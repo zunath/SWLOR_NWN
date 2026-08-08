@@ -198,42 +198,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public GuiBindingList<GuiComboEntry> TintMaterialOptions
+        public bool IsCustomTintAvailable
         {
-            get => Get<GuiBindingList<GuiComboEntry>>();
+            get => Get<bool>();
             set => Set(value);
         }
 
-        public int SelectedTintMaterialIndex
+        public bool IsCustomTintPickerVisible
         {
-            get => Get<int>();
-            set
-            {
-                Set(value);
-                if (_tintMapSelections.Count > 0)
-                    LoadTintLayerOptions();
-            }
-        }
-
-        public GuiBindingList<GuiComboEntry> TintLayerOptions
-        {
-            get => Get<GuiBindingList<GuiComboEntry>>();
+            get => Get<bool>();
             set => Set(value);
         }
 
-        public int SelectedTintLayerType
+        public string CustomTintSelectionText
         {
-            get => Get<int>();
-            set
-            {
-                Set(value);
-
-                if (!Enum.IsDefined(typeof(TintMapLayerType), value))
-                    return;
-
-                var layer = TintMapMaterialRegistry.GetLayer((TintMapLayerType)value);
-                LoadSelectedTintColor(layer);
-            }
+            get => Get<string>();
+            set => Set(value);
         }
 
         public GuiColor SelectedTintColor
@@ -243,22 +223,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 Set(value);
                 if (_loadingTintColor || value == null ||
-                    !TryGetSelectedTintMap(out var selection, out var layerType, out var layer))
+                    !TryGetEditableTintSelections(out var selections, out var layerType, out var layer))
                 {
                     return;
                 }
 
                 var color = new TintMapColor(value.R, value.G, value.B);
-                TintMapService.SetColor(_target, selection, layerType, color);
-                TintSelectionText =
-                    $"{selection.Material.Name} - {layer.Name}: #{value.R:X2}{value.G:X2}{value.B:X2}";
-            }
-        }
+                foreach (var selection in selections)
+                {
+                    TintMapService.SetColor(_target, selection, layerType, color);
+                }
 
-        public string TintSelectionText
-        {
-            get => Get<string>();
-            set => Set(value);
+                CustomTintSelectionText = $"{layer.Name}: #{value.R:X2}{value.G:X2}{value.B:X2}";
+            }
         }
 
         public bool IsSettingsVisible
@@ -713,6 +690,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 LoadColorCategoryOptions();
                 LoadPartCategoryOptions();
                 LoadItemParts();
+                LoadTintMapEditor();
                 _lastModifiedItem = OBJECT_INVALID;
             }
         }
@@ -852,11 +830,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsSettingsSelected = false;
             IsColorPickerVisible = true;
             IsCopyEnabled = true;
-            TintMaterialOptions = new GuiBindingList<GuiComboEntry>();
-            TintLayerOptions = new GuiBindingList<GuiComboEntry>();
-            SelectedTintMaterialIndex = -1;
-            SelectedTintLayerType = -1;
-            TintSelectionText = "Choose a material and tint channel.";
+            IsCustomTintAvailable = false;
+            IsCustomTintPickerVisible = false;
+            CustomTintSelectionText = "Select a color channel.";
             ToggleItemEquippedFlags();
             LoadColorCategoryOptions();
             LoadPartCategoryOptions();
@@ -875,8 +851,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.SelectedPartCategoryIndex);
             WatchOnClient(model => model.SelectedPartIndex);
             WatchOnClient(model => model.SelectedItemTypeIndex);
-            WatchOnClient(model => model.SelectedTintMaterialIndex);
-            WatchOnClient(model => model.SelectedTintLayerType);
             WatchOnClient(model => model.SelectedTintColor);
 
             if (GetIsPC(_target) && !GetIsDM(_target) && !GetIsDMPossessed(_target))
@@ -904,82 +878,40 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadTintMapEditor()
         {
-            var selectedModel = string.Empty;
-            var selectedMaterial = string.Empty;
-            if (SelectedTintMaterialIndex >= 0 && SelectedTintMaterialIndex < _tintMapSelections.Count)
-            {
-                var currentSelection = _tintMapSelections[SelectedTintMaterialIndex];
-                selectedModel = currentSelection.ModelResref;
-                selectedMaterial = currentSelection.Material.Resref;
-            }
-
             RefreshTintMapAvailability();
-
-            var materialOptions = new GuiBindingList<GuiComboEntry>();
-            var selectedIndex = -1;
-            for (var index = 0; index < _tintMapSelections.Count; index++)
+            if (!TryGetEditableTintSelections(out var selections, out var layerType, out var layer))
             {
-                var selection = _tintMapSelections[index];
-                materialOptions.Add(new GuiComboEntry(
-                    $"{selection.ModelResref}: {selection.Material.Name}",
-                    index));
-
-                if (selection.ModelResref.Equals(selectedModel, StringComparison.OrdinalIgnoreCase) &&
-                    selection.Material.Resref.Equals(selectedMaterial, StringComparison.OrdinalIgnoreCase))
-                {
-                    selectedIndex = index;
-                }
-            }
-
-            TintMaterialOptions = materialOptions;
-            if (selectedIndex < 0 && _tintMapSelections.Count > 0)
-                selectedIndex = 0;
-
-            SelectedTintMaterialIndex = selectedIndex;
-        }
-
-        private void LoadTintLayerOptions()
-        {
-            var layerOptions = new GuiBindingList<GuiComboEntry>();
-
-            if (SelectedTintMaterialIndex < 0 || SelectedTintMaterialIndex >= _tintMapSelections.Count)
-            {
-                TintLayerOptions = layerOptions;
+                IsCustomTintAvailable = false;
+                IsCustomTintPickerVisible = false;
                 SetSelectedTintColor(GuiColor.Grey);
-                TintSelectionText = "No tintable materials are currently equipped.";
+                CustomTintSelectionText = "Select a tintable color channel.";
                 return;
             }
 
-            var material = _tintMapSelections[SelectedTintMaterialIndex].Material;
-            foreach (var layerType in material.Layers)
-            {
-                var layer = TintMapMaterialRegistry.GetLayer(layerType);
-                layerOptions.Add(new GuiComboEntry(layer.Name, (int)layerType));
-            }
+            IsCustomTintAvailable = true;
+            var customColors = selections
+                .Select(selection => TintMapService.TryGetCustomColor(selection, layerType, out var color)
+                    ? (TintMapColor?)color
+                    : null)
+                .ToList();
+            var distinctCustomColors = customColors
+                .Where(color => color.HasValue)
+                .Select(color => color.Value)
+                .Distinct()
+                .ToList();
 
-            TintLayerOptions = layerOptions;
-            SelectedTintLayerType = (int)material.Layers[0];
-        }
-
-        private void LoadSelectedTintColor(TintMapLayerDefinition layer)
-        {
-            if (!TryGetSelectedTintMap(out var selection, out var layerType, out _))
+            if (customColors.All(color => color.HasValue) && distinctCustomColors.Count == 1)
             {
-                SetSelectedTintColor(GuiColor.Grey);
-                TintSelectionText = "No tintable materials are currently equipped.";
-                return;
-            }
-
-            if (TintMapService.TryGetCustomColor(selection, layerType, out var color))
-            {
+                var color = distinctCustomColors[0];
                 SetSelectedTintColor(new GuiColor(color.Red, color.Green, color.Blue));
-                TintSelectionText =
-                    $"{selection.Material.Name} - {layer.Name}: #{color.Red:X2}{color.Green:X2}{color.Blue:X2}";
+                CustomTintSelectionText = $"{layer.Name}: #{color.Red:X2}{color.Green:X2}{color.Blue:X2}";
                 return;
             }
 
             SetSelectedTintColor(GuiColor.Grey);
-            TintSelectionText = $"{selection.Material.Name} - {layer.Name}: Standard color";
+            CustomTintSelectionText = distinctCustomColors.Count > 0
+                ? $"{layer.Name}: Mixed custom colors"
+                : $"{layer.Name}: Preset color";
         }
 
         private void SetSelectedTintColor(GuiColor color)
@@ -995,28 +927,93 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         }
 
-        private bool TryGetSelectedTintMap(
-            out TintMapMaterialSelection selection,
+        private bool TryGetEditableTintSelections(
+            out IReadOnlyList<TintMapMaterialSelection> selections,
             out TintMapLayerType layerType,
             out TintMapLayerDefinition layer)
         {
-            selection = null;
+            selections = Array.Empty<TintMapMaterialSelection>();
             layerType = default;
             layer = null;
 
-            if (SelectedTintMaterialIndex < 0 || SelectedTintMaterialIndex >= _tintMapSelections.Count)
-                return false;
-            if (!Enum.IsDefined(typeof(TintMapLayerType), SelectedTintLayerType))
+            if (!TryGetSelectedTintLayer(out layerType))
                 return false;
 
-            selection = _tintMapSelections[SelectedTintMaterialIndex];
-            layerType = (TintMapLayerType)SelectedTintLayerType;
+            var paletteSource = IsAppearanceSelected ? _target : GetItem();
+            if (!GetIsObjectValid(paletteSource))
+                return false;
 
-            if (!selection.Material.Layers.Contains(layerType))
+            var restrictToArmorPart = IsEquipmentSelected &&
+                                      SelectedItemTypeIndex == 0 &&
+                                      _colorTarget != ColorTarget.Global;
+            var armorPart = restrictToArmorPart
+                ? GetArmorModelType(_colorTarget)
+                : AppearanceArmor.Invalid;
+            var selectedLayerType = layerType;
+            selections = _tintMapSelections
+                .Where(selection =>
+                    selection.PaletteSource == paletteSource &&
+                    selection.Material.Layers.Contains(selectedLayerType) &&
+                    (!restrictToArmorPart || selection.ArmorPart == armorPart))
+                .ToList();
+            if (selections.Count == 0)
                 return false;
 
             layer = TintMapMaterialRegistry.GetLayer(layerType);
             return true;
+        }
+
+        private bool TryGetSelectedTintLayer(out TintMapLayerType layerType)
+        {
+            layerType = default;
+            if (IsAppearanceSelected)
+            {
+                layerType = SelectedColorCategoryIndex switch
+                {
+                    0 => TintMapLayerType.Skin,
+                    1 => TintMapLayerType.Hair,
+                    2 => TintMapLayerType.Tattoo1,
+                    3 => TintMapLayerType.Tattoo2,
+                    _ => default
+                };
+                return SelectedColorCategoryIndex is >= 0 and <= 3;
+            }
+
+            if (!IsEquipmentSelected)
+                return false;
+
+            if (SelectedItemTypeIndex == 0)
+            {
+                if (_colorTarget == ColorTarget.Invalid)
+                    return false;
+
+                layerType = _selectedColorChannel switch
+                {
+                    AppearanceArmorColor.Leather1 => TintMapLayerType.Leather1,
+                    AppearanceArmorColor.Leather2 => TintMapLayerType.Leather2,
+                    AppearanceArmorColor.Cloth1 => TintMapLayerType.Cloth1,
+                    AppearanceArmorColor.Cloth2 => TintMapLayerType.Cloth2,
+                    AppearanceArmorColor.Metal1 => TintMapLayerType.Metal1,
+                    AppearanceArmorColor.Metal2 => TintMapLayerType.Metal2,
+                    _ => default
+                };
+                return _selectedColorChannel is >= AppearanceArmorColor.Leather1 and <= AppearanceArmorColor.Metal2;
+            }
+
+            if (SelectedItemTypeIndex is not (1 or 2))
+                return false;
+
+            layerType = SelectedColorCategoryIndex switch
+            {
+                0 => TintMapLayerType.Leather1,
+                1 => TintMapLayerType.Leather2,
+                2 => TintMapLayerType.Cloth1,
+                3 => TintMapLayerType.Cloth2,
+                4 => TintMapLayerType.Metal1,
+                5 => TintMapLayerType.Metal2,
+                _ => default
+            };
+            return SelectedColorCategoryIndex is >= 0 and <= 5;
         }
 
         private void StartArmorClientWatches()
@@ -1576,6 +1573,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             SelectedColorCategoryIndex = index;
             ColorCategorySelected[index] = true;
+            LoadTintMapEditor();
         };
 
         public Action OnSelectPartCategory() => () =>
@@ -1731,6 +1729,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             var colorId = GetSelectedPaletteColorId();
+            ResetCurrentCustomTintOverrides();
 
             // Appearance - Skin, Hair, or Tattoo
             if (IsAppearanceSelected)
@@ -1780,15 +1779,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             TintMapService.ApplyCurrentColors(_target);
         };
 
+        public Action OnToggleCustomTintPicker() => () =>
+        {
+            LoadTintMapEditor();
+            if (IsCustomTintAvailable)
+                IsCustomTintPickerVisible = !IsCustomTintPickerVisible;
+        };
+
         public Action OnResetTintColor() => () =>
         {
-            if (!TryGetSelectedTintMap(out var selection, out var layerType, out var layer))
+            ResetCurrentCustomTintOverrides();
+        };
+
+        private void ResetCurrentCustomTintOverrides()
+        {
+            if (!TryGetEditableTintSelections(out var selections, out var layerType, out var layer))
                 return;
 
-            TintMapService.ResetColor(_target, selection, layerType);
+            foreach (var selection in selections)
+            {
+                TintMapService.ResetColor(_target, selection, layerType);
+            }
+
             SetSelectedTintColor(GuiColor.Grey);
-            TintSelectionText = $"{selection.Material.Name} - {layer.Name}: Standard color";
-        };
+            CustomTintSelectionText = $"{layer.Name}: Preset color";
+        }
 
         private void ModifyHelmetCloakColor(AppearanceArmorColor colorChannel, int colorId)
         {
@@ -2038,6 +2053,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (_colorTarget == ColorTarget.Invalid)
                 return;
 
+            ResetCurrentCustomTintOverrides();
+
             if (_colorTarget == ColorTarget.Global)
             {
                 var item = GetItem();
@@ -2073,6 +2090,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var button = JsonGetInt(JsonObjectGet(payload, "mouse_btn"));
             if (button != 2)
                 return;
+
+            ResetCurrentCustomTintOverrides();
 
             var item = GetItem();
             DestroyObject(item);
@@ -2175,6 +2194,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ChangePartialView(ArmorColorElement, ArmorColorsClothLeather);
                 _isMetalPalette = false;
             }
+
+            LoadTintMapEditor();
         };
 
         private GuiRectangle BuildColorRegion(ColorTarget target, AppearanceArmorColor colorChannel)

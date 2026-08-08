@@ -110,8 +110,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 {
                     row.AddPartialView(AppearanceEditorViewModel.EditorPartialElement);
                 });
-
-                BuildTintMapEditor(col);
             });
         }
 
@@ -183,6 +181,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .BindIsVisible(model => model.IsColorPickerVisible);
                         });
 
+                        BuildCustomTintEditor(col2);
+
                         col2.AddRow(row2 =>
                         {
                             row2.AddList(template =>
@@ -219,73 +219,48 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             });
         }
 
-        private void BuildTintMapEditor(GuiColumn<AppearanceEditorViewModel> col)
+        private void BuildCustomTintEditor(GuiColumn<AppearanceEditorViewModel> col)
         {
             col.AddRow(row =>
             {
-                row.BindIsVisible(model => model.IsTintMapAvailable);
-                row.AddLabel()
-                    .SetText("Custom Color")
-                    .SetHeight(24f)
-                    .SetHorizontalAlign(NuiHorizontalAlign.Center);
-            });
+                row.AddButton()
+                    .SetText("Custom Color...")
+                    .SetWidth(128f)
+                    .SetHeight(32f)
+                    .BindIsEnabled(model => model.IsCustomTintAvailable)
+                    .BindOnClicked(model => model.OnToggleCustomTintPicker());
 
-            col.AddRow(row =>
-            {
-                row.BindIsVisible(model => model.IsTintMapAvailable);
                 row.AddLabel()
-                    .SetText("Material")
-                    .SetWidth(80f)
+                    .BindText(model => model.CustomTintSelectionText)
                     .SetHeight(32f)
                     .SetHorizontalAlign(NuiHorizontalAlign.Left);
-
-                row.AddComboBox()
-                    .BindOptions(model => model.TintMaterialOptions)
-                    .BindSelectedIndex(model => model.SelectedTintMaterialIndex)
-                    .SetHeight(32f);
             });
 
             col.AddRow(row =>
             {
-                row.BindIsVisible(model => model.IsTintMapAvailable);
-                row.AddLabel()
-                    .SetText("Channel")
-                    .SetWidth(80f)
-                    .SetHeight(32f)
-                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
-
-                row.AddComboBox()
-                    .BindOptions(model => model.TintLayerOptions)
-                    .BindSelectedIndex(model => model.SelectedTintLayerType)
-                    .SetHeight(32f);
-            });
-
-            col.AddRow(row =>
-            {
-                row.BindIsVisible(model => model.IsTintMapAvailable);
+                row.BindIsVisible(model => model.IsCustomTintPickerVisible);
                 row.AddSpacer();
 
                 row.AddColorPicker()
                     .BindSelectedColor(model => model.SelectedTintColor)
-                    .SetHeight(220f)
-                    .SetWidth(256f);
+                    .SetHeight(176f)
+                    .SetWidth(208f);
 
                 row.AddSpacer();
             });
 
             col.AddRow(row =>
             {
-                row.BindIsVisible(model => model.IsTintMapAvailable);
-                row.AddLabel()
-                    .BindText(model => model.TintSelectionText)
-                    .SetHeight(32f)
-                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                row.BindIsVisible(model => model.IsCustomTintPickerVisible);
+                row.AddSpacer();
 
                 row.AddButton()
-                    .SetText("Reset")
-                    .SetWidth(72f)
+                    .SetText("Use Preset Color")
+                    .SetWidth(144f)
                     .SetHeight(32f)
                     .BindOnClicked(model => model.OnResetTintColor());
+
+                row.AddSpacer();
             });
         }
 
@@ -1016,6 +991,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         }
                     });
                 }
+
+                BuildCustomTintEditor(col);
 
             });
         }

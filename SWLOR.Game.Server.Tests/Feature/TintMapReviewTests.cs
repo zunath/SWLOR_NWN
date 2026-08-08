@@ -64,7 +64,7 @@ public class TintMapReviewTests
     }
 
     [Test]
-    public void AppearanceTintEditorUsesColorPickerInsteadOfPaletteImage()
+    public void AppearanceTintEditorAddsCustomColorAlongsideExistingPresetPalettes()
     {
         var definition = ReadSource(
             "SWLOR.Game.Server",
@@ -78,13 +78,25 @@ public class TintMapReviewTests
             "ViewModel",
             "AppearanceEditorViewModel.cs");
 
+        var definitionRoot = CSharpSyntaxTree.ParseText(definition).GetRoot();
+        var definitionMethods = definitionRoot.DescendantNodes()
+            .OfType<MethodDeclarationSyntax>()
+            .ToDictionary(method => method.Identifier.ValueText);
+
         definition.Should().Contain("row.AddColorPicker()");
         definition.Should().Contain(".BindSelectedColor(model => model.SelectedTintColor)");
-        definition.Should().Contain("BuildTintMapEditor(col);");
+        definition.Should().Contain(".BindResref(model => model.ColorSheetResref)");
+        definition.Should().Contain("model => model.OnClickColorPalette(paletteIndex)");
+        definition.Should().Contain(".SetText(\"Custom Color...\")");
+        definitionMethods["BuildEditorHeader"].ToString().Should().NotContain("BuildCustomTintEditor");
+        definitionMethods["BuildMainEditor"].ToString().Should().Contain("BuildCustomTintEditor(col2)");
+        definitionMethods["BuildColorPalette"].ToString().Should().Contain("BuildCustomTintEditor(col)");
         definition.Should().NotContain(".SetText(\"Tints\")");
         definition.Should().NotContain("TintColorSheetResref");
         viewModel.Should().Contain("new TintMapColor(value.R, value.G, value.B)");
         viewModel.Should().Contain("WatchOnClient(model => model.SelectedTintColor)");
+        viewModel.Should().NotContain("TintMaterialOptions");
+        viewModel.Should().NotContain("TintLayerOptions");
         viewModel.Should().NotContain("OnSelectTintColor");
         viewModel.Should().NotContain("OnSelectTintMap");
         viewModel.Should().NotContain("IsTintMapSelected");
@@ -111,7 +123,7 @@ public class TintMapReviewTests
     }
 
     [Test]
-    public void BodyPartChangesRebuildTintMaterialAndLayerOptions()
+    public void BodyPartChangesRefreshCustomTintTargets()
     {
         var source = ReadSource(
             "SWLOR.Game.Server",
@@ -135,7 +147,7 @@ public class TintMapReviewTests
     }
 
     [Test]
-    public void AppearanceTintEditorInitializesSelectionsBeforeLoading()
+    public void AppearanceTintEditorTargetsTheExistingColorSelectionAndRestoresPresets()
     {
         var source = ReadSource(
             "SWLOR.Game.Server",
@@ -144,30 +156,30 @@ public class TintMapReviewTests
             "ViewModel",
             "AppearanceEditorViewModel.cs");
         var root = CSharpSyntaxTree.ParseText(source).GetRoot();
-        var initialize = root.DescendantNodes()
+        var methodNames = new HashSet<string>
+        {
+            "TryGetSelectedTintLayer",
+            "TryGetEditableTintSelections",
+            "OnSelectColor",
+            "OnClickColorPalette",
+            "OnClickColorTarget"
+        };
+        var methods = root.DescendantNodes()
             .OfType<MethodDeclarationSyntax>()
-            .Single(node => node.Identifier.ValueText == "Initialize");
-        var load = initialize.DescendantNodes()
-            .OfType<InvocationExpressionSyntax>()
-            .Single(invocation => GetInvokedMethodName(invocation) == "LoadTintMapEditor");
-        var assignments = initialize.DescendantNodes()
-            .OfType<AssignmentExpressionSyntax>()
-            .Where(assignment => assignment.Left.ToString() is
-                "SelectedTintMaterialIndex" or "SelectedTintLayerType")
-            .ToDictionary(
-                assignment => assignment.Left.ToString(),
-                assignment => assignment);
+            .Where(method => methodNames.Contains(method.Identifier.ValueText))
+            .ToDictionary(method => method.Identifier.ValueText);
 
-        assignments["SelectedTintMaterialIndex"].SpanStart.Should().BeLessThan(load.SpanStart);
-        assignments["SelectedTintLayerType"].SpanStart.Should().BeLessThan(load.SpanStart);
-
-        var materialIndexProperty = root.DescendantNodes()
-            .OfType<PropertyDeclarationSyntax>()
-            .Single(property => property.Identifier.ValueText == "SelectedTintMaterialIndex");
-        var setter = materialIndexProperty.AccessorList!.Accessors
-            .Single(accessor => accessor.Kind() == SyntaxKind.SetAccessorDeclaration);
-        setter.ToString().Should().Contain("_tintMapSelections.Count > 0");
-        setter.ToString().Should().NotContain("IsTintMapAvailable");
+        methods["TryGetSelectedTintLayer"].ToString().Should().Contain("SelectedColorCategoryIndex switch");
+        methods["TryGetSelectedTintLayer"].ToString().Should().Contain("_selectedColorChannel switch");
+        methods["TryGetEditableTintSelections"].ToString().Should().Contain(
+            "selection.PaletteSource == paletteSource");
+        methods["TryGetEditableTintSelections"].ToString().Should().Contain(
+            "selection.ArmorPart == armorPart");
+        methods["TryGetEditableTintSelections"].ToString().Should().Contain(
+            "selection.Material.Layers.Contains(selectedLayerType)");
+        methods["OnSelectColor"].ToString().Should().Contain("ResetCurrentCustomTintOverrides");
+        methods["OnClickColorPalette"].ToString().Should().Contain("ResetCurrentCustomTintOverrides");
+        methods["OnClickColorTarget"].ToString().Should().Contain("LoadTintMapEditor");
     }
 
     [Test]

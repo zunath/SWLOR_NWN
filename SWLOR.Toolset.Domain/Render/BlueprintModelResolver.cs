@@ -58,6 +58,13 @@ namespace SWLOR.Toolset.Domain.Render
         /// <summary>The single model resref for <see cref="BlueprintModelKind.Simple"/>; null otherwise.</summary>
         public string? ModelResRef { get; init; }
 
+        /// <summary>
+        /// The resolved door row declares <c>VisibleModel=0</c>. These are area-transition planes:
+        /// invisible at runtime, but drawn translucently by the toolset from the model's hidden
+        /// selection geometry.
+        /// </summary>
+        public bool IsDoorTransition { get; init; }
+
         /// <summary>The skeleton/supermodel resref for <see cref="BlueprintModelKind.Segmented"/>; null otherwise.</summary>
         public string? SkeletonResRef { get; init; }
 
@@ -858,6 +865,7 @@ namespace SWLOR.Toolset.Domain.Render
                 : null;
             var displayName = specific?.DisplayName ?? generic?.DisplayName;
             var model = specific?.Model ?? generic?.Model;
+            var visibleModel = specific?.VisibleModel ?? generic?.VisibleModel ?? true;
             var table = specific != null ? "doortypes.2da" : "genericdoors.2da";
 
             if (displayName == null)
@@ -872,7 +880,8 @@ namespace SWLOR.Toolset.Domain.Render
             {
                 Kind = BlueprintModelKind.Simple,
                 Status = $"{displayName} ({model}.mdl)",
-                ModelResRef = model
+                ModelResRef = model,
+                IsDoorTransition = !visibleModel
             };
         }
 

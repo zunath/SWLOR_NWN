@@ -132,6 +132,12 @@ namespace SWLOR.Toolset.Domain.Render
         public RenderModel? Model { get; init; }
 
         /// <summary>
+        /// This door's 2DA row declares <c>VisibleModel=0</c>, making it an invisible runtime area
+        /// transition that the toolset must represent with translucent editor geometry.
+        /// </summary>
+        public bool IsDoorTransition { get; init; }
+
+        /// <summary>
         /// A sound instance's MinDistance in metres - the range it plays at full volume, which
         /// Aurora draws as the dotted sphere around the marker. Null for every other kind and for
         /// sounds that carry no such field.
@@ -189,6 +195,7 @@ namespace SWLOR.Toolset.Domain.Render
                 VisualTransform = VisualTransform,
                 Geometry = geometry,
                 Model = Model,
+                IsDoorTransition = IsDoorTransition,
                 SoundMinDistance = SoundMinDistance,
                 SoundMaxDistance = SoundMaxDistance,
                 IsPositionalSound = IsPositionalSound

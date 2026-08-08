@@ -1243,7 +1243,9 @@ namespace SWLOR.Toolset.Editors
                     InstanceMarkerKind.Waypoint => WaypointMarkerModel.ForwardCorrection,
                     _ => Matrix4x4.Identity
                 },
-                Model = model
+                Model = model,
+                IsDoorTransition = kind.Value == InstanceMarkerKind.Door &&
+                                   model?.IsDoorTransitionGeometry == true
             };
         }
 

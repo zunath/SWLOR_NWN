@@ -123,16 +123,19 @@ namespace SWLOR.Toolset.Tests
                     "2DA V2.0\r\n\r\nLabel StrRef ModelName BlockSight VisibleModel SoundAppType Name\r\n" +
                     "0 GenericDoor 123 generic_model 1 1 1 123\r\n" +
                     "1 User002 **** **** **** **** **** ****\r\n" +
-                    "2 MissingModel 123 **** 1 1 1 123\r\n");
+                    "2 MissingModel 123 **** 1 1 1 123\r\n" +
+                    "3 Transition 124 transition_model 0 0 **** 124\r\n");
                 var service = new DoorTypeService(
                     new TwoDaService(scratch),
                     new TlkService(TlkJsonFile.Parse("{\"language\":0,\"entries\":[]}")));
 
                 service.GetAll().Should().ContainSingle()
                     .Which.Should().Be(new DoorTypeRow(0, "RealDoor", "RealDoor", "real_model"));
-                service.GetGenericAll().Should().ContainSingle()
-                    .Which.Should().Match<GenericDoorRow>(row =>
-                        row.Id == 0 && row.Label == "GenericDoor" && row.Model == "generic_model");
+                service.GetGenericAll().Should().HaveCount(2);
+                service.GetGeneric(0).Should().Match<GenericDoorRow>(row =>
+                    row.Label == "GenericDoor" && row.Model == "generic_model" && row.VisibleModel);
+                service.GetGeneric(3).Should().Match<GenericDoorRow>(row =>
+                    row.Label == "Transition" && row.Model == "transition_model" && !row.VisibleModel);
             }
             finally
             {

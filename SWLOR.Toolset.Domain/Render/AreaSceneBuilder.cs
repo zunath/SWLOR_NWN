@@ -231,7 +231,8 @@ namespace SWLOR.Toolset.Domain.Render
                 resolveModel: resolveCreatureModel,
                 modelCorrection: CreatureModelFacing.ForwardCorrection);
             AddMarkers(markers, git.Doors, InstanceMarkerKind.Door, ResourceType.Utd,
-                resolveModel: instance => ResolveDoorModel(instance, doorTypes, modelCache));
+                resolveModel: instance => ResolveDoorModel(instance, doorTypes, modelCache),
+                isDoorTransition: instance => IsDoorTransition(instance, doorTypes));
             AddMarkers(markers, git.Items, InstanceMarkerKind.Item, ResourceType.Uti);
             AddMarkers(markers, git.Placeables, InstanceMarkerKind.Placeable, ResourceType.Utp,
                 resolveModel: instance => ResolvePlaceableModel(instance, placeableAppearances, modelCache));
@@ -259,7 +260,8 @@ namespace SWLOR.Toolset.Domain.Render
             bool includeGeometry = false,
             Func<JsonGffStruct, RenderModel?>? resolveModel = null,
             Matrix4x4? modelCorrection = null,
-            IReadOnlyList<TilePlacement>? tiles = null)
+            IReadOnlyList<TilePlacement>? tiles = null,
+            Func<JsonGffStruct, bool>? isDoorTransition = null)
         {
             foreach (var instance in instances)
             {
@@ -300,6 +302,7 @@ namespace SWLOR.Toolset.Domain.Render
                         : InstanceFieldMap.GetVisualTransform(instance),
                     Geometry = geometry,
                     Model = resolveModel?.Invoke(instance),
+                    IsDoorTransition = isDoorTransition?.Invoke(instance) ?? false,
                     SoundMinDistance = kind == InstanceMarkerKind.Sound ? instance.GetSingleOrNull("MinDistance") : null,
                     SoundMaxDistance = kind == InstanceMarkerKind.Sound ? instance.GetSingleOrNull("MaxDistance") : null,
                     IsPositionalSound = kind == InstanceMarkerKind.Sound && (instance.GetIntOrNull("Positional") ?? 0) != 0
@@ -406,16 +409,42 @@ namespace SWLOR.Toolset.Domain.Render
                 return null;
 
             var appearance = instance.GetIntOrNull("Appearance") ?? 0;
-            var modelResRef = appearance > 0
-                ? doorTypes.GetAll().FirstOrDefault(row => row.Id == appearance)?.Model
-                : doorTypes.GetGenericAll().FirstOrDefault(row =>
+            var specific = appearance > 0
+                ? doorTypes.GetAll().FirstOrDefault(row => row.Id == appearance)
+                : null;
+            var generic = appearance == 0
+                ? doorTypes.GetGenericAll().FirstOrDefault(row =>
                     row.Id == (instance.GetIntOrNull("GenericType_New")
                                ?? instance.GetIntOrNull("GenericType")
-                               ?? 0))?.Model;
+                               ?? 0))
+                : null;
+            var modelResRef = specific?.Model ?? generic?.Model;
+            var visibleModel = specific?.VisibleModel ?? generic?.VisibleModel ?? true;
 
             return string.IsNullOrWhiteSpace(modelResRef)
                 ? null
-                : modelCache.GetOrBuild(modelResRef);
+                : visibleModel
+                    ? modelCache.GetOrBuild(modelResRef)
+                    : modelCache.GetOrBuildDoorTransition(modelResRef);
+        }
+
+        /// <summary>
+        /// <c>VisibleModel=0</c> is how both genericdoors.2da and doortypes.2da identify the
+        /// invisible area-transition planes that Aurora still shows while editing.
+        /// </summary>
+        private static bool IsDoorTransition(JsonGffStruct instance, DoorTypeService? doorTypes)
+        {
+            if (doorTypes == null)
+                return false;
+
+            var appearance = instance.GetIntOrNull("Appearance") ?? 0;
+            if (appearance > 0)
+                return doorTypes.GetAll().FirstOrDefault(row => row.Id == appearance) is { VisibleModel: false };
+
+            var genericType = instance.GetIntOrNull("GenericType_New")
+                              ?? instance.GetIntOrNull("GenericType")
+                              ?? 0;
+            return doorTypes.GetGenericAll().FirstOrDefault(row => row.Id == genericType) is { VisibleModel: false };
         }
 
         private static IReadOnlyList<Vector3>? ReadGeometry(JsonGffStruct instance)

@@ -37,7 +37,9 @@ namespace SWLOR.Toolset.Domain.Render
 
         /// <summary>True when <paramref name="instance"/> should be hit-tested (and drawn) as its resolved model rather than its kind-colored marker pyramid - must mirror GlAreaControl.DrawsAsModel exactly so picking always matches what is on screen.</summary>
         public static bool DrawsAsModel(InstanceMarker instance, bool showPlaceableModels) =>
-            instance.Model != null && (showPlaceableModels || instance.Kind != InstanceMarkerKind.Placeable);
+            !instance.IsDoorTransition &&
+            instance.Model is { Meshes.Count: > 0 } &&
+            (showPlaceableModels || instance.Kind != InstanceMarkerKind.Placeable);
 
         /// <summary>
         /// The local-to-world transform for one instance marker: apply its optional visual
@@ -72,9 +74,11 @@ namespace SWLOR.Toolset.Domain.Render
 
             foreach (var instance in scene.Instances)
             {
-                var hitDistance = DrawsAsModel(instance, showPlaceableModels)
-                    ? PickModelInstance(ray, instance)
-                    : PickMarkerInstance(ray, instance);
+                var hitDistance = instance.IsDoorTransition
+                    ? PickDoorTransition(ray, instance)
+                    : DrawsAsModel(instance, showPlaceableModels)
+                        ? PickModelInstance(ray, instance)
+                        : PickMarkerInstance(ray, instance);
 
                 if (hitDistance is { } distance && distance < closestDistance)
                 {
@@ -95,7 +99,20 @@ namespace SWLOR.Toolset.Domain.Render
         /// re-scanning every instance in the scene.
         /// </summary>
         public static float? PickInstance(PickRay ray, InstanceMarker instance, bool drawsAsModel) =>
-            drawsAsModel ? PickModelInstance(ray, instance) : PickMarkerInstance(ray, instance);
+            instance.IsDoorTransition
+                ? PickDoorTransition(ray, instance)
+                : drawsAsModel
+                    ? PickModelInstance(ray, instance)
+                    : PickMarkerInstance(ray, instance);
+
+        private static float? PickDoorTransition(PickRay ray, InstanceMarker instance)
+        {
+            if (instance.Model is { Meshes.Count: > 0 })
+                return PickModelInstance(ray, instance);
+
+            var bounds = ComputeDoorTransitionWorldBounds(instance);
+            return RayAabbIntersect(ray, bounds.Min, bounds.Max);
+        }
 
         /// <summary>World-space AABB of one instance's transformed marker pyramid.</summary>
         public static (Vector3 Min, Vector3 Max) ComputeMarkerWorldBounds(InstanceMarker instance)
@@ -130,6 +147,21 @@ namespace SWLOR.Toolset.Domain.Render
         }
 
         /// <summary>
+        /// World bounds of the translucent transition representation: its authored hidden-model
+        /// geometry when available, otherwise the standard two-by-three-metre doorway plane.
+        /// </summary>
+        public static (Vector3 Min, Vector3 Max) ComputeDoorTransitionWorldBounds(InstanceMarker instance)
+        {
+            if (ComputeModelWorldBounds(instance) is { } modelBounds)
+                return modelBounds;
+
+            return TransformAabb(
+                DoorTransitionMarker.LocalMinimum,
+                DoorTransitionMarker.LocalMaximum,
+                ComputeInstanceTransform(instance));
+        }
+
+        /// <summary>
         /// World-space AABB for an instance as it is currently displayed: its merged model bounds
         /// when <paramref name="drawsAsModel"/> (falling back to the marker bounds if it somehow has
         /// no mesh), otherwise the marker pyramid's bounds. Used by GlAreaControl to draw a
@@ -137,6 +169,9 @@ namespace SWLOR.Toolset.Domain.Render
         /// </summary>
         public static (Vector3 Min, Vector3 Max) ComputeInstanceWorldBounds(InstanceMarker instance, bool drawsAsModel)
         {
+            if (instance.IsDoorTransition)
+                return ComputeDoorTransitionWorldBounds(instance);
+
             if (drawsAsModel && ComputeModelWorldBounds(instance) is { } modelBounds)
                 return modelBounds;
 

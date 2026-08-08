@@ -476,7 +476,8 @@ namespace SWLOR.Toolset.Editors.Doors
                                 AreaSceneBuilder.TileSize / 2f,
                                 0f),
                             Orientation = new Vector2(1f, 0f),
-                            Model = model
+                            Model = model,
+                            IsDoorTransition = model.IsDoorTransitionGeometry
                         }
                     },
                     Diagnostics = new AreaSceneDiagnostics()

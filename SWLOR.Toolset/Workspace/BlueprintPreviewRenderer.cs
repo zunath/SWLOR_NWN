@@ -239,6 +239,8 @@ namespace SWLOR.Toolset.Workspace
                             ? ComposeSegmented(reference, includeCreatureAnimations) ??
                               BuildCreatureModel(reference.ModelResRef, includeCreatureAnimations)
                             : BuildCreatureModel(reference.ModelResRef, includeCreatureAnimations)
+                        : type == ResourceType.Utd && reference.IsDoorTransition
+                            ? BuildDoorTransitionModel(reference.ModelResRef)
                         : BuildRenderModel(reference.ModelResRef),
                 BlueprintModelKind.Segmented => ComposeSegmented(reference, includeCreatureAnimations),
                 BlueprintModelKind.ItemComposite => ComposeItemParts(reference),
@@ -268,6 +270,7 @@ namespace SWLOR.Toolset.Workspace
                 Animations = model.Animations,
                 Emitters = model.Emitters,
                 DefaultAnimationName = model.DefaultAnimationName,
+                IsDoorTransitionGeometry = model.IsDoorTransitionGeometry,
                 LayerColorIndices = reference.LayerColorIndices,
             };
         }
@@ -528,6 +531,24 @@ namespace SWLOR.Toolset.Workspace
             catch (Exception)
             {
                 // A model that cannot be turned into meshes falls back to the type symbol.
+                return null;
+            }
+        }
+
+        private RenderModel? BuildDoorTransitionModel(string modelResRef)
+        {
+            var model = LoadMdl(modelResRef, withSupermodelAnims: false);
+            if (model == null)
+                return null;
+
+            try
+            {
+                return MdlMeshBuilder.BuildDoorTransition(model, IdleFrames(model));
+            }
+            catch (Exception)
+            {
+                // The area viewport still has a fixed-size transition-plane fallback when the
+                // model's authored editor geometry cannot be built.
                 return null;
             }
         }

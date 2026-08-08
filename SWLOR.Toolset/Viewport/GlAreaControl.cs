@@ -62,6 +62,12 @@ namespace SWLOR.Toolset.Viewport
         private const float MarkerHeight = 1.2f;
         private const float MarkerGroundOffset = 0.05f;
 
+        // Aurora keeps runtime-invisible area-transition doors editable as a translucent
+        // lavender plane in the doorway. The model's authored hidden geometry supplies the shape;
+        // DoorTransitionMarker supplies the fixed 2m x 3m fallback when that MDL is unavailable.
+        private static readonly Vector3 DoorTransitionColor = new(0.52f, 0.52f, 0.82f);
+        private const float DoorTransitionAlpha = 0.42f;
+
         /// <summary>Net press-to-release pointer movement (logical px) below which a left button press+release is treated as a pick click rather than a (degenerate/aborted) orbit drag.</summary>
         private const float ClickDragThresholdPixels = 4f;
 
@@ -423,6 +429,7 @@ void main()
 
         private StaticMeshBuffer? _fallbackCubeBuffer;
         private StaticMeshBuffer? _markerMeshBuffer;
+        private StaticMeshBuffer? _doorTransitionBuffer;
         private StaticMeshBuffer? _particleQuadBuffer;
 
         // Sound marker geometry: a billboarded musical note (indices split into a red head range
@@ -983,7 +990,8 @@ void main()
         }
 
         /// <summary>True when this instance should draw its resolved model rather than a marker.</summary>
-        private static bool DrawsAsModel(InstanceMarker instance) => instance.Model != null;
+        private static bool DrawsAsModel(InstanceMarker instance) =>
+            !instance.IsDoorTransition && instance.Model is { Meshes.Count: > 0 };
 
         /// <summary>
         /// Whether the placed model can use NWN's ordinary back-face culling pass.
@@ -1581,6 +1589,7 @@ void main()
             VisualTransform = source.VisualTransform,
             Geometry = source.Geometry,
             Model = source.Model,
+            IsDoorTransition = source.IsDoorTransition,
             SoundMinDistance = source.SoundMinDistance,
             SoundMaxDistance = source.SoundMaxDistance,
             IsPositionalSound = source.IsPositionalSound
@@ -2503,6 +2512,9 @@ void main()
                         DeleteBuffer(cube.Vao, cube.Vbo, cube.Ebo);
                     if (_markerMeshBuffer is { } marker)
                         DeleteBuffer(marker.Vao, marker.Vbo, marker.Ebo);
+                    if (_doorTransitionBuffer is { } transition)
+                        DeleteBuffer(transition.Vao, transition.Vbo, transition.Ebo);
+                    _doorTransitionBuffer = null;
                     if (_particleQuadBuffer is { } particle)
                         DeleteBuffer(particle.Vao, particle.Vbo, particle.Ebo);
                     _particleQuadBuffer = null;
@@ -3201,6 +3213,8 @@ void main()
                     EndModelFaceCulling();
             }
 
+            DrawDoorTransitions(scene);
+
             DrawPreviewEmitters(scene, preview);
             if (previewNeedsFrames)
                 RequestNextFrameRendering();
@@ -3217,7 +3231,7 @@ void main()
 
             foreach (var raw in scene.Instances)
             {
-                if (DrawsAsModel(raw))
+                if (DrawsAsModel(raw) || raw.IsDoorTransition)
                     continue;
 
                 var instance = Displayed(raw);
@@ -3235,6 +3249,80 @@ void main()
                     _gl.DrawElements(PrimitiveType.Triangles, (uint)marker.IndexCount,
                         DrawElementsType.UnsignedInt, (void*)0);
                 }
+            }
+        }
+
+        /// <summary>
+        /// Draws runtime-invisible area-transition doors from their authored hidden MDL surfaces,
+        /// falling back to Aurora's standard two-by-three-metre doorway plane. Depth testing stays
+        /// on so walls can occlude the plane naturally; depth writes are disabled so its transparent
+        /// surface does not punch holes in geometry drawn later in the frame.
+        /// </summary>
+        private void DrawDoorTransitions(AreaScene scene)
+        {
+            if (_gl == null || !scene.Instances.Any(instance => instance.IsDoorTransition))
+                return;
+
+            _gl.Enable(EnableCap.Blend);
+            _gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            _gl.DepthMask(false);
+
+            SetUniformBool("hasTexture", false);
+            SetUniformBool("useTextureAlpha", false);
+            SetUniformBool("unlit", true);
+            SetUniformFloat("alphaCutoff", 0f);
+            SetUniformFloat("flatAlpha", DoorTransitionAlpha);
+            SetUniformVec3("flatColor", DoorTransitionColor);
+
+            foreach (var raw in scene.Instances)
+            {
+                if (!raw.IsDoorTransition)
+                    continue;
+
+                var instance = Displayed(raw);
+                if (!IsInstanceVisible(instance))
+                    continue;
+
+                DrawDoorTransitionGeometry(instance);
+            }
+
+            _gl.DepthMask(true);
+            _gl.Disable(EnableCap.Blend);
+            SetUniformFloat("flatAlpha", 1f);
+        }
+
+        /// <summary>
+        /// Submits one transition door using flat-colour state already configured by the caller.
+        /// </summary>
+        private void DrawDoorTransitionGeometry(InstanceMarker instance)
+        {
+            var instanceTransform = AreaPicking.ComputeInstanceTransform(instance);
+            if (instance.Model is { Meshes.Count: > 0 } model)
+            {
+                var buffer = GetOrBuildModelBuffer(model);
+                _gl!.BindVertexArray(buffer.Vao);
+                foreach (var meshRange in buffer.MeshRanges)
+                {
+                    SetUniformMatrix4("model", meshRange.MeshTransform * instanceTransform);
+                    unsafe
+                    {
+                        _gl.DrawElements(PrimitiveType.Triangles, (uint)meshRange.IndexCount,
+                            DrawElementsType.UnsignedInt, (void*)meshRange.IndexOffset);
+                    }
+                }
+
+                return;
+            }
+
+            if (_doorTransitionBuffer is not { } fallback)
+                return;
+
+            _gl!.BindVertexArray(fallback.Vao);
+            SetUniformMatrix4("model", instanceTransform);
+            unsafe
+            {
+                _gl.DrawElements(PrimitiveType.Triangles, (uint)fallback.IndexCount,
+                    DrawElementsType.UnsignedInt, (void*)0);
             }
         }
 
@@ -3628,7 +3716,8 @@ void main()
                 Orientation = _snappedDoorAnchor?.Orientation ?? ghost.Orientation,
                 VisualTransform = ghost.VisualTransform,
                 LayerColorIndices = ghost.LayerColorIndices,
-                Model = ghost.Model
+                Model = ghost.Model,
+                IsDoorTransition = ghost.IsDoorTransition
             };
 
             var transform = AreaPicking.ComputeInstanceTransform(placed);
@@ -3644,7 +3733,16 @@ void main()
             // being placed, visibly not placeable here.
             var refused = SnapsToDoorAnchors && _snappedDoorAnchor == null;
 
-            if (DrawsAsModel(placed))
+            if (placed.IsDoorTransition)
+            {
+                SetUniformBool("hasTexture", false);
+                SetUniformBool("useTextureAlpha", false);
+                SetUniformBool("unlit", true);
+                SetUniformFloat("alphaCutoff", 0f);
+                SetUniformVec3("flatColor", refused ? PlacementRefusedColor : DoorTransitionColor);
+                DrawDoorTransitionGeometry(placed);
+            }
+            else if (DrawsAsModel(placed))
             {
                 var buffer = GetOrBuildModelBuffer(placed.Model!);
                 _gl.BindVertexArray(buffer.Vao);
@@ -4904,6 +5002,9 @@ void main()
             var (markerVertices, markerIndices) = BuildMarkerPyramidMesh();
             _markerMeshBuffer = UploadStaticMesh(markerVertices, markerIndices);
 
+            var (transitionVertices, transitionIndices) = BuildDoorTransitionMesh();
+            _doorTransitionBuffer = UploadStaticMesh(transitionVertices, transitionIndices);
+
             var (particleVertices, particleIndices) = BuildParticleQuadMesh();
             _particleQuadBuffer = UploadStaticMesh(particleVertices, particleIndices);
 
@@ -5144,6 +5245,33 @@ void main()
             builder.AddTriangle(b2, b3, apex);
             builder.AddTriangle(b3, b0, apex);
 
+            return builder.Build();
+        }
+
+        /// <summary>
+        /// Thin two-sided box matching <see cref="DoorTransitionMarker"/>'s fallback bounds. A
+        /// small depth keeps the transition visible from an edge-on editing angle and gives picking
+        /// the same stable volume the renderer shows.
+        /// </summary>
+        private static (float[] Vertices, uint[] Indices) BuildDoorTransitionMesh()
+        {
+            var min = DoorTransitionMarker.LocalMinimum;
+            var max = DoorTransitionMarker.LocalMaximum;
+            var c = new[]
+            {
+                new Vector3(min.X, min.Y, min.Z), new Vector3(max.X, min.Y, min.Z),
+                new Vector3(max.X, max.Y, min.Z), new Vector3(min.X, max.Y, min.Z),
+                new Vector3(min.X, min.Y, max.Z), new Vector3(max.X, min.Y, max.Z),
+                new Vector3(max.X, max.Y, max.Z), new Vector3(min.X, max.Y, max.Z)
+            };
+
+            var builder = new BoxMeshBuilder();
+            builder.AddQuad(c[3], c[2], c[1], c[0], new Vector3(0, 0, -1));
+            builder.AddQuad(c[4], c[5], c[6], c[7], new Vector3(0, 0, 1));
+            builder.AddQuad(c[0], c[1], c[5], c[4], new Vector3(0, -1, 0));
+            builder.AddQuad(c[2], c[3], c[7], c[6], new Vector3(0, 1, 0));
+            builder.AddQuad(c[3], c[0], c[4], c[7], new Vector3(-1, 0, 0));
+            builder.AddQuad(c[1], c[2], c[6], c[5], new Vector3(1, 0, 0));
             return builder.Build();
         }
 

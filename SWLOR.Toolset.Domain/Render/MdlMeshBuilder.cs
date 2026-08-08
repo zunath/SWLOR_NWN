@@ -150,6 +150,12 @@ namespace SWLOR.Toolset.Domain.Render
         public string? DefaultAnimationName { get; init; }
 
         /// <summary>
+        /// This model was built from an invisible transition door's editor-only geometry. Area
+        /// viewports draw it flat and translucent instead of treating it as ordinary game artwork.
+        /// </summary>
+        public bool IsDoorTransitionGeometry { get; init; }
+
+        /// <summary>
         /// The palette index each PLT layer is dyed with (skin, hair, metal, cloth, leather, tattoo),
         /// or empty for a model with no dyed textures.
         /// </summary>
@@ -231,6 +237,7 @@ namespace SWLOR.Toolset.Domain.Render
                 model,
                 poseFrames,
                 includePlaceableMetadata: false,
+                includeDoorTransitionGeometry: false,
                 skinSurfaceClearance: skinSurfaceClearance,
                 skinSurfaceClearanceExcludedBones: excludedBones,
                 sampledAnimations: null);
@@ -259,6 +266,7 @@ namespace SWLOR.Toolset.Domain.Render
                 model,
                 restingPoseFrames,
                 includePlaceableMetadata: false,
+                includeDoorTransitionGeometry: false,
                 skinSurfaceClearance,
                 skinSurfaceClearanceExcludedBones?.ToHashSet(StringComparer.OrdinalIgnoreCase),
                 animations);
@@ -275,6 +283,28 @@ namespace SWLOR.Toolset.Domain.Render
                 model,
                 poseFrames: null,
                 includePlaceableMetadata: true,
+                includeDoorTransitionGeometry: false,
+                skinSurfaceClearance: 0f,
+                skinSurfaceClearanceExcludedBones: null,
+                sampledAnimations: null);
+        }
+
+        /// <summary>
+        /// Builds the authored editor geometry for a door row whose <c>VisibleModel</c> is zero.
+        /// Those transition planes commonly put their selectable surface on <c>render 0</c> meshes:
+        /// correct for the game, but not for an area editor where the otherwise invisible object has
+        /// to remain visible and selectable.
+        /// </summary>
+        public static RenderModel BuildDoorTransition(
+            MdlModel model,
+            IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>? poseFrames = null)
+        {
+            ArgumentNullException.ThrowIfNull(model);
+            return BuildInternal(
+                model,
+                poseFrames,
+                includePlaceableMetadata: false,
+                includeDoorTransitionGeometry: true,
                 skinSurfaceClearance: 0f,
                 skinSurfaceClearanceExcludedBones: null,
                 sampledAnimations: null);
@@ -336,6 +366,7 @@ namespace SWLOR.Toolset.Domain.Render
             MdlModel model,
             IReadOnlyList<IReadOnlyDictionary<string, PosedNode>>? poseFrames,
             bool includePlaceableMetadata,
+            bool includeDoorTransitionGeometry,
             float skinSurfaceClearance,
             IReadOnlySet<string>? skinSurfaceClearanceExcludedBones,
             IReadOnlyList<MdlAnimationPose.SampledAnimation>? sampledAnimations)
@@ -360,7 +391,7 @@ namespace SWLOR.Toolset.Domain.Render
                 // arrives at the default of true, and it carries no bitmap - which drew it as a flat
                 // grey slab across the ground of every tile that had one. The area view gets its
                 // walkmesh from the tile's .wok (see TileWalkmeshCache), never from here.
-                if (!IsRenderableMesh(mesh))
+                if (!(includeDoorTransitionGeometry ? IsDoorTransitionMesh(mesh) : IsRenderableMesh(mesh)))
                     continue;
 
                 var built = BuildMesh(
@@ -412,7 +443,8 @@ namespace SWLOR.Toolset.Domain.Render
                 Meshes = renderMeshes,
                 Animations = renderAnimations,
                 Emitters = renderEmitters,
-                DefaultAnimationName = defaultAnimationName
+                DefaultAnimationName = defaultAnimationName,
+                IsDoorTransitionGeometry = includeDoorTransitionGeometry
             };
         }
 
@@ -425,6 +457,27 @@ namespace SWLOR.Toolset.Domain.Render
         {
             ArgumentNullException.ThrowIfNull(mesh);
             if (mesh.IsWalkmesh || !mesh.Render || PlaceholderNames.Contains(mesh.Name) ||
+                mesh.Vertices.Length == 0 || mesh.Faces.Length == 0)
+            {
+                return false;
+            }
+
+            var vertexCount = mesh.Vertices.Length;
+            return mesh.Faces.Any(face =>
+                face.VertexIndex0 < vertexCount &&
+                face.VertexIndex1 < vertexCount &&
+                face.VertexIndex2 < vertexCount);
+        }
+
+        /// <summary>
+        /// A transition door may expose its toolset selection surface with <c>render 0</c>. Keep
+        /// those meshes while retaining the ordinary exclusions for collision and placeholder
+        /// nodes; both rendered and non-rendered authored surfaces contribute to the editor shape.
+        /// </summary>
+        private static bool IsDoorTransitionMesh(MdlTrimeshNode mesh)
+        {
+            ArgumentNullException.ThrowIfNull(mesh);
+            if (mesh.IsWalkmesh || PlaceholderNames.Contains(mesh.Name) ||
                 mesh.Vertices.Length == 0 || mesh.Faces.Length == 0)
             {
                 return false;

@@ -210,7 +210,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (IsTintMapAvailable)
+                if (_tintMapSelections.Count > 0)
                     LoadTintLayerOptions();
             }
         }
@@ -854,6 +854,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsCopyEnabled = true;
             TintMaterialOptions = new GuiBindingList<GuiComboEntry>();
             TintLayerOptions = new GuiBindingList<GuiComboEntry>();
+            SelectedTintMaterialIndex = -1;
+            SelectedTintLayerType = -1;
             TintSelectionText = "Choose a material and tint channel.";
             ToggleItemEquippedFlags();
             LoadColorCategoryOptions();

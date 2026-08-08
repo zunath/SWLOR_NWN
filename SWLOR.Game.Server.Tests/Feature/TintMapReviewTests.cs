@@ -90,6 +90,42 @@ public class TintMapReviewTests
     }
 
     [Test]
+    public void AppearanceTintEditorInitializesSelectionsBeforeLoading()
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "AppearanceEditorViewModel.cs");
+        var root = CSharpSyntaxTree.ParseText(source).GetRoot();
+        var initialize = root.DescendantNodes()
+            .OfType<MethodDeclarationSyntax>()
+            .Single(node => node.Identifier.ValueText == "Initialize");
+        var load = initialize.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Single(invocation => GetInvokedMethodName(invocation) == "LoadTintMapEditor");
+        var assignments = initialize.DescendantNodes()
+            .OfType<AssignmentExpressionSyntax>()
+            .Where(assignment => assignment.Left.ToString() is
+                "SelectedTintMaterialIndex" or "SelectedTintLayerType")
+            .ToDictionary(
+                assignment => assignment.Left.ToString(),
+                assignment => assignment);
+
+        assignments["SelectedTintMaterialIndex"].SpanStart.Should().BeLessThan(load.SpanStart);
+        assignments["SelectedTintLayerType"].SpanStart.Should().BeLessThan(load.SpanStart);
+
+        var materialIndexProperty = root.DescendantNodes()
+            .OfType<PropertyDeclarationSyntax>()
+            .Single(property => property.Identifier.ValueText == "SelectedTintMaterialIndex");
+        var setter = materialIndexProperty.AccessorList!.Accessors
+            .Single(accessor => accessor.Kind() == SyntaxKind.SetAccessorDeclaration);
+        setter.ToString().Should().Contain("_tintMapSelections.Count > 0");
+        setter.ToString().Should().NotContain("IsTintMapAvailable");
+    }
+
+    [Test]
     public void ManagedCreatureEquipmentChangesRefreshTintUniformsAndEditor()
     {
         var source = ReadSource(

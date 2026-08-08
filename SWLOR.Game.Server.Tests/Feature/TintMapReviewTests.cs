@@ -414,6 +414,30 @@ public class TintMapReviewTests
     }
 
     [Test]
+    public void NonPartsAppearancesIncludeVisibleItemOwnedTintSelections()
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapModelResolver.cs");
+        var method = FindMethod(source, "GetCurrentSelections");
+        var nonPartsBranch = method.DescendantNodes()
+            .OfType<ElseClauseSyntax>()
+            .Single();
+
+        var calls = nonPartsBranch.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Select(GetInvokedMethodName)
+            .ToList();
+        calls.Should().Contain("AddSimpleItemSelections",
+            "a non-modular creature can still visibly equip a helmet");
+        calls.Should().Contain("AddCloakSelections",
+            "a non-modular creature can still visibly equip an item-owned cloak");
+    }
+
+    [Test]
     public void EquipmentTintEditsHonorItemRestrictions()
     {
         var source = ReadSource(

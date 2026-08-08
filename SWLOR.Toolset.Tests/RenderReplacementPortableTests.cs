@@ -298,6 +298,20 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void PlacementGhostDrawCarriesBlueprintAndItemTintOverrides()
+        {
+            var source = File.ReadAllText(Path.Combine(
+                CorpusLocator.RepositoryRoot,
+                "SWLOR.Toolset",
+                "Viewport",
+                "GlAreaControl.cs"));
+
+            source.Should().Contain("TintMapOverrides = ghost.TintMapOverrides");
+            source.Should().Contain("placed.Kind != InstanceMarkerKind.Item");
+            source.Should().Contain(": placed.TintMapOverrides");
+        }
+
+        [Test]
         public void TintShaderSamplesTexture9CutoutsFromRed()
         {
             var shader = typeof(SWLOR.Toolset.Viewport.GlAreaControl)

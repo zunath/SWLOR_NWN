@@ -237,13 +237,23 @@ namespace SWLOR.Toolset.Domain.Render
             else if (string.IsNullOrWhiteSpace(mesh.TextureName))
                 return null;
 
-            var paletteKey = resolveLayeredTexture == null || mesh.LayerColorIndices.Count == 0
+            var usesMeshState = resolveLayeredTexture != null || resolveMeshTexture != null;
+            var paletteKey = !usesMeshState || mesh.LayerColorIndices.Count == 0
                 ? string.Empty
                 : "|" + string.Join(
                     ",",
                     mesh.LayerColorIndices.OrderBy(pair => pair.Key)
                         .Select(pair => $"{pair.Key}:{pair.Value}"));
-            var cacheKey = mesh.MaterialName + "|" + mesh.TextureName + paletteKey;
+            var tintKey = !usesMeshState || mesh.TintMapOverrides.Count == 0
+                ? string.Empty
+                : "|" + string.Join(
+                    ",",
+                    mesh.TintMapOverrides.OrderBy(pair => pair.Key, StringComparer.Ordinal)
+                        .Select(pair => $"{pair.Key}:{pair.Value}"));
+            var ownershipKey = resolveMeshTexture == null
+                ? string.Empty
+                : mesh.UsesItemTintOverrides ? "|item" : "|owner";
+            var cacheKey = mesh.MaterialName + "|" + mesh.TextureName + paletteKey + tintKey + ownershipKey;
             if (decoded.TryGetValue(cacheKey, out var cached))
                 return cached;
 

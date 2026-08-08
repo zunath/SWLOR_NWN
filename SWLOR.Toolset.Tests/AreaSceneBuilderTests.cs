@@ -269,6 +269,40 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void Build_ResolvesRepeatedTemplateTintOverridesOnlyOnce()
+        {
+            var (are, git) = LoadArea("coxxian_hq");
+            var creature = git.Creatures[0];
+            var resRef = InstanceFieldMap.GetTemplateResRef(ResourceType.Utc, creature)!;
+            ((List<JsonGffStruct>)git.Creatures).Add(creature);
+            var matchingCalls = 0;
+            var index = BuildHakOnlyIndex();
+
+            var scene = AreaSceneBuilder.Build(
+                are,
+                git,
+                new TilesetCatalog(index),
+                new TileModelCache(index),
+                resolveTemplateTintMapOverrides: (type, candidate) =>
+                {
+                    if (type == ResourceType.Utc &&
+                        candidate.Equals(resRef, StringComparison.OrdinalIgnoreCase))
+                    {
+                        matchingCalls++;
+                    }
+
+                    return new Dictionary<string, int>();
+                });
+
+            scene.Instances.Count(marker =>
+                    marker.Kind == InstanceMarkerKind.Creature &&
+                    marker.TemplateResRef?.Equals(resRef, StringComparison.OrdinalIgnoreCase) == true)
+                .Should().BeGreaterThan(1);
+            matchingCalls.Should().Be(1,
+                "all placements of one blueprint share the same immutable template override set");
+        }
+
+        [Test]
         public void Build_AnchorEntreenorArea_TriggerMarkerCarriesGeometryPolygon()
         {
             var (are, git) = LoadArea("anchor_entreenor");

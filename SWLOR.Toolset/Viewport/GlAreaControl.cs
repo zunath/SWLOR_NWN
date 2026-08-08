@@ -3811,7 +3811,8 @@ void main()
                 VisualTransform = ghost.VisualTransform,
                 LayerColorIndices = ghost.LayerColorIndices,
                 Model = ghost.Model,
-                IsDoorTransition = ghost.IsDoorTransition
+                IsDoorTransition = ghost.IsDoorTransition,
+                TintMapOverrides = ghost.TintMapOverrides
             };
 
             var transform = AreaPicking.ComputeInstanceTransform(placed);
@@ -3860,7 +3861,20 @@ void main()
                         {
                             UseLayerColors(
                                 meshRange.LayerColorIndices, placed.LayerColorIndices, placed.Model);
-                            BindMeshTexture(meshRange.TextureName, meshRange.MaterialName);
+                            var tintMapOverrides = placed.TintMapOverrides;
+                            if (meshRange.UsesItemTintOverrides)
+                            {
+                                tintMapOverrides = meshRange.TintMapOverrides.Count > 0 ||
+                                                   placed.Kind != InstanceMarkerKind.Item
+                                    ? meshRange.TintMapOverrides
+                                    : placed.TintMapOverrides;
+                            }
+
+                            BindMeshTexture(
+                                meshRange.TextureName,
+                                meshRange.MaterialName,
+                                null,
+                                tintMapOverrides);
                         }
 
                         unsafe

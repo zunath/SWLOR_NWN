@@ -226,6 +226,9 @@ namespace SWLOR.Toolset.Domain.Render
             IReadOnlyList<TilePlacement>? tiles = null)
         {
             var markers = new List<InstanceMarker>();
+            var templateTintMapOverrides = resolveTemplateTintMapOverrides == null
+                ? null
+                : CacheTemplateTintMapOverrides(resolveTemplateTintMapOverrides);
 
             // A creature's model cannot be resolved here: a humanoid body is assembled from a skeleton
             // and a dozen part models, which needs the composer that lives in the app layer. The caller
@@ -233,33 +236,50 @@ namespace SWLOR.Toolset.Domain.Render
             AddMarkers(markers, git.Creatures, InstanceMarkerKind.Creature, ResourceType.Utc,
                 resolveModel: resolveCreatureModel,
                 modelCorrection: CreatureModelFacing.ForwardCorrection,
-                resolveTemplateTintMapOverrides: resolveTemplateTintMapOverrides);
+                resolveTemplateTintMapOverrides: templateTintMapOverrides);
             AddMarkers(markers, git.Doors, InstanceMarkerKind.Door, ResourceType.Utd,
                 resolveModel: instance => ResolveDoorModel(instance, doorTypes, modelCache),
                 isDoorTransition: instance => IsDoorTransition(instance, doorTypes),
-                resolveTemplateTintMapOverrides: resolveTemplateTintMapOverrides);
+                resolveTemplateTintMapOverrides: templateTintMapOverrides);
             AddMarkers(markers, git.Items, InstanceMarkerKind.Item, ResourceType.Uti,
-                resolveTemplateTintMapOverrides: resolveTemplateTintMapOverrides);
+                resolveTemplateTintMapOverrides: templateTintMapOverrides);
             AddMarkers(markers, git.Placeables, InstanceMarkerKind.Placeable, ResourceType.Utp,
                 resolveModel: instance => ResolvePlaceableModel(instance, placeableAppearances, modelCache),
-                resolveTemplateTintMapOverrides: resolveTemplateTintMapOverrides);
+                resolveTemplateTintMapOverrides: templateTintMapOverrides);
             AddMarkers(markers, git.Sounds, InstanceMarkerKind.Sound, ResourceType.Uts,
-                resolveTemplateTintMapOverrides: resolveTemplateTintMapOverrides);
+                resolveTemplateTintMapOverrides: templateTintMapOverrides);
             // Aurora gives stores a fixed yellow waypoint flag. A store carries no Appearance field,
             // so leaving this unresolved falls through to the generic pyramid: its apex is at the
             // store while its broad face hangs beside the merchant, and its symmetry loses facing.
             AddMarkers(markers, git.Stores, InstanceMarkerKind.Store, ResourceType.Utm,
                 resolveModel: _ => modelCache.GetOrBuild(WaypointMarkerModel.MerchantModelResRef),
                 modelCorrection: WaypointMarkerModel.ForwardCorrection,
-                resolveTemplateTintMapOverrides: resolveTemplateTintMapOverrides);
+                resolveTemplateTintMapOverrides: templateTintMapOverrides);
             AddMarkers(markers, git.Triggers, InstanceMarkerKind.Trigger, ResourceType.Utt, includeGeometry: true,
-                tiles: tiles, resolveTemplateTintMapOverrides: resolveTemplateTintMapOverrides);
+                tiles: tiles, resolveTemplateTintMapOverrides: templateTintMapOverrides);
             AddMarkers(markers, git.Waypoints, InstanceMarkerKind.Waypoint, ResourceType.Utw,
                 resolveModel: instance => ResolveWaypointModel(instance, waypointAppearances, modelCache),
                 modelCorrection: WaypointMarkerModel.ForwardCorrection,
-                resolveTemplateTintMapOverrides: resolveTemplateTintMapOverrides);
+                resolveTemplateTintMapOverrides: templateTintMapOverrides);
 
             return markers;
+        }
+
+        private static Func<ResourceType, string, IReadOnlyDictionary<string, int>> CacheTemplateTintMapOverrides(
+            Func<ResourceType, string, IReadOnlyDictionary<string, int>> resolve)
+        {
+            var cache = new Dictionary<(ResourceType Type, string ResRef), IReadOnlyDictionary<string, int>>();
+            return (type, resRef) =>
+            {
+                var key = (type, resRef.ToLowerInvariant());
+                if (!cache.TryGetValue(key, out var overrides))
+                {
+                    overrides = resolve(type, resRef);
+                    cache[key] = overrides;
+                }
+
+                return overrides;
+            };
         }
 
         private static void AddMarkers(

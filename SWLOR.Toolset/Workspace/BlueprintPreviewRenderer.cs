@@ -405,7 +405,8 @@ namespace SWLOR.Toolset.Workspace
                     : mesh => ResolveMeshTexture(
                         mesh,
                         layerColors,
-                        tintMapOverrides);
+                        tintMapOverrides,
+                        useBlueprintOverridesForItemOwnedMeshes: type == ResourceType.Uti);
             var pixels = ThumbnailRenderer.Render(
                 model, ModelRenderSize, palette: null,
                 resolveMeshTexture: resolveMeshTexture,
@@ -459,7 +460,8 @@ namespace SWLOR.Toolset.Workspace
         private TextureImage? ResolveMeshTexture(
             RenderMesh mesh,
             IReadOnlyDictionary<int, int>? fallbackLayerColors = null,
-            IReadOnlyDictionary<string, int>? tintMapOverrides = null)
+            IReadOnlyDictionary<string, int>? tintMapOverrides = null,
+            bool useBlueprintOverridesForItemOwnedMeshes = false)
         {
             if (_textures == null)
                 return null;
@@ -469,9 +471,17 @@ namespace SWLOR.Toolset.Workspace
             var layerColors = mesh.LayerColorIndices.Count > 0
                 ? mesh.LayerColorIndices
                 : fallbackLayerColors;
-            var activeTintMapOverrides = mesh.UsesItemTintOverrides
-                ? mesh.TintMapOverrides
-                : tintMapOverrides;
+            // Composed creature equipment carries its owning item's locals on the mesh and must never
+            // inherit creature-blueprint locals. A root item preview also marks its mesh item-owned,
+            // but has no nested snapshot; only that path falls back to the blueprint's own locals.
+            var activeTintMapOverrides = tintMapOverrides;
+            if (mesh.UsesItemTintOverrides)
+            {
+                activeTintMapOverrides = mesh.TintMapOverrides.Count > 0 ||
+                                         !useBlueprintOverridesForItemOwnedMeshes
+                    ? mesh.TintMapOverrides
+                    : tintMapOverrides;
+            }
             return _textures.Get(
                 surfaceName,
                 layerColors,

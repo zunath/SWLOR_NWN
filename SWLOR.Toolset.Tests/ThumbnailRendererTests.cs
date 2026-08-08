@@ -412,6 +412,34 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void APerMeshResolverCachesDistinctDyeAndTintStateSeparately()
+        {
+            var first = TexturedQuad("shared_mtr").Meshes[0];
+            first.LayerColorIndices = new Dictionary<int, int> { [2] = 45 };
+            first.TintMapOverrides = new Dictionary<string, int> { ["TM_shared_mtr_2"] = 123 };
+            var itemOwned = TexturedQuad("shared_mtr").Meshes[0];
+            itemOwned.LayerColorIndices = new Dictionary<int, int> { [2] = 45 };
+            itemOwned.TintMapOverrides = new Dictionary<string, int> { ["TM_shared_mtr_2"] = 123 };
+            itemOwned.UsesItemTintOverrides = true;
+            var second = TexturedQuad("shared_mtr").Meshes[0];
+            second.LayerColorIndices = new Dictionary<int, int> { [2] = 97 };
+            second.TintMapOverrides = new Dictionary<string, int> { ["TM_shared_mtr_2"] = 456 };
+            var seen = new List<(int Palette, int Tint)>();
+
+            ThumbnailRenderer.Render(
+                new RenderModel { Name = "independent-custom-tints", Meshes = [first, itemOwned, second] },
+                Size,
+                resolveMeshTexture: mesh =>
+                {
+                    seen.Add((mesh.LayerColorIndices[2], mesh.TintMapOverrides["TM_shared_mtr_2"]));
+                    return SolidTexture(10, 10, 10);
+                });
+
+            seen.Should().BeEquivalentTo(new[] { (45, 123), (45, 123), (97, 456) },
+                "a per-mesh resolver uses ownership, palette rows, and custom RGB overrides");
+        }
+
+        [Test]
         public void Fully_Transparent_Texels_Are_Cut_Out_Rather_Than_Drawn()
         {
             var opaque = ThumbnailRenderer.Render(

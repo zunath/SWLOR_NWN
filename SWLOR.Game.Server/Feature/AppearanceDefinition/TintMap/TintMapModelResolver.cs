@@ -53,6 +53,12 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     creature,
                     selections,
                     seenSelections);
+
+                // Non-parts appearances still render simple equipped models. Their base body is a
+                // single appearance.RACE model rather than assembled phenotype parts, but a visible
+                // helmet or cloak remains item-owned and its custom tints must be edited on that item.
+                AddSimpleItemSelections(creature, InventorySlot.Head, "helm", selections, seenSelections);
+                AddCloakSelections(creature, string.Empty, selections, seenSelections);
             }
 
             AddTableModelSelections(

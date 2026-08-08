@@ -308,6 +308,48 @@ namespace SWLOR.Toolset.Tests.Items
             }
         }
 
+        [Test]
+        public void RootItemTintOverridesReachItemOwnedPreviewMeshes()
+        {
+            var renderer = BuildRenderer(out var index);
+            var model = renderer.BuildModel(ResourceType.Uti, CorpusItem("chimedclothes"))!;
+            var catalog = TintMapCatalog.Load(index)!;
+            var material = catalog.FindMaterials(model)
+                .First(entry => entry.Resref == "pmh0_robe010");
+            var layer = material.Layers.First();
+            var mesh = model.Meshes.First(entry =>
+                entry.UsesItemTintOverrides &&
+                (entry.MaterialName.Equals(material.Resref, StringComparison.OrdinalIgnoreCase) ||
+                 entry.TextureName.Equals(material.Resref, StringComparison.OrdinalIgnoreCase)));
+            mesh.TintMapOverrides.Should().BeEmpty(
+                "a root item has no nested equipped-item snapshot to stamp onto its meshes");
+
+            var resolve = typeof(BlueprintPreviewRenderer).GetMethod(
+                "ResolveMeshTexture",
+                System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic)!;
+            TextureImage? Resolve(
+                IReadOnlyDictionary<string, int>? overrides,
+                bool useBlueprintOverridesForItemOwnedMeshes) =>
+                (TextureImage?)resolve.Invoke(renderer,
+                    [mesh, model.LayerColorIndices, overrides, useBlueprintOverridesForItemOwnedMeshes]);
+
+            var baseline = Resolve(null, useBlueprintOverridesForItemOwnedMeshes: true);
+            var overrides = new Dictionary<string, int>
+            {
+                [TintMapVariable.GetName(material.Resref, layer)] =
+                    new TintMapColor(17, 231, 83).ToStoredValue()
+            };
+            var custom = Resolve(overrides, useBlueprintOverridesForItemOwnedMeshes: true);
+            var equippedWithoutOverride = Resolve(overrides, useBlueprintOverridesForItemOwnedMeshes: false);
+
+            baseline.Should().NotBeNull();
+            custom.Should().NotBeNull();
+            custom!.Pixels.Should().NotEqual(baseline!.Pixels,
+                "item-owned root meshes must fall back to their blueprint's own tint locals");
+            equippedWithoutOverride!.Pixels.Should().Equal(baseline.Pixels,
+                "an equipped item with no override must not inherit its owning creature's locals");
+        }
+
         private static Domain.Gff.JsonGffStruct CorpusItem(string resRef) =>
             new ModuleWorkspace(CorpusLocator.ModuleDirectory).LoadBlueprint(ResourceType.Uti, resRef).Document.Root;
     }

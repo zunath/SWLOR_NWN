@@ -1,14 +1,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class DisguiseViewModel: GuiViewModelBase<DisguiseViewModel, GuiPayloadBase>
+    public class DisguiseViewModel: GuiViewModelBase<DisguiseViewModel, GuiPayloadBase>,
+        IGuiRefreshable<PerkAcquiredRefreshEvent>,
+        IGuiRefreshable<PerkRefundedRefreshEvent>
     {
         public const string ContentPartialElement = "DISGUISE_CONTENT_PARTIAL";
         public const string ContentAvailablePartial = "DISGUISE_CONTENT_AVAILABLE";
@@ -560,15 +564,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
-            var usedSlots = Disguise.CountUsedSlots(playerId);
-            var slotLimit = Disguise.GetDisguiseSlotLimit(Player, dbPlayer);
-            SlotCountText = $"Slots Used: {usedSlots} / {slotLimit}";
-            SlotBarLabel = $"Disguise Slots   {usedSlots} / {slotLimit}";
-            SlotUsageProgress = slotLimit <= 0
-                ? 0f
-                : Math.Clamp((float)usedSlots / slotLimit, 0f, 1f);
-            SlotUsageColor = usedSlots >= slotLimit ? _slotFullColor : _slotFreeColor;
-            ActivationDelayNote = $"Activating starts a {GetActivationDelayMinutes()}-minute cooldown before you can activate another disguise.";
+            RefreshSlotCapacity(playerId, dbPlayer);
+            RefreshActivationDelayNote();
 
             var disguises = Disguise.GetDisguises(playerId, IsRetiredSelected);
             var disguiseNames = new GuiBindingList<string>();
@@ -608,6 +605,52 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ClearSelection();
             ConfigureEmptyState(_disguiseIds.Count > 0);
             RefreshLayoutPartials();
+        }
+
+        private void RefreshSlotCapacity()
+        {
+            var playerId = GetObjectUUID(Player);
+            RefreshSlotCapacity(playerId, DB.Get<Player>(playerId));
+        }
+
+        private void RefreshSlotCapacity(string playerId, Player dbPlayer)
+        {
+            var usedSlots = Disguise.CountUsedSlots(playerId);
+            var slotLimit = Disguise.GetDisguiseSlotLimit(Player, dbPlayer);
+            SlotCountText = $"Slots Used: {usedSlots} / {slotLimit}";
+            SlotBarLabel = $"Disguise Slots   {usedSlots} / {slotLimit}";
+            SlotUsageProgress = slotLimit <= 0
+                ? 0f
+                : Math.Clamp((float)usedSlots / slotLimit, 0f, 1f);
+            SlotUsageColor = usedSlots >= slotLimit ? _slotFullColor : _slotFreeColor;
+        }
+
+        private void RefreshActivationDelayNote()
+        {
+            ActivationDelayNote = $"Activating starts a {GetActivationDelayMinutes()}-minute cooldown before you can activate another disguise.";
+        }
+
+        public void Refresh(PerkAcquiredRefreshEvent payload)
+        {
+            RefreshPerkDependentBindings(payload.Type);
+        }
+
+        public void Refresh(PerkRefundedRefreshEvent payload)
+        {
+            RefreshPerkDependentBindings(payload.Type);
+        }
+
+        private void RefreshPerkDependentBindings(PerkType perkType)
+        {
+            switch (perkType)
+            {
+                case PerkType.FalseIdentities:
+                    RefreshSlotCapacity();
+                    break;
+                case PerkType.CoverStory:
+                    RefreshActivationDelayNote();
+                    break;
+            }
         }
 
         private void LoadSelectedDisguise()

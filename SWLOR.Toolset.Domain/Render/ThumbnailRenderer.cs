@@ -97,7 +97,7 @@ namespace SWLOR.Toolset.Domain.Render
         /// </param>
         /// <param name="renderDoorTransitionFallback">
         /// Draws the fixed editor doorway when transition metadata exists but the authored model is
-        /// null or has no triangles.
+        /// null, has no triangles, or has no triangles that survive projection.
         /// </param>
         public static byte[]? Render(
             RenderModel? model,
@@ -112,16 +112,18 @@ namespace SWLOR.Toolset.Domain.Render
 
             palette ??= ThumbnailPalette.Default;
 
+            var isDoorTransition = renderDoorTransitionFallback || model?.IsDoorTransitionGeometry == true;
+            var usingDoorTransitionFallback = false;
             var triangles = model == null
                 ? new List<SourceTriangle>()
                 : CollectTriangles(model, resolveTexture, resolveLayeredTexture);
-            if (triangles.Count == 0 &&
-                (renderDoorTransitionFallback || model?.IsDoorTransitionGeometry == true))
+            if (triangles.Count == 0 && isDoorTransition)
             {
                 triangles = CollectTriangles(
                     DoorTransitionMarker.CreateFallbackModel(),
                     resolveTexture: null,
                     resolveLayeredTexture: null);
+                usingDoorTransitionFallback = true;
             }
 
             if (triangles.Count == 0)
@@ -132,6 +134,15 @@ namespace SWLOR.Toolset.Domain.Render
 
             var view = BuildViewBasis();
             var projected = Project(triangles, view, size, out var any);
+            if (!any && isDoorTransition && !usingDoorTransitionFallback)
+            {
+                triangles = CollectTriangles(
+                    DoorTransitionMarker.CreateFallbackModel(),
+                    resolveTexture: null,
+                    resolveLayeredTexture: null);
+                projected = Project(triangles, view, size, out any);
+            }
+
             if (!any)
                 return null;
 

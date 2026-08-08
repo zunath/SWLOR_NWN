@@ -360,7 +360,9 @@ namespace SWLOR.Toolset.Editors.Appearance
             }
             else if (!string.IsNullOrWhiteSpace(tile.Option.ModelResRef))
             {
-                tile.Preview = _thumbnails.CachedTile(tile.Option.ModelResRef);
+                tile.Preview = _thumbnails.CachedTile(
+                    tile.Option.ModelResRef,
+                    renderDoorTransitionFallback: tile.Option.IsDoorTransition);
             }
 
             if (tile.Preview != null)

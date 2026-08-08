@@ -202,6 +202,23 @@ namespace SWLOR.Toolset.Tests
             var thumbnails = new ThumbnailService(
                 new WorkspaceContext(_ => throw new NotSupportedException(), new OutputLogService()),
                 source);
+
+            thumbnails.RequestTileAsync("tn_gdoor_08", _ => { });
+            DrainDispatcher();
+            var ordinary = thumbnails.CachedTile("tn_gdoor_08");
+
+            thumbnails.RequestTileAsync(
+                "tn_gdoor_08",
+                _ => { },
+                renderDoorTransitionFallback: true);
+            DrainDispatcher();
+            var transition = thumbnails.CachedTile(
+                "tn_gdoor_08",
+                renderDoorTransitionFallback: true);
+
+            ordinary.Should().NotBeNull();
+            transition.Should().NotBeNull().And.NotBeSameAs(ordinary);
+
             using var section = new AppearanceGallerySectionViewModel(
                 [
                     new AppearanceOption(
@@ -216,11 +233,16 @@ namespace SWLOR.Toolset.Tests
                 _ => true,
                 noun: "appearance");
 
-            section.EnsurePreview(section.Tiles.Single());
+            var tile = section.Tiles.Single();
+            tile.Preview.Should().BeSameAs(transition,
+                "the rebuilt gallery must read the transition-aware cache entry");
+            tile.PreviewRequested.Should().BeTrue();
+
+            section.EnsurePreview(tile);
             DrainDispatcher();
 
-            source.ModelTransitionRequests.Should().Equal(true);
-            section.Tiles.Single().Preview.Should().NotBeNull();
+            source.ModelTransitionRequests.Should().Equal(new[] { false, true },
+                "the cached transition preview should avoid a third render request");
         }
 
         [AvaloniaTest]

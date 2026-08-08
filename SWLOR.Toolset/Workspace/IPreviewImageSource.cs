@@ -36,7 +36,7 @@ namespace SWLOR.Toolset.Workspace
         IconImage? Render(ResourceType type, string resRef, bool useIndexedBlueprint = false);
 
         /// <summary>A model by resref, with no blueprint involved — how a tile gets its picture.</summary>
-        IconImage? RenderModel(string modelResRef);
+        IconImage? RenderModel(string modelResRef, bool renderDoorTransitionFallback = false);
 
         /// <summary>
         /// A multi-tile palette group laid out on the grid, so its thumbnail shows the footprint it

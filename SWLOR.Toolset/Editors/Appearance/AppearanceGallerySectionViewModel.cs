@@ -233,7 +233,10 @@ namespace SWLOR.Toolset.Editors.Appearance
             if (!string.IsNullOrWhiteSpace(tile.Option.ModelResRef))
             {
                 tile.PreviewRequested = true;
-                _thumbnails.RequestTileAsync(tile.Option.ModelResRef, bitmap => tile.Preview = bitmap);
+                _thumbnails.RequestTileAsync(
+                    tile.Option.ModelResRef,
+                    bitmap => tile.Preview = bitmap,
+                    renderDoorTransitionFallback: tile.Option.IsDoorTransition);
             }
         }
 

@@ -42,6 +42,31 @@ namespace SWLOR.Toolset.Tests
         }
 
         [AvaloniaTest]
+        public void DoorTransitionModelsUseTheirOwnFallbackAwareCacheEntry()
+        {
+            var source = new CountingSource();
+            var service = new ThumbnailService(
+                new WorkspaceContext(_ => throw new NotSupportedException(), new OutputLogService()),
+                source);
+
+            service.RequestTileAsync(
+                "shared_model",
+                _ => { },
+                renderDoorTransitionFallback: true);
+            Drain();
+
+            service.CachedTile("shared_model", renderDoorTransitionFallback: true).Should().NotBeNull();
+            service.CachedTile("shared_model").Should().BeNull(
+                "an ordinary model render must not reuse a transition fallback thumbnail");
+
+            service.RequestTileAsync("shared_model", _ => { });
+            Drain();
+
+            source.ModelCalls.Should().Be(2);
+            source.ModelTransitionRequests.Should().Equal(true, false);
+        }
+
+        [AvaloniaTest]
         public void EveryCallerWaitingOnOneRenderIsCalledBack()
         {
             // Four tileset groups routinely share a preview model. An earlier version tracked only
@@ -462,6 +487,7 @@ namespace SWLOR.Toolset.Tests
             public int ModelCalls;
             public int AppearanceCalls;
             public ConcurrentQueue<int> AppearanceOrder { get; } = new();
+            public ConcurrentQueue<bool> ModelTransitionRequests { get; } = new();
 
             public IconImage? AppearanceResult { get; set; } = Image();
 
@@ -473,10 +499,11 @@ namespace SWLOR.Toolset.Tests
             public IconImage? RenderTileGroup(IReadOnlyList<string> slotModelResRefs, int columns, int rows) =>
                 RenderModel(slotModelResRefs.FirstOrDefault(slot => !string.IsNullOrWhiteSpace(slot)) ?? string.Empty);
 
-            public IconImage? RenderModel(string modelResRef)
+            public IconImage? RenderModel(string modelResRef, bool renderDoorTransitionFallback = false)
             {
                 _gate.Wait(TimeSpan.FromSeconds(5));
                 Interlocked.Increment(ref ModelCalls);
+                ModelTransitionRequests.Enqueue(renderDoorTransitionFallback);
 
                 if (ThrowOnModel)
                     throw new InvalidOperationException("unparseable model");

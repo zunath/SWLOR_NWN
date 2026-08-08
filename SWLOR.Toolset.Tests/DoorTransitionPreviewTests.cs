@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Toolset.Domain.Editors.Doors;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.Tlk;
@@ -50,10 +51,15 @@ namespace SWLOR.Toolset.Tests
                 var door = TransitionDoor();
 
                 var result = renderer.BuildModelResult(ResourceType.Utd, door);
+                var appearance = DoorAppearanceCatalog.Read(doors).Should().ContainSingle().Subject;
 
                 result.Model.Should().BeNull("the synthetic transition MDL does not exist");
                 result.IsDoorTransition.Should().BeTrue(
                     "the 2DA classification must survive independently of nullable geometry");
+                appearance.IsDoorTransition.Should().BeTrue(
+                    "the appearance gallery must retain the same classification");
+                renderer.RenderModel(appearance.Model!, appearance.IsDoorTransition).Should().NotBeNull(
+                    "a missing transition model should render the fixed doorway thumbnail");
             }
             finally
             {
@@ -69,12 +75,32 @@ namespace SWLOR.Toolset.Tests
                 "test",
                 isInstance: false,
                 RunEdit,
+                appearances:
+                [
+                    new DoorAppearanceChoice(
+                        DoorAppearanceKind.Generic,
+                        0,
+                        "Transition",
+                        "missing_transition_model",
+                        IsDoorTransition: true)
+                ],
                 resolveModel: _ => new BlueprintModelRenderResult(null, IsDoorTransition: true));
 
             editor.PreviewScene.Should().NotBeNull();
             var marker = editor.PreviewScene!.Instances.Should().ContainSingle().Subject;
             marker.Model.Should().BeNull();
             marker.IsDoorTransition.Should().BeTrue();
+            editor.Appearance.Tiles.Should().ContainSingle()
+                .Which.Option.IsDoorTransition.Should().BeTrue();
+
+            var (target, distance) = AreaCameraMath.ComputeSceneFraming(
+                editor.PreviewScene,
+                AreaSceneBuilder.TileSize,
+                MathF.PI / 4f,
+                aspectRatio: 1f);
+            target.Should().Be(new System.Numerics.Vector3(5f, 5f, 0f));
+            distance.Should().BeLessThan(6f,
+                "the missing-model doorway fallback should fill its dedicated preview");
         }
 
         [Test]

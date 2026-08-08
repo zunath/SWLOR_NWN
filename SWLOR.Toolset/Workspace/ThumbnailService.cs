@@ -371,7 +371,8 @@ namespace SWLOR.Toolset.Workspace
             Action<Bitmap> onReady,
             IReadOnlyList<string>? footprintModelResRefs = null,
             int columns = 1,
-            int rows = 1)
+            int rows = 1,
+            bool renderDoorTransitionFallback = false)
         {
             ArgumentNullException.ThrowIfNull(onReady);
 
@@ -379,7 +380,12 @@ namespace SWLOR.Toolset.Workspace
                 return;
 
             var composite = IsCompositeFootprint(footprintModelResRefs, columns, rows);
-            var key = TileKey(modelResRef, footprintModelResRefs, columns, rows);
+            var key = TileKey(
+                modelResRef,
+                footprintModelResRefs,
+                columns,
+                rows,
+                renderDoorTransitionFallback);
             if (_memory.TryGet(key, out var known))
             {
                 if (known != null)
@@ -398,8 +404,8 @@ namespace SWLOR.Toolset.Workspace
                 {
                     var image = composite
                         ? _renderer.RenderTileGroup(footprintModelResRefs!, columns, rows)
-                          ?? _renderer.RenderModel(modelResRef)
-                        : _renderer.RenderModel(modelResRef);
+                          ?? _renderer.RenderModel(modelResRef, renderDoorTransitionFallback)
+                        : _renderer.RenderModel(modelResRef, renderDoorTransitionFallback);
                     if (image != null)
                         bitmap = ToBitmap(image);
                 }
@@ -804,8 +810,9 @@ namespace SWLOR.Toolset.Workspace
         /// The cached tile thumbnail if it is already decoded, else null.
         /// </summary>
         /// <remarks>
-        /// Must be called with the same footprint, columns and rows <see cref="RequestTileAsync"/>
-        /// was (or will be) called with, or this looks up the wrong slot: a multi-slot group renders
+        /// Must be called with the same footprint, columns, rows, and transition-fallback flag
+        /// <see cref="RequestTileAsync"/> was (or will be) called with, or this looks up the wrong
+        /// slot: a multi-slot group renders
         /// and caches under a composite key of its whole footprint, not under
         /// <paramref name="modelResRef"/> alone, because two groups can share a first tile and still
         /// look nothing alike. Passing only <paramref name="modelResRef"/> for a real group would
@@ -816,8 +823,16 @@ namespace SWLOR.Toolset.Workspace
             string modelResRef,
             IReadOnlyList<string>? footprintModelResRefs = null,
             int columns = 1,
-            int rows = 1) =>
-            _memory.TryGet(TileKey(modelResRef, footprintModelResRefs, columns, rows), out var bitmap)
+            int rows = 1,
+            bool renderDoorTransitionFallback = false) =>
+            _memory.TryGet(
+                TileKey(
+                    modelResRef,
+                    footprintModelResRefs,
+                    columns,
+                    rows,
+                    renderDoorTransitionFallback),
+                out var bitmap)
                 ? bitmap
                 : null;
 
@@ -832,10 +847,17 @@ namespace SWLOR.Toolset.Workspace
         /// distinct; anything else is keyed by its own model resref.
         /// </summary>
         private static string TileKey(
-            string modelResRef, IReadOnlyList<string>? footprintModelResRefs, int columns, int rows) =>
-            IsCompositeFootprint(footprintModelResRefs, columns, rows)
+            string modelResRef,
+            IReadOnlyList<string>? footprintModelResRefs,
+            int columns,
+            int rows,
+            bool renderDoorTransitionFallback)
+        {
+            var key = IsCompositeFootprint(footprintModelResRefs, columns, rows)
                 ? "tilegroup:" + columns + "x" + rows + ":" + string.Join(",", footprintModelResRefs!)
                 : "tile:" + modelResRef;
+            return renderDoorTransitionFallback ? "door-transition:" + key : key;
+        }
 
         /// <summary>
         /// The shared symbol for a blueprint type, drawn on first use. Shared rather than per-blueprint

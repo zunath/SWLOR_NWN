@@ -1,4 +1,5 @@
 using Avalonia.Headless.NUnit;
+using System.Collections.Concurrent;
 using Avalonia.Controls;
 using Avalonia.Logging;
 using Avalonia.Threading;
@@ -192,6 +193,34 @@ namespace SWLOR.Toolset.Tests
             source.AppearanceCalls.Should().Be(3,
                 "only the currently published page is retried");
             section.Tiles.Should().OnlyContain(tile => tile.Preview != null);
+        }
+
+        [AvaloniaTest]
+        public void DoorAppearancePreviewRequestsTransitionFallbackRendering()
+        {
+            var source = new AppearancePreviewSource { IsAvailable = true };
+            var thumbnails = new ThumbnailService(
+                new WorkspaceContext(_ => throw new NotSupportedException(), new OutputLogService()),
+                source);
+            using var section = new AppearanceGallerySectionViewModel(
+                [
+                    new AppearanceOption(
+                        "transition",
+                        "Transition",
+                        "tn_gdoor_08",
+                        ModelResRef: "tn_gdoor_08",
+                        IsDoorTransition: true)
+                ],
+                thumbnails,
+                () => "transition",
+                _ => true,
+                noun: "appearance");
+
+            section.EnsurePreview(section.Tiles.Single());
+            DrainDispatcher();
+
+            source.ModelTransitionRequests.Should().Equal(true);
+            section.Tiles.Single().Preview.Should().NotBeNull();
         }
 
         [AvaloniaTest]
@@ -588,11 +617,16 @@ namespace SWLOR.Toolset.Tests
             public bool IsAvailable { get; set; }
             public DateTime ContentVersionUtc => new(2026, 1, 1);
             public int AppearanceCalls;
+            public ConcurrentQueue<bool> ModelTransitionRequests { get; } = new();
 
             public IconImage? Render(ResourceType type, string resRef, bool useIndexedBlueprint = false) =>
                 Image();
 
-            public IconImage? RenderModel(string modelResRef) => Image();
+            public IconImage? RenderModel(string modelResRef, bool renderDoorTransitionFallback = false)
+            {
+                ModelTransitionRequests.Enqueue(renderDoorTransitionFallback);
+                return Image();
+            }
 
             public IconImage? RenderTileGroup(
                 IReadOnlyList<string> slotModelResRefs, int columns, int rows) => Image();

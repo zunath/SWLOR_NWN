@@ -163,12 +163,26 @@ namespace SWLOR.Toolset.Domain.Render
         {
             ArgumentNullException.ThrowIfNull(scene);
 
-            if (scene.Tiles.Count == 0 && scene.Instances.Count == 1 &&
-                scene.Instances[0].Model?.ComputeBounds() is { } bounds)
+            if (scene.Tiles.Count == 0 && scene.Instances.Count == 1)
             {
-                var offset = scene.Instances[0].Position;
-                return ComputeModelFraming(
-                    bounds.Minimum + offset, bounds.Maximum + offset, verticalFovRadians, aspectRatio);
+                var instance = scene.Instances[0];
+                var bounds = instance.Model?.ComputeBounds();
+                if (bounds == null && instance.IsDoorTransition)
+                {
+                    bounds = (
+                        DoorTransitionMarker.LocalMinimum,
+                        DoorTransitionMarker.LocalMaximum);
+                }
+
+                if (bounds is { } previewBounds)
+                {
+                    var offset = instance.Position;
+                    return ComputeModelFraming(
+                        previewBounds.Minimum + offset,
+                        previewBounds.Maximum + offset,
+                        verticalFovRadians,
+                        aspectRatio);
+                }
             }
 
             return ComputeInitialFraming(

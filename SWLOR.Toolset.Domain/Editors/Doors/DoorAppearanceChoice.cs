@@ -5,7 +5,8 @@ namespace SWLOR.Toolset.Domain.Editors.Doors
         DoorAppearanceKind Kind,
         int Id,
         string Display,
-        string? Model)
+        string? Model,
+        bool IsDoorTransition = false)
     {
         public override string ToString() => Display;
     }

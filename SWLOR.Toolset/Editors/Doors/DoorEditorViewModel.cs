@@ -138,7 +138,8 @@ namespace SWLOR.Toolset.Editors.Doors
                         AppearanceKey(choice),
                         choice.Display,
                         choice.Model,
-                        ModelResRef: choice.Model))
+                        ModelResRef: choice.Model,
+                        IsDoorTransition: choice.IsDoorTransition))
                     .ToList(),
                 thumbnails,
                 () => _store.GetAppearance(_appearances) is { } current

@@ -419,15 +419,19 @@ namespace SWLOR.Toolset.Workspace
         /// a tile is a row in a .set file, not a module resource, so there is nothing to load fields from
         /// - only geometry to draw.
         /// </summary>
-        public IconImage? RenderModel(string modelResRef)
+        public IconImage? RenderModel(string modelResRef, bool renderDoorTransitionFallback = false)
         {
             if (!IsAvailable || string.IsNullOrWhiteSpace(modelResRef))
                 return null;
 
             var pixels = ThumbnailRenderer.Render(
-                BuildRenderModel(modelResRef), ModelRenderSize,
+                renderDoorTransitionFallback
+                    ? BuildDoorTransitionModel(modelResRef)
+                    : BuildRenderModel(modelResRef),
+                ModelRenderSize,
                 palette: null,
-                resolveMeshTexture: _textures == null ? null : mesh => ResolveMeshTexture(mesh));
+                resolveMeshTexture: _textures == null ? null : mesh => ResolveMeshTexture(mesh),
+                renderDoorTransitionFallback: renderDoorTransitionFallback);
 
             return pixels == null ? null : new IconImage(ModelRenderSize, ModelRenderSize, pixels);
         }

@@ -25,7 +25,7 @@ namespace SWLOR.Toolset.Editors.Doors
         private readonly Func<BehaviorTagScope, string, string?>? _resolveTag;
         private readonly Func<string, IReadOnlyList<BehaviorChoice>>? _resolveChoices;
         private readonly IReadOnlyList<DoorAppearanceChoice> _appearances;
-        private readonly Func<JsonGffStruct, RenderModel?>? _resolveModel;
+        private readonly Func<JsonGffStruct, BlueprintModelRenderResult>? _resolveModel;
         private readonly ChoicePreviewService? _choicePreviews;
         private readonly bool _isInstance;
         private ModelPreviewControl? _previewView;
@@ -106,7 +106,7 @@ namespace SWLOR.Toolset.Editors.Doors
             Func<string, IReadOnlyList<BehaviorChoice>>? resolveChoices = null,
             IReadOnlyList<DoorAppearanceChoice>? appearances = null,
             ResourceIndex? resourceIndex = null,
-            Func<JsonGffStruct, RenderModel?>? resolveModel = null,
+            Func<JsonGffStruct, BlueprintModelRenderResult>? resolveModel = null,
             bool isDirty = false,
             ThumbnailService? thumbnails = null,
             ChoicePreviewService? choicePreviews = null,
@@ -455,8 +455,8 @@ namespace SWLOR.Toolset.Editors.Doors
             if (_disposed)
                 return;
 
-            var model = _resolveModel?.Invoke(_store.Door);
-            PreviewScene = model == null
+            var preview = _resolveModel?.Invoke(_store.Door) ?? default;
+            PreviewScene = preview.Model == null && !preview.IsDoorTransition
                 ? null
                 : new AreaScene
                 {
@@ -476,8 +476,8 @@ namespace SWLOR.Toolset.Editors.Doors
                                 AreaSceneBuilder.TileSize / 2f,
                                 0f),
                             Orientation = new Vector2(1f, 0f),
-                            Model = model,
-                            IsDoorTransition = model.IsDoorTransitionGeometry
+                            Model = preview.Model,
+                            IsDoorTransition = preview.IsDoorTransition
                         }
                     },
                     Diagnostics = new AreaSceneDiagnostics()

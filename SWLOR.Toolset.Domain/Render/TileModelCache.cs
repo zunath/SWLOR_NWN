@@ -92,7 +92,20 @@ namespace SWLOR.Toolset.Domain.Render
         private RenderModel? BuildDoorTransition(string modelResRef)
         {
             var model = Load(modelResRef);
-            return model == null ? null : MdlMeshBuilder.BuildDoorTransition(model);
+            if (model == null)
+                return null;
+
+            try
+            {
+                return MdlMeshBuilder.BuildDoorTransition(model);
+            }
+            catch (Exception)
+            {
+                // Hidden editor meshes are less constrained than runtime artwork. A malformed
+                // parent chain or other mesh-build failure must fall back to the fixed transition
+                // doorway instead of aborting assembly of the entire area.
+                return null;
+            }
         }
 
         private MdlModel? Load(string modelResRef)

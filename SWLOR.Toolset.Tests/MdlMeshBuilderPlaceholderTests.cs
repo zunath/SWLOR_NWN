@@ -140,6 +140,29 @@ namespace SWLOR.Toolset.Tests
             MdlMeshBuilder.Build(ModelOf(malformed)).Meshes.Should().BeEmpty();
         }
 
+        [Test]
+        public void AnUnsignedMinusOneFaceIndex_NeverReachesARenderBuffer()
+        {
+            var malformed = Trimesh("malformed");
+            malformed.Faces =
+            [
+                new MdlFace
+                {
+                    // MDL face indices are ushort. A raw -1 sentinel is represented as 0xFFFF,
+                    // so the existing upper-bound validation is also its non-negative guard.
+                    VertexIndex0 = unchecked((ushort)-1),
+                    VertexIndex1 = 1,
+                    VertexIndex2 = 2
+                }
+            ];
+
+            MdlMeshBuilder.IsRenderableMesh(malformed).Should().BeFalse();
+            MdlMeshBuilder.Build(ModelOf(malformed)).Meshes.Should().BeEmpty();
+
+            malformed.Render = false;
+            MdlMeshBuilder.BuildDoorTransition(ModelOf(malformed)).Meshes.Should().BeEmpty();
+        }
+
         /// <summary>
         /// The Aurora "no texture" literal must resolve the same way whether it came from an ASCII
         /// MDL (already lowercased/blanked by <see cref="AsciiMdlReader"/>) or a binary MDL (which

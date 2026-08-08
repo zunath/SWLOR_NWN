@@ -1566,7 +1566,7 @@ namespace SWLOR.Toolset.Editors
                 DoorAppearances(),
                 _resourceIndex,
                 _previewRenderer != null
-                    ? door => _previewRenderer.BuildModel(ResourceType.Utd, door)
+                    ? door => _previewRenderer.BuildModelResult(ResourceType.Utd, door)
                     : null,
                 _thumbnails,
                 ChoicePreviews(),
@@ -3312,7 +3312,7 @@ namespace SWLOR.Toolset.Editors
                     _tlkService != null ? _tlkService.GetString : null, _waypointAppearances,
                     _previewRenderer != null
                         ? (type, blueprintResRef, useIndexed) =>
-                            _previewRenderer.BuildModel(type, blueprintResRef, useIndexed)
+                            _previewRenderer.BuildModelResult(type, blueprintResRef, useIndexed)
                         : null,
                     CreateScriptSlotHost($"Area '{resRef}'"),
                     _previewRenderer != null
@@ -3325,7 +3325,7 @@ namespace SWLOR.Toolset.Editors
                         DoorAppearances(),
                         _resourceIndex,
                         _previewRenderer != null
-                            ? door => _previewRenderer.BuildModel(ResourceType.Utd, door)
+                            ? door => _previewRenderer.BuildModelResult(ResourceType.Utd, door)
                             : null,
                         _thumbnails,
                         ChoicePreviews()),

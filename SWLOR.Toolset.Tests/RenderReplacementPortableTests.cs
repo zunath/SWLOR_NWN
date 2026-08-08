@@ -295,7 +295,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void TintPaletteKeepsDecodedRowsInShaderCoordinateOrder()
+        public void TintPaletteIsFlippedFromDecodedRowsIntoShaderCoordinateOrder()
         {
             byte[] rows =
             [
@@ -313,16 +313,17 @@ namespace SWLOR.Toolset.Tests
             var palette = (byte[])prepare.Invoke(null, ["plt_palette", 1, 4, rows])!;
             var modelTexture = (byte[])prepare.Invoke(null, ["pmh0_robe010", 1, 4, rows])!;
 
-            palette.Should().BeSameAs(rows,
-                "tintPaletteRow values address the decoded atlas from row zero");
-            modelTexture.Should().Equal(
-                [
-                    255, 255, 255, 255,
-                    0, 0, 255, 255,
-                    0, 255, 0, 255,
-                    255, 0, 0, 255
-                ],
-                "ordinary model UVs still require the top-down decoded image to be flipped");
+            byte[] expected =
+            [
+                255, 255, 255, 255,
+                0, 0, 255, 255,
+                0, 255, 0, 255,
+                255, 0, 0, 255
+            ];
+            palette.Should().Equal(expected,
+                "NWN palette rows count from the bottom while decoded TGA pixels are top-first");
+            modelTexture.Should().Equal(expected,
+                "ordinary model UVs also require the top-down decoded image to be flipped");
         }
 
         [Test]

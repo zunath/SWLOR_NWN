@@ -26,6 +26,13 @@ public class MdlTrimeshNode : MdlNode
     public string Bitmap { get; set; } = string.Empty;
 
     /// <summary>
+    /// Optional NWN:EE material resource explicitly bound by the mesh's <c>materialname</c> field.
+    /// This is distinct from <see cref="Bitmap"/>: a same-named MTR must not replace a bitmap unless
+    /// the model actually binds it.
+    /// </summary>
+    public string MaterialName { get; set; } = string.Empty;
+
+    /// <summary>
     /// The mesh's authored diffuse colour. Untextured marker meshes (waypoint flags on
     /// tcn01_white) are coloured entirely by this value, so consumers must not drop it.
     /// </summary>

@@ -69,10 +69,14 @@ namespace SWLOR.Toolset.Domain.Render
 
                 var definition = TintMapMaterialRegistry.GetLayer(layer);
                 var paletteX = shade * (palette.Width - 1) / 255;
-                var paletteY = Math.Clamp(
+                // Tint palette coordinates are authored from the bottom of the texture because
+                // NWN shaders use OpenGL texture coordinates. TextureLoader exposes decoded
+                // images top-first, so convert the shader row before indexing the CPU image.
+                var shaderPaletteRow = Math.Clamp(
                     definition.PaletteBaseRow + paletteIndex,
                     0,
                     palette.Height - 1);
+                var paletteY = palette.Height - 1 - shaderPaletteRow;
                 var paletteOffset = (paletteY * palette.Width + paletteX) * 4;
                 output[offset] = palette.Pixels[paletteOffset];
                 output[offset + 1] = palette.Pixels[paletteOffset + 1];

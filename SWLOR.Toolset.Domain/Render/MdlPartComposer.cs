@@ -504,6 +504,7 @@ namespace SWLOR.Toolset.Domain.Render
             target.Render = source.Render;
             target.TileFade = source.TileFade;
             target.Bitmap = source.Bitmap;
+            target.MaterialName = source.MaterialName;
             target.Lightmap = source.Lightmap;
             target.Diffuse = source.Diffuse;
             target.Vertices = source.Vertices.ToArray();

@@ -52,6 +52,7 @@ namespace SWLOR.Toolset.Tests
                     {
                         NodeName = "sample",
                         TextureName = material,
+                        MaterialName = material,
                         Positions = Array.Empty<float>(),
                         Normals = Array.Empty<float>(),
                         TexCoords = Array.Empty<float>(),
@@ -154,6 +155,7 @@ namespace SWLOR.Toolset.Tests
                     {
                         NodeName = "equipped_robe",
                         TextureName = "pmh0_robe010",
+                        MaterialName = "pmh0_robe010",
                         Positions = Array.Empty<float>(),
                         Normals = Array.Empty<float>(),
                         TexCoords = Array.Empty<float>(),

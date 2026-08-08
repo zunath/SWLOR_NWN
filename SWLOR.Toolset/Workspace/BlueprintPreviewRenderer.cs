@@ -399,16 +399,16 @@ namespace SWLOR.Toolset.Workspace
             }
 
             var tintMapOverrides = TintMapOverrides.Read(new VarTable(root));
-            Func<string, IReadOnlyDictionary<int, int>?, TextureImage?>? resolveLayeredTexture =
+            Func<RenderMesh, TextureImage?>? resolveMeshTexture =
                 _textures == null
                     ? null
-                    : (texture, meshColors) => _textures.Get(
-                        texture,
-                        meshColors is { Count: > 0 } ? meshColors : layerColors,
+                    : mesh => ResolveMeshTexture(
+                        mesh,
+                        layerColors,
                         tintMapOverrides);
             var pixels = ThumbnailRenderer.Render(
                 model, ModelRenderSize, palette: null,
-                resolveLayeredTexture: resolveLayeredTexture,
+                resolveMeshTexture: resolveMeshTexture,
                 renderDoorTransitionFallback: reference.IsDoorTransition);
             return pixels == null ? null : new IconImage(ModelRenderSize, ModelRenderSize, pixels);
         }
@@ -426,7 +426,7 @@ namespace SWLOR.Toolset.Workspace
             var pixels = ThumbnailRenderer.Render(
                 BuildRenderModel(modelResRef), ModelRenderSize,
                 palette: null,
-                resolveTexture: _textures == null ? null : texture => _textures.Get(texture));
+                resolveMeshTexture: _textures == null ? null : mesh => ResolveMeshTexture(mesh));
 
             return pixels == null ? null : new IconImage(ModelRenderSize, ModelRenderSize, pixels);
         }
@@ -451,9 +451,29 @@ namespace SWLOR.Toolset.Workspace
             var pixels = ThumbnailRenderer.Render(
                 TileGroupPreview.Compose(slots, columns, rows), ModelRenderSize,
                 palette: null,
-                resolveTexture: _textures == null ? null : texture => _textures.Get(texture));
+                resolveMeshTexture: _textures == null ? null : mesh => ResolveMeshTexture(mesh));
 
             return pixels == null ? null : new IconImage(ModelRenderSize, ModelRenderSize, pixels);
+        }
+
+        private TextureImage? ResolveMeshTexture(
+            RenderMesh mesh,
+            IReadOnlyDictionary<int, int>? fallbackLayerColors = null,
+            IReadOnlyDictionary<string, int>? tintMapOverrides = null)
+        {
+            if (_textures == null)
+                return null;
+
+            var hasMaterial = !string.IsNullOrWhiteSpace(mesh.MaterialName);
+            var surfaceName = hasMaterial ? mesh.MaterialName : mesh.TextureName;
+            var layerColors = mesh.LayerColorIndices.Count > 0
+                ? mesh.LayerColorIndices
+                : fallbackLayerColors;
+            return _textures.Get(
+                surfaceName,
+                layerColors,
+                tintMapOverrides,
+                resolveMaterial: hasMaterial);
         }
 
         /// <summary>
@@ -756,7 +776,11 @@ namespace SWLOR.Toolset.Workspace
             foreach (var mesh in composed.GetMeshNodes())
             {
                 if (overrides.TryGetValue(mesh.Bitmap, out var textureResRef))
+                {
                     mesh.Bitmap = textureResRef;
+                    if (!string.IsNullOrWhiteSpace(mesh.MaterialName))
+                        mesh.MaterialName = textureResRef;
+                }
             }
         }
 
@@ -847,7 +871,11 @@ namespace SWLOR.Toolset.Workspace
                 return;
 
             foreach (var mesh in model.GetMeshNodes())
+            {
                 mesh.Bitmap = textureResRef;
+                if (!string.IsNullOrWhiteSpace(mesh.MaterialName))
+                    mesh.MaterialName = textureResRef;
+            }
         }
 
         /// <summary>

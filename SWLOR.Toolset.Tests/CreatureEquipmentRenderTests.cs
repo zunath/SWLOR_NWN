@@ -19,6 +19,7 @@ namespace SWLOR.Toolset.Tests
     public sealed class CreatureEquipmentRenderTests
     {
         private BlueprintPreviewRenderer _renderer = null!;
+        private ResourceIndex _resources = null!;
         private ModuleWorkspace _workspace = null!;
         private GitDocument _hangarGit = null!;
         private GitDocument _anchorGit = null!;
@@ -58,6 +59,7 @@ namespace SWLOR.Toolset.Tests
                 Path.Combine(RepoRoot, "SWLOR_Haks"),
                 baseLayer);
             index.EnsureInitialized();
+            _resources = index;
 
             var twoDa = new TwoDaService(index);
             var tlk = TlkService.Load(Path.Combine(RepoRoot, "SWLOR_Haks", "sw_tlk", "sw_tlk.tlk.json"));
@@ -173,6 +175,35 @@ namespace SWLOR.Toolset.Tests
             armedFixed!.Meshes.Sum(mesh => mesh.VertexCount).Should().BeGreaterThan(
                 unarmedFixed!.Meshes.Sum(mesh => mesh.VertexCount),
                 "a simple creature's held item must be composed with its base model");
+        }
+
+        [Test]
+        public void AgricultureGuildMasterTintSourcesRemainVisible()
+        {
+            var model = _renderer.BuildModel(
+                ResourceType.Utc,
+                _workspace.LoadBlueprint(ResourceType.Utc, "agr_guildmaster").Fields);
+
+            model.Should().NotBeNull();
+            var head = model!.Meshes.Single(mesh =>
+                mesh.TextureName.Equals("pmh0_head038", StringComparison.OrdinalIgnoreCase));
+            head.MaterialName.Should().Be("pmh0_head038",
+                "the binary model's explicit generated tint material must reach the preview renderer");
+
+            var textures = new PreviewTextureCache(_resources);
+            var texture = textures.Get(
+                head.MaterialName,
+                model.LayerColorIndices,
+                resolveMaterial: true);
+
+            texture.Should().NotBeNull();
+            var visible = texture!.Pixels
+                .Chunk(4)
+                .Where(pixel => pixel[3] > 0)
+                .ToList();
+            visible.Should().NotBeEmpty();
+            visible.Average(pixel => pixel[0] + pixel[1] + pixel[2]).Should().BeGreaterThan(45,
+                "skin palette row 44 must resolve from the bottom of the NWN palette atlas instead of the black decoded top row");
         }
 
         private static JsonGffStruct WithoutEquippedSlot(JsonGffStruct source, int slot)

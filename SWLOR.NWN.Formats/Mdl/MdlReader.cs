@@ -245,6 +245,7 @@ public sealed class MdlReader
         mesh.Render = _reader.ReadUInt32(offset + 108) != 0;
         mesh.Bitmap = FixedString(offset + 120, 64, "MDL mesh bitmap");
         mesh.Lightmap = FixedString(offset + 184, 64, "MDL mesh lightmap");
+        mesh.MaterialName = FixedString(offset + 312, 64, "MDL mesh material name");
         mesh.TileFade = _reader.ReadInt32(offset + 376);
 
         var facePointer = _reader.ReadUInt32(offset + 8);

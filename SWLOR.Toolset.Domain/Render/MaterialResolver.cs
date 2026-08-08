@@ -143,12 +143,15 @@ namespace SWLOR.Toolset.Domain.Render
         /// unchanged (the common case - most meshes reference a texture directly, with no
         /// material override).
         /// </summary>
-        public static string ResolveDiffuseTextureName(ResourceIndex index, string textureOrMaterialName)
+        public static string ResolveDiffuseTextureName(
+            ResourceIndex index,
+            string textureOrMaterialName,
+            bool resolveMaterial = true)
         {
             if (string.IsNullOrWhiteSpace(textureOrMaterialName))
                 return textureOrMaterialName;
 
-            var material = TryParseMaterial(index, textureOrMaterialName);
+            var material = resolveMaterial ? TryParseMaterial(index, textureOrMaterialName) : null;
             if (material == null)
                 return textureOrMaterialName;
 
@@ -166,12 +169,15 @@ namespace SWLOR.Toolset.Domain.Render
         /// <c>&lt;diffuse&gt;_n</c> is the normal map, <c>&lt;diffuse&gt;_s</c> the specular map
         /// and <c>&lt;diffuse&gt;_r</c> the roughness map, when such a resource exists.
         /// </summary>
-        public static MaterialMaps ResolveMaterialMaps(ResourceIndex index, string textureOrMaterialName)
+        public static MaterialMaps ResolveMaterialMaps(
+            ResourceIndex index,
+            string textureOrMaterialName,
+            bool resolveMaterial = true)
         {
             if (string.IsNullOrWhiteSpace(textureOrMaterialName))
                 return new MaterialMaps { Diffuse = textureOrMaterialName };
 
-            var material = TryParseMaterial(index, textureOrMaterialName);
+            var material = resolveMaterial ? TryParseMaterial(index, textureOrMaterialName) : null;
             if (material != null)
             {
                 return new MaterialMaps

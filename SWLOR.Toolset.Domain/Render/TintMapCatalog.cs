@@ -85,9 +85,10 @@ namespace SWLOR.Toolset.Domain.Render
                 .Where(mesh =>
                     (includeItemOwnedMaterials || !mesh.UsesItemTintOverrides) &&
                     (includeNonItemOwnedMaterials || mesh.UsesItemTintOverrides))
-                .Select(mesh => mesh.TextureName)
+                .Select(mesh => mesh.MaterialName)
+                .Where(material => !string.IsNullOrWhiteSpace(material))
                 .Distinct(StringComparer.OrdinalIgnoreCase)
-                .Select(material => _materials.GetValueOrDefault(material))
+                .Select(material => _materials.GetValueOrDefault(material!))
                 .Where(material => material != null)
                 .Cast<TintMapMaterialDefinition>()
                 .OrderBy(material => material.Name, StringComparer.OrdinalIgnoreCase)

@@ -388,6 +388,8 @@ void main()
 
             public string? TextureName { get; init; }
 
+            public string? MaterialName { get; init; }
+
             /// <summary>Equipment-specific PLT dyes; empty means use the instance/model palette.</summary>
             public IReadOnlyDictionary<int, int> LayerColorIndices { get; init; } =
                 new Dictionary<int, int>();
@@ -3107,7 +3109,7 @@ void main()
 
                             var worldMatrix = meshRange.MeshTransform * placement.Transform;
                             SetUniformMatrix4("model", worldMatrix);
-                            BindMeshTexture(meshRange.TextureName);
+                            BindMeshTexture(meshRange.TextureName, meshRange.MaterialName);
 
                             unsafe
                             {
@@ -3275,6 +3277,7 @@ void main()
                             meshRange.LayerColorIndices, instance.LayerColorIndices, raw.Model);
                         BindMeshTexture(
                             meshRange.TextureName,
+                            meshRange.MaterialName,
                             meshRange.LayerColorIndices,
                             instance.Kind == InstanceMarkerKind.Creature && meshRange.UsesItemTintOverrides
                                 ? null
@@ -3532,7 +3535,7 @@ void main()
                 return false;
 
             // Particles draw unlit, so only the diffuse matters here.
-            var texId = ResolveTexture(textureName).TexId;
+            var texId = ResolveTexture(textureName, materialName: null).TexId;
             if (texId == 0)
                 return false;
 
@@ -3848,7 +3851,7 @@ void main()
                         {
                             UseLayerColors(
                                 meshRange.LayerColorIndices, placed.LayerColorIndices, placed.Model);
-                            BindMeshTexture(meshRange.TextureName);
+                            BindMeshTexture(meshRange.TextureName, meshRange.MaterialName);
                         }
 
                         unsafe
@@ -4425,7 +4428,7 @@ void main()
 
                         SetUniformMatrix4("model", meshRange.MeshTransform * transform);
                         if (fits)
-                            BindMeshTexture(meshRange.TextureName);
+                            BindMeshTexture(meshRange.TextureName, meshRange.MaterialName);
 
                         unsafe
                         {
@@ -4850,6 +4853,7 @@ void main()
                     AnimationFrames = mesh.AnimationFrames,
                     AnimationIndexOffsets = animationIndexOffsets,
                     TextureName = string.IsNullOrEmpty(mesh.TextureName) ? null : mesh.TextureName,
+                    MaterialName = string.IsNullOrEmpty(mesh.MaterialName) ? null : mesh.MaterialName,
                     LayerColorIndices = mesh.LayerColorIndices,
                     UsesItemTintOverrides = mesh.UsesItemTintOverrides,
                     TileFade = mesh.TileFade
@@ -4919,12 +4923,16 @@ void main()
 
         private void BindMeshTexture(
             string? textureName,
+            string? materialName = null,
             IReadOnlyDictionary<int, int>? layerColorIndices = null,
             IReadOnlyDictionary<string, int>? tintMapOverrides = null)
         {
-            var material = string.IsNullOrWhiteSpace(textureName)
+            var surfaceName = !string.IsNullOrWhiteSpace(materialName)
+                ? materialName
+                : textureName;
+            var material = string.IsNullOrWhiteSpace(surfaceName)
                 ? default
-                : ResolveTexture(textureName);
+                : ResolveTexture(textureName!, materialName);
 
             SetUniformBool("unlit", false);
 
@@ -4934,7 +4942,7 @@ void main()
                 var activeLayerColors = layerColorIndices is { Count: > 0 }
                     ? layerColorIndices
                     : _layerColors;
-                BindTintMapState(textureName!, material, activeLayerColors, tintMapOverrides);
+                BindTintMapState(surfaceName!, material, activeLayerColors, tintMapOverrides);
                 SetUniformFloat(
                     "alphaCutoff",
                     material.TintAlphaTexId != 0
@@ -4976,25 +4984,33 @@ void main()
             }
         }
 
-        private MeshMaterial ResolveTexture(string rawTextureName)
+        private MeshMaterial ResolveTexture(string rawTextureName, string? materialName)
         {
             if (ResourceIndex == null)
                 return default;
 
-            if (_rawTextureCache.TryGetValue(rawTextureName + _layerColorKey, out var memo))
+            var hasMaterial = !string.IsNullOrWhiteSpace(materialName);
+            var surfaceName = hasMaterial ? materialName! : rawTextureName;
+            var rawKey = (hasMaterial ? "m|" : "t|") + surfaceName + _layerColorKey;
+            if (_rawTextureCache.TryGetValue(rawKey, out var memo))
                 return memo;
 
             MaterialMaps maps;
             MtrMaterial? parsedMaterial;
             try
             {
-                parsedMaterial = MaterialResolver.TryParseMaterial(ResourceIndex, rawTextureName);
-                maps = MaterialResolver.ResolveMaterialMaps(ResourceIndex, rawTextureName);
+                parsedMaterial = hasMaterial
+                    ? MaterialResolver.TryParseMaterial(ResourceIndex, surfaceName)
+                    : null;
+                maps = MaterialResolver.ResolveMaterialMaps(
+                    ResourceIndex,
+                    surfaceName,
+                    resolveMaterial: hasMaterial);
             }
             catch (Exception)
             {
                 parsedMaterial = null;
-                maps = new MaterialMaps { Diffuse = rawTextureName };
+                maps = new MaterialMaps { Diffuse = surfaceName };
             }
 
             // Keyed by the dye set as well as the resref: one PLT dyed two ways is two different
@@ -5025,7 +5041,7 @@ void main()
                         : 0,
                     ResolveTintAlphaTexture(parsedMaterial));
 
-            _rawTextureCache[rawTextureName + _layerColorKey] = material;
+            _rawTextureCache[rawKey] = material;
             return material;
         }
 
@@ -5156,9 +5172,8 @@ void main()
         }
 
         /// <summary>
-        /// Uploads decoded RGBA pixels as a 2D texture. Model artwork is flipped so v = 0 lands on
-        /// the last decoded row; the tint palette is a row-addressed data atlas, so its decoded row
-        /// numbers must remain its GPU row numbers.
+        /// Uploads top-first decoded RGBA pixels as an OpenGL texture. Every image, including the
+        /// row-addressed tint palette, must be flipped so v = 0 lands on its bottom decoded row.
         /// </summary>
         private uint UploadTexture(int width, int height, byte[] rgba, string resourceName)
         {
@@ -5185,11 +5200,7 @@ void main()
             int height,
             byte[] rgba)
         {
-            // tintPaletteRow0..9 are calculated from decoded atlas rows (row 0 => v = 0).
-            // Flipping this data texture changes every requested dye into a different palette.
-            return resourceName.Equals("plt_palette", StringComparison.OrdinalIgnoreCase)
-                ? rgba
-                : TextureOrientation.FlipRows(width, height, rgba);
+            return TextureOrientation.FlipRows(width, height, rgba);
         }
 
         // ----- Static placeholder/marker geometry (scene-independent; built once at GL init) -----

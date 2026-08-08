@@ -95,6 +95,11 @@ namespace SWLOR.Toolset.Domain.Render
         /// takes precedence over <paramref name="resolveTexture"/> and lets equipped garments keep
         /// dyes that differ from the creature's chest armor.
         /// </param>
+        /// <param name="resolveMeshTexture">
+        /// Resolves the complete mesh, including its explicit material binding. When supplied it
+        /// takes precedence over the name-only resolvers so a bitmap is not mistaken for a
+        /// same-named material.
+        /// </param>
         /// <param name="renderDoorTransitionFallback">
         /// Draws the fixed editor doorway when transition metadata exists but the authored model is
         /// null, has no triangles, or has no triangles that survive projection.
@@ -105,6 +110,7 @@ namespace SWLOR.Toolset.Domain.Render
             ThumbnailPalette? palette = null,
             Func<string, TextureImage?>? resolveTexture = null,
             Func<string, IReadOnlyDictionary<int, int>?, TextureImage?>? resolveLayeredTexture = null,
+            Func<RenderMesh, TextureImage?>? resolveMeshTexture = null,
             bool renderDoorTransitionFallback = false)
         {
             if (size <= 0)
@@ -116,13 +122,14 @@ namespace SWLOR.Toolset.Domain.Render
             var usingDoorTransitionFallback = false;
             var triangles = model == null
                 ? new List<SourceTriangle>()
-                : CollectTriangles(model, resolveTexture, resolveLayeredTexture);
+                : CollectTriangles(model, resolveTexture, resolveLayeredTexture, resolveMeshTexture);
             if (triangles.Count == 0 && isDoorTransition)
             {
                 triangles = CollectTriangles(
                     DoorTransitionMarker.CreateFallbackModel(),
                     resolveTexture: null,
-                    resolveLayeredTexture: null);
+                    resolveLayeredTexture: null,
+                    resolveMeshTexture: null);
                 usingDoorTransitionFallback = true;
             }
 
@@ -139,7 +146,8 @@ namespace SWLOR.Toolset.Domain.Render
                 triangles = CollectTriangles(
                     DoorTransitionMarker.CreateFallbackModel(),
                     resolveTexture: null,
-                    resolveLayeredTexture: null);
+                    resolveLayeredTexture: null,
+                    resolveMeshTexture: null);
                 projected = Project(triangles, view, size, out any);
             }
 
@@ -158,7 +166,8 @@ namespace SWLOR.Toolset.Domain.Render
         private static List<SourceTriangle> CollectTriangles(
             RenderModel model,
             Func<string, TextureImage?>? resolveTexture,
-            Func<string, IReadOnlyDictionary<int, int>?, TextureImage?>? resolveLayeredTexture)
+            Func<string, IReadOnlyDictionary<int, int>?, TextureImage?>? resolveLayeredTexture,
+            Func<RenderMesh, TextureImage?>? resolveMeshTexture)
         {
             var triangles = new List<SourceTriangle>();
 
@@ -171,7 +180,7 @@ namespace SWLOR.Toolset.Domain.Render
                     continue;
 
                 var texture = ResolveMeshTexture(
-                    mesh, resolveTexture, resolveLayeredTexture, decoded);
+                    mesh, resolveTexture, resolveLayeredTexture, resolveMeshTexture, decoded);
                 var hasUvs = texture != null && mesh.TexCoords.Length * 3 >= mesh.Positions.Length * 2;
 
                 for (var i = 0; i + 2 < mesh.Indices.Length; i += 3)
@@ -213,10 +222,19 @@ namespace SWLOR.Toolset.Domain.Render
             RenderMesh mesh,
             Func<string, TextureImage?>? resolveTexture,
             Func<string, IReadOnlyDictionary<int, int>?, TextureImage?>? resolveLayeredTexture,
+            Func<RenderMesh, TextureImage?>? resolveMeshTexture,
             Dictionary<string, TextureImage?> decoded)
         {
-            if ((resolveTexture == null && resolveLayeredTexture == null) ||
-                string.IsNullOrWhiteSpace(mesh.TextureName))
+            if (resolveTexture == null && resolveLayeredTexture == null && resolveMeshTexture == null)
+                return null;
+
+            if (resolveMeshTexture != null)
+            {
+                if (string.IsNullOrWhiteSpace(mesh.TextureName) &&
+                    string.IsNullOrWhiteSpace(mesh.MaterialName))
+                    return null;
+            }
+            else if (string.IsNullOrWhiteSpace(mesh.TextureName))
                 return null;
 
             var paletteKey = resolveLayeredTexture == null || mesh.LayerColorIndices.Count == 0
@@ -225,16 +243,18 @@ namespace SWLOR.Toolset.Domain.Render
                     ",",
                     mesh.LayerColorIndices.OrderBy(pair => pair.Key)
                         .Select(pair => $"{pair.Key}:{pair.Value}"));
-            var cacheKey = mesh.TextureName + paletteKey;
+            var cacheKey = mesh.MaterialName + "|" + mesh.TextureName + paletteKey;
             if (decoded.TryGetValue(cacheKey, out var cached))
                 return cached;
 
             TextureImage? texture = null;
             try
             {
-                texture = resolveLayeredTexture != null
-                    ? resolveLayeredTexture(mesh.TextureName, mesh.LayerColorIndices)
-                    : resolveTexture!(mesh.TextureName);
+                texture = resolveMeshTexture != null
+                    ? resolveMeshTexture(mesh)
+                    : resolveLayeredTexture != null
+                        ? resolveLayeredTexture(mesh.TextureName, mesh.LayerColorIndices)
+                        : resolveTexture!(mesh.TextureName);
             }
             catch (Exception)
             {

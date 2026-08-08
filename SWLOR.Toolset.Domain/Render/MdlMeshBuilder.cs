@@ -17,6 +17,12 @@ namespace SWLOR.Toolset.Domain.Render
         /// </summary>
         public required string TextureName { get; init; }
 
+        /// <summary>
+        /// Explicit NWN:EE material bound by the source model. Empty means <see cref="TextureName"/>
+        /// is a bitmap and must not be replaced by an unrelated same-named MTR.
+        /// </summary>
+        public string MaterialName { get; init; } = string.Empty;
+
         /// <summary>Vertex positions in node-local space, 3 floats (x, y, z) per vertex.</summary>
         public required float[] Positions { get; init; }
 
@@ -592,6 +598,7 @@ namespace SWLOR.Toolset.Domain.Render
             {
                 NodeName = mesh.Name,
                 TextureName = NormalizeTextureName(mesh.Bitmap),
+                MaterialName = NormalizeTextureName(mesh.MaterialName),
                 DiffuseColor = ReadDiffuse(mesh),
                 Positions = positions,
                 Normals = normals,

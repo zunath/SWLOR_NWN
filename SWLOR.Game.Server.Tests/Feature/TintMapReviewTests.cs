@@ -64,6 +64,33 @@ public class TintMapReviewTests
     }
 
     [Test]
+    public void TintPaletteCoordinatesPreserveEveryLegacyMaterialFamily()
+    {
+        TintMapMaterialRegistry.PaletteTextureHeight.Should().Be(2048);
+        var expectedBaseRows = new Dictionary<TintMapLayerType, int>
+        {
+            [TintMapLayerType.Skin] = 0,
+            [TintMapLayerType.Hair] = 176,
+            [TintMapLayerType.Metal1] = 352,
+            [TintMapLayerType.Metal2] = 528,
+            [TintMapLayerType.Cloth1] = 704,
+            [TintMapLayerType.Cloth2] = 704,
+            [TintMapLayerType.Leather1] = 880,
+            [TintMapLayerType.Leather2] = 880,
+            [TintMapLayerType.Tattoo1] = 1056,
+            [TintMapLayerType.Tattoo2] = 1056,
+        };
+
+        foreach (var (layer, baseRow) in expectedBaseRows)
+        {
+            TintMapMaterialRegistry.GetLayer(layer).PaletteBaseRow.Should().Be(baseRow);
+            TintMapMaterialRegistry.GetPaletteCoordinate(layer, 0).Should().BeApproximately(
+                (baseRow + 0.5f) / TintMapMaterialRegistry.PaletteTextureHeight,
+                0.000001f);
+        }
+    }
+
+    [Test]
     public void AppearanceTintEditorAddsCustomColorAlongsideExistingPresetPalettes()
     {
         var definition = ReadSource(

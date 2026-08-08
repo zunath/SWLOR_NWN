@@ -226,6 +226,59 @@ namespace SWLOR.Toolset.Tests
                 "skin palette row 44 must resolve from the bottom of the NWN palette atlas instead of the black decoded top row");
         }
 
+        [Test]
+        public void TintPaletteAtlasMatchesEveryLegacyPltPalette()
+        {
+            const int paletteWidth = 256;
+            const int paletteColorCount = 176;
+            const int atlasHeight = 2048;
+            var atlas = TextureLoader.LoadTga(_resources, "plt_palette");
+
+            atlas.Should().NotBeNull();
+            atlas!.Width.Should().Be(paletteWidth);
+            atlas.Height.Should().Be(atlasHeight);
+
+            var palettes = new (string Resource, int AtlasBaseRow)[]
+            {
+                ("pal_skin01", 0),
+                ("pal_hair01", 176),
+                ("pal_armor01", 352),
+                ("pal_armor02", 528),
+                ("pal_cloth01", 704),
+                ("pal_leath01", 880),
+                ("pal_tattoo01", 1056),
+            };
+
+            foreach (var (resource, atlasBaseRow) in palettes)
+            {
+                var legacy = TextureLoader.LoadTga(_resources, resource);
+                legacy.Should().NotBeNull($"{resource} is the palette used by legacy PLT rendering");
+                legacy!.Width.Should().Be(paletteWidth);
+                legacy.Height.Should().Be(paletteColorCount);
+
+                for (var color = 0; color < paletteColorCount; color++)
+                {
+                    var legacyOffset = color * paletteWidth * 4;
+                    var atlasOffset = (atlasHeight - 1 - atlasBaseRow - color) * paletteWidth * 4;
+                    var legacyRow = legacy.Pixels.AsSpan(legacyOffset, paletteWidth * 4);
+                    var atlasRow = atlas.Pixels.AsSpan(atlasOffset, paletteWidth * 4);
+                    for (var channelOffset = 0; channelOffset < legacyRow.Length; channelOffset++)
+                    {
+                        if (channelOffset % 4 == 3)
+                            continue;
+
+                        if (legacyRow[channelOffset] == atlasRow[channelOffset])
+                            continue;
+
+                        Assert.Fail(
+                            $"Atlas row {atlasBaseRow + color} does not reproduce {resource} color {color} " +
+                            $"at byte {channelOffset}: expected {legacyRow[channelOffset]}, " +
+                            $"found {atlasRow[channelOffset]}.");
+                    }
+                }
+            }
+        }
+
         private static JsonGffStruct WithoutEquippedSlot(JsonGffStruct source, int slot)
         {
             var clone = InstanceFieldMap.Duplicate(source);

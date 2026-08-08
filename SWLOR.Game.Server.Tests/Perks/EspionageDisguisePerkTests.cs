@@ -108,6 +108,41 @@ public class EspionageDisguisePerkTests
     }
 
     [Test]
+    public void DisguisePerkChanges_RefreshTheirVisibleEffectsWithoutReloadingTheDisguiseList()
+    {
+        var source = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot(),
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "DisguiseViewModel.cs"));
+        var purchaseRefresh = ExtractMethod(source, "public void Refresh(PerkAcquiredRefreshEvent payload)");
+        var refundRefresh = ExtractMethod(source, "public void Refresh(PerkRefundedRefreshEvent payload)");
+        var capacityRefresh = ExtractMethod(source, "private void RefreshSlotCapacity(string playerId, Player dbPlayer)");
+        var delayRefresh = ExtractMethod(source, "private void RefreshActivationDelayNote()");
+        var perkRefresh = ExtractMethod(source, "private void RefreshPerkDependentBindings(PerkType perkType)");
+
+        source.Should().Contain("IGuiRefreshable<PerkAcquiredRefreshEvent>");
+        source.Should().Contain("IGuiRefreshable<PerkRefundedRefreshEvent>");
+        capacityRefresh.Should().Contain("Disguise.GetDisguiseSlotLimit(Player, dbPlayer)");
+        capacityRefresh.Should().Contain("SlotBarLabel = $\"Disguise Slots   {usedSlots} / {slotLimit}\"");
+        capacityRefresh.Should().Contain("SlotUsageProgress = slotLimit <= 0");
+        capacityRefresh.Should().Contain("SlotUsageColor = usedSlots >= slotLimit");
+        delayRefresh.Should().Contain("ActivationDelayNote = $\"Activating starts a {GetActivationDelayMinutes()}-minute cooldown");
+        perkRefresh.Should().Contain("case PerkType.FalseIdentities:");
+        perkRefresh.Should().Contain("RefreshSlotCapacity();");
+        perkRefresh.Should().Contain("case PerkType.CoverStory:");
+        perkRefresh.Should().Contain("RefreshActivationDelayNote();");
+
+        foreach (var refreshMethod in new[] { purchaseRefresh, refundRefresh })
+        {
+            refreshMethod.Should().Contain("RefreshPerkDependentBindings(payload.Type);");
+            refreshMethod.Should().NotContain("LoadList(");
+        }
+    }
+
+    [Test]
     public void DisguiseService_ReadsThePerkStatsRatherThanCheckingPerksDirectly()
     {
         var source = File.ReadAllText(Path.Combine(
@@ -156,6 +191,33 @@ public class EspionageDisguisePerkTests
             .GetValue(builder)!;
 
         return perks[perkType];
+    }
+
+    private static string ExtractMethod(string source, string signature)
+    {
+        var signatureIndex = source.IndexOf(signature, StringComparison.Ordinal);
+        signatureIndex.Should().BeGreaterThanOrEqualTo(0);
+
+        var openingBraceIndex = source.IndexOf('{', signatureIndex);
+        openingBraceIndex.Should().BeGreaterThan(signatureIndex);
+
+        var depth = 0;
+        for (var index = openingBraceIndex; index < source.Length; index++)
+        {
+            switch (source[index])
+            {
+                case '{':
+                    depth++;
+                    break;
+                case '}':
+                    depth--;
+                    if (depth == 0)
+                        return source[signatureIndex..(index + 1)];
+                    break;
+            }
+        }
+
+        throw new InvalidOperationException($"Could not extract method '{signature}'.");
     }
 
     private static string FindRepositoryRoot()

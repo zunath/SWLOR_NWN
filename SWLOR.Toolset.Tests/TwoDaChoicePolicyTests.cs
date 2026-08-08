@@ -117,14 +117,16 @@ namespace SWLOR.Toolset.Tests
                     "1 Reserved47 **** **** **** **** **** **** ****\r\n" +
                     "2 User002 **** **** **** **** **** **** ****\r\n" +
                     "3 MissingModel **** TST01 missing_model 123 1 1 1\r\n" +
-                    "4 MissingStringRef another_model TST01 missing_strref **** 1 1 1\r\n");
+                    "4 MissingStringRef another_model TST01 missing_strref **** 1 1 1\r\n" +
+                    "5 MissingVisibility another_model TST01 missing_visibility 124 1 **** 1\r\n");
                 File.WriteAllText(
                     Path.Combine(scratch, "genericdoors.2da"),
                     "2DA V2.0\r\n\r\nLabel StrRef ModelName BlockSight VisibleModel SoundAppType Name\r\n" +
                     "0 GenericDoor 123 generic_model 1 1 1 123\r\n" +
                     "1 User002 **** **** **** **** **** ****\r\n" +
                     "2 MissingModel 123 **** 1 1 1 123\r\n" +
-                    "3 Transition 124 transition_model 0 0 **** 124\r\n");
+                    "3 Transition 124 transition_model 0 0 **** 124\r\n" +
+                    "4 MissingVisibility 125 missing_visibility 1 **** 1 125\r\n");
                 var service = new DoorTypeService(
                     new TwoDaService(scratch),
                     new TlkService(TlkJsonFile.Parse("{\"language\":0,\"entries\":[]}")));
@@ -136,6 +138,36 @@ namespace SWLOR.Toolset.Tests
                     row.Label == "GenericDoor" && row.Model == "generic_model" && row.VisibleModel);
                 service.GetGeneric(3).Should().Match<GenericDoorRow>(row =>
                     row.Label == "Transition" && row.Model == "transition_model" && !row.VisibleModel);
+            }
+            finally
+            {
+                Directory.Delete(scratch, recursive: true);
+            }
+        }
+
+        [Test]
+        public void DoorChoicesFailClosedWhenVisibilityColumnIsMissing()
+        {
+            var scratch = Path.Combine(
+                TestContext.CurrentContext.WorkDirectory,
+                $"door-visibility-{Guid.NewGuid():N}");
+            Directory.CreateDirectory(scratch);
+            try
+            {
+                File.WriteAllText(
+                    Path.Combine(scratch, "doortypes.2da"),
+                    "2DA V2.0\r\n\r\nLabel Model StringRefGame\r\n" +
+                    "0 RealDoor real_model 123\r\n");
+                File.WriteAllText(
+                    Path.Combine(scratch, "genericdoors.2da"),
+                    "2DA V2.0\r\n\r\nLabel ModelName Name\r\n" +
+                    "0 GenericDoor generic_model 123\r\n");
+                var service = new DoorTypeService(
+                    new TwoDaService(scratch),
+                    new TlkService(TlkJsonFile.Parse("{\"language\":0,\"entries\":[]}")));
+
+                service.GetAll().Should().BeEmpty();
+                service.GetGenericAll().Should().BeEmpty();
             }
             finally
             {

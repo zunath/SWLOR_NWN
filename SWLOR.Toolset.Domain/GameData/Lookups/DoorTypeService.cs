@@ -107,6 +107,12 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
                     continue;
                 }
 
+                var visibleModel = TryGetInt(table, row, "VisibleModel");
+                if (visibleModel is null)
+                {
+                    continue;
+                }
+
                 int? strref = null;
                 try
                 {
@@ -125,7 +131,7 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
                     displayName,
                     model)
                 {
-                    VisibleModel = TryGetInt(table, row, "VisibleModel") != 0
+                    VisibleModel = visibleModel != 0
                 });
             }
 
@@ -155,6 +161,12 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
                     continue;
                 }
 
+                var visibleModel = TryGetInt(table, row, "VisibleModel");
+                if (visibleModel is null)
+                {
+                    continue;
+                }
+
                 var nameStrRef = TryGetInt(table, row, "Name") ?? TryGetInt(table, row, "StrRef");
                 results.Add(new GenericDoorRow(
                     row,
@@ -162,7 +174,7 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
                     DisplayNameResolver.Resolve(tlk, nameStrRef, label!.Replace('_', ' ')),
                     model)
                 {
-                    VisibleModel = TryGetInt(table, row, "VisibleModel") != 0
+                    VisibleModel = visibleModel != 0
                 });
             }
 

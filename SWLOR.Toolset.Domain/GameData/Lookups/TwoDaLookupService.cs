@@ -138,13 +138,18 @@ namespace SWLOR.Toolset.Domain.GameData.Lookups
         public static readonly TwoDaLookupTable PlaceableModel =
             new("placeables", "Label", "StrRef", ["ModelName"]);
 
-        /// <summary>doortypes.2da - specific door appearances need a model and display strref.</summary>
+        /// <summary>
+        /// doortypes.2da - specific door appearances need a model, display strref, and visibility
+        /// metadata so the editor can distinguish ordinary doors from transition planes.
+        /// </summary>
         public static readonly TwoDaLookupTable DoorType =
-            new("doortypes", "Label", "StringRefGame", ["Model", "StringRefGame"]);
+            new("doortypes", "Label", "StringRefGame", ["Model", "StringRefGame", "VisibleModel"]);
 
-        /// <summary>genericdoors.2da - generic door appearances need a model.</summary>
+        /// <summary>
+        /// genericdoors.2da - generic door appearances need a model and visibility metadata.
+        /// </summary>
         public static readonly TwoDaLookupTable GenericDoor =
-            new("genericdoors", "Label", "Name", ["ModelName"]);
+            new("genericdoors", "Label", "Name", ["ModelName", "VisibleModel"]);
 
         /// <summary>
         /// iprp_spells.2da - a Cast Spell subtype must identify a real spell, its levels, supported

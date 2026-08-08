@@ -100,6 +100,100 @@ namespace SWLOR.Toolset.Tests
             edits.Should().HaveCount(2);
         }
 
+        [Test]
+        public void ResetRemovesLegacyPaletteOverride()
+        {
+            var catalog = TintMapCatalog.Load(Resources());
+            catalog.Should().NotBeNull();
+            var root = JsonGffDocument.Parse(
+                Encoding.UTF8.GetBytes("""{"__data_type":"UTI "}""")).Root;
+            var variables = new VarTable(root);
+            var key = TintMapVariable.GetName("pmo0_footl10", TintMapLayerType.Leather1);
+            variables.SetInt(key, 42);
+            var editor = new TintMapEditorViewModel(
+                variables,
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                catalog!);
+
+            editor.Reload(ModelWith("pmo0_footl10"));
+            var leather = editor.Colors.Single(row => row.Layer == TintMapLayerType.Leather1);
+            leather.IsCustom.Should().BeFalse();
+            leather.HasOverride.Should().BeTrue();
+            leather.Status.Should().Be("Legacy palette override");
+
+            leather.ResetCommand.Execute(null);
+
+            variables.GetInt(key).Should().BeNull();
+            leather.HasOverride.Should().BeFalse();
+            leather.Status.Should().Be("Standard NWN color");
+        }
+
+        [Test]
+        public void CreatureEditorFiltersMaterialsWhoseOverridesBelongToEquipment()
+        {
+            var catalog = TintMapCatalog.Load(Resources());
+            catalog.Should().NotBeNull();
+            var editor = new TintMapEditorViewModel(
+                new VarTable(new JsonGffStruct()),
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                catalog!);
+            var model = new RenderModel
+            {
+                Meshes = new[]
+                {
+                    ModelWith("pmo0_footl10").Meshes.Single(),
+                    new RenderMesh
+                    {
+                        NodeName = "equipped_robe",
+                        TextureName = "pmh0_robe010",
+                        Positions = Array.Empty<float>(),
+                        Normals = Array.Empty<float>(),
+                        TexCoords = Array.Empty<float>(),
+                        Indices = Array.Empty<int>(),
+                        Transform = System.Numerics.Matrix4x4.Identity,
+                        UsesItemTintOverrides = true
+                    }
+                }
+            };
+
+            editor.Reload(model, includeItemOwnedMaterials: false);
+
+            editor.Colors.Should().NotBeEmpty();
+            editor.Colors.Select(row => row.MaterialName)
+                .Should().OnlyContain(material => material.Equals(
+                    "pmo0_footl10", StringComparison.OrdinalIgnoreCase));
+        }
+
+        [Test]
+        public void CatalogReloadClearsStaleRowsBeforeTheNewModelIsResolved()
+        {
+            var catalog = TintMapCatalog.Load(Resources());
+            catalog.Should().NotBeNull();
+            var editor = new TintMapEditorViewModel(
+                new VarTable(new JsonGffStruct()),
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                catalog!);
+            editor.Reload(ModelWith("pmo0_footl10"));
+            editor.Colors.Should().NotBeEmpty();
+
+            editor.ReloadCatalog(null);
+
+            editor.Colors.Should().BeEmpty();
+            editor.HasColors.Should().BeFalse();
+        }
+
         [AvaloniaTest]
         public void TintEditorViewLoadsTheAvaloniaColorPicker()
         {

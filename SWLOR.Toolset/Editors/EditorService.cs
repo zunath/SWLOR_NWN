@@ -533,6 +533,9 @@ namespace SWLOR.Toolset.Editors
             _itemCostTableRanges = null;
             _armorDyeSwatches = null;
             _armorPartModels = null;
+            _tintMapCatalog = null;
+
+            var tintMapCatalog = GetTintMapCatalog();
 
             foreach (var editor in _openAreaEditors.Values)
                 editor.ReloadGameResources();
@@ -541,9 +544,15 @@ namespace SWLOR.Toolset.Editors
             foreach (var editor in _openDoorEditors.Values)
                 editor.Editor.ReloadGameResources();
             foreach (var editor in _openCreatureEditors.Values)
+            {
+                editor.Editor.ReloadTintMapCatalog(tintMapCatalog);
                 editor.Editor.ReloadGameResources();
+            }
             foreach (var editor in _openItemEditors.Values)
+            {
+                editor.Editor.ReloadTintMapCatalog(tintMapCatalog);
                 editor.Editor.ReloadGameResources(ItemCostTables());
+            }
             foreach (var editor in _openMerchantEditors.Values)
                 editor.Editor.RefreshItemCatalog();
         }

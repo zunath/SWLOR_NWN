@@ -11,7 +11,7 @@ namespace SWLOR.Toolset.Editors.TintMaps
     {
         private readonly VarTable _variables;
         private readonly Func<string, Action, bool> _runEdit;
-        private readonly TintMapCatalog _catalog;
+        private TintMapCatalog? _catalog;
         private readonly Func<RenderModel?>? _resolveModel;
         private readonly Action? _colorChanged;
 
@@ -41,9 +41,16 @@ namespace SWLOR.Toolset.Editors.TintMaps
             Reload(_resolveModel?.Invoke());
         }
 
-        public void Reload(RenderModel? model)
+        public void Reload(RenderModel? model, bool includeItemOwnedMaterials = true)
         {
-            var wanted = _catalog.FindMaterials(model)
+            if (_catalog == null)
+            {
+                Colors.Clear();
+                OnPropertyChanged(nameof(HasColors));
+                return;
+            }
+
+            var wanted = _catalog.FindMaterials(model, includeItemOwnedMaterials)
                 .SelectMany(material => material.Layers.Select(layer => (material, layer)))
                 .ToList();
             var currentKeys = Colors.Select(row => row.Key);
@@ -69,6 +76,12 @@ namespace SWLOR.Toolset.Editors.TintMaps
             }
 
             OnPropertyChanged(nameof(HasColors));
+        }
+
+        public void ReloadCatalog(TintMapCatalog? catalog)
+        {
+            _catalog = catalog;
+            Reload();
         }
     }
 

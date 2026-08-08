@@ -704,6 +704,11 @@ namespace SWLOR.Toolset.Editors.Items
             UpdatePreview();
         }
 
+        public void ReloadTintMapCatalog(TintMapCatalog? catalog)
+        {
+            TintMapEditor?.ReloadCatalog(catalog);
+        }
+
         /// <summary>
         /// Refreshes immutable picker and cost-table models after the module's custom content changes.
         /// </summary>

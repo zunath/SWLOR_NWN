@@ -22,7 +22,7 @@
               </StackPanel>
               <ColorPicker Grid.Column="1" Color="{Binding Color, Mode=TwoWay}" />
               <Button Grid.Column="2" Content="Reset" VerticalAlignment="Top"
-                      Command="{Binding ResetCommand}" IsEnabled="{Binding IsCustom}" />
+                      Command="{Binding ResetCommand}" IsEnabled="{Binding HasOverride}" />
             </Grid>
           </Border>
         </DataTemplate>

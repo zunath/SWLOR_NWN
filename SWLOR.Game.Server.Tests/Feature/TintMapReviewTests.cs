@@ -84,9 +84,34 @@ public class TintMapReviewTests
         definition.Should().NotContain(".SetText(\"Tints\")");
         definition.Should().NotContain("TintColorSheetResref");
         viewModel.Should().Contain("new TintMapColor(value.R, value.G, value.B)");
+        viewModel.Should().Contain("WatchOnClient(model => model.SelectedTintColor)");
         viewModel.Should().NotContain("OnSelectTintColor");
         viewModel.Should().NotContain("OnSelectTintMap");
         viewModel.Should().NotContain("IsTintMapSelected");
+    }
+
+    [Test]
+    public void BodyPartChangesRebuildTintMaterialAndLayerOptions()
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "AppearanceEditorViewModel.cs");
+        var root = CSharpSyntaxTree.ParseText(source).GetRoot();
+        var loadBodyPart = root.DescendantNodes()
+            .OfType<MethodDeclarationSyntax>()
+            .Single(node => node.Identifier.ValueText == "LoadBodyPart");
+
+        loadBodyPart.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Select(GetInvokedMethodName)
+            .Should().Contain("LoadTintMapEditor");
+        loadBodyPart.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Select(GetInvokedMethodName)
+            .Should().NotContain("RefreshTintMapAvailability");
     }
 
     [Test]

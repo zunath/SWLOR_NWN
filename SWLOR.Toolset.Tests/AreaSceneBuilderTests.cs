@@ -239,6 +239,36 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void Build_InstanceTintOverridesMergeTemplateAndEmbeddedValues()
+        {
+            var (are, git) = LoadArea("coxxian_hq");
+            var instance = git.Creatures[0];
+            var instanceVariables = new VarTable(instance);
+            instanceVariables.SetInt("TM_instance_2", 77);
+            instanceVariables.SetInt("TM_shared_2", 99);
+            var index = BuildHakOnlyIndex();
+
+            var scene = AreaSceneBuilder.Build(
+                are,
+                git,
+                new TilesetCatalog(index),
+                new TileModelCache(index),
+                resolveTemplateTintMapOverrides: (_, _) =>
+                    new Dictionary<string, int>
+                    {
+                        ["TM_template_2"] = 42,
+                        ["TM_shared_2"] = 12
+                    });
+
+            var marker = scene.Instances
+                .First(entry => entry.Kind == InstanceMarkerKind.Creature);
+            marker.TintMapOverrides.Should().Contain("TM_template_2", 42);
+            marker.TintMapOverrides.Should().Contain("TM_instance_2", 77);
+            marker.TintMapOverrides.Should().Contain("TM_shared_2", 99,
+                "an instance-local override must win over its template default");
+        }
+
+        [Test]
         public void Build_AnchorEntreenorArea_TriggerMarkerCarriesGeometryPolygon()
         {
             var (are, git) = LoadArea("anchor_entreenor");

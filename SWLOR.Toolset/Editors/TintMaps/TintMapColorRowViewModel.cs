@@ -26,7 +26,14 @@ namespace SWLOR.Toolset.Editors.TintMaps
         [ObservableProperty]
         private bool _isCustom;
 
-        public string Status => IsCustom ? $"#{Color.R:X2}{Color.G:X2}{Color.B:X2}" : "Standard NWN color";
+        [ObservableProperty]
+        private bool _hasOverride;
+
+        public string Status => IsCustom
+            ? $"#{Color.R:X2}{Color.G:X2}{Color.B:X2}"
+            : HasOverride
+                ? "Legacy palette override"
+                : "Standard NWN color";
 
         public TintMapColorRowViewModel(
             string materialName,
@@ -58,6 +65,7 @@ namespace SWLOR.Toolset.Editors.TintMaps
             }
 
             IsCustom = true;
+            HasOverride = true;
             OnPropertyChanged(nameof(Status));
             _colorChanged?.Invoke();
         }
@@ -65,7 +73,7 @@ namespace SWLOR.Toolset.Editors.TintMaps
         [RelayCommand]
         private void Reset()
         {
-            if (!IsCustom)
+            if (!HasOverride)
                 return;
 
             if (!_runEdit(
@@ -90,11 +98,13 @@ namespace SWLOR.Toolset.Editors.TintMaps
                 {
                     Color = Color.FromRgb(tint.Red, tint.Green, tint.Blue);
                     IsCustom = true;
+                    HasOverride = true;
                 }
                 else
                 {
                     Color = StandardPlaceholder;
                     IsCustom = false;
+                    HasOverride = saved is > 0 and <= TintMapMaterialRegistry.PaletteColorCount;
                 }
             }
             finally

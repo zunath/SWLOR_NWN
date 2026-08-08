@@ -41,7 +41,8 @@ namespace SWLOR.Toolset.Domain.Render
         string PartType,
         string ModelResRef,
         IReadOnlyDictionary<int, int>? LayerColorIndices = null,
-        string? TextureResRef = null);
+        string? TextureResRef = null,
+        bool UsesItemTintOverrides = false);
 
     /// <summary>
     /// The resolved preview-model description for a blueprint, produced by <see cref="BlueprintModelResolver"/>.
@@ -332,7 +333,10 @@ namespace SWLOR.Toolset.Domain.Render
             {
                 var robeResRef = BuildPartName(prefix, "robe", robeNumber);
                 if (partModelExists?.Invoke(robeResRef) ?? true)
-                    parts.Add(new BlueprintModelPart("robe", robeResRef));
+                {
+                    parts.Add(new BlueprintModelPart(
+                        "robe", robeResRef, UsesItemTintOverrides: true));
+                }
             }
 
             parts.Add(new BlueprintModelPart("head", BuildPartName(prefix, "head", 1)));
@@ -349,7 +353,12 @@ namespace SWLOR.Toolset.Domain.Render
                     ? armorValue
                     : partType is "shol" or "shor" ? 0 : 1;
                 if (number > 0)
-                    parts.Add(new BlueprintModelPart(partType, BuildPartName(prefix, partType, number)));
+                {
+                    parts.Add(new BlueprintModelPart(
+                        partType,
+                        BuildPartName(prefix, partType, number),
+                        UsesItemTintOverrides: true));
+                }
             }
 
             return new BlueprintModelReference
@@ -489,7 +498,10 @@ namespace SWLOR.Toolset.Domain.Render
             {
                 var robeResRef = BuildPartName(prefix, "robe", robeNumber);
                 if (partModelExists?.Invoke(robeResRef) ?? true)
-                    parts.Add(new BlueprintModelPart("robe", robeResRef));
+                {
+                    parts.Add(new BlueprintModelPart(
+                        "robe", robeResRef, UsesItemTintOverrides: true));
+                }
             }
 
             var head = root.GetIntOrNull("Appearance_Head");
@@ -507,7 +519,12 @@ namespace SWLOR.Toolset.Domain.Render
                         ? 0
                         : ItemAppearanceValues.Read(armor, "ArmorPart_" + armorKey) ?? 0);
                 if (number > 0)
-                    parts.Add(new BlueprintModelPart(partType, BuildPartName(prefix, partType, number)));
+                {
+                    parts.Add(new BlueprintModelPart(
+                        partType,
+                        BuildPartName(prefix, partType, number),
+                        UsesItemTintOverrides: armor != null));
+                }
             }
 
             parts.AddRange(visibleEquipment.Parts);
@@ -665,7 +682,8 @@ namespace SWLOR.Toolset.Domain.Render
                     if (partModelExists?.Invoke(modelResRef) ?? true)
                     {
                         destination.Add(new BlueprintModelPart(
-                            attachmentType, modelResRef, reference.LayerColorIndices, textureResRef));
+                            attachmentType, modelResRef, reference.LayerColorIndices, textureResRef,
+                            UsesItemTintOverrides: true));
                     }
                 }
 
@@ -677,7 +695,8 @@ namespace SWLOR.Toolset.Domain.Render
                 foreach (var part in reference.Parts)
                 {
                     destination.Add(new BlueprintModelPart(
-                        attachmentType, part.ModelResRef, reference.LayerColorIndices));
+                        attachmentType, part.ModelResRef, reference.LayerColorIndices,
+                        UsesItemTintOverrides: true));
                 }
                 return;
             }
@@ -687,7 +706,8 @@ namespace SWLOR.Toolset.Domain.Render
                 !reference.ModelResRef.Equals("it_bag", StringComparison.OrdinalIgnoreCase))
             {
                 destination.Add(new BlueprintModelPart(
-                    attachmentType, reference.ModelResRef, reference.LayerColorIndices));
+                    attachmentType, reference.ModelResRef, reference.LayerColorIndices,
+                    UsesItemTintOverrides: true));
             }
         }
 

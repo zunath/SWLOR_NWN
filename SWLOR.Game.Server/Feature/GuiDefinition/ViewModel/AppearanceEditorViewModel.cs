@@ -877,6 +877,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.SelectedItemTypeIndex);
             WatchOnClient(model => model.SelectedTintMaterialIndex);
             WatchOnClient(model => model.SelectedTintLayerType);
+            WatchOnClient(model => model.SelectedTintColor);
 
             if (GetIsPC(_target) && !GetIsDM(_target) && !GetIsDMPossessed(_target))
             {
@@ -1883,7 +1884,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             ExecuteScript(ScriptName.OnAppearanceEdit, _target);
-            RefreshTintMapAvailability();
+            LoadTintMapEditor();
         }
 
         private void LoadArmorPart()

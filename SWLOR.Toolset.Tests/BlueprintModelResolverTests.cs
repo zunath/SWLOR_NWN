@@ -149,6 +149,10 @@ namespace SWLOR.Toolset.Tests
             parts["footr"].Should().Be("pmh0_footr052");
             parts.Should().NotContainKey("belt", "creature belt 0 wins over armor belt 25");
             parts.Should().NotContainKey("shol");
+            result.Parts.Single(part => part.PartType == "head").UsesItemTintOverrides.Should().BeFalse();
+            result.Parts.Where(part => part.PartType != "head")
+                .Should().OnlyContain(part => part.UsesItemTintOverrides,
+                    "runtime stores equipped armor tint overrides on the chest item");
 
             result.LayerColorIndices[PltLayers.Skin]
                 .Should().Be((int)root.Get("Color_Skin").GetInteger());
@@ -213,6 +217,7 @@ namespace SWLOR.Toolset.Tests
 
             var weaponParts = result.Parts.Where(part => part.PartType == "weaponr").ToList();
             weaponParts.Should().HaveCount(3);
+            weaponParts.Should().OnlyContain(part => part.UsesItemTintOverrides);
             weaponParts.Select(part => part.ModelResRef).Should()
                 .Contain(model => model.EndsWith("_b_011", StringComparison.OrdinalIgnoreCase))
                 .And.Contain(model => model.EndsWith("_m_121", StringComparison.OrdinalIgnoreCase))

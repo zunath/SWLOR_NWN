@@ -242,7 +242,8 @@ namespace SWLOR.Toolset.Workspace
 
             return new BlueprintModelRenderResult(
                 WithLayerColors(model, reference),
-                reference.IsDoorTransition);
+                reference.IsDoorTransition,
+                TintMapOverrides.Read(new VarTable(root)));
         }
 
         /// <summary>
@@ -666,6 +667,7 @@ namespace SWLOR.Toolset.Workspace
                 MdlModel? composed;
                 IReadOnlyList<IReadOnlyDictionary<int, int>?> rigidLayerColors =
                     Array.Empty<IReadOnlyDictionary<int, int>?>();
+                IReadOnlyList<bool> rigidItemTintOwnership = Array.Empty<bool>();
                 lock (_composerGate)
                 {
                     // _partTextures is filled by LoadComposerModel as the composer pulls each part in,
@@ -678,6 +680,7 @@ namespace SWLOR.Toolset.Workspace
                     if (composed != null)
                     {
                         rigidLayerColors = CaptureComposedLayerColors(composed, rigidParts);
+                        rigidItemTintOwnership = CaptureComposedItemTintOwnership(composed, rigidParts);
                         ApplyComposedTextureOverrides(composed, rigidParts);
                         _partTextures.Restore(composed, TextureExists);
                     }
@@ -690,6 +693,7 @@ namespace SWLOR.Toolset.Workspace
                         ? MdlMeshBuilder.BuildAnimatedPreview(composed, frames, sharedAnimations)
                         : MdlMeshBuilder.Build(composed, frames);
                     ApplyLayerColors(rigidModel, rigidLayerColors);
+                    ApplyItemTintOwnership(rigidModel, rigidItemTintOwnership);
                     renderModels.Add(rigidModel);
                 }
             }
@@ -716,6 +720,12 @@ namespace SWLOR.Toolset.Workspace
                 {
                     foreach (var mesh in model.Meshes)
                         mesh.LayerColorIndices = partColors;
+                }
+
+                if (part.Part.UsesItemTintOverrides)
+                {
+                    foreach (var mesh in model.Meshes)
+                        mesh.UsesItemTintOverrides = true;
                 }
 
                 return model;
@@ -796,6 +806,38 @@ namespace SWLOR.Toolset.Workspace
                 if (layerColors[index] is { Count: > 0 } colors)
                     model.Meshes[index].LayerColorIndices = colors;
             }
+        }
+
+        private static IReadOnlyList<bool> CaptureComposedItemTintOwnership(
+            MdlModel composed,
+            IReadOnlyList<BlueprintModelPart> parts)
+        {
+            var itemOwnedModels = parts
+                .Where(part => part.UsesItemTintOverrides)
+                .Select(part => part.ModelResRef)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var result = new List<bool>();
+            foreach (var mesh in composed.GetMeshNodes())
+            {
+                if (MdlMeshBuilder.IsRenderableMesh(mesh))
+                    result.Add(itemOwnedModels.Contains(mesh.Bitmap));
+            }
+
+            return result;
+        }
+
+        private static void ApplyItemTintOwnership(
+            RenderModel model,
+            IReadOnlyList<bool> itemTintOwnership)
+        {
+            if (model.Meshes.Count != itemTintOwnership.Count)
+            {
+                throw new InvalidDataException(
+                    $"Composed mesh tint ownership count {itemTintOwnership.Count} does not match rendered mesh count {model.Meshes.Count}.");
+            }
+
+            for (var index = 0; index < model.Meshes.Count; index++)
+                model.Meshes[index].UsesItemTintOverrides = itemTintOwnership[index];
         }
 
         /// <summary>Applies a selected surface to a weighted garment before its meshes are built.</summary>

@@ -758,7 +758,7 @@ namespace SWLOR.Toolset.Editors.Creatures
 
         private void ApplyPreviewScene(RenderModel? model)
         {
-            TintMapEditor?.Reload(model);
+            TintMapEditor?.Reload(model, includeItemOwnedMaterials: false);
             PublishAnimations(model);
             PreviewScene = model == null
                 ? null
@@ -966,6 +966,11 @@ namespace SWLOR.Toolset.Editors.Creatures
             _previewModelGeneration++;
             AppearanceGallery?.ReloadPreviews();
             UpdatePreviewScene();
+        }
+
+        public void ReloadTintMapCatalog(TintMapCatalog? catalog)
+        {
+            TintMapEditor?.ReloadCatalog(catalog);
         }
 
         private void NotifySummary()

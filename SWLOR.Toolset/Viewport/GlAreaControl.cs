@@ -387,6 +387,8 @@ void main()
             public IReadOnlyDictionary<int, int> LayerColorIndices { get; init; } =
                 new Dictionary<int, int>();
 
+            public bool UsesItemTintOverrides { get; init; }
+
             /// <summary>
             /// The source node's MDL <c>tilefade</c> flag - see <see cref="RenderMesh.TileFade"/>.
             /// Non-zero marks the tileset's own overhead geometry, which the tile pass drops unless
@@ -3266,7 +3268,9 @@ void main()
                         BindMeshTexture(
                             meshRange.TextureName,
                             instance.LayerColorIndices,
-                            instance.TintMapOverrides);
+                            instance.Kind == InstanceMarkerKind.Creature && meshRange.UsesItemTintOverrides
+                                ? null
+                                : instance.TintMapOverrides);
 
                         unsafe
                         {
@@ -4839,6 +4843,7 @@ void main()
                     AnimationIndexOffsets = animationIndexOffsets,
                     TextureName = string.IsNullOrEmpty(mesh.TextureName) ? null : mesh.TextureName,
                     LayerColorIndices = mesh.LayerColorIndices,
+                    UsesItemTintOverrides = mesh.UsesItemTintOverrides,
                     TileFade = mesh.TileFade
                 });
             }

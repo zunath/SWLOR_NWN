@@ -105,6 +105,13 @@ namespace SWLOR.Toolset.Domain.Render
         public IReadOnlyDictionary<int, int> LayerColorIndices { get; set; } =
             new Dictionary<int, int>();
 
+        /// <summary>
+        /// The mesh is supplied by equipped creature armor, a helmet, or a cloak. Creature-blueprint
+        /// tint locals must not be offered or rendered for it because runtime stores those overrides
+        /// on the item instead.
+        /// </summary>
+        public bool UsesItemTintOverrides { get; set; }
+
         public int VertexCount => Positions.Length / 3;
         public int TriangleCount => Indices.Length / 3;
     }

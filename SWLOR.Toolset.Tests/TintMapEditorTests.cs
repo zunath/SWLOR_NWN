@@ -9,8 +9,12 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.GameData.Resources;
+using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Render;
+using SWLOR.Toolset.Domain.Workspace;
+using SWLOR.Toolset.Editors.Creatures;
+using SWLOR.Toolset.Editors.Items;
 using SWLOR.Toolset.Editors.TintMaps;
 
 namespace SWLOR.Toolset.Tests
@@ -226,6 +230,69 @@ namespace SWLOR.Toolset.Tests
 
             editor.Colors.Should().BeEmpty();
             editor.HasColors.Should().BeFalse();
+        }
+
+        [Test]
+        public void ExistingEditorsCreateTintControlsWhenCatalogAppears()
+        {
+            var catalog = TintMapCatalog.Load(Resources());
+            catalog.Should().NotBeNull();
+            var creatureRoot = new ModuleWorkspace(CorpusLocator.ModuleDirectory)
+                .LoadBlueprint(ResourceType.Utc, "agr_guildmaster")
+                .Document.Root;
+            var itemRoot = new ModuleWorkspace(CorpusLocator.ModuleDirectory)
+                .LoadBlueprint(ResourceType.Uti, "adren_harness")
+                .Document.Root;
+            static bool Edit(string _, Action mutation)
+            {
+                mutation();
+                return true;
+            }
+
+            using var creatureEditor = new CreatureEditorViewModel(
+                creatureRoot,
+                Path.Combine(
+                    CorpusLocator.ModuleDirectory,
+                    "utc",
+                    "agr_guildmaster.utc.json"),
+                "agr_guildmaster",
+                Edit,
+                null,
+                null,
+                null,
+                null,
+                _ => null,
+                null);
+            using var itemEditor = new ItemEditorViewModel(
+                itemRoot,
+                "adren_harness",
+                Edit,
+                baseItemRows: baseItem => baseItem == 16
+                    ? new BaseItemRow(16, "armor", 3)
+                    : null,
+                baseItemIcons: baseItem => baseItem == 16
+                    ? new BaseItemIconRow(16, 3, "AArCl", "gifp")
+                    : null,
+                textureExists: _ => true);
+
+            creatureEditor.TintMapEditor.Should().BeNull();
+            itemEditor.TintMapEditor.Should().BeNull();
+
+            creatureEditor.ReloadTintMapCatalog(catalog);
+            itemEditor.ReloadTintMapCatalog(catalog);
+
+            creatureEditor.TintMapEditor.Should().NotBeNull();
+            creatureEditor.HasTintMapEditor.Should().BeTrue();
+            itemEditor.TintMapEditor.Should().NotBeNull();
+            itemEditor.Appearance!.Tints.Should().BeSameAs(itemEditor.TintMapEditor);
+
+            creatureEditor.ReloadTintMapCatalog(null);
+            itemEditor.ReloadTintMapCatalog(null);
+
+            creatureEditor.TintMapEditor.Should().BeNull();
+            creatureEditor.HasTintMapEditor.Should().BeFalse();
+            itemEditor.TintMapEditor.Should().BeNull();
+            itemEditor.Appearance!.Tints.Should().BeNull();
         }
 
         [AvaloniaTest]

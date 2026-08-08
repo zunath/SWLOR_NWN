@@ -4,6 +4,7 @@ using System.Buffers.Binary;
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.NWN.Formats.Mdl;
 using SWLOR.NWN.Formats.Plt;
 using SWLOR.Toolset.Domain.GameData.Resources;
@@ -289,9 +290,80 @@ namespace SWLOR.Toolset.Tests
             source.Should().Contain("SetUniformInt(\"environmentTexture\", 4);");
             source.Should().Contain("SetUniformInt(\"tintMapTexture\", 5);");
             source.Should().Contain("SetUniformInt(\"tintPaletteTexture\", 6);");
+            source.Should().Contain("SetUniformInt(\"tintAlphaTexture\", 7);");
             source.Should().Contain("_gl.ActiveTexture(TextureUnit.Texture4);");
             source.Should().Contain("_gl!.ActiveTexture(TextureUnit.Texture5);");
             source.Should().Contain("_gl.ActiveTexture(TextureUnit.Texture6);");
+            source.Should().Contain("_gl.ActiveTexture(TextureUnit.Texture7);");
+        }
+
+        [Test]
+        public void TintShaderSamplesTexture9CutoutsFromRed()
+        {
+            var shader = typeof(SWLOR.Toolset.Viewport.GlAreaControl)
+                .GetField(
+                    "FragmentShaderBody",
+                    System.Reflection.BindingFlags.NonPublic |
+                    System.Reflection.BindingFlags.Static)!
+                .GetRawConstantValue()
+                .Should()
+                .BeOfType<string>()
+                .Subject;
+
+            shader.Should().Contain("uniform bool tintAlphaUsesRedChannel;");
+            shader.Should().Contain("tintAlphaUsesRedChannel ? alphaSample.r : alphaSample.a");
+        }
+
+        [Test]
+        public void SoftwareTintRendererUsesTexture9RedAsAlpha()
+        {
+            File.WriteAllBytes(Path.Combine(_resourceDirectory, "tint.tga"), SolidColorTga(255, 0, 0));
+            File.WriteAllBytes(Path.Combine(_resourceDirectory, "palette.tga"), SolidColorTga(255, 255, 255));
+            File.WriteAllBytes(Path.Combine(_resourceDirectory, "cutout.tga"), SolidColorTga(73, 0, 0));
+            var material = MaterialResolver.Parse(
+                "texture7 tint\n" +
+                "texture9 cutout\n" +
+                "texture10 palette\n" +
+                "customshaderPSH fs_plt_tinter\n" +
+                "parameter float useTexture9Alpha 1.0\n");
+            var overrideKey = TintMapVariable.GetName("sample_material", TintMapLayerType.Skin);
+
+            var image = TintMapTextureRenderer.Render(
+                Index(),
+                "sample_material",
+                material,
+                new Dictionary<int, int>(),
+                new Dictionary<string, int>
+                {
+                    [overrideKey] = new TintMapColor(20, 40, 60).ToStoredValue()
+                });
+
+            image.Should().NotBeNull();
+            Pixel(image!, 0, 0).Should().Be((20, 40, 60, 73));
+        }
+
+        [Test]
+        public void SoftwareTintRendererUsesTexture1AlphaChannel()
+        {
+            File.WriteAllBytes(Path.Combine(_resourceDirectory, "tint.tga"), SolidColorTga(255, 0, 0));
+            File.WriteAllBytes(Path.Combine(_resourceDirectory, "palette.tga"), SolidColorTga(255, 255, 255));
+            File.WriteAllBytes(Path.Combine(_resourceDirectory, "normal.tga"), SolidColorTga(10, 20, 30, 91));
+            var material = MaterialResolver.Parse(
+                "texture1 normal\n" +
+                "texture7 tint\n" +
+                "texture10 palette\n" +
+                "customshaderPSH fs_plt_tinter\n" +
+                "parameter float useTexture1Alpha 1.0\n");
+
+            var image = TintMapTextureRenderer.Render(
+                Index(),
+                "sample_material",
+                material,
+                new Dictionary<int, int>(),
+                new Dictionary<string, int>());
+
+            image.Should().NotBeNull();
+            Pixel(image!, 0, 0).A.Should().Be(91);
         }
 
         [Test]
@@ -711,6 +783,21 @@ namespace SWLOR.Toolset.Tests
             bytes[18] = b;
             bytes[19] = g;
             bytes[20] = r;
+            return bytes;
+        }
+
+        private static byte[] SolidColorTga(byte r, byte g, byte b, byte a)
+        {
+            var bytes = new byte[18 + 4];
+            bytes[2] = 2;
+            BinaryPrimitives.WriteUInt16LittleEndian(bytes.AsSpan(12, 2), 1);
+            BinaryPrimitives.WriteUInt16LittleEndian(bytes.AsSpan(14, 2), 1);
+            bytes[16] = 32;
+            bytes[17] = 8;
+            bytes[18] = b;
+            bytes[19] = g;
+            bytes[20] = r;
+            bytes[21] = a;
             return bytes;
         }
 

@@ -57,7 +57,8 @@ namespace SWLOR.Toolset.Editors.Items
 
         public bool ShowsAppearanceTab => Appearance != null;
 
-        public TintMapEditorViewModel? TintMapEditor { get; }
+        [ObservableProperty]
+        private TintMapEditorViewModel? _tintMapEditor;
 
         public ItemSourceSectionViewModel Source { get; }
 
@@ -706,7 +707,25 @@ namespace SWLOR.Toolset.Editors.Items
 
         public void ReloadTintMapCatalog(TintMapCatalog? catalog)
         {
-            TintMapEditor?.ReloadCatalog(catalog);
+            if (catalog == null)
+            {
+                TintMapEditor = null;
+                Appearance?.SetTintMapEditor(null);
+                return;
+            }
+
+            if (TintMapEditor == null)
+            {
+                TintMapEditor = new TintMapEditorViewModel(
+                    _store.Locals,
+                    RunEdit,
+                    catalog,
+                    colorChanged: UpdatePreview);
+                Appearance?.SetTintMapEditor(TintMapEditor);
+                return;
+            }
+
+            TintMapEditor.ReloadCatalog(catalog);
         }
 
         /// <summary>

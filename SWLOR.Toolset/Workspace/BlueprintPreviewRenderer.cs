@@ -469,10 +469,13 @@ namespace SWLOR.Toolset.Workspace
             var layerColors = mesh.LayerColorIndices.Count > 0
                 ? mesh.LayerColorIndices
                 : fallbackLayerColors;
+            var activeTintMapOverrides = mesh.UsesItemTintOverrides
+                ? mesh.TintMapOverrides
+                : tintMapOverrides;
             return _textures.Get(
                 surfaceName,
                 layerColors,
-                tintMapOverrides,
+                activeTintMapOverrides,
                 resolveMaterial: hasMaterial);
         }
 
@@ -688,6 +691,8 @@ namespace SWLOR.Toolset.Workspace
                 IReadOnlyList<IReadOnlyDictionary<int, int>?> rigidLayerColors =
                     Array.Empty<IReadOnlyDictionary<int, int>?>();
                 IReadOnlyList<bool> rigidItemTintOwnership = Array.Empty<bool>();
+                IReadOnlyList<IReadOnlyDictionary<string, int>?> rigidTintMapOverrides =
+                    Array.Empty<IReadOnlyDictionary<string, int>?>();
                 lock (_composerGate)
                 {
                     // _partTextures is filled by LoadComposerModel as the composer pulls each part in,
@@ -701,6 +706,7 @@ namespace SWLOR.Toolset.Workspace
                     {
                         rigidLayerColors = CaptureComposedLayerColors(composed, rigidParts);
                         rigidItemTintOwnership = CaptureComposedItemTintOwnership(composed, rigidParts);
+                        rigidTintMapOverrides = CaptureComposedTintMapOverrides(composed, rigidParts);
                         ApplyComposedTextureOverrides(composed, rigidParts);
                         _partTextures.Restore(composed, TextureExists);
                     }
@@ -714,6 +720,7 @@ namespace SWLOR.Toolset.Workspace
                         : MdlMeshBuilder.Build(composed, frames);
                     ApplyLayerColors(rigidModel, rigidLayerColors);
                     ApplyItemTintOwnership(rigidModel, rigidItemTintOwnership);
+                    ApplyTintMapOverrides(rigidModel, rigidTintMapOverrides);
                     renderModels.Add(rigidModel);
                 }
             }
@@ -745,7 +752,11 @@ namespace SWLOR.Toolset.Workspace
                 if (part.Part.UsesItemTintOverrides)
                 {
                     foreach (var mesh in model.Meshes)
+                    {
                         mesh.UsesItemTintOverrides = true;
+                        mesh.TintMapOverrides = part.Part.TintMapOverrides ??
+                                                new Dictionary<string, int>(StringComparer.Ordinal);
+                    }
                 }
 
                 return model;
@@ -862,6 +873,46 @@ namespace SWLOR.Toolset.Workspace
 
             for (var index = 0; index < model.Meshes.Count; index++)
                 model.Meshes[index].UsesItemTintOverrides = itemTintOwnership[index];
+        }
+
+        private static IReadOnlyList<IReadOnlyDictionary<string, int>?> CaptureComposedTintMapOverrides(
+            MdlModel composed,
+            IReadOnlyList<BlueprintModelPart> parts)
+        {
+            var overridesByModel = parts
+                .Where(part => part.TintMapOverrides is { Count: > 0 })
+                .GroupBy(part => part.ModelResRef, StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.Last().TintMapOverrides!,
+                    StringComparer.OrdinalIgnoreCase);
+            var result = new List<IReadOnlyDictionary<string, int>?>();
+            foreach (var mesh in composed.GetMeshNodes())
+            {
+                if (!MdlMeshBuilder.IsRenderableMesh(mesh))
+                    continue;
+
+                result.Add(overridesByModel.TryGetValue(mesh.Bitmap, out var values) ? values : null);
+            }
+
+            return result;
+        }
+
+        private static void ApplyTintMapOverrides(
+            RenderModel model,
+            IReadOnlyList<IReadOnlyDictionary<string, int>?> overrides)
+        {
+            if (model.Meshes.Count != overrides.Count)
+            {
+                throw new InvalidDataException(
+                    $"Composed mesh tint override count {overrides.Count} does not match rendered mesh count {model.Meshes.Count}.");
+            }
+
+            for (var index = 0; index < model.Meshes.Count; index++)
+            {
+                if (overrides[index] is { Count: > 0 } values)
+                    model.Meshes[index].TintMapOverrides = values;
+            }
         }
 
         /// <summary>Applies a selected surface to a weighted garment before its meshes are built.</summary>

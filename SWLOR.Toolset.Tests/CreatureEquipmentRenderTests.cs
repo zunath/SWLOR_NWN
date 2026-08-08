@@ -107,6 +107,26 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void EmbeddedArmorCarriesCustomTintOverridesIntoRenderedMeshes()
+        {
+            var creature = InstanceFieldMap.Duplicate(_hangarGit.Creatures.First());
+            var armor = creature.GetListOrEmpty("Equip_ItemList").Single(item =>
+                System.Text.Encoding.ASCII.GetString(item.RawStructId ?? []) == "2");
+            const string tintKey = "TM_embedded_test_4";
+            new VarTable(armor).SetInt(tintKey, 654321);
+
+            var model = _renderer.BuildModel(ResourceType.Utc, creature);
+
+            model.Should().NotBeNull();
+            var armorMeshes = model!.Meshes.Where(mesh => mesh.UsesItemTintOverrides).ToList();
+            armorMeshes.Should().NotBeEmpty();
+            armorMeshes.Should().OnlyContain(mesh =>
+                mesh.TintMapOverrides.ContainsKey(tintKey) &&
+                mesh.TintMapOverrides[tintKey] == 654321,
+                "the equipped item owns TM_* values at runtime and the preview must use that same source");
+        }
+
+        [Test]
         public void EmbeddedRightHandWeaponAddsCreatureGeometry()
         {
             var armedRoot = _anchorGit.Creatures.First(creature => creature.GetListOrEmpty("Equip_ItemList")

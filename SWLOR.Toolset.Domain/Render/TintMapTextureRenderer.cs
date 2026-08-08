@@ -32,6 +32,11 @@ namespace SWLOR.Toolset.Domain.Render
             if (tintMap == null || palette == null || palette.Width <= 0 || palette.Height <= 0)
                 return null;
 
+            var alphaSource = material.GetAlphaSource();
+            var alphaTexture = alphaSource is { } source
+                ? TextureLoader.Load(resourceIndex, source.TextureName)
+                : null;
+
             var output = new byte[checked(tintMap.Width * tintMap.Height * 4)];
             for (var pixel = 0; pixel < tintMap.Width * tintMap.Height; pixel++)
             {
@@ -51,7 +56,13 @@ namespace SWLOR.Toolset.Domain.Render
                     output[offset] = Modulate(customColor.Red, shade);
                     output[offset + 1] = Modulate(customColor.Green, shade);
                     output[offset + 2] = Modulate(customColor.Blue, shade);
-                    output[offset + 3] = 255;
+                    output[offset + 3] = SampleAlpha(
+                        alphaTexture,
+                        alphaSource,
+                        pixel % tintMap.Width,
+                        pixel / tintMap.Width,
+                        tintMap.Width,
+                        tintMap.Height);
                     continue;
                 }
 
@@ -81,7 +92,13 @@ namespace SWLOR.Toolset.Domain.Render
                 output[offset] = palette.Pixels[paletteOffset];
                 output[offset + 1] = palette.Pixels[paletteOffset + 1];
                 output[offset + 2] = palette.Pixels[paletteOffset + 2];
-                output[offset + 3] = palette.Pixels[paletteOffset + 3];
+                output[offset + 3] = SampleAlpha(
+                    alphaTexture,
+                    alphaSource,
+                    pixel % tintMap.Width,
+                    pixel / tintMap.Width,
+                    tintMap.Width,
+                    tintMap.Height);
             }
 
             return new TextureImage
@@ -96,6 +113,23 @@ namespace SWLOR.Toolset.Domain.Render
         private static byte Modulate(byte color, byte shade)
         {
             return (byte)((color * shade + 127) / 255);
+        }
+
+        private static byte SampleAlpha(
+            TextureImage? texture,
+            MtrAlphaSource? source,
+            int x,
+            int y,
+            int targetWidth,
+            int targetHeight)
+        {
+            if (texture == null || source == null || texture.Width <= 0 || texture.Height <= 0)
+                return 255;
+
+            var sourceX = Math.Clamp(x * texture.Width / Math.Max(targetWidth, 1), 0, texture.Width - 1);
+            var sourceY = Math.Clamp(y * texture.Height / Math.Max(targetHeight, 1), 0, texture.Height - 1);
+            var offset = (sourceY * texture.Width + sourceX) * 4;
+            return texture.Pixels[offset + (source.Value.UsesRedChannel ? 0 : 3)];
         }
     }
 }

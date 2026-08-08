@@ -360,7 +360,7 @@ public class TintMapReviewTests
     }
 
     [Test]
-    public void PartsBasedCloaksFallBackToGenericModel()
+    public void PartsBasedCloaksResolveTextureThroughCloakModelTable()
     {
         var source = ReadSource(
             "SWLOR.Game.Server",
@@ -368,37 +368,69 @@ public class TintMapReviewTests
             "AppearanceDefinition",
             "TintMap",
             "TintMapModelResolver.cs");
-        var method = CSharpSyntaxTree.ParseText(source)
-            .GetRoot()
-            .DescendantNodes()
-            .OfType<MethodDeclarationSyntax>()
-            .Single(node => node.Identifier.ValueText == "AddPartsAppearanceSelections");
-        var cloakInvocation = method.DescendantNodes()
+        var partsMethod = FindMethod(source, "AddPartsAppearanceSelections");
+        partsMethod.DescendantNodes()
             .OfType<InvocationExpressionSyntax>()
             .Single(invocation =>
-                invocation.Expression is IdentifierNameSyntax
-                {
-                    Identifier.ValueText: "AddSimpleItemSelections"
-                } &&
-                invocation.ArgumentList.Arguments.Any(argument =>
-                    argument.Expression is MemberAccessExpressionSyntax
-                    {
-                        Expression: IdentifierNameSyntax { Identifier.ValueText: "InventorySlot" },
-                        Name.Identifier.ValueText: "Cloak"
-                    }));
+                GetInvokedMethodName(invocation) == "AddCloakSelections");
 
-        cloakInvocation.ArgumentList.Arguments.Any(argument =>
-            argument.Expression is InterpolatedStringExpressionSyntax interpolated &&
-            interpolated.Contents
-                .OfType<InterpolatedStringTextSyntax>()
-                .Any(text => text.TextToken.ValueText.Contains("cloak", StringComparison.Ordinal)))
+        var cloakMethod = FindMethod(source, "AddCloakSelections");
+        cloakMethod.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
             .Should()
-            .BeTrue();
-        cloakInvocation.ArgumentList.Arguments.Any(argument =>
-            argument.Expression is LiteralExpressionSyntax literal &&
-            literal.Token.ValueText == "cloak")
+            .Contain(invocation =>
+                GetInvokedMethodName(invocation) == "Get2DAString" &&
+                invocation.ArgumentList.Arguments.Count == 3 &&
+                invocation.ArgumentList.Arguments[0].Expression.ToString() == "\"cloakmodel\"" &&
+                invocation.ArgumentList.Arguments[1].Expression.ToString() == "\"TEXTURE\"");
+        cloakMethod.ToString().Should().Contain("cloak_{textureId:D3}");
+    }
+
+    [Test]
+    public void EquipmentTintEditsHonorItemRestrictions()
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "AppearanceEditorViewModel.cs");
+        var method = FindMethod(source, "TryGetEditableTintSelections");
+
+        method.ToString().Should().Contain("IsEquipmentSelected && !IsValidItem()");
+    }
+
+    [Test]
+    public void MirroringArmorCopiesCustomTintOverrides()
+    {
+        var viewModelSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "AppearanceEditorViewModel.cs");
+        FindMethod(viewModelSource, "CopyColors")
+            .DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
             .Should()
-            .BeTrue();
+            .Contain(invocation =>
+                IsMemberInvocation(invocation, "TintMapModelResolver", "CopyArmorPartTintOverrides"));
+
+        var resolverSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapModelResolver.cs");
+        var method = FindMethod(resolverSource, "CopyArmorPartTintOverrides");
+        var invocations = method.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Select(GetInvokedMethodName)
+            .ToList();
+
+        invocations.Should().Contain("GetMaterials");
+        invocations.Should().Contain("SetLocalInt");
+        invocations.Should().Contain("DeleteLocalInt");
     }
 
     [Test]

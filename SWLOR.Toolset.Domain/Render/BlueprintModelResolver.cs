@@ -42,7 +42,8 @@ namespace SWLOR.Toolset.Domain.Render
         string ModelResRef,
         IReadOnlyDictionary<int, int>? LayerColorIndices = null,
         string? TextureResRef = null,
-        bool UsesItemTintOverrides = false);
+        bool UsesItemTintOverrides = false,
+        IReadOnlyDictionary<string, int>? TintMapOverrides = null);
 
     /// <summary>
     /// The resolved preview-model description for a blueprint, produced by <see cref="BlueprintModelResolver"/>.
@@ -489,6 +490,9 @@ namespace SWLOR.Toolset.Domain.Render
             VisibleEquipment visibleEquipment)
         {
             var armor = LoadEquippedChestArmor(root, itemBlueprintLoader);
+            var armorTintMapOverrides = armor == null
+                ? null
+                : TintMapOverrides.Read(new VarTable(armor));
             var parts = new List<BlueprintModelPart>();
 
             // Robe first (armor-only; creatures have no robe body part), when its model resolves.
@@ -504,7 +508,8 @@ namespace SWLOR.Toolset.Domain.Render
                 if (partModelExists?.Invoke(robeResRef) ?? true)
                 {
                     parts.Add(new BlueprintModelPart(
-                        "robe", robeResRef, UsesItemTintOverrides: true));
+                        "robe", robeResRef, UsesItemTintOverrides: true,
+                        TintMapOverrides: armorTintMapOverrides));
                 }
             }
 
@@ -527,7 +532,8 @@ namespace SWLOR.Toolset.Domain.Render
                     parts.Add(new BlueprintModelPart(
                         partType,
                         BuildPartName(prefix, partType, number),
-                        UsesItemTintOverrides: armor != null));
+                        UsesItemTintOverrides: armor != null,
+                        TintMapOverrides: armorTintMapOverrides));
                 }
             }
 
@@ -661,6 +667,8 @@ namespace SWLOR.Toolset.Domain.Render
             if (item == null)
                 return;
 
+            var tintMapOverrides = TintMapOverrides.Read(new VarTable(item));
+
             var reference = ResolveItem(
                 item, baseItems, partModelExists, armorPreviewFemale: false,
                 cloakModels: cloakModels);
@@ -687,7 +695,8 @@ namespace SWLOR.Toolset.Domain.Render
                     {
                         destination.Add(new BlueprintModelPart(
                             attachmentType, modelResRef, reference.LayerColorIndices, textureResRef,
-                            UsesItemTintOverrides: true));
+                            UsesItemTintOverrides: true,
+                            TintMapOverrides: tintMapOverrides));
                     }
                 }
 
@@ -700,7 +709,8 @@ namespace SWLOR.Toolset.Domain.Render
                 {
                     destination.Add(new BlueprintModelPart(
                         attachmentType, part.ModelResRef, reference.LayerColorIndices,
-                        UsesItemTintOverrides: true));
+                        UsesItemTintOverrides: true,
+                        TintMapOverrides: tintMapOverrides));
                 }
                 return;
             }
@@ -711,7 +721,8 @@ namespace SWLOR.Toolset.Domain.Render
             {
                 destination.Add(new BlueprintModelPart(
                     attachmentType, reference.ModelResRef, reference.LayerColorIndices,
-                    UsesItemTintOverrides: true));
+                    UsesItemTintOverrides: true,
+                    TintMapOverrides: tintMapOverrides));
             }
         }
 

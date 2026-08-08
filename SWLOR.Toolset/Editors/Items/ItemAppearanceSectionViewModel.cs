@@ -54,7 +54,7 @@ namespace SWLOR.Toolset.Editors.Items
         [ObservableProperty]
         private TintMapEditorViewModel? _tints;
 
-        public void SetTintMapEditor(TintMapEditorViewModel editor)
+        public void SetTintMapEditor(TintMapEditorViewModel? editor)
         {
             Tints = editor;
         }

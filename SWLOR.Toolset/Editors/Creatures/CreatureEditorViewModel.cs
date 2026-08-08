@@ -63,7 +63,9 @@ namespace SWLOR.Toolset.Editors.Creatures
         public CreatureLootViewModel Loot { get; }
         public CreatureBodyPartsViewModel BodyParts { get; }
         public CreatureEquipmentSlotsViewModel EquipmentSlots { get; }
-        public TintMapEditorViewModel? TintMapEditor { get; }
+        [ObservableProperty]
+        private TintMapEditorViewModel? _tintMapEditor;
+
         public bool HasTintMapEditor => TintMapEditor != null;
         public VarTableSectionViewModel Variables { get; }
         public AppearanceGallerySectionViewModel? AppearanceGallery { get; }
@@ -970,8 +972,27 @@ namespace SWLOR.Toolset.Editors.Creatures
 
         public void ReloadTintMapCatalog(TintMapCatalog? catalog)
         {
-            TintMapEditor?.ReloadCatalog(catalog);
+            if (catalog == null)
+            {
+                TintMapEditor = null;
+                return;
+            }
+
+            if (TintMapEditor == null)
+            {
+                TintMapEditor = new TintMapEditorViewModel(
+                    _store.Locals,
+                    RunEdit,
+                    catalog,
+                    colorChanged: OnTintColorChanged);
+                return;
+            }
+
+            TintMapEditor.ReloadCatalog(catalog);
         }
+
+        partial void OnTintMapEditorChanged(TintMapEditorViewModel? value) =>
+            OnPropertyChanged(nameof(HasTintMapEditor));
 
         private void NotifySummary()
         {

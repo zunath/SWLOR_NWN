@@ -5,6 +5,8 @@ using SWLOR.Toolset.Domain.GameData.Resources;
 
 namespace SWLOR.Toolset.Domain.Render
 {
+    public readonly record struct MtrAlphaSource(string TextureName, bool UsesRedChannel);
+
     /// <summary>
     /// Minimal parse of an NWN:EE MTR (material) file: plain-text lines declaring
     /// <c>textureN</c> slots, a <c>renderhint</c>, <c>customshaderXXX</c> overrides, and named
@@ -30,9 +32,11 @@ namespace SWLOR.Toolset.Domain.Render
         public string? GetTexture(int slot = 0) => Textures.TryGetValue(slot, out var texture) ? texture : null;
 
         /// <summary>
-        /// Returns the texture selected by an enabled <c>useTextureNAlpha</c> parameter, or null.
+        /// Returns the texture and channel selected by an enabled <c>useTextureNAlpha</c>
+        /// parameter, or null. The tint shader treats texture9 as a red-channel cutout mask;
+        /// normal-map texture1 stores its cutout in alpha.
         /// </summary>
-        public string? GetAlphaTexture()
+        public MtrAlphaSource? GetAlphaSource()
         {
             const string prefix = "useTexture";
             const string suffix = "Alpha";
@@ -53,12 +57,18 @@ namespace SWLOR.Toolset.Domain.Render
                 }
 
                 var slotText = name.Substring(prefix.Length, name.Length - prefix.Length - suffix.Length);
-                if (int.TryParse(slotText, NumberStyles.None, CultureInfo.InvariantCulture, out var slot))
-                    return GetTexture(slot);
+                if (!int.TryParse(slotText, NumberStyles.None, CultureInfo.InvariantCulture, out var slot))
+                    continue;
+
+                var texture = GetTexture(slot);
+                if (!string.IsNullOrWhiteSpace(texture))
+                    return new MtrAlphaSource(texture, UsesRedChannel: slot == 9);
             }
 
             return null;
         }
+
+        public string? GetAlphaTexture() => GetAlphaSource()?.TextureName;
     }
 
     /// <summary>

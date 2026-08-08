@@ -174,6 +174,7 @@ uniform sampler2D tintAlphaTexture;
 uniform bool hasTexture;
 uniform bool hasTintMap;
 uniform bool hasTintAlpha;
+uniform bool tintAlphaUsesRedChannel;
 uniform bool hasNormalMap;
 uniform bool hasSpecularMap;
 uniform bool hasRoughnessMap;
@@ -298,7 +299,10 @@ void main()
         : hasTexture ? texture(diffuseTexture, TexCoord) : vec4(flatColor, 1.0);
 
     if (hasTintAlpha)
-        texColor.a = texture(tintAlphaTexture, TexCoord).a;
+    {
+        vec4 alphaSample = texture(tintAlphaTexture, TexCoord);
+        texColor.a = tintAlphaUsesRedChannel ? alphaSample.r : alphaSample.a;
+    }
 
     if (alphaCutoff > 0.0 && texColor.a < alphaCutoff)
         discard;
@@ -396,6 +400,9 @@ void main()
 
             public bool UsesItemTintOverrides { get; init; }
 
+            public IReadOnlyDictionary<string, int> TintMapOverrides { get; init; } =
+                new Dictionary<string, int>(StringComparer.Ordinal);
+
             /// <summary>
             /// The source node's MDL <c>tilefade</c> flag - see <see cref="RenderMesh.TileFade"/>.
             /// Non-zero marks the tileset's own overhead geometry, which the tile pass drops unless
@@ -447,7 +454,8 @@ void main()
             uint EnvironmentTexId,
             uint TintMapTexId,
             uint TintPaletteTexId,
-            uint TintAlphaTexId);
+            uint TintAlphaTexId,
+            bool TintAlphaUsesRedChannel);
 
         private readonly record struct UploadedDiffuse(
             uint TexId,
@@ -3016,6 +3024,7 @@ void main()
             SetUniformInt("tintAlphaTexture", 7);
             SetUniformBool("hasTintMap", false);
             SetUniformBool("hasTintAlpha", false);
+            SetUniformBool("tintAlphaUsesRedChannel", false);
             SetUniformBool("hasNormalMap", false);
             SetUniformBool("hasSpecularMap", false);
             SetUniformBool("hasRoughnessMap", false);
@@ -3280,7 +3289,7 @@ void main()
                             meshRange.MaterialName,
                             meshRange.LayerColorIndices,
                             instance.Kind == InstanceMarkerKind.Creature && meshRange.UsesItemTintOverrides
-                                ? null
+                                ? meshRange.TintMapOverrides
                                 : instance.TintMapOverrides);
 
                         unsafe
@@ -4856,6 +4865,7 @@ void main()
                     MaterialName = string.IsNullOrEmpty(mesh.MaterialName) ? null : mesh.MaterialName,
                     LayerColorIndices = mesh.LayerColorIndices,
                     UsesItemTintOverrides = mesh.UsesItemTintOverrides,
+                    TintMapOverrides = mesh.TintMapOverrides,
                     TileFade = mesh.TileFade
                 });
             }
@@ -4975,6 +4985,7 @@ void main()
                 SetUniformBool("hasTexture", false);
                 SetUniformBool("hasTintMap", false);
                 SetUniformBool("hasTintAlpha", false);
+                SetUniformBool("tintAlphaUsesRedChannel", false);
                 SetUniformBool("hasNormalMap", false);
                 SetUniformBool("hasSpecularMap", false);
                 SetUniformBool("hasRoughnessMap", false);
@@ -5025,7 +5036,7 @@ void main()
             // A mesh whose diffuse failed to resolve draws flat-colored; loading its maps
             // anyway would waste GPU memory on textures the shader never samples.
             var material = cached.TexId == 0
-                ? new MeshMaterial(0, 0f, 0, 0, 0, 0, 0, 0, 0)
+                ? new MeshMaterial(0, 0f, 0, 0, 0, 0, 0, 0, 0, false)
                 : new MeshMaterial(
                     cached.TexId,
                     cached.AlphaCutoff,
@@ -5039,7 +5050,8 @@ void main()
                     IsTintMapMaterial(parsedMaterial)
                         ? ResolveMapTexture(parsedMaterial!.GetTexture(10))
                         : 0,
-                    ResolveTintAlphaTexture(parsedMaterial));
+                    ResolveTintAlphaTexture(parsedMaterial),
+                    parsedMaterial?.GetAlphaSource()?.UsesRedChannel == true);
 
             _rawTextureCache[rawKey] = material;
             return material;
@@ -5057,7 +5069,7 @@ void main()
             if (!IsTintMapMaterial(material))
                 return 0;
 
-            return ResolveMapTexture(material!.GetAlphaTexture());
+            return ResolveMapTexture(material!.GetAlphaSource()?.TextureName);
         }
 
         private void BindTintMapState(
@@ -5070,6 +5082,9 @@ void main()
             var hasTintAlpha = hasTintMap && material.TintAlphaTexId != 0;
             SetUniformBool("hasTintMap", hasTintMap);
             SetUniformBool("hasTintAlpha", hasTintAlpha);
+            SetUniformBool(
+                "tintAlphaUsesRedChannel",
+                hasTintAlpha && material.TintAlphaUsesRedChannel);
             if (!hasTintMap)
                 return;
 

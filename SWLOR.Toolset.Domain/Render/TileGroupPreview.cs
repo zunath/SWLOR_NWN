@@ -55,6 +55,7 @@ namespace SWLOR.Toolset.Domain.Render
                         NodeName = mesh.NodeName,
                         TextureName = mesh.TextureName,
                         MaterialName = mesh.MaterialName,
+                        TintMapOverrides = mesh.TintMapOverrides,
                         Positions = mesh.Positions,
                         Normals = mesh.Normals,
                         TexCoords = mesh.TexCoords,

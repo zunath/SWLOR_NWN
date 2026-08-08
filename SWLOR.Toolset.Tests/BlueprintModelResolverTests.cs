@@ -128,7 +128,11 @@ namespace SWLOR.Toolset.Tests
             // Neck 4) — except parts the creature sets to 0 (belt 0, shoulders 0 stay invisible,
             // Quartermaster precedence) and the head, which armor never overrides.
             var root = BlueprintRoot(ResourceType.Utc, "agr_guildmaster");
-            JsonGffStruct? LoadItem(string resRef) => BlueprintRoot(ResourceType.Uti, resRef);
+            var armor = BlueprintRoot(ResourceType.Uti, "noble_gr");
+            const string tintOverride = "TM_equipped_test_4";
+            new VarTable(armor).SetInt(tintOverride, 123456);
+            JsonGffStruct? LoadItem(string resRef) =>
+                resRef.Equals("noble_gr", StringComparison.OrdinalIgnoreCase) ? armor : null;
 
             var result = BlueprintModelResolver.Resolve(
                 ResourceType.Utc, root, Appearances(), null, null, LoadItem, _ => true);
@@ -153,13 +157,18 @@ namespace SWLOR.Toolset.Tests
             result.Parts.Where(part => part.PartType != "head")
                 .Should().OnlyContain(part => part.UsesItemTintOverrides,
                     "runtime stores equipped armor tint overrides on the chest item");
+            result.Parts.Where(part => part.UsesItemTintOverrides)
+                .Should().OnlyContain(part =>
+                    part.TintMapOverrides != null &&
+                    part.TintMapOverrides.ContainsKey(tintOverride) &&
+                    part.TintMapOverrides[tintOverride] == 123456,
+                    "the equipped item's custom tint locals must reach every armor-owned mesh");
 
             result.LayerColorIndices[PltLayers.Skin]
                 .Should().Be((int)root.Get("Color_Skin").GetInteger());
             result.LayerColorIndices[PltLayers.Hair]
                 .Should().Be((int)root.Get("Color_Hair").GetInteger());
 
-            var armor = BlueprintRoot(ResourceType.Uti, "noble_gr");
             result.LayerColorIndices[PltLayers.Metal1]
                 .Should().Be((int)armor.Get("Metal1Color").GetInteger());
             result.LayerColorIndices[PltLayers.Cloth2]

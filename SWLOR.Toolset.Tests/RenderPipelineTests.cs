@@ -320,6 +320,19 @@ namespace SWLOR.Toolset.Tests
             material.CustomShaders.Should().ContainKey("customshaderPSH").WhoseValue.Should().Be("my_pixel_shader");
             material.Parameters.Should().ContainKey("useTexture1Alpha").WhoseValue.Should().Be("1.0");
             material.GetAlphaTexture().Should().Be("base_normal");
+            material.GetAlphaSource().Should().Be(new MtrAlphaSource("base_normal", UsesRedChannel: false));
+        }
+
+        [Test]
+        public void MaterialResolver_Texture9AlphaUsesRedChannel()
+        {
+            const string sample =
+                "texture9 cutout_mask\n" +
+                "parameter float useTexture9Alpha 1.0\n";
+
+            var material = MaterialResolver.Parse(sample);
+
+            material.GetAlphaSource().Should().Be(new MtrAlphaSource("cutout_mask", UsesRedChannel: true));
         }
 
         [Test]

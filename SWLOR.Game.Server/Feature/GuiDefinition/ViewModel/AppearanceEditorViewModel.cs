@@ -939,6 +939,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!TryGetSelectedTintLayer(out layerType))
                 return false;
 
+            if (IsEquipmentSelected && !IsValidItem())
+                return false;
+
             var paletteSource = IsAppearanceSelected ? _target : GetItem();
             if (!GetIsObjectValid(paletteSource))
                 return false;
@@ -2514,6 +2517,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 item = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, copyToIndex, newColor, true);
                 DestroyObject(item);
             }
+
+            TintMapModelResolver.CopyArmorPartTintOverrides(
+                _target,
+                item,
+                copyFrom,
+                copyTo);
         }
 
         public Action OnClickCopyToRight() => () =>

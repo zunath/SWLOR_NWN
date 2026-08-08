@@ -118,6 +118,13 @@ namespace SWLOR.Toolset.Domain.Render
         /// </summary>
         public bool UsesItemTintOverrides { get; set; }
 
+        /// <summary>
+        /// Stored TM_* values from the equipped item that supplied this mesh. Empty for creature-
+        /// owned and ordinary model geometry.
+        /// </summary>
+        public IReadOnlyDictionary<string, int> TintMapOverrides { get; set; } =
+            new Dictionary<string, int>(StringComparer.Ordinal);
+
         public int VertexCount => Positions.Length / 3;
         public int TriangleCount => Indices.Length / 3;
     }

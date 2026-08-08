@@ -5000,9 +5000,13 @@ void main()
             if (ResourceIndex == null)
                 return default;
 
-            var hasMaterial = !string.IsNullOrWhiteSpace(materialName);
-            var surfaceName = hasMaterial ? materialName! : rawTextureName;
-            var rawKey = (hasMaterial ? "m|" : "t|") + surfaceName + _layerColorKey;
+            var surfaceName = !string.IsNullOrWhiteSpace(materialName)
+                ? materialName!
+                : rawTextureName;
+            // Segmented creature composition can retain a bitmap while dropping the inherited
+            // material-name field. A generated MTR with the bitmap's resref is still the intended
+            // surface, so always try material resolution before treating the name as raw artwork.
+            var rawKey = "m|" + surfaceName + _layerColorKey;
             if (_rawTextureCache.TryGetValue(rawKey, out var memo))
                 return memo;
 
@@ -5010,13 +5014,11 @@ void main()
             MtrMaterial? parsedMaterial;
             try
             {
-                parsedMaterial = hasMaterial
-                    ? MaterialResolver.TryParseMaterial(ResourceIndex, surfaceName)
-                    : null;
+                parsedMaterial = MaterialResolver.TryParseMaterial(ResourceIndex, surfaceName);
                 maps = MaterialResolver.ResolveMaterialMaps(
                     ResourceIndex,
                     surfaceName,
-                    resolveMaterial: hasMaterial);
+                    resolveMaterial: true);
             }
             catch (Exception)
             {

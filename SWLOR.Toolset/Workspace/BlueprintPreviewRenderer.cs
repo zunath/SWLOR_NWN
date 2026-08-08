@@ -476,7 +476,10 @@ namespace SWLOR.Toolset.Workspace
                 surfaceName,
                 layerColors,
                 activeTintMapOverrides,
-                resolveMaterial: hasMaterial);
+                // Composed body-part meshes can inherit the bitmap while losing the binary
+                // material-name field. NWN still resolves the generated same-resref MTR, so the
+                // Toolset must try it before falling back to the raw texture as well.
+                resolveMaterial: true);
         }
 
         /// <summary>

@@ -224,6 +224,26 @@ namespace SWLOR.Toolset.Tests
             visible.Should().NotBeEmpty();
             visible.Average(pixel => pixel[0] + pixel[1] + pixel[2]).Should().BeGreaterThan(45,
                 "skin palette row 44 must resolve from the bottom of the NWN palette atlas instead of the black decoded top row");
+
+            var inheritedMaterials = model.Meshes
+                .Where(mesh => string.IsNullOrWhiteSpace(mesh.MaterialName))
+                .Select(mesh => mesh.TextureName)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .Where(textureName => MaterialResolver.TryParseMaterial(_resources, textureName) is { } material &&
+                    material.CustomShaders.Values.Any(shader =>
+                        shader.Equals("fs_plt_tinter", StringComparison.OrdinalIgnoreCase)))
+                .ToList();
+            inheritedMaterials.Should().Contain("pmh0_chest027",
+                "segmented composition inherits this generated MTR through its bitmap resref");
+            foreach (var inheritedMaterial in inheritedMaterials)
+            {
+                textures.Get(
+                        inheritedMaterial,
+                        model.LayerColorIndices,
+                        resolveMaterial: true)
+                    .Should().NotBeNull(
+                        $"same-resref MTR {inheritedMaterial} must replace its removed PLT");
+            }
         }
 
         [Test]
@@ -264,9 +284,11 @@ namespace SWLOR.Toolset.Tests
                     var atlasRow = atlas.Pixels.AsSpan(atlasOffset, paletteWidth * 4);
                     for (var channelOffset = 0; channelOffset < legacyRow.Length; channelOffset++)
                     {
+                        // The compact shared atlas is intentionally RGB; legacy palette alpha is
+                        // environment-map coverage rather than tint color and stays on the engine's
+                        // standard material path.
                         if (channelOffset % 4 == 3)
                             continue;
-
                         if (legacyRow[channelOffset] == atlasRow[channelOffset])
                             continue;
 

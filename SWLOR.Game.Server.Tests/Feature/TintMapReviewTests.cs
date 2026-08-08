@@ -80,9 +80,13 @@ public class TintMapReviewTests
 
         definition.Should().Contain("row.AddColorPicker()");
         definition.Should().Contain(".BindSelectedColor(model => model.SelectedTintColor)");
+        definition.Should().Contain("BuildTintMapEditor(col);");
+        definition.Should().NotContain(".SetText(\"Tints\")");
         definition.Should().NotContain("TintColorSheetResref");
         viewModel.Should().Contain("new TintMapColor(value.R, value.G, value.B)");
         viewModel.Should().NotContain("OnSelectTintColor");
+        viewModel.Should().NotContain("OnSelectTintMap");
+        viewModel.Should().NotContain("IsTintMapSelected");
     }
 
     [Test]

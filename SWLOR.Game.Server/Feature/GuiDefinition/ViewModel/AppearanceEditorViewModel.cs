@@ -56,7 +56,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const string EditorMainPartial = "APPEARANCE_EDITOR_MAIN_PARTIAL";
         public const string EditorArmorPartial = "APPEARANCE_EDITOR_ARMOR_PARTIAL";
         public const string SettingsPartial = "SETTINGS_PARTIAL";
-        public const string TintMapPartial = "TINT_MAP_PARTIAL";
         public const string ArmorColorsClothLeather = "APPEARANCE_EDITOR_COLORS_CLOTH_LEATHER";
         public const string ArmorColorsMetal = "APPEARANCE_EDITOR_COLORS_METAL";
 
@@ -193,12 +192,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public bool IsTintMapSelected
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-
         public bool IsTintMapAvailable
         {
             get => Get<bool>();
@@ -217,7 +210,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (IsTintMapSelected)
+                if (IsTintMapAvailable)
                     LoadTintLayerOptions();
             }
         }
@@ -857,7 +850,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsAppearanceSelected = true;
             IsEquipmentSelected = false;
             IsSettingsSelected = false;
-            IsTintMapSelected = false;
             IsColorPickerVisible = true;
             IsCopyEnabled = true;
             TintMaterialOptions = new GuiBindingList<GuiComboEntry>();
@@ -874,6 +866,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             PartCategorySelected[0] = true;
             LoadBodyParts();
             RefreshTintMapAvailability();
+            LoadTintMapEditor();
             LoadSettings();
 
             WatchOnClient(model => model.SelectedColorCategoryIndex);
@@ -1471,7 +1464,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsAppearanceSelected = true;
             IsEquipmentSelected = false;
             IsSettingsSelected = false;
-            IsTintMapSelected = false;
             ToggleItemEquippedFlags();
             LoadItemTypeEditor();
 
@@ -1480,6 +1472,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SelectedColorCategoryIndex = 0;
             _lastModifiedItem = OBJECT_INVALID;
             LoadBodyParts();
+            LoadTintMapEditor();
         };
 
         public Action OnSelectEquipment() => () =>
@@ -1488,7 +1481,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsAppearanceSelected = false;
             IsEquipmentSelected = true;
             IsSettingsSelected = false;
-            IsTintMapSelected = false;
             ToggleItemEquippedFlags();
             LoadItemTypeEditor();
 
@@ -1500,6 +1492,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             _colorTarget = ColorTarget.Invalid;
             ColorTargetText = string.Empty;
+            LoadTintMapEditor();
 
             // If we don't delay the watch, NUI will reset values of some parts back to default (first item in the list)
             // This is related to the dropdown menu options for each part type.
@@ -1512,7 +1505,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsAppearanceSelected = false;
             IsEquipmentSelected = false;
             IsSettingsSelected = true;
-            IsTintMapSelected = false;
 
             var playerId = GetObjectUUID(_target);
             var dbPlayer = DB.Get<Player>(playerId);
@@ -1520,22 +1512,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ShowHelmet = dbPlayer.Settings.ShowHelmet;
             ShowCloak = dbPlayer.Settings.ShowCloak;
             _lastModifiedItem = OBJECT_INVALID;
-        };
-
-        public Action OnSelectTintMap() => () =>
-        {
-            RefreshTintMapAvailability();
-            if (!IsTintMapAvailable)
-                return;
-
-            ChangePartialView(MainPartialElement, TintMapPartial);
-            IsAppearanceSelected = false;
-            IsEquipmentSelected = false;
-            IsSettingsSelected = false;
-            IsTintMapSelected = true;
-            _lastModifiedItem = OBJECT_INVALID;
-
-            LoadTintMapEditor();
         };
 
         public Action OnDecreaseAppearanceScale() => () =>
@@ -2692,12 +2668,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void RefreshTintMapEditorAfterAppearanceChange()
         {
-            if (IsTintMapSelected)
-            {
+            if (IsAppearanceSelected || IsEquipmentSelected)
                 LoadTintMapEditor();
-                if (!IsTintMapAvailable)
-                    OnSelectAppearance()();
-            }
             else
                 RefreshTintMapAvailability();
         }

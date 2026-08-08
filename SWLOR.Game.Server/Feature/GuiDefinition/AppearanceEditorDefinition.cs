@@ -31,8 +31,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                 .DefinePartialView(AppearanceEditorViewModel.SettingsPartial, BuildSettings)
 
-                .DefinePartialView(AppearanceEditorViewModel.TintMapPartial, BuildTintMapEditor)
-
                 .DefinePartialView(AppearanceEditorViewModel.ArmorColorsClothLeather, partial =>
                 {
                     BuildColorPalette(partial, "gui_pal_tattoo");
@@ -65,13 +63,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .SetHeight(32f)
                     .BindIsToggled(model => model.IsEquipmentSelected)
                     .BindOnClicked(model => model.OnSelectEquipment());
-
-                row.AddToggleButton()
-                    .SetText("Tints")
-                    .SetHeight(32f)
-                    .BindIsToggled(model => model.IsTintMapSelected)
-                    .BindOnClicked(model => model.OnSelectTintMap())
-                    .BindIsVisible(model => model.IsTintMapAvailable);
 
                 row.AddToggleButton()
                     .SetText("Settings")
@@ -119,6 +110,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 {
                     row.AddPartialView(AppearanceEditorViewModel.EditorPartialElement);
                 });
+
+                BuildTintMapEditor(col);
             });
         }
 
@@ -226,71 +219,73 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             });
         }
 
-        private void BuildTintMapEditor(GuiGroup<AppearanceEditorViewModel> partial)
+        private void BuildTintMapEditor(GuiColumn<AppearanceEditorViewModel> col)
         {
-            partial.AddColumn(col =>
+            col.AddRow(row =>
             {
-                col.AddRow(row =>
-                {
-                    row.AddLabel()
-                        .SetText("Select a model material, tint channel, and palette color.")
-                        .SetHeight(24f)
-                        .SetHorizontalAlign(NuiHorizontalAlign.Center);
-                });
+                row.BindIsVisible(model => model.IsTintMapAvailable);
+                row.AddLabel()
+                    .SetText("Custom Color")
+                    .SetHeight(24f)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Center);
+            });
 
-                col.AddRow(row =>
-                {
-                    row.AddLabel()
-                        .SetText("Material")
-                        .SetWidth(80f)
-                        .SetHeight(32f)
-                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+            col.AddRow(row =>
+            {
+                row.BindIsVisible(model => model.IsTintMapAvailable);
+                row.AddLabel()
+                    .SetText("Material")
+                    .SetWidth(80f)
+                    .SetHeight(32f)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
 
-                    row.AddComboBox()
-                        .BindOptions(model => model.TintMaterialOptions)
-                        .BindSelectedIndex(model => model.SelectedTintMaterialIndex)
-                        .SetHeight(32f);
-                });
+                row.AddComboBox()
+                    .BindOptions(model => model.TintMaterialOptions)
+                    .BindSelectedIndex(model => model.SelectedTintMaterialIndex)
+                    .SetHeight(32f);
+            });
 
-                col.AddRow(row =>
-                {
-                    row.AddLabel()
-                        .SetText("Channel")
-                        .SetWidth(80f)
-                        .SetHeight(32f)
-                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+            col.AddRow(row =>
+            {
+                row.BindIsVisible(model => model.IsTintMapAvailable);
+                row.AddLabel()
+                    .SetText("Channel")
+                    .SetWidth(80f)
+                    .SetHeight(32f)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
 
-                    row.AddComboBox()
-                        .BindOptions(model => model.TintLayerOptions)
-                        .BindSelectedIndex(model => model.SelectedTintLayerType)
-                        .SetHeight(32f);
-                });
+                row.AddComboBox()
+                    .BindOptions(model => model.TintLayerOptions)
+                    .BindSelectedIndex(model => model.SelectedTintLayerType)
+                    .SetHeight(32f);
+            });
 
-                col.AddRow(row =>
-                {
-                    row.AddSpacer();
+            col.AddRow(row =>
+            {
+                row.BindIsVisible(model => model.IsTintMapAvailable);
+                row.AddSpacer();
 
-                    row.AddColorPicker()
-                        .BindSelectedColor(model => model.SelectedTintColor)
-                        .SetHeight(220f)
-                        .SetWidth(256f);
+                row.AddColorPicker()
+                    .BindSelectedColor(model => model.SelectedTintColor)
+                    .SetHeight(220f)
+                    .SetWidth(256f);
 
-                    row.AddSpacer();
-                });
+                row.AddSpacer();
+            });
 
-                col.AddRow(row =>
-                {
-                    row.AddLabel()
-                        .BindText(model => model.TintSelectionText)
-                        .SetHeight(32f)
-                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+            col.AddRow(row =>
+            {
+                row.BindIsVisible(model => model.IsTintMapAvailable);
+                row.AddLabel()
+                    .BindText(model => model.TintSelectionText)
+                    .SetHeight(32f)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
 
-                    row.AddButton()
-                        .SetText("Reset")
-                        .SetWidth(72f)
-                        .SetHeight(32f)
-                        .BindOnClicked(model => model.OnResetTintColor());
-                });
+                row.AddButton()
+                    .SetText("Reset")
+                    .SetWidth(72f)
+                    .SetHeight(32f)
+                    .BindOnClicked(model => model.OnResetTintColor());
             });
         }
 

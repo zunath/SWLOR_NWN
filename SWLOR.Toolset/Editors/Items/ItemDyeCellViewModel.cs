@@ -133,7 +133,6 @@ namespace SWLOR.Toolset.Editors.Items
         [RelayCommand]
         private void Pick(ItemDyeSwatchViewModel? swatch)
         {
-            IsPickerOpen = false;
             if (swatch == null ||
                 swatch.Index == (int?)Number && !IsUsingCustomColor)
                 return;

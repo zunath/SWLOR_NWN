@@ -570,8 +570,9 @@ namespace SWLOR.Toolset.Tests
             itemView.Should().Contain("<items:PaletteColorPickerView");
             creatureView.Should().Contain("<items:PaletteColorPickerView",
                 "creature colors reuse the item editor's established palette control");
-            creatureView.Should().Contain("<TabItem Header=\"Body\">",
-                "full-body creatures need the existing appearance Body surface too");
+            creatureView.Should().Contain(
+                "<TabItem Header=\"Body\" IsVisible=\"{Binding BodyParts.HasEditableContent}\">",
+                "the existing Body surface must be available only when the model exposes editable content");
             creatureView.Should().Contain("Content=\"{Binding TintMapEditor}\"",
                 "full-body tint channels belong inside the existing Body editor");
             creatureView.Should().NotContain("<TabItem Header=\"Tints\"",
@@ -590,6 +591,9 @@ namespace SWLOR.Toolset.Tests
             palettePickerView.Should().Contain(
                 "IsLightDismissEnabled=\"True\"",
                 "a click outside the combined preset/custom picker must dismiss it");
+            palettePickerView.Should().Contain(
+                "OverlayDismissEventPassThrough=\"False\"",
+                "the dismiss click on the active color chip must close rather than reopen the picker");
             palettePickerView.Should().NotContain("<Flyout",
                 "an auto-managed flyout closes during live custom color edits");
             palettePickerView.Should().NotContain("<ColorPicker ",

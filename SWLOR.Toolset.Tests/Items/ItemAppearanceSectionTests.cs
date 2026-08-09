@@ -327,7 +327,7 @@ namespace SWLOR.Toolset.Tests.Items
             }
 
             [Test]
-            public void PickingASwatchWritesItsIndexAndMarksItSelected()
+            public void PickingASwatchWritesItsIndexAndKeepsThePickerOpen()
             {
                 var store = OpenStore("adren_harness");
                 var palette = new[]
@@ -346,6 +346,7 @@ namespace SWLOR.Toolset.Tests.Items
                 cell.HasPalette.Should().BeTrue();
                 cell.Swatches.Should().HaveCount(3);
                 cell.Swatches[0].IsSelected.Should().BeTrue("index 0 is what the field holds");
+                cell.IsPickerOpen = true;
 
                 cell.PickCommand.Execute(cell.Swatches[2]);
 
@@ -354,7 +355,13 @@ namespace SWLOR.Toolset.Tests.Items
                 cell.Swatches[2].IsSelected.Should().BeTrue();
                 cell.Swatches[0].IsSelected.Should().BeFalse();
                 cell.SelectedBrush.Should().NotBeNull("the row's chip shows the chosen colour");
-                cell.IsPickerOpen.Should().BeFalse("picking closes the popup");
+                cell.IsPickerOpen.Should().BeTrue(
+                    "builders can compare preset colors without repeatedly reopening the popup");
+
+                cell.PickCommand.Execute(cell.Swatches[2]);
+
+                cell.IsPickerOpen.Should().BeTrue(
+                    "reselecting the active preset is still an interaction inside the popup");
             }
 
             [AvaloniaTest]
@@ -398,6 +405,8 @@ namespace SWLOR.Toolset.Tests.Items
                     "reselecting the underlying preset must authoritatively replace Custom");
                 cell.IsUsingCustomColor.Should().BeFalse();
                 cell.DisplayBrush.Should().BeSameAs(cell.SelectedBrush);
+                cell.IsPickerOpen.Should().BeTrue(
+                    "switching from a custom color to a preset must not dismiss the popup");
             }
 
         }

@@ -26,13 +26,15 @@
               BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" />
     </ToggleButton>
 
-    <!-- Light dismiss gives the picker normal popup behavior: interaction inside the ColorView
-         keeps it open, while a click anywhere else closes it. Presets deliberately close it
-         through Pick() as well. -->
+    <!-- Color changes never dismiss the picker, so builders can compare several choices against
+         the live preview. Light dismiss closes it only when the active chip or anything else
+         outside the popup is clicked; consuming that dismiss click prevents the chip from
+         immediately reopening the popup. -->
     <Popup Grid.Column="1"
            IsOpen="{Binding IsPickerOpen, Mode=TwoWay}"
            PlacementTarget="{Binding #PickerButton}" Placement="Bottom"
-           IsLightDismissEnabled="True">
+           IsLightDismissEnabled="True"
+           OverlayDismissEventPassThrough="False">
       <Border Background="{DynamicResource PanelBrush}" CornerRadius="4" Padding="8"
               BorderBrush="{DynamicResource RuleStrongBrush}" BorderThickness="1">
           <StackPanel Width="292" Spacing="8">

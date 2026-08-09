@@ -90,13 +90,15 @@ public class LightsaberWorkbenchTests
         var saberProperties = ExtractProperties(saber);
         var templateProperties = ExtractProperties(template);
 
-        // Workbench sabers glow: Light (44), no subtype, iprp_lightcost (18), Bright (4) —
-        // matching the DM-built saber template pclightsabert001 the workbench replaced.
+        // Workbench sabers receive a free 5m glow: Light (44), no subtype,
+        // iprp_lightcost (18), Dim (1). It is part of the output blueprint rather
+        // than a socketed enhancement, so constructing the weapon cannot charge
+        // or consume an enhancement slot for it.
         var expectedProperties = templateProperties
-            .Append((PropertyName: 44, Subtype: 0, CostTable: 18, CostValue: 4))
+            .Append((PropertyName: 44, Subtype: 0, CostTable: 18, CostValue: 1))
             .ToList();
         saberProperties.Should().BeEquivalentTo(expectedProperties,
-            $"{Path.GetFileName(saberPath)} must carry the exact property set of {Path.GetFileName(templatePath)} plus a Bright Light property");
+            $"{Path.GetFileName(saberPath)} must carry the exact property set of {Path.GetFileName(templatePath)} plus a free Dim (5m) Light property");
     }
 
     private static List<(int PropertyName, int Subtype, int CostTable, int CostValue)> ExtractProperties(JObject item)

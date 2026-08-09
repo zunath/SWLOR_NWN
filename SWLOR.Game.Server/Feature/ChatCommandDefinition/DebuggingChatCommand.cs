@@ -80,6 +80,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             _builder.Create("enmitydebugger")
                 .Description("Opens enmity debugger window")
                 .Permissions(AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
                 .Action((user, target, location, args) =>
                 {
                     Gui.TogglePlayerWindow(user, GuiWindowType.DebugEnmity);

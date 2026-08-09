@@ -236,6 +236,39 @@ public class TintMapReviewTests
     }
 
     [Test]
+    public void WingEquipmentLayersUseEquippedArmorColors()
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapModelResolver.cs");
+        var method = FindMethod(source, nameof(TintMapModelResolver.GetCurrentSelections));
+        var wingCall = method.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Single(invocation =>
+                GetInvokedMethodName(invocation) == "AddTableModelSelections" &&
+                invocation.ArgumentList.Arguments[0].Expression.ToString() == "\"wingmodel\"");
+
+        wingCall.ArgumentList.Arguments
+            .Select(argument => argument.Expression.ToString())
+            .Should().Equal(
+                "\"wingmodel\"",
+                "\"MODEL\"",
+                "(int)GetCreatureWingType(creature)",
+                "wingUsesItemColors ? wingPaletteSource : creature",
+                "creature",
+                "wingUsesItemColors",
+                "selections",
+                "seenSelections");
+        method.ToString().Should().Contain(
+            "var wingPaletteSource = GetItemInSlot(InventorySlot.Chest, creature);");
+        method.ToString().Should().Contain(
+            "var wingUsesItemColors = GetIsObjectValid(wingPaletteSource);");
+    }
+
+    [Test]
     public void RightClickResetUsesTheClickedArmorChannel()
     {
         var source = ReadSource(

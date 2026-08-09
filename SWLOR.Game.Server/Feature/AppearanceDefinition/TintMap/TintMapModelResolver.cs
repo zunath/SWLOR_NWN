@@ -51,6 +51,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     "RACE",
                     appearanceRow,
                     creature,
+                    creature,
+                    false,
                     selections,
                     seenSelections);
 
@@ -61,11 +63,15 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 AddCloakSelections(creature, string.Empty, selections, seenSelections);
             }
 
+            var wingPaletteSource = GetItemInSlot(InventorySlot.Chest, creature);
+            var wingUsesItemColors = GetIsObjectValid(wingPaletteSource);
             AddTableModelSelections(
                 "wingmodel",
                 "MODEL",
                 (int)GetCreatureWingType(creature),
+                wingUsesItemColors ? wingPaletteSource : creature,
                 creature,
+                wingUsesItemColors,
                 selections,
                 seenSelections);
             AddTableModelSelections(
@@ -73,6 +79,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 "MODEL",
                 (int)GetCreatureTailType(creature),
                 creature,
+                creature,
+                false,
                 selections,
                 seenSelections);
 
@@ -360,7 +368,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             string table,
             string column,
             int row,
-            uint creature,
+            uint paletteSource,
+            uint creaturePaletteSource,
+            bool usesItemColors,
             ICollection<TintMapMaterialSelection> selections,
             ISet<string> seenSelections)
         {
@@ -375,9 +385,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 selections,
                 seenSelections,
                 model,
-                creature,
-                creature,
-                false,
+                paletteSource,
+                creaturePaletteSource,
+                usesItemColors,
                 AppearanceArmor.Invalid);
         }
 

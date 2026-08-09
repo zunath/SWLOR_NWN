@@ -811,6 +811,51 @@ public class TintMapReviewTests
     }
 
     [Test]
+    public void PlainPltBodyPartsRetainLegacyLightingWhileMappedMaterialsRetainTheirMaps()
+    {
+        var repositoryRoot = FindRepositoryRoot();
+        var materialRoot = Path.Combine(repositoryRoot.FullName, "SWLOR_Haks", "sw_tint_mtr");
+        var plainBodyMaterials = new[]
+        {
+            // Default nude male body pieces from the in-game seam regression.
+            "pmh0_chest001", "pmh0_bicepl001", "pmh0_forel001", "pmh0_handl001",
+            "pmh0_legl001", "pmh0_shinl001", "pmh0_footl001",
+
+            // Party Outfit Male (party_male.uti.json), which must follow the
+            // same legacy PLT lighting path as the stock NWN renderer.
+            "pmh0_chest168", "pmh0_bicepl008", "pmh0_neck115", "pmh0_pelvis237",
+            "pmh0_legl088", "pmh0_shinl081", "pmh0_footl052"
+        };
+
+        foreach (var materialName in plainBodyMaterials)
+        {
+            var material = File.ReadAllText(Path.Combine(materialRoot, $"{materialName}.mtr"));
+            material.Should().Contain("customshaderVS vslit_sm");
+            material.Should().Contain("customshaderFS fs_plt_tinter");
+            material.Should().NotContain("customshaderVS vslit_sm_nm");
+            material.Should().NotContain("customshaderFS fs_plt_tinter_nm");
+            material.Should().NotContain("renderhint NormalTangents");
+        }
+
+        var mappedMaterial = File.ReadAllText(Path.Combine(materialRoot, "helm_034.mtr"));
+        mappedMaterial.Should().Contain("renderhint NormalAndSpecMapped");
+        mappedMaterial.Should().Contain("texture1 helm_034_n");
+        mappedMaterial.Should().Contain("customshaderVS vslit_sm_nm");
+        mappedMaterial.Should().Contain("customshaderFS fs_plt_tinter_nm");
+
+        var legacyShader = ReadSource("SWLOR_Haks", "sw_shader", "fs_plt_tinter.shd");
+        var mappedShader = ReadSource("SWLOR_Haks", "sw_shader", "fs_plt_tinter_nm.shd");
+        foreach (var macro in new[]
+                 {
+                     "NORMAL_MAP", "SPECULAR_MAP", "ROUGHNESS_MAP", "SELF_ILLUMINATION_MAP"
+                 })
+        {
+            legacyShader.Should().Contain($"#define {macro} 0");
+            mappedShader.Should().Contain($"#define {macro} 1");
+        }
+    }
+
+    [Test]
     public void OutfitLoadsReplaceTintOverridesFromSavedOutfit()
     {
         var tintSource = ReadSource(

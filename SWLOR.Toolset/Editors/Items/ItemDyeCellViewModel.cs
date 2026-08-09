@@ -25,6 +25,7 @@ namespace SWLOR.Toolset.Editors.Items
         private readonly Func<int, bool> _write;
         private readonly Func<Color?>? _readCustom;
         private readonly Func<Color, bool>? _writeCustom;
+        private readonly Func<bool>? _hasExternalOverride;
 
         public string Label { get; }
 
@@ -87,13 +88,15 @@ namespace SWLOR.Toolset.Editors.Items
             IReadOnlyList<(byte R, byte G, byte B)> paletteColors,
             bool allowsNumericFallback = true,
             Func<Color?>? readCustom = null,
-            Func<Color, bool>? writeCustom = null)
+            Func<Color, bool>? writeCustom = null,
+            Func<bool>? hasExternalOverride = null)
         {
             Label = label ?? throw new ArgumentNullException(nameof(label));
             _read = read ?? throw new ArgumentNullException(nameof(read));
             _write = write ?? throw new ArgumentNullException(nameof(write));
             _readCustom = readCustom;
             _writeCustom = writeCustom;
+            _hasExternalOverride = hasExternalOverride;
             AllowsNumericFallback = allowsNumericFallback;
 
             for (var index = 0; index < paletteColors.Count; index++)
@@ -140,7 +143,9 @@ namespace SWLOR.Toolset.Editors.Items
         private void Pick(ItemDyeSwatchViewModel? swatch)
         {
             if (swatch == null ||
-                swatch.Index == (int?)Number && !IsUsingCustomColor)
+                swatch.Index == (int?)Number &&
+                !IsUsingCustomColor &&
+                !(_hasExternalOverride?.Invoke() ?? false))
                 return;
 
             if (_write(swatch.Index))

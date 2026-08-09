@@ -2,6 +2,7 @@ using Avalonia.Headless.NUnit;
 using Avalonia.Media;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Items;
@@ -249,6 +250,25 @@ namespace SWLOR.Toolset.Tests.Items
             }
 
             [Test]
+            public void ChoosingAnArmorPresetClearsOnlyThatChannelsCustomTintOverrides()
+            {
+                var store = OpenStore("adren_harness");
+                var cloth1 = TintMapVariable.GetName("pmh0_chest156", TintMapLayerType.Cloth1);
+                var cloth2 = TintMapVariable.GetName("pmh0_chest156", TintMapLayerType.Cloth2);
+                store.Locals.SetInt(cloth1, new TintMapColor(12, 34, 56).ToStoredValue());
+                store.Locals.SetInt(cloth2, new TintMapColor(65, 43, 21).ToStoredValue());
+                var section = Open(store, ArmorRow, new HashSet<string>());
+
+                section.Armor!.Cloth1.Number = 50;
+
+                store.GetInteger(BehaviorFieldStorage.Field, "Cloth1Color").Should().Be(50);
+                store.Locals.GetInt(cloth1).Should().BeNull(
+                    "the preset must become authoritative for its dye channel");
+                store.Locals.GetInt(cloth2).Should().NotBeNull(
+                    "selecting Cloth 1 must not reset another dye channel");
+            }
+
+            [Test]
             public void OutOfRangeDyeValueIsClampedToThePalette()
             {
                 var store = OpenStore("adren_harness");
@@ -362,6 +382,37 @@ namespace SWLOR.Toolset.Tests.Items
 
                 cell.IsPickerOpen.Should().BeTrue(
                     "reselecting the active preset is still an interaction inside the popup");
+            }
+
+            [Test]
+            public void ReselectingTheCurrentPresetStillClearsAnExternalCustomOverride()
+            {
+                var stored = 1;
+                var hasOverride = true;
+                var writes = 0;
+                var cell = new ItemDyeCellViewModel(
+                    "Cloth 1",
+                    () => stored,
+                    value =>
+                    {
+                        writes++;
+                        stored = value;
+                        hasOverride = false;
+                        return true;
+                    },
+                    new[]
+                    {
+                        ((byte)10, (byte)20, (byte)30),
+                        ((byte)40, (byte)50, (byte)60)
+                    },
+                    hasExternalOverride: () => hasOverride);
+
+                cell.PickCommand.Execute(cell.Swatches[1]);
+
+                writes.Should().Be(1,
+                    "the matching TM_* override must be cleared even when its underlying preset is reselected");
+                hasOverride.Should().BeFalse();
+                cell.Number.Should().Be(1);
             }
 
             [AvaloniaTest]

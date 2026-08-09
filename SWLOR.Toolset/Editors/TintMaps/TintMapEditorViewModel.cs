@@ -14,6 +14,12 @@ namespace SWLOR.Toolset.Editors.TintMaps
         private TintMapCatalog? _catalog;
         private readonly Func<RenderModel?>? _resolveModel;
         private readonly Action? _colorChanged;
+        private ItemColorCarry? _pendingItemColorCarry;
+
+        private sealed record ItemColorCarry(
+            IReadOnlySet<string> ActiveKeys,
+            IReadOnlyDictionary<TintMapLayerType, int> Colors,
+            IReadOnlyDictionary<TintMapLayerType, IReadOnlyList<string>> SourceKeys);
 
         public ObservableCollection<TintMapColorRowViewModel> Colors { get; } = new();
 
@@ -45,7 +51,8 @@ namespace SWLOR.Toolset.Editors.TintMaps
             RenderModel? model,
             bool includeItemOwnedMaterials = true,
             bool includeNonItemOwnedMaterials = true,
-            bool includeCreatureLayersFromItemOwnedMaterials = false)
+            bool includeCreatureLayersFromItemOwnedMaterials = false,
+            bool carryItemCustomColorsAcrossMaterials = false)
         {
             if (_catalog == null)
             {
@@ -65,11 +72,24 @@ namespace SWLOR.Toolset.Editors.TintMaps
             var wantedKeys = wanted.Select(entry =>
                 TintMapVariable.GetName(entry.material.Resref, entry.layer));
 
-            if (currentKeys.SequenceEqual(wantedKeys, StringComparer.Ordinal))
+            var hasPendingReplacement =
+                carryItemCustomColorsAcrossMaterials &&
+                model != null &&
+                _pendingItemColorCarry != null;
+            if (!hasPendingReplacement &&
+                currentKeys.SequenceEqual(wantedKeys, StringComparer.Ordinal))
             {
                 foreach (var row in Colors)
                     row.Reload();
                 return;
+            }
+
+            ItemColorCarry? carry = null;
+            if (carryItemCustomColorsAcrossMaterials)
+            {
+                carry = _pendingItemColorCarry ?? CaptureItemCustomColors(Colors);
+                if (model == null)
+                    _pendingItemColorCarry = carry;
             }
 
             Colors.Clear();
@@ -83,7 +103,98 @@ namespace SWLOR.Toolset.Editors.TintMaps
                     _colorChanged));
             }
 
+            if (carryItemCustomColorsAcrossMaterials && model != null)
+            {
+                if (CarryItemCustomColors(carry, Colors))
+                    _pendingItemColorCarry = null;
+            }
+
             OnPropertyChanged(nameof(HasColors));
+        }
+
+        /// <summary>
+        /// Captures only equipment layers with one clear custom RGB value. Different colors on the
+        /// same layer are intentional per-material edits and cannot safely be mapped to a new model.
+        /// </summary>
+        private ItemColorCarry CaptureItemCustomColors(
+            IReadOnlyCollection<TintMapColorRowViewModel> rows)
+        {
+            var activeKeys = rows.Select(row => row.Key).ToHashSet(StringComparer.Ordinal);
+            var colors = new Dictionary<TintMapLayerType, int>();
+            var sourceKeys = new Dictionary<TintMapLayerType, IReadOnlyList<string>>();
+            foreach (var group in rows
+                         .Where(row => !TintMapVariable.IsCreatureColorLayer(row.Layer))
+                         .GroupBy(row => row.Layer))
+            {
+                var custom = group
+                    .Select(row => (row.Key, Saved: _variables.GetInt(row.Key) ?? 0))
+                    .Where(entry => TintMapColor.TryFromStoredValue(entry.Saved, out _))
+                    .ToList();
+                var distinct = custom.Select(entry => entry.Saved).Distinct().ToList();
+                if (distinct.Count != 1)
+                    continue;
+
+                colors[group.Key] = distinct[0];
+                sourceKeys[group.Key] = custom
+                    .Select(entry => entry.Key)
+                    .Distinct(StringComparer.Ordinal)
+                    .ToList();
+            }
+
+            return new ItemColorCarry(activeKeys, colors, sourceKeys);
+        }
+
+        /// <summary>
+        /// Applies captured colors only to material keys introduced by the replacement model, then
+        /// removes source keys that no active mesh still uses so switching back cannot revive them.
+        /// </summary>
+        private bool CarryItemCustomColors(
+            ItemColorCarry? carry,
+            IReadOnlyCollection<TintMapColorRowViewModel> rows)
+        {
+            if (carry == null || carry.Colors.Count == 0)
+                return true;
+
+            var activeKeys = rows.Select(row => row.Key).ToHashSet(StringComparer.Ordinal);
+            var destinations = carry.Colors
+                .Select(entry => (
+                    entry.Key,
+                    entry.Value,
+                    Keys: rows
+                        .Where(row =>
+                            row.Layer == entry.Key &&
+                            !carry.ActiveKeys.Contains(row.Key))
+                        .Select(row => row.Key)
+                        .Distinct(StringComparer.Ordinal)
+                        .ToList()))
+                .Where(entry => entry.Keys.Count > 0)
+                .ToList();
+            if (destinations.Count == 0)
+                return true;
+
+            var applied = _runEdit("Carry custom item colors to replacement models", () =>
+            {
+                foreach (var (layer, saved, keys) in destinations)
+                {
+                    foreach (var key in keys)
+                        _variables.SetInt(key, saved);
+
+                    if (!carry.SourceKeys.TryGetValue(layer, out var sources))
+                        continue;
+
+                    foreach (var source in sources)
+                    {
+                        if (!activeKeys.Contains(source))
+                            _variables.Remove(source);
+                    }
+                }
+            });
+            if (!applied)
+                return false;
+
+            foreach (var row in rows)
+                row.Reload();
+            return true;
         }
 
         public void ReloadCatalog(TintMapCatalog? catalog)

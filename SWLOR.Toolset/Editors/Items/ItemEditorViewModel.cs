@@ -791,7 +791,8 @@ namespace SWLOR.Toolset.Editors.Items
             var hasItemOwnedMeshes = model?.Meshes.Any(mesh => mesh.UsesItemTintOverrides) == true;
             TintMapEditor?.Reload(
                 model,
-                includeNonItemOwnedMaterials: !hasItemOwnedMeshes);
+                includeNonItemOwnedMaterials: !hasItemOwnedMeshes,
+                carryItemCustomColorsAcrossMaterials: true);
             PreviewScene = model == null
                 ? null
                 : new AreaScene

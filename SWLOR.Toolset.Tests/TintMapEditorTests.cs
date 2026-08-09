@@ -508,6 +508,101 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void ItemCustomColorFollowsAReplacementMaterialAndRemovesItsStaleKey()
+        {
+            var catalog = TintMapCatalog.Load(Resources());
+            catalog.Should().NotBeNull();
+            var variables = new VarTable(new JsonGffStruct());
+            var editor = new TintMapEditorViewModel(
+                variables,
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                catalog!);
+            var oldModel = ModelWith("helm_004");
+            oldModel.Meshes.Single().UsesItemTintOverrides = true;
+            var newModel = ModelWith("helm_005");
+            newModel.Meshes.Single().UsesItemTintOverrides = true;
+            var oldKey = TintMapVariable.GetName("helm_004", TintMapLayerType.Cloth1);
+            var newKey = TintMapVariable.GetName("helm_005", TintMapLayerType.Cloth1);
+
+            editor.Reload(
+                oldModel,
+                includeNonItemOwnedMaterials: false,
+                carryItemCustomColorsAcrossMaterials: true);
+            editor.Colors.Single(row => row.Layer == TintMapLayerType.Cloth1).Color =
+                Color.FromRgb(12, 34, 56);
+
+            editor.Reload(
+                null,
+                includeNonItemOwnedMaterials: false,
+                carryItemCustomColorsAcrossMaterials: true);
+            editor.Reload(
+                newModel,
+                includeNonItemOwnedMaterials: false,
+                carryItemCustomColorsAcrossMaterials: true);
+
+            TintMapColor.TryFromStoredValue(variables.GetInt(newKey)!.Value, out var carried)
+                .Should().BeTrue();
+            carried.Should().Be(new TintMapColor(12, 34, 56));
+            variables.GetInt(oldKey).Should().BeNull(
+                "returning to the old model must not resurrect its obsolete custom color");
+            editor.Colors.Single(row => row.Key == newKey).IsCustom.Should().BeTrue();
+        }
+
+        [Test]
+        public void ItemModelReplacementDoesNotGuessBetweenDifferentColorsForOneLayer()
+        {
+            var catalog = TintMapCatalog.Load(Resources());
+            catalog.Should().NotBeNull();
+            var variables = new VarTable(new JsonGffStruct());
+            var editor = new TintMapEditorViewModel(
+                variables,
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                catalog!);
+            var oldModel = new RenderModel
+            {
+                Meshes = new[]
+                {
+                    ModelWith("helm_004").Meshes.Single(),
+                    ModelWith("helm_053").Meshes.Single()
+                }
+            };
+            foreach (var mesh in oldModel.Meshes)
+                mesh.UsesItemTintOverrides = true;
+            var newModel = ModelWith("helm_005");
+            newModel.Meshes.Single().UsesItemTintOverrides = true;
+            variables.SetInt(
+                TintMapVariable.GetName("helm_004", TintMapLayerType.Cloth1),
+                new TintMapColor(12, 34, 56).ToStoredValue());
+            variables.SetInt(
+                TintMapVariable.GetName("helm_053", TintMapLayerType.Cloth1),
+                new TintMapColor(65, 43, 21).ToStoredValue());
+
+            editor.Reload(
+                oldModel,
+                includeNonItemOwnedMaterials: false,
+                carryItemCustomColorsAcrossMaterials: true);
+            editor.Reload(
+                null,
+                includeNonItemOwnedMaterials: false,
+                carryItemCustomColorsAcrossMaterials: true);
+            editor.Reload(
+                newModel,
+                includeNonItemOwnedMaterials: false,
+                carryItemCustomColorsAcrossMaterials: true);
+
+            variables.GetInt(TintMapVariable.GetName("helm_005", TintMapLayerType.Cloth1))
+                .Should().BeNull("different per-material colors are ambiguous and must not be guessed");
+        }
+
+        [Test]
         public void CatalogReloadClearsStaleRowsBeforeTheNewModelIsResolved()
         {
             var catalog = TintMapCatalog.Load(Resources());

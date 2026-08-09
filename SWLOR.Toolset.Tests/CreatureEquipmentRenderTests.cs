@@ -263,6 +263,56 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void InstalledHakStackRendersAgricultureGuildMasterTintSources()
+        {
+            var installRoot = NwnInstallLocator.Locate();
+            var profile = NwnIniProfile.Load();
+            var ifoPath = Path.Combine(RepoRoot, "Module", "ifo", "module.ifo.json");
+            if (installRoot == null || profile.HakDirectory == null || !File.Exists(ifoPath))
+                Assert.Ignore("the installed NWN HAK stack is unavailable");
+
+            var resolution = profile.ResolveHakLayers(IfoDocument.Load(ifoPath).HakNames);
+            if (resolution.MissingHakNames.Count > 0)
+                Assert.Ignore("the installed NWN profile is missing one or more module HAKs");
+
+            var resources = ResourceIndex.CreateDeferred(
+                resolution.Layers,
+                () => KeyBifCatalog.Load(Path.Combine(installRoot, "data")));
+            resources.EnsureInitialized();
+            var twoDa = new TwoDaService(resources);
+            var tlk = TlkService.Load(Path.Combine(RepoRoot, "SWLOR_Haks", "sw_tlk", "sw_tlk.tlk.json"));
+            var context = new WorkspaceContext(
+                path => new ModuleWorkspace(path, resources),
+                new OutputLogService());
+            context.Open(CorpusLocator.ModuleDirectory);
+            var renderer = new BlueprintPreviewRenderer(
+                context,
+                resources,
+                appearances: new AppearanceService(twoDa, tlk),
+                baseItems: new BaseItemIconService(twoDa),
+                twoDa: twoDa,
+                tlk: tlk);
+
+            var model = renderer.BuildModel(ResourceType.Utc, "agr_guildmaster");
+            model.Should().NotBeNull();
+            var textures = new PreviewTextureCache(resources);
+            foreach (var surface in new[]
+                     {
+                         "pmh0_legl087", "pmh0_legr087", "pmh0_shinl085", "pmh0_shinr085"
+                     })
+            {
+                model!.Meshes.Should().Contain(mesh =>
+                    mesh.TextureName.Equals(surface, StringComparison.OrdinalIgnoreCase) &&
+                    mesh.MaterialName.Equals(surface, StringComparison.OrdinalIgnoreCase));
+                textures.Get(surface, model.LayerColorIndices, resolveMaterial: true)
+                    .Should().NotBeNull($"installed HAK resources must decode {surface}");
+            }
+
+            var image = renderer.Render(ResourceType.Utc, "agr_guildmaster");
+            image.Should().NotBeNull();
+        }
+
+        [Test]
         public void TintPaletteAtlasMatchesEveryLegacyPltPalette()
         {
             const int paletteWidth = 256;

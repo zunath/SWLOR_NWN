@@ -107,12 +107,13 @@ namespace SWLOR.Toolset.Tests
                 mesh => mesh.TextureName.Equals("pmh0_chest001", StringComparison.OrdinalIgnoreCase));
         }
 
-        [Test]
-        public void EquippedArmorKeepsEveryTintSurfaceResolvable()
+        [TestCase("adventurer_l_f")]
+        [TestCase("adren_harness")]
+        public void EquippedArmorKeepsEverySurfaceResolvable(string armorResRef)
         {
             var creature = InstanceFieldMap.Duplicate(
                 _workspace.LoadBlueprint(ResourceType.Utc, "npc_l").Fields);
-            new CreatureValueStore(creature).SetEquippedResRef(2, "adventurer_l_f");
+            new CreatureValueStore(creature).SetEquippedResRef(2, armorResRef);
 
             var model = _renderer.BuildModel(ResourceType.Utc, creature);
 
@@ -130,16 +131,35 @@ namespace SWLOR.Toolset.Tests
                 var layerColors = mesh.LayerColorIndices.Count > 0
                     ? mesh.LayerColorIndices
                     : model.LayerColorIndices;
-                textures.Get(surface, layerColors, resolveMaterial: true)
-                    .Should().NotBeNull(
-                        $"equipped armor surface {mesh.TextureName} must retain its converted tint material");
+                var texture = textures.Get(surface, layerColors, resolveMaterial: true);
+                texture.Should().NotBeNull(
+                    $"equipped armor surface {mesh.TextureName} must resolve its authored texture or converted tint material");
             }
 
-            foreach (var surface in new[]
-                     {
-                         "pmh0_footr160", "pmh0_legl243", "pmh0_legr243",
-                         "pmh0_neck107", "pmh0_shinr244"
-                     })
+            if (armorResRef == "adren_harness")
+            {
+                var authoredHandMeshes = armorMeshes
+                    .Where(mesh => mesh.TextureName.Equals("n_repsold01", StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+                authoredHandMeshes.Should().NotBeEmpty();
+                authoredHandMeshes.Should().OnlyContain(mesh => string.IsNullOrWhiteSpace(mesh.MaterialName),
+                    "a generated same-name tint material must not replace the harness's authored hand texture");
+                TextureLoader.Load(_resources, "n_repsold01")!.SourceFormat
+                    .Should().Be(TextureSourceFormat.Dds);
+            }
+
+            var knownStaleSurfaces = armorResRef == "adventurer_l_f"
+                ? new[]
+                {
+                    "pmh0_footr160", "pmh0_legl243", "pmh0_legr243",
+                    "pmh0_neck107", "pmh0_shinr244"
+                }
+                : new[]
+                {
+                    "pmh0_chest156", "pmh0_footl186", "pmh0_footr186",
+                    "pmh0_legl158", "pmh0_legr158", "pmh0_shinl030", "pmh0_shinr030"
+                };
+            foreach (var surface in knownStaleSurfaces)
             {
                 armorMeshes.Should().Contain(mesh =>
                         mesh.TextureName.Equals(surface, StringComparison.OrdinalIgnoreCase) &&

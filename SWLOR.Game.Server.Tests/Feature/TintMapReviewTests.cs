@@ -170,6 +170,10 @@ public class TintMapReviewTests
         loadBodyPart.DescendantNodes()
             .OfType<InvocationExpressionSyntax>()
             .Select(GetInvokedMethodName)
+            .Should().Contain("CarryCreatureCustomColors");
+        loadBodyPart.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Select(GetInvokedMethodName)
             .Should().NotContain("RefreshTintMapAvailability");
     }
 

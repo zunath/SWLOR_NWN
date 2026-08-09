@@ -159,6 +159,60 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             return TintMapColor.TryFromStoredValue(savedColor, out color);
         }
 
+        public static void CarryCreatureCustomColors(
+            uint creature,
+            IReadOnlyList<TintMapMaterialSelection> previousSelections)
+        {
+            if (!GetIsObjectValid(creature) || previousSelections == null)
+                return;
+
+            var semanticLayers = new[]
+            {
+                TintMapLayerType.Skin,
+                TintMapLayerType.Hair,
+                TintMapLayerType.Tattoo1,
+                TintMapLayerType.Tattoo2
+            };
+            var colors = new Dictionary<TintMapLayerType, TintMapColor>();
+            foreach (var layer in semanticLayers)
+            {
+                var distinct = previousSelections
+                    .Where(selection =>
+                        selection.GetPaletteSource(layer) == creature &&
+                        selection.Material.Layers.Contains(layer) &&
+                        TryGetCustomColor(selection, layer, out _))
+                    .Select(selection =>
+                    {
+                        TryGetCustomColor(selection, layer, out var color);
+                        return color;
+                    })
+                    .Distinct()
+                    .ToList();
+                if (distinct.Count == 1)
+                    colors[layer] = distinct[0];
+            }
+
+            if (colors.Count == 0)
+                return;
+
+            var appliedVariables = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var selection in TintMapModelResolver.GetCurrentSelections(creature))
+            {
+                foreach (var (layer, color) in colors)
+                {
+                    if (selection.GetPaletteSource(layer) != creature ||
+                        !selection.Material.Layers.Contains(layer))
+                    {
+                        continue;
+                    }
+
+                    var variableName = TintMapVariable.GetName(selection.Material.Resref, layer);
+                    if (appliedVariables.Add(variableName))
+                        SetColor(creature, selection, layer, color);
+                }
+            }
+        }
+
         public static void RestoreDroidOverrides(
             uint droid,
             IReadOnlyDictionary<string, int> tintOverrides)

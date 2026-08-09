@@ -1847,6 +1847,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadBodyPart()
         {
+            var previousTintSelections = _tintMapSelections;
             var appearanceType = GetAppearanceType(_target);
             var gender = GetGender(_target);
             var appearance = _racialAppearances[appearanceType];
@@ -1910,6 +1911,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     throw new ArgumentOutOfRangeException(nameof(SelectedPartIndex));
             }
 
+            TintMapService.CarryCreatureCustomColors(_target, previousTintSelections);
             ExecuteScript(ScriptName.OnAppearanceEdit, _target);
             LoadTintMapEditor();
         }

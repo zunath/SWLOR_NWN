@@ -192,6 +192,78 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     colors[layer] = distinct[0];
             }
 
+            ApplyCreatureCustomColors(creature, colors);
+        }
+
+        public static void CarryStoredCreatureCustomColors(uint creature)
+        {
+            if (!GetIsObjectValid(creature))
+                return;
+
+            var colorsByLayer = new Dictionary<TintMapLayerType, HashSet<TintMapColor>>();
+            foreach (var variableName in GetCreatureCustomColorVariables(creature))
+            {
+                if (!TintMapVariable.TryGetLayer(variableName, out var layer) ||
+                    !TintMapColor.TryFromStoredValue(GetLocalInt(creature, variableName), out var color))
+                {
+                    continue;
+                }
+
+                if (!colorsByLayer.TryGetValue(layer, out var colors))
+                {
+                    colors = new HashSet<TintMapColor>();
+                    colorsByLayer[layer] = colors;
+                }
+
+                colors.Add(color);
+            }
+
+            ApplyCreatureCustomColors(
+                creature,
+                colorsByLayer
+                    .Where(entry => entry.Value.Count == 1)
+                    .ToDictionary(entry => entry.Key, entry => entry.Value.Single()));
+        }
+
+        public static void ResetCreatureCustomColor(uint creature, TintMapLayerType layer)
+        {
+            if (!GetIsObjectValid(creature) || !TintMapVariable.IsCreatureColorLayer(layer))
+                return;
+
+            var variableNames = GetCreatureCustomColorVariables(creature)
+                .Where(variableName =>
+                    TintMapVariable.TryGetLayer(variableName, out var variableLayer) &&
+                    variableLayer == layer)
+                .ToList();
+            foreach (var variableName in variableNames)
+            {
+                DeleteLocalInt(creature, variableName);
+            }
+
+            RemoveDroidOverrides(creature, variableNames);
+
+            var appliedMaterials = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var selection in TintMapModelResolver.GetCurrentSelections(creature))
+            {
+                if (selection.GetPaletteSource(layer) != creature ||
+                    !selection.Material.Layers.Contains(layer) ||
+                    !appliedMaterials.Add(selection.Material.Resref))
+                {
+                    continue;
+                }
+
+                ApplyColor(
+                    creature,
+                    selection,
+                    layer,
+                    new TintMapColorSelection(GetStandardColor(creature, selection, layer), null));
+            }
+        }
+
+        private static void ApplyCreatureCustomColors(
+            uint creature,
+            IReadOnlyDictionary<TintMapLayerType, TintMapColor> colors)
+        {
             if (colors.Count == 0)
                 return;
 
@@ -253,7 +325,11 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             if (!GetIsObjectValid(creature))
                 return;
 
-            DelayCommand(RefreshDelaySeconds, () => ApplyCurrentColors(creature));
+            DelayCommand(RefreshDelaySeconds, () =>
+            {
+                CarryStoredCreatureCustomColors(creature);
+                ApplyCurrentColors(creature);
+            });
         }
 
         public static void QueueItemRefresh(uint item)
@@ -433,6 +509,46 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             }
 
             return tintOverrides;
+        }
+
+        private static IReadOnlyList<string> GetCreatureCustomColorVariables(uint creature)
+        {
+            var variableNames = new List<string>();
+            var variableCount = ObjectPlugin.GetLocalVariableCount(creature);
+            for (var index = 0; index < variableCount; index++)
+            {
+                var variable = ObjectPlugin.GetLocalVariable(creature, index);
+                if (variable.Type != LocalVariableType.Int ||
+                    !TintMapVariable.TryGetLayer(variable.Key, out var layer) ||
+                    !TintMapVariable.IsCreatureColorLayer(layer))
+                {
+                    continue;
+                }
+
+                variableNames.Add(variable.Key);
+            }
+
+            return variableNames;
+        }
+
+        private static void RemoveDroidOverrides(uint creature, IReadOnlyList<string> variableNames)
+        {
+            if (variableNames.Count == 0 || !Droid.IsDroid(creature))
+                return;
+
+            var controller = Droid.GetControllerItem(creature);
+            if (!GetIsObjectValid(controller))
+                return;
+
+            var constructedDroid = Droid.LoadConstructedDroid(controller);
+            var changed = false;
+            foreach (var variableName in variableNames)
+            {
+                changed |= constructedDroid.TintOverrides.Remove(variableName);
+            }
+
+            if (changed)
+                Droid.SaveConstructedDroid(controller, constructedDroid);
         }
 
         private static void SaveDroidOverride(

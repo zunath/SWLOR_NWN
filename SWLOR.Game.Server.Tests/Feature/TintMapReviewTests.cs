@@ -371,6 +371,77 @@ public class TintMapReviewTests
     }
 
     [Test]
+    public void QueuedRefreshCarriesStoredSemanticColorsOntoNewEquipmentMaterials()
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapService.cs");
+        var queueRefresh = FindMethod(source, nameof(TintMapService.QueueRefresh));
+        var delayedBody = queueRefresh.DescendantNodes()
+            .OfType<ParenthesizedLambdaExpressionSyntax>()
+            .Single()
+            .Body.ToString();
+
+        delayedBody.Should().Contain(nameof(TintMapService.CarryStoredCreatureCustomColors));
+        delayedBody.Should().Contain(nameof(TintMapService.ApplyCurrentColors));
+        delayedBody.IndexOf(nameof(TintMapService.CarryStoredCreatureCustomColors), StringComparison.Ordinal)
+            .Should().BeLessThan(
+                delayedBody.IndexOf(nameof(TintMapService.ApplyCurrentColors), StringComparison.Ordinal));
+
+        var carry = FindMethod(source, nameof(TintMapService.CarryStoredCreatureCustomColors));
+        carry.ToString().Should().Contain("GetCreatureCustomColorVariables(creature)");
+        carry.ToString().Should().Contain("entry.Value.Count == 1",
+            "mixed semantic colors must not be propagated onto replacement equipment");
+        carry.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Select(GetInvokedMethodName)
+            .Should().Contain("ApplyCreatureCustomColors");
+    }
+
+    [Test]
+    public void SemanticPresetResetClearsInactiveAndPersistedOverrides()
+    {
+        var serviceSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapService.cs");
+        var reset = FindMethod(serviceSource, nameof(TintMapService.ResetCreatureCustomColor));
+        var resetInvocations = reset.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Select(GetInvokedMethodName)
+            .ToList();
+
+        reset.ToString().Should().Contain("GetCreatureCustomColorVariables(creature)");
+        resetInvocations.Should().Contain("DeleteLocalInt");
+        resetInvocations.Should().Contain("RemoveDroidOverrides");
+        resetInvocations.Should().Contain("ApplyColor");
+
+        var viewModelSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "AppearanceEditorViewModel.cs");
+        var resetEditor = CSharpSyntaxTree.ParseText(viewModelSource)
+            .GetRoot()
+            .DescendantNodes()
+            .OfType<MethodDeclarationSyntax>()
+            .Single(method =>
+                method.Identifier.ValueText == "ResetCustomTintOverrides" &&
+                method.ParameterList.Parameters.Count == 3);
+        resetEditor.ToString().Should().Contain("TintMapVariable.IsCreatureColorLayer(layerType)");
+        resetEditor.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Should().Contain(invocation =>
+                IsMemberInvocation(invocation, "TintMapService", nameof(TintMapService.ResetCreatureCustomColor)));
+    }
+
+    [Test]
     public void SpeederAppearanceChangesRefreshTintMaps()
     {
         var source = ReadSource(

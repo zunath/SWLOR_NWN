@@ -1807,10 +1807,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             TintMapLayerType layerType,
             TintMapLayerDefinition layer)
         {
-
-            foreach (var selection in selections)
+            if (TintMapVariable.IsCreatureColorLayer(layerType))
             {
-                TintMapService.ResetColor(_target, selection, layerType);
+                TintMapService.ResetCreatureCustomColor(_target, layerType);
+            }
+            else
+            {
+                foreach (var selection in selections)
+                {
+                    TintMapService.ResetColor(_target, selection, layerType);
+                }
             }
 
             SetSelectedTintColor(GuiColor.Grey);

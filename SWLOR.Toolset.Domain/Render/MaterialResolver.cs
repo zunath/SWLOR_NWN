@@ -5,7 +5,17 @@ using SWLOR.Toolset.Domain.GameData.Resources;
 
 namespace SWLOR.Toolset.Domain.Render
 {
-    public readonly record struct MtrAlphaSource(string TextureName, bool UsesRedChannel);
+    public readonly record struct MtrAlphaSource(string TextureName, bool UsesRedChannel)
+    {
+        /// <summary>
+        /// The runtime tint shader discards texture1 alpha below 0.2 and texture9 red below 0.3.
+        /// Preview renderers must use the same source-specific cutoff or translucent edge pixels
+        /// disappear differently in the toolset than they do in game.
+        /// </summary>
+        public float Cutoff => UsesRedChannel ? 0.3f : 0.2f;
+
+        public byte ByteCutoff => (byte)Math.Ceiling(Cutoff * byte.MaxValue);
+    }
 
     /// <summary>
     /// Minimal parse of an NWN:EE MTR (material) file: plain-text lines declaring

@@ -465,7 +465,8 @@ void main()
             uint TintMapTexId,
             uint TintPaletteTexId,
             uint TintAlphaTexId,
-            bool TintAlphaUsesRedChannel);
+            bool TintAlphaUsesRedChannel,
+            float TintAlphaCutoff);
 
         private readonly record struct UploadedDiffuse(
             uint TexId,
@@ -5019,7 +5020,7 @@ void main()
                 SetUniformFloat(
                     "alphaCutoff",
                     material.TintAlphaTexId != 0
-                        ? MathF.Max(material.AlphaCutoff, TextureAlphaPolicy.PunchThroughCutoff)
+                        ? MathF.Max(material.AlphaCutoff, material.TintAlphaCutoff)
                         : material.AlphaCutoff);
 
                 // The display toggle gates the flags rather than the caches, so flipping it is
@@ -5101,8 +5102,9 @@ void main()
             // A mesh whose diffuse failed to resolve draws flat-colored; loading its maps
             // anyway would waste GPU memory on textures the shader never samples.
             var isTintMap = IsTintMapMaterial(parsedMaterial);
+            var alphaSource = isTintMap ? parsedMaterial?.GetAlphaSource() : null;
             var material = cached.TexId == 0
-                ? new MeshMaterial(0, 0f, 0, 0, 0, 0, 0, 0, 0, false)
+                ? new MeshMaterial(0, 0f, 0, 0, 0, 0, 0, 0, 0, false, 0f)
                 : new MeshMaterial(
                     cached.TexId,
                     cached.AlphaCutoff,
@@ -5121,7 +5123,8 @@ void main()
                         ? ResolveMapTexture(parsedMaterial!.GetTexture(10))
                         : 0,
                     ResolveTintAlphaTexture(parsedMaterial),
-                    parsedMaterial?.GetAlphaSource()?.UsesRedChannel == true);
+                    alphaSource?.UsesRedChannel == true,
+                    alphaSource?.Cutoff ?? 0f);
 
             _rawTextureCache[rawKey] = material;
             return material;

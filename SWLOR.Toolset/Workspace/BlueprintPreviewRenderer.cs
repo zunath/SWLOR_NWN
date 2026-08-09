@@ -53,6 +53,7 @@ namespace SWLOR.Toolset.Workspace
         private readonly WaypointAppearanceService? _waypoints;
         private readonly BaseItemIconService? _baseItems;
         private readonly CloakModelService? _cloakModels;
+        private readonly CreatureAttachmentModelService? _creatureAttachmentModels;
         private readonly PortraitService? _portraits;
         private readonly TwoDaService? _twoDa;
         private readonly ArmorDyeSwatchService _dyeSwatches;
@@ -92,6 +93,7 @@ namespace SWLOR.Toolset.Workspace
             _waypoints = waypoints;
             _baseItems = baseItems;
             _cloakModels = twoDa == null ? null : new CloakModelService(twoDa);
+            _creatureAttachmentModels = twoDa == null ? null : new CreatureAttachmentModelService(twoDa);
             _portraits = portraits;
             _twoDa = twoDa;
             _dyeSwatches = new ArmorDyeSwatchService(resourceIndex);
@@ -235,7 +237,7 @@ namespace SWLOR.Toolset.Workspace
                 type, root, _appearances, _placeables, _doors,
                 itemResRef => LoadItemBlueprintRoot(itemResRef, useIndexedBlueprint),
                 PartModelExists, _waypoints, _baseItems == null ? null : _baseItems.GetOrNull,
-                armorPreviewFemale, _cloakModels);
+                armorPreviewFemale, _cloakModels, _creatureAttachmentModels);
 
             var model = BuildResolvedModel(
                 type, reference, includeCreatureAnimations: type == ResourceType.Utc);
@@ -385,7 +387,8 @@ namespace SWLOR.Toolset.Workspace
                 type, root, _appearances, _placeables, _doors,
                 itemResRef => LoadItemBlueprintRoot(itemResRef, useIndexedBlueprint),
                 PartModelExists, _waypoints, _baseItems == null ? null : _baseItems.GetOrNull,
-                cloakModels: _cloakModels);
+                cloakModels: _cloakModels,
+                creatureAttachmentModels: _creatureAttachmentModels);
 
             var model = BuildResolvedModel(type, reference, includeCreatureAnimations: false);
 

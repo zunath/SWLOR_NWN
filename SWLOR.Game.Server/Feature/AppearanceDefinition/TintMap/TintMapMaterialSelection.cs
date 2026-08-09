@@ -11,13 +11,21 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         public bool UsesItemColors { get; }
         public AppearanceArmor ArmorPart { get; }
 
+        /// <summary>
+        /// An alternate rendered model whose material locals should be read for this selection.
+        /// Dropped cloaks use their appearance-number ground model while worn cloaks use the
+        /// texture selected by cloakmodel.2da.
+        /// </summary>
+        public string OverrideModelResref { get; }
+
         public TintMapMaterialSelection(
             string modelResref,
             TintMapMaterialDefinition material,
             uint paletteSource,
             uint creaturePaletteSource,
             bool usesItemColors,
-            AppearanceArmor armorPart)
+            AppearanceArmor armorPart,
+            string overrideModelResref = null)
         {
             ModelResref = modelResref;
             Material = material;
@@ -25,6 +33,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             CreaturePaletteSource = creaturePaletteSource;
             UsesItemColors = usesItemColors;
             ArmorPart = armorPart;
+            OverrideModelResref = overrideModelResref ?? string.Empty;
         }
 
         /// <summary>

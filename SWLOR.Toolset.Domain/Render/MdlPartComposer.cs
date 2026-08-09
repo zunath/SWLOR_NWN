@@ -80,14 +80,15 @@ namespace SWLOR.Toolset.Domain.Render
                 if (partSource?.GeometryRoot == null)
                     continue;
 
-                // Robe and cloak geometry is authored in absolute body space, so both graft at the
-                // composite root. Attach() applies no transform compensation, and parenting one under
-                // a bone would double-transform it by that bone's chain: a cloak model carries its own
-                // copy of rootdummy>torso_g>Cloak_g, so hanging it off the skeleton's Cloak_g lifted it
-                // about a metre and a half clear of the body. Coverage-based body-part suppression
-                // (hiding skin beneath a partial robe) is the caller's concern, not this decision.
+                // Robes, cloaks, wings, and tails are authored in absolute creature space, so they
+                // graft at the composite root. Attach() applies no transform compensation, and
+                // parenting one under a bone would double-transform its authored hierarchy: a cloak
+                // model, for example, carries its own rootdummy>torso_g>Cloak_g chain. Coverage-based
+                // body-part suppression (hiding skin beneath a partial robe) is the caller's concern.
                 var bone = partType.Equals("robe", StringComparison.OrdinalIgnoreCase) ||
-                           partType.Equals("cloak", StringComparison.OrdinalIgnoreCase)
+                           partType.Equals("cloak", StringComparison.OrdinalIgnoreCase) ||
+                           partType.Equals("wing", StringComparison.OrdinalIgnoreCase) ||
+                           partType.Equals("tail", StringComparison.OrdinalIgnoreCase)
                     ? composed.GeometryRoot
                     : FindBone(bones, partType);
                 if (bone == null)

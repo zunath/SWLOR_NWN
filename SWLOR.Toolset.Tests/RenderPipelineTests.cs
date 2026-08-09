@@ -321,6 +321,8 @@ namespace SWLOR.Toolset.Tests
             material.Parameters.Should().ContainKey("useTexture1Alpha").WhoseValue.Should().Be("1.0");
             material.GetAlphaTexture().Should().Be("base_normal");
             material.GetAlphaSource().Should().Be(new MtrAlphaSource("base_normal", UsesRedChannel: false));
+            material.GetAlphaSource()!.Value.Cutoff.Should().Be(0.2f);
+            material.GetAlphaSource()!.Value.ByteCutoff.Should().Be(51);
         }
 
         [Test]
@@ -333,6 +335,8 @@ namespace SWLOR.Toolset.Tests
             var material = MaterialResolver.Parse(sample);
 
             material.GetAlphaSource().Should().Be(new MtrAlphaSource("cutout_mask", UsesRedChannel: true));
+            material.GetAlphaSource()!.Value.Cutoff.Should().Be(0.3f);
+            material.GetAlphaSource()!.Value.ByteCutoff.Should().Be(77);
         }
 
         [Test]

@@ -249,7 +249,13 @@ namespace SWLOR.Toolset.Tests
                 }
             };
 
-        private static TextureImage SolidTexture(byte r, byte g, byte b, byte a = 255, int size = 4)
+        private static TextureImage SolidTexture(
+            byte r,
+            byte g,
+            byte b,
+            byte a = 255,
+            int size = 4,
+            byte alphaCutoff = TextureImage.DefaultAlphaCutoff)
         {
             var pixels = new byte[size * size * 4];
             for (var i = 0; i < pixels.Length; i += 4)
@@ -265,7 +271,8 @@ namespace SWLOR.Toolset.Tests
                 Width = size,
                 Height = size,
                 Pixels = pixels,
-                SourceFormat = TextureSourceFormat.Tga
+                SourceFormat = TextureSourceFormat.Tga,
+                AlphaCutoff = alphaCutoff
             };
         }
 
@@ -467,6 +474,22 @@ namespace SWLOR.Toolset.Tests
 
             OpaquePixels(cutOut).Should().Be(0);
             OpaquePixels(opaque).Should().BeGreaterThan(0);
+        }
+
+        [Test]
+        public void TextureSpecificAlphaCutoffControlsSoftwarePreviewCutout()
+        {
+            var runtimeTintCutoff = ThumbnailRenderer.Render(
+                TexturedQuad("leaf"), Size, palette: null,
+                resolveTexture: _ => SolidTexture(9, 9, 9, a: 80, alphaCutoff: 77))!;
+            var legacyCutoff = ThumbnailRenderer.Render(
+                TexturedQuad("leaf"), Size, palette: null,
+                resolveTexture: _ => SolidTexture(9, 9, 9, a: 80))!;
+
+            OpaquePixels(runtimeTintCutoff).Should().BeGreaterThan(0,
+                "texture9 alpha 80 survives the shader's byte cutoff of 77");
+            OpaquePixels(legacyCutoff).Should().Be(0,
+                "ordinary preview textures retain the historical byte cutoff of 96");
         }
 
         [Test]

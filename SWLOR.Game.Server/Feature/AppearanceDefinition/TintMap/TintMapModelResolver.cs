@@ -99,6 +99,14 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 var modelId = GetItemAppearance(item, ItemAppearanceType.SimpleModel, 0);
                 if (modelId > 0)
                 {
+                    var overrideModel = string.Empty;
+                    if (itemClass == "cloak" &&
+                        int.TryParse(Get2DAString("cloakmodel", "TEXTURE", modelId), out var textureId) &&
+                        textureId > 0 && textureId != modelId)
+                    {
+                        overrideModel = $"cloak_{textureId:D3}";
+                    }
+
                     AddModelSelections(
                         selections,
                         seenSelections,
@@ -106,7 +114,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                         item,
                         item,
                         true,
-                        AppearanceArmor.Invalid);
+                        AppearanceArmor.Invalid,
+                        overrideModel);
                 }
             }
             else if (modelType == 2)
@@ -379,7 +388,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             uint paletteSource,
             uint creaturePaletteSource,
             bool usesItemColors,
-            AppearanceArmor armorPart)
+            AppearanceArmor armorPart,
+            string overrideModelResref = null)
         {
             var foundModel = false;
             foreach (var material in TintMapMaterialRegistry.GetMaterials(model))
@@ -395,7 +405,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     paletteSource,
                     creaturePaletteSource,
                     usesItemColors,
-                    armorPart));
+                    armorPart,
+                    overrideModelResref));
             }
 
             return foundModel;

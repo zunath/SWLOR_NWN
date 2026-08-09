@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
@@ -154,9 +155,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             TintMapLayerType layer,
             out TintMapColor color)
         {
-            var savedColor = GetLocalInt(
-                selection.GetPaletteSource(layer),
-                TintMapVariable.GetName(selection.Material.Resref, layer));
+            var savedColor = GetSavedColor(selection, layer);
             return TintMapColor.TryFromStoredValue(savedColor, out color);
         }
 
@@ -240,9 +239,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             TintMapMaterialSelection selection,
             TintMapLayerType layer)
         {
-            var savedColor = GetLocalInt(
-                selection.GetPaletteSource(layer),
-                TintMapVariable.GetName(selection.Material.Resref, layer));
+            var savedColor = GetSavedColor(selection, layer);
 
             var standardColor = GetStandardColor(creature, selection, layer);
             if (TintMapColor.TryFromStoredValue(savedColor, out var customColor))
@@ -253,6 +250,35 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 ? savedColor - 1
                 : standardColor;
             return new TintMapColorSelection(paletteColor, null);
+        }
+
+        private static int GetSavedColor(
+            TintMapMaterialSelection selection,
+            TintMapLayerType layer)
+        {
+            var paletteSource = selection.GetPaletteSource(layer);
+            var savedColor = GetLocalInt(
+                paletteSource,
+                TintMapVariable.GetName(selection.Material.Resref, layer));
+            if (savedColor > 0 || string.IsNullOrWhiteSpace(selection.OverrideModelResref))
+                return savedColor;
+
+            // A worn cloak renders the texture selected by cloakmodel.2da, while its dropped
+            // ground model retains the appearance-number material. Read the worn material's
+            // same semantic layer so dropping the item does not discard its visible tint.
+            foreach (var material in TintMapMaterialRegistry.GetMaterials(selection.OverrideModelResref))
+            {
+                if (!material.Layers.Contains(layer))
+                    continue;
+
+                savedColor = GetLocalInt(
+                    paletteSource,
+                    TintMapVariable.GetName(material.Resref, layer));
+                if (savedColor > 0)
+                    return savedColor;
+            }
+
+            return 0;
         }
 
         private static int GetStandardColor(

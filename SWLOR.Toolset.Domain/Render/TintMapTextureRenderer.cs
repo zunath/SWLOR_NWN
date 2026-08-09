@@ -106,7 +106,8 @@ namespace SWLOR.Toolset.Domain.Render
                 Width = tintMap.Width,
                 Height = tintMap.Height,
                 Pixels = output,
-                SourceFormat = tintMap.SourceFormat
+                SourceFormat = tintMap.SourceFormat,
+                AlphaCutoff = alphaSource?.ByteCutoff ?? TextureImage.DefaultAlphaCutoff
             };
         }
 

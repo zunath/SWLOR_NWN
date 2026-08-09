@@ -277,6 +277,34 @@ public class TintMapReviewTests
     }
 
     [Test]
+    public void DroppedCloaksReadOverridesFromTheirMappedWornMaterial()
+    {
+        var resolver = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapModelResolver.cs");
+        var worldSelections = FindMethod(resolver, nameof(TintMapModelResolver.GetWorldItemSelections));
+        var worldSource = worldSelections.ToString();
+        worldSource.Should().Contain("itemClass == \"cloak\"");
+        worldSource.Should().Contain("Get2DAString(\"cloakmodel\", \"TEXTURE\", modelId)");
+        worldSource.Should().Contain("overrideModel");
+
+        var service = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapService.cs");
+        var savedColor = FindMethod(service, "GetSavedColor").ToString();
+        savedColor.Should().Contain("selection.OverrideModelResref");
+        savedColor.Should().Contain("material.Layers.Contains(layer)",
+            "the worn and ground materials are matched by semantic tint layer");
+        savedColor.Should().Contain("TintMapVariable.GetName(material.Resref, layer)");
+    }
+
+    [Test]
     public void ManagedCreatureEquipmentChangesRefreshTintUniformsAndEditor()
     {
         var source = ReadSource(

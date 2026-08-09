@@ -70,6 +70,9 @@ namespace SWLOR.Toolset.Tests
         private static CloakModelService CloakModels() =>
             new(new TwoDaService(Sw2DaDirectory));
 
+        private static CreatureAttachmentModelService CreatureAttachmentModels() =>
+            new(new TwoDaService(Sw2DaDirectory));
+
         private static Domain.Gff.JsonGffStruct BlueprintRoot(ResourceType type, string resRef)
         {
             var workspace = new ModuleWorkspace(CorpusLocator.ModuleDirectory);
@@ -117,6 +120,28 @@ namespace SWLOR.Toolset.Tests
             parts["footl"].Should().Be("pmh0_footl001");
             parts["footr"].Should().Be("pmh0_footr001", "right foot is read from ArmorPart_RFoot on the utc root");
             parts.Should().NotContainKey("belt");
+        }
+
+        [Test]
+        public void Resolve_CreatureIncludesWingAndTailModelsSelectedByUtcFields()
+        {
+            var root = BlueprintRoot(ResourceType.Utc, "agr_guildmaster");
+            root.Get("Wings_New").SetInteger(22);
+            root.Get("Tail_New").SetInteger(608);
+
+            var result = BlueprintModelResolver.Resolve(
+                ResourceType.Utc,
+                root,
+                Appearances(),
+                null,
+                null,
+                partModelExists: _ => true,
+                creatureAttachmentModels: CreatureAttachmentModels());
+
+            result.Parts.Should().ContainSingle(part =>
+                part.PartType == "wing" && part.ModelResRef == "c_w_dm_plt");
+            result.Parts.Should().ContainSingle(part =>
+                part.PartType == "tail" && part.ModelResRef == "c_t_liz_plt");
         }
 
         [Test]

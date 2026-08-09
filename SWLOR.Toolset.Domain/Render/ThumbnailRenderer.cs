@@ -78,9 +78,6 @@ namespace SWLOR.Toolset.Domain.Render
         /// </summary>
         private static readonly Vector3 LightDirection = Vector3.Normalize(new Vector3(-0.4f, 0.6f, 1f));
 
-        /// <summary>Texels below this alpha are treated as cut out rather than blended.</summary>
-        private const byte AlphaCutoff = 96;
-
         /// <summary>
         /// Renders to a BGRA pixel buffer of <paramref name="size"/> squared, or null when the model has
         /// no triangles to draw - callers fall back to their placeholder rather than showing an empty box.
@@ -502,7 +499,7 @@ namespace SWLOR.Toolset.Domain.Render
             var y = Math.Clamp((int)((1f - v) * texture.Height), 0, texture.Height - 1);
 
             var offset = (y * texture.Width + x) * 4;
-            if (texture.Pixels[offset + 3] < AlphaCutoff)
+            if (texture.Pixels[offset + 3] < texture.AlphaCutoff)
                 return false;
 
             r = (byte)Math.Clamp(texture.Pixels[offset] * tintR, 0, 255);

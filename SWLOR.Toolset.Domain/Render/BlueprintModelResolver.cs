@@ -178,14 +178,16 @@ namespace SWLOR.Toolset.Domain.Render
             WaypointAppearanceService? waypoints = null,
             Func<int, BaseItemIconRow?>? baseItems = null,
             bool armorPreviewFemale = false,
-            CloakModelService? cloakModels = null)
+            CloakModelService? cloakModels = null,
+            CreatureAttachmentModelService? creatureAttachmentModels = null)
         {
             ArgumentNullException.ThrowIfNull(root);
 
             return type switch
             {
                 ResourceType.Utc => ResolveCreature(
-                    root, appearances, itemBlueprintLoader, partModelExists, baseItems, cloakModels),
+                    root, appearances, itemBlueprintLoader, partModelExists, baseItems, cloakModels,
+                    creatureAttachmentModels),
                 ResourceType.Utp => ResolvePlaceable(root, placeables),
                 ResourceType.Utd => ResolveDoor(root, doors),
                 ResourceType.Utw => ResolveWaypoint(root, waypoints),
@@ -431,7 +433,8 @@ namespace SWLOR.Toolset.Domain.Render
             Func<string, JsonGffStruct?>? itemBlueprintLoader,
             Func<string, bool>? partModelExists,
             Func<int, BaseItemIconRow?>? baseItems,
-            CloakModelService? cloakModels)
+            CloakModelService? cloakModels,
+            CreatureAttachmentModelService? creatureAttachmentModels)
         {
             if (appearances == null)
                 return BlueprintModelReference.NoneWith("Creature preview unavailable (appearance data not loaded).");
@@ -450,6 +453,8 @@ namespace SWLOR.Toolset.Domain.Render
 
                 var visibleEquipment = ResolveVisibleEquipment(
                     root, itemBlueprintLoader, partModelExists, baseItems, cloakModels, prefix);
+                visibleEquipment = AddCreatureAttachments(
+                    root, visibleEquipment, creatureAttachmentModels, partModelExists);
                 return ResolveSegmentedCreature(
                     root, row, prefix, itemBlueprintLoader, partModelExists, visibleEquipment);
             }
@@ -458,14 +463,18 @@ namespace SWLOR.Toolset.Domain.Render
             if (string.IsNullOrWhiteSpace(modelResRef))
                 return BlueprintModelReference.NoneWith($"{row.DisplayName}: no model ResRef in appearance.2da.");
 
+            var simpleParts = ResolveVisibleEquipment(
+                root, itemBlueprintLoader, partModelExists, baseItems, cloakModels,
+                wearerPrefix: null);
+            simpleParts = AddCreatureAttachments(
+                root, simpleParts, creatureAttachmentModels, partModelExists);
+
             return new BlueprintModelReference
             {
                 Kind = BlueprintModelKind.Simple,
                 Status = $"{row.DisplayName} ({modelResRef}.mdl)",
                 ModelResRef = modelResRef,
-                Parts = ResolveVisibleEquipment(
-                    root, itemBlueprintLoader, partModelExists, baseItems, cloakModels,
-                    wearerPrefix: null).Parts,
+                Parts = simpleParts.Parts,
                 LayerColorIndices = ResolveLayerColors(root, null)
             };
         }
@@ -600,6 +609,44 @@ namespace SWLOR.Toolset.Domain.Render
         private readonly record struct VisibleEquipment(
             IReadOnlyList<BlueprintModelPart> Parts,
             IReadOnlySet<string> HiddenBodyParts);
+
+        private static VisibleEquipment AddCreatureAttachments(
+            JsonGffStruct creature,
+            VisibleEquipment visibleEquipment,
+            CreatureAttachmentModelService? attachmentModels,
+            Func<string, bool>? partModelExists)
+        {
+            if (attachmentModels == null)
+                return visibleEquipment;
+
+            var parts = visibleEquipment.Parts.ToList();
+            AddCreatureAttachment(
+                parts,
+                "wing",
+                attachmentModels.GetWingOrNull(creature.GetIntOrNull("Wings_New") ?? 0),
+                partModelExists);
+            AddCreatureAttachment(
+                parts,
+                "tail",
+                attachmentModels.GetTailOrNull(creature.GetIntOrNull("Tail_New") ?? 0),
+                partModelExists);
+            return new VisibleEquipment(parts, visibleEquipment.HiddenBodyParts);
+        }
+
+        private static void AddCreatureAttachment(
+            ICollection<BlueprintModelPart> parts,
+            string partType,
+            string? modelResRef,
+            Func<string, bool>? partModelExists)
+        {
+            if (string.IsNullOrWhiteSpace(modelResRef) ||
+                partModelExists?.Invoke(modelResRef) == false)
+            {
+                return;
+            }
+
+            parts.Add(new BlueprintModelPart(partType, modelResRef));
+        }
 
         private static VisibleEquipment ResolveVisibleEquipment(
             JsonGffStruct root,

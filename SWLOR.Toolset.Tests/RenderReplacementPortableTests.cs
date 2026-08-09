@@ -362,6 +362,7 @@ namespace SWLOR.Toolset.Tests
 
             image.Should().NotBeNull();
             Pixel(image!, 0, 0).Should().Be((20, 40, 60, 73));
+            image.AlphaCutoff.Should().Be(77, "texture9 red uses the runtime shader's 0.3 cutoff");
         }
 
         [Test]
@@ -386,6 +387,7 @@ namespace SWLOR.Toolset.Tests
 
             image.Should().NotBeNull();
             Pixel(image!, 0, 0).A.Should().Be(91);
+            image.AlphaCutoff.Should().Be(51, "texture1 alpha uses the runtime shader's 0.2 cutoff");
         }
 
         [Test]

@@ -626,6 +626,51 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void ComposedPartThatRepeatsItsBoneNameConsumesThePoseOnlyOnce()
+        {
+            var skeletonRoot = new MdlNode { Name = "root" };
+            var thighBone = new MdlNode
+            {
+                Name = "lthigh_g",
+                Parent = skeletonRoot
+            };
+            skeletonRoot.Children.Add(thighBone);
+            var skeleton = new MdlModel { Name = "pmh0", GeometryRoot = skeletonRoot };
+
+            var partRoot = new MdlNode { Name = "pmh0_legl161" };
+            var partMesh = Triangle("lthigh_g");
+            partMesh.Parent = partRoot;
+            partRoot.Children.Add(partMesh);
+            var part = new MdlModel { Name = "pmh0_legl161", GeometryRoot = partRoot };
+            var composer = new MdlPartComposer((resRef, _) =>
+                resRef == "pmh0" ? skeleton :
+                resRef == "pmh0_legl161" ? part :
+                null);
+
+            var composed = composer.Compose(
+                "pmh0",
+                new[] { ("legl", "pmh0_legl161") },
+                adjustSeams: false)!;
+            var attachedMesh = composed.GetMeshNodes().Single();
+            var pose = new Dictionary<string, PosedNode>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["lthigh_g"] = new PosedNode(
+                    new Vector3(-0.15f, 0.02f, -0.20f),
+                    Quaternion.CreateFromAxisAngle(Vector3.UnitY, 0.35f),
+                    1f)
+            };
+
+            var actual = MdlMeshBuilder.ComposeNodeTransform(attachedMesh, pose);
+            var posedBone = attachedMesh.Parent!.Parent!;
+            var expected = MdlMeshBuilder.ComposeNodeTransform(posedBone, pose);
+
+            actual.Should().Be(expected,
+                "the part already inherits the pose from its skeleton parent and must not pose its same-named mesh again");
+            attachedMesh.ReceivesNamedAnimationPose.Should().BeFalse();
+            posedBone.ReceivesNamedAnimationPose.Should().BeTrue();
+        }
+
+        [Test]
         public void FullBodyRobeAttachesAtTheSkeletonRoot()
         {
             var skeletonRoot = new MdlNode { Name = "root" };

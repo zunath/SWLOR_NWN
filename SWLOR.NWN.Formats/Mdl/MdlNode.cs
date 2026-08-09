@@ -8,6 +8,17 @@ public class MdlNode
 {
     public string Name { get; set; } = string.Empty;
 
+    /// <summary>
+    /// Whether a renderer may replace this node's authored local transform with an animation pose
+    /// found by <see cref="Name"/>. This is runtime composition metadata and is not serialized.
+    /// </summary>
+    /// <remarks>
+    /// Segmented body-part models are attached beneath an already-posed skeleton bone. Their mesh
+    /// nodes frequently repeat that bone's name, so posing both nodes would apply the same transform
+    /// twice and pull equipment away from the body.
+    /// </remarks>
+    public bool ReceivesNamedAnimationPose { get; set; } = true;
+
     public MdlNode? Parent { get; set; }
 
     public List<MdlNode> Children { get; } = new();

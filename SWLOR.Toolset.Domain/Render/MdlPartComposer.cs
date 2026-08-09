@@ -85,10 +85,11 @@ namespace SWLOR.Toolset.Domain.Render
                 // parenting one under a bone would double-transform its authored hierarchy: a cloak
                 // model, for example, carries its own rootdummy>torso_g>Cloak_g chain. Coverage-based
                 // body-part suppression (hiding skin beneath a partial robe) is the caller's concern.
-                var bone = partType.Equals("robe", StringComparison.OrdinalIgnoreCase) ||
-                           partType.Equals("cloak", StringComparison.OrdinalIgnoreCase) ||
-                           partType.Equals("wing", StringComparison.OrdinalIgnoreCase) ||
-                           partType.Equals("tail", StringComparison.OrdinalIgnoreCase)
+                var attachesAtRoot = partType.Equals("robe", StringComparison.OrdinalIgnoreCase) ||
+                                     partType.Equals("cloak", StringComparison.OrdinalIgnoreCase) ||
+                                     partType.Equals("wing", StringComparison.OrdinalIgnoreCase) ||
+                                     partType.Equals("tail", StringComparison.OrdinalIgnoreCase);
+                var bone = attachesAtRoot
                     ? composed.GeometryRoot
                     : FindBone(bones, partType);
                 if (bone == null)
@@ -97,6 +98,15 @@ namespace SWLOR.Toolset.Domain.Render
                 var partRoot = CloneNodeTree(partSource.GeometryRoot);
                 if (partRoot == null)
                     continue;
+
+                // A segmented part inherits its animation from the skeleton bone it is attached to.
+                // Its internal nodes often repeat that bone's name (lthigh_g beneath lthigh_g is a
+                // common example). The pose sampler is name-based, so allowing both nodes to consume
+                // the pose applies the bone transform twice and separates equipment at the joints.
+                // Root-authored attachments retain pose lookup because their internal hierarchy is
+                // the only skeleton they have.
+                if (!attachesAtRoot)
+                    DisableNamedAnimationPose(partRoot);
 
                 StampPartTexture(partRoot, modelResRef);
                 Attach(bone, partRoot);
@@ -232,6 +242,29 @@ namespace SWLOR.Toolset.Domain.Render
             // transform chain coherent even when an ASCII source omitted or disagreed with them; the
             // Children collection is the topology authority used by the standalone reader.
             RepairParentLinks(partRoot);
+        }
+
+        private static void DisableNamedAnimationPose(MdlNode root)
+        {
+            var visited = new HashSet<MdlNode>(ReferenceEqualityComparer.Instance);
+            var pending = new Stack<MdlNode>();
+            pending.Push(root);
+
+            while (pending.Count > 0)
+            {
+                var node = pending.Pop();
+                if (!visited.Add(node))
+                    continue;
+                if (visited.Count > MaximumNodes)
+                    throw new InvalidDataException($"MDL part exceeds the {MaximumNodes:N0}-node limit.");
+
+                node.ReceivesNamedAnimationPose = false;
+                foreach (var child in node.Children)
+                {
+                    if (child != null)
+                        pending.Push(child);
+                }
+            }
         }
 
         private static void AdjustSeamOverlaps(
@@ -489,6 +522,7 @@ namespace SWLOR.Toolset.Domain.Render
         private static void CopyCommon(MdlNode source, MdlNode target)
         {
             target.Name = source.Name;
+            target.ReceivesNamedAnimationPose = source.ReceivesNamedAnimationPose;
             target.Position = source.Position;
             target.Orientation = source.Orientation;
             target.Scale = source.Scale;

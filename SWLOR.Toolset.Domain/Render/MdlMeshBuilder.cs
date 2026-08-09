@@ -370,7 +370,8 @@ namespace SWLOR.Toolset.Domain.Render
                     throw new InvalidDataException(
                         $"MDL parent chain exceeds the {MaximumParentDepth:N0}-level limit.");
 
-                var local = pose != null &&
+                var local = current.ReceivesNamedAnimationPose &&
+                            pose != null &&
                             !string.IsNullOrEmpty(current.Name) &&
                             pose.TryGetValue(current.Name, out var posed)
                     ? LocalTransform(posed.Position, posed.Orientation, posed.Scale)

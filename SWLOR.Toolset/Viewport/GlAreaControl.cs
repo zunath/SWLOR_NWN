@@ -1689,9 +1689,11 @@ void main()
             Position = position,
             Orientation = orientation,
             VisualTransform = source.VisualTransform,
+            LayerColorIndices = source.LayerColorIndices,
             Geometry = source.Geometry,
             Model = source.Model,
             IsDoorTransition = source.IsDoorTransition,
+            TintMapOverrides = source.TintMapOverrides,
             SoundMinDistance = source.SoundMinDistance,
             SoundMaxDistance = source.SoundMaxDistance,
             IsPositionalSound = source.IsPositionalSound

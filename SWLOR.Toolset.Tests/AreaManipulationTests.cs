@@ -142,5 +142,30 @@ namespace SWLOR.Toolset.Tests
 
             MathF.Atan2(orientation.Y, orientation.X).Should().BeApproximately(heading, 0.0001f);
         }
+
+        [Test]
+        public void ManipulationPreviewPreservesPaletteAndCustomTintState()
+        {
+            var palette = new Dictionary<int, int> { [4] = 73 };
+            var tints = new Dictionary<string, int> { ["TM_pmh0_chest189_4"] = 123456 };
+            var source = new InstanceMarker
+            {
+                Kind = InstanceMarkerKind.Creature,
+                Position = Vector3.Zero,
+                Orientation = Vector2.UnitX,
+                LayerColorIndices = palette,
+                TintMapOverrides = tints
+            };
+            var clonePreview = typeof(SWLOR.Toolset.Viewport.GlAreaControl).GetMethod(
+                "ClonePreview",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!;
+
+            var preview = (InstanceMarker)clonePreview.Invoke(
+                null,
+                [source, Vector3.One, Vector2.UnitY])!;
+
+            preview.LayerColorIndices.Should().BeSameAs(palette);
+            preview.TintMapOverrides.Should().BeSameAs(tints);
+        }
     }
 }

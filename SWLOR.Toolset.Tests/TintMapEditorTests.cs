@@ -226,6 +226,28 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void EquipmentSemanticOverridesAreDiscardedWithoutCreatureOverrides()
+        {
+            var skinKey = TintMapVariable.GetName("pmh0_chest189", TintMapLayerType.Skin);
+            var hairKey = TintMapVariable.GetName("pmh0_chest189", TintMapLayerType.Hair);
+            var tattooKey = TintMapVariable.GetName("pmh0_chest189", TintMapLayerType.Tattoo2);
+            var clothKey = TintMapVariable.GetName("pmh0_chest189", TintMapLayerType.Cloth1);
+            var item = new Dictionary<string, int>
+            {
+                [skinKey] = 111,
+                [hairKey] = 222,
+                [tattooKey] = 333,
+                [clothKey] = 444
+            };
+
+            var merged = TintMapOverrides.MergeCreatureLayers(null, item);
+
+            merged.Should().ContainSingle();
+            merged[clothKey].Should().Be(444);
+            merged.Should().NotContainKeys(skinKey, hairKey, tattooKey);
+        }
+
+        [Test]
         public void CatalogFindsKnownTintMaterialThroughMeshTextureFallback()
         {
             var catalog = TintMapCatalog.Load(Resources());

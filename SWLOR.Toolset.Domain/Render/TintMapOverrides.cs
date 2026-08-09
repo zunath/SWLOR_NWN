@@ -30,16 +30,16 @@ namespace SWLOR.Toolset.Domain.Render
             IReadOnlyDictionary<string, int>? creatureOverrides,
             IReadOnlyDictionary<string, int>? itemOverrides)
         {
-            var hasCreatureLayers = creatureOverrides?.Keys.Any(key =>
-                TintMapVariable.TryGetLayer(key, out var layer) &&
-                TintMapVariable.IsCreatureColorLayer(layer)) == true;
-            if (!hasCreatureLayers)
-                return itemOverrides ?? new Dictionary<string, int>(StringComparer.Ordinal);
+            var merged = itemOverrides?
+                .Where(pair =>
+                    !TintMapVariable.TryGetLayer(pair.Key, out var layer) ||
+                    !TintMapVariable.IsCreatureColorLayer(layer))
+                .ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal) ??
+                new Dictionary<string, int>(StringComparer.Ordinal);
+            if (creatureOverrides == null)
+                return merged;
 
-            var merged = itemOverrides?.ToDictionary(pair => pair.Key, pair => pair.Value,
-                             StringComparer.Ordinal) ??
-                         new Dictionary<string, int>(StringComparer.Ordinal);
-            foreach (var (key, value) in creatureOverrides!)
+            foreach (var (key, value) in creatureOverrides)
             {
                 if (TintMapVariable.TryGetLayer(key, out var layer) &&
                     TintMapVariable.IsCreatureColorLayer(layer))

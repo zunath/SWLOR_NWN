@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry;
 using SWLOR.Game.Server.Feature.AbilityDefinition.NPC;
 using SWLOR.Game.Server.Feature.PerkDefinition;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -187,6 +188,79 @@ public class MimicryTests
         merciless.Should().Contain("if (StatusEffect.HasStatusEffect(target, typeof(BleedStatusEffect), typeof(HemorrhageStatusEffect)))");
         merciless.Should().Contain("StatusEffect.ApplyStatusEffect<HemorrhageStatusEffect>(activator, target, 30f");
         merciless.Should().NotContain("typeof(HemorrhageStatusEffect),\r\n                CombatImpactAreaShape.Cone");
+    }
+
+    [Test]
+    public void ShockTechniques_DescriptionsExposeTheirActualForceSuppressionContract()
+    {
+        var root = FindRepositoryRoot();
+        var featRows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
+            root.FullName, "SWLOR_Haks", "sw_2da", "feat.2da")));
+        var tlkEntries = ReadTlkEntries(new FileInfo(Path.Combine(
+            root.FullName, "SWLOR_Haks", "sw_tlk", "sw_tlk.tlk.json")));
+        var techniques = BuildAllAbilities(MimicryTechniqueNamespace)
+            .ToDictionary(technique => technique.Feat, technique => technique.Detail);
+
+        foreach (var feat in new[] { FeatType.DarkShockTechnique, FeatType.NullShockTechnique })
+        {
+            var ability = techniques[feat];
+            ability.SkillType.Should().Be(SkillType.Mimicry);
+            ability.CombatImpactDamageAbility.Should().Be(AbilityType.Willpower,
+                $"{feat}'s hostile hit check should use WIL even though the technique deals no direct damage");
+
+            var descriptionStrref = int.Parse(featRows[(int)feat]["DESCRIPTION"]);
+            var description = tlkEntries[descriptionStrref - CustomTlkStrrefOffset];
+            description.Should().Contain("separate WIL-based Mimicry hit checks");
+            description.Should().Contain(
+                "reducing Attack by 10% and Force Attack by an additional 15% (25% total)");
+            description.Should().Contain("Deals no direct damage.");
+        }
+
+        var suppression = new ForceSuppressionStatusEffect();
+        suppression.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(-10);
+        suppression.StatGroup.Stats[StatType.ForceAttackPercentAdjustment].Should().Be(-15);
+    }
+
+    [Test]
+    public void MimicryDescriptions_DistinguishAccuracyRatingSkillScalingAndDamageType()
+    {
+        var root = FindRepositoryRoot();
+        var featRows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
+            root.FullName, "SWLOR_Haks", "sw_2da", "feat.2da")));
+        var tlkEntries = ReadTlkEntries(new FileInfo(Path.Combine(
+            root.FullName, "SWLOR_Haks", "sw_tlk", "sw_tlk.tlk.json")));
+        var techniques = BuildAllAbilities(MimicryTechniqueNamespace)
+            .ToDictionary(technique => technique.Feat, technique => technique.Detail);
+
+        string Description(FeatType feat)
+        {
+            var descriptionStrref = int.Parse(featRows[(int)feat]["DESCRIPTION"]);
+            return tlkEntries[descriptionStrref - CustomTlkStrrefOffset];
+        }
+
+        foreach (var (feat, percent) in new[]
+                 {
+                     (FeatType.MindSpikeTechnique, 6),
+                     (FeatType.RangefinderShotTechnique, 8)
+                 })
+        {
+            techniques[feat].MimicryTraitStats[StatType.AccuracyPercentAdjustment].Should().Be(percent);
+            Description(feat).Should().Contain($"increases your Accuracy rating by {percent}%");
+            Description(feat).Should().Contain("including Force and Mimicry");
+            Description(feat).Should().Contain($"does not add {percent} percentage points directly to hit chance");
+        }
+
+        foreach (var feat in new[] { FeatType.FinalEclipseTechnique, FeatType.FinalLineTechnique })
+        {
+            techniques[feat].SkillType.Should().Be(SkillType.Mimicry);
+            techniques[feat].CombatImpactDamageAbility.Should().Be(AbilityType.Might);
+            Description(feat).Should().StartWith("Uses Mimicry rank and MGT for its hit check.");
+        }
+
+        Description(FeatType.FinalEclipseTechnique).Should().Contain(
+            "Force is the damage type; this remains a Mimicry ability.");
+        Description(FeatType.FinalLineTechnique).Should().Contain(
+            "After the normal damage roll, each hit gains +0% damage at full HP, scaling smoothly up to +35% as that target nears defeat.");
     }
 
     // Every damaging (active) technique must declare a scaling attribute so its damage tracks player

@@ -19,6 +19,17 @@ public class CharacterSheetStatCoverageTests
     }
 
     [Test]
+    public void CharacterSheet_DistinguishesAccuracyRatingFromDirectAbilityHitChance()
+    {
+        var viewModel = ReadViewModel();
+
+        viewModel.Should().Contain(
+            "Direct percentage-point change to hit chance for weapon-skill and Force-skill ability hit checks only. Does not affect Mimicry abilities or the underlying Accuracy rating.");
+        viewModel.Should().Contain(
+            "Percentage bonus or penalty applied to the underlying Accuracy rating for attacks and ability hit checks, including Force and Mimicry. It is not a direct percentage-point change to hit chance");
+    }
+
+    [Test]
     public void CharacterSheet_DisplaysGlobalOutputAndSustainStats()
     {
         var viewModel = ReadViewModel();

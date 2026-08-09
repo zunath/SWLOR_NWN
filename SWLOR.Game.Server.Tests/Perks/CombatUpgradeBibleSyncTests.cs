@@ -1031,7 +1031,7 @@ public class CombatUpgradeBibleSyncTests
             };
             foreach (Match match in Regex.Matches(
                          row.Description,
-                         @"(?:Increases your |\+)(?<stat>Accuracy|Attack|Critical Rate|Force Attack|Force Defense|Physical Defense)(?: by)? (?<value>\d+)%|\+(?<prefixValue>\d+)%(?:\s+)(?<prefixStat>Force Defense|Physical Defense)",
+                         @"(?:Increases your |\+)(?<stat>Accuracy|Attack|Critical Rate|Force Attack|Force Defense|Physical Defense)(?: rating)?(?: by)? (?<value>\d+)%|\+(?<prefixValue>\d+)%(?:\s+)(?<prefixStat>Force Defense|Physical Defense)",
                          RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
             {
                 var statName = match.Groups["stat"].Success

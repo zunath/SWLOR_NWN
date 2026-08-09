@@ -270,9 +270,13 @@ namespace SWLOR.Toolset.Tests
             shader.Should().Contain(
                 "vec3 result = (ambientColor + diff * lightColor) * texColor.rgb;",
                 "only the diffuse pass is affected by the model lighting");
+            shader.Should().Contain("float environmentDiffuseCoverage = texColor.a;");
             shader.Should().Contain(
-                "result = mix(SampleEnvironmentMap(norm), result, texColor.a);",
+                "result = mix(SampleEnvironmentMap(norm), result, environmentDiffuseCoverage);",
                 "Aurora draws an unlit environment pass and source-alpha blends the lit diffuse on top");
+            shader.Should().Contain("paletteColor.rgb = custom.rgb * shade;");
+            shader.Should().Contain("return paletteColor;",
+                "custom RGB replaces only color and must retain the legacy palette's environment coverage");
             shader.Should().NotContain(
                 "(ambientColor + diff * lightColor) * surfaceColor",
                 "lighting the combined passes incorrectly darkens reflective PLT regions");
@@ -295,6 +299,8 @@ namespace SWLOR.Toolset.Tests
             source.Should().Contain("_gl!.ActiveTexture(TextureUnit.Texture5);");
             source.Should().Contain("_gl.ActiveTexture(TextureUnit.Texture6);");
             source.Should().Contain("_gl.ActiveTexture(TextureUnit.Texture7);");
+            source.Should().Contain("TextureRenderPolicy.StandaloneEnvironmentMap",
+                "converted PLTs must keep Aurora's standalone environment map in the Toolset");
         }
 
         [Test]

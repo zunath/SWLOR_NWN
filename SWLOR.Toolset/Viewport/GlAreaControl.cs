@@ -285,11 +285,14 @@ vec4 ResolveTintMapColor()
     else if (layer > 1.5) { custom = tintColor2; paletteRow = tintPaletteRow2; }
     else if (layer > 0.5) { custom = tintColor1; paletteRow = tintPaletteRow1; }
 
-    if (custom.a > 0.5)
-        return vec4(custom.rgb * shade, 1.0);
-
     float paletteU = (shade * 255.0 + 0.5) / 256.0;
-    return textureLod(tintPaletteTexture, vec2(paletteU, paletteRow), 0.0);
+    vec4 paletteColor = textureLod(
+        tintPaletteTexture,
+        vec2(paletteU, paletteRow),
+        0.0);
+    if (custom.a > 0.5)
+        paletteColor.rgb = custom.rgb * shade;
+    return paletteColor;
 }
 
 void main()
@@ -297,6 +300,7 @@ void main()
     vec4 texColor = hasTintMap
         ? ResolveTintMapColor()
         : hasTexture ? texture(diffuseTexture, TexCoord) : vec4(flatColor, 1.0);
+    float environmentDiffuseCoverage = texColor.a;
 
     if (hasTintAlpha)
     {
@@ -331,7 +335,7 @@ void main()
         // lit diffuse texture source-alpha blended over it. PLT alpha therefore means diffuse
         // coverage (zero = full reflection), not transparency. Applying diffuse lighting after
         // this mix incorrectly dims the reflective metal regions.
-        result = mix(SampleEnvironmentMap(norm), result, texColor.a);
+        result = mix(SampleEnvironmentMap(norm), result, environmentDiffuseCoverage);
     }
 
     if (hasTexture && hasSpecularMap)
@@ -5064,6 +5068,7 @@ void main()
 
             // A mesh whose diffuse failed to resolve draws flat-colored; loading its maps
             // anyway would waste GPU memory on textures the shader never samples.
+            var isTintMap = IsTintMapMaterial(parsedMaterial);
             var material = cached.TexId == 0
                 ? new MeshMaterial(0, 0f, 0, 0, 0, 0, 0, 0, 0, false)
                 : new MeshMaterial(
@@ -5072,11 +5077,15 @@ void main()
                     ResolveMapTexture(maps.Normal),
                     ResolveMapTexture(maps.Specular),
                     ResolveMapTexture(maps.Roughness),
-                    ResolveMapTexture(cached.EnvironmentMapTexture),
-                    IsTintMapMaterial(parsedMaterial)
+                    ResolveMapTexture(
+                        isTintMap
+                            ? cached.EnvironmentMapTexture ??
+                              TextureRenderPolicy.StandaloneEnvironmentMap
+                            : cached.EnvironmentMapTexture),
+                    isTintMap
                         ? ResolveMapTexture(parsedMaterial!.GetTexture(7))
                         : 0,
-                    IsTintMapMaterial(parsedMaterial)
+                    isTintMap
                         ? ResolveMapTexture(parsedMaterial!.GetTexture(10))
                         : 0,
                     ResolveTintAlphaTexture(parsedMaterial),

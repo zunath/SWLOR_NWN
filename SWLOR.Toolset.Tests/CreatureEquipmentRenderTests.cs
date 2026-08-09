@@ -380,11 +380,6 @@ namespace SWLOR.Toolset.Tests
                     var atlasRow = atlas.Pixels.AsSpan(atlasOffset, paletteWidth * 4);
                     for (var channelOffset = 0; channelOffset < legacyRow.Length; channelOffset++)
                     {
-                        // The compact shared atlas is intentionally RGB; legacy palette alpha is
-                        // environment-map coverage rather than tint color and stays on the engine's
-                        // standard material path.
-                        if (channelOffset % 4 == 3)
-                            continue;
                         if (legacyRow[channelOffset] == atlasRow[channelOffset])
                             continue;
 

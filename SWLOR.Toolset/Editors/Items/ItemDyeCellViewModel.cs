@@ -23,6 +23,8 @@ namespace SWLOR.Toolset.Editors.Items
     {
         private readonly Func<int?> _read;
         private readonly Func<int, bool> _write;
+        private readonly Func<Color?>? _readCustom;
+        private readonly Func<Color, bool>? _writeCustom;
 
         public string Label { get; }
 
@@ -38,7 +40,13 @@ namespace SWLOR.Toolset.Editors.Items
         public bool HasNumericFallback => !HasPalette && AllowsNumericFallback;
 
         /// <summary>True when this row must remain a color picker but its palette could not load.</summary>
-        public bool IsPaletteUnavailable => !HasPalette && !AllowsNumericFallback;
+        public bool IsPaletteUnavailable => !HasPalette && !AllowsNumericFallback && !HasCustomOption;
+
+        /// <summary>True when Custom RGB is another choice inside this palette selector.</summary>
+        public bool HasCustomOption => _readCustom != null && _writeCustom != null;
+
+        /// <summary>The combined selector is useful when either presets or Custom are available.</summary>
+        public bool HasColorPicker => HasPalette || HasCustomOption;
 
         public int Minimum => 0;
 
@@ -53,6 +61,18 @@ namespace SWLOR.Toolset.Editors.Items
         private IBrush? _selectedBrush;
 
         [ObservableProperty]
+        private Color _customColor = Color.FromRgb(128, 128, 128);
+
+        public IBrush CustomBrush => new SolidColorBrush(CustomColor);
+        public IBrush? DisplayBrush => IsUsingCustomColor ? CustomBrush : SelectedBrush;
+
+        [ObservableProperty]
+        private bool _isUsingCustomColor;
+
+        [ObservableProperty]
+        private bool _isCustomEditorOpen;
+
+        [ObservableProperty]
         private bool _isPickerOpen;
 
         private bool _loading;
@@ -62,11 +82,15 @@ namespace SWLOR.Toolset.Editors.Items
             Func<int?> read,
             Func<int, bool> write,
             IReadOnlyList<(byte R, byte G, byte B)> paletteColors,
-            bool allowsNumericFallback = true)
+            bool allowsNumericFallback = true,
+            Func<Color?>? readCustom = null,
+            Func<Color, bool>? writeCustom = null)
         {
             Label = label ?? throw new ArgumentNullException(nameof(label));
             _read = read ?? throw new ArgumentNullException(nameof(read));
             _write = write ?? throw new ArgumentNullException(nameof(write));
+            _readCustom = readCustom;
+            _writeCustom = writeCustom;
             AllowsNumericFallback = allowsNumericFallback;
 
             for (var index = 0; index < paletteColors.Count; index++)
@@ -89,13 +113,33 @@ namespace SWLOR.Toolset.Editors.Items
             }
 
             SyncSelection();
+
+            _loading = true;
+            try
+            {
+                var custom = _readCustom?.Invoke();
+                IsUsingCustomColor = custom.HasValue;
+                if (custom.HasValue)
+                    CustomColor = custom.Value;
+                else if (SelectedBrush is SolidColorBrush selected)
+                    CustomColor = selected.Color;
+            }
+            finally
+            {
+                _loading = false;
+            }
+
+            OnPropertyChanged(nameof(CustomBrush));
+            OnPropertyChanged(nameof(DisplayBrush));
         }
 
         [RelayCommand]
         private void Pick(ItemDyeSwatchViewModel? swatch)
         {
             IsPickerOpen = false;
-            if (swatch == null || swatch.Index == (int?)Number)
+            IsCustomEditorOpen = false;
+            if (swatch == null ||
+                swatch.Index == (int?)Number && !IsUsingCustomColor)
                 return;
 
             if (_write(swatch.Index))
@@ -130,6 +174,20 @@ namespace SWLOR.Toolset.Editors.Items
             _write(index);
             Reload();
         }
+
+        partial void OnCustomColorChanged(Color value)
+        {
+            OnPropertyChanged(nameof(CustomBrush));
+            OnPropertyChanged(nameof(DisplayBrush));
+            if (_loading || _writeCustom == null)
+                return;
+
+            _writeCustom(value);
+            Reload();
+        }
+
+        partial void OnIsUsingCustomColorChanged(bool value) =>
+            OnPropertyChanged(nameof(DisplayBrush));
 
         private void SyncSelection()
         {

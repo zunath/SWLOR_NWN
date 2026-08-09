@@ -570,6 +570,12 @@ namespace SWLOR.Toolset.Tests
             itemView.Should().Contain("<items:PaletteColorPickerView");
             creatureView.Should().Contain("<items:PaletteColorPickerView",
                 "creature colors reuse the item editor's established palette control");
+            var palettePickerView = File.ReadAllText(Path.Combine(
+                CorpusLocator.RepositoryRoot,
+                "SWLOR.Toolset", "Editors", "Items", "PaletteColorPickerView.axaml"));
+            palettePickerView.Should().Contain("Text=\"Custom…\"");
+            palettePickerView.Should().Contain("IsVisible=\"{Binding HasCustomOption}\"",
+                "Custom RGB must be an option inside the existing preset flyout");
             creatureView.Should().Contain("<TabItem Header=\"Equipment\"");
             creatureView.Should().Contain("SelectedItem=\"{Binding EquipmentSlots.SelectedSlot, Mode=TwoWay}\"",
                 "equipment reuses the merchant editor's focused rail/work-pane interaction");

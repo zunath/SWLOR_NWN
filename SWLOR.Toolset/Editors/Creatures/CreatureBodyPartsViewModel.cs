@@ -223,6 +223,12 @@ namespace SWLOR.Toolset.Editors.Creatures
             foreach (var definition in definitions)
             {
                 var tintRows = _tintRows.Where(row => row.Layer == definition.Layer).ToList();
+                Func<Color?>? readCustom = tintRows.Count == 0
+                    ? null
+                    : () => ReadCustomColor(tintRows);
+                Func<Color, bool>? writeCustom = tintRows.Count == 0
+                    ? null
+                    : color => WriteCustomColor(definition.Label, color, tintRows);
                 var palette = new ItemDyeCellViewModel(
                     definition.Label,
                     () => Read(definition.Field),
@@ -230,13 +236,25 @@ namespace SWLOR.Toolset.Editors.Creatures
                         definition.Label, value, definition.Field, tintRows),
                     _colorPalettes?.GetPaletteColors(definition.Palette) ??
                     Array.Empty<(byte, byte, byte)>(),
-                    allowsNumericFallback: false);
+                    allowsNumericFallback: false,
+                    readCustom: readCustom,
+                    writeCustom: writeCustom);
                 Colors.Add(new CreatureBodyColorViewModel(
                     palette,
-                    tintRows,
-                    color => WriteCustomColor(definition.Label, color, tintRows),
-                    () => ResetCustomColor(definition.Label, tintRows)));
+                    tintRows));
             }
+        }
+
+        private static Color? ReadCustomColor(
+            IReadOnlyCollection<TintMapColorRowViewModel> tintRows)
+        {
+            var custom = tintRows.Where(row => row.IsCustom)
+                .Select(row => row.Color)
+                .Distinct()
+                .ToList();
+            return custom.Count == 1 && tintRows.All(row => row.IsCustom)
+                ? custom[0]
+                : null;
         }
 
         private bool WriteStandardColor(
@@ -275,26 +293,6 @@ namespace SWLOR.Toolset.Editors.Creatures
                     foreach (var row in tintRows)
                         _store.Locals.SetInt(row.Key, tint);
                 });
-            if (!applied)
-                return false;
-
-            ReloadColors();
-            _changed();
-            return true;
-        }
-
-        private bool ResetCustomColor(
-            string label,
-            IReadOnlyList<TintMapColorRowViewModel> tintRows)
-        {
-            if (!tintRows.Any(row => row.HasOverride))
-                return false;
-
-            var applied = _runEdit($"Reset {label} custom tint", () =>
-            {
-                foreach (var row in tintRows)
-                    _store.Locals.Remove(row.Key);
-            });
             if (!applied)
                 return false;
 

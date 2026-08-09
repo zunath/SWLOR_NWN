@@ -1301,13 +1301,19 @@ namespace SWLOR.Toolset.Tests
                 }
                 await editor.BodyParts.EnsureLoadedAsync();
                 Dispatcher.UIThread.RunJobs();
-                editor.BodyParts.Colors.Single(color => color.Label == "Skin")
-                    .HasCustomTint.Should().BeTrue();
+                var skinColor = editor.BodyParts.Colors.Single(color => color.Label == "Skin");
+                skinColor.HasCustomTint.Should().BeTrue();
+                skinColor.Palette.HasCustomOption.Should().BeTrue();
                 view.GetVisualDescendants().OfType<Button>()
                     .Should().ContainSingle(button => button.IsEffectivelyVisible && Equals(
                         ToolTip.GetTip(button),
+                        "Pick a preset or custom colour"),
+                        "preset and Custom are choices in the same Body color selector");
+                view.GetVisualDescendants().OfType<Button>()
+                    .Should().NotContain(button => Equals(
+                        ToolTip.GetTip(button),
                         "Pick an unrestricted custom RGB tint"),
-                        "the custom RGB control belongs beside the Skin preset in Body");
+                        "Body must not expose a second custom-color control");
 
                 tabs.SelectedIndex = 4;
                 Dispatcher.UIThread.RunJobs();

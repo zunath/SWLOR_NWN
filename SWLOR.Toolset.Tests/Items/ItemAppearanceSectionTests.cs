@@ -1,3 +1,4 @@
+using Avalonia.Media;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
@@ -353,6 +354,46 @@ namespace SWLOR.Toolset.Tests.Items
                 cell.Swatches[0].IsSelected.Should().BeFalse();
                 cell.SelectedBrush.Should().NotBeNull("the row's chip shows the chosen colour");
                 cell.IsPickerOpen.Should().BeFalse("picking closes the popup");
+            }
+
+            [Test]
+            public void CustomRgbIsAChoiceInsideThePresetPickerAndTheCurrentPresetClearsIt()
+            {
+                var stored = 1;
+                Color? custom = null;
+                var cell = new ItemDyeCellViewModel(
+                    "Skin",
+                    () => stored,
+                    value =>
+                    {
+                        stored = value;
+                        custom = null;
+                        return true;
+                    },
+                    new[]
+                    {
+                        ((byte)10, (byte)20, (byte)30),
+                        ((byte)40, (byte)50, (byte)60)
+                    },
+                    readCustom: () => custom,
+                    writeCustom: value =>
+                    {
+                        custom = value;
+                        return true;
+                    });
+
+                cell.HasCustomOption.Should().BeTrue();
+                cell.CustomColor = Color.FromRgb(70, 80, 90);
+                cell.IsUsingCustomColor.Should().BeTrue();
+                cell.DisplayBrush.Should().BeOfType<SolidColorBrush>()
+                    .Which.Color.Should().Be(Color.FromRgb(70, 80, 90));
+
+                cell.PickCommand.Execute(cell.Swatches[1]);
+
+                custom.Should().BeNull(
+                    "reselecting the underlying preset must authoritatively replace Custom");
+                cell.IsUsingCustomColor.Should().BeFalse();
+                cell.DisplayBrush.Should().BeSameAs(cell.SelectedBrush);
             }
 
         }

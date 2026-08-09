@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Enumeration;
@@ -87,6 +88,37 @@ public class ForceUniversalTests
 
         source.Should().Contain("ActionPlayAnimation(Animation.SaberThrow, 2)");
         source.Should().NotContain("Animation.CastOutAnimation");
+    }
+
+    [Test]
+    public void ThrowLightsaber_PathProjectionIncludesStationaryTargetAtFloatingPointEndpoint()
+    {
+        var origin = new Vector3(394.638855f, -247.003616f, 5.14350939f);
+        var destination = new Vector3(389.8544f, -245.746658f, 4.644441f);
+
+        InvokeThrowLightsaberPathCheck(origin, destination, destination).Should().BeTrue();
+    }
+
+    [Test]
+    public void ThrowLightsaber_PathProjectionRejectsTargetsOutsideLineBounds()
+    {
+        var origin = Vector3.Zero;
+        var destination = new Vector3(10f, 0f, 0f);
+
+        InvokeThrowLightsaberPathCheck(origin, destination, new Vector3(5f, 1.25f, 0f)).Should().BeTrue();
+        InvokeThrowLightsaberPathCheck(origin, destination, new Vector3(-0.01f, 0f, 0f)).Should().BeFalse();
+        InvokeThrowLightsaberPathCheck(origin, destination, new Vector3(10.01f, 0f, 0f)).Should().BeFalse();
+        InvokeThrowLightsaberPathCheck(origin, destination, new Vector3(5f, 1.26f, 0f)).Should().BeFalse();
+    }
+
+    [Test]
+    public void ThrowLightsaber_PreservesSelectedTargetAndReportsNoValidTargets()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ThrowLightsaberAbilityDefinition.cs").FullName);
+
+        source.Should().Contain("candidate => candidate == target || IsTargetAlongPath");
+        source.Should().Contain("Combat.BuildAbilityNoTargetCombatLogMessage");
     }
 
     [Test]
@@ -221,6 +253,14 @@ public class ForceUniversalTests
         ability.Targeting.SizeY.Should().Be(5f);
         ability.Targeting.Flags.Should().Be(
             AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf);
+    }
+
+    private static bool InvokeThrowLightsaberPathCheck(Vector3 origin, Vector3 destination, Vector3 candidate)
+    {
+        var method = typeof(ThrowLightsaberAbilityDefinition)
+            .GetMethod("IsPositionAlongPath", BindingFlags.Static | BindingFlags.NonPublic)!;
+
+        return (bool)method.Invoke(null, new object[] { origin, destination, candidate })!;
     }
 
     private static void AssertSkillRequirement(PerkLevel level, SkillType skill, int rank)

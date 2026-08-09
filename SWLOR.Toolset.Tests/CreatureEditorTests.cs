@@ -1504,7 +1504,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         [AvaloniaTest]
-        public void CreatureAppearance_KeepsUnifiedBodyColorEditorForFullBodyModels()
+        public void CreatureAppearance_HidesUnavailableBodyEditorForFullBodyModels()
         {
             var document = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
                 ResourceType.Utc, "body_visibility", "Body Visibility"));
@@ -1556,13 +1556,30 @@ namespace SWLOR.Toolset.Tests
                 tile.Option.CreatureAppearanceId == 7);
             Dispatcher.UIThread.RunJobs();
 
-            bodyTab.IsVisible.Should().BeTrue(
-                "the unified Body section also owns tint-map colors for full-body models");
+            bodyTab.IsVisible.Should().BeFalse(
+                "full-body models without tint channels do not offer any Body functionality");
             editor.BodyParts.IsDynamic.Should().BeFalse();
             editor.BodyParts.IsFullBody.Should().BeTrue();
-            editor.SelectedAppearanceSectionIndex.Should().Be(2,
-                "changing model type must not throw the builder out of the unified color editor");
-            appearanceSections.SelectedIndex.Should().Be(2);
+            editor.SelectedAppearanceSectionIndex.Should().Be(0,
+                "the editor must leave a Body section that becomes unavailable");
+            appearanceSections.SelectedIndex.Should().Be(0);
+
+            editor.BodyParts.SetTintMapRows(new[]
+            {
+                new TintMapColorRowViewModel(
+                    "c_droid",
+                    TintMapLayerType.Skin,
+                    new CreatureValueStore(document.Root).Locals,
+                    (_, mutation) =>
+                    {
+                        mutation();
+                        return true;
+                    },
+                    null)
+            });
+            Dispatcher.UIThread.RunJobs();
+            bodyTab.IsVisible.Should().BeTrue(
+                "a full-body model with a tint channel still has editable Body content");
 
             editorTabs!.SelectedItem = editorTabs.Items.Cast<TabItem>()
                 .Single(tab => tab.Header?.ToString() == "Equipment");

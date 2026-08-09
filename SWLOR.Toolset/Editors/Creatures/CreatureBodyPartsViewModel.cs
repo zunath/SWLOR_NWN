@@ -59,6 +59,7 @@ namespace SWLOR.Toolset.Editors.Creatures
 
         public bool IsDynamic => string.Equals(CurrentAppearance?.ModelType, "P", StringComparison.OrdinalIgnoreCase);
         public bool IsFullBody => !IsDynamic;
+        public bool HasEditableContent => IsDynamic || _tintRows.Count > 0;
         public string ModelSummary => CurrentAppearance == null
             ? "The selected model is not available in the loaded game data."
             : IsDynamic
@@ -116,6 +117,7 @@ namespace SWLOR.Toolset.Editors.Creatures
             OnPropertyChanged(nameof(IsLoaded));
             OnPropertyChanged(nameof(IsDynamic));
             OnPropertyChanged(nameof(IsFullBody));
+            OnPropertyChanged(nameof(HasEditableContent));
             OnPropertyChanged(nameof(ModelSummary));
             OnPropertyChanged(nameof(FullBodyDetails));
         }
@@ -201,6 +203,7 @@ namespace SWLOR.Toolset.Editors.Creatures
             var changed = !_tintRows.Select(row => row.Key)
                 .SequenceEqual(next.Select(row => row.Key), StringComparer.Ordinal);
             _tintRows = next;
+            OnPropertyChanged(nameof(HasEditableContent));
 
             if (!_loaded)
                 return;

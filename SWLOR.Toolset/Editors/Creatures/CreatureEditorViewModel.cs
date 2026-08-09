@@ -449,6 +449,7 @@ namespace SWLOR.Toolset.Editors.Creatures
         private void OnDirectValueChanged()
         {
             BodyParts.Reload();
+            ReconcileBodySectionAvailability();
             EnsureSelectedAppearanceSectionLoaded();
             UpdateWarnings();
             if (_referenceWarningsRequested)
@@ -771,6 +772,7 @@ namespace SWLOR.Toolset.Editors.Creatures
                 includeItemOwnedMaterials: false,
                 includeCreatureLayersFromItemOwnedMaterials: true);
             BodyParts.SetTintMapRows(TintMapEditor?.Colors);
+            ReconcileBodySectionAvailability();
             PublishAnimations(model);
             PreviewScene = model == null
                 ? null
@@ -945,8 +947,14 @@ namespace SWLOR.Toolset.Editors.Creatures
             if (SelectedAppearanceSectionIndex != 2)
                 return;
 
-            if (BodyParts.IsDynamic)
+            if (BodyParts.HasEditableContent && BodyParts.IsDynamic)
                 _ = BodyParts.EnsureLoadedAsync();
+        }
+
+        private void ReconcileBodySectionAvailability()
+        {
+            if (!BodyParts.HasEditableContent && SelectedAppearanceSectionIndex == 2)
+                SelectedAppearanceSectionIndex = 0;
         }
 
         /// <summary>
@@ -1002,6 +1010,7 @@ namespace SWLOR.Toolset.Editors.Creatures
             {
                 TintMapEditor = null;
                 BodyParts.SetTintMapRows(null);
+                ReconcileBodySectionAvailability();
                 return;
             }
 

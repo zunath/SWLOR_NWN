@@ -60,9 +60,12 @@
                         BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" />
               </Grid>
             </ToggleButton>
-            <ColorPicker Color="{Binding CustomColor, Mode=TwoWay}"
-                         IsAlphaEnabled="False"
-                         IsVisible="{Binding IsCustomEditorOpen}" />
+            <!-- ColorPicker is itself a collapsed button, which made Custom require a second
+                 click. ColorView is the picker surface, so selecting Custom reveals it directly. -->
+            <ColorView Color="{Binding CustomColor, Mode=TwoWay}"
+                       IsAlphaEnabled="False"
+                       IsColorPaletteVisible="False"
+                       IsVisible="{Binding IsCustomEditorOpen}" />
           </StackPanel>
         </Flyout>
       </Button.Flyout>

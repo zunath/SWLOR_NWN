@@ -223,11 +223,11 @@ namespace SWLOR.Toolset.Tests
             }
 
             var head = model!.Meshes.Single(mesh =>
-                mesh.MaterialName.Equals("pmh0_head038", StringComparison.OrdinalIgnoreCase));
+                mesh.MaterialName.Equals("pmh0_head220", StringComparison.OrdinalIgnoreCase));
             head.TextureName.Should().Be("pmh0_head220",
-                "the creature's authored head model and its isolated tint material are distinct resrefs");
-            head.MaterialName.Should().Be("pmh0_head038",
-                "the binary model's explicit generated tint material must reach the preview renderer");
+                "the modular head must retain its same-name 512px Togruta texture");
+            head.MaterialName.Should().Be("pmh0_head220",
+                "the stale embedded pmh0_head038 bitmap must not replace the head's Togruta skin artwork");
 
             var texture = textures.Get(
                 head.MaterialName,
@@ -235,6 +235,8 @@ namespace SWLOR.Toolset.Tests
                 resolveMaterial: true);
 
             texture.Should().NotBeNull();
+            texture!.Width.Should().Be(512);
+            texture.Height.Should().Be(512);
             var visible = texture!.Pixels
                 .Chunk(4)
                 .Where(pixel => pixel[3] > 0)

@@ -576,6 +576,10 @@ namespace SWLOR.Toolset.Tests
             palettePickerView.Should().Contain("Text=\"Custom…\"");
             palettePickerView.Should().Contain("IsVisible=\"{Binding HasCustomOption}\"",
                 "Custom RGB must be an option inside the existing preset flyout");
+            palettePickerView.Should().Contain("<ColorView",
+                "selecting Custom must reveal the color surface immediately");
+            palettePickerView.Should().NotContain("<ColorPicker ",
+                "a nested collapsed picker would require a second click after Custom");
             creatureView.Should().Contain("<TabItem Header=\"Equipment\"");
             creatureView.Should().Contain("SelectedItem=\"{Binding EquipmentSlots.SelectedSlot, Mode=TwoWay}\"",
                 "equipment reuses the merchant editor's focused rail/work-pane interaction");

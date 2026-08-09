@@ -171,8 +171,14 @@ namespace SWLOR.Toolset.Editors.Items
             if (_loading || _writeCustom == null)
                 return;
 
-            _writeCustom(value);
+            if (!_writeCustom(value))
+            {
+                Reload();
+                return;
+            }
+
             Reload();
+            IsPickerOpen = true;
         }
 
         partial void OnIsUsingCustomColorChanged(bool value) =>

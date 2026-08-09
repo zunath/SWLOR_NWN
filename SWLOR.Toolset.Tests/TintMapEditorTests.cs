@@ -306,6 +306,8 @@ namespace SWLOR.Toolset.Tests
                 mutation();
                 return true;
             }
+            var geometryChangeCount = 0;
+            var colorChangeCount = 0;
 
             var tintRows = new[]
             {
@@ -322,7 +324,8 @@ namespace SWLOR.Toolset.Tests
                 id => new AppearanceRow(id, "DYNAMIC_TEST", "Dynamic Test", "P", "H", null),
                 null,
                 null,
-                () => { });
+                () => geometryChangeCount++,
+                () => colorChangeCount++);
             body.SetTintMapRows(tintRows);
             await body.EnsureLoadedAsync();
 
@@ -335,6 +338,9 @@ namespace SWLOR.Toolset.Tests
                 .Should().BeTrue();
             custom.Should().Be(new TintMapColor(12, 34, 56));
             skin.HasOverride.Should().BeTrue();
+            colorChangeCount.Should().Be(1);
+            geometryChangeCount.Should().Be(0,
+                "RGB edits must recolor the retained model instead of rebuilding preview geometry");
 
             skin.Palette.Number = 12;
 
@@ -345,6 +351,9 @@ namespace SWLOR.Toolset.Tests
             store.Locals.GetInt(key).Should().BeNull(
                 "choosing a preset replaces the custom RGB value for the same color channel");
             skin.HasOverride.Should().BeFalse();
+            colorChangeCount.Should().Be(2);
+            geometryChangeCount.Should().Be(0,
+                "palette changes also preserve the current preview camera");
         }
 
         [Test]

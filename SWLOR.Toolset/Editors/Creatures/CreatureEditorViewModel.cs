@@ -203,7 +203,13 @@ namespace SWLOR.Toolset.Editors.Creatures
             Loot = new CreatureLootViewModel(
                 _store, RunEdit, openDefinition: openLootDefinition, resolveItemName: resolveItemName);
             BodyParts = new CreatureBodyPartsViewModel(
-                _store, RunEdit, appearance, armorParts, colorPalettes, OnBodyPartChanged);
+                _store,
+                RunEdit,
+                appearance,
+                armorParts,
+                colorPalettes,
+                OnBodyPartChanged,
+                OnTintColorChanged);
             if (tintMapCatalog != null)
             {
                 TintMapEditor = new TintMapEditorViewModel(

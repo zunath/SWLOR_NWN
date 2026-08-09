@@ -19,6 +19,7 @@ namespace SWLOR.Toolset.Editors.Creatures
         private readonly ArmorPartCatalog? _parts;
         private readonly ArmorDyeSwatchService? _colorPalettes;
         private readonly Action _changed;
+        private readonly Action _colorChanged;
         private int _generation;
         private bool _loaded;
         private bool _partCatalogReady = true;
@@ -78,7 +79,8 @@ namespace SWLOR.Toolset.Editors.Creatures
             Func<int, AppearanceRow?> appearance,
             ArmorPartCatalog? parts,
             ArmorDyeSwatchService? colorPalettes,
-            Action changed)
+            Action changed,
+            Action? colorChanged = null)
         {
             _store = store;
             _runEdit = runEdit;
@@ -86,6 +88,7 @@ namespace SWLOR.Toolset.Editors.Creatures
             _parts = parts;
             _colorPalettes = colorPalettes;
             _changed = changed;
+            _colorChanged = colorChanged ?? changed;
         }
 
         public void Reload()
@@ -273,7 +276,7 @@ namespace SWLOR.Toolset.Editors.Creatures
                 return false;
 
             ReloadColors();
-            _changed();
+            _colorChanged();
             return true;
         }
 
@@ -297,7 +300,7 @@ namespace SWLOR.Toolset.Editors.Creatures
                 return false;
 
             ReloadColors();
-            _changed();
+            _colorChanged();
             return true;
         }
 

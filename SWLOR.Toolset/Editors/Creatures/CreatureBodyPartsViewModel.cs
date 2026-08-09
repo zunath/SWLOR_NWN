@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using Avalonia.Media;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
+using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.Gff;
@@ -202,7 +203,12 @@ namespace SWLOR.Toolset.Editors.Creatures
             var next = rows?.ToList() ?? new List<TintMapColorRowViewModel>();
             var changed = !_tintRows.Select(row => row.Key)
                 .SequenceEqual(next.Select(row => row.Key), StringComparer.Ordinal);
+            var carriedColors = changed
+                ? CaptureSemanticCustomColors(_tintRows)
+                : new Dictionary<TintMapLayerType, Color>();
             _tintRows = next;
+            if (changed)
+                CarrySemanticCustomColors(next, carriedColors);
             OnPropertyChanged(nameof(HasEditableContent));
 
             if (!_loaded)
@@ -234,12 +240,13 @@ namespace SWLOR.Toolset.Editors.Creatures
                     : () => ReadCustomColor(tintRows);
                 Func<Color, bool>? writeCustom = tintRows.Count == 0
                     ? null
-                    : color => WriteCustomColor(definition.Label, color, tintRows);
+                    : color => WriteCustomColor(
+                        definition.Label, color, definition.Layer, tintRows);
                 var palette = new ItemDyeCellViewModel(
                     definition.Label,
                     () => Read(definition.Field),
                     value => WriteStandardColor(
-                        definition.Label, value, definition.Field, tintRows),
+                        definition.Label, value, definition.Field, definition.Layer),
                     _colorPalettes?.GetPaletteColors(definition.Palette) ??
                     Array.Empty<(byte, byte, byte)>(),
                     allowsNumericFallback: false,
@@ -263,17 +270,85 @@ namespace SWLOR.Toolset.Editors.Creatures
                 : null;
         }
 
+        private Dictionary<TintMapLayerType, Color> CaptureSemanticCustomColors(
+            IReadOnlyCollection<TintMapColorRowViewModel> tintRows)
+        {
+            var colors = new Dictionary<TintMapLayerType, Color>();
+            foreach (var group in tintRows
+                         .Where(row => TintMapVariable.IsCreatureColorLayer(row.Layer))
+                         .GroupBy(row => row.Layer))
+            {
+                var distinct = group
+                    .Select(row => _store.Locals.GetInt(row.Key) ?? 0)
+                    .Select(saved => TintMapColor.TryFromStoredValue(saved, out var color)
+                        ? (TintMapColor?)color
+                        : null)
+                    .Where(color => color.HasValue)
+                    .Select(color => color!.Value)
+                    .Distinct()
+                    .ToList();
+                if (distinct.Count != 1)
+                    continue;
+
+                var color = distinct[0];
+                colors[group.Key] = Color.FromRgb(color.Red, color.Green, color.Blue);
+            }
+
+            return colors;
+        }
+
+        private void CarrySemanticCustomColors(
+            IReadOnlyCollection<TintMapColorRowViewModel> tintRows,
+            IReadOnlyDictionary<TintMapLayerType, Color> colors)
+        {
+            var applicable = colors
+                .Where(entry => tintRows.Any(row => row.Layer == entry.Key))
+                .ToList();
+            if (applicable.Count == 0)
+                return;
+
+            _runEdit("Carry custom body colors to replacement models", () =>
+            {
+                foreach (var (layer, color) in applicable)
+                {
+                    var saved = new TintMapColor(color.R, color.G, color.B).ToStoredValue();
+                    foreach (var variableName in GetSemanticVariableKeys(layer, tintRows))
+                        _store.Locals.SetInt(variableName, saved);
+                }
+            });
+
+            foreach (var row in tintRows)
+                row.Reload();
+        }
+
+        private IReadOnlyCollection<string> GetSemanticVariableKeys(
+            TintMapLayerType layer,
+            IEnumerable<TintMapColorRowViewModel> tintRows)
+        {
+            var keys = _store.Locals
+                .Where(entry =>
+                    entry.Type == VarTable.TypeInt &&
+                    TintMapVariable.TryGetLayer(entry.Name, out var variableLayer) &&
+                    variableLayer == layer)
+                .Select(entry => entry.Name)
+                .ToHashSet(StringComparer.Ordinal);
+            foreach (var row in tintRows.Where(row => row.Layer == layer))
+                keys.Add(row.Key);
+
+            return keys;
+        }
+
         private bool WriteStandardColor(
             string label,
             int value,
             string field,
-            IReadOnlyList<TintMapColorRowViewModel> tintRows)
+            TintMapLayerType layer)
         {
             var applied = _runEdit($"Change {label} preset", () =>
             {
                 WriteFields(value, field);
-                foreach (var row in tintRows)
-                    _store.Locals.Remove(row.Key);
+                foreach (var variableName in GetSemanticVariableKeys(layer, _tintRows))
+                    _store.Locals.Remove(variableName);
             });
             if (!applied)
                 return false;
@@ -286,6 +361,7 @@ namespace SWLOR.Toolset.Editors.Creatures
         private bool WriteCustomColor(
             string label,
             Color color,
+            TintMapLayerType layer,
             IReadOnlyList<TintMapColorRowViewModel> tintRows)
         {
             if (tintRows.Count == 0)
@@ -296,8 +372,8 @@ namespace SWLOR.Toolset.Editors.Creatures
                 $"Set {label} custom tint to #{color.R:X2}{color.G:X2}{color.B:X2}",
                 () =>
                 {
-                    foreach (var row in tintRows)
-                        _store.Locals.SetInt(row.Key, tint);
+                    foreach (var variableName in GetSemanticVariableKeys(layer, tintRows))
+                        _store.Locals.SetInt(variableName, tint);
                 });
             if (!applied)
                 return false;

@@ -1667,6 +1667,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var item = GetItem();
             var itemType = GetBaseItemType(item);
             var modelType = GetModelType();
+            var armorPart = modelType == ItemAppearanceType.ArmorModel
+                ? (AppearanceArmor)type
+                : AppearanceArmor.Invalid;
+            var previousTintSelections = GetCurrentTintMapSelections()
+                .Where(selection =>
+                    selection.PaletteSource == item &&
+                    selection.ArmorPart == armorPart)
+                .ToList();
+            var tintCarry = TintMapService.CaptureItemCustomColors(item, previousTintSelections);
             var copy = item;
 
             if (colorId > -1)
@@ -1701,6 +1710,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ClearAllActions();
                 ActionEquipItem(copy, slot);
             });
+            TintMapService.QueueItemCustomColorCarry(_target, copy, Player, armorPart, tintCarry);
 
             _lastModifiedItem = copy;
         }

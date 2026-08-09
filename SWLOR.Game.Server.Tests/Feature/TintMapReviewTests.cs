@@ -658,6 +658,59 @@ public class TintMapReviewTests
     }
 
     [Test]
+    public void EquipmentModelChangesCarryCustomTintsToReplacementMaterials()
+    {
+        var viewModelSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "AppearanceEditorViewModel.cs");
+        var modifyMethod = FindMethod(viewModelSource, "ModifyItemPart");
+        var modifyCalls = modifyMethod.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Select(GetInvokedMethodName)
+            .ToList();
+
+        modifyCalls.Should().Contain("CaptureItemCustomColors",
+            "the old material keys must be read before CopyItemAndModify destroys the source item");
+        modifyCalls.Should().Contain("QueueItemCustomColorCarry",
+            "the replacement material resrefs are only available after the new item is equipped");
+        modifyMethod.ToString().Should().Contain("selection.ArmorPart == armorPart",
+            "one modular armor part must not overwrite another part's custom dyes");
+
+        var serviceSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapService.cs");
+        var captureMethod = FindMethod(serviceSource, "CaptureItemCustomColors");
+        captureMethod.ToString().Should().Contain("TintMapVariable.IsCreatureColorLayer(layer)",
+            "equipment swaps must leave creature-owned skin, hair and tattoo colors alone");
+        captureMethod.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Select(GetInvokedMethodName)
+            .Should().Contain("Distinct",
+                "ambiguous per-material colors must not be guessed during a model replacement");
+
+        var carryMethod = FindMethod(serviceSource, "QueueItemCustomColorCarry");
+        var carryCalls = carryMethod.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Select(GetInvokedMethodName)
+            .ToList();
+        carryCalls.Should().Contain("SetColor");
+        carryCalls.Should().Contain("DeleteLocalInt",
+            "obsolete material keys must not resurrect an older color when the model returns");
+        carryMethod.ToString().Should().Contain("activeVariables.Contains(variableName)",
+            "cleanup must retain a material key that another equipped armor part still uses");
+        carryCalls.Should().Contain("ApplyCurrentColors",
+            "the equipped replacement must render its carried colors immediately");
+        carryCalls.Should().Contain("PublishRefreshEvent",
+            "the open appearance editor must show the replacement material's current value");
+    }
+
+    [Test]
     public void PaddedModularModelUsesItsUnpaddedTintMaterial()
     {
         var rows = ReadSource("SWLOR_Haks", "sw_2da", "tintmap.2da")

@@ -12,6 +12,20 @@ using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 {
+    public sealed class TintMapItemColorCarry
+    {
+        public IReadOnlyDictionary<TintMapLayerType, TintMapColor> Colors { get; }
+        public IReadOnlyDictionary<TintMapLayerType, IReadOnlyList<string>> SourceVariables { get; }
+
+        public TintMapItemColorCarry(
+            IReadOnlyDictionary<TintMapLayerType, TintMapColor> colors,
+            IReadOnlyDictionary<TintMapLayerType, IReadOnlyList<string>> sourceVariables)
+        {
+            Colors = colors;
+            SourceVariables = sourceVariables;
+        }
+    }
+
     public static class TintMapService
     {
         private const float RefreshDelaySeconds = 0.2f;
@@ -318,6 +332,120 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             {
                 SetLocalInt(targetItem, variableName, savedColor);
             }
+        }
+
+        public static TintMapItemColorCarry CaptureItemCustomColors(
+            uint item,
+            IReadOnlyList<TintMapMaterialSelection> selections)
+        {
+            var colors = new Dictionary<TintMapLayerType, TintMapColor>();
+            var sourceVariables = new Dictionary<TintMapLayerType, IReadOnlyList<string>>();
+            if (!GetIsObjectValid(item) || selections == null)
+                return new TintMapItemColorCarry(colors, sourceVariables);
+
+            foreach (var layer in Enum.GetValues<TintMapLayerType>())
+            {
+                if (TintMapVariable.IsCreatureColorLayer(layer))
+                    continue;
+
+                var layerSelections = selections
+                    .Where(selection =>
+                        selection.GetPaletteSource(layer) == item &&
+                        selection.Material.Layers.Contains(layer))
+                    .ToList();
+                var distinct = layerSelections
+                    .Where(selection => TryGetCustomColor(selection, layer, out _))
+                    .Select(selection =>
+                    {
+                        TryGetCustomColor(selection, layer, out var color);
+                        return color;
+                    })
+                    .Distinct()
+                    .ToList();
+                if (distinct.Count != 1)
+                    continue;
+
+                colors[layer] = distinct[0];
+                sourceVariables[layer] = layerSelections
+                    .Select(selection => TintMapVariable.GetName(selection.Material.Resref, layer))
+                    .Where(variableName =>
+                        TintMapColor.TryFromStoredValue(GetLocalInt(item, variableName), out _))
+                    .Distinct(StringComparer.Ordinal)
+                    .ToList();
+            }
+
+            return new TintMapItemColorCarry(colors, sourceVariables);
+        }
+
+        public static void QueueItemCustomColorCarry(
+            uint creature,
+            uint item,
+            uint player,
+            AppearanceArmor armorPart,
+            TintMapItemColorCarry carry)
+        {
+            if (!GetIsObjectValid(creature) || !GetIsObjectValid(item) || carry == null)
+                return;
+
+            DelayCommand(RefreshDelaySeconds, () =>
+            {
+                if (!GetIsObjectValid(creature) || !GetIsObjectValid(item))
+                    return;
+
+                var itemSelections = TintMapModelResolver.GetCurrentSelections(creature)
+                    .Where(selection => selection.PaletteSource == item)
+                    .ToList();
+                var selections = itemSelections
+                    .Where(selection => selection.ArmorPart == armorPart)
+                    .ToList();
+                var removedStaleVariables = false;
+                foreach (var (layer, color) in carry.Colors)
+                {
+                    var destinations = selections
+                        .Where(selection =>
+                            selection.GetPaletteSource(layer) == item &&
+                            selection.Material.Layers.Contains(layer))
+                        .GroupBy(
+                            selection => TintMapVariable.GetName(selection.Material.Resref, layer),
+                            StringComparer.Ordinal)
+                        .Select(group => group.First())
+                        .ToList();
+                    if (destinations.Count == 0)
+                        continue;
+
+                    var destinationVariables = destinations
+                        .Select(selection => TintMapVariable.GetName(selection.Material.Resref, layer))
+                        .ToHashSet(StringComparer.Ordinal);
+                    var activeVariables = itemSelections
+                        .Where(selection =>
+                            selection.GetPaletteSource(layer) == item &&
+                            selection.Material.Layers.Contains(layer))
+                        .Select(selection => TintMapVariable.GetName(selection.Material.Resref, layer))
+                        .ToHashSet(StringComparer.Ordinal);
+                    foreach (var selection in destinations)
+                        SetColor(creature, selection, layer, color);
+
+                    if (!carry.SourceVariables.TryGetValue(layer, out var previousVariables))
+                        continue;
+
+                    foreach (var variableName in previousVariables)
+                    {
+                        if (destinationVariables.Contains(variableName) ||
+                            activeVariables.Contains(variableName))
+                            continue;
+
+                        DeleteLocalInt(item, variableName);
+                        removedStaleVariables = true;
+                    }
+                }
+
+                if (removedStaleVariables && Droid.IsDroid(creature))
+                    Droid.UpdateEquippedItemSnapshot(creature, item);
+
+                ApplyCurrentColors(creature);
+                if (GetIsObjectValid(player))
+                    Gui.PublishRefreshEvent(player, new AppearanceChangedRefreshEvent());
+            });
         }
 
         public static void QueueRefresh(uint creature)

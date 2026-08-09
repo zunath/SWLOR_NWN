@@ -379,6 +379,73 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task CreatureBodyColorFollowsReplacementMaterialsWithoutLeavingStaleValues()
+        {
+            var creature = new ModuleWorkspace(CorpusLocator.ModuleDirectory)
+                .LoadBlueprint(ResourceType.Utc, "agr_guildmaster")
+                .Document.Root;
+            var store = new SWLOR.Toolset.Domain.Editors.Creatures.CreatureValueStore(creature);
+            static bool Edit(string _, Action mutation)
+            {
+                mutation();
+                return true;
+            }
+            var geometryChangeCount = 0;
+            var colorChangeCount = 0;
+            var oldKey = TintMapVariable.GetName("pmh0_head038", TintMapLayerType.Skin);
+            var newKey = TintMapVariable.GetName("pmh0_head221", TintMapLayerType.Skin);
+            var original = new TintMapColor(12, 34, 56);
+            store.Locals.SetInt(oldKey, original.ToStoredValue());
+
+            var oldRows = new[]
+            {
+                new TintMapColorRowViewModel(
+                    "pmh0_head038", TintMapLayerType.Skin, store.Locals, Edit, null)
+            };
+            var body = new CreatureBodyPartsViewModel(
+                store,
+                Edit,
+                id => new AppearanceRow(id, "DYNAMIC_TEST", "Dynamic Test", "P", "H", null),
+                null,
+                null,
+                () => geometryChangeCount++,
+                () => colorChangeCount++);
+            body.SetTintMapRows(oldRows);
+            await body.EnsureLoadedAsync();
+
+            var newRows = new[]
+            {
+                new TintMapColorRowViewModel(
+                    "pmh0_head221", TintMapLayerType.Skin, store.Locals, Edit, null)
+            };
+            body.SetTintMapRows(newRows);
+
+            TintMapColor.TryFromStoredValue(store.Locals.GetInt(newKey)!.Value, out var carried)
+                .Should().BeTrue();
+            carried.Should().Be(original,
+                "a replacement body part must immediately inherit its semantic custom color");
+
+            var skin = body.Colors.Single(color => color.Label == "Skin");
+            skin.CustomColor = Color.FromRgb(65, 43, 21);
+
+            foreach (var key in new[] { oldKey, newKey })
+            {
+                TintMapColor.TryFromStoredValue(store.Locals.GetInt(key)!.Value, out var updated)
+                    .Should().BeTrue();
+                updated.Should().Be(new TintMapColor(65, 43, 21),
+                    "inactive materials must not resurrect an older semantic color");
+            }
+
+            skin.Palette.Number = 9;
+
+            store.Locals.GetInt(oldKey).Should().BeNull();
+            store.Locals.GetInt(newKey).Should().BeNull();
+            geometryChangeCount.Should().Be(0,
+                "semantic tint transfers and edits must retain the preview geometry and camera");
+            colorChangeCount.Should().Be(2);
+        }
+
+        [Test]
         public void ItemEditorFiltersMannequinMaterialsWhenModelIdentifiesItemOwnedMeshes()
         {
             var catalog = TintMapCatalog.Load(Resources());

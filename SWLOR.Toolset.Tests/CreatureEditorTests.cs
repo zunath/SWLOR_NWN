@@ -24,7 +24,9 @@ using SWLOR.Toolset.Editors.Appearance;
 using SWLOR.Toolset.Editors.Behaviors;
 using SWLOR.Toolset.Editors.Creatures;
 using SWLOR.Toolset.Editors.Items;
+using SWLOR.Toolset.Editors.TintMaps;
 using SWLOR.Game.Server.Service.AIService;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Toolset.Tests
@@ -1225,6 +1227,17 @@ namespace SWLOR.Toolset.Tests
                                     $"armor_{index:D3}", $"Armor {index:D3}", 16, 2))
                                 .ToList()
                             : Array.Empty<CreatureEquipmentChoice>()));
+                var tintRow = new TintMapColorRowViewModel(
+                    "pmh0_head038",
+                    TintMapLayerType.Skin,
+                    new CreatureValueStore(session.Document.Root).Locals,
+                    (description, mutation) =>
+                    {
+                        session.Execute(description, mutation);
+                        return true;
+                    },
+                    null);
+                editor.BodyParts.SetTintMapRows(new[] { tintRow });
                 var view = new CreatureEditorView { DataContext = editor };
                 var window = new Window { Width = 1280, Height = 800, Content = view };
 
@@ -1278,15 +1291,23 @@ namespace SWLOR.Toolset.Tests
                 appearanceSections.Should().NotBeNull();
                 var appearanceTabs = appearanceSections!.Items.Cast<TabItem>().ToList();
                 appearanceTabs.Select(tab => tab.Header?.ToString()).Should().Equal(
-                    "Model", "Details", "Body", "Tints");
-                appearanceTabs.Single(tab => tab.Header?.ToString() == "Tints")
-                    .IsVisible.Should().BeFalse(
-                        "the RGB editor is only useful when tintmap.2da is available");
-                for (var index = 0; index < 4; index++)
+                    "Model", "Details", "Body");
+                appearanceTabs.Should().NotContain(tab => Convert.ToString(tab.Header) == "Tints",
+                    "preset colors and custom RGB tinting are one Body color editor");
+                for (var index = 0; index < 3; index++)
                 {
                     appearanceSections!.SelectedIndex = index;
                     Dispatcher.UIThread.RunJobs();
                 }
+                await editor.BodyParts.EnsureLoadedAsync();
+                Dispatcher.UIThread.RunJobs();
+                editor.BodyParts.Colors.Single(color => color.Label == "Skin")
+                    .HasCustomTint.Should().BeTrue();
+                view.GetVisualDescendants().OfType<Button>()
+                    .Should().ContainSingle(button => button.IsEffectivelyVisible && Equals(
+                        ToolTip.GetTip(button),
+                        "Pick an unrestricted custom RGB tint"),
+                        "the custom RGB control belongs beside the Skin preset in Body");
 
                 tabs.SelectedIndex = 4;
                 Dispatcher.UIThread.RunJobs();

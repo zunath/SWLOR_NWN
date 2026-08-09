@@ -223,7 +223,9 @@ namespace SWLOR.Toolset.Tests
             }
 
             var head = model!.Meshes.Single(mesh =>
-                mesh.TextureName.Equals("pmh0_head038", StringComparison.OrdinalIgnoreCase));
+                mesh.MaterialName.Equals("pmh0_head038", StringComparison.OrdinalIgnoreCase));
+            head.TextureName.Should().Be("pmh0_head220",
+                "the creature's authored head model and its isolated tint material are distinct resrefs");
             head.MaterialName.Should().Be("pmh0_head038",
                 "the binary model's explicit generated tint material must reach the preview renderer");
 
@@ -296,12 +298,40 @@ namespace SWLOR.Toolset.Tests
             var model = renderer.BuildModel(ResourceType.Utc, "agr_guildmaster");
             model.Should().NotBeNull();
             var textures = new PreviewTextureCache(resources);
+            var tintMaterials = model!.Meshes
+                .Select(mesh => string.IsNullOrWhiteSpace(mesh.MaterialName)
+                    ? mesh.TextureName
+                    : mesh.MaterialName)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .Select(name => (Name: name, Material: MaterialResolver.TryParseMaterial(resources, name)))
+                .Where(entry => entry.Material?.CustomShaders.Values.Any(shader =>
+                    shader.Equals("fs_plt_tinter", StringComparison.OrdinalIgnoreCase)) == true)
+                .ToList();
+            tintMaterials.Select(entry => entry.Name).Should().Contain("pmh0_handl003",
+                "the left hand was the known legacy-DDS collision that corrupted creature colors");
+            foreach (var (name, material) in tintMaterials)
+            {
+                var tintTexture = material!.GetTexture(7);
+                tintTexture.Should().MatchRegex("^tm_[0-9a-f]{13}$",
+                    $"{name} must bind a collision-proof internal tint resource");
+                var tintImage = TextureLoader.Load(resources, tintTexture);
+                tintImage.Should().NotBeNull($"installed HAK resources must resolve {name}'s tint mask");
+                var expectedWidth = int.Parse(
+                    material.Parameters["tintMapWidth"].Split('.')[0],
+                    System.Globalization.CultureInfo.InvariantCulture);
+                var expectedHeight = int.Parse(
+                    material.Parameters["tintMapHeight"].Split('.')[0],
+                    System.Globalization.CultureInfo.InvariantCulture);
+                tintImage!.Width.Should().Be(expectedWidth,
+                    $"{name} must not resolve a same-name legacy DDS with different dimensions");
+                tintImage.Height.Should().Be(expectedHeight);
+            }
             foreach (var surface in new[]
                      {
                          "pmh0_legl087", "pmh0_legr087", "pmh0_shinl085", "pmh0_shinr085"
                      })
             {
-                model!.Meshes.Should().Contain(mesh =>
+                model.Meshes.Should().Contain(mesh =>
                     mesh.TextureName.Equals(surface, StringComparison.OrdinalIgnoreCase) &&
                     mesh.MaterialName.Equals(surface, StringComparison.OrdinalIgnoreCase));
                 textures.Get(surface, model.LayerColorIndices, resolveMaterial: true)

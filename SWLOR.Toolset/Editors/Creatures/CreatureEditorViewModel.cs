@@ -761,6 +761,7 @@ namespace SWLOR.Toolset.Editors.Creatures
         private void ApplyPreviewScene(RenderModel? model)
         {
             TintMapEditor?.Reload(model, includeItemOwnedMaterials: false);
+            BodyParts.SetTintMapRows(TintMapEditor?.Colors);
             PublishAnimations(model);
             PreviewScene = model == null
                 ? null
@@ -975,6 +976,7 @@ namespace SWLOR.Toolset.Editors.Creatures
             if (catalog == null)
             {
                 TintMapEditor = null;
+                BodyParts.SetTintMapRows(null);
                 return;
             }
 
@@ -985,10 +987,12 @@ namespace SWLOR.Toolset.Editors.Creatures
                     RunEdit,
                     catalog,
                     colorChanged: OnTintColorChanged);
+                UpdatePreviewScene();
                 return;
             }
 
             TintMapEditor.ReloadCatalog(catalog);
+            UpdatePreviewScene();
         }
 
         partial void OnTintMapEditorChanged(TintMapEditorViewModel? value) =>

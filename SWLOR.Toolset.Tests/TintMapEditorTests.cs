@@ -179,6 +179,59 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task CreatureBodyColorCombinesPresetAndCustomRgbForOneSemanticChannel()
+        {
+            var creature = new ModuleWorkspace(CorpusLocator.ModuleDirectory)
+                .LoadBlueprint(ResourceType.Utc, "agr_guildmaster")
+                .Document.Root;
+            var store = new SWLOR.Toolset.Domain.Editors.Creatures.CreatureValueStore(creature);
+            static bool Edit(string _, Action mutation)
+            {
+                mutation();
+                return true;
+            }
+
+            var tintRows = new[]
+            {
+                new TintMapColorRowViewModel(
+                    "pmh0_head038",
+                    TintMapLayerType.Skin,
+                    store.Locals,
+                    Edit,
+                    null)
+            };
+            var body = new CreatureBodyPartsViewModel(
+                store,
+                Edit,
+                id => new AppearanceRow(id, "DYNAMIC_TEST", "Dynamic Test", "P", "H", null),
+                null,
+                null,
+                () => { });
+            body.SetTintMapRows(tintRows);
+            await body.EnsureLoadedAsync();
+
+            var skin = body.Colors.Single(color => color.Label == "Skin");
+            skin.HasCustomTint.Should().BeTrue();
+            skin.CustomColor = Color.FromRgb(12, 34, 56);
+
+            var key = TintMapVariable.GetName("pmh0_head038", TintMapLayerType.Skin);
+            TintMapColor.TryFromStoredValue(store.Locals.GetInt(key)!.Value, out var custom)
+                .Should().BeTrue();
+            custom.Should().Be(new TintMapColor(12, 34, 56));
+            skin.HasOverride.Should().BeTrue();
+
+            skin.Palette.Number = 12;
+
+            store.GetInteger(
+                    SWLOR.Toolset.Domain.Editors.Behaviors.BehaviorFieldStorage.Field,
+                    "Color_Skin")
+                .Should().Be(12);
+            store.Locals.GetInt(key).Should().BeNull(
+                "choosing a preset replaces the custom RGB value for the same color channel");
+            skin.HasOverride.Should().BeFalse();
+        }
+
+        [Test]
         public void ItemEditorFiltersMannequinMaterialsWhenModelIdentifiesItemOwnedMeshes()
         {
             var catalog = TintMapCatalog.Load(Resources());

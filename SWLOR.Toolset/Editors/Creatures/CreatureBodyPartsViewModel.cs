@@ -1,9 +1,12 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using Avalonia.Media;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Editors.Items;
+using SWLOR.Toolset.Editors.TintMaps;
 
 namespace SWLOR.Toolset.Editors.Creatures
 {
@@ -21,6 +24,8 @@ namespace SWLOR.Toolset.Editors.Creatures
         private bool _partCatalogReady = true;
         private Task? _loadTask;
         private bool _loadingMirror;
+        private IReadOnlyList<TintMapColorRowViewModel> _tintRows =
+            Array.Empty<TintMapColorRowViewModel>();
 
         private static readonly IReadOnlyList<LimbDefinition> LimbDefinitions = new[]
         {
@@ -37,7 +42,7 @@ namespace SWLOR.Toolset.Editors.Creatures
 
         public ObservableCollection<ItemFieldCellViewModel> Structure { get; } = new();
         public ObservableCollection<BodyPartPairViewModel> Limbs { get; } = new();
-        public ObservableCollection<ItemDyeCellViewModel> Colors { get; } = new();
+        public ObservableCollection<CreatureBodyColorViewModel> Colors { get; } = new();
 
         [ObservableProperty]
         private bool _isLoading;
@@ -184,21 +189,124 @@ namespace SWLOR.Toolset.Editors.Creatures
             foreach (var definition in LimbDefinitions)
                 Limbs.Add(Pair(definition));
 
-            foreach (var (field, label, palette) in new[]
-                     {
-                         ("Color_Skin", "Skin", ArmorDyeSwatchService.DyeMaterial.Skin),
-                         ("Color_Hair", "Hair", ArmorDyeSwatchService.DyeMaterial.Hair),
-                         ("Color_Tattoo1", "Body Color 1", ArmorDyeSwatchService.DyeMaterial.Tattoo),
-                         ("Color_Tattoo2", "Body Color 2", ArmorDyeSwatchService.DyeMaterial.Tattoo)
-                     })
+            BuildColors();
+        }
+
+        public void SetTintMapRows(IEnumerable<TintMapColorRowViewModel>? rows)
+        {
+            var next = rows?.ToList() ?? new List<TintMapColorRowViewModel>();
+            var changed = !_tintRows.Select(row => row.Key)
+                .SequenceEqual(next.Select(row => row.Key), StringComparer.Ordinal);
+            _tintRows = next;
+
+            if (!_loaded)
+                return;
+
+            if (changed)
+                BuildColors();
+            else
+                ReloadColors();
+        }
+
+        private void BuildColors()
+        {
+            Colors.Clear();
+            var definitions = new (string Field, string Label,
+                ArmorDyeSwatchService.DyeMaterial Palette, TintMapLayerType Layer)[]
             {
-                Colors.Add(new ItemDyeCellViewModel(
-                    label,
-                    () => Read(field),
-                    value => Write(label, value, field),
-                    _colorPalettes?.GetPaletteColors(palette) ?? Array.Empty<(byte, byte, byte)>(),
-                    allowsNumericFallback: false));
+                ("Color_Skin", "Skin", ArmorDyeSwatchService.DyeMaterial.Skin, TintMapLayerType.Skin),
+                ("Color_Hair", "Hair", ArmorDyeSwatchService.DyeMaterial.Hair, TintMapLayerType.Hair),
+                ("Color_Tattoo1", "Body Color 1", ArmorDyeSwatchService.DyeMaterial.Tattoo, TintMapLayerType.Tattoo1),
+                ("Color_Tattoo2", "Body Color 2", ArmorDyeSwatchService.DyeMaterial.Tattoo, TintMapLayerType.Tattoo2)
+            };
+
+            foreach (var definition in definitions)
+            {
+                var tintRows = _tintRows.Where(row => row.Layer == definition.Layer).ToList();
+                var palette = new ItemDyeCellViewModel(
+                    definition.Label,
+                    () => Read(definition.Field),
+                    value => WriteStandardColor(
+                        definition.Label, value, definition.Field, tintRows),
+                    _colorPalettes?.GetPaletteColors(definition.Palette) ??
+                    Array.Empty<(byte, byte, byte)>(),
+                    allowsNumericFallback: false);
+                Colors.Add(new CreatureBodyColorViewModel(
+                    palette,
+                    tintRows,
+                    color => WriteCustomColor(definition.Label, color, tintRows),
+                    () => ResetCustomColor(definition.Label, tintRows)));
             }
+        }
+
+        private bool WriteStandardColor(
+            string label,
+            int value,
+            string field,
+            IReadOnlyList<TintMapColorRowViewModel> tintRows)
+        {
+            var applied = _runEdit($"Change {label} preset", () =>
+            {
+                WriteFields(value, field);
+                foreach (var row in tintRows)
+                    _store.Locals.Remove(row.Key);
+            });
+            if (!applied)
+                return false;
+
+            ReloadColors();
+            _changed();
+            return true;
+        }
+
+        private bool WriteCustomColor(
+            string label,
+            Color color,
+            IReadOnlyList<TintMapColorRowViewModel> tintRows)
+        {
+            if (tintRows.Count == 0)
+                return false;
+
+            var tint = new TintMapColor(color.R, color.G, color.B).ToStoredValue();
+            var applied = _runEdit(
+                $"Set {label} custom tint to #{color.R:X2}{color.G:X2}{color.B:X2}",
+                () =>
+                {
+                    foreach (var row in tintRows)
+                        _store.Locals.SetInt(row.Key, tint);
+                });
+            if (!applied)
+                return false;
+
+            ReloadColors();
+            _changed();
+            return true;
+        }
+
+        private bool ResetCustomColor(
+            string label,
+            IReadOnlyList<TintMapColorRowViewModel> tintRows)
+        {
+            if (!tintRows.Any(row => row.HasOverride))
+                return false;
+
+            var applied = _runEdit($"Reset {label} custom tint", () =>
+            {
+                foreach (var row in tintRows)
+                    _store.Locals.Remove(row.Key);
+            });
+            if (!applied)
+                return false;
+
+            ReloadColors();
+            _changed();
+            return true;
+        }
+
+        private void ReloadColors()
+        {
+            foreach (var color in Colors)
+                color.Reload();
         }
 
         private ItemFieldCellViewModel Single(

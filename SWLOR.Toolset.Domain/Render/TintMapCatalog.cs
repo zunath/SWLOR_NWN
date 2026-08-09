@@ -86,8 +86,12 @@ namespace SWLOR.Toolset.Domain.Render
                 StringComparer.OrdinalIgnoreCase);
             foreach (var mesh in model.Meshes)
             {
-                if (string.IsNullOrWhiteSpace(mesh.MaterialName) ||
-                    !_materials.TryGetValue(mesh.MaterialName, out var material))
+                TintMapMaterialDefinition? material = null;
+                if (!string.IsNullOrWhiteSpace(mesh.MaterialName))
+                    _materials.TryGetValue(mesh.MaterialName, out material);
+                if (material == null && !string.IsNullOrWhiteSpace(mesh.TextureName))
+                    _materials.TryGetValue(mesh.TextureName, out material);
+                if (material == null)
                 {
                     continue;
                 }

@@ -275,7 +275,7 @@
               </ScrollViewer>
             </TabItem>
 
-            <TabItem Header="Body" IsVisible="{Binding BodyParts.IsDynamic}">
+            <TabItem Header="Body">
               <ScrollViewer>
                 <Border Classes="card" Padding="12" Margin="14,10">
                   <StackPanel Spacing="6">
@@ -325,6 +325,15 @@
                         </ItemsControl>
                       </StackPanel>
                     </Grid>
+
+                    <StackPanel Spacing="8" IsVisible="{Binding BodyParts.IsFullBody}">
+                      <TextBlock Text="Colors" Classes="section" Margin="0,6,0,0" />
+                      <TextBlock Text="This model does not expose any tint-map color channels."
+                                 Classes="dim" TextWrapping="Wrap"
+                                 IsVisible="{Binding !TintMapEditor.HasColors}" />
+                      <ContentControl Content="{Binding TintMapEditor}"
+                                      IsVisible="{Binding TintMapEditor.HasColors}" />
+                    </StackPanel>
                   </StackPanel>
                 </Border>
               </ScrollViewer>

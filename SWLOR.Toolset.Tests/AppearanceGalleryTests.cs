@@ -570,6 +570,12 @@ namespace SWLOR.Toolset.Tests
             itemView.Should().Contain("<items:PaletteColorPickerView");
             creatureView.Should().Contain("<items:PaletteColorPickerView",
                 "creature colors reuse the item editor's established palette control");
+            creatureView.Should().Contain("<TabItem Header=\"Body\">",
+                "full-body creatures need the existing appearance Body surface too");
+            creatureView.Should().Contain("Content=\"{Binding TintMapEditor}\"",
+                "full-body tint channels belong inside the existing Body editor");
+            creatureView.Should().NotContain("<TabItem Header=\"Tints\"",
+                "tints must not duplicate the Body appearance surface");
             var palettePickerView = File.ReadAllText(Path.Combine(
                 CorpusLocator.RepositoryRoot,
                 "SWLOR.Toolset", "Editors", "Items", "PaletteColorPickerView.axaml"));

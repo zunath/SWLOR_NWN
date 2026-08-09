@@ -46,7 +46,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 return;
 
             QueueRefresh(creature);
-            QueueWorldItemsInArea(GetArea(creature));
+            if (GetIsPC(creature) || GetIsDM(creature) || GetIsDMPossessed(creature))
+                QueueWorldItemsInArea(GetArea(creature));
         }
 
         [NWNEventHandler(ScriptName.OnModuleUnacquire)]

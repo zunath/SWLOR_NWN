@@ -43,7 +43,7 @@ namespace SWLOR.Toolset.Domain.Render
                 var offset = pixel * 4;
                 var shade = tintMap.Pixels[offset];
                 var layer = (TintMapLayerType)Math.Clamp(
-                    tintMap.Pixels[offset + 1] * 10 / 256,
+                    tintMap.Pixels[offset + 1] * 10 / byte.MaxValue,
                     0,
                     9);
                 var variableName = TintMapVariable.GetName(materialName, layer);

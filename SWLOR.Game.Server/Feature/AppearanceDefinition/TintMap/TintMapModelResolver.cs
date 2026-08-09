@@ -291,16 +291,17 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 $"{prefix}{sourcePartName}{partId:D3}".ToLowerInvariant());
             var destinationMaterials = TintMapMaterialRegistry.GetMaterials(
                 $"{prefix}{destinationPartName}{partId:D3}".ToLowerInvariant());
-            for (var index = 0; index < destinationMaterials.Count; index++)
+            foreach (var destination in destinationMaterials)
             {
-                var destination = destinationMaterials[index];
-                var source = index < sourceMaterials.Count ? sourceMaterials[index] : null;
                 foreach (var layer in destination.Layers)
                 {
                     var destinationVariable = TintMapVariable.GetName(destination.Resref, layer);
-                    var sourceValue = source != null && source.Layers.Contains(layer)
-                        ? GetLocalInt(item, TintMapVariable.GetName(source.Resref, layer))
-                        : 0;
+                    var sourceValue = sourceMaterials
+                        .Where(source => source.Layers.Contains(layer))
+                        .Select(source => GetLocalInt(
+                            item,
+                            TintMapVariable.GetName(source.Resref, layer)))
+                        .FirstOrDefault(value => value > 0);
                     if (sourceValue > 0)
                         SetLocalInt(item, destinationVariable, sourceValue);
                     else

@@ -918,13 +918,8 @@ namespace SWLOR.Toolset.Editors.Creatures
             if (SelectedAppearanceSectionIndex != 2)
                 return;
 
-            if (!BodyParts.IsDynamic)
-            {
-                SelectedAppearanceSectionIndex = 0;
-                return;
-            }
-
-            _ = BodyParts.EnsureLoadedAsync();
+            if (BodyParts.IsDynamic)
+                _ = BodyParts.EnsureLoadedAsync();
         }
 
         /// <summary>

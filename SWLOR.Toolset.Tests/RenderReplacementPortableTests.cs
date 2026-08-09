@@ -387,6 +387,34 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void SoftwareTintRendererDecodesLayerBoundariesLikeTheShader()
+        {
+            File.WriteAllBytes(Path.Combine(_resourceDirectory, "tint.tga"), SolidColorTga(255, 230, 0));
+            File.WriteAllBytes(Path.Combine(_resourceDirectory, "palette.tga"), SolidColorTga(255, 255, 255));
+            var material = MaterialResolver.Parse(
+                "texture7 tint\n" +
+                "texture10 palette\n" +
+                "customshaderPSH fs_plt_tinter\n");
+
+            var image = TintMapTextureRenderer.Render(
+                Index(),
+                "sample_material",
+                material,
+                new Dictionary<int, int>(),
+                new Dictionary<string, int>
+                {
+                    [TintMapVariable.GetName("sample_material", TintMapLayerType.Tattoo1)] =
+                        new TintMapColor(0, 255, 0).ToStoredValue(),
+                    [TintMapVariable.GetName("sample_material", TintMapLayerType.Tattoo2)] =
+                        new TintMapColor(255, 0, 0).ToStoredValue()
+                });
+
+            image.Should().NotBeNull();
+            Pixel(image!, 0, 0).Should().Be((255, 0, 0, 255),
+                "byte 230 is layer 9 under floor((value / 255) * 10)");
+        }
+
+        [Test]
         public void TintPaletteIsFlippedFromDecodedRowsIntoShaderCoordinateOrder()
         {
             byte[] rows =

@@ -267,8 +267,11 @@ public class TintMapReviewTests
             "TintMapService.cs");
         FindMethod(service, nameof(TintMapService.OnModuleUnacquire))
             .ToString().Should().Contain("QueueItemRefresh(GetModuleItemLost())");
-        FindMethod(service, nameof(TintMapService.OnAreaEnter))
-            .ToString().Should().Contain("QueueWorldItemsInArea(GetArea(creature))");
+        var areaEnter = FindMethod(service, nameof(TintMapService.OnAreaEnter)).ToString();
+        areaEnter.Should().Contain("QueueWorldItemsInArea(GetArea(creature))");
+        areaEnter.Should().Contain(
+            "GetIsPC(creature) || GetIsDM(creature) || GetIsDMPossessed(creature)",
+            "NPC and summon entries must not rescan every ground item in the area");
         FindMethod(service, nameof(TintMapService.ApplyCurrentItemColors))
             .ToString().Should().Contain("GetWorldItemSelections(item)");
     }
@@ -546,6 +549,9 @@ public class TintMapReviewTests
         invocations.Should().Contain("GetMaterials");
         invocations.Should().Contain("SetLocalInt");
         invocations.Should().Contain("DeleteLocalInt");
+        invocations.Should().Contain("FirstOrDefault");
+        method.ToString().Should().NotContain("sourceMaterials[index]",
+            "one source material can map to several destination materials");
     }
 
     [Test]

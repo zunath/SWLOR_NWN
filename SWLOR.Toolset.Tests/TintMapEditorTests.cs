@@ -226,6 +226,75 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void CatalogFindsKnownTintMaterialThroughMeshTextureFallback()
+        {
+            var catalog = TintMapCatalog.Load(Resources());
+            catalog.Should().NotBeNull();
+            var model = new RenderModel
+            {
+                Meshes =
+                [
+                    new RenderMesh
+                    {
+                        NodeName = "stock_cloak",
+                        TextureName = "cloak_102",
+                        MaterialName = string.Empty,
+                        Positions = Array.Empty<float>(),
+                        Normals = Array.Empty<float>(),
+                        TexCoords = Array.Empty<float>(),
+                        Indices = Array.Empty<int>(),
+                        Transform = System.Numerics.Matrix4x4.Identity
+                    }
+                ]
+            };
+
+            var materials = catalog!.FindMaterials(model);
+
+            materials.Should().ContainSingle(material =>
+                material.Resref.Equals("cloak_102", StringComparison.OrdinalIgnoreCase));
+        }
+
+        [Test]
+        public async Task LegacyBodyOverrideRemainsPresetInsteadOfBecomingMisleadingCustomRgb()
+        {
+            var creature = new ModuleWorkspace(CorpusLocator.ModuleDirectory)
+                .LoadBlueprint(ResourceType.Utc, "agr_guildmaster")
+                .Document.Root;
+            var store = new SWLOR.Toolset.Domain.Editors.Creatures.CreatureValueStore(creature);
+            static bool Edit(string _, Action mutation)
+            {
+                mutation();
+                return true;
+            }
+
+            var key = TintMapVariable.GetName("pmh0_head038", TintMapLayerType.Skin);
+            store.Locals.SetInt(key, 42);
+            var tintRows = new[]
+            {
+                new TintMapColorRowViewModel(
+                    "pmh0_head038",
+                    TintMapLayerType.Skin,
+                    store.Locals,
+                    Edit,
+                    null)
+            };
+            var body = new CreatureBodyPartsViewModel(
+                store,
+                Edit,
+                id => new AppearanceRow(id, "DYNAMIC_TEST", "Dynamic Test", "P", "H", null),
+                null,
+                null,
+                () => { });
+            body.SetTintMapRows(tintRows);
+            await body.EnsureLoadedAsync();
+
+            var skin = body.Colors.Single(color => color.Label == "Skin");
+            skin.HasOverride.Should().BeTrue();
+            skin.Palette.IsUsingCustomColor.Should().BeFalse();
+            tintRows.Single().Status.Should().Be("Legacy palette override");
+        }
+
+        [Test]
         public async Task CreatureBodyColorCombinesPresetAndCustomRgbForOneSemanticChannel()
         {
             var creature = new ModuleWorkspace(CorpusLocator.ModuleDirectory)

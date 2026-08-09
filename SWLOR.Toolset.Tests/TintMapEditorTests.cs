@@ -380,6 +380,36 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void ItemEditorExcludesCreatureOwnedLayersFromItemMeshes()
+        {
+            var catalog = TintMapCatalog.Load(Resources());
+            catalog.Should().NotBeNull();
+            var editor = new TintMapEditorViewModel(
+                new VarTable(new JsonGffStruct()),
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                catalog!);
+            var itemMesh = ModelWith("helm_004").Meshes.Single();
+            itemMesh.UsesItemTintOverrides = true;
+
+            editor.Reload(
+                new RenderModel { Meshes = new[] { itemMesh } },
+                includeNonItemOwnedMaterials: false);
+
+            editor.Colors.Select(row => row.Layer).Should().BeEquivalentTo(new[]
+            {
+                TintMapLayerType.Cloth1,
+                TintMapLayerType.Leather1,
+                TintMapLayerType.Leather2
+            });
+            editor.Colors.Select(row => row.Layer)
+                .Should().OnlyContain(layer => !TintMapVariable.IsCreatureColorLayer(layer));
+        }
+
+        [Test]
         public void CatalogReloadClearsStaleRowsBeforeTheNewModelIsResolved()
         {
             var catalog = TintMapCatalog.Load(Resources());

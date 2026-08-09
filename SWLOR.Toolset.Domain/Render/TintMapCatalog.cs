@@ -96,14 +96,22 @@ namespace SWLOR.Toolset.Domain.Render
                     continue;
                 }
 
-                var includeWholeMaterial = mesh.UsesItemTintOverrides
-                    ? includeItemOwnedMaterials
-                    : includeNonItemOwnedMaterials;
-                var layers = includeWholeMaterial
-                    ? material.Layers
-                    : mesh.UsesItemTintOverrides && includeCreatureLayersFromItemOwnedMaterials
-                        ? material.Layers.Where(TintMapVariable.IsCreatureColorLayer).ToArray()
+                IReadOnlyList<TintMapLayerType> layers;
+                if (mesh.UsesItemTintOverrides)
+                {
+                    layers = includeItemOwnedMaterials
+                        ? material.Layers.Where(layer => !TintMapVariable.IsCreatureColorLayer(layer)).ToArray()
+                        : includeCreatureLayersFromItemOwnedMaterials
+                            ? material.Layers.Where(TintMapVariable.IsCreatureColorLayer).ToArray()
+                            : Array.Empty<TintMapLayerType>();
+                }
+                else
+                {
+                    layers = includeNonItemOwnedMaterials
+                        ? material.Layers
                         : Array.Empty<TintMapLayerType>();
+                }
+
                 if (layers.Count == 0)
                     continue;
 

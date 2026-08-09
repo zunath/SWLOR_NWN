@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
+using SWLOR.Toolset.Domain.Editors.Creatures;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.Tlk;
@@ -104,6 +105,47 @@ namespace SWLOR.Toolset.Tests
                 mesh => mesh.TextureName.Equals("pmh0_chest102", StringComparison.OrdinalIgnoreCase));
             dockhand.Meshes.Should().NotContain(
                 mesh => mesh.TextureName.Equals("pmh0_chest001", StringComparison.OrdinalIgnoreCase));
+        }
+
+        [Test]
+        public void EquippedArmorKeepsEveryTintSurfaceResolvable()
+        {
+            var creature = InstanceFieldMap.Duplicate(
+                _workspace.LoadBlueprint(ResourceType.Utc, "npc_l").Fields);
+            new CreatureValueStore(creature).SetEquippedResRef(2, "adventurer_l_f");
+
+            var model = _renderer.BuildModel(ResourceType.Utc, creature);
+
+            model.Should().NotBeNull();
+            var textures = new PreviewTextureCache(_resources);
+            var armorMeshes = model!.Meshes
+                .Where(mesh => mesh.UsesItemTintOverrides)
+                .ToList();
+            armorMeshes.Should().NotBeEmpty();
+            foreach (var mesh in armorMeshes)
+            {
+                var surface = string.IsNullOrWhiteSpace(mesh.MaterialName)
+                    ? mesh.TextureName
+                    : mesh.MaterialName;
+                var layerColors = mesh.LayerColorIndices.Count > 0
+                    ? mesh.LayerColorIndices
+                    : model.LayerColorIndices;
+                textures.Get(surface, layerColors, resolveMaterial: true)
+                    .Should().NotBeNull(
+                        $"equipped armor surface {mesh.TextureName} must retain its converted tint material");
+            }
+
+            foreach (var surface in new[]
+                     {
+                         "pmh0_footr160", "pmh0_legl243", "pmh0_legr243",
+                         "pmh0_neck107", "pmh0_shinr244"
+                     })
+            {
+                armorMeshes.Should().Contain(mesh =>
+                        mesh.TextureName.Equals(surface, StringComparison.OrdinalIgnoreCase) &&
+                        !string.IsNullOrWhiteSpace(mesh.MaterialName),
+                    $"stale or placeholder bitmap fields must not discard same-name tint material {surface}");
+            }
         }
 
         [Test]
@@ -245,24 +287,25 @@ namespace SWLOR.Toolset.Tests
             visible.Average(pixel => pixel[0] + pixel[1] + pixel[2]).Should().BeGreaterThan(45,
                 "skin palette row 44 must resolve from the bottom of the NWN palette atlas instead of the black decoded top row");
 
-            var inheritedMaterials = model.Meshes
-                .Where(mesh => string.IsNullOrWhiteSpace(mesh.MaterialName))
-                .Select(mesh => mesh.TextureName)
+            var tintMaterials = model.Meshes
+                .Select(mesh => string.IsNullOrWhiteSpace(mesh.MaterialName)
+                    ? mesh.TextureName
+                    : mesh.MaterialName)
                 .Distinct(StringComparer.OrdinalIgnoreCase)
-                .Where(textureName => MaterialResolver.TryParseMaterial(_resources, textureName) is { } material &&
+                .Where(materialName => MaterialResolver.TryParseMaterial(_resources, materialName) is { } material &&
                     material.CustomShaders.Values.Any(shader =>
                         shader.Equals("fs_plt_tinter", StringComparison.OrdinalIgnoreCase)))
                 .ToList();
-            inheritedMaterials.Should().Contain("pmh0_chest027",
-                "segmented composition inherits this generated MTR through its bitmap resref");
-            foreach (var inheritedMaterial in inheritedMaterials)
+            tintMaterials.Should().Contain("pmh0_chest027",
+                "modular body parts with stale bitmaps must retain their explicit same-name tint material");
+            foreach (var tintMaterial in tintMaterials)
             {
                 textures.Get(
-                        inheritedMaterial,
+                        tintMaterial,
                         model.LayerColorIndices,
                         resolveMaterial: true)
                     .Should().NotBeNull(
-                        $"same-resref MTR {inheritedMaterial} must replace its removed PLT");
+                        $"same-resref MTR {tintMaterial} must replace its removed PLT");
             }
         }
 

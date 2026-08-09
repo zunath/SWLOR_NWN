@@ -48,6 +48,12 @@ namespace SWLOR.Toolset.Editors.Items
         /// <summary>The combined selector is useful when either presets or Custom are available.</summary>
         public bool HasColorPicker => HasPalette || HasCustomOption;
 
+        /// <summary>
+        /// Without palette artwork there are no swatches to clear a custom tint. The stored NWN
+        /// palette index still exists, so expose an explicit way to restore it while Custom is active.
+        /// </summary>
+        public bool CanRestorePreset => HasCustomOption && !HasPalette && IsUsingCustomColor;
+
         public int Minimum => 0;
 
         /// <summary>The palette's own last index, or NWN's dye range when there is no palette to measure.</summary>
@@ -141,6 +147,19 @@ namespace SWLOR.Toolset.Editors.Items
                 Reload();
         }
 
+        [RelayCommand]
+        private void RestorePreset()
+        {
+            if (!CanRestorePreset)
+                return;
+
+            var index = Number.HasValue
+                ? (int)Math.Clamp(Number.Value, Minimum, Maximum)
+                : Minimum;
+            if (_write(index))
+                Reload();
+        }
+
         partial void OnNumberChanged(decimal? value)
         {
             if (_loading)
@@ -180,8 +199,11 @@ namespace SWLOR.Toolset.Editors.Items
             IsPickerOpen = true;
         }
 
-        partial void OnIsUsingCustomColorChanged(bool value) =>
+        partial void OnIsUsingCustomColorChanged(bool value)
+        {
             OnPropertyChanged(nameof(DisplayBrush));
+            OnPropertyChanged(nameof(CanRestorePreset));
+        }
 
         private void SyncSelection()
         {

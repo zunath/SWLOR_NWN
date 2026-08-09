@@ -268,7 +268,8 @@ namespace SWLOR.Toolset.Workspace
                             : BuildCreatureModel(reference.ModelResRef, includeCreatureAnimations)
                         : type == ResourceType.Utd && reference.IsDoorTransition
                             ? BuildDoorTransitionModel(reference.ModelResRef)
-                        : BuildRenderModel(reference.ModelResRef),
+                        : ApplyRootItemTintOwnership(
+                            BuildRenderModel(reference.ModelResRef), reference),
                 BlueprintModelKind.Segmented => ComposeSegmented(reference, includeCreatureAnimations),
                 BlueprintModelKind.ItemComposite => ComposeItemParts(reference),
                 _ => null
@@ -279,6 +280,19 @@ namespace SWLOR.Toolset.Workspace
             includeCreatureAnimations
                 ? BuildCreatureRenderModel(modelResRef)
                 : BuildRenderModel(modelResRef);
+
+        private static RenderModel? ApplyRootItemTintOwnership(
+            RenderModel? model,
+            BlueprintModelReference reference)
+        {
+            if (model == null || !reference.RootUsesItemTintOverrides)
+                return model;
+
+            foreach (var mesh in model.Meshes)
+                mesh.UsesItemTintOverrides = true;
+
+            return model;
+        }
 
         /// <summary>
         /// Hands the blueprint's dye choices to the model so the viewport can colour its PLT layers.

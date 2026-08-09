@@ -584,6 +584,8 @@ namespace SWLOR.Toolset.Tests
                 "the custom RGB editor must stay visible inside the existing preset popup");
             palettePickerView.Should().Contain("<ColorView",
                 "the custom color surface must be shown alongside the presets");
+            palettePickerView.Should().Contain("Command=\"{Binding RestorePresetCommand}\"",
+                "Custom must be removable even when palette artwork cannot supply swatches");
             palettePickerView.Should().Contain("<Popup");
             palettePickerView.Should().Contain(
                 "IsOpen=\"{Binding IsPickerOpen, Mode=TwoWay}\"",

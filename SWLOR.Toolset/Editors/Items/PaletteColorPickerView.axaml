@@ -66,6 +66,10 @@
                        IsAlphaEnabled="False"
                        IsColorPaletteVisible="False"
                        IsVisible="{Binding HasCustomOption}" />
+            <Button Content="Restore preset"
+                    Command="{Binding RestorePresetCommand}"
+                    IsVisible="{Binding CanRestorePreset}"
+                    HorizontalAlignment="Right" />
           </StackPanel>
       </Border>
     </Popup>

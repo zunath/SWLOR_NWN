@@ -61,6 +61,13 @@ namespace SWLOR.Toolset.Domain.Render
         public string? ModelResRef { get; init; }
 
         /// <summary>
+        /// The meshes in <see cref="ModelResRef"/> belong to the item being previewed. This is
+        /// separate from <see cref="BlueprintModelPart.UsesItemTintOverrides"/> because a simple
+        /// ModelType 0/1 UTI has no composed part record.
+        /// </summary>
+        public bool RootUsesItemTintOverrides { get; init; }
+
+        /// <summary>
         /// The resolved door row declares <c>VisibleModel=0</c>. These are area-transition planes:
         /// invisible at runtime, but drawn translucently by the toolset from the model's hidden
         /// selection geometry.
@@ -280,6 +287,7 @@ namespace SWLOR.Toolset.Domain.Render
                         Kind = BlueprintModelKind.Simple,
                         Status = $"{modelResRef}.mdl",
                         ModelResRef = modelResRef,
+                        RootUsesItemTintOverrides = true,
                         LayerColorIndices = ResolveLayerColors(root, root)
                     };
                 }

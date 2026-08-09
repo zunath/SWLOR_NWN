@@ -409,6 +409,43 @@ namespace SWLOR.Toolset.Tests.Items
                     "switching from a custom color to a preset must not dismiss the popup");
             }
 
+            [AvaloniaTest]
+            public void PaletteLessCustomColorCanRestoreItsStoredPresetWithoutClosing()
+            {
+                var stored = 7;
+                Color? custom = null;
+                var cell = new ItemDyeCellViewModel(
+                    "Skin",
+                    () => stored,
+                    value =>
+                    {
+                        stored = value;
+                        custom = null;
+                        return true;
+                    },
+                    Array.Empty<(byte, byte, byte)>(),
+                    allowsNumericFallback: false,
+                    readCustom: () => custom,
+                    writeCustom: value =>
+                    {
+                        custom = value;
+                        return true;
+                    });
+                cell.IsPickerOpen = true;
+                cell.CustomColor = Color.FromRgb(70, 80, 90);
+
+                cell.CanRestorePreset.Should().BeTrue(
+                    "there is no swatch to clear Custom when palette artwork is unavailable");
+                cell.RestorePresetCommand.Execute(null);
+
+                custom.Should().BeNull();
+                stored.Should().Be(7, "restoring Custom keeps the existing NWN palette choice");
+                cell.IsUsingCustomColor.Should().BeFalse();
+                cell.CanRestorePreset.Should().BeFalse();
+                cell.IsPickerOpen.Should().BeTrue(
+                    "restoring a preset is another color choice inside the popup");
+            }
+
         }
 
         [TestFixture]

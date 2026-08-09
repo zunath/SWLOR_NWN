@@ -350,6 +350,33 @@ namespace SWLOR.Toolset.Tests.Items
                 "an equipped item with no override must not inherit its owning creature's locals");
         }
 
+        [Test]
+        public void SimpleWearableRootMeshesAreItemOwnedAndExcludeCreatureColors()
+        {
+            var root = CorpusItem("001");
+            ItemAppearanceValues.Write(new ItemValueStore(root), "ModelPart1", 4);
+            var renderer = BuildRenderer(out var index);
+
+            var model = renderer.BuildModel(ResourceType.Uti, root);
+
+            model.Should().NotBeNull("helm_004 is a shipped tint-mapped wearable model");
+            model!.Meshes.Should().NotBeEmpty()
+                .And.OnlyContain(mesh => mesh.UsesItemTintOverrides,
+                    "the simple model is the UTI's root geometry");
+            var layers = TintMapCatalog.Load(index)!.FindMaterials(
+                    model,
+                    includeNonItemOwnedMaterials: false)
+                .SelectMany(material => material.Layers)
+                .Distinct()
+                .ToList();
+            layers.Should().NotContain(TintMapLayerType.Skin);
+            layers.Should().NotContain(TintMapLayerType.Hair);
+            layers.Should().NotContain(TintMapLayerType.Tattoo1);
+            layers.Should().NotContain(TintMapLayerType.Tattoo2);
+            layers.Should().Contain(TintMapLayerType.Cloth1,
+                "the wearable's actual equipment tint channels remain editable");
+        }
+
         private static Domain.Gff.JsonGffStruct CorpusItem(string resRef) =>
             new ModuleWorkspace(CorpusLocator.ModuleDirectory).LoadBlueprint(ResourceType.Uti, resRef).Document.Root;
     }

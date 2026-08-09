@@ -574,11 +574,15 @@ namespace SWLOR.Toolset.Tests
                 CorpusLocator.RepositoryRoot,
                 "SWLOR.Toolset", "Editors", "Items", "PaletteColorPickerView.axaml"));
             palettePickerView.Should().Contain("IsVisible=\"{Binding HasCustomOption}\"",
-                "the custom RGB editor must stay visible inside the existing preset flyout");
+                "the custom RGB editor must stay visible inside the existing preset popup");
             palettePickerView.Should().Contain("<ColorView",
                 "the custom color surface must be shown alongside the presets");
-            palettePickerView.Should().NotContain("<ToggleButton",
-                "the always-visible custom color surface must not require a reveal click");
+            palettePickerView.Should().Contain("<Popup");
+            palettePickerView.Should().Contain(
+                "IsOpen=\"{Binding IsPickerOpen, Mode=TwoWay}\"",
+                "custom RGB changes must not dismiss the palette popup");
+            palettePickerView.Should().NotContain("<Flyout",
+                "an auto-managed flyout closes during live custom color edits");
             palettePickerView.Should().NotContain("<ColorPicker ",
                 "a nested collapsed picker would require another click");
             creatureView.Should().Contain("<TabItem Header=\"Equipment\"");

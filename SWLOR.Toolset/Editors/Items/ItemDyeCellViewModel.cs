@@ -142,13 +142,6 @@ namespace SWLOR.Toolset.Editors.Items
                 Reload();
         }
 
-        [RelayCommand]
-        private void TogglePicker()
-        {
-            if (HasPalette)
-                IsPickerOpen = !IsPickerOpen;
-        }
-
         partial void OnNumberChanged(decimal? value)
         {
             if (_loading)

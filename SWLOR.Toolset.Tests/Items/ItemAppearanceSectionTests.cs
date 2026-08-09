@@ -383,8 +383,11 @@ namespace SWLOR.Toolset.Tests.Items
                     });
 
                 cell.HasCustomOption.Should().BeTrue();
+                cell.IsPickerOpen = true;
                 cell.CustomColor = Color.FromRgb(70, 80, 90);
                 cell.IsUsingCustomColor.Should().BeTrue();
+                cell.IsPickerOpen.Should().BeTrue(
+                    "editing custom RGB must leave the shared preset/custom popup open");
                 cell.DisplayBrush.Should().BeOfType<SolidColorBrush>()
                     .Which.Color.Should().Be(Color.FromRgb(70, 80, 90));
 

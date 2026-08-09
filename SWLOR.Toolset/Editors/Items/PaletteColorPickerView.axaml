@@ -18,13 +18,22 @@
                Foreground="{DynamicResource InkSecondaryBrush}"
                TextTrimming="CharacterEllipsis" />
 
-    <Button Grid.Column="1" Padding="3" Command="{Binding TogglePickerCommand}"
-            IsVisible="{Binding HasColorPicker}" ToolTip.Tip="Pick a preset or custom colour">
+    <ToggleButton x:Name="PickerButton" Grid.Column="1" Padding="3"
+                  IsChecked="{Binding IsPickerOpen, Mode=TwoWay}"
+                  IsVisible="{Binding HasColorPicker}" ToolTip.Tip="Pick a preset or custom colour">
       <Border Width="46" Height="18" CornerRadius="2"
               Background="{Binding DisplayBrush}"
               BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" />
-      <Button.Flyout>
-        <Flyout Placement="Bottom" ShowMode="Standard">
+    </ToggleButton>
+
+    <!-- Explicit popup state keeps the editor open while ColorView publishes RGB changes. A
+         preset deliberately closes it through Pick(), and light-dismiss still closes it outside. -->
+    <Popup Grid.Column="1"
+           IsOpen="{Binding IsPickerOpen, Mode=TwoWay}"
+           PlacementTarget="{Binding #PickerButton}" Placement="Bottom"
+           IsLightDismissEnabled="True">
+      <Border Background="{DynamicResource PanelBrush}" CornerRadius="4" Padding="8"
+              BorderBrush="{DynamicResource RuleStrongBrush}" BorderThickness="1">
           <StackPanel Width="292" Spacing="8">
             <ScrollViewer MaxHeight="260" HorizontalScrollBarVisibility="Disabled"
                           IsVisible="{Binding HasPalette}">
@@ -55,9 +64,8 @@
                        IsColorPaletteVisible="False"
                        IsVisible="{Binding HasCustomOption}" />
           </StackPanel>
-        </Flyout>
-      </Button.Flyout>
-    </Button>
+      </Border>
+    </Popup>
 
     <!-- Existing item documents remain editable without base-game palette artwork. Creature rows
          disable this path at construction, so they can never regress to a numeric color control. -->

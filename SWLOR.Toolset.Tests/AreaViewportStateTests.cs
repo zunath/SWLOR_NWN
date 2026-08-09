@@ -117,5 +117,82 @@ namespace SWLOR.Toolset.Tests
             control.CaptureViewportState()!.Value.Target.Should().Be(expectedTarget,
                 "the retained viewport must be restored before a queued Source-tab Go To is applied");
         }
+
+        [AvaloniaTest]
+        public void RecoloringTheSamePreviewModel_PreservesTheExactCamera()
+        {
+            var model = PreviewModel();
+            var control = new GlAreaControl();
+            SetViewportSize(control, width: 1000, height: 100);
+            control.Scene = PreviewScene(model, new Dictionary<string, int>());
+
+            var framed = control.CaptureViewportState()!.Value;
+            var expected = new AreaViewportState(
+                new Vector3(8f, -3f, 4f),
+                framed.Distance,
+                framed.InitialDistance,
+                Azimuth: 0.72f,
+                Elevation: 0.31f);
+            control.RestoreViewportState(expected);
+
+            // A popup edit can arrive after layout establishes a very different aspect ratio.
+            // Re-fitting from that new ratio used to replace the builder's orbit on the first tint.
+            SetViewportSize(control, width: 100, height: 1000);
+            control.Scene = PreviewScene(model, new Dictionary<string, int>
+            {
+                ["TM_BODY_SKIN"] = 123456
+            });
+
+            control.CaptureViewportState().Should().Be(expected,
+                "tint dictionaries change appearance, not model geometry or camera framing");
+        }
+
+        private static RenderModel PreviewModel() => new()
+        {
+            Name = "camera_tint_preview",
+            Meshes =
+            [
+                new RenderMesh
+                {
+                    NodeName = "body",
+                    TextureName = string.Empty,
+                    Positions = [-1f, -1f, 0f, 1f, 1f, 2f],
+                    Normals = [0f, 0f, 1f, 0f, 0f, 1f],
+                    TexCoords = [0f, 0f, 1f, 1f],
+                    Indices = [0, 1, 0],
+                    Transform = Matrix4x4.Identity
+                }
+            ]
+        };
+
+        private static AreaScene PreviewScene(
+            RenderModel model,
+            IReadOnlyDictionary<string, int> tintMapOverrides) => new()
+        {
+            Tileset = string.Empty,
+            Width = 1,
+            Height = 1,
+            Tiles = Array.Empty<TilePlacement>(),
+            Instances =
+            [
+                new InstanceMarker
+                {
+                    Kind = InstanceMarkerKind.Creature,
+                    Position = new Vector3(5f, 5f, 0f),
+                    Orientation = new Vector2(-1f, 0f),
+                    Model = model,
+                    TintMapOverrides = tintMapOverrides
+                }
+            ],
+            Diagnostics = new AreaSceneDiagnostics()
+        };
+
+        private static void SetViewportSize(GlAreaControl control, int width, int height)
+        {
+            typeof(GlAreaControl).GetField(
+                "_viewportWidth", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(control, width);
+            typeof(GlAreaControl).GetField(
+                "_viewportHeight", BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(control, height);
+        }
     }
 }

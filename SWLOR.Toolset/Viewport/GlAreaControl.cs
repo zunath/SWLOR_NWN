@@ -1186,6 +1186,8 @@ void main()
             get => Volatile.Read(ref _sceneState).Scene;
             set
             {
+                var previous = Volatile.Read(ref _sceneState).Scene;
+                var preservesPreviewGeometry = HasSamePreviewGeometry(previous, value);
                 var version = Interlocked.Increment(ref _nextSceneVersion);
                 Volatile.Write(ref _sceneState, new SceneState(value, version));
 
@@ -1211,6 +1213,13 @@ void main()
                     _restoredCameraAwaitingScene = false;
                     RecordSceneFramingBaseline(value);
                 }
+                else if (value != null && preservesPreviewGeometry)
+                {
+                    // Palette and RGB edits replace the immutable scene only to publish new tint
+                    // dictionaries. The model, transform and placement are unchanged, so retain
+                    // the builder's exact orbit while refreshing the layout-aware baseline.
+                    RecordSceneFramingBaseline(value);
+                }
                 else if (value != null && (!_cameraFramed || NeedsRefit(value)))
                 {
                     _cameraFramed = true;
@@ -1225,6 +1234,21 @@ void main()
 
                 RequestNextFrameRendering();
             }
+        }
+
+        private static bool HasSamePreviewGeometry(AreaScene? previous, AreaScene? next)
+        {
+            if (!IsSingleModelPreview(previous) || !IsSingleModelPreview(next))
+                return false;
+
+            var before = previous!.Instances[0];
+            var after = next!.Instances[0];
+            return before.Model != null &&
+                   ReferenceEquals(before.Model, after.Model) &&
+                   before.Kind == after.Kind &&
+                   before.Position == after.Position &&
+                   before.Orientation == after.Orientation &&
+                   before.VisualTransform.Equals(after.VisualTransform);
         }
 
         /// <summary>

@@ -236,7 +236,7 @@ public class TintMapReviewTests
     }
 
     [Test]
-    public void WingEquipmentLayersUseEquippedArmorColors()
+    public void WingAndTailEquipmentLayersUseEquippedArmorColors()
     {
         var source = ReadSource(
             "SWLOR.Game.Server",
@@ -245,27 +245,39 @@ public class TintMapReviewTests
             "TintMap",
             "TintMapModelResolver.cs");
         var method = FindMethod(source, nameof(TintMapModelResolver.GetCurrentSelections));
-        var wingCall = method.DescendantNodes()
+        var appendageCalls = method.DescendantNodes()
             .OfType<InvocationExpressionSyntax>()
-            .Single(invocation =>
-                GetInvokedMethodName(invocation) == "AddTableModelSelections" &&
-                invocation.ArgumentList.Arguments[0].Expression.ToString() == "\"wingmodel\"");
+            .Where(invocation => GetInvokedMethodName(invocation) == "AddTableModelSelections")
+            .ToDictionary(
+                invocation => invocation.ArgumentList.Arguments[0].Expression.ToString(),
+                invocation => invocation.ArgumentList.Arguments
+                    .Select(argument => argument.Expression.ToString())
+                    .ToArray());
 
-        wingCall.ArgumentList.Arguments
-            .Select(argument => argument.Expression.ToString())
+        appendageCalls["\"wingmodel\""]
             .Should().Equal(
                 "\"wingmodel\"",
                 "\"MODEL\"",
                 "(int)GetCreatureWingType(creature)",
-                "wingUsesItemColors ? wingPaletteSource : creature",
+                "appendagePaletteSource",
                 "creature",
-                "wingUsesItemColors",
+                "appendagesUseItemColors",
+                "selections",
+                "seenSelections");
+        appendageCalls["\"tailmodel\""]
+            .Should().Equal(
+                "\"tailmodel\"",
+                "\"MODEL\"",
+                "(int)GetCreatureTailType(creature)",
+                "appendagePaletteSource",
+                "creature",
+                "appendagesUseItemColors",
                 "selections",
                 "seenSelections");
         method.ToString().Should().Contain(
-            "var wingPaletteSource = GetItemInSlot(InventorySlot.Chest, creature);");
+            "var equipmentPaletteSource = GetItemInSlot(InventorySlot.Chest, creature);");
         method.ToString().Should().Contain(
-            "var wingUsesItemColors = GetIsObjectValid(wingPaletteSource);");
+            "var appendagesUseItemColors = GetIsObjectValid(equipmentPaletteSource);");
     }
 
     [Test]

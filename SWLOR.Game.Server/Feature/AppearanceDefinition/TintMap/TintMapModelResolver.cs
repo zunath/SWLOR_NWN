@@ -63,24 +63,27 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 AddCloakSelections(creature, string.Empty, selections, seenSelections);
             }
 
-            var wingPaletteSource = GetItemInSlot(InventorySlot.Chest, creature);
-            var wingUsesItemColors = GetIsObjectValid(wingPaletteSource);
+            var equipmentPaletteSource = GetItemInSlot(InventorySlot.Chest, creature);
+            var appendagesUseItemColors = GetIsObjectValid(equipmentPaletteSource);
+            var appendagePaletteSource = appendagesUseItemColors
+                ? equipmentPaletteSource
+                : creature;
             AddTableModelSelections(
                 "wingmodel",
                 "MODEL",
                 (int)GetCreatureWingType(creature),
-                wingUsesItemColors ? wingPaletteSource : creature,
+                appendagePaletteSource,
                 creature,
-                wingUsesItemColors,
+                appendagesUseItemColors,
                 selections,
                 seenSelections);
             AddTableModelSelections(
                 "tailmodel",
                 "MODEL",
                 (int)GetCreatureTailType(creature),
+                appendagePaletteSource,
                 creature,
-                creature,
-                false,
+                appendagesUseItemColors,
                 selections,
                 seenSelections);
 

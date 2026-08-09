@@ -731,8 +731,11 @@ public class TintMapReviewTests
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
         while (directory != null)
         {
-            if (Directory.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server")))
+            if (Directory.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server")) &&
+                File.Exists(Path.Combine(directory.FullName, "Build", "hakbuilder.json")))
+            {
                 return directory;
+            }
 
             directory = directory.Parent;
         }

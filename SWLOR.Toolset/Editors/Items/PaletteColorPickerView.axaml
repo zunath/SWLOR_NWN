@@ -50,22 +50,10 @@
             </ScrollViewer>
 
             <Separator IsVisible="{Binding HasCustomOption}" />
-            <ToggleButton IsVisible="{Binding HasCustomOption}"
-                          IsChecked="{Binding IsCustomEditorOpen, Mode=TwoWay}"
-                          HorizontalContentAlignment="Stretch" Padding="8,5">
-              <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
-                <TextBlock Text="Custom…" VerticalAlignment="Center" />
-                <Border Grid.Column="1" Width="46" Height="18" CornerRadius="2"
-                        Background="{Binding CustomBrush}"
-                        BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" />
-              </Grid>
-            </ToggleButton>
-            <!-- ColorPicker is itself a collapsed button, which made Custom require a second
-                 click. ColorView is the picker surface, so selecting Custom reveals it directly. -->
             <ColorView Color="{Binding CustomColor, Mode=TwoWay}"
                        IsAlphaEnabled="False"
                        IsColorPaletteVisible="False"
-                       IsVisible="{Binding IsCustomEditorOpen}" />
+                       IsVisible="{Binding HasCustomOption}" />
           </StackPanel>
         </Flyout>
       </Button.Flyout>

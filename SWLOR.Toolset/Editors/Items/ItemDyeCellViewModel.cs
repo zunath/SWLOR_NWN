@@ -42,7 +42,7 @@ namespace SWLOR.Toolset.Editors.Items
         /// <summary>True when this row must remain a color picker but its palette could not load.</summary>
         public bool IsPaletteUnavailable => !HasPalette && !AllowsNumericFallback && !HasCustomOption;
 
-        /// <summary>True when Custom RGB is another choice inside this palette selector.</summary>
+        /// <summary>True when this palette selector includes the always-visible custom RGB editor.</summary>
         public bool HasCustomOption => _readCustom != null && _writeCustom != null;
 
         /// <summary>The combined selector is useful when either presets or Custom are available.</summary>
@@ -68,9 +68,6 @@ namespace SWLOR.Toolset.Editors.Items
 
         [ObservableProperty]
         private bool _isUsingCustomColor;
-
-        [ObservableProperty]
-        private bool _isCustomEditorOpen;
 
         [ObservableProperty]
         private bool _isPickerOpen;
@@ -137,7 +134,6 @@ namespace SWLOR.Toolset.Editors.Items
         private void Pick(ItemDyeSwatchViewModel? swatch)
         {
             IsPickerOpen = false;
-            IsCustomEditorOpen = false;
             if (swatch == null ||
                 swatch.Index == (int?)Number && !IsUsingCustomColor)
                 return;

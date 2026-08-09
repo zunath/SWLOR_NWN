@@ -573,13 +573,14 @@ namespace SWLOR.Toolset.Tests
             var palettePickerView = File.ReadAllText(Path.Combine(
                 CorpusLocator.RepositoryRoot,
                 "SWLOR.Toolset", "Editors", "Items", "PaletteColorPickerView.axaml"));
-            palettePickerView.Should().Contain("Text=\"Custom…\"");
             palettePickerView.Should().Contain("IsVisible=\"{Binding HasCustomOption}\"",
-                "Custom RGB must be an option inside the existing preset flyout");
+                "the custom RGB editor must stay visible inside the existing preset flyout");
             palettePickerView.Should().Contain("<ColorView",
-                "selecting Custom must reveal the color surface immediately");
+                "the custom color surface must be shown alongside the presets");
+            palettePickerView.Should().NotContain("<ToggleButton",
+                "the always-visible custom color surface must not require a reveal click");
             palettePickerView.Should().NotContain("<ColorPicker ",
-                "a nested collapsed picker would require a second click after Custom");
+                "a nested collapsed picker would require another click");
             creatureView.Should().Contain("<TabItem Header=\"Equipment\"");
             creatureView.Should().Contain("SelectedItem=\"{Binding EquipmentSlots.SelectedSlot, Mode=TwoWay}\"",
                 "equipment reuses the merchant editor's focused rail/work-pane interaction");

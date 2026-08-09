@@ -113,8 +113,8 @@ namespace SWLOR.Toolset.Domain.Render
 
         /// <summary>
         /// The mesh is supplied by equipped creature armor, a helmet, or a cloak. Creature-blueprint
-        /// tint locals must not be offered or rendered for it because runtime stores those overrides
-        /// on the item instead.
+        /// material-dye tint locals are stored on that item. Semantic skin, hair and tattoo layers
+        /// still come from the creature and are merged by creature preview renderers.
         /// </summary>
         public bool UsesItemTintOverrides { get; set; }
 

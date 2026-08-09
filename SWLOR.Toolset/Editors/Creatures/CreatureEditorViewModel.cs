@@ -760,7 +760,10 @@ namespace SWLOR.Toolset.Editors.Creatures
 
         private void ApplyPreviewScene(RenderModel? model)
         {
-            TintMapEditor?.Reload(model, includeItemOwnedMaterials: false);
+            TintMapEditor?.Reload(
+                model,
+                includeItemOwnedMaterials: false,
+                includeCreatureLayersFromItemOwnedMaterials: true);
             BodyParts.SetTintMapRows(TintMapEditor?.Colors);
             PublishAnimations(model);
             PreviewScene = model == null

@@ -955,7 +955,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var selectedLayerType = layerType;
             selections = _tintMapSelections
                 .Where(selection =>
-                    selection.PaletteSource == paletteSource &&
+                    selection.GetPaletteSource(selectedLayerType) == paletteSource &&
                     selection.Material.Layers.Contains(selectedLayerType) &&
                     (!restrictToArmorPart || selection.ArmorPart == armorPart))
                 .ToList();
@@ -1799,6 +1799,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!TryGetEditableTintSelections(out var selections, out var layerType, out var layer))
                 return;
 
+            ResetCustomTintOverrides(selections, layerType, layer);
+        }
+
+        private void ResetCustomTintOverrides(
+            IReadOnlyList<TintMapMaterialSelection> selections,
+            TintMapLayerType layerType,
+            TintMapLayerDefinition layer)
+        {
+
             foreach (var selection in selections)
             {
                 TintMapService.ResetColor(_target, selection, layerType);
@@ -2094,7 +2103,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (button != 2)
                 return;
 
-            ResetCurrentCustomTintOverrides();
+            ResetCustomTintOverrides(colorTarget, colorChannel);
 
             var item = GetItem();
             DestroyObject(item);
@@ -2106,6 +2115,52 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             ChangeColor(colorTarget, colorChannel, 255);
         };
+
+        private void ResetCustomTintOverrides(
+            ColorTarget colorTarget,
+            AppearanceArmorColor colorChannel)
+        {
+            if (!TryGetArmorTintLayer(colorChannel, out var layerType))
+                return;
+
+            var item = GetItem();
+            if (!GetIsObjectValid(item))
+                return;
+
+            var armorPart = colorTarget == ColorTarget.Global
+                ? AppearanceArmor.Invalid
+                : GetArmorModelType(colorTarget);
+            var selections = _tintMapSelections
+                .Where(selection =>
+                    selection.GetPaletteSource(layerType) == item &&
+                    selection.Material.Layers.Contains(layerType) &&
+                    (armorPart == AppearanceArmor.Invalid || selection.ArmorPart == armorPart))
+                .ToList();
+            if (selections.Count == 0)
+                return;
+
+            ResetCustomTintOverrides(
+                selections,
+                layerType,
+                TintMapMaterialRegistry.GetLayer(layerType));
+        }
+
+        private static bool TryGetArmorTintLayer(
+            AppearanceArmorColor colorChannel,
+            out TintMapLayerType layerType)
+        {
+            layerType = colorChannel switch
+            {
+                AppearanceArmorColor.Leather1 => TintMapLayerType.Leather1,
+                AppearanceArmorColor.Leather2 => TintMapLayerType.Leather2,
+                AppearanceArmorColor.Cloth1 => TintMapLayerType.Cloth1,
+                AppearanceArmorColor.Cloth2 => TintMapLayerType.Cloth2,
+                AppearanceArmorColor.Metal1 => TintMapLayerType.Metal1,
+                AppearanceArmorColor.Metal2 => TintMapLayerType.Metal2,
+                _ => default
+            };
+            return colorChannel is >= AppearanceArmorColor.Leather1 and <= AppearanceArmorColor.Metal2;
+        }
 
         private AppearanceArmor GetArmorModelType(ColorTarget colorTarget)
         {

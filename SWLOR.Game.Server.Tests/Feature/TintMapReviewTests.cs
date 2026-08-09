@@ -199,7 +199,7 @@ public class TintMapReviewTests
         methods["TryGetSelectedTintLayer"].ToString().Should().Contain("SelectedColorCategoryIndex switch");
         methods["TryGetSelectedTintLayer"].ToString().Should().Contain("_selectedColorChannel switch");
         methods["TryGetEditableTintSelections"].ToString().Should().Contain(
-            "selection.PaletteSource == paletteSource");
+            "selection.GetPaletteSource(selectedLayerType) == paletteSource");
         methods["TryGetEditableTintSelections"].ToString().Should().Contain(
             "selection.ArmorPart == armorPart");
         methods["TryGetEditableTintSelections"].ToString().Should().Contain(
@@ -207,6 +207,70 @@ public class TintMapReviewTests
         methods["OnSelectColor"].ToString().Should().Contain("ResetCurrentCustomTintOverrides");
         methods["OnClickColorPalette"].ToString().Should().Contain("ResetCurrentCustomTintOverrides");
         methods["OnClickColorTarget"].ToString().Should().Contain("LoadTintMapEditor");
+    }
+
+    [Test]
+    public void CreatureSemanticColorsRemainCreatureOwnedOnEquippedMeshes()
+    {
+        var material = new TintMapMaterialDefinition(
+            "exposed_skin",
+            "exposed_skin",
+            TintMapLayerType.Skin,
+            TintMapLayerType.Cloth1);
+        var selection = new TintMapMaterialSelection(
+            "pmh0_chest189",
+            material,
+            paletteSource: 200,
+            creaturePaletteSource: 100,
+            usesItemColors: true,
+            AppearanceArmor.Torso);
+
+        selection.GetPaletteSource(TintMapLayerType.Skin).Should().Be(100);
+        selection.UsesItemColor(TintMapLayerType.Skin).Should().BeFalse();
+        selection.GetPaletteSource(TintMapLayerType.Cloth1).Should().Be(200);
+        selection.UsesItemColor(TintMapLayerType.Cloth1).Should().BeTrue();
+    }
+
+    [Test]
+    public void RightClickResetUsesTheClickedArmorChannel()
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "AppearanceEditorViewModel.cs");
+        var method = FindMethod(source, "OnClickClearColor");
+
+        method.ToString().Should().Contain(
+            "ResetCustomTintOverrides(colorTarget, colorChannel)");
+        method.ToString().Should().NotContain("ResetCurrentCustomTintOverrides()");
+    }
+
+    [Test]
+    public void WorldItemsReceiveTheirOwnTintUniformsAfterTheyBecomeVisible()
+    {
+        var resolver = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapModelResolver.cs");
+        FindMethod(resolver, nameof(TintMapModelResolver.GetWorldItemSelections))
+            .ToString().Should().Contain("ItemClass");
+
+        var service = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapService.cs");
+        FindMethod(service, nameof(TintMapService.OnModuleUnacquire))
+            .ToString().Should().Contain("QueueItemRefresh(GetModuleItemLost())");
+        FindMethod(service, nameof(TintMapService.OnAreaEnter))
+            .ToString().Should().Contain("QueueWorldItemsInArea(GetArea(creature))");
+        FindMethod(service, nameof(TintMapService.ApplyCurrentItemColors))
+            .ToString().Should().Contain("GetWorldItemSelections(item)");
     }
 
     [Test]

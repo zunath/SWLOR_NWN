@@ -79,6 +79,73 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             return selections;
         }
 
+        public static IReadOnlyList<TintMapMaterialSelection> GetWorldItemSelections(uint item)
+        {
+            var selections = new List<TintMapMaterialSelection>();
+            if (!GetIsObjectValid(item) || GetObjectType(item) != ObjectType.Item)
+                return selections;
+
+            var baseItem = (int)GetBaseItemType(item);
+            var itemClass = Get2DAString("baseitems", "ItemClass", baseItem).ToLowerInvariant();
+            if (string.IsNullOrWhiteSpace(itemClass) || itemClass == "****")
+                return selections;
+
+            var seenSelections = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            if (!int.TryParse(Get2DAString("baseitems", "ModelType", baseItem), out var modelType))
+                return selections;
+
+            if (modelType is 0 or 1)
+            {
+                var modelId = GetItemAppearance(item, ItemAppearanceType.SimpleModel, 0);
+                if (modelId > 0)
+                {
+                    AddModelSelections(
+                        selections,
+                        seenSelections,
+                        $"{itemClass}_{modelId:D3}",
+                        item,
+                        item,
+                        true,
+                        AppearanceArmor.Invalid);
+                }
+            }
+            else if (modelType == 2)
+            {
+                AddWorldItemPart(
+                    item, itemClass, "b", AppearanceWeapon.Bottom, selections, seenSelections);
+                AddWorldItemPart(
+                    item, itemClass, "m", AppearanceWeapon.Middle, selections, seenSelections);
+                AddWorldItemPart(
+                    item, itemClass, "t", AppearanceWeapon.Top, selections, seenSelections);
+            }
+
+            // ModelType 3 armor uses the engine's generic ground bag. Its tintable body-part
+            // models only exist while worn and are already handled by GetCurrentSelections.
+            return selections;
+        }
+
+        private static void AddWorldItemPart(
+            uint item,
+            string itemClass,
+            string partName,
+            AppearanceWeapon part,
+            ICollection<TintMapMaterialSelection> selections,
+            ISet<string> seenSelections)
+        {
+            var modelId = GetItemAppearance(item, ItemAppearanceType.WeaponModel, (int)part);
+            if (modelId <= 0)
+                return;
+
+            AddModelSelections(
+                selections,
+                seenSelections,
+                $"{itemClass}_{partName}_{modelId:D3}",
+                item,
+                item,
+                true,
+                AppearanceArmor.Invalid);
+        }
+
         private static void AddPartsAppearanceSelections(
             uint creature,
             ICollection<TintMapMaterialSelection> selections,
@@ -111,6 +178,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     seenSelections,
                     model,
                     usesItemColors ? armor : creature,
+                    creature,
                     usesItemColors,
                     armorPart);
             }
@@ -125,6 +193,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                         seenSelections,
                         $"{prefix}robe{robeId:D3}".ToLowerInvariant(),
                         armor,
+                        creature,
                         true,
                         AppearanceArmor.Robe);
                 }
@@ -184,6 +253,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 seenSelections,
                 $"{creaturePrefix}cloak_{textureId:D3}".ToLowerInvariant(),
                 cloak,
+                creature,
                 true,
                 AppearanceArmor.Invalid);
             if (!foundRaceSpecific)
@@ -193,6 +263,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     seenSelections,
                     $"cloak_{textureId:D3}".ToLowerInvariant(),
                     cloak,
+                    creature,
                     true,
                     AppearanceArmor.Invalid);
             }
@@ -259,6 +330,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 seenSelections,
                 $"{modelPrefix}_{modelId:D3}".ToLowerInvariant(),
                 item,
+                creature,
                 true,
                 AppearanceArmor.Invalid);
             if (!foundModel && !string.IsNullOrWhiteSpace(fallbackModelPrefix))
@@ -268,6 +340,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     seenSelections,
                     $"{fallbackModelPrefix}_{modelId:D3}".ToLowerInvariant(),
                     item,
+                    creature,
                     true,
                     AppearanceArmor.Invalid);
             }
@@ -293,6 +366,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 seenSelections,
                 model,
                 creature,
+                creature,
                 false,
                 AppearanceArmor.Invalid);
         }
@@ -302,6 +376,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             ISet<string> seenSelections,
             string model,
             uint paletteSource,
+            uint creaturePaletteSource,
             bool usesItemColors,
             AppearanceArmor armorPart)
         {
@@ -317,6 +392,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     model,
                     material,
                     paletteSource,
+                    creaturePaletteSource,
                     usesItemColors,
                     armorPart));
             }

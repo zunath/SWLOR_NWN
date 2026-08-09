@@ -3284,13 +3284,16 @@ void main()
                             PreviewMeshTransform(meshRange, buffer, preview, idleElapsed) * instanceTransform);
                         UseLayerColors(
                             meshRange.LayerColorIndices, instance.LayerColorIndices, raw.Model);
+                        var itemOwnedCreatureMesh = instance.Kind == InstanceMarkerKind.Creature &&
+                                                    meshRange.UsesItemTintOverrides;
                         BindMeshTexture(
                             meshRange.TextureName,
                             meshRange.MaterialName,
                             meshRange.LayerColorIndices,
-                            instance.Kind == InstanceMarkerKind.Creature && meshRange.UsesItemTintOverrides
+                            itemOwnedCreatureMesh
                                 ? meshRange.TintMapOverrides
-                                : instance.TintMapOverrides);
+                                : instance.TintMapOverrides,
+                            itemOwnedCreatureMesh ? instance.TintMapOverrides : null);
 
                         unsafe
                         {
@@ -3862,19 +3865,23 @@ void main()
                             UseLayerColors(
                                 meshRange.LayerColorIndices, placed.LayerColorIndices, placed.Model);
                             var tintMapOverrides = placed.TintMapOverrides;
+                            IReadOnlyDictionary<string, int>? creatureTintMapOverrides = null;
                             if (meshRange.UsesItemTintOverrides)
                             {
                                 tintMapOverrides = meshRange.TintMapOverrides.Count > 0 ||
                                                    placed.Kind != InstanceMarkerKind.Item
                                     ? meshRange.TintMapOverrides
                                     : placed.TintMapOverrides;
+                                if (placed.Kind == InstanceMarkerKind.Creature)
+                                    creatureTintMapOverrides = placed.TintMapOverrides;
                             }
 
                             BindMeshTexture(
                                 meshRange.TextureName,
                                 meshRange.MaterialName,
                                 null,
-                                tintMapOverrides);
+                                tintMapOverrides,
+                                creatureTintMapOverrides);
                         }
 
                         unsafe
@@ -4949,7 +4956,8 @@ void main()
             string? textureName,
             string? materialName = null,
             IReadOnlyDictionary<int, int>? layerColorIndices = null,
-            IReadOnlyDictionary<string, int>? tintMapOverrides = null)
+            IReadOnlyDictionary<string, int>? tintMapOverrides = null,
+            IReadOnlyDictionary<string, int>? creatureTintMapOverrides = null)
         {
             var surfaceName = !string.IsNullOrWhiteSpace(materialName)
                 ? materialName
@@ -4966,7 +4974,12 @@ void main()
                 var activeLayerColors = layerColorIndices is { Count: > 0 }
                     ? layerColorIndices
                     : _layerColors;
-                BindTintMapState(surfaceName!, material, activeLayerColors, tintMapOverrides);
+                BindTintMapState(
+                    surfaceName!,
+                    material,
+                    activeLayerColors,
+                    tintMapOverrides,
+                    creatureTintMapOverrides);
                 SetUniformFloat(
                     "alphaCutoff",
                     material.TintAlphaTexId != 0
@@ -5092,7 +5105,8 @@ void main()
             string materialName,
             MeshMaterial material,
             IReadOnlyDictionary<int, int>? layerColorIndices,
-            IReadOnlyDictionary<string, int>? tintMapOverrides)
+            IReadOnlyDictionary<string, int>? tintMapOverrides,
+            IReadOnlyDictionary<string, int>? creatureTintMapOverrides)
         {
             var hasTintMap = material.TintMapTexId != 0 && material.TintPaletteTexId != 0;
             var hasTintAlpha = hasTintMap && material.TintAlphaTexId != 0;
@@ -5116,8 +5130,12 @@ void main()
             {
                 var layer = (TintMapLayerType)layerValue;
                 var variableName = TintMapVariable.GetName(materialName, layer);
-                var savedValue = tintMapOverrides != null &&
-                                 tintMapOverrides.TryGetValue(variableName, out var saved)
+                var activeOverrides = TintMapVariable.IsCreatureColorLayer(layer) &&
+                                      creatureTintMapOverrides != null
+                    ? creatureTintMapOverrides
+                    : tintMapOverrides;
+                var savedValue = activeOverrides != null &&
+                                 activeOverrides.TryGetValue(variableName, out var saved)
                     ? saved
                     : 0;
 

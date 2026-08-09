@@ -179,6 +179,53 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void CreatureBodyIncludesSemanticSkinFromEquippedBodyMeshesOnly()
+        {
+            var catalog = TintMapCatalog.Load(Resources());
+            catalog.Should().NotBeNull();
+            var editor = new TintMapEditorViewModel(
+                new VarTable(new JsonGffStruct()),
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                catalog!);
+            var equippedChest = ModelWith("pmh0_chest189").Meshes.Single();
+            equippedChest.UsesItemTintOverrides = true;
+
+            editor.Reload(
+                new RenderModel { Meshes = new[] { equippedChest } },
+                includeItemOwnedMaterials: false,
+                includeCreatureLayersFromItemOwnedMaterials: true);
+
+            editor.Colors.Should().ContainSingle();
+            editor.Colors.Single().Layer.Should().Be(TintMapLayerType.Skin);
+        }
+
+        [Test]
+        public void CreatureAndEquipmentOverridesMergeBySemanticLayerOwnership()
+        {
+            var skinKey = TintMapVariable.GetName("pmh0_chest189", TintMapLayerType.Skin);
+            var clothKey = TintMapVariable.GetName("pmh0_chest189", TintMapLayerType.Cloth1);
+            var creature = new Dictionary<string, int>
+            {
+                [skinKey] = 111,
+                [clothKey] = 222
+            };
+            var item = new Dictionary<string, int>
+            {
+                [skinKey] = 333,
+                [clothKey] = 444
+            };
+
+            var merged = TintMapOverrides.MergeCreatureLayers(creature, item);
+
+            merged[skinKey].Should().Be(111);
+            merged[clothKey].Should().Be(444);
+        }
+
+        [Test]
         public async Task CreatureBodyColorCombinesPresetAndCustomRgbForOneSemanticChannel()
         {
             var creature = new ModuleWorkspace(CorpusLocator.ModuleDirectory)

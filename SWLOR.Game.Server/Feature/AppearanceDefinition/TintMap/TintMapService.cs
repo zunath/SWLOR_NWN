@@ -46,6 +46,13 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 return;
 
             QueueRefresh(creature);
+            QueueWorldItemsInArea(GetArea(creature));
+        }
+
+        [NWNEventHandler(ScriptName.OnModuleUnacquire)]
+        public static void OnModuleUnacquire()
+        {
+            QueueItemRefresh(GetModuleItemLost());
         }
 
         [NWNEventHandler(ScriptName.OnModuleEquip)]
@@ -91,6 +98,24 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             }
         }
 
+        public static void ApplyCurrentItemColors(uint item)
+        {
+            if (!GetIsObjectValid(item) ||
+                GetObjectType(item) != ObjectType.Item ||
+                GetIsObjectValid(GetItemPossessor(item)))
+            {
+                return;
+            }
+
+            foreach (var selection in TintMapModelResolver.GetWorldItemSelections(item))
+            {
+                foreach (var layer in selection.Material.Layers)
+                {
+                    ApplyColor(item, selection, layer, GetEffectiveColor(OBJECT_INVALID, selection, layer));
+                }
+            }
+        }
+
         public static void SetColor(
             uint creature,
             TintMapMaterialSelection selection,
@@ -99,8 +124,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         {
             var savedColor = color.ToStoredValue();
             var variableName = TintMapVariable.GetName(selection.Material.Resref, layer);
-            SetLocalInt(selection.PaletteSource, variableName, savedColor);
-            SaveDroidOverride(creature, selection, variableName, savedColor);
+            SetLocalInt(selection.GetPaletteSource(layer), variableName, savedColor);
+            SaveDroidOverride(creature, selection, layer, variableName, savedColor);
             ApplyColor(
                 creature,
                 selection,
@@ -114,8 +139,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             TintMapLayerType layer)
         {
             var variableName = TintMapVariable.GetName(selection.Material.Resref, layer);
-            DeleteLocalInt(selection.PaletteSource, variableName);
-            SaveDroidOverride(creature, selection, variableName, 0);
+            DeleteLocalInt(selection.GetPaletteSource(layer), variableName);
+            SaveDroidOverride(creature, selection, layer, variableName, 0);
             ApplyColor(
                 creature,
                 selection,
@@ -129,7 +154,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             out TintMapColor color)
         {
             var savedColor = GetLocalInt(
-                selection.PaletteSource,
+                selection.GetPaletteSource(layer),
                 TintMapVariable.GetName(selection.Material.Resref, layer));
             return TintMapColor.TryFromStoredValue(savedColor, out color);
         }
@@ -177,6 +202,14 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             DelayCommand(RefreshDelaySeconds, () => ApplyCurrentColors(creature));
         }
 
+        public static void QueueItemRefresh(uint item)
+        {
+            if (!GetIsObjectValid(item))
+                return;
+
+            DelayCommand(RefreshDelaySeconds, () => ApplyCurrentItemColors(item));
+        }
+
         public static void QueueRefreshAndEditor(uint creature, uint player)
         {
             QueueRefresh(creature);
@@ -188,13 +221,26 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 () => Gui.PublishRefreshEvent(player, new AppearanceChangedRefreshEvent()));
         }
 
+        private static void QueueWorldItemsInArea(uint area)
+        {
+            if (!GetIsObjectValid(area))
+                return;
+
+            for (var item = GetFirstObjectInArea(area, ObjectType.Item);
+                 GetIsObjectValid(item);
+                 item = GetNextObjectInArea(area, ObjectType.Item))
+            {
+                QueueItemRefresh(item);
+            }
+        }
+
         private static TintMapColorSelection GetEffectiveColor(
             uint creature,
             TintMapMaterialSelection selection,
             TintMapLayerType layer)
         {
             var savedColor = GetLocalInt(
-                selection.PaletteSource,
+                selection.GetPaletteSource(layer),
                 TintMapVariable.GetName(selection.Material.Resref, layer));
 
             var standardColor = GetStandardColor(creature, selection, layer);
@@ -213,7 +259,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             TintMapMaterialSelection selection,
             TintMapLayerType layer)
         {
-            if (selection.UsesItemColors)
+            if (selection.UsesItemColor(layer))
             {
                 var itemColor = layer switch
                 {
@@ -260,7 +306,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 _ => (ColorChannel)(-1)
             };
 
-            return (int)creatureColor >= 0
+            return (int)creatureColor >= 0 && GetObjectType(creature) == ObjectType.Creature
                 ? Math.Clamp(GetColor(creature, creatureColor), 0, TintMapMaterialRegistry.PaletteColorCount - 1)
                 : 0;
         }
@@ -311,15 +357,17 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         private static void SaveDroidOverride(
             uint creature,
             TintMapMaterialSelection selection,
+            TintMapLayerType layer,
             string variableName,
             int savedColor)
         {
             if (!Droid.IsDroid(creature))
                 return;
 
-            if (selection.PaletteSource != creature)
+            var paletteSource = selection.GetPaletteSource(layer);
+            if (paletteSource != creature)
             {
-                Droid.UpdateEquippedItemSnapshot(creature, selection.PaletteSource);
+                Droid.UpdateEquippedItemSnapshot(creature, paletteSource);
                 return;
             }
 

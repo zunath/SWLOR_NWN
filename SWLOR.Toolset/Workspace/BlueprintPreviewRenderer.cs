@@ -475,16 +475,20 @@ namespace SWLOR.Toolset.Workspace
             var layerColors = mesh.LayerColorIndices.Count > 0
                 ? mesh.LayerColorIndices
                 : fallbackLayerColors;
-            // Composed creature equipment carries its owning item's locals on the mesh and must never
-            // inherit creature-blueprint locals. A root item preview also marks its mesh item-owned,
-            // but has no nested snapshot; only that path falls back to the blueprint's own locals.
+            // Composed creature equipment carries its material-dye locals on the mesh. Creature
+            // skin, hair and tattoo overrides remain semantic appearance colors, so those four
+            // layers are merged from the creature root. A root item preview has no nested snapshot
+            // and instead falls back to the item blueprint's own locals for every layer.
             var activeTintMapOverrides = tintMapOverrides;
             if (mesh.UsesItemTintOverrides)
             {
-                activeTintMapOverrides = mesh.TintMapOverrides.Count > 0 ||
-                                         !useBlueprintOverridesForItemOwnedMeshes
-                    ? mesh.TintMapOverrides
-                    : tintMapOverrides;
+                activeTintMapOverrides = useBlueprintOverridesForItemOwnedMeshes
+                    ? mesh.TintMapOverrides.Count > 0
+                        ? mesh.TintMapOverrides
+                        : tintMapOverrides
+                    : TintMapOverrides.MergeCreatureLayers(
+                        tintMapOverrides,
+                        mesh.TintMapOverrides);
             }
             return _textures.Get(
                 surfaceName,

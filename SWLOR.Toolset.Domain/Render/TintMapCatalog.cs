@@ -76,21 +76,47 @@ namespace SWLOR.Toolset.Domain.Render
         public IReadOnlyList<TintMapMaterialDefinition> FindMaterials(
             RenderModel? model,
             bool includeItemOwnedMaterials = true,
-            bool includeNonItemOwnedMaterials = true)
+            bool includeNonItemOwnedMaterials = true,
+            bool includeCreatureLayersFromItemOwnedMaterials = false)
         {
             if (model == null)
                 return Array.Empty<TintMapMaterialDefinition>();
 
-            return model.Meshes
-                .Where(mesh =>
-                    (includeItemOwnedMaterials || !mesh.UsesItemTintOverrides) &&
-                    (includeNonItemOwnedMaterials || mesh.UsesItemTintOverrides))
-                .Select(mesh => mesh.MaterialName)
-                .Where(material => !string.IsNullOrWhiteSpace(material))
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .Select(material => _materials.GetValueOrDefault(material!))
-                .Where(material => material != null)
-                .Cast<TintMapMaterialDefinition>()
+            var layersByMaterial = new Dictionary<string, HashSet<TintMapLayerType>>(
+                StringComparer.OrdinalIgnoreCase);
+            foreach (var mesh in model.Meshes)
+            {
+                if (string.IsNullOrWhiteSpace(mesh.MaterialName) ||
+                    !_materials.TryGetValue(mesh.MaterialName, out var material))
+                {
+                    continue;
+                }
+
+                var includeWholeMaterial = mesh.UsesItemTintOverrides
+                    ? includeItemOwnedMaterials
+                    : includeNonItemOwnedMaterials;
+                var layers = includeWholeMaterial
+                    ? material.Layers
+                    : mesh.UsesItemTintOverrides && includeCreatureLayersFromItemOwnedMaterials
+                        ? material.Layers.Where(TintMapVariable.IsCreatureColorLayer).ToArray()
+                        : Array.Empty<TintMapLayerType>();
+                if (layers.Count == 0)
+                    continue;
+
+                if (!layersByMaterial.TryGetValue(material.Resref, out var selectedLayers))
+                {
+                    selectedLayers = new HashSet<TintMapLayerType>();
+                    layersByMaterial[material.Resref] = selectedLayers;
+                }
+
+                selectedLayers.UnionWith(layers);
+            }
+
+            return layersByMaterial
+                .Select(pair => new TintMapMaterialDefinition(
+                    pair.Key,
+                    pair.Key,
+                    pair.Value.OrderBy(layer => layer).ToArray()))
                 .OrderBy(material => material.Name, StringComparer.OrdinalIgnoreCase)
                 .ToArray();
         }

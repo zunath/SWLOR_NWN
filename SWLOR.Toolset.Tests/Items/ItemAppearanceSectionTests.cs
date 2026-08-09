@@ -1,3 +1,4 @@
+using Avalonia.Headless.NUnit;
 using Avalonia.Media;
 using FluentAssertions;
 using NUnit.Framework;
@@ -356,7 +357,7 @@ namespace SWLOR.Toolset.Tests.Items
                 cell.IsPickerOpen.Should().BeFalse("picking closes the popup");
             }
 
-            [Test]
+            [AvaloniaTest]
             public void CustomRgbIsAChoiceInsideThePresetPickerAndTheCurrentPresetClearsIt()
             {
                 var stored = 1;

@@ -26,12 +26,13 @@
               BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" />
     </ToggleButton>
 
-    <!-- Custom ColorView interaction must never dismiss this editor. Presets deliberately close it
-         through Pick(), and the row's toggle remains the explicit open/close control. -->
+    <!-- Light dismiss gives the picker normal popup behavior: interaction inside the ColorView
+         keeps it open, while a click anywhere else closes it. Presets deliberately close it
+         through Pick() as well. -->
     <Popup Grid.Column="1"
            IsOpen="{Binding IsPickerOpen, Mode=TwoWay}"
            PlacementTarget="{Binding #PickerButton}" Placement="Bottom"
-           IsLightDismissEnabled="False">
+           IsLightDismissEnabled="True">
       <Border Background="{DynamicResource PanelBrush}" CornerRadius="4" Padding="8"
               BorderBrush="{DynamicResource RuleStrongBrush}" BorderThickness="1">
           <StackPanel Width="292" Spacing="8">

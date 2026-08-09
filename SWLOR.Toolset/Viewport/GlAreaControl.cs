@@ -291,7 +291,13 @@ vec4 ResolveTintMapColor()
         vec2(paletteU, paletteRow),
         0.0);
     if (custom.a > 0.5)
+    {
         paletteColor.rgb = custom.rgb * shade;
+        // A direct RGB choice must not inherit the hidden preset row's reflection mask. Without
+        // this, the same custom color can turn chrome/grey depending on the preset selected before
+        // it. Presets retain their authored PLT environment coverage through paletteColor.a.
+        paletteColor.a = 1.0;
+    }
     return paletteColor;
 }
 

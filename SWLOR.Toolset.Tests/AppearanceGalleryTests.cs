@@ -588,8 +588,8 @@ namespace SWLOR.Toolset.Tests
                 "IsOpen=\"{Binding IsPickerOpen, Mode=TwoWay}\"",
                 "custom RGB changes must not dismiss the palette popup");
             palettePickerView.Should().Contain(
-                "IsLightDismissEnabled=\"False\"",
-                "pointer interaction inside the custom ColorView must not light-dismiss the popup");
+                "IsLightDismissEnabled=\"True\"",
+                "a click outside the combined preset/custom picker must dismiss it");
             palettePickerView.Should().NotContain("<Flyout",
                 "an auto-managed flyout closes during live custom color edits");
             palettePickerView.Should().NotContain("<ColorPicker ",

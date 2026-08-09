@@ -791,6 +791,7 @@ namespace SWLOR.Toolset.Editors.Creatures
                             // The default model-preview camera sits on the -Y side while creature
                             // fronts are authored toward +Y, so turn the model around to greet the user.
                             Orientation = new Vector2(-1f, 0f),
+                            LayerColorIndices = CurrentLayerColors(model),
                             Model = model,
                             TintMapOverrides = TintMapOverrides.Read(_store.Locals)
                         }
@@ -798,6 +799,26 @@ namespace SWLOR.Toolset.Editors.Creatures
                     Diagnostics = new AreaSceneDiagnostics()
                 };
             OnPropertyChanged(nameof(PreviewScene));
+        }
+
+        /// <summary>
+        /// Publishes the creature's current semantic palette colors on the scene instance. The
+        /// retained model is an immutable geometry snapshot, so its palette dictionary still
+        /// contains the values from the last model build. Reusing that dictionary made a color
+        /// selection appear only after an unrelated body-part edit forced the model to rebuild.
+        /// </summary>
+        private IReadOnlyDictionary<int, int> CurrentLayerColors(RenderModel model)
+        {
+            var colors = model.LayerColorIndices.ToDictionary(pair => pair.Key, pair => pair.Value);
+            colors[SWLOR.NWN.Formats.Plt.PltLayers.Skin] =
+                (int)(_store.GetInteger(BehaviorFieldStorage.Field, "Color_Skin") ?? 0);
+            colors[SWLOR.NWN.Formats.Plt.PltLayers.Hair] =
+                (int)(_store.GetInteger(BehaviorFieldStorage.Field, "Color_Hair") ?? 0);
+            colors[SWLOR.NWN.Formats.Plt.PltLayers.Tattoo1] =
+                (int)(_store.GetInteger(BehaviorFieldStorage.Field, "Color_Tattoo1") ?? 0);
+            colors[SWLOR.NWN.Formats.Plt.PltLayers.Tattoo2] =
+                (int)(_store.GetInteger(BehaviorFieldStorage.Field, "Color_Tattoo2") ?? 0);
+            return colors;
         }
 
         private void PublishAnimations(RenderModel? model)

@@ -275,8 +275,10 @@ namespace SWLOR.Toolset.Tests
                 "result = mix(SampleEnvironmentMap(norm), result, environmentDiffuseCoverage);",
                 "Aurora draws an unlit environment pass and source-alpha blends the lit diffuse on top");
             shader.Should().Contain("paletteColor.rgb = custom.rgb * shade;");
+            shader.Should().Contain("paletteColor.a = 1.0;",
+                "custom RGB must not inherit the previously selected preset's reflection mask");
             shader.Should().Contain("return paletteColor;",
-                "custom RGB replaces only color and must retain the legacy palette's environment coverage");
+                "custom RGB must retain the tint map's authored shade detail");
             shader.Should().NotContain(
                 "(ambientColor + diff * lightColor) * surfaceColor",
                 "lighting the combined passes incorrectly darkens reflective PLT regions");

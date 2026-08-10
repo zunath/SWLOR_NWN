@@ -725,7 +725,7 @@ public class GeneratedWeaponPerkBehaviorTests
             "public static void TrackHostileAbilityActivity(",
             StringComparison.Ordinal);
         var hostileAbilityActivityEnd = combatSource.IndexOf(
-            "private static void TrackHostileDamageReceivedActivity(",
+            "private static void TrackHostileDefensiveCombatEntryActivity(",
             hostileAbilityActivityStart,
             StringComparison.Ordinal);
         hostileAbilityActivityEnd.Should().BeGreaterThan(hostileAbilityActivityStart);
@@ -735,19 +735,19 @@ public class GeneratedWeaponPerkBehaviorTests
         hostileAbilityActivitySource.Should().NotContain("_lastCombatActivity[creature] = now;",
             "hostile attempts must not suppress landed-opening riders such as Venatic Recovery");
 
-        var incomingDamageActivityStart = hostileAbilityActivityEnd;
-        var incomingDamageActivityEnd = combatSource.IndexOf(
+        var defensiveCombatEntryActivityStart = hostileAbilityActivityEnd;
+        var defensiveCombatEntryActivityEnd = combatSource.IndexOf(
             "private static void ReportCombatEntryIfNeeded(",
-            incomingDamageActivityStart,
+            defensiveCombatEntryActivityStart,
             StringComparison.Ordinal);
-        incomingDamageActivityEnd.Should().BeGreaterThan(incomingDamageActivityStart);
-        var incomingDamageActivitySource = combatSource[incomingDamageActivityStart..incomingDamageActivityEnd];
-        incomingDamageActivitySource.Should().Contain("ReportCombatEntryIfNeeded(creature, now);");
-        incomingDamageActivitySource.Should().Contain("_lastIncomingDamageActivity[creature] = now;");
-        incomingDamageActivitySource.Should().NotContain("_lastCombatActivity[creature] = now;",
+        defensiveCombatEntryActivityEnd.Should().BeGreaterThan(defensiveCombatEntryActivityStart);
+        var defensiveCombatEntryActivitySource = combatSource[defensiveCombatEntryActivityStart..defensiveCombatEntryActivityEnd];
+        defensiveCombatEntryActivitySource.Should().Contain("ReportCombatEntryIfNeeded(creature, now);");
+        defensiveCombatEntryActivitySource.Should().Contain("_lastHostileIncomingActivity[creature] = now;");
+        defensiveCombatEntryActivitySource.Should().NotContain("_lastCombatActivity[creature] = now;",
             "taking damage must not suppress Venatic Recovery on the defender's retaliation");
 
-        var reportCombatEntryStart = incomingDamageActivityEnd;
+        var reportCombatEntryStart = defensiveCombatEntryActivityEnd;
         var reportCombatEntryEnd = combatSource.IndexOf(
             "private static bool HasRecentCombatEntryActivity(",
             reportCombatEntryStart,
@@ -756,7 +756,10 @@ public class GeneratedWeaponPerkBehaviorTests
         var reportCombatEntrySource = combatSource[reportCombatEntryStart..reportCombatEntryEnd];
         reportCombatEntrySource.Should().Contain("!HasRecentCombatEntryActivity(creature, now)");
         reportCombatEntrySource.Should().Contain("ReportFirstStrikeCombatEntry(creature, now);");
-        combatSource.Should().Contain("TrackHostileDamageReceivedActivity(defender);");
+        combatSource.Should().Contain("TrackHostileDefensiveCombatEntryActivity(defender);");
+        combatSource.Should().Contain("TrackHostileDefensiveCombatEntryActivity(creature);");
+        combatSource.Should().Contain("GetIsReactionTypeHostile(attacker, creature)");
+        nativeAttackSource.Should().Contain("Combat.TrackAvoidedAttack(defender.m_idSelf, attacker.m_idSelf);");
 
         var hostileCombatImpactStart = abilitySource.IndexOf(
             "private static int ApplyHostileCombatImpact(",

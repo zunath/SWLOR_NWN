@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<uint, DateTime> _recentDeflections = new();
         private static readonly Dictionary<uint, DateTime> _lastCombatActivity = new();
         private static readonly Dictionary<uint, DateTime> _lastHostileAbilityAttemptActivity = new();
-        private static readonly Dictionary<uint, DateTime> _lastIncomingDamageActivity = new();
+        private static readonly Dictionary<uint, DateTime> _lastHostileIncomingActivity = new();
         private static readonly Dictionary<uint, DateTime> _lastAttackActivity = new();
         private static readonly Dictionary<uint, DateTime> _lastCombatAbilityUse = new();
         private static readonly Dictionary<(uint, uint), SuppressionAbilityUseState> _pendingSuppressionAbilityUses = new();
@@ -2205,7 +2205,7 @@ namespace SWLOR.Game.Server.Service
 
             if (GetIsObjectValid(attacker) && GetIsReactionTypeHostile(attacker, defender))
             {
-                TrackHostileDamageReceivedActivity(defender);
+                TrackHostileDefensiveCombatEntryActivity(defender);
                 EmbattledStatusEffect.Refresh(defender, attacker);
             }
         }
@@ -2850,16 +2850,16 @@ namespace SWLOR.Game.Server.Service
             _lastHostileAbilityAttemptActivity[creature] = now;
         }
 
-        private static void TrackHostileDamageReceivedActivity(uint creature)
+        private static void TrackHostileDefensiveCombatEntryActivity(uint creature)
         {
             if (!GetIsObjectValid(creature))
                 return;
 
             var now = DateTime.UtcNow;
             ReportCombatEntryIfNeeded(creature, now);
-            // Incoming damage starts combat for First Strike visibility without consuming the
+            // Incoming hostile actions start combat for First Strike visibility without consuming the
             // landed-opening timestamp that Venatic Recovery reads when the defender retaliates.
-            _lastIncomingDamageActivity[creature] = now;
+            _lastHostileIncomingActivity[creature] = now;
         }
 
         private static void ReportCombatEntryIfNeeded(uint creature, DateTime now)
@@ -2874,8 +2874,8 @@ namespace SWLOR.Game.Server.Service
                     (now - lastCombatActivity).TotalSeconds <= 30) ||
                 (_lastHostileAbilityAttemptActivity.TryGetValue(creature, out var lastHostileAbilityAttempt) &&
                     (now - lastHostileAbilityAttempt).TotalSeconds <= 30) ||
-                (_lastIncomingDamageActivity.TryGetValue(creature, out var lastIncomingDamage) &&
-                    (now - lastIncomingDamage).TotalSeconds <= 30);
+                (_lastHostileIncomingActivity.TryGetValue(creature, out var lastHostileIncomingActivity) &&
+                    (now - lastHostileIncomingActivity).TotalSeconds <= 30);
         }
 
         public static void TrackStealthOpeningWindow(uint creature)
@@ -3074,10 +3074,13 @@ namespace SWLOR.Game.Server.Service
             ApplyGuardedHitNextSkillAbilityStatusEffects(creature);
         }
 
-        public static void TrackAvoidedAttack(uint creature)
+        public static void TrackAvoidedAttack(uint creature, uint attacker)
         {
             if (!GetIsObjectValid(creature))
                 return;
+
+            if (GetIsObjectValid(attacker) && GetIsReactionTypeHostile(attacker, creature))
+                TrackHostileDefensiveCombatEntryActivity(creature);
 
             var skillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(creature, StatType.AvoidedAttackNextSkillAbilitySkillType));
             var adjustment = Stat.GetStatAdjustment(creature, StatType.AvoidedAttackNextSkillAbilityStaminaCostAdjustment);
@@ -4655,7 +4658,7 @@ namespace SWLOR.Game.Server.Service
             _recentDeflections.Remove(creature);
             _lastCombatActivity.Remove(creature);
             _lastHostileAbilityAttemptActivity.Remove(creature);
-            _lastIncomingDamageActivity.Remove(creature);
+            _lastHostileIncomingActivity.Remove(creature);
             _lastAttackActivity.Remove(creature);
             _lastCombatAbilityUse.Remove(creature);
             foreach (var key in _pendingSuppressionAbilityUses.Keys.Where(x => x.Item1 == creature || x.Item2 == creature).ToList())

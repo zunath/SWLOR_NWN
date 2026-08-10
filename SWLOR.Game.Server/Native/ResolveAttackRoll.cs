@@ -314,7 +314,7 @@ namespace SWLOR.Game.Server.Native
                 // Miss
                 else
                 {
-                    Combat.TrackAvoidedAttack(defender.m_idSelf);
+                    Combat.TrackAvoidedAttack(defender.m_idSelf, attacker.m_idSelf);
                     Combat.TrackAttackActivity(attacker.m_idSelf);
 
                     if (deflected)

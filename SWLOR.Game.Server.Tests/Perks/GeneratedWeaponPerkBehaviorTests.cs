@@ -706,6 +706,33 @@ public class GeneratedWeaponPerkBehaviorTests
         firstStrikeSource.Should().Contain("First Strike recharged: Attacker={Attacker}");
         firstStrikeSource.Should().Contain("First Strike reset after combat: Attacker={Attacker}");
 
+        var firstCombatAttackStart = combatSource.IndexOf(
+            "private static void ApplyFirstCombatAttackStaminaRestore(",
+            StringComparison.Ordinal);
+        var firstCombatAttackEnd = combatSource.IndexOf(
+            "private static void ApplyAutoAttackHamstringEffect(",
+            firstCombatAttackStart,
+            StringComparison.Ordinal);
+        firstCombatAttackEnd.Should().BeGreaterThan(firstCombatAttackStart);
+        var firstCombatAttackSource = combatSource[firstCombatAttackStart..firstCombatAttackEnd];
+        firstCombatAttackSource.Should().Contain("_firstCombatAttackConsumed.Add(attacker)");
+        firstCombatAttackSource.Should().NotContain("_lastCombatActivity",
+            "a prolonged combat entry can remain active through hostile attempts and incoming attacks");
+
+        var damageDealtEffectsStart = combatSource.IndexOf(
+            "public static void ApplyDamageDealtEffects(",
+            StringComparison.Ordinal);
+        var damageDealtEffectsEnd = combatSource.IndexOf(
+            "private static void ApplyHeavyVibrobladeDefenseDamageRecovery(",
+            damageDealtEffectsStart,
+            StringComparison.Ordinal);
+        damageDealtEffectsEnd.Should().BeGreaterThan(damageDealtEffectsStart);
+        var damageDealtEffectsSource = combatSource[damageDealtEffectsStart..damageDealtEffectsEnd];
+        damageDealtEffectsSource.IndexOf("TrackCombatActivity(attacker);", StringComparison.Ordinal)
+            .Should().BeLessThan(
+                damageDealtEffectsSource.IndexOf("ApplyFirstCombatAttackStaminaRestore(attacker);", StringComparison.Ordinal),
+                "combat entry must reset the consumed state before the opening landed attack evaluates Venatic Recovery");
+
         var trackCombatActivityStart = combatSource.IndexOf(
             "private static void TrackCombatActivity(",
             StringComparison.Ordinal);
@@ -725,7 +752,7 @@ public class GeneratedWeaponPerkBehaviorTests
             "public static void TrackHostileAbilityActivity(",
             StringComparison.Ordinal);
         var hostileAbilityActivityEnd = combatSource.IndexOf(
-            "private static void TrackHostileDefensiveCombatEntryActivity(",
+            "public static void TrackHostileDefensiveCombatEntryActivity(",
             hostileAbilityActivityStart,
             StringComparison.Ordinal);
         hostileAbilityActivityEnd.Should().BeGreaterThan(hostileAbilityActivityStart);
@@ -744,8 +771,9 @@ public class GeneratedWeaponPerkBehaviorTests
         var defensiveCombatEntryActivitySource = combatSource[defensiveCombatEntryActivityStart..defensiveCombatEntryActivityEnd];
         defensiveCombatEntryActivitySource.Should().Contain("ReportCombatEntryIfNeeded(creature, now);");
         defensiveCombatEntryActivitySource.Should().Contain("_lastHostileIncomingActivity[creature] = now;");
+        defensiveCombatEntryActivitySource.Should().Contain("GetIsReactionTypeHostile(attacker, creature)");
         defensiveCombatEntryActivitySource.Should().NotContain("_lastCombatActivity[creature] = now;",
-            "taking damage must not suppress Venatic Recovery on the defender's retaliation");
+            "incoming hostile actions must not suppress Venatic Recovery on the defender's retaliation");
 
         var reportCombatEntryStart = defensiveCombatEntryActivityEnd;
         var reportCombatEntryEnd = combatSource.IndexOf(
@@ -754,12 +782,24 @@ public class GeneratedWeaponPerkBehaviorTests
             StringComparison.Ordinal);
         reportCombatEntryEnd.Should().BeGreaterThan(reportCombatEntryStart);
         var reportCombatEntrySource = combatSource[reportCombatEntryStart..reportCombatEntryEnd];
-        reportCombatEntrySource.Should().Contain("!HasRecentCombatEntryActivity(creature, now)");
+        reportCombatEntrySource.Should().Contain("HasRecentCombatEntryActivity(creature, now)");
+        reportCombatEntrySource.Should().Contain("_firstCombatAttackConsumed.Remove(creature);");
         reportCombatEntrySource.Should().Contain("ReportFirstStrikeCombatEntry(creature, now);");
-        combatSource.Should().Contain("TrackHostileDefensiveCombatEntryActivity(defender);");
-        combatSource.Should().Contain("TrackHostileDefensiveCombatEntryActivity(creature);");
-        combatSource.Should().Contain("GetIsReactionTypeHostile(attacker, creature)");
+        combatSource.Should().Contain("TrackHostileDefensiveCombatEntryActivity(defender, attacker);");
+        combatSource.Should().Contain("TrackHostileDefensiveCombatEntryActivity(creature, attacker);");
         nativeAttackSource.Should().Contain("Combat.TrackAvoidedAttack(defender.m_idSelf, attacker.m_idSelf);");
+        nativeAttackSource.Should().Contain("var wasSuccessfulBeforeDefensiveEffects = IsSuccessfulAttackResult(");
+        nativeAttackSource.Should().Contain("wasSuccessfulBeforeDefensiveEffects &&");
+        var defensiveEffectsIndex = nativeAttackSource.IndexOf(
+            "attacker.ResolveDefensiveEffects(defender, isHit ? 1 : 0);",
+            StringComparison.Ordinal);
+        defensiveEffectsIndex.Should().BeGreaterThan(-1);
+        nativeAttackSource.IndexOf(
+                "Combat.TrackAvoidedAttack(defender.m_idSelf, attacker.m_idSelf);",
+                defensiveEffectsIndex,
+                StringComparison.Ordinal)
+            .Should().BeGreaterThan(defensiveEffectsIndex,
+                "concealment can convert a provisional hit into an avoided attack");
 
         var hostileCombatImpactStart = abilitySource.IndexOf(
             "private static int ApplyHostileCombatImpact(",
@@ -771,10 +811,15 @@ public class GeneratedWeaponPerkBehaviorTests
         hostileCombatImpactEnd.Should().BeGreaterThan(hostileCombatImpactStart);
         var hostileCombatImpactSource = abilitySource[hostileCombatImpactStart..hostileCombatImpactEnd];
         hostileCombatImpactSource.Should().Contain("Combat.TrackHostileAbilityActivity(activator);");
+        hostileCombatImpactSource.Should().Contain("Combat.TrackHostileDefensiveCombatEntryActivity(target, activator);");
         hostileCombatImpactSource.IndexOf("Combat.TrackHostileAbilityActivity(activator);", StringComparison.Ordinal)
             .Should().BeLessThan(
                 hostileCombatImpactSource.IndexOf("Combat.TryResolveAbilityHit(", StringComparison.Ordinal),
                 "a missed opening cast still enters combat and must report First Strike readiness");
+        hostileCombatImpactSource.IndexOf("Combat.TrackHostileDefensiveCombatEntryActivity(target, activator);", StringComparison.Ordinal)
+            .Should().BeLessThan(
+                hostileCombatImpactSource.IndexOf("Combat.TryResolveAbilityHit(", StringComparison.Ordinal),
+                "the defender must enter combat even when the opening hostile cast misses");
         hostileCombatImpactSource.Should().Contain("firstHostileAbilityHitDamageBonusApplied: true");
         abilitySource.Should().Contain("bool firstHostileAbilityHitDamageBonusApplied = false");
         combatSource.Should().Contain("if (firstHostileAbilityHitDamageBonusApplied)");

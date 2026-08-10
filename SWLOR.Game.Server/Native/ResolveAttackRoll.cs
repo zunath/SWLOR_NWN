@@ -338,7 +338,13 @@ namespace SWLOR.Game.Server.Native
                 Log.Write(LogGroup.Attack, $"Resolving NWN defensive effects");
                 // Resolve any defensive effects (like concealment).  Do this after all the above so that the attack data is
                 // accurate.
+                var wasSuccessfulBeforeDefensiveEffects = IsSuccessfulAttackResult(pAttackData.m_nAttackResult);
                 attacker.ResolveDefensiveEffects(defender, isHit ? 1 : 0);
+                if (wasSuccessfulBeforeDefensiveEffects &&
+                    !IsSuccessfulAttackResult(pAttackData.m_nAttackResult))
+                {
+                    Combat.TrackAvoidedAttack(defender.m_idSelf, attacker.m_idSelf);
+                }
 
                 Log.Write(LogGroup.Attack, $"Building combat log message");
                 var attackerMessage = BuildAttackFeedbackMessage(

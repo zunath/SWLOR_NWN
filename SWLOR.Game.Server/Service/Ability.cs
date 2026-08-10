@@ -2113,6 +2113,7 @@ namespace SWLOR.Game.Server.Service
             using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(activator);
             var trackedImpact = GetTrackedAbilityImpact(activator);
             Combat.TrackHostileAbilityActivity(activator);
+            Combat.TrackHostileDefensiveCombatEntryActivity(target, activator);
             var perkType = trackedImpact?.Ability?.EffectiveLevelPerkType ?? PerkType.Invalid;
             var usesNPCStatScaling = ShouldUseNPCStatScaling(activator, useNPCStatScaling);
             var damageAbility = combatImpactDamageAbility != AbilityType.Invalid

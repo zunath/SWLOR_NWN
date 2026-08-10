@@ -65,6 +65,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<uint, DateTime> _lastCombatActivity = new();
         private static readonly Dictionary<uint, DateTime> _lastHostileAbilityAttemptActivity = new();
         private static readonly Dictionary<uint, DateTime> _lastHostileIncomingActivity = new();
+        private static readonly HashSet<uint> _firstCombatAttackConsumed = new();
         private static readonly Dictionary<uint, DateTime> _lastAttackActivity = new();
         private static readonly Dictionary<uint, DateTime> _lastCombatAbilityUse = new();
         private static readonly Dictionary<(uint, uint), SuppressionAbilityUseState> _pendingSuppressionAbilityUses = new();
@@ -1072,11 +1073,8 @@ namespace SWLOR.Game.Server.Service
             if (staminaRestore <= 0 || cooldownSeconds <= 0)
                 return;
 
-            if (_lastCombatActivity.TryGetValue(attacker, out var lastActivity) &&
-                (DateTime.UtcNow - lastActivity).TotalSeconds <= 30)
-            {
+            if (!_firstCombatAttackConsumed.Add(attacker))
                 return;
-            }
 
             if (!TryUseStatTrigger(attacker, StatType.FirstCombatAttackStaminaRestore, cooldownSeconds))
                 return;
@@ -1295,19 +1293,16 @@ namespace SWLOR.Game.Server.Service
 
             var appliesDirectDamageEffects = deliveryType == CombatDamageDeliveryType.Direct;
 
-            // Must run before TrackCombatActivity below updates the "last combat activity"
-            // timestamp, since this checks whether the attacker was already active in combat.
-            // Runs for direct hits only (auto-attacks and ability impacts), not DoT ticks, so
-            // that a hostile ability opener still counts as the "first attack" for Vibroknife's
-            // Venatic Recovery rather than only a raw auto-attack.
-            if (appliesDirectDamageEffects)
-                ApplyFirstCombatAttackStaminaRestore(attacker);
-
             TrackCombatActivity(attacker);
             TrackRecentDamageTarget(attacker, defender);
 
             if (!appliesDirectDamageEffects)
                 return;
+
+            // The combat-entry tracker resets this rider's consumed state before the first landed
+            // direct attack. Missed casts and incoming hostile actions keep that state alive without
+            // consuming it, so Venatic Recovery cannot trigger twice during one prolonged engagement.
+            ApplyFirstCombatAttackStaminaRestore(attacker);
 
             ApplySameTargetPressureDamageEffects(attacker, defender, skillType);
             ApplySideAttackDamageEffects(attacker, defender, skillType, damage);
@@ -2205,7 +2200,7 @@ namespace SWLOR.Game.Server.Service
 
             if (GetIsObjectValid(attacker) && GetIsReactionTypeHostile(attacker, defender))
             {
-                TrackHostileDefensiveCombatEntryActivity(defender);
+                TrackHostileDefensiveCombatEntryActivity(defender, attacker);
                 EmbattledStatusEffect.Refresh(defender, attacker);
             }
         }
@@ -2850,9 +2845,11 @@ namespace SWLOR.Game.Server.Service
             _lastHostileAbilityAttemptActivity[creature] = now;
         }
 
-        private static void TrackHostileDefensiveCombatEntryActivity(uint creature)
+        public static void TrackHostileDefensiveCombatEntryActivity(uint creature, uint attacker)
         {
-            if (!GetIsObjectValid(creature))
+            if (!GetIsObjectValid(creature) ||
+                !GetIsObjectValid(attacker) ||
+                !GetIsReactionTypeHostile(attacker, creature))
                 return;
 
             var now = DateTime.UtcNow;
@@ -2864,8 +2861,11 @@ namespace SWLOR.Game.Server.Service
 
         private static void ReportCombatEntryIfNeeded(uint creature, DateTime now)
         {
-            if (!HasRecentCombatEntryActivity(creature, now))
-                ReportFirstStrikeCombatEntry(creature, now);
+            if (HasRecentCombatEntryActivity(creature, now))
+                return;
+
+            _firstCombatAttackConsumed.Remove(creature);
+            ReportFirstStrikeCombatEntry(creature, now);
         }
 
         private static bool HasRecentCombatEntryActivity(uint creature, DateTime now)
@@ -3079,8 +3079,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(creature))
                 return;
 
-            if (GetIsObjectValid(attacker) && GetIsReactionTypeHostile(attacker, creature))
-                TrackHostileDefensiveCombatEntryActivity(creature);
+            TrackHostileDefensiveCombatEntryActivity(creature, attacker);
 
             var skillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(creature, StatType.AvoidedAttackNextSkillAbilitySkillType));
             var adjustment = Stat.GetStatAdjustment(creature, StatType.AvoidedAttackNextSkillAbilityStaminaCostAdjustment);
@@ -4659,6 +4658,7 @@ namespace SWLOR.Game.Server.Service
             _lastCombatActivity.Remove(creature);
             _lastHostileAbilityAttemptActivity.Remove(creature);
             _lastHostileIncomingActivity.Remove(creature);
+            _firstCombatAttackConsumed.Remove(creature);
             _lastAttackActivity.Remove(creature);
             _lastCombatAbilityUse.Remove(creature);
             foreach (var key in _pendingSuppressionAbilityUses.Keys.Where(x => x.Item1 == creature || x.Item2 == creature).ToList())

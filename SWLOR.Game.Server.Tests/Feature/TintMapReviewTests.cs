@@ -842,6 +842,30 @@ public class TintMapReviewTests
         modifyMethod.ToString().Should().Contain("selection.ArmorPart == armorPart",
             "one modular armor part must not overwrite another part's custom dyes");
 
+        var paletteMethod = FindMethod(viewModelSource, "OnClickColorPalette");
+        paletteMethod.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Select(GetInvokedMethodName)
+            .Count(name => name == "LinkPendingItemColorCarryReplacement")
+            .Should().Be(2,
+                "global and per-part preset copies must remain descendants of a pending model carry");
+        paletteMethod.ToString().IndexOf("ResetCurrentCustomTintOverrides", StringComparison.Ordinal)
+            .Should().BeLessThan(
+                paletteMethod.ToString().IndexOf("LinkPendingItemColorCarryReplacement", StringComparison.Ordinal),
+                "the selected layer revision must advance before its preset replacement joins the lineage");
+
+        var clearMethod = FindMethod(viewModelSource, "OnClickClearColor");
+        clearMethod.ToString().Should().Contain("LinkPendingItemColorCarryReplacement(item, copy)",
+            "right-click preset resets also replace the equipped item during a pending carry");
+        clearMethod.ToString().IndexOf("ResetCustomTintOverrides", StringComparison.Ordinal)
+            .Should().BeLessThan(
+                clearMethod.ToString().IndexOf("LinkPendingItemColorCarryReplacement", StringComparison.Ordinal),
+                "reset intent must invalidate only its layer before the replacement is linked");
+
+        FindMethod(viewModelSource, "ModifyHelmetCloakColor").ToString().Should()
+            .Contain("LinkPendingItemColorCarryReplacement(item, copy)",
+                "helmet and cloak preset copies must preserve pending custom colors on untouched layers");
+
         var serviceSource = ReadSource(
             "SWLOR.Game.Server",
             "Feature",
@@ -860,6 +884,11 @@ public class TintMapReviewTests
             "preset slots must be retained so partial custom colors keep their material position");
         captureMethod.ToString().Should().NotContain("distinct.Count != 1",
             "ambiguous colors still need their source keys captured for stale cleanup");
+
+        FindMethod(serviceSource, "LinkPendingItemColorCarryReplacement").Modifiers
+            .Select(modifier => modifier.Text)
+            .Should().Contain("public",
+                "all appearance-editor replacement paths need to register descendants");
 
         var carryMethod = FindMethod(serviceSource, "QueueItemCustomColorCarry");
         var carryCalls = carryMethod.DescendantNodes()

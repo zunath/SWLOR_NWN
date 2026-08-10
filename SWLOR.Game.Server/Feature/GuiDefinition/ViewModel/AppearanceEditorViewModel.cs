@@ -1850,6 +1850,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var slot = GetInventorySlot();
             var item = GetItem();
             var copy = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, (int)colorChannel, colorId, true);
+            TintMapService.LinkPendingItemColorCarryReplacement(item, copy);
 
             if (item != _lastModifiedItem && _lastModifiedItem != OBJECT_INVALID)
             {
@@ -2097,8 +2098,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var item = GetItem();
                 DestroyObject(item);
-                item = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, (int)_selectedColorChannel, colorId, true);
-                AssignCommand(_target, () => ActionEquipItem(item, InventorySlot.Chest));
+                var copy = CopyItemAndModify(
+                    item,
+                    ItemAppearanceType.ArmorColor,
+                    (int)_selectedColorChannel,
+                    colorId,
+                    true);
+                TintMapService.LinkPendingItemColorCarryReplacement(item, copy);
+                AssignCommand(_target, () => ActionEquipItem(copy, InventorySlot.Chest));
             }
             else
             {
@@ -2107,14 +2114,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 var armorModel = GetArmorModelType(_colorTarget);
                 var index = ArmorColorIndexCalculator.CalculatePerPart(armorModel, _selectedColorChannel);
-                item = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, index, colorId, true);
+                var copy = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, index, colorId, true);
+                TintMapService.LinkPendingItemColorCarryReplacement(item, copy);
                 SetLocalInt(
-                    item,
+                    copy,
                     ArmorColorIndexCalculator.GetPerPartOverrideVariableName(
                         armorModel,
                         _selectedColorChannel),
                     1);
-                AssignCommand(_target, () => ActionEquipItem(item, InventorySlot.Chest));
+                AssignCommand(_target, () => ActionEquipItem(copy, InventorySlot.Chest));
             }
 
             ChangeColor(_colorTarget, _selectedColorChannel, colorId);
@@ -2142,11 +2150,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var armorModel = GetArmorModelType(colorTarget);
             var index = ArmorColorIndexCalculator.CalculatePerPart(armorModel, colorChannel);
-            item = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, index, 255, true);
+            var copy = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, index, 255, true);
+            TintMapService.LinkPendingItemColorCarryReplacement(item, copy);
             DeleteLocalInt(
-                item,
+                copy,
                 ArmorColorIndexCalculator.GetPerPartOverrideVariableName(armorModel, colorChannel));
-            AssignCommand(_target, () => ActionEquipItem(item, InventorySlot.Chest));
+            AssignCommand(_target, () => ActionEquipItem(copy, InventorySlot.Chest));
 
             ChangeColor(colorTarget, colorChannel, 255);
         };

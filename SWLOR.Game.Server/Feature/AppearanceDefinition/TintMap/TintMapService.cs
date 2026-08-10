@@ -484,7 +484,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             }
         }
 
-        private static void LinkPendingItemColorCarryReplacement(uint sourceItem, uint replacementItem)
+        public static void LinkPendingItemColorCarryReplacement(uint sourceItem, uint replacementItem)
         {
             lock (PendingItemColorCarryLock)
             {

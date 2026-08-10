@@ -1252,21 +1252,6 @@ namespace SWLOR.Toolset.Editors
             };
         }
 
-        private IReadOnlyDictionary<string, int> ResolveTemplateTintMapOverrides(
-            ResourceType type,
-            string resRef)
-        {
-            try
-            {
-                var blueprint = _workspace.LoadBlueprint(type, resRef);
-                return TintMapOverrides.Read(new VarTable(blueprint.Fields));
-            }
-            catch
-            {
-                return new Dictionary<string, int>(StringComparer.Ordinal);
-            }
-        }
-
         /// <summary>
         /// Called by the view when a viewport click resolves a pending placement
         /// (GlAreaControl.PlacementPointPicked): creates the instance at the clicked ground
@@ -1987,7 +1972,7 @@ namespace SWLOR.Toolset.Editors
                     return AreaSceneBuilder.Build(
                         AreDocument.Parse(snapshots[0]), GitDocument.Parse(snapshots[1]),
                         tilesetCatalog, tileModelCache, _placeableAppearances, _doorTypes, _tileWalkmeshCache,
-                        _waypointAppearances, ResolveCreatureModel, ResolveTemplateTintMapOverrides);
+                        _waypointAppearances, ResolveCreatureModel);
                 });
 
                 if (generation != Volatile.Read(ref _sceneBuildGeneration))

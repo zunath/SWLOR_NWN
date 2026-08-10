@@ -35,8 +35,7 @@ namespace SWLOR.Toolset.Domain.Render
             DoorTypeService? doorTypes = null,
             TileWalkmeshCache? walkmeshes = null,
             WaypointAppearanceService? waypointAppearances = null,
-            Func<JsonGffStruct, RenderModel?>? resolveCreatureModel = null,
-            Func<ResourceType, string, IReadOnlyDictionary<string, int>>? resolveTemplateTintMapOverrides = null)
+            Func<JsonGffStruct, RenderModel?>? resolveCreatureModel = null)
         {
             ArgumentNullException.ThrowIfNull(are);
             ArgumentNullException.ThrowIfNull(git);
@@ -61,8 +60,7 @@ namespace SWLOR.Toolset.Domain.Render
 
             var tiles = BuildTiles(are, tileset, tilesetResRef, width, modelCache, diagnostics, walkmeshes);
             var instances = BuildInstances(
-                git, modelCache, placeableAppearances, doorTypes, waypointAppearances, resolveCreatureModel,
-                resolveTemplateTintMapOverrides, tiles);
+                git, modelCache, placeableAppearances, doorTypes, waypointAppearances, resolveCreatureModel, tiles);
             var doorAnchors = BuildDoorAnchors(tiles, tileset);
 
             return new AreaScene
@@ -222,64 +220,36 @@ namespace SWLOR.Toolset.Domain.Render
             DoorTypeService? doorTypes,
             WaypointAppearanceService? waypointAppearances,
             Func<JsonGffStruct, RenderModel?>? resolveCreatureModel,
-            Func<ResourceType, string, IReadOnlyDictionary<string, int>>? resolveTemplateTintMapOverrides,
             IReadOnlyList<TilePlacement>? tiles = null)
         {
             var markers = new List<InstanceMarker>();
-            var templateTintMapOverrides = resolveTemplateTintMapOverrides == null
-                ? null
-                : CacheTemplateTintMapOverrides(resolveTemplateTintMapOverrides);
 
             // A creature's model cannot be resolved here: a humanoid body is assembled from a skeleton
             // and a dozen part models, which needs the composer that lives in the app layer. The caller
             // supplies it, and without one a creature falls back to its marker as before.
             AddMarkers(markers, git.Creatures, InstanceMarkerKind.Creature, ResourceType.Utc,
                 resolveModel: resolveCreatureModel,
-                modelCorrection: CreatureModelFacing.ForwardCorrection,
-                resolveTemplateTintMapOverrides: templateTintMapOverrides);
+                modelCorrection: CreatureModelFacing.ForwardCorrection);
             AddMarkers(markers, git.Doors, InstanceMarkerKind.Door, ResourceType.Utd,
                 resolveModel: instance => ResolveDoorModel(instance, doorTypes, modelCache),
-                isDoorTransition: instance => IsDoorTransition(instance, doorTypes),
-                resolveTemplateTintMapOverrides: templateTintMapOverrides);
-            AddMarkers(markers, git.Items, InstanceMarkerKind.Item, ResourceType.Uti,
-                resolveTemplateTintMapOverrides: templateTintMapOverrides);
+                isDoorTransition: instance => IsDoorTransition(instance, doorTypes));
+            AddMarkers(markers, git.Items, InstanceMarkerKind.Item, ResourceType.Uti);
             AddMarkers(markers, git.Placeables, InstanceMarkerKind.Placeable, ResourceType.Utp,
-                resolveModel: instance => ResolvePlaceableModel(instance, placeableAppearances, modelCache),
-                resolveTemplateTintMapOverrides: templateTintMapOverrides);
-            AddMarkers(markers, git.Sounds, InstanceMarkerKind.Sound, ResourceType.Uts,
-                resolveTemplateTintMapOverrides: templateTintMapOverrides);
+                resolveModel: instance => ResolvePlaceableModel(instance, placeableAppearances, modelCache));
+            AddMarkers(markers, git.Sounds, InstanceMarkerKind.Sound, ResourceType.Uts);
             // Aurora gives stores a fixed yellow waypoint flag. A store carries no Appearance field,
             // so leaving this unresolved falls through to the generic pyramid: its apex is at the
             // store while its broad face hangs beside the merchant, and its symmetry loses facing.
             AddMarkers(markers, git.Stores, InstanceMarkerKind.Store, ResourceType.Utm,
                 resolveModel: _ => modelCache.GetOrBuild(WaypointMarkerModel.MerchantModelResRef),
-                modelCorrection: WaypointMarkerModel.ForwardCorrection,
-                resolveTemplateTintMapOverrides: templateTintMapOverrides);
+                modelCorrection: WaypointMarkerModel.ForwardCorrection);
             AddMarkers(markers, git.Triggers, InstanceMarkerKind.Trigger, ResourceType.Utt, includeGeometry: true,
-                tiles: tiles, resolveTemplateTintMapOverrides: templateTintMapOverrides);
+                tiles: tiles);
             AddMarkers(markers, git.Waypoints, InstanceMarkerKind.Waypoint, ResourceType.Utw,
                 resolveModel: instance => ResolveWaypointModel(instance, waypointAppearances, modelCache),
-                modelCorrection: WaypointMarkerModel.ForwardCorrection,
-                resolveTemplateTintMapOverrides: templateTintMapOverrides);
+                modelCorrection: WaypointMarkerModel.ForwardCorrection);
 
             return markers;
-        }
-
-        private static Func<ResourceType, string, IReadOnlyDictionary<string, int>> CacheTemplateTintMapOverrides(
-            Func<ResourceType, string, IReadOnlyDictionary<string, int>> resolve)
-        {
-            var cache = new Dictionary<(ResourceType Type, string ResRef), IReadOnlyDictionary<string, int>>();
-            return (type, resRef) =>
-            {
-                var key = (type, resRef.ToLowerInvariant());
-                if (!cache.TryGetValue(key, out var overrides))
-                {
-                    overrides = resolve(type, resRef);
-                    cache[key] = overrides;
-                }
-
-                return overrides;
-            };
         }
 
         private static void AddMarkers(
@@ -291,8 +261,7 @@ namespace SWLOR.Toolset.Domain.Render
             Func<JsonGffStruct, RenderModel?>? resolveModel = null,
             Matrix4x4? modelCorrection = null,
             IReadOnlyList<TilePlacement>? tiles = null,
-            Func<JsonGffStruct, bool>? isDoorTransition = null,
-            Func<ResourceType, string, IReadOnlyDictionary<string, int>>? resolveTemplateTintMapOverrides = null)
+            Func<JsonGffStruct, bool>? isDoorTransition = null)
         {
             foreach (var instance in instances)
             {
@@ -334,34 +303,12 @@ namespace SWLOR.Toolset.Domain.Render
                     Geometry = geometry,
                     Model = resolveModel?.Invoke(instance),
                     IsDoorTransition = isDoorTransition?.Invoke(instance) ?? false,
-                    TintMapOverrides = ResolveTintMapOverrides(
-                        type, templateResRef, instance, resolveTemplateTintMapOverrides),
+                    TintMapOverrides = TintMapOverrides.Read(new VarTable(instance)),
                     SoundMinDistance = kind == InstanceMarkerKind.Sound ? instance.GetSingleOrNull("MinDistance") : null,
                     SoundMaxDistance = kind == InstanceMarkerKind.Sound ? instance.GetSingleOrNull("MaxDistance") : null,
                     IsPositionalSound = kind == InstanceMarkerKind.Sound && (instance.GetIntOrNull("Positional") ?? 0) != 0
                 });
             }
-        }
-
-        private static IReadOnlyDictionary<string, int> ResolveTintMapOverrides(
-            ResourceType type,
-            string? templateResRef,
-            JsonGffStruct instance,
-            Func<ResourceType, string, IReadOnlyDictionary<string, int>>? resolveTemplateTintMapOverrides)
-        {
-            var template = string.IsNullOrWhiteSpace(templateResRef)
-                ? null
-                : resolveTemplateTintMapOverrides?.Invoke(type, templateResRef);
-            var embedded = TintMapOverrides.Read(new VarTable(instance));
-            if ((template == null || template.Count == 0) && embedded.Count == 0)
-                return new Dictionary<string, int>(StringComparer.Ordinal);
-
-            var merged = template == null
-                ? new Dictionary<string, int>(StringComparer.Ordinal)
-                : new Dictionary<string, int>(template, StringComparer.Ordinal);
-            foreach (var (key, value) in embedded)
-                merged[key] = value;
-            return merged;
         }
 
         /// <summary>Placeable instances carry their appearance directly: Appearance → placeables.2da ModelName.</summary>

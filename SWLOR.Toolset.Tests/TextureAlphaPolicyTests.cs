@@ -64,6 +64,13 @@ namespace SWLOR.Toolset.Tests
             TextureAlphaPolicy.RequiresCutoff(Image(16, 16, i => (byte)(i % 2 == 0 ? 0 : 255))).Should().BeTrue();
         }
 
+        [Test]
+        public void GrayscaleMaterialMask_NeedsNoCutoff()
+        {
+            TextureAlphaPolicy.RequiresCutoff(Image(16, 16, i => (byte)(30 + i % 100))).Should().BeFalse(
+                "a nonzero TGA alpha channel can be a reflectivity or specular mask rather than transparency");
+        }
+
         /// <summary>
         /// A handful of stray transparent texels - a DXT block artefact, a bad pixel - must not start
         /// punching holes in a surface that is meant to be solid.
@@ -142,6 +149,13 @@ namespace SWLOR.Toolset.Tests
             grating.Should().NotBeNull("zsf01_bridge ships in the sci-fi base tileset hak");
             TextureAlphaPolicy.RequiresCutoff(grating).Should().BeTrue(
                 "the floor grate is see-through, and drawing it solid turns 62 tiles black");
+
+            var sithArmor = TextureLoader.Load(index, "n_sithsoldier03");
+            sithArmor.Should().NotBeNull("the Arkanian armor shin model uses this shipped surface");
+            TextureAlphaPolicy.RequiresCutoff(sithArmor).Should().BeFalse(
+                "the armor's grayscale alpha is a material mask; cutting at 0.5 punches away its shin geometry");
+            TextureRenderPolicy.Resolve(index, "n_sithsoldier03", sithArmor!).AlphaCutoff.Should().Be(0f,
+                "the viewport must draw the full shin surface instead of discarding its low-reflectivity pixels");
 
             foreach (var solid in new[] { "zsf01_rock3", "zsf01_stonfloor2", "zsf01_stonegld" })
             {

@@ -2838,6 +2838,11 @@ namespace SWLOR.Game.Server.Service
             TrackCombatActivity(creature);
         }
 
+        public static void TrackHostileAbilityActivity(uint creature)
+        {
+            TrackCombatActivity(creature);
+        }
+
         public static void TrackStealthOpeningWindow(uint creature)
         {
             if (!GetIsObjectValid(creature) || !IsStealthedOrInvisible(creature))

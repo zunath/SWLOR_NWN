@@ -720,6 +720,21 @@ public class GeneratedWeaponPerkBehaviorTests
             .Should().BeLessThan(
                 trackCombatActivitySource.IndexOf("_lastCombatActivity[creature] = now;", StringComparison.Ordinal),
                 "combat entry must be evaluated before the activity timestamp is refreshed");
+
+        var hostileCombatImpactStart = abilitySource.IndexOf(
+            "private static int ApplyHostileCombatImpact(",
+            StringComparison.Ordinal);
+        var hostileCombatImpactEnd = abilitySource.IndexOf(
+            "private static bool ShouldResolveCombatImpactHit(",
+            hostileCombatImpactStart,
+            StringComparison.Ordinal);
+        hostileCombatImpactEnd.Should().BeGreaterThan(hostileCombatImpactStart);
+        var hostileCombatImpactSource = abilitySource[hostileCombatImpactStart..hostileCombatImpactEnd];
+        hostileCombatImpactSource.Should().Contain("Combat.TrackHostileAbilityActivity(activator);");
+        hostileCombatImpactSource.IndexOf("Combat.TrackHostileAbilityActivity(activator);", StringComparison.Ordinal)
+            .Should().BeLessThan(
+                hostileCombatImpactSource.IndexOf("Combat.TryResolveAbilityHit(", StringComparison.Ordinal),
+                "a missed opening cast still enters combat and must report First Strike readiness");
         combatSource.Should().Contain("ApplyHostileAbilityUsedAttackAdjustment(activator, ability)");
         combatSource.Should().Contain("public static void ApplyStatusAppliedTargetStaminaDrain(");
         combatSource.Should().Contain("TryUseStatTrigger(activator, StatType.StatusAppliedTargetStaminaDrain, cooldown)");

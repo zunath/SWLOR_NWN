@@ -640,6 +640,70 @@ namespace SWLOR.Toolset.Tests
 
             variables.GetInt(TintMapVariable.GetName("helm_005", TintMapLayerType.Cloth1))
                 .Should().BeNull("different per-material colors are ambiguous and must not be guessed");
+            variables.GetInt(TintMapVariable.GetName("helm_004", TintMapLayerType.Cloth1))
+                .Should().BeNull("ambiguous obsolete colors must not resurrect with the old model");
+            variables.GetInt(TintMapVariable.GetName("helm_053", TintMapLayerType.Cloth1))
+                .Should().BeNull("every obsolete per-material color must be cleaned up");
+        }
+
+        [Test]
+        public void ItemModelReplacementPreservesPartialCustomColorByMaterialPosition()
+        {
+            var catalog = TintMapCatalog.Load(Resources());
+            catalog.Should().NotBeNull();
+            var variables = new VarTable(new JsonGffStruct());
+            var editor = new TintMapEditorViewModel(
+                variables,
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                catalog!);
+            var oldModel = new RenderModel
+            {
+                Meshes = new[]
+                {
+                    ModelWith("helm_004").Meshes.Single(),
+                    ModelWith("helm_053").Meshes.Single()
+                }
+            };
+            var newModel = new RenderModel
+            {
+                Meshes = new[]
+                {
+                    ModelWith("helm_013").Meshes.Single(),
+                    ModelWith("helm_109").Meshes.Single()
+                }
+            };
+            foreach (var mesh in oldModel.Meshes.Concat(newModel.Meshes))
+                mesh.UsesItemTintOverrides = true;
+            var oldCustomKey = TintMapVariable.GetName("helm_004", TintMapLayerType.Cloth1);
+            var oldPresetKey = TintMapVariable.GetName("helm_053", TintMapLayerType.Cloth1);
+            var newCustomKey = TintMapVariable.GetName("helm_013", TintMapLayerType.Cloth1);
+            var newPresetKey = TintMapVariable.GetName("helm_109", TintMapLayerType.Cloth1);
+            variables.SetInt(oldCustomKey, new TintMapColor(12, 34, 56).ToStoredValue());
+
+            editor.Reload(
+                oldModel,
+                includeNonItemOwnedMaterials: false,
+                carryItemCustomColorsAcrossMaterials: true);
+            editor.Reload(
+                null,
+                includeNonItemOwnedMaterials: false,
+                carryItemCustomColorsAcrossMaterials: true);
+            editor.Reload(
+                newModel,
+                includeNonItemOwnedMaterials: false,
+                carryItemCustomColorsAcrossMaterials: true);
+
+            TintMapColor.TryFromStoredValue(variables.GetInt(newCustomKey)!.Value, out var carried)
+                .Should().BeTrue();
+            carried.Should().Be(new TintMapColor(12, 34, 56));
+            variables.GetInt(newPresetKey).Should().BeNull(
+                "a preset source position must leave the corresponding replacement on its preset");
+            variables.GetInt(oldCustomKey).Should().BeNull();
+            variables.GetInt(oldPresetKey).Should().BeNull();
         }
 
         [Test]

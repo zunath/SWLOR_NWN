@@ -16,10 +16,10 @@ namespace SWLOR.Toolset.Editors.TintMaps
         private readonly Action? _colorChanged;
         private ItemColorCarry? _pendingItemColorCarry;
 
+        private readonly record struct ItemColorSource(string Key, int? SavedColor);
+
         private sealed record ItemColorCarry(
-            IReadOnlySet<string> ActiveKeys,
-            IReadOnlyDictionary<TintMapLayerType, int> Colors,
-            IReadOnlyDictionary<TintMapLayerType, IReadOnlyList<string>> SourceKeys);
+            IReadOnlyDictionary<TintMapLayerType, IReadOnlyList<ItemColorSource>> Sources);
 
         public ObservableCollection<TintMapColorRowViewModel> Colors { get; } = new();
 
@@ -113,84 +113,101 @@ namespace SWLOR.Toolset.Editors.TintMaps
         }
 
         /// <summary>
-        /// Captures only equipment layers with one clear custom RGB value. Different colors on the
-        /// same layer are intentional per-material edits and cannot safely be mapped to a new model.
+        /// Captures every material position for equipment layers that contain a custom RGB value.
+        /// Preset positions must remain in the sequence so a partial custom tint can be mapped to
+        /// the corresponding replacement material without tinting the entire layer.
         /// </summary>
         private ItemColorCarry CaptureItemCustomColors(
             IReadOnlyCollection<TintMapColorRowViewModel> rows)
         {
-            var activeKeys = rows.Select(row => row.Key).ToHashSet(StringComparer.Ordinal);
-            var colors = new Dictionary<TintMapLayerType, int>();
-            var sourceKeys = new Dictionary<TintMapLayerType, IReadOnlyList<string>>();
+            var sources = new Dictionary<TintMapLayerType, IReadOnlyList<ItemColorSource>>();
             foreach (var group in rows
                          .Where(row => !TintMapVariable.IsCreatureColorLayer(row.Layer))
                          .GroupBy(row => row.Layer))
             {
-                var custom = group
-                    .Select(row => (row.Key, Saved: _variables.GetInt(row.Key) ?? 0))
-                    .Where(entry => TintMapColor.TryFromStoredValue(entry.Saved, out _))
+                var entries = group
+                    .GroupBy(row => row.Key, StringComparer.Ordinal)
+                    .Select(keyGroup =>
+                    {
+                        var saved = _variables.GetInt(keyGroup.Key);
+                        return new ItemColorSource(
+                            keyGroup.Key,
+                            saved.HasValue && TintMapColor.TryFromStoredValue(saved.Value, out _)
+                                ? saved.Value
+                                : null);
+                    })
                     .ToList();
-                var distinct = custom.Select(entry => entry.Saved).Distinct().ToList();
-                if (distinct.Count != 1)
+                if (!entries.Any(entry => entry.SavedColor.HasValue))
                     continue;
 
-                colors[group.Key] = distinct[0];
-                sourceKeys[group.Key] = custom
-                    .Select(entry => entry.Key)
-                    .Distinct(StringComparer.Ordinal)
-                    .ToList();
+                sources[group.Key] = entries;
             }
 
-            return new ItemColorCarry(activeKeys, colors, sourceKeys);
+            return new ItemColorCarry(sources);
         }
 
         /// <summary>
-        /// Applies captured colors only to material keys introduced by the replacement model, then
-        /// removes source keys that no active mesh still uses so switching back cannot revive them.
+        /// Maps replaced source material positions to replacement positions when the layer has one
+        /// unambiguous custom value, then removes every stale source key. Shared materials retain
+        /// their existing variables and ambiguous per-material colors are cleaned up, not guessed.
         /// </summary>
         private bool CarryItemCustomColors(
             ItemColorCarry? carry,
             IReadOnlyCollection<TintMapColorRowViewModel> rows)
         {
-            if (carry == null || carry.Colors.Count == 0)
+            if (carry == null || carry.Sources.Count == 0)
                 return true;
 
             var activeKeys = rows.Select(row => row.Key).ToHashSet(StringComparer.Ordinal);
-            var destinations = carry.Colors
-                .Select(entry => (
-                    entry.Key,
-                    entry.Value,
-                    Keys: rows
-                        .Where(row =>
-                            row.Layer == entry.Key &&
-                            !carry.ActiveKeys.Contains(row.Key))
-                        .Select(row => row.Key)
-                        .Distinct(StringComparer.Ordinal)
-                        .ToList()))
-                .ToList();
-            var hasChanges = destinations.Any(entry =>
-                entry.Keys.Count > 0 ||
-                carry.SourceKeys.TryGetValue(entry.Key, out var sources) &&
-                sources.Any(source => !activeKeys.Contains(source)));
-            if (!hasChanges)
+            var assignments = new Dictionary<string, int>(StringComparer.Ordinal);
+            var staleKeys = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var (layer, sources) in carry.Sources)
+            {
+                var sourceKeys = sources
+                    .Select(source => source.Key)
+                    .ToHashSet(StringComparer.Ordinal);
+                var replacedSources = sources
+                    .Where(source => !activeKeys.Contains(source.Key))
+                    .ToList();
+                var replacementDestinations = rows
+                    .Where(row => row.Layer == layer && !sourceKeys.Contains(row.Key))
+                    .GroupBy(row => row.Key, StringComparer.Ordinal)
+                    .Select(group => group.Key)
+                    .ToList();
+                var distinctCustomColors = replacedSources
+                    .Where(source => source.SavedColor.HasValue)
+                    .Select(source => source.SavedColor!.Value)
+                    .Distinct()
+                    .ToList();
+
+                if (distinctCustomColors.Count == 1)
+                {
+                    for (var index = 0;
+                         index < replacedSources.Count && index < replacementDestinations.Count;
+                         index++)
+                    {
+                        if (replacedSources[index].SavedColor is int savedColor)
+                            assignments[replacementDestinations[index]] = savedColor;
+                    }
+                }
+
+                foreach (var source in sources)
+                {
+                    if (source.SavedColor.HasValue && !activeKeys.Contains(source.Key))
+                        staleKeys.Add(source.Key);
+                }
+            }
+
+            if (assignments.Count == 0 && staleKeys.Count == 0)
                 return true;
 
             var applied = _runEdit("Carry custom item colors to replacement models", () =>
             {
-                foreach (var (layer, saved, keys) in destinations)
-                {
-                    foreach (var key in keys)
-                        _variables.SetInt(key, saved);
+                foreach (var (key, savedColor) in assignments)
+                    _variables.SetInt(key, savedColor);
 
-                    if (!carry.SourceKeys.TryGetValue(layer, out var sources))
-                        continue;
-
-                    foreach (var source in sources)
-                    {
-                        if (!activeKeys.Contains(source))
-                            _variables.Remove(source);
-                    }
-                }
+                foreach (var staleKey in staleKeys)
+                    _variables.Remove(staleKey);
             });
             if (!applied)
                 return false;

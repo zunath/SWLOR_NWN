@@ -93,27 +93,28 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void Renewal1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyRenewal(activator, target, "Renewal I", 12f);
+            ApplyRenewal(activator, target, "Renewal I", 20f);
         }
 
         private static void Renewal2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyRenewal(activator, target, "Renewal II", 18f);
+            ApplyRenewal(activator, target, "Renewal II", 40f);
         }
 
         private static void Renewal3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyRenewal(activator, target, "Renewal III", 24f);
+            ApplyRenewal(activator, target, "Renewal III", 60f);
         }
 
         private static void ApplyRenewal(uint activator, uint target, string name, float totalPercent)
         {
             var friendly = AbilityTargeting.ResolveFriendlyTarget(activator, target);
             var targetWasBelowHalfHP = ForceControlHealingEffects.IsBelowHalfHP(friendly);
+            var affinityAdjustedTotalPercent = totalPercent * Ability.GetActiveForceAffinityMagnitudeMultiplier(activator);
             StatusEffect.ApplyStatusEffect(
                 activator,
                 friendly,
-                new RegenerativeHealingStatusEffect(name, totalPercent, 6),
+                new RegenerativeHealingStatusEffect(name, affinityAdjustedTotalPercent, 10),
                 30f);
             ForceControlHealingEffects.ApplyRestorativeControlPower(activator, friendly, targetWasBelowHalfHP);
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Healing_M), friendly);

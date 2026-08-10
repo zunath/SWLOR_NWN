@@ -168,6 +168,29 @@ public class GeneratedWeaponPerkBehaviorTests
     }
 
     [Test]
+    public void PathogenStrike_ExtendsCasterOwnedVenomAndInfectionWithoutConsumingThem()
+    {
+        var root = FindRepositoryRoot();
+        var pathogenSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "Vibroknife",
+            "PathogenStrikeAbilityDefinition.cs"));
+        var generatedAbilitySource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "WeaponActiveAbilityDefinitionBase.cs")).Replace("\r\n", "\n");
+
+        pathogenSource.Should().Contain("SourceStatusEffectsToExtend = new[] { typeof(VenomStatusEffect), typeof(InfectionStatusEffect) }");
+        pathogenSource.Should().NotContain("ConsumeSourceStatusEffectsOnHit = true");
+        generatedAbilitySource.Should().Contain("StatusEffect.ExtendStatusEffectDuration(\n                        target,\n                        statusEffectType,\n                        activator,");
+    }
+
+    [Test]
     public void SpottersRhythm_UsesSameTargetPressureInsteadOfIdleAbilityStats()
     {
         var root = FindRepositoryRoot();

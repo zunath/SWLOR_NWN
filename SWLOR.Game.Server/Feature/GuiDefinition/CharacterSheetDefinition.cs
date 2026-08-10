@@ -503,6 +503,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             Expression<Func<CharacterSheetViewModel, bool>> upgradeVisibleExpression,
             Expression<Func<CharacterSheetViewModel, Action>> clickExpression)
         {
+            const string attributeCapTooltip = " AP upgrades stop at 26. A racial bonus may raise one attribute to 27; that extra point remains part of combat formulas, while direct-effect scaling reaches its designed cap at 26.";
+
             col.AddRow(row =>
             {
                 row.SetHeight(StatRowHeight);
@@ -512,7 +514,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .SetWidth(112f)
                     .SetVerticalAlign(NuiVerticalAlign.Top)
                     .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                    .SetTooltip(tooltip);
+                    .SetTooltip(tooltip + attributeCapTooltip);
 
                 row.AddLabel()
                     .BindText(valueExpression)

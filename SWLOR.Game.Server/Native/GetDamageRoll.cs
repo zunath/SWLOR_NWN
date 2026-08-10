@@ -97,15 +97,15 @@ namespace SWLOR.Game.Server.Native
 
                 // Extract weapon damage properties and get ability stats
                 var damageProfile = ExtractAttackDamageProfile(attacker, weapon);
-
-                // Imbuement Stance converts the wearer's hostile weapon auto-attacks to Force damage for an FP cost.
-                damageProfile = ApplyForceConversionStance(attacker, defender, damageProfile);
-
-                var attackerStatType = GetWeaponDamageAbilityType(attacker.m_idSelf, weapon);
-                var weaponDeltaCap = GetWeaponDeltaCap(weapon);
                 var weaponSkillType = weapon == null
                     ? SkillType.Invalid
                     : SWLOR.Game.Server.Service.Skill.GetSkillTypeByBaseItem((BaseItem)weapon.m_nBaseItem);
+
+                // Imbuement Stance converts the wearer's hostile weapon auto-attacks to Force damage for an FP cost.
+                damageProfile = ApplyForceConversionStance(attacker, defender, damageProfile, weaponSkillType);
+
+                var attackerStatType = GetWeaponDamageAbilityType(attacker.m_idSelf, weapon);
+                var weaponDeltaCap = GetWeaponDeltaCap(weapon);
 
                 var attackerStat = Stat.GetStatValueNative(attacker, attackerStatType);
 
@@ -214,7 +214,7 @@ namespace SWLOR.Game.Server.Native
             totalDamage = 0;
 
             if (targetObject.m_nObjectType == (int)ObjectType.Creature &&
-                UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf))
+                UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, skillType))
             {
                 Combat.ConsumeSuppressedAutoAttackDamageBonuses(attacker.m_idSelf, skillType);
                 return physicalDamage;
@@ -280,7 +280,10 @@ namespace SWLOR.Game.Server.Native
         // their normal type and cost FP per swing. This only affects real auto-attacks against creatures; queued
         // weapon abilities apply their own damage and are excluded so they are neither converted nor charged.
         private static WeaponDamageProfile ApplyForceConversionStance(
-            CNWSCreature attacker, CNWSObject defender, WeaponDamageProfile damageProfile)
+            CNWSCreature attacker,
+            CNWSObject defender,
+            WeaponDamageProfile damageProfile,
+            SkillType weaponSkillType)
         {
             if (defender.m_nObjectType != (int)ObjectType.Creature)
                 return damageProfile;
@@ -294,7 +297,7 @@ namespace SWLOR.Game.Server.Native
                 return damageProfile;
 
             // Weapon abilities apply their own combat impact and suppress the auto-attack; do not convert/charge them.
-            if (UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf))
+            if (UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType))
                 return damageProfile;
 
             var fpCost = Stat.GetStatAdjustment(attacker.m_idSelf, StatType.StanceHostileAutoAttackFPCost);

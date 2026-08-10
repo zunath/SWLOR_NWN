@@ -9291,29 +9291,46 @@ namespace SWLOR.Game.Server.Service
             if (!IsWeaponSkillType(skillType))
                 return 0;
 
-            var weapon = GetCombatImpactWeapon(activator);
+            var weapon = GetCombatImpactWeapon(activator, skillType);
             return GetIsObjectValid(weapon)
                 ? Item.GetDMG(weapon)
                 : 0;
         }
 
-        private static uint GetCombatImpactWeapon(uint activator)
+        private static uint GetCombatImpactWeapon(uint activator, SkillType skillType)
         {
             var rightHand = GetItemInSlot(InventorySlot.RightHand, activator);
-            if (IsCombatImpactWeapon(rightHand))
+            if (CanItemTriggerWeaponAbility(rightHand, skillType))
                 return rightHand;
 
             var leftHand = GetItemInSlot(InventorySlot.LeftHand, activator);
-            if (IsCombatImpactWeapon(leftHand))
+            if (CanItemTriggerWeaponAbility(leftHand, skillType))
                 return leftHand;
 
             return OBJECT_INVALID;
         }
 
-        private static bool IsCombatImpactWeapon(uint item)
+        public static bool HasEquippedWeaponForAbilitySkill(uint creature, SkillType abilitySkillType)
         {
-            return GetIsObjectValid(item) &&
-                   Skill.GetSkillTypeByBaseItem((BaseItem)GetBaseItemType(item)) != SkillType.Invalid;
+            if (!GetIsObjectValid(creature) || !IsWeaponSkillType(abilitySkillType))
+                return false;
+
+            return CanItemTriggerWeaponAbility(GetItemInSlot(InventorySlot.RightHand, creature), abilitySkillType) ||
+                   CanItemTriggerWeaponAbility(GetItemInSlot(InventorySlot.LeftHand, creature), abilitySkillType);
+        }
+
+        public static bool CanItemTriggerWeaponAbility(uint item, SkillType abilitySkillType)
+        {
+            if (!GetIsObjectValid(item))
+                return false;
+
+            var weaponSkillType = Skill.GetSkillTypeByBaseItem((BaseItem)GetBaseItemType(item));
+            return CanWeaponSkillTriggerAbility(weaponSkillType, abilitySkillType);
+        }
+
+        public static bool CanWeaponSkillTriggerAbility(SkillType weaponSkillType, SkillType abilitySkillType)
+        {
+            return !IsWeaponSkillType(abilitySkillType) || weaponSkillType == abilitySkillType;
         }
 
         public static bool IsWeaponSkillType(SkillType skillType)

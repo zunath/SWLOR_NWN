@@ -423,7 +423,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 new(
                     "Perks",
                     "Progression",
-                    "Perk ranks, SP prices, requirements, colors, beast perks, and granted effects.",
+                    "Perk ranks, SP prices, requirements, colors, Force Affinity, beast perks, and granted effects.",
                     "SP prices and requirements",
                     new[]
                     {
@@ -433,6 +433,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             "The list color is based on whether the next upgrade's requirements pass. The Buy button is enabled only when the next upgrade exists, requirements pass, and you have enough unallocated SP."),
                         new ArticleBlock("What Perks Can Do",
                             "Perk levels can grant active abilities, passive bonuses, and other effects."),
+                        new ArticleBlock("Force Affinity",
+                            "Force-sensitive characters see their current Force Affinity near the top of the Perks window. Selecting a Force perk also shows whether it is Light, Dark, or Universal and how the current affinity changes that power. See the Force Affinity guide topic for the full rules."),
                         new ArticleBlock("Requirements",
                             "A perk may require a skill rank, quest completion, character type, unlock, another perk, not having a conflicting perk, or beast level or role progress before the next rank can be purchased."),
                         new ArticleBlock("Beast Perks",
@@ -444,7 +446,37 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new QuestionAnswer("When can I buy?", "When the next rank exists, requirements pass, and you have enough SP."),
                         new QuestionAnswer("What are beast perks?", "A Perks window mode that uses the active beast's SP and level.")
                     },
-                    new[] { "Perk Refunds", "Skills", "Abilities", "Skill Decay" }),
+                    new[] { "Force Affinity", "Perk Refunds", "Skills", "Abilities", "Skill Decay" }),
+
+                new(
+                    "Force Affinity",
+                    "Combat",
+                    "How Light, Dark, and Universal Force powers change—and are changed by—your affinity.",
+                    "Light, Dark, and Universal powers",
+                    new[]
+                    {
+                        new ArticleBlock("Reading Your Affinity",
+                            "Force Affinity ranges from -10 Dark to +10 Light. A value of 0 is neutral. Your current value is displayed prominently in the Perks window and in the Character Sheet's detailed statistics."),
+                        new ArticleBlock("How Affinity Changes",
+                            "Owning any rank of a Light-aligned perk contributes +1 Light affinity. Owning any rank of a Dark-aligned perk contributes -1 Dark affinity. Additional ranks of the same perk do not contribute additional affinity. Refunding the perk removes its contribution. Universal Force perks do not change affinity."),
+                        new ArticleBlock("Magnitude",
+                            "Each point toward a power's side increases that power's damage, healing, shields, regeneration, or drain magnitude by 5 percent. Each point toward the opposing side reduces it by 5 percent. The multiplier is limited to 50 percent at full opposition and 150 percent at full alignment."),
+                        new ArticleBlock("Hit Chance",
+                            "Affinity also changes the hit chance of detrimental Light and Dark Force powers. At +10 Light, Light powers gain +5% hit chance and Dark powers suffer -5%. At -10 Dark, Dark powers gain +5% and Light powers suffer -5%. The final chance shown in the combat log already includes this adjustment."),
+                        new ArticleBlock("Universal Powers and Durations",
+                            "Universal Force powers use their normal Willpower scaling but neither gain nor lose magnitude or hit chance from affinity. Force Affinity does not change effect duration. Status resistance and explicit duration modifiers can still change a duration."),
+                        new ArticleBlock("Example: +6 Light",
+                            "At +6 Light, a Light power uses 130% magnitude and gains +3% hit chance. A Dark power uses 70% magnitude and suffers -3% hit chance. A Universal power remains at 100% magnitude with no affinity hit adjustment.")
+                    },
+                    new[]
+                    {
+                        new QuestionAnswer("Do extra ranks of one power add more affinity?", "No. Owning any rank contributes one point for that perk; higher ranks of the same perk do not add more."),
+                        new QuestionAnswer("Why is my Dark power weaker?", "Positive Light affinity weakens Dark power magnitude and hit chance. Negative Dark affinity does the same to Light powers."),
+                        new QuestionAnswer("Do Universal powers move affinity?", "No. They neither change affinity nor receive its magnitude or hit-chance modifiers."),
+                        new QuestionAnswer("Does affinity change duration?", "No. Affinity changes magnitude and hit chance, while resistance and duration modifiers handle duration."),
+                        new QuestionAnswer("Where can I see the exact effect?", "The Perks window shows your current affinity and the current magnitude and hit-chance effect on a selected Force perk.")
+                    },
+                    new[] { "Perks", "Abilities", "Attributes", "Combat Basics" }),
 
                 new(
                     "Perk Refunds",

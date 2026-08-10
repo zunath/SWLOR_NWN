@@ -681,7 +681,41 @@ public class GeneratedWeaponPerkBehaviorTests
         combatSource.Should().Contain("StatType.NextAutoAttackNoDelayAllSkills");
         combatSource.Should().Contain("var appliesToSkill = skillType != SkillType.Invalid && storedSkillType == skillType");
         combatSource.Should().Contain("if (appliesToSkill)");
+        combatSource.Should().Contain("First Strike ready: {maximumCount} {stackLabel} (+{damageBonus} DMG each).");
+        combatSource.Should().Contain("First Strike deals +{damageBonus} DMG ({remaining} {stackLabel} remaining{rechargeText}).");
         combatSource.Should().Contain("First Strike +{damageBonus} DMG ({remaining} {stackLabel} remaining)");
+        combatSource.Should().Contain("First Strike is recharging ({remainingSeconds} seconds remaining).");
+
+        var firstStrikeStart = combatSource.IndexOf(
+            "private static int GetFirstHostileAbilityHitDamageBonus(",
+            StringComparison.Ordinal);
+        var firstStrikeEnd = combatSource.IndexOf(
+            "private static int GetAbilityDamageToSourceAppliedStatusTargetAdjustment(",
+            firstStrikeStart,
+            StringComparison.Ordinal);
+        firstStrikeEnd.Should().BeGreaterThan(firstStrikeStart);
+        var firstStrikeSource = combatSource[firstStrikeStart..firstStrikeEnd];
+        firstStrikeSource.Should().Contain("ability?.IsHostileAbility != true");
+        firstStrikeSource.Should().NotContain("SkillType.",
+            "the Bible grants First Strike to any hostile combat ability, including cross-skill abilities");
+        firstStrikeSource.Should().Contain("SendMessageToPC(attacker, feedback);");
+        firstStrikeSource.Should().Contain("Count = 0");
+        firstStrikeSource.Should().Contain("LastHit = DateTime.MinValue");
+
+        var trackCombatActivityStart = combatSource.IndexOf(
+            "private static void TrackCombatActivity(",
+            StringComparison.Ordinal);
+        var trackCombatActivityEnd = combatSource.IndexOf(
+            "public static void TrackAttackActivity(",
+            trackCombatActivityStart,
+            StringComparison.Ordinal);
+        trackCombatActivityEnd.Should().BeGreaterThan(trackCombatActivityStart);
+        var trackCombatActivitySource = combatSource[trackCombatActivityStart..trackCombatActivityEnd];
+        trackCombatActivitySource.Should().Contain("ReportFirstStrikeCombatEntry(creature, now);");
+        trackCombatActivitySource.IndexOf("ReportFirstStrikeCombatEntry(creature, now);", StringComparison.Ordinal)
+            .Should().BeLessThan(
+                trackCombatActivitySource.IndexOf("_lastCombatActivity[creature] = now;", StringComparison.Ordinal),
+                "combat entry must be evaluated before the activity timestamp is refreshed");
         combatSource.Should().Contain("ApplyHostileAbilityUsedAttackAdjustment(activator, ability)");
         combatSource.Should().Contain("public static void ApplyStatusAppliedTargetStaminaDrain(");
         combatSource.Should().Contain("TryUseStatTrigger(activator, StatType.StatusAppliedTargetStaminaDrain, cooldown)");

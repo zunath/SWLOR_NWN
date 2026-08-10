@@ -2819,7 +2819,14 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(creature))
                 return;
 
-            _lastCombatActivity[creature] = DateTime.UtcNow;
+            var now = DateTime.UtcNow;
+            var isEnteringCombat = !_lastCombatActivity.TryGetValue(creature, out var lastActivity) ||
+                (now - lastActivity).TotalSeconds > 30;
+
+            if (isEnteringCombat)
+                ReportFirstStrikeCombatEntry(creature, now);
+
+            _lastCombatActivity[creature] = now;
         }
 
         public static void TrackAttackActivity(uint creature)
@@ -5792,9 +5799,8 @@ namespace SWLOR.Game.Server.Service
             if (bonus <= 0 || maximumCount <= 0 || ability?.IsHostileAbility != true)
                 return 0;
 
-            RechargeFirstHostileAbilityHitStacks(attacker, maximumCount);
-            _firstHostileAbilityHitCounts.TryGetValue(attacker, out var state);
-            return (state?.Count ?? 0) < maximumCount
+            var state = EnsureFirstHostileAbilityHitState(attacker, maximumCount, bonus, out _);
+            return state.Count < maximumCount
                 ? bonus
                 : 0;
         }
@@ -5805,12 +5811,11 @@ namespace SWLOR.Game.Server.Service
             if (maximumCount <= 0 || ability?.IsHostileAbility != true)
                 return;
 
-            RechargeFirstHostileAbilityHitStacks(attacker, maximumCount);
+            var damageBonus = Stat.GetStatAdjustment(attacker, StatType.FirstHostileAbilityHitDamageBonus);
+            var state = EnsureFirstHostileAbilityHitState(attacker, maximumCount, damageBonus, out _);
 
             var now = DateTime.UtcNow;
-            _firstHostileAbilityHitCounts.TryGetValue(attacker, out var state);
             if (ability.IsAreaAbility &&
-                state != null &&
                 (now - state.LastHit).TotalSeconds <= 1)
             {
                 return;
@@ -5838,16 +5843,83 @@ namespace SWLOR.Game.Server.Service
                 RechargeAvailableAt = rechargeAvailableAt
             };
 
-            var damageBonus = Stat.GetStatAdjustment(attacker, StatType.FirstHostileAbilityHitDamageBonus);
             if (damageBonus > 0 && GetIsPC(attacker))
             {
                 var remaining = maximumCount - newCount;
                 var stackLabel = remaining == 1 ? "stack" : "stacks";
+                var cooldownSeconds = Stat.GetStatAdjustment(attacker, StatType.FirstHostileAbilityHitCooldownSeconds);
+                var rechargeText = remaining == 0
+                    ? cooldownSeconds > 0
+                        ? $"; recharges in {cooldownSeconds} seconds"
+                        : "; recharges after combat"
+                    : string.Empty;
+                var feedback = ColorToken.Combat(
+                    $"First Strike deals +{damageBonus} DMG ({remaining} {stackLabel} remaining{rechargeText}).");
+
+                SendMessageToPC(attacker, feedback);
                 FloatingTextStringOnCreature(
                     ColorToken.Combat($"First Strike +{damageBonus} DMG ({remaining} {stackLabel} remaining)"),
                     attacker,
                     false);
             }
+        }
+
+        private static TargetHitSequenceState EnsureFirstHostileAbilityHitState(
+            uint attacker,
+            int maximumCount,
+            int damageBonus,
+            out bool becameReady)
+        {
+            RechargeFirstHostileAbilityHitStacks(attacker, maximumCount);
+            if (_firstHostileAbilityHitCounts.TryGetValue(attacker, out var state))
+            {
+                becameReady = false;
+                return state;
+            }
+
+            state = new TargetHitSequenceState
+            {
+                Count = 0,
+                LastHit = DateTime.MinValue
+            };
+            _firstHostileAbilityHitCounts[attacker] = state;
+            becameReady = true;
+
+            if (damageBonus > 0 && GetIsPC(attacker))
+            {
+                var stackLabel = maximumCount == 1 ? "stack" : "stacks";
+                var feedback = ColorToken.Combat(
+                    $"First Strike ready: {maximumCount} {stackLabel} (+{damageBonus} DMG each).");
+                SendMessageToPC(attacker, feedback);
+                FloatingTextStringOnCreature(
+                    ColorToken.Combat($"First Strike ready ({maximumCount} {stackLabel})"),
+                    attacker,
+                    false);
+            }
+
+            return state;
+        }
+
+        private static void ReportFirstStrikeCombatEntry(uint attacker, DateTime now)
+        {
+            var maximumCount = Stat.GetStatAdjustment(attacker, StatType.FirstHostileAbilityHitMaximumCount);
+            var damageBonus = Stat.GetStatAdjustment(attacker, StatType.FirstHostileAbilityHitDamageBonus);
+            if (maximumCount <= 0 || damageBonus <= 0)
+                return;
+
+            var state = EnsureFirstHostileAbilityHitState(attacker, maximumCount, damageBonus, out var becameReady);
+            if (becameReady ||
+                state.Count < maximumCount ||
+                state.RechargeAvailableAt == null ||
+                !GetIsPC(attacker))
+            {
+                return;
+            }
+
+            var remainingSeconds = Math.Max(1, (int)Math.Ceiling((state.RechargeAvailableAt.Value - now).TotalSeconds));
+            SendMessageToPC(
+                attacker,
+                ColorToken.Combat($"First Strike is recharging ({remainingSeconds} seconds remaining)."));
         }
 
         private static void RechargeFirstHostileAbilityHitStacks(uint attacker, int maximumCount)

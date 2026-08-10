@@ -837,6 +837,8 @@ public class TintMapReviewTests
             "the old material keys must be read before CopyItemAndModify destroys the source item");
         modifyCalls.Should().Contain("QueueItemCustomColorCarry",
             "the replacement material resrefs are only available after the new item is equipped");
+        modifyMethod.ToString().Should().Contain("Player, slot, armorPart, tintCarry",
+            "the delayed carry must be able to follow a rapidly replaced item through its slot");
         modifyMethod.ToString().Should().Contain("selection.ArmorPart == armorPart",
             "one modular armor part must not overwrite another part's custom dyes");
 
@@ -865,6 +867,10 @@ public class TintMapReviewTests
             .Select(GetInvokedMethodName)
             .ToList();
         carryCalls.Should().Contain("SetColor");
+        carryCalls.Should().Contain("GetItemInSlot",
+            "rapid model selections can destroy an intermediate item before its carry runs");
+        carryMethod.ToString().Should().Contain("selection.PaletteSource == targetItem");
+        carryMethod.ToString().Should().Contain("DeleteLocalInt(targetItem, variableName)");
         carryCalls.Should().Contain("DeleteLocalInt",
             "obsolete material keys must not resurrect an older color when the model returns");
         carryMethod.ToString().Should().Contain("activeVariables.Contains(variableName)",

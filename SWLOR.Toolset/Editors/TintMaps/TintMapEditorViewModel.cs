@@ -174,6 +174,8 @@ namespace SWLOR.Toolset.Editors.TintMaps
         {
             if (carry == null || carry.Sources.Count == 0)
                 return true;
+            if (!CarrySourceValuesAreCurrent(carry))
+                return true;
 
             var activeKeys = rows.Select(row => row.Key).ToHashSet(StringComparer.Ordinal);
             var assignments = new Dictionary<string, int>(StringComparer.Ordinal);
@@ -235,6 +237,27 @@ namespace SWLOR.Toolset.Editors.TintMaps
 
             foreach (var row in rows)
                 row.Reload();
+            return true;
+        }
+
+        /// <summary>
+        /// A model replacement resolves asynchronously. A later preset or custom-color edit is the
+        /// builder's newer intent, so an older captured carry must not recreate the value that edit
+        /// removed or replaced when the replacement model finally arrives.
+        /// </summary>
+        private bool CarrySourceValuesAreCurrent(ItemColorCarry carry)
+        {
+            foreach (var source in carry.Sources.Values.SelectMany(sources => sources))
+            {
+                var saved = _variables.GetInt(source.Key);
+                int? current = saved.HasValue &&
+                               TintMapColor.TryFromStoredValue(saved.Value, out _)
+                    ? saved.Value
+                    : null;
+                if (current != source.SavedColor)
+                    return false;
+            }
+
             return true;
         }
 

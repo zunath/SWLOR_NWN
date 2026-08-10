@@ -433,6 +433,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             uint creature,
             uint item,
             uint player,
+            InventorySlot slot,
             AppearanceArmor armorPart,
             TintMapItemColorCarry carry)
         {
@@ -441,11 +442,20 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
             DelayCommand(RefreshDelaySeconds, () =>
             {
-                if (!GetIsObjectValid(creature) || !GetIsObjectValid(item))
+                if (!GetIsObjectValid(creature))
+                    return;
+
+                // A second model click can replace the first copy before this delayed carry runs.
+                // Follow the slot to the newest equipped copy so the original custom colors are not
+                // discarded merely because the intermediate item was destroyed.
+                var targetItem = GetItemInSlot(slot, creature);
+                if (!GetIsObjectValid(targetItem))
+                    targetItem = item;
+                if (!GetIsObjectValid(targetItem))
                     return;
 
                 var itemSelections = TintMapModelResolver.GetCurrentSelections(creature)
-                    .Where(selection => selection.PaletteSource == item)
+                    .Where(selection => selection.PaletteSource == targetItem)
                     .ToList();
                 var selections = itemSelections
                     .Where(selection => selection.ArmorPart == armorPart)
@@ -455,7 +465,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 {
                     var destinations = selections
                         .Where(selection =>
-                            selection.GetPaletteSource(layer) == item &&
+                            selection.GetPaletteSource(layer) == targetItem &&
                             selection.Material.Layers.Contains(layer))
                         .GroupBy(
                             selection => TintMapVariable.GetName(selection.Material.Resref, layer),
@@ -468,7 +478,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                         .ToHashSet(StringComparer.Ordinal);
                     var activeVariables = itemSelections
                         .Where(selection =>
-                            selection.GetPaletteSource(layer) == item &&
+                            selection.GetPaletteSource(layer) == targetItem &&
                             selection.Material.Layers.Contains(layer))
                         .Select(selection => TintMapVariable.GetName(selection.Material.Resref, layer))
                         .ToHashSet(StringComparer.Ordinal);
@@ -507,13 +517,13 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                             activeVariables.Contains(variableName))
                             continue;
 
-                        DeleteLocalInt(item, variableName);
+                        DeleteLocalInt(targetItem, variableName);
                         removedStaleVariables = true;
                     }
                 }
 
                 if (removedStaleVariables && Droid.IsDroid(creature))
-                    Droid.UpdateEquippedItemSnapshot(creature, item);
+                    Droid.UpdateEquippedItemSnapshot(creature, targetItem);
 
                 ApplyCurrentColors(creature);
                 if (GetIsObjectValid(player))

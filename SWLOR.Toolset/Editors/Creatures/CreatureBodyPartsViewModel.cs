@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using Avalonia.Media;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Toolset.Domain.Documents;
+using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.Gff;
@@ -16,6 +17,8 @@ namespace SWLOR.Toolset.Editors.Creatures
     {
         private readonly Domain.Editors.Creatures.CreatureValueStore _store;
         private readonly Func<string, Action, bool> _runEdit;
+        private readonly Func<IDocumentEdit?>? _captureCoalesceOrigin;
+        private readonly Func<IDocumentEdit, string, Action, bool>? _runCoalescedEdit;
         private readonly Func<int, AppearanceRow?> _appearance;
         private readonly ArmorPartCatalog? _parts;
         private readonly ArmorDyeSwatchService? _colorPalettes;
@@ -28,6 +31,7 @@ namespace SWLOR.Toolset.Editors.Creatures
         private bool _loadingMirror;
         private IReadOnlyList<TintMapColorRowViewModel> _tintRows =
             Array.Empty<TintMapColorRowViewModel>();
+        private IDocumentEdit? _pendingTintCarryOrigin;
 
         private static readonly IReadOnlyList<LimbDefinition> LimbDefinitions = new[]
         {
@@ -82,10 +86,14 @@ namespace SWLOR.Toolset.Editors.Creatures
             ArmorPartCatalog? parts,
             ArmorDyeSwatchService? colorPalettes,
             Action changed,
-            Action? colorChanged = null)
+            Action? colorChanged = null,
+            Func<IDocumentEdit?>? captureCoalesceOrigin = null,
+            Func<IDocumentEdit, string, Action, bool>? runCoalescedEdit = null)
         {
             _store = store;
             _runEdit = runEdit;
+            _captureCoalesceOrigin = captureCoalesceOrigin;
+            _runCoalescedEdit = runCoalescedEdit;
             _appearance = appearance;
             _parts = parts;
             _colorPalettes = colorPalettes;
@@ -95,6 +103,7 @@ namespace SWLOR.Toolset.Editors.Creatures
 
         public void Reload()
         {
+            _pendingTintCarryOrigin = null;
             // Never infer that mirroring was requested merely because values match. If an undo or
             // external reload makes explicitly mirrored values diverge, return to independent mode.
             if (MirrorRightFromLeft && !StoredPairsMatch())
@@ -206,9 +215,12 @@ namespace SWLOR.Toolset.Editors.Creatures
             var carriedColors = changed
                 ? CaptureSemanticCustomColors(_tintRows)
                 : new Dictionary<TintMapLayerType, Color>();
+            var carryOrigin = changed ? _pendingTintCarryOrigin : null;
+            if (changed)
+                _pendingTintCarryOrigin = null;
             _tintRows = next;
             if (changed)
-                CarrySemanticCustomColors(next, carriedColors);
+                CarrySemanticCustomColors(next, carriedColors, carryOrigin);
             OnPropertyChanged(nameof(HasEditableContent));
 
             if (!_loaded)
@@ -299,7 +311,8 @@ namespace SWLOR.Toolset.Editors.Creatures
 
         private void CarrySemanticCustomColors(
             IReadOnlyCollection<TintMapColorRowViewModel> tintRows,
-            IReadOnlyDictionary<TintMapLayerType, Color> colors)
+            IReadOnlyDictionary<TintMapLayerType, Color> colors,
+            IDocumentEdit? originEdit)
         {
             var applicable = colors
                 .Where(entry => tintRows.Any(row => row.Layer == entry.Key))
@@ -307,7 +320,8 @@ namespace SWLOR.Toolset.Editors.Creatures
             if (applicable.Count == 0)
                 return;
 
-            _runEdit("Carry custom body colors to replacement models", () =>
+            var description = "Carry custom body colors to replacement models";
+            var mutation = () =>
             {
                 foreach (var (layer, color) in applicable)
                 {
@@ -315,7 +329,12 @@ namespace SWLOR.Toolset.Editors.Creatures
                     foreach (var variableName in GetSemanticVariableKeys(layer, tintRows))
                         _store.Locals.SetInt(variableName, saved);
                 }
-            });
+            };
+            var applied = originEdit != null && _runCoalescedEdit != null
+                ? _runCoalescedEdit(originEdit, description, mutation)
+                : _runEdit(description, mutation);
+            if (!applied)
+                return;
 
             foreach (var row in tintRows)
                 row.Reload();
@@ -424,7 +443,10 @@ namespace SWLOR.Toolset.Editors.Creatures
         {
             var applied = _runEdit($"Change {label}", () => WriteFields(value, fields));
             if (applied)
+            {
+                _pendingTintCarryOrigin = _captureCoalesceOrigin?.Invoke();
                 _changed();
+            }
             return applied;
         }
 
@@ -471,6 +493,7 @@ namespace SWLOR.Toolset.Editors.Creatures
                 return;
             }
 
+            _pendingTintCarryOrigin = _captureCoalesceOrigin?.Invoke();
             _changed();
             ReloadPairs();
         }

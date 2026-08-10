@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Creatures;
+using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
@@ -178,7 +179,9 @@ namespace SWLOR.Toolset.Editors.Creatures
             Func<IReadOnlyList<AppearanceOption>>? appearanceOptionsLoader = null,
             Func<int, string?>? abilityIcon = null,
             OutputLogService? log = null,
-            TintMapCatalog? tintMapCatalog = null)
+            TintMapCatalog? tintMapCatalog = null,
+            Func<IDocumentEdit?>? captureCoalesceOrigin = null,
+            Func<IDocumentEdit, string, Action, bool>? runCoalescedEdit = null)
         {
             _store = new CreatureValueStore(creature);
             _runEdit = runEdit;
@@ -209,7 +212,9 @@ namespace SWLOR.Toolset.Editors.Creatures
                 armorParts,
                 colorPalettes,
                 OnBodyPartChanged,
-                OnTintColorChanged);
+                OnTintColorChanged,
+                captureCoalesceOrigin,
+                runCoalescedEdit);
             if (tintMapCatalog != null)
             {
                 TintMapEditor = new TintMapEditorViewModel(

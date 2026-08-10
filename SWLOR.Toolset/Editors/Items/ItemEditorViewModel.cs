@@ -36,6 +36,7 @@ namespace SWLOR.Toolset.Editors.Items
         private ModelPreviewControl? _previewView;
         private RenderModel? _cachedModel;
         private string? _cachedModelSignature;
+        private string? _cachedItemGeometrySignature;
         private string? _pendingModelSignature;
         private int _previewModelGeneration;
         private readonly SemaphoreSlim _previewModelGate = new(1);
@@ -664,17 +665,26 @@ namespace SWLOR.Toolset.Editors.Items
                 _previewModelGeneration++;
                 _pendingModelSignature = null;
                 IsModelPreviewLoading = false;
-                ApplyPreviewScene(null);
+                ApplyPreviewScene(null, carryItemCustomColorsAcrossMaterials: false);
                 return;
             }
 
+            var itemGeometrySignature = ItemGeometrySignature();
+            var carryItemCustomColors =
+                _cachedItemGeometrySignature != null &&
+                !string.Equals(
+                    _cachedItemGeometrySignature,
+                    itemGeometrySignature,
+                    StringComparison.Ordinal);
             var signature = GeometrySignature();
             if (_cachedModelSignature == signature)
             {
                 _previewModelGeneration++;
                 _pendingModelSignature = null;
                 IsModelPreviewLoading = false;
-                ApplyPreviewScene(_cachedModel);
+                ApplyPreviewScene(
+                    _cachedModel,
+                    carryItemCustomColorsAcrossMaterials: carryItemCustomColors);
                 return;
             }
 
@@ -684,13 +694,21 @@ namespace SWLOR.Toolset.Editors.Items
             var generation = ++_previewModelGeneration;
             _pendingModelSignature = signature;
             IsModelPreviewLoading = true;
-            ApplyPreviewScene(null);
+            ApplyPreviewScene(
+                null,
+                carryItemCustomColorsAcrossMaterials: carryItemCustomColors);
 
             // Snapshot on the UI thread. The background resolver never observes a field halfway
             // through another edit, and an older completion is discarded by its generation.
             var snapshot = new JsonGffDocument("UTI ", _store.Item).ToBytes();
             var female = PreviewFemale;
-            _ = ResolvePreviewModelAsync(snapshot, female, signature, generation);
+            _ = ResolvePreviewModelAsync(
+                snapshot,
+                female,
+                signature,
+                itemGeometrySignature,
+                carryItemCustomColors,
+                generation);
         }
 
         public void ReloadGameResources()
@@ -746,6 +764,8 @@ namespace SWLOR.Toolset.Editors.Items
             byte[] snapshot,
             bool female,
             string signature,
+            string itemGeometrySignature,
+            bool carryItemCustomColors,
             int generation)
         {
             RenderModel? model;
@@ -781,18 +801,23 @@ namespace SWLOR.Toolset.Editors.Items
                 _pendingModelSignature = null;
                 _cachedModel = model;
                 _cachedModelSignature = signature;
+                _cachedItemGeometrySignature = itemGeometrySignature;
                 IsModelPreviewLoading = false;
-                ApplyPreviewScene(model);
+                ApplyPreviewScene(
+                    model,
+                    carryItemCustomColorsAcrossMaterials: carryItemCustomColors);
             });
         }
 
-        private void ApplyPreviewScene(RenderModel? model)
+        private void ApplyPreviewScene(
+            RenderModel? model,
+            bool carryItemCustomColorsAcrossMaterials)
         {
             var hasItemOwnedMeshes = model?.Meshes.Any(mesh => mesh.UsesItemTintOverrides) == true;
             TintMapEditor?.Reload(
                 model,
                 includeNonItemOwnedMaterials: !hasItemOwnedMeshes,
-                carryItemCustomColorsAcrossMaterials: true);
+                carryItemCustomColorsAcrossMaterials: carryItemCustomColorsAcrossMaterials);
             PreviewScene = model == null
                 ? null
                 : new AreaScene
@@ -833,7 +858,15 @@ namespace SWLOR.Toolset.Editors.Items
         {
             var parts = new System.Text.StringBuilder();
             parts.Append(PreviewFemale ? 'f' : 'm');
-            parts.Append(':').Append(CurrentBaseItem());
+            parts.Append(':').Append(ItemGeometrySignature());
+
+            return parts.ToString();
+        }
+
+        private string ItemGeometrySignature()
+        {
+            var parts = new System.Text.StringBuilder();
+            parts.Append(CurrentBaseItem());
 
             foreach (var field in GeometryFields)
                 parts.Append(':').Append(ItemAppearanceValues.Read(_store.Item, field) ?? -1);

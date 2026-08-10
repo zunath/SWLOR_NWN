@@ -722,7 +722,7 @@ namespace SWLOR.Toolset.Editors.Creatures
 
             var generation = ++_previewModelGeneration;
             IsModelPreviewLoading = true;
-            ApplyPreviewScene(null);
+            ApplyPreviewScene(null, preserveTintRowsWhenEmpty: true);
 
             // The resolver never observes a partially applied edit, and no worker touches the
             // live document while undo/redo or another field mutation is in progress.
@@ -765,14 +765,17 @@ namespace SWLOR.Toolset.Editors.Creatures
             });
         }
 
-        private void ApplyPreviewScene(RenderModel? model)
+        private void ApplyPreviewScene(RenderModel? model, bool preserveTintRowsWhenEmpty = false)
         {
-            TintMapEditor?.Reload(
-                model,
-                includeItemOwnedMaterials: false,
-                includeCreatureLayersFromItemOwnedMaterials: true);
-            BodyParts.SetTintMapRows(TintMapEditor?.Colors);
-            ReconcileBodySectionAvailability();
+            if (model != null || !preserveTintRowsWhenEmpty)
+            {
+                TintMapEditor?.Reload(
+                    model,
+                    includeItemOwnedMaterials: false,
+                    includeCreatureLayersFromItemOwnedMaterials: true);
+                BodyParts.SetTintMapRows(TintMapEditor?.Colors);
+                ReconcileBodySectionAvailability();
+            }
             PublishAnimations(model);
             PreviewScene = model == null
                 ? null

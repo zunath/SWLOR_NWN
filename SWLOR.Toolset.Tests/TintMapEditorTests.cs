@@ -1,4 +1,5 @@
 using System.Text;
+using System.Reflection;
 using Avalonia.Controls;
 using Avalonia.Headless.NUnit;
 using Avalonia.Media;
@@ -8,6 +9,8 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Toolset.Domain.Documents;
+using SWLOR.Toolset.Domain.Editors.Creatures;
+using SWLOR.Toolset.Domain.Editors.Items;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.Gff;
@@ -552,6 +555,117 @@ namespace SWLOR.Toolset.Tests
             editor.Colors.Single(row => row.Key == newKey).IsCustom.Should().BeTrue();
         }
 
+        [AvaloniaTest]
+        public void MannequinSexChangeDoesNotMoveOrDeleteGenderSpecificCustomColors()
+        {
+            var catalog = TintMapCatalog.Load(Resources());
+            catalog.Should().NotBeNull();
+            var item = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
+                ResourceType.Uti,
+                "gender_tint",
+                "Gender Tint")).Root;
+            var variables = new ItemValueStore(item).Locals;
+            var maleKey = TintMapVariable.GetName("pmh0_robe030", TintMapLayerType.Cloth1);
+            var femaleKey = TintMapVariable.GetName("pfh0_robe149", TintMapLayerType.Cloth1);
+            variables.SetInt(maleKey, new TintMapColor(12, 34, 56).ToStoredValue());
+
+            using var editor = new ItemEditorViewModel(
+                item,
+                "gender_tint",
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                resolveModel: (_, female) => ItemOwnedModelWith(
+                    female ? "pfh0_robe149" : "pmh0_robe030"),
+                tintMapCatalog: catalog);
+            DrainUntil(() => !editor.IsModelPreviewLoading);
+
+            editor.TintMapEditor!.Colors.Should().Contain(row => row.Key == maleKey && row.IsCustom);
+
+            editor.PreviewFemale = true;
+            Dispatcher.UIThread.RunJobs();
+            DrainUntil(() => !editor.IsModelPreviewLoading);
+
+            variables.GetInt(maleKey).Should().NotBeNull(
+                "changing only the preview mannequin must not delete the male material's tint");
+            variables.GetInt(femaleKey).Should().BeNull(
+                "changing only the preview mannequin must not copy a male tint onto female materials");
+        }
+
+        [AvaloniaTest]
+        public async Task CreatureModelReloadRetainsSemanticColorsThroughItsEmptyLoadingScene()
+        {
+            var catalog = TintMapCatalog.Load(Resources());
+            catalog.Should().NotBeNull();
+            var creature = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
+                ResourceType.Utc,
+                "semantic_reload",
+                "Semantic Reload")).Root;
+            var variables = new CreatureValueStore(creature).Locals;
+            using var secondStarted = new ManualResetEventSlim();
+            using var releaseSecond = new ManualResetEventSlim();
+            var calls = 0;
+            using var editor = new CreatureEditorViewModel(
+                creature,
+                Path.Combine(CorpusLocator.ModuleDirectory, "utc", "semantic_reload.utc.json"),
+                "semantic_reload",
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                null,
+                null,
+                null,
+                _ =>
+                {
+                    if (Interlocked.Increment(ref calls) == 1)
+                        return ModelWith("pmh0_head038");
+
+                    secondStarted.Set();
+                    releaseSecond.Wait();
+                    return ModelWith("pmh0_head220");
+                },
+                id => new AppearanceRow(id, "DYNAMIC_TEST", "Dynamic Test", "P", "H", null),
+                null,
+                tintMapCatalog: catalog);
+            DrainUntil(() => !editor.IsModelPreviewLoading);
+            await editor.BodyParts.EnsureLoadedAsync();
+
+            var oldKey = TintMapVariable.GetName("pmh0_head038", TintMapLayerType.Skin);
+            var newKey = TintMapVariable.GetName("pmh0_head220", TintMapLayerType.Skin);
+            var expected = Color.FromRgb(12, 34, 56);
+            editor.BodyParts.Colors.Single(color => color.Label == "Skin").CustomColor = expected;
+
+            var updatePreview = typeof(CreatureEditorViewModel).GetMethod(
+                "UpdatePreviewScene",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            updatePreview.Should().NotBeNull();
+            try
+            {
+                updatePreview!.Invoke(editor, null);
+                secondStarted.Wait(TimeSpan.FromSeconds(5)).Should().BeTrue();
+
+                editor.TintMapEditor!.Colors.Should().Contain(row => row.Key == oldKey,
+                    "the temporary empty scene must retain the source semantic rows");
+                editor.BodyParts.Colors.Single(color => color.Label == "Skin").CustomColor
+                    .Should().Be(expected);
+            }
+            finally
+            {
+                releaseSecond.Set();
+            }
+
+            DrainUntil(() => !editor.IsModelPreviewLoading);
+
+            TintMapColor.TryFromStoredValue(variables.GetInt(newKey)!.Value, out var carried)
+                .Should().BeTrue();
+            carried.Should().Be(new TintMapColor(12, 34, 56),
+                "the resolved replacement material must receive the retained semantic color");
+        }
+
         [Test]
         public void ItemModelReplacementWithoutLayerRemovesItsStaleCustomColor()
         {
@@ -851,6 +965,25 @@ namespace SWLOR.Toolset.Tests
             {
                 window.Close();
             }
+        }
+
+        private static RenderModel ItemOwnedModelWith(string material)
+        {
+            var model = ModelWith(material);
+            model.Meshes.Single().UsesItemTintOverrides = true;
+            return model;
+        }
+
+        private static void DrainUntil(Func<bool> condition)
+        {
+            for (var attempt = 0; attempt < 200 && !condition(); attempt++)
+            {
+                Dispatcher.UIThread.RunJobs();
+                Thread.Sleep(5);
+            }
+
+            Dispatcher.UIThread.RunJobs();
+            condition().Should().BeTrue("the background preview should publish promptly");
         }
     }
 }

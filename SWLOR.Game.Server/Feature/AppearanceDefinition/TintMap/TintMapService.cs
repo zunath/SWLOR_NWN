@@ -472,7 +472,18 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                             selection.Material.Layers.Contains(layer))
                         .Select(selection => TintMapVariable.GetName(selection.Material.Resref, layer))
                         .ToHashSet(StringComparer.Ordinal);
-                    var distinctColors = sourceEntries
+                    var sourceVariables = sourceEntries
+                        .Select(source => source.VariableName)
+                        .ToHashSet(StringComparer.Ordinal);
+                    var replacedSources = sourceEntries
+                        .Where(source => !destinationVariables.Contains(source.VariableName))
+                        .ToList();
+                    var replacementDestinations = destinations
+                        .Where(selection => !sourceVariables.Contains(TintMapVariable.GetName(
+                            selection.Material.Resref,
+                            layer)))
+                        .ToList();
+                    var distinctColors = replacedSources
                         .Where(source => source.Color.HasValue)
                         .Select(source => source.Color!.Value)
                         .Distinct()
@@ -480,19 +491,11 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     if (distinctColors.Count == 1)
                     {
                         for (var index = 0;
-                             index < destinations.Count && index < sourceEntries.Count;
+                             index < replacementDestinations.Count && index < replacedSources.Count;
                              index++)
                         {
-                            var destinationVariable = TintMapVariable.GetName(
-                                destinations[index].Material.Resref,
-                                layer);
-                            var wasAlreadyActive = sourceEntries.Any(source =>
-                                string.Equals(
-                                    source.VariableName,
-                                    destinationVariable,
-                                    StringComparison.Ordinal));
-                            if (!wasAlreadyActive && sourceEntries[index].Color is { } color)
-                                SetColor(creature, destinations[index], layer, color);
+                            if (replacedSources[index].Color is { } color)
+                                SetColor(creature, replacementDestinations[index], layer, color);
                         }
                     }
 

@@ -873,12 +873,14 @@ public class TintMapReviewTests
             "a model with no destination for the layer must still discard inactive source keys");
         carryMethod.ToString().Should().Contain("distinctColors.Count == 1",
             "different per-material colors must not be guessed during a model replacement");
-        carryMethod.ToString().Should().Contain("index < sourceEntries.Count",
+        carryMethod.ToString().Should().Contain("index < replacedSources.Count",
             "a partial custom color may migrate only to its corresponding replacement material");
-        carryMethod.ToString().Should().Contain("sourceEntries[index].Color",
+        carryMethod.ToString().Should().Contain("replacedSources[index].Color",
             "preset source slots must not be flattened to the layer's one custom color");
-        carryMethod.ToString().Should().Contain("wasAlreadyActive",
-            "shared material keys must retain their existing per-material state");
+        carryMethod.ToString().Should().Contain("!destinationVariables.Contains(source.VariableName)",
+            "shared source slots must be removed before replacement slots are aligned");
+        carryMethod.ToString().Should().Contain("!sourceVariables.Contains",
+            "shared destination slots must be removed before replacement slots are aligned");
         carryMethod.ToString().Should().Contain("source.Color.HasValue",
             "ambiguous custom source variables must still reach stale-key cleanup");
         carryCalls.Should().Contain("ApplyCurrentColors",

@@ -274,11 +274,13 @@ namespace SWLOR.Toolset.Tests
             shader.Should().Contain(
                 "result = mix(SampleEnvironmentMap(norm), result, environmentDiffuseCoverage);",
                 "Aurora draws an unlit environment pass and source-alpha blends the lit diffuse on top");
-            shader.Should().Contain("paletteColor.rgb = custom.rgb * shade;");
+            shader.Should().Contain("paletteColor.rgb = custom.rgb * shadeScale;");
+            shader.Should().Contain("float referenceRow = 0.000244;");
+            shader.Should().Contain("vec3 referenceShade = textureLod(");
             shader.Should().Contain("paletteColor.a = 1.0;",
                 "custom RGB must not inherit the previously selected preset's reflection mask");
             shader.Should().Contain("return paletteColor;",
-                "custom RGB must retain the tint map's authored shade detail");
+                "custom RGB must retain the tint map's native nonlinear shade detail");
             shader.Should().NotContain(
                 "(ambientColor + diff * lightColor) * surfaceColor",
                 "lighting the combined passes incorrectly darkens reflective PLT regions");
@@ -363,6 +365,34 @@ namespace SWLOR.Toolset.Tests
             image.Should().NotBeNull();
             Pixel(image!, 0, 0).Should().Be((20, 40, 60, 73));
             image.AlphaCutoff.Should().Be(77, "texture9 red uses the runtime shader's 0.3 cutoff");
+        }
+
+        [Test]
+        public void SoftwareTintRendererUsesNativePaletteShadingForCustomColors()
+        {
+            File.WriteAllBytes(Path.Combine(_resourceDirectory, "tint.tga"), SolidColorTga(64, 0, 0));
+            File.WriteAllBytes(Path.Combine(_resourceDirectory, "palette.tga"), SolidColorTga(127, 127, 127));
+            var material = MaterialResolver.Parse(
+                "texture7 tint\n" +
+                "texture10 palette\n" +
+                "customshaderPSH fs_plt_tinter\n");
+            var customColor = new TintMapColor(120, 80, 40);
+
+            var image = TintMapTextureRenderer.Render(
+                Index(),
+                "sample_material",
+                material,
+                new Dictionary<int, int>(),
+                new Dictionary<string, int>
+                {
+                    [TintMapVariable.GetName("sample_material", TintMapLayerType.Skin)] =
+                        customColor.ToStoredValue()
+                });
+
+            image.Should().NotBeNull();
+            Pixel(image!, 0, 0).Should().Be((120, 80, 40, 255),
+                "custom RGB values should follow the native palette's nonlinear shade response, " +
+                "not be multiplied by the raw PLT intensity");
         }
 
         [Test]

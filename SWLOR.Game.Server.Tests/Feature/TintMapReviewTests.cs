@@ -487,6 +487,43 @@ public class TintMapReviewTests
     }
 
     [Test]
+    public void SemanticRgbEditsSynchronizeInactiveAndPersistedOverrides()
+    {
+        var serviceSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapService.cs");
+        var synchronize = FindMethod(serviceSource, nameof(TintMapService.SetCreatureCustomColor));
+        var synchronizeCalls = synchronize.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Select(GetInvokedMethodName)
+            .ToList();
+
+        synchronize.ToString().Should().Contain("GetCreatureCustomColorVariables(creature)",
+            "inactive semantic material keys must receive the newly selected RGB value");
+        synchronizeCalls.Should().Contain("SetLocalInt");
+        synchronizeCalls.Should().Contain("SaveDroidOverrides",
+            "inactive semantic keys must remain synchronized after a droid respawns");
+        synchronizeCalls.Should().Contain("SetColor",
+            "the active materials must update immediately in the game preview");
+
+        var viewModelSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "AppearanceEditorViewModel.cs");
+        var selectedTintColor = CSharpSyntaxTree.ParseText(viewModelSource)
+            .GetRoot()
+            .DescendantNodes()
+            .OfType<PropertyDeclarationSyntax>()
+            .Single(property => property.Identifier.ValueText == "SelectedTintColor");
+        selectedTintColor.ToString().Should().Contain(nameof(TintMapService.SetCreatureCustomColor));
+    }
+
+    [Test]
     public void SpeederAppearanceChangesRefreshTintMaps()
     {
         var source = ReadSource(
@@ -749,6 +786,8 @@ public class TintMapReviewTests
             "obsolete material keys must not resurrect an older color when the model returns");
         carryMethod.ToString().Should().Contain("activeVariables.Contains(variableName)",
             "cleanup must retain a material key that another equipped armor part still uses");
+        carryMethod.ToString().Should().NotContain("if (destinations.Count == 0)",
+            "a model with no destination for the layer must still discard inactive source keys");
         carryCalls.Should().Contain("ApplyCurrentColors",
             "the equipped replacement must render its carried colors immediately");
         carryCalls.Should().Contain("PublishRefreshEvent",
@@ -852,6 +891,14 @@ public class TintMapReviewTests
         {
             legacyShader.Should().Contain($"#define {macro} 0");
             mappedShader.Should().Contain($"#define {macro} 1");
+        }
+
+        foreach (var shader in new[] { legacyShader, mappedShader })
+        {
+            shader.Should().Contain("float referenceV = 0.000244;");
+            shader.Should().Contain("customTint.rgb * shadeScale");
+            shader.Should().NotContain("customTint.rgb * g",
+                "raw PLT intensity exaggerates seams between modular skin parts");
         }
     }
 

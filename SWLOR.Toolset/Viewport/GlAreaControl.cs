@@ -275,15 +275,16 @@ vec4 ResolveTintMapColor()
 
     vec4 custom = tintColor0;
     float paletteRow = tintPaletteRow0;
-    if      (layer > 8.5) { custom = tintColor9; paletteRow = tintPaletteRow9; }
-    else if (layer > 7.5) { custom = tintColor8; paletteRow = tintPaletteRow8; }
-    else if (layer > 6.5) { custom = tintColor7; paletteRow = tintPaletteRow7; }
-    else if (layer > 5.5) { custom = tintColor6; paletteRow = tintPaletteRow6; }
-    else if (layer > 4.5) { custom = tintColor5; paletteRow = tintPaletteRow5; }
-    else if (layer > 3.5) { custom = tintColor4; paletteRow = tintPaletteRow4; }
-    else if (layer > 2.5) { custom = tintColor3; paletteRow = tintPaletteRow3; }
-    else if (layer > 1.5) { custom = tintColor2; paletteRow = tintPaletteRow2; }
-    else if (layer > 0.5) { custom = tintColor1; paletteRow = tintPaletteRow1; }
+    float referenceRow = 0.000244;
+    if      (layer > 8.5) { custom = tintColor9; paletteRow = tintPaletteRow9; referenceRow = 0.515869; }
+    else if (layer > 7.5) { custom = tintColor8; paletteRow = tintPaletteRow8; referenceRow = 0.515869; }
+    else if (layer > 6.5) { custom = tintColor7; paletteRow = tintPaletteRow7; referenceRow = 0.429932; }
+    else if (layer > 5.5) { custom = tintColor6; paletteRow = tintPaletteRow6; referenceRow = 0.429932; }
+    else if (layer > 4.5) { custom = tintColor5; paletteRow = tintPaletteRow5; referenceRow = 0.343994; }
+    else if (layer > 3.5) { custom = tintColor4; paletteRow = tintPaletteRow4; referenceRow = 0.343994; }
+    else if (layer > 2.5) { custom = tintColor3; paletteRow = tintPaletteRow3; referenceRow = 0.258057; }
+    else if (layer > 1.5) { custom = tintColor2; paletteRow = tintPaletteRow2; referenceRow = 0.172119; }
+    else if (layer > 0.5) { custom = tintColor1; paletteRow = tintPaletteRow1; referenceRow = 0.086182; }
 
     float paletteU = (shade * 255.0 + 0.5) / 256.0;
     vec4 paletteColor = textureLod(
@@ -292,7 +293,21 @@ vec4 ResolveTintMapColor()
         0.0);
     if (custom.a > 0.5)
     {
-        paletteColor.rgb = custom.rgb * shade;
+        vec3 referenceShade = textureLod(
+            tintPaletteTexture,
+            vec2(paletteU, referenceRow),
+            0.0).rgb;
+        vec3 referencePeak = textureLod(
+            tintPaletteTexture,
+            vec2(255.5 / 256.0, referenceRow),
+            0.0).rgb;
+        const vec3 luminanceWeights = vec3(0.2126, 0.7152, 0.0722);
+        float shadeScale = clamp(
+            dot(referenceShade, luminanceWeights) /
+                max(dot(referencePeak, luminanceWeights), 1.0 / 255.0),
+            0.0,
+            1.0);
+        paletteColor.rgb = custom.rgb * shadeScale;
         // A direct RGB choice must not inherit the hidden preset row's reflection mask. Without
         // this, the same custom color can turn chrome/grey depending on the preset selected before
         // it. Presets retain their authored PLT environment coverage through paletteColor.a.

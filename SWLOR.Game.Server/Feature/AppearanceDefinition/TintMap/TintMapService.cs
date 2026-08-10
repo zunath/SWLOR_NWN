@@ -274,6 +274,47 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             }
         }
 
+        public static void SetCreatureCustomColor(
+            uint creature,
+            IReadOnlyList<TintMapMaterialSelection> selections,
+            TintMapLayerType layer,
+            TintMapColor color)
+        {
+            if (!GetIsObjectValid(creature) ||
+                selections == null ||
+                !TintMapVariable.IsCreatureColorLayer(layer))
+            {
+                return;
+            }
+
+            var savedColor = color.ToStoredValue();
+            var existingVariables = GetCreatureCustomColorVariables(creature)
+                .Where(variableName =>
+                    TintMapVariable.TryGetLayer(variableName, out var variableLayer) &&
+                    variableLayer == layer)
+                .ToList();
+            foreach (var variableName in existingVariables)
+            {
+                SetLocalInt(creature, variableName, savedColor);
+            }
+
+            SaveDroidOverrides(creature, existingVariables, savedColor);
+
+            var appliedVariables = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var selection in selections)
+            {
+                if (selection.GetPaletteSource(layer) != creature ||
+                    !selection.Material.Layers.Contains(layer))
+                {
+                    continue;
+                }
+
+                var variableName = TintMapVariable.GetName(selection.Material.Resref, layer);
+                if (appliedVariables.Add(variableName))
+                    SetColor(creature, selection, layer, color);
+            }
+        }
+
         private static void ApplyCreatureCustomColors(
             uint creature,
             IReadOnlyDictionary<TintMapLayerType, TintMapColor> colors)
@@ -410,8 +451,6 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                             StringComparer.Ordinal)
                         .Select(group => group.First())
                         .ToList();
-                    if (destinations.Count == 0)
-                        continue;
 
                     var destinationVariables = destinations
                         .Select(selection => TintMapVariable.GetName(selection.Material.Resref, layer))
@@ -677,6 +716,27 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
             if (changed)
                 Droid.SaveConstructedDroid(controller, constructedDroid);
+        }
+
+        private static void SaveDroidOverrides(
+            uint creature,
+            IReadOnlyList<string> variableNames,
+            int savedColor)
+        {
+            if (variableNames.Count == 0 || !Droid.IsDroid(creature))
+                return;
+
+            var controller = Droid.GetControllerItem(creature);
+            if (!GetIsObjectValid(controller))
+                return;
+
+            var constructedDroid = Droid.LoadConstructedDroid(controller);
+            foreach (var variableName in variableNames)
+            {
+                constructedDroid.TintOverrides[variableName] = savedColor;
+            }
+
+            Droid.SaveConstructedDroid(controller, constructedDroid);
         }
 
         private static void SaveDroidOverride(

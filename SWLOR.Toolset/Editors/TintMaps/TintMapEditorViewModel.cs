@@ -167,9 +167,12 @@ namespace SWLOR.Toolset.Editors.TintMaps
                         .Select(row => row.Key)
                         .Distinct(StringComparer.Ordinal)
                         .ToList()))
-                .Where(entry => entry.Keys.Count > 0)
                 .ToList();
-            if (destinations.Count == 0)
+            var hasChanges = destinations.Any(entry =>
+                entry.Keys.Count > 0 ||
+                carry.SourceKeys.TryGetValue(entry.Key, out var sources) &&
+                sources.Any(source => !activeKeys.Contains(source)));
+            if (!hasChanges)
                 return true;
 
             var applied = _runEdit("Carry custom item colors to replacement models", () =>

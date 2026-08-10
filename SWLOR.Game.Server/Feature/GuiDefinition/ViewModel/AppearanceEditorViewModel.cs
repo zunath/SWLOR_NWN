@@ -229,9 +229,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
 
                 var color = new TintMapColor(value.R, value.G, value.B);
-                foreach (var selection in selections)
+                if (TintMapVariable.IsCreatureColorLayer(layerType))
                 {
-                    TintMapService.SetColor(_target, selection, layerType, color);
+                    TintMapService.SetCreatureCustomColor(_target, selections, layerType, color);
+                }
+                else
+                {
+                    foreach (var selection in selections)
+                    {
+                        TintMapService.SetColor(_target, selection, layerType, color);
+                    }
                 }
 
                 CustomTintSelectionText = $"{layer.Name}: #{value.R:X2}{value.G:X2}{value.B:X2}";

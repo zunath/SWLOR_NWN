@@ -61,9 +61,10 @@ namespace SWLOR.Toolset.Domain.Render
 
                 if (TintMapColor.TryFromStoredValue(savedValue, out var customColor))
                 {
-                    output[offset] = Modulate(customColor.Red, shade);
-                    output[offset + 1] = Modulate(customColor.Green, shade);
-                    output[offset + 2] = Modulate(customColor.Blue, shade);
+                    var shadeScale = GetCustomShadeScale(palette, layer, shade);
+                    output[offset] = ApplyShade(customColor.Red, shadeScale);
+                    output[offset + 1] = ApplyShade(customColor.Green, shadeScale);
+                    output[offset + 2] = ApplyShade(customColor.Blue, shadeScale);
                     output[offset + 3] = SampleAlpha(
                         alphaTexture,
                         alphaSource,
@@ -119,9 +120,41 @@ namespace SWLOR.Toolset.Domain.Render
             };
         }
 
-        private static byte Modulate(byte color, byte shade)
+        private static float GetCustomShadeScale(
+            TextureImage palette,
+            TintMapLayerType layer,
+            byte shade)
         {
-            return (byte)((color * shade + 127) / 255);
+            var definition = TintMapMaterialRegistry.GetLayer(layer);
+            var paletteY = Math.Clamp(
+                palette.Height - 1 - definition.PaletteBaseRow,
+                0,
+                palette.Height - 1);
+            var shadeX = Math.Clamp(
+                shade * (palette.Width - 1) / byte.MaxValue,
+                0,
+                palette.Width - 1);
+            var peakX = palette.Width - 1;
+            var shadeOffset = (paletteY * palette.Width + shadeX) * 4;
+            var peakOffset = (paletteY * palette.Width + peakX) * 4;
+            var shadeLuminance = Luminance(palette.Pixels, shadeOffset);
+            var peakLuminance = Math.Max(Luminance(palette.Pixels, peakOffset), 1f);
+            return Math.Clamp(shadeLuminance / peakLuminance, 0f, 1f);
+        }
+
+        private static float Luminance(byte[] pixels, int offset)
+        {
+            return pixels[offset] * 0.2126f +
+                   pixels[offset + 1] * 0.7152f +
+                   pixels[offset + 2] * 0.0722f;
+        }
+
+        private static byte ApplyShade(byte color, float shadeScale)
+        {
+            return (byte)Math.Clamp(
+                (int)MathF.Round(color * shadeScale),
+                byte.MinValue,
+                byte.MaxValue);
         }
 
         private static byte SampleAlpha(

@@ -553,6 +553,46 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void ItemModelReplacementWithoutLayerRemovesItsStaleCustomColor()
+        {
+            var catalog = TintMapCatalog.Load(Resources());
+            catalog.Should().NotBeNull();
+            var variables = new VarTable(new JsonGffStruct());
+            var editor = new TintMapEditorViewModel(
+                variables,
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                catalog!);
+            var oldModel = ModelWith("helm_004");
+            oldModel.Meshes.Single().UsesItemTintOverrides = true;
+            var replacementWithoutCloth = ModelWith("pmo0_footl10");
+            replacementWithoutCloth.Meshes.Single().UsesItemTintOverrides = true;
+            var oldKey = TintMapVariable.GetName("helm_004", TintMapLayerType.Cloth1);
+
+            editor.Reload(
+                oldModel,
+                includeNonItemOwnedMaterials: false,
+                carryItemCustomColorsAcrossMaterials: true);
+            editor.Colors.Single(row => row.Layer == TintMapLayerType.Cloth1).Color =
+                Color.FromRgb(12, 34, 56);
+
+            editor.Reload(
+                null,
+                includeNonItemOwnedMaterials: false,
+                carryItemCustomColorsAcrossMaterials: true);
+            editor.Reload(
+                replacementWithoutCloth,
+                includeNonItemOwnedMaterials: false,
+                carryItemCustomColorsAcrossMaterials: true);
+
+            variables.GetInt(oldKey).Should().BeNull(
+                "a destinationless layer must not resurrect when the old model is selected again");
+        }
+
+        [Test]
         public void ItemModelReplacementDoesNotGuessBetweenDifferentColorsForOneLayer()
         {
             var catalog = TintMapCatalog.Load(Resources());

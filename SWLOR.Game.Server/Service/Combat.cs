@@ -2825,11 +2825,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var now = DateTime.UtcNow;
-            var isEnteringCombat = !HasRecentCombatEntryActivity(creature, now);
-
-            if (isEnteringCombat)
-                ReportFirstStrikeCombatEntry(creature, now);
-
+            ReportCombatEntryIfNeeded(creature, now);
             _lastCombatActivity[creature] = now;
         }
 
@@ -2848,9 +2844,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var now = DateTime.UtcNow;
-            if (!HasRecentCombatEntryActivity(creature, now))
-                ReportFirstStrikeCombatEntry(creature, now);
-
+            ReportCombatEntryIfNeeded(creature, now);
             // Keep cast attempts separate from landed combat activity. Opening-hit riders such as
             // Venatic Recovery must still observe the previous landed-combat timestamp.
             _lastHostileAbilityAttemptActivity[creature] = now;
@@ -2862,12 +2856,16 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var now = DateTime.UtcNow;
-            if (!HasRecentCombatEntryActivity(creature, now))
-                ReportFirstStrikeCombatEntry(creature, now);
-
+            ReportCombatEntryIfNeeded(creature, now);
             // Incoming damage starts combat for First Strike visibility without consuming the
             // landed-opening timestamp that Venatic Recovery reads when the defender retaliates.
             _lastIncomingDamageActivity[creature] = now;
+        }
+
+        private static void ReportCombatEntryIfNeeded(uint creature, DateTime now)
+        {
+            if (!HasRecentCombatEntryActivity(creature, now))
+                ReportFirstStrikeCombatEntry(creature, now);
         }
 
         private static bool HasRecentCombatEntryActivity(uint creature, DateTime now)

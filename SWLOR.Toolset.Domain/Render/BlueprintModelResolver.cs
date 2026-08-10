@@ -452,6 +452,8 @@ namespace SWLOR.Toolset.Domain.Render
             if (row == null)
                 return BlueprintModelReference.NoneWith($"Unknown appearance id {appearanceId}.");
 
+            var armor = LoadEquippedChestArmor(root, itemBlueprintLoader);
+
             if (string.Equals(row.ModelType, "P", StringComparison.OrdinalIgnoreCase))
             {
                 var prefix = SegmentedCreaturePrefix(root, row);
@@ -462,9 +464,9 @@ namespace SWLOR.Toolset.Domain.Render
                 var visibleEquipment = ResolveVisibleEquipment(
                     root, itemBlueprintLoader, partModelExists, baseItems, cloakModels, prefix);
                 visibleEquipment = AddCreatureAttachments(
-                    root, visibleEquipment, creatureAttachmentModels, partModelExists);
+                    root, visibleEquipment, armor, creatureAttachmentModels, partModelExists);
                 return ResolveSegmentedCreature(
-                    root, row, prefix, itemBlueprintLoader, partModelExists, visibleEquipment);
+                    root, row, prefix, partModelExists, visibleEquipment, armor);
             }
 
             var modelResRef = row.Race;
@@ -475,7 +477,7 @@ namespace SWLOR.Toolset.Domain.Render
                 root, itemBlueprintLoader, partModelExists, baseItems, cloakModels,
                 wearerPrefix: null);
             simpleParts = AddCreatureAttachments(
-                root, simpleParts, creatureAttachmentModels, partModelExists);
+                root, simpleParts, armor, creatureAttachmentModels, partModelExists);
 
             return new BlueprintModelReference
             {
@@ -502,11 +504,10 @@ namespace SWLOR.Toolset.Domain.Render
             JsonGffStruct root,
             AppearanceRow row,
             string prefix,
-            Func<string, JsonGffStruct?>? itemBlueprintLoader,
             Func<string, bool>? partModelExists,
-            VisibleEquipment visibleEquipment)
+            VisibleEquipment visibleEquipment,
+            JsonGffStruct? armor)
         {
-            var armor = LoadEquippedChestArmor(root, itemBlueprintLoader);
             var armorTintMapOverrides = armor == null
                 ? null
                 : TintMapOverrides.Read(new VarTable(armor));
@@ -621,6 +622,7 @@ namespace SWLOR.Toolset.Domain.Render
         private static VisibleEquipment AddCreatureAttachments(
             JsonGffStruct creature,
             VisibleEquipment visibleEquipment,
+            JsonGffStruct? armor,
             CreatureAttachmentModelService? attachmentModels,
             Func<string, bool>? partModelExists)
         {
@@ -628,16 +630,26 @@ namespace SWLOR.Toolset.Domain.Render
                 return visibleEquipment;
 
             var parts = visibleEquipment.Parts.ToList();
+            var layerColorIndices = ResolveLayerColors(creature, armor);
+            var tintMapOverrides = armor == null
+                ? null
+                : TintMapOverrides.Read(new VarTable(armor));
             AddCreatureAttachment(
                 parts,
                 "wing",
                 attachmentModels.GetWingOrNull(creature.GetIntOrNull("Wings_New") ?? 0),
-                partModelExists);
+                partModelExists,
+                layerColorIndices,
+                armor != null,
+                tintMapOverrides);
             AddCreatureAttachment(
                 parts,
                 "tail",
                 attachmentModels.GetTailOrNull(creature.GetIntOrNull("Tail_New") ?? 0),
-                partModelExists);
+                partModelExists,
+                layerColorIndices,
+                armor != null,
+                tintMapOverrides);
             return new VisibleEquipment(parts, visibleEquipment.HiddenBodyParts);
         }
 
@@ -645,7 +657,10 @@ namespace SWLOR.Toolset.Domain.Render
             ICollection<BlueprintModelPart> parts,
             string partType,
             string? modelResRef,
-            Func<string, bool>? partModelExists)
+            Func<string, bool>? partModelExists,
+            IReadOnlyDictionary<int, int> layerColorIndices,
+            bool usesItemTintOverrides,
+            IReadOnlyDictionary<string, int>? tintMapOverrides)
         {
             if (string.IsNullOrWhiteSpace(modelResRef) ||
                 partModelExists?.Invoke(modelResRef) == false)
@@ -653,7 +668,12 @@ namespace SWLOR.Toolset.Domain.Render
                 return;
             }
 
-            parts.Add(new BlueprintModelPart(partType, modelResRef));
+            parts.Add(new BlueprintModelPart(
+                partType,
+                modelResRef,
+                LayerColorIndices: layerColorIndices,
+                UsesItemTintOverrides: usesItemTintOverrides,
+                TintMapOverrides: tintMapOverrides));
         }
 
         private static VisibleEquipment ResolveVisibleEquipment(

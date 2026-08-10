@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
+using SWLOR.Toolset.Domain.Editors.Creatures;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Tlk;
@@ -142,6 +143,92 @@ namespace SWLOR.Toolset.Tests
                 part.PartType == "wing" && part.ModelResRef == "c_w_dm_plt");
             result.Parts.Should().ContainSingle(part =>
                 part.PartType == "tail" && part.ModelResRef == "c_t_liz_plt");
+        }
+
+        [Test]
+        public void Resolve_CreatureAppendagesUseEquippedArmorPaletteAndTintOverrides()
+        {
+            var root = BlueprintRoot(ResourceType.Utc, "agr_guildmaster");
+            root.Get("Wings_New").SetInteger(22);
+            root.Get("Tail_New").SetInteger(608);
+            var armor = BlueprintRoot(ResourceType.Uti, "noble_gr");
+            const string tintOverride = "TM_appendage_test_4";
+            new VarTable(armor).SetInt(tintOverride, 246810);
+            JsonGffStruct? LoadItem(string resRef) =>
+                resRef.Equals("noble_gr", StringComparison.OrdinalIgnoreCase) ? armor : null;
+
+            var result = BlueprintModelResolver.Resolve(
+                ResourceType.Utc,
+                root,
+                Appearances(),
+                null,
+                null,
+                LoadItem,
+                _ => true,
+                creatureAttachmentModels: CreatureAttachmentModels());
+
+            var appendages = result.Parts
+                .Where(part => part.PartType is "wing" or "tail")
+                .ToList();
+            appendages.Should().HaveCount(2);
+            appendages.Should().OnlyContain(part => part.UsesItemTintOverrides,
+                "the runtime stores appendage equipment-layer colors on the chest item");
+            appendages.Should().OnlyContain(part =>
+                part.TintMapOverrides != null &&
+                part.TintMapOverrides.ContainsKey(tintOverride) &&
+                part.TintMapOverrides[tintOverride] == 246810);
+            appendages.Should().OnlyContain(part =>
+                part.LayerColorIndices != null &&
+                part.LayerColorIndices[PltLayers.Skin] ==
+                (int)root.Get("Color_Skin").GetInteger() &&
+                part.LayerColorIndices[PltLayers.Hair] ==
+                (int)root.Get("Color_Hair").GetInteger() &&
+                part.LayerColorIndices[PltLayers.Metal1] ==
+                (int)armor.Get("Metal1Color").GetInteger() &&
+                part.LayerColorIndices[PltLayers.Cloth2] ==
+                (int)armor.Get("Cloth2Color").GetInteger() &&
+                part.LayerColorIndices[PltLayers.Leather1] ==
+                (int)armor.Get("Leather1Color").GetInteger(),
+                "semantic colors come from the creature while equipment colors come from its chest armor");
+        }
+
+        [Test]
+        public void Resolve_FullBodyCreatureAppendagesUseEquippedArmorTintOwnership()
+        {
+            var root = BlueprintRoot(ResourceType.Utc, "ashwing");
+            root.Get("Wings_New").SetInteger(22);
+            root.Get("Tail_New").SetInteger(608);
+            new CreatureValueStore(root).SetEquippedResRef(2, "noble_gr");
+            var armor = BlueprintRoot(ResourceType.Uti, "noble_gr");
+            const string tintOverride = "TM_full_body_appendage_test_8";
+            new VarTable(armor).SetInt(tintOverride, 135791);
+            JsonGffStruct? LoadItem(string resRef) =>
+                resRef.Equals("noble_gr", StringComparison.OrdinalIgnoreCase) ? armor : null;
+
+            var result = BlueprintModelResolver.Resolve(
+                ResourceType.Utc,
+                root,
+                Appearances(),
+                null,
+                null,
+                LoadItem,
+                _ => true,
+                creatureAttachmentModels: CreatureAttachmentModels());
+
+            result.Kind.Should().Be(BlueprintModelKind.Simple);
+            var appendages = result.Parts
+                .Where(part => part.PartType is "wing" or "tail")
+                .ToList();
+            appendages.Should().HaveCount(2);
+            appendages.Should().OnlyContain(part =>
+                part.UsesItemTintOverrides &&
+                part.LayerColorIndices != null &&
+                part.LayerColorIndices[PltLayers.Cloth1] ==
+                (int)armor.Get("Cloth1Color").GetInteger() &&
+                part.TintMapOverrides != null &&
+                part.TintMapOverrides.ContainsKey(tintOverride) &&
+                part.TintMapOverrides[tintOverride] == 135791,
+                "full-body attachments follow the same chest-item ownership rules as segmented bodies");
         }
 
         [Test]

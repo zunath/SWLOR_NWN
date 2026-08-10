@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.ActivityService;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
@@ -132,6 +133,14 @@ namespace SWLOR.Game.Server.Feature
             {
                 return false;
             }
+
+            Log.WriteStructured(
+                LogGroup.Server,
+                "Ability activation interrupted: Activator={Activator} ActivationId={ActivationId} Ability={Ability} IsChanneled={IsChanneled}",
+                activator,
+                activation.ActivationId,
+                activation.Ability.Name,
+                activation.Ability.IsChanneled);
 
             RemoveEffectByTag(activator, "ACTIVATION_VFX");
             CancelActivationTargetingTelegraphs(activation.TelegraphIds);

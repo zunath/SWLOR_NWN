@@ -852,8 +852,12 @@ public class TintMapReviewTests
         captureMethod.DescendantNodes()
             .OfType<InvocationExpressionSyntax>()
             .Select(GetInvokedMethodName)
-            .Should().Contain("Distinct",
-                "ambiguous per-material colors must not be guessed during a model replacement");
+            .Should().Contain("Any",
+                "layers without custom colors need no carry state");
+        captureMethod.ToString().Should().Contain("TintMapItemColorSource(variableName, color)",
+            "preset slots must be retained so partial custom colors keep their material position");
+        captureMethod.ToString().Should().NotContain("distinct.Count != 1",
+            "ambiguous colors still need their source keys captured for stale cleanup");
 
         var carryMethod = FindMethod(serviceSource, "QueueItemCustomColorCarry");
         var carryCalls = carryMethod.DescendantNodes()
@@ -867,6 +871,16 @@ public class TintMapReviewTests
             "cleanup must retain a material key that another equipped armor part still uses");
         carryMethod.ToString().Should().NotContain("if (destinations.Count == 0)",
             "a model with no destination for the layer must still discard inactive source keys");
+        carryMethod.ToString().Should().Contain("distinctColors.Count == 1",
+            "different per-material colors must not be guessed during a model replacement");
+        carryMethod.ToString().Should().Contain("index < sourceEntries.Count",
+            "a partial custom color may migrate only to its corresponding replacement material");
+        carryMethod.ToString().Should().Contain("sourceEntries[index].Color",
+            "preset source slots must not be flattened to the layer's one custom color");
+        carryMethod.ToString().Should().Contain("wasAlreadyActive",
+            "shared material keys must retain their existing per-material state");
+        carryMethod.ToString().Should().Contain("source.Color.HasValue",
+            "ambiguous custom source variables must still reach stale-key cleanup");
         carryCalls.Should().Contain("ApplyCurrentColors",
             "the equipped replacement must render its carried colors immediately");
         carryCalls.Should().Contain("PublishRefreshEvent",

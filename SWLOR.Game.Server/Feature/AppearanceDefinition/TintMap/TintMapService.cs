@@ -14,17 +14,18 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 {
     public sealed class TintMapItemColorCarry
     {
-        public IReadOnlyDictionary<TintMapLayerType, TintMapColor> Colors { get; }
-        public IReadOnlyDictionary<TintMapLayerType, IReadOnlyList<string>> SourceVariables { get; }
+        public IReadOnlyDictionary<TintMapLayerType, IReadOnlyList<TintMapItemColorSource>> Sources { get; }
 
         public TintMapItemColorCarry(
-            IReadOnlyDictionary<TintMapLayerType, TintMapColor> colors,
-            IReadOnlyDictionary<TintMapLayerType, IReadOnlyList<string>> sourceVariables)
+            IReadOnlyDictionary<TintMapLayerType, IReadOnlyList<TintMapItemColorSource>> sources)
         {
-            Colors = colors;
-            SourceVariables = sourceVariables;
+            Sources = sources;
         }
     }
+
+    public readonly record struct TintMapItemColorSource(
+        string VariableName,
+        TintMapColor? Color);
 
     public static class TintMapService
     {
@@ -383,10 +384,11 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             uint item,
             IReadOnlyList<TintMapMaterialSelection> selections)
         {
-            var colors = new Dictionary<TintMapLayerType, TintMapColor>();
-            var sourceVariables = new Dictionary<TintMapLayerType, IReadOnlyList<string>>();
+            var sources = new Dictionary<
+                TintMapLayerType,
+                IReadOnlyList<TintMapItemColorSource>>();
             if (!GetIsObjectValid(item) || selections == null)
-                return new TintMapItemColorCarry(colors, sourceVariables);
+                return new TintMapItemColorCarry(sources);
 
             foreach (var layer in Enum.GetValues<TintMapLayerType>())
             {
@@ -397,29 +399,34 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     .Where(selection =>
                         selection.GetPaletteSource(layer) == item &&
                         selection.Material.Layers.Contains(layer))
+                    .GroupBy(
+                        selection => TintMapVariable.GetName(selection.Material.Resref, layer),
+                        StringComparer.Ordinal)
+                    .Select(group => group.First())
                     .ToList();
-                var distinct = layerSelections
-                    .Where(selection => TryGetCustomColor(selection, layer, out _))
+                var layerSources = layerSelections
                     .Select(selection =>
                     {
-                        TryGetCustomColor(selection, layer, out var color);
-                        return color;
+                        var variableName = TintMapVariable.GetName(
+                            selection.Material.Resref,
+                            layer);
+                        TintMapColor? color = TryGetCustomColor(selection, layer, out var customColor)
+                            ? customColor
+                            : null;
+                        return new TintMapItemColorSource(variableName, color);
                     })
-                    .Distinct()
                     .ToList();
-                if (distinct.Count != 1)
+                if (!layerSources.Any(source => source.Color.HasValue))
                     continue;
 
-                colors[layer] = distinct[0];
-                sourceVariables[layer] = layerSelections
-                    .Select(selection => TintMapVariable.GetName(selection.Material.Resref, layer))
-                    .Where(variableName =>
-                        TintMapColor.TryFromStoredValue(GetLocalInt(item, variableName), out _))
-                    .Distinct(StringComparer.Ordinal)
-                    .ToList();
+                // Retain every source slot, including preset slots. The slot positions let the
+                // delayed replacement map a partial custom tint only to its corresponding new
+                // material, while the custom variable names remain available for stale cleanup
+                // even when the layer contains several different colors.
+                sources[layer] = layerSources;
             }
 
-            return new TintMapItemColorCarry(colors, sourceVariables);
+            return new TintMapItemColorCarry(sources);
         }
 
         public static void QueueItemCustomColorCarry(
@@ -444,7 +451,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     .Where(selection => selection.ArmorPart == armorPart)
                     .ToList();
                 var removedStaleVariables = false;
-                foreach (var (layer, color) in carry.Colors)
+                foreach (var (layer, sourceEntries) in carry.Sources)
                 {
                     var destinations = selections
                         .Where(selection =>
@@ -465,13 +472,33 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                             selection.Material.Layers.Contains(layer))
                         .Select(selection => TintMapVariable.GetName(selection.Material.Resref, layer))
                         .ToHashSet(StringComparer.Ordinal);
-                    foreach (var selection in destinations)
-                        SetColor(creature, selection, layer, color);
+                    var distinctColors = sourceEntries
+                        .Where(source => source.Color.HasValue)
+                        .Select(source => source.Color!.Value)
+                        .Distinct()
+                        .ToList();
+                    if (distinctColors.Count == 1)
+                    {
+                        for (var index = 0;
+                             index < destinations.Count && index < sourceEntries.Count;
+                             index++)
+                        {
+                            var destinationVariable = TintMapVariable.GetName(
+                                destinations[index].Material.Resref,
+                                layer);
+                            var wasAlreadyActive = sourceEntries.Any(source =>
+                                string.Equals(
+                                    source.VariableName,
+                                    destinationVariable,
+                                    StringComparison.Ordinal));
+                            if (!wasAlreadyActive && sourceEntries[index].Color is { } color)
+                                SetColor(creature, destinations[index], layer, color);
+                        }
+                    }
 
-                    if (!carry.SourceVariables.TryGetValue(layer, out var previousVariables))
-                        continue;
-
-                    foreach (var variableName in previousVariables)
+                    foreach (var variableName in sourceEntries
+                                 .Where(source => source.Color.HasValue)
+                                 .Select(source => source.VariableName))
                     {
                         if (destinationVariables.Contains(variableName) ||
                             activeVariables.Contains(variableName))

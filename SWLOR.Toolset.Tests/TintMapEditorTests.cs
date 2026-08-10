@@ -507,6 +507,65 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task CreatureBodyColorCarryCoalescesWithAnInterveningTintEdit()
+        {
+            var creature = new ModuleWorkspace(CorpusLocator.ModuleDirectory)
+                .LoadBlueprint(ResourceType.Utc, "agr_guildmaster")
+                .Document.Root;
+            var store = new CreatureValueStore(creature);
+            var partOrigin = new NoOpDocumentEdit("change head");
+            var tintOrigin = new NoOpDocumentEdit("change skin tint");
+            IDocumentEdit? currentAppliedEdit = null;
+            IDocumentEdit? coalescedOrigin = null;
+            bool Edit(string description, Action mutation)
+            {
+                mutation();
+                currentAppliedEdit = description == "Change Head" ? partOrigin : tintOrigin;
+                return true;
+            }
+
+            var oldKey = TintMapVariable.GetName("pmh0_head038", TintMapLayerType.Skin);
+            var newKey = TintMapVariable.GetName("pmh0_head221", TintMapLayerType.Skin);
+            store.Locals.SetInt(oldKey, new TintMapColor(12, 34, 56).ToStoredValue());
+            var body = new CreatureBodyPartsViewModel(
+                store,
+                Edit,
+                id => new AppearanceRow(id, "DYNAMIC_TEST", "Dynamic Test", "P", "H", null),
+                null,
+                null,
+                () => { },
+                () => { },
+                captureCoalesceOrigin: () => currentAppliedEdit,
+                runCoalescedEdit: (capturedOrigin, _, mutation) =>
+                {
+                    coalescedOrigin = capturedOrigin;
+                    mutation();
+                    return true;
+                });
+            body.SetTintMapRows(new[]
+            {
+                new TintMapColorRowViewModel(
+                    "pmh0_head038", TintMapLayerType.Skin, store.Locals, Edit, null)
+            });
+            await body.EnsureLoadedAsync();
+
+            body.Structure.Single(cell => cell.Label == "Head").Number = 221;
+            body.Colors.Single(color => color.Label == "Skin").CustomColor =
+                Color.FromRgb(65, 43, 21);
+            body.SetTintMapRows(new[]
+            {
+                new TintMapColorRowViewModel(
+                    "pmh0_head221", TintMapLayerType.Skin, store.Locals, Edit, null)
+            });
+
+            coalescedOrigin.Should().BeSameAs(tintOrigin,
+                "the replacement key belongs to the newer tint transaction when it intervenes");
+            TintMapColor.TryFromStoredValue(store.Locals.GetInt(newKey)!.Value, out var carried)
+                .Should().BeTrue();
+            carried.Should().Be(new TintMapColor(65, 43, 21));
+        }
+
+        [Test]
         public void ItemEditorFiltersMannequinMaterialsWhenModelIdentifiesItemOwnedMeshes()
         {
             var catalog = TintMapCatalog.Load(Resources());
@@ -656,6 +715,56 @@ namespace SWLOR.Toolset.Tests
                 "a later preset choice must win over the custom tint captured before model loading");
         }
 
+        [Test]
+        public void PresetEditDuringItemModelLoadCancelsOnlyItsTintLayer()
+        {
+            var catalog = TintMapCatalog.Load(Resources());
+            catalog.Should().NotBeNull();
+            var variables = new VarTable(new JsonGffStruct());
+            var editor = new TintMapEditorViewModel(
+                variables,
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                catalog!);
+            var oldModel = ItemOwnedModelWith("helm_004");
+            var newModel = ItemOwnedModelWith("helm_005");
+            var oldCloth = TintMapVariable.GetName("helm_004", TintMapLayerType.Cloth1);
+            var newCloth = TintMapVariable.GetName("helm_005", TintMapLayerType.Cloth1);
+            var oldLeather = TintMapVariable.GetName("helm_004", TintMapLayerType.Leather1);
+            var newLeather = TintMapVariable.GetName("helm_005", TintMapLayerType.Leather1);
+
+            editor.Reload(
+                oldModel,
+                includeNonItemOwnedMaterials: false,
+                carryItemCustomColorsAcrossMaterials: true);
+            editor.Colors.Single(row => row.Layer == TintMapLayerType.Cloth1).Color =
+                Color.FromRgb(12, 34, 56);
+            editor.Colors.Single(row => row.Layer == TintMapLayerType.Leather1).Color =
+                Color.FromRgb(65, 43, 21);
+            editor.Reload(
+                null,
+                includeNonItemOwnedMaterials: false,
+                carryItemCustomColorsAcrossMaterials: true);
+
+            variables.Remove(oldCloth);
+            editor.Reload(
+                newModel,
+                includeNonItemOwnedMaterials: false,
+                carryItemCustomColorsAcrossMaterials: true);
+
+            variables.GetInt(newCloth).Should().BeNull(
+                "the changed Cloth 1 preset must cancel only Cloth 1 carry");
+            variables.GetInt(oldCloth).Should().BeNull();
+            variables.GetInt(oldLeather).Should().BeNull(
+                "the untouched Leather 1 layer must still clean up its obsolete source key");
+            TintMapColor.TryFromStoredValue(variables.GetInt(newLeather)!.Value, out var leather)
+                .Should().BeTrue();
+            leather.Should().Be(new TintMapColor(65, 43, 21));
+        }
+
         [AvaloniaTest]
         public void MannequinSexChangeDoesNotMoveOrDeleteGenderSpecificCustomColors()
         {
@@ -693,6 +802,62 @@ namespace SWLOR.Toolset.Tests
                 "changing only the preview mannequin must not delete the male material's tint");
             variables.GetInt(femaleKey).Should().BeNull(
                 "changing only the preview mannequin must not copy a male tint onto female materials");
+        }
+
+        [AvaloniaTest]
+        public void ItemPreviewCapturesModelEditOriginBeforeDeferredRebuild()
+        {
+            var catalog = TintMapCatalog.Load(Resources());
+            catalog.Should().NotBeNull();
+            var item = new ModuleWorkspace(CorpusLocator.ModuleDirectory)
+                .LoadBlueprint(ResourceType.Uti, "adren_harness")
+                .Document.Root;
+            var originalTorso = ItemAppearanceValues.Read(item, ItemAppearanceFieldNames.Torso);
+            var modelOrigin = new NoOpDocumentEdit("change torso");
+            var unrelatedOrigin = new NoOpDocumentEdit("unrelated edit");
+            IDocumentEdit? currentAppliedEdit = null;
+            IDocumentEdit? coalescedOrigin = null;
+            bool Edit(string description, Action mutation)
+            {
+                mutation();
+                currentAppliedEdit = description == "Set Torso" ? modelOrigin : unrelatedOrigin;
+                return true;
+            }
+
+            using var editor = new ItemEditorViewModel(
+                item,
+                "adren_harness",
+                Edit,
+                baseItemRows: baseItem => baseItem == 16
+                    ? new BaseItemRow(16, "armor", 3)
+                    : null,
+                baseItemIcons: baseItem => baseItem == 16
+                    ? new BaseItemIconRow(16, 3, "AArCl", "gifp")
+                    : null,
+                textureExists: _ => true,
+                resolveModel: (snapshot, _) => ItemOwnedModelWith(
+                    ItemAppearanceValues.Read(snapshot, ItemAppearanceFieldNames.Torso) == originalTorso
+                        ? "helm_004"
+                        : "helm_005"),
+                tintMapCatalog: catalog,
+                captureCoalesceOrigin: () => currentAppliedEdit,
+                runCoalescedEdit: (origin, _, mutation) =>
+                {
+                    coalescedOrigin = origin;
+                    mutation();
+                    return true;
+                });
+            DrainUntil(() => !editor.IsModelPreviewLoading);
+            editor.TintMapEditor!.Colors.Single(row => row.Layer == TintMapLayerType.Cloth1).Color =
+                Color.FromRgb(12, 34, 56);
+
+            editor.Appearance!.Armor!.Torso.Number = originalTorso + 1;
+            currentAppliedEdit = unrelatedOrigin;
+            Dispatcher.UIThread.RunJobs();
+            DrainUntil(() => !editor.IsModelPreviewLoading);
+
+            coalescedOrigin.Should().BeSameAs(modelOrigin,
+                "the queued rebuild must retain the appearance transaction captured synchronously");
         }
 
         [AvaloniaTest]

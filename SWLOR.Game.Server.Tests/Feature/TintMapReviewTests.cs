@@ -837,8 +837,8 @@ public class TintMapReviewTests
             "the old material keys must be read before CopyItemAndModify destroys the source item");
         modifyCalls.Should().Contain("QueueItemCustomColorCarry",
             "the replacement material resrefs are only available after the new item is equipped");
-        modifyMethod.ToString().Should().Contain("Player, slot, armorPart, tintCarry",
-            "the delayed carry must be able to follow a rapidly replaced item through its slot");
+        modifyMethod.ToString().Should().Contain("_target, item, copy, Player, slot, armorPart, tintCarry",
+            "the delayed carry needs both sides of the replacement so it can validate rapid-click lineage");
         modifyMethod.ToString().Should().Contain("selection.ArmorPart == armorPart",
             "one modular armor part must not overwrite another part's custom dyes");
 
@@ -869,6 +869,21 @@ public class TintMapReviewTests
         carryCalls.Should().Contain("SetColor");
         carryCalls.Should().Contain("GetItemInSlot",
             "rapid model selections can destroy an intermediate item before its carry runs");
+        carryMethod.ToString().Should().Contain("LinkPendingItemColorCarryReplacement(sourceItem, item)",
+            "even a colorless intermediate edit must link its replacement to the earlier pending carry");
+        carryMethod.ToString().IndexOf("LinkPendingItemColorCarryReplacement(sourceItem, item)", StringComparison.Ordinal)
+            .Should().BeLessThan(carryMethod.ToString().IndexOf("if (carry == null)", StringComparison.Ordinal),
+                "the descendant link is required precisely when the rapid intermediate capture is empty");
+        carryMethod.ToString().Should().Contain("BelongsToItemColorCarryLineage",
+            "a destroyed intermediate item may follow the slot only to a registered replacement descendant");
+        carryMethod.ToString().Should().Contain("GetIsObjectValid(item) && slottedItem == item",
+            "a surviving replacement must still occupy the original slot before its carry is applied");
+        carryMethod.ToString().Should().Contain("!GetIsObjectValid(item)",
+            "the slot fallback must not redirect a surviving, moved item's colors to unrelated equipment");
+        carryMethod.ToString().Should().Contain("PendingItemColorCarryLayerIsCurrent",
+            "a newer preset or custom edit must cancel the older delayed carry for that tint layer");
+        carryMethod.ToString().Should().Contain("invalidatePendingCarry: false",
+            "the carry's own writes must not invalidate its remaining derived work");
         carryMethod.ToString().Should().Contain("selection.PaletteSource == targetItem");
         carryMethod.ToString().Should().Contain("DeleteLocalInt(targetItem, variableName)");
         carryCalls.Should().Contain("DeleteLocalInt",
@@ -893,6 +908,16 @@ public class TintMapReviewTests
             "the equipped replacement must render its carried colors immediately");
         carryCalls.Should().Contain("PublishRefreshEvent",
             "the open appearance editor must show the replacement material's current value");
+
+        var setColorMethod = CSharpSyntaxTree.ParseText(serviceSource).GetRoot().DescendantNodes()
+            .OfType<MethodDeclarationSyntax>()
+            .Single(method => method.Identifier.Text == nameof(TintMapService.SetColor) &&
+                              method.ParameterList.Parameters.Count == 4);
+        setColorMethod.ToString().Should().Contain("invalidatePendingCarry: true",
+            "an explicit color edit must advance the pending-carry revision for its layer");
+        FindMethod(serviceSource, nameof(TintMapService.ResetColor)).ToString()
+            .Should().Contain("MarkPendingItemColorEdit",
+                "resetting to a preset is also newer builder intent than a queued model carry");
     }
 
     [Test]

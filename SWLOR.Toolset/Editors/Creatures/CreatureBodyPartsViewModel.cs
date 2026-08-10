@@ -372,6 +372,7 @@ namespace SWLOR.Toolset.Editors.Creatures
             if (!applied)
                 return false;
 
+            CaptureInterveningTintCarryOrigin();
             ReloadColors();
             _colorChanged();
             return true;
@@ -397,9 +398,21 @@ namespace SWLOR.Toolset.Editors.Creatures
             if (!applied)
                 return false;
 
+            CaptureInterveningTintCarryOrigin();
             ReloadColors();
             _colorChanged();
             return true;
+        }
+
+        /// <summary>
+        /// A semantic tint edit made while a body-part model is rebuilding is newer than the part
+        /// selection. Coalesce the derived material-key carry with that tint transaction so its Undo
+        /// removes both the old- and replacement-material values together.
+        /// </summary>
+        private void CaptureInterveningTintCarryOrigin()
+        {
+            if (_pendingTintCarryOrigin != null)
+                _pendingTintCarryOrigin = _captureCoalesceOrigin?.Invoke();
         }
 
         private void ReloadColors()

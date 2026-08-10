@@ -31,6 +31,17 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
     {
         private const float RefreshDelaySeconds = 0.2f;
 
+        private sealed class PendingItemColorCarryLineage
+        {
+            public HashSet<uint> Items { get; } = new();
+            public Dictionary<TintMapLayerType, int> LayerRevisions { get; } = new();
+            public int PendingCount { get; set; }
+        }
+
+        private static readonly object PendingItemColorCarryLock = new();
+        private static readonly Dictionary<uint, Guid> ItemColorCarryLineages = new();
+        private static readonly Dictionary<Guid, PendingItemColorCarryLineage> PendingItemColorCarries = new();
+
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void OnModuleEnter()
         {
@@ -143,9 +154,23 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             TintMapLayerType layer,
             TintMapColor color)
         {
+            SetColor(creature, selection, layer, color, invalidatePendingCarry: true);
+        }
+
+        private static void SetColor(
+            uint creature,
+            TintMapMaterialSelection selection,
+            TintMapLayerType layer,
+            TintMapColor color,
+            bool invalidatePendingCarry)
+        {
+            var paletteSource = selection.GetPaletteSource(layer);
+            if (invalidatePendingCarry)
+                MarkPendingItemColorEdit(paletteSource, layer);
+
             var savedColor = color.ToStoredValue();
             var variableName = TintMapVariable.GetName(selection.Material.Resref, layer);
-            SetLocalInt(selection.GetPaletteSource(layer), variableName, savedColor);
+            SetLocalInt(paletteSource, variableName, savedColor);
             SaveDroidOverride(creature, selection, layer, variableName, savedColor);
             ApplyColor(
                 creature,
@@ -160,7 +185,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             TintMapLayerType layer)
         {
             var variableName = TintMapVariable.GetName(selection.Material.Resref, layer);
-            DeleteLocalInt(selection.GetPaletteSource(layer), variableName);
+            var paletteSource = selection.GetPaletteSource(layer);
+            MarkPendingItemColorEdit(paletteSource, layer);
+            DeleteLocalInt(paletteSource, variableName);
             SaveDroidOverride(creature, selection, layer, variableName, 0);
             ApplyColor(
                 creature,
@@ -429,105 +456,257 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             return new TintMapItemColorCarry(sources);
         }
 
+        private static (Guid Lineage, IReadOnlyDictionary<TintMapLayerType, int> LayerRevisions)
+            RegisterPendingItemColorCarry(
+                uint sourceItem,
+                uint replacementItem,
+                IEnumerable<TintMapLayerType> layers)
+        {
+            lock (PendingItemColorCarryLock)
+            {
+                if (!ItemColorCarryLineages.TryGetValue(sourceItem, out var lineage) ||
+                    !PendingItemColorCarries.TryGetValue(lineage, out var state))
+                {
+                    lineage = Guid.NewGuid();
+                    state = new PendingItemColorCarryLineage();
+                    PendingItemColorCarries[lineage] = state;
+                }
+
+                ItemColorCarryLineages[replacementItem] = lineage;
+                state.Items.Add(replacementItem);
+                state.PendingCount++;
+                var revisions = layers
+                    .Distinct()
+                    .ToDictionary(
+                        layer => layer,
+                        layer => state.LayerRevisions.GetValueOrDefault(layer));
+                return (lineage, revisions);
+            }
+        }
+
+        private static void LinkPendingItemColorCarryReplacement(uint sourceItem, uint replacementItem)
+        {
+            lock (PendingItemColorCarryLock)
+            {
+                if (!ItemColorCarryLineages.TryGetValue(sourceItem, out var lineage) ||
+                    !PendingItemColorCarries.TryGetValue(lineage, out var state))
+                {
+                    return;
+                }
+
+                ItemColorCarryLineages[replacementItem] = lineage;
+                state.Items.Add(replacementItem);
+            }
+        }
+
+        private static bool BelongsToItemColorCarryLineage(uint item, Guid lineage)
+        {
+            lock (PendingItemColorCarryLock)
+            {
+                return ItemColorCarryLineages.TryGetValue(item, out var itemLineage) &&
+                       itemLineage == lineage;
+            }
+        }
+
+        private static bool PendingItemColorCarryLayerIsCurrent(
+            Guid lineage,
+            TintMapLayerType layer,
+            IReadOnlyDictionary<TintMapLayerType, int> capturedRevisions)
+        {
+            lock (PendingItemColorCarryLock)
+            {
+                return PendingItemColorCarries.TryGetValue(lineage, out var state) &&
+                       state.LayerRevisions.GetValueOrDefault(layer) ==
+                       capturedRevisions.GetValueOrDefault(layer);
+            }
+        }
+
+        private static void MarkPendingItemColorEdit(uint item, TintMapLayerType layer)
+        {
+            lock (PendingItemColorCarryLock)
+            {
+                if (!ItemColorCarryLineages.TryGetValue(item, out var lineage) ||
+                    !PendingItemColorCarries.TryGetValue(lineage, out var state))
+                {
+                    return;
+                }
+
+                state.LayerRevisions[layer] = state.LayerRevisions.GetValueOrDefault(layer) + 1;
+            }
+        }
+
+        private static void CompletePendingItemColorCarry(Guid lineage)
+        {
+            lock (PendingItemColorCarryLock)
+            {
+                if (!PendingItemColorCarries.TryGetValue(lineage, out var state))
+                    return;
+
+                state.PendingCount--;
+                if (state.PendingCount > 0)
+                    return;
+
+                foreach (var item in state.Items)
+                {
+                    if (ItemColorCarryLineages.TryGetValue(item, out var itemLineage) &&
+                        itemLineage == lineage)
+                    {
+                        ItemColorCarryLineages.Remove(item);
+                    }
+                }
+
+                PendingItemColorCarries.Remove(lineage);
+            }
+        }
+
         public static void QueueItemCustomColorCarry(
             uint creature,
+            uint sourceItem,
             uint item,
             uint player,
             InventorySlot slot,
             AppearanceArmor armorPart,
             TintMapItemColorCarry carry)
         {
-            if (!GetIsObjectValid(creature) || !GetIsObjectValid(item) || carry == null)
+            if (!GetIsObjectValid(creature) || !GetIsObjectValid(item))
                 return;
 
+            // A rapid second model selection can capture no colors because the first delayed carry
+            // has not populated its intermediate material yet. It must still link the newest copy
+            // into that pending lineage so the original carry can follow the destroyed intermediate.
+            LinkPendingItemColorCarryReplacement(sourceItem, item);
+            if (carry == null)
+                return;
+
+            var registration = RegisterPendingItemColorCarry(
+                sourceItem,
+                item,
+                carry.Sources.Keys);
             DelayCommand(RefreshDelaySeconds, () =>
             {
-                if (!GetIsObjectValid(creature))
-                    return;
-
-                // A second model click can replace the first copy before this delayed carry runs.
-                // Follow the slot to the newest equipped copy so the original custom colors are not
-                // discarded merely because the intermediate item was destroyed.
-                var targetItem = GetItemInSlot(slot, creature);
-                if (!GetIsObjectValid(targetItem))
-                    targetItem = item;
-                if (!GetIsObjectValid(targetItem))
-                    return;
-
-                var itemSelections = TintMapModelResolver.GetCurrentSelections(creature)
-                    .Where(selection => selection.PaletteSource == targetItem)
-                    .ToList();
-                var selections = itemSelections
-                    .Where(selection => selection.ArmorPart == armorPart)
-                    .ToList();
-                var removedStaleVariables = false;
-                foreach (var (layer, sourceEntries) in carry.Sources)
+                try
                 {
-                    var destinations = selections
-                        .Where(selection =>
-                            selection.GetPaletteSource(layer) == targetItem &&
-                            selection.Material.Layers.Contains(layer))
-                        .GroupBy(
-                            selection => TintMapVariable.GetName(selection.Material.Resref, layer),
-                            StringComparer.Ordinal)
-                        .Select(group => group.First())
-                        .ToList();
+                    if (!GetIsObjectValid(creature))
+                        return;
 
-                    var destinationVariables = destinations
-                        .Select(selection => TintMapVariable.GetName(selection.Material.Resref, layer))
-                        .ToHashSet(StringComparer.Ordinal);
-                    var activeVariables = itemSelections
-                        .Where(selection =>
-                            selection.GetPaletteSource(layer) == targetItem &&
-                            selection.Material.Layers.Contains(layer))
-                        .Select(selection => TintMapVariable.GetName(selection.Material.Resref, layer))
-                        .ToHashSet(StringComparer.Ordinal);
-                    var sourceVariables = sourceEntries
-                        .Select(source => source.VariableName)
-                        .ToHashSet(StringComparer.Ordinal);
-                    var replacedSources = sourceEntries
-                        .Where(source => !destinationVariables.Contains(source.VariableName))
-                        .ToList();
-                    var replacementDestinations = destinations
-                        .Where(selection => !sourceVariables.Contains(TintMapVariable.GetName(
-                            selection.Material.Resref,
-                            layer)))
-                        .ToList();
-                    var distinctColors = replacedSources
-                        .Where(source => source.Color.HasValue)
-                        .Select(source => source.Color!.Value)
-                        .Distinct()
-                        .ToList();
-                    if (distinctColors.Count == 1)
+                    var slottedItem = GetItemInSlot(slot, creature);
+                    uint targetItem;
+                    if (GetIsObjectValid(item) && slottedItem == item)
                     {
-                        for (var index = 0;
-                             index < replacementDestinations.Count && index < replacedSources.Count;
-                             index++)
+                        targetItem = item;
+                    }
+                    else if (!GetIsObjectValid(item) &&
+                             GetIsObjectValid(slottedItem) &&
+                             BelongsToItemColorCarryLineage(slottedItem, registration.Lineage))
+                    {
+                        // Rapid model clicks destroy the intermediate copy. Only follow its slot
+                        // when the equipped item is a registered descendant of that replacement;
+                        // an ordinary equipment change must never redirect colors to another item.
+                        targetItem = slottedItem;
+                    }
+                    else
+                    {
+                        return;
+                    }
+
+                    var itemSelections = TintMapModelResolver.GetCurrentSelections(creature)
+                        .Where(selection => selection.PaletteSource == targetItem)
+                        .ToList();
+                    var selections = itemSelections
+                        .Where(selection => selection.ArmorPart == armorPart)
+                        .ToList();
+                    var removedStaleVariables = false;
+                    foreach (var (layer, sourceEntries) in carry.Sources)
+                    {
+                        // A preset/custom edit made after the model click is newer intent. Skip only
+                        // that layer so unrelated queued colors can still migrate and clean up.
+                        if (!PendingItemColorCarryLayerIsCurrent(
+                                registration.Lineage,
+                                layer,
+                                registration.LayerRevisions))
                         {
-                            if (replacedSources[index].Color is { } color)
-                                SetColor(creature, replacementDestinations[index], layer, color);
+                            continue;
+                        }
+
+                        var destinations = selections
+                            .Where(selection =>
+                                selection.GetPaletteSource(layer) == targetItem &&
+                                selection.Material.Layers.Contains(layer))
+                            .GroupBy(
+                                selection => TintMapVariable.GetName(selection.Material.Resref, layer),
+                                StringComparer.Ordinal)
+                            .Select(group => group.First())
+                            .ToList();
+
+                        var destinationVariables = destinations
+                            .Select(selection => TintMapVariable.GetName(selection.Material.Resref, layer))
+                            .ToHashSet(StringComparer.Ordinal);
+                        var activeVariables = itemSelections
+                            .Where(selection =>
+                                selection.GetPaletteSource(layer) == targetItem &&
+                                selection.Material.Layers.Contains(layer))
+                            .Select(selection => TintMapVariable.GetName(selection.Material.Resref, layer))
+                            .ToHashSet(StringComparer.Ordinal);
+                        var sourceVariables = sourceEntries
+                            .Select(source => source.VariableName)
+                            .ToHashSet(StringComparer.Ordinal);
+                        var replacedSources = sourceEntries
+                            .Where(source => !destinationVariables.Contains(source.VariableName))
+                            .ToList();
+                        var replacementDestinations = destinations
+                            .Where(selection => !sourceVariables.Contains(TintMapVariable.GetName(
+                                selection.Material.Resref,
+                                layer)))
+                            .ToList();
+                        var distinctColors = replacedSources
+                            .Where(source => source.Color.HasValue)
+                            .Select(source => source.Color!.Value)
+                            .Distinct()
+                            .ToList();
+                        if (distinctColors.Count == 1)
+                        {
+                            for (var index = 0;
+                                 index < replacementDestinations.Count && index < replacedSources.Count;
+                                 index++)
+                            {
+                                if (replacedSources[index].Color is { } color)
+                                {
+                                    SetColor(
+                                        creature,
+                                        replacementDestinations[index],
+                                        layer,
+                                        color,
+                                        invalidatePendingCarry: false);
+                                }
+                            }
+                        }
+
+                        foreach (var variableName in sourceEntries
+                                     .Where(source => source.Color.HasValue)
+                                     .Select(source => source.VariableName))
+                        {
+                            if (destinationVariables.Contains(variableName) ||
+                                activeVariables.Contains(variableName))
+                            {
+                                continue;
+                            }
+
+                            DeleteLocalInt(targetItem, variableName);
+                            removedStaleVariables = true;
                         }
                     }
 
-                    foreach (var variableName in sourceEntries
-                                 .Where(source => source.Color.HasValue)
-                                 .Select(source => source.VariableName))
-                    {
-                        if (destinationVariables.Contains(variableName) ||
-                            activeVariables.Contains(variableName))
-                            continue;
+                    if (removedStaleVariables && Droid.IsDroid(creature))
+                        Droid.UpdateEquippedItemSnapshot(creature, targetItem);
 
-                        DeleteLocalInt(targetItem, variableName);
-                        removedStaleVariables = true;
-                    }
+                    ApplyCurrentColors(creature);
+                    if (GetIsObjectValid(player))
+                        Gui.PublishRefreshEvent(player, new AppearanceChangedRefreshEvent());
                 }
-
-                if (removedStaleVariables && Droid.IsDroid(creature))
-                    Droid.UpdateEquippedItemSnapshot(creature, targetItem);
-
-                ApplyCurrentColors(creature);
-                if (GetIsObjectValid(player))
-                    Gui.PublishRefreshEvent(player, new AppearanceChangedRefreshEvent());
+                finally
+                {
+                    CompletePendingItemColorCarry(registration.Lineage);
+                }
             });
         }
 

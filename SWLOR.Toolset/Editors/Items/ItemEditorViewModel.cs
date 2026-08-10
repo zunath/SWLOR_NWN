@@ -41,6 +41,7 @@ namespace SWLOR.Toolset.Editors.Items
         private string? _cachedModelSignature;
         private string? _cachedItemGeometrySignature;
         private string? _pendingModelSignature;
+        private IDocumentEdit? _pendingModelEditOrigin;
         private int _previewModelGeneration;
         private readonly SemaphoreSlim _previewModelGate = new(1);
         private bool _disposed;
@@ -256,7 +257,7 @@ namespace SWLOR.Toolset.Editors.Items
             if (baseItemIcons != null && textureExists != null)
             {
                 Appearance = new ItemAppearanceSectionViewModel(
-                    _store, RunEdit, baseItemIcons, textureExists, choicePreviews, QueuePreviewUpdate,
+                    _store, RunEdit, baseItemIcons, textureExists, choicePreviews, OnAppearanceChanged,
                     armorDyeSwatches, armorPartModels);
             }
             if (tintMapCatalog != null)
@@ -646,6 +647,17 @@ namespace SWLOR.Toolset.Editors.Items
             }, DispatcherPriority.Background);
         }
 
+        /// <summary>
+        /// Appearance controls invoke this synchronously after their document edit commits. Capture
+        /// that transaction before the background-priority preview callback can observe a later,
+        /// unrelated edit as the current undo entry.
+        /// </summary>
+        private void OnAppearanceChanged()
+        {
+            _pendingModelEditOrigin = _captureCoalesceOrigin?.Invoke();
+            QueuePreviewUpdate();
+        }
+
         private void QueuePreviewSceneUpdate()
         {
             if (_disposed || _previewSceneUpdateQueued)
@@ -684,18 +696,19 @@ namespace SWLOR.Toolset.Editors.Items
                     _cachedItemGeometrySignature,
                     itemGeometrySignature,
                     StringComparison.Ordinal);
+            var carryOrigin = carryItemCustomColors ? _pendingModelEditOrigin : null;
             var signature = GeometrySignature();
             if (_cachedModelSignature == signature)
             {
                 _previewModelGeneration++;
                 _pendingModelSignature = null;
                 IsModelPreviewLoading = false;
+                if (carryItemCustomColors)
+                    _pendingModelEditOrigin = null;
                 ApplyPreviewScene(
                     _cachedModel,
                     carryItemCustomColorsAcrossMaterials: carryItemCustomColors,
-                    coalesceOrigin: carryItemCustomColors
-                        ? _captureCoalesceOrigin?.Invoke()
-                        : null);
+                    coalesceOrigin: carryOrigin);
                 return;
             }
 
@@ -705,12 +718,12 @@ namespace SWLOR.Toolset.Editors.Items
             var generation = ++_previewModelGeneration;
             _pendingModelSignature = signature;
             IsModelPreviewLoading = true;
+            if (carryItemCustomColors)
+                _pendingModelEditOrigin = null;
             ApplyPreviewScene(
                 null,
                 carryItemCustomColorsAcrossMaterials: carryItemCustomColors,
-                coalesceOrigin: carryItemCustomColors
-                    ? _captureCoalesceOrigin?.Invoke()
-                    : null);
+                coalesceOrigin: carryOrigin);
 
             // Snapshot on the UI thread. The background resolver never observes a field halfway
             // through another edit, and an older completion is discarded by its generation.

@@ -1718,7 +1718,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ActionEquipItem(copy, slot);
             });
             TintMapService.QueueItemCustomColorCarry(
-                _target, copy, Player, slot, armorPart, tintCarry);
+                _target, item, copy, Player, slot, armorPart, tintCarry);
 
             _lastModifiedItem = copy;
         }

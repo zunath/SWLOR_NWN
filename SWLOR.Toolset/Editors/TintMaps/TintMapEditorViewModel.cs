@@ -174,14 +174,17 @@ namespace SWLOR.Toolset.Editors.TintMaps
         {
             if (carry == null || carry.Sources.Count == 0)
                 return true;
-            if (!CarrySourceValuesAreCurrent(carry))
-                return true;
-
             var activeKeys = rows.Select(row => row.Key).ToHashSet(StringComparer.Ordinal);
             var assignments = new Dictionary<string, int>(StringComparer.Ordinal);
             var staleKeys = new HashSet<string>(StringComparer.Ordinal);
             foreach (var (layer, sources) in carry.Sources)
             {
+                // A builder can change one tint layer while the replacement model is loading.
+                // That newer choice invalidates only its own captured layer; unrelated layers must
+                // still migrate to the replacement materials and clean up their obsolete keys.
+                if (!CarrySourceValuesAreCurrent(sources))
+                    continue;
+
                 var sourceKeys = sources
                     .Select(source => source.Key)
                     .ToHashSet(StringComparer.Ordinal);
@@ -245,9 +248,9 @@ namespace SWLOR.Toolset.Editors.TintMaps
         /// builder's newer intent, so an older captured carry must not recreate the value that edit
         /// removed or replaced when the replacement model finally arrives.
         /// </summary>
-        private bool CarrySourceValuesAreCurrent(ItemColorCarry carry)
+        private bool CarrySourceValuesAreCurrent(IReadOnlyList<ItemColorSource> sources)
         {
-            foreach (var source in carry.Sources.Values.SelectMany(sources => sources))
+            foreach (var source in sources)
             {
                 var saved = _variables.GetInt(source.Key);
                 int? current = saved.HasValue &&

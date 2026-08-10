@@ -9,6 +9,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Toolset.Domain.Documents;
+using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Editors.Creatures;
 using SWLOR.Toolset.Domain.Editors.Items;
 using SWLOR.Toolset.Domain.GameData.Resources;
@@ -707,6 +708,51 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void ItemModelReplacementUsesOriginatingEditForAutomaticColorCarry()
+        {
+            var catalog = TintMapCatalog.Load(Resources());
+            catalog.Should().NotBeNull();
+            var variables = new VarTable(new JsonGffStruct());
+            var origin = new NoOpDocumentEdit("change model");
+            IDocumentEdit? coalescedOrigin = null;
+            var editor = new TintMapEditorViewModel(
+                variables,
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                catalog!,
+                runCoalescedEdit: (capturedOrigin, _, mutation) =>
+                {
+                    coalescedOrigin = capturedOrigin;
+                    mutation();
+                    return true;
+                });
+            var oldModel = ModelWith("helm_004");
+            var newModel = ModelWith("helm_005");
+            oldModel.Meshes.Single().UsesItemTintOverrides = true;
+            newModel.Meshes.Single().UsesItemTintOverrides = true;
+
+            editor.Reload(oldModel, includeNonItemOwnedMaterials: false);
+            editor.Colors.Single(row => row.Layer == TintMapLayerType.Cloth1).Color =
+                Color.FromRgb(12, 34, 56);
+            editor.Reload(
+                null,
+                includeNonItemOwnedMaterials: false,
+                carryItemCustomColorsAcrossMaterials: true,
+                coalesceOrigin: origin);
+            editor.Reload(
+                newModel,
+                includeNonItemOwnedMaterials: false,
+                carryItemCustomColorsAcrossMaterials: true);
+
+            coalescedOrigin.Should().BeSameAs(origin);
+            variables.GetInt(TintMapVariable.GetName("helm_005", TintMapLayerType.Cloth1))
+                .Should().NotBeNull();
+        }
+
+        [Test]
         public void ItemModelReplacementDoesNotGuessBetweenDifferentColorsForOneLayer()
         {
             var catalog = TintMapCatalog.Load(Resources());
@@ -984,6 +1030,26 @@ namespace SWLOR.Toolset.Tests
 
             Dispatcher.UIThread.RunJobs();
             condition().Should().BeTrue("the background preview should publish promptly");
+        }
+
+        private sealed class NoOpDocumentEdit : IDocumentEdit
+        {
+            private readonly string _description;
+
+            public NoOpDocumentEdit(string description)
+            {
+                _description = description;
+            }
+
+            public void Apply()
+            {
+            }
+
+            public void Revert()
+            {
+            }
+
+            public string Describe() => _description;
         }
     }
 }

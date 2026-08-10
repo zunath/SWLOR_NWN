@@ -132,7 +132,9 @@ namespace SWLOR.Toolset.Editors.Items
                 armorPartModels: armorPartModels,
                 placementSource: placementSource,
                 log: log,
-                tintMapCatalog: tintMapCatalog);
+                tintMapCatalog: tintMapCatalog,
+                captureCoalesceOrigin: () => _session.UndoStack.CurrentAppliedEntry,
+                runCoalescedEdit: RunCoalescedEdit);
             UpdateTitle();
         }
 
@@ -143,6 +145,25 @@ namespace SWLOR.Toolset.Editors.Items
                 _session.Execute(description, mutation);
                 AfterHistoryChange();
                 return true;
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Edit failed ({description}): {ex.Message}");
+                return false;
+            }
+        }
+
+        private bool RunCoalescedEdit(
+            IDocumentEdit origin,
+            string description,
+            Action mutation)
+        {
+            try
+            {
+                var applied = _session.ExecuteCoalesced(origin, description, mutation);
+                if (applied)
+                    AfterHistoryChange();
+                return applied;
             }
             catch (Exception ex)
             {

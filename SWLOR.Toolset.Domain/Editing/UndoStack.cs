@@ -37,6 +37,9 @@ namespace SWLOR.Toolset.Domain.Editing
         /// <summary>Number of entries currently applied (0..Entries.Count).</summary>
         public int Position => _position;
 
+        /// <summary>The most recently applied entry, used as an identity token for deferred work.</summary>
+        public IDocumentEdit? CurrentAppliedEntry => _position > 0 ? _entries[_position - 1] : null;
+
         public bool CanUndo => _position > 0;
 
         public bool CanRedo => _position < _entries.Count;
@@ -84,6 +87,51 @@ namespace SWLOR.Toolset.Domain.Editing
 
             _entries.Add(edit);
             _position++;
+        }
+
+        /// <summary>
+        /// Moves the newest applied entry into an earlier originating entry without changing the
+        /// document state. Deferred work can therefore remain part of the user action that caused
+        /// it even when an unrelated edit completed while the worker was running.
+        /// </summary>
+        internal bool CoalesceNewestInto(IDocumentEdit origin)
+        {
+            ArgumentNullException.ThrowIfNull(origin);
+
+            if (_position == 0 || _position != _entries.Count)
+                return false;
+
+            var newestIndex = _position - 1;
+            var originIndex = -1;
+            for (var index = 0; index < newestIndex; index++)
+            {
+                if (ReferenceEquals(_entries[index], origin))
+                {
+                    originIndex = index;
+                    break;
+                }
+            }
+
+            if (originIndex < 0)
+                return false;
+
+            var newest = _entries[newestIndex];
+            _entries[originIndex] = new CoalescedDocumentEdit(origin, newest);
+            _entries.RemoveAt(newestIndex);
+            _position--;
+
+            if (_savedPosition == newestIndex + 1)
+            {
+                _savedPosition--;
+            }
+            else if (_savedPosition.HasValue && _savedPosition.Value > originIndex)
+            {
+                // A saved state between the originating edit and its deferred continuation is no
+                // longer representable by the coalesced history.
+                _savedPosition = null;
+            }
+
+            return true;
         }
 
         public void Undo()
@@ -160,6 +208,32 @@ namespace SWLOR.Toolset.Domain.Editing
             _entries.Clear();
             _position = 0;
             _savedPosition = 0;
+        }
+
+        private sealed class CoalescedDocumentEdit : IDocumentEdit
+        {
+            private readonly IDocumentEdit _origin;
+            private readonly IDocumentEdit _continuation;
+
+            public CoalescedDocumentEdit(IDocumentEdit origin, IDocumentEdit continuation)
+            {
+                _origin = origin;
+                _continuation = continuation;
+            }
+
+            public void Apply()
+            {
+                _origin.Apply();
+                _continuation.Apply();
+            }
+
+            public void Revert()
+            {
+                _continuation.Revert();
+                _origin.Revert();
+            }
+
+            public string Describe() => _origin.Describe();
         }
     }
 }

@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Toolset.Domain.Documents;
+using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Render;
 
 namespace SWLOR.Toolset.Editors.TintMaps
@@ -11,6 +12,7 @@ namespace SWLOR.Toolset.Editors.TintMaps
     {
         private readonly VarTable _variables;
         private readonly Func<string, Action, bool> _runEdit;
+        private readonly Func<IDocumentEdit, string, Action, bool>? _runCoalescedEdit;
         private TintMapCatalog? _catalog;
         private readonly Func<RenderModel?>? _resolveModel;
         private readonly Action? _colorChanged;
@@ -19,7 +21,8 @@ namespace SWLOR.Toolset.Editors.TintMaps
         private readonly record struct ItemColorSource(string Key, int? SavedColor);
 
         private sealed record ItemColorCarry(
-            IReadOnlyDictionary<TintMapLayerType, IReadOnlyList<ItemColorSource>> Sources);
+            IReadOnlyDictionary<TintMapLayerType, IReadOnlyList<ItemColorSource>> Sources,
+            IDocumentEdit? OriginEdit);
 
         public ObservableCollection<TintMapColorRowViewModel> Colors { get; } = new();
 
@@ -30,13 +33,15 @@ namespace SWLOR.Toolset.Editors.TintMaps
             Func<string, Action, bool> runEdit,
             TintMapCatalog catalog,
             Func<RenderModel?>? resolveModel = null,
-            Action? colorChanged = null)
+            Action? colorChanged = null,
+            Func<IDocumentEdit, string, Action, bool>? runCoalescedEdit = null)
         {
             _variables = variables ?? throw new ArgumentNullException(nameof(variables));
             _runEdit = runEdit ?? throw new ArgumentNullException(nameof(runEdit));
             _catalog = catalog ?? throw new ArgumentNullException(nameof(catalog));
             _resolveModel = resolveModel;
             _colorChanged = colorChanged;
+            _runCoalescedEdit = runCoalescedEdit;
 
             if (_resolveModel != null)
                 Reload();
@@ -52,7 +57,8 @@ namespace SWLOR.Toolset.Editors.TintMaps
             bool includeItemOwnedMaterials = true,
             bool includeNonItemOwnedMaterials = true,
             bool includeCreatureLayersFromItemOwnedMaterials = false,
-            bool carryItemCustomColorsAcrossMaterials = false)
+            bool carryItemCustomColorsAcrossMaterials = false,
+            IDocumentEdit? coalesceOrigin = null)
         {
             if (_catalog == null)
             {
@@ -76,6 +82,16 @@ namespace SWLOR.Toolset.Editors.TintMaps
                 carryItemCustomColorsAcrossMaterials &&
                 model != null &&
                 _pendingItemColorCarry != null;
+            if (carryItemCustomColorsAcrossMaterials &&
+                model == null &&
+                _pendingItemColorCarry != null &&
+                coalesceOrigin != null)
+            {
+                _pendingItemColorCarry = _pendingItemColorCarry with
+                {
+                    OriginEdit = coalesceOrigin
+                };
+            }
             if (!hasPendingReplacement &&
                 currentKeys.SequenceEqual(wantedKeys, StringComparer.Ordinal))
             {
@@ -87,7 +103,7 @@ namespace SWLOR.Toolset.Editors.TintMaps
             ItemColorCarry? carry = null;
             if (carryItemCustomColorsAcrossMaterials)
             {
-                carry = _pendingItemColorCarry ?? CaptureItemCustomColors(Colors);
+                carry = _pendingItemColorCarry ?? CaptureItemCustomColors(Colors, coalesceOrigin);
                 if (model == null)
                     _pendingItemColorCarry = carry;
             }
@@ -118,7 +134,8 @@ namespace SWLOR.Toolset.Editors.TintMaps
         /// the corresponding replacement material without tinting the entire layer.
         /// </summary>
         private ItemColorCarry CaptureItemCustomColors(
-            IReadOnlyCollection<TintMapColorRowViewModel> rows)
+            IReadOnlyCollection<TintMapColorRowViewModel> rows,
+            IDocumentEdit? originEdit)
         {
             var sources = new Dictionary<TintMapLayerType, IReadOnlyList<ItemColorSource>>();
             foreach (var group in rows
@@ -143,7 +160,7 @@ namespace SWLOR.Toolset.Editors.TintMaps
                 sources[group.Key] = entries;
             }
 
-            return new ItemColorCarry(sources);
+            return new ItemColorCarry(sources, originEdit);
         }
 
         /// <summary>
@@ -201,14 +218,18 @@ namespace SWLOR.Toolset.Editors.TintMaps
             if (assignments.Count == 0 && staleKeys.Count == 0)
                 return true;
 
-            var applied = _runEdit("Carry custom item colors to replacement models", () =>
+            var description = "Carry custom item colors to replacement models";
+            var mutation = () =>
             {
                 foreach (var (key, savedColor) in assignments)
                     _variables.SetInt(key, savedColor);
 
                 foreach (var staleKey in staleKeys)
                     _variables.Remove(staleKey);
-            });
+            };
+            var applied = carry.OriginEdit != null && _runCoalescedEdit != null
+                ? _runCoalescedEdit(carry.OriginEdit, description, mutation)
+                : _runEdit(description, mutation);
             if (!applied)
                 return false;
 

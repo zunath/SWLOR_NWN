@@ -58,6 +58,38 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void ExecuteCoalesced_GroupsDeferredWorkWithItsOriginatingEdit()
+        {
+            var path = CorpusFiles.FindFileWithMutableInteger("utc");
+            var document = JsonGffDocument.Parse(File.ReadAllBytes(path));
+            using var session = new DocumentSession(path, document);
+            var fields = CollectMutableIntegers(document.Root, 2);
+            var firstOriginal = fields[0].GetInteger();
+            var secondOriginal = fields[1].GetInteger();
+
+            session.Execute("change model", () => fields[0].SetInteger(firstOriginal + 1));
+            var origin = session.UndoStack.CurrentAppliedEntry;
+            origin.Should().NotBeNull();
+
+            session.ExecuteCoalesced(
+                    origin!,
+                    "carry generated tint variables",
+                    () => fields[1].SetInteger(secondOriginal + 1))
+                .Should().BeTrue();
+
+            session.UndoStack.Entries.Should().ContainSingle();
+            session.UndoStack.Entries[0].Describe().Should().Be("change model");
+
+            session.Undo();
+            fields[0].GetInteger().Should().Be(firstOriginal);
+            fields[1].GetInteger().Should().Be(secondOriginal);
+
+            session.Redo();
+            fields[0].GetInteger().Should().Be(firstOriginal + 1);
+            fields[1].GetInteger().Should().Be(secondOriginal + 1);
+        }
+
+        [Test]
         public void Execute_WhenMutationThrows_RollsBackCapturedEditsAndLeavesHistoryClean()
         {
             var path = CorpusFiles.FindFileWithMutableInteger("utc");

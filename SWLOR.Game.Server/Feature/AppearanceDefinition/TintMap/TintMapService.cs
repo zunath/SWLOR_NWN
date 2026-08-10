@@ -784,15 +784,21 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                             continue;
                         }
 
-                        var destinationIdentity = GetEquipmentMaterialIdentity(
+                        var destinationIdentity = TintMapEquipmentMaterialMatcher.GetVariantIdentity(
                             selection.Material.Resref);
                         var matchingColors = storedColors
                             .Where(stored =>
                                 stored.Layer == layer &&
-                                string.Equals(
-                                    GetEquipmentMaterialIdentity(stored.MaterialResref),
-                                    destinationIdentity,
-                                    StringComparison.OrdinalIgnoreCase))
+                                (string.Equals(
+                                     TintMapEquipmentMaterialMatcher.GetVariantIdentity(
+                                         stored.MaterialResref),
+                                     destinationIdentity,
+                                     StringComparison.OrdinalIgnoreCase) ||
+                                 TintMapMaterialRegistry.AreEquipmentMaterialSlotsEquivalent(
+                                     stored.MaterialResref,
+                                     selection.ModelResref,
+                                     selection.Material.Resref,
+                                     layer)))
                             .Select(stored => stored.Color)
                             .Distinct()
                             .ToList();
@@ -801,17 +807,6 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     }
                 }
             }
-        }
-
-        private static string GetEquipmentMaterialIdentity(string materialResref)
-        {
-            // Player part models use p{gender}{race}{phenotype}_ prefixes. The rest of the
-            // material resref identifies the same armor part and model across wearers.
-            return materialResref.Length > 5 &&
-                   char.ToLowerInvariant(materialResref[0]) == 'p' &&
-                   materialResref[4] == '_'
-                ? materialResref[5..]
-                : materialResref;
         }
 
         private static IReadOnlyList<string> GetCreatureCustomColorVariables(uint creature)

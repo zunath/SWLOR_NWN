@@ -4,6 +4,7 @@ using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Items;
+using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
@@ -28,6 +29,8 @@ namespace SWLOR.Toolset.Editors.Items
         private bool _previewUpdateQueued;
         private bool _previewSceneUpdateQueued;
         private readonly Func<string, Action, bool> _runEdit;
+        private readonly Func<IDocumentEdit?>? _captureCoalesceOrigin;
+        private readonly Func<IDocumentEdit, string, Action, bool>? _runCoalescedEdit;
         private readonly IGameCodeIndex? _gameCodeIndex;
         private readonly Func<string, IReadOnlyList<BehaviorChoice>>? _resolveChoices;
         private readonly Func<int, BaseItemRow?>? _baseItemRows;
@@ -217,12 +220,16 @@ namespace SWLOR.Toolset.Editors.Items
             ArmorPartCatalog? armorPartModels = null,
             Sources.ObjectSourceSectionViewModel? placementSource = null,
             Workspace.OutputLogService? log = null,
-            TintMapCatalog? tintMapCatalog = null)
+            TintMapCatalog? tintMapCatalog = null,
+            Func<IDocumentEdit?>? captureCoalesceOrigin = null,
+            Func<IDocumentEdit, string, Action, bool>? runCoalescedEdit = null)
         {
             ArgumentNullException.ThrowIfNull(item);
 
             _store = new ItemValueStore(item);
             _runEdit = runEdit;
+            _captureCoalesceOrigin = captureCoalesceOrigin;
+            _runCoalescedEdit = runCoalescedEdit;
             _gameCodeIndex = gameCodeIndex;
             _resolveChoices = resolveChoices;
             _baseItemRows = baseItemRows;
@@ -258,7 +265,8 @@ namespace SWLOR.Toolset.Editors.Items
                     _store.Locals,
                     RunEdit,
                     tintMapCatalog,
-                    colorChanged: UpdatePreview);
+                    colorChanged: UpdatePreview,
+                    runCoalescedEdit: _runCoalescedEdit);
                 Appearance?.SetTintMapEditor(TintMapEditor);
             }
             Source = new ItemSourceSectionViewModel(headerOwner, sourceLookup, itemSourcesReady);
@@ -684,7 +692,10 @@ namespace SWLOR.Toolset.Editors.Items
                 IsModelPreviewLoading = false;
                 ApplyPreviewScene(
                     _cachedModel,
-                    carryItemCustomColorsAcrossMaterials: carryItemCustomColors);
+                    carryItemCustomColorsAcrossMaterials: carryItemCustomColors,
+                    coalesceOrigin: carryItemCustomColors
+                        ? _captureCoalesceOrigin?.Invoke()
+                        : null);
                 return;
             }
 
@@ -696,7 +707,10 @@ namespace SWLOR.Toolset.Editors.Items
             IsModelPreviewLoading = true;
             ApplyPreviewScene(
                 null,
-                carryItemCustomColorsAcrossMaterials: carryItemCustomColors);
+                carryItemCustomColorsAcrossMaterials: carryItemCustomColors,
+                coalesceOrigin: carryItemCustomColors
+                    ? _captureCoalesceOrigin?.Invoke()
+                    : null);
 
             // Snapshot on the UI thread. The background resolver never observes a field halfway
             // through another edit, and an older completion is discarded by its generation.
@@ -738,7 +752,8 @@ namespace SWLOR.Toolset.Editors.Items
                     _store.Locals,
                     RunEdit,
                     catalog,
-                    colorChanged: UpdatePreview);
+                    colorChanged: UpdatePreview,
+                    runCoalescedEdit: _runCoalescedEdit);
                 Appearance?.SetTintMapEditor(TintMapEditor);
                 return;
             }
@@ -811,13 +826,15 @@ namespace SWLOR.Toolset.Editors.Items
 
         private void ApplyPreviewScene(
             RenderModel? model,
-            bool carryItemCustomColorsAcrossMaterials)
+            bool carryItemCustomColorsAcrossMaterials,
+            IDocumentEdit? coalesceOrigin = null)
         {
             var hasItemOwnedMeshes = model?.Meshes.Any(mesh => mesh.UsesItemTintOverrides) == true;
             TintMapEditor?.Reload(
                 model,
                 includeNonItemOwnedMaterials: !hasItemOwnedMeshes,
-                carryItemCustomColorsAcrossMaterials: carryItemCustomColorsAcrossMaterials);
+                carryItemCustomColorsAcrossMaterials: carryItemCustomColorsAcrossMaterials,
+                coalesceOrigin: coalesceOrigin);
             PreviewScene = model == null
                 ? null
                 : new AreaScene

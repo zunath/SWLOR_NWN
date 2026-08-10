@@ -84,6 +84,20 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 : Array.Empty<TintMapMaterialDefinition>();
         }
 
+        public static bool AreEquipmentMaterialSlotsEquivalent(
+            string sourceMaterialResref,
+            string destinationModelResref,
+            string destinationMaterialResref,
+            TintMapLayerType layer)
+        {
+            return TintMapEquipmentMaterialMatcher.AreEquivalent(
+                sourceMaterialResref,
+                destinationModelResref,
+                destinationMaterialResref,
+                layer,
+                MaterialsByModel);
+        }
+
         public static TintMapLayerDefinition GetLayer(TintMapLayerType layer)
         {
             if (!LayerDefinitions.TryGetValue(layer, out var definition))

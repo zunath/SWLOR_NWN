@@ -914,7 +914,8 @@ public class TintMapReviewTests
         carryCalls.Should().Contain("TryParse");
         carryCalls.Should().Contain("TryFromStoredValue");
         carryCalls.Should().Contain("SetColor");
-        carryCalls.Should().Contain("GetEquipmentMaterialIdentity");
+        carryCalls.Should().Contain("AreEquipmentMaterialSlotsEquivalent",
+            "hashed generated material names must still migrate across wearer variants");
         carryMethod.ToString().Should().Contain("destinationVariable",
             "an existing destination override must remain untouched");
         carryMethod.ToString().Should().Contain("matchingColors.Count == 1",
@@ -924,13 +925,62 @@ public class TintMapReviewTests
         carryMethod.ToString().Should().Contain("TintMapVariable.IsCreatureColorLayer(layer)",
             "equipment colors must not overwrite skin, hair, or tattoos");
 
-        var identityMethod = typeof(TintMapService).GetMethod(
-            "GetEquipmentMaterialIdentity",
-            BindingFlags.Static | BindingFlags.NonPublic);
-        identityMethod.Should().NotBeNull();
-        identityMethod!.Invoke(null, new object[] { "pmh0_shor012" }).Should().Be("shor012");
-        identityMethod.Invoke(null, new object[] { "pfh0_shor012" }).Should().Be("shor012");
-        identityMethod.Invoke(null, new object[] { "shared_material" }).Should().Be("shared_material");
+        TintMapEquipmentMaterialMatcher.GetVariantIdentity("pmh0_shor012").Should().Be("shor012");
+        TintMapEquipmentMaterialMatcher.GetVariantIdentity("pfh0_shor012").Should().Be("shor012");
+        TintMapEquipmentMaterialMatcher.GetVariantIdentity("pmd22_shor012").Should().Be("shor012");
+        TintMapEquipmentMaterialMatcher.GetVariantIdentity("shared_material").Should().Be("shared_material");
+    }
+
+    [Test]
+    public void HashedEquipmentMaterialsMatchByCorrespondingWearerVariantSlot()
+    {
+        var catalog = new Dictionary<string, IReadOnlyList<TintMapMaterialDefinition>>(
+            StringComparer.OrdinalIgnoreCase)
+        {
+            ["pmh0_robe030"] = new[]
+            {
+                new TintMapMaterialDefinition(
+                    "male skin",
+                    "pmh0_p_ro_6c9e96",
+                    TintMapLayerType.Skin,
+                    TintMapLayerType.Cloth2),
+                new TintMapMaterialDefinition(
+                    "male equipment",
+                    "pmh0_r_ro_7a1a22",
+                    TintMapLayerType.Metal1,
+                    TintMapLayerType.Cloth1)
+            },
+            ["pfh0_robe030"] = new[]
+            {
+                // tintmap.2da lists the equipment material before the skin material for the
+                // female model, unlike the male model. Matching absolute list indexes is wrong.
+                new TintMapMaterialDefinition(
+                    "female equipment",
+                    "pfh0_r_ro_82b326",
+                    TintMapLayerType.Metal1,
+                    TintMapLayerType.Cloth1),
+                new TintMapMaterialDefinition(
+                    "female skin",
+                    "pmh0_p_ro_6c9e96",
+                    TintMapLayerType.Skin,
+                    TintMapLayerType.Cloth2)
+            }
+        };
+
+        TintMapEquipmentMaterialMatcher.AreEquivalent(
+                "pmh0_r_ro_7a1a22",
+                "pfh0_robe030",
+                "pfh0_r_ro_82b326",
+                TintMapLayerType.Metal1,
+                catalog)
+            .Should().BeTrue();
+        TintMapEquipmentMaterialMatcher.AreEquivalent(
+                "pmh0_p_ro_6c9e96",
+                "pfh0_robe030",
+                "pfh0_r_ro_82b326",
+                TintMapLayerType.Metal1,
+                catalog)
+            .Should().BeFalse("a material in another slot must not receive the equipment dye");
     }
 
     [Test]

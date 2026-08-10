@@ -191,7 +191,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VenomTempoTrait)
                 .Description("After successfully landing a hostile combat ability, your next auto-attack comes out instantly.")
-                .IncreasesStat(StatType.HostileAbilityHitNextAutoAttackNoDelaySkillType, (int)SkillType.Vibroknife)
+                .IncreasesStat(StatType.HostileAbilityHitNextAutoAttackNoDelayAllSkills, 1)
                 .IncreasesStat(StatType.HostileAbilityHitNextAutoAttackNoDelayDurationSeconds, 30)
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroknife, 25);

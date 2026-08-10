@@ -5711,6 +5711,20 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.NonBeneficial)]
         RangedRepeatedTargetDamageDurationSeconds = 992,
 
+        /// <summary>
+        /// When enabled, landing any hostile ability grants minimum delay to the next auto-attack,
+        /// regardless of the weapon skill used for that attack.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        HostileAbilityHitNextAutoAttackNoDelayAllSkills = 993,
+
+        /// <summary>
+        /// Internal temporary flag that causes the next auto-attack from any weapon skill to use
+        /// the default minimum delay, then is consumed.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        NextAutoAttackNoDelayAllSkills = 994,
+
     }
 
     public class StatTypeAttribute : Attribute

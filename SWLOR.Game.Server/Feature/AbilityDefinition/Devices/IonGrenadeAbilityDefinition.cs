@@ -110,22 +110,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             {
                 if (creature != activator && GetIsReactionTypeHostile(creature, activator))
                 {
-                    var damage = IsDroid(creature)
-                        ? baseDamage + GameMath.PercentOf(baseDamage, droidBonusPercent)
-                        : baseDamage;
-
                     Ability.ApplyCombatImpact(
                         activator,
                         creature,
                         GetLocation(creature),
                         SkillType.Devices,
-                        damage,
+                        baseDamage,
                         12,
                         statusEffect,
                         false,
                         Array.Empty<Type>(),
                         damageType: CombatDamageType.Electrical,
-                        targetVisualEffect: VisualEffect.Vfx_Com_Hit_Electrical);
+                        targetVisualEffect: VisualEffect.Vfx_Com_Hit_Electrical,
+                        damagePercentAdjustment: impactedTarget => IsDroid(impactedTarget) ? droidBonusPercent : 0);
                 }
 
                 creature = GetNextObjectInShape(Shape.Sphere, DeviceAbilityEffects.ApplyBlastRadiusBonus(activator, 3f), location, true);
@@ -145,7 +142,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         private static bool IsDroid(uint target)
         {
             var racialType = GetRacialType(target);
-            return racialType == RacialType.Droid || racialType == RacialType.Construct;
+            return racialType == RacialType.Droid ||
+                   racialType == RacialType.Construct ||
+                   racialType == RacialType.Robot;
         }
 
     }

@@ -51,6 +51,7 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("VibroknifePerkDefinition.cs", StatType.DirectDamageToStatusCategoryOrStealthBonusCategory, "(int)StatusEffectCategory.Incapacitating");
         AssertSourceStat("VibroknifePerkDefinition.cs", StatType.HostileAbilityUsedAttackPercentAdjustment, "5");
         AssertSourceStat("VibroknifePerkDefinition.cs", StatType.StatusAppliedTargetStaminaDrainRequiredCategory, "(int)StatusEffectCategory.StaminaDrainTrigger");
+        AssertSourceStat("VibroknifePerkDefinition.cs", StatType.HostileAbilityHitNextAutoAttackNoDelayAllSkills, "1");
 
         AssertSourceStat("HeavyVibrobladePerkDefinition.cs", StatType.HeavyVibrobladeOffenseEssenceHunter, "1");
         AssertSourceStat("HeavyVibrobladePerkDefinition.cs", StatType.HeavyVibrobladeOffenseSoulAscension, "1");
@@ -549,6 +550,10 @@ public class GeneratedWeaponPerkBehaviorTests
             .Should().Be(StatTypeCategory.NonBeneficial);
         Stat.GetStatTypeCategory(StatType.HostileAbilityHitNextAutoAttackNoDelaySkillType)
             .Should().Be(StatTypeCategory.NonBeneficial);
+        Stat.GetStatTypeCategory(StatType.HostileAbilityHitNextAutoAttackNoDelayAllSkills)
+            .Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.NextAutoAttackNoDelayAllSkills)
+            .Should().Be(StatTypeCategory.NonBeneficial);
         Stat.GetStatTypeCategory(StatType.SourceStatusAutoAttackCycleDamage)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
         Stat.GetStatTypeCategory(StatType.StatusAppliedTargetStaminaDrain)
@@ -671,9 +676,18 @@ public class GeneratedWeaponPerkBehaviorTests
         combatSource.Should().Contain("IdleSkillAbilityCriticalDamagePercentAdjustment");
         combatSource.Should().Contain("TargetHasSourceAppliedStatusCategory(defender, attacker, category)");
         combatSource.Should().Contain("ApplySourceStatusStackEffects(attacker, defender)");
-        combatSource.Should().Contain("ApplyHostileAbilityHitNextAutoAttackNoDelay(activator, ability, skillType)");
+        combatSource.Should().Contain("ApplyHostileAbilityHitNextAutoAttackNoDelay(activator, ability)");
+        combatSource.Should().Contain("GrantNextAutoAttackNoDelay(activator, duration)");
+        combatSource.Should().Contain("StatType.NextAutoAttackNoDelayAllSkills");
+        combatSource.Should().Contain("var appliesToSkill = skillType != SkillType.Invalid && storedSkillType == skillType");
+        combatSource.Should().Contain("if (appliesToSkill)");
+        combatSource.Should().Contain("First Strike +{damageBonus} DMG ({remaining} {stackLabel} remaining)");
         combatSource.Should().Contain("ApplyHostileAbilityUsedAttackAdjustment(activator, ability)");
-        combatSource.Should().Contain("ApplyStatusAppliedTargetStaminaDrain(");
+        combatSource.Should().Contain("public static void ApplyStatusAppliedTargetStaminaDrain(");
+        combatSource.Should().Contain("TryUseStatTrigger(activator, StatType.StatusAppliedTargetStaminaDrain, cooldown)");
+        statusEffectSource.Should().Contain("Combat.ApplyStatusAppliedTargetStaminaDrain(source, creature, statusEffect.Categories)");
+        usePerkFeatSource.Should().Contain("public static bool InterruptAbilityActivation(uint activator)");
+        usePerkFeatSource.Should().Contain("activation.Ability.ChannelInterruptAction?.Invoke(activator)");
         combatSource.Should().Contain("StatusEffectCategory.Infection => typeof(InfectionStatusEffect)");
         abilitySource.Should().Contain("beforeSuccessfulImpactRiders?.Invoke(target)");
         abilitySource.Should().Contain("Combat.ApplySuccessfulAbilityImpactRiders(");
@@ -737,11 +751,21 @@ public class GeneratedWeaponPerkBehaviorTests
             .Should().HaveCount(2, "the high-STM Exposed rule must have one canonical case-insensitive branch");
         AssertAbilitySourceContains(root, "Staff", "WorldbreakerAbilityDefinition.cs", "RequiredTargetStatusCategoryForConditionalStatus = StatusEffectCategory.Control");
         AssertAbilitySourceContains(root, "Vibroknife", "PathogenStrikeAbilityDefinition.cs", "SourceStatusEffectsToExtend = new[] { typeof(VenomStatusEffect), typeof(InfectionStatusEffect) }");
+        AssertAbilitySourceContains(root, "Vibroknife", "BackstabAbilityDefinition.cs", "ExtraDamageIfBehindFeedbackLabel = \"Backstab\"");
         AssertAbilitySourceContains(root, "Vibroknife", "ViralCascadeAbilityDefinition.cs", "ExtraDamageSourceStatusEffect = typeof(VenomStatusEffect)");
         AssertAbilitySourceContains(root, "Vibroknife", "ViralCascadeAbilityDefinition.cs", "ExtraDamageSourceStackStatusEffect = typeof(InfectionStatusEffect)");
         AssertAbilitySourceContains(root, "Vibroknife", "ViralCascadeAbilityDefinition.cs", "ConsumeSourceStatusEffectsOnHit = true");
         AssertAbilitySourceContains(root, "Vibroknife", "ViralCascadeAbilityDefinition.cs", "SuppressSourceStatusStackRiders = true");
         AssertAbilitySourceContains(root, "TwinBlade", "RedBloomAbilityDefinition.cs", "SpreadHemorrhageFromTarget = true");
+
+        var weaponBaseSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "WeaponActiveAbilityDefinitionBase.cs"));
+        weaponBaseSource.Should().Contain("UsePerkFeat.InterruptAbilityActivation(target)");
+        weaponBaseSource.Should().Contain("Extended {extendedCount} {statusLabel} by {SourceStatusExtensionSeconds}s");
     }
 
     [Test]

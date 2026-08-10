@@ -243,6 +243,11 @@ public class DevicesGrenadierTests
         ionGrenade.Should().Contain("while (GetIsObjectValid(creature))");
         ionGrenade.Should().Contain("Ability.ApplyCombatImpact(");
         ionGrenade.Should().Contain("damageType: CombatDamageType.Electrical");
+        ionGrenade.Should().Contain("damagePercentAdjustment: impactedTarget => IsDroid(impactedTarget) ? droidBonusPercent : 0");
+        ionGrenade.Should().Contain("racialType == RacialType.Droid");
+        ionGrenade.Should().Contain("racialType == RacialType.Construct");
+        ionGrenade.Should().Contain("racialType == RacialType.Robot");
+        ionGrenade.Should().NotContain("GameMath.PercentOf(baseDamage, droidBonusPercent)");
 
         concussionGrenade.Should().Contain("Ability.ApplyTelegraphedCombatImpact(");
         concussionGrenade.Should().Contain("DeviceAbilityEffects.ApplyBlastRadiusBonus(activator, 3f)");

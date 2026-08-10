@@ -5081,7 +5081,7 @@ namespace SWLOR.Game.Server.Service
                 ApplySourceStatusStackEffects(activator, target);
             }
 
-            ApplyHostileAbilityHitNextAutoAttackNoDelay(activator, ability, skillType);
+            ApplyHostileAbilityHitNextAutoAttackNoDelay(activator, ability);
             ApplySameTargetHostileAbilityHitEffects(activator, target, ability);
             ApplyAbilityStatusRiders(
                 activator,
@@ -5218,16 +5218,18 @@ namespace SWLOR.Game.Server.Service
 
         private static void ApplyHostileAbilityHitNextAutoAttackNoDelay(
             uint activator,
-            AbilityDetail ability,
-            SkillType skillType)
+            AbilityDetail ability)
         {
             if (ability?.IsHostileAbility != true)
                 return;
 
+            var appliesToAllSkills = Stat.GetStatAdjustment(
+                activator,
+                StatType.HostileAbilityHitNextAutoAttackNoDelayAllSkills) > 0;
             var autoAttackSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
                 activator,
                 StatType.HostileAbilityHitNextAutoAttackNoDelaySkillType));
-            if (autoAttackSkillType == SkillType.Invalid)
+            if (!appliesToAllSkills && autoAttackSkillType == SkillType.Invalid)
                 return;
 
             var duration = Stat.GetStatAdjustment(
@@ -5236,7 +5238,10 @@ namespace SWLOR.Game.Server.Service
             if (duration <= 0)
                 return;
 
-            GrantNextAutoAttackNoDelay(activator, autoAttackSkillType, duration);
+            if (appliesToAllSkills)
+                GrantNextAutoAttackNoDelay(activator, duration);
+            else
+                GrantNextAutoAttackNoDelay(activator, autoAttackSkillType, duration);
         }
 
         private static void ApplyAbilityStatusRiders(
@@ -5832,6 +5837,17 @@ namespace SWLOR.Game.Server.Service
                 LastHit = now,
                 RechargeAvailableAt = rechargeAvailableAt
             };
+
+            var damageBonus = Stat.GetStatAdjustment(attacker, StatType.FirstHostileAbilityHitDamageBonus);
+            if (damageBonus > 0 && GetIsPC(attacker))
+            {
+                var remaining = maximumCount - newCount;
+                var stackLabel = remaining == 1 ? "stack" : "stacks";
+                FloatingTextStringOnCreature(
+                    ColorToken.Combat($"First Strike +{damageBonus} DMG ({remaining} {stackLabel} remaining)"),
+                    attacker,
+                    false);
+            }
         }
 
         private static void RechargeFirstHostileAbilityHitStacks(uint attacker, int maximumCount)
@@ -6415,11 +6431,6 @@ namespace SWLOR.Game.Server.Service
 
             ApplyStatusAppliedSelfEffects(activator);
             ApplyStatusAppliedTargetEffects(activator, target);
-            ApplyStatusAppliedTargetStaminaDrain(
-                activator,
-                target,
-                primaryStatusEffect,
-                additionalStatusEffects);
         }
 
         private static void ApplyStatusAppliedSelfEffects(uint activator)
@@ -6532,13 +6543,14 @@ namespace SWLOR.Game.Server.Service
                 StatType.AbilityTargetStatusPhysicalDefensePercentAdjustment);
         }
 
-        private static void ApplyStatusAppliedTargetStaminaDrain(
+        public static void ApplyStatusAppliedTargetStaminaDrain(
             uint activator,
             uint target,
-            Type primaryStatusEffect,
-            IEnumerable<Type> additionalStatusEffects)
+            StatusEffectCategory appliedCategories)
         {
-            if (!GetIsObjectValid(target))
+            if (!GetIsObjectValid(activator) ||
+                !GetIsObjectValid(target) ||
+                activator == target)
                 return;
 
             var requiredCategory = GetStatusEffectCategoryFromStat(Stat.GetStatAdjustment(
@@ -6549,13 +6561,17 @@ namespace SWLOR.Game.Server.Service
             if (requiredCategory == 0 ||
                 staminaDrain <= 0 ||
                 cooldown <= 0 ||
-                !AbilityAppliedAnyStatusCategory(primaryStatusEffect, additionalStatusEffects, requiredCategory) ||
-                !TryUseStatTrigger(target, StatType.StatusAppliedTargetStaminaDrain, cooldown))
+                (appliedCategories & requiredCategory) == 0 ||
+                !TryUseStatTrigger(activator, StatType.StatusAppliedTargetStaminaDrain, cooldown))
             {
                 return;
             }
 
             Stat.ReduceStamina(target, staminaDrain);
+            FloatingTextStringOnCreature(
+                ColorToken.Combat($"-{staminaDrain} STM"),
+                target,
+                false);
         }
 
         private static void ApplyAreaAbilityTargetHitSequenceEffects(
@@ -7706,9 +7722,15 @@ namespace SWLOR.Game.Server.Service
 
         public static bool HasNextAutoAttackNoDelay(uint creature, SkillType skillType)
         {
+            var appliesToAllSkills = TemporaryStatModifier.GetStatAdjustment(
+                creature,
+                StatType.NextAutoAttackNoDelayAllSkills,
+                StatType.NextAutoAttackNoDelayAllSkills) > 0;
+            if (appliesToAllSkills)
+                return true;
+
             if (skillType == SkillType.Invalid)
                 return false;
-
             var storedSkillType = GetSkillTypeFromStat(TemporaryStatModifier.GetStatAdjustment(
                 creature,
                 StatType.NextAutoAttackNoDelaySkillType,
@@ -7719,13 +7741,33 @@ namespace SWLOR.Game.Server.Service
 
         public static bool ConsumeNextAutoAttackNoDelay(uint creature, SkillType skillType)
         {
-            if (!HasNextAutoAttackNoDelay(creature, skillType))
-                return false;
-
-            TemporaryStatModifier.Consume(
+            var appliesToAllSkills = TemporaryStatModifier.GetStatAdjustment(
+                creature,
+                StatType.NextAutoAttackNoDelayAllSkills,
+                StatType.NextAutoAttackNoDelayAllSkills) > 0;
+            var storedSkillType = GetSkillTypeFromStat(TemporaryStatModifier.GetStatAdjustment(
                 creature,
                 StatType.NextAutoAttackNoDelaySkillType,
-                StatType.NextAutoAttackNoDelaySkillType);
+                StatType.NextAutoAttackNoDelaySkillType));
+            var appliesToSkill = skillType != SkillType.Invalid && storedSkillType == skillType;
+            if (!appliesToAllSkills && !appliesToSkill)
+                return false;
+
+            if (appliesToAllSkills)
+            {
+                TemporaryStatModifier.Consume(
+                    creature,
+                    StatType.NextAutoAttackNoDelayAllSkills,
+                    StatType.NextAutoAttackNoDelayAllSkills);
+            }
+
+            if (appliesToSkill)
+            {
+                TemporaryStatModifier.Consume(
+                    creature,
+                    StatType.NextAutoAttackNoDelaySkillType,
+                    StatType.NextAutoAttackNoDelaySkillType);
+            }
 
             return true;
         }
@@ -7765,6 +7807,19 @@ namespace SWLOR.Game.Server.Service
                 (int)skillType,
                 durationSeconds,
                 StatType.NextAutoAttackNoDelaySkillType);
+        }
+
+        public static void GrantNextAutoAttackNoDelay(uint creature, int durationSeconds)
+        {
+            if (!GetIsObjectValid(creature) || durationSeconds <= 0)
+                return;
+
+            TemporaryStatModifier.Replace(
+                creature,
+                StatType.NextAutoAttackNoDelayAllSkills,
+                1,
+                durationSeconds,
+                StatType.NextAutoAttackNoDelayAllSkills);
         }
 
         public static void GrantNextAutoAttackCriticalRateBonus(

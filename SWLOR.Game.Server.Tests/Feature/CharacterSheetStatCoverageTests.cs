@@ -27,6 +27,7 @@ public class CharacterSheetStatCoverageTests
             "Direct percentage-point change to hit chance for weapon-skill and Force-skill ability hit checks only. Does not affect Mimicry abilities or the underlying Accuracy rating.");
         viewModel.Should().Contain(
             "Percentage bonus or penalty applied to the underlying Accuracy rating for attacks and ability hit checks, including Force and Mimicry. It is not a direct percentage-point change to hit chance");
+        viewModel.Should().Contain("already included in the Weapon Accuracy and Force Accuracy ratings shown on the Attributes tab.");
     }
 
     [Test]

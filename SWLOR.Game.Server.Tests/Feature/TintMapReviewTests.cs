@@ -762,6 +762,11 @@ public class TintMapReviewTests
         invocations.Should().Contain("SetLocalInt");
         invocations.Should().Contain("DeleteLocalInt");
         invocations.Should().Contain("FirstOrDefault");
+        method.ToString().Should().Contain("destinationPartId",
+            "the old destination model must be captured before its part is replaced");
+        method.ToString().Should().Contain("previousDestinationMaterials");
+        method.ToString().Should().Contain("activeVariables.Contains(previousVariable)",
+            "an obsolete destination key must be removed without deleting a key another active part shares");
         method.ToString().Should().NotContain("sourceMaterials[index]",
             "one source material can map to several destination materials");
     }
@@ -819,6 +824,53 @@ public class TintMapReviewTests
             "the equipped replacement must render its carried colors immediately");
         carryCalls.Should().Contain("PublishRefreshEvent",
             "the open appearance editor must show the replacement material's current value");
+    }
+
+    [Test]
+    public void NormalEquipmentRefreshCarriesUnambiguousCustomColorsToCurrentMaterials()
+    {
+        var serviceSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapService.cs");
+        var refreshMethod = FindMethod(serviceSource, nameof(TintMapService.QueueRefresh));
+        var refreshBody = refreshMethod.ToString();
+        refreshBody.Should().Contain("CarryStoredEquipmentCustomColors(creature)");
+        refreshBody.IndexOf("CarryStoredEquipmentCustomColors(creature)", StringComparison.Ordinal)
+            .Should().BeLessThan(refreshBody.IndexOf("ApplyCurrentColors(creature)", StringComparison.Ordinal),
+                "wearer-specific material locals must exist before shader uniforms are applied");
+
+        var carryMethod = FindMethod(serviceSource, "CarryStoredEquipmentCustomColors");
+        var carryCalls = carryMethod.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Select(GetInvokedMethodName)
+            .ToList();
+        carryCalls.Should().Contain("GetItemTintOverrides");
+        carryCalls.Should().Contain("TryGetLayer");
+        carryCalls.Should().Contain("TryFromStoredValue");
+        carryCalls.Should().Contain("SetColor");
+        carryMethod.ToString().Should().Contain("colors.Count != 1",
+            "distinct per-material designs must not be flattened during an ordinary equip");
+        carryMethod.ToString().Should().Contain("TintMapVariable.IsCreatureColorLayer(layer)",
+            "equipment colors must not overwrite skin, hair, or tattoos");
+    }
+
+    [Test]
+    public void FlatColorViewportPassesClearTintMapState()
+    {
+        var viewportSource = ReadSource(
+            "SWLOR.Toolset",
+            "Viewport",
+            "GlAreaControl.cs");
+        var setUniformMethod = FindMethod(viewportSource, "SetUniformBool");
+        var methodBody = setUniformMethod.ToString();
+
+        methodBody.Should().Contain("name == \"hasTexture\" && !value",
+            "every existing flat-color pass disables hasTexture through this shared path");
+        methodBody.Should().Contain("SetUniformBoolCore(\"hasTintMap\", false)");
+        methodBody.Should().Contain("SetUniformBoolCore(\"hasTintAlpha\", false)");
     }
 
     [Test]
@@ -1126,6 +1178,15 @@ public class TintMapReviewTests
                     argument.Expression.DescendantNodesAndSelf()
                         .OfType<SimpleNameSyntax>()
                         .Any(name => name.Identifier.ValueText == "Ordinal")));
+        getOverridesMethod.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Should()
+            .Contain(invocation =>
+                IsMemberInvocation(
+                    invocation,
+                    "ArmorColorIndexCalculator",
+                    "IsPerPartOverrideVariableName"),
+                "saved palette-zero markers must replace stale markers on the currently equipped armor");
         var outfitSource = ReadSource(
             "SWLOR.Game.Server",
             "Feature",

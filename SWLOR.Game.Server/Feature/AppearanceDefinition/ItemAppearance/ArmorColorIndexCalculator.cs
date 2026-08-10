@@ -22,6 +22,13 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
             return $"{PerPartOverridePrefix}_{(int)armorPart}_{(int)colorChannel}";
         }
 
+        public static bool IsPerPartOverrideVariableName(string variableName)
+        {
+            return variableName?.StartsWith(
+                $"{PerPartOverridePrefix}_",
+                System.StringComparison.Ordinal) == true;
+        }
+
         public static bool ShouldUsePerPartColor(int colorId, bool hasExplicitOverride)
         {
             if (colorId == 255)

@@ -303,14 +303,34 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             }
 
             var prefix = GetCreatureModelPrefix(creature);
-            var partId = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)sourcePart);
-            if (string.IsNullOrWhiteSpace(prefix) || partId <= 0)
+            var sourcePartId = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)sourcePart);
+            var destinationPartId = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)destinationPart);
+            if (string.IsNullOrWhiteSpace(prefix) || sourcePartId <= 0)
                 return;
 
             var sourceMaterials = TintMapMaterialRegistry.GetMaterials(
-                $"{prefix}{sourcePartName}{partId:D3}".ToLowerInvariant());
+                $"{prefix}{sourcePartName}{sourcePartId:D3}".ToLowerInvariant());
             var destinationMaterials = TintMapMaterialRegistry.GetMaterials(
-                $"{prefix}{destinationPartName}{partId:D3}".ToLowerInvariant());
+                $"{prefix}{destinationPartName}{sourcePartId:D3}".ToLowerInvariant());
+            var previousDestinationMaterials = destinationPartId > 0
+                ? TintMapMaterialRegistry.GetMaterials(
+                    $"{prefix}{destinationPartName}{destinationPartId:D3}".ToLowerInvariant())
+                : Array.Empty<TintMapMaterialDefinition>();
+            var activeVariables = BodyPartNames
+                .SelectMany(pair =>
+                {
+                    var part = (AppearanceArmor)(int)pair.Key;
+                    var activePartId = part == destinationPart
+                        ? sourcePartId
+                        : GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)part);
+                    return activePartId > 0
+                        ? TintMapMaterialRegistry.GetMaterials(
+                            $"{prefix}{pair.Value}{activePartId:D3}".ToLowerInvariant())
+                        : Array.Empty<TintMapMaterialDefinition>();
+                })
+                .SelectMany(material => material.Layers.Select(layer =>
+                    TintMapVariable.GetName(material.Resref, layer)))
+                .ToHashSet(StringComparer.Ordinal);
             foreach (var destination in destinationMaterials)
             {
                 foreach (var layer in destination.Layers)
@@ -326,6 +346,16 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                         SetLocalInt(item, destinationVariable, sourceValue);
                     else
                         DeleteLocalInt(item, destinationVariable);
+                }
+            }
+
+            foreach (var previousDestination in previousDestinationMaterials)
+            {
+                foreach (var layer in previousDestination.Layers)
+                {
+                    var previousVariable = TintMapVariable.GetName(previousDestination.Resref, layer);
+                    if (!activeVariables.Contains(previousVariable))
+                        DeleteLocalInt(item, previousVariable);
                 }
             }
         }

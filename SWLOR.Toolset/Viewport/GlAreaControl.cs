@@ -2973,6 +2973,20 @@ void main()
 
         private void SetUniformBool(string name, bool value)
         {
+            // Every path that disables the diffuse texture is switching to flat-color rendering.
+            // Tint state otherwise survives from the last model mesh and takes precedence over the
+            // flat color in the fragment shader, corrupting later markers and overlays.
+            if (name == "hasTexture" && !value)
+            {
+                SetUniformBoolCore("hasTintMap", false);
+                SetUniformBoolCore("hasTintAlpha", false);
+            }
+
+            SetUniformBoolCore(name, value);
+        }
+
+        private void SetUniformBoolCore(string name, bool value)
+        {
             var location = GetUniformLocationCached(name);
             var gl = _gl;
             if (location >= 0 && gl != null)

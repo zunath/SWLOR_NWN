@@ -498,6 +498,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
             DelayCommand(RefreshDelaySeconds, () =>
             {
+                CarryStoredEquipmentCustomColors(creature);
                 CarryStoredCreatureCustomColors(creature);
                 ApplyCurrentColors(creature);
             });
@@ -696,7 +697,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             {
                 var variable = ObjectPlugin.GetLocalVariable(item, index);
                 if (variable.Type != LocalVariableType.Int ||
-                    !variable.Key.StartsWith(TintMapVariable.Prefix, StringComparison.Ordinal))
+                    (!variable.Key.StartsWith(TintMapVariable.Prefix, StringComparison.Ordinal) &&
+                     !ArmorColorIndexCalculator.IsPerPartOverrideVariableName(variable.Key)))
                 {
                     continue;
                 }
@@ -705,6 +707,51 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             }
 
             return tintOverrides;
+        }
+
+        private static void CarryStoredEquipmentCustomColors(uint creature)
+        {
+            var selections = TintMapModelResolver.GetCurrentSelections(creature);
+            foreach (var itemSelections in selections
+                         .Where(selection =>
+                             selection.PaletteSource != creature &&
+                             GetIsObjectValid(selection.PaletteSource))
+                         .GroupBy(selection => selection.PaletteSource))
+            {
+                var item = itemSelections.Key;
+                var storedColors = new Dictionary<TintMapLayerType, HashSet<TintMapColor>>();
+                foreach (var (variableName, savedColor) in GetItemTintOverrides(item))
+                {
+                    if (!TintMapVariable.TryGetLayer(variableName, out var layer) ||
+                        TintMapVariable.IsCreatureColorLayer(layer) ||
+                        !TintMapColor.TryFromStoredValue(savedColor, out var color))
+                    {
+                        continue;
+                    }
+
+                    if (!storedColors.TryGetValue(layer, out var colors))
+                    {
+                        colors = new HashSet<TintMapColor>();
+                        storedColors[layer] = colors;
+                    }
+
+                    colors.Add(color);
+                }
+
+                foreach (var (layer, colors) in storedColors)
+                {
+                    if (colors.Count != 1)
+                        continue;
+
+                    var color = colors.Single();
+                    foreach (var selection in itemSelections.Where(selection =>
+                                 selection.GetPaletteSource(layer) == item &&
+                                 selection.Material.Layers.Contains(layer)))
+                    {
+                        SetColor(creature, selection, layer, color);
+                    }
+                }
+            }
         }
 
         private static IReadOnlyList<string> GetCreatureCustomColorVariables(uint creature)

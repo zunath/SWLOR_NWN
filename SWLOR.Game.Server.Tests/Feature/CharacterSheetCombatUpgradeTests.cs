@@ -32,6 +32,12 @@ public class CharacterSheetCombatUpgradeTests
 
         definition.Should().Contain("\"Physical DEF\", model => model.PhysicalDefense");
         definition.Should().Contain("\"Force DEF\", model => model.ForceDefense");
+        definition.Should().Contain("\"Weapon Acc.\", model => model.WeaponAccuracy");
+        definition.Should().Contain("\"Force Acc.\", model => model.ForceAccuracy");
+        viewModel.Should().Contain("public int WeaponAccuracy");
+        viewModel.Should().Contain("public int ForceAccuracy");
+        viewModel.Should().Contain("WeaponAccuracy = Stat.GetAccuracy(_target, mainHand, accuracyStatOverride, SkillType.Invalid);");
+        viewModel.Should().Contain("ForceAccuracy = Stat.GetAccuracy(_target, forceAccuracyWeapon, AbilityType.Willpower, SkillType.Force);");
         definition.Should().Contain("\"TYPE\", 90f, \"Resistance family.\"");
         definition.Should().Contain("model => model.ResistanceNames");
         definition.Should().Contain("model => model.ResistanceScores");

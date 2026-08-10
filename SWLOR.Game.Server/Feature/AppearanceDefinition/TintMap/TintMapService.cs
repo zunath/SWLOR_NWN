@@ -719,39 +719,69 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                          .GroupBy(selection => selection.PaletteSource))
             {
                 var item = itemSelections.Key;
-                var storedColors = new Dictionary<TintMapLayerType, HashSet<TintMapColor>>();
+                var storedColors = new List<(
+                    string MaterialResref,
+                    TintMapLayerType Layer,
+                    TintMapColor Color)>();
                 foreach (var (variableName, savedColor) in GetItemTintOverrides(item))
                 {
-                    if (!TintMapVariable.TryGetLayer(variableName, out var layer) ||
+                    if (!TintMapVariable.TryParse(
+                            variableName,
+                            out var materialResref,
+                            out var layer) ||
                         TintMapVariable.IsCreatureColorLayer(layer) ||
                         !TintMapColor.TryFromStoredValue(savedColor, out var color))
                     {
                         continue;
                     }
 
-                    if (!storedColors.TryGetValue(layer, out var colors))
-                    {
-                        colors = new HashSet<TintMapColor>();
-                        storedColors[layer] = colors;
-                    }
-
-                    colors.Add(color);
+                    storedColors.Add((materialResref, layer, color));
                 }
 
-                foreach (var (layer, colors) in storedColors)
+                foreach (var selection in itemSelections)
                 {
-                    if (colors.Count != 1)
-                        continue;
-
-                    var color = colors.Single();
-                    foreach (var selection in itemSelections.Where(selection =>
-                                 selection.GetPaletteSource(layer) == item &&
-                                 selection.Material.Layers.Contains(layer)))
+                    foreach (var layer in selection.Material.Layers.Where(layer =>
+                                 !TintMapVariable.IsCreatureColorLayer(layer) &&
+                                 selection.GetPaletteSource(layer) == item))
                     {
-                        SetColor(creature, selection, layer, color);
+                        var destinationVariable = TintMapVariable.GetName(
+                            selection.Material.Resref,
+                            layer);
+                        if (TintMapColor.TryFromStoredValue(
+                                GetLocalInt(item, destinationVariable),
+                                out _))
+                        {
+                            continue;
+                        }
+
+                        var destinationIdentity = GetEquipmentMaterialIdentity(
+                            selection.Material.Resref);
+                        var matchingColors = storedColors
+                            .Where(stored =>
+                                stored.Layer == layer &&
+                                string.Equals(
+                                    GetEquipmentMaterialIdentity(stored.MaterialResref),
+                                    destinationIdentity,
+                                    StringComparison.OrdinalIgnoreCase))
+                            .Select(stored => stored.Color)
+                            .Distinct()
+                            .ToList();
+                        if (matchingColors.Count == 1)
+                            SetColor(creature, selection, layer, matchingColors[0]);
                     }
                 }
             }
+        }
+
+        private static string GetEquipmentMaterialIdentity(string materialResref)
+        {
+            // Player part models use p{gender}{race}{phenotype}_ prefixes. The rest of the
+            // material resref identifies the same armor part and model across wearers.
+            return materialResref.Length > 5 &&
+                   char.ToLowerInvariant(materialResref[0]) == 'p' &&
+                   materialResref[4] == '_'
+                ? materialResref[5..]
+                : materialResref;
         }
 
         private static IReadOnlyList<string> GetCreatureCustomColorVariables(uint creature)

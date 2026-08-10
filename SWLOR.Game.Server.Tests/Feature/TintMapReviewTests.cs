@@ -767,8 +767,23 @@ public class TintMapReviewTests
         method.ToString().Should().Contain("previousDestinationMaterials");
         method.ToString().Should().Contain("activeVariables.Contains(previousVariable)",
             "an obsolete destination key must be removed without deleting a key another active part shares");
+        method.ToString().Should().Contain("ResolvePartId",
+            "zero-valued armor model fields render the creature's body-part fallback");
+        method.ToString().Should().Contain("GetCreatureBodyPart",
+            "cleanup must inspect the model that was actually rendered before mirroring");
+        method.ToString().Should().NotContain("destinationPartId > 0",
+            "a zero-valued destination still has a rendered fallback model whose stale tints must be removed");
         method.ToString().Should().NotContain("sourceMaterials[index]",
             "one source material can map to several destination materials");
+
+        var copyColorMethod = FindMethod(viewModelSource, "CopyColor");
+        var copyColorBody = copyColorMethod.ToString();
+        copyColorBody.Should().Contain("ShouldUsePerPartColor",
+            "mirroring must distinguish an explicit part color from an inherited global color");
+        copyColorBody.Should().Contain("sourceUsesPerPartColor ? sourceColor : 255",
+            "an inherited source must leave the destination in the inherited sentinel state");
+        copyColorBody.Should().Contain("ClearPerPartColorOverride",
+            "an inherited source must clear any explicit destination marker");
     }
 
     [Test]
@@ -827,7 +842,7 @@ public class TintMapReviewTests
     }
 
     [Test]
-    public void NormalEquipmentRefreshCarriesUnambiguousCustomColorsToCurrentMaterials()
+    public void NormalEquipmentRefreshCarriesOnlyMatchingCustomColorsToCurrentMaterials()
     {
         var serviceSource = ReadSource(
             "SWLOR.Game.Server",
@@ -848,13 +863,41 @@ public class TintMapReviewTests
             .Select(GetInvokedMethodName)
             .ToList();
         carryCalls.Should().Contain("GetItemTintOverrides");
-        carryCalls.Should().Contain("TryGetLayer");
+        carryCalls.Should().Contain("TryParse");
         carryCalls.Should().Contain("TryFromStoredValue");
         carryCalls.Should().Contain("SetColor");
-        carryMethod.ToString().Should().Contain("colors.Count != 1",
-            "distinct per-material designs must not be flattened during an ordinary equip");
+        carryCalls.Should().Contain("GetEquipmentMaterialIdentity");
+        carryMethod.ToString().Should().Contain("destinationVariable",
+            "an existing destination override must remain untouched");
+        carryMethod.ToString().Should().Contain("matchingColors.Count == 1",
+            "only an unambiguous color for the corresponding material may migrate");
+        carryMethod.ToString().Should().NotContain("Dictionary<TintMapLayerType",
+            "a partial dye on one armor part must not be spread to every material exposing the layer");
         carryMethod.ToString().Should().Contain("TintMapVariable.IsCreatureColorLayer(layer)",
             "equipment colors must not overwrite skin, hair, or tattoos");
+
+        var identityMethod = typeof(TintMapService).GetMethod(
+            "GetEquipmentMaterialIdentity",
+            BindingFlags.Static | BindingFlags.NonPublic);
+        identityMethod.Should().NotBeNull();
+        identityMethod!.Invoke(null, new object[] { "pmh0_shor012" }).Should().Be("shor012");
+        identityMethod.Invoke(null, new object[] { "pfh0_shor012" }).Should().Be("shor012");
+        identityMethod.Invoke(null, new object[] { "shared_material" }).Should().Be("shared_material");
+    }
+
+    [Test]
+    public void TintMapVariableParsingRetainsTheMaterialIdentity()
+    {
+        TintMapVariable.TryParse(
+                "TM_pmh0_chest070_4",
+                out var materialResref,
+                out var layer)
+            .Should().BeTrue();
+        materialResref.Should().Be("pmh0_chest070");
+        layer.Should().Be(TintMapLayerType.Cloth1);
+
+        TintMapVariable.TryParse("TM__5", out _, out _).Should().BeFalse();
+        TintMapVariable.TryParse("APC_1_5", out _, out _).Should().BeFalse();
     }
 
     [Test]

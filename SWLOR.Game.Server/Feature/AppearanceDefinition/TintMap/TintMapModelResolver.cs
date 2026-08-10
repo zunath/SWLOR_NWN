@@ -303,8 +303,16 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             }
 
             var prefix = GetCreatureModelPrefix(creature);
-            var sourcePartId = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)sourcePart);
-            var destinationPartId = GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)destinationPart);
+            var sourceCreaturePart = (CreaturePart)(int)sourcePart;
+            var destinationCreaturePart = (CreaturePart)(int)destinationPart;
+            var sourcePartId = ResolvePartId(
+                GetCreatureBodyPart(sourceCreaturePart, creature),
+                GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)sourcePart),
+                true);
+            var destinationPartId = ResolvePartId(
+                GetCreatureBodyPart(destinationCreaturePart, creature),
+                GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)destinationPart),
+                true);
             if (string.IsNullOrWhiteSpace(prefix) || sourcePartId <= 0)
                 return;
 
@@ -312,17 +320,18 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 $"{prefix}{sourcePartName}{sourcePartId:D3}".ToLowerInvariant());
             var destinationMaterials = TintMapMaterialRegistry.GetMaterials(
                 $"{prefix}{destinationPartName}{sourcePartId:D3}".ToLowerInvariant());
-            var previousDestinationMaterials = destinationPartId > 0
-                ? TintMapMaterialRegistry.GetMaterials(
-                    $"{prefix}{destinationPartName}{destinationPartId:D3}".ToLowerInvariant())
-                : Array.Empty<TintMapMaterialDefinition>();
+            var previousDestinationMaterials = TintMapMaterialRegistry.GetMaterials(
+                $"{prefix}{destinationPartName}{destinationPartId:D3}".ToLowerInvariant());
             var activeVariables = BodyPartNames
                 .SelectMany(pair =>
                 {
                     var part = (AppearanceArmor)(int)pair.Key;
                     var activePartId = part == destinationPart
                         ? sourcePartId
-                        : GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)part);
+                        : ResolvePartId(
+                            GetCreatureBodyPart(pair.Key, creature),
+                            GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)part),
+                            true);
                     return activePartId > 0
                         ? TintMapMaterialRegistry.GetMaterials(
                             $"{prefix}{pair.Value}{activePartId:D3}".ToLowerInvariant())

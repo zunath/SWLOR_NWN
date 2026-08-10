@@ -25,6 +25,15 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
         public static bool TryGetLayer(string variableName, out TintMapLayerType layer)
         {
+            return TryParse(variableName, out _, out layer);
+        }
+
+        public static bool TryParse(
+            string variableName,
+            out string materialResref,
+            out TintMapLayerType layer)
+        {
+            materialResref = string.Empty;
             layer = default;
             if (string.IsNullOrWhiteSpace(variableName) ||
                 !variableName.StartsWith(Prefix, StringComparison.Ordinal))
@@ -33,13 +42,14 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             }
 
             var separator = variableName.LastIndexOf('_');
-            if (separator < Prefix.Length ||
+            if (separator <= Prefix.Length ||
                 !int.TryParse(variableName[(separator + 1)..], out var value) ||
                 !Enum.IsDefined(typeof(TintMapLayerType), value))
             {
                 return false;
             }
 
+            materialResref = variableName[Prefix.Length..separator];
             layer = (TintMapLayerType)value;
             return true;
         }

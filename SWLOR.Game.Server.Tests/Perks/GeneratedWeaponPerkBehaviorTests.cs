@@ -716,10 +716,24 @@ public class GeneratedWeaponPerkBehaviorTests
         trackCombatActivityEnd.Should().BeGreaterThan(trackCombatActivityStart);
         var trackCombatActivitySource = combatSource[trackCombatActivityStart..trackCombatActivityEnd];
         trackCombatActivitySource.Should().Contain("ReportFirstStrikeCombatEntry(creature, now);");
+        trackCombatActivitySource.Should().Contain("!HasRecentCombatEntryActivity(creature, now)");
         trackCombatActivitySource.IndexOf("ReportFirstStrikeCombatEntry(creature, now);", StringComparison.Ordinal)
             .Should().BeLessThan(
                 trackCombatActivitySource.IndexOf("_lastCombatActivity[creature] = now;", StringComparison.Ordinal),
                 "combat entry must be evaluated before the activity timestamp is refreshed");
+
+        var hostileAbilityActivityStart = combatSource.IndexOf(
+            "public static void TrackHostileAbilityActivity(",
+            StringComparison.Ordinal);
+        var hostileAbilityActivityEnd = combatSource.IndexOf(
+            "private static bool HasRecentCombatEntryActivity(",
+            hostileAbilityActivityStart,
+            StringComparison.Ordinal);
+        hostileAbilityActivityEnd.Should().BeGreaterThan(hostileAbilityActivityStart);
+        var hostileAbilityActivitySource = combatSource[hostileAbilityActivityStart..hostileAbilityActivityEnd];
+        hostileAbilityActivitySource.Should().Contain("_lastHostileAbilityAttemptActivity[creature] = now;");
+        hostileAbilityActivitySource.Should().NotContain("_lastCombatActivity[creature] = now;",
+            "hostile attempts must not suppress landed-opening riders such as Venatic Recovery");
 
         var hostileCombatImpactStart = abilitySource.IndexOf(
             "private static int ApplyHostileCombatImpact(",
@@ -735,6 +749,9 @@ public class GeneratedWeaponPerkBehaviorTests
             .Should().BeLessThan(
                 hostileCombatImpactSource.IndexOf("Combat.TryResolveAbilityHit(", StringComparison.Ordinal),
                 "a missed opening cast still enters combat and must report First Strike readiness");
+        hostileCombatImpactSource.Should().Contain("firstHostileAbilityHitDamageBonusApplied: true");
+        abilitySource.Should().Contain("bool firstHostileAbilityHitDamageBonusApplied = false");
+        combatSource.Should().Contain("if (firstHostileAbilityHitDamageBonusApplied)");
         combatSource.Should().Contain("ApplyHostileAbilityUsedAttackAdjustment(activator, ability)");
         combatSource.Should().Contain("public static void ApplyStatusAppliedTargetStaminaDrain(");
         combatSource.Should().Contain("TryUseStatTrigger(activator, StatType.StatusAppliedTargetStaminaDrain, cooldown)");

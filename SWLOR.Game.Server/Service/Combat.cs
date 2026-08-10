@@ -63,6 +63,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<uint, DateTime> _recentGuardedHits = new();
         private static readonly Dictionary<uint, DateTime> _recentDeflections = new();
         private static readonly Dictionary<uint, DateTime> _lastCombatActivity = new();
+        private static readonly Dictionary<uint, DateTime> _lastHostileAbilityAttemptActivity = new();
         private static readonly Dictionary<uint, DateTime> _lastAttackActivity = new();
         private static readonly Dictionary<uint, DateTime> _lastCombatAbilityUse = new();
         private static readonly Dictionary<(uint, uint), SuppressionAbilityUseState> _pendingSuppressionAbilityUses = new();
@@ -2820,8 +2821,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var now = DateTime.UtcNow;
-            var isEnteringCombat = !_lastCombatActivity.TryGetValue(creature, out var lastActivity) ||
-                (now - lastActivity).TotalSeconds > 30;
+            var isEnteringCombat = !HasRecentCombatEntryActivity(creature, now);
 
             if (isEnteringCombat)
                 ReportFirstStrikeCombatEntry(creature, now);
@@ -2840,7 +2840,24 @@ namespace SWLOR.Game.Server.Service
 
         public static void TrackHostileAbilityActivity(uint creature)
         {
-            TrackCombatActivity(creature);
+            if (!GetIsObjectValid(creature))
+                return;
+
+            var now = DateTime.UtcNow;
+            if (!HasRecentCombatEntryActivity(creature, now))
+                ReportFirstStrikeCombatEntry(creature, now);
+
+            // Keep cast attempts separate from landed combat activity. Opening-hit riders such as
+            // Venatic Recovery must still observe the previous landed-combat timestamp.
+            _lastHostileAbilityAttemptActivity[creature] = now;
+        }
+
+        private static bool HasRecentCombatEntryActivity(uint creature, DateTime now)
+        {
+            return (_lastCombatActivity.TryGetValue(creature, out var lastCombatActivity) &&
+                    (now - lastCombatActivity).TotalSeconds <= 30) ||
+                (_lastHostileAbilityAttemptActivity.TryGetValue(creature, out var lastHostileAbilityAttempt) &&
+                    (now - lastHostileAbilityAttempt).TotalSeconds <= 30);
         }
 
         public static void TrackStealthOpeningWindow(uint creature)
@@ -4619,6 +4636,7 @@ namespace SWLOR.Game.Server.Service
             _recentGuardedHits.Remove(creature);
             _recentDeflections.Remove(creature);
             _lastCombatActivity.Remove(creature);
+            _lastHostileAbilityAttemptActivity.Remove(creature);
             _lastAttackActivity.Remove(creature);
             _lastCombatAbilityUse.Remove(creature);
             foreach (var key in _pendingSuppressionAbilityUses.Keys.Where(x => x.Item1 == creature || x.Item2 == creature).ToList())
@@ -5082,12 +5100,14 @@ namespace SWLOR.Game.Server.Service
             int damage,
             bool statusApplied,
             Type primaryStatusEffect,
-            IEnumerable<Type> additionalStatusEffects)
+            IEnumerable<Type> additionalStatusEffects,
+            bool firstHostileAbilityHitDamageBonusApplied)
         {
             if (!GetIsObjectValid(activator) || !GetIsObjectValid(target) || ability == null)
                 return;
 
-            ApplyFirstHostileAbilityHitCount(activator, ability);
+            if (firstHostileAbilityHitDamageBonusApplied)
+                ApplyFirstHostileAbilityHitCount(activator, ability);
             if (ability.IsHostileAbility && !ability.SuppressesSourceStatusStackRiders)
             {
                 ApplySourceStatusStackEffects(activator, target);
@@ -5968,8 +5988,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             // With stacks remaining, refresh to a full set once the wielder drops out of combat so each new engagement opens with all stacks.
-            if (_lastCombatActivity.TryGetValue(attacker, out var lastActivity) &&
-                (DateTime.UtcNow - lastActivity).TotalSeconds <= 30)
+            if (HasRecentCombatEntryActivity(attacker, DateTime.UtcNow))
             {
                 return;
             }

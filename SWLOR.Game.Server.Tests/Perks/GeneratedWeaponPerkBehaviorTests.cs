@@ -685,10 +685,32 @@ public class GeneratedWeaponPerkBehaviorTests
         combatSource.Should().Contain("ApplyHostileAbilityUsedAttackAdjustment(activator, ability)");
         combatSource.Should().Contain("public static void ApplyStatusAppliedTargetStaminaDrain(");
         combatSource.Should().Contain("TryUseStatTrigger(activator, StatType.StatusAppliedTargetStaminaDrain, cooldown)");
-        combatSource.Should().Contain("var staminaBefore = Stat.GetCurrentStamina(target)");
-        combatSource.Should().Contain("var staminaDrained = Math.Max(0, staminaBefore - Stat.GetCurrentStamina(target))");
-        combatSource.Should().Contain("ColorToken.Combat($\"-{staminaDrained} STM\")");
-        combatSource.Should().NotContain("ColorToken.Combat($\"-{staminaDrain} STM\")");
+        var staminaDrainMethodStart = combatSource.IndexOf(
+            "public static void ApplyStatusAppliedTargetStaminaDrain(",
+            StringComparison.Ordinal);
+        var staminaDrainMethodEnd = combatSource.IndexOf(
+            "private static void ApplyAreaAbilityTargetHitSequenceEffects(",
+            staminaDrainMethodStart,
+            StringComparison.Ordinal);
+        staminaDrainMethodEnd.Should().BeGreaterThan(staminaDrainMethodStart);
+        var staminaDrainMethod = combatSource[staminaDrainMethodStart..staminaDrainMethodEnd];
+        var staminaBeforeIndex = staminaDrainMethod.IndexOf(
+            "var staminaBefore = Stat.GetCurrentStamina(target)",
+            StringComparison.Ordinal);
+        var reduceStaminaIndex = staminaDrainMethod.IndexOf(
+            "Stat.ReduceStamina(target, staminaDrain)",
+            StringComparison.Ordinal);
+        var staminaDrainedIndex = staminaDrainMethod.IndexOf(
+            "var staminaDrained = Math.Max(0, staminaBefore - Stat.GetCurrentStamina(target))",
+            StringComparison.Ordinal);
+        var feedbackIndex = staminaDrainMethod.IndexOf(
+            "ColorToken.Combat($\"-{staminaDrained} STM\")",
+            StringComparison.Ordinal);
+        staminaBeforeIndex.Should().BeGreaterThanOrEqualTo(0);
+        reduceStaminaIndex.Should().BeGreaterThan(staminaBeforeIndex);
+        staminaDrainedIndex.Should().BeGreaterThan(reduceStaminaIndex);
+        feedbackIndex.Should().BeGreaterThan(staminaDrainedIndex);
+        staminaDrainMethod.Should().NotContain("ColorToken.Combat($\"-{staminaDrain} STM\")");
         statusEffectSource.Should().Contain("Combat.ApplyStatusAppliedTargetStaminaDrain(source, creature, statusEffect.Categories)");
         usePerkFeatSource.Should().Contain("public static bool InterruptAbilityActivation(uint activator)");
         usePerkFeatSource.Should().Contain("activation.Ability.ChannelInterruptAction?.Invoke(activator)");

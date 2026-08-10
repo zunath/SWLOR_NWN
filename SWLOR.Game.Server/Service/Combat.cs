@@ -64,6 +64,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<uint, DateTime> _recentDeflections = new();
         private static readonly Dictionary<uint, DateTime> _lastCombatActivity = new();
         private static readonly Dictionary<uint, DateTime> _lastHostileAbilityAttemptActivity = new();
+        private static readonly Dictionary<uint, DateTime> _lastIncomingDamageActivity = new();
         private static readonly Dictionary<uint, DateTime> _lastAttackActivity = new();
         private static readonly Dictionary<uint, DateTime> _lastCombatAbilityUse = new();
         private static readonly Dictionary<(uint, uint), SuppressionAbilityUseState> _pendingSuppressionAbilityUses = new();
@@ -2203,7 +2204,10 @@ namespace SWLOR.Game.Server.Service
             ApplyRecentDamageTargetHitEffects(defender, attacker);
 
             if (GetIsObjectValid(attacker) && GetIsReactionTypeHostile(attacker, defender))
+            {
+                TrackHostileDamageReceivedActivity(defender);
                 EmbattledStatusEffect.Refresh(defender, attacker);
+            }
         }
 
         private static void ApplyDamageTakenNextSkillAbilityDamage(uint defender)
@@ -2852,12 +2856,28 @@ namespace SWLOR.Game.Server.Service
             _lastHostileAbilityAttemptActivity[creature] = now;
         }
 
+        private static void TrackHostileDamageReceivedActivity(uint creature)
+        {
+            if (!GetIsObjectValid(creature))
+                return;
+
+            var now = DateTime.UtcNow;
+            if (!HasRecentCombatEntryActivity(creature, now))
+                ReportFirstStrikeCombatEntry(creature, now);
+
+            // Incoming damage starts combat for First Strike visibility without consuming the
+            // landed-opening timestamp that Venatic Recovery reads when the defender retaliates.
+            _lastIncomingDamageActivity[creature] = now;
+        }
+
         private static bool HasRecentCombatEntryActivity(uint creature, DateTime now)
         {
             return (_lastCombatActivity.TryGetValue(creature, out var lastCombatActivity) &&
                     (now - lastCombatActivity).TotalSeconds <= 30) ||
                 (_lastHostileAbilityAttemptActivity.TryGetValue(creature, out var lastHostileAbilityAttempt) &&
-                    (now - lastHostileAbilityAttempt).TotalSeconds <= 30);
+                    (now - lastHostileAbilityAttempt).TotalSeconds <= 30) ||
+                (_lastIncomingDamageActivity.TryGetValue(creature, out var lastIncomingDamage) &&
+                    (now - lastIncomingDamage).TotalSeconds <= 30);
         }
 
         public static void TrackStealthOpeningWindow(uint creature)
@@ -4637,6 +4657,7 @@ namespace SWLOR.Game.Server.Service
             _recentDeflections.Remove(creature);
             _lastCombatActivity.Remove(creature);
             _lastHostileAbilityAttemptActivity.Remove(creature);
+            _lastIncomingDamageActivity.Remove(creature);
             _lastAttackActivity.Remove(creature);
             _lastCombatAbilityUse.Remove(creature);
             foreach (var key in _pendingSuppressionAbilityUses.Keys.Where(x => x.Item1 == creature || x.Item2 == creature).ToList())

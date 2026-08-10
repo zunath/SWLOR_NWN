@@ -6567,9 +6567,11 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            var staminaBefore = Stat.GetCurrentStamina(target);
             Stat.ReduceStamina(target, staminaDrain);
+            var staminaDrained = Math.Max(0, staminaBefore - Stat.GetCurrentStamina(target));
             FloatingTextStringOnCreature(
-                ColorToken.Combat($"-{staminaDrain} STM"),
+                ColorToken.Combat($"-{staminaDrained} STM"),
                 target,
                 false);
         }

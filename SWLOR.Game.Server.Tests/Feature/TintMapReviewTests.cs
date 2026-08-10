@@ -317,10 +317,17 @@ public class TintMapReviewTests
         FindMethod(service, nameof(TintMapService.OnModuleUnacquire))
             .ToString().Should().Contain("QueueItemRefresh(GetModuleItemLost())");
         var areaEnter = FindMethod(service, nameof(TintMapService.OnAreaEnter)).ToString();
-        areaEnter.Should().Contain("QueueWorldItemsInArea(GetArea(creature))");
+        areaEnter.Should().Contain("QueueOtherCreaturesInArea(area, creature)",
+            "placed NPCs may have spawned before the managed tint hooks were registered");
+        areaEnter.Should().Contain("QueueWorldItemsInArea(area)");
         areaEnter.Should().Contain(
             "GetIsPC(creature) || GetIsDM(creature) || GetIsDMPossessed(creature)",
             "NPC and summon entries must not rescan every ground item in the area");
+        var creatureRefresh = FindMethod(service, "QueueOtherCreaturesInArea").ToString();
+        creatureRefresh.Should().Contain("GetFirstObjectInArea(area, ObjectType.Creature)");
+        creatureRefresh.Should().Contain("QueueRefresh(creature)");
+        creatureRefresh.Should().Contain("creature != enteringCreature",
+            "the entering player is already queued before the area scan");
         FindMethod(service, nameof(TintMapService.ApplyCurrentItemColors))
             .ToString().Should().Contain("GetWorldItemSelections(item)");
     }

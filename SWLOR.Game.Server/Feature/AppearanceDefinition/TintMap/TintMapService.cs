@@ -62,7 +62,11 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
             QueueRefresh(creature);
             if (GetIsPC(creature) || GetIsDM(creature) || GetIsDMPossessed(creature))
-                QueueWorldItemsInArea(GetArea(creature));
+            {
+                var area = GetArea(creature);
+                QueueOtherCreaturesInArea(area, creature);
+                QueueWorldItemsInArea(area);
+            }
         }
 
         [NWNEventHandler(ScriptName.OnModuleUnacquire)]
@@ -528,6 +532,23 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                  item = GetNextObjectInArea(area, ObjectType.Item))
             {
                 QueueItemRefresh(item);
+            }
+        }
+
+        private static void QueueOtherCreaturesInArea(uint area, uint enteringCreature)
+        {
+            if (!GetIsObjectValid(area))
+                return;
+
+            // Placed creatures can finish their spawn scripts before the managed server has
+            // registered the tint-map hooks. Refresh every creature when a player first makes the
+            // area visible so those static NPCs do not retain the generated MTR's row-zero defaults.
+            for (var creature = GetFirstObjectInArea(area, ObjectType.Creature);
+                 GetIsObjectValid(creature);
+                 creature = GetNextObjectInArea(area, ObjectType.Creature))
+            {
+                if (creature != enteringCreature)
+                    QueueRefresh(creature);
             }
         }
 

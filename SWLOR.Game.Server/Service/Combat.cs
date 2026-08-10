@@ -5843,6 +5843,15 @@ namespace SWLOR.Game.Server.Service
                 RechargeAvailableAt = rechargeAvailableAt
             };
 
+            Log.WriteStructured(
+                LogGroup.Attack,
+                "First Strike stack consumed: Attacker={Attacker} Count={Count} MaximumCount={MaximumCount} DamageBonus={DamageBonus} RechargeAvailableAt={RechargeAvailableAt}",
+                attacker,
+                newCount,
+                maximumCount,
+                damageBonus,
+                rechargeAvailableAt);
+
             if (damageBonus > 0 && GetIsPC(attacker))
             {
                 var remaining = maximumCount - newCount;
@@ -5884,6 +5893,14 @@ namespace SWLOR.Game.Server.Service
             };
             _firstHostileAbilityHitCounts[attacker] = state;
             becameReady = true;
+
+            Log.WriteStructured(
+                LogGroup.Attack,
+                "First Strike ready: Attacker={Attacker} Count={Count} MaximumCount={MaximumCount} DamageBonus={DamageBonus}",
+                attacker,
+                state.Count,
+                maximumCount,
+                damageBonus);
 
             if (damageBonus > 0 && GetIsPC(attacker))
             {
@@ -5933,6 +5950,13 @@ namespace SWLOR.Game.Server.Service
                 if (DateTime.UtcNow >= state.RechargeAvailableAt.Value)
                 {
                     _firstHostileAbilityHitCounts.Remove(attacker);
+                    Log.WriteStructured(
+                        LogGroup.Attack,
+                        "First Strike recharged: Attacker={Attacker} PreviousCount={PreviousCount} MaximumCount={MaximumCount} RechargeAvailableAt={RechargeAvailableAt}",
+                        attacker,
+                        state.Count,
+                        maximumCount,
+                        state.RechargeAvailableAt.Value);
                 }
 
                 return;
@@ -5946,6 +5970,12 @@ namespace SWLOR.Game.Server.Service
             }
 
             _firstHostileAbilityHitCounts.Remove(attacker);
+            Log.WriteStructured(
+                LogGroup.Attack,
+                "First Strike reset after combat: Attacker={Attacker} PreviousCount={PreviousCount} MaximumCount={MaximumCount}",
+                attacker,
+                state.Count,
+                maximumCount);
         }
 
         private static int GetAbilityDamageToSourceAppliedStatusTargetAdjustment(

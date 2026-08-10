@@ -701,6 +701,10 @@ public class GeneratedWeaponPerkBehaviorTests
         firstStrikeSource.Should().Contain("SendMessageToPC(attacker, feedback);");
         firstStrikeSource.Should().Contain("Count = 0");
         firstStrikeSource.Should().Contain("LastHit = DateTime.MinValue");
+        firstStrikeSource.Should().Contain("First Strike ready: Attacker={Attacker}");
+        firstStrikeSource.Should().Contain("First Strike stack consumed: Attacker={Attacker}");
+        firstStrikeSource.Should().Contain("First Strike recharged: Attacker={Attacker}");
+        firstStrikeSource.Should().Contain("First Strike reset after combat: Attacker={Attacker}");
 
         var trackCombatActivityStart = combatSource.IndexOf(
             "private static void TrackCombatActivity(",

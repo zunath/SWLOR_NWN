@@ -656,6 +656,8 @@ public class GeneratedWeaponPerkBehaviorTests
         combatSource.Should().Contain("ApplyHostileAbilityHitNextAutoAttackNoDelay(activator, ability)");
         combatSource.Should().Contain("GrantNextAutoAttackNoDelay(activator, duration)");
         combatSource.Should().Contain("StatType.NextAutoAttackNoDelayAllSkills");
+        combatSource.Should().Contain("var appliesToSkill = skillType != SkillType.Invalid && storedSkillType == skillType");
+        combatSource.Should().Contain("if (appliesToSkill)");
         combatSource.Should().Contain("First Strike +{damageBonus} DMG ({remaining} {stackLabel} remaining)");
         combatSource.Should().Contain("ApplyHostileAbilityUsedAttackAdjustment(activator, ability)");
         combatSource.Should().Contain("public static void ApplyStatusAppliedTargetStaminaDrain(");

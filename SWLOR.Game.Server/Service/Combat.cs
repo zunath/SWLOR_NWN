@@ -7741,17 +7741,33 @@ namespace SWLOR.Game.Server.Service
 
         public static bool ConsumeNextAutoAttackNoDelay(uint creature, SkillType skillType)
         {
-            if (!HasNextAutoAttackNoDelay(creature, skillType))
-                return false;
-
-            TemporaryStatModifier.Consume(
+            var appliesToAllSkills = TemporaryStatModifier.GetStatAdjustment(
                 creature,
                 StatType.NextAutoAttackNoDelayAllSkills,
-                StatType.NextAutoAttackNoDelayAllSkills);
-            TemporaryStatModifier.Consume(
+                StatType.NextAutoAttackNoDelayAllSkills) > 0;
+            var storedSkillType = GetSkillTypeFromStat(TemporaryStatModifier.GetStatAdjustment(
                 creature,
                 StatType.NextAutoAttackNoDelaySkillType,
-                StatType.NextAutoAttackNoDelaySkillType);
+                StatType.NextAutoAttackNoDelaySkillType));
+            var appliesToSkill = skillType != SkillType.Invalid && storedSkillType == skillType;
+            if (!appliesToAllSkills && !appliesToSkill)
+                return false;
+
+            if (appliesToAllSkills)
+            {
+                TemporaryStatModifier.Consume(
+                    creature,
+                    StatType.NextAutoAttackNoDelayAllSkills,
+                    StatType.NextAutoAttackNoDelayAllSkills);
+            }
+
+            if (appliesToSkill)
+            {
+                TemporaryStatModifier.Consume(
+                    creature,
+                    StatType.NextAutoAttackNoDelaySkillType,
+                    StatType.NextAutoAttackNoDelaySkillType);
+            }
 
             return true;
         }

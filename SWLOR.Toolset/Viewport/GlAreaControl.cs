@@ -5132,9 +5132,7 @@ void main()
 
         private static bool IsTintMapMaterial(MtrMaterial? material)
         {
-            return material != null &&
-                   material.CustomShaders.Values.Any(shader =>
-                       shader.Equals("fs_plt_tinter", StringComparison.OrdinalIgnoreCase));
+            return TintMapTextureRenderer.IsTintMapMaterial(material);
         }
 
         private uint ResolveTintAlphaTexture(MtrMaterial? material)

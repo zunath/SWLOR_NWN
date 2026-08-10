@@ -10,6 +10,15 @@ namespace SWLOR.Toolset.Domain.Render
     public static class TintMapTextureRenderer
     {
         private const string TintShader = "fs_plt_tinter";
+        private const string NormalMappedTintShader = "fs_plt_tinter_nm";
+
+        public static bool IsTintMapMaterial(MtrMaterial? material)
+        {
+            return material != null &&
+                   material.CustomShaders.Values.Any(shader =>
+                       shader.Equals(TintShader, StringComparison.OrdinalIgnoreCase) ||
+                       shader.Equals(NormalMappedTintShader, StringComparison.OrdinalIgnoreCase));
+        }
 
         public static TextureImage? Render(
             ResourceIndex resourceIndex,
@@ -18,8 +27,7 @@ namespace SWLOR.Toolset.Domain.Render
             IReadOnlyDictionary<int, int>? layerColorIndices,
             IReadOnlyDictionary<string, int>? overrides)
         {
-            if (!material.CustomShaders.Values.Any(shader =>
-                    shader.Equals(TintShader, StringComparison.OrdinalIgnoreCase)))
+            if (!IsTintMapMaterial(material))
                 return null;
 
             var tintMapName = material.GetTexture(7);

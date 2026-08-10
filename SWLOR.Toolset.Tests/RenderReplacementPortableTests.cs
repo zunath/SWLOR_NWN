@@ -366,6 +366,36 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void NormalMappedTintShaderIsRecognizedBySoftwareAndViewportRenderers()
+        {
+            File.WriteAllBytes(Path.Combine(_resourceDirectory, "tint.tga"), SolidColorTga(255, 0, 0));
+            File.WriteAllBytes(Path.Combine(_resourceDirectory, "palette.tga"), SolidColorTga(255, 255, 255));
+            var material = MaterialResolver.Parse(
+                "texture7 tint\n" +
+                "texture10 palette\n" +
+                "customshaderFS fs_plt_tinter_nm\n");
+
+            TintMapTextureRenderer.IsTintMapMaterial(material).Should().BeTrue();
+            var viewportRecognizesTintMaterial = typeof(SWLOR.Toolset.Viewport.GlAreaControl)
+                .GetMethod(
+                    "IsTintMapMaterial",
+                    System.Reflection.BindingFlags.NonPublic |
+                    System.Reflection.BindingFlags.Static)!
+                .Invoke(null, new object?[] { material });
+            viewportRecognizesTintMaterial.Should().Be(true);
+
+            var image = TintMapTextureRenderer.Render(
+                Index(),
+                "sample_material",
+                material,
+                new Dictionary<int, int>(),
+                new Dictionary<string, int>());
+
+            image.Should().NotBeNull(
+                "normal-mapped tint materials still require the same tint-map and palette composition");
+        }
+
+        [Test]
         public void SoftwareTintRendererUsesTexture1AlphaChannel()
         {
             File.WriteAllBytes(Path.Combine(_resourceDirectory, "tint.tga"), SolidColorTga(255, 0, 0));

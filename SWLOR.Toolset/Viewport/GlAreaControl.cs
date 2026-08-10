@@ -5093,25 +5093,36 @@ void main()
             if (ResourceIndex == null)
                 return default;
 
-            var surfaceName = !string.IsNullOrWhiteSpace(materialName)
+            var hasMaterial = !string.IsNullOrWhiteSpace(materialName);
+            var surfaceName = hasMaterial
                 ? materialName!
                 : rawTextureName;
-            // Segmented creature composition can retain a bitmap while dropping the inherited
-            // material-name field. A generated MTR with the bitmap's resref is still the intended
-            // surface, so always try material resolution before treating the name as raw artwork.
-            var rawKey = "m|" + surfaceName + _layerColorKey;
+            MtrMaterial? parsedMaterial = null;
+            if (hasMaterial)
+            {
+                parsedMaterial = TryParseMaterial(surfaceName);
+            }
+            else
+            {
+                // Same-resref fallback is only valid for the generated tint shaders. A plain mesh
+                // whose bitmap happens to share a resref with an unrelated MTR must keep the bitmap.
+                var candidate = TryParseMaterial(surfaceName);
+                if (IsTintMapMaterial(candidate))
+                    parsedMaterial = candidate;
+            }
+
+            var resolveMaterial = hasMaterial || parsedMaterial != null;
+            var rawKey = (resolveMaterial ? "m|" : "t|") + surfaceName + _layerColorKey;
             if (_rawTextureCache.TryGetValue(rawKey, out var memo))
                 return memo;
 
             MaterialMaps maps;
-            MtrMaterial? parsedMaterial;
             try
             {
-                parsedMaterial = MaterialResolver.TryParseMaterial(ResourceIndex, surfaceName);
                 maps = MaterialResolver.ResolveMaterialMaps(
                     ResourceIndex,
                     surfaceName,
-                    resolveMaterial: true);
+                    resolveMaterial);
             }
             catch (Exception)
             {
@@ -5157,6 +5168,18 @@ void main()
 
             _rawTextureCache[rawKey] = material;
             return material;
+        }
+
+        private MtrMaterial? TryParseMaterial(string surfaceName)
+        {
+            try
+            {
+                return MaterialResolver.TryParseMaterial(ResourceIndex!, surfaceName);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
         }
 
         private static bool IsTintMapMaterial(MtrMaterial? material)

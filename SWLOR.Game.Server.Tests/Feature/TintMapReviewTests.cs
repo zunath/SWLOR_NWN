@@ -761,7 +761,6 @@ public class TintMapReviewTests
         invocations.Should().Contain("GetMaterials");
         invocations.Should().Contain("SetLocalInt");
         invocations.Should().Contain("DeleteLocalInt");
-        invocations.Should().Contain("FirstOrDefault");
         method.ToString().Should().Contain("destinationPartId",
             "the old destination model must be captured before its part is replaced");
         method.ToString().Should().Contain("previousDestinationMaterials");
@@ -773,8 +772,12 @@ public class TintMapReviewTests
             "cleanup must inspect the model that was actually rendered before mirroring");
         method.ToString().Should().NotContain("destinationPartId > 0",
             "a zero-valued destination still has a rendered fallback model whose stale tints must be removed");
-        method.ToString().Should().NotContain("sourceMaterials[index]",
-            "one source material can map to several destination materials");
+        method.ToString().Should().Contain("sourceLayerMaterials.Count == 1",
+            "one source material can intentionally map to several destination materials");
+        method.ToString().Should().Contain("sourceLayerMaterials[index]",
+            "multi-material parts must retain the corresponding material's distinct color");
+        method.ToString().Should().Contain("index < sourceLayerMaterials.Count",
+            "an unmatched destination material must be cleared rather than borrowing another color");
 
         var copyColorMethod = FindMethod(viewModelSource, "CopyColor");
         var copyColorBody = copyColorMethod.ToString();
@@ -784,6 +787,35 @@ public class TintMapReviewTests
             "an inherited source must leave the destination in the inherited sentinel state");
         copyColorBody.Should().Contain("ClearPerPartColorOverride",
             "an inherited source must clear any explicit destination marker");
+    }
+
+    [Test]
+    public void BitmapOnlyMeshesResolveOnlyGeneratedTintMaterials()
+    {
+        var previewSource = ReadSource(
+            "SWLOR.Toolset",
+            "Workspace",
+            "BlueprintPreviewRenderer.cs");
+        var previewResolver = FindMethod(previewSource, "ResolveMeshTexture").ToString();
+        previewResolver.Should().Contain("hasMaterial || IsGeneratedTintMaterial(surfaceName)",
+            "an explicit material or a recognized generated tint material may resolve through MTR");
+        previewResolver.Should().NotContain("resolveMaterial: true",
+            "a bitmap-only mesh must not be replaced by an unrelated same-resref MTR");
+        FindMethod(previewSource, "IsGeneratedTintMaterial").ToString()
+            .Should().Contain("TintMapTextureRenderer.IsTintMapMaterial",
+                "same-resref fallback is limited to the generated tint shader family");
+
+        var viewportSource = ReadSource(
+            "SWLOR.Toolset",
+            "Viewport",
+            "GlAreaControl.cs");
+        var viewportResolver = FindMethod(viewportSource, "ResolveTexture").ToString();
+        viewportResolver.Should().Contain("hasMaterial || parsedMaterial != null",
+            "explicit MTR bindings remain authoritative in the live viewport");
+        viewportResolver.Should().Contain("IsTintMapMaterial(candidate)",
+            "bitmap-name fallback in the live viewport must use the same tint-material gate");
+        viewportResolver.Should().NotContain("resolveMaterial: true",
+            "ordinary bitmap-only viewport meshes must bypass same-resref MTR lookup");
     }
 
     [Test]

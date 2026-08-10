@@ -340,17 +340,34 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 .SelectMany(material => material.Layers.Select(layer =>
                     TintMapVariable.GetName(material.Resref, layer)))
                 .ToHashSet(StringComparer.Ordinal);
-            foreach (var destination in destinationMaterials)
+            foreach (var layer in destinationMaterials
+                         .SelectMany(destination => destination.Layers)
+                         .Distinct())
             {
-                foreach (var layer in destination.Layers)
+                var sourceLayerMaterials = sourceMaterials
+                    .Where(source => source.Layers.Contains(layer))
+                    .ToList();
+                var destinationLayerMaterials = destinationMaterials
+                    .Where(destination => destination.Layers.Contains(layer))
+                    .ToList();
+                for (var index = 0; index < destinationLayerMaterials.Count; index++)
                 {
+                    var destination = destinationLayerMaterials[index];
                     var destinationVariable = TintMapVariable.GetName(destination.Resref, layer);
-                    var sourceValue = sourceMaterials
-                        .Where(source => source.Layers.Contains(layer))
-                        .Select(source => GetLocalInt(
+                    // Most mirrored parts declare corresponding left/right materials in the same
+                    // tintmap.2da order. Preserve each material's own color in that case. A few
+                    // legacy parts expose one source material but several destination materials;
+                    // those intentionally broadcast the single source color to every destination.
+                    var source = sourceLayerMaterials.Count == 1
+                        ? sourceLayerMaterials[0]
+                        : index < sourceLayerMaterials.Count
+                            ? sourceLayerMaterials[index]
+                            : null;
+                    var sourceValue = source == null
+                        ? 0
+                        : GetLocalInt(
                             item,
-                            TintMapVariable.GetName(source.Resref, layer)))
-                        .FirstOrDefault(value => value > 0);
+                            TintMapVariable.GetName(source.Resref, layer));
                     if (sourceValue > 0)
                         SetLocalInt(item, destinationVariable, sourceValue);
                     else

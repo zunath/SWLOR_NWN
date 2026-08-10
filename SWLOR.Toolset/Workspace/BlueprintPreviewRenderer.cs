@@ -489,6 +489,7 @@ namespace SWLOR.Toolset.Workspace
 
             var hasMaterial = !string.IsNullOrWhiteSpace(mesh.MaterialName);
             var surfaceName = hasMaterial ? mesh.MaterialName : mesh.TextureName;
+            var resolveMaterial = hasMaterial || IsGeneratedTintMaterial(surfaceName);
             var layerColors = mesh.LayerColorIndices.Count > 0
                 ? mesh.LayerColorIndices
                 : fallbackLayerColors;
@@ -511,10 +512,26 @@ namespace SWLOR.Toolset.Workspace
                 surfaceName,
                 layerColors,
                 activeTintMapOverrides,
-                // Composed body-part meshes can inherit the bitmap while losing the binary
-                // material-name field. NWN still resolves the generated same-resref MTR, so the
-                // Toolset must try it before falling back to the raw texture as well.
-                resolveMaterial: true);
+                // Only generated tint materials may use the same-resref MTR fallback. Ordinary
+                // bitmap-only meshes must retain their authored bitmap even when an unrelated MTR
+                // happens to share its resref.
+                resolveMaterial);
+        }
+
+        private bool IsGeneratedTintMaterial(string surfaceName)
+        {
+            if (_resourceIndex == null || string.IsNullOrWhiteSpace(surfaceName))
+                return false;
+
+            try
+            {
+                return TintMapTextureRenderer.IsTintMapMaterial(
+                    MaterialResolver.TryParseMaterial(_resourceIndex, surfaceName));
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         /// <summary>

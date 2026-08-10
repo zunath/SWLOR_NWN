@@ -685,6 +685,10 @@ public class GeneratedWeaponPerkBehaviorTests
         combatSource.Should().Contain("ApplyHostileAbilityUsedAttackAdjustment(activator, ability)");
         combatSource.Should().Contain("public static void ApplyStatusAppliedTargetStaminaDrain(");
         combatSource.Should().Contain("TryUseStatTrigger(activator, StatType.StatusAppliedTargetStaminaDrain, cooldown)");
+        combatSource.Should().Contain("var staminaBefore = Stat.GetCurrentStamina(target)");
+        combatSource.Should().Contain("var staminaDrained = Math.Max(0, staminaBefore - Stat.GetCurrentStamina(target))");
+        combatSource.Should().Contain("ColorToken.Combat($\"-{staminaDrained} STM\")");
+        combatSource.Should().NotContain("ColorToken.Combat($\"-{staminaDrain} STM\")");
         statusEffectSource.Should().Contain("Combat.ApplyStatusAppliedTargetStaminaDrain(source, creature, statusEffect.Categories)");
         usePerkFeatSource.Should().Contain("public static bool InterruptAbilityActivation(uint activator)");
         usePerkFeatSource.Should().Contain("activation.Ability.ChannelInterruptAction?.Invoke(activator)");

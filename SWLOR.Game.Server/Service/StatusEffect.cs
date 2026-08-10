@@ -468,10 +468,10 @@ namespace SWLOR.Game.Server.Service
             CombatDamageType sourceDamageType = CombatDamageType.Invalid)
         {
             durationTicks = ApplyOutgoingStatusDurationAdjustments(statusEffect, source, durationTicks, isPermanent);
-            durationTicks = Ability.ApplyActiveForceAffinityDurationAdjustment(source, durationTicks, isPermanent);
             ApplyOutgoingStatusStatAdjustments(statusEffect, source);
 
             var resistanceType = ResolveResistanceType(statusEffect, resistanceOverride, sourceDamageType);
+            var durationResistanceMessage = string.Empty;
             if (!isPermanent &&
                 durationTicks > 0 &&
                 GetIsObjectValid(source) &&
@@ -486,7 +486,14 @@ namespace SWLOR.Game.Server.Service
                         return false;
                     }
 
+                    var durationTicksBeforeResistance = durationTicks;
                     durationTicks = Resistance.CalculateResistedTicks(creature, resistanceType, durationTicks);
+                    durationResistanceMessage = BuildDurationResistanceMessage(
+                        resistanceType,
+                        statusEffect.Name,
+                        durationTicksBeforeResistance,
+                        durationTicks,
+                        statusEffect.Frequency);
                 }
             }
 
@@ -564,6 +571,12 @@ namespace SWLOR.Game.Server.Service
             ApplyTrackedNWNEffect(creature, statusEffect, durationTicks, isPermanent);
             Combat.ApplyStatusAppliedTargetStaminaDrain(source, creature, statusEffect.Categories);
 
+            if (!string.IsNullOrWhiteSpace(durationResistanceMessage) &&
+                (GetIsPC(source) || GetIsDM(source)))
+            {
+                SendMessageToPC(source, durationResistanceMessage);
+            }
+
             if (statusEffect.SendsApplicationMessage)
             {
                 Messaging.SendMessageNearbyToPlayers(creature, receiver =>
@@ -585,6 +598,40 @@ namespace SWLOR.Game.Server.Service
             }
 
             return true;
+        }
+
+        public static string BuildDurationResistanceMessage(
+            ResistanceType resistanceType,
+            string effectName,
+            int originalDurationTicks,
+            int adjustedDurationTicks,
+            float frequency)
+        {
+            if (resistanceType == ResistanceType.Invalid ||
+                originalDurationTicks <= 0 ||
+                adjustedDurationTicks <= 0 ||
+                originalDurationTicks == adjustedDurationTicks)
+            {
+                return string.Empty;
+            }
+
+            var direction = adjustedDurationTicks < originalDurationTicks
+                ? "reduced"
+                : "increased";
+            var secondsPerTick = Math.Max(1f, frequency);
+            var originalSeconds = FormatDurationSeconds(originalDurationTicks * secondsPerTick);
+            var adjustedSeconds = FormatDurationSeconds(adjustedDurationTicks * secondsPerTick);
+            var displayedEffectName = string.IsNullOrWhiteSpace(effectName) ? "the effect" : effectName;
+
+            return $"{resistanceType} Resistance {direction} {displayedEffectName} duration from {originalSeconds} to {adjustedSeconds}.";
+        }
+
+        private static string FormatDurationSeconds(float seconds)
+        {
+            var roundedSeconds = Math.Round(seconds);
+            return Math.Abs(seconds - roundedSeconds) < 0.01f
+                ? $"{(int)roundedSeconds}s"
+                : $"{seconds:0.#}s";
         }
 
         private static int ApplyOutgoingStatusDurationAdjustments(

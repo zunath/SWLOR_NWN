@@ -278,15 +278,6 @@ namespace SWLOR.Game.Server.Service
             return amount;
         }
 
-        public static int ApplyActiveForceAffinityDurationAdjustment(uint activator, int durationTicks, bool isPermanent)
-        {
-            if (isPermanent || durationTicks <= 0)
-                return durationTicks;
-
-            var adjustedDuration = ApplyActiveForceAffinityMagnitude(activator, durationTicks);
-            return Math.Max(1, adjustedDuration);
-        }
-
         public static void ApplyHostileAbilityEnmity(uint activator, uint target, int damage = 0)
         {
             var amount = HostileAbilityBaseEnmity + Math.Max(0, damage);
@@ -414,6 +405,14 @@ namespace SWLOR.Game.Server.Service
             if (Activity.IsBusy(activator))
             {
                 return Deny("You are busy.");
+            }
+
+            if (ability.ActivationType == AbilityActivationType.Weapon &&
+                Combat.IsWeaponSkillType(ability.SkillType) &&
+                !Combat.HasEquippedWeaponForAbilitySkill(activator, ability.SkillType))
+            {
+                var skillName = Skill.GetSkillDetails(ability.SkillType).Name;
+                return Deny($"You must equip a {skillName} weapon to use this ability.");
             }
 
             if (Combat.GetAbilitySkillType(activator, ability) == SkillType.Force &&

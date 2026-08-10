@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
@@ -75,6 +76,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public string TotalSP
         {
             get => Get<string>();
+            set => Set(value);
+        }
+
+        public bool IsForceAffinityVisible
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public string ForceAffinityHeading
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string ForceAffinityExplanation
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public GuiColor ForceAffinityColor
+        {
+            get => Get<GuiColor>();
             set => Set(value);
         }
 
@@ -409,6 +434,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var dbPlayer = DB.Get<Player>(playerId);
             var now = DateTime.UtcNow;
 
+            LoadForceAffinityDetails(dbPlayer);
+
             if (IsInMyPerksMode)
             {
                 AvailableSP = $"Available SP: {dbPlayer.UnallocatedSP}";
@@ -431,6 +458,32 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ResetNextAvailable = $"Reset Available: {dateRefundAvailableText} [# Available: {Currency.GetCurrency(Player, CurrencyType.PerkRefundToken)}]";
             IsRefundEnabled = false;
             HasBeast = !string.IsNullOrWhiteSpace(dbPlayer.ActiveBeastId);
+        }
+
+        private void LoadForceAffinityDetails(Player dbPlayer)
+        {
+            IsForceAffinityVisible = IsInMyPerksMode &&
+                                     dbPlayer.CharacterType == CharacterType.ForceSensitive;
+            if (!IsForceAffinityVisible)
+            {
+                ForceAffinityHeading = string.Empty;
+                ForceAffinityExplanation = string.Empty;
+                ForceAffinityColor = GuiColor.White;
+                return;
+            }
+
+            var affinity = Perk.GetForceAffinity(Player);
+            var affinityLabel = FormatForceAffinity(affinity);
+            ForceAffinityHeading = $"FORCE AFFINITY: {affinityLabel}";
+            ForceAffinityExplanation =
+                "Owning any rank of a Light power contributes +1; a Dark power contributes -1. " +
+                "Each point changes aligned or opposed magnitude by 5%. At full affinity, hit chance shifts by 5%. " +
+                "Universal powers and effect durations are unaffected. Select a Force perk for its current result.";
+            ForceAffinityColor = affinity > 0
+                ? new GuiColor(120, 190, 255)
+                : affinity < 0
+                    ? new GuiColor(225, 100, 100)
+                    : new GuiColor(221, 181, 93);
         }
 
         private void LoadPerks()
@@ -624,6 +677,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             selectedDetails += $"[{categoryDetail.Name}]\n";
 
+            var forceAffinityText = BuildForceAffinityPerkDetailText(detail);
+            if (!string.IsNullOrWhiteSpace(forceAffinityText))
+            {
+                selectedDetails += forceAffinityText + "\n";
+            }
+
             var recastGroupText = BuildRecastGroupText(detail);
             if (!string.IsNullOrWhiteSpace(recastGroupText))
             {
@@ -651,6 +710,52 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             return selectedDetails;
+        }
+
+        private string BuildForceAffinityPerkDetailText(PerkDetail detail)
+        {
+            if (!IsForcePerkCategory(detail.Category))
+                return string.Empty;
+
+            if (detail.ForceAffinityType == null)
+            {
+                return "\nUNIVERSAL FORCE POWER\n" +
+                       "Does not change Force Affinity and receives no affinity magnitude or hit-chance adjustment.";
+            }
+
+            var affinity = Perk.GetForceAffinity(Player);
+            var alignment = detail.ForceAffinityType.Value == ForceAffinityType.Light ? "LIGHT" : "DARK";
+            var contribution = detail.ForceAffinityType.Value == ForceAffinityType.Light ? "+1 Light" : "-1 Dark";
+            var magnitudeAdjustment = (int)Math.Round(
+                (Perk.GetForceAffinityMagnitudeMultiplier(Player, detail.Type) - 1f) * 100f,
+                MidpointRounding.AwayFromZero);
+            var hitChanceAdjustment = Perk.GetForceAffinityHitChanceAdjustment(Player, detail.Type);
+
+            return $"\n{alignment}-ALIGNED FORCE POWER\n" +
+                   $"At {FormatForceAffinity(affinity)}: {FormatSignedPercent(magnitudeAdjustment)} magnitude, " +
+                   $"{FormatSignedPercent(hitChanceAdjustment)} hit chance.\n" +
+                   $"Owning any rank contributes {contribution}; additional ranks do not add more affinity.";
+        }
+
+        private static bool IsForcePerkCategory(PerkCategoryType category)
+        {
+            return category == PerkCategoryType.ForceAlter ||
+                   category == PerkCategoryType.ForceControl ||
+                   category == PerkCategoryType.ForceSense;
+        }
+
+        private static string FormatForceAffinity(int affinity)
+        {
+            return affinity > 0
+                ? $"+{affinity} Light"
+                : affinity < 0
+                    ? $"{affinity} Dark"
+                    : "0 Neutral";
+        }
+
+        private static string FormatSignedPercent(int adjustment)
+        {
+            return adjustment > 0 ? $"+{adjustment}%" : $"{adjustment}%";
         }
 
         private static string BuildRecastGroupText(PerkDetail detail)

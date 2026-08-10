@@ -82,6 +82,20 @@ public class ForceLightConsularTests
     }
 
     [Test]
+    public void Renewal_RestoresTheBiblePercentEveryThreeSecondsForThirtySeconds()
+    {
+        var root = FindSourceRepositoryRoot();
+        var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "RenewalAbilityDefinition.cs").FullName);
+
+        source.Should().Contain("ApplyRenewal(activator, target, \"Renewal I\", 20f);");
+        source.Should().Contain("ApplyRenewal(activator, target, \"Renewal II\", 40f);");
+        source.Should().Contain("ApplyRenewal(activator, target, \"Renewal III\", 60f);");
+        source.Should().Contain("totalPercent * Ability.GetActiveForceAffinityMagnitudeMultiplier(activator)");
+        source.Should().Contain("new RegenerativeHealingStatusEffect(name, affinityAdjustedTotalPercent, 10)");
+        source.Should().Contain("30f);");
+    }
+
+    [Test]
     public void ForceSanctuary_UsesSingleAllyPulseAndPersistentAreaVisual()
     {
         var root = FindSourceRepositoryRoot();

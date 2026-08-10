@@ -244,7 +244,7 @@ namespace SWLOR.Game.Server.Native
                 // Hit
                 if (isHit)
                 {
-                    if (UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf))
+                    if (UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType))
                     {
                         Log.Write(LogGroup.Attack, $"Queued weapon ability hit - attack result 1");
                         pAttackData.m_nAttackResult = AttackResultRegularHit;
@@ -346,13 +346,15 @@ namespace SWLOR.Game.Server.Native
                     attacker,
                     defender,
                     pAttackData.m_nAttackResult,
-                    hitRate);
+                    hitRate,
+                    weaponSkillType);
                 var defenderMessage = BuildAttackFeedbackMessage(
                     defender.m_idSelf,
                     attacker,
                     defender,
                     pAttackData.m_nAttackResult,
-                    hitRate);
+                    hitRate,
+                    weaponSkillType);
                 attacker.SendFeedbackString(new CExoString(attackerMessage));
                 defender.SendFeedbackString(new CExoString(defenderMessage));
 
@@ -371,10 +373,11 @@ namespace SWLOR.Game.Server.Native
             CNWSCreature attacker,
             CNWSCreature defender,
             int attackResultType,
-            int hitRate)
+            int hitRate,
+            SkillType weaponSkillType)
         {
             if (IsSuccessfulAttackResult(attackResultType) &&
-                UsePerkFeat.TryGetQueuedWeaponAbility(attacker.m_idSelf, out var queuedAbility))
+                UsePerkFeat.TryGetQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, out var queuedAbility))
             {
                 return Combat.BuildAbilityCombatLogMessage(
                     observer,

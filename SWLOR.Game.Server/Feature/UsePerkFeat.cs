@@ -697,6 +697,27 @@ namespace SWLOR.Game.Server.Feature
             return TryGetQueuedWeaponAbility(activator, out _);
         }
 
+        public static bool HasQueuedWeaponAbility(uint activator, SkillType weaponSkillType)
+        {
+            return TryGetQueuedWeaponAbility(activator, out var ability) &&
+                   Combat.CanWeaponSkillTriggerAbility(weaponSkillType, ability.SkillType);
+        }
+
+        public static bool TryGetQueuedWeaponAbility(
+            uint activator,
+            SkillType weaponSkillType,
+            out AbilityDetail ability)
+        {
+            if (!TryGetQueuedWeaponAbility(activator, out ability) ||
+                !Combat.CanWeaponSkillTriggerAbility(weaponSkillType, ability.SkillType))
+            {
+                ability = null;
+                return false;
+            }
+
+            return true;
+        }
+
         public static bool TryGetQueuedWeaponAbility(uint activator, out AbilityDetail ability)
         {
             if (!GetIsObjectValid(activator))
@@ -912,6 +933,9 @@ namespace SWLOR.Game.Server.Feature
             }
 
             var abilityDetail = Ability.GetAbilityDetail(activeWeaponAbility);
+            if (!Combat.CanItemTriggerWeaponAbility(item, abilityDetail.SkillType))
+                return;
+
             HandleStealthBreaking(activator, abilityDetail);
             var impactEnded = false;
             try

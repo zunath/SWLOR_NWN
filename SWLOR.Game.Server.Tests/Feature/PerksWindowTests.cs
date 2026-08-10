@@ -83,6 +83,40 @@ public class PerksWindowTests
     }
 
     [Test]
+    public void ForceAffinity_IsProminentAndExplainsEachSelectedForcePerk()
+    {
+        var root = FindRepositoryRoot();
+        var definitionSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "PerksDefinition.cs"));
+        var viewModelSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "PerksViewModel.cs"));
+
+        definitionSource.Should().Contain("model => model.IsForceAffinityVisible");
+        definitionSource.Should().Contain("model => model.ForceAffinityHeading");
+        definitionSource.Should().Contain("model => model.ForceAffinityExplanation");
+        definitionSource.Should().Contain("model => model.ForceAffinityColor");
+
+        viewModelSource.Should().Contain("dbPlayer.CharacterType == CharacterType.ForceSensitive");
+        viewModelSource.Should().Contain("FORCE AFFINITY: {affinityLabel}");
+        viewModelSource.Should().Contain("Owning any rank of a Light power contributes +1; a Dark power contributes -1.");
+        viewModelSource.Should().Contain("detail.ForceAffinityType.Value == ForceAffinityType.Light ? \"LIGHT\" : \"DARK\"");
+        viewModelSource.Should().Contain("{alignment}-ALIGNED FORCE POWER");
+        viewModelSource.Should().Contain("UNIVERSAL FORCE POWER");
+        viewModelSource.Should().Contain("Perk.GetForceAffinityMagnitudeMultiplier(Player, detail.Type)");
+        viewModelSource.Should().Contain("Perk.GetForceAffinityHitChanceAdjustment(Player, detail.Type)");
+        viewModelSource.Should().Contain("additional ranks do not add more affinity");
+    }
+
+    [Test]
     public void NativeStealthMode_IsAddedAndRemovedAsAModeToggle()
     {
         var root = FindRepositoryRoot();

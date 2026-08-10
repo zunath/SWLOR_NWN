@@ -274,9 +274,14 @@ namespace SWLOR.Toolset.Tests
             shader.Should().Contain(
                 "result = mix(SampleEnvironmentMap(norm), result, environmentDiffuseCoverage);",
                 "Aurora draws an unlit environment pass and source-alpha blends the lit diffuse on top");
-            shader.Should().Contain("paletteColor.rgb = custom.rgb * shadeScale;");
+            shader.Should().Contain(
+                "paletteColor.rgb = clamp(custom.rgb * shadeScale, 0.0, 1.0);");
             shader.Should().Contain("float referenceRow = 0.000244;");
             shader.Should().Contain("vec3 referenceShade = textureLod(");
+            shader.Should().Contain("vec2(128.5 / 256.0, referenceRow)",
+                "custom colors use the same representative midtone as the preset swatches");
+            shader.Should().NotContain("vec2(255.5 / 256.0, referenceRow)",
+                "normalizing at the palette peak makes the selected RGB much too dark");
             shader.Should().Contain("paletteColor.a = 1.0;",
                 "custom RGB must not inherit the previously selected preset's reflection mask");
             shader.Should().Contain("return paletteColor;",
@@ -393,6 +398,35 @@ namespace SWLOR.Toolset.Tests
             Pixel(image!, 0, 0).Should().Be((120, 80, 40, 255),
                 "custom RGB values should follow the native palette's nonlinear shade response, " +
                 "not be multiplied by the raw PLT intensity");
+        }
+
+        [Test]
+        public void SoftwareTintRendererDisplaysTheSelectedRgbAtTheSwatchMidpoint()
+        {
+            File.WriteAllBytes(Path.Combine(_resourceDirectory, "tint.tga"), SolidColorTga(128, 0, 0));
+            File.WriteAllBytes(
+                Path.Combine(_resourceDirectory, "palette.tga"),
+                HorizontalGrayscaleTga(64, 128, 255));
+            var material = MaterialResolver.Parse(
+                "texture7 tint\n" +
+                "texture10 palette\n" +
+                "customshaderPSH fs_plt_tinter\n");
+            var customColor = new TintMapColor(120, 80, 40);
+
+            var image = TintMapTextureRenderer.Render(
+                Index(),
+                "sample_material",
+                material,
+                new Dictionary<int, int>(),
+                new Dictionary<string, int>
+                {
+                    [TintMapVariable.GetName("sample_material", TintMapLayerType.Skin)] =
+                        customColor.ToStoredValue()
+                });
+
+            image.Should().NotBeNull();
+            Pixel(image!, 0, 0).Should().Be((120, 80, 40, 255),
+                "the color picker and preset swatches both represent intensity 128");
         }
 
         [Test]
@@ -955,6 +989,24 @@ namespace SWLOR.Toolset.Tests
             bytes[19] = g;
             bytes[20] = r;
             bytes[21] = a;
+            return bytes;
+        }
+
+        private static byte[] HorizontalGrayscaleTga(params byte[] values)
+        {
+            var bytes = new byte[18 + values.Length * 3];
+            bytes[2] = 2;
+            BinaryPrimitives.WriteUInt16LittleEndian(bytes.AsSpan(12, 2), (ushort)values.Length);
+            BinaryPrimitives.WriteUInt16LittleEndian(bytes.AsSpan(14, 2), 1);
+            bytes[16] = 24;
+            for (var index = 0; index < values.Length; index++)
+            {
+                var offset = 18 + index * 3;
+                bytes[offset] = values[index];
+                bytes[offset + 1] = values[index];
+                bytes[offset + 2] = values[index];
+            }
+
             return bytes;
         }
 

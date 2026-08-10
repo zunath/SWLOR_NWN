@@ -10,6 +10,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
     {
         public const int PaletteColorCount = 176;
         public const int PaletteTextureHeight = 2048;
+        public const int CustomColorReferenceIntensity = 128;
         private const string TintMap2DA = "tintmap";
 
         private static readonly Dictionary<string, IReadOnlyList<TintMapMaterialDefinition>> MaterialsByModel =

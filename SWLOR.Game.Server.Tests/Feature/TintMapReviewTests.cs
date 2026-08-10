@@ -1222,7 +1222,11 @@ public class TintMapReviewTests
         foreach (var shader in new[] { legacyShader, mappedShader })
         {
             shader.Should().Contain("float referenceV = 0.000244;");
-            shader.Should().Contain("customTint.rgb * shadeScale");
+            shader.Should().Contain("clamp(customTint.rgb * shadeScale, 0.0, 1.0)");
+            shader.Should().Contain("vec2(128.5 / 256.0, referenceV)",
+                "custom RGB is represented by the same midtone as the preset swatches");
+            shader.Should().NotContain("vec2(255.5 / 256.0, referenceV)",
+                "normalizing at the brightest palette texel darkens ordinary skin texels");
             shader.Should().NotContain("customTint.rgb * g",
                 "raw PLT intensity exaggerates seams between modular skin parts");
         }

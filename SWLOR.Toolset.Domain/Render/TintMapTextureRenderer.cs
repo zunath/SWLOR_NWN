@@ -134,12 +134,16 @@ namespace SWLOR.Toolset.Domain.Render
                 shade * (palette.Width - 1) / byte.MaxValue,
                 0,
                 palette.Width - 1);
-            var peakX = palette.Width - 1;
+            var referenceX = Math.Clamp(
+                TintMapMaterialRegistry.CustomColorReferenceIntensity *
+                (palette.Width - 1) / byte.MaxValue,
+                0,
+                palette.Width - 1);
             var shadeOffset = (paletteY * palette.Width + shadeX) * 4;
-            var peakOffset = (paletteY * palette.Width + peakX) * 4;
+            var referenceOffset = (paletteY * palette.Width + referenceX) * 4;
             var shadeLuminance = Luminance(palette.Pixels, shadeOffset);
-            var peakLuminance = Math.Max(Luminance(palette.Pixels, peakOffset), 1f);
-            return Math.Clamp(shadeLuminance / peakLuminance, 0f, 1f);
+            var referenceLuminance = Math.Max(Luminance(palette.Pixels, referenceOffset), 1f);
+            return Math.Max(shadeLuminance / referenceLuminance, 0f);
         }
 
         private static float Luminance(byte[] pixels, int offset)

@@ -297,17 +297,16 @@ vec4 ResolveTintMapColor()
             tintPaletteTexture,
             vec2(paletteU, referenceRow),
             0.0).rgb;
-        vec3 referencePeak = textureLod(
+        vec3 referenceMidpoint = textureLod(
             tintPaletteTexture,
-            vec2(255.5 / 256.0, referenceRow),
+            vec2(128.5 / 256.0, referenceRow),
             0.0).rgb;
         const vec3 luminanceWeights = vec3(0.2126, 0.7152, 0.0722);
         float shadeScale = clamp(
             dot(referenceShade, luminanceWeights) /
-                max(dot(referencePeak, luminanceWeights), 1.0 / 255.0),
-            0.0,
-            1.0);
-        paletteColor.rgb = custom.rgb * shadeScale;
+                max(dot(referenceMidpoint, luminanceWeights), 1.0 / 255.0),
+            0.0);
+        paletteColor.rgb = clamp(custom.rgb * shadeScale, 0.0, 1.0);
         // A direct RGB choice must not inherit the hidden preset row's reflection mask. Without
         // this, the same custom color can turn chrome/grey depending on the preset selected before
         // it. Presets retain their authored PLT environment coverage through paletteColor.a.

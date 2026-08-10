@@ -802,6 +802,65 @@ public class TintMapReviewTests
     }
 
     [Test]
+    public void RodianMusicianPartsBindTheConvertedHumanFallbackMaterials()
+    {
+        var repositoryRoot = FindRepositoryRoot();
+        var rows = ReadSource("SWLOR_Haks", "sw_2da", "tintmap.2da")
+            .Split('\n', StringSplitOptions.RemoveEmptyEntries)
+            .Select(line => line.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+            .Where(columns => columns.Length >= 4)
+            .ToList();
+        var expectedRows = new Dictionary<string, (string Material, string Layers)>
+        {
+            ["pfe0_chest070"] = ("pfh0_chest070", "0,2,5,6,7"),
+            ["pfe0_legl123"] = ("pfh0_legl123", "0,6"),
+            ["pfe0_legr123"] = ("pfh0_legr123", "0,6"),
+            ["pfe0_shinl080"] = ("pfh0_shinl080", "7"),
+            ["pfe0_shinr080"] = ("pfh0_shinr080", "7"),
+            ["pfh0_legl123"] = ("pfh0_legl123", "0,6"),
+            ["pfh0_legr123"] = ("pfh0_legr123", "0,6")
+        };
+
+        foreach (var (model, expected) in expectedRows)
+        {
+            var row = rows.Single(columns => columns[1] == model);
+            row[2].Should().Be(expected.Material);
+            row[3].Should().Be(expected.Layers);
+        }
+
+        var modelBindings = new Dictionary<string, string>
+        {
+            [Path.Combine("sw_pt_chest", "pfe0_chest070.mdl")] = "pfh0_chest070",
+            [Path.Combine("sw_pt_lthigh", "pfe0_legl123.mdl")] = "pfh0_legl123",
+            [Path.Combine("sw_pt_rthigh", "pfe0_legr123.mdl")] = "pfh0_legr123",
+            [Path.Combine("sw_pt_lshin", "pfe0_shinl080.mdl")] = "pfh0_shinl080",
+            [Path.Combine("sw_pt_rshin", "pfe0_shinr080.mdl")] = "pfh0_shinr080"
+        };
+        foreach (var (relativePath, material) in modelBindings)
+        {
+            var modelPath = Path.Combine(repositoryRoot.FullName, "SWLOR_Haks", relativePath);
+            System.Text.Encoding.ASCII.GetString(File.ReadAllBytes(modelPath))
+                .Should().Contain(material);
+        }
+
+        foreach (var material in new[] { "pfh0_legl123", "pfh0_legr123" })
+        {
+            var materialPath = Path.Combine(
+                repositoryRoot.FullName,
+                "SWLOR_Haks",
+                "sw_tint_mtr",
+                $"{material}.mtr");
+            File.ReadAllText(materialPath).Should().Contain("texture7 tm_53954255618f4");
+        }
+        File.Exists(Path.Combine(
+                repositoryRoot.FullName,
+                "SWLOR_Haks",
+                "sw_tint1",
+                "tm_53954255618f4.dds"))
+            .Should().BeTrue();
+    }
+
+    [Test]
     public void PaddedModularModelUsesItsUnpaddedTintMaterial()
     {
         var rows = ReadSource("SWLOR_Haks", "sw_2da", "tintmap.2da")

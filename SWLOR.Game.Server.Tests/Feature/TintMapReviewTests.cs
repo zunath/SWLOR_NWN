@@ -861,6 +861,41 @@ public class TintMapReviewTests
     }
 
     [Test]
+    public void RodianBountyHunterPartsBindTheConvertedHumanFallbackMaterials()
+    {
+        var repositoryRoot = FindRepositoryRoot();
+        var rows = ReadSource("SWLOR_Haks", "sw_2da", "tintmap.2da")
+            .Split('\n', StringSplitOptions.RemoveEmptyEntries)
+            .Select(line => line.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+            .Where(columns => columns.Length >= 4)
+            .ToList();
+        var expectedRows = new Dictionary<string, (string Material, string Layers)>
+        {
+            ["pme0_legl104"] = ("pmh0_legl104", "4"),
+            ["pme0_pelvis102"] = ("pmh0_pelvis102", "4,6")
+        };
+
+        foreach (var (model, expected) in expectedRows)
+        {
+            var row = rows.Single(columns => columns[1] == model);
+            row[2].Should().Be(expected.Material);
+            row[3].Should().Be(expected.Layers);
+        }
+
+        var modelBindings = new Dictionary<string, string>
+        {
+            [Path.Combine("sw_pt_lthigh", "pme0_legl104.mdl")] = "pmh0_legl104",
+            [Path.Combine("sw_pt_pelvis", "pme0_pelvis102.mdl")] = "pmh0_pelvis102"
+        };
+        foreach (var (relativePath, material) in modelBindings)
+        {
+            var modelPath = Path.Combine(repositoryRoot.FullName, "SWLOR_Haks", relativePath);
+            System.Text.Encoding.ASCII.GetString(File.ReadAllBytes(modelPath))
+                .Should().Contain(material);
+        }
+    }
+
+    [Test]
     public void PaddedModularModelUsesItsUnpaddedTintMaterial()
     {
         var rows = ReadSource("SWLOR_Haks", "sw_2da", "tintmap.2da")

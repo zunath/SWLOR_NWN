@@ -2107,6 +2107,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var armorModel = GetArmorModelType(_colorTarget);
                 var index = ArmorColorIndexCalculator.CalculatePerPart(armorModel, _selectedColorChannel);
                 item = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, index, colorId, true);
+                SetLocalInt(
+                    item,
+                    ArmorColorIndexCalculator.GetPerPartOverrideVariableName(
+                        armorModel,
+                        _selectedColorChannel),
+                    1);
                 AssignCommand(_target, () => ActionEquipItem(item, InventorySlot.Chest));
             }
 
@@ -2136,6 +2142,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var armorModel = GetArmorModelType(colorTarget);
             var index = ArmorColorIndexCalculator.CalculatePerPart(armorModel, colorChannel);
             item = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, index, 255, true);
+            DeleteLocalInt(
+                item,
+                ArmorColorIndexCalculator.GetPerPartOverrideVariableName(armorModel, colorChannel));
             AssignCommand(_target, () => ActionEquipItem(item, InventorySlot.Chest));
 
             ChangeColor(colorTarget, colorChannel, 255);
@@ -2185,6 +2194,41 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _ => default
             };
             return colorChannel is >= AppearanceArmorColor.Leather1 and <= AppearanceArmorColor.Metal2;
+        }
+
+        private static int GetEffectiveArmorColor(
+            uint item,
+            AppearanceArmor armorPart,
+            AppearanceArmorColor colorChannel)
+        {
+            var perPartColorIndex = ArmorColorIndexCalculator.CalculatePerPart(armorPart, colorChannel);
+            var perPartColor = GetItemAppearance(
+                item,
+                ItemAppearanceType.ArmorColor,
+                perPartColorIndex);
+            var hasExplicitOverride = GetLocalInt(
+                item,
+                ArmorColorIndexCalculator.GetPerPartOverrideVariableName(
+                    armorPart,
+                    colorChannel)) > 0;
+            return ArmorColorIndexCalculator.ShouldUsePerPartColor(
+                    perPartColor,
+                    hasExplicitOverride)
+                ? perPartColor
+                : GetItemAppearance(item, ItemAppearanceType.ArmorColor, (int)colorChannel);
+        }
+
+        private static void MarkPerPartColorOverride(
+            uint item,
+            AppearanceArmor armorPart,
+            AppearanceArmorColor colorChannel)
+        {
+            SetLocalInt(
+                item,
+                ArmorColorIndexCalculator.GetPerPartOverrideVariableName(
+                    armorPart,
+                    colorChannel),
+                1);
         }
 
         private AppearanceArmor GetArmorModelType(ColorTarget colorTarget)
@@ -2293,8 +2337,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             else
             {
                 var armorModel = GetArmorModelType(target);
-                var perPartColorIndex = ArmorColorIndexCalculator.CalculatePerPart(armorModel, colorChannel);
-                colorId = GetItemAppearance(item, ItemAppearanceType.ArmorColor, perPartColorIndex);
+                colorId = GetEffectiveArmorColor(item, armorModel, colorChannel);
             }
 
             var (x, y) = ColorIdToCoordinates(colorId);
@@ -2541,60 +2584,60 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
             {
                 var copyToIndex = ArmorColorIndexCalculator.CalculatePerPart(copyTo, AppearanceArmorColor.Cloth1);
-                var copyFromIndex = ArmorColorIndexCalculator.CalculatePerPart(copyFrom, AppearanceArmorColor.Cloth1);
-                var newColor = GetItemAppearance(item, ItemAppearanceType.ArmorColor, copyFromIndex);
+                var newColor = GetEffectiveArmorColor(item, copyFrom, AppearanceArmorColor.Cloth1);
                 ChangeColor(copyToTarget, AppearanceArmorColor.Cloth1, newColor);
                 item = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, copyToIndex, newColor, true);
+                MarkPerPartColorOverride(item, copyTo, AppearanceArmorColor.Cloth1);
                 DestroyObject(item);
             }
             // Cloth 2
             if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
             {
                 var copyToIndex = ArmorColorIndexCalculator.CalculatePerPart(copyTo, AppearanceArmorColor.Cloth2);
-                var copyFromIndex = ArmorColorIndexCalculator.CalculatePerPart(copyFrom, AppearanceArmorColor.Cloth2);
-                var newColor = GetItemAppearance(item, ItemAppearanceType.ArmorColor, copyFromIndex);
+                var newColor = GetEffectiveArmorColor(item, copyFrom, AppearanceArmorColor.Cloth2);
                 ChangeColor(copyToTarget, AppearanceArmorColor.Cloth2, newColor);
                 item = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, copyToIndex, newColor, true);
+                MarkPerPartColorOverride(item, copyTo, AppearanceArmorColor.Cloth2);
                 DestroyObject(item);
             }
             // Leather 1
             if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
             {
                 var copyToIndex = ArmorColorIndexCalculator.CalculatePerPart(copyTo, AppearanceArmorColor.Leather1);
-                var copyFromIndex = ArmorColorIndexCalculator.CalculatePerPart(copyFrom, AppearanceArmorColor.Leather1);
-                var newColor = GetItemAppearance(item, ItemAppearanceType.ArmorColor, copyFromIndex);
+                var newColor = GetEffectiveArmorColor(item, copyFrom, AppearanceArmorColor.Leather1);
                 ChangeColor(copyToTarget, AppearanceArmorColor.Leather1, newColor);
                 item = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, copyToIndex, newColor, true);
+                MarkPerPartColorOverride(item, copyTo, AppearanceArmorColor.Leather1);
                 DestroyObject(item);
             }
             // Leather 2
             if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
             {
                 var copyToIndex = ArmorColorIndexCalculator.CalculatePerPart(copyTo, AppearanceArmorColor.Leather2);
-                var copyFromIndex = ArmorColorIndexCalculator.CalculatePerPart(copyFrom, AppearanceArmorColor.Leather2);
-                var newColor = GetItemAppearance(item, ItemAppearanceType.ArmorColor, copyFromIndex);
+                var newColor = GetEffectiveArmorColor(item, copyFrom, AppearanceArmorColor.Leather2);
                 ChangeColor(copyToTarget, AppearanceArmorColor.Leather2, newColor);
                 item = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, copyToIndex, newColor, true);
+                MarkPerPartColorOverride(item, copyTo, AppearanceArmorColor.Leather2);
                 DestroyObject(item);
             }
             // Metal 1
             if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
             {
                 var copyToIndex = ArmorColorIndexCalculator.CalculatePerPart(copyTo, AppearanceArmorColor.Metal1);
-                var copyFromIndex = ArmorColorIndexCalculator.CalculatePerPart(copyFrom, AppearanceArmorColor.Metal1);
-                var newColor = GetItemAppearance(item, ItemAppearanceType.ArmorColor, copyFromIndex);
+                var newColor = GetEffectiveArmorColor(item, copyFrom, AppearanceArmorColor.Metal1);
                 ChangeColor(copyToTarget, AppearanceArmorColor.Metal1, newColor);
                 item = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, copyToIndex, newColor, true);
+                MarkPerPartColorOverride(item, copyTo, AppearanceArmorColor.Metal1);
                 DestroyObject(item);
             }
             // Metal 2
             if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
             {
                 var copyToIndex = ArmorColorIndexCalculator.CalculatePerPart(copyTo, AppearanceArmorColor.Metal2);
-                var copyFromIndex = ArmorColorIndexCalculator.CalculatePerPart(copyFrom, AppearanceArmorColor.Metal2);
-                var newColor = GetItemAppearance(item, ItemAppearanceType.ArmorColor, copyFromIndex);
+                var newColor = GetEffectiveArmorColor(item, copyFrom, AppearanceArmorColor.Metal2);
                 ChangeColor(copyToTarget, AppearanceArmorColor.Metal2, newColor);
                 item = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, copyToIndex, newColor, true);
+                MarkPerPartColorOverride(item, copyTo, AppearanceArmorColor.Metal2);
                 DestroyObject(item);
             }
 

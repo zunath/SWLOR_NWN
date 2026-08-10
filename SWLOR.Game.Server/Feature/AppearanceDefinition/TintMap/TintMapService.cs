@@ -629,10 +629,18 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                             selection.PaletteSource,
                             ItemAppearanceType.ArmorColor,
                             perPartIndex);
+                        var hasExplicitOverride = GetLocalInt(
+                            selection.PaletteSource,
+                            ArmorColorIndexCalculator.GetPerPartOverrideVariableName(
+                                selection.ArmorPart,
+                                itemColor)) > 0;
 
-                        // 255 is NWN's per-part "inherit global color" sentinel.
-                        if (perPartColor != 255)
+                        if (ArmorColorIndexCalculator.ShouldUsePerPartColor(
+                                perPartColor,
+                                hasExplicitOverride))
+                        {
                             return Math.Clamp(perPartColor, 0, TintMapMaterialRegistry.PaletteColorCount - 1);
+                        }
                     }
 
                     return Math.Clamp(

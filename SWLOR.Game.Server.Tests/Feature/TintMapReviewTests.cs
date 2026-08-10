@@ -3,6 +3,7 @@ using FluentAssertions;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
@@ -617,6 +618,25 @@ public class TintMapReviewTests
     }
 
     [Test]
+    public void LegacyArmorPartColorZeroInheritsTheAuthoredGlobalDye()
+    {
+        ArmorColorIndexCalculator.ShouldUsePerPartColor(0, false).Should().BeFalse();
+        ArmorColorIndexCalculator.ShouldUsePerPartColor(0, true).Should().BeTrue();
+        ArmorColorIndexCalculator.ShouldUsePerPartColor(23, false).Should().BeTrue();
+        ArmorColorIndexCalculator.ShouldUsePerPartColor(255, true).Should().BeFalse();
+
+        var serviceSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapService.cs");
+        var standardColorMethod = FindMethod(serviceSource, "GetStandardColor").ToString();
+        standardColorMethod.Should().Contain("ShouldUsePerPartColor");
+        standardColorMethod.Should().Contain("GetPerPartOverrideVariableName");
+    }
+
+    [Test]
     public void EquippedDroidTintChangesUpdateSerializedItemSnapshot()
     {
         var tintSource = ReadSource(
@@ -818,7 +838,13 @@ public class TintMapReviewTests
             ["pfe0_shinl080"] = ("pfh0_shinl080", "7"),
             ["pfe0_shinr080"] = ("pfh0_shinr080", "7"),
             ["pfh0_legl123"] = ("pfh0_legl123", "0,6"),
-            ["pfh0_legr123"] = ("pfh0_legr123", "0,6")
+            ["pfh0_legr123"] = ("pfh0_legr123", "0,6"),
+            ["pme0_chest070"] = ("pmh0_chest070", "0,2,3,5,6,7"),
+            ["pme0_footl102"] = ("pmh0_footl102", "2,3"),
+            ["pme0_legl123"] = ("pmh0_legl123", "0,6"),
+            ["pme0_legr123"] = ("pmh0_legr123", "0,6"),
+            ["pme0_shinl080"] = ("pmh0_shinl080", "7"),
+            ["pme0_shinr080"] = ("pmh0_shinr080", "7")
         };
 
         foreach (var (model, expected) in expectedRows)
@@ -834,7 +860,13 @@ public class TintMapReviewTests
             [Path.Combine("sw_pt_lthigh", "pfe0_legl123.mdl")] = "pfh0_legl123",
             [Path.Combine("sw_pt_rthigh", "pfe0_legr123.mdl")] = "pfh0_legr123",
             [Path.Combine("sw_pt_lshin", "pfe0_shinl080.mdl")] = "pfh0_shinl080",
-            [Path.Combine("sw_pt_rshin", "pfe0_shinr080.mdl")] = "pfh0_shinr080"
+            [Path.Combine("sw_pt_rshin", "pfe0_shinr080.mdl")] = "pfh0_shinr080",
+            [Path.Combine("sw_pt_chest", "pme0_chest070.mdl")] = "pmh0_chest070",
+            [Path.Combine("sw_pt_lfoot", "pme0_footl102.mdl")] = "pmh0_footl102",
+            [Path.Combine("sw_pt_lthigh", "pme0_legl123.mdl")] = "pmh0_legl123",
+            [Path.Combine("sw_pt_rthigh", "pme0_legr123.mdl")] = "pmh0_legr123",
+            [Path.Combine("sw_pt_lshin", "pme0_shinl080.mdl")] = "pmh0_shinl080",
+            [Path.Combine("sw_pt_rshin", "pme0_shinr080.mdl")] = "pmh0_shinr080"
         };
         foreach (var (relativePath, material) in modelBindings)
         {
@@ -858,6 +890,58 @@ public class TintMapReviewTests
                 "sw_tint1",
                 "tm_53954255618f4.dds"))
             .Should().BeTrue();
+    }
+
+    [Test]
+    public void MaleMusicianOutfitKeepsItsAuthoredDyesAndConvertedThighMaterials()
+    {
+        var repositoryRoot = FindRepositoryRoot();
+        var outfit = JObject.Parse(ReadSource("Module", "uti", "musicianoutfit1.uti.json"));
+        outfit["Cloth1Color"]?["value"]?.Value<int>().Should().Be(132);
+        outfit["Cloth2Color"]?["value"]?.Value<int>().Should().Be(132);
+        outfit["Leather1Color"]?["value"]?.Value<int>().Should().Be(23);
+        outfit["Leather2Color"]?["value"]?.Value<int>().Should().Be(23);
+        outfit["Metal1Color"]?["value"]?.Value<int>().Should().Be(7);
+        outfit["Metal2Color"]?["value"]?.Value<int>().Should().Be(7);
+
+        var rows = ReadSource("SWLOR_Haks", "sw_2da", "tintmap.2da")
+            .Split('\n', StringSplitOptions.RemoveEmptyEntries)
+            .Select(line => line.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+            .Where(columns => columns.Length >= 4)
+            .ToList();
+        var expectedRows = new Dictionary<string, (string Material, string Layers)>
+        {
+            ["pmh0_chest070"] = ("pmh0_chest070", "0,2,3,5,6,7"),
+            ["pmh0_legl123"] = ("pmh0_legl123", "0,6"),
+            ["pmh0_legr123"] = ("pmh0_legr123", "0,6"),
+            ["pmh0_shinl080"] = ("pmh0_shinl080", "7"),
+            ["pmh0_shinr080"] = ("pmh0_shinr080", "7"),
+            ["pmh0_footl102"] = ("pmh0_footl102", "2,3"),
+            ["pmh0_footr102"] = ("pmh0_footr102", "2,3")
+        };
+        foreach (var (model, expected) in expectedRows)
+        {
+            var row = rows.Single(columns => columns[1] == model);
+            row[2].Should().Be(expected.Material);
+            row[3].Should().Be(expected.Layers);
+        }
+
+        foreach (var material in new[] { "pmh0_legl123", "pmh0_legr123" })
+        {
+            var modelPath = Path.Combine(
+                repositoryRoot.FullName,
+                "SWLOR_Haks",
+                material.Contains("legl", StringComparison.Ordinal) ? "sw_pt_lthigh" : "sw_pt_rthigh",
+                $"{material}.mdl");
+            System.Text.Encoding.ASCII.GetString(File.ReadAllBytes(modelPath))
+                .Should().Contain(material);
+            File.ReadAllText(Path.Combine(
+                    repositoryRoot.FullName,
+                    "SWLOR_Haks",
+                    "sw_tint_mtr",
+                    $"{material}.mtr"))
+                .Should().Contain("texture7 tm_53954255618f4");
+        }
     }
 
     [Test]

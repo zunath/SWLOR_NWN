@@ -26,7 +26,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
             TemporaryStatModifier.Replace(
                 target,
-                StatType.AttackDeflection,
+                StatType.RangedDeflection,
                 attackDeflection,
                 duration,
                 StatType.LightGuardianPowerAttackDeflection);

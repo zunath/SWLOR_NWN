@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             _forceDefensePercent = forceDefensePercent;
 
             StatGroup.Stats[StatType.ForceDefensePercentAdjustment] = forceDefensePercent;
-            StatGroup.Stats[StatType.AttackDeflection] = attackDeflection;
+            StatGroup.Stats[StatType.RangedDeflection] = attackDeflection;
         }
 
         public override IStatusEffect Clone()

@@ -600,7 +600,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 ReplaceTemporary(activator, StatType.EvasionPercentAdjustment, SelfEvasionPercent, duration);
                 ReplaceTemporary(activator, StatType.PhysicalDefensePercentAdjustment, SelfDefensePercent, duration);
                 ReplaceTemporary(activator, StatType.ForceDefensePercentAdjustment, SelfForceDefensePercent, duration);
-                ReplaceTemporary(activator, StatType.AttackDeflection, SelfAttackDeflection, duration);
+                ReplaceTemporary(activator, StatType.RangedDeflection, SelfAttackDeflection, duration);
                 if (SelfAttackDeflection != 0)
                     Combat.ApplyAbilityGrantedAttackDeflectionEffects(activator);
                 ReplaceTemporary(activator, StatType.CriticalRatePercentAdjustment, SelfCriticalRatePercent, duration);
@@ -808,7 +808,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 if (ConditionalStatusEffect == null ||
                     ConditionalStatusDurationSeconds <= 0 ||
                     ConditionalStatusAfterDeflectionWindowSeconds <= 0 ||
-                    !Combat.HasRecentDeflection(activator, ConditionalStatusAfterDeflectionWindowSeconds))
+                    !Combat.HasRecentDeflection(activator, DeflectionSource.Ranged, ConditionalStatusAfterDeflectionWindowSeconds))
                 {
                     return;
                 }

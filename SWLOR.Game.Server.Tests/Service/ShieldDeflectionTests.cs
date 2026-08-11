@@ -19,7 +19,7 @@ public class ShieldDeflectionTests
         // Shield Deflection is perk/item-driven only. There is no inherent baseline: the Bulwark package
         // caps at +35 total per the combat-upgrade deflection budget, so adding a flat +10 for every shield
         // pushed Bulwark rank 3 to 45%. Deflection now comes solely from the shield item property and the
-        // ShieldDeflection stat (Bulwark), mirroring how Attack Deflection has no inherent base.
+        // ShieldDeflection stat (Bulwark), mirroring how weapon deflection has no inherent base.
         statSource.Should().NotContain("InherentShieldDeflectionChance");
         statSource.Should().Contain("var chance = GetShieldDeflectionItemPropertyBonusNative(shield) +");
         statSource.Should().Contain("var chance = GetShieldDeflectionItemPropertyBonus(shield) +");

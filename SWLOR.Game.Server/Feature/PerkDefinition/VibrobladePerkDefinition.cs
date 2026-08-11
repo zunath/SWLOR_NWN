@@ -158,8 +158,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AlacrityTrait)
                 .Description("Restore 4 STM when your shield deflects an attack. This can only trigger once every 6 seconds.")
-                .IncreasesStat(StatType.DeflectionStaminaRestore, creature => EquipmentPredicates.HasOffHandShield(creature) ? 4 : 0)
-                .IncreasesStat(StatType.DeflectionStaminaRestoreCooldownSeconds, creature => EquipmentPredicates.HasOffHandShield(creature) ? 6 : 0)
+                .IncreasesStat(StatType.ShieldDeflectionStaminaRestore, creature => EquipmentPredicates.HasOffHandShield(creature) ? 4 : 0)
+                .IncreasesStat(StatType.ShieldDeflectionStaminaRestoreCooldownSeconds, creature => EquipmentPredicates.HasOffHandShield(creature) ? 6 : 0)
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 25);
         }

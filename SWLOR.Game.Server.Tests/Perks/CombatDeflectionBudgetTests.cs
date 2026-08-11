@@ -27,21 +27,22 @@ public class CombatDeflectionBudgetTests
 
     private static readonly Dictionary<(PerkType Perk, StatType Stat), int> DynamicStatBudgetValues = new()
     {
-        [(PerkType.UnbreakableWill, StatType.AttackDeflection)] = 8,
+        [(PerkType.UnbreakableWill, StatType.MeleeDeflection)] = 8,
     };
 
-    [Test]
-    public void PermanentWeaponAttackDeflectionSources_StayBelowDefaultCap()
+    [TestCase(StatType.MeleeDeflection)]
+    [TestCase(StatType.RangedDeflection)]
+    public void PermanentWeaponDeflectionSources_StayBelowIndependentDefaultCap(StatType deflectionStat)
     {
-        var sources = WeaponStatSources(StatType.AttackDeflection)
+        var sources = WeaponStatSources(deflectionStat)
             .Where(source => source.Value > 0)
             .ToArray();
 
         sources.Sum(source => source.Value).Should().BeLessThan(
             50,
-            "permanent weapon attack deflection should not reach the soft cap before temporary effects");
+            $"permanent {deflectionStat} should not reach its soft cap before temporary effects");
         sources.Where(source => source.Value > 15).Should().BeEmpty(
-            "large attack deflection spikes should come from temporary effects, not always-on perk levels");
+            "large weapon deflection spikes should come from temporary effects, not always-on perk levels");
     }
 
     [Test]
@@ -57,7 +58,7 @@ public class CombatDeflectionBudgetTests
     }
 
     [Test]
-    public void ShieldDeflectionGuardAndAttackDeflection_BudgetsRemainMechanicallySeparate()
+    public void MeleeRangedShieldDeflectionAndGuard_BudgetsRemainMechanicallySeparate()
     {
         var failures = new List<string>();
 
@@ -67,10 +68,17 @@ public class CombatDeflectionBudgetTests
                 .Select(bonus => bonus.Stat)
                 .ToHashSet();
 
-            if (stats.Contains(StatType.AttackDeflection) &&
+            var hasWeaponDeflection = stats.Contains(StatType.MeleeDeflection) ||
+                                      stats.Contains(StatType.RangedDeflection);
+            if (hasWeaponDeflection &&
                 (stats.Contains(StatType.ShieldDeflection) || stats.Contains(StatType.Guard)))
             {
-                failures.Add($"{source.Perk.Name} level {source.LevelNumber} mixes Attack Deflection with Shield Deflection or Guard");
+                failures.Add($"{source.Perk.Name} level {source.LevelNumber} mixes weapon deflection with Shield Deflection or Guard");
+            }
+
+            if (stats.Contains(StatType.MeleeDeflection) && stats.Contains(StatType.RangedDeflection))
+            {
+                failures.Add($"{source.Perk.Name} level {source.LevelNumber} mixes Melee and Ranged Deflection");
             }
 
             if (stats.Contains(StatType.ShieldDeflection) && stats.Contains(StatType.Guard))
@@ -80,7 +88,7 @@ public class CombatDeflectionBudgetTests
         }
 
         failures.Should().BeEmpty(
-            "Attack Deflection, Shield Deflection, and Guard are separate mechanics with separate budget lanes");
+            "Melee Deflection, Ranged Deflection, Shield Deflection, and Guard are separate budget lanes");
     }
 
     [Test]

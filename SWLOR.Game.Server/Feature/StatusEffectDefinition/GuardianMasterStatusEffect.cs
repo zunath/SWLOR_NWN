@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             StatGroup.Stats[StatType.DeflectionFPRestore] = 4;
             StatGroup.Stats[StatType.DeflectionEnmityPercentAdjustment] = 50;
-            StatGroup.Stats[StatType.AttackDeflectionChanceCap] = 10;
+            StatGroup.Stats[StatType.RangedDeflectionChanceCap] = 10;
         }
 
     }

@@ -686,7 +686,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Critical Hits",
                             "Critical Rate raises your chance to critically hit, while Critical Damage makes critical hits stronger. The target's Vitality can affect the final critical chance."),
                         new ArticleBlock("Deflection and Guard",
-                            "Attack Deflection works while wielding a weapon without a shield. Shield Deflection works while using a shield. They are attack-roll outcomes and do not stack with one another. Guard is a separate damage-stage outcome that reduces incoming physical damage by 20 to 40 percent and increases enmity."),
+                            "Melee Deflection can negate hostile melee weapon auto-attacks, and Ranged Deflection can negate hostile ranged weapon auto-attacks. Both require a weapon and no shield. Shield Deflection covers both melee and ranged weapon auto-attacks and completely replaces weapon deflection while a shield is equipped; the chances never stack or roll in sequence. Deflection does not work against activated combat abilities or Force powers, and only one deflection attempt can occur in an incoming combat round. Guard is a separate damage-stage outcome that reduces incoming physical damage by 20 to 40 percent and increases enmity."),
                         new ArticleBlock("Combat Readiness",
                             "Combat Readiness increases activated ability damage and healing. It does not reduce cooldowns.")
                     },
@@ -694,7 +694,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     {
                         new QuestionAnswer("Why did I miss?", "Your Accuracy was checked against the target's Evasion, and final hit chance is always between 20 and 95 percent."),
                         new QuestionAnswer("What defense matters?", "Physical DEF helps against physical attacks, Force DEF helps against Force attacks, and resistances help against matching elemental or status types."),
-                        new QuestionAnswer("Are deflection and guard the same?", "No. Deflection can stop an attack from landing, while Guard reduces physical damage after the hit."),
+                        new QuestionAnswer("Are deflection and guard the same?", "No. Deflection can stop a hostile weapon auto-attack from landing, while Guard reduces physical damage after the hit."),
                         new QuestionAnswer("Does readiness lower cooldowns?", "No. Combat Readiness improves activated ability damage and healing.")
                     },
                     new[] { "Abilities", "Attributes", "Skills", "Death & Recovery", "Espionage", "Useful Windows" }),

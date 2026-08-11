@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LightGuardianDeflectivePresenceTrait)
-                .Description("Control powers that grant temporary HP, absorb damage, or prevent defeat grant affected allies +4 Attack Deflection for 30 seconds.")
+                .Description("Control powers that grant temporary HP, absorb damage, or prevent defeat grant affected allies +4 Ranged Deflection for 30 seconds.")
                 .IncreasesStat(StatType.LightGuardianPowerAttackDeflection, 4)
                 .IncreasesStat(StatType.LightGuardianPowerAttackDeflectionDurationSeconds, 30)
                 .Price(4)

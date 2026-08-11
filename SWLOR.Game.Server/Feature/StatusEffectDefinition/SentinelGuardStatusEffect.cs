@@ -21,14 +21,14 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             _attackDeflection = attackDeflection;
             _selfEnmityPercentAdjustment = selfEnmityPercentAdjustment;
-            StatGroup.Stats[StatType.AttackDeflection] = _attackDeflection;
+            StatGroup.Stats[StatType.MeleeDeflection] = _attackDeflection;
         }
 
         protected override void Apply(uint creature, int durationTicks)
         {
             if (creature == Source)
             {
-                StatGroup.Stats.Remove(StatType.AttackDeflection);
+                StatGroup.Stats.Remove(StatType.MeleeDeflection);
                 StatGroup.Stats[StatType.EnmityPercentAdjustment] = _selfEnmityPercentAdjustment;
             }
         }

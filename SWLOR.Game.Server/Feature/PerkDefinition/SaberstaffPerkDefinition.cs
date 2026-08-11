@@ -298,7 +298,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SpinningDeflectionTrait)
-                .Description("After using an area combat ability, gain +3 Attack Deflection for 30 seconds.")
+                .Description("After using an area combat ability, gain +3 Ranged Deflection for 30 seconds.")
                 .IncreasesStat(StatType.AreaAbilityMinTargetsBuffThreshold, 1)
                 .IncreasesStat(StatType.AreaAbilityAttackDeflection, 3)
                 .IncreasesStat(StatType.AreaAbilityBuffDurationSeconds, 30)
@@ -307,7 +307,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
-                .Description("After using an area combat ability, gain +5 Attack Deflection for 30 seconds.")
+                .Description("After using an area combat ability, gain +5 Ranged Deflection for 30 seconds.")
                 .IncreasesStat(StatType.AreaAbilityMinTargetsBuffThreshold, 1)
                 .IncreasesStat(StatType.AreaAbilityAttackDeflection, 5)
                 .IncreasesStat(StatType.AreaAbilityBuffDurationSeconds, 30)
@@ -316,7 +316,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
-                .Description("After using an area combat ability, gain +7 Attack Deflection for 30 seconds.")
+                .Description("After using an area combat ability, gain +7 Ranged Deflection for 30 seconds.")
                 .IncreasesStat(StatType.AreaAbilityMinTargetsBuffThreshold, 1)
                 .IncreasesStat(StatType.AreaAbilityAttackDeflection, 7)
                 .IncreasesStat(StatType.AreaAbilityBuffDurationSeconds, 30)
@@ -332,21 +332,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CircleSlash1)
-                .Description("Deals weapon DMG + 12 to enemies within 5m and grants +4 Attack Deflection for 30 seconds.")
+                .Description("Deals weapon DMG + 12 to enemies within 5m and grants +4 Ranged Deflection for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Saberstaff, 10)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CircleSlash2)
-                .Description("Deals weapon DMG + 24 to enemies within 5m and grants +6 Attack Deflection for 30 seconds.")
+                .Description("Deals weapon DMG + 24 to enemies within 5m and grants +6 Ranged Deflection for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Saberstaff, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CircleSlash3)
-                .Description("Deals weapon DMG + 36 to enemies within 5m and grants +8 Attack Deflection for 30 seconds.")
+                .Description("Deals weapon DMG + 36 to enemies within 5m and grants +8 Ranged Deflection for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Saberstaff, 38)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -359,7 +359,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.TempestFocusTrait)
-                .Description("Your hostile area abilities deal +10% damage if you have deflected an attack in the last 30 seconds.")
+                .Description("Your hostile area abilities deal +10% damage if your Ranged Deflection has negated a ranged weapon auto-attack in the last 30 seconds.")
                 .IncreasesStat(StatType.AreaAbilityAfterDeflectionDamagePercentAdjustmentSkillType, (int)SkillType.Saberstaff)
                 .IncreasesStat(StatType.AreaAbilityAfterDeflectionDamagePercentAdjustment, 10)
                 .IncreasesStat(StatType.AreaAbilityAfterDeflectionWindowSeconds, 30)
@@ -375,14 +375,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.MaelstromArc1)
-                .Description("Deals weapon DMG + 16 in a 5m x 5m cone. If you deflected an attack in the last 30 seconds, restore 4 FP.")
+                .Description("Deals weapon DMG + 16 in a 5m x 5m cone. If your Ranged Deflection negated a ranged weapon auto-attack in the last 30 seconds, restore 4 FP.")
                 .Price(3)
                 .RequirementSkill(SkillType.Saberstaff, 18)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.MaelstromArc2)
-                .Description("Deals weapon DMG + 30 in a 5m x 5m cone. If you deflected an attack in the last 30 seconds, restore 8 FP.")
+                .Description("Deals weapon DMG + 30 in a 5m x 5m cone. If your Ranged Deflection negated a ranged weapon auto-attack in the last 30 seconds, restore 8 FP.")
                 .Price(3)
                 .RequirementSkill(SkillType.Saberstaff, 32)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -395,7 +395,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.TempestStance1)
-                .Description("While active, area combat abilities gain +10% damage and +5 Attack Deflection for 30 seconds, but single-target damage is reduced by 10%.")
+                .Description("While active, area combat abilities gain +10% damage and +5 Ranged Deflection for 30 seconds, but single-target damage is reduced by 10%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Saberstaff, 20)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -408,7 +408,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ForceGyreTrait)
-                .Description("When you gain Attack Deflection from an ability, restore 2 FP. This can trigger once every 6 seconds.")
+                .Description("When you gain Ranged Deflection from an ability, restore 2 FP. This can trigger once every 6 seconds.")
                 .IncreasesStat(StatType.AbilityGrantedAttackDeflectionFPRestore, 2)
                 .IncreasesStat(StatType.AbilityGrantedAttackDeflectionFPRestoreCooldownSeconds, 6)
                 .Price(4)
@@ -438,7 +438,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SaberCyclone1)
-                .Description("For 45 seconds, area combat abilities restore 4 FP and grant +8 Attack Deflection for 30 seconds.")
+                .Description("For 45 seconds, area combat abilities restore 4 FP and grant +8 Ranged Deflection for 30 seconds.")
                 .Price(6)
                 .RequirementSkill(SkillType.Saberstaff, 50)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

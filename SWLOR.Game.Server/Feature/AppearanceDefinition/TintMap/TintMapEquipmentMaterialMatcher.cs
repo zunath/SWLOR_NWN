@@ -75,6 +75,61 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             return sourceSlots.Count == 1 && destinationSlots.Contains(sourceSlots.Single());
         }
 
+        public static IReadOnlyList<string> GetEquivalentMaterialResrefs(
+            string sourceModelResref,
+            string sourceMaterialResref,
+            TintMapLayerType layer,
+            IReadOnlyDictionary<string, IReadOnlyList<TintMapMaterialDefinition>> materialsByModel)
+        {
+            ArgumentNullException.ThrowIfNull(materialsByModel);
+
+            var modelIdentity = GetVariantIdentity(sourceModelResref);
+            if (string.IsNullOrWhiteSpace(modelIdentity) ||
+                !materialsByModel.ContainsKey(sourceModelResref))
+            {
+                return Array.Empty<string>();
+            }
+
+            var variantModels = materialsByModel
+                .Where(entry => string.Equals(
+                    GetVariantIdentity(entry.Key),
+                    modelIdentity,
+                    StringComparison.OrdinalIgnoreCase))
+                .ToList();
+            var sourceSlots = variantModels
+                .SelectMany(entry => entry.Value.Select((material, index) => new
+                {
+                    Material = material,
+                    Signature = GetLayerSignature(material),
+                    Slot = GetSignatureSlot(entry.Value, index)
+                }))
+                .Where(entry =>
+                    entry.Material.Layers.Contains(layer) &&
+                    string.Equals(
+                        entry.Material.Resref,
+                        sourceMaterialResref,
+                        StringComparison.OrdinalIgnoreCase))
+                .Select(entry => (entry.Signature, entry.Slot))
+                .ToHashSet();
+            if (sourceSlots.Count != 1)
+                return Array.Empty<string>();
+
+            var sourceSlot = sourceSlots.Single();
+            return variantModels
+                .SelectMany(entry => entry.Value.Select((material, index) => new
+                {
+                    Material = material,
+                    Signature = GetLayerSignature(material),
+                    Slot = GetSignatureSlot(entry.Value, index)
+                }))
+                .Where(entry =>
+                    entry.Material.Layers.Contains(layer) &&
+                    (entry.Signature, entry.Slot) == sourceSlot)
+                .Select(entry => entry.Material.Resref)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+        }
+
         private static string GetLayerSignature(TintMapMaterialDefinition material)
         {
             return string.Join(",", material.Layers

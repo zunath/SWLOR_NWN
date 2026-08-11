@@ -852,6 +852,10 @@ public class TintMapReviewTests
             "multi-material parts must retain the corresponding material's distinct color");
         method.ToString().Should().Contain("index < sourceLayerMaterials.Count",
             "an unmatched destination material must be cleared rather than borrowing another color");
+        method.ToString().Should().Contain("GetEquivalentMaterialVariables",
+            "mirroring and cleanup must include the corresponding material slots for inactive wearer variants");
+        FindMethod(resolverSource, "GetEquivalentMaterialVariables").ToString().Should()
+            .Contain(nameof(TintMapMaterialRegistry.GetEquivalentEquipmentMaterialResrefs));
 
         var copyColorMethod = FindMethod(viewModelSource, "CopyColor");
         var copyColorBody = copyColorMethod.ToString();
@@ -1114,6 +1118,10 @@ public class TintMapReviewTests
         var setGlobalItemColor = FindMethod(serviceSource, nameof(TintMapService.SetGlobalItemCustomColor));
         setGlobalItemColor.ToString().Should().Contain("GetItemGlobalColorStateName(layer)",
             "global equipment tints need persisted intent distinct from per-part material keys");
+        setGlobalItemColor.ToString().Should().Contain("selectionColor == previousGlobalColor",
+            "changing a global RGB tint must preserve independently customized armor parts");
+        setGlobalItemColor.ToString().Should().Contain("!TryGetCustomColor",
+            "a newly exposed material without a stored override still inherits the changed global tint");
         var resetGlobalItemColor = FindMethod(serviceSource, nameof(TintMapService.ResetGlobalItemCustomColor));
         resetGlobalItemColor.ToString().Should().Contain("customColors.All(color => color.HasValue)",
             "legacy global state is safe to infer only when every active material is custom");
@@ -1180,6 +1188,14 @@ public class TintMapReviewTests
                 TintMapLayerType.Metal1,
                 catalog)
             .Should().BeFalse("a material in another slot must not receive the equipment dye");
+        TintMapEquipmentMaterialMatcher.GetEquivalentMaterialResrefs(
+                "pmh0_robe030",
+                "pmh0_r_ro_7a1a22",
+                TintMapLayerType.Metal1,
+                catalog)
+            .Should().BeEquivalentTo(
+                "pmh0_r_ro_7a1a22",
+                "pfh0_r_ro_82b326");
     }
 
     [Test]

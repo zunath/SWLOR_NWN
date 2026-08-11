@@ -242,13 +242,22 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             itemSelections = itemSelections
                 .Where(selection => selection.GetPaletteSource(layer) == item)
                 .ToList();
+            var stateVariable = TintMapVariable.GetItemGlobalColorStateName(layer);
+            var hasPreviousGlobalColor = TintMapColor.TryFromStoredValue(
+                GetLocalInt(item, stateVariable),
+                out var previousGlobalColor);
             SetLocalInt(
                 item,
-                TintMapVariable.GetItemGlobalColorStateName(layer),
+                stateVariable,
                 color.ToStoredValue());
             foreach (var selection in itemSelections)
             {
-                SetColor(creature, selection, layer, color);
+                if (!hasPreviousGlobalColor ||
+                    !TryGetCustomColor(selection, layer, out var selectionColor) ||
+                    selectionColor == previousGlobalColor)
+                {
+                    SetColor(creature, selection, layer, color);
+                }
             }
         }
 

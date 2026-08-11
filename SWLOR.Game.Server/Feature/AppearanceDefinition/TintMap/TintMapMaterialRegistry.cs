@@ -98,6 +98,18 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 MaterialsByModel);
         }
 
+        public static IReadOnlyList<string> GetEquivalentEquipmentMaterialResrefs(
+            string sourceModelResref,
+            string sourceMaterialResref,
+            TintMapLayerType layer)
+        {
+            return TintMapEquipmentMaterialMatcher.GetEquivalentMaterialResrefs(
+                sourceModelResref,
+                sourceMaterialResref,
+                layer,
+                MaterialsByModel);
+        }
+
         public static TintMapLayerDefinition GetLayer(TintMapLayerType layer)
         {
             if (!LayerDefinitions.TryGetValue(layer, out var definition))

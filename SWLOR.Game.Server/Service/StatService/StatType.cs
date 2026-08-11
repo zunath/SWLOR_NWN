@@ -785,9 +785,9 @@ namespace SWLOR.Game.Server.Service.StatService
         AreaAbilityHastePercentAdjustment = 141,
 
         /// <summary>
-        /// Temporary flat attack deflection chance applied when an area ability meets the buff threshold.
+        /// Temporary Ranged Deflection applied when an area ability meets the buff threshold.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Ranged)]
         AreaAbilityAttackDeflection = 142,
 
         /// <summary>
@@ -1165,7 +1165,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Temporary Ranged Deflection granted after a Light Guardian power is used.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Ranged)]
         LightGuardianPowerAttackDeflection = 211,
 
         /// <summary>
@@ -3080,7 +3080,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Melee Deflection granted to nearby allies after using an ability from a matching perk category.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Melee)]
         AbilityUsedPerkCategoryNearbyAllyAttackDeflection = 541,
 
         /// <summary>
@@ -3176,7 +3176,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Ranged Deflection granted to nearby allies by Guardian's Influence.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Ranged)]
         LightsaberDefenseGuardiansInfluenceAttackDeflection = 558,
 
         /// <summary>
@@ -4052,7 +4052,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Temporary Melee Deflection granted after applying a matching status.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Melee)]
         StatusAppliedSelfAttackDeflection = 706,
 
         /// <summary>

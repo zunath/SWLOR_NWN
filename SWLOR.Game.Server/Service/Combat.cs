@@ -6600,7 +6600,7 @@ namespace SWLOR.Game.Server.Service
 
             ReplaceTemporaryStat(
                 activator,
-                StatType.MeleeDeflection,
+                Stat.GetGrantedDeflectionStatType(StatType.StatusAppliedSelfAttackDeflection),
                 Stat.GetStatAdjustment(activator, StatType.StatusAppliedSelfAttackDeflection),
                 duration,
                 StatType.StatusAppliedSelfAttackDeflection);
@@ -6670,7 +6670,7 @@ namespace SWLOR.Game.Server.Service
             int durationSeconds,
             StatType group)
         {
-            if (amount == 0 || durationSeconds <= 0)
+            if (statType == StatType.Invalid || amount == 0 || durationSeconds <= 0)
                 return;
 
             TemporaryStatModifier.Replace(target, statType, amount, durationSeconds, group);
@@ -7131,18 +7131,20 @@ namespace SWLOR.Game.Server.Service
 
         private static void ApplyLightsaberDefenseActivatedEffects(uint activator)
         {
-            var attackDeflection = Stat.GetStatAdjustment(activator, StatType.LightsaberDefenseGuardiansInfluenceAttackDeflection);
-            if (attackDeflection <= 0)
+            var sourceStatType = StatType.LightsaberDefenseGuardiansInfluenceAttackDeflection;
+            var attackDeflection = Stat.GetStatAdjustment(activator, sourceStatType);
+            var deflectionStatType = Stat.GetGrantedDeflectionStatType(sourceStatType);
+            if (deflectionStatType == StatType.Invalid || attackDeflection <= 0)
                 return;
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, GetLocation(activator), 5f, false))
             {
                 TemporaryStatModifier.Replace(
                     friendly,
-                    StatType.RangedDeflection,
+                    deflectionStatType,
                     attackDeflection,
                     12f,
-                    StatType.LightsaberDefenseGuardiansInfluenceAttackDeflection);
+                    sourceStatType);
             }
         }
 
@@ -7273,13 +7275,15 @@ namespace SWLOR.Game.Server.Service
             var attackDeflection = Stat.GetStatAdjustment(
                 activator,
                 StatType.AbilityUsedPerkCategoryNearbyAllyAttackDeflection);
+            var deflectionStatType = Stat.GetGrantedDeflectionStatType(
+                StatType.AbilityUsedPerkCategoryNearbyAllyAttackDeflection);
             var duration = Stat.GetStatAdjustment(
                 activator,
                 StatType.AbilityUsedPerkCategoryNearbyAllyAttackDeflectionDurationSeconds);
             var selfEnmity = Stat.GetStatAdjustment(
                 activator,
                 StatType.AbilityUsedPerkCategoryNearbyAllyAttackDeflectionSelfEnmityPercentAdjustment);
-            if (attackDeflection <= 0 || duration <= 0)
+            if (deflectionStatType == StatType.Invalid || attackDeflection <= 0 || duration <= 0)
                 return;
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, GetLocation(activator), 5f))
@@ -7287,7 +7291,7 @@ namespace SWLOR.Game.Server.Service
                 StatusEffect.ApplyStatusEffect(
                     activator,
                     friendly,
-                    new SentinelGuardStatusEffect(attackDeflection, selfEnmity),
+                    new SentinelGuardStatusEffect(attackDeflection, selfEnmity, deflectionStatType),
                     duration);
             }
         }
@@ -9121,12 +9125,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             var source = Stat.GetStatTypeDeflectionSource(attackDeflectionStatType);
-            var targetStatType = source switch
-            {
-                DeflectionSource.Melee => StatType.MeleeDeflection,
-                DeflectionSource.Ranged => StatType.RangedDeflection,
-                _ => StatType.Invalid
-            };
+            var targetStatType = Stat.GetGrantedDeflectionStatType(attackDeflectionStatType);
             if (targetStatType == StatType.Invalid)
                 return;
 
@@ -9148,12 +9147,15 @@ namespace SWLOR.Game.Server.Service
                         DeflectionSource.Ranged => StatType.DeflectionFPRestore,
                         _ => StatType.Invalid
                     };
-                    TemporaryStatModifier.Replace(
-                        activator,
-                        fpRestoreTargetStatType,
-                        fpRestore,
-                        duration,
-                        deflectionFPRestoreStatType);
+                    if (fpRestoreTargetStatType != StatType.Invalid)
+                    {
+                        TemporaryStatModifier.Replace(
+                            activator,
+                            fpRestoreTargetStatType,
+                            fpRestore,
+                            duration,
+                            deflectionFPRestoreStatType);
+                    }
                 }
             }
 
@@ -9243,13 +9245,18 @@ namespace SWLOR.Game.Server.Service
             var deflection = Stat.GetStatAdjustment(activator, StatType.AreaAbilityAttackDeflection);
             if (deflection != 0)
             {
+                var source = Stat.GetStatTypeDeflectionSource(StatType.AreaAbilityAttackDeflection);
+                var deflectionStatType = Stat.GetGrantedDeflectionStatType(StatType.AreaAbilityAttackDeflection);
+                if (deflectionStatType == StatType.Invalid)
+                    return;
+
                 TemporaryStatModifier.Replace(
                     activator,
-                    StatType.RangedDeflection,
+                    deflectionStatType,
                     deflection,
                     duration,
-                    StatType.RangedDeflection);
-                ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.Ranged);
+                    StatType.AreaAbilityAttackDeflection);
+                ApplyAbilityGrantedAttackDeflectionEffects(activator, source);
             }
         }
 

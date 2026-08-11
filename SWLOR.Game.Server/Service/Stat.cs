@@ -79,6 +79,17 @@ namespace SWLOR.Game.Server.Service
                 : DeflectionSource.None;
         }
 
+        public static StatType GetGrantedDeflectionStatType(StatType sourceStatType)
+        {
+            return GetStatTypeDeflectionSource(sourceStatType) switch
+            {
+                DeflectionSource.Melee => StatType.MeleeDeflection,
+                DeflectionSource.Ranged => StatType.RangedDeflection,
+                DeflectionSource.Shield => StatType.ShieldDeflection,
+                _ => StatType.Invalid
+            };
+        }
+
         public static int AggregateStatAdjustment(StatType statType, int current, int adjustment)
         {
             return GetStatTypeAggregation(statType) == StatTypeAggregation.BitwiseOr

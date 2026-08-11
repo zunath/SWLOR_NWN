@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -8,34 +9,43 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         private readonly int _attackDeflection;
         private readonly int _selfEnmityPercentAdjustment;
+        private readonly StatType _deflectionStatType;
 
         public override string Name => "Sentinel Guard";
         public override EffectIconType Icon => EffectIconType.SentinelGuardStatusEffect;
 
         public SentinelGuardStatusEffect()
-            : this(8, 20)
+            : this(8, 20, Stat.GetGrantedDeflectionStatType(
+                StatType.AbilityUsedPerkCategoryNearbyAllyAttackDeflection))
         {
         }
 
-        public SentinelGuardStatusEffect(int attackDeflection, int selfEnmityPercentAdjustment)
+        public SentinelGuardStatusEffect(
+            int attackDeflection,
+            int selfEnmityPercentAdjustment,
+            StatType deflectionStatType)
         {
             _attackDeflection = attackDeflection;
             _selfEnmityPercentAdjustment = selfEnmityPercentAdjustment;
-            StatGroup.Stats[StatType.MeleeDeflection] = _attackDeflection;
+            _deflectionStatType = deflectionStatType;
+            StatGroup.Stats[_deflectionStatType] = _attackDeflection;
         }
 
         protected override void Apply(uint creature, int durationTicks)
         {
             if (creature == Source)
             {
-                StatGroup.Stats.Remove(StatType.MeleeDeflection);
+                StatGroup.Stats.Remove(_deflectionStatType);
                 StatGroup.Stats[StatType.EnmityPercentAdjustment] = _selfEnmityPercentAdjustment;
             }
         }
 
         public override IStatusEffect Clone()
         {
-            return new SentinelGuardStatusEffect(_attackDeflection, _selfEnmityPercentAdjustment);
+            return new SentinelGuardStatusEffect(
+                _attackDeflection,
+                _selfEnmityPercentAdjustment,
+                _deflectionStatType);
         }
     }
 }

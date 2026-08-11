@@ -19,6 +19,11 @@ public class WeaponDeflectionTests
         Stat.GetStatTypeDeflectionSource(StatType.RangedDeflection).Should().Be(DeflectionSource.Ranged);
         Stat.GetStatTypeDeflectionSource(StatType.RangedDeflectionChanceCap).Should().Be(DeflectionSource.Ranged);
         Stat.GetStatTypeDeflectionSource(StatType.ShieldDeflection).Should().Be(DeflectionSource.Shield);
+        Stat.GetStatTypeDeflectionSource(StatType.AreaAbilityAttackDeflection).Should().Be(DeflectionSource.Ranged);
+        Stat.GetStatTypeDeflectionSource(StatType.LightGuardianPowerAttackDeflection).Should().Be(DeflectionSource.Ranged);
+        Stat.GetStatTypeDeflectionSource(StatType.AbilityUsedPerkCategoryNearbyAllyAttackDeflection).Should().Be(DeflectionSource.Melee);
+        Stat.GetStatTypeDeflectionSource(StatType.LightsaberDefenseGuardiansInfluenceAttackDeflection).Should().Be(DeflectionSource.Ranged);
+        Stat.GetStatTypeDeflectionSource(StatType.StatusAppliedSelfAttackDeflection).Should().Be(DeflectionSource.Melee);
         Stat.GetStatTypeDeflectionSource(StatType.SingleTargetAbilityAttackDeflection).Should().Be(DeflectionSource.Melee);
         Stat.GetStatTypeDeflectionSource(StatType.AbilityUsedAttackDeflection).Should().Be(DeflectionSource.Melee);
         Stat.GetStatTypeDeflectionSource(StatType.AbilityUsedAttackDeflectionFPRestore).Should().Be(DeflectionSource.Melee);
@@ -40,6 +45,10 @@ public class WeaponDeflectionTests
         Stat.GetStatTypeDeflectionSource(StatType.AreaAbilityAfterDeflectionDamagePercentAdjustmentSkillType).Should().Be(DeflectionSource.Ranged);
         Stat.GetStatTypeDeflectionSource(StatType.AreaAbilityAfterDeflectionDamagePercentAdjustment).Should().Be(DeflectionSource.Ranged);
         Stat.GetStatTypeDeflectionSource(StatType.AreaAbilityAfterDeflectionWindowSeconds).Should().Be(DeflectionSource.Ranged);
+        Stat.GetGrantedDeflectionStatType(StatType.StatusAppliedSelfAttackDeflection).Should().Be(StatType.MeleeDeflection);
+        Stat.GetGrantedDeflectionStatType(StatType.AreaAbilityAttackDeflection).Should().Be(StatType.RangedDeflection);
+        Stat.GetGrantedDeflectionStatType(StatType.ShieldDeflection).Should().Be(StatType.ShieldDeflection);
+        Stat.GetGrantedDeflectionStatType(StatType.Attack).Should().Be(StatType.Invalid);
     }
 
     [Test]
@@ -87,6 +96,10 @@ public class WeaponDeflectionTests
         var combatSource = ReadSource("SWLOR.Game.Server", "Service", "Combat.cs");
         var abilitySource = ReadSource(
             "SWLOR.Game.Server", "Feature", "AbilityDefinition", "WeaponActiveAbilityDefinitionBase.cs");
+        var forceSupportSource = ReadSource(
+            "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Force", "LightGuardianPowerSupport.cs");
+        var sentinelGuardSource = ReadSource(
+            "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "SentinelGuardStatusEffect.cs");
 
         statSource.Should().Contain(
             "GetStatAdjustment(creatureId, StatType.DeflectionStaminaRestorePercent)");
@@ -99,13 +112,19 @@ public class WeaponDeflectionTests
         combatSource.Should().NotContain(
             "ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.Melee)");
         combatSource.Should().Contain(
-            "ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.Ranged)");
+            "ApplyAbilityGrantedAttackDeflectionEffects(activator, source)");
         combatSource.Should().Contain(
             "Stat.GetStatTypeDeflectionSource(StatType.AbilityGrantedAttackDeflectionFPRestore) != source");
         combatSource.Should().Contain("StatType.MeleeDeflectionFPRestore");
         combatSource.Should().Contain("var source = Stat.GetStatTypeDeflectionSource(attackDeflectionStatType);");
-        combatSource.Should().Contain("DeflectionSource.Melee => StatType.MeleeDeflection");
-        combatSource.Should().Contain("DeflectionSource.Ranged => StatType.RangedDeflection");
+        statSource.Should().Contain("public static StatType GetGrantedDeflectionStatType(StatType sourceStatType)");
+        statSource.Should().Contain("DeflectionSource.Melee => StatType.MeleeDeflection");
+        statSource.Should().Contain("DeflectionSource.Ranged => StatType.RangedDeflection");
+        statSource.Should().Contain("DeflectionSource.Shield => StatType.ShieldDeflection");
+        combatSource.Should().Contain("Stat.GetGrantedDeflectionStatType(attackDeflectionStatType)");
+        combatSource.Should().Contain("Stat.GetGrantedDeflectionStatType(StatType.AreaAbilityAttackDeflection)");
+        combatSource.Should().Contain("Stat.GetGrantedDeflectionStatType(StatType.StatusAppliedSelfAttackDeflection)");
+        combatSource.Should().Contain("Stat.GetGrantedDeflectionStatType(sourceStatType)");
         combatSource.Should().Contain("var fpRestoreSource = Stat.GetStatTypeDeflectionSource(deflectionFPRestoreStatType);");
         combatSource.Should().Contain("fpRestore > 0 && fpRestoreSource == source");
         combatSource.Should().Contain("ApplyAbilityGrantedAttackDeflectionEffects(activator, source)");
@@ -113,6 +132,9 @@ public class WeaponDeflectionTests
             "Combat.ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.Melee)");
         abilitySource.Should().Contain(
             "Combat.ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.Ranged)");
+        forceSupportSource.Should().Contain("Stat.GetGrantedDeflectionStatType(sourceStatType)");
+        sentinelGuardSource.Should().Contain("Stat.GetGrantedDeflectionStatType(");
+        sentinelGuardSource.Should().Contain("StatGroup.Stats[_deflectionStatType]");
     }
 
     [Test]
@@ -132,6 +154,18 @@ public class WeaponDeflectionTests
         generator.Should().NotContain("(\"SelfAttackDeflection\"");
         generator.Should().NotContain("add_stat(stats, \"AttackDeflection\"");
         generator.Should().NotContain("parse_count(r\"\\+(\\d+) Attack Deflection\", description)");
+    }
+
+    [Test]
+    public void BibleReviewPatch_PreservesMaelstromArcRangedDeflectionWording()
+    {
+        var patch = ReadSource("tools", "ApplyCombatBibleReviewFixes.ps1");
+
+        patch.Should().Contain(
+            "If your Ranged Deflection negated a ranged weapon auto-attack in the last 30 seconds, restore 4 FP.");
+        patch.Should().Contain(
+            "If your Ranged Deflection negated a ranged weapon auto-attack in the last 30 seconds, restore 8 FP.");
+        patch.Should().NotContain("If you deflected an attack in the last 30 seconds");
     }
 
     [Test]

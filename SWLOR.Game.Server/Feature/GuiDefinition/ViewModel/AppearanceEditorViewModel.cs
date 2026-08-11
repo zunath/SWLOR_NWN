@@ -1863,8 +1863,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void ResetCurrentCustomTintOverrides()
         {
-            if (!TryGetEditableTintSelections(out var selections, out var layerType, out var layer))
+            if (!TryGetSelectedTintLayer(out var selectedLayerType))
                 return;
+
+            if (!TryGetEditableTintSelections(out var selections, out var layerType, out var layer))
+            {
+                // A model can stop exposing a semantic channel (for example, a hairless
+                // head). Selecting a preset still means the persisted custom channel is
+                // being replaced, even though there is no current material to reset.
+                if (IsAppearanceSelected && TintMapVariable.IsCreatureColorLayer(selectedLayerType))
+                {
+                    TintMapService.ResetCreatureCustomColor(_target, selectedLayerType);
+                    LoadTintMapEditor();
+                }
+
+                return;
+            }
 
             if (IsEquipmentSelected &&
                 SelectedItemTypeIndex == 0 &&

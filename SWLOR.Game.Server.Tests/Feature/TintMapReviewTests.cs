@@ -212,6 +212,7 @@ public class TintMapReviewTests
         {
             "TryGetSelectedTintLayer",
             "TryGetEditableTintSelections",
+            "ResetCurrentCustomTintOverrides",
             "OnSelectColor",
             "OnClickColorPalette",
             "OnClickColorTarget"
@@ -232,6 +233,11 @@ public class TintMapReviewTests
         methods["OnSelectColor"].ToString().Should().Contain("ResetCurrentCustomTintOverrides");
         methods["OnClickColorPalette"].ToString().Should().Contain("ResetCurrentCustomTintOverrides");
         methods["OnClickColorTarget"].ToString().Should().Contain("LoadTintMapEditor");
+        methods["ResetCurrentCustomTintOverrides"].ToString().Should()
+            .Contain("TryGetSelectedTintLayer(out var selectedLayerType)");
+        methods["ResetCurrentCustomTintOverrides"].ToString().Should()
+            .Contain("ResetCreatureCustomColor(_target, selectedLayerType)",
+                "selecting a preset must clear an inactive creature channel's persisted RGB tint");
     }
 
     [Test]
@@ -1091,6 +1097,8 @@ public class TintMapReviewTests
             "hashed generated material names must still migrate across wearer variants");
         carryMethod.ToString().Should().Contain("destinationVariable",
             "an existing destination override must remain untouched");
+        carryMethod.ToString().Should().Contain("destinationColor <= TintMapMaterialRegistry.PaletteColorCount",
+            "compatibility-format palette overrides are authoritative destination values too");
         carryMethod.ToString().Should().Contain("matchingColors.Count == 1",
             "only an unambiguous color for the corresponding material may migrate");
         carryMethod.ToString().Should().Contain("GetItemGlobalColorStateName(layer)",
@@ -1133,11 +1141,15 @@ public class TintMapReviewTests
             "the first global RGB tint must preserve existing per-part custom colors");
         setGlobalItemColor.ToString().Should().NotContain("!hasPreviousGlobalColor ||",
             "missing legacy global intent must not make every per-part custom color look inherited");
+        setGlobalItemColor.ToString().Should().Contain("Droid.UpdateEquippedItemSnapshot(creature, item)",
+            "changing only the global marker must still persist equipped droid armor");
         var resetGlobalItemColor = FindMethod(serviceSource, nameof(TintMapService.ResetGlobalItemCustomColor));
         resetGlobalItemColor.ToString().Should().Contain("customColors.All(color => color.HasValue)",
             "legacy global state is safe to infer only when every active material is custom");
         resetGlobalItemColor.ToString().Should().Contain("color == globalColor",
             "a global preset must preserve independently customized armor parts");
+        resetGlobalItemColor.ToString().Should().Contain("Droid.UpdateEquippedItemSnapshot(creature, item)",
+            "removing only the global marker must still persist equipped droid armor");
 
         var viewModelSource = ReadSource(
             "SWLOR.Game.Server",

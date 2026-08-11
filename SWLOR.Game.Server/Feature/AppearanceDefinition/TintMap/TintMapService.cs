@@ -262,6 +262,10 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     SetColor(creature, selection, layer, color);
                 }
             }
+
+            // The global marker is meaningful state even when every active material has an
+            // independent override and the loop does not update a material.
+            Droid.UpdateEquippedItemSnapshot(creature, item);
         }
 
         public static void ResetGlobalItemCustomColor(
@@ -310,6 +314,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             }
 
             DeleteLocalInt(item, stateVariable);
+            // Persist removal of the marker even when there is no inferred global color, or
+            // when no active material still matches it closely enough to be reset below.
+            Droid.UpdateEquippedItemSnapshot(creature, item);
             if (!hasGlobalColor)
                 return;
 
@@ -1136,9 +1143,10 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                         var destinationVariable = TintMapVariable.GetName(
                             selection.Material.Resref,
                             layer);
-                        if (TintMapColor.TryFromStoredValue(
-                                GetLocalInt(item, destinationVariable),
-                                out _))
+                        var destinationColor = GetLocalInt(item, destinationVariable);
+                        if (TintMapColor.TryFromStoredValue(destinationColor, out _) ||
+                            destinationColor > 0 &&
+                            destinationColor <= TintMapMaterialRegistry.PaletteColorCount)
                         {
                             continue;
                         }

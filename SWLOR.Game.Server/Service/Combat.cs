@@ -63,6 +63,9 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<uint, DateTime> _recentGuardedHits = new();
         private static readonly Dictionary<uint, DateTime> _recentDeflections = new();
         private static readonly Dictionary<uint, DateTime> _lastCombatActivity = new();
+        private static readonly Dictionary<uint, DateTime> _lastHostileAbilityAttemptActivity = new();
+        private static readonly Dictionary<uint, DateTime> _lastHostileIncomingActivity = new();
+        private static readonly HashSet<uint> _firstCombatAttackConsumed = new();
         private static readonly Dictionary<uint, DateTime> _lastAttackActivity = new();
         private static readonly Dictionary<uint, DateTime> _lastCombatAbilityUse = new();
         private static readonly Dictionary<(uint, uint), SuppressionAbilityUseState> _pendingSuppressionAbilityUses = new();
@@ -1070,11 +1073,8 @@ namespace SWLOR.Game.Server.Service
             if (staminaRestore <= 0 || cooldownSeconds <= 0)
                 return;
 
-            if (_lastCombatActivity.TryGetValue(attacker, out var lastActivity) &&
-                (DateTime.UtcNow - lastActivity).TotalSeconds <= 30)
-            {
+            if (!_firstCombatAttackConsumed.Add(attacker))
                 return;
-            }
 
             if (!TryUseStatTrigger(attacker, StatType.FirstCombatAttackStaminaRestore, cooldownSeconds))
                 return;
@@ -1293,19 +1293,16 @@ namespace SWLOR.Game.Server.Service
 
             var appliesDirectDamageEffects = deliveryType == CombatDamageDeliveryType.Direct;
 
-            // Must run before TrackCombatActivity below updates the "last combat activity"
-            // timestamp, since this checks whether the attacker was already active in combat.
-            // Runs for direct hits only (auto-attacks and ability impacts), not DoT ticks, so
-            // that a hostile ability opener still counts as the "first attack" for Vibroknife's
-            // Venatic Recovery rather than only a raw auto-attack.
-            if (appliesDirectDamageEffects)
-                ApplyFirstCombatAttackStaminaRestore(attacker);
-
             TrackCombatActivity(attacker);
             TrackRecentDamageTarget(attacker, defender);
 
             if (!appliesDirectDamageEffects)
                 return;
+
+            // The combat-entry tracker resets this rider's consumed state before the first landed
+            // direct attack. Missed casts and incoming hostile actions keep that state alive without
+            // consuming it, so Venatic Recovery cannot trigger twice during one prolonged engagement.
+            ApplyFirstCombatAttackStaminaRestore(attacker);
 
             ApplySameTargetPressureDamageEffects(attacker, defender, skillType);
             ApplySideAttackDamageEffects(attacker, defender, skillType, damage);
@@ -2202,7 +2199,10 @@ namespace SWLOR.Game.Server.Service
             ApplyRecentDamageTargetHitEffects(defender, attacker);
 
             if (GetIsObjectValid(attacker) && GetIsReactionTypeHostile(attacker, defender))
+            {
+                TrackHostileDefensiveCombatEntryActivity(defender, attacker);
                 EmbattledStatusEffect.Refresh(defender, attacker);
+            }
         }
 
         private static void ApplyDamageTakenNextSkillAbilityDamage(uint defender)
@@ -2819,7 +2819,9 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(creature))
                 return;
 
-            _lastCombatActivity[creature] = DateTime.UtcNow;
+            var now = DateTime.UtcNow;
+            ReportCombatEntryIfNeeded(creature, now);
+            _lastCombatActivity[creature] = now;
         }
 
         public static void TrackAttackActivity(uint creature)
@@ -2829,6 +2831,51 @@ namespace SWLOR.Game.Server.Service
 
             _lastAttackActivity[creature] = DateTime.UtcNow;
             TrackCombatActivity(creature);
+        }
+
+        public static void TrackHostileAbilityActivity(uint creature)
+        {
+            if (!GetIsObjectValid(creature))
+                return;
+
+            var now = DateTime.UtcNow;
+            ReportCombatEntryIfNeeded(creature, now);
+            // Keep cast attempts separate from landed combat activity. Opening-hit riders such as
+            // Venatic Recovery must still observe the previous landed-combat timestamp.
+            _lastHostileAbilityAttemptActivity[creature] = now;
+        }
+
+        public static void TrackHostileDefensiveCombatEntryActivity(uint creature, uint attacker)
+        {
+            if (!GetIsObjectValid(creature) ||
+                !GetIsObjectValid(attacker) ||
+                !GetIsReactionTypeHostile(attacker, creature))
+                return;
+
+            var now = DateTime.UtcNow;
+            ReportCombatEntryIfNeeded(creature, now);
+            // Incoming hostile actions start combat for First Strike visibility without consuming the
+            // landed-opening timestamp that Venatic Recovery reads when the defender retaliates.
+            _lastHostileIncomingActivity[creature] = now;
+        }
+
+        private static void ReportCombatEntryIfNeeded(uint creature, DateTime now)
+        {
+            if (HasRecentCombatEntryActivity(creature, now))
+                return;
+
+            _firstCombatAttackConsumed.Remove(creature);
+            ReportFirstStrikeCombatEntry(creature, now);
+        }
+
+        private static bool HasRecentCombatEntryActivity(uint creature, DateTime now)
+        {
+            return (_lastCombatActivity.TryGetValue(creature, out var lastCombatActivity) &&
+                    (now - lastCombatActivity).TotalSeconds <= 30) ||
+                (_lastHostileAbilityAttemptActivity.TryGetValue(creature, out var lastHostileAbilityAttempt) &&
+                    (now - lastHostileAbilityAttempt).TotalSeconds <= 30) ||
+                (_lastHostileIncomingActivity.TryGetValue(creature, out var lastHostileIncomingActivity) &&
+                    (now - lastHostileIncomingActivity).TotalSeconds <= 30);
         }
 
         public static void TrackStealthOpeningWindow(uint creature)
@@ -3027,10 +3074,12 @@ namespace SWLOR.Game.Server.Service
             ApplyGuardedHitNextSkillAbilityStatusEffects(creature);
         }
 
-        public static void TrackAvoidedAttack(uint creature)
+        public static void TrackAvoidedAttack(uint creature, uint attacker)
         {
             if (!GetIsObjectValid(creature))
                 return;
+
+            TrackHostileDefensiveCombatEntryActivity(creature, attacker);
 
             var skillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(creature, StatType.AvoidedAttackNextSkillAbilitySkillType));
             var adjustment = Stat.GetStatAdjustment(creature, StatType.AvoidedAttackNextSkillAbilityStaminaCostAdjustment);
@@ -4607,6 +4656,9 @@ namespace SWLOR.Game.Server.Service
             _recentGuardedHits.Remove(creature);
             _recentDeflections.Remove(creature);
             _lastCombatActivity.Remove(creature);
+            _lastHostileAbilityAttemptActivity.Remove(creature);
+            _lastHostileIncomingActivity.Remove(creature);
+            _firstCombatAttackConsumed.Remove(creature);
             _lastAttackActivity.Remove(creature);
             _lastCombatAbilityUse.Remove(creature);
             foreach (var key in _pendingSuppressionAbilityUses.Keys.Where(x => x.Item1 == creature || x.Item2 == creature).ToList())
@@ -5070,12 +5122,14 @@ namespace SWLOR.Game.Server.Service
             int damage,
             bool statusApplied,
             Type primaryStatusEffect,
-            IEnumerable<Type> additionalStatusEffects)
+            IEnumerable<Type> additionalStatusEffects,
+            bool firstHostileAbilityHitDamageBonusApplied)
         {
             if (!GetIsObjectValid(activator) || !GetIsObjectValid(target) || ability == null)
                 return;
 
-            ApplyFirstHostileAbilityHitCount(activator, ability);
+            if (firstHostileAbilityHitDamageBonusApplied)
+                ApplyFirstHostileAbilityHitCount(activator, ability);
             if (ability.IsHostileAbility && !ability.SuppressesSourceStatusStackRiders)
             {
                 ApplySourceStatusStackEffects(activator, target);
@@ -5792,9 +5846,8 @@ namespace SWLOR.Game.Server.Service
             if (bonus <= 0 || maximumCount <= 0 || ability?.IsHostileAbility != true)
                 return 0;
 
-            RechargeFirstHostileAbilityHitStacks(attacker, maximumCount);
-            _firstHostileAbilityHitCounts.TryGetValue(attacker, out var state);
-            return (state?.Count ?? 0) < maximumCount
+            var state = EnsureFirstHostileAbilityHitState(attacker, maximumCount, bonus, out _);
+            return state.Count < maximumCount
                 ? bonus
                 : 0;
         }
@@ -5805,12 +5858,11 @@ namespace SWLOR.Game.Server.Service
             if (maximumCount <= 0 || ability?.IsHostileAbility != true)
                 return;
 
-            RechargeFirstHostileAbilityHitStacks(attacker, maximumCount);
+            var damageBonus = Stat.GetStatAdjustment(attacker, StatType.FirstHostileAbilityHitDamageBonus);
+            var state = EnsureFirstHostileAbilityHitState(attacker, maximumCount, damageBonus, out _);
 
             var now = DateTime.UtcNow;
-            _firstHostileAbilityHitCounts.TryGetValue(attacker, out var state);
             if (ability.IsAreaAbility &&
-                state != null &&
                 (now - state.LastHit).TotalSeconds <= 1)
             {
                 return;
@@ -5838,16 +5890,100 @@ namespace SWLOR.Game.Server.Service
                 RechargeAvailableAt = rechargeAvailableAt
             };
 
-            var damageBonus = Stat.GetStatAdjustment(attacker, StatType.FirstHostileAbilityHitDamageBonus);
+            Log.WriteStructured(
+                LogGroup.Attack,
+                "First Strike stack consumed: Attacker={Attacker} Count={Count} MaximumCount={MaximumCount} DamageBonus={DamageBonus} RechargeAvailableAt={RechargeAvailableAt}",
+                attacker,
+                newCount,
+                maximumCount,
+                damageBonus,
+                rechargeAvailableAt);
+
             if (damageBonus > 0 && GetIsPC(attacker))
             {
                 var remaining = maximumCount - newCount;
                 var stackLabel = remaining == 1 ? "stack" : "stacks";
+                var cooldownSeconds = Stat.GetStatAdjustment(attacker, StatType.FirstHostileAbilityHitCooldownSeconds);
+                var rechargeText = remaining == 0
+                    ? cooldownSeconds > 0
+                        ? $"; recharges in {cooldownSeconds} seconds"
+                        : "; recharges after combat"
+                    : string.Empty;
+                var feedback = ColorToken.Combat(
+                    $"First Strike deals +{damageBonus} DMG ({remaining} {stackLabel} remaining{rechargeText}).");
+
+                SendMessageToPC(attacker, feedback);
                 FloatingTextStringOnCreature(
                     ColorToken.Combat($"First Strike +{damageBonus} DMG ({remaining} {stackLabel} remaining)"),
                     attacker,
                     false);
             }
+        }
+
+        private static TargetHitSequenceState EnsureFirstHostileAbilityHitState(
+            uint attacker,
+            int maximumCount,
+            int damageBonus,
+            out bool becameReady)
+        {
+            RechargeFirstHostileAbilityHitStacks(attacker, maximumCount);
+            if (_firstHostileAbilityHitCounts.TryGetValue(attacker, out var state))
+            {
+                becameReady = false;
+                return state;
+            }
+
+            state = new TargetHitSequenceState
+            {
+                Count = 0,
+                LastHit = DateTime.MinValue
+            };
+            _firstHostileAbilityHitCounts[attacker] = state;
+            becameReady = true;
+
+            Log.WriteStructured(
+                LogGroup.Attack,
+                "First Strike ready: Attacker={Attacker} Count={Count} MaximumCount={MaximumCount} DamageBonus={DamageBonus}",
+                attacker,
+                state.Count,
+                maximumCount,
+                damageBonus);
+
+            if (damageBonus > 0 && GetIsPC(attacker))
+            {
+                var stackLabel = maximumCount == 1 ? "stack" : "stacks";
+                var feedback = ColorToken.Combat(
+                    $"First Strike ready: {maximumCount} {stackLabel} (+{damageBonus} DMG each).");
+                SendMessageToPC(attacker, feedback);
+                FloatingTextStringOnCreature(
+                    ColorToken.Combat($"First Strike ready ({maximumCount} {stackLabel})"),
+                    attacker,
+                    false);
+            }
+
+            return state;
+        }
+
+        private static void ReportFirstStrikeCombatEntry(uint attacker, DateTime now)
+        {
+            var maximumCount = Stat.GetStatAdjustment(attacker, StatType.FirstHostileAbilityHitMaximumCount);
+            var damageBonus = Stat.GetStatAdjustment(attacker, StatType.FirstHostileAbilityHitDamageBonus);
+            if (maximumCount <= 0 || damageBonus <= 0)
+                return;
+
+            var state = EnsureFirstHostileAbilityHitState(attacker, maximumCount, damageBonus, out var becameReady);
+            if (becameReady ||
+                state.Count < maximumCount ||
+                state.RechargeAvailableAt == null ||
+                !GetIsPC(attacker))
+            {
+                return;
+            }
+
+            var remainingSeconds = Math.Max(1, (int)Math.Ceiling((state.RechargeAvailableAt.Value - now).TotalSeconds));
+            SendMessageToPC(
+                attacker,
+                ColorToken.Combat($"First Strike is recharging ({remainingSeconds} seconds remaining)."));
         }
 
         private static void RechargeFirstHostileAbilityHitStacks(uint attacker, int maximumCount)
@@ -5861,19 +5997,31 @@ namespace SWLOR.Game.Server.Service
                 if (DateTime.UtcNow >= state.RechargeAvailableAt.Value)
                 {
                     _firstHostileAbilityHitCounts.Remove(attacker);
+                    Log.WriteStructured(
+                        LogGroup.Attack,
+                        "First Strike recharged: Attacker={Attacker} PreviousCount={PreviousCount} MaximumCount={MaximumCount} RechargeAvailableAt={RechargeAvailableAt}",
+                        attacker,
+                        state.Count,
+                        maximumCount,
+                        state.RechargeAvailableAt.Value);
                 }
 
                 return;
             }
 
             // With stacks remaining, refresh to a full set once the wielder drops out of combat so each new engagement opens with all stacks.
-            if (_lastCombatActivity.TryGetValue(attacker, out var lastActivity) &&
-                (DateTime.UtcNow - lastActivity).TotalSeconds <= 30)
+            if (HasRecentCombatEntryActivity(attacker, DateTime.UtcNow))
             {
                 return;
             }
 
             _firstHostileAbilityHitCounts.Remove(attacker);
+            Log.WriteStructured(
+                LogGroup.Attack,
+                "First Strike reset after combat: Attacker={Attacker} PreviousCount={PreviousCount} MaximumCount={MaximumCount}",
+                attacker,
+                state.Count,
+                maximumCount);
         }
 
         private static int GetAbilityDamageToSourceAppliedStatusTargetAdjustment(

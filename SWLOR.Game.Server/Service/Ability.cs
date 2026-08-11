@@ -1994,7 +1994,8 @@ namespace SWLOR.Game.Server.Service
             Action<uint> afterSuccessfulHit = null,
             Action<uint> beforeSuccessfulImpactRiders = null,
             bool awardsCombatPoints = true,
-            DamageType? effectDamageType = null)
+            DamageType? effectDamageType = null,
+            bool firstHostileAbilityHitDamageBonusApplied = false)
         {
             using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(activator);
             var trackedImpact = GetTrackedAbilityImpact(activator);
@@ -2070,7 +2071,8 @@ namespace SWLOR.Game.Server.Service
                 damage,
                 statusApplied,
                 statusEffect,
-                additionalStatusEffects);
+                additionalStatusEffects,
+                firstHostileAbilityHitDamageBonusApplied);
 
             if ((damage > 0 || statusApplied) && targetVisualEffect != VisualEffect.None)
             {
@@ -2110,6 +2112,8 @@ namespace SWLOR.Game.Server.Service
         {
             using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(activator);
             var trackedImpact = GetTrackedAbilityImpact(activator);
+            Combat.TrackHostileAbilityActivity(activator);
+            Combat.TrackHostileDefensiveCombatEntryActivity(target, activator);
             var perkType = trackedImpact?.Ability?.EffectiveLevelPerkType ?? PerkType.Invalid;
             var usesNPCStatScaling = ShouldUseNPCStatScaling(activator, useNPCStatScaling);
             var damageAbility = combatImpactDamageAbility != AbilityType.Invalid
@@ -2177,7 +2181,8 @@ namespace SWLOR.Game.Server.Service
                 afterSuccessfulHit,
                 beforeSuccessfulImpactRiders,
                 awardsCombatPoints,
-                effectDamageType);
+                effectDamageType,
+                firstHostileAbilityHitDamageBonusApplied: true);
         }
 
         private static bool ShouldResolveCombatImpactHit(TrackedAbilityImpact trackedImpact)

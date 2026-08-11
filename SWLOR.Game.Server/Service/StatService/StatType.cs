@@ -1,3 +1,5 @@
+using SWLOR.Game.Server.Service.CombatService;
+
 namespace SWLOR.Game.Server.Service.StatService
 {
     public enum StatType
@@ -45,25 +47,25 @@ namespace SWLOR.Game.Server.Service.StatService
         EvasionPercentAdjustment = 6,
 
         /// <summary>
-        /// Flat percent chance to deflect an attack while wielding a weapon and no shield.
+        /// Flat percent chance to deflect a hostile melee weapon auto-attack while wielding a weapon and no shield.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        AttackDeflection = 7,
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Melee)]
+        MeleeDeflection = 7,
 
         /// <summary>
-        /// Flat Stamina restored when the creature successfully deflects an attack.
+        /// Flat Stamina restored when the creature successfully uses Melee Deflection.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        DeflectionStaminaRestore = 8,
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Melee)]
+        MeleeDeflectionStaminaRestore = 8,
 
         /// <summary>
-        /// Flat FP restored when the creature successfully deflects an attack.
+        /// Flat FP restored when the creature successfully uses Ranged Deflection.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Ranged)]
         DeflectionFPRestore = 9,
 
         /// <summary>
-        /// Percent of maximum Stamina restored when the creature successfully deflects an attack.
+        /// Percent of maximum Stamina restored after any successful melee, ranged, or shield deflection.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         DeflectionStaminaRestorePercent = 10,
@@ -279,33 +281,33 @@ namespace SWLOR.Game.Server.Service.StatService
         EnmityPercentAdjustment = 46,
 
         /// <summary>
-        /// Temporary percent Evasion adjustment applied after a successful ranged attack deflection.
+        /// Temporary percent Evasion adjustment applied after a successful Shield Deflection.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Shield)]
         DeflectionEvasionPercentAdjustment = 47,
 
         /// <summary>
         /// Temporary percent Enmity adjustment paired with the deflection Evasion effect.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Shield)]
         DeflectionEvasionEnmityPercentAdjustment = 48,
 
         /// <summary>
         /// Temporary percent Enmity adjustment applied after a successful ranged attack deflection.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Ranged)]
         DeflectionEnmityPercentAdjustment = 49,
 
         /// <summary>
         /// Temporary percent Physical Defense adjustment applied after a successful ranged attack deflection.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Ranged)]
         DeflectionDefensePercentAdjustment = 50,
 
         /// <summary>
         /// Temporary percent Force Defense adjustment applied after a successful ranged attack deflection.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Ranged)]
         DeflectionForceDefensePercentAdjustment = 51,
 
         /// <summary>
@@ -783,9 +785,9 @@ namespace SWLOR.Game.Server.Service.StatService
         AreaAbilityHastePercentAdjustment = 141,
 
         /// <summary>
-        /// Temporary flat attack deflection chance applied when an area ability meets the buff threshold.
+        /// Temporary Ranged Deflection applied when an area ability meets the buff threshold.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Ranged)]
         AreaAbilityAttackDeflection = 142,
 
         /// <summary>
@@ -1161,9 +1163,9 @@ namespace SWLOR.Game.Server.Service.StatService
         DarkForceDamageHPPercentRestore = 210,
 
         /// <summary>
-        /// Temporary Attack Deflection granted after a Light Guardian power is used.
+        /// Temporary Ranged Deflection granted after a Light Guardian power is used.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Ranged)]
         LightGuardianPowerAttackDeflection = 211,
 
         /// <summary>
@@ -1234,15 +1236,15 @@ namespace SWLOR.Game.Server.Service.StatService
         NextAbilityStaminaCostAdjustment = 226,
 
         /// <summary>
-        /// Flat bonus added to the default Attack Deflection chance cap.
+        /// Flat bonus added to the default Melee Deflection chance cap.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        AttackDeflectionChanceCap = 227,
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Melee)]
+        MeleeDeflectionChanceCap = 227,
 
         /// <summary>
         /// Flat percent chance to deflect an attack while equipped with a shield.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Shield)]
         ShieldDeflection = 228,
 
         /// <summary>
@@ -1302,19 +1304,19 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Flat damage bonus for the next matching skill ability after deflecting an attack.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Ranged)]
         DeflectionNextSkillAbilityDamageBonus = 238,
 
         /// <summary>
         /// Critical chance bonus for the next matching skill ability after deflecting an attack.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Ranged)]
         DeflectionNextSkillAbilityCriticalRatePercentAdjustment = 239,
 
         /// <summary>
         /// Non-zero when deflection grants no activation delay to the next matching skill ability.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Ranged)]
         DeflectionNextSkillAbilityNoDelay = 240,
 
         /// <summary>
@@ -3076,9 +3078,9 @@ namespace SWLOR.Game.Server.Service.StatService
         AbilityUsedPerkCategorySelfEvasionPercentAdjustment = 540,
 
         /// <summary>
-        /// Attack Deflection granted to nearby allies after using an ability from a matching perk category.
+        /// Melee Deflection granted to nearby allies after using an ability from a matching perk category.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Melee)]
         AbilityUsedPerkCategoryNearbyAllyAttackDeflection = 541,
 
         /// <summary>
@@ -3172,9 +3174,9 @@ namespace SWLOR.Game.Server.Service.StatService
         LightsaberOffenseCenteringCooldownSeconds = 557,
 
         /// <summary>
-        /// Attack Deflection granted to nearby allies by Guardian's Influence.
+        /// Ranged Deflection granted to nearby allies by Guardian's Influence.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Ranged)]
         LightsaberDefenseGuardiansInfluenceAttackDeflection = 558,
 
         /// <summary>
@@ -3382,9 +3384,9 @@ namespace SWLOR.Game.Server.Service.StatService
         SingleTargetAbilityAttackDeflectionSkillType = 589,
 
         /// <summary>
-        /// Temporary Attack Deflection granted after using a matching single-target ability.
+        /// Temporary Melee Deflection granted after using a matching single-target ability.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Melee)]
         SingleTargetAbilityAttackDeflection = 590,
 
         /// <summary>
@@ -3430,10 +3432,10 @@ namespace SWLOR.Game.Server.Service.StatService
         HeavyVibrobladeDefenseGuardiansResolveTriggerQuaternaryPerkType = 597,
 
         /// <summary>
-        /// Cooldown in seconds for DeflectionStaminaRestore.
+        /// Cooldown in seconds for MeleeDeflectionStaminaRestore.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
-        DeflectionStaminaRestoreCooldownSeconds = 598,
+        [StatType(StatTypeCategory.NonBeneficial, deflectionSource: DeflectionSource.Melee)]
+        MeleeDeflectionStaminaRestoreCooldownSeconds = 598,
 
         /// <summary>
         /// Cooldown in seconds for CriticalHPPercentOfDamageRestore.
@@ -3516,7 +3518,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value for deflection-triggered next-skill ability bonuses. Unset applies to any skill.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, deflectionSource: DeflectionSource.Ranged)]
         DeflectionNextSkillAbilitySkillType = 615,
 
         /// <summary>
@@ -3588,19 +3590,19 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Cooldown in seconds for DeflectionFPRestore.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, deflectionSource: DeflectionSource.Ranged)]
         DeflectionFPRestoreCooldownSeconds = 627,
 
         /// <summary>
         /// SkillType id whose next auto-attack receives a critical chance bonus after deflecting an attack.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, deflectionSource: DeflectionSource.Ranged)]
         DeflectionNextAutoAttackCriticalRateSkillType = 630,
 
         /// <summary>
         /// Critical chance bonus for the next matching auto-attack after deflecting an attack.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Ranged)]
         DeflectionNextAutoAttackCriticalRatePercentAdjustment = 631,
 
         /// <summary>
@@ -3712,9 +3714,9 @@ namespace SWLOR.Game.Server.Service.StatService
         AbilityUsedAttackDeflectionSkillType = 649,
 
         /// <summary>
-        /// Temporary Attack Deflection granted after using a matching hostile ability.
+        /// Temporary Melee Deflection granted after using a matching hostile ability.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Melee)]
         AbilityUsedAttackDeflection = 650,
 
         /// <summary>
@@ -4048,9 +4050,9 @@ namespace SWLOR.Game.Server.Service.StatService
         StatusAppliedNextSkillAbilityWindowSeconds = 705,
 
         /// <summary>
-        /// Temporary Attack Deflection granted after applying a matching status.
+        /// Temporary Melee Deflection granted after applying a matching status.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Melee)]
         StatusAppliedSelfAttackDeflection = 706,
 
         /// <summary>
@@ -4182,19 +4184,19 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value whose area abilities can receive recent-deflection damage.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, deflectionSource: DeflectionSource.Ranged)]
         AreaAbilityAfterDeflectionDamagePercentAdjustmentSkillType = 728,
 
         /// <summary>
         /// Damage percent granted to matching area abilities after a recent deflection.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Ranged)]
         AreaAbilityAfterDeflectionDamagePercentAdjustment = 729,
 
         /// <summary>
         /// Recent deflection window for AreaAbilityAfterDeflectionDamagePercentAdjustment.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, deflectionSource: DeflectionSource.Ranged)]
         AreaAbilityAfterDeflectionWindowSeconds = 730,
 
         /// <summary>
@@ -4493,21 +4495,21 @@ namespace SWLOR.Game.Server.Service.StatService
         CostlyAbilityDamageBonus = 781,
 
         /// <summary>
-        /// FP restored when an ability grants Attack Deflection.
+        /// FP restored when an ability grants Ranged Deflection.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Ranged)]
         AbilityGrantedAttackDeflectionFPRestore = 782,
 
         /// <summary>
         /// Cooldown in seconds for AbilityGrantedAttackDeflectionFPRestore.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, deflectionSource: DeflectionSource.Ranged)]
         AbilityGrantedAttackDeflectionFPRestoreCooldownSeconds = 783,
 
         /// <summary>
         /// Guard granted to one nearby ally after the creature deflects an attack.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Melee)]
         DeflectionNearbyAllyGuard = 784,
 
         /// <summary>
@@ -4651,7 +4653,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// FP restoration temporarily granted while AbilityUsedAttackDeflection is active.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Melee)]
         AbilityUsedAttackDeflectionFPRestore = 808,
 
         /// <summary>
@@ -4661,9 +4663,9 @@ namespace SWLOR.Game.Server.Service.StatService
         AbilityUsedPerkCategoryAttackDeflectionCategoryType = 809,
 
         /// <summary>
-        /// Temporary Attack Deflection granted after using an ability from AbilityUsedPerkCategoryAttackDeflectionCategoryType.
+        /// Temporary Melee Deflection granted after using an ability from AbilityUsedPerkCategoryAttackDeflectionCategoryType.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Melee)]
         AbilityUsedPerkCategoryAttackDeflection = 810,
 
         /// <summary>
@@ -4675,7 +4677,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// FP restoration temporarily granted while AbilityUsedPerkCategoryAttackDeflection is active.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Melee)]
         AbilityUsedPerkCategoryAttackDeflectionFPRestore = 812,
 
         /// <summary>
@@ -4793,7 +4795,7 @@ namespace SWLOR.Game.Server.Service.StatService
         AbilityUsedPerkCategoryTargetEnmityToSourceCategoryId = 835,
 
         /// <summary>
-        /// PerkCategoryType value whose abilities trigger nearby ally Attack Deflection.
+        /// PerkCategoryType value whose abilities trigger nearby ally Melee Deflection.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
         AbilityUsedPerkCategoryNearbyAllyAttackDeflectionCategoryId = 836,
@@ -4823,7 +4825,7 @@ namespace SWLOR.Game.Server.Service.StatService
         GuardedHitNextSkillAbilityStatusSkillType = 841,
 
         /// <summary>
-        /// Duration in seconds for nearby ally Attack Deflection from matching category abilities.
+        /// Duration in seconds for nearby ally Melee Deflection from matching category abilities.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
         AbilityUsedPerkCategoryNearbyAllyAttackDeflectionDurationSeconds = 843,
@@ -4847,7 +4849,7 @@ namespace SWLOR.Game.Server.Service.StatService
         AbilityUsedPerkCategorySelfDefenseDurationSeconds = 846,
 
         /// <summary>
-        /// Enmity percent granted to self when applying nearby ally Attack Deflection.
+        /// Enmity percent granted to self when applying nearby ally Melee Deflection.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         AbilityUsedPerkCategoryNearbyAllyAttackDeflectionSelfEnmityPercentAdjustment = 847,
@@ -4885,13 +4887,13 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// RecastGroup value whose active cooldown is reduced when a deflection succeeds.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, deflectionSource: DeflectionSource.Shield)]
         DeflectionRecastReductionGroupId = 853,
 
         /// <summary>
         /// Seconds removed from the configured recast group when a deflection succeeds.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Shield)]
         DeflectionRecastReductionSeconds = 854,
 
         /// <summary>
@@ -5725,19 +5727,58 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.NonBeneficial)]
         NextAutoAttackNoDelayAllSkills = 994,
 
+        /// <summary>
+        /// Flat percent chance to deflect a hostile ranged weapon auto-attack while wielding a weapon and no shield.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Ranged)]
+        RangedDeflection = 995,
+
+        /// <summary>
+        /// Flat bonus added to the default Ranged Deflection chance cap.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Ranged)]
+        RangedDeflectionChanceCap = 996,
+
+        /// <summary>
+        /// Flat Stamina restored when the creature successfully uses Shield Deflection.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Shield)]
+        ShieldDeflectionStaminaRestore = 997,
+
+        /// <summary>
+        /// Cooldown in seconds for ShieldDeflectionStaminaRestore.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, deflectionSource: DeflectionSource.Shield)]
+        ShieldDeflectionStaminaRestoreCooldownSeconds = 998,
+
+        /// <summary>
+        /// Flat FP restored when the creature successfully uses Melee Deflection.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Melee)]
+        MeleeDeflectionFPRestore = 999,
+
+        /// <summary>
+        /// Cooldown in seconds for MeleeDeflectionFPRestore.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, deflectionSource: DeflectionSource.Melee)]
+        MeleeDeflectionFPRestoreCooldownSeconds = 1000,
+
     }
 
     public class StatTypeAttribute : Attribute
     {
         public StatTypeCategory Category { get; }
         public StatTypeAggregation Aggregation { get; }
+        public DeflectionSource DeflectionSource { get; }
 
         public StatTypeAttribute(
             StatTypeCategory category,
-            StatTypeAggregation aggregation = StatTypeAggregation.Additive)
+            StatTypeAggregation aggregation = StatTypeAggregation.Additive,
+            DeflectionSource deflectionSource = DeflectionSource.None)
         {
             Category = category;
             Aggregation = aggregation;
+            DeflectionSource = deflectionSource;
         }
     }
 

@@ -19,17 +19,19 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             if (!GetIsObjectValid(activator))
                 return;
 
-            var attackDeflection = Stat.GetStatAdjustment(activator, StatType.LightGuardianPowerAttackDeflection);
+            var sourceStatType = StatType.LightGuardianPowerAttackDeflection;
+            var attackDeflection = Stat.GetStatAdjustment(activator, sourceStatType);
             var duration = Stat.GetStatAdjustment(activator, StatType.LightGuardianPowerAttackDeflectionDurationSeconds);
-            if (attackDeflection == 0 || duration <= 0)
+            var deflectionStatType = Stat.GetGrantedDeflectionStatType(sourceStatType);
+            if (deflectionStatType == StatType.Invalid || attackDeflection == 0 || duration <= 0)
                 return;
 
             TemporaryStatModifier.Replace(
                 target,
-                StatType.AttackDeflection,
+                deflectionStatType,
                 attackDeflection,
                 duration,
-                StatType.LightGuardianPowerAttackDeflection);
+                sourceStatType);
         }
 
         public static void ApplyTemporaryHPPowerRiders(uint activator, uint target, float durationSeconds)

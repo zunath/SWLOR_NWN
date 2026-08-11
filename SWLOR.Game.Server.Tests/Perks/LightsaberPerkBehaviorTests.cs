@@ -29,6 +29,9 @@ public class LightsaberPerkBehaviorTests
         AssertPerkStat(StatType.HostileAbilityFPSpendForceAttackDurationSeconds, "30");
 
         // Deflecting Return (bounded reflection)
+        AssertPerkStat(StatType.RangedDeflection, "4");
+        AssertPerkStat(StatType.RangedDeflection, "6");
+        AssertPerkStat(StatType.RangedDeflection, "8");
         AssertPerkStat(StatType.RangedDeflectionReflectionPercent, "8");
         AssertPerkStat(StatType.RangedDeflectionReflectionPercent, "12");
         AssertPerkStat(StatType.RangedDeflectionReflectionPercent, "16");
@@ -260,9 +263,12 @@ public class LightsaberPerkBehaviorTests
         var resolve = File.ReadAllText(Path.Combine(
             FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
 
-        // Only a deflected ranged attack reflects, and it does so through the stat-driven helper.
-        resolve.Should().Contain("attackType == (uint)AttackType.Ranged");
+        // Only Ranged Deflection reflects. A shield deflecting a ranged auto-attack cannot trigger it.
+        resolve.Should().Contain("deflectionSource == DeflectionSource.Ranged");
         resolve.Should().Contain("Combat.ApplyRangedDeflectionReflection(defender.m_idSelf, attacker.m_idSelf, weaponSkillType)");
+        File.ReadAllText(Path.Combine(
+                FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Service", "Combat.cs"))
+            .Should().Contain("GetCombatImpactWeaponDamage(defender, GetEquippedWeaponSkillType(defender))");
     }
 
     [Test]

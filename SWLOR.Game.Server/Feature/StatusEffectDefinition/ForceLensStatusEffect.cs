@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 return;
 
             StatGroup.Stats.Remove(StatType.ForceDefensePercentAdjustment);
-            StatGroup.Stats[StatType.AttackDeflection] = 8;
+            StatGroup.Stats[StatType.RangedDeflection] = 8;
         }
     }
 }

@@ -626,15 +626,18 @@ public class CombatDamageTests
         guard.Should().Contain("defender == attacker");
         guard.Should().Contain("damage <= 0");
         guard.Should().Contain("!damageType.IsPhysicalDamageType()");
-        guard.Should().Contain("!IsGuardableAttackSource(defender, attacker)");
+        guard.Should().Contain("!IsHostileAttackSource(defender, attacker)");
         guard.IndexOf("!isLandedAttack", StringComparison.Ordinal).Should().BeLessThan(
             guard.IndexOf("var guardChance", StringComparison.Ordinal),
             "discarded swings must never enter the Guard roll");
-        var guardableSource = ExtractMethod(combatSource, "private static bool IsGuardableAttackSource(");
-        guardableSource.Should().Contain("GetIsReactionTypeHostile(attacker, defender)");
-        guardableSource.Should().Contain("GetIsReactionTypeHostile(defender, attacker)");
-        guardableSource.Should().Contain("GetIsEnemy(attacker, defender)");
-        guardableSource.Should().Contain("GetIsEnemy(defender, attacker)");
+        var hostileSource = ExtractMethod(combatSource, "internal static bool IsHostileAttackSource(");
+        hostileSource.Should().Contain("GetIsPC(attacker)");
+        hostileSource.Should().Contain("GetIsDM(attacker)");
+        hostileSource.Should().Contain("GetIsDMPossessed(attacker)");
+        hostileSource.Should().Contain("GetIsReactionTypeHostile(attacker, defender)");
+        hostileSource.Should().Contain("GetIsReactionTypeHostile(defender, attacker)");
+        hostileSource.Should().Contain("GetIsEnemy(attacker, defender)");
+        hostileSource.Should().Contain("GetIsEnemy(defender, attacker)");
         damageRollSource.Should().Contain("private static bool IsLandedAttackOnDamageableTarget(");
         damageRollSource.Should().Contain("targetObject.m_bPlotObject == 1");
         damageRollSource.Should().Contain("ResolveAttackRoll.IsSuccessfulAttackResult(attackData.m_nAttackResult)");

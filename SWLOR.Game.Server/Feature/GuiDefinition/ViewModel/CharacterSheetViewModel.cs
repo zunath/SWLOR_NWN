@@ -797,7 +797,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var mainHand = GetItemInSlot(InventorySlot.RightHand, _target);
             var offHand = GetItemInSlot(InventorySlot.LeftHand, _target);
-            var forceAccuracyWeapon = GetIsObjectValid(mainHand) ? mainHand : offHand;
+            var forceAccuracyWeapon = SelectForceAccuracyWeapon(mainHand, offHand, GetIsObjectValid(mainHand));
             var mainHandType = GetBaseItemType(mainHand);
             var attackDelayInfo = GetAttackDelayInfo();
             AttackDelay = attackDelayInfo.Value;
@@ -852,12 +852,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ForceDefense = Stat.GetDefense(_target, CombatDamageType.Force, AbilityType.Willpower);
 
             WeaponAccuracy = Stat.GetAccuracy(_target, mainHand, accuracyStatOverride, SkillType.Invalid);
-            ForceAccuracy = Stat.GetAccuracy(_target, forceAccuracyWeapon, AbilityType.Willpower, SkillType.Force);
+            ForceAccuracy = Stat.GetAccuracy(
+                _target,
+                forceAccuracyWeapon,
+                AbilityType.Willpower,
+                SkillType.Force,
+                ignoreWeaponAccuracyStatOverride: true);
             Evasion = Stat.GetEvasion(_target, SkillType.Invalid);
 
             RefreshResistances();
             RefreshCraftingStats();
             RefreshCharacterStatsList();
+        }
+
+        private static uint SelectForceAccuracyWeapon(uint mainHand, uint offHand, bool isMainHandValid)
+        {
+            return isMainHandValid ? mainHand : offHand;
         }
 
         private (string Value, string Tooltip) GetAttackDelayInfo()

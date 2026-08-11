@@ -223,12 +223,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         {
             col.AddRow(row =>
             {
-                row.AddButton()
-                    .SetText("Custom Color...")
+                row.AddLabel()
+                    .SetText("Custom Color")
                     .SetWidth(128f)
                     .SetHeight(32f)
-                    .BindIsEnabled(model => model.IsCustomTintAvailable)
-                    .BindOnClicked(model => model.OnToggleCustomTintPicker());
+                    .SetVerticalAlign(NuiVerticalAlign.Middle);
 
                 row.AddLabel()
                     .BindText(model => model.CustomTintSelectionText)
@@ -238,11 +237,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
             col.AddRow(row =>
             {
-                row.BindIsVisible(model => model.IsCustomTintPickerVisible);
                 row.AddSpacer();
 
                 row.AddColorPicker()
                     .BindSelectedColor(model => model.SelectedTintColor)
+                    .BindIsEnabled(model => model.IsCustomTintAvailable)
                     .SetHeight(176f)
                     .SetWidth(208f);
 
@@ -251,13 +250,56 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
             col.AddRow(row =>
             {
-                row.BindIsVisible(model => model.IsCustomTintPickerVisible);
+                row.AddSpacer();
+
+                row.AddLabel()
+                    .SetText("R")
+                    .SetWidth(18f)
+                    .SetHeight(32f)
+                    .SetVerticalAlign(NuiVerticalAlign.Middle);
+                row.AddTextEdit()
+                    .BindValue(model => model.CustomTintRed)
+                    .BindIsEnabled(model => model.IsCustomTintAvailable)
+                    .SetMaxLength(3)
+                    .SetWidth(48f)
+                    .SetHeight(32f);
+
+                row.AddLabel()
+                    .SetText("G")
+                    .SetWidth(18f)
+                    .SetHeight(32f)
+                    .SetVerticalAlign(NuiVerticalAlign.Middle);
+                row.AddTextEdit()
+                    .BindValue(model => model.CustomTintGreen)
+                    .BindIsEnabled(model => model.IsCustomTintAvailable)
+                    .SetMaxLength(3)
+                    .SetWidth(48f)
+                    .SetHeight(32f);
+
+                row.AddLabel()
+                    .SetText("B")
+                    .SetWidth(18f)
+                    .SetHeight(32f)
+                    .SetVerticalAlign(NuiVerticalAlign.Middle);
+                row.AddTextEdit()
+                    .BindValue(model => model.CustomTintBlue)
+                    .BindIsEnabled(model => model.IsCustomTintAvailable)
+                    .SetMaxLength(3)
+                    .SetWidth(48f)
+                    .SetHeight(32f);
+
+                row.AddSpacer();
+            });
+
+            col.AddRow(row =>
+            {
                 row.AddSpacer();
 
                 row.AddButton()
                     .SetText("Use Preset Color")
                     .SetWidth(144f)
                     .SetHeight(32f)
+                    .BindIsEnabled(model => model.IsCustomTintAvailable)
                     .BindOnClicked(model => model.OnResetTintColor());
 
                 row.AddSpacer();

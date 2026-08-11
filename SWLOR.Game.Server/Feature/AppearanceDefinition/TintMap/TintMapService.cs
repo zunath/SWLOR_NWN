@@ -356,8 +356,12 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
             SaveDroidOverrides(creature, existingVariables, savedColor);
 
+            // The NUI can remain open while an equipment or body-part replacement completes.
+            // Re-resolve here so an RGB edit always reaches the materials currently rendered by
+            // the creature instead of only the selections captured by the previous refresh.
+            var currentSelections = TintMapModelResolver.GetCurrentSelections(creature);
             var appliedVariables = new HashSet<string>(StringComparer.Ordinal);
-            foreach (var selection in selections)
+            foreach (var selection in selections.Concat(currentSelections))
             {
                 if (selection.GetPaletteSource(layer) != creature ||
                     !selection.Material.Layers.Contains(layer))
@@ -916,6 +920,14 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             return (int)creatureColor >= 0 && GetObjectType(creature) == ObjectType.Creature
                 ? Math.Clamp(GetColor(creature, creatureColor), 0, TintMapMaterialRegistry.PaletteColorCount - 1)
                 : 0;
+        }
+
+        public static int GetStandardColorId(
+            uint creature,
+            TintMapMaterialSelection selection,
+            TintMapLayerType layer)
+        {
+            return GetStandardColor(creature, selection, layer);
         }
 
         private static void ApplyColor(

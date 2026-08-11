@@ -115,7 +115,11 @@ public class TintMapReviewTests
         definition.Should().Contain(".BindSelectedColor(model => model.SelectedTintColor)");
         definition.Should().Contain(".BindResref(model => model.ColorSheetResref)");
         definition.Should().Contain("model => model.OnClickColorPalette(paletteIndex)");
-        definition.Should().Contain(".SetText(\"Custom Color...\")");
+        definition.Should().Contain(".SetText(\"Custom Color\")");
+        definition.Should().Contain(".BindValue(model => model.CustomTintRed)");
+        definition.Should().Contain(".BindValue(model => model.CustomTintGreen)");
+        definition.Should().Contain(".BindValue(model => model.CustomTintBlue)");
+        definition.Should().NotContain("IsCustomTintPickerVisible");
         definitionMethods["BuildEditorHeader"].ToString().Should().NotContain("BuildCustomTintEditor");
         definitionMethods["BuildMainEditor"].ToString().Should().Contain("BuildCustomTintEditor(col2)");
         definitionMethods["BuildColorPalette"].ToString().Should().Contain("BuildCustomTintEditor(col)");
@@ -123,6 +127,13 @@ public class TintMapReviewTests
         definition.Should().NotContain("TintColorSheetResref");
         viewModel.Should().Contain("new TintMapColor(value.R, value.G, value.B)");
         viewModel.Should().Contain("WatchOnClient(model => model.SelectedTintColor)");
+        viewModel.Should().Contain("WatchOnClient(model => model.CustomTintRed)");
+        viewModel.Should().Contain("WatchOnClient(model => model.CustomTintGreen)");
+        viewModel.Should().Contain("WatchOnClient(model => model.CustomTintBlue)");
+        viewModel.Should().Contain("TintMapPaletteColors.GetColor(");
+        viewModel.Should().Contain("TintMapService.GetStandardColorId(");
+        viewModel.Should().NotContain("IsCustomTintPickerVisible");
+        viewModel.Should().NotContain("OnToggleCustomTintPicker");
         viewModel.Should().NotContain("TintMaterialOptions");
         viewModel.Should().NotContain("TintLayerOptions");
         viewModel.Should().NotContain("OnSelectTintColor");
@@ -516,6 +527,8 @@ public class TintMapReviewTests
             "inactive semantic keys must remain synchronized after a droid respawns");
         synchronizeCalls.Should().Contain("SetColor",
             "the active materials must update immediately in the game preview");
+        synchronizeCalls.Should().Contain(nameof(TintMapModelResolver.GetCurrentSelections),
+            "an RGB edit must re-resolve body parts that changed while the editor remained open");
 
         var viewModelSource = ReadSource(
             "SWLOR.Game.Server",
@@ -529,6 +542,42 @@ public class TintMapReviewTests
             .OfType<PropertyDeclarationSyntax>()
             .Single(property => property.Identifier.ValueText == "SelectedTintColor");
         selectedTintColor.ToString().Should().Contain(nameof(TintMapService.SetCreatureCustomColor));
+    }
+
+    [Test]
+    public void PresetPickerColorsMatchThePaletteAtlasMiddletone()
+    {
+        var repositoryRoot = FindRepositoryRoot();
+        var atlas = File.ReadAllBytes(Path.Combine(
+            repositoryRoot.FullName,
+            "SWLOR_Haks",
+            "sw_item",
+            "plt_palette.tga"));
+        var width = BitConverter.ToUInt16(atlas, 12);
+        var height = BitConverter.ToUInt16(atlas, 14);
+        var bitsPerPixel = atlas[16];
+        var isTopOrigin = (atlas[17] & 0x20) != 0;
+
+        width.Should().Be(256);
+        height.Should().Be(TintMapMaterialRegistry.PaletteTextureHeight);
+        bitsPerPixel.Should().Be(32);
+
+        foreach (var layer in Enum.GetValues<TintMapLayerType>())
+        {
+            var baseRow = TintMapMaterialRegistry.GetLayer(layer).PaletteBaseRow;
+            for (var colorId = 0; colorId < TintMapMaterialRegistry.PaletteColorCount; colorId++)
+            {
+                var atlasY = baseRow + colorId;
+                var fileY = isTopOrigin ? height - 1 - atlasY : atlasY;
+                var pixelOffset = 18 + (fileY * width + 128) * 4;
+                var expected = new TintMapColor(
+                    atlas[pixelOffset + 2],
+                    atlas[pixelOffset + 1],
+                    atlas[pixelOffset]);
+
+                TintMapPaletteColors.GetColor(layer, colorId).Should().Be(expected);
+            }
+        }
     }
 
     [Test]
@@ -1184,6 +1233,42 @@ public class TintMapReviewTests
                 "sw_tint1",
                 "tm_53954255618f4.dds"))
             .Should().BeTrue();
+    }
+
+    [Test]
+    public void HumanHand246ModelsUseTheirAuthoredSkinTintMasks()
+    {
+        var repositoryRoot = FindRepositoryRoot();
+        var rows = ReadSource("SWLOR_Haks", "sw_2da", "tintmap.2da")
+            .Split('\n', StringSplitOptions.RemoveEmptyEntries)
+            .Select(line => line.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+            .Where(columns => columns.Length >= 4)
+            .ToList();
+        var expectedModels = new Dictionary<string, string>
+        {
+            [Path.Combine("sw_pt_lhand", "pfh0_handl246.mdl")] = "pfh0_handl246",
+            [Path.Combine("sw_pt_rhand", "pfh0_handr246.mdl")] = "pfh0_handr246",
+            [Path.Combine("sw_pt_lhand", "pmh0_handl246.mdl")] = "pmh0_handl246",
+            [Path.Combine("sw_pt_rhand", "pmh0_handr246.mdl")] = "pmh0_handr246"
+        };
+
+        foreach (var (relativePath, model) in expectedModels)
+        {
+            var row = rows.Single(columns => columns[1] == model);
+            row[2].Should().Be(model);
+            row[3].Should().Be("0,1,2,4,5,6,7");
+
+            var modelPath = Path.Combine(repositoryRoot.FullName, "SWLOR_Haks", relativePath);
+            System.Text.Encoding.ASCII.GetString(File.ReadAllBytes(modelPath))
+                .Should().Contain(model);
+        }
+
+        var fallbackConfiguration = JObject.Parse(
+            ReadSource("SWLOR_Haks", "tools", "TintMapFallbacks.json"));
+        var authoredTextureOverrides = fallbackConfiguration["authoredTextureOverrides"]!
+            .ToObject<Dictionary<string, string>>();
+        authoredTextureOverrides.Should().BeEquivalentTo(
+            expectedModels.Values.ToDictionary(model => model, model => model));
     }
 
     [Test]

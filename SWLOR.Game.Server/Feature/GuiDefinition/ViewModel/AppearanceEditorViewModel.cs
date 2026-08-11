@@ -204,12 +204,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public bool IsCustomTintPickerVisible
-        {
-            get => Get<bool>();
-            set => Set(value);
-        }
-
         public string CustomTintSelectionText
         {
             get => Get<string>();
@@ -222,7 +216,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set
             {
                 Set(value);
-                if (_loadingTintColor || value == null ||
+                if (value == null)
+                    return;
+
+                SynchronizeCustomTintComponents(value);
+                if (_loadingTintColor ||
                     !TryGetEditableTintSelections(out var selections, out var layerType, out var layer))
                 {
                     return;
@@ -243,6 +241,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 CustomTintSelectionText = $"{layer.Name}: #{value.R:X2}{value.G:X2}{value.B:X2}";
             }
+        }
+
+        public string CustomTintRed
+        {
+            get => Get<string>();
+            set => SetCustomTintComponent(value, nameof(CustomTintRed));
+        }
+
+        public string CustomTintGreen
+        {
+            get => Get<string>();
+            set => SetCustomTintComponent(value, nameof(CustomTintGreen));
+        }
+
+        public string CustomTintBlue
+        {
+            get => Get<string>();
+            set => SetCustomTintComponent(value, nameof(CustomTintBlue));
         }
 
         public bool IsSettingsVisible
@@ -838,7 +854,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsColorPickerVisible = true;
             IsCopyEnabled = true;
             IsCustomTintAvailable = false;
-            IsCustomTintPickerVisible = false;
             CustomTintSelectionText = "Select a color channel.";
             ToggleItemEquippedFlags();
             LoadColorCategoryOptions();
@@ -859,6 +874,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.SelectedPartIndex);
             WatchOnClient(model => model.SelectedItemTypeIndex);
             WatchOnClient(model => model.SelectedTintColor);
+            WatchOnClient(model => model.CustomTintRed);
+            WatchOnClient(model => model.CustomTintGreen);
+            WatchOnClient(model => model.CustomTintBlue);
 
             if (GetIsPC(_target) && !GetIsDM(_target) && !GetIsDMPossessed(_target))
             {
@@ -889,36 +907,33 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!TryGetEditableTintSelections(out var selections, out var layerType, out var layer))
             {
                 IsCustomTintAvailable = false;
-                IsCustomTintPickerVisible = false;
                 SetSelectedTintColor(GuiColor.Grey);
                 CustomTintSelectionText = "Select a tintable color channel.";
                 return;
             }
 
             IsCustomTintAvailable = true;
-            var customColors = selections
-                .Select(selection => TintMapService.TryGetCustomColor(selection, layerType, out var color)
-                    ? (TintMapColor?)color
-                    : null)
+            var effectiveColors = selections
+                .Select(selection => TintMapService.TryGetCustomColor(selection, layerType, out var customColor)
+                    ? customColor
+                    : TintMapPaletteColors.GetColor(
+                        layerType,
+                        TintMapService.GetStandardColorId(_target, selection, layerType)))
                 .ToList();
-            var distinctCustomColors = customColors
-                .Where(color => color.HasValue)
-                .Select(color => color.Value)
+            var distinctColors = effectiveColors
                 .Distinct()
                 .ToList();
 
-            if (customColors.All(color => color.HasValue) && distinctCustomColors.Count == 1)
+            if (distinctColors.Count == 1)
             {
-                var color = distinctCustomColors[0];
+                var color = distinctColors[0];
                 SetSelectedTintColor(new GuiColor(color.Red, color.Green, color.Blue));
                 CustomTintSelectionText = $"{layer.Name}: #{color.Red:X2}{color.Green:X2}{color.Blue:X2}";
                 return;
             }
 
             SetSelectedTintColor(GuiColor.Grey);
-            CustomTintSelectionText = distinctCustomColors.Count > 0
-                ? $"{layer.Name}: Mixed custom colors"
-                : $"{layer.Name}: Preset color";
+            CustomTintSelectionText = $"{layer.Name}: Mixed colors";
         }
 
         private void SetSelectedTintColor(GuiColor color)
@@ -932,6 +947,41 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 _loadingTintColor = false;
             }
+        }
+
+        private void SynchronizeCustomTintComponents(GuiColor color)
+        {
+            var wasLoading = _loadingTintColor;
+            _loadingTintColor = true;
+            try
+            {
+                Set(color.R.ToString(), nameof(CustomTintRed));
+                Set(color.G.ToString(), nameof(CustomTintGreen));
+                Set(color.B.ToString(), nameof(CustomTintBlue));
+            }
+            finally
+            {
+                _loadingTintColor = wasLoading;
+            }
+        }
+
+        private void SetCustomTintComponent(string value, string propertyName)
+        {
+            var digits = new string((value ?? string.Empty).Where(char.IsDigit).ToArray());
+            var normalized = int.TryParse(digits, out var component)
+                ? Math.Clamp(component, 0, byte.MaxValue).ToString()
+                : string.Empty;
+            Set(normalized, propertyName);
+
+            if (_loadingTintColor ||
+                !byte.TryParse(CustomTintRed, out var red) ||
+                !byte.TryParse(CustomTintGreen, out var green) ||
+                !byte.TryParse(CustomTintBlue, out var blue))
+            {
+                return;
+            }
+
+            SelectedTintColor = new GuiColor(red, green, blue);
         }
 
         private bool TryGetEditableTintSelections(
@@ -1798,13 +1848,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             TintMapService.ApplyCurrentColors(_target);
-        };
-
-        public Action OnToggleCustomTintPicker() => () =>
-        {
             LoadTintMapEditor();
-            if (IsCustomTintAvailable)
-                IsCustomTintPickerVisible = !IsCustomTintPickerVisible;
         };
 
         public Action OnResetTintColor() => () =>
@@ -1837,8 +1881,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
             }
 
-            SetSelectedTintColor(GuiColor.Grey);
-            CustomTintSelectionText = $"{layer.Name}: Preset color";
+            LoadTintMapEditor();
         }
 
         private void ModifyHelmetCloakColor(AppearanceArmorColor colorChannel, int colorId)

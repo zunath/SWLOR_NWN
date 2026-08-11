@@ -24,6 +24,9 @@ public class WeaponDeflectionTests
         Stat.GetStatTypeDeflectionSource(StatType.MeleeDeflectionStaminaRestoreCooldownSeconds).Should().Be(DeflectionSource.Melee);
         Stat.GetStatTypeDeflectionSource(StatType.ShieldDeflectionStaminaRestore).Should().Be(DeflectionSource.Shield);
         Stat.GetStatTypeDeflectionSource(StatType.ShieldDeflectionStaminaRestoreCooldownSeconds).Should().Be(DeflectionSource.Shield);
+        Stat.GetStatTypeDeflectionSource(StatType.AreaAbilityAfterDeflectionDamagePercentAdjustmentSkillType).Should().Be(DeflectionSource.Ranged);
+        Stat.GetStatTypeDeflectionSource(StatType.AreaAbilityAfterDeflectionDamagePercentAdjustment).Should().Be(DeflectionSource.Ranged);
+        Stat.GetStatTypeDeflectionSource(StatType.AreaAbilityAfterDeflectionWindowSeconds).Should().Be(DeflectionSource.Ranged);
     }
 
     [Test]
@@ -32,12 +35,14 @@ public class WeaponDeflectionTests
         var source = ReadSource("SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs");
 
         source.Should().Contain("UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType)");
+        source.Should().Contain("weaponSkillType == SkillType.Invalid");
         source.Should().Contain("Combat.IsHostileAttackSource(defender.m_idSelf, attacker.m_idSelf)");
         source.Should().NotContain("!GetIsReactionTypeHostile(attacker.m_idSelf, defender.m_idSelf) ||");
-        source.Should().Contain("attacker.m_ScriptVars.SetInt(new CExoString(DeflectionAttemptedVariable), 0)");
-        source.Should().Contain("attacker.m_ScriptVars.GetInt(new CExoString(DeflectionAttemptedVariable))");
-        source.Should().Contain("attacker.m_ScriptVars.SetInt(new CExoString(DeflectionAttemptedVariable), 1)");
-        source.Should().NotContain("defender.m_ScriptVars.SetInt(new CExoString(DeflectionAttemptedVariable)");
+        source.Should().Contain("AdvanceDeflectionRound(attacker)");
+        source.Should().Contain("GetDeflectionAttemptedVariable(defender.m_idSelf)");
+        source.Should().Contain("attemptedRound == roundToken");
+        source.Should().Contain("attacker.m_ScriptVars.SetInt(attemptedVariable, roundToken)");
+        source.Should().Contain("DeflectionAttemptedVariablePrefix}{defender}");
         source.Should().Contain("var shieldDeflection = Stat.GetShieldDeflectionChanceNative(defender);");
         source.Should().Contain("Stat.GetRangedDeflectionChanceNative(defender)");
         source.Should().Contain("Stat.GetMeleeDeflectionChanceNative(defender)");
@@ -52,6 +57,10 @@ public class WeaponDeflectionTests
         combatSource.Should().Contain("DeflectionSource.Shield => \"shield deflect\"");
         combatSource.Should().Contain("internal static bool IsHostileAttackSource(uint defender, uint attacker)");
         combatSource.Should().Contain("GetIsPC(attacker) || GetIsDM(attacker) || GetIsDMPossessed(attacker)");
+        combatSource.Should().Contain("var requiredSource = Stat.GetStatTypeDeflectionSource(");
+        combatSource.Should().Contain("StatType.AreaAbilityAfterDeflectionDamagePercentAdjustment);");
+        combatSource.Should().Contain("!HasRecentDeflection(attacker, requiredSource, window)");
+        combatSource.Should().NotContain("HasRecentDeflection(attacker, DeflectionSource.Ranged, window)");
 
         source.IndexOf("var shieldDeflection = Stat.GetShieldDeflectionChanceNative(defender);", StringComparison.Ordinal)
             .Should().BeLessThan(source.IndexOf("Stat.GetRangedDeflectionChanceNative(defender)", StringComparison.Ordinal));

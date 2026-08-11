@@ -4097,7 +4097,11 @@ namespace SWLOR.Game.Server.Service
                 return damage;
 
             var window = Stat.GetStatAdjustment(attacker, StatType.AreaAbilityAfterDeflectionWindowSeconds);
-            if (window <= 0 || !HasRecentDeflection(attacker, DeflectionSource.Ranged, window))
+            var requiredSource = Stat.GetStatTypeDeflectionSource(
+                StatType.AreaAbilityAfterDeflectionDamagePercentAdjustment);
+            if (window <= 0 ||
+                requiredSource == DeflectionSource.None ||
+                !HasRecentDeflection(attacker, requiredSource, window))
                 return damage;
 
             var adjustment = Stat.GetStatAdjustment(attacker, StatType.AreaAbilityAfterDeflectionDamagePercentAdjustment);

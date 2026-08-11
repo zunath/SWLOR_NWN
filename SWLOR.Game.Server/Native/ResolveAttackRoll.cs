@@ -54,7 +54,8 @@ namespace SWLOR.Game.Server.Native
         private const int DefaultMissedBy = 1;
         private const int DefaultToHitMod = 1;
         private const int DefaultToHitRoll = 1;
-        private const string DeflectionAttemptedVariable = "RESOLVE_ATTACK_ROLL_DEFLECTION_ATTEMPTED";
+        private const string DeflectionRoundVariable = "RESOLVE_ATTACK_ROLL_DEFLECTION_ROUND";
+        private const string DeflectionAttemptedVariablePrefix = "RESOLVE_ATTACK_ROLL_DEFLECTION_ATTEMPTED_";
 
         internal delegate void ResolveAttackRollHook(void* thisPtr, void* pTarget);
 
@@ -131,13 +132,12 @@ namespace SWLOR.Game.Server.Native
                 // If we get to this point, we are fighting a creature.  Pull the target's stats.
                 var defender = CNWSCreature.FromPointer(pTarget);
 
-                // One deflection attempt per incoming attacker combat round: m_bRoundStarted stays
-                // 1 for the whole round, so keep the marker on the attacker and reset it only on
-                // that attacker's first swing. A defender-scoped marker can be cleared by another
-                // attacker's interleaved round and allow the first attacker to roll twice.
+                // Advance one token per incoming attacker combat round. The attacker stores that
+                // token under a defender-specific marker, so interleaved attackers and Cleave
+                // target changes cannot reset or consume another attacker-defender pair's budget.
                 if (pCombatRound.m_bRoundStarted == 1 && pCombatRound.m_nCurrentAttack == 0)
                 {
-                    attacker.m_ScriptVars.SetInt(new CExoString(DeflectionAttemptedVariable), 0);
+                    AdvanceDeflectionRound(attacker);
                 }
 
                 var attackType = (uint)AttackType.Melee;
@@ -474,10 +474,13 @@ namespace SWLOR.Game.Server.Native
             CNWSCreature attacker,
             CNWSCreature defender)
         {
-            var hasAttemptedDeflection = attacker.m_ScriptVars.GetInt(new CExoString(DeflectionAttemptedVariable));
+            var roundToken = GetDeflectionRoundToken(attacker);
+            var attemptedVariable = GetDeflectionAttemptedVariable(defender.m_idSelf);
+            var attemptedRound = attacker.m_ScriptVars.GetInt(attemptedVariable);
 
             if (!isHit ||
-                hasAttemptedDeflection != 0 ||
+                attemptedRound == roundToken ||
+                weaponSkillType == SkillType.Invalid ||
                 !Combat.IsHostileAttackSource(defender.m_idSelf, attacker.m_idSelf) ||
                 UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType))
                 return DeflectionSource.None;
@@ -486,7 +489,7 @@ namespace SWLOR.Game.Server.Native
             if (deflectChance <= 0)
                 return DeflectionSource.None;
 
-            attacker.m_ScriptVars.SetInt(new CExoString(DeflectionAttemptedVariable), 1);
+            attacker.m_ScriptVars.SetInt(attemptedVariable, roundToken);
 
             var deflectRoll = Random.D100(1);
             var deflected = deflectRoll <= deflectChance;
@@ -503,6 +506,29 @@ namespace SWLOR.Game.Server.Native
             Log.Write(LogGroup.Attack, $"Deflect roll: {deflectRoll}, Chance: {deflectChance}, Hit: {!deflected}");
 
             return deflected ? source : DeflectionSource.None;
+        }
+
+        private static void AdvanceDeflectionRound(CNWSCreature attacker)
+        {
+            var variable = new CExoString(DeflectionRoundVariable);
+            var nextRound = attacker.m_ScriptVars.GetInt(variable) + 1;
+            attacker.m_ScriptVars.SetInt(variable, nextRound > 0 ? nextRound : 1);
+        }
+
+        private static int GetDeflectionRoundToken(CNWSCreature attacker)
+        {
+            var variable = new CExoString(DeflectionRoundVariable);
+            var roundToken = attacker.m_ScriptVars.GetInt(variable);
+            if (roundToken > 0)
+                return roundToken;
+
+            attacker.m_ScriptVars.SetInt(variable, 1);
+            return 1;
+        }
+
+        private static CExoString GetDeflectionAttemptedVariable(uint defender)
+        {
+            return new CExoString($"{DeflectionAttemptedVariablePrefix}{defender}");
         }
 
         private static string BuildDeflectionFeedback(uint observer, CNWSCreature attacker, CNWSCreature defender, string deflectionName, string feedbackString)

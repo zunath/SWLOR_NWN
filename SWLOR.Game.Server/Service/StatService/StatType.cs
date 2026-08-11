@@ -4184,19 +4184,19 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value whose area abilities can receive recent-deflection damage.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, deflectionSource: DeflectionSource.Ranged)]
         AreaAbilityAfterDeflectionDamagePercentAdjustmentSkillType = 728,
 
         /// <summary>
         /// Damage percent granted to matching area abilities after a recent deflection.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Ranged)]
         AreaAbilityAfterDeflectionDamagePercentAdjustment = 729,
 
         /// <summary>
         /// Recent deflection window for AreaAbilityAfterDeflectionDamagePercentAdjustment.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, deflectionSource: DeflectionSource.Ranged)]
         AreaAbilityAfterDeflectionWindowSeconds = 730,
 
         /// <summary>

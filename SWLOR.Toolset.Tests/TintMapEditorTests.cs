@@ -329,6 +329,109 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void ResetMaterialInheritedFromGlobalItemTintRestoresOnlyItsStockPaletteColor()
+        {
+            var variables = new VarTable(new JsonGffStruct());
+            var layer = TintMapLayerType.Cloth1;
+            var globalKey = TintMapVariable.GetItemGlobalColorStateName(layer);
+            var globalColor = new TintMapColor(12, 34, 56).ToStoredValue();
+            variables.SetInt(globalKey, globalColor);
+            var row = new TintMapColorRowViewModel(
+                "item_material",
+                layer,
+                variables,
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                null,
+                standardPaletteColorId: 37);
+
+            row.Color.Should().Be(Color.FromRgb(12, 34, 56));
+            row.ResetCommand.Execute(null);
+
+            variables.GetInt(row.Key).Should().Be(38,
+                "palette overrides are stored one-based and must mask the inherited global tint");
+            variables.GetInt(globalKey).Should().Be(globalColor,
+                "resetting one material must not discard the item-wide tint from sibling materials");
+            TintMapOverrides.GetMaterialColor(variables, row.MaterialName, layer).Should().Be(38);
+            row.IsCustom.Should().BeFalse();
+            row.Color.Should().Be(Color.FromRgb(
+                TintMapPaletteColors.GetColor(layer, 37).Red,
+                TintMapPaletteColors.GetColor(layer, 37).Green,
+                TintMapPaletteColors.GetColor(layer, 37).Blue));
+        }
+
+        [Test]
+        public void TintEditorUsesMatchingMeshPaletteWhenResettingAnInheritedGlobalItemTint()
+        {
+            var catalog = TintMapCatalog.Load(Resources());
+            catalog.Should().NotBeNull();
+            var variables = new VarTable(new JsonGffStruct());
+            var layer = TintMapLayerType.Leather1;
+            variables.SetInt(
+                TintMapVariable.GetItemGlobalColorStateName(layer),
+                new TintMapColor(65, 43, 21).ToStoredValue());
+            var model = ModelWith("pmo0_footl10");
+            model.Meshes.Single().LayerColorIndices = new Dictionary<int, int>
+            {
+                [(int)layer] = 73
+            };
+            var editor = new TintMapEditorViewModel(
+                variables,
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                catalog!);
+
+            editor.Reload(model);
+            var row = editor.Colors.Single(color => color.Layer == layer);
+            row.ResetCommand.Execute(null);
+
+            variables.GetInt(row.Key).Should().Be(74);
+        }
+
+        [Test]
+        public void TintEditorRefreshesStockPaletteColorWhenTheModelKeysStayTheSame()
+        {
+            var catalog = TintMapCatalog.Load(Resources());
+            catalog.Should().NotBeNull();
+            var variables = new VarTable(new JsonGffStruct());
+            var layer = TintMapLayerType.Leather1;
+            variables.SetInt(
+                TintMapVariable.GetItemGlobalColorStateName(layer),
+                new TintMapColor(65, 43, 21).ToStoredValue());
+            var model = ModelWith("pmo0_footl10");
+            model.Meshes.Single().LayerColorIndices = new Dictionary<int, int>
+            {
+                [(int)layer] = 12
+            };
+            var editor = new TintMapEditorViewModel(
+                variables,
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                catalog!);
+            editor.Reload(model);
+
+            model.Meshes.Single().LayerColorIndices = new Dictionary<int, int>
+            {
+                [(int)layer] = 91
+            };
+            editor.Reload(model);
+            var row = editor.Colors.Single(color => color.Layer == layer);
+            row.ResetCommand.Execute(null);
+
+            variables.GetInt(row.Key).Should().Be(92,
+                "the retained tint row must follow a newer stock dye on the same model material");
+        }
+
+        [Test]
         public void CatalogFindsKnownTintMaterialThroughMeshTextureFallback()
         {
             var catalog = TintMapCatalog.Load(Resources());

@@ -14,6 +14,7 @@ namespace SWLOR.Toolset.Editors.TintMaps
         private readonly VarTable _variables;
         private readonly Func<string, Action, bool> _runEdit;
         private readonly Action? _colorChanged;
+        private int _standardPaletteColorId;
         private bool _loading;
 
         public string MaterialName { get; }
@@ -41,13 +42,18 @@ namespace SWLOR.Toolset.Editors.TintMaps
             TintMapLayerType layer,
             VarTable variables,
             Func<string, Action, bool> runEdit,
-            Action? colorChanged)
+            Action? colorChanged,
+            int standardPaletteColorId = 0)
         {
             MaterialName = materialName;
             Layer = layer;
             _variables = variables;
             _runEdit = runEdit;
             _colorChanged = colorChanged;
+            _standardPaletteColorId = Math.Clamp(
+                standardPaletteColorId,
+                0,
+                TintMapMaterialRegistry.PaletteColorCount - 1);
             Reload();
         }
 
@@ -85,7 +91,17 @@ namespace SWLOR.Toolset.Editors.TintMaps
                     $"Reset {MaterialName} {LayerName} tint",
                     () =>
                     {
-                        _variables.Remove(Key);
+                        if (HasInheritedItemGlobalColor())
+                        {
+                            // A material without its own TM_* value inherits the item's TMG_*
+                            // custom color. Keep that item-wide intent for sibling materials while
+                            // explicitly restoring this material to its stock NWN palette row.
+                            _variables.SetInt(Key, _standardPaletteColorId + 1);
+                        }
+                        else
+                        {
+                            _variables.Remove(Key);
+                        }
                         RemoveGlobalSemanticIntent();
                     }))
             {
@@ -97,8 +113,16 @@ namespace SWLOR.Toolset.Editors.TintMaps
             _colorChanged?.Invoke();
         }
 
-        public void Reload()
+        public void Reload(int? standardPaletteColorId = null)
         {
+            if (standardPaletteColorId.HasValue)
+            {
+                _standardPaletteColorId = Math.Clamp(
+                    standardPaletteColorId.Value,
+                    0,
+                    TintMapMaterialRegistry.PaletteColorCount - 1);
+            }
+
             _loading = true;
             try
             {
@@ -141,6 +165,16 @@ namespace SWLOR.Toolset.Editors.TintMaps
         {
             if (TintMapVariable.IsCreatureColorLayer(Layer))
                 _variables.Remove(TintMapVariable.GetCreatureColorStateName(Layer));
+        }
+
+        private bool HasInheritedItemGlobalColor()
+        {
+            if (TintMapVariable.IsCreatureColorLayer(Layer))
+                return false;
+
+            var stateVariable = TintMapVariable.GetItemGlobalColorStateName(Layer);
+            return _variables.GetInt(stateVariable) is int savedColor &&
+                   TintMapColor.TryFromStoredValue(savedColor, out _);
         }
     }
 }

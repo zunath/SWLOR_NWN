@@ -95,8 +95,12 @@ namespace SWLOR.Toolset.Editors.TintMaps
             if (!hasPendingReplacement &&
                 currentKeys.SequenceEqual(wantedKeys, StringComparer.Ordinal))
             {
-                foreach (var row in Colors)
-                    row.Reload();
+                for (var index = 0; index < Colors.Count; index++)
+                {
+                    var (material, layer) = wanted[index];
+                    Colors[index].Reload(
+                        ResolveStandardPaletteColorId(model, material.Resref, layer));
+                }
                 return;
             }
 
@@ -116,7 +120,8 @@ namespace SWLOR.Toolset.Editors.TintMaps
                     layer,
                     _variables,
                     _runEdit,
-                    _colorChanged));
+                    _colorChanged,
+                    ResolveStandardPaletteColorId(model, material.Resref, layer)));
             }
 
             if (carryItemCustomColorsAcrossMaterials && model != null)
@@ -126,6 +131,28 @@ namespace SWLOR.Toolset.Editors.TintMaps
             }
 
             OnPropertyChanged(nameof(HasColors));
+        }
+
+        private static int ResolveStandardPaletteColorId(
+            RenderModel? model,
+            string materialResref,
+            TintMapLayerType layer)
+        {
+            if (model == null)
+                return 0;
+
+            foreach (var mesh in model.Meshes.Where(mesh =>
+                         string.Equals(mesh.MaterialName, materialResref, StringComparison.OrdinalIgnoreCase) ||
+                         string.IsNullOrWhiteSpace(mesh.MaterialName) &&
+                         string.Equals(mesh.TextureName, materialResref, StringComparison.OrdinalIgnoreCase)))
+            {
+                if (mesh.LayerColorIndices.TryGetValue((int)layer, out var meshColor))
+                    return Math.Clamp(meshColor, 0, TintMapMaterialRegistry.PaletteColorCount - 1);
+            }
+
+            return model.LayerColorIndices.TryGetValue((int)layer, out var modelColor)
+                ? Math.Clamp(modelColor, 0, TintMapMaterialRegistry.PaletteColorCount - 1)
+                : 0;
         }
 
         /// <summary>

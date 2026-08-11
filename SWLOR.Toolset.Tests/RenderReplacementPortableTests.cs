@@ -317,6 +317,24 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void ParsedMaterialsAreCachedOutsideThePerMeshDrawPath()
+        {
+            var source = File.ReadAllText(Path.Combine(
+                CorpusLocator.RepositoryRoot,
+                "SWLOR.Toolset",
+                "Viewport",
+                "GlAreaControl.cs"));
+
+            source.Should().Contain("Dictionary<string, MtrMaterial?> _parsedMaterialCache");
+            source.Should().Contain("_parsedMaterialCache.TryGetValue(surfaceName, out var cached)",
+                "repeated meshes must not reload and parse the same MTR every frame");
+            source.Should().Contain("_parsedMaterialCache[surfaceName] = material",
+                "failed parses must be memoized too");
+            source.Should().Contain("_parsedMaterialCache.Clear()",
+                "a changed HAK resource index must invalidate parsed MTR data");
+        }
+
+        [Test]
         public void PlacementGhostDrawCarriesBlueprintAndItemTintOverrides()
         {
             var source = File.ReadAllText(Path.Combine(

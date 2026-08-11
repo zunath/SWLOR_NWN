@@ -1093,6 +1093,10 @@ public class TintMapReviewTests
             "an existing destination override must remain untouched");
         carryMethod.ToString().Should().Contain("matchingColors.Count == 1",
             "only an unambiguous color for the corresponding material may migrate");
+        carryMethod.ToString().Should().Contain("GetItemGlobalColorStateName(layer)",
+            "an explicit global tint must fill materials newly exposed by another wearer variant");
+        carryMethod.ToString().Should().Contain("out var globalColor",
+            "global intent must be distinguished from coincidentally uniform per-material colors");
         carryMethod.ToString().Should().Contain("invalidatePendingCarry: false",
             "automatic refresh migration must not look like a newer explicit color edit");
         carryMethod.ToString().Should().NotContain("Dictionary<TintMapLayerType",
@@ -1108,9 +1112,10 @@ public class TintMapReviewTests
         equivalentVariablesMethod.ToString().Should().Contain("AreEquipmentMaterialsEquivalent",
             "only corresponding material slots across wearer variants may be cleared");
         var equivalenceMethod = FindMethod(serviceSource, "AreEquipmentMaterialsEquivalent");
-        equivalenceMethod.ToString().Should().Contain("GetVariantIdentity");
         equivalenceMethod.ToString().Should().Contain("AreEquipmentMaterialSlotsEquivalent",
             "hashed material variants require registry slot matching");
+        equivalenceMethod.ToString().Should().NotContain("GetVariantIdentity",
+            "normalizing a material resref alone can alias two distinct slots across wearer variants");
 
         TintMapEquipmentMaterialMatcher.GetVariantIdentity("pmh0_shor012").Should().Be("shor012");
         TintMapEquipmentMaterialMatcher.GetVariantIdentity("pfh0_shor012").Should().Be("shor012");
@@ -1231,6 +1236,35 @@ public class TintMapReviewTests
                 catalog)
             .Should().BeFalse(
                 "the stored material resref does not identify which wearer variant supplied its slot");
+    }
+
+    [Test]
+    public void NormalizedVariantIdentityDoesNotOverrideMaterialSlotIdentity()
+    {
+        var catalog = new Dictionary<string, IReadOnlyList<TintMapMaterialDefinition>>(
+            StringComparer.OrdinalIgnoreCase)
+        {
+            ["pmh0_robe017"] = new[]
+            {
+                new TintMapMaterialDefinition("male slot", "pmh0_robe017", TintMapLayerType.Cloth1)
+            },
+            ["pfh0_robe017"] = new[]
+            {
+                new TintMapMaterialDefinition("male material in female slot zero", "pmh0_robe017", TintMapLayerType.Cloth1),
+                new TintMapMaterialDefinition("female material in slot one", "pfh0_robe017", TintMapLayerType.Cloth1)
+            }
+        };
+
+        TintMapEquipmentMaterialMatcher.GetVariantIdentity("pmh0_robe017")
+            .Should().Be(TintMapEquipmentMaterialMatcher.GetVariantIdentity("pfh0_robe017"));
+        TintMapEquipmentMaterialMatcher.AreEquivalent(
+                "pmh0_robe017",
+                "pfh0_robe017",
+                "pfh0_robe017",
+                TintMapLayerType.Cloth1,
+                catalog)
+            .Should().BeFalse(
+                "materials with the same normalized variant identity can occupy different slots");
     }
 
     [Test]

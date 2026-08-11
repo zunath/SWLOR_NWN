@@ -1092,15 +1092,11 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             TintMapMaterialSelection destination,
             TintMapLayerType layer)
         {
-            return string.Equals(
-                       TintMapEquipmentMaterialMatcher.GetVariantIdentity(sourceMaterialResref),
-                       TintMapEquipmentMaterialMatcher.GetVariantIdentity(destination.Material.Resref),
-                       StringComparison.OrdinalIgnoreCase) ||
-                   TintMapMaterialRegistry.AreEquipmentMaterialSlotsEquivalent(
-                       sourceMaterialResref,
-                       destination.ModelResref,
-                       destination.Material.Resref,
-                       layer);
+            return TintMapMaterialRegistry.AreEquipmentMaterialSlotsEquivalent(
+                sourceMaterialResref,
+                destination.ModelResref,
+                destination.Material.Resref,
+                layer);
         }
 
         private static void CarryStoredEquipmentCustomColors(uint creature)
@@ -1145,6 +1141,21 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                                 GetLocalInt(item, destinationVariable),
                                 out _))
                         {
+                            continue;
+                        }
+
+                        if (TintMapColor.TryFromStoredValue(
+                                GetLocalInt(
+                                    item,
+                                    TintMapVariable.GetItemGlobalColorStateName(layer)),
+                                out var globalColor))
+                        {
+                            SetColor(
+                                creature,
+                                selection,
+                                layer,
+                                globalColor,
+                                invalidatePendingCarry: false);
                             continue;
                         }
 

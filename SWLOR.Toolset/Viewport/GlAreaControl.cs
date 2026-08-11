@@ -513,6 +513,12 @@ void main()
         private readonly Dictionary<string, MeshMaterial> _rawTextureCache =
             new(StringComparer.OrdinalIgnoreCase);
 
+        // MTR parsing reads and decodes the resource. Keep both successful parses and misses out of
+        // the per-mesh draw path; invalidating game resources clears this together with the GPU
+        // material cache so a changed HAK can be reparsed.
+        private readonly Dictionary<string, MtrMaterial?> _parsedMaterialCache =
+            new(StringComparer.OrdinalIgnoreCase);
+
         private int _gameResourceInvalidationRequested;
 
         // GPU caches only ever grew before eviction was added: an item-preview document composes a
@@ -2628,6 +2634,7 @@ void main()
                             _gl.DeleteTexture(texId);
                     _mapTextureCache.Clear();
                     _rawTextureCache.Clear();
+                    _parsedMaterialCache.Clear();
 
                     foreach (var buffer in _modelBuffers.Values)
                         DeleteBuffer(buffer.Vao, buffer.Vbo, buffer.Ebo);
@@ -2823,6 +2830,7 @@ void main()
             }
             _mapTextureCache.Clear();
             _rawTextureCache.Clear();
+            _parsedMaterialCache.Clear();
 
             foreach (var buffer in _modelBuffers.Values)
                 DeleteBuffer(buffer.Vao, buffer.Vbo, buffer.Ebo);
@@ -4847,6 +4855,7 @@ void main()
                 }
                 _mapTextureCache.Clear();
                 _rawTextureCache.Clear();
+                _parsedMaterialCache.Clear();
             }
         }
 
@@ -5171,14 +5180,21 @@ void main()
 
         private MtrMaterial? TryParseMaterial(string surfaceName)
         {
+            if (_parsedMaterialCache.TryGetValue(surfaceName, out var cached))
+                return cached;
+
+            MtrMaterial? material;
             try
             {
-                return MaterialResolver.TryParseMaterial(ResourceIndex!, surfaceName);
+                material = MaterialResolver.TryParseMaterial(ResourceIndex!, surfaceName);
             }
             catch (Exception)
             {
-                return null;
+                material = null;
             }
+
+            _parsedMaterialCache[surfaceName] = material;
+            return material;
         }
 
         private static bool IsTintMapMaterial(MtrMaterial? material)

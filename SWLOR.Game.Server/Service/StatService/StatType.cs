@@ -5757,6 +5757,12 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Melee)]
         MeleeDeflectionFPRestore = 999,
 
+        /// <summary>
+        /// Cooldown in seconds for MeleeDeflectionFPRestore.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, deflectionSource: DeflectionSource.Melee)]
+        MeleeDeflectionFPRestoreCooldownSeconds = 1000,
+
     }
 
     public class StatTypeAttribute : Attribute

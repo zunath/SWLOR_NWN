@@ -33,6 +33,7 @@ public class WeaponDeflectionTests
         Stat.GetStatTypeDeflectionSource(StatType.AbilityGrantedAttackDeflectionFPRestoreCooldownSeconds).Should().Be(DeflectionSource.Ranged);
         Stat.GetStatTypeDeflectionSource(StatType.DeflectionStaminaRestorePercent).Should().Be(DeflectionSource.None);
         Stat.GetStatTypeDeflectionSource(StatType.MeleeDeflectionFPRestore).Should().Be(DeflectionSource.Melee);
+        Stat.GetStatTypeDeflectionSource(StatType.MeleeDeflectionFPRestoreCooldownSeconds).Should().Be(DeflectionSource.Melee);
         Stat.GetStatTypeDeflectionSource(StatType.DeflectionFPRestore).Should().Be(DeflectionSource.Ranged);
         Stat.GetStatTypeDeflectionSource(StatType.DeflectionFPRestoreCooldownSeconds).Should().Be(DeflectionSource.Ranged);
         Stat.GetStatTypeDeflectionSource(StatType.DeflectionEnmityPercentAdjustment).Should().Be(DeflectionSource.Ranged);
@@ -108,6 +109,10 @@ public class WeaponDeflectionTests
         statSource.Should().Contain("GetDeflectionStatTypeForSource(");
         statSource.Should().NotContain("source == DeflectionSource.Shield");
         statSource.Should().Contain("StatType.MeleeDeflectionFPRestore");
+        statSource.Should().Contain("StatType.MeleeDeflectionFPRestoreCooldownSeconds");
+        statSource.Should().Contain("var fpRestoreCooldown = fpRestoreCooldownStat != StatType.Invalid");
+        statSource.Should().NotContain(
+            "var fpRestoreCooldown = GetStatAdjustment(creatureId, StatType.DeflectionFPRestoreCooldownSeconds)");
         statSource.Should().Contain("Combat.TryUseStatTrigger(creatureId, fpRestoreStat, fpRestoreCooldown)");
         combatSource.Should().NotContain(
             "ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.Melee)");

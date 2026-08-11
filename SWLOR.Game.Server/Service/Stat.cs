@@ -1711,11 +1711,17 @@ namespace SWLOR.Game.Server.Service
             var fpRestore = fpRestoreStat != StatType.Invalid
                 ? GetStatAdjustment(creatureId, fpRestoreStat)
                 : 0;
+            var fpRestoreCooldownStat = GetDeflectionStatTypeForSource(
+                source,
+                StatType.MeleeDeflectionFPRestoreCooldownSeconds,
+                StatType.DeflectionFPRestoreCooldownSeconds);
             var staminaRestorePercent = GetStatAdjustment(creatureId, StatType.DeflectionStaminaRestorePercent);
             var staminaRestoreCooldown = staminaRestoreCooldownStat != StatType.Invalid
                 ? GetStatAdjustment(creatureId, staminaRestoreCooldownStat)
                 : 0;
-            var fpRestoreCooldown = GetStatAdjustment(creatureId, StatType.DeflectionFPRestoreCooldownSeconds);
+            var fpRestoreCooldown = fpRestoreCooldownStat != StatType.Invalid
+                ? GetStatAdjustment(creatureId, fpRestoreCooldownStat)
+                : 0;
             var evasionBoost = GetDeflectionStatAdjustment(creatureId, StatType.DeflectionEvasionPercentAdjustment, source);
             var evasionEnmityBoost = GetDeflectionStatAdjustment(creatureId, StatType.DeflectionEvasionEnmityPercentAdjustment, source);
             var enmityBoost = GetDeflectionStatAdjustment(creatureId, StatType.DeflectionEnmityPercentAdjustment, source);
@@ -1839,18 +1845,24 @@ namespace SWLOR.Game.Server.Service
 
         private static int GetMeleeDeflectionChanceCap(uint creature)
         {
-            var capAdjustment = GetStatAdjustment(creature, StatType.MeleeDeflectionChanceCap);
-            var cap = DefaultMeleeDeflectionChanceCap + capAdjustment;
-
-            return Math.Clamp(cap, DefaultMeleeDeflectionChanceCap, MaximumDeflectionChanceCap);
+            return GetDeflectionChanceCap(
+                creature,
+                StatType.MeleeDeflectionChanceCap,
+                DefaultMeleeDeflectionChanceCap);
         }
 
         private static int GetRangedDeflectionChanceCap(uint creature)
         {
-            var capAdjustment = GetStatAdjustment(creature, StatType.RangedDeflectionChanceCap);
-            var cap = DefaultRangedDeflectionChanceCap + capAdjustment;
+            return GetDeflectionChanceCap(
+                creature,
+                StatType.RangedDeflectionChanceCap,
+                DefaultRangedDeflectionChanceCap);
+        }
 
-            return Math.Clamp(cap, DefaultRangedDeflectionChanceCap, MaximumDeflectionChanceCap);
+        private static int GetDeflectionChanceCap(uint creature, StatType capStat, int defaultCap)
+        {
+            var cap = defaultCap + GetStatAdjustment(creature, capStat);
+            return Math.Clamp(cap, defaultCap, MaximumDeflectionChanceCap);
         }
 
         private static int GetDeflectionStatAdjustment(uint creature, StatType statType, DeflectionSource source)

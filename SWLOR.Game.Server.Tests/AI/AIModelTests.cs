@@ -586,6 +586,30 @@ public class AIModelTests
     }
 
     [Test]
+    public void NativeAttackAction_BlockedRangedLine_OverlapFallbackUsesFiringDistance()
+    {
+        var plan = CreateBlockedLineMovementPlan(
+            0f,
+            0f,
+            2f,
+            0f,
+            0f,
+            0f,
+            3,
+            10f,
+            1.5f,
+            false,
+            true);
+        var destinationX = ReadPlanProperty<float>(plan, "DestinationX");
+        var destinationY = ReadPlanProperty<float>(plan, "DestinationY");
+
+        var destinationRadius = MathF.Sqrt(MathF.Pow(destinationX, 2) + MathF.Pow(destinationY, 2));
+        destinationRadius.Should().BeApproximately(10f, 0.001f);
+        ReadPlanProperty<float>(plan, "AttackCheckRange").Should().Be(10f);
+        ReadPlanProperty<bool>(plan, "TrackAttackTarget").Should().BeFalse();
+    }
+
+    [Test]
     public void CreatureHeartbeat_DoesNotScanForAggroTargets()
     {
         var aiSource = File.ReadAllText(Path.Combine(

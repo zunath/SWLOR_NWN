@@ -735,7 +735,8 @@ namespace SWLOR.Game.Server.Native
                 attackerZ,
                 targetX,
                 targetY,
-                attackerId);
+                attackerId,
+                desiredAttackRange);
             return new BlockedLineMovementPlan(
                 destination.X,
                 destination.Y,
@@ -751,7 +752,8 @@ namespace SWLOR.Game.Server.Native
             float attackerZ,
             float targetX,
             float targetY,
-            uint attackerId)
+            uint attackerId,
+            float desiredAttackRange)
         {
             var x = attackerX - targetX;
             var y = attackerY - targetY;
@@ -761,8 +763,8 @@ namespace SWLOR.Game.Server.Native
             if (radius <= CNW_PATHFIND_TOLERANCE)
             {
                 return new RepositionDestination(
-                    attackerX,
-                    attackerY + direction * RANGED_LINE_REPOSITION_ARC_LENGTH,
+                    targetX,
+                    targetY + direction * desiredAttackRange,
                     attackerZ);
             }
 

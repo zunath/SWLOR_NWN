@@ -220,6 +220,94 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 new TintMapColorSelection(GetStandardColor(creature, selection, layer), null));
         }
 
+        public static void SetGlobalItemCustomColor(
+            uint creature,
+            IReadOnlyList<TintMapMaterialSelection> selections,
+            TintMapLayerType layer,
+            TintMapColor color)
+        {
+            if (selections == null || TintMapVariable.IsCreatureColorLayer(layer))
+                return;
+
+            var itemSelections = selections
+                .Where(selection =>
+                    selection.Material.Layers.Contains(layer) &&
+                    GetIsObjectValid(selection.GetPaletteSource(layer)) &&
+                    GetObjectType(selection.GetPaletteSource(layer)) == ObjectType.Item)
+                .ToList();
+            if (itemSelections.Count == 0)
+                return;
+
+            var item = itemSelections[0].GetPaletteSource(layer);
+            itemSelections = itemSelections
+                .Where(selection => selection.GetPaletteSource(layer) == item)
+                .ToList();
+            SetLocalInt(
+                item,
+                TintMapVariable.GetItemGlobalColorStateName(layer),
+                color.ToStoredValue());
+            foreach (var selection in itemSelections)
+            {
+                SetColor(creature, selection, layer, color);
+            }
+        }
+
+        public static void ResetGlobalItemCustomColor(
+            uint creature,
+            IReadOnlyList<TintMapMaterialSelection> selections,
+            TintMapLayerType layer)
+        {
+            if (selections == null || TintMapVariable.IsCreatureColorLayer(layer))
+                return;
+
+            var itemSelections = selections
+                .Where(selection =>
+                    selection.Material.Layers.Contains(layer) &&
+                    GetIsObjectValid(selection.GetPaletteSource(layer)) &&
+                    GetObjectType(selection.GetPaletteSource(layer)) == ObjectType.Item)
+                .ToList();
+            if (itemSelections.Count == 0)
+                return;
+
+            var item = itemSelections[0].GetPaletteSource(layer);
+            itemSelections = itemSelections
+                .Where(selection => selection.GetPaletteSource(layer) == item)
+                .ToList();
+            var stateVariable = TintMapVariable.GetItemGlobalColorStateName(layer);
+            var hasGlobalColor = TintMapColor.TryFromStoredValue(
+                GetLocalInt(item, stateVariable),
+                out var globalColor);
+
+            // Compatibility for items authored before the explicit global-intent marker existed:
+            // only a complete, uniform set can safely be interpreted as a global custom color.
+            if (!hasGlobalColor)
+            {
+                var customColors = itemSelections
+                    .Select(selection => TryGetCustomColor(selection, layer, out var color)
+                        ? (TintMapColor?)color
+                        : null)
+                    .ToList();
+                var distinctColors = customColors
+                    .Where(color => color.HasValue)
+                    .Select(color => color!.Value)
+                    .Distinct()
+                    .ToList();
+                hasGlobalColor = customColors.All(color => color.HasValue) && distinctColors.Count == 1;
+                if (hasGlobalColor)
+                    globalColor = distinctColors[0];
+            }
+
+            DeleteLocalInt(item, stateVariable);
+            if (!hasGlobalColor)
+                return;
+
+            foreach (var selection in itemSelections)
+            {
+                if (TryGetCustomColor(selection, layer, out var color) && color == globalColor)
+                    ResetColor(creature, selection, layer);
+            }
+        }
+
         public static bool TryGetCustomColor(
             TintMapMaterialSelection selection,
             TintMapLayerType layer,
@@ -1078,7 +1166,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
         private static string GetCreatureCustomColorStateVariable(TintMapLayerType layer)
         {
-            return $"TMC_{(int)layer}";
+            return TintMapVariable.GetCreatureColorStateName(layer);
         }
 
         private static void RemoveDroidOverrides(uint creature, IReadOnlyList<string> variableNames)

@@ -290,20 +290,11 @@ namespace SWLOR.Toolset.Editors.Creatures
                          .Where(row => TintMapVariable.IsCreatureColorLayer(row.Layer))
                          .GroupBy(row => row.Layer))
             {
-                var distinct = group
-                    .Select(row => _store.Locals.GetInt(row.Key) ?? 0)
-                    .Select(saved => TintMapColor.TryFromStoredValue(saved, out var color)
-                        ? (TintMapColor?)color
-                        : null)
-                    .Where(color => color.HasValue)
-                    .Select(color => color!.Value)
-                    .Distinct()
-                    .ToList();
-                if (distinct.Count != 1)
+                var custom = ReadCustomColor(group.ToList());
+                if (!custom.HasValue)
                     continue;
 
-                var color = distinct[0];
-                colors[group.Key] = Color.FromRgb(color.Red, color.Green, color.Blue);
+                colors[group.Key] = custom.Value;
             }
 
             return colors;
@@ -368,6 +359,7 @@ namespace SWLOR.Toolset.Editors.Creatures
                 WriteFields(value, field);
                 foreach (var variableName in GetSemanticVariableKeys(layer, _tintRows))
                     _store.Locals.Remove(variableName);
+                _store.Locals.Remove(TintMapVariable.GetCreatureColorStateName(layer));
             });
             if (!applied)
                 return false;
@@ -392,6 +384,9 @@ namespace SWLOR.Toolset.Editors.Creatures
                 $"Set {label} custom tint to #{color.R:X2}{color.G:X2}{color.B:X2}",
                 () =>
                 {
+                    _store.Locals.SetInt(
+                        TintMapVariable.GetCreatureColorStateName(layer),
+                        tint);
                     foreach (var variableName in GetSemanticVariableKeys(layer, tintRows))
                         _store.Locals.SetInt(variableName, tint);
                 });

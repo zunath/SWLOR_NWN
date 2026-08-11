@@ -1104,6 +1104,24 @@ public class TintMapReviewTests
         TintMapEquipmentMaterialMatcher.GetVariantIdentity("pfh0_shor012").Should().Be("shor012");
         TintMapEquipmentMaterialMatcher.GetVariantIdentity("pmd22_shor012").Should().Be("shor012");
         TintMapEquipmentMaterialMatcher.GetVariantIdentity("shared_material").Should().Be("shared_material");
+
+        var setGlobalItemColor = FindMethod(serviceSource, nameof(TintMapService.SetGlobalItemCustomColor));
+        setGlobalItemColor.ToString().Should().Contain("GetItemGlobalColorStateName(layer)",
+            "global equipment tints need persisted intent distinct from per-part material keys");
+        var resetGlobalItemColor = FindMethod(serviceSource, nameof(TintMapService.ResetGlobalItemCustomColor));
+        resetGlobalItemColor.ToString().Should().Contain("customColors.All(color => color.HasValue)",
+            "legacy global state is safe to infer only when every active material is custom");
+        resetGlobalItemColor.ToString().Should().Contain("color == globalColor",
+            "a global preset must preserve independently customized armor parts");
+
+        var viewModelSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "AppearanceEditorViewModel.cs");
+        viewModelSource.Should().Contain(nameof(TintMapService.SetGlobalItemCustomColor));
+        viewModelSource.Should().Contain(nameof(TintMapService.ResetGlobalItemCustomColor));
     }
 
     [Test]
@@ -1156,6 +1174,35 @@ public class TintMapReviewTests
                 TintMapLayerType.Metal1,
                 catalog)
             .Should().BeFalse("a material in another slot must not receive the equipment dye");
+    }
+
+    [Test]
+    public void AmbiguousCrossVariantMaterialSlotsAreNotTreatedAsEquivalent()
+    {
+        var sharedMaterial = "pmh0_h_lh_1cb350";
+        var catalog = new Dictionary<string, IReadOnlyList<TintMapMaterialDefinition>>(
+            StringComparer.OrdinalIgnoreCase)
+        {
+            ["pmh0_handl153"] = new[]
+            {
+                new TintMapMaterialDefinition("shared male slot zero", sharedMaterial, TintMapLayerType.Cloth1),
+                new TintMapMaterialDefinition("male slot one", "pmh0_h_lh_other", TintMapLayerType.Cloth1)
+            },
+            ["pfh0_handl153"] = new[]
+            {
+                new TintMapMaterialDefinition("female slot zero", "pfh0_h_lh_other", TintMapLayerType.Cloth1),
+                new TintMapMaterialDefinition("shared female slot one", sharedMaterial, TintMapLayerType.Cloth1)
+            }
+        };
+
+        TintMapEquipmentMaterialMatcher.AreEquivalent(
+                sharedMaterial,
+                "pfh0_handl153",
+                "pfh0_h_lh_other",
+                TintMapLayerType.Cloth1,
+                catalog)
+            .Should().BeFalse(
+                "the stored material resref does not identify which wearer variant supplied its slot");
     }
 
     [Test]

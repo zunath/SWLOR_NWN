@@ -6,6 +6,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
     public static class TintMapVariable
     {
         public const string Prefix = "TM_";
+        private const string CreatureColorStatePrefix = "TMC_";
+        private const string ItemGlobalColorStatePrefix = "TMG_";
 
         public static string GetName(string materialResref, TintMapLayerType layer)
         {
@@ -13,6 +15,22 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 throw new ArgumentException("A tint material resref is required.", nameof(materialResref));
 
             return $"{Prefix}{materialResref}_{(int)layer}";
+        }
+
+        public static string GetCreatureColorStateName(TintMapLayerType layer)
+        {
+            if (!IsCreatureColorLayer(layer))
+                throw new ArgumentOutOfRangeException(nameof(layer), layer, "Layer is not a creature color.");
+
+            return $"{CreatureColorStatePrefix}{(int)layer}";
+        }
+
+        public static string GetItemGlobalColorStateName(TintMapLayerType layer)
+        {
+            if (IsCreatureColorLayer(layer))
+                throw new ArgumentOutOfRangeException(nameof(layer), layer, "Layer is not an equipment color.");
+
+            return $"{ItemGlobalColorStatePrefix}{(int)layer}";
         }
 
         public static bool IsCreatureColorLayer(TintMapLayerType layer)

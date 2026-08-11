@@ -231,6 +231,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 {
                     TintMapService.SetCreatureCustomColor(_target, selections, layerType, color);
                 }
+                else if (IsEquipmentSelected &&
+                         SelectedItemTypeIndex == 0 &&
+                         _colorTarget == ColorTarget.Global)
+                {
+                    TintMapService.SetGlobalItemCustomColor(_target, selections, layerType, color);
+                }
                 else
                 {
                     foreach (var selection in selections)
@@ -1860,7 +1866,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!TryGetEditableTintSelections(out var selections, out var layerType, out var layer))
                 return;
 
-            ResetCustomTintOverrides(selections, layerType, layer);
+            if (IsEquipmentSelected &&
+                SelectedItemTypeIndex == 0 &&
+                _colorTarget == ColorTarget.Global)
+            {
+                TintMapService.ResetGlobalItemCustomColor(_target, selections, layerType);
+                LoadTintMapEditor();
+            }
+            else
+            {
+                ResetCustomTintOverrides(selections, layerType, layer);
+            }
         }
 
         private void ResetCustomTintOverrides(

@@ -58,7 +58,11 @@ namespace SWLOR.Toolset.Editors.TintMaps
             var tint = new TintMapColor(value.R, value.G, value.B);
             if (!_runEdit(
                     $"Set {MaterialName} {LayerName} tint to #{value.R:X2}{value.G:X2}{value.B:X2}",
-                    () => _variables.SetInt(Key, tint.ToStoredValue())))
+                    () =>
+                    {
+                        _variables.SetInt(Key, tint.ToStoredValue());
+                        RemoveGlobalSemanticIntent();
+                    }))
             {
                 Reload();
                 return;
@@ -78,7 +82,11 @@ namespace SWLOR.Toolset.Editors.TintMaps
 
             if (!_runEdit(
                     $"Reset {MaterialName} {LayerName} tint",
-                    () => _variables.Remove(Key)))
+                    () =>
+                    {
+                        _variables.Remove(Key);
+                        RemoveGlobalSemanticIntent();
+                    }))
             {
                 Reload();
                 return;
@@ -123,6 +131,12 @@ namespace SWLOR.Toolset.Editors.TintMaps
             }
 
             OnPropertyChanged(nameof(Status));
+        }
+
+        private void RemoveGlobalSemanticIntent()
+        {
+            if (TintMapVariable.IsCreatureColorLayer(Layer))
+                _variables.Remove(TintMapVariable.GetCreatureColorStateName(Layer));
         }
     }
 }

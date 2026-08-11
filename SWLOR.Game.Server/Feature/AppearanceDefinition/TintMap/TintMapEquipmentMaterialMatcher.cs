@@ -42,6 +42,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             if (destinationSlots.Count == 0)
                 return false;
 
+            var sourceSlots = new HashSet<(string Signature, int Slot)>();
             foreach (var (modelResref, materials) in materialsByModel)
             {
                 if (!string.Equals(
@@ -62,15 +63,16 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                             StringComparison.OrdinalIgnoreCase))
                         continue;
 
-                    var sourceSlot = (
+                    sourceSlots.Add((
                         Signature: GetLayerSignature(material),
-                        Slot: GetSignatureSlot(materials, index));
-                    if (destinationSlots.Contains(sourceSlot))
-                        return true;
+                        Slot: GetSignatureSlot(materials, index)));
                 }
             }
 
-            return false;
+            // A stored override identifies only its material resref, not the wearer model that
+            // produced it. If that resref occupies different semantic slots across variants,
+            // choosing either occurrence would spread a part-specific tint to the wrong surface.
+            return sourceSlots.Count == 1 && destinationSlots.Contains(sourceSlots.Single());
         }
 
         private static string GetLayerSignature(TintMapMaterialDefinition material)

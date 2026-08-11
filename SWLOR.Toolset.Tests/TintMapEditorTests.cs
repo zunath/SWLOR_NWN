@@ -365,9 +365,12 @@ namespace SWLOR.Toolset.Tests
             skin.CustomColor = Color.FromRgb(12, 34, 56);
 
             var key = TintMapVariable.GetName("pmh0_head038", TintMapLayerType.Skin);
+            var stateKey = TintMapVariable.GetCreatureColorStateName(TintMapLayerType.Skin);
             TintMapColor.TryFromStoredValue(store.Locals.GetInt(key)!.Value, out var custom)
                 .Should().BeTrue();
             custom.Should().Be(new TintMapColor(12, 34, 56));
+            store.Locals.GetInt(stateKey).Should().Be(custom.ToStoredValue(),
+                "the semantic control represents a global tint intent for future materials");
             skin.HasOverride.Should().BeTrue();
             colorChangeCount.Should().Be(1);
             geometryChangeCount.Should().Be(0,
@@ -381,6 +384,8 @@ namespace SWLOR.Toolset.Tests
                 .Should().Be(12);
             store.Locals.GetInt(key).Should().BeNull(
                 "choosing a preset replaces the custom RGB value for the same color channel");
+            store.Locals.GetInt(stateKey).Should().BeNull(
+                "choosing a preset clears the persisted global tint intent");
             skin.HasOverride.Should().BeFalse();
             colorChangeCount.Should().Be(2);
             geometryChangeCount.Should().Be(0,
@@ -452,6 +457,60 @@ namespace SWLOR.Toolset.Tests
             geometryChangeCount.Should().Be(0,
                 "semantic tint transfers and edits must retain the preview geometry and camera");
             colorChangeCount.Should().Be(2);
+        }
+
+        [Test]
+        public async Task PartialSemanticCustomColorsDoNotSpreadAcrossReplacementMaterials()
+        {
+            var creature = new ModuleWorkspace(CorpusLocator.ModuleDirectory)
+                .LoadBlueprint(ResourceType.Utc, "agr_guildmaster")
+                .Document.Root;
+            var store = new CreatureValueStore(creature);
+            static bool Edit(string _, Action mutation)
+            {
+                mutation();
+                return true;
+            }
+
+            var customKey = TintMapVariable.GetName("pmh0_head038", TintMapLayerType.Skin);
+            var presetKey = TintMapVariable.GetName("pmh0_handl001", TintMapLayerType.Skin);
+            var replacementKey = TintMapVariable.GetName("pmh0_head221", TintMapLayerType.Skin);
+            var stateKey = TintMapVariable.GetCreatureColorStateName(TintMapLayerType.Skin);
+            store.Locals.SetInt(customKey, new TintMapColor(12, 34, 56).ToStoredValue());
+            store.Locals.SetInt(stateKey, new TintMapColor(90, 80, 70).ToStoredValue());
+            var body = new CreatureBodyPartsViewModel(
+                store,
+                Edit,
+                id => new AppearanceRow(id, "DYNAMIC_TEST", "Dynamic Test", "P", "H", null),
+                null,
+                null,
+                () => { });
+            var initialRows = new[]
+            {
+                new TintMapColorRowViewModel(
+                    "pmh0_head038", TintMapLayerType.Skin, store.Locals, Edit, null),
+                new TintMapColorRowViewModel(
+                    "pmh0_handl001", TintMapLayerType.Skin, store.Locals, Edit, null)
+            };
+            body.SetTintMapRows(initialRows);
+            await body.EnsureLoadedAsync();
+
+            initialRows[0].Color = Color.FromRgb(13, 34, 56);
+            store.Locals.GetInt(stateKey).Should().BeNull(
+                "a direct per-material edit is no longer a global semantic tint intent");
+
+            body.SetTintMapRows(new[]
+            {
+                new TintMapColorRowViewModel(
+                    "pmh0_head221", TintMapLayerType.Skin, store.Locals, Edit, null),
+                new TintMapColorRowViewModel(
+                    "pmh0_handl001", TintMapLayerType.Skin, store.Locals, Edit, null)
+            });
+
+            store.Locals.GetInt(customKey).Should().NotBeNull();
+            store.Locals.GetInt(presetKey).Should().BeNull();
+            store.Locals.GetInt(replacementKey).Should().BeNull(
+                "one custom material must not be mistaken for a global semantic tint");
         }
 
         [Test]

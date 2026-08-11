@@ -250,7 +250,7 @@ namespace SWLOR.Toolset.Tests.Items
             }
 
             [Test]
-            public void ChoosingAnArmorPresetClearsOnlyThatChannelsCustomTintOverrides()
+            public void ChoosingAnArmorPresetPreservesIndependentCustomTintOverrides()
             {
                 var store = OpenStore("adren_harness");
                 var cloth1 = TintMapVariable.GetName("pmh0_chest156", TintMapLayerType.Cloth1);
@@ -262,10 +262,39 @@ namespace SWLOR.Toolset.Tests.Items
                 section.Armor!.Cloth1.Number = 50;
 
                 store.GetInteger(BehaviorFieldStorage.Field, "Cloth1Color").Should().Be(50);
-                store.Locals.GetInt(cloth1).Should().BeNull(
-                    "the preset must become authoritative for its dye channel");
+                store.Locals.GetInt(cloth1).Should().NotBeNull(
+                    "without global semantic intent the custom value may belong to one material");
                 store.Locals.GetInt(cloth2).Should().NotBeNull(
                     "selecting Cloth 1 must not reset another dye channel");
+            }
+
+            [Test]
+            public void ChoosingAnArmorPresetClearsOnlyOverridesFromThePreviousGlobalCustomTint()
+            {
+                var store = OpenStore("adren_harness");
+                var globalColor = new TintMapColor(12, 34, 56).ToStoredValue();
+                var independentColor = new TintMapColor(65, 43, 21).ToStoredValue();
+                var inherited = TintMapVariable.GetName("pmh0_chest156", TintMapLayerType.Cloth1);
+                var independent = TintMapVariable.GetName("pmh0_bicepl249", TintMapLayerType.Cloth1);
+                var otherLayer = TintMapVariable.GetName("pmh0_chest156", TintMapLayerType.Cloth2);
+                var state = TintMapVariable.GetItemGlobalColorStateName(TintMapLayerType.Cloth1);
+                store.Locals.SetInt(inherited, globalColor);
+                store.Locals.SetInt(independent, independentColor);
+                store.Locals.SetInt(otherLayer, globalColor);
+                store.Locals.SetInt(state, globalColor);
+                var section = Open(store, ArmorRow, new HashSet<string>());
+
+                section.Armor!.Cloth1.Number = 50;
+
+                store.GetInteger(BehaviorFieldStorage.Field, "Cloth1Color").Should().Be(50);
+                store.Locals.GetInt(inherited).Should().BeNull(
+                    "the material that followed the old global custom color now follows the preset");
+                store.Locals.GetInt(independent).Should().Be(independentColor,
+                    "a separately customized material must retain its own tint");
+                store.Locals.GetInt(otherLayer).Should().Be(globalColor,
+                    "the preset transition is scoped to one dye channel");
+                store.Locals.GetInt(state).Should().BeNull(
+                    "the selected preset replaces the old global custom intent");
             }
 
             [Test]

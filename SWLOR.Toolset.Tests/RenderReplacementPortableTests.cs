@@ -276,6 +276,10 @@ namespace SWLOR.Toolset.Tests
                 "Aurora draws an unlit environment pass and source-alpha blends the lit diffuse on top");
             shader.Should().Contain(
                 "paletteColor.rgb = clamp(custom.rgb * shadeScale, 0.0, 1.0);");
+            shader.Should().Contain("float shadeScale = max(",
+                "GLSL max accepts the intended lower bound while retaining bright tint-map highlights");
+            shader.Should().NotContain("float shadeScale = clamp(",
+                "GLSL clamp requires both a lower and upper bound");
             shader.Should().Contain("float referenceRow = 0.000244;");
             shader.Should().Contain("vec3 referenceShade = textureLod(");
             shader.Should().Contain("vec2(128.5 / 256.0, referenceRow)",

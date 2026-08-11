@@ -290,11 +290,34 @@ namespace SWLOR.Toolset.Editors.Items
                     label, () =>
                     {
                         _store.SetInteger(BehaviorFieldStorage.Field, field, GffFieldType.Byte, value);
-                        foreach (var key in GetTintVariableKeys(layer))
-                            _store.Locals.Remove(key);
+                        ClearGlobalCustomTint(layer);
                     }),
                 _dyes?.GetPaletteColors(material) ?? Array.Empty<(byte, byte, byte)>(),
                 hasExternalOverride: () => GetTintVariableKeys(layer).Count > 0);
+
+        /// <summary>
+        /// Restores the selected global dye channel to its palette value without discarding an
+        /// independently customized material in the same channel. The explicit global-intent
+        /// marker identifies which material overrides were written by the previous global custom
+        /// color; without that marker there is no safe way to distinguish legacy global values
+        /// from per-material edits, so those values are preserved.
+        /// </summary>
+        private void ClearGlobalCustomTint(TintMapLayerType layer)
+        {
+            var stateVariable = TintMapVariable.GetItemGlobalColorStateName(layer);
+            var savedGlobalColor = _store.Locals.GetInt(stateVariable);
+            if (savedGlobalColor.HasValue &&
+                TintMapColor.TryFromStoredValue(savedGlobalColor.Value, out _))
+            {
+                foreach (var key in GetTintVariableKeys(layer))
+                {
+                    if (_store.Locals.GetInt(key) == savedGlobalColor)
+                        _store.Locals.Remove(key);
+                }
+            }
+
+            _store.Locals.Remove(stateVariable);
+        }
 
         private IReadOnlyList<string> GetTintVariableKeys(TintMapLayerType layer) =>
             _store.Locals

@@ -1093,6 +1093,8 @@ public class TintMapReviewTests
             "an existing destination override must remain untouched");
         carryMethod.ToString().Should().Contain("matchingColors.Count == 1",
             "only an unambiguous color for the corresponding material may migrate");
+        carryMethod.ToString().Should().Contain("invalidatePendingCarry: false",
+            "automatic refresh migration must not look like a newer explicit color edit");
         carryMethod.ToString().Should().NotContain("Dictionary<TintMapLayerType",
             "a partial dye on one armor part must not be spread to every material exposing the layer");
         carryMethod.ToString().Should().Contain("TintMapVariable.IsCreatureColorLayer(layer)",

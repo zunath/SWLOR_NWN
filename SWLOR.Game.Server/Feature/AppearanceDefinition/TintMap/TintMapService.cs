@@ -1159,7 +1159,12 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                             .Distinct()
                             .ToList();
                         if (matchingColors.Count == 1)
-                            SetColor(creature, selection, layer, matchingColors[0]);
+                            SetColor(
+                                creature,
+                                selection,
+                                layer,
+                                matchingColors[0],
+                                invalidatePendingCarry: false);
                     }
                 }
             }

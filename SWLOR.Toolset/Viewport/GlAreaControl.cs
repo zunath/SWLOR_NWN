@@ -302,7 +302,7 @@ vec4 ResolveTintMapColor()
             vec2(128.5 / 256.0, referenceRow),
             0.0).rgb;
         const vec3 luminanceWeights = vec3(0.2126, 0.7152, 0.0722);
-        float shadeScale = clamp(
+        float shadeScale = max(
             dot(referenceShade, luminanceWeights) /
                 max(dot(referenceMidpoint, luminanceWeights), 1.0 / 255.0),
             0.0);

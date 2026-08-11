@@ -2092,7 +2092,8 @@ def profile_property_lines(row, level, primary_status):
         ("SelfEvasionPercent", r"(?:gain(?:s)?|grant(?:s)?) \+(\d+)% Evasion"),
         ("SelfDefensePercent", r"(?:gain(?:s)?|grant(?:s)?) \+(\d+)% (?:Physical )?Defense"),
         ("SelfForceDefensePercent", r"(?:gain(?:s)?|grant(?:s)?) \+(\d+)% Force Defense"),
-        ("SelfAttackDeflection", r"(?:gain(?:s)?|grant(?:s)?) \+(\d+) (?:Ranged|Attack) Deflection"),
+        ("SelfMeleeDeflection", r"(?:gain(?:s)?|grant(?:s)?) \+(\d+) Melee Deflection"),
+        ("SelfRangedDeflection", r"(?:gain(?:s)?|grant(?:s)?) \+(\d+) (?:Ranged|Attack) Deflection"),
         ("SelfCriticalRatePercent", r"(?:gain(?:s)?|grant(?:s)?) \+(\d+)% Critical Rate"),
     ]
     any_self_stat = False
@@ -2100,8 +2101,7 @@ def profile_property_lines(row, level, primary_status):
         "area combat abilities restore" not in lowered and
         "control effects you apply" not in lowered and
         "nearby allies" not in lowered and
-        "allies within" not in lowered and
-        "cannot be knocked" not in lowered
+        "allies within" not in lowered
     )
     if direct_self_stats_allowed:
         for property_name, pattern in self_stats:

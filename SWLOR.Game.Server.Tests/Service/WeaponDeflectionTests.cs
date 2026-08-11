@@ -91,6 +91,8 @@ public class WeaponDeflectionTests
             "Stat.GetStatTypeDeflectionSource(StatType.AbilityGrantedAttackDeflectionFPRestore) != source");
         combatSource.Should().Contain("StatType.MeleeDeflectionFPRestore");
         abilitySource.Should().Contain(
+            "Combat.ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.Melee)");
+        abilitySource.Should().Contain(
             "Combat.ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.Ranged)");
     }
 
@@ -103,6 +105,10 @@ public class WeaponDeflectionTests
         generator.Should().Contain("parse_deflection_count(description)");
         generator.Should().Contain("add_stat(stats, \"MeleeDeflection\"");
         generator.Should().Contain("add_stat(stats, \"RangedDeflection\"");
+        generator.Should().Contain("(\"SelfMeleeDeflection\"");
+        generator.Should().Contain("(\"SelfRangedDeflection\"");
+        generator.Should().Contain("(?:Ranged|Attack) Deflection");
+        generator.Should().NotContain("(\"SelfAttackDeflection\"");
         generator.Should().NotContain("add_stat(stats, \"AttackDeflection\"");
         generator.Should().NotContain("parse_count(r\"\\+(\\d+) Attack Deflection\", description)");
     }

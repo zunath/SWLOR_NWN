@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 AbilityType.Invalid,
                 new GeneratedWeaponAbilityProfile
                 {
-                    SelfAttackDeflection = 4,
+                    SelfRangedDeflection = 4,
                     SelfStatDurationSeconds = 30
                 });
 
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 AbilityType.Invalid,
                 new GeneratedWeaponAbilityProfile
                 {
-                    SelfAttackDeflection = 6,
+                    SelfRangedDeflection = 6,
                     SelfStatDurationSeconds = 30
                 });
 
@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 AbilityType.Invalid,
                 new GeneratedWeaponAbilityProfile
                 {
-                    SelfAttackDeflection = 8,
+                    SelfRangedDeflection = 8,
                     SelfStatDurationSeconds = 30
                 });
 

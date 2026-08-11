@@ -97,7 +97,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public int SelfEvasionPercent { get; init; }
             public int SelfDefensePercent { get; init; }
             public int SelfForceDefensePercent { get; init; }
-            public int SelfAttackDeflection { get; init; }
+            public int SelfMeleeDeflection { get; init; }
+            public int SelfRangedDeflection { get; init; }
             public int SelfCriticalRatePercent { get; init; }
             public int SelfStatDurationSeconds { get; init; }
             public int SelfStatResourceAboveThresholdPercent { get; init; }
@@ -600,8 +601,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 ReplaceTemporary(activator, StatType.EvasionPercentAdjustment, SelfEvasionPercent, duration);
                 ReplaceTemporary(activator, StatType.PhysicalDefensePercentAdjustment, SelfDefensePercent, duration);
                 ReplaceTemporary(activator, StatType.ForceDefensePercentAdjustment, SelfForceDefensePercent, duration);
-                ReplaceTemporary(activator, StatType.RangedDeflection, SelfAttackDeflection, duration);
-                if (SelfAttackDeflection != 0)
+                ReplaceTemporary(activator, StatType.MeleeDeflection, SelfMeleeDeflection, duration);
+                if (SelfMeleeDeflection != 0)
+                    Combat.ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.Melee);
+                ReplaceTemporary(activator, StatType.RangedDeflection, SelfRangedDeflection, duration);
+                if (SelfRangedDeflection != 0)
                     Combat.ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.Ranged);
                 ReplaceTemporary(activator, StatType.CriticalRatePercentAdjustment, SelfCriticalRatePercent, duration);
             }

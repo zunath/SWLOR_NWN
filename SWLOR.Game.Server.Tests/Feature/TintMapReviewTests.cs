@@ -1606,7 +1606,7 @@ public class TintMapReviewTests
     }
 
     [Test]
-    public void PlainPltBodyPartsRetainLegacyLightingWhileMappedMaterialsRetainTheirMaps()
+    public void PlainPltBodyPartsRetainLegacyTangentsWhileMappedMaterialsRetainTheirMaps()
     {
         var repositoryRoot = FindRepositoryRoot();
         var materialRoot = Path.Combine(repositoryRoot.FullName, "SWLOR_Haks", "sw_tint_mtr");
@@ -1629,7 +1629,8 @@ public class TintMapReviewTests
             material.Should().Contain("customshaderFS fs_plt_tinter");
             material.Should().NotContain("customshaderVS vslit_sm_nm");
             material.Should().NotContain("customshaderFS fs_plt_tinter_nm");
-            material.Should().NotContain("renderhint NormalTangents");
+            material.Should().Contain("renderhint NormalTangents");
+            material.Should().NotContain("renderhint NormalAndSpecMapped");
         }
 
         var mappedMaterial = File.ReadAllText(Path.Combine(materialRoot, "helm_034.mtr"));

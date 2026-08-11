@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AIService;
@@ -518,6 +519,165 @@ public class AIModelTests
             .BeLessThan(pendingAttackBody.IndexOf("pCreature.ResolveAttack(oidTarget, nAttacks, nTimeAnimation);", StringComparison.Ordinal));
     }
 
+    [TestCase(false, false, 1.5f, 1.5f, true, true)]
+    [TestCase(false, true, 0.25f, 10f, false, false)]
+    [TestCase(true, false, 10f, 10f, true, true)]
+    [TestCase(true, true, 10f, 10f, true, true)]
+    public void NativeAttackAction_BlockedLineMovementPlan_SelectsExecutablePath(
+        bool isOutsideAttackRange,
+        bool hasRangedWeapon,
+        float expectedPathCompletionRange,
+        float expectedAttackCheckRange,
+        bool expectedTrackAttackTarget,
+        bool expectedTargetDestination)
+    {
+        var plan = CreateBlockedLineMovementPlan(
+            10f,
+            0f,
+            0f,
+            0f,
+            0f,
+            0f,
+            2,
+            10f,
+            1.5f,
+            isOutsideAttackRange,
+            hasRangedWeapon);
+
+        ReadPlanProperty<float>(plan, "PathCompletionRange").Should().Be(expectedPathCompletionRange);
+        ReadPlanProperty<float>(plan, "AttackCheckRange").Should().Be(expectedAttackCheckRange);
+        ReadPlanProperty<bool>(plan, "TrackAttackTarget").Should().Be(expectedTrackAttackTarget);
+
+        var destinationIsTarget =
+            ReadPlanProperty<float>(plan, "DestinationX") == 0f &&
+            ReadPlanProperty<float>(plan, "DestinationY") == 0f &&
+            ReadPlanProperty<float>(plan, "DestinationZ") == 0f;
+        destinationIsTarget.Should().Be(expectedTargetDestination);
+    }
+
+    [Test]
+    public void NativeAttackAction_BlockedRangedLine_ForcesLateralMovementAtFiringDistance()
+    {
+        var plan = CreateBlockedLineMovementPlan(
+            10f,
+            0f,
+            2f,
+            0f,
+            0f,
+            0f,
+            2,
+            10f,
+            1.5f,
+            false,
+            true);
+        var destinationX = ReadPlanProperty<float>(plan, "DestinationX");
+        var destinationY = ReadPlanProperty<float>(plan, "DestinationY");
+        var destinationZ = ReadPlanProperty<float>(plan, "DestinationZ");
+
+        destinationX.Should().NotBe(10f);
+        destinationY.Should().NotBe(0f);
+        ReadPlanProperty<float>(plan, "PathCompletionRange").Should().BeLessThan(2f);
+        ReadPlanProperty<float>(plan, "AttackCheckRange").Should().Be(10f);
+        ReadPlanProperty<bool>(plan, "TrackAttackTarget").Should().BeFalse();
+
+        var repositionedRadiusSquared = MathF.Pow(destinationX, 2) + MathF.Pow(destinationY, 2);
+        repositionedRadiusSquared.Should().BeApproximately(100f, 0.001f);
+        destinationZ.Should().Be(2f);
+    }
+
+    [Test]
+    public void NativeAttackAction_BlockedRangedLine_OverlapFallbackUsesFiringDistance()
+    {
+        var plan = CreateBlockedLineMovementPlan(
+            0f,
+            0f,
+            2f,
+            0f,
+            0f,
+            0f,
+            3,
+            10f,
+            1.5f,
+            false,
+            true);
+        var destinationX = ReadPlanProperty<float>(plan, "DestinationX");
+        var destinationY = ReadPlanProperty<float>(plan, "DestinationY");
+
+        var destinationRadius = MathF.Sqrt(MathF.Pow(destinationX, 2) + MathF.Pow(destinationY, 2));
+        destinationRadius.Should().BeApproximately(10f, 0.001f);
+        ReadPlanProperty<float>(plan, "AttackCheckRange").Should().Be(10f);
+        ReadPlanProperty<bool>(plan, "TrackAttackTarget").Should().BeFalse();
+    }
+
+    [Test]
+    public void NativeAttackAction_BlockedRangedLine_NearOverlapStillForcesMovement()
+    {
+        var plan = CreateBlockedLineMovementPlan(
+            0.2f,
+            0f,
+            2f,
+            0f,
+            0f,
+            0f,
+            5,
+            10f,
+            1.5f,
+            false,
+            true);
+        var destinationX = ReadPlanProperty<float>(plan, "DestinationX");
+        var destinationY = ReadPlanProperty<float>(plan, "DestinationY");
+        var distanceFromAttacker = MathF.Sqrt(
+            MathF.Pow(destinationX - 0.2f, 2) +
+            MathF.Pow(destinationY, 2));
+
+        distanceFromAttacker.Should().BeGreaterThan(
+            ReadPlanProperty<float>(plan, "PathCompletionRange"));
+        MathF.Sqrt(MathF.Pow(destinationX, 2) + MathF.Pow(destinationY, 2))
+            .Should()
+            .BeApproximately(10f, 0.001f);
+    }
+
+    [Test]
+    public void NativeAttackAction_BlockedRangedLine_PathFailureAlternatesSidestep()
+    {
+        const uint attackerId = 9001;
+        var firstPlan = CreateBlockedLineMovementPlan(
+            10f,
+            0f,
+            0f,
+            0f,
+            0f,
+            0f,
+            attackerId,
+            10f,
+            1.5f,
+            false,
+            true);
+
+        AlternateRangedRepositionDirection(attackerId);
+
+        var secondPlan = CreateBlockedLineMovementPlan(
+            10f,
+            0f,
+            0f,
+            0f,
+            0f,
+            0f,
+            attackerId,
+            10f,
+            1.5f,
+            false,
+            true);
+
+        ReadPlanProperty<float>(firstPlan, "DestinationX")
+            .Should()
+            .BeApproximately(ReadPlanProperty<float>(secondPlan, "DestinationX"), 0.001f);
+        (ReadPlanProperty<float>(firstPlan, "DestinationY") *
+         ReadPlanProperty<float>(secondPlan, "DestinationY"))
+            .Should()
+            .BeNegative();
+    }
+
     [Test]
     public void CreatureHeartbeat_DoesNotScanForAggroTargets()
     {
@@ -938,6 +1098,57 @@ public class AIModelTests
         return (T)typeof(Enmity)
             .GetField(name, BindingFlags.Static | BindingFlags.NonPublic)!
             .GetValue(null)!;
+    }
+
+    private static object CreateBlockedLineMovementPlan(
+        float attackerX,
+        float attackerY,
+        float attackerZ,
+        float targetX,
+        float targetY,
+        float targetZ,
+        uint attackerId,
+        float desiredAttackRange,
+        float personalSpaceRange,
+        bool isOutsideAttackRange,
+        bool hasRangedWeapon)
+    {
+        var method = typeof(OnAIActionAttackObject).GetMethod(
+            "CreateBlockedLineMovementPlan",
+            BindingFlags.Static | BindingFlags.NonPublic);
+
+        method.Should().NotBeNull();
+        return method!.Invoke(null, new object[]
+        {
+            attackerX,
+            attackerY,
+            attackerZ,
+            targetX,
+            targetY,
+            targetZ,
+            attackerId,
+            desiredAttackRange,
+            personalSpaceRange,
+            isOutsideAttackRange,
+            hasRangedWeapon
+        })!;
+    }
+
+    private static T ReadPlanProperty<T>(object plan, string name)
+    {
+        var property = plan.GetType().GetProperty(name, BindingFlags.Instance | BindingFlags.Public);
+        property.Should().NotBeNull();
+        return (T)property!.GetValue(plan)!;
+    }
+
+    private static void AlternateRangedRepositionDirection(uint attackerId)
+    {
+        var method = typeof(OnAIActionAttackObject).GetMethod(
+            "AlternateRangedRepositionDirection",
+            BindingFlags.Static | BindingFlags.NonPublic);
+
+        method.Should().NotBeNull();
+        method!.Invoke(null, new object[] { attackerId });
     }
 
     private static string ReadSource(params string[] pathParts)

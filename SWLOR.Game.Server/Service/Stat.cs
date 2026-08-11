@@ -1682,18 +1682,22 @@ namespace SWLOR.Game.Server.Service
             var creatureId = creature.m_idSelf;
             Combat.TrackDeflection(creatureId, source);
 
-            var staminaRestoreStat = source == DeflectionSource.Shield
-                ? StatType.ShieldDeflectionStaminaRestore
-                : StatType.MeleeDeflectionStaminaRestore;
-            var staminaRestoreCooldownStat = source == DeflectionSource.Shield
-                ? StatType.ShieldDeflectionStaminaRestoreCooldownSeconds
-                : StatType.MeleeDeflectionStaminaRestoreCooldownSeconds;
-            var staminaRestore = source is DeflectionSource.Melee or DeflectionSource.Shield
+            var staminaRestoreStat = GetDeflectionStatTypeForSource(
+                source,
+                StatType.MeleeDeflectionStaminaRestore,
+                StatType.ShieldDeflectionStaminaRestore);
+            var staminaRestoreCooldownStat = GetDeflectionStatTypeForSource(
+                source,
+                StatType.MeleeDeflectionStaminaRestoreCooldownSeconds,
+                StatType.ShieldDeflectionStaminaRestoreCooldownSeconds);
+            var staminaRestore = staminaRestoreStat != StatType.Invalid
                 ? GetStatAdjustment(creatureId, staminaRestoreStat)
                 : 0;
             var fpRestore = GetDeflectionStatAdjustment(creatureId, StatType.DeflectionFPRestore, source);
             var staminaRestorePercent = GetStatAdjustment(creatureId, StatType.DeflectionStaminaRestorePercent);
-            var staminaRestoreCooldown = GetStatAdjustment(creatureId, staminaRestoreCooldownStat);
+            var staminaRestoreCooldown = staminaRestoreCooldownStat != StatType.Invalid
+                ? GetStatAdjustment(creatureId, staminaRestoreCooldownStat)
+                : 0;
             var fpRestoreCooldown = GetStatAdjustment(creatureId, StatType.DeflectionFPRestoreCooldownSeconds);
             var evasionBoost = GetDeflectionStatAdjustment(creatureId, StatType.DeflectionEvasionPercentAdjustment, source);
             var evasionEnmityBoost = GetDeflectionStatAdjustment(creatureId, StatType.DeflectionEvasionEnmityPercentAdjustment, source);
@@ -1837,6 +1841,19 @@ namespace SWLOR.Game.Server.Service
             return GetStatTypeDeflectionSource(statType) == source
                 ? GetStatAdjustment(creature, statType)
                 : 0;
+        }
+
+        private static StatType GetDeflectionStatTypeForSource(
+            DeflectionSource source,
+            StatType first,
+            StatType second)
+        {
+            if (GetStatTypeDeflectionSource(first) == source)
+                return first;
+
+            return GetStatTypeDeflectionSource(second) == source
+                ? second
+                : StatType.Invalid;
         }
 
         private static bool HasWeaponEquippedForWeaponDeflectionNative(CNWSCreature creature)

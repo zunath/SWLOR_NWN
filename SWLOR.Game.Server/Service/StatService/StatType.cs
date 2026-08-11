@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Flat Stamina restored when the creature successfully uses Melee Deflection.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Melee)]
         MeleeDeflectionStaminaRestore = 8,
 
         /// <summary>
@@ -3434,7 +3434,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Cooldown in seconds for MeleeDeflectionStaminaRestore.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, deflectionSource: DeflectionSource.Melee)]
         MeleeDeflectionStaminaRestoreCooldownSeconds = 598,
 
         /// <summary>
@@ -5742,13 +5742,13 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Flat Stamina restored when the creature successfully uses Shield Deflection.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Shield)]
         ShieldDeflectionStaminaRestore = 997,
 
         /// <summary>
         /// Cooldown in seconds for ShieldDeflectionStaminaRestore.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, deflectionSource: DeflectionSource.Shield)]
         ShieldDeflectionStaminaRestoreCooldownSeconds = 998,
 
     }

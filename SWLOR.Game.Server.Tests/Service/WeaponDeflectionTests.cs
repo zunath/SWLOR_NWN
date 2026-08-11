@@ -20,6 +20,10 @@ public class WeaponDeflectionTests
         Stat.GetStatTypeDeflectionSource(StatType.DeflectionEnmityPercentAdjustment).Should().Be(DeflectionSource.Ranged);
         Stat.GetStatTypeDeflectionSource(StatType.DeflectionRecastReductionSeconds).Should().Be(DeflectionSource.Shield);
         Stat.GetStatTypeDeflectionSource(StatType.DeflectionNearbyAllyGuard).Should().Be(DeflectionSource.Melee);
+        Stat.GetStatTypeDeflectionSource(StatType.MeleeDeflectionStaminaRestore).Should().Be(DeflectionSource.Melee);
+        Stat.GetStatTypeDeflectionSource(StatType.MeleeDeflectionStaminaRestoreCooldownSeconds).Should().Be(DeflectionSource.Melee);
+        Stat.GetStatTypeDeflectionSource(StatType.ShieldDeflectionStaminaRestore).Should().Be(DeflectionSource.Shield);
+        Stat.GetStatTypeDeflectionSource(StatType.ShieldDeflectionStaminaRestoreCooldownSeconds).Should().Be(DeflectionSource.Shield);
     }
 
     [Test]
@@ -65,6 +69,8 @@ public class WeaponDeflectionTests
             "GetStatAdjustment(creatureId, StatType.DeflectionStaminaRestorePercent)");
         statSource.Should().NotContain(
             "GetDeflectionStatAdjustment(creatureId, StatType.DeflectionStaminaRestorePercent, source)");
+        statSource.Should().Contain("GetDeflectionStatTypeForSource(");
+        statSource.Should().NotContain("source == DeflectionSource.Shield");
         combatSource.Should().Contain(
             "ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.Melee)");
         combatSource.Should().Contain(

@@ -252,9 +252,12 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 color.ToStoredValue());
             foreach (var selection in itemSelections)
             {
-                if (!hasPreviousGlobalColor ||
-                    !TryGetCustomColor(selection, layer, out var selectionColor) ||
-                    selectionColor == previousGlobalColor)
+                var hasSelectionColor = TryGetCustomColor(
+                    selection,
+                    layer,
+                    out var selectionColor);
+                if (!hasSelectionColor ||
+                    hasPreviousGlobalColor && selectionColor == previousGlobalColor)
                 {
                     SetColor(creature, selection, layer, color);
                 }

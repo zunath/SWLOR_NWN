@@ -1120,8 +1120,12 @@ public class TintMapReviewTests
             "global equipment tints need persisted intent distinct from per-part material keys");
         setGlobalItemColor.ToString().Should().Contain("selectionColor == previousGlobalColor",
             "changing a global RGB tint must preserve independently customized armor parts");
-        setGlobalItemColor.ToString().Should().Contain("!TryGetCustomColor",
+        setGlobalItemColor.ToString().Should().Contain("!hasSelectionColor",
             "a newly exposed material without a stored override still inherits the changed global tint");
+        setGlobalItemColor.ToString().Should().Contain("hasPreviousGlobalColor &&",
+            "the first global RGB tint must preserve existing per-part custom colors");
+        setGlobalItemColor.ToString().Should().NotContain("!hasPreviousGlobalColor ||",
+            "missing legacy global intent must not make every per-part custom color look inherited");
         var resetGlobalItemColor = FindMethod(serviceSource, nameof(TintMapService.ResetGlobalItemCustomColor));
         resetGlobalItemColor.ToString().Should().Contain("customColors.All(color => color.HasValue)",
             "legacy global state is safe to infer only when every active material is custom");

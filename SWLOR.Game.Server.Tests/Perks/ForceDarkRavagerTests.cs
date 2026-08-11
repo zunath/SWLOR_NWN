@@ -30,6 +30,11 @@ public class ForceDarkRavagerTests
             "While active, gain +8% weapon and force damage and +10% critical damage, but take 5% more damage and suffer -5% Defense and Force Defense. Only one stance may be active.");
         AssertPerkLevel(perks[PerkType.ForceSpark], "Force Spark", 2, 3, 18, FeatType.ForceSpark2,
             "Deals 30 force DMG plus WIL scaling to one target and reduces Evasion by 6% for 30 seconds.");
+        perks[PerkType.ForceSpark].PerkLevels.Should().NotContainKey(3);
+        perks[PerkType.ForceSpark].PerkLevels.Values
+            .SelectMany(level => level.GrantedFeats)
+            .Should()
+            .NotContain(FeatType.ForceSpark3);
         AssertPerkLevel(perks[PerkType.ForceLightning], "Force Lightning", 2, 4, 22, FeatType.ForceLightning2,
             "Deals 18 force DMG plus WIL scaling to one target, then arcs to up to three enemies within 5m for 50% damage. Affected targets suffer Shock for 30 seconds.");
         AssertPerkLevel(perks[PerkType.ForceLightning], "Force Lightning", 3, 4, 42, FeatType.ForceLightning3,
@@ -163,17 +168,17 @@ public class ForceDarkRavagerTests
 
         var feats = new[]
         {
-            (FeatType.ForceSpark1, "ife_forcesprk1", "M", "0x02", "1", "****", "****", "****", "****"),
-            (FeatType.ForceLightning1, "ife_forcelghtnn1", "M", "0x02", "1", "sphere", "5", "****", "1"),
-            (FeatType.ForceDrain1, "ife_forcedrn1", "M", "0x02", "1", "****", "****", "****", "****"),
-            (FeatType.FuryStance1, "ife_frystnc1", "P", "0x01", "0", "****", "****", "****", "****"),
-            (FeatType.ForceSpark2, "ife_forcesprk2", "M", "0x02", "1", "****", "****", "****", "****"),
-            (FeatType.ForceLightning2, "ife_forcelghtnn2", "M", "0x02", "1", "sphere", "5", "****", "1"),
+            (FeatType.ForceSpark1, "ife_forcespark1", "M", "0x02", "1", "****", "****", "****", "****"),
+            (FeatType.ForceLightning1, "ife_forcezap1", "M", "0x02", "1", "sphere", "5", "****", "1"),
+            (FeatType.ForceDrain1, "ife_forcedrain1", "M", "0x02", "1", "****", "****", "****", "****"),
+            (FeatType.FuryStance1, "ife_furystance1", "P", "0x01", "0", "****", "****", "****", "****"),
+            (FeatType.ForceSpark2, "ife_forcespark2", "M", "0x02", "1", "****", "****", "****", "****"),
+            (FeatType.ForceLightning2, "ife_forcezap2", "M", "0x02", "1", "sphere", "5", "****", "1"),
             (FeatType.ForceLightning3, "ife_fzap3", "M", "0x02", "1", "sphere", "5", "****", "1"),
-            (FeatType.ForceDrain2, "ife_forcedrn2", "M", "0x02", "1", "****", "****", "****", "****"),
-            (FeatType.ForceDrain3, "ife_forcedrn3", "M", "0x02", "1", "****", "****", "****", "****"),
-            (FeatType.FuryStance2, "ife_frystnc2", "P", "0x01", "0", "****", "****", "****", "****"),
-            (FeatType.HungerOfTheDark1, "ife_hngrdrk1", "P", "0x01", "0", "****", "****", "****", "****")
+            (FeatType.ForceDrain2, "ife_forcedrain2", "M", "0x02", "1", "****", "****", "****", "****"),
+            (FeatType.ForceDrain3, "ife_forcedrain3", "M", "0x02", "1", "****", "****", "****", "****"),
+            (FeatType.FuryStance2, "ife_furystance2", "P", "0x01", "0", "****", "****", "****", "****"),
+            (FeatType.HungerOfTheDark1, "ife_hungerdark1", "P", "0x01", "0", "****", "****", "****", "****")
         };
         var seenIcons = new HashSet<string>();
 
@@ -183,6 +188,7 @@ public class ForceDarkRavagerTests
             var abilityRow = abilityRows[int.Parse(featRow["SPELLID"])];
             var featIcon = featRow["ICON"];
 
+            featIcon.Should().Be(expectedIcon);
             abilityRow["IconResRef"].Should().Be(featIcon);
             seenIcons.Add(featIcon).Should().BeTrue($"{featType} should have a unique icon");
             File.Exists((root / "SWLOR_Haks" / "sw_ability" / $"{featIcon}.tga").FullName).Should().BeTrue();

@@ -249,6 +249,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     ExpectsFPCost = true,
                     ExpectsRecast = true,
                 },
+                new()
+                {
+                    Feat = FeatType.ForceLightning3,
+                    Target = AbilityTargetKind.HostileCreature,
+                    ExpectedTargetStatusEffects = new[] { typeof(ShockStatusEffect) },
+                    ExpectsTargetDamage = true,
+                    ExpectsFPCost = true,
+                    ExpectsRecast = true,
+                },
 
                 // ForcePushAbilityDefinition - hostile cone knockdown + unconditional Hobble rider
                 // on a successful hit. Cone shape always resolves to a location target internally;
@@ -313,16 +322,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     ExpectsFPCost = true,
                     ExpectsRecast = true,
                 },
-                new()
-                {
-                    Feat = FeatType.ForceSpark3,
-                    Target = AbilityTargetKind.HostileCreature,
-                    ExpectedTargetStatusEffects = new[] { typeof(ForceSpark3StatusEffect) },
-                    ExpectsTargetDamage = true,
-                    ExpectsFPCost = true,
-                    ExpectsRecast = true,
-                },
-
                 // FuryStanceAbilityDefinition - self toggle stance via WeaponActiveAbilityDefinitionBase
                 // .ConfigureToggle: the impact unconditionally applies the stance status to self.
                 new()

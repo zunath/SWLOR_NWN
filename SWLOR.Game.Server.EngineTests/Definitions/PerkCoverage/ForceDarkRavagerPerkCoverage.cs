@@ -13,16 +13,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.PerkCoverage
                 new()
                 {
                     Perk = PerkType.ForceSpark,
-                    MaxLevel = 3,
-                    Prices = new[] { 2, 3, 4 },
-                    GrantedFeats = new[] { FeatType.ForceSpark1, FeatType.ForceSpark2, FeatType.ForceSpark3 },
+                    MaxLevel = 2,
+                    Prices = new[] { 2, 3 },
+                    GrantedFeats = new[] { FeatType.ForceSpark1, FeatType.ForceSpark2 },
                 },
                 new()
                 {
                     Perk = PerkType.ForceLightning,
-                    MaxLevel = 2,
-                    Prices = new[] { 3, 4 },
-                    GrantedFeats = new[] { FeatType.ForceLightning1, FeatType.ForceLightning2 },
+                    MaxLevel = 3,
+                    Prices = new[] { 3, 4, 4 },
+                    GrantedFeats = new[] { FeatType.ForceLightning1, FeatType.ForceLightning2, FeatType.ForceLightning3 },
                 },
                 new()
                 {

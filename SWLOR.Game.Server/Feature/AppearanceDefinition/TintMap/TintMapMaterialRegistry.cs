@@ -15,6 +15,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
         private static readonly Dictionary<string, IReadOnlyList<TintMapMaterialDefinition>> MaterialsByModel =
             new(StringComparer.OrdinalIgnoreCase);
+        private static TintMapEquipmentMaterialIndex _equipmentMaterialIndex =
+            TintMapEquipmentMaterialIndex.Empty;
 
         private static readonly Dictionary<TintMapLayerType, TintMapLayerDefinition> LayerDefinitions = new()
         {
@@ -67,6 +69,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             {
                 MaterialsByModel[model] = modelMaterials;
             }
+            _equipmentMaterialIndex = new TintMapEquipmentMaterialIndex(MaterialsByModel);
 
             Log.WriteStructured(
                 LogGroup.Server,
@@ -90,12 +93,11 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             string destinationMaterialResref,
             TintMapLayerType layer)
         {
-            return TintMapEquipmentMaterialMatcher.AreEquivalent(
+            return _equipmentMaterialIndex.AreEquivalent(
                 sourceMaterialResref,
                 destinationModelResref,
                 destinationMaterialResref,
-                layer,
-                MaterialsByModel);
+                layer);
         }
 
         public static IReadOnlyList<string> GetEquivalentEquipmentMaterialResrefs(
@@ -103,11 +105,10 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             string sourceMaterialResref,
             TintMapLayerType layer)
         {
-            return TintMapEquipmentMaterialMatcher.GetEquivalentMaterialResrefs(
+            return _equipmentMaterialIndex.GetEquivalentMaterialResrefs(
                 sourceModelResref,
                 sourceMaterialResref,
-                layer,
-                MaterialsByModel);
+                layer);
         }
 
         public static TintMapLayerDefinition GetLayer(TintMapLayerType layer)

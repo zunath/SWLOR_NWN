@@ -955,7 +955,7 @@ namespace SWLOR.Toolset.Editors.Creatures
             if (SelectedAppearanceSectionIndex != 2)
                 return;
 
-            if (BodyParts.HasEditableContent && BodyParts.IsDynamic)
+            if (BodyParts.HasEditableContent)
                 _ = BodyParts.EnsureLoadedAsync();
         }
 

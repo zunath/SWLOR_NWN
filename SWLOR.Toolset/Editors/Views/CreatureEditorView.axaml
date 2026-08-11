@@ -328,11 +328,14 @@
 
                     <StackPanel Spacing="8" IsVisible="{Binding BodyParts.IsFullBody}">
                       <TextBlock Text="Colors" Classes="section" Margin="0,6,0,0" />
-                      <TextBlock Text="This model does not expose any tint-map color channels."
-                                 Classes="dim" TextWrapping="Wrap"
-                                 IsVisible="{Binding !TintMapEditor.HasColors}" />
-                      <ContentControl Content="{Binding TintMapEditor}"
-                                      IsVisible="{Binding TintMapEditor.HasColors}" />
+                      <ItemsControl ItemsSource="{Binding BodyParts.Colors}">
+                        <ItemsControl.ItemTemplate>
+                          <DataTemplate DataType="creatures:CreatureBodyColorViewModel">
+                            <items:PaletteColorPickerView DataContext="{Binding Palette}"
+                                                          Margin="0,2,0,8" />
+                          </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                      </ItemsControl>
                     </StackPanel>
                   </StackPanel>
                 </Border>

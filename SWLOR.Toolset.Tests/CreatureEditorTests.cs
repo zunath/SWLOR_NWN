@@ -1581,6 +1581,13 @@ namespace SWLOR.Toolset.Tests
             bodyTab.IsVisible.Should().BeTrue(
                 "a full-body model with a tint channel still has editable Body content");
 
+            appearanceSections.SelectedIndex = 2;
+            Dispatcher.UIThread.RunJobs();
+            DrainUntil(() => editor.BodyParts.IsLoaded);
+            editor.BodyParts.Colors.Should().Contain(color => color.Label == "Skin");
+            editor.BodyParts.Structure.Should().BeEmpty(
+                "full-body models expose colors without segmented geometry controls");
+
             editorTabs!.SelectedItem = editorTabs.Items.Cast<TabItem>()
                 .Single(tab => tab.Header?.ToString() == "Equipment");
             Dispatcher.UIThread.RunJobs();

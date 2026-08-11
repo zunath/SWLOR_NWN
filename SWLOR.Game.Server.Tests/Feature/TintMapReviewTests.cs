@@ -1197,25 +1197,23 @@ public class TintMapReviewTests
             }
         };
 
-        TintMapEquipmentMaterialMatcher.AreEquivalent(
+        var index = new TintMapEquipmentMaterialIndex(catalog);
+        index.AreEquivalent(
                 "pmh0_r_ro_7a1a22",
                 "pfh0_robe030",
                 "pfh0_r_ro_82b326",
-                TintMapLayerType.Metal1,
-                catalog)
+                TintMapLayerType.Metal1)
             .Should().BeTrue();
-        TintMapEquipmentMaterialMatcher.AreEquivalent(
+        index.AreEquivalent(
                 "pmh0_p_ro_6c9e96",
                 "pfh0_robe030",
                 "pfh0_r_ro_82b326",
-                TintMapLayerType.Metal1,
-                catalog)
+                TintMapLayerType.Metal1)
             .Should().BeFalse("a material in another slot must not receive the equipment dye");
-        TintMapEquipmentMaterialMatcher.GetEquivalentMaterialResrefs(
+        index.GetEquivalentMaterialResrefs(
                 "pmh0_robe030",
                 "pmh0_r_ro_7a1a22",
-                TintMapLayerType.Metal1,
-                catalog)
+                TintMapLayerType.Metal1)
             .Should().BeEquivalentTo(
                 "pmh0_r_ro_7a1a22",
                 "pfh0_r_ro_82b326");
@@ -1240,12 +1238,11 @@ public class TintMapReviewTests
             }
         };
 
-        TintMapEquipmentMaterialMatcher.AreEquivalent(
+        new TintMapEquipmentMaterialIndex(catalog).AreEquivalent(
                 sharedMaterial,
                 "pfh0_handl153",
                 "pfh0_h_lh_other",
-                TintMapLayerType.Cloth1,
-                catalog)
+                TintMapLayerType.Cloth1)
             .Should().BeFalse(
                 "the stored material resref does not identify which wearer variant supplied its slot");
     }
@@ -1269,12 +1266,11 @@ public class TintMapReviewTests
 
         TintMapEquipmentMaterialMatcher.GetVariantIdentity("pmh0_robe017")
             .Should().Be(TintMapEquipmentMaterialMatcher.GetVariantIdentity("pfh0_robe017"));
-        TintMapEquipmentMaterialMatcher.AreEquivalent(
+        new TintMapEquipmentMaterialIndex(catalog).AreEquivalent(
                 "pmh0_robe017",
                 "pfh0_robe017",
                 "pfh0_robe017",
-                TintMapLayerType.Cloth1,
-                catalog)
+                TintMapLayerType.Cloth1)
             .Should().BeFalse(
                 "materials with the same normalized variant identity can occupy different slots");
     }
@@ -1513,6 +1509,15 @@ public class TintMapReviewTests
         applyColor.ToString().Should().Contain("layerDefinition.ColorUniformName");
         applyColor.ToString().Should().Contain("layerDefinition.CustomModeUniformName");
         applyColor.ToString().Should().Contain("customColor.HasValue ? 1f : 0f");
+        applyColor.ToString().Should().Contain("customColor.HasValue");
+        applyColor.ToString().Should().Contain("? 0f");
+
+        foreach (var shaderName in new[] { "fs_plt_tinter.shd", "fs_plt_tinter_nm.shd" })
+        {
+            ReadSource("SWLOR_Haks", "sw_shader", shaderName)
+                .Should().Contain("customTintMode > 0.5 || v <= 0.0",
+                    "custom RGB must still activate when a client drops the scalar mode override");
+        }
     }
 
     [Test]
@@ -1603,6 +1608,36 @@ public class TintMapReviewTests
             IsMemberInvocation(invocation, "Console", "WriteLine"));
         invocations.Should().NotContain(invocation =>
             GetInvokedMethodName(invocation) == "Information");
+    }
+
+    [Test]
+    public void TintMapRegistryPrecomputesEquipmentMaterialSlotsDuringLoad()
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapMaterialRegistry.cs");
+        var loadMethod = FindMethod(source, nameof(TintMapMaterialRegistry.Load));
+        loadMethod.ToString().Should().Contain(
+            "_equipmentMaterialIndex = new TintMapEquipmentMaterialIndex(MaterialsByModel)",
+            "the complete tint-map catalog should be indexed once when the registry loads");
+
+        var equivalenceMethod = FindMethod(
+            source,
+            nameof(TintMapMaterialRegistry.AreEquipmentMaterialSlotsEquivalent));
+        equivalenceMethod.ToString().Should().Contain("_equipmentMaterialIndex.AreEquivalent");
+        equivalenceMethod.ToString().Should().NotContain("MaterialsByModel",
+            "interactive tint changes must not rescan every registered model");
+
+        var equivalentMaterialsMethod = FindMethod(
+            source,
+            nameof(TintMapMaterialRegistry.GetEquivalentEquipmentMaterialResrefs));
+        equivalentMaterialsMethod.ToString().Should()
+            .Contain("_equipmentMaterialIndex.GetEquivalentMaterialResrefs");
+        equivalentMaterialsMethod.ToString().Should().NotContain("MaterialsByModel",
+            "equivalent material expansion should use the precomputed slot index");
     }
 
     [Test]

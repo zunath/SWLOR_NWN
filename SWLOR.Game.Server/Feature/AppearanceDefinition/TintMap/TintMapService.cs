@@ -1024,12 +1024,14 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             TintMapColorSelection color)
         {
             var layerDefinition = TintMapMaterialRegistry.GetLayer(layer);
+            var customColor = color.CustomColor;
             SetMaterialShaderUniformVec4(
                 creature,
                 selection.Material.Resref,
                 layerDefinition.UniformName,
-                TintMapMaterialRegistry.GetPaletteCoordinate(layer, color.PaletteColorId));
-            var customColor = color.CustomColor;
+                customColor.HasValue
+                    ? 0f
+                    : TintMapMaterialRegistry.GetPaletteCoordinate(layer, color.PaletteColorId));
             SetMaterialShaderUniformVec4(
                 creature,
                 selection.Material.Resref,
@@ -1038,9 +1040,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 (customColor?.Green ?? 0) / 255f,
                 (customColor?.Blue ?? 0) / 255f,
                 customColor.HasValue ? 1f : 0f);
-            // Use a dedicated scalar for custom/preset selection. Scripted scalar material
-            // overrides are retained reliably by NWN, while neither a vec4's fourth component
-            // nor an overloaded negative palette coordinate survives on every supported client.
+            // Keep a dedicated mode scalar, while the zero palette row above provides a second
+            // activation signal for clients that drop that scalar override. Every real palette
+            // coordinate is strictly positive, so zero cannot collide with a preset selection.
             SetMaterialShaderUniformVec4(
                 creature,
                 selection.Material.Resref,

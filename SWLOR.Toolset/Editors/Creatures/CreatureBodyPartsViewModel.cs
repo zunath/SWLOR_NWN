@@ -192,18 +192,20 @@ namespace SWLOR.Toolset.Editors.Creatures
             Structure.Clear();
             Limbs.Clear();
             Colors.Clear();
-            if (!IsDynamic)
-                return;
+            if (IsDynamic)
+            {
+                Structure.Add(Single("Head", "Appearance_Head", "head"));
+                Structure.Add(Single("Neck", "BodyPart_Neck", "neck"));
+                Structure.Add(Single("Torso", "BodyPart_Torso", "chest"));
+                Structure.Add(Single("Belt", "BodyPart_Belt", "belt", allowsNone: true));
+                Structure.Add(Single("Pelvis", "BodyPart_Pelvis", "pelvis"));
 
-            Structure.Add(Single("Head", "Appearance_Head", "head"));
-            Structure.Add(Single("Neck", "BodyPart_Neck", "neck"));
-            Structure.Add(Single("Torso", "BodyPart_Torso", "chest"));
-            Structure.Add(Single("Belt", "BodyPart_Belt", "belt", allowsNone: true));
-            Structure.Add(Single("Pelvis", "BodyPart_Pelvis", "pelvis"));
+                foreach (var definition in LimbDefinitions)
+                    Limbs.Add(Pair(definition));
+            }
 
-            foreach (var definition in LimbDefinitions)
-                Limbs.Add(Pair(definition));
-
+            // Full-body appearances cannot change segmented geometry, but tint-map channels on
+            // their model still use the same preset/custom semantic color controls.
             BuildColors();
         }
 

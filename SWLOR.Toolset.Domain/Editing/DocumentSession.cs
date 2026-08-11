@@ -123,22 +123,20 @@ namespace SWLOR.Toolset.Domain.Editing
 
             lock (_syncRoot)
             {
-                if (!UndoStack.Entries
-                        .Take(UndoStack.Position)
-                        .Any(entry => ReferenceEquals(entry, origin)))
-                {
+                if (!UndoStack.ContainsApplied(origin))
                     return false;
+
+                using var transaction = Begin(description);
+                try
+                {
+                    mutation();
+                    return transaction.CommitCoalescedInto(origin);
                 }
-
-                var positionBefore = UndoStack.Position;
-                Execute(description, mutation);
-                if (UndoStack.Position == positionBefore)
-                    return true;
-
-                if (!UndoStack.CoalesceNewestInto(origin))
-                    throw new InvalidOperationException("Could not coalesce the deferred document edit.");
-
-                return true;
+                catch
+                {
+                    transaction.Rollback();
+                    throw;
+                }
             }
         }
 

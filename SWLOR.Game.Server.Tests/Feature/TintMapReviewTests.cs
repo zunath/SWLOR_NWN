@@ -130,8 +130,17 @@ public class TintMapReviewTests
         viewModel.Should().Contain("WatchOnClient(model => model.CustomTintRed)");
         viewModel.Should().Contain("WatchOnClient(model => model.CustomTintGreen)");
         viewModel.Should().Contain("WatchOnClient(model => model.CustomTintBlue)");
-        viewModel.Should().Contain("TintMapPaletteColors.GetColor(");
-        viewModel.Should().Contain("TintMapService.GetStandardColorId(");
+        viewModel.Should().Contain("TintMapService.GetEffectiveDisplayColor(");
+        var service = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapService.cs");
+        var effectiveDisplayColor = FindMethod(service, nameof(TintMapService.GetEffectiveDisplayColor));
+        effectiveDisplayColor.ToString().Should().Contain("GetEffectiveColor(");
+        effectiveDisplayColor.ToString().Should().Contain("TintMapPaletteColors.GetColor(",
+            "legacy 1-176 overrides must initialize the picker from their rendered palette color");
         viewModel.Should().NotContain("IsCustomTintPickerVisible");
         viewModel.Should().NotContain("OnToggleCustomTintPicker");
         viewModel.Should().NotContain("TintMaterialOptions");
@@ -182,7 +191,7 @@ public class TintMapReviewTests
         loadBodyPart.DescendantNodes()
             .OfType<InvocationExpressionSyntax>()
             .Select(GetInvokedMethodName)
-            .Should().Contain("CarryCreatureCustomColors");
+            .Should().Contain(nameof(TintMapService.CarryStoredCreatureCustomColors));
         loadBodyPart.DescendantNodes()
             .OfType<InvocationExpressionSyntax>()
             .Select(GetInvokedMethodName)
@@ -435,7 +444,7 @@ public class TintMapReviewTests
     }
 
     [Test]
-    public void QueuedRefreshCarriesStoredSemanticColorsOntoNewEquipmentMaterials()
+    public void QueuedRefreshCarriesOnlyExplicitGlobalSemanticColorsOntoNewMaterials()
     {
         var source = ReadSource(
             "SWLOR.Game.Server",
@@ -456,13 +465,27 @@ public class TintMapReviewTests
                 delayedBody.IndexOf(nameof(TintMapService.ApplyCurrentColors), StringComparison.Ordinal));
 
         var carry = FindMethod(source, nameof(TintMapService.CarryStoredCreatureCustomColors));
-        carry.ToString().Should().Contain("GetCreatureCustomColorVariables(creature)");
-        carry.ToString().Should().Contain("entry.Value.Count == 1",
-            "mixed semantic colors must not be propagated onto replacement equipment");
+        carry.ToString().Should().Contain("GetCreatureCustomColorStateVariable(layer)",
+            "per-material variables cannot prove that a semantic color was chosen globally");
+        carry.ToString().Should().NotContain("entry.Value.Count == 1",
+            "one distinct custom value may still be only one member of a partial authored tint");
         carry.DescendantNodes()
             .OfType<InvocationExpressionSyntax>()
             .Select(GetInvokedMethodName)
             .Should().Contain("ApplyCreatureCustomColors");
+
+        var setGlobal = FindMethod(source, nameof(TintMapService.SetCreatureCustomColor));
+        setGlobal.ToString().Should().Contain("GetCreatureCustomColorStateVariable(layer)",
+            "global edits need an explicit persisted marker for later equipment refreshes");
+
+        var viewModelSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "AppearanceEditorViewModel.cs");
+        FindMethod(viewModelSource, "LoadBodyPart").ToString().Should()
+            .Contain(nameof(TintMapService.CarryStoredCreatureCustomColors));
     }
 
     [Test]
@@ -481,6 +504,8 @@ public class TintMapReviewTests
             .ToList();
 
         reset.ToString().Should().Contain("GetCreatureCustomColorVariables(creature)");
+        reset.ToString().Should().Contain("GetCreatureCustomColorStateVariable(layer)",
+            "resetting to a preset must also remove the persisted global semantic tint marker");
         resetInvocations.Should().Contain("DeleteLocalInt");
         resetInvocations.Should().Contain("RemoveDroidOverrides");
         resetInvocations.Should().Contain("ApplyColor");

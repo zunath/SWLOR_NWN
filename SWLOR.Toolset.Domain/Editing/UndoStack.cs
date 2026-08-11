@@ -90,22 +90,19 @@ namespace SWLOR.Toolset.Domain.Editing
         }
 
         /// <summary>
-        /// Moves the newest applied entry into an earlier originating entry without changing the
-        /// document state. Deferred work can therefore remain part of the user action that caused
-        /// it even when an unrelated edit completed while the worker was running.
+        /// Adds a continuation to an applied originating entry without changing the history cursor
+        /// or discarding its redo tail. Deferred work can therefore remain part of the user action
+        /// that caused it even after the builder undid a later unrelated edit.
         /// </summary>
-        internal bool CoalesceNewestInto(IDocumentEdit origin)
+        internal bool CoalesceIntoApplied(IDocumentEdit origin, IDocumentEdit continuation)
         {
             ArgumentNullException.ThrowIfNull(origin);
+            ArgumentNullException.ThrowIfNull(continuation);
 
-            if (_position == 0 || _position != _entries.Count)
-                return false;
-
-            var newestIndex = _position - 1;
             var originIndex = -1;
-            for (var index = 0; index < newestIndex; index++)
+            for (var index = 0; index < _position; index++)
             {
-                if (ReferenceEquals(_entries[index], origin))
+                if (MatchesOrigin(_entries[index], origin))
                 {
                     originIndex = index;
                     break;
@@ -115,16 +112,8 @@ namespace SWLOR.Toolset.Domain.Editing
             if (originIndex < 0)
                 return false;
 
-            var newest = _entries[newestIndex];
-            _entries[originIndex] = new CoalescedDocumentEdit(origin, newest);
-            _entries.RemoveAt(newestIndex);
-            _position--;
-
-            if (_savedPosition == newestIndex + 1)
-            {
-                _savedPosition--;
-            }
-            else if (_savedPosition.HasValue && _savedPosition.Value > originIndex)
+            _entries[originIndex] = new CoalescedDocumentEdit(_entries[originIndex], continuation);
+            if (_savedPosition.HasValue && _savedPosition.Value > originIndex)
             {
                 // A saved state between the originating edit and its deferred continuation is no
                 // longer representable by the coalesced history.
@@ -132,6 +121,18 @@ namespace SWLOR.Toolset.Domain.Editing
             }
 
             return true;
+        }
+
+        internal bool ContainsApplied(IDocumentEdit origin)
+        {
+            ArgumentNullException.ThrowIfNull(origin);
+            return _entries.Take(_position).Any(entry => MatchesOrigin(entry, origin));
+        }
+
+        private static bool MatchesOrigin(IDocumentEdit entry, IDocumentEdit origin)
+        {
+            return ReferenceEquals(entry, origin) ||
+                   entry is CoalescedDocumentEdit coalesced && coalesced.Contains(origin);
         }
 
         public void Undo()
@@ -234,6 +235,12 @@ namespace SWLOR.Toolset.Domain.Editing
             }
 
             public string Describe() => _origin.Describe();
+
+            public bool Contains(IDocumentEdit origin)
+            {
+                return ReferenceEquals(_origin, origin) ||
+                       _origin is CoalescedDocumentEdit coalesced && coalesced.Contains(origin);
+            }
         }
     }
 }

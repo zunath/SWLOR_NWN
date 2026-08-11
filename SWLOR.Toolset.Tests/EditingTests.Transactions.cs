@@ -90,6 +90,43 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void ExecuteCoalesced_PreservesRedoHistoryAfterLaterEditWasUndone()
+        {
+            var path = CorpusFiles.FindFileWithMutableInteger("utc");
+            var document = JsonGffDocument.Parse(File.ReadAllBytes(path));
+            using var session = new DocumentSession(path, document);
+            var fields = CollectMutableIntegers(document.Root, 2);
+            var firstOriginal = fields[0].GetInteger();
+            var secondOriginal = fields[1].GetInteger();
+
+            session.Execute("change model", () => fields[0].SetInteger(firstOriginal + 1));
+            var origin = session.UndoStack.CurrentAppliedEntry;
+            origin.Should().NotBeNull();
+            session.Execute("unrelated edit", () => fields[1].SetInteger(secondOriginal + 1));
+            session.Undo();
+
+            session.ExecuteCoalesced(
+                    origin!,
+                    "carry generated tint variables",
+                    () => fields[0].SetInteger(firstOriginal + 2))
+                .Should().BeTrue();
+
+            session.UndoStack.Entries.Should().HaveCount(2);
+            session.UndoStack.Position.Should().Be(1);
+            session.UndoStack.CanRedo.Should().BeTrue(
+                "a deferred continuation must not branch away an unrelated redo entry");
+            fields[0].GetInteger().Should().Be(firstOriginal + 2);
+            fields[1].GetInteger().Should().Be(secondOriginal);
+
+            session.Redo();
+            fields[1].GetInteger().Should().Be(secondOriginal + 1);
+            session.Undo();
+            session.Undo();
+            fields[0].GetInteger().Should().Be(firstOriginal);
+            fields[1].GetInteger().Should().Be(secondOriginal);
+        }
+
+        [Test]
         public void Execute_WhenMutationThrows_RollsBackCapturedEditsAndLeavesHistoryClean()
         {
             var path = CorpusFiles.FindFileWithMutableInteger("utc");

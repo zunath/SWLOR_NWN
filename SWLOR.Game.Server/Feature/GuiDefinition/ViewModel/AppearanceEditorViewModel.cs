@@ -914,11 +914,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             IsCustomTintAvailable = true;
             var effectiveColors = selections
-                .Select(selection => TintMapService.TryGetCustomColor(selection, layerType, out var customColor)
-                    ? customColor
-                    : TintMapPaletteColors.GetColor(
-                        layerType,
-                        TintMapService.GetStandardColorId(_target, selection, layerType)))
+                .Select(selection => TintMapService.GetEffectiveDisplayColor(
+                    _target,
+                    selection,
+                    layerType))
                 .ToList();
             var distinctColors = effectiveColors
                 .Distinct()
@@ -1915,7 +1914,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadBodyPart()
         {
-            var previousTintSelections = _tintMapSelections;
             var appearanceType = GetAppearanceType(_target);
             var gender = GetGender(_target);
             var appearance = _racialAppearances[appearanceType];
@@ -1979,7 +1977,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     throw new ArgumentOutOfRangeException(nameof(SelectedPartIndex));
             }
 
-            TintMapService.CarryCreatureCustomColors(_target, previousTintSelections);
+            TintMapService.CarryStoredCreatureCustomColors(_target);
             ExecuteScript(ScriptName.OnAppearanceEdit, _target);
             LoadTintMapEditor();
         }

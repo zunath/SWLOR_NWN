@@ -229,70 +229,26 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             return TintMapColor.TryFromStoredValue(savedColor, out color);
         }
 
-        public static void CarryCreatureCustomColors(
-            uint creature,
-            IReadOnlyList<TintMapMaterialSelection> previousSelections)
-        {
-            if (!GetIsObjectValid(creature) || previousSelections == null)
-                return;
-
-            var semanticLayers = new[]
-            {
-                TintMapLayerType.Skin,
-                TintMapLayerType.Hair,
-                TintMapLayerType.Tattoo1,
-                TintMapLayerType.Tattoo2
-            };
-            var colors = new Dictionary<TintMapLayerType, TintMapColor>();
-            foreach (var layer in semanticLayers)
-            {
-                var distinct = previousSelections
-                    .Where(selection =>
-                        selection.GetPaletteSource(layer) == creature &&
-                        selection.Material.Layers.Contains(layer) &&
-                        TryGetCustomColor(selection, layer, out _))
-                    .Select(selection =>
-                    {
-                        TryGetCustomColor(selection, layer, out var color);
-                        return color;
-                    })
-                    .Distinct()
-                    .ToList();
-                if (distinct.Count == 1)
-                    colors[layer] = distinct[0];
-            }
-
-            ApplyCreatureCustomColors(creature, colors);
-        }
-
         public static void CarryStoredCreatureCustomColors(uint creature)
         {
             if (!GetIsObjectValid(creature))
                 return;
 
-            var colorsByLayer = new Dictionary<TintMapLayerType, HashSet<TintMapColor>>();
-            foreach (var variableName in GetCreatureCustomColorVariables(creature))
+            var colors = new Dictionary<TintMapLayerType, TintMapColor>();
+            foreach (var layer in Enum.GetValues<TintMapLayerType>())
             {
-                if (!TintMapVariable.TryGetLayer(variableName, out var layer) ||
-                    !TintMapColor.TryFromStoredValue(GetLocalInt(creature, variableName), out var color))
+                if (!TintMapVariable.IsCreatureColorLayer(layer) ||
+                    !TintMapColor.TryFromStoredValue(
+                        GetLocalInt(creature, GetCreatureCustomColorStateVariable(layer)),
+                        out var color))
                 {
                     continue;
                 }
 
-                if (!colorsByLayer.TryGetValue(layer, out var colors))
-                {
-                    colors = new HashSet<TintMapColor>();
-                    colorsByLayer[layer] = colors;
-                }
-
-                colors.Add(color);
+                colors[layer] = color;
             }
 
-            ApplyCreatureCustomColors(
-                creature,
-                colorsByLayer
-                    .Where(entry => entry.Value.Count == 1)
-                    .ToDictionary(entry => entry.Key, entry => entry.Value.Single()));
+            ApplyCreatureCustomColors(creature, colors);
         }
 
         public static void ResetCreatureCustomColor(uint creature, TintMapLayerType layer)
@@ -305,6 +261,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     TintMapVariable.TryGetLayer(variableName, out var variableLayer) &&
                     variableLayer == layer)
                 .ToList();
+            variableNames.Add(GetCreatureCustomColorStateVariable(layer));
             foreach (var variableName in variableNames)
             {
                 DeleteLocalInt(creature, variableName);
@@ -344,6 +301,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             }
 
             var savedColor = color.ToStoredValue();
+            var stateVariable = GetCreatureCustomColorStateVariable(layer);
+            SetLocalInt(creature, stateVariable, savedColor);
             var existingVariables = GetCreatureCustomColorVariables(creature)
                 .Where(variableName =>
                     TintMapVariable.TryGetLayer(variableName, out var variableLayer) &&
@@ -354,7 +313,10 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 SetLocalInt(creature, variableName, savedColor);
             }
 
-            SaveDroidOverrides(creature, existingVariables, savedColor);
+            SaveDroidOverrides(
+                creature,
+                existingVariables.Concat(new[] { stateVariable }).Distinct().ToList(),
+                savedColor);
 
             // The NUI can remain open while an equipment or body-part replacement completes.
             // Re-resolve here so an RGB edit always reaches the materials currently rendered by
@@ -828,6 +790,16 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             return new TintMapColorSelection(paletteColor, null);
         }
 
+        public static TintMapColor GetEffectiveDisplayColor(
+            uint creature,
+            TintMapMaterialSelection selection,
+            TintMapLayerType layer)
+        {
+            var effectiveColor = GetEffectiveColor(creature, selection, layer);
+            return effectiveColor.CustomColor ??
+                   TintMapPaletteColors.GetColor(layer, effectiveColor.PaletteColorId);
+        }
+
         private static int GetSavedColor(
             TintMapMaterialSelection selection,
             TintMapLayerType layer)
@@ -1102,6 +1074,11 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             }
 
             return variableNames;
+        }
+
+        private static string GetCreatureCustomColorStateVariable(TintMapLayerType layer)
+        {
+            return $"TMC_{(int)layer}";
         }
 
         private static void RemoveDroidOverrides(uint creature, IReadOnlyList<string> variableNames)

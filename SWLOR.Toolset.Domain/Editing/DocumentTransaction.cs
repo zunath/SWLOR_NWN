@@ -63,6 +63,35 @@ namespace SWLOR.Toolset.Domain.Editing
         }
 
         /// <summary>
+        /// Ends recording and attaches the captured edits to an earlier applied action without
+        /// pushing a new history entry. If the origin is no longer applied, the captured mutations
+        /// are rolled back and false is returned.
+        /// </summary>
+        internal bool CommitCoalescedInto(IDocumentEdit origin)
+        {
+            if (_finished)
+                return false;
+
+            _finished = true;
+            _scope.Dispose();
+            try
+            {
+                if (_edits.Count == 0)
+                    return true;
+                if (_stack.CoalesceIntoApplied(origin, this))
+                    return true;
+
+                using (EditScope.EnterReplay())
+                    Revert();
+                return false;
+            }
+            finally
+            {
+                _ownerLock?.Dispose();
+            }
+        }
+
+        /// <summary>
         /// Ends recording without adding an undo step and reverts every mutation captured so far.
         /// This is the exception path for multi-field edits: callers can abandon a partially
         /// applied mutation without leaving the document changed or dirty. Safe to call more than

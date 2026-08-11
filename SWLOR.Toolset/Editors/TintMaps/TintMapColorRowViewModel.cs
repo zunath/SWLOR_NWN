@@ -100,11 +100,21 @@ namespace SWLOR.Toolset.Editors.TintMaps
                     IsCustom = true;
                     HasOverride = true;
                 }
+                else if (saved is > 0 and <= TintMapMaterialRegistry.PaletteColorCount)
+                {
+                    var paletteColor = TintMapPaletteColors.GetColor(Layer, saved - 1);
+                    Color = Color.FromRgb(
+                        paletteColor.Red,
+                        paletteColor.Green,
+                        paletteColor.Blue);
+                    IsCustom = false;
+                    HasOverride = true;
+                }
                 else
                 {
                     Color = StandardPlaceholder;
                     IsCustom = false;
-                    HasOverride = saved is > 0 and <= TintMapMaterialRegistry.PaletteColorCount;
+                    HasOverride = false;
                 }
             }
             finally

@@ -133,6 +133,11 @@ namespace SWLOR.Toolset.Tests
             leather.IsCustom.Should().BeFalse();
             leather.HasOverride.Should().BeTrue();
             leather.Status.Should().Be("Legacy palette override");
+            var expectedColor = TintMapPaletteColors.GetColor(TintMapLayerType.Leather1, 41);
+            leather.Color.Should().Be(Color.FromRgb(
+                expectedColor.Red,
+                expectedColor.Green,
+                expectedColor.Blue));
 
             leather.ResetCommand.Execute(null);
 

@@ -46,11 +46,12 @@ public class WeaponDeflectionTests
         source.Should().Contain("weaponSkillType == SkillType.Invalid");
         source.Should().Contain("Combat.IsHostileAttackSource(defender.m_idSelf, attacker.m_idSelf)");
         source.Should().NotContain("!GetIsReactionTypeHostile(attacker.m_idSelf, defender.m_idSelf) ||");
-        source.Should().Contain("AdvanceDeflectionRound(attacker)");
-        source.Should().Contain("GetDeflectionAttemptedVariable(defender.m_idSelf)");
-        source.Should().Contain("attemptedRound == roundToken");
-        source.Should().Contain("attacker.m_ScriptVars.SetInt(attemptedVariable, roundToken)");
-        source.Should().Contain("DeflectionAttemptedVariablePrefix}{defender}");
+        source.Should().Contain("ResetDeflectionAttemptedDefenders(attacker)");
+        source.Should().Contain("GetLocalString(attacker.m_idSelf, DeflectionAttemptedDefendersVariable)");
+        source.Should().Contain("attemptedDefenders.Contains(defenderToken, StringComparison.Ordinal)");
+        source.Should().Contain("SetLocalString(");
+        source.Should().Contain("DeleteLocalString(attacker.m_idSelf, DeflectionAttemptedDefendersVariable)");
+        source.Should().NotContain("DeflectionAttemptedVariablePrefix");
         source.Should().Contain("var shieldDeflection = Stat.GetShieldDeflectionChanceNative(defender);");
         source.Should().Contain("Stat.GetRangedDeflectionChanceNative(defender)");
         source.Should().Contain("Stat.GetMeleeDeflectionChanceNative(defender)");

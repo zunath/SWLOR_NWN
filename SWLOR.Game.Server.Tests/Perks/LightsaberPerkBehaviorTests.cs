@@ -266,6 +266,9 @@ public class LightsaberPerkBehaviorTests
         // Only Ranged Deflection reflects. A shield deflecting a ranged auto-attack cannot trigger it.
         resolve.Should().Contain("deflectionSource == DeflectionSource.Ranged");
         resolve.Should().Contain("Combat.ApplyRangedDeflectionReflection(defender.m_idSelf, attacker.m_idSelf, weaponSkillType)");
+        File.ReadAllText(Path.Combine(
+                FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Service", "Combat.cs"))
+            .Should().Contain("GetCombatImpactWeaponDamage(defender, GetEquippedWeaponSkillType(defender))");
     }
 
     [Test]

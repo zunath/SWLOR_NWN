@@ -6915,7 +6915,7 @@ namespace SWLOR.Game.Server.Service
             var reflected = GetRangedDeflectionReflectionAmount(
                 GetCombatImpactWeaponDamage(attacker, attackerWeaponSkill),
                 reflectPercent,
-                GetCombatImpactWeaponDamage(defender, SkillType.Lightsaber),
+                GetCombatImpactWeaponDamage(defender, GetEquippedWeaponSkillType(defender)),
                 capPercent);
             if (reflected <= 0)
                 return 0;

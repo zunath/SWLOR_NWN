@@ -16,6 +16,7 @@ public class WeaponDeflectionTests
         Stat.MaximumDeflectionChanceCap.Should().Be(100);
         Stat.GetStatTypeDeflectionSource(StatType.AbilityGrantedAttackDeflectionFPRestore).Should().Be(DeflectionSource.Ranged);
         Stat.GetStatTypeDeflectionSource(StatType.DeflectionStaminaRestorePercent).Should().Be(DeflectionSource.None);
+        Stat.GetStatTypeDeflectionSource(StatType.MeleeDeflectionFPRestore).Should().Be(DeflectionSource.Melee);
         Stat.GetStatTypeDeflectionSource(StatType.DeflectionFPRestore).Should().Be(DeflectionSource.Ranged);
         Stat.GetStatTypeDeflectionSource(StatType.DeflectionEnmityPercentAdjustment).Should().Be(DeflectionSource.Ranged);
         Stat.GetStatTypeDeflectionSource(StatType.DeflectionRecastReductionSeconds).Should().Be(DeflectionSource.Shield);
@@ -80,12 +81,15 @@ public class WeaponDeflectionTests
             "GetDeflectionStatAdjustment(creatureId, StatType.DeflectionStaminaRestorePercent, source)");
         statSource.Should().Contain("GetDeflectionStatTypeForSource(");
         statSource.Should().NotContain("source == DeflectionSource.Shield");
+        statSource.Should().Contain("StatType.MeleeDeflectionFPRestore");
+        statSource.Should().Contain("Combat.TryUseStatTrigger(creatureId, fpRestoreStat, fpRestoreCooldown)");
         combatSource.Should().Contain(
             "ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.Melee)");
         combatSource.Should().Contain(
             "ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.Ranged)");
         combatSource.Should().Contain(
             "Stat.GetStatTypeDeflectionSource(StatType.AbilityGrantedAttackDeflectionFPRestore) != source");
+        combatSource.Should().Contain("StatType.MeleeDeflectionFPRestore");
         abilitySource.Should().Contain(
             "Combat.ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.Ranged)");
     }

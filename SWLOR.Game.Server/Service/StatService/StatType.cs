@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Service.StatService
         MeleeDeflectionStaminaRestore = 8,
 
         /// <summary>
-        /// Flat FP restored when the creature successfully deflects an attack.
+        /// Flat FP restored when the creature successfully uses Ranged Deflection.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Ranged)]
         DeflectionFPRestore = 9,
@@ -281,7 +281,7 @@ namespace SWLOR.Game.Server.Service.StatService
         EnmityPercentAdjustment = 46,
 
         /// <summary>
-        /// Temporary percent Evasion adjustment applied after a successful ranged attack deflection.
+        /// Temporary percent Evasion adjustment applied after a successful Shield Deflection.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Shield)]
         DeflectionEvasionPercentAdjustment = 47,
@@ -5750,6 +5750,12 @@ namespace SWLOR.Game.Server.Service.StatService
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial, deflectionSource: DeflectionSource.Shield)]
         ShieldDeflectionStaminaRestoreCooldownSeconds = 998,
+
+        /// <summary>
+        /// Flat FP restored when the creature successfully uses Melee Deflection.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Melee)]
+        MeleeDeflectionFPRestore = 999,
 
     }
 

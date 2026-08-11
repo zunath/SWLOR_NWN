@@ -9133,7 +9133,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     TemporaryStatModifier.Replace(
                         activator,
-                        StatType.DeflectionFPRestore,
+                        StatType.MeleeDeflectionFPRestore,
                         fpRestore,
                         duration,
                         deflectionFPRestoreStatType);

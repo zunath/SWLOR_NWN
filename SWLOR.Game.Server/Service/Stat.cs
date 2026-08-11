@@ -1693,7 +1693,13 @@ namespace SWLOR.Game.Server.Service
             var staminaRestore = staminaRestoreStat != StatType.Invalid
                 ? GetStatAdjustment(creatureId, staminaRestoreStat)
                 : 0;
-            var fpRestore = GetDeflectionStatAdjustment(creatureId, StatType.DeflectionFPRestore, source);
+            var fpRestoreStat = GetDeflectionStatTypeForSource(
+                source,
+                StatType.MeleeDeflectionFPRestore,
+                StatType.DeflectionFPRestore);
+            var fpRestore = fpRestoreStat != StatType.Invalid
+                ? GetStatAdjustment(creatureId, fpRestoreStat)
+                : 0;
             var staminaRestorePercent = GetStatAdjustment(creatureId, StatType.DeflectionStaminaRestorePercent);
             var staminaRestoreCooldown = staminaRestoreCooldownStat != StatType.Invalid
                 ? GetStatAdjustment(creatureId, staminaRestoreCooldownStat)
@@ -1733,7 +1739,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             if (fpRestore > 0 &&
-                Combat.TryUseStatTrigger(creatureId, StatType.DeflectionFPRestore, fpRestoreCooldown))
+                Combat.TryUseStatTrigger(creatureId, fpRestoreStat, fpRestoreCooldown))
             {
                 RestoreFP(creatureId, fpRestore);
             }

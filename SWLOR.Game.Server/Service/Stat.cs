@@ -1210,26 +1210,35 @@ namespace SWLOR.Game.Server.Service
         /// <param name="statOverride">The stat override used to calculate accuracy. This stat will be used instead of whatever stat is defined for the weapon type.</param>
         /// <param name="skillOverride">The skill override used to calculate accuracy. This skill will be used instead of whatever skill is defined for the weapon type.</param>
         /// <param name="skillLevelOverride">Overrides the skill rank or NPC level used in the accuracy calculation.</param>
+        /// <param name="ignoreWeaponAccuracyStatOverride">When true, Accuracy Stat item properties do not replace <paramref name="statOverride"/>.</param>
         /// <returns>The accuracy rating for a creature using a specific weapon.</returns>
-        public static int GetAccuracy(uint creature, uint weapon, AbilityType statOverride, SkillType skillOverride, int skillLevelOverride = -1)
+        public static int GetAccuracy(
+            uint creature,
+            uint weapon,
+            AbilityType statOverride,
+            SkillType skillOverride,
+            int skillLevelOverride = -1,
+            bool ignoreWeaponAccuracyStatOverride = false)
         {
             var accuracyBonus = 0;
 
             for (var ip = GetFirstItemProperty(weapon); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(weapon))
             {
                 var type = GetItemPropertyType(ip);
+                if (type != ItemPropertyType.AccuracyBonus &&
+                    type != ItemPropertyType.EnhancementBonus &&
+                    type != ItemPropertyType.AccuracyStat)
+                    continue;
 
-                // Attack Bonus / Enhancement Bonus found on the weapon.
-                if (type == ItemPropertyType.AccuracyBonus ||
-                    type == ItemPropertyType.EnhancementBonus)
-                {
-                    accuracyBonus += GetItemPropertyCostTableValue(ip);
-                }
-                // Accuracy Stat Override - Always "wins" even if another override was passed in.
-                else if (type == ItemPropertyType.AccuracyStat)
-                {
-                    statOverride = (AbilityType)GetItemPropertySubType(ip);
-                }
+                var value = type == ItemPropertyType.AccuracyStat
+                    ? GetItemPropertySubType(ip)
+                    : GetItemPropertyCostTableValue(ip);
+                (statOverride, accuracyBonus) = ApplyAccuracyItemProperty(
+                    statOverride,
+                    accuracyBonus,
+                    type,
+                    value,
+                    ignoreWeaponAccuracyStatOverride);
             }
 
 
@@ -1272,6 +1281,22 @@ namespace SWLOR.Game.Server.Service
 
             var accuracy = GetAccuracy(skillLevel, stat, accuracyBonus);
             return ApplyPostAccuracyStatusModifiers(creature, accuracy);
+        }
+
+        private static (AbilityType StatOverride, int AccuracyBonus) ApplyAccuracyItemProperty(
+            AbilityType statOverride,
+            int accuracyBonus,
+            ItemPropertyType type,
+            int value,
+            bool ignoreWeaponAccuracyStatOverride)
+        {
+            if (type == ItemPropertyType.AccuracyBonus || type == ItemPropertyType.EnhancementBonus)
+                return (statOverride, accuracyBonus + value);
+
+            if (type == ItemPropertyType.AccuracyStat && !ignoreWeaponAccuracyStatOverride)
+                return ((AbilityType)value, accuracyBonus);
+
+            return (statOverride, accuracyBonus);
         }
 
         /// <summary>

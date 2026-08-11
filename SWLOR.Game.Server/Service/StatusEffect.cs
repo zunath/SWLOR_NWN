@@ -569,6 +569,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             ApplyTrackedNWNEffect(creature, statusEffect, durationTicks, isPermanent);
+            Combat.ApplyStatusAppliedTargetStaminaDrain(source, creature, statusEffect.Categories);
 
             if (!string.IsNullOrWhiteSpace(durationResistanceMessage) &&
                 (GetIsPC(source) || GetIsDM(source)))

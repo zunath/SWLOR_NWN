@@ -610,6 +610,75 @@ public class AIModelTests
     }
 
     [Test]
+    public void NativeAttackAction_BlockedRangedLine_NearOverlapStillForcesMovement()
+    {
+        var plan = CreateBlockedLineMovementPlan(
+            0.2f,
+            0f,
+            2f,
+            0f,
+            0f,
+            0f,
+            5,
+            10f,
+            1.5f,
+            false,
+            true);
+        var destinationX = ReadPlanProperty<float>(plan, "DestinationX");
+        var destinationY = ReadPlanProperty<float>(plan, "DestinationY");
+        var distanceFromAttacker = MathF.Sqrt(
+            MathF.Pow(destinationX - 0.2f, 2) +
+            MathF.Pow(destinationY, 2));
+
+        distanceFromAttacker.Should().BeGreaterThan(
+            ReadPlanProperty<float>(plan, "PathCompletionRange"));
+        MathF.Sqrt(MathF.Pow(destinationX, 2) + MathF.Pow(destinationY, 2))
+            .Should()
+            .BeApproximately(10f, 0.001f);
+    }
+
+    [Test]
+    public void NativeAttackAction_BlockedRangedLine_PathFailureAlternatesSidestep()
+    {
+        const uint attackerId = 9001;
+        var firstPlan = CreateBlockedLineMovementPlan(
+            10f,
+            0f,
+            0f,
+            0f,
+            0f,
+            0f,
+            attackerId,
+            10f,
+            1.5f,
+            false,
+            true);
+
+        AlternateRangedRepositionDirection(attackerId);
+
+        var secondPlan = CreateBlockedLineMovementPlan(
+            10f,
+            0f,
+            0f,
+            0f,
+            0f,
+            0f,
+            attackerId,
+            10f,
+            1.5f,
+            false,
+            true);
+
+        ReadPlanProperty<float>(firstPlan, "DestinationX")
+            .Should()
+            .BeApproximately(ReadPlanProperty<float>(secondPlan, "DestinationX"), 0.001f);
+        (ReadPlanProperty<float>(firstPlan, "DestinationY") *
+         ReadPlanProperty<float>(secondPlan, "DestinationY"))
+            .Should()
+            .BeNegative();
+    }
+
+    [Test]
     public void CreatureHeartbeat_DoesNotScanForAggroTargets()
     {
         var aiSource = File.ReadAllText(Path.Combine(
@@ -1070,6 +1139,16 @@ public class AIModelTests
         var property = plan.GetType().GetProperty(name, BindingFlags.Instance | BindingFlags.Public);
         property.Should().NotBeNull();
         return (T)property!.GetValue(plan)!;
+    }
+
+    private static void AlternateRangedRepositionDirection(uint attackerId)
+    {
+        var method = typeof(OnAIActionAttackObject).GetMethod(
+            "AlternateRangedRepositionDirection",
+            BindingFlags.Static | BindingFlags.NonPublic);
+
+        method.Should().NotBeNull();
+        method!.Invoke(null, new object[] { attackerId });
     }
 
     private static string ReadSource(params string[] pathParts)

@@ -49,6 +49,7 @@ namespace SWLOR.Game.Server.Native
         private const int WEAPON_ATTACK_TYPE_OFFHAND = 2;
 
         private static readonly Dictionary<uint, DateTime> _creatureAttackDelays = new();
+        private static readonly Dictionary<uint, float> _rangedRepositionDirections = new();
 
         internal delegate int AIActionAttackObjectHook(void* pCreature, void* pNode);
 
@@ -81,6 +82,7 @@ namespace SWLOR.Game.Server.Native
                 if (_creatureAttackDelays.ContainsKey(pCreature.m_idSelf) && !GetIsObjectValid(pCreature.m_idSelf))
                 {
                     _creatureAttackDelays.Remove(pCreature.m_idSelf);
+                    _rangedRepositionDirections.Remove(pCreature.m_idSelf);
                     Combat.ClearAttackSwingDebt(pCreature.m_idSelf);
                 }
 
@@ -99,6 +101,8 @@ namespace SWLOR.Game.Server.Native
                     {
                         _creatureAttackDelays.Remove(pCreature.m_idSelf);
                     }
+
+                    _rangedRepositionDirections.Remove(pCreature.m_idSelf);
 
                     Combat.ClearAttackSwingDebt(pCreature.m_idSelf);
 
@@ -268,6 +272,10 @@ namespace SWLOR.Game.Server.Native
                             {
                                 newTarget = pCreature.GetNewCombatTarget(oidAttackTarget);
                             }
+                            else
+                            {
+                                AlternateRangedRepositionDirection(pCreature.m_idSelf);
+                            }
 
                             var bUpdateTarget = false;
                             if (newTarget != null)
@@ -385,6 +393,8 @@ namespace SWLOR.Game.Server.Native
                         return ACTION_COMPLETE;
                     }
                 }
+
+                _rangedRepositionDirections.Remove(pCreature.m_idSelf);
 
 
 
@@ -673,6 +683,7 @@ namespace SWLOR.Game.Server.Native
 
                     if (bTargetActive == false)
                     {
+                        _rangedRepositionDirections.Remove(pCreature.m_idSelf);
                         var newTarget = pCreature.GetNewCombatTarget(oidAttackTarget);
                         oidAttackTarget = OBJECT_INVALID;
 
@@ -758,9 +769,12 @@ namespace SWLOR.Game.Server.Native
             var x = attackerX - targetX;
             var y = attackerY - targetY;
             var radius = MathF.Sqrt(x * x + y * y);
-            var direction = (attackerId & 1) == 0 ? 1f : -1f;
+            var direction = GetRangedRepositionDirection(attackerId);
+            var maximumArcStep =
+                2f * radius * MathF.Sin(RANGED_LINE_REPOSITION_MAX_ANGLE / 2f);
 
-            if (radius <= CNW_PATHFIND_TOLERANCE)
+            if (radius <= CNW_PATHFIND_TOLERANCE ||
+                maximumArcStep <= RANGED_LINE_REPOSITION_COMPLETION_RANGE)
             {
                 return new RepositionDestination(
                     targetX,
@@ -780,6 +794,20 @@ namespace SWLOR.Game.Server.Native
                 attackerZ);
         }
 
+        private static float GetRangedRepositionDirection(uint attackerId)
+        {
+            return _rangedRepositionDirections.TryGetValue(attackerId, out var direction)
+                ? direction
+                : (attackerId & 1) == 0
+                    ? 1f
+                    : -1f;
+        }
+
+        private static void AlternateRangedRepositionDirection(uint attackerId)
+        {
+            _rangedRepositionDirections[attackerId] = -GetRangedRepositionDirection(attackerId);
+        }
+
         private readonly record struct BlockedLineMovementPlan(
             float DestinationX,
             float DestinationY,
@@ -796,6 +824,7 @@ namespace SWLOR.Game.Server.Native
                 return false;
 
             _creatureAttackDelays.Remove(pCreature.m_idSelf);
+            _rangedRepositionDirections.Remove(pCreature.m_idSelf);
             Combat.ClearAttackSwingDebt(pCreature.m_idSelf);
             pCreature.ChangeAttackTarget(pNode, OBJECT_INVALID);
             return true;

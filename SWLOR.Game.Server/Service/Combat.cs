@@ -9139,8 +9139,6 @@ namespace SWLOR.Game.Server.Service
                         deflectionFPRestoreStatType);
                 }
             }
-
-            ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.Melee);
         }
 
         public static void ApplyAbilityGrantedAttackDeflectionEffects(uint activator, DeflectionSource source)

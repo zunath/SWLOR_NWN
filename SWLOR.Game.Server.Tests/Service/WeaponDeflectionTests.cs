@@ -91,7 +91,7 @@ public class WeaponDeflectionTests
         statSource.Should().NotContain("source == DeflectionSource.Shield");
         statSource.Should().Contain("StatType.MeleeDeflectionFPRestore");
         statSource.Should().Contain("Combat.TryUseStatTrigger(creatureId, fpRestoreStat, fpRestoreCooldown)");
-        combatSource.Should().Contain(
+        combatSource.Should().NotContain(
             "ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.Melee)");
         combatSource.Should().Contain(
             "ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.Ranged)");
@@ -116,6 +116,8 @@ public class WeaponDeflectionTests
         generator.Should().Contain("(\"SelfMeleeDeflection\"");
         generator.Should().Contain("(\"SelfRangedDeflection\"");
         generator.Should().Contain("(?:Ranged|Attack) Deflection");
+        generator.Should().Contain(
+            "add_stat(stats, \"RangedDeflection\", parse_count(r\"\\+(\\d+) (?:Ranged|Attack) Deflection\", description))");
         generator.Should().NotContain("(\"SelfAttackDeflection\"");
         generator.Should().NotContain("add_stat(stats, \"AttackDeflection\"");
         generator.Should().NotContain("parse_count(r\"\\+(\\d+) Attack Deflection\", description)");

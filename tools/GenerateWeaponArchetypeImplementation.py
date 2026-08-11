@@ -1751,7 +1751,7 @@ def stance_stat_entries(row):
     add_stat(stats, "CriticalRatePercentAdjustment", parse_percent(r"\+(\d+)% Critical Rate", description))
     add_stat(stats, "AttackDelayReductionPercent", parse_percent(r"\+(\d+)% Haste", description))
     add_stat(stats, "MeleeDeflection", parse_count(r"\+(\d+) Melee Deflection", description))
-    add_stat(stats, "RangedDeflection", parse_count(r"\+(\d+) Ranged Deflection", description))
+    add_stat(stats, "RangedDeflection", parse_count(r"\+(\d+) (?:Ranged|Attack) Deflection", description))
 
     if "Attack is reduced by" in description or "reduces Attack" in description or "Attack and Force Attack are reduced" in description:
         attack_reduction = (

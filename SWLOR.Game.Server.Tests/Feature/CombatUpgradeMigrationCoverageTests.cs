@@ -644,31 +644,6 @@ public class CombatUpgradeMigrationCoverageTests
     }
 
     [Test]
-    public void CombatUpgradeServerMigration_RefundsRemovedForceSparkRankOnly()
-    {
-        var cleanPerks = typeof(_22_CombatSystemReplacement)
-            .GetMethod("CleanPerks", BindingFlags.NonPublic | BindingFlags.Static)!;
-        var perks = new Dictionary<PerkType, int>
-        {
-            { PerkType.ForceSpark, 3 },
-            { PerkType.ForceLightning, 2 },
-        };
-        var removedPerks = new Dictionary<PerkType, int[]>();
-        var trimmedPerks = new Dictionary<PerkType, (int MaxLevel, int[] PricesByLevel)>
-        {
-            { PerkType.ForceSpark, (2, new[] { 2, 3, 4 }) },
-        };
-        var args = new object[] { perks, removedPerks, trimmedPerks, false };
-
-        var refund = (int)cleanPerks.Invoke(null, args)!;
-
-        refund.Should().Be(4);
-        perks[PerkType.ForceSpark].Should().Be(2);
-        perks[PerkType.ForceLightning].Should().Be(2);
-        ((bool)args[3]).Should().BeTrue();
-    }
-
-    [Test]
     public void RemovedPerkMigration_CoversEveryPerkWithoutCurrentDefinition()
     {
         var root = FindRepositoryRoot();

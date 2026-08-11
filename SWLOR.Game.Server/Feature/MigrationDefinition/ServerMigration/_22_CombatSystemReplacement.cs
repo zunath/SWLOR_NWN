@@ -513,7 +513,6 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 
         private static readonly Dictionary<PerkType, (int MaxLevel, int[] PricesByLevel)> PlayerTrimmedPerks = new()
         {
-            { PerkType.ForceSpark, (2, new[] { 2, 3, 4 }) },
             { PerkType.IonGrenade, (2, new[] { 2, 3, 3 }) },
             { PerkType.AdhesiveGrenade, (2, new[] { 2, 3, 3 }) },
             { PerkType.MedKit, (4, new[] { 1, 2, 3, 4, 4 }) },

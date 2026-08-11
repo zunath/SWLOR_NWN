@@ -14,6 +14,11 @@ public class WeaponDeflectionTests
         Stat.DefaultMeleeDeflectionChanceCap.Should().Be(50);
         Stat.DefaultRangedDeflectionChanceCap.Should().Be(50);
         Stat.MaximumDeflectionChanceCap.Should().Be(100);
+        Stat.GetStatTypeDeflectionSource(StatType.MeleeDeflection).Should().Be(DeflectionSource.Melee);
+        Stat.GetStatTypeDeflectionSource(StatType.MeleeDeflectionChanceCap).Should().Be(DeflectionSource.Melee);
+        Stat.GetStatTypeDeflectionSource(StatType.RangedDeflection).Should().Be(DeflectionSource.Ranged);
+        Stat.GetStatTypeDeflectionSource(StatType.RangedDeflectionChanceCap).Should().Be(DeflectionSource.Ranged);
+        Stat.GetStatTypeDeflectionSource(StatType.ShieldDeflection).Should().Be(DeflectionSource.Shield);
         Stat.GetStatTypeDeflectionSource(StatType.AbilityGrantedAttackDeflectionFPRestore).Should().Be(DeflectionSource.Ranged);
         Stat.GetStatTypeDeflectionSource(StatType.DeflectionStaminaRestorePercent).Should().Be(DeflectionSource.None);
         Stat.GetStatTypeDeflectionSource(StatType.MeleeDeflectionFPRestore).Should().Be(DeflectionSource.Melee);
@@ -111,6 +116,18 @@ public class WeaponDeflectionTests
         generator.Should().NotContain("(\"SelfAttackDeflection\"");
         generator.Should().NotContain("add_stat(stats, \"AttackDeflection\"");
         generator.Should().NotContain("parse_count(r\"\\+(\\d+) Attack Deflection\", description)");
+    }
+
+    [Test]
+    public void UnmovingCenter_UsesItsStatusForOneMeleeDeflectionGrant()
+    {
+        var ability = ReadSource(
+            "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Staff", "UnmovingCenterAbilityDefinition.cs");
+        var status = ReadSource(
+            "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "UnmovingCenterStatusEffect.cs");
+
+        ability.Should().NotContain("SelfMeleeDeflection");
+        status.Should().Contain("StatGroup.Stats[StatType.MeleeDeflection] = 20;");
     }
 
     [Test]

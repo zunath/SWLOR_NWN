@@ -2101,7 +2101,8 @@ def profile_property_lines(row, level, primary_status):
         "area combat abilities restore" not in lowered and
         "control effects you apply" not in lowered and
         "nearby allies" not in lowered and
-        "allies within" not in lowered
+        "allies within" not in lowered and
+        "cannot be knocked" not in lowered
     )
     if direct_self_stats_allowed:
         for property_name, pattern in self_stats:

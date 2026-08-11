@@ -43,9 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 AbilityType.Invalid,
                 new GeneratedWeaponAbilityProfile
                 {
-                    SelfKnockdownDazedImmunityDurationSeconds = 45,
-                    SelfMeleeDeflection = 20,
-                    SelfStatDurationSeconds = 45
+                    SelfKnockdownDazedImmunityDurationSeconds = 45
                 });
 
             return builder.Build();

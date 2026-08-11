@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Flat percent chance to deflect a hostile melee weapon auto-attack while wielding a weapon and no shield.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Melee)]
         MeleeDeflection = 7,
 
         /// <summary>
@@ -1238,13 +1238,13 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Flat bonus added to the default Melee Deflection chance cap.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Melee)]
         MeleeDeflectionChanceCap = 227,
 
         /// <summary>
         /// Flat percent chance to deflect an attack while equipped with a shield.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Shield)]
         ShieldDeflection = 228,
 
         /// <summary>
@@ -5730,13 +5730,13 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Flat percent chance to deflect a hostile ranged weapon auto-attack while wielding a weapon and no shield.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Ranged)]
         RangedDeflection = 995,
 
         /// <summary>
         /// Flat bonus added to the default Ranged Deflection chance cap.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Ranged)]
         RangedDeflectionChanceCap = 996,
 
         /// <summary>

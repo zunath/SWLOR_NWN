@@ -32,6 +32,10 @@ namespace SWLOR.Game.Server.Native
         private const int CNWSOBJECTACTION_PARAMETER_FLOAT = 2;
         private const int CNWSOBJECTACTION_PARAMETER_OBJECT = 3;
 
+        private const float RANGED_LINE_REPOSITION_ARC_LENGTH = 2.0f;
+        private const float RANGED_LINE_REPOSITION_MAX_ANGLE = 0.7853982f;
+        private const float RANGED_LINE_REPOSITION_COMPLETION_RANGE = 0.25f;
+
         private const int CNWSCOMBATROUND_TYPE_INVALID = 0;
         private const int CNWSCOMBATROUND_TYPE_ATTACK = 1;
         private const int CNWSCOMBATROUND_TYPE_REACTION = 3;
@@ -45,6 +49,7 @@ namespace SWLOR.Game.Server.Native
         private const int WEAPON_ATTACK_TYPE_OFFHAND = 2;
 
         private static readonly Dictionary<uint, DateTime> _creatureAttackDelays = new();
+        private static readonly Dictionary<uint, float> _rangedRepositionDirections = new();
 
         internal delegate int AIActionAttackObjectHook(void* pCreature, void* pNode);
 
@@ -77,6 +82,7 @@ namespace SWLOR.Game.Server.Native
                 if (_creatureAttackDelays.ContainsKey(pCreature.m_idSelf) && !GetIsObjectValid(pCreature.m_idSelf))
                 {
                     _creatureAttackDelays.Remove(pCreature.m_idSelf);
+                    _rangedRepositionDirections.Remove(pCreature.m_idSelf);
                     Combat.ClearAttackSwingDebt(pCreature.m_idSelf);
                 }
 
@@ -95,6 +101,8 @@ namespace SWLOR.Game.Server.Native
                     {
                         _creatureAttackDelays.Remove(pCreature.m_idSelf);
                     }
+
+                    _rangedRepositionDirections.Remove(pCreature.m_idSelf);
 
                     Combat.ClearAttackSwingDebt(pCreature.m_idSelf);
 
@@ -264,6 +272,10 @@ namespace SWLOR.Game.Server.Native
                             {
                                 newTarget = pCreature.GetNewCombatTarget(oidAttackTarget);
                             }
+                            else
+                            {
+                                AlternateRangedRepositionDirection(pCreature.m_idSelf);
+                            }
 
                             var bUpdateTarget = false;
                             if (newTarget != null)
@@ -291,21 +303,42 @@ namespace SWLOR.Game.Server.Native
 
                         var fMoveToTargetRange = fDesiredAttackRange;
                         var fMoveToTargetMaxRange = fMaxAttackRange;
+                        var fPathMoveRange = fMoveToTargetRange;
+                        var vMoveTargetPosition = vTargetPosition;
+                        var bTrackAttackTargetWhileMoving = true;
 
                         if (bClearLineOfAttack == 0)
                         {
-                            if (!bOutsideAttackRange)
+                            float fPersonalSpaceRange;
+                            if (pTarget.AsNWSCreature() != null)
                             {
-                                if (pTarget.AsNWSCreature() != null)
-                                {
-                                    fMoveToTargetRange = pCreature.m_pcPathfindInformation.m_fCreaturePersonalSpace;
-                                    fMoveToTargetRange += pTarget.AsNWSCreature().m_pcPathfindInformation.m_fCreaturePersonalSpace;
-                                }
-                                else
-                                {
-                                    fMoveToTargetRange = pCreature.m_pcPathfindInformation.m_fPersonalSpace;
-                                }
+                                fPersonalSpaceRange = pCreature.m_pcPathfindInformation.m_fCreaturePersonalSpace;
+                                fPersonalSpaceRange += pTarget.AsNWSCreature().m_pcPathfindInformation.m_fCreaturePersonalSpace;
                             }
+                            else
+                            {
+                                fPersonalSpaceRange = pCreature.m_pcPathfindInformation.m_fPersonalSpace;
+                            }
+
+                            var movementPlan = CreateBlockedLineMovementPlan(
+                                pCreature.m_vPosition.x,
+                                pCreature.m_vPosition.y,
+                                pCreature.m_vPosition.z,
+                                vTargetPosition.x,
+                                vTargetPosition.y,
+                                vTargetPosition.z,
+                                pCreature.m_idSelf,
+                                fDesiredAttackRange,
+                                fPersonalSpaceRange,
+                                bOutsideAttackRange,
+                                pCreature.GetRangeWeaponEquipped() == 1);
+                            fMoveToTargetRange = movementPlan.AttackCheckRange;
+                            fPathMoveRange = movementPlan.PathCompletionRange;
+                            vMoveTargetPosition = new Vector(
+                                movementPlan.DestinationX,
+                                movementPlan.DestinationY,
+                                movementPlan.DestinationZ);
+                            bTrackAttackTargetWhileMoving = movementPlan.TrackAttackTarget;
 
                             pCreature.m_pcPathfindInformation.m_bUsePlotGridPath = 1;
                         }
@@ -339,27 +372,29 @@ namespace SWLOR.Game.Server.Native
                         {
                             pCreature.AddMoveToPointActionToFront(
                                 pNode.m_nGroupActionId,
-                                vTargetPosition,
+                                vMoveTargetPosition,
                                 oidArea,
                                 OBJECT_INVALID,
                                 bRunToTarget ? 1 : 0,
-                                fMoveToTargetRange);
+                                fPathMoveRange);
                         }
                         else
                         {
                             pCreature.AddMoveToPointActionToFront(
                                 pNode.m_nGroupActionId,
-                                vTargetPosition,
+                                vMoveTargetPosition,
                                 oidArea,
-                                oidAttackTarget,
+                                bTrackAttackTargetWhileMoving ? oidAttackTarget : OBJECT_INVALID,
                                 bRunToTarget ? 1 : 0,
-                                fMoveToTargetRange);
+                                fPathMoveRange);
                         }
 
 
                         return ACTION_COMPLETE;
                     }
                 }
+
+                _rangedRepositionDirections.Remove(pCreature.m_idSelf);
 
 
 
@@ -648,6 +683,7 @@ namespace SWLOR.Game.Server.Native
 
                     if (bTargetActive == false)
                     {
+                        _rangedRepositionDirections.Remove(pCreature.m_idSelf);
                         var newTarget = pCreature.GetNewCombatTarget(oidAttackTarget);
                         oidAttackTarget = OBJECT_INVALID;
 
@@ -669,12 +705,126 @@ namespace SWLOR.Game.Server.Native
             });
         }
 
+        private static BlockedLineMovementPlan CreateBlockedLineMovementPlan(
+            float attackerX,
+            float attackerY,
+            float attackerZ,
+            float targetX,
+            float targetY,
+            float targetZ,
+            uint attackerId,
+            float desiredAttackRange,
+            float personalSpaceRange,
+            bool isOutsideAttackRange,
+            bool hasRangedWeapon)
+        {
+            if (isOutsideAttackRange)
+            {
+                return new BlockedLineMovementPlan(
+                    targetX,
+                    targetY,
+                    targetZ,
+                    desiredAttackRange,
+                    desiredAttackRange,
+                    true);
+            }
+
+            if (!hasRangedWeapon)
+            {
+                return new BlockedLineMovementPlan(
+                    targetX,
+                    targetY,
+                    targetZ,
+                    personalSpaceRange,
+                    personalSpaceRange,
+                    true);
+            }
+
+            var destination = GetRangedLineRepositionDestination(
+                attackerX,
+                attackerY,
+                attackerZ,
+                targetX,
+                targetY,
+                attackerId,
+                desiredAttackRange);
+            return new BlockedLineMovementPlan(
+                destination.X,
+                destination.Y,
+                destination.Z,
+                RANGED_LINE_REPOSITION_COMPLETION_RANGE,
+                desiredAttackRange,
+                false);
+        }
+
+        private static RepositionDestination GetRangedLineRepositionDestination(
+            float attackerX,
+            float attackerY,
+            float attackerZ,
+            float targetX,
+            float targetY,
+            uint attackerId,
+            float desiredAttackRange)
+        {
+            var x = attackerX - targetX;
+            var y = attackerY - targetY;
+            var radius = MathF.Sqrt(x * x + y * y);
+            var direction = GetRangedRepositionDirection(attackerId);
+            var maximumArcStep =
+                2f * radius * MathF.Sin(RANGED_LINE_REPOSITION_MAX_ANGLE / 2f);
+
+            if (radius <= CNW_PATHFIND_TOLERANCE ||
+                maximumArcStep <= RANGED_LINE_REPOSITION_COMPLETION_RANGE)
+            {
+                return new RepositionDestination(
+                    targetX,
+                    targetY + direction * desiredAttackRange,
+                    attackerZ);
+            }
+
+            var angle = MathF.Min(
+                RANGED_LINE_REPOSITION_MAX_ANGLE,
+                RANGED_LINE_REPOSITION_ARC_LENGTH / radius);
+            var cosine = MathF.Cos(angle);
+            var sine = MathF.Sin(angle) * direction;
+
+            return new RepositionDestination(
+                targetX + x * cosine - y * sine,
+                targetY + x * sine + y * cosine,
+                attackerZ);
+        }
+
+        private static float GetRangedRepositionDirection(uint attackerId)
+        {
+            return _rangedRepositionDirections.TryGetValue(attackerId, out var direction)
+                ? direction
+                : (attackerId & 1) == 0
+                    ? 1f
+                    : -1f;
+        }
+
+        private static void AlternateRangedRepositionDirection(uint attackerId)
+        {
+            _rangedRepositionDirections[attackerId] = -GetRangedRepositionDirection(attackerId);
+        }
+
+        private readonly record struct BlockedLineMovementPlan(
+            float DestinationX,
+            float DestinationY,
+            float DestinationZ,
+            float PathCompletionRange,
+            float AttackCheckRange,
+            bool TrackAttackTarget);
+
+        private readonly record struct RepositionDestination(float X, float Y, float Z);
+
         private static bool TryCancelAttackForCombatLeash(CNWSCreature pCreature, CNWSObjectActionNode pNode, uint target)
         {
             if (!AI.TryStartCombatLeashEvade(pCreature.m_idSelf, target))
                 return false;
 
             _creatureAttackDelays.Remove(pCreature.m_idSelf);
+            _rangedRepositionDirections.Remove(pCreature.m_idSelf);
             Combat.ClearAttackSwingDebt(pCreature.m_idSelf);
             pCreature.ChangeAttackTarget(pNode, OBJECT_INVALID);
             return true;

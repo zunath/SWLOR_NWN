@@ -22,7 +22,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
             ForceSpark1(builder);
             ForceSpark2(builder);
-            ForceSpark3(builder);
 
             return builder.Build();
         }
@@ -73,29 +72,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .RequirementFP(4);
         }
 
-        private static void ForceSpark3(AbilityBuilder builder)
-        {
-            builder
-                .Create(FeatType.ForceSpark3, PerkType.ForceSpark)
-                .Name("Force Spark III")
-                .Level(3)
-                .HasActivationDelay(1f)
-                .HasRecastDelay(RecastGroup.ForceSpark, 6f)
-                .SkillType(SkillType.Force)
-                .CombatImpactDamageAbility(AbilityType.Willpower)
-                .UsesImpactAnimation(Animation.CastOutAnimation)
-                .PlaysSoundOnImpact("ksfx_frc_lightn")
-                .IsSingleTargetAbility()
-                .HasMaxRange(15f)
-                .RequiresTarget()
-                .HasImpactAction(ForceSpark3ImpactAction)
-                .IsCastedAbility()
-                .IsHostileAbility()
-                .TriggersDarkForceConversion()
-                .BreaksStealth()
-                .RequirementFP(6);
-        }
-
         private static void ForceSpark1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             Ability.ApplyCombatImpact(
@@ -122,22 +98,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 32,
                 30,
                 typeof(ForceSpark2StatusEffect),
-                false,
-                Array.Empty<Type>(),
-                damageType: CombatDamageType.Force,
-                afterSuccessfulHit: hitTarget => ApplyForceSparkHitEffects(activator, hitTarget));
-        }
-
-        private static void ForceSpark3ImpactAction(uint activator, uint target, int level, Location targetLocation)
-        {
-            Ability.ApplyCombatImpact(
-                activator,
-                target,
-                targetLocation,
-                SkillType.Force,
-                44,
-                30,
-                typeof(ForceSpark3StatusEffect),
                 false,
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Force,

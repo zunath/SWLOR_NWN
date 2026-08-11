@@ -1031,6 +1031,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 var variable = ObjectPlugin.GetLocalVariable(item, index);
                 if (variable.Type != LocalVariableType.Int ||
                     (!variable.Key.StartsWith(TintMapVariable.Prefix, StringComparison.Ordinal) &&
+                     !TintMapVariable.IsItemGlobalColorStateName(variable.Key) &&
                      !ArmorColorIndexCalculator.IsPerPartOverrideVariableName(variable.Key)))
                 {
                     continue;

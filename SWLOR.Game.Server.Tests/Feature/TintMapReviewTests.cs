@@ -1604,6 +1604,15 @@ public class TintMapReviewTests
             .Contain(invocation =>
                 IsMemberInvocation(
                     invocation,
+                    "TintMapVariable",
+                    nameof(TintMapVariable.IsItemGlobalColorStateName)),
+                "saved global tint intent must replace stale global state on the currently equipped armor");
+        getOverridesMethod.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Should()
+            .Contain(invocation =>
+                IsMemberInvocation(
+                    invocation,
                     "ArmorColorIndexCalculator",
                     "IsPerPartOverrideVariableName"),
                 "saved palette-zero markers must replace stale markers on the currently equipped armor");
@@ -1619,6 +1628,12 @@ public class TintMapReviewTests
             .ToList();
         var replaceInvocation = loadInvocations.Single(invocation =>
             IsMemberInvocation(invocation, "TintMapService", "ReplaceItemTintOverrides"));
+        loadInvocations.Where(invocation => GetInvokedMethodName(invocation) == "CopyItemAndModify")
+            .Should()
+            .OnlyContain(invocation =>
+                    invocation.ArgumentList.Arguments.Count == 5 &&
+                    invocation.ArgumentList.Arguments[4].Expression.Kind() == SyntaxKind.TrueLiteralExpression,
+                "every intermediate armor copy must retain unrelated item locals");
         loadInvocations.Where(invocation =>
                 GetInvokedMethodName(invocation) == "CopyItem" &&
                 invocation.ArgumentList.Arguments.Count == 3 &&

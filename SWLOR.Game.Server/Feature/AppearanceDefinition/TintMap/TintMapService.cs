@@ -751,19 +751,27 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                             .Select(source => source.Color!.Value)
                             .Distinct()
                             .ToList();
-                        if (distinctColors.Count == 1)
+                        var globalColor = TintMapColor.TryFromStoredValue(
+                            GetLocalInt(
+                                targetItem,
+                                TintMapVariable.GetItemGlobalColorStateName(layer)),
+                            out var storedGlobalColor)
+                            ? storedGlobalColor
+                            : (TintMapColor?)null;
+                        if (distinctColors.Count == 1 || globalColor.HasValue)
                         {
-                            for (var index = 0;
-                                 index < replacementDestinations.Count && index < replacedSources.Count;
-                                 index++)
+                            for (var index = 0; index < replacementDestinations.Count; index++)
                             {
-                                if (replacedSources[index].Color is { } color)
+                                var color = index < replacedSources.Count
+                                    ? replacedSources[index].Color ?? globalColor
+                                    : globalColor;
+                                if (color is { } replacementColor)
                                 {
                                     SetColor(
                                         creature,
                                         replacementDestinations[index],
                                         layer,
-                                        color,
+                                        replacementColor,
                                         invalidatePendingCarry: false);
                                 }
                             }

@@ -1011,10 +1011,16 @@ public class TintMapReviewTests
             "a model with no destination for the layer must still discard inactive source keys");
         carryMethod.ToString().Should().Contain("distinctColors.Count == 1",
             "different per-material colors must not be guessed during a model replacement");
+        carryMethod.ToString().Should().Contain("index < replacementDestinations.Count",
+            "every replacement material needs an opportunity to inherit a persisted global tint");
         carryMethod.ToString().Should().Contain("index < replacedSources.Count",
-            "a partial custom color may migrate only to its corresponding replacement material");
-        carryMethod.ToString().Should().Contain("replacedSources[index].Color",
+            "an existing per-material color may migrate only to its corresponding replacement material");
+        carryMethod.ToString().Should().Contain("replacedSources[index].Color ?? globalColor",
             "preset source slots must not be flattened to the layer's one custom color");
+        carryMethod.ToString().Should().Contain("GetItemGlobalColorStateName(layer)",
+            "new replacement materials must inherit an explicitly global equipment tint");
+        carryMethod.ToString().Should().Contain("distinctColors.Count == 1 || globalColor.HasValue",
+            "different per-material colors remain positional while unmatched materials use the global tint");
         carryMethod.ToString().Should().Contain("!destinationVariables.Contains(source.VariableName)",
             "shared source slots must be removed before replacement slots are aligned");
         carryMethod.ToString().Should().Contain("!sourceVariables.Contains",

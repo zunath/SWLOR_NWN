@@ -911,6 +911,20 @@ public class TintMapReviewTests
             "the slot fallback must not redirect a surviving, moved item's colors to unrelated equipment");
         carryMethod.ToString().Should().Contain("PendingItemColorCarryLayerIsCurrent",
             "a newer preset or custom edit must cancel the older delayed carry for that tint layer");
+        carryMethod.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Single(invocation => GetInvokedMethodName(invocation) == "PendingItemColorCarryLayerIsCurrent")
+            .ArgumentList.Arguments
+            .Select(argument => argument.Expression.ToString())
+            .Should().Equal(
+                new[]
+                {
+                    "registration.Lineage",
+                    "layer",
+                    "armorPart",
+                    "registration.Revisions"
+                },
+                "a color edit on one armor part must not cancel another part's pending carry for the same layer");
         carryMethod.ToString().Should().Contain("invalidatePendingCarry: false",
             "the carry's own writes must not invalidate its remaining derived work");
         carryMethod.ToString().Should().Contain("selection.PaletteSource == targetItem");
@@ -944,9 +958,24 @@ public class TintMapReviewTests
                               method.ParameterList.Parameters.Count == 4);
         setColorMethod.ToString().Should().Contain("invalidatePendingCarry: true",
             "an explicit color edit must advance the pending-carry revision for its layer");
-        FindMethod(serviceSource, nameof(TintMapService.ResetColor)).ToString()
-            .Should().Contain("MarkPendingItemColorEdit",
-                "resetting to a preset is also newer builder intent than a queued model carry");
+        var privateSetColorMethod = CSharpSyntaxTree.ParseText(serviceSource).GetRoot().DescendantNodes()
+            .OfType<MethodDeclarationSyntax>()
+            .Single(method => method.Identifier.Text == nameof(TintMapService.SetColor) &&
+                              method.ParameterList.Parameters.Count == 5);
+        privateSetColorMethod.ToString().Should().Contain("GetEquivalentItemTintVariables",
+            "a new custom color must replace stale equivalent wearer-variant values too");
+        var resetColorMethod = FindMethod(serviceSource, nameof(TintMapService.ResetColor));
+        resetColorMethod.ToString().Should().Contain(
+            "MarkPendingItemColorEdit(paletteSource, layer, selection.ArmorPart)",
+            "reset sequencing must be scoped to the edited armor part as well as its layer");
+        resetColorMethod.ToString().Should().Contain("GetEquivalentItemTintVariables",
+            "resetting a carried color must remove inactive wearer-variant keys that could resurrect it");
+        FindMethod(serviceSource, "MarkPendingItemColorEdit").ParameterList.Parameters
+            .Select(parameter => parameter.Identifier.Text)
+            .Should().Contain("armorPart");
+        FindMethod(serviceSource, "RegisterPendingItemColorCarry").ToString().Should()
+            .Contain("new ItemColorCarryRevisionScope(layer, armorPart)",
+                "two armor parts sharing a layer need independent revision scopes");
     }
 
     [Test]
@@ -974,7 +1003,7 @@ public class TintMapReviewTests
         carryCalls.Should().Contain("TryParse");
         carryCalls.Should().Contain("TryFromStoredValue");
         carryCalls.Should().Contain("SetColor");
-        carryCalls.Should().Contain("AreEquipmentMaterialSlotsEquivalent",
+        carryCalls.Should().Contain("AreEquipmentMaterialsEquivalent",
             "hashed generated material names must still migrate across wearer variants");
         carryMethod.ToString().Should().Contain("destinationVariable",
             "an existing destination override must remain untouched");
@@ -984,6 +1013,18 @@ public class TintMapReviewTests
             "a partial dye on one armor part must not be spread to every material exposing the layer");
         carryMethod.ToString().Should().Contain("TintMapVariable.IsCreatureColorLayer(layer)",
             "equipment colors must not overwrite skin, hair, or tattoos");
+
+        var equivalentVariablesMethod = FindMethod(serviceSource, "GetEquivalentItemTintVariables");
+        equivalentVariablesMethod.ToString().Should().Contain("TryParse",
+            "reset cleanup must inspect every stored material key on the item");
+        equivalentVariablesMethod.ToString().Should().Contain("variableLayer == layer",
+            "reset cleanup must leave other tint layers untouched");
+        equivalentVariablesMethod.ToString().Should().Contain("AreEquipmentMaterialsEquivalent",
+            "only corresponding material slots across wearer variants may be cleared");
+        var equivalenceMethod = FindMethod(serviceSource, "AreEquipmentMaterialsEquivalent");
+        equivalenceMethod.ToString().Should().Contain("GetVariantIdentity");
+        equivalenceMethod.ToString().Should().Contain("AreEquipmentMaterialSlotsEquivalent",
+            "hashed material variants require registry slot matching");
 
         TintMapEquipmentMaterialMatcher.GetVariantIdentity("pmh0_shor012").Should().Be("shor012");
         TintMapEquipmentMaterialMatcher.GetVariantIdentity("pfh0_shor012").Should().Be("shor012");

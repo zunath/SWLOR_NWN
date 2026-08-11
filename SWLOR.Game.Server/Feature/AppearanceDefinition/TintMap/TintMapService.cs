@@ -31,10 +31,14 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
     {
         private const float RefreshDelaySeconds = 0.2f;
 
+        private readonly record struct ItemColorCarryRevisionScope(
+            TintMapLayerType Layer,
+            AppearanceArmor ArmorPart);
+
         private sealed class PendingItemColorCarryLineage
         {
             public HashSet<uint> Items { get; } = new();
-            public Dictionary<TintMapLayerType, int> LayerRevisions { get; } = new();
+            public Dictionary<ItemColorCarryRevisionScope, int> Revisions { get; } = new();
             public int PendingCount { get; set; }
         }
 
@@ -166,11 +170,21 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         {
             var paletteSource = selection.GetPaletteSource(layer);
             if (invalidatePendingCarry)
-                MarkPendingItemColorEdit(paletteSource, layer);
+                MarkPendingItemColorEdit(paletteSource, layer, selection.ArmorPart);
 
             var savedColor = color.ToStoredValue();
             var variableName = TintMapVariable.GetName(selection.Material.Resref, layer);
-            SetLocalInt(paletteSource, variableName, savedColor);
+            var setVariables = GetEquivalentItemTintVariables(
+                paletteSource,
+                selection,
+                layer);
+            if (!setVariables.Contains(variableName, StringComparer.Ordinal))
+                setVariables.Add(variableName);
+            foreach (var setVariable in setVariables)
+            {
+                SetLocalInt(paletteSource, setVariable, savedColor);
+            }
+
             SaveDroidOverride(creature, selection, layer, variableName, savedColor);
             ApplyColor(
                 creature,
@@ -186,8 +200,18 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         {
             var variableName = TintMapVariable.GetName(selection.Material.Resref, layer);
             var paletteSource = selection.GetPaletteSource(layer);
-            MarkPendingItemColorEdit(paletteSource, layer);
-            DeleteLocalInt(paletteSource, variableName);
+            MarkPendingItemColorEdit(paletteSource, layer, selection.ArmorPart);
+            var resetVariables = GetEquivalentItemTintVariables(
+                paletteSource,
+                selection,
+                layer);
+            if (resetVariables.Count == 0)
+                resetVariables.Add(variableName);
+            foreach (var resetVariable in resetVariables)
+            {
+                DeleteLocalInt(paletteSource, resetVariable);
+            }
+
             SaveDroidOverride(creature, selection, layer, variableName, 0);
             ApplyColor(
                 creature,
@@ -456,10 +480,11 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             return new TintMapItemColorCarry(sources);
         }
 
-        private static (Guid Lineage, IReadOnlyDictionary<TintMapLayerType, int> LayerRevisions)
+        private static (Guid Lineage, IReadOnlyDictionary<ItemColorCarryRevisionScope, int> Revisions)
             RegisterPendingItemColorCarry(
                 uint sourceItem,
                 uint replacementItem,
+                AppearanceArmor armorPart,
                 IEnumerable<TintMapLayerType> layers)
         {
             lock (PendingItemColorCarryLock)
@@ -478,8 +503,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 var revisions = layers
                     .Distinct()
                     .ToDictionary(
-                        layer => layer,
-                        layer => state.LayerRevisions.GetValueOrDefault(layer));
+                        layer => new ItemColorCarryRevisionScope(layer, armorPart),
+                        layer => state.Revisions.GetValueOrDefault(
+                            new ItemColorCarryRevisionScope(layer, armorPart)));
                 return (lineage, revisions);
             }
         }
@@ -511,17 +537,22 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         private static bool PendingItemColorCarryLayerIsCurrent(
             Guid lineage,
             TintMapLayerType layer,
-            IReadOnlyDictionary<TintMapLayerType, int> capturedRevisions)
+            AppearanceArmor armorPart,
+            IReadOnlyDictionary<ItemColorCarryRevisionScope, int> capturedRevisions)
         {
+            var scope = new ItemColorCarryRevisionScope(layer, armorPart);
             lock (PendingItemColorCarryLock)
             {
                 return PendingItemColorCarries.TryGetValue(lineage, out var state) &&
-                       state.LayerRevisions.GetValueOrDefault(layer) ==
-                       capturedRevisions.GetValueOrDefault(layer);
+                       state.Revisions.GetValueOrDefault(scope) ==
+                       capturedRevisions.GetValueOrDefault(scope);
             }
         }
 
-        private static void MarkPendingItemColorEdit(uint item, TintMapLayerType layer)
+        private static void MarkPendingItemColorEdit(
+            uint item,
+            TintMapLayerType layer,
+            AppearanceArmor armorPart)
         {
             lock (PendingItemColorCarryLock)
             {
@@ -531,7 +562,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     return;
                 }
 
-                state.LayerRevisions[layer] = state.LayerRevisions.GetValueOrDefault(layer) + 1;
+                var scope = new ItemColorCarryRevisionScope(layer, armorPart);
+                state.Revisions[scope] = state.Revisions.GetValueOrDefault(scope) + 1;
             }
         }
 
@@ -581,6 +613,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             var registration = RegisterPendingItemColorCarry(
                 sourceItem,
                 item,
+                armorPart,
                 carry.Sources.Keys);
             DelayCommand(RefreshDelaySeconds, () =>
             {
@@ -623,7 +656,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                         if (!PendingItemColorCarryLayerIsCurrent(
                                 registration.Lineage,
                                 layer,
-                                registration.LayerRevisions))
+                                armorPart,
+                                registration.Revisions))
                         {
                             continue;
                         }
@@ -928,6 +962,46 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             return tintOverrides;
         }
 
+        private static List<string> GetEquivalentItemTintVariables(
+            uint item,
+            TintMapMaterialSelection selection,
+            TintMapLayerType layer)
+        {
+            if (!GetIsObjectValid(item) ||
+                GetObjectType(item) != ObjectType.Item ||
+                TintMapVariable.IsCreatureColorLayer(layer))
+            {
+                return new List<string>();
+            }
+
+            return GetItemTintOverrides(item).Keys
+                .Where(variableName =>
+                    TintMapVariable.TryParse(
+                        variableName,
+                        out var materialResref,
+                        out var variableLayer) &&
+                    variableLayer == layer &&
+                    AreEquipmentMaterialsEquivalent(materialResref, selection, layer))
+                .Distinct(StringComparer.Ordinal)
+                .ToList();
+        }
+
+        private static bool AreEquipmentMaterialsEquivalent(
+            string sourceMaterialResref,
+            TintMapMaterialSelection destination,
+            TintMapLayerType layer)
+        {
+            return string.Equals(
+                       TintMapEquipmentMaterialMatcher.GetVariantIdentity(sourceMaterialResref),
+                       TintMapEquipmentMaterialMatcher.GetVariantIdentity(destination.Material.Resref),
+                       StringComparison.OrdinalIgnoreCase) ||
+                   TintMapMaterialRegistry.AreEquipmentMaterialSlotsEquivalent(
+                       sourceMaterialResref,
+                       destination.ModelResref,
+                       destination.Material.Resref,
+                       layer);
+        }
+
         private static void CarryStoredEquipmentCustomColors(uint creature)
         {
             var selections = TintMapModelResolver.GetCurrentSelections(creature);
@@ -973,21 +1047,13 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                             continue;
                         }
 
-                        var destinationIdentity = TintMapEquipmentMaterialMatcher.GetVariantIdentity(
-                            selection.Material.Resref);
                         var matchingColors = storedColors
                             .Where(stored =>
                                 stored.Layer == layer &&
-                                (string.Equals(
-                                     TintMapEquipmentMaterialMatcher.GetVariantIdentity(
-                                         stored.MaterialResref),
-                                     destinationIdentity,
-                                     StringComparison.OrdinalIgnoreCase) ||
-                                 TintMapMaterialRegistry.AreEquipmentMaterialSlotsEquivalent(
-                                     stored.MaterialResref,
-                                     selection.ModelResref,
-                                     selection.Material.Resref,
-                                     layer)))
+                                AreEquipmentMaterialsEquivalent(
+                                    stored.MaterialResref,
+                                    selection,
+                                    layer))
                             .Select(stored => stored.Color)
                             .Distinct()
                             .ToList();

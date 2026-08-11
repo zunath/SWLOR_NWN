@@ -28,12 +28,14 @@ public class HutlarSpawnDefinitionTests
         foreach (var tableId in DungeonSpawnTables)
         {
             tables.Should().ContainKey(tableId);
-            tables[tableId].Spawns
+            var creatureSpawns = tables[tableId].Spawns
                 .Where(spawn => spawn.Type == ObjectType.Creature)
-                .Should()
-                .OnlyContain(
-                    spawn => spawn.AIFlags.HasFlag(AIFlag.ReturnHome),
-                    $"{tableId} creatures must leash home instead of accumulating at area transitions");
+                .ToList();
+
+            creatureSpawns.Should().NotBeEmpty($"{tableId} must define at least one creature spawn");
+            creatureSpawns.Should().OnlyContain(
+                spawn => spawn.AIFlags.HasFlag(AIFlag.ReturnHome),
+                $"{tableId} creatures must leash home instead of accumulating at area transitions");
         }
     }
 }

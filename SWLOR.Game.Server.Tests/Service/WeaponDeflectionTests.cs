@@ -30,6 +30,10 @@ public class WeaponDeflectionTests
         source.Should().Contain("UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType)");
         source.Should().Contain("Combat.IsHostileAttackSource(defender.m_idSelf, attacker.m_idSelf)");
         source.Should().NotContain("!GetIsReactionTypeHostile(attacker.m_idSelf, defender.m_idSelf) ||");
+        source.Should().Contain("attacker.m_ScriptVars.SetInt(new CExoString(DeflectionAttemptedVariable), 0)");
+        source.Should().Contain("attacker.m_ScriptVars.GetInt(new CExoString(DeflectionAttemptedVariable))");
+        source.Should().Contain("attacker.m_ScriptVars.SetInt(new CExoString(DeflectionAttemptedVariable), 1)");
+        source.Should().NotContain("defender.m_ScriptVars.SetInt(new CExoString(DeflectionAttemptedVariable)");
         source.Should().Contain("var shieldDeflection = Stat.GetShieldDeflectionChanceNative(defender);");
         source.Should().Contain("Stat.GetRangedDeflectionChanceNative(defender)");
         source.Should().Contain("Stat.GetMeleeDeflectionChanceNative(defender)");

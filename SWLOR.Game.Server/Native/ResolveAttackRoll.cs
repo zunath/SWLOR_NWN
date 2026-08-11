@@ -131,13 +131,13 @@ namespace SWLOR.Game.Server.Native
                 // If we get to this point, we are fighting a creature.  Pull the target's stats.
                 var defender = CNWSCreature.FromPointer(pTarget);
 
-                // One deflection attempt per incoming combat round: m_bRoundStarted stays 1 for the
-                // whole round, so gate the reset on the round's first attack — resetting on every
-                // attack would let the defender roll deflection against each swing of a
-                // multi-attack round.
+                // One deflection attempt per incoming attacker combat round: m_bRoundStarted stays
+                // 1 for the whole round, so keep the marker on the attacker and reset it only on
+                // that attacker's first swing. A defender-scoped marker can be cleared by another
+                // attacker's interleaved round and allow the first attacker to roll twice.
                 if (pCombatRound.m_bRoundStarted == 1 && pCombatRound.m_nCurrentAttack == 0)
                 {
-                    defender.m_ScriptVars.SetInt(new CExoString(DeflectionAttemptedVariable), 0);
+                    attacker.m_ScriptVars.SetInt(new CExoString(DeflectionAttemptedVariable), 0);
                 }
 
                 var attackType = (uint)AttackType.Melee;
@@ -474,7 +474,7 @@ namespace SWLOR.Game.Server.Native
             CNWSCreature attacker,
             CNWSCreature defender)
         {
-            var hasAttemptedDeflection = defender.m_ScriptVars.GetInt(new CExoString(DeflectionAttemptedVariable));
+            var hasAttemptedDeflection = attacker.m_ScriptVars.GetInt(new CExoString(DeflectionAttemptedVariable));
 
             if (!isHit ||
                 hasAttemptedDeflection != 0 ||
@@ -486,7 +486,7 @@ namespace SWLOR.Game.Server.Native
             if (deflectChance <= 0)
                 return DeflectionSource.None;
 
-            defender.m_ScriptVars.SetInt(new CExoString(DeflectionAttemptedVariable), 1);
+            attacker.m_ScriptVars.SetInt(new CExoString(DeflectionAttemptedVariable), 1);
 
             var deflectRoll = Random.D100(1);
             var deflected = deflectRoll <= deflectChance;

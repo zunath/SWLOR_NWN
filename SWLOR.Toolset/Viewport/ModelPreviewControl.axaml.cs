@@ -34,6 +34,8 @@ namespace SWLOR.Toolset.Viewport
         private IModelPreviewSource? _viewModel;
         private ResourceIndex? _subscribedResourceIndex;
         private bool _isAttached;
+        private bool _sceneBindingReady;
+        private int _attachmentGeneration;
         private bool _hostVisible;
         private bool _disposed;
 
@@ -61,12 +63,29 @@ namespace SWLOR.Toolset.Viewport
         {
             base.OnAttachedToVisualTree(e);
             _isAttached = true;
-            ApplyAnimation();
+            _sceneBindingReady = false;
+            var generation = ++_attachmentGeneration;
+
+            // A scene can be ready before this lazily-created editor preview joins the visual tree.
+            // OpenGlControlBase cannot retain a frame request made while detached, so assigning that
+            // scene eagerly leaves a valid model in a permanently blank viewport. Bind after the
+            // child GL control has completed attachment and its first layout pass instead.
+            Dispatcher.UIThread.Post(() =>
+            {
+                if (_disposed || !_isAttached || generation != _attachmentGeneration)
+                    return;
+
+                _sceneBindingReady = true;
+                ApplyScene();
+                ApplyAnimation();
+            }, DispatcherPriority.Loaded);
         }
 
         protected override void OnDetachedFromVisualTree(VisualTreeAttachmentEventArgs e)
         {
             _isAttached = false;
+            _sceneBindingReady = false;
+            _attachmentGeneration++;
             EndDrag();
             ApplyAnimation();
             base.OnDetachedFromVisualTree(e);
@@ -119,7 +138,7 @@ namespace SWLOR.Toolset.Viewport
 
         private void ApplyScene()
         {
-            if (_modelView == null)
+            if (_modelView == null || !_sceneBindingReady)
                 return;
 
             var scene = _viewModel?.PreviewScene;

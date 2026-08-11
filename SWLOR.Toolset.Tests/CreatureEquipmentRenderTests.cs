@@ -1,3 +1,4 @@
+using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
@@ -9,6 +10,8 @@ using SWLOR.Toolset.Domain.GameData.TwoDa;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Workspace;
+using SWLOR.Toolset.Editors.TintMaps;
+using SWLOR.Toolset.Viewport;
 using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Tests
@@ -79,6 +82,65 @@ namespace SWLOR.Toolset.Tests
             _workspace = context.Workspace!;
             (_, _hangarGit, _) = _workspace.LoadArea("czs220_hangar");
             (_, _anchorGit, _) = _workspace.LoadArea("anchor_entreenor");
+        }
+
+        [Test]
+        public void NpcLSerializedEditorSnapshotBuildsAndProjectsTintRows()
+        {
+            var source = _workspace.LoadBlueprint(ResourceType.Utc, "npc_l").Fields;
+            var snapshot = new JsonGffDocument("UTC ", source).ToBytes();
+            var creature = JsonGffDocument.Parse(snapshot).Root;
+
+            var model = _renderer.BuildModel(ResourceType.Utc, creature);
+
+            model.Should().NotBeNull("the live editor resolves its preview from this serialized snapshot");
+            var catalog = TintMapCatalog.Load(_resources);
+            catalog.Should().NotBeNull();
+            var tintEditor = new TintMapEditorViewModel(
+                new VarTable(creature),
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                catalog!);
+
+            var project = () => tintEditor.Reload(
+                model,
+                includeItemOwnedMaterials: false,
+                includeCreatureLayersFromItemOwnedMaterials: true);
+
+            project.Should().NotThrow("tint controls must not prevent a valid creature preview from publishing");
+
+            var scene = new AreaScene
+            {
+                Tileset = string.Empty,
+                Width = 1,
+                Height = 1,
+                Tiles = Array.Empty<TilePlacement>(),
+                Instances =
+                [
+                    new InstanceMarker
+                    {
+                        Kind = InstanceMarkerKind.Creature,
+                        Position = new Vector3(
+                            AreaSceneBuilder.TileSize / 2f,
+                            AreaSceneBuilder.TileSize / 2f,
+                            0f),
+                        Orientation = new Vector2(-1f, 0f),
+                        Model = model
+                    }
+                ],
+                Diagnostics = new AreaSceneDiagnostics()
+            };
+            var (target, distance) = AreaCameraMath.ComputeSceneFraming(
+                scene,
+                AreaSceneBuilder.TileSize,
+                MathF.PI / 3f,
+                230f / 600f);
+            TestContext.Progress.WriteLine($"npc_l framing target={target}, distance={distance}");
+            distance.Should().BeInRange(0.1f, 10f,
+                "a humanoid editor preview must remain close enough to be visible");
         }
 
         [Test]

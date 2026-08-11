@@ -257,6 +257,78 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void PreviewOverridesPreserveAndApplyGlobalColorStateFallbacks()
+        {
+            var variables = new VarTable(new JsonGffStruct());
+            var creatureState = TintMapVariable.GetCreatureColorStateName(TintMapLayerType.Skin);
+            var itemState = TintMapVariable.GetItemGlobalColorStateName(TintMapLayerType.Cloth1);
+            var skinColor = new TintMapColor(12, 34, 56).ToStoredValue();
+            var clothColor = new TintMapColor(65, 43, 21).ToStoredValue();
+            variables.SetInt(creatureState, skinColor);
+            variables.SetInt(itemState, clothColor);
+            variables.SetInt("UNRELATED", 123);
+
+            var overrides = TintMapOverrides.Read(variables);
+
+            overrides.Should().Contain(creatureState, skinColor);
+            overrides.Should().Contain(itemState, clothColor);
+            overrides.Should().NotContainKey("UNRELATED");
+            TintMapOverrides.GetMaterialColor(
+                    overrides,
+                    "new_skin_material",
+                    TintMapLayerType.Skin)
+                .Should().Be(skinColor);
+            TintMapOverrides.GetMaterialColor(
+                    overrides,
+                    "new_cloth_material",
+                    TintMapLayerType.Cloth1)
+                .Should().Be(clothColor);
+        }
+
+        [Test]
+        public void ExactMaterialColorTakesPriorityOverGlobalColorState()
+        {
+            var material = "specific_material";
+            var layer = TintMapLayerType.Cloth1;
+            var exactKey = TintMapVariable.GetName(material, layer);
+            var stateKey = TintMapVariable.GetItemGlobalColorStateName(layer);
+            var exact = new TintMapColor(1, 2, 3).ToStoredValue();
+            var global = new TintMapColor(4, 5, 6).ToStoredValue();
+            var overrides = new Dictionary<string, int>
+            {
+                [exactKey] = exact,
+                [stateKey] = global
+            };
+
+            TintMapOverrides.GetMaterialColor(overrides, material, layer).Should().Be(exact);
+        }
+
+        [Test]
+        public void TintRowDisplaysPersistedSemanticColorForNewMaterial()
+        {
+            var variables = new VarTable(new JsonGffStruct());
+            var color = new TintMapColor(12, 34, 56);
+            variables.SetInt(
+                TintMapVariable.GetCreatureColorStateName(TintMapLayerType.Skin),
+                color.ToStoredValue());
+
+            var row = new TintMapColorRowViewModel(
+                "new_skin_material",
+                TintMapLayerType.Skin,
+                variables,
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                null);
+
+            row.IsCustom.Should().BeTrue();
+            row.HasOverride.Should().BeTrue();
+            row.Color.Should().Be(Color.FromRgb(color.Red, color.Green, color.Blue));
+        }
+
+        [Test]
         public void CatalogFindsKnownTintMaterialThroughMeshTextureFallback()
         {
             var catalog = TintMapCatalog.Load(Resources());

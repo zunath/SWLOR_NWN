@@ -46,6 +46,19 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             return !IsCreatureColorLayer((TintMapLayerType)value);
         }
 
+        public static bool IsCreatureColorStateName(string variableName)
+        {
+            if (string.IsNullOrWhiteSpace(variableName) ||
+                !variableName.StartsWith(CreatureColorStatePrefix, StringComparison.Ordinal) ||
+                !int.TryParse(variableName[CreatureColorStatePrefix.Length..], out var value) ||
+                !Enum.IsDefined(typeof(TintMapLayerType), value))
+            {
+                return false;
+            }
+
+            return IsCreatureColorLayer((TintMapLayerType)value);
+        }
+
         public static bool IsCreatureColorLayer(TintMapLayerType layer)
         {
             return layer is TintMapLayerType.Skin or

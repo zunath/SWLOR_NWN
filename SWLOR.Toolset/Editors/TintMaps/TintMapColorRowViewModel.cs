@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Toolset.Domain.Documents;
+using SWLOR.Toolset.Domain.Render;
 
 namespace SWLOR.Toolset.Editors.TintMaps
 {
@@ -101,7 +102,10 @@ namespace SWLOR.Toolset.Editors.TintMaps
             _loading = true;
             try
             {
-                var saved = _variables.GetInt(Key) ?? 0;
+                var saved = TintMapOverrides.GetMaterialColor(
+                    _variables,
+                    MaterialName,
+                    Layer);
                 if (TintMapColor.TryFromStoredValue(saved, out var tint))
                 {
                     Color = Color.FromRgb(tint.Red, tint.Green, tint.Blue);

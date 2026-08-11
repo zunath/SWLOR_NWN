@@ -54,10 +54,10 @@ namespace SWLOR.Toolset.Domain.Render
                     tintMap.Pixels[offset + 1] * 10 / byte.MaxValue,
                     0,
                     9);
-                var variableName = TintMapVariable.GetName(materialName, layer);
-                var savedValue = overrides != null && overrides.TryGetValue(variableName, out var saved)
-                    ? saved
-                    : 0;
+                var savedValue = TintMapOverrides.GetMaterialColor(
+                    overrides,
+                    materialName,
+                    layer);
 
                 if (TintMapColor.TryFromStoredValue(savedValue, out var customColor))
                 {

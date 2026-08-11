@@ -14,7 +14,9 @@ namespace SWLOR.Toolset.Domain.Render
                 .Where(entry =>
                     entry.Type == VarTable.TypeInt &&
                     entry.IntValue is > 0 &&
-                    entry.Name.StartsWith(TintMapVariable.Prefix, StringComparison.Ordinal))
+                    (entry.Name.StartsWith(TintMapVariable.Prefix, StringComparison.Ordinal) ||
+                     TintMapVariable.IsCreatureColorStateName(entry.Name) ||
+                     TintMapVariable.IsItemGlobalColorStateName(entry.Name)))
                 .ToDictionary(
                     entry => entry.Name,
                     entry => entry.IntValue!.Value,
@@ -32,8 +34,9 @@ namespace SWLOR.Toolset.Domain.Render
         {
             var merged = itemOverrides?
                 .Where(pair =>
-                    !TintMapVariable.TryGetLayer(pair.Key, out var layer) ||
-                    !TintMapVariable.IsCreatureColorLayer(layer))
+                    !TintMapVariable.IsCreatureColorStateName(pair.Key) &&
+                    (!TintMapVariable.TryGetLayer(pair.Key, out var layer) ||
+                     !TintMapVariable.IsCreatureColorLayer(layer)))
                 .ToDictionary(pair => pair.Key, pair => pair.Value, StringComparer.Ordinal) ??
                 new Dictionary<string, int>(StringComparer.Ordinal);
             if (creatureOverrides == null)
@@ -41,7 +44,8 @@ namespace SWLOR.Toolset.Domain.Render
 
             foreach (var (key, value) in creatureOverrides)
             {
-                if (TintMapVariable.TryGetLayer(key, out var layer) &&
+                if (TintMapVariable.IsCreatureColorStateName(key) ||
+                    TintMapVariable.TryGetLayer(key, out var layer) &&
                     TintMapVariable.IsCreatureColorLayer(layer))
                 {
                     merged[key] = value;
@@ -49,6 +53,45 @@ namespace SWLOR.Toolset.Domain.Render
             }
 
             return merged;
+        }
+
+        /// <summary>
+        /// Resolves a material-specific override, falling back to the persisted semantic/global
+        /// intent used by the server when a newly exposed material has no exact key yet.
+        /// </summary>
+        public static int GetMaterialColor(
+            IReadOnlyDictionary<string, int>? overrides,
+            string materialName,
+            TintMapLayerType layer)
+        {
+            if (overrides == null)
+                return 0;
+
+            var materialKey = TintMapVariable.GetName(materialName, layer);
+            if (overrides.TryGetValue(materialKey, out var saved))
+                return saved;
+
+            var stateKey = TintMapVariable.IsCreatureColorLayer(layer)
+                ? TintMapVariable.GetCreatureColorStateName(layer)
+                : TintMapVariable.GetItemGlobalColorStateName(layer);
+            return overrides.TryGetValue(stateKey, out saved) ? saved : 0;
+        }
+
+        public static int GetMaterialColor(
+            VarTable variables,
+            string materialName,
+            TintMapLayerType layer)
+        {
+            ArgumentNullException.ThrowIfNull(variables);
+
+            var materialKey = TintMapVariable.GetName(materialName, layer);
+            if (variables.GetInt(materialKey) is int saved)
+                return saved;
+
+            var stateKey = TintMapVariable.IsCreatureColorLayer(layer)
+                ? TintMapVariable.GetCreatureColorStateName(layer)
+                : TintMapVariable.GetItemGlobalColorStateName(layer);
+            return variables.GetInt(stateKey) ?? 0;
         }
     }
 }

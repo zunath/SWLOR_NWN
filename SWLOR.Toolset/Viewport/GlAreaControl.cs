@@ -5238,15 +5238,14 @@ void main()
             for (var layerValue = 0; layerValue < 10; layerValue++)
             {
                 var layer = (TintMapLayerType)layerValue;
-                var variableName = TintMapVariable.GetName(materialName, layer);
                 var activeOverrides = TintMapVariable.IsCreatureColorLayer(layer) &&
                                       creatureTintMapOverrides != null
                     ? creatureTintMapOverrides
                     : tintMapOverrides;
-                var savedValue = activeOverrides != null &&
-                                 activeOverrides.TryGetValue(variableName, out var saved)
-                    ? saved
-                    : 0;
+                var savedValue = TintMapOverrides.GetMaterialColor(
+                    activeOverrides,
+                    materialName,
+                    layer);
 
                 if (TintMapColor.TryFromStoredValue(savedValue, out var custom))
                 {

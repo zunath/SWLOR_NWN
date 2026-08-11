@@ -44,14 +44,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 18)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.ForceSpark2)
-
-                .AddPerkLevel()
-                .Description("Deals 44 force DMG plus WIL scaling to one target and reduces Evasion by 8% for 30 seconds.")
-                .Price(4)
-                .RequirementSkill(SkillType.Force, 42)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.ForceSpark3);
+                .GrantsFeat(FeatType.ForceSpark2);
         }
 
         private void ForceLightning()
@@ -72,7 +65,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 22)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.ForceLightning2);
+                .GrantsFeat(FeatType.ForceLightning2)
+
+                .AddPerkLevel()
+                .Description("Deals 40 force DMG plus WIL scaling to one target, then arcs to up to three enemies within 5m for 50% damage. Affected targets suffer Shock for 30 seconds.")
+                .Price(4)
+                .RequirementSkill(SkillType.Force, 42)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceLightning3);
         }
 
         private void UnstablePressure()

@@ -3228,7 +3228,7 @@ namespace SWLOR.Game.Server.Service
                 defender == attacker ||
                 damage <= 0 ||
                 !damageType.IsPhysicalDamageType() ||
-                !IsGuardableAttackSource(defender, attacker))
+                !IsHostileAttackSource(defender, attacker))
                 return damage;
 
             var guardChance = Stat.GetGuardChance(defender);
@@ -3249,7 +3249,7 @@ namespace SWLOR.Game.Server.Service
             return adjustedDamage;
         }
 
-        private static bool IsGuardableAttackSource(uint defender, uint attacker)
+        internal static bool IsHostileAttackSource(uint defender, uint attacker)
         {
             // Preserve PvP and DM-driven testing while rejecting clearly non-hostile NPC swings.
             if (GetIsPC(attacker) || GetIsDM(attacker) || GetIsDMPossessed(attacker))

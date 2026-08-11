@@ -478,7 +478,7 @@ namespace SWLOR.Game.Server.Native
 
             if (!isHit ||
                 hasAttemptedDeflection != 0 ||
-                !GetIsReactionTypeHostile(attacker.m_idSelf, defender.m_idSelf) ||
+                !Combat.IsHostileAttackSource(defender.m_idSelf, attacker.m_idSelf) ||
                 UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType))
                 return DeflectionSource.None;
 

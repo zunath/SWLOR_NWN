@@ -8,14 +8,14 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     /// Perfect Aegis (Aegis Eternal capstone): replaces Saber Ward. Converts 40% of incoming physical
     /// damage into Force damage, grants +8% Defense, +12% Force Defense, and +25% Enmity, is treated as five
     /// Embattled stacks (an additional +10% Defense and +10% Force Defense), and pushes Deflecting
-    /// Return to its capstone reflection of 24% up to 75% of normal weapon damage.
+    /// Return to its capstone reflection of 50% up to 125% of normal weapon damage.
     /// </summary>
     public sealed class PerfectAegisStatusEffect : StatusEffectBase
     {
         public const int ConversionPercent = 40;
         public const int TreatedAsEmbattledStacks = 5;
-        public const int ReflectionPercent = 24;
-        public const int ReflectionCapPercent = 75;
+        public const int ReflectionPercent = 50;
+        public const int ReflectionCapPercent = 125;
 
         public override string Name => "Perfect Aegis";
         public override EffectIconType Icon => EffectIconType.PerfectAegisStatusEffect;

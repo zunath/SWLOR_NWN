@@ -498,13 +498,12 @@ namespace SWLOR.Game.Server.Native
             if (deflected)
             {
                 Stat.ApplyDeflectionEffectsNative(defender, source);
+
+                var deflectionName = Combat.GetDeflectionResultName(source);
+                attacker.SendFeedbackString(new CExoString(BuildDeflectionFeedback(attacker.m_idSelf, attacker, defender, deflectionName)));
+                defender.SendFeedbackString(new CExoString(BuildDeflectionFeedback(defender.m_idSelf, attacker, defender, deflectionName)));
             }
 
-            var feedbackString = deflected ? "*success*" : "*failure*";
-            var deflectionName = Combat.GetDeflectionResultName(source);
-
-            attacker.SendFeedbackString(new CExoString(BuildDeflectionFeedback(attacker.m_idSelf, attacker, defender, deflectionName, feedbackString)));
-            defender.SendFeedbackString(new CExoString(BuildDeflectionFeedback(defender.m_idSelf, attacker, defender, deflectionName, feedbackString)));
             Log.Write(LogGroup.Attack, $"Deflect roll: {deflectRoll}, Chance: {deflectChance}, Hit: {!deflected}");
 
             return deflected ? source : DeflectionSource.None;
@@ -515,12 +514,12 @@ namespace SWLOR.Game.Server.Native
             DeleteLocalString(attacker.m_idSelf, DeflectionAttemptedDefendersVariable);
         }
 
-        private static string BuildDeflectionFeedback(uint observer, CNWSCreature attacker, CNWSCreature defender, string deflectionName, string feedbackString)
+        private static string BuildDeflectionFeedback(uint observer, CNWSCreature attacker, CNWSCreature defender, string deflectionName)
         {
             var attackerName = PlayerName.GetColoredDisplayName(observer, attacker.m_idSelf);
             var defenderName = PlayerName.GetColoredDisplayName(observer, defender.m_idSelf);
 
-            return ColorToken.Combat($"{defenderName} attempts to {deflectionName} {attackerName}'s attack: {feedbackString}");
+            return ColorToken.Combat($"{defenderName}'s {deflectionName} negates {attackerName}'s attack.");
         }
 
         private static (DeflectionSource Source, int Chance) GetDeflectionChance(CNWSCreature defender, uint attackType)

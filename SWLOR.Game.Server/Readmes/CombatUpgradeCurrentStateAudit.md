@@ -164,7 +164,7 @@ The Bible workbook and `CombatUpgradeBiblePerkManifest.csv` are the source of tr
 
 The refreshed workbook review contains 1,003 rows: 998 in-scope rows pass and only the five unimplemented, first-iteration-out-of-scope Agriculture rows are skipped. Mimicry is 98/98 pass, including all 88 techniques; Espionage is 41/41 pass.
 
-The production-consumer audit found one real stat wiring defect: `EmbattledHighStackDeflectionReflectionBonusPercent` was granted by Center of the Storm but never consumed. It is now applied at the documented Embattled stack threshold. The same review found that Aegis Eternal's Perfect Aegis status added its 24% reflection and 75% cap on top of Deflecting Return instead of setting the documented final values. Perfect Aegis now uses stat-driven override values, so the capstone resolves to exactly 24% reflection with a 75% damage cap while normal Center of the Storm behavior resolves to 20%/50% at high Embattled stacks.
+The production-consumer audit found one real stat wiring defect: `EmbattledHighStackDeflectionReflectionBonusPercent` was granted by Center of the Storm but never consumed. It is now applied at the documented Embattled stack threshold. The same review found that Aegis Eternal's Perfect Aegis status added its reflection and cap values on top of Deflecting Return instead of setting the documented final values. Perfect Aegis now uses stat-driven override values, so the capstone resolves to exactly its documented reflection and cap values while normal Center of the Storm behavior remains additive at the Embattled threshold.
 
 ## Not Recommended
 

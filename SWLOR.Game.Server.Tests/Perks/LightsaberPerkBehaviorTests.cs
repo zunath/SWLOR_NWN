@@ -29,15 +29,15 @@ public class LightsaberPerkBehaviorTests
         AssertPerkStat(StatType.HostileAbilityFPSpendForceAttackDurationSeconds, "30");
 
         // Deflecting Return (bounded reflection)
-        AssertPerkStat(StatType.RangedDeflection, "4");
-        AssertPerkStat(StatType.RangedDeflection, "6");
+        AssertPerkStat(StatType.RangedDeflection, "5");
         AssertPerkStat(StatType.RangedDeflection, "8");
-        AssertPerkStat(StatType.RangedDeflectionReflectionPercent, "8");
-        AssertPerkStat(StatType.RangedDeflectionReflectionPercent, "12");
-        AssertPerkStat(StatType.RangedDeflectionReflectionPercent, "16");
-        AssertPerkStat(StatType.RangedDeflectionReflectionCapPercent, "25");
-        AssertPerkStat(StatType.RangedDeflectionReflectionCapPercent, "40");
+        AssertPerkStat(StatType.RangedDeflection, "12");
+        AssertPerkStat(StatType.RangedDeflectionReflectionPercent, "20");
+        AssertPerkStat(StatType.RangedDeflectionReflectionPercent, "30");
+        AssertPerkStat(StatType.RangedDeflectionReflectionPercent, "40");
         AssertPerkStat(StatType.RangedDeflectionReflectionCapPercent, "50");
+        AssertPerkStat(StatType.RangedDeflectionReflectionCapPercent, "75");
+        AssertPerkStat(StatType.RangedDeflectionReflectionCapPercent, "100");
 
         // Surrounded, Not Outmatched
         AssertPerkStat(StatType.EmbattledStackDefensePercent, "2");
@@ -169,8 +169,8 @@ public class LightsaberPerkBehaviorTests
         aegis.StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment].Should().Be(18);
         aegis.StatGroup.Stats[StatType.ForceDefensePercentAdjustment].Should().Be(22);
         aegis.StatGroup.Stats[StatType.EnmityPercentAdjustment].Should().Be(25);
-        aegis.StatGroup.Stats[StatType.RangedDeflectionReflectionOverridePercent].Should().Be(24);
-        aegis.StatGroup.Stats[StatType.RangedDeflectionReflectionCapOverridePercent].Should().Be(75);
+        aegis.StatGroup.Stats[StatType.RangedDeflectionReflectionOverridePercent].Should().Be(50);
+        aegis.StatGroup.Stats[StatType.RangedDeflectionReflectionCapOverridePercent].Should().Be(125);
     }
 
     [Test]
@@ -231,30 +231,30 @@ public class LightsaberPerkBehaviorTests
     [Test]
     public void DeflectingReturn_ReflectsCappedShareOfWeaponDamage()
     {
-        // 8% of a 50-DMG attack = 4, under the 25% cap of a 60-DMG saber (15).
-        Combat.GetRangedDeflectionReflectionAmount(50, 8, 60, 25).Should().Be(4);
-        // Cap binds: 16% of 100 = 16, capped at 50% of 20 = 10.
-        Combat.GetRangedDeflectionReflectionAmount(100, 16, 20, 50).Should().Be(10);
+        // 20% of a 50-DMG attack = 10, under the 50% cap of a 60-DMG saber (30).
+        Combat.GetRangedDeflectionReflectionAmount(50, 20, 60, 50).Should().Be(10);
+        // Cap binds: 40% of 100 = 40, capped at 100% of 20 = 20.
+        Combat.GetRangedDeflectionReflectionAmount(100, 40, 20, 100).Should().Be(20);
         // No reflection without a percent or without incoming damage.
-        Combat.GetRangedDeflectionReflectionAmount(50, 0, 60, 25).Should().Be(0);
-        Combat.GetRangedDeflectionReflectionAmount(0, 8, 60, 25).Should().Be(0);
+        Combat.GetRangedDeflectionReflectionAmount(50, 0, 60, 50).Should().Be(0);
+        Combat.GetRangedDeflectionReflectionAmount(0, 20, 60, 50).Should().Be(0);
         // No cap applied when the cap percent is 0.
-        Combat.GetRangedDeflectionReflectionAmount(100, 16, 20, 0).Should().Be(16);
+        Combat.GetRangedDeflectionReflectionAmount(100, 40, 20, 0).Should().Be(40);
     }
 
     [Test]
     public void DeflectingReturn_UsesEmbattledBonusAndPerfectAegisFinalOverrides()
     {
-        Combat.GetRangedDeflectionReflectionRates(16, 50, 2, 3, 4, 0, 0)
-            .Should().Be((16, 50));
-        Combat.GetRangedDeflectionReflectionRates(16, 50, 3, 3, 4, 0, 0)
-            .Should().Be((20, 50));
+        Combat.GetRangedDeflectionReflectionRates(40, 100, 2, 3, 4, 0, 0)
+            .Should().Be((40, 100));
+        Combat.GetRangedDeflectionReflectionRates(40, 100, 3, 3, 4, 0, 0)
+            .Should().Be((44, 100));
 
         // Stat totals remain additive globally, so Perfect Aegis uses separate final-override stats.
-        // This prevents its documented 24% / 75% ceiling from becoming 40% / 125% when the
+        // This prevents its documented 50% / 125% ceiling from becoming 94% / 225% when the
         // permanent Deflecting Return III values are also present.
-        Combat.GetRangedDeflectionReflectionRates(16, 50, 5, 3, 4, 24, 75)
-            .Should().Be((24, 75));
+        Combat.GetRangedDeflectionReflectionRates(40, 100, 5, 3, 4, 50, 125)
+            .Should().Be((50, 125));
     }
 
     [Test]

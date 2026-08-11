@@ -1324,6 +1324,23 @@ public class TintMapReviewTests
     }
 
     [Test]
+    public void ScriptedPaletteCoordinateUsesSignToSelectCustomRgb()
+    {
+        var preset = TintMapMaterialRegistry.GetScriptedPaletteCoordinate(
+            TintMapLayerType.Skin,
+            42,
+            false);
+        var custom = TintMapMaterialRegistry.GetScriptedPaletteCoordinate(
+            TintMapLayerType.Skin,
+            42,
+            true);
+
+        preset.Should().BePositive();
+        custom.Should().BeNegative();
+        Math.Abs(custom).Should().Be(preset);
+    }
+
+    [Test]
     public void RodianBountyHunterPartsBindTheConvertedHumanFallbackMaterials()
     {
         var repositoryRoot = FindRepositoryRoot();

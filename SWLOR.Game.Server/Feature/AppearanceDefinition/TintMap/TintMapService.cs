@@ -937,12 +937,20 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             TintMapColorSelection color)
         {
             var layerDefinition = TintMapMaterialRegistry.GetLayer(layer);
-            var paletteCoordinate = TintMapMaterialRegistry.GetPaletteCoordinate(layer, color.PaletteColorId);
+            // NWN's material-uniform override path is reliable for scalar parameters but some
+            // clients do not retain the fourth component of a scripted vec4 override. Encode
+            // the custom/preset mode in the sign of the already-scriptable palette coordinate
+            // instead of depending on tint*.a. Palette coordinates are always positive, so the
+            // shader can recover the original row with abs() without sacrificing a palette row.
+            var scriptedPaletteCoordinate = TintMapMaterialRegistry.GetScriptedPaletteCoordinate(
+                layer,
+                color.PaletteColorId,
+                color.CustomColor.HasValue);
             SetMaterialShaderUniformVec4(
                 creature,
                 selection.Material.Resref,
                 layerDefinition.UniformName,
-                paletteCoordinate);
+                scriptedPaletteCoordinate);
             var customColor = color.CustomColor;
             SetMaterialShaderUniformVec4(
                 creature,

@@ -114,5 +114,14 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             var definition = GetLayer(layer);
             return (definition.PaletteBaseRow + colorId + 0.5f) / PaletteTextureHeight;
         }
+
+        public static float GetScriptedPaletteCoordinate(
+            TintMapLayerType layer,
+            int colorId,
+            bool useCustomColor)
+        {
+            var coordinate = GetPaletteCoordinate(layer, colorId);
+            return useCustomColor ? -coordinate : coordinate;
+        }
     }
 }

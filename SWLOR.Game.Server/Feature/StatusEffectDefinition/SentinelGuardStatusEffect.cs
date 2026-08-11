@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     public sealed class SentinelGuardStatusEffect : StatusEffectBase
     {
-        private readonly int _attackDeflection;
+        private readonly int _deflection;
         private readonly int _selfEnmityPercentAdjustment;
         private readonly StatType _deflectionStatType;
 
@@ -21,14 +21,14 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         }
 
         public SentinelGuardStatusEffect(
-            int attackDeflection,
+            int deflection,
             int selfEnmityPercentAdjustment,
             StatType deflectionStatType)
         {
-            _attackDeflection = attackDeflection;
+            _deflection = deflection;
             _selfEnmityPercentAdjustment = selfEnmityPercentAdjustment;
             _deflectionStatType = deflectionStatType;
-            StatGroup.Stats[_deflectionStatType] = _attackDeflection;
+            StatGroup.Stats[_deflectionStatType] = _deflection;
         }
 
         protected override void Apply(uint creature, int durationTicks)
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override IStatusEffect Clone()
         {
             return new SentinelGuardStatusEffect(
-                _attackDeflection,
+                _deflection,
                 _selfEnmityPercentAdjustment,
                 _deflectionStatType);
         }

@@ -9134,7 +9134,7 @@ namespace SWLOR.Game.Server.Service
                 targetStatType,
                 attackDeflection,
                 duration,
-                targetStatType);
+                attackDeflectionStatType);
             if (deflectionFPRestoreStatType != StatType.Invalid)
             {
                 var fpRestore = Stat.GetStatAdjustment(activator, deflectionFPRestoreStatType);

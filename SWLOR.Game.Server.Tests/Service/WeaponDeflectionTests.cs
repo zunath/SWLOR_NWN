@@ -122,6 +122,8 @@ public class WeaponDeflectionTests
         statSource.Should().Contain("DeflectionSource.Ranged => StatType.RangedDeflection");
         statSource.Should().Contain("DeflectionSource.Shield => StatType.ShieldDeflection");
         combatSource.Should().Contain("Stat.GetGrantedDeflectionStatType(attackDeflectionStatType)");
+        combatSource.Should().MatchRegex(
+            @"TemporaryStatModifier\.Replace\(\s*activator,\s*targetStatType,\s*attackDeflection,\s*duration,\s*attackDeflectionStatType\);");
         combatSource.Should().Contain("Stat.GetGrantedDeflectionStatType(StatType.AreaAbilityAttackDeflection)");
         combatSource.Should().Contain("Stat.GetGrantedDeflectionStatType(StatType.StatusAppliedSelfAttackDeflection)");
         combatSource.Should().Contain("Stat.GetGrantedDeflectionStatType(sourceStatType)");
@@ -135,6 +137,8 @@ public class WeaponDeflectionTests
         forceSupportSource.Should().Contain("Stat.GetGrantedDeflectionStatType(sourceStatType)");
         sentinelGuardSource.Should().Contain("Stat.GetGrantedDeflectionStatType(");
         sentinelGuardSource.Should().Contain("StatGroup.Stats[_deflectionStatType]");
+        sentinelGuardSource.Should().Contain("private readonly int _deflection;");
+        sentinelGuardSource.Should().NotContain("_attackDeflection");
     }
 
     [Test]

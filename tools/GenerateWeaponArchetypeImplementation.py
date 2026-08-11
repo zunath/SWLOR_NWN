@@ -930,7 +930,7 @@ def description_stat_entries(row, base):
         add_stat(stats, "SourceStatusStackMaximum", parse_count(r"max (\d+) stacks", description) or 5)
         add_stat(stats, "SourceStatusStackDurationSeconds", parse_count(r"Stacks last (\d+) seconds", description) or 18)
     if base == "Venom Tempo":
-        add_stat(stats, "HostileAbilityHitNextAutoAttackNoDelaySkillType", skill_expr)
+        add_stat(stats, "HostileAbilityHitNextAutoAttackNoDelayAllSkills", 1)
         add_stat(stats, "HostileAbilityHitNextAutoAttackNoDelayDurationSeconds", parse_duration(description) or 30)
     if base == "Propagation":
         add_stat(stats, "SourceStatusAutoAttackCycleRequiredCategory", status_category_expression("Venom"))
@@ -1883,6 +1883,7 @@ def profile_property_lines(row, level, primary_status):
 
     if base == "Backstab":
         add_profile_property("ExtraDamageIfBehind", str(first_int(r"additional \+\s*(\d+) DMG", description)))
+        add_profile_property("ExtraDamageIfBehindFeedbackLabel", "\"Backstab\"")
         add_profile_property("ConditionalTargetStatusEffect", "typeof(KnockdownStatusEffect)")
         add_profile_property("ConditionalTargetStatusDurationSeconds", str(parse_count(r"Knockdown for (\d+) seconds", description) or parse_duration(description) or 6))
         add_profile_property("RequireBehindForConditionalStatus", "true")

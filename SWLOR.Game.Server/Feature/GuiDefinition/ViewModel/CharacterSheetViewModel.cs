@@ -242,7 +242,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public int Accuracy
+        public int WeaponAccuracy
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
+        public int ForceAccuracy
         {
             get => Get<int>();
             set => Set(value);
@@ -791,6 +797,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var mainHand = GetItemInSlot(InventorySlot.RightHand, _target);
             var offHand = GetItemInSlot(InventorySlot.LeftHand, _target);
+            var forceAccuracyWeapon = SelectForceAccuracyWeapon(mainHand, offHand, GetIsObjectValid(mainHand));
             var mainHandType = GetBaseItemType(mainHand);
             var attackDelayInfo = GetAttackDelayInfo();
             AttackDelay = attackDelayInfo.Value;
@@ -844,12 +851,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             PhysicalDefense = Stat.GetDefense(_target, CombatDamageType.Physical, AbilityType.Vitality);
             ForceDefense = Stat.GetDefense(_target, CombatDamageType.Force, AbilityType.Willpower);
 
-            Accuracy = Stat.GetAccuracy(_target, mainHand, accuracyStatOverride, SkillType.Invalid);
+            WeaponAccuracy = Stat.GetAccuracy(_target, mainHand, accuracyStatOverride, SkillType.Invalid);
+            ForceAccuracy = Stat.GetAccuracy(
+                _target,
+                forceAccuracyWeapon,
+                AbilityType.Willpower,
+                SkillType.Force,
+                ignoreWeaponAccuracyStatOverride: true);
             Evasion = Stat.GetEvasion(_target, SkillType.Invalid);
 
             RefreshResistances();
             RefreshCraftingStats();
             RefreshCharacterStatsList();
+        }
+
+        private static uint SelectForceAccuracyWeapon(uint mainHand, uint offHand, bool isMainHandValid)
+        {
+            return isMainHandValid ? mainHand : offHand;
         }
 
         private (string Value, string Tooltip) GetAttackDelayInfo()
@@ -907,7 +925,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             AddStat("Physical DEF %", FormatPercent(Stat.GetDefensePercentAdjustment(_target, CombatDamageType.Physical)), "Bonus or penalty applied to Physical DEF. Already included in the Physical DEF shown on the Attributes tab.");
             AddStat("Force DEF %", FormatPercent(Stat.GetDefensePercentAdjustment(_target, CombatDamageType.Force)), "Bonus or penalty applied to Force DEF. Already included in the Force DEF shown on the Attributes tab.");
             AddStat("Ability Accuracy", FormatPercent(Stat.GetStatAdjustment(_target, StatType.PhysicalAndForceAbilityHitChancePercentAdjustment)), "Direct percentage-point change to hit chance for weapon-skill and Force-skill ability hit checks only. Does not affect Mimicry abilities or the underlying Accuracy rating.");
-            AddStat("Accuracy %", FormatPercent(Stat.GetStatAdjustment(_target, StatType.AccuracyPercentAdjustment)), "Percentage bonus or penalty applied to the underlying Accuracy rating for attacks and ability hit checks, including Force and Mimicry. It is not a direct percentage-point change to hit chance and is already included in the Accuracy shown on the Attributes tab.");
+            AddStat("Accuracy %", FormatPercent(Stat.GetStatAdjustment(_target, StatType.AccuracyPercentAdjustment)), "Percentage bonus or penalty applied to the underlying Accuracy rating for attacks and ability hit checks, including Force and Mimicry. It is not a direct percentage-point change to hit chance and is already included in the Weapon Accuracy and Force Accuracy ratings shown on the Attributes tab.");
             AddStat("Evasion %", FormatPercent(Stat.GetStatAdjustment(_target, StatType.EvasionPercentAdjustment)), "Bonus or penalty applied to Evasion. Already included in the Evasion shown on the Attributes tab.");
             AddStat("Attack %", FormatPercent(Stat.GetStatAdjustment(_target, StatType.AttackPercentAdjustment)), "Bonus or penalty applied to Attack when using physical attacks and abilities.");
             AddStat("Force Attack %", FormatPercent(Stat.GetStatAdjustment(_target, StatType.ForceAttackPercentAdjustment)), "Bonus or penalty applied to Attack when using Force-typed attacks and abilities.");

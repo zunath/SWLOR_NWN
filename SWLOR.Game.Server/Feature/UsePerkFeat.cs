@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.ActivityService;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
@@ -28,12 +29,21 @@ namespace SWLOR.Game.Server.Feature
             Completed = 3
         }
 
+        private sealed class ActiveAbilityActivation
+        {
+            public string ActivationId { get; init; }
+            public AbilityDetail Ability { get; init; }
+            public List<string> TelegraphIds { get; init; }
+            public uint ResumeAttackTarget { get; init; }
+        }
+
         // Variable names for queued abilities.
         private const string ActiveAbilityIdName = "ACTIVE_ABILITY_ID";
         private const string ActiveAbilityFeatIdName = "ACTIVE_ABILITY_FEAT_ID";
         private const string ActiveAbilityEffectivePerkLevelName = "ACTIVE_ABILITY_EFFECTIVE_PERK_LEVEL";
         private const string ActiveAbilityWeaponIneffectiveFeedbackSuppressedName = "ACTIVE_ABILITY_WEAPON_INEFFECTIVE_FEEDBACK_SUPPRESSED";
         private const string ActiveAbilityWeaponIneffectiveFeedbackWasHiddenName = "ACTIVE_ABILITY_WEAPON_INEFFECTIVE_FEEDBACK_WAS_HIDDEN";
+        private static readonly Dictionary<uint, ActiveAbilityActivation> _activeAbilityActivations = new();
 
         private static uint GetResumeAttackTarget(uint activator, uint target, AbilityDetail ability)
         {
@@ -104,6 +114,60 @@ namespace SWLOR.Game.Server.Feature
             {
                 ActionAttack(target);
             });
+        }
+
+        /// <summary>
+        /// Interrupts the creature's current cast or channel, if one is active.
+        /// </summary>
+        public static bool InterruptAbilityActivation(uint activator)
+        {
+            return InterruptAbilityActivation(activator, null);
+        }
+
+        private static bool InterruptAbilityActivation(uint activator, string expectedActivationId)
+        {
+            if (!_activeAbilityActivations.TryGetValue(activator, out var activation) ||
+                !string.IsNullOrWhiteSpace(expectedActivationId) &&
+                activation.ActivationId != expectedActivationId ||
+                GetLocalInt(activator, activation.ActivationId) != (int)ActivationStatus.Started)
+            {
+                return false;
+            }
+
+            Log.WriteStructured(
+                LogGroup.Server,
+                "Ability activation interrupted: Activator={Activator} ActivationId={ActivationId} Ability={Ability} IsChanneled={IsChanneled}",
+                activator,
+                activation.ActivationId,
+                activation.Ability.Name,
+                activation.Ability.IsChanneled);
+
+            RemoveEffectByTag(activator, "ACTIVATION_VFX");
+            CancelActivationTargetingTelegraphs(activation.TelegraphIds);
+            if (GetIsPC(activator))
+                PlayerPlugin.StopGuiTimingBar(activator, string.Empty);
+
+            Messaging.SendMessageNearbyToPlayers(
+                activator,
+                receiver => $"{PlayerName.GetDisplayName(receiver, activator)}'s ability has been interrupted.");
+            SetLocalInt(activator, activation.ActivationId, (int)ActivationStatus.Interrupted);
+            Activity.ClearBusy(activator);
+
+            if (activation.Ability.IsChanneled)
+                activation.Ability.ChannelInterruptAction?.Invoke(activator);
+
+            _activeAbilityActivations.Remove(activator);
+            ResumeAttack(activator, activation.ResumeAttackTarget);
+            return true;
+        }
+
+        private static void ClearActiveAbilityActivation(uint activator, string activationId)
+        {
+            if (_activeAbilityActivations.TryGetValue(activator, out var activation) &&
+                activation.ActivationId == activationId)
+            {
+                _activeAbilityActivations.Remove(activator);
+            }
         }
 
         private static void ResumeAttackAfterDelay(uint activator, uint target, float delay, bool clearActions = true)
@@ -412,9 +476,9 @@ namespace SWLOR.Game.Server.Feature
             {
                 if (!GetIsPC(activator)) return;
 
-                // Completed abilities should no longer run.
+                // Completed and externally interrupted abilities should no longer run.
                 var status = GetLocalInt(activator, activationId);
-                if (status == (int)ActivationStatus.Completed || status == (int)ActivationStatus.Invalid) return;
+                if (status != (int)ActivationStatus.Started) return;
 
                 var currentPosition = GetPosition(activator);
 
@@ -422,23 +486,7 @@ namespace SWLOR.Game.Server.Feature
                     currentPosition.Y != originalPosition.Y ||
                     currentPosition.Z != originalPosition.Z)
                 {
-                    RemoveEffectByTag(activator, "ACTIVATION_VFX");
-                    CancelActivationTargetingTelegraphs(activationTelegraphIds);
-                    PlayerPlugin.StopGuiTimingBar(activator, string.Empty);
-                    Messaging.SendMessageNearbyToPlayers(
-                        activator,
-                        receiver => $"{PlayerName.GetDisplayName(receiver, activator)}'s ability has been interrupted.");
-                    SetLocalInt(activator, activationId, (int)ActivationStatus.Interrupted);
-
-                    // Release the activator immediately - the busy state must not linger for the
-                    // remainder of the activation delay.
-                    Activity.ClearBusy(activator);
-
-                    // Channeled abilities granted their effects at channel start; end them early.
-                    if (ability.IsChanneled)
-                        ability.ChannelInterruptAction?.Invoke(activator);
-
-                    ResumeAttack(activator, resumeAttackTarget);
+                    InterruptAbilityActivation(activator, activationId);
                     return;
                 }
 
@@ -450,6 +498,7 @@ namespace SWLOR.Game.Server.Feature
             {
                 void CancelActivation(bool resumeAttack)
                 {
+                    ClearActiveAbilityActivation(activator, activationId);
                     DeleteLocalInt(activator, activationId);
                     CancelActivationTargetingTelegraphs(activationTelegraphIds);
 
@@ -462,6 +511,7 @@ namespace SWLOR.Game.Server.Feature
                 // may have started a new activation since - don't clear that one's busy state.
                 if (GetLocalInt(activator, activationId) == (int)ActivationStatus.Interrupted)
                 {
+                    ClearActiveAbilityActivation(activator, activationId);
                     DeleteLocalInt(activator, activationId);
                     return;
                 }
@@ -522,6 +572,13 @@ namespace SWLOR.Game.Server.Feature
             var resumeAttackTarget = GetResumeAttackTarget(activator, target, ability);
             var activationTelegraphIds = ProcessAnimationAndVisualEffects(activationDelay);
             SetLocalInt(activator, activationId, (int)ActivationStatus.Started);
+            _activeAbilityActivations[activator] = new ActiveAbilityActivation
+            {
+                ActivationId = activationId,
+                Ability = ability,
+                TelegraphIds = activationTelegraphIds,
+                ResumeAttackTarget = resumeAttackTarget
+            };
             CheckForActivationInterruption(activationId, position, activationTelegraphIds, resumeAttackTarget);
 
             var executeImpact = ability.ActivationAction == null
@@ -530,6 +587,7 @@ namespace SWLOR.Game.Server.Feature
 
             if (executeImpact != true)
             {
+                ClearActiveAbilityActivation(activator, activationId);
                 DeleteLocalInt(activator, activationId);
                 CancelActivationTargetingTelegraphs(activationTelegraphIds);
                 ResumeAttack(activator, resumeAttackTarget);

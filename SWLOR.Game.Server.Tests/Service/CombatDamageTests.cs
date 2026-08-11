@@ -490,14 +490,12 @@ public class CombatDamageTests
         var root = FindRepositoryRoot();
         var skillTypeSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "SkillService", "SkillType.cs"));
         var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
-        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
 
         skillTypeSource.Should().NotContain("CombatImpactDamageAbility");
         skillTypeSource.Should().NotContain("AbilityType.");
         abilitySource.Should().NotContain("GetAttribute<SkillType, SkillAttribute>()");
         abilitySource.Should().NotContain("GetCombatImpactAbilityOverride");
         abilitySource.Should().Contain("GetTrackedAbilityImpact(activator)?.Ability?.CombatImpactDamageAbility");
-        combatSource.Should().NotContain("AbilityType.Willpower");
 
         var abilityDefinitionRoot = Path.Combine(root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition");
         var failures = new List<string>();

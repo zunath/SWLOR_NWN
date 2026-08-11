@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -51,6 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public Type ExtraDamageTargetStatusEffect { get; init; }
             public int ExtraDamageIfTargetStatusEffect { get; init; }
             public int ExtraDamageIfBehind { get; init; }
+            public string ExtraDamageIfBehindFeedbackLabel { get; init; }
             public Type ExtraDamageSourceStatusEffect { get; init; }
             public int ExtraDamageIfSourceStatusEffect { get; init; }
             public Type ExtraDamageSourceStackStatusEffect { get; init; }
@@ -246,7 +248,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 }
 
                 if (ExtraDamageIfBehind != 0 && Combat.IsTargetNotFacingAttacker(activator, target))
+                {
                     bonus += ExtraDamageIfBehind;
+                    if (GetIsPC(activator) && !string.IsNullOrWhiteSpace(ExtraDamageIfBehindFeedbackLabel))
+                    {
+                        FloatingTextStringOnCreature(
+                            ColorToken.Combat($"{ExtraDamageIfBehindFeedbackLabel} +{ExtraDamageIfBehind} DMG"),
+                            activator,
+                            false);
+                    }
+                }
 
                 if (ExtraDamageIfSourceStatusEffect != 0 &&
                     ExtraDamageSourceStatusEffect != null &&
@@ -344,7 +355,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public void AfterSuccessfulHit(uint activator, uint target, CombatDamageType damageType)
             {
                 if (ClearTargetActionsOnHit)
+                {
                     AssignCommand(target, () => ClearAllActions());
+                    UsePerkFeat.InterruptAbilityActivation(target);
+                }
 
                 if (RestoreStaminaOnHit > 0)
                     Stat.RestoreStamina(activator, RestoreStaminaOnHit);
@@ -388,16 +402,29 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 if (SourceStatusExtensionSeconds <= 0 || SourceStatusEffectsToExtend == null)
                     return;
 
+                var extendedCount = 0;
                 foreach (var statusEffectType in SourceStatusEffectsToExtend)
                 {
                     if (statusEffectType == null)
                         continue;
 
-                    StatusEffect.ExtendStatusEffectDuration(
+                    if (StatusEffect.ExtendStatusEffectDuration(
                         target,
                         statusEffectType,
                         activator,
-                        SourceStatusExtensionSeconds);
+                        SourceStatusExtensionSeconds))
+                    {
+                        extendedCount++;
+                    }
+                }
+
+                if (extendedCount > 0 && GetIsPC(activator))
+                {
+                    var statusLabel = extendedCount == 1 ? "status" : "statuses";
+                    FloatingTextStringOnCreature(
+                        ColorToken.Combat($"Extended {extendedCount} {statusLabel} by {SourceStatusExtensionSeconds}s"),
+                        activator,
+                        false);
                 }
             }
 

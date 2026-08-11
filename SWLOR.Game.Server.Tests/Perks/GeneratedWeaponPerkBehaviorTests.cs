@@ -670,7 +670,7 @@ public class GeneratedWeaponPerkBehaviorTests
         combatSource.Should().Contain("ApplyBleedingStatusExpiredEffects(uint source)");
         combatSource.Should().Contain("ApplyCostlyAbilityHitEffects(activator, target, ability, skillType)");
         combatSource.Should().Contain("ApplyDeflectionNearbyAllyGuard(creature, source)");
-        combatSource.Should().Contain("ApplyAbilityGrantedAttackDeflectionEffects(activator)");
+        combatSource.Should().Contain("ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.");
         combatSource.Should().Contain("ApplyTargetLowHPStatusDamageModifier(attacker, defender, damage)");
         combatSource.Should().Contain("ApplyDamageTakenShareToStatusSource(defender, attacker, damage, damageType)");
         combatSource.Should().Contain("IdleSkillAbilityCriticalDamagePercentAdjustment");

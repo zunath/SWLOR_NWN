@@ -602,7 +602,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 ReplaceTemporary(activator, StatType.ForceDefensePercentAdjustment, SelfForceDefensePercent, duration);
                 ReplaceTemporary(activator, StatType.RangedDeflection, SelfAttackDeflection, duration);
                 if (SelfAttackDeflection != 0)
-                    Combat.ApplyAbilityGrantedAttackDeflectionEffects(activator);
+                    Combat.ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.Ranged);
                 ReplaceTemporary(activator, StatType.CriticalRatePercentAdjustment, SelfCriticalRatePercent, duration);
             }
 

@@ -1692,7 +1692,7 @@ namespace SWLOR.Game.Server.Service
                 ? GetStatAdjustment(creatureId, staminaRestoreStat)
                 : 0;
             var fpRestore = GetDeflectionStatAdjustment(creatureId, StatType.DeflectionFPRestore, source);
-            var staminaRestorePercent = GetDeflectionStatAdjustment(creatureId, StatType.DeflectionStaminaRestorePercent, source);
+            var staminaRestorePercent = GetStatAdjustment(creatureId, StatType.DeflectionStaminaRestorePercent);
             var staminaRestoreCooldown = GetStatAdjustment(creatureId, staminaRestoreCooldownStat);
             var fpRestoreCooldown = GetStatAdjustment(creatureId, StatType.DeflectionFPRestoreCooldownSeconds);
             var evasionBoost = GetDeflectionStatAdjustment(creatureId, StatType.DeflectionEvasionPercentAdjustment, source);

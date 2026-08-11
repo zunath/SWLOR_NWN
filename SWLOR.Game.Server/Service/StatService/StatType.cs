@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Service.StatService
         DeflectionFPRestore = 9,
 
         /// <summary>
-        /// Percent of maximum Stamina restored when the creature successfully deflects an attack.
+        /// Percent of maximum Stamina restored after any successful melee, ranged, or shield deflection.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         DeflectionStaminaRestorePercent = 10,
@@ -4497,7 +4497,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// FP restored when an ability grants Ranged Deflection.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Ranged)]
         AbilityGrantedAttackDeflectionFPRestore = 782,
 
         /// <summary>

@@ -13,6 +13,9 @@ public class WeaponDeflectionTests
     {
         Stat.DefaultMeleeDeflectionChanceCap.Should().Be(50);
         Stat.DefaultRangedDeflectionChanceCap.Should().Be(50);
+        Stat.MaximumDeflectionChanceCap.Should().Be(100);
+        Stat.GetStatTypeDeflectionSource(StatType.AbilityGrantedAttackDeflectionFPRestore).Should().Be(DeflectionSource.Ranged);
+        Stat.GetStatTypeDeflectionSource(StatType.DeflectionStaminaRestorePercent).Should().Be(DeflectionSource.None);
         Stat.GetStatTypeDeflectionSource(StatType.DeflectionFPRestore).Should().Be(DeflectionSource.Ranged);
         Stat.GetStatTypeDeflectionSource(StatType.DeflectionEnmityPercentAdjustment).Should().Be(DeflectionSource.Ranged);
         Stat.GetStatTypeDeflectionSource(StatType.DeflectionRecastReductionSeconds).Should().Be(DeflectionSource.Shield);
@@ -31,12 +34,38 @@ public class WeaponDeflectionTests
         source.Should().Contain("Stat.GetMeleeDeflectionChanceNative(defender)");
         source.Should().Contain("Stat.ApplyDeflectionEffectsNative(defender, source)");
         source.Should().Contain("deflectionSource == DeflectionSource.Ranged");
-        source.Should().Contain("DeflectionSource.Melee => \"melee deflect\"");
-        source.Should().Contain("DeflectionSource.Ranged => \"ranged deflect\"");
-        source.Should().Contain("DeflectionSource.Shield => \"shield deflect\"");
+        source.Should().Contain("Combat.GetDeflectionResultName(source)");
+        source.Should().NotContain("private static string GetDeflectionName");
+
+        var combatSource = ReadSource("SWLOR.Game.Server", "Service", "Combat.cs");
+        combatSource.Should().Contain("DeflectionSource.Melee => \"melee deflect\"");
+        combatSource.Should().Contain("DeflectionSource.Ranged => \"ranged deflect\"");
+        combatSource.Should().Contain("DeflectionSource.Shield => \"shield deflect\"");
 
         source.IndexOf("var shieldDeflection = Stat.GetShieldDeflectionChanceNative(defender);", StringComparison.Ordinal)
             .Should().BeLessThan(source.IndexOf("Stat.GetRangedDeflectionChanceNative(defender)", StringComparison.Ordinal));
+    }
+
+    [Test]
+    public void DeflectionRiders_PreserveGenericStaminaRestoreAndFilterForceGyreToRanged()
+    {
+        var statSource = ReadSource("SWLOR.Game.Server", "Service", "Stat.cs");
+        var combatSource = ReadSource("SWLOR.Game.Server", "Service", "Combat.cs");
+        var abilitySource = ReadSource(
+            "SWLOR.Game.Server", "Feature", "AbilityDefinition", "WeaponActiveAbilityDefinitionBase.cs");
+
+        statSource.Should().Contain(
+            "GetStatAdjustment(creatureId, StatType.DeflectionStaminaRestorePercent)");
+        statSource.Should().NotContain(
+            "GetDeflectionStatAdjustment(creatureId, StatType.DeflectionStaminaRestorePercent, source)");
+        combatSource.Should().Contain(
+            "ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.Melee)");
+        combatSource.Should().Contain(
+            "ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.Ranged)");
+        combatSource.Should().Contain(
+            "Stat.GetStatTypeDeflectionSource(StatType.AbilityGrantedAttackDeflectionFPRestore) != source");
+        abilitySource.Should().Contain(
+            "Combat.ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.Ranged)");
     }
 
     [Test]

@@ -9136,11 +9136,14 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            ApplyAbilityGrantedAttackDeflectionEffects(activator);
+            ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.Melee);
         }
 
-        public static void ApplyAbilityGrantedAttackDeflectionEffects(uint activator)
+        public static void ApplyAbilityGrantedAttackDeflectionEffects(uint activator, DeflectionSource source)
         {
+            if (Stat.GetStatTypeDeflectionSource(StatType.AbilityGrantedAttackDeflectionFPRestore) != source)
+                return;
+
             var fpRestore = Stat.GetStatAdjustment(activator, StatType.AbilityGrantedAttackDeflectionFPRestore);
             var cooldown = Stat.GetStatAdjustment(activator, StatType.AbilityGrantedAttackDeflectionFPRestoreCooldownSeconds);
             if (fpRestore <= 0 || !TryUseStatTrigger(activator, StatType.AbilityGrantedAttackDeflectionFPRestore, cooldown))
@@ -9224,7 +9227,7 @@ namespace SWLOR.Game.Server.Service
                     deflection,
                     duration,
                     StatType.RangedDeflection);
-                ApplyAbilityGrantedAttackDeflectionEffects(activator);
+                ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.Ranged);
             }
         }
 
@@ -10067,7 +10070,7 @@ namespace SWLOR.Game.Server.Service
             return ColorToken.Combat($"{attackerName} attacks {defenderName}{type} : ({chanceToHit}% chance to hit)");
         }
 
-        private static string GetDeflectionResultName(DeflectionSource source)
+        internal static string GetDeflectionResultName(DeflectionSource source)
         {
             return source switch
             {

@@ -496,7 +496,7 @@ namespace SWLOR.Game.Server.Native
             }
 
             var feedbackString = deflected ? "*success*" : "*failure*";
-            var deflectionName = GetDeflectionName(source);
+            var deflectionName = Combat.GetDeflectionResultName(source);
 
             attacker.SendFeedbackString(new CExoString(BuildDeflectionFeedback(attacker.m_idSelf, attacker, defender, deflectionName, feedbackString)));
             defender.SendFeedbackString(new CExoString(BuildDeflectionFeedback(defender.m_idSelf, attacker, defender, deflectionName, feedbackString)));
@@ -532,17 +532,6 @@ namespace SWLOR.Game.Server.Native
                 return (DeflectionSource.Melee, meleeDeflection);
 
             return (DeflectionSource.None, 0);
-        }
-
-        private static string GetDeflectionName(DeflectionSource source)
-        {
-            return source switch
-            {
-                DeflectionSource.Melee => "melee deflect",
-                DeflectionSource.Ranged => "ranged deflect",
-                DeflectionSource.Shield => "shield deflect",
-                _ => "deflect"
-            };
         }
 
         private static int CalculateCriticalRateModifier(CNWSCreature attacker, CNWSCreature defender, SkillType skillType)

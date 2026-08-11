@@ -7627,7 +7627,15 @@ namespace SWLOR.Game.Server.Service
             AbilityType statOverride = AbilityType.Invalid)
         {
             var weapon = GetRelevantSkillWeapon(attacker, skillType);
-            var accuracy = Stat.GetAccuracy(attacker, weapon, statOverride, skillType, skillLevelOverride);
+            var usesForceAccuracy = skillType == SkillType.Force;
+            var accuracyStatOverride = usesForceAccuracy ? AbilityType.Willpower : statOverride;
+            var accuracy = Stat.GetAccuracy(
+                attacker,
+                weapon,
+                accuracyStatOverride,
+                skillType,
+                skillLevelOverride,
+                ignoreWeaponAccuracyStatOverride: usesForceAccuracy);
             return ApplyStatusSourceAccuracyModifiers(attacker, defender, accuracy);
         }
 

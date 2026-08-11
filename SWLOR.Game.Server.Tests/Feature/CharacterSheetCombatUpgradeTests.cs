@@ -1,5 +1,10 @@
+using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Game.Server.Service;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -32,11 +37,74 @@ public class CharacterSheetCombatUpgradeTests
 
         definition.Should().Contain("\"Physical DEF\", model => model.PhysicalDefense");
         definition.Should().Contain("\"Force DEF\", model => model.ForceDefense");
+        definition.Should().Contain("\"Weapon Acc.\", model => model.WeaponAccuracy");
+        definition.Should().Contain("\"Force Acc.\", model => model.ForceAccuracy");
+        viewModel.Should().Contain("public int WeaponAccuracy");
+        viewModel.Should().Contain("public int ForceAccuracy");
+        viewModel.Should().Contain("WeaponAccuracy = Stat.GetAccuracy(_target, mainHand, accuracyStatOverride, SkillType.Invalid);");
+        viewModel.Should().Contain("ignoreWeaponAccuracyStatOverride: true");
         definition.Should().Contain("\"TYPE\", 90f, \"Resistance family.\"");
         definition.Should().Contain("model => model.ResistanceNames");
         definition.Should().Contain("model => model.ResistanceScores");
         definition.Should().Contain("model => model.ResistanceDamageTaken");
         definition.Should().Contain("model => model.ResistanceStatusDurations");
+    }
+
+    [Test]
+    public void AccuracyWeaponSelection_UsesMainHandWithOffHandFallback()
+    {
+        var selectWeapon = typeof(CharacterSheetViewModel).GetMethod(
+            "SelectForceAccuracyWeapon",
+            BindingFlags.NonPublic | BindingFlags.Static);
+
+        selectWeapon.Should().NotBeNull();
+        ((uint)selectWeapon!.Invoke(null, new object[] { 11u, 22u, true })!).Should().Be(11u);
+        ((uint)selectWeapon.Invoke(null, new object[] { 11u, 22u, false })!).Should().Be(22u);
+    }
+
+    [Test]
+    public void ForceAccuracy_IgnoresWeaponStatOverrideButRetainsWeaponAccuracyBonus()
+    {
+        var applyItemProperty = typeof(Stat).GetMethod(
+            "ApplyAccuracyItemProperty",
+            BindingFlags.NonPublic | BindingFlags.Static);
+
+        applyItemProperty.Should().NotBeNull();
+
+        var weaponStatOverride = ((AbilityType StatOverride, int AccuracyBonus))applyItemProperty!.Invoke(
+            null,
+            new object[] { AbilityType.Willpower, 7, ItemPropertyType.AccuracyStat, (int)AbilityType.Agility, false })!;
+        weaponStatOverride.Should().Be((AbilityType.Agility, 7));
+
+        var forceStatOverride = ((AbilityType StatOverride, int AccuracyBonus))applyItemProperty.Invoke(
+            null,
+            new object[] { AbilityType.Willpower, 7, ItemPropertyType.AccuracyStat, (int)AbilityType.Agility, true })!;
+        forceStatOverride.Should().Be((AbilityType.Willpower, 7));
+
+        var forceAccuracyBonus = ((AbilityType StatOverride, int AccuracyBonus))applyItemProperty.Invoke(
+            null,
+            new object[] { AbilityType.Willpower, 7, ItemPropertyType.AccuracyBonus, 4, true })!;
+        forceAccuracyBonus.Should().Be((AbilityType.Willpower, 11));
+
+        var forceEnhancementBonus = ((AbilityType StatOverride, int AccuracyBonus))applyItemProperty.Invoke(
+            null,
+            new object[] { AbilityType.Willpower, 7, ItemPropertyType.EnhancementBonus, 5, true })!;
+        forceEnhancementBonus.Should().Be((AbilityType.Willpower, 12));
+    }
+
+    [Test]
+    public void ForceHitChecks_UseTheSameWillpowerAccuracyModeAsTheCharacterSheet()
+    {
+        var combat = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot().FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Combat.cs"));
+        var method = ExtractMethod(combat, "private static int GetAbilityAccuracy(");
+
+        method.Should().Contain("var usesForceAccuracy = skillType == SkillType.Force;");
+        method.Should().Contain("usesForceAccuracy ? AbilityType.Willpower : statOverride");
+        method.Should().Contain("ignoreWeaponAccuracyStatOverride: usesForceAccuracy");
     }
 
     [Test]

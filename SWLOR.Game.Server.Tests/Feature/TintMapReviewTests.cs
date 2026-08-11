@@ -1458,20 +1458,49 @@ public class TintMapReviewTests
     }
 
     [Test]
-    public void ScriptedPaletteCoordinateUsesSignToSelectCustomRgb()
+    public void TintLayersUseDedicatedScalarCustomModeUniforms()
     {
-        var preset = TintMapMaterialRegistry.GetScriptedPaletteCoordinate(
-            TintMapLayerType.Skin,
-            42,
-            false);
-        var custom = TintMapMaterialRegistry.GetScriptedPaletteCoordinate(
-            TintMapLayerType.Skin,
-            42,
-            true);
+        var expectedUniforms = new Dictionary<TintMapLayerType, string>
+        {
+            [TintMapLayerType.Skin] = "useCustomSkin",
+            [TintMapLayerType.Hair] = "useCustomHair",
+            [TintMapLayerType.Metal1] = "useCustomMetal1",
+            [TintMapLayerType.Metal2] = "useCustomMetal2",
+            [TintMapLayerType.Cloth1] = "useCustomCloth1",
+            [TintMapLayerType.Cloth2] = "useCustomCloth2",
+            [TintMapLayerType.Leather1] = "useCustomLeath1",
+            [TintMapLayerType.Leather2] = "useCustomLeath2",
+            [TintMapLayerType.Tattoo1] = "useCustomTat1",
+            [TintMapLayerType.Tattoo2] = "useCustomTat2"
+        };
 
-        preset.Should().BePositive();
-        custom.Should().BeNegative();
-        Math.Abs(custom).Should().Be(preset);
+        foreach (var (layer, uniformName) in expectedUniforms)
+        {
+            TintMapMaterialRegistry.GetLayer(layer).CustomModeUniformName.Should().Be(uniformName);
+            TintMapMaterialRegistry.GetPaletteCoordinate(layer, 42).Should().BePositive();
+        }
+    }
+
+    [Test]
+    public void ApplyingAColorWritesRgbAndAnIndependentCustomModeScalar()
+    {
+        var serviceSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapService.cs");
+        var applyColor = FindMethod(serviceSource, "ApplyColor");
+        var materialWrites = applyColor.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Where(invocation =>
+                invocation.Expression.ToString() == "SetMaterialShaderUniformVec4")
+            .ToList();
+
+        materialWrites.Should().HaveCount(3);
+        applyColor.ToString().Should().Contain("layerDefinition.ColorUniformName");
+        applyColor.ToString().Should().Contain("layerDefinition.CustomModeUniformName");
+        applyColor.ToString().Should().Contain("customColor.HasValue ? 1f : 0f");
     }
 
     [Test]

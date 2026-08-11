@@ -18,16 +18,16 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
         private static readonly Dictionary<TintMapLayerType, TintMapLayerDefinition> LayerDefinitions = new()
         {
-            { TintMapLayerType.Skin, new TintMapLayerDefinition("Skin", "rowSkin", "tintSkin", "gui_pal_skin", 0) },
-            { TintMapLayerType.Hair, new TintMapLayerDefinition("Hair", "rowHair", "tintHair", "gui_pal_hair01", 176) },
-            { TintMapLayerType.Metal1, new TintMapLayerDefinition("Metal 1", "rowMetal1", "tintMetal1", "gui_pal_armor01", 352) },
-            { TintMapLayerType.Metal2, new TintMapLayerDefinition("Metal 2", "rowMetal2", "tintMetal2", "gui_pal_armor01", 528) },
-            { TintMapLayerType.Cloth1, new TintMapLayerDefinition("Cloth 1", "rowCloth1", "tintCloth1", "gui_pal_tattoo", 704) },
-            { TintMapLayerType.Cloth2, new TintMapLayerDefinition("Cloth 2", "rowCloth2", "tintCloth2", "gui_pal_tattoo", 704) },
-            { TintMapLayerType.Leather1, new TintMapLayerDefinition("Leather 1", "rowLeath1", "tintLeath1", "gui_pal_tattoo", 880) },
-            { TintMapLayerType.Leather2, new TintMapLayerDefinition("Leather 2", "rowLeath2", "tintLeath2", "gui_pal_tattoo", 880) },
-            { TintMapLayerType.Tattoo1, new TintMapLayerDefinition("Tattoo 1", "rowTat1", "tintTat1", "gui_pal_tattoo", 1056) },
-            { TintMapLayerType.Tattoo2, new TintMapLayerDefinition("Tattoo 2", "rowTat2", "tintTat2", "gui_pal_tattoo", 1056) }
+            { TintMapLayerType.Skin, new TintMapLayerDefinition("Skin", "rowSkin", "tintSkin", "useCustomSkin", "gui_pal_skin", 0) },
+            { TintMapLayerType.Hair, new TintMapLayerDefinition("Hair", "rowHair", "tintHair", "useCustomHair", "gui_pal_hair01", 176) },
+            { TintMapLayerType.Metal1, new TintMapLayerDefinition("Metal 1", "rowMetal1", "tintMetal1", "useCustomMetal1", "gui_pal_armor01", 352) },
+            { TintMapLayerType.Metal2, new TintMapLayerDefinition("Metal 2", "rowMetal2", "tintMetal2", "useCustomMetal2", "gui_pal_armor01", 528) },
+            { TintMapLayerType.Cloth1, new TintMapLayerDefinition("Cloth 1", "rowCloth1", "tintCloth1", "useCustomCloth1", "gui_pal_tattoo", 704) },
+            { TintMapLayerType.Cloth2, new TintMapLayerDefinition("Cloth 2", "rowCloth2", "tintCloth2", "useCustomCloth2", "gui_pal_tattoo", 704) },
+            { TintMapLayerType.Leather1, new TintMapLayerDefinition("Leather 1", "rowLeath1", "tintLeath1", "useCustomLeath1", "gui_pal_tattoo", 880) },
+            { TintMapLayerType.Leather2, new TintMapLayerDefinition("Leather 2", "rowLeath2", "tintLeath2", "useCustomLeath2", "gui_pal_tattoo", 880) },
+            { TintMapLayerType.Tattoo1, new TintMapLayerDefinition("Tattoo 1", "rowTat1", "tintTat1", "useCustomTat1", "gui_pal_tattoo", 1056) },
+            { TintMapLayerType.Tattoo2, new TintMapLayerDefinition("Tattoo 2", "rowTat2", "tintTat2", "useCustomTat2", "gui_pal_tattoo", 1056) }
         };
 
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
@@ -127,13 +127,5 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             return (definition.PaletteBaseRow + colorId + 0.5f) / PaletteTextureHeight;
         }
 
-        public static float GetScriptedPaletteCoordinate(
-            TintMapLayerType layer,
-            int colorId,
-            bool useCustomColor)
-        {
-            var coordinate = GetPaletteCoordinate(layer, colorId);
-            return useCustomColor ? -coordinate : coordinate;
-        }
     }
 }

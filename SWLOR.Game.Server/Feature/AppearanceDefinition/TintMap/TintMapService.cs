@@ -1017,20 +1017,11 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             TintMapColorSelection color)
         {
             var layerDefinition = TintMapMaterialRegistry.GetLayer(layer);
-            // NWN's material-uniform override path is reliable for scalar parameters but some
-            // clients do not retain the fourth component of a scripted vec4 override. Encode
-            // the custom/preset mode in the sign of the already-scriptable palette coordinate
-            // instead of depending on tint*.a. Palette coordinates are always positive, so the
-            // shader can recover the original row with abs() without sacrificing a palette row.
-            var scriptedPaletteCoordinate = TintMapMaterialRegistry.GetScriptedPaletteCoordinate(
-                layer,
-                color.PaletteColorId,
-                color.CustomColor.HasValue);
             SetMaterialShaderUniformVec4(
                 creature,
                 selection.Material.Resref,
                 layerDefinition.UniformName,
-                scriptedPaletteCoordinate);
+                TintMapMaterialRegistry.GetPaletteCoordinate(layer, color.PaletteColorId));
             var customColor = color.CustomColor;
             SetMaterialShaderUniformVec4(
                 creature,
@@ -1039,6 +1030,14 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 (customColor?.Red ?? 0) / 255f,
                 (customColor?.Green ?? 0) / 255f,
                 (customColor?.Blue ?? 0) / 255f,
+                customColor.HasValue ? 1f : 0f);
+            // Use a dedicated scalar for custom/preset selection. Scripted scalar material
+            // overrides are retained reliably by NWN, while neither a vec4's fourth component
+            // nor an overloaded negative palette coordinate survives on every supported client.
+            SetMaterialShaderUniformVec4(
+                creature,
+                selection.Material.Resref,
+                layerDefinition.CustomModeUniformName,
                 customColor.HasValue ? 1f : 0f);
         }
 

@@ -5,6 +5,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         public string Name { get; }
         public string UniformName { get; }
         public string ColorUniformName { get; }
+        public string CustomModeUniformName { get; }
         public string PaletteResref { get; }
         public int PaletteBaseRow { get; }
 
@@ -12,12 +13,14 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             string name,
             string uniformName,
             string colorUniformName,
+            string customModeUniformName,
             string paletteResref,
             int paletteBaseRow)
         {
             Name = name;
             UniformName = uniformName;
             ColorUniformName = colorUniformName;
+            CustomModeUniformName = customModeUniformName;
             PaletteResref = paletteResref;
             PaletteBaseRow = paletteBaseRow;
         }

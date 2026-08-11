@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AIService;
@@ -516,6 +517,44 @@ public class AIModelTests
         pendingAttackBody.IndexOf("TryCancelAttackForCombatLeash(pCreature, pNode, oidTarget)", StringComparison.Ordinal)
             .Should()
             .BeLessThan(pendingAttackBody.IndexOf("pCreature.ResolveAttack(oidTarget, nAttacks, nTimeAnimation);", StringComparison.Ordinal));
+    }
+
+    [TestCase(false, false, true)]
+    [TestCase(false, true, false)]
+    [TestCase(true, false, false)]
+    [TestCase(true, true, false)]
+    public void NativeAttackAction_OnlyMeleeAttackersInsideMaximumRangeCloseToPersonalSpace(
+        bool isOutsideAttackRange,
+        bool hasRangedWeapon,
+        bool expected)
+    {
+        var method = typeof(OnAIActionAttackObject).GetMethod(
+            "ShouldUsePersonalSpaceForBlockedLineOfAttack",
+            BindingFlags.Static | BindingFlags.NonPublic);
+
+        method.Should().NotBeNull();
+        method!.Invoke(null, new object[] { isOutsideAttackRange, hasRangedWeapon })
+            .Should()
+            .Be(expected);
+    }
+
+    [Test]
+    public void NativeAttackAction_BlockedRangedLinePreservesDesiredAttackRange()
+    {
+        var source = ReadSource("SWLOR.Game.Server", "Native", "OnAIActionAttackObject.cs")
+            .Replace("\r\n", "\n");
+        var movementStart = source.IndexOf(
+            "var fMoveToTargetRange = fDesiredAttackRange;",
+            StringComparison.Ordinal);
+        var movementBody = source.Substring(
+            movementStart,
+            source.IndexOf("var bRunToTarget = true;", movementStart, StringComparison.Ordinal) - movementStart);
+
+        movementBody.Should().Contain(
+            "ShouldUsePersonalSpaceForBlockedLineOfAttack(\n                                    bOutsideAttackRange,\n                                    pCreature.GetRangeWeaponEquipped() == 1)");
+        movementBody.Should().Contain(
+            "fMoveToTargetRange = pCreature.m_pcPathfindInformation.m_fCreaturePersonalSpace;");
+        movementBody.Should().NotContain("if (!bOutsideAttackRange)");
     }
 
     [Test]

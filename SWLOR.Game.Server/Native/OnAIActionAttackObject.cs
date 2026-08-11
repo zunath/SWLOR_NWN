@@ -294,7 +294,9 @@ namespace SWLOR.Game.Server.Native
 
                         if (bClearLineOfAttack == 0)
                         {
-                            if (!bOutsideAttackRange)
+                            if (ShouldUsePersonalSpaceForBlockedLineOfAttack(
+                                    bOutsideAttackRange,
+                                    pCreature.GetRangeWeaponEquipped() == 1))
                             {
                                 if (pTarget.AsNWSCreature() != null)
                                 {
@@ -667,6 +669,13 @@ namespace SWLOR.Game.Server.Native
 
                 return ACTION_IN_PROGRESS;
             });
+        }
+
+        private static bool ShouldUsePersonalSpaceForBlockedLineOfAttack(
+            bool isOutsideAttackRange,
+            bool hasRangedWeapon)
+        {
+            return !isOutsideAttackRange && !hasRangedWeapon;
         }
 
         private static bool TryCancelAttackForCombatLeash(CNWSCreature pCreature, CNWSObjectActionNode pNode, uint target)

@@ -3590,7 +3590,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Cooldown in seconds for DeflectionFPRestore.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, deflectionSource: DeflectionSource.Ranged)]
         DeflectionFPRestoreCooldownSeconds = 627,
 
         /// <summary>
@@ -4503,7 +4503,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Cooldown in seconds for AbilityGrantedAttackDeflectionFPRestore.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, deflectionSource: DeflectionSource.Ranged)]
         AbilityGrantedAttackDeflectionFPRestoreCooldownSeconds = 783,
 
         /// <summary>

@@ -20,9 +20,11 @@ public class WeaponDeflectionTests
         Stat.GetStatTypeDeflectionSource(StatType.RangedDeflectionChanceCap).Should().Be(DeflectionSource.Ranged);
         Stat.GetStatTypeDeflectionSource(StatType.ShieldDeflection).Should().Be(DeflectionSource.Shield);
         Stat.GetStatTypeDeflectionSource(StatType.AbilityGrantedAttackDeflectionFPRestore).Should().Be(DeflectionSource.Ranged);
+        Stat.GetStatTypeDeflectionSource(StatType.AbilityGrantedAttackDeflectionFPRestoreCooldownSeconds).Should().Be(DeflectionSource.Ranged);
         Stat.GetStatTypeDeflectionSource(StatType.DeflectionStaminaRestorePercent).Should().Be(DeflectionSource.None);
         Stat.GetStatTypeDeflectionSource(StatType.MeleeDeflectionFPRestore).Should().Be(DeflectionSource.Melee);
         Stat.GetStatTypeDeflectionSource(StatType.DeflectionFPRestore).Should().Be(DeflectionSource.Ranged);
+        Stat.GetStatTypeDeflectionSource(StatType.DeflectionFPRestoreCooldownSeconds).Should().Be(DeflectionSource.Ranged);
         Stat.GetStatTypeDeflectionSource(StatType.DeflectionEnmityPercentAdjustment).Should().Be(DeflectionSource.Ranged);
         Stat.GetStatTypeDeflectionSource(StatType.DeflectionRecastReductionSeconds).Should().Be(DeflectionSource.Shield);
         Stat.GetStatTypeDeflectionSource(StatType.DeflectionNearbyAllyGuard).Should().Be(DeflectionSource.Melee);

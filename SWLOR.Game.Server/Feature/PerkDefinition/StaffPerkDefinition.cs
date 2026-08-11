@@ -264,7 +264,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SentinelGuardTrait)
-                .Description("Staff Sentinel protection abilities grant allies within 5m +8 Attack Deflection for 30 seconds and grant you +20% Enmity for 30 seconds.")
+                .Description("Staff Sentinel protection abilities grant allies within 5m +8 Melee Deflection for 30 seconds and grant you +20% Enmity for 30 seconds.")
                 .IncreasesStat(StatType.AbilityUsedPerkCategoryNearbyAllyAttackDeflectionCategoryId, (int)PerkCategoryType.StaffSentinel)
                 .IncreasesStat(StatType.AbilityUsedPerkCategoryNearbyAllyAttackDeflection, 8)
                 .IncreasesStat(StatType.AbilityUsedPerkCategoryNearbyAllyAttackDeflectionDurationSeconds, 30)
@@ -280,7 +280,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.StaffParryTrait)
-                .Description("After using a hostile Staff ability, gain +4 Attack Deflection for 30 seconds.")
+                .Description("After using a hostile Staff ability, gain +4 Melee Deflection for 30 seconds.")
                 .IncreasesStat(StatType.AbilityUsedAttackDeflectionSkillType, (int)SkillType.Staff)
                 .IncreasesStat(StatType.AbilityUsedAttackDeflection, 4)
                 .IncreasesStat(StatType.AbilityUsedAttackDeflectionDurationSeconds, 30)
@@ -288,7 +288,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Staff, 8)
 
                 .AddPerkLevel()
-                .Description("After using a hostile Staff ability, gain +6 Attack Deflection for 30 seconds.")
+                .Description("After using a hostile Staff ability, gain +6 Melee Deflection for 30 seconds.")
                 .IncreasesStat(StatType.AbilityUsedAttackDeflectionSkillType, (int)SkillType.Staff)
                 .IncreasesStat(StatType.AbilityUsedAttackDeflection, 6)
                 .IncreasesStat(StatType.AbilityUsedAttackDeflectionDurationSeconds, 30)
@@ -296,7 +296,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Staff, 22)
 
                 .AddPerkLevel()
-                .Description("After using a hostile Staff ability, gain +8 Attack Deflection for 30 seconds.")
+                .Description("After using a hostile Staff ability, gain +8 Melee Deflection for 30 seconds.")
                 .IncreasesStat(StatType.AbilityUsedAttackDeflectionSkillType, (int)SkillType.Staff)
                 .IncreasesStat(StatType.AbilityUsedAttackDeflection, 8)
                 .IncreasesStat(StatType.AbilityUsedAttackDeflectionDurationSeconds, 30)
@@ -365,7 +365,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SentinelStance1)
-                .Description("While active, grants +15% Evasion and +8 Attack Deflection, but Attack is reduced by 15%.")
+                .Description("While active, grants +15% Evasion and +8 Melee Deflection, but Attack is reduced by 15%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 20);
         }
@@ -420,7 +420,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.UnmovingCenter1)
-                .Description("For 45 seconds, you cannot be Knocked down or Dazed, gain +20 Attack Deflection, and generate +30% Enmity.")
+                .Description("For 45 seconds, you cannot be Knocked down or Dazed, gain +20 Melee Deflection, and generate +30% Enmity.")
                 .Price(6)
                 .RequirementSkill(SkillType.Staff, 50)
                 .RequirementQuest(StaffCapstoneQuestDefinition.UnmovingCenterMasteryQuestId);

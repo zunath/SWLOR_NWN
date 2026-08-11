@@ -306,7 +306,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DeflectingReturnTrait)
-                .Description("When you deflect a directly targeted ranged attack, reflect 8% of the attack's damage back to its source, up to 25% of your normal weapon damage. Triggers at most once every 6 seconds.")
+                .Description("Gain +4 Ranged Deflection. When your Ranged Deflection negates a directly targeted ranged weapon auto-attack, reflect 8% of the attack's damage back to its source, up to 25% of your normal weapon damage. Triggers at most once every 6 seconds.")
+                .IncreasesStat(StatType.RangedDeflection, 4)
                 .IncreasesStat(StatType.RangedDeflectionReflectionPercent, 8)
                 .IncreasesStat(StatType.RangedDeflectionReflectionCapPercent, 25)
                 .Price(2)
@@ -314,7 +315,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
-                .Description("When you deflect a directly targeted ranged attack, reflect 12% of the attack's damage back to its source, up to 40% of your normal weapon damage. Triggers at most once every 6 seconds.")
+                .Description("Gain +6 Ranged Deflection. When your Ranged Deflection negates a directly targeted ranged weapon auto-attack, reflect 12% of the attack's damage back to its source, up to 40% of your normal weapon damage. Triggers at most once every 6 seconds.")
+                .IncreasesStat(StatType.RangedDeflection, 6)
                 .IncreasesStat(StatType.RangedDeflectionReflectionPercent, 12)
                 .IncreasesStat(StatType.RangedDeflectionReflectionCapPercent, 40)
                 .Price(4)
@@ -322,7 +324,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
-                .Description("When you deflect a directly targeted ranged attack, reflect 16% of the attack's damage back to its source, up to 50% of your normal weapon damage. Triggers at most once every 6 seconds.")
+                .Description("Gain +8 Ranged Deflection. When your Ranged Deflection negates a directly targeted ranged weapon auto-attack, reflect 16% of the attack's damage back to its source, up to 50% of your normal weapon damage. Triggers at most once every 6 seconds.")
+                .IncreasesStat(StatType.RangedDeflection, 8)
                 .IncreasesStat(StatType.RangedDeflectionReflectionPercent, 16)
                 .IncreasesStat(StatType.RangedDeflectionReflectionCapPercent, 50)
                 .Price(4)

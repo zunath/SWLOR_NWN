@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     public sealed class GuardedChannelStatusEffect : StatusEffectBase
     {
-        private readonly int _attackDeflection;
+        private readonly int _rangedDeflection;
         private readonly int _forceDefensePercent;
 
         public override string Name => "Guarded Channel";
@@ -16,18 +16,18 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
         }
 
-        public GuardedChannelStatusEffect(int attackDeflection, int forceDefensePercent)
+        public GuardedChannelStatusEffect(int rangedDeflection, int forceDefensePercent)
         {
-            _attackDeflection = attackDeflection;
+            _rangedDeflection = rangedDeflection;
             _forceDefensePercent = forceDefensePercent;
 
             StatGroup.Stats[StatType.ForceDefensePercentAdjustment] = forceDefensePercent;
-            StatGroup.Stats[StatType.AttackDeflection] = attackDeflection;
+            StatGroup.Stats[StatType.RangedDeflection] = rangedDeflection;
         }
 
         public override IStatusEffect Clone()
         {
-            return new GuardedChannelStatusEffect(_attackDeflection, _forceDefensePercent);
+            return new GuardedChannelStatusEffect(_rangedDeflection, _forceDefensePercent);
         }
     }
 }

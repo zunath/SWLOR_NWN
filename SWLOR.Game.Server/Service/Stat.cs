@@ -32,7 +32,8 @@ namespace SWLOR.Game.Server.Service
         private const float DefaultPlayerMovementSpeedIncrease = 0.25f;
         private const float DefaultCompanionMovementSpeedIncrease = 0.25f;
         private const float DefaultNPCMovementSpeedIncrease = 0.30f;
-        public const int DefaultAttackDeflectionChanceCap = 50;
+        public const int DefaultMeleeDeflectionChanceCap = 50;
+        public const int DefaultRangedDeflectionChanceCap = 50;
         public const int MaximumDeflectionChanceCap = 100;
         public const int MaximumShieldDeflectionChance = 75;
         public const int MaximumGuardChance = 100;
@@ -67,6 +68,26 @@ namespace SWLOR.Game.Server.Service
             return _statTypeAttributes.TryGetValue(statType, out var attribute)
                 ? attribute.Aggregation
                 : StatTypeAggregation.Additive;
+        }
+
+        public static DeflectionSource GetStatTypeDeflectionSource(StatType statType)
+        {
+            EnsureStatTypeAttributesCached();
+
+            return _statTypeAttributes.TryGetValue(statType, out var attribute)
+                ? attribute.DeflectionSource
+                : DeflectionSource.None;
+        }
+
+        public static StatType GetGrantedDeflectionStatType(StatType sourceStatType)
+        {
+            return GetStatTypeDeflectionSource(sourceStatType) switch
+            {
+                DeflectionSource.Melee => StatType.MeleeDeflection,
+                DeflectionSource.Ranged => StatType.RangedDeflection,
+                DeflectionSource.Shield => StatType.ShieldDeflection,
+                _ => StatType.Invalid
+            };
         }
 
         public static int AggregateStatAdjustment(StatType statType, int current, int adjustment)
@@ -1604,22 +1625,40 @@ namespace SWLOR.Game.Server.Service
             return ApplyPostEvasionStatusModifiers(creature.m_idSelf, evasion, incomingSkillType);
         }
 
-        public static int GetAttackDeflectionChanceNative(CNWSCreature creature)
+        public static int GetMeleeDeflectionChanceNative(CNWSCreature creature)
         {
-            if (!HasWeaponEquippedForAttackDeflectionNative(creature) || HasShieldEquippedNative(creature))
+            if (!HasWeaponEquippedForWeaponDeflectionNative(creature) || HasShieldEquippedNative(creature))
                 return 0;
 
-            var chance = GetStatAdjustment(creature.m_idSelf, StatType.AttackDeflection);
-            return Math.Clamp(chance, 0, GetAttackDeflectionChanceCap(creature.m_idSelf));
+            var chance = GetStatAdjustment(creature.m_idSelf, StatType.MeleeDeflection);
+            return Math.Clamp(chance, 0, GetMeleeDeflectionChanceCap(creature.m_idSelf));
         }
 
-        public static int GetAttackDeflectionChance(uint creature)
+        public static int GetMeleeDeflectionChance(uint creature)
         {
-            if (!HasWeaponEquippedForAttackDeflection(creature) || HasShieldEquipped(creature))
+            if (!HasWeaponEquippedForWeaponDeflection(creature) || HasShieldEquipped(creature))
                 return 0;
 
-            var chance = GetStatAdjustment(creature, StatType.AttackDeflection);
-            return Math.Clamp(chance, 0, GetAttackDeflectionChanceCap(creature));
+            var chance = GetStatAdjustment(creature, StatType.MeleeDeflection);
+            return Math.Clamp(chance, 0, GetMeleeDeflectionChanceCap(creature));
+        }
+
+        public static int GetRangedDeflectionChanceNative(CNWSCreature creature)
+        {
+            if (!HasWeaponEquippedForWeaponDeflectionNative(creature) || HasShieldEquippedNative(creature))
+                return 0;
+
+            var chance = GetStatAdjustment(creature.m_idSelf, StatType.RangedDeflection);
+            return Math.Clamp(chance, 0, GetRangedDeflectionChanceCap(creature.m_idSelf));
+        }
+
+        public static int GetRangedDeflectionChance(uint creature)
+        {
+            if (!HasWeaponEquippedForWeaponDeflection(creature) || HasShieldEquipped(creature))
+                return 0;
+
+            var chance = GetStatAdjustment(creature, StatType.RangedDeflection);
+            return Math.Clamp(chance, 0, GetRangedDeflectionChanceCap(creature));
         }
 
         public static int GetShieldDeflectionChanceNative(CNWSCreature creature)
@@ -1649,48 +1688,75 @@ namespace SWLOR.Game.Server.Service
             return Math.Clamp(GetStatAdjustment(creature, StatType.Guard), 0, MaximumGuardChance);
         }
 
-        public static void ApplyDeflectionEffectsNative(CNWSCreature creature)
+        public static void ApplyDeflectionEffectsNative(CNWSCreature creature, DeflectionSource source)
         {
             var creatureId = creature.m_idSelf;
-            Combat.TrackDeflection(creatureId);
+            Combat.TrackDeflection(creatureId, source);
 
-            var staminaRestore = GetStatAdjustment(creatureId, StatType.DeflectionStaminaRestore);
-            var fpRestore = GetStatAdjustment(creatureId, StatType.DeflectionFPRestore);
+            var staminaRestoreStat = GetDeflectionStatTypeForSource(
+                source,
+                StatType.MeleeDeflectionStaminaRestore,
+                StatType.ShieldDeflectionStaminaRestore);
+            var staminaRestoreCooldownStat = GetDeflectionStatTypeForSource(
+                source,
+                StatType.MeleeDeflectionStaminaRestoreCooldownSeconds,
+                StatType.ShieldDeflectionStaminaRestoreCooldownSeconds);
+            var staminaRestore = staminaRestoreStat != StatType.Invalid
+                ? GetStatAdjustment(creatureId, staminaRestoreStat)
+                : 0;
+            var fpRestoreStat = GetDeflectionStatTypeForSource(
+                source,
+                StatType.MeleeDeflectionFPRestore,
+                StatType.DeflectionFPRestore);
+            var fpRestore = fpRestoreStat != StatType.Invalid
+                ? GetStatAdjustment(creatureId, fpRestoreStat)
+                : 0;
+            var fpRestoreCooldownStat = GetDeflectionStatTypeForSource(
+                source,
+                StatType.MeleeDeflectionFPRestoreCooldownSeconds,
+                StatType.DeflectionFPRestoreCooldownSeconds);
             var staminaRestorePercent = GetStatAdjustment(creatureId, StatType.DeflectionStaminaRestorePercent);
-            var staminaRestoreCooldown = GetStatAdjustment(creatureId, StatType.DeflectionStaminaRestoreCooldownSeconds);
-            var fpRestoreCooldown = GetStatAdjustment(creatureId, StatType.DeflectionFPRestoreCooldownSeconds);
-            var evasionBoost = GetStatAdjustment(creatureId, StatType.DeflectionEvasionPercentAdjustment);
-            var evasionEnmityBoost = GetStatAdjustment(creatureId, StatType.DeflectionEvasionEnmityPercentAdjustment);
-            var enmityBoost = GetStatAdjustment(creatureId, StatType.DeflectionEnmityPercentAdjustment);
-            var defenseBoost = GetStatAdjustment(creatureId, StatType.DeflectionDefensePercentAdjustment);
-            var forceDefenseBoost = GetStatAdjustment(creatureId, StatType.DeflectionForceDefensePercentAdjustment);
-            var recastReductionGroup = GetRecastGroupFromStat(GetStatAdjustment(
+            var staminaRestoreCooldown = staminaRestoreCooldownStat != StatType.Invalid
+                ? GetStatAdjustment(creatureId, staminaRestoreCooldownStat)
+                : 0;
+            var fpRestoreCooldown = fpRestoreCooldownStat != StatType.Invalid
+                ? GetStatAdjustment(creatureId, fpRestoreCooldownStat)
+                : 0;
+            var evasionBoost = GetDeflectionStatAdjustment(creatureId, StatType.DeflectionEvasionPercentAdjustment, source);
+            var evasionEnmityBoost = GetDeflectionStatAdjustment(creatureId, StatType.DeflectionEvasionEnmityPercentAdjustment, source);
+            var enmityBoost = GetDeflectionStatAdjustment(creatureId, StatType.DeflectionEnmityPercentAdjustment, source);
+            var defenseBoost = GetDeflectionStatAdjustment(creatureId, StatType.DeflectionDefensePercentAdjustment, source);
+            var forceDefenseBoost = GetDeflectionStatAdjustment(creatureId, StatType.DeflectionForceDefensePercentAdjustment, source);
+            var recastReductionGroup = GetRecastGroupFromStat(GetDeflectionStatAdjustment(
                 creatureId,
-                StatType.DeflectionRecastReductionGroupId));
-            var recastReductionSeconds = GetStatAdjustment(creatureId, StatType.DeflectionRecastReductionSeconds);
-            var nextSkillAbilitySkillType = GetSkillTypeFromStat(GetStatAdjustment(
+                StatType.DeflectionRecastReductionGroupId,
+                source));
+            var recastReductionSeconds = GetDeflectionStatAdjustment(creatureId, StatType.DeflectionRecastReductionSeconds, source);
+            var nextSkillAbilitySkillType = GetSkillTypeFromStat(GetDeflectionStatAdjustment(
                 creatureId,
-                StatType.DeflectionNextSkillAbilitySkillType));
-            var nextSkillAbilityDamageBonus = GetStatAdjustment(creatureId, StatType.DeflectionNextSkillAbilityDamageBonus);
-            var nextSkillAbilityCriticalRate = GetStatAdjustment(creatureId, StatType.DeflectionNextSkillAbilityCriticalRatePercentAdjustment);
-            var nextSkillAbilityNoDelay = GetStatAdjustment(creatureId, StatType.DeflectionNextSkillAbilityNoDelay);
+                StatType.DeflectionNextSkillAbilitySkillType,
+                source));
+            var nextSkillAbilityDamageBonus = GetDeflectionStatAdjustment(creatureId, StatType.DeflectionNextSkillAbilityDamageBonus, source);
+            var nextSkillAbilityCriticalRate = GetDeflectionStatAdjustment(creatureId, StatType.DeflectionNextSkillAbilityCriticalRatePercentAdjustment, source);
+            var nextSkillAbilityNoDelay = GetDeflectionStatAdjustment(creatureId, StatType.DeflectionNextSkillAbilityNoDelay, source);
             var nextSkillAbilityDamageWindow = GetStatAdjustment(creatureId, StatType.DeflectionNextSkillAbilityDamageBonusWindowSeconds);
             var nextSkillAbilityCriticalWindow = GetStatAdjustment(creatureId, StatType.DeflectionNextSkillAbilityCriticalRateWindowSeconds);
             var nextSkillAbilityNoDelayWindow = GetStatAdjustment(creatureId, StatType.DeflectionNextSkillAbilityNoDelayWindowSeconds);
-            var nextAutoAttackCriticalRateSkillType = GetSkillTypeFromStat(GetStatAdjustment(
+            var nextAutoAttackCriticalRateSkillType = GetSkillTypeFromStat(GetDeflectionStatAdjustment(
                 creatureId,
-                StatType.DeflectionNextAutoAttackCriticalRateSkillType));
-            var nextAutoAttackCriticalRate = GetStatAdjustment(creatureId, StatType.DeflectionNextAutoAttackCriticalRatePercentAdjustment);
+                StatType.DeflectionNextAutoAttackCriticalRateSkillType,
+                source));
+            var nextAutoAttackCriticalRate = GetDeflectionStatAdjustment(creatureId, StatType.DeflectionNextAutoAttackCriticalRatePercentAdjustment, source);
             var nextAutoAttackCriticalRateWindow = GetStatAdjustment(creatureId, StatType.DeflectionNextAutoAttackCriticalRateWindowSeconds);
 
             if (staminaRestore > 0 &&
-                Combat.TryUseStatTrigger(creatureId, StatType.DeflectionStaminaRestore, staminaRestoreCooldown))
+                Combat.TryUseStatTrigger(creatureId, staminaRestoreStat, staminaRestoreCooldown))
             {
                 RestoreStamina(creatureId, staminaRestore);
             }
 
             if (fpRestore > 0 &&
-                Combat.TryUseStatTrigger(creatureId, StatType.DeflectionFPRestore, fpRestoreCooldown))
+                Combat.TryUseStatTrigger(creatureId, fpRestoreStat, fpRestoreCooldown))
             {
                 RestoreFP(creatureId, fpRestore);
             }
@@ -1777,34 +1843,68 @@ namespace SWLOR.Game.Server.Service
                 : RecastGroup.Invalid;
         }
 
-        private static int GetAttackDeflectionChanceCap(uint creature)
+        private static int GetMeleeDeflectionChanceCap(uint creature)
         {
-            var capAdjustment = GetStatAdjustment(creature, StatType.AttackDeflectionChanceCap);
-            var cap = DefaultAttackDeflectionChanceCap + capAdjustment;
-
-            return Math.Clamp(cap, DefaultAttackDeflectionChanceCap, MaximumDeflectionChanceCap);
+            return GetDeflectionChanceCap(
+                creature,
+                StatType.MeleeDeflectionChanceCap,
+                DefaultMeleeDeflectionChanceCap);
         }
 
-        private static bool HasWeaponEquippedForAttackDeflectionNative(CNWSCreature creature)
+        private static int GetRangedDeflectionChanceCap(uint creature)
         {
-            return HasWeaponEquippedForAttackDeflectionNative(creature, EquipmentSlot.RightHand) ||
-                   HasWeaponEquippedForAttackDeflectionNative(creature, EquipmentSlot.LeftHand);
+            return GetDeflectionChanceCap(
+                creature,
+                StatType.RangedDeflectionChanceCap,
+                DefaultRangedDeflectionChanceCap);
         }
 
-        private static bool HasWeaponEquippedForAttackDeflectionNative(CNWSCreature creature, EquipmentSlot slot)
+        private static int GetDeflectionChanceCap(uint creature, StatType capStat, int defaultCap)
+        {
+            var cap = defaultCap + GetStatAdjustment(creature, capStat);
+            return Math.Clamp(cap, defaultCap, MaximumDeflectionChanceCap);
+        }
+
+        private static int GetDeflectionStatAdjustment(uint creature, StatType statType, DeflectionSource source)
+        {
+            return GetStatTypeDeflectionSource(statType) == source
+                ? GetStatAdjustment(creature, statType)
+                : 0;
+        }
+
+        private static StatType GetDeflectionStatTypeForSource(
+            DeflectionSource source,
+            StatType first,
+            StatType second)
+        {
+            if (GetStatTypeDeflectionSource(first) == source)
+                return first;
+
+            return GetStatTypeDeflectionSource(second) == source
+                ? second
+                : StatType.Invalid;
+        }
+
+        private static bool HasWeaponEquippedForWeaponDeflectionNative(CNWSCreature creature)
+        {
+            return HasWeaponEquippedForWeaponDeflectionNative(creature, EquipmentSlot.RightHand) ||
+                   HasWeaponEquippedForWeaponDeflectionNative(creature, EquipmentSlot.LeftHand);
+        }
+
+        private static bool HasWeaponEquippedForWeaponDeflectionNative(CNWSCreature creature, EquipmentSlot slot)
         {
             var item = creature.m_pInventory.GetItemInSlot((uint)slot);
             return item != null &&
                    Skill.GetSkillTypeByBaseItem((BaseItem)item.m_nBaseItem) != SkillType.Invalid;
         }
 
-        private static bool HasWeaponEquippedForAttackDeflection(uint creature)
+        private static bool HasWeaponEquippedForWeaponDeflection(uint creature)
         {
-            return HasWeaponEquippedForAttackDeflection(creature, InventorySlot.RightHand) ||
-                   HasWeaponEquippedForAttackDeflection(creature, InventorySlot.LeftHand);
+            return HasWeaponEquippedForWeaponDeflection(creature, InventorySlot.RightHand) ||
+                   HasWeaponEquippedForWeaponDeflection(creature, InventorySlot.LeftHand);
         }
 
-        private static bool HasWeaponEquippedForAttackDeflection(uint creature, InventorySlot slot)
+        private static bool HasWeaponEquippedForWeaponDeflection(uint creature, InventorySlot slot)
         {
             var item = GetItemInSlot(slot, creature);
             return GetIsObjectValid(item) &&

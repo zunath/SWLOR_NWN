@@ -669,8 +669,8 @@ public class GeneratedWeaponPerkBehaviorTests
         combatSource.Should().Contain("ApplyAvoidedAttackNextAutoAttackNoDelay(creature)");
         combatSource.Should().Contain("ApplyBleedingStatusExpiredEffects(uint source)");
         combatSource.Should().Contain("ApplyCostlyAbilityHitEffects(activator, target, ability, skillType)");
-        combatSource.Should().Contain("ApplyDeflectionNearbyAllyGuard(creature)");
-        combatSource.Should().Contain("ApplyAbilityGrantedAttackDeflectionEffects(activator)");
+        combatSource.Should().Contain("ApplyDeflectionNearbyAllyGuard(creature, source)");
+        combatSource.Should().Contain("ApplyAbilityGrantedAttackDeflectionEffects(activator, source)");
         combatSource.Should().Contain("ApplyTargetLowHPStatusDamageModifier(attacker, defender, damage)");
         combatSource.Should().Contain("ApplyDamageTakenShareToStatusSource(defender, attacker, damage, damageType)");
         combatSource.Should().Contain("IdleSkillAbilityCriticalDamagePercentAdjustment");
@@ -906,6 +906,7 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertAbilitySourceContains(root, "Throwing", "ExplosiveTossAbilityDefinition.cs", "typeof(BurnStatusEffect)");
         AssertAbilitySourceContains(root, "Throwing", "ExplosiveTossAbilityDefinition.cs", "Spell.ExplosiveToss4");
         AssertAbilitySourceContains(root, "Saberstaff", "SaberCycloneAbilityDefinition.cs", "TemporaryAreaAbilityAttackDeflection = 8");
+        AssertAbilitySourceContains(root, "Saberstaff", "CircleSlashAbilityDefinition.cs", "SelfRangedDeflection = 8");
         AssertAbilitySourceContains(root, "Staff", "ShelterCircleAbilityDefinition.cs", "NearbyPartyStatusEffect = typeof(ShelterCircleStatusEffect)");
         AssertAbilitySourceContains(root, "Staff", "ShelterCircleAbilityDefinition.cs", "NearbyPartyStatusIncludesSelf = true");
         AssertAbilitySourceContains(root, "Staff", "UnmovingCenterAbilityDefinition.cs", "SelfKnockdownDazedImmunityDurationSeconds = 45");

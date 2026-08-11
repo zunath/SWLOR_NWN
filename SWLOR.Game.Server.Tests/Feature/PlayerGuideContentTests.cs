@@ -135,6 +135,16 @@ public class PlayerGuideContentTests
         text.Should().Contain("At +6 Light, a Light power uses 130% magnitude and gains +3% hit chance");
     }
 
+    [Test]
+    public void CombatBasics_ExplainsCombatReadinessMagnitudeAndCooldownScope()
+    {
+        var topic = GetTopics().Single(topic => GetString(topic, "Name") == "Combat Basics");
+        var text = string.Join("\n", GetAllText(topic));
+
+        text.Should().Contain("activated ability damage, healing, and temporary HP");
+        text.Should().Contain("does not reduce cooldowns");
+    }
+
     private static List<object> GetTopics()
     {
         var field = typeof(PlayerGuideViewModel).GetField("Topics", BindingFlags.NonPublic | BindingFlags.Static);

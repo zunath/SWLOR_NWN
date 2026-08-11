@@ -61,7 +61,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<(uint, uint), DateTime> _recentDamageTargets = new();
         private static readonly Dictionary<uint, DateTime> _recentDamageTaken = new();
         private static readonly Dictionary<uint, DateTime> _recentGuardedHits = new();
-        private static readonly Dictionary<uint, DateTime> _recentDeflections = new();
+        private static readonly Dictionary<(uint Creature, DeflectionSource Source), DateTime> _recentDeflections = new();
         private static readonly Dictionary<uint, DateTime> _lastCombatActivity = new();
         private static readonly Dictionary<uint, DateTime> _lastHostileAbilityAttemptActivity = new();
         private static readonly Dictionary<uint, DateTime> _lastHostileIncomingActivity = new();
@@ -3228,7 +3228,7 @@ namespace SWLOR.Game.Server.Service
                 defender == attacker ||
                 damage <= 0 ||
                 !damageType.IsPhysicalDamageType() ||
-                !IsGuardableAttackSource(defender, attacker))
+                !IsHostileAttackSource(defender, attacker))
                 return damage;
 
             var guardChance = Stat.GetGuardChance(defender);
@@ -3249,7 +3249,7 @@ namespace SWLOR.Game.Server.Service
             return adjustedDamage;
         }
 
-        private static bool IsGuardableAttackSource(uint defender, uint attacker)
+        internal static bool IsHostileAttackSource(uint defender, uint attacker)
         {
             // Preserve PvP and DM-driven testing while rejecting clearly non-hostile NPC swings.
             if (GetIsPC(attacker) || GetIsDM(attacker) || GetIsDMPossessed(attacker))
@@ -3509,17 +3509,20 @@ namespace SWLOR.Game.Server.Service
             return isRecent;
         }
 
-        public static void TrackDeflection(uint creature)
+        public static void TrackDeflection(uint creature, DeflectionSource source)
         {
-            if (!GetIsObjectValid(creature))
+            if (!GetIsObjectValid(creature) || source == DeflectionSource.None)
                 return;
 
-            _recentDeflections[creature] = DateTime.UtcNow;
-            ApplyDeflectionNearbyAllyGuard(creature);
+            _recentDeflections[(creature, source)] = DateTime.UtcNow;
+            ApplyDeflectionNearbyAllyGuard(creature, source);
         }
 
-        private static void ApplyDeflectionNearbyAllyGuard(uint creature)
+        private static void ApplyDeflectionNearbyAllyGuard(uint creature, DeflectionSource source)
         {
+            if (Stat.GetStatTypeDeflectionSource(StatType.DeflectionNearbyAllyGuard) != source)
+                return;
+
             var guard = Stat.GetStatAdjustment(creature, StatType.DeflectionNearbyAllyGuard);
             var duration = Stat.GetStatAdjustment(creature, StatType.DeflectionNearbyAllyGuardDurationSeconds);
             if (guard <= 0 || duration <= 0)
@@ -3540,17 +3543,18 @@ namespace SWLOR.Game.Server.Service
                 StatType.DeflectionNearbyAllyGuard);
         }
 
-        public static bool HasRecentDeflection(uint creature, float windowSeconds)
+        public static bool HasRecentDeflection(uint creature, DeflectionSource source, float windowSeconds)
         {
-            if (!GetIsObjectValid(creature) || windowSeconds <= 0f)
+            if (!GetIsObjectValid(creature) || source == DeflectionSource.None || windowSeconds <= 0f)
                 return false;
 
-            if (!_recentDeflections.TryGetValue(creature, out var lastDeflection))
+            var key = (creature, source);
+            if (!_recentDeflections.TryGetValue(key, out var lastDeflection))
                 return false;
 
             var isRecent = (DateTime.UtcNow - lastDeflection).TotalSeconds <= windowSeconds;
             if (!isRecent)
-                _recentDeflections.Remove(creature);
+                _recentDeflections.Remove(key);
 
             return isRecent;
         }
@@ -4093,7 +4097,11 @@ namespace SWLOR.Game.Server.Service
                 return damage;
 
             var window = Stat.GetStatAdjustment(attacker, StatType.AreaAbilityAfterDeflectionWindowSeconds);
-            if (window <= 0 || !HasRecentDeflection(attacker, window))
+            var requiredSource = Stat.GetStatTypeDeflectionSource(
+                StatType.AreaAbilityAfterDeflectionDamagePercentAdjustment);
+            if (window <= 0 ||
+                requiredSource == DeflectionSource.None ||
+                !HasRecentDeflection(attacker, requiredSource, window))
                 return damage;
 
             var adjustment = Stat.GetStatAdjustment(attacker, StatType.AreaAbilityAfterDeflectionDamagePercentAdjustment);
@@ -4654,7 +4662,10 @@ namespace SWLOR.Game.Server.Service
 
             _recentDamageTaken.Remove(creature);
             _recentGuardedHits.Remove(creature);
-            _recentDeflections.Remove(creature);
+            foreach (var key in _recentDeflections.Keys.Where(x => x.Creature == creature).ToList())
+            {
+                _recentDeflections.Remove(key);
+            }
             _lastCombatActivity.Remove(creature);
             _lastHostileAbilityAttemptActivity.Remove(creature);
             _lastHostileIncomingActivity.Remove(creature);
@@ -6589,7 +6600,7 @@ namespace SWLOR.Game.Server.Service
 
             ReplaceTemporaryStat(
                 activator,
-                StatType.AttackDeflection,
+                Stat.GetGrantedDeflectionStatType(StatType.StatusAppliedSelfAttackDeflection),
                 Stat.GetStatAdjustment(activator, StatType.StatusAppliedSelfAttackDeflection),
                 duration,
                 StatType.StatusAppliedSelfAttackDeflection);
@@ -6659,7 +6670,7 @@ namespace SWLOR.Game.Server.Service
             int durationSeconds,
             StatType group)
         {
-            if (amount == 0 || durationSeconds <= 0)
+            if (statType == StatType.Invalid || amount == 0 || durationSeconds <= 0)
                 return;
 
             TemporaryStatModifier.Replace(target, statType, amount, durationSeconds, group);
@@ -6885,10 +6896,10 @@ namespace SWLOR.Game.Server.Service
         /// stats the Deflecting Return perk grants. Embattled high-stack bonuses and finite capstone
         /// overrides are also stat-driven.
         /// </summary>
-        public static void ApplyRangedDeflectionReflection(uint defender, uint attacker, SkillType attackerWeaponSkill)
+        public static int ApplyRangedDeflectionReflection(uint defender, uint attacker, SkillType attackerWeaponSkill)
         {
             if (!GetIsObjectValid(attacker) || !GetIsObjectValid(defender))
-                return;
+                return 0;
 
             var (reflectPercent, capPercent) = GetRangedDeflectionReflectionRates(
                 Stat.GetStatAdjustment(defender, StatType.RangedDeflectionReflectionPercent),
@@ -6899,21 +6910,40 @@ namespace SWLOR.Game.Server.Service
                 Stat.GetStatAdjustment(defender, StatType.RangedDeflectionReflectionOverridePercent),
                 Stat.GetStatAdjustment(defender, StatType.RangedDeflectionReflectionCapOverridePercent));
             if (reflectPercent <= 0)
-                return;
+                return 0;
 
             var reflected = GetRangedDeflectionReflectionAmount(
                 GetCombatImpactWeaponDamage(attacker, attackerWeaponSkill),
                 reflectPercent,
-                GetCombatImpactWeaponDamage(defender, SkillType.Lightsaber),
+                GetCombatImpactWeaponDamage(defender, GetEquippedWeaponSkillType(defender)),
                 capPercent);
             if (reflected <= 0)
-                return;
+                return 0;
 
             // Consume the shared cooldown only when a hit will actually be reflected.
             if (!TryUseStatTrigger(defender, StatType.RangedDeflectionReflectionPercent, DeflectingReturnCooldownSeconds))
-                return;
+                return 0;
 
-            ApplyTriggeredDamage(defender, attacker, reflected, CombatDamageType.Force);
+            var appliedDamage = ApplyTriggeredDamage(defender, attacker, reflected, CombatDamageType.Force);
+            if (appliedDamage <= 0)
+                return 0;
+
+            Messaging.SendMessageNearbyToPlayers(
+                defender,
+                observer => BuildDeflectingReturnCombatLogMessage(observer, defender, attacker, appliedDamage),
+                60f);
+            return appliedDamage;
+        }
+
+        public static string BuildDeflectingReturnCombatLogMessage(
+            uint observer,
+            uint defender,
+            uint attacker,
+            int damage)
+        {
+            var defenderName = PlayerName.GetColoredDisplayName(observer, defender);
+            var attackerName = PlayerName.GetColoredDisplayName(observer, attacker);
+            return ColorToken.Combat($"{defenderName}'s Deflecting Return reflects {damage} Force damage to {attackerName}.");
         }
 
         private static void ApplyGuardiansResolve(uint activator)
@@ -7101,18 +7131,20 @@ namespace SWLOR.Game.Server.Service
 
         private static void ApplyLightsaberDefenseActivatedEffects(uint activator)
         {
-            var attackDeflection = Stat.GetStatAdjustment(activator, StatType.LightsaberDefenseGuardiansInfluenceAttackDeflection);
-            if (attackDeflection <= 0)
+            var sourceStatType = StatType.LightsaberDefenseGuardiansInfluenceAttackDeflection;
+            var attackDeflection = Stat.GetStatAdjustment(activator, sourceStatType);
+            var deflectionStatType = Stat.GetGrantedDeflectionStatType(sourceStatType);
+            if (deflectionStatType == StatType.Invalid || attackDeflection <= 0)
                 return;
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, GetLocation(activator), 5f, false))
             {
                 TemporaryStatModifier.Replace(
                     friendly,
-                    StatType.AttackDeflection,
+                    deflectionStatType,
                     attackDeflection,
                     12f,
-                    StatType.LightsaberDefenseGuardiansInfluenceAttackDeflection);
+                    sourceStatType);
             }
         }
 
@@ -7243,13 +7275,15 @@ namespace SWLOR.Game.Server.Service
             var attackDeflection = Stat.GetStatAdjustment(
                 activator,
                 StatType.AbilityUsedPerkCategoryNearbyAllyAttackDeflection);
+            var deflectionStatType = Stat.GetGrantedDeflectionStatType(
+                StatType.AbilityUsedPerkCategoryNearbyAllyAttackDeflection);
             var duration = Stat.GetStatAdjustment(
                 activator,
                 StatType.AbilityUsedPerkCategoryNearbyAllyAttackDeflectionDurationSeconds);
             var selfEnmity = Stat.GetStatAdjustment(
                 activator,
                 StatType.AbilityUsedPerkCategoryNearbyAllyAttackDeflectionSelfEnmityPercentAdjustment);
-            if (attackDeflection <= 0 || duration <= 0)
+            if (deflectionStatType == StatType.Invalid || attackDeflection <= 0 || duration <= 0)
                 return;
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, GetLocation(activator), 5f))
@@ -7257,7 +7291,7 @@ namespace SWLOR.Game.Server.Service
                 StatusEffect.ApplyStatusEffect(
                     activator,
                     friendly,
-                    new SentinelGuardStatusEffect(attackDeflection, selfEnmity),
+                    new SentinelGuardStatusEffect(attackDeflection, selfEnmity, deflectionStatType),
                     duration);
             }
         }
@@ -9090,31 +9124,50 @@ namespace SWLOR.Game.Server.Service
             if (attackDeflection == 0 || duration <= 0)
                 return;
 
+            var source = Stat.GetStatTypeDeflectionSource(attackDeflectionStatType);
+            var targetStatType = Stat.GetGrantedDeflectionStatType(attackDeflectionStatType);
+            if (targetStatType == StatType.Invalid)
+                return;
+
             TemporaryStatModifier.Replace(
                 activator,
-                StatType.AttackDeflection,
+                targetStatType,
                 attackDeflection,
                 duration,
-                StatType.AttackDeflection);
+                attackDeflectionStatType);
             if (deflectionFPRestoreStatType != StatType.Invalid)
             {
                 var fpRestore = Stat.GetStatAdjustment(activator, deflectionFPRestoreStatType);
-                if (fpRestore > 0)
+                var fpRestoreSource = Stat.GetStatTypeDeflectionSource(deflectionFPRestoreStatType);
+                if (fpRestore > 0 && fpRestoreSource == source)
                 {
-                    TemporaryStatModifier.Replace(
-                        activator,
-                        StatType.DeflectionFPRestore,
-                        fpRestore,
-                        duration,
-                        deflectionFPRestoreStatType);
+                    var fpRestoreTargetStatType = fpRestoreSource switch
+                    {
+                        DeflectionSource.Melee => StatType.MeleeDeflectionFPRestore,
+                        DeflectionSource.Ranged => StatType.DeflectionFPRestore,
+                        _ => StatType.Invalid
+                    };
+                    if (fpRestoreTargetStatType != StatType.Invalid)
+                    {
+                        TemporaryStatModifier.Replace(
+                            activator,
+                            fpRestoreTargetStatType,
+                            fpRestore,
+                            duration,
+                            deflectionFPRestoreStatType);
+                    }
                 }
             }
 
-            ApplyAbilityGrantedAttackDeflectionEffects(activator);
+            if (source == DeflectionSource.Ranged)
+                ApplyAbilityGrantedAttackDeflectionEffects(activator, source);
         }
 
-        public static void ApplyAbilityGrantedAttackDeflectionEffects(uint activator)
+        public static void ApplyAbilityGrantedAttackDeflectionEffects(uint activator, DeflectionSource source)
         {
+            if (Stat.GetStatTypeDeflectionSource(StatType.AbilityGrantedAttackDeflectionFPRestore) != source)
+                return;
+
             var fpRestore = Stat.GetStatAdjustment(activator, StatType.AbilityGrantedAttackDeflectionFPRestore);
             var cooldown = Stat.GetStatAdjustment(activator, StatType.AbilityGrantedAttackDeflectionFPRestoreCooldownSeconds);
             if (fpRestore <= 0 || !TryUseStatTrigger(activator, StatType.AbilityGrantedAttackDeflectionFPRestore, cooldown))
@@ -9192,13 +9245,18 @@ namespace SWLOR.Game.Server.Service
             var deflection = Stat.GetStatAdjustment(activator, StatType.AreaAbilityAttackDeflection);
             if (deflection != 0)
             {
+                var source = Stat.GetStatTypeDeflectionSource(StatType.AreaAbilityAttackDeflection);
+                var deflectionStatType = Stat.GetGrantedDeflectionStatType(StatType.AreaAbilityAttackDeflection);
+                if (deflectionStatType == StatType.Invalid)
+                    return;
+
                 TemporaryStatModifier.Replace(
                     activator,
-                    StatType.AttackDeflection,
+                    deflectionStatType,
                     deflection,
                     duration,
-                    StatType.AttackDeflection);
-                ApplyAbilityGrantedAttackDeflectionEffects(activator);
+                    StatType.AreaAbilityAttackDeflection);
+                ApplyAbilityGrantedAttackDeflectionEffects(activator, source);
             }
         }
 
@@ -10013,7 +10071,8 @@ namespace SWLOR.Game.Server.Service
             CNWSCreature attacker,
             CNWSCreature defender,
             int attackResultType,
-            int chanceToHit)
+            int chanceToHit,
+            DeflectionSource deflectionSource = DeflectionSource.None)
         {
             var type = string.Empty;
 
@@ -10030,7 +10089,7 @@ namespace SWLOR.Game.Server.Service
                     type = ": *miss*";
                     break;
                 case 2:
-                    type = ": *deflect*";
+                    type = $": *{GetDeflectionResultName(deflectionSource)}*";
                     break;
             }
 
@@ -10038,6 +10097,17 @@ namespace SWLOR.Game.Server.Service
             var defenderName = PlayerName.GetColoredDisplayName(observer, defender.m_idSelf);
 
             return ColorToken.Combat($"{attackerName} attacks {defenderName}{type} : ({chanceToHit}% chance to hit)");
+        }
+
+        internal static string GetDeflectionResultName(DeflectionSource source)
+        {
+            return source switch
+            {
+                DeflectionSource.Melee => "melee deflect",
+                DeflectionSource.Ranged => "ranged deflect",
+                DeflectionSource.Shield => "shield deflect",
+                _ => "deflect"
+            };
         }
 
         public static int GetPerkAdjustedAbilityScore(uint attacker)

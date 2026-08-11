@@ -16,6 +16,7 @@ using ImmunityType = NWN.Native.API.ImmunityType;
 using ObjectType = NWN.Native.API.ObjectType;
 using Player = SWLOR.Game.Server.Entity.Player;
 using Random = SWLOR.Game.Server.Service.Random;
+using static SWLOR.NWN.API.NWScript.NWScript;
 
 namespace SWLOR.Game.Server.Native
 {
@@ -54,7 +55,7 @@ namespace SWLOR.Game.Server.Native
         private const int DefaultMissedBy = 1;
         private const int DefaultToHitMod = 1;
         private const int DefaultToHitRoll = 1;
-        private const string DeflectionAttemptedVariable = "RESOLVE_ATTACK_ROLL_DEFLECTION_ATTEMPTED";
+        private const string DeflectionAttemptedDefendersVariable = "RESOLVE_ATTACK_ROLL_DEFLECTION_ATTEMPTED";
 
         internal delegate void ResolveAttackRollHook(void* thisPtr, void* pTarget);
 
@@ -131,13 +132,12 @@ namespace SWLOR.Game.Server.Native
                 // If we get to this point, we are fighting a creature.  Pull the target's stats.
                 var defender = CNWSCreature.FromPointer(pTarget);
 
-                // One deflection attempt per incoming combat round: m_bRoundStarted stays 1 for the
-                // whole round, so gate the reset on the round's first attack — resetting on every
-                // attack would let the defender roll deflection against each swing of a
-                // multi-attack round.
+                // Start each attacker combat round with an empty defender set. Tracking every
+                // attempted defender in one round-local value preserves Cleave target switching
+                // without accumulating one persistent script variable per defender.
                 if (pCombatRound.m_bRoundStarted == 1 && pCombatRound.m_nCurrentAttack == 0)
                 {
-                    defender.m_ScriptVars.SetInt(new CExoString(DeflectionAttemptedVariable), 0);
+                    ResetDeflectionAttemptedDefenders(attacker);
                 }
 
                 var attackType = (uint)AttackType.Melee;
@@ -230,14 +230,19 @@ namespace SWLOR.Game.Server.Native
                 Log.Write(LogGroup.Attack, $"Hit Rate: {hitRate}, Roll = {attackRoll}");
 
                 // Check for deflection
-                var deflected = CheckDeflection(isHit, attacker, defender);
+                var deflectionSource = CheckDeflection(
+                    isHit,
+                    attackType,
+                    weaponSkillType,
+                    attacker,
+                    defender);
+                var deflected = deflectionSource != DeflectionSource.None;
                 if (deflected)
                 {
                     isHit = false;
 
-                    // Deflecting Return: a deflected directly targeted ranged attack reflects a capped
-                    // share of weapon damage back to its source.
-                    if (attackType == (uint)AttackType.Ranged)
+                    // Deflecting Return is a Ranged Deflection rider. Shield Deflection never triggers it.
+                    if (deflectionSource == DeflectionSource.Ranged)
                         Combat.ApplyRangedDeflectionReflection(defender.m_idSelf, attacker.m_idSelf, weaponSkillType);
                 }
 
@@ -353,14 +358,16 @@ namespace SWLOR.Game.Server.Native
                     defender,
                     pAttackData.m_nAttackResult,
                     hitRate,
-                    weaponSkillType);
+                    weaponSkillType,
+                    deflectionSource);
                 var defenderMessage = BuildAttackFeedbackMessage(
                     defender.m_idSelf,
                     attacker,
                     defender,
                     pAttackData.m_nAttackResult,
                     hitRate,
-                    weaponSkillType);
+                    weaponSkillType,
+                    deflectionSource);
                 attacker.SendFeedbackString(new CExoString(attackerMessage));
                 defender.SendFeedbackString(new CExoString(defenderMessage));
 
@@ -380,7 +387,8 @@ namespace SWLOR.Game.Server.Native
             CNWSCreature defender,
             int attackResultType,
             int hitRate,
-            SkillType weaponSkillType)
+            SkillType weaponSkillType,
+            DeflectionSource deflectionSource)
         {
             if (IsSuccessfulAttackResult(attackResultType) &&
                 UsePerkFeat.TryGetQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType, out var queuedAbility))
@@ -399,7 +407,8 @@ namespace SWLOR.Game.Server.Native
                 attacker,
                 defender,
                 attackResultType,
-                hitRate);
+                hitRate,
+                deflectionSource);
         }
 
         /// <summary>
@@ -458,34 +467,52 @@ namespace SWLOR.Game.Server.Native
             return 0;
         }
 
-        private static bool CheckDeflection(bool isHit, CNWSCreature attacker, CNWSCreature defender)
+        private static DeflectionSource CheckDeflection(
+            bool isHit,
+            uint attackType,
+            SkillType weaponSkillType,
+            CNWSCreature attacker,
+            CNWSCreature defender)
         {
-            var hasAttemptedDeflection = defender.m_ScriptVars.GetInt(new CExoString(DeflectionAttemptedVariable));
+            var attemptedDefenders = GetLocalString(attacker.m_idSelf, DeflectionAttemptedDefendersVariable) ?? string.Empty;
+            var defenderToken = $"|{defender.m_idSelf}|";
 
-            if (!isHit || hasAttemptedDeflection != 0)
-                return false;
+            if (!isHit ||
+                attemptedDefenders.Contains(defenderToken, StringComparison.Ordinal) ||
+                weaponSkillType == SkillType.Invalid ||
+                !Combat.IsHostileAttackSource(defender.m_idSelf, attacker.m_idSelf) ||
+                UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType))
+                return DeflectionSource.None;
 
-            var (source, deflectChance) = GetDeflectionChance(defender);
+            var (source, deflectChance) = GetDeflectionChance(defender, attackType);
             if (deflectChance <= 0)
-                return false;
+                return DeflectionSource.None;
 
-            defender.m_ScriptVars.SetInt(new CExoString(DeflectionAttemptedVariable), 1);
+            SetLocalString(
+                attacker.m_idSelf,
+                DeflectionAttemptedDefendersVariable,
+                $"{attemptedDefenders}{defenderToken}");
 
             var deflectRoll = Random.D100(1);
             var deflected = deflectRoll <= deflectChance;
             if (deflected)
             {
-                Stat.ApplyDeflectionEffectsNative(defender);
+                Stat.ApplyDeflectionEffectsNative(defender, source);
             }
 
             var feedbackString = deflected ? "*success*" : "*failure*";
-            var deflectionName = source == DeflectionSource.Shield ? "shield deflect" : "deflect";
+            var deflectionName = Combat.GetDeflectionResultName(source);
 
             attacker.SendFeedbackString(new CExoString(BuildDeflectionFeedback(attacker.m_idSelf, attacker, defender, deflectionName, feedbackString)));
             defender.SendFeedbackString(new CExoString(BuildDeflectionFeedback(defender.m_idSelf, attacker, defender, deflectionName, feedbackString)));
             Log.Write(LogGroup.Attack, $"Deflect roll: {deflectRoll}, Chance: {deflectChance}, Hit: {!deflected}");
 
-            return deflected;
+            return deflected ? source : DeflectionSource.None;
+        }
+
+        private static void ResetDeflectionAttemptedDefenders(CNWSCreature attacker)
+        {
+            DeleteLocalString(attacker.m_idSelf, DeflectionAttemptedDefendersVariable);
         }
 
         private static string BuildDeflectionFeedback(uint observer, CNWSCreature attacker, CNWSCreature defender, string deflectionName, string feedbackString)
@@ -496,15 +523,23 @@ namespace SWLOR.Game.Server.Native
             return ColorToken.Combat($"{defenderName} attempts to {deflectionName} {attackerName}'s attack: {feedbackString}");
         }
 
-        private static (DeflectionSource Source, int Chance) GetDeflectionChance(CNWSCreature defender)
+        private static (DeflectionSource Source, int Chance) GetDeflectionChance(CNWSCreature defender, uint attackType)
         {
             var shieldDeflection = Stat.GetShieldDeflectionChanceNative(defender);
             if (shieldDeflection > 0)
                 return (DeflectionSource.Shield, shieldDeflection);
 
-            var attackDeflection = Stat.GetAttackDeflectionChanceNative(defender);
-            if (attackDeflection > 0)
-                return (DeflectionSource.Attack, attackDeflection);
+            if (attackType == (uint)AttackType.Ranged)
+            {
+                var rangedDeflection = Stat.GetRangedDeflectionChanceNative(defender);
+                return rangedDeflection > 0
+                    ? (DeflectionSource.Ranged, rangedDeflection)
+                    : (DeflectionSource.None, 0);
+            }
+
+            var meleeDeflection = Stat.GetMeleeDeflectionChanceNative(defender);
+            if (meleeDeflection > 0)
+                return (DeflectionSource.Melee, meleeDeflection);
 
             return (DeflectionSource.None, 0);
         }

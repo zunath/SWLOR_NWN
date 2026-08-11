@@ -81,7 +81,7 @@ public class CombatUpgradeBibleWorkbookFormattingTests
 
         AssertStatRange(stats, "Combat Readiness", 0, Stat.MaximumCombatReadinessPercent);
         AssertStatRange(stats, "Shield Deflection", 0, Stat.MaximumShieldDeflectionChance);
-        AssertStatRange(stats, "Attack Deflection", 0, Stat.MaximumDeflectionChanceCap);
+        AssertStatRange(stats, "Melee / Ranged Deflection", 0, Stat.MaximumDeflectionChanceCap);
         AssertStatRange(stats, "Guard", 0, Stat.MaximumGuardChance);
         AssertStatRange(stats, "Critical Rate", Combat.MinimumCriticalRate, Combat.MaximumCriticalRate);
         AssertStatRange(stats, "Critical Damage", 0, Combat.MaximumCriticalDamagePercentAdjustment);
@@ -115,7 +115,9 @@ public class CombatUpgradeBibleWorkbookFormattingTests
             0,
             Combat.MaximumCombinedDamageReductionPercent);
 
-        stats["Attack Deflection"]["K"].Should().Contain($"Default chance cap is {Stat.DefaultAttackDeflectionChanceCap}%");
+        stats["Melee / Ranged Deflection"]["K"].Should().Contain($"independent default chance cap of {Stat.DefaultMeleeDeflectionChanceCap}%");
+        stats["Melee / Ranged Deflection"]["K"].Should().Contain("activated combat abilities or Force powers");
+        stats["Shield Deflection"]["K"].Should().Contain("completely replaces Melee and Ranged Deflection");
         stats["Guard"]["K"].Should().Contain($"reduces damage by {Combat.BaseGuardDamageReductionPercent}% by default");
         stats["Guard"]["K"].Should().Contain($"{Combat.MaximumGuardDamageReductionPercent}% hard limit");
         stats["Damage-Derived Healing per Hit"]["K"].Should().Contain("after Combat Readiness and healing-received modifiers");

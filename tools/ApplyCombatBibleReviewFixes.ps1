@@ -173,14 +173,14 @@ $perkChanges = @(
         Sheet = "Saberstaff"
         PerkName = "Maelstrom Arc I"
         Values = @{
-            Description = "Deals weapon DMG + 16 in a 5m x 5m cone. If you deflected an attack in the last 30 seconds, restore 4 FP."
+            Description = "Deals weapon DMG + 16 in a 5m x 5m cone. If your Ranged Deflection negated a ranged weapon auto-attack in the last 30 seconds, restore 4 FP."
         }
     },
     @{
         Sheet = "Saberstaff"
         PerkName = "Maelstrom Arc II"
         Values = @{
-            Description = "Deals weapon DMG + 30 in a 5m x 5m cone. If you deflected an attack in the last 30 seconds, restore 8 FP."
+            Description = "Deals weapon DMG + 30 in a 5m x 5m cone. If your Ranged Deflection negated a ranged weapon auto-attack in the last 30 seconds, restore 8 FP."
         }
     },
     @{

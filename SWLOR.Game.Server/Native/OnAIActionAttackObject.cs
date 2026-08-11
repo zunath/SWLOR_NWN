@@ -32,6 +32,10 @@ namespace SWLOR.Game.Server.Native
         private const int CNWSOBJECTACTION_PARAMETER_FLOAT = 2;
         private const int CNWSOBJECTACTION_PARAMETER_OBJECT = 3;
 
+        private const float RANGED_LINE_REPOSITION_ARC_LENGTH = 2.0f;
+        private const float RANGED_LINE_REPOSITION_MAX_ANGLE = 0.7853982f;
+        private const float RANGED_LINE_REPOSITION_COMPLETION_RANGE = 0.25f;
+
         private const int CNWSCOMBATROUND_TYPE_INVALID = 0;
         private const int CNWSCOMBATROUND_TYPE_ATTACK = 1;
         private const int CNWSCOMBATROUND_TYPE_REACTION = 3;
@@ -291,23 +295,42 @@ namespace SWLOR.Game.Server.Native
 
                         var fMoveToTargetRange = fDesiredAttackRange;
                         var fMoveToTargetMaxRange = fMaxAttackRange;
+                        var fPathMoveRange = fMoveToTargetRange;
+                        var vMoveTargetPosition = vTargetPosition;
+                        var bTrackAttackTargetWhileMoving = true;
 
                         if (bClearLineOfAttack == 0)
                         {
-                            if (ShouldUsePersonalSpaceForBlockedLineOfAttack(
-                                    bOutsideAttackRange,
-                                    pCreature.GetRangeWeaponEquipped() == 1))
+                            float fPersonalSpaceRange;
+                            if (pTarget.AsNWSCreature() != null)
                             {
-                                if (pTarget.AsNWSCreature() != null)
-                                {
-                                    fMoveToTargetRange = pCreature.m_pcPathfindInformation.m_fCreaturePersonalSpace;
-                                    fMoveToTargetRange += pTarget.AsNWSCreature().m_pcPathfindInformation.m_fCreaturePersonalSpace;
-                                }
-                                else
-                                {
-                                    fMoveToTargetRange = pCreature.m_pcPathfindInformation.m_fPersonalSpace;
-                                }
+                                fPersonalSpaceRange = pCreature.m_pcPathfindInformation.m_fCreaturePersonalSpace;
+                                fPersonalSpaceRange += pTarget.AsNWSCreature().m_pcPathfindInformation.m_fCreaturePersonalSpace;
                             }
+                            else
+                            {
+                                fPersonalSpaceRange = pCreature.m_pcPathfindInformation.m_fPersonalSpace;
+                            }
+
+                            var movementPlan = CreateBlockedLineMovementPlan(
+                                pCreature.m_vPosition.x,
+                                pCreature.m_vPosition.y,
+                                pCreature.m_vPosition.z,
+                                vTargetPosition.x,
+                                vTargetPosition.y,
+                                vTargetPosition.z,
+                                pCreature.m_idSelf,
+                                fDesiredAttackRange,
+                                fPersonalSpaceRange,
+                                bOutsideAttackRange,
+                                pCreature.GetRangeWeaponEquipped() == 1);
+                            fMoveToTargetRange = movementPlan.AttackCheckRange;
+                            fPathMoveRange = movementPlan.PathCompletionRange;
+                            vMoveTargetPosition = new Vector(
+                                movementPlan.DestinationX,
+                                movementPlan.DestinationY,
+                                movementPlan.DestinationZ);
+                            bTrackAttackTargetWhileMoving = movementPlan.TrackAttackTarget;
 
                             pCreature.m_pcPathfindInformation.m_bUsePlotGridPath = 1;
                         }
@@ -341,21 +364,21 @@ namespace SWLOR.Game.Server.Native
                         {
                             pCreature.AddMoveToPointActionToFront(
                                 pNode.m_nGroupActionId,
-                                vTargetPosition,
+                                vMoveTargetPosition,
                                 oidArea,
                                 OBJECT_INVALID,
                                 bRunToTarget ? 1 : 0,
-                                fMoveToTargetRange);
+                                fPathMoveRange);
                         }
                         else
                         {
                             pCreature.AddMoveToPointActionToFront(
                                 pNode.m_nGroupActionId,
-                                vTargetPosition,
+                                vMoveTargetPosition,
                                 oidArea,
-                                oidAttackTarget,
+                                bTrackAttackTargetWhileMoving ? oidAttackTarget : OBJECT_INVALID,
                                 bRunToTarget ? 1 : 0,
-                                fMoveToTargetRange);
+                                fPathMoveRange);
                         }
 
 
@@ -671,12 +694,99 @@ namespace SWLOR.Game.Server.Native
             });
         }
 
-        private static bool ShouldUsePersonalSpaceForBlockedLineOfAttack(
+        private static BlockedLineMovementPlan CreateBlockedLineMovementPlan(
+            float attackerX,
+            float attackerY,
+            float attackerZ,
+            float targetX,
+            float targetY,
+            float targetZ,
+            uint attackerId,
+            float desiredAttackRange,
+            float personalSpaceRange,
             bool isOutsideAttackRange,
             bool hasRangedWeapon)
         {
-            return !isOutsideAttackRange && !hasRangedWeapon;
+            if (isOutsideAttackRange)
+            {
+                return new BlockedLineMovementPlan(
+                    targetX,
+                    targetY,
+                    targetZ,
+                    desiredAttackRange,
+                    desiredAttackRange,
+                    true);
+            }
+
+            if (!hasRangedWeapon)
+            {
+                return new BlockedLineMovementPlan(
+                    targetX,
+                    targetY,
+                    targetZ,
+                    personalSpaceRange,
+                    personalSpaceRange,
+                    true);
+            }
+
+            var destination = GetRangedLineRepositionDestination(
+                attackerX,
+                attackerY,
+                attackerZ,
+                targetX,
+                targetY,
+                attackerId);
+            return new BlockedLineMovementPlan(
+                destination.X,
+                destination.Y,
+                destination.Z,
+                RANGED_LINE_REPOSITION_COMPLETION_RANGE,
+                desiredAttackRange,
+                false);
         }
+
+        private static RepositionDestination GetRangedLineRepositionDestination(
+            float attackerX,
+            float attackerY,
+            float attackerZ,
+            float targetX,
+            float targetY,
+            uint attackerId)
+        {
+            var x = attackerX - targetX;
+            var y = attackerY - targetY;
+            var radius = MathF.Sqrt(x * x + y * y);
+            var direction = (attackerId & 1) == 0 ? 1f : -1f;
+
+            if (radius <= CNW_PATHFIND_TOLERANCE)
+            {
+                return new RepositionDestination(
+                    attackerX,
+                    attackerY + direction * RANGED_LINE_REPOSITION_ARC_LENGTH,
+                    attackerZ);
+            }
+
+            var angle = MathF.Min(
+                RANGED_LINE_REPOSITION_MAX_ANGLE,
+                RANGED_LINE_REPOSITION_ARC_LENGTH / radius);
+            var cosine = MathF.Cos(angle);
+            var sine = MathF.Sin(angle) * direction;
+
+            return new RepositionDestination(
+                targetX + x * cosine - y * sine,
+                targetY + x * sine + y * cosine,
+                attackerZ);
+        }
+
+        private readonly record struct BlockedLineMovementPlan(
+            float DestinationX,
+            float DestinationY,
+            float DestinationZ,
+            float PathCompletionRange,
+            float AttackCheckRange,
+            bool TrackAttackTarget);
+
+        private readonly record struct RepositionDestination(float X, float Y, float Z);
 
         private static bool TryCancelAttackForCombatLeash(CNWSCreature pCreature, CNWSObjectActionNode pNode, uint target)
         {

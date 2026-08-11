@@ -519,42 +519,70 @@ public class AIModelTests
             .BeLessThan(pendingAttackBody.IndexOf("pCreature.ResolveAttack(oidTarget, nAttacks, nTimeAnimation);", StringComparison.Ordinal));
     }
 
-    [TestCase(false, false, true)]
-    [TestCase(false, true, false)]
-    [TestCase(true, false, false)]
-    [TestCase(true, true, false)]
-    public void NativeAttackAction_OnlyMeleeAttackersInsideMaximumRangeCloseToPersonalSpace(
+    [TestCase(false, false, 1.5f, 1.5f, true, true)]
+    [TestCase(false, true, 0.25f, 10f, false, false)]
+    [TestCase(true, false, 10f, 10f, true, true)]
+    [TestCase(true, true, 10f, 10f, true, true)]
+    public void NativeAttackAction_BlockedLineMovementPlan_SelectsExecutablePath(
         bool isOutsideAttackRange,
         bool hasRangedWeapon,
-        bool expected)
+        float expectedPathCompletionRange,
+        float expectedAttackCheckRange,
+        bool expectedTrackAttackTarget,
+        bool expectedTargetDestination)
     {
-        var method = typeof(OnAIActionAttackObject).GetMethod(
-            "ShouldUsePersonalSpaceForBlockedLineOfAttack",
-            BindingFlags.Static | BindingFlags.NonPublic);
+        var plan = CreateBlockedLineMovementPlan(
+            10f,
+            0f,
+            0f,
+            0f,
+            0f,
+            0f,
+            2,
+            10f,
+            1.5f,
+            isOutsideAttackRange,
+            hasRangedWeapon);
 
-        method.Should().NotBeNull();
-        method!.Invoke(null, new object[] { isOutsideAttackRange, hasRangedWeapon })
-            .Should()
-            .Be(expected);
+        ReadPlanProperty<float>(plan, "PathCompletionRange").Should().Be(expectedPathCompletionRange);
+        ReadPlanProperty<float>(plan, "AttackCheckRange").Should().Be(expectedAttackCheckRange);
+        ReadPlanProperty<bool>(plan, "TrackAttackTarget").Should().Be(expectedTrackAttackTarget);
+
+        var destinationIsTarget =
+            ReadPlanProperty<float>(plan, "DestinationX") == 0f &&
+            ReadPlanProperty<float>(plan, "DestinationY") == 0f &&
+            ReadPlanProperty<float>(plan, "DestinationZ") == 0f;
+        destinationIsTarget.Should().Be(expectedTargetDestination);
     }
 
     [Test]
-    public void NativeAttackAction_BlockedRangedLinePreservesDesiredAttackRange()
+    public void NativeAttackAction_BlockedRangedLine_ForcesLateralMovementAtFiringDistance()
     {
-        var source = ReadSource("SWLOR.Game.Server", "Native", "OnAIActionAttackObject.cs")
-            .Replace("\r\n", "\n");
-        var movementStart = source.IndexOf(
-            "var fMoveToTargetRange = fDesiredAttackRange;",
-            StringComparison.Ordinal);
-        var movementBody = source.Substring(
-            movementStart,
-            source.IndexOf("var bRunToTarget = true;", movementStart, StringComparison.Ordinal) - movementStart);
+        var plan = CreateBlockedLineMovementPlan(
+            10f,
+            0f,
+            2f,
+            0f,
+            0f,
+            0f,
+            2,
+            10f,
+            1.5f,
+            false,
+            true);
+        var destinationX = ReadPlanProperty<float>(plan, "DestinationX");
+        var destinationY = ReadPlanProperty<float>(plan, "DestinationY");
+        var destinationZ = ReadPlanProperty<float>(plan, "DestinationZ");
 
-        movementBody.Should().Contain(
-            "ShouldUsePersonalSpaceForBlockedLineOfAttack(\n                                    bOutsideAttackRange,\n                                    pCreature.GetRangeWeaponEquipped() == 1)");
-        movementBody.Should().Contain(
-            "fMoveToTargetRange = pCreature.m_pcPathfindInformation.m_fCreaturePersonalSpace;");
-        movementBody.Should().NotContain("if (!bOutsideAttackRange)");
+        destinationX.Should().NotBe(10f);
+        destinationY.Should().NotBe(0f);
+        ReadPlanProperty<float>(plan, "PathCompletionRange").Should().BeLessThan(2f);
+        ReadPlanProperty<float>(plan, "AttackCheckRange").Should().Be(10f);
+        ReadPlanProperty<bool>(plan, "TrackAttackTarget").Should().BeFalse();
+
+        var repositionedRadiusSquared = MathF.Pow(destinationX, 2) + MathF.Pow(destinationY, 2);
+        repositionedRadiusSquared.Should().BeApproximately(100f, 0.001f);
+        destinationZ.Should().Be(2f);
     }
 
     [Test]
@@ -977,6 +1005,47 @@ public class AIModelTests
         return (T)typeof(Enmity)
             .GetField(name, BindingFlags.Static | BindingFlags.NonPublic)!
             .GetValue(null)!;
+    }
+
+    private static object CreateBlockedLineMovementPlan(
+        float attackerX,
+        float attackerY,
+        float attackerZ,
+        float targetX,
+        float targetY,
+        float targetZ,
+        uint attackerId,
+        float desiredAttackRange,
+        float personalSpaceRange,
+        bool isOutsideAttackRange,
+        bool hasRangedWeapon)
+    {
+        var method = typeof(OnAIActionAttackObject).GetMethod(
+            "CreateBlockedLineMovementPlan",
+            BindingFlags.Static | BindingFlags.NonPublic);
+
+        method.Should().NotBeNull();
+        return method!.Invoke(null, new object[]
+        {
+            attackerX,
+            attackerY,
+            attackerZ,
+            targetX,
+            targetY,
+            targetZ,
+            attackerId,
+            desiredAttackRange,
+            personalSpaceRange,
+            isOutsideAttackRange,
+            hasRangedWeapon
+        })!;
+    }
+
+    private static T ReadPlanProperty<T>(object plan, string name)
+    {
+        var property = plan.GetType().GetProperty(name, BindingFlags.Instance | BindingFlags.Public);
+        property.Should().NotBeNull();
+        return (T)property!.GetValue(plan)!;
     }
 
     private static string ReadSource(params string[] pathParts)

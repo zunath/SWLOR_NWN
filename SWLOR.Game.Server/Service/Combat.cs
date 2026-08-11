@@ -9120,25 +9120,45 @@ namespace SWLOR.Game.Server.Service
             if (attackDeflection == 0 || duration <= 0)
                 return;
 
+            var source = Stat.GetStatTypeDeflectionSource(attackDeflectionStatType);
+            var targetStatType = source switch
+            {
+                DeflectionSource.Melee => StatType.MeleeDeflection,
+                DeflectionSource.Ranged => StatType.RangedDeflection,
+                _ => StatType.Invalid
+            };
+            if (targetStatType == StatType.Invalid)
+                return;
+
             TemporaryStatModifier.Replace(
                 activator,
-                StatType.MeleeDeflection,
+                targetStatType,
                 attackDeflection,
                 duration,
-                StatType.MeleeDeflection);
+                targetStatType);
             if (deflectionFPRestoreStatType != StatType.Invalid)
             {
                 var fpRestore = Stat.GetStatAdjustment(activator, deflectionFPRestoreStatType);
-                if (fpRestore > 0)
+                var fpRestoreSource = Stat.GetStatTypeDeflectionSource(deflectionFPRestoreStatType);
+                if (fpRestore > 0 && fpRestoreSource == source)
                 {
+                    var fpRestoreTargetStatType = fpRestoreSource switch
+                    {
+                        DeflectionSource.Melee => StatType.MeleeDeflectionFPRestore,
+                        DeflectionSource.Ranged => StatType.DeflectionFPRestore,
+                        _ => StatType.Invalid
+                    };
                     TemporaryStatModifier.Replace(
                         activator,
-                        StatType.MeleeDeflectionFPRestore,
+                        fpRestoreTargetStatType,
                         fpRestore,
                         duration,
                         deflectionFPRestoreStatType);
                 }
             }
+
+            if (source == DeflectionSource.Ranged)
+                ApplyAbilityGrantedAttackDeflectionEffects(activator, source);
         }
 
         public static void ApplyAbilityGrantedAttackDeflectionEffects(uint activator, DeflectionSource source)

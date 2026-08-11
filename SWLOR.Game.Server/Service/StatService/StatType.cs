@@ -3386,7 +3386,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Temporary Melee Deflection granted after using a matching single-target ability.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Melee)]
         SingleTargetAbilityAttackDeflection = 590,
 
         /// <summary>
@@ -3716,7 +3716,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Temporary Melee Deflection granted after using a matching hostile ability.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Melee)]
         AbilityUsedAttackDeflection = 650,
 
         /// <summary>
@@ -4653,7 +4653,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// FP restoration temporarily granted while AbilityUsedAttackDeflection is active.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Melee)]
         AbilityUsedAttackDeflectionFPRestore = 808,
 
         /// <summary>
@@ -4665,7 +4665,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Temporary Melee Deflection granted after using an ability from AbilityUsedPerkCategoryAttackDeflectionCategoryType.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Melee)]
         AbilityUsedPerkCategoryAttackDeflection = 810,
 
         /// <summary>
@@ -4677,7 +4677,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// FP restoration temporarily granted while AbilityUsedPerkCategoryAttackDeflection is active.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Melee)]
         AbilityUsedPerkCategoryAttackDeflectionFPRestore = 812,
 
         /// <summary>

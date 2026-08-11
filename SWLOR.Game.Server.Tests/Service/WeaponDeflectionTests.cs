@@ -19,6 +19,11 @@ public class WeaponDeflectionTests
         Stat.GetStatTypeDeflectionSource(StatType.RangedDeflection).Should().Be(DeflectionSource.Ranged);
         Stat.GetStatTypeDeflectionSource(StatType.RangedDeflectionChanceCap).Should().Be(DeflectionSource.Ranged);
         Stat.GetStatTypeDeflectionSource(StatType.ShieldDeflection).Should().Be(DeflectionSource.Shield);
+        Stat.GetStatTypeDeflectionSource(StatType.SingleTargetAbilityAttackDeflection).Should().Be(DeflectionSource.Melee);
+        Stat.GetStatTypeDeflectionSource(StatType.AbilityUsedAttackDeflection).Should().Be(DeflectionSource.Melee);
+        Stat.GetStatTypeDeflectionSource(StatType.AbilityUsedAttackDeflectionFPRestore).Should().Be(DeflectionSource.Melee);
+        Stat.GetStatTypeDeflectionSource(StatType.AbilityUsedPerkCategoryAttackDeflection).Should().Be(DeflectionSource.Melee);
+        Stat.GetStatTypeDeflectionSource(StatType.AbilityUsedPerkCategoryAttackDeflectionFPRestore).Should().Be(DeflectionSource.Melee);
         Stat.GetStatTypeDeflectionSource(StatType.AbilityGrantedAttackDeflectionFPRestore).Should().Be(DeflectionSource.Ranged);
         Stat.GetStatTypeDeflectionSource(StatType.AbilityGrantedAttackDeflectionFPRestoreCooldownSeconds).Should().Be(DeflectionSource.Ranged);
         Stat.GetStatTypeDeflectionSource(StatType.DeflectionStaminaRestorePercent).Should().Be(DeflectionSource.None);
@@ -98,6 +103,12 @@ public class WeaponDeflectionTests
         combatSource.Should().Contain(
             "Stat.GetStatTypeDeflectionSource(StatType.AbilityGrantedAttackDeflectionFPRestore) != source");
         combatSource.Should().Contain("StatType.MeleeDeflectionFPRestore");
+        combatSource.Should().Contain("var source = Stat.GetStatTypeDeflectionSource(attackDeflectionStatType);");
+        combatSource.Should().Contain("DeflectionSource.Melee => StatType.MeleeDeflection");
+        combatSource.Should().Contain("DeflectionSource.Ranged => StatType.RangedDeflection");
+        combatSource.Should().Contain("var fpRestoreSource = Stat.GetStatTypeDeflectionSource(deflectionFPRestoreStatType);");
+        combatSource.Should().Contain("fpRestore > 0 && fpRestoreSource == source");
+        combatSource.Should().Contain("ApplyAbilityGrantedAttackDeflectionEffects(activator, source)");
         abilitySource.Should().Contain(
             "Combat.ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.Melee)");
         abilitySource.Should().Contain(

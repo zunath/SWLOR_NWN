@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Tests.Perks;
 public class CombatReleaseBalanceAuditTests
 {
     private const int SkillPointCap = 400;
-    private const int PermanentWeaponDeflectionCap = 50;
+    private const int DefaultWeaponDeflectionCap = 50;
 
     private static readonly PerkCategoryType[] WeaponPackages =
     {
@@ -366,12 +366,12 @@ public class CombatReleaseBalanceAuditTests
                 continue;
             }
 
-            if (archetype.Profile.MeleeDeflection >= PermanentWeaponDeflectionCap)
+            if (archetype.Profile.MeleeDeflection >= DefaultWeaponDeflectionCap)
             {
                 failures.Add($"{archetype.Name}: permanent Melee Deflection is {archetype.Profile.MeleeDeflection}; cap access must stay temporary.");
             }
 
-            if (archetype.Profile.RangedDeflection >= PermanentWeaponDeflectionCap)
+            if (archetype.Profile.RangedDeflection >= DefaultWeaponDeflectionCap)
             {
                 failures.Add($"{archetype.Name}: permanent Ranged Deflection is {archetype.Profile.RangedDeflection}; cap access must stay temporary.");
             }
@@ -408,8 +408,8 @@ public class CombatReleaseBalanceAuditTests
         legalProfiles.Should().NotBeEmpty("the release audit needs legal package combinations to inspect");
 
         var capViolations = legalProfiles
-            .Where(x => x.MeleeDeflection >= PermanentWeaponDeflectionCap ||
-                        x.RangedDeflection >= PermanentWeaponDeflectionCap)
+            .Where(x => x.MeleeDeflection >= DefaultWeaponDeflectionCap ||
+                        x.RangedDeflection >= DefaultWeaponDeflectionCap)
             .OrderByDescending(x => Math.Max(x.MeleeDeflection, x.RangedDeflection))
             .ThenByDescending(x => x.OffenseScore)
             .Take(20)
@@ -625,7 +625,8 @@ public class CombatReleaseBalanceAuditTests
             Archetype(packages, "Cross-skill control stack", PerkCategoryType.SpearDisabler, PerkCategoryType.RiflePacification, PerkCategoryType.DevicesGrenadier, PerkCategoryType.EspionageSaboteur, PerkCategoryType.Mimicry),
             Archetype(packages, "High-MGT damage stack", PerkCategoryType.HeavyVibrobladeOffense, PerkCategoryType.SpearDamage, PerkCategoryType.StaffCrusher, PerkCategoryType.LeadershipVanguardCommand),
             Archetype(packages, "High-PER crit stack", PerkCategoryType.PistolGunslinger, PerkCategoryType.RifleMarksman, PerkCategoryType.ThrowingDeadeye, PerkCategoryType.LeadershipVanguardCommand),
-            Archetype(packages, "Attack Deflection stack", PerkCategoryType.StaffSentinel, PerkCategoryType.LightsaberOffense, PerkCategoryType.SaberstaffTempest, PerkCategoryType.TwinBladeDuelist, PerkCategoryType.HeavyVibrobladeDefense),
+            Archetype(packages, "Melee Deflection stack", PerkCategoryType.StaffSentinel, PerkCategoryType.TwinBladeDuelist, PerkCategoryType.HeavyVibrobladeDefense),
+            Archetype(packages, "Ranged Deflection stack", PerkCategoryType.LightsaberOffense, PerkCategoryType.SaberstaffTempest),
             Archetype(packages, "Shield Deflection stack", PerkCategoryType.VibrobladeDefense, PerkCategoryType.DevicesFieldSupport, PerkCategoryType.LeadershipFieldSteward),
             Archetype(packages, "Guard tank stack", PerkCategoryType.KatarIronGuard, PerkCategoryType.HeavyVibrobladeDefense, PerkCategoryType.LeadershipFieldSteward),
             Archetype(packages, "Sustain tank", PerkCategoryType.HeavyVibrobladeOffense, PerkCategoryType.HeavyVibrobladeDefense, PerkCategoryType.FirstAidTraumaMedic, PerkCategoryType.LeadershipFieldSteward),
@@ -716,8 +717,8 @@ public class CombatReleaseBalanceAuditTests
     private static EnumerationKey GetEnumerationKey(ReleaseProfile profile)
     {
         return new EnumerationKey(
-            Math.Min(profile.MeleeDeflection, PermanentWeaponDeflectionCap),
-            Math.Min(profile.RangedDeflection, PermanentWeaponDeflectionCap),
+            Math.Min(profile.MeleeDeflection, DefaultWeaponDeflectionCap),
+            Math.Min(profile.RangedDeflection, DefaultWeaponDeflectionCap),
             Math.Min(profile.OffenseScore, 175),
             Math.Min(profile.DefenseScore, 160),
             Math.Min(profile.SustainScore, 80),

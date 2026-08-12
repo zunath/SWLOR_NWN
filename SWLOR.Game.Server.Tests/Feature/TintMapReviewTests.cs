@@ -1248,6 +1248,48 @@ public class TintMapReviewTests
     }
 
     [Test]
+    public void EquipmentMaterialSlotsAreIndexedIndependentlyForEachLayer()
+    {
+        var catalog = new Dictionary<string, IReadOnlyList<TintMapMaterialDefinition>>(
+            StringComparer.OrdinalIgnoreCase)
+        {
+            ["pfa0_bicepr122"] = new[]
+            {
+                new TintMapMaterialDefinition(
+                    "female material",
+                    "pfh0_b_rb_805035",
+                    TintMapLayerType.Metal1,
+                    TintMapLayerType.Metal2)
+            },
+            ["pfh0_bicepr122"] = new[]
+            {
+                new TintMapMaterialDefinition(
+                    "half-elf material",
+                    "pfh0_bicepr122",
+                    TintMapLayerType.Metal1,
+                    TintMapLayerType.Cloth1,
+                    TintMapLayerType.Cloth2,
+                    TintMapLayerType.Leather1,
+                    TintMapLayerType.Leather2)
+            }
+        };
+
+        var index = new TintMapEquipmentMaterialIndex(catalog);
+        index.AreEquivalent(
+                "pfh0_b_rb_805035",
+                "pfh0_bicepr122",
+                "pfh0_bicepr122",
+                TintMapLayerType.Metal1)
+            .Should().BeTrue(
+                "the first Metal 1 material remains the same slot even when its extra layers differ");
+        index.GetEquivalentMaterialResrefs(
+                "pfa0_bicepr122",
+                "pfh0_b_rb_805035",
+                TintMapLayerType.Metal1)
+            .Should().BeEquivalentTo("pfh0_b_rb_805035", "pfh0_bicepr122");
+    }
+
+    [Test]
     public void NormalizedVariantIdentityDoesNotOverrideMaterialSlotIdentity()
     {
         var catalog = new Dictionary<string, IReadOnlyList<TintMapMaterialDefinition>>(

@@ -11,9 +11,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
     public sealed class TintMapEquipmentMaterialIndex
     {
         private readonly HashSet<string> _models = new(StringComparer.OrdinalIgnoreCase);
-        private readonly Dictionary<string, Dictionary<MaterialLayerKey, HashSet<MaterialSlot>>>
+        private readonly Dictionary<string, Dictionary<MaterialLayerKey, HashSet<int>>>
             _slotsByModel = new(StringComparer.OrdinalIgnoreCase);
-        private readonly Dictionary<string, Dictionary<MaterialLayerKey, HashSet<MaterialSlot>>>
+        private readonly Dictionary<string, Dictionary<MaterialLayerKey, HashSet<int>>>
             _slotsByVariant = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, Dictionary<LayerSlotKey, HashSet<string>>>
             _materialsByVariantSlot = new(StringComparer.OrdinalIgnoreCase);
@@ -33,18 +33,15 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 var modelSlots = GetOrAdd(_slotsByModel, modelResref);
                 var variantSlots = GetOrAdd(_slotsByVariant, variantIdentity);
                 var variantMaterials = GetOrAdd(_materialsByVariantSlot, variantIdentity);
-                var nextSlotBySignature = new Dictionary<string, int>(StringComparer.Ordinal);
+                var nextSlotByLayer = new Dictionary<TintMapLayerType, int>();
 
                 for (var index = 0; index < materials.Count; index++)
                 {
                     var material = materials[index];
-                    var signature = GetLayerSignature(material);
-                    var slot = new MaterialSlot(
-                        signature,
-                        nextSlotBySignature.GetValueOrDefault(signature));
-                    nextSlotBySignature[signature] = slot.Index + 1;
                     foreach (var layer in material.Layers.Distinct())
                     {
+                        var slot = nextSlotByLayer.GetValueOrDefault(layer);
+                        nextSlotByLayer[layer] = slot + 1;
                         var materialKey = new MaterialLayerKey(
                             Normalize(material.Resref),
                             layer);
@@ -52,7 +49,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                         GetOrAdd(variantSlots, materialKey).Add(slot);
                         GetOrAddStringSet(
                                 variantMaterials,
-                                new LayerSlotKey(layer, slot.Signature, slot.Index))
+                                new LayerSlotKey(layer, slot))
                             .Add(material.Resref);
                     }
                 }
@@ -111,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
             var sourceSlot = sourceSlots.Single();
             return materialsBySlot.TryGetValue(
-                    new LayerSlotKey(layer, sourceSlot.Signature, sourceSlot.Index),
+                    new LayerSlotKey(layer, sourceSlot),
                     out var materialResrefs)
                 ? materialResrefs.OrderBy(value => value, StringComparer.OrdinalIgnoreCase).ToList()
                 : Array.Empty<string>();
@@ -155,20 +152,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             return result;
         }
 
-        private static string GetLayerSignature(TintMapMaterialDefinition material)
-        {
-            return string.Join(",", material.Layers
-                .Select(value => (int)value)
-                .OrderBy(value => value));
-        }
-
         private static string Normalize(string value) => value?.ToLowerInvariant() ?? string.Empty;
 
         private readonly record struct MaterialLayerKey(string MaterialResref, TintMapLayerType Layer);
-        private readonly record struct MaterialSlot(string Signature, int Index);
-        private readonly record struct LayerSlotKey(
-            TintMapLayerType Layer,
-            string Signature,
-            int Index);
+        private readonly record struct LayerSlotKey(TintMapLayerType Layer, int Index);
     }
 }

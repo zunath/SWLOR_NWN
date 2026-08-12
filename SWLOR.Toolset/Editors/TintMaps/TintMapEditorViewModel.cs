@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Render;
@@ -98,8 +99,10 @@ namespace SWLOR.Toolset.Editors.TintMaps
                 for (var index = 0; index < Colors.Count; index++)
                 {
                     var (material, layer) = wanted[index];
+                    var context = ResolveMaterialContext(model, material.Resref, layer);
                     Colors[index].Reload(
-                        ResolveStandardPaletteColorId(model, material.Resref, layer));
+                        context.StandardPaletteColorId,
+                        context.ArmorPart);
                 }
                 return;
             }
@@ -115,13 +118,15 @@ namespace SWLOR.Toolset.Editors.TintMaps
             Colors.Clear();
             foreach (var (material, layer) in wanted)
             {
+                var context = ResolveMaterialContext(model, material.Resref, layer);
                 Colors.Add(new TintMapColorRowViewModel(
                     material.Resref,
                     layer,
                     _variables,
                     _runEdit,
                     _colorChanged,
-                    ResolveStandardPaletteColorId(model, material.Resref, layer)));
+                    context.StandardPaletteColorId,
+                    context.ArmorPart));
             }
 
             if (carryItemCustomColorsAcrossMaterials && model != null)
@@ -136,26 +141,44 @@ namespace SWLOR.Toolset.Editors.TintMaps
             OnPropertyChanged(nameof(HasColors));
         }
 
-        private static int ResolveStandardPaletteColorId(
+        private static MaterialContext ResolveMaterialContext(
             RenderModel? model,
             string materialResref,
             TintMapLayerType layer)
         {
             if (model == null)
-                return 0;
+                return new MaterialContext(0, AppearanceArmor.Invalid);
 
-            foreach (var mesh in model.Meshes.Where(mesh =>
-                         string.Equals(mesh.MaterialName, materialResref, StringComparison.OrdinalIgnoreCase) ||
-                         string.IsNullOrWhiteSpace(mesh.MaterialName) &&
-                         string.Equals(mesh.TextureName, materialResref, StringComparison.OrdinalIgnoreCase)))
+            var matchingMeshes = model.Meshes.Where(mesh =>
+                    string.Equals(mesh.MaterialName, materialResref, StringComparison.OrdinalIgnoreCase) ||
+                    string.IsNullOrWhiteSpace(mesh.MaterialName) &&
+                    string.Equals(mesh.TextureName, materialResref, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+            var armorParts = matchingMeshes
+                .Select(mesh => mesh.ArmorPart)
+                .Where(part => part != AppearanceArmor.Invalid)
+                .Distinct()
+                .ToList();
+            // A material shared by several independently colored parts cannot truthfully inherit
+            // one part's opt-out in its single editor row. Generated isolated materials normally
+            // produce one identity; fail back to material/global behavior if a legacy asset does not.
+            var armorPart = armorParts.Count == 1
+                ? armorParts[0]
+                : AppearanceArmor.Invalid;
+            foreach (var mesh in matchingMeshes)
             {
                 if (mesh.LayerColorIndices.TryGetValue((int)layer, out var meshColor))
-                    return Math.Clamp(meshColor, 0, TintMapMaterialRegistry.PaletteColorCount - 1);
+                {
+                    return new MaterialContext(
+                        Math.Clamp(meshColor, 0, TintMapMaterialRegistry.PaletteColorCount - 1),
+                        armorPart);
+                }
             }
 
-            return model.LayerColorIndices.TryGetValue((int)layer, out var modelColor)
+            var paletteColorId = model.LayerColorIndices.TryGetValue((int)layer, out var modelColor)
                 ? Math.Clamp(modelColor, 0, TintMapMaterialRegistry.PaletteColorCount - 1)
                 : 0;
+            return new MaterialContext(paletteColorId, armorPart);
         }
 
         /// <summary>
@@ -270,13 +293,16 @@ namespace SWLOR.Toolset.Editors.TintMaps
                 var unmatchedDestinations = replacementDestinations
                     .Where(destination => !matchedDestinationKeys.Contains(destination.Key))
                     .ToList();
-                var distinctCustomColors = unmatchedSources
+                var storedSources = unmatchedSources
                     .Where(source => source.SavedColor.HasValue)
+                    .ToList();
+                var distinctCustomColors = storedSources
                     .Select(source => source.SavedColor!.Value)
                     .Distinct()
                     .ToList();
 
-                if (distinctCustomColors.Count == 1)
+                if (unmatchedSources.Count == unmatchedDestinations.Count &&
+                    distinctCustomColors.Count == 1)
                 {
                     for (var index = 0;
                          index < unmatchedSources.Count && index < unmatchedDestinations.Count;
@@ -285,6 +311,10 @@ namespace SWLOR.Toolset.Editors.TintMaps
                         if (unmatchedSources[index].SavedColor is int savedColor)
                             assignments[unmatchedDestinations[index].Key] = savedColor;
                     }
+                }
+                else if (storedSources.Count == 1 && unmatchedDestinations.Count == 1)
+                {
+                    assignments[unmatchedDestinations[0].Key] = storedSources[0].SavedColor!.Value;
                 }
 
                 foreach (var source in sources)
@@ -316,6 +346,10 @@ namespace SWLOR.Toolset.Editors.TintMaps
                 row.Reload();
             return true;
         }
+
+        private sealed record MaterialContext(
+            int StandardPaletteColorId,
+            AppearanceArmor ArmorPart);
 
         /// <summary>
         /// A model replacement resolves asynchronously. A later preset or custom-color edit is the

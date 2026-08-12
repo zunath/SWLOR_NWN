@@ -2,6 +2,7 @@ using Avalonia.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Render;
 
@@ -19,6 +20,7 @@ namespace SWLOR.Toolset.Editors.TintMaps
 
         public string MaterialName { get; }
         public TintMapLayerType Layer { get; }
+        public AppearanceArmor ArmorPart { get; private set; }
         public string LayerName => TintMapMaterialRegistry.GetLayer(Layer).Name;
         public string Key => TintMapVariable.GetName(MaterialName, Layer);
 
@@ -43,13 +45,15 @@ namespace SWLOR.Toolset.Editors.TintMaps
             VarTable variables,
             Func<string, Action, bool> runEdit,
             Action? colorChanged,
-            int standardPaletteColorId = 0)
+            int standardPaletteColorId = 0,
+            AppearanceArmor armorPart = AppearanceArmor.Invalid)
         {
             MaterialName = materialName;
             Layer = layer;
             _variables = variables;
             _runEdit = runEdit;
             _colorChanged = colorChanged;
+            ArmorPart = armorPart;
             _standardPaletteColorId = Math.Clamp(
                 standardPaletteColorId,
                 0,
@@ -113,7 +117,9 @@ namespace SWLOR.Toolset.Editors.TintMaps
             _colorChanged?.Invoke();
         }
 
-        public void Reload(int? standardPaletteColorId = null)
+        public void Reload(
+            int? standardPaletteColorId = null,
+            AppearanceArmor? armorPart = null)
         {
             if (standardPaletteColorId.HasValue)
             {
@@ -123,13 +129,17 @@ namespace SWLOR.Toolset.Editors.TintMaps
                     TintMapMaterialRegistry.PaletteColorCount - 1);
             }
 
+            if (armorPart.HasValue)
+                ArmorPart = armorPart.Value;
+
             _loading = true;
             try
             {
                 var saved = TintMapOverrides.GetMaterialColor(
                     _variables,
                     MaterialName,
-                    Layer);
+                    Layer,
+                    ArmorPart);
                 if (TintMapColor.TryFromStoredValue(saved, out var tint))
                 {
                     Color = Color.FromRgb(tint.Red, tint.Green, tint.Blue);
@@ -170,6 +180,9 @@ namespace SWLOR.Toolset.Editors.TintMaps
         private bool HasInheritedItemGlobalColor()
         {
             if (TintMapVariable.IsCreatureColorLayer(Layer))
+                return false;
+
+            if (TintMapOverrides.HasExplicitPerPartPreset(_variables, ArmorPart, Layer))
                 return false;
 
             var stateVariable = TintMapVariable.GetItemGlobalColorStateName(Layer);

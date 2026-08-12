@@ -420,6 +420,50 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void TintEditorCarriesArmorPartContextIntoRowsThatOptOutOfGlobalRgb()
+        {
+            var catalog = TintMapCatalog.Load(Resources());
+            catalog.Should().NotBeNull();
+            var variables = new VarTable(new JsonGffStruct());
+            var layer = TintMapLayerType.Cloth1;
+            var material = "helm_004";
+            var exactKey = TintMapVariable.GetName(material, layer);
+            variables.SetInt(
+                TintMapVariable.GetItemGlobalColorStateName(layer),
+                new TintMapColor(12, 34, 56).ToStoredValue());
+            variables.SetInt(
+                ArmorColorIndexCalculator.GetPerPartOverrideVariableName(
+                    AppearanceArmor.Torso,
+                    AppearanceArmorColor.Cloth1),
+                1);
+            variables.SetInt(exactKey, new TintMapColor(90, 80, 70).ToStoredValue());
+            var editor = new TintMapEditorViewModel(
+                variables,
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                catalog!);
+            var model = ItemOwnedModelWith(material);
+            model.Meshes.Single().ArmorPart = AppearanceArmor.Torso;
+
+            editor.Reload(model, includeNonItemOwnedMaterials: false);
+
+            var row = editor.Colors.Single(entry =>
+                entry.MaterialName == material && entry.Layer == layer);
+            row.ArmorPart.Should().Be(AppearanceArmor.Torso);
+            row.IsCustom.Should().BeTrue("the exact material tint still wins");
+
+            row.ResetCommand.Execute(null);
+
+            variables.GetInt(exactKey).Should().BeNull(
+                "the per-part preset marker already masks the item-wide RGB tint");
+            row.IsCustom.Should().BeFalse();
+            row.HasOverride.Should().BeFalse();
+        }
+
+        [Test]
         public void TintEditorUsesMatchingMeshPaletteWhenResettingAnInheritedGlobalItemTint()
         {
             var catalog = TintMapCatalog.Load(Resources());
@@ -1645,6 +1689,57 @@ namespace SWLOR.Toolset.Tests
             variables.GetInt(
                     TintMapVariable.GetName("pfh0_p_pe_714899", TintMapLayerType.Leather2))
                 .Should().BeNull("the first female list position was never the custom source");
+        }
+
+        [Test]
+        public void ItemModelReplacementCarriesLoneLaterSlotTintToLoneDestination()
+        {
+            var catalog = TintMapCatalog.Load(Resources());
+            catalog.Should().NotBeNull();
+            var variables = new VarTable(new JsonGffStruct());
+            var editor = new TintMapEditorViewModel(
+                variables,
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                catalog!);
+            var oldModel = new RenderModel
+            {
+                Meshes = new[]
+                {
+                    ModelWith("pfh0_p_pe_714899").Meshes.Single(),
+                    ModelWith("pfh0_pelvis268").Meshes.Single()
+                }
+            };
+            var newModel = ModelWith("pfh0_pelvis269");
+            foreach (var mesh in oldModel.Meshes.Concat(newModel.Meshes))
+                mesh.UsesItemTintOverrides = true;
+            var layer = TintMapLayerType.Cloth2;
+            var oldKey = TintMapVariable.GetName("pfh0_pelvis268", layer);
+            var newKey = TintMapVariable.GetName("pfh0_pelvis269", layer);
+            var color = new TintMapColor(12, 34, 56);
+            variables.SetInt(oldKey, color.ToStoredValue());
+
+            editor.Reload(
+                oldModel,
+                includeNonItemOwnedMaterials: false,
+                carryItemCustomColorsAcrossMaterials: true);
+            editor.Reload(
+                null,
+                includeNonItemOwnedMaterials: false,
+                carryItemCustomColorsAcrossMaterials: true);
+            editor.Reload(
+                newModel,
+                includeNonItemOwnedMaterials: false,
+                carryItemCustomColorsAcrossMaterials: true);
+
+            var stored = variables.GetInt(newKey);
+            stored.Should().NotBeNull();
+            TintMapColor.TryFromStoredValue(stored!.Value, out var carried).Should().BeTrue();
+            carried.Should().Be(color);
+            variables.GetInt(oldKey).Should().BeNull();
         }
 
         [Test]

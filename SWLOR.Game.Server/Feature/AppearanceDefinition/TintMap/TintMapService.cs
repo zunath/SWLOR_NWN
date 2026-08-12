@@ -9,7 +9,6 @@ using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
-using CNWSCreature = NWN.Native.API.CNWSCreature;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using NWNXLib = NWN.Native.API.NWNXLib;
 
@@ -1455,20 +1454,27 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             TintMapLayerType layer,
             TintMapColorSelection color)
         {
-            // A body-part edit updates the creature's appearance before OnAppearanceEdit reapplies
-            // the tint uniforms. That appearance update is why an RGB tint previously became
-            // visible only after changing a body part. Reproduce that successful ordering here:
-            // invalidate the composed appearance, install the current shader values, then force
-            // the server to compare and publish the changed material-parameter list this tick.
-            var creaturePointer = NWNXUtils.GetGameObject(creature);
-            if (creaturePointer != nint.Zero)
+            ApplyCreatureColor(creature, selections, layer, color);
+
+            // NWN compares an object's shader parameters with the copy stored in each connected
+            // player's last-update object. Replacing a vec4 under the same material/parameter
+            // key can leave that cached copy equal by identity even though the server-side value
+            // changed; the client then keeps the first custom color until an unrelated appearance
+            // rebuild recreates the snapshot. Clear only the cached shader-parameter list after
+            // installing the new values. The next forced update now compares the live list with an
+            // empty snapshot and sends every current tint without despawning the creature or
+            // disturbing its camera/appearance state.
+            var server = NWNXLib.g_pAppManager.m_pServerExoApp;
+            for (var playerObject = GetFirstPC();
+                 GetIsObjectValid(playerObject);
+                 playerObject = GetNextPC())
             {
-                var nativeCreature = CNWSCreature.FromPointer(creaturePointer);
-                nativeCreature?.UpdateAppearanceDependantInfo();
+                var nativePlayer = server.GetClientObjectByObjectId(playerObject);
+                var lastUpdateObject = nativePlayer?.GetLastUpdateObject(creature);
+                lastUpdateObject?.m_lMaterialShaderParameters.Clear();
             }
 
-            ApplyCreatureColor(creature, selections, layer, color);
-            NWNXLib.g_pAppManager.m_pServerExoApp.SetForceUpdate();
+            server.SetForceUpdate();
         }
 
         private static void ApplyMaterialColor(

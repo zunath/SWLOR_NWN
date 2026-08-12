@@ -595,15 +595,21 @@ public class TintMapReviewTests
             .OfType<InvocationExpressionSyntax>()
             .Select(GetInvokedMethodName)
             .ToList();
-        publish.ToString().Should().Contain("UpdateAppearanceDependantInfo",
-            "custom RGB edits must invalidate the composed creature appearance just like a body-part edit");
         publishCalls.Should().Contain("ApplyCreatureColor");
+        publishCalls.Should().Contain("GetFirstPC",
+            "every connected observer can retain the old shader-parameter snapshot");
+        publish.ToString().Should().Contain("GetLastUpdateObject(creature)",
+            "the client comparison snapshot must be invalidated after a same-key vec4 replacement");
+        publish.ToString().Should().Contain("m_lMaterialShaderParameters.Clear()",
+            "clearing only the cached material parameters forces the live RGB values to replicate without recreating the creature");
         publishCalls.Should().Contain("SetForceUpdate",
             "the changed material-parameter list must be compared and sent to clients immediately");
-        publish.ToString().IndexOf("UpdateAppearanceDependantInfo", StringComparison.Ordinal)
+        publish.ToString().IndexOf("ApplyCreatureColor(creature", StringComparison.Ordinal)
             .Should().BeLessThan(
-                publish.ToString().IndexOf("ApplyCreatureColor(creature", StringComparison.Ordinal),
-                "the proven body-part refresh ordering invalidates appearance before reapplying tint uniforms");
+                publish.ToString().IndexOf("m_lMaterialShaderParameters.Clear()", StringComparison.Ordinal),
+                "the server's live tint list must contain the replacement before observer snapshots are invalidated");
+        publish.ToString().Should().NotContain("UpdateAppearanceDependantInfo",
+            "a color edit must not rebuild the creature or disturb the player's view state");
 
         var applyCreatureColor = FindMethod(serviceSource, "ApplyCreatureColor");
         var replacementSource = applyCreatureColor.ToString();

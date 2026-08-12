@@ -126,8 +126,11 @@ namespace SWLOR.Toolset.Editors.TintMaps
 
             if (carryItemCustomColorsAcrossMaterials && model != null)
             {
-                if (CarryItemCustomColors(carry, Colors))
-                    _pendingItemColorCarry = null;
+                CarryItemCustomColors(carry, Colors);
+                // A resolved replacement consumes its captured source snapshot even when the
+                // originating edit can no longer accept the automatic carry. Retaining a rejected
+                // snapshot lets a later, unrelated replacement reuse obsolete source materials.
+                _pendingItemColorCarry = null;
             }
 
             OnPropertyChanged(nameof(HasColors));

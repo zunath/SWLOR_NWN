@@ -1347,6 +1347,75 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void RejectedItemColorCarryIsNotReusedByALaterReplacement()
+        {
+            var catalog = TintMapCatalog.Load(Resources());
+            catalog.Should().NotBeNull();
+            var variables = new VarTable(new JsonGffStruct());
+            var firstOrigin = new NoOpDocumentEdit("replace first model");
+            var secondOrigin = new NoOpDocumentEdit("replace second model");
+            IDocumentEdit? appliedOrigin = null;
+            var carryAttempts = 0;
+            var editor = new TintMapEditorViewModel(
+                variables,
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                catalog!,
+                runCoalescedEdit: (origin, _, mutation) =>
+                {
+                    carryAttempts++;
+                    if (carryAttempts == 1)
+                        return false;
+
+                    appliedOrigin = origin;
+                    mutation();
+                    return true;
+                });
+            var firstModel = ModelWith("helm_004");
+            var secondModel = ModelWith("helm_005");
+            var thirdModel = ModelWith("helm_053");
+            firstModel.Meshes.Single().UsesItemTintOverrides = true;
+            secondModel.Meshes.Single().UsesItemTintOverrides = true;
+            thirdModel.Meshes.Single().UsesItemTintOverrides = true;
+            var firstColor = Color.FromRgb(12, 34, 56);
+            var secondColor = Color.FromRgb(65, 43, 21);
+
+            editor.Reload(firstModel, includeNonItemOwnedMaterials: false);
+            editor.Colors.Single(row => row.Layer == TintMapLayerType.Cloth1).Color = firstColor;
+            editor.Reload(
+                null,
+                includeNonItemOwnedMaterials: false,
+                carryItemCustomColorsAcrossMaterials: true,
+                coalesceOrigin: firstOrigin);
+            editor.Reload(
+                secondModel,
+                includeNonItemOwnedMaterials: false,
+                carryItemCustomColorsAcrossMaterials: true);
+
+            editor.Colors.Single(row => row.Layer == TintMapLayerType.Cloth1).Color = secondColor;
+            editor.Reload(
+                null,
+                includeNonItemOwnedMaterials: false,
+                carryItemCustomColorsAcrossMaterials: true,
+                coalesceOrigin: secondOrigin);
+            editor.Reload(
+                thirdModel,
+                includeNonItemOwnedMaterials: false,
+                carryItemCustomColorsAcrossMaterials: true);
+
+            carryAttempts.Should().Be(2);
+            appliedOrigin.Should().BeSameAs(secondOrigin);
+            var thirdKey = TintMapVariable.GetName("helm_053", TintMapLayerType.Cloth1);
+            TintMapColor.TryFromStoredValue(variables.GetInt(thirdKey)!.Value, out var carried)
+                .Should().BeTrue();
+            carried.Should().Be(new TintMapColor(secondColor.R, secondColor.G, secondColor.B),
+                "the rejected first snapshot must not override the newer model color");
+        }
+
+        [Test]
         public void ItemModelReplacementDoesNotGuessBetweenDifferentColorsForOneLayer()
         {
             var catalog = TintMapCatalog.Load(Resources());

@@ -39,7 +39,6 @@ namespace SWLOR.Toolset.Editors.Items
         private ModelPreviewControl? _previewView;
         private RenderModel? _cachedModel;
         private string? _cachedModelSignature;
-        private string? _cachedItemGeometrySignature;
         private string? _pendingModelSignature;
         private IDocumentEdit? _pendingModelEditOrigin;
         private int _previewModelGeneration;
@@ -689,15 +688,14 @@ namespace SWLOR.Toolset.Editors.Items
                 return;
             }
 
-            var itemGeometrySignature = ItemGeometrySignature();
+            var signature = GeometrySignature();
             var carryItemCustomColors =
-                _cachedItemGeometrySignature != null &&
+                _cachedModelSignature != null &&
                 !string.Equals(
-                    _cachedItemGeometrySignature,
-                    itemGeometrySignature,
+                    _cachedModelSignature,
+                    signature,
                     StringComparison.Ordinal);
             var carryOrigin = carryItemCustomColors ? _pendingModelEditOrigin : null;
-            var signature = GeometrySignature();
             if (_cachedModelSignature == signature)
             {
                 _previewModelGeneration++;
@@ -733,7 +731,6 @@ namespace SWLOR.Toolset.Editors.Items
                 snapshot,
                 female,
                 signature,
-                itemGeometrySignature,
                 carryItemCustomColors,
                 generation);
         }
@@ -792,7 +789,6 @@ namespace SWLOR.Toolset.Editors.Items
             byte[] snapshot,
             bool female,
             string signature,
-            string itemGeometrySignature,
             bool carryItemCustomColors,
             int generation)
         {
@@ -829,7 +825,6 @@ namespace SWLOR.Toolset.Editors.Items
                 _pendingModelSignature = null;
                 _cachedModel = model;
                 _cachedModelSignature = signature;
-                _cachedItemGeometrySignature = itemGeometrySignature;
                 IsModelPreviewLoading = false;
                 ApplyPreviewScene(
                     model,

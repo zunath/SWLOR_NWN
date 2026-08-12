@@ -1005,7 +1005,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         [AvaloniaTest]
-        public void MannequinSexChangeDoesNotMoveOrDeleteGenderSpecificCustomColors()
+        public void MannequinSexChangeCarriesCustomColorsToTheVisibleWearerVariant()
         {
             var catalog = TintMapCatalog.Load(Resources());
             catalog.Should().NotBeNull();
@@ -1037,10 +1037,13 @@ namespace SWLOR.Toolset.Tests
             Dispatcher.UIThread.RunJobs();
             DrainUntil(() => !editor.IsModelPreviewLoading);
 
-            variables.GetInt(maleKey).Should().NotBeNull(
-                "changing only the preview mannequin must not delete the male material's tint");
-            variables.GetInt(femaleKey).Should().BeNull(
-                "changing only the preview mannequin must not copy a male tint onto female materials");
+            variables.GetInt(maleKey).Should().BeNull(
+                "the hidden wearer variant must not retain an obsolete material-specific key");
+            TintMapColor.TryFromStoredValue(variables.GetInt(femaleKey)!.Value, out var carried)
+                .Should().BeTrue();
+            carried.Should().Be(new TintMapColor(12, 34, 56));
+            editor.TintMapEditor.Colors.Should().Contain(row =>
+                row.Key == femaleKey && row.IsCustom && row.Color == Color.FromRgb(12, 34, 56));
         }
 
         [AvaloniaTest]

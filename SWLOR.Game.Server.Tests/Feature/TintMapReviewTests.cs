@@ -514,7 +514,7 @@ public class TintMapReviewTests
             "resetting to a preset must also remove the persisted global semantic tint marker");
         resetInvocations.Should().Contain("DeleteLocalInt");
         resetInvocations.Should().Contain("RemoveDroidOverrides");
-        resetInvocations.Should().Contain("ApplyMaterialColor");
+        resetInvocations.Should().Contain("ApplyCreatureColor");
 
         var viewModelSource = ReadSource(
             "SWLOR.Game.Server",
@@ -556,10 +556,10 @@ public class TintMapReviewTests
         synchronizeCalls.Should().Contain("SetLocalInt");
         synchronizeCalls.Should().Contain("SaveDroidOverrides",
             "inactive semantic keys must remain synchronized after a droid respawns");
-        synchronizeCalls.Should().Contain("ApplyMaterialColor",
-            "the active creature must receive one immediate model-wide shader update");
-        synchronize.ToString().Should().Contain("string.Empty",
-            "semantic skin, hair and tattoo colors must target every compatible body material");
+        synchronizeCalls.Should().Contain("ApplyCreatureColor",
+            "the active creature must immediately update every registry-approved body material");
+        synchronize.ToString().Should().NotContain("string.Empty",
+            "a semantic edit must not broadcast into unrelated equipment or NPC materials");
         synchronizeCalls.Should().Contain(nameof(TintMapModelResolver.GetCurrentSelections),
             "an RGB edit must re-resolve body parts that changed while the editor remained open");
 
@@ -1592,11 +1592,10 @@ public class TintMapReviewTests
             .Where(invocation =>
                 invocation.Expression.ToString() == "ResetMaterialShaderUniforms")
             .ToList();
-        resets.Should().HaveCount(5,
-            "a model-wide update clears three legacy per-material values before a preset discards its RGB/mode overrides");
-        resets.Count(reset => reset.ToString().Contains("string.Empty"))
-            .Should().Be(3,
-                "row, RGB and mode values from legacy per-part creature updates must all be cleared");
+        resets.Should().HaveCount(2,
+            "a preset discards only its material-scoped RGB and mode overrides");
+        resets.Should().NotContain(reset => reset.ToString().Contains("string.Empty"),
+            "material writes must never broadcast to every material on the creature");
 
         foreach (var shaderName in new[] { "fs_plt_tinter.shd", "fs_plt_tinter_nm.shd" })
         {
@@ -1615,7 +1614,7 @@ public class TintMapReviewTests
     }
 
     [Test]
-    public void CreatureSemanticColorsUseOneModelWideUniformUpdate()
+    public void CreatureSemanticColorsUseRegistryScopedMaterialUpdates()
     {
         var serviceSource = ReadSource(
             "SWLOR.Game.Server",
@@ -1624,9 +1623,23 @@ public class TintMapReviewTests
             "TintMap",
             "TintMapService.cs");
         var applyCurrent = FindMethod(serviceSource, nameof(TintMapService.ApplyCurrentColors));
-        applyCurrent.ToString().Should().Contain("appliedCreatureLayers");
-        applyCurrent.ToString().Should().Contain("string.Empty");
+        applyCurrent.ToString().Should().Contain("creatureLayers");
+        applyCurrent.ToString().Should().Contain("ApplyCreatureColor");
         applyCurrent.ToString().Should().Contain("GetEffectiveCreatureColor(creature, layer)");
+
+        var applyCreatureColor = FindMethod(serviceSource, "ApplyCreatureColor");
+        applyCreatureColor.ToString().Should().Contain("selection.GetPaletteSource(layer) != creature");
+        applyCreatureColor.ToString().Should().Contain("!selection.Material.Layers.Contains(layer)");
+        applyCreatureColor.ToString().Should().Contain("selection.Material.Resref");
+        applyCreatureColor.ToString().Should().Contain("appliedMaterials");
+        applyCreatureColor.ToString().Should().Contain("ResetCreatureLayerShaderOverrides");
+
+        var resetCreatureLayer = FindMethod(serviceSource, "ResetCreatureLayerShaderOverrides");
+        resetCreatureLayer.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Count(invocation => invocation.Expression.ToString() == "ResetMaterialShaderUniforms")
+            .Should().Be(3,
+                "legacy wildcard and stale per-material row, RGB and mode entries must be removed before scoped writes");
 
         var effectiveCreatureColor = FindMethod(serviceSource, "GetEffectiveCreatureColor");
         effectiveCreatureColor.ToString().Should().Contain("GetCreatureCustomColorStateVariable(layer)");

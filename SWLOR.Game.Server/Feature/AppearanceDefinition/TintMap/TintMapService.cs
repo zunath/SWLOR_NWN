@@ -125,26 +125,29 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             if (!GetIsObjectValid(creature))
                 return;
 
-            var appliedCreatureLayers = new HashSet<TintMapLayerType>();
-            foreach (var selection in TintMapModelResolver.GetCurrentSelections(creature))
+            var selections = TintMapModelResolver.GetCurrentSelections(creature);
+            var creatureLayers = new HashSet<TintMapLayerType>();
+            foreach (var selection in selections)
             {
                 foreach (var layer in selection.Material.Layers)
                 {
                     if (TintMapVariable.IsCreatureColorLayer(layer))
                     {
-                        if (!appliedCreatureLayers.Add(layer))
-                            continue;
-
-                        ApplyMaterialColor(
-                            creature,
-                            string.Empty,
-                            layer,
-                            GetEffectiveCreatureColor(creature, layer));
+                        creatureLayers.Add(layer);
                         continue;
                     }
 
                     ApplyColor(creature, selection, layer, GetEffectiveColor(creature, selection, layer));
                 }
+            }
+
+            foreach (var layer in creatureLayers)
+            {
+                ApplyCreatureColor(
+                    creature,
+                    selections,
+                    layer,
+                    GetEffectiveCreatureColor(creature, layer));
             }
         }
 
@@ -485,9 +488,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             }
 
             RemoveDroidOverrides(creature, variableNames);
-            ApplyMaterialColor(
+            ApplyCreatureColor(
                 creature,
-                string.Empty,
+                TintMapModelResolver.GetCurrentSelections(creature),
                 layer,
                 new TintMapColorSelection(GetCreatureStandardColor(creature, layer), null));
         }
@@ -516,9 +519,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
             // The NUI can remain open while an equipment or body-part replacement completes.
             // Persist every currently rendered semantic material so model swaps and droid
-            // snapshots retain the edit, then publish one creature-wide shader value. The
-            // MATERIAL_NAME_NULL_IS_ALL tweak applies it to all compatible body materials in one
-            // update instead of racing the engine's per-object uniform list one part at a time.
+            // snapshots retain the edit. Shader values remain scoped to materials which the
+            // tint-map registry explicitly declares for this semantic layer; publishing an empty
+            // material name would also recolor unrelated equipment and full-body NPC materials.
             var currentSelections = TintMapModelResolver.GetCurrentSelections(creature);
             foreach (var selection in selections.Concat(currentSelections))
             {
@@ -541,9 +544,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 creature,
                 variableNames.Concat(new[] { stateVariable }).ToList(),
                 savedColor);
-            ApplyMaterialColor(
+            ApplyCreatureColor(
                 creature,
-                string.Empty,
+                currentSelections,
                 layer,
                 new TintMapColorSelection(GetCreatureStandardColor(creature, layer), color));
         }
@@ -1142,6 +1145,39 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             ApplyMaterialColor(creature, selection.Material.Resref, layer, color);
         }
 
+        private static void ApplyCreatureColor(
+            uint creature,
+            IReadOnlyList<TintMapMaterialSelection> selections,
+            TintMapLayerType layer,
+            TintMapColorSelection color)
+        {
+            ResetCreatureLayerShaderOverrides(creature, layer);
+
+            var appliedMaterials = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var selection in selections)
+            {
+                if (selection.GetPaletteSource(layer) != creature ||
+                    !selection.Material.Layers.Contains(layer) ||
+                    !appliedMaterials.Add(selection.Material.Resref))
+                {
+                    continue;
+                }
+
+                ApplyMaterialColor(creature, selection.Material.Resref, layer, color);
+            }
+        }
+
+        private static void ResetCreatureLayerShaderOverrides(uint creature, TintMapLayerType layer)
+        {
+            var layerDefinition = TintMapMaterialRegistry.GetLayer(layer);
+            // Empty material names on reset remove both the old wildcard entries and any stale
+            // per-material entries for this parameter. New values are then installed only on the
+            // registry-approved materials by ApplyCreatureColor.
+            ResetMaterialShaderUniforms(creature, string.Empty, layerDefinition.UniformName);
+            ResetMaterialShaderUniforms(creature, string.Empty, layerDefinition.ColorUniformName);
+            ResetMaterialShaderUniforms(creature, string.Empty, layerDefinition.CustomModeUniformName);
+        }
+
         private static void ApplyMaterialColor(
             uint creature,
             string materialResref,
@@ -1150,15 +1186,6 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         {
             var layerDefinition = TintMapMaterialRegistry.GetLayer(layer);
             var customColor = color.CustomColor;
-
-            if (string.IsNullOrEmpty(materialResref))
-            {
-                // Creature-owned channels are semantic, not per-part. Clear any legacy
-                // per-material entries before publishing one wildcard value for the whole model.
-                ResetMaterialShaderUniforms(creature, string.Empty, layerDefinition.UniformName);
-                ResetMaterialShaderUniforms(creature, string.Empty, layerDefinition.ColorUniformName);
-                ResetMaterialShaderUniforms(creature, string.Empty, layerDefinition.CustomModeUniformName);
-            }
 
             SetMaterialShaderUniformVec4(
                 creature,

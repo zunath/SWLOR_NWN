@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using System.Text.RegularExpressions;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Katar;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Pistol;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff;
@@ -27,6 +28,37 @@ public class GeneratedWeaponPerkBehaviorTests
         ability.IsAreaAbility.Should().BeFalse();
         ability.RequiresTarget.Should().BeFalse();
         ability.Targeting.Should().BeNull();
+    }
+
+    [Test]
+    public void ForceSheath_RanksUseMeaningfulDamageSteps()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "Lightsaber",
+            "ForceSheathAbilityDefinition.cs"));
+        var matches = Regex.Matches(
+            source,
+            @"builder\.Create\(FeatType\.ForceSheath(?<rank>\d).*?SkillType\.Lightsaber,\s*(?<damage>\d+),",
+            RegexOptions.Singleline);
+        var damageByRank = matches.ToDictionary(
+            match => int.Parse(match.Groups["rank"].Value),
+            match => int.Parse(match.Groups["damage"].Value));
+
+        damageByRank.Should().Equal(
+            new Dictionary<int, int>
+            {
+                [1] = 12,
+                [2] = 17,
+                [3] = 23,
+                [4] = 30
+            });
+        (source.Split("IsQueuedWeaponAbility = true").Length - 1).Should().Be(4);
+        (source.Split("DamageType = CombatDamageType.Force").Length - 1).Should().Be(4);
     }
 
     [Test]
@@ -107,6 +139,8 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.AbilityFPCostStaminaRestorePercentSkillType, "(int)SkillType.Force");
         AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.AbilityFPCostStaminaRestorePercent, "35");
         AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.HighFPAndStaminaAbilityDamageBonus, "12");
+        AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.HighFPAndStaminaAbilityDamagePercentAdjustmentThresholdPercent, "60");
+        AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.HighFPAndStaminaAbilityDamagePercentAdjustment, "8");
         AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.AbilityRestoredFPHastePercentAdjustment, "10");
         AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.AreaAbilityAfterDeflectionDamagePercentAdjustment, "10");
         AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.AbilityGrantedAttackDeflectionFPRestore, "2");
@@ -266,6 +300,26 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertStatusStat(infiniteConduit, StatType.AbilityFPCostStaminaRestorePercent, 50);
         AssertStatusStat(infiniteConduit, StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent, 70);
         AssertStatusStat(infiniteConduit, StatType.HighFPAndStaminaAbilityDamageBonus, 20);
+
+        var forceLensForceAttack = new ForceLensForceAttackStatusEffect();
+        AssertStatusStat(forceLensForceAttack, StatType.ForceAttackPercentAdjustment, 8);
+        forceLensForceAttack.Icon.Should().Be(EffectIconType.ForceLensForceAttackStatusEffect);
+
+        var forceLensAttack = new ForceLensAttackStatusEffect();
+        AssertStatusStat(forceLensAttack, StatType.AttackPercentAdjustment, 8);
+        forceLensAttack.Icon.Should().Be(EffectIconType.ForceLensAttackStatusEffect);
+
+        var restoredFPHaste = new RestoredFPHasteStatusEffect(10);
+        AssertStatusStat(restoredFPHaste, StatType.AttackDelayReductionPercent, 10);
+        restoredFPHaste.Icon.Should().Be(EffectIconType.RestoredFPHasteStatusEffect);
+
+        var forceMomentum = new ForceMomentumStatusEffect(15);
+        AssertStatusStat(forceMomentum, StatType.ForceAttackPercentAdjustment, 15);
+        forceMomentum.Icon.Should().Be(EffectIconType.ForceMomentumStatusEffect);
+
+        var guardedChannel = new GuardedChannelStatusEffect(20);
+        AssertStatusStat(guardedChannel, StatType.PhysicalDefensePercentAdjustment, 20);
+        guardedChannel.Icon.Should().Be(EffectIconType.GuardedChannelStatusEffect);
 
         var guardianReflexes = new GuardianReflexesStatusEffect(25);
         AssertStatusStat(guardianReflexes, StatType.Guard, 25);
@@ -462,6 +516,8 @@ public class GeneratedWeaponPerkBehaviorTests
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
         Stat.GetStatTypeCategory(StatType.HighFPAndStaminaAbilityDamageBonus)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.HighFPAndStaminaAbilityDamagePercentAdjustment)
+            .Should().Be(StatTypeCategory.BeneficialWhenPositive);
         Stat.GetStatTypeCategory(StatType.BleedingTargetAbilityBleedSpreadChance)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
         Stat.GetStatTypeCategory(StatType.AvoidedAttackNextAutoAttackNoDelaySkillType)
@@ -603,6 +659,12 @@ public class GeneratedWeaponPerkBehaviorTests
         var statusEffectSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "StatusEffect.cs"));
         var generatorSource = File.ReadAllText(Path.Combine(root.FullName, "tools", "GenerateWeaponArchetypeImplementation.py"));
         combatSource.Should().Contain("ApplyCriticalBleedingStatusDurationExtension(attacker, defender)");
+        combatSource.Should().Contain("StatType.HighFPAndStaminaAbilityDamagePercentAdjustmentThresholdPercent");
+        combatSource.Should().Contain("StatType.HighFPAndStaminaAbilityDamagePercentAdjustment");
+        combatSource.Should().Contain("new ForceMomentumStatusEffect(total)");
+        combatSource.Should().Contain("new RestoredFPHasteStatusEffect(haste)");
+        combatSource.Should().Contain("typeof(ForceLensForceAttackStatusEffect)");
+        combatSource.Should().Contain("typeof(ForceLensAttackStatusEffect)");
         combatSource.Should().Contain("ApplyHostileAbilitySequenceEffects(activator, feat, ability)");
         combatSource.Should().Contain("ApplySameTargetHostileAbilityHitEffects(activator, target, ability)");
         combatSource.Should().Contain("ApplyNextDamageDealtBleedEffect(attacker, defender, damageType)");
@@ -886,6 +948,7 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertAbilitySourceContains(root, "Saberstaff", "FocusedArcAbilityDefinition.cs", "HighResourceExtraDamageThresholdPercent = 60");
         AssertAbilitySourceContains(root, "Saberstaff", "FocusedArcAbilityDefinition.cs", "ExtraDamageIfHighResources = 10");
         AssertAbilitySourceContains(root, "Saberstaff", "GuardedChannelAbilityDefinition.cs", "SelfStatResourceAboveThresholdPercent = 40");
+        AssertAbilitySourceContains(root, "Saberstaff", "GuardedChannelAbilityDefinition.cs", "SelfStatusEffectFactory = () => new GuardedChannelStatusEffect");
         AssertAbilitySourceContains(root, "Saberstaff", "SeverFocusAbilityDefinition.cs", "DrainTargetResourceAboveThresholdPercent = 80");
         AssertAbilitySourceContains(root, "Saberstaff", "InfiniteConduitAbilityDefinition.cs", "typeof(InfiniteConduitStatusEffect)");
         AssertAbilitySourceContains(root, "Katar", "SteelShoulderAbilityDefinition.cs", "FriendlyTargetStatusEffectFactory = () => new GuardedStatusEffect(50, 5.0f)");

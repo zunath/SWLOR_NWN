@@ -6,28 +6,29 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     public sealed class GuardedChannelStatusEffect : StatusEffectBase
     {
-        private readonly int _rangedDeflection;
-        private readonly int _forceDefensePercent;
+        private readonly int _physicalDefensePercent;
 
         public override string Name => "Guarded Channel";
         public override EffectIconType Icon => EffectIconType.GuardedChannelStatusEffect;
+        public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
+        public override bool PersistsOnLogout => false;
+        public override bool SendsApplicationMessage => false;
+        public override bool SendsWornOffMessage => false;
+
         public GuardedChannelStatusEffect()
-            : this(12, 20)
+            : this(10)
         {
         }
 
-        public GuardedChannelStatusEffect(int rangedDeflection, int forceDefensePercent)
+        public GuardedChannelStatusEffect(int physicalDefensePercent)
         {
-            _rangedDeflection = rangedDeflection;
-            _forceDefensePercent = forceDefensePercent;
-
-            StatGroup.Stats[StatType.ForceDefensePercentAdjustment] = forceDefensePercent;
-            StatGroup.Stats[StatType.RangedDeflection] = rangedDeflection;
+            _physicalDefensePercent = physicalDefensePercent;
+            StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment] = physicalDefensePercent;
         }
 
         public override IStatusEffect Clone()
         {
-            return new GuardedChannelStatusEffect(_rangedDeflection, _forceDefensePercent);
+            return new GuardedChannelStatusEffect(_physicalDefensePercent);
         }
     }
 }

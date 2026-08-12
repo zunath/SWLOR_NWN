@@ -53,6 +53,19 @@ public class CharacterSheetStatCoverageTests
     }
 
     [Test]
+    public void CharacterSheet_DisplaysHighResourceAbilityBonusesAndTheirLiveState()
+    {
+        var viewModel = ReadViewModel();
+
+        viewModel.Should().Contain("AddHighResourceAbilityDamageStats(AddStat);");
+        viewModel.Should().Contain("\"Balanced Current\"");
+        viewModel.Should().Contain("StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent");
+        viewModel.Should().Contain("\"Balanced Attunement\"");
+        viewModel.Should().Contain("StatType.HighFPAndStaminaAbilityDamagePercentAdjustmentThresholdPercent");
+        viewModel.Should().Contain("Combat.IsCurrentFPAndStaminaAtOrAbovePercent(_target");
+    }
+
+    [Test]
     public void CharacterSheet_DisplaysDetectionAndStealth()
     {
         var viewModel = ReadViewModel();

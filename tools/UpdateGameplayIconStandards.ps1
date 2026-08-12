@@ -3,6 +3,7 @@ param(
     [string]$Feat2daPath = "SWLOR_Haks\sw_2da\feat.2da",
     [string]$Spells2daPath = "SWLOR_Haks\sw_2da\spells.2da",
     [string]$IconPath = "SWLOR_Haks\sw_ability",
+    [string]$StatusIconSourcePath = "SWLOR_Haks\sw_ability_source",
     [string]$EffectIcons2daPath = "SWLOR_Haks\sw_2da\effecticons.2da",
     [string]$EffectIconTypePath = "SWLOR.NWN.API\NWScript\Enum\EffectIconType.cs",
     [string]$StatusEffectPath = "SWLOR.Game.Server\Feature\StatusEffectDefinition",
@@ -768,6 +769,36 @@ function New-StatusIconResRef([pscustomobject]$entry, [hashtable]$seen) {
     return $candidate
 }
 
+function Get-PreservedStatusIconResRef(
+    [hashtable]$existing,
+    [pscustomobject]$entry,
+    [hashtable]$seen) {
+    $manifestKey = Get-ManifestKey $entry.Type $entry.Key
+    $row = if ($existing.ContainsKey($manifestKey)) {
+        $existing[$manifestKey]
+    }
+    else {
+        Get-ManifestRowByKey $existing $entry.Key
+    }
+
+    if ($null -ne $row) {
+        $preserved = (Get-OptionalProperty $row "IconResRef").Trim().ToLowerInvariant()
+        if (![string]::IsNullOrWhiteSpace($preserved)) {
+            if ($preserved.Length -gt 16 -or $preserved -notmatch "^[a-z0-9_]+$") {
+                throw "Preserved status icon resref '$preserved' for '$($entry.Key)' is not a valid NWN resource name."
+            }
+            if ($seen.ContainsKey($preserved)) {
+                throw "Preserved status icon resref '$preserved' is shared by '$($seen[$preserved])' and '$($entry.Key)'."
+            }
+
+            $seen[$preserved] = $entry.Key
+            return $preserved
+        }
+    }
+
+    return New-StatusIconResRef $entry $seen
+}
+
 function Get-SemanticColor([string]$category) {
     switch ($category) {
         "Beneficial" { return [System.Drawing.Color]::FromArgb(255, 84, 246, 122) }
@@ -1295,9 +1326,33 @@ function New-StatusIcon([pscustomobject]$entry, [string]$outputPath) {
 
     Draw-IconBackdrop $g $semantic $motif $hash
 
-    Invoke-InContentBounds $g {
-        Draw-IllustrativeAccents $g $motif $semantic $hash
-        Draw-StatusMotif $g "$($entry.Key) $($entry.DisplayName)" $motif $semantic
+    $sourcePath = Join-Path (Resolve-RepoPath $StatusIconSourcePath) "$($entry.IconResRef).png"
+    if (Test-Path -LiteralPath $sourcePath) {
+        $source = [System.Drawing.Image]::FromFile($sourcePath)
+        try {
+            $cropSize = [Math]::Min($source.Width, $source.Height)
+            $cropX = [int](($source.Width - $cropSize) / 2)
+            $cropY = [int](($source.Height - $cropSize) / 2)
+            $destination = [System.Drawing.RectangleF]::new(18, 18, 92, 92)
+            $sourceRectangle = [System.Drawing.Rectangle]::new($cropX, $cropY, $cropSize, $cropSize)
+
+            Invoke-InContentBounds $g {
+                $g.DrawImage(
+                    $source,
+                    $destination,
+                    $sourceRectangle,
+                    [System.Drawing.GraphicsUnit]::Pixel)
+            }
+        }
+        finally {
+            $source.Dispose()
+        }
+    }
+    else {
+        Invoke-InContentBounds $g {
+            Draw-IllustrativeAccents $g $motif $semantic $hash
+            Draw-StatusMotif $g "$($entry.Key) $($entry.DisplayName)" $motif $semantic
+        }
     }
     $badgeRank = ""
     $resrefKey = $entry.IconResRef.ToLowerInvariant()
@@ -1343,7 +1398,7 @@ function Build-ManifestRows([hashtable]$existing) {
     $rows += @(Get-CustomFeatSpellRows $abilityRows $existing)
 
     foreach ($status in Get-StatusEffectClasses (Resolve-RepoPath $StatusEffectPath)) {
-        $resref = New-StatusIconResRef $status $statusIconSeen
+        $resref = Get-PreservedStatusIconResRef $existing $status $statusIconSeen
         $relativePath = $status.SourcePath.Substring((Get-Location).Path.Length + 1)
         $rows += [pscustomobject]@{
             Type = $status.Type

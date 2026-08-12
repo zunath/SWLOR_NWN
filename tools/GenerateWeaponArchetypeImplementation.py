@@ -2116,6 +2116,9 @@ def profile_property_lines(row, level, primary_status):
         add_profile_property("SelfDefensePercent", guarded_channel.group(1))
         add_profile_property("SelfStatResourceAboveThresholdPercent", guarded_channel.group(2))
         add_profile_property("SelfStatDurationSeconds", "30")
+        add_profile_property(
+            "SelfStatusEffectFactory",
+            f"() => new GuardedChannelStatusEffect({guarded_channel.group(1)})")
 
     hp_cost = first_int(r"(?:costs?|spending) (\d+)% (?:current )?HP", description)
     if hp_cost:

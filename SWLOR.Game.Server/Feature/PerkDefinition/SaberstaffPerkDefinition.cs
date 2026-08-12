@@ -220,8 +220,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BalancedAttunementTrait)
                 .Description("When FP and STM are both above 60%, hostile combat abilities deal +8% damage.")
-                .IncreasesStat(StatType.HighFPAndStaminaAttackThresholdPercent, 60)
-                .IncreasesStat(StatType.HighFPAndStaminaAttackPercentAdjustment, 8)
+                .IncreasesStat(StatType.HighFPAndStaminaAbilityDamagePercentAdjustmentThresholdPercent, 60)
+                .IncreasesStat(StatType.HighFPAndStaminaAbilityDamagePercentAdjustment, 8)
                 .Price(2)
                 .RequirementSkill(SkillType.Saberstaff, 35)
                 .RequirementCharacterType(CharacterType.ForceSensitive);

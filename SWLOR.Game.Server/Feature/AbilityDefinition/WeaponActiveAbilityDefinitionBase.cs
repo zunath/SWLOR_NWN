@@ -596,6 +596,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     return;
                 }
 
+                if (SelfStatusEffectFactory != null)
+                {
+                    StatusEffect.ApplyStatusEffect(
+                        activator,
+                        activator,
+                        SelfStatusEffectFactory(),
+                        duration);
+                    return;
+                }
+
                 ReplaceTemporary(activator, StatType.AttackPercentAdjustment, SelfAttackPercent, duration);
                 ReplaceTemporary(activator, StatType.AccuracyPercentAdjustment, SelfAccuracyPercent, duration);
                 ReplaceTemporary(activator, StatType.EvasionPercentAdjustment, SelfEvasionPercent, duration);

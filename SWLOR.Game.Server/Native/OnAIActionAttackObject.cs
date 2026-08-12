@@ -16,6 +16,8 @@ namespace SWLOR.Game.Server.Native
 
         private const int SANCTUARY_SAVE_FAILED = 1;
         private const float CNW_PATHFIND_TOLERANCE = 0.01f;
+        private const float DEFAULT_RANGED_DESIRED_ATTACK_RANGE = 10f;
+        private const float MELEE_ATTACK_RANGE = 1.5f;
 
         private const ushort AISTATE_CREATURE_ABLE_TO_GO_HOSTILE = 0x0080;
         private const ushort AISTATE_CREATURE_USE_HANDS = 0x0004;
@@ -176,6 +178,10 @@ namespace SWLOR.Game.Server.Native
 
                     var fMaxAttackRange = pCreature.MaxAttackRange(oidAttackTarget);
                     var fDesiredAttackRange = pCreature.DesiredAttackRange(oidAttackTarget);
+                    fDesiredAttackRange = ResolveDesiredAttackRange(
+                        fDesiredAttackRange,
+                        fMaxAttackRange,
+                        pCreature.GetRangeWeaponEquipped() == 1);
                     if (pCreature.m_oidAttemptedAttackTarget == OBJECT_INVALID)
                     {
                         pCreature.m_oidAttemptedAttackTarget = oidAttackTarget;
@@ -817,6 +823,30 @@ namespace SWLOR.Game.Server.Native
             bool TrackAttackTarget);
 
         private readonly record struct RepositionDestination(float X, float Y, float Z);
+
+        private static float ResolveDesiredAttackRange(
+            float desiredAttackRange,
+            float maxAttackRange,
+            bool hasRangedWeapon)
+        {
+            if (!hasRangedWeapon ||
+                !float.IsNaN(desiredAttackRange) &&
+                !float.IsInfinity(desiredAttackRange) &&
+                desiredAttackRange > MELEE_ATTACK_RANGE)
+            {
+                return desiredAttackRange;
+            }
+
+            if (float.IsNaN(maxAttackRange) ||
+                float.IsInfinity(maxAttackRange) ||
+                maxAttackRange <= MELEE_ATTACK_RANGE)
+            {
+                return DEFAULT_RANGED_DESIRED_ATTACK_RANGE;
+            }
+
+            var maximumUsableRange = maxAttackRange - CNW_PATHFIND_TOLERANCE;
+            return Math.Min(DEFAULT_RANGED_DESIRED_ATTACK_RANGE, maximumUsableRange);
+        }
 
         private static bool TryCancelAttackForCombatLeash(CNWSCreature pCreature, CNWSObjectActionNode pNode, uint target)
         {

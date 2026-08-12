@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Service
         public const int MaximumGuardDamageReductionPercent = 40;
         public const int MaximumNormalDamageReductionPercent = 95;
         public const int MaximumDamageBonusPercent = 100;
+        private const int MaximumCrossResourceRestorePercent = 95;
         public const int MaximumCombinedDamageReductionPercent = 85;
         public const int MaximumAttackDelayAdjustmentPercent = 50;
         public const int BaseHitRate = 75;
@@ -3936,9 +3937,13 @@ namespace SWLOR.Game.Server.Service
             if (isAbilityDamage &&
                 IsCurrentFPAndStaminaAtOrAbovePercent(
                     attacker,
-                    Stat.GetStatAdjustment(attacker, StatType.HighFPAndStaminaAttackThresholdPercent)))
+                    Stat.GetStatAdjustment(
+                        attacker,
+                        StatType.HighFPAndStaminaAbilityDamagePercentAdjustmentThresholdPercent)))
             {
-                adjustment += Stat.GetStatAdjustment(attacker, StatType.HighFPAndStaminaAttackPercentAdjustment);
+                adjustment += Stat.GetStatAdjustment(
+                    attacker,
+                    StatType.HighFPAndStaminaAbilityDamagePercentAdjustment);
             }
 
             if (skillType == SkillType.Rifle &&
@@ -4884,15 +4889,16 @@ namespace SWLOR.Game.Server.Service
             if (forceAttack == 0 || duration <= 0 || maximum <= 0)
                 return;
 
-            TemporaryStatModifier.AddCapped(
+            var current = StatusEffect.GetStatusEffect(
                 activator,
-                StatType.ForceAttackPercentAdjustment,
-                forceAttack,
-                duration,
-                maximum,
-                StatType.HostileAbilityForceAttackPercentPerStack,
-                1,
-                refreshExistingStacks: true);
+                typeof(ForceMomentumStatusEffect)) as ForceMomentumStatusEffect;
+            var total = Math.Min(maximum, (current?.ForceAttack ?? 0) + forceAttack);
+
+            StatusEffect.ApplyStatusEffect(
+                activator,
+                activator,
+                new ForceMomentumStatusEffect(total),
+                duration);
         }
 
         /// <summary>
@@ -5026,9 +5032,6 @@ namespace SWLOR.Game.Server.Service
                     ApplyLightsaberOffenseActivatedEffects(activator, target);
                     ApplyLightsaberDefenseActivatedEffects(activator);
                     ApplyLightsaberWardActivatedEffects(activator, ability);
-                    break;
-                case SkillType.Saberstaff:
-                    ApplySaberstaffConduitActivatedEffects(activator, ability);
                     break;
             }
         }
@@ -7199,22 +7202,6 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private static void ApplySaberstaffConduitActivatedEffects(
-            uint activator,
-            AbilityDetail ability)
-        {
-            if (ability.IsHostileAbility ||
-                Stat.GetStatAdjustment(activator, StatType.SaberstaffConduitForceLens) <= 0)
-            {
-                return;
-            }
-
-            foreach (var friendly in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, GetLocation(activator), 5f))
-            {
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(ForceLensStatusEffect), 30f);
-            }
-        }
-
         private static void ApplyAbilityUsedPerkCategorySelfDefense(
             uint activator,
             AbilityDetail ability)
@@ -8448,7 +8435,12 @@ namespace SWLOR.Game.Server.Service
             if (restorePercent <= 0 || !SkillTypeMatches(skillType, restoreSkillType))
                 return;
 
-            Stat.RestoreFP(creature, CalculateResourceRestoreFromCost(staminaCost, restorePercent));
+            var amount = CalculateResourceRestoreFromCost(staminaCost, restorePercent);
+            if (amount <= 0)
+                return;
+
+            if (Stat.RestoreFP(creature, amount) > 0)
+                ApplyAbilityRestoredFPEffects(creature);
         }
 
         private static void TrackAbilityStaminaCost(uint creature, AbilityDetail ability, int staminaCost)
@@ -8544,7 +8536,9 @@ namespace SWLOR.Game.Server.Service
             if (restorePercent <= 0 || !SkillTypeMatches(skillType, restoreSkillType))
                 return;
 
-            Stat.RestoreStamina(creature, CalculateResourceRestoreFromCost(fpCost, restorePercent));
+            var amount = CalculateResourceRestoreFromCost(fpCost, restorePercent);
+            if (amount > 0)
+                Stat.RestoreStamina(creature, amount);
         }
 
         private static int CalculateResourceRestoreFromCost(int cost, int percent)
@@ -8552,7 +8546,7 @@ namespace SWLOR.Game.Server.Service
             if (cost <= 0 || percent <= 0)
                 return 0;
 
-            return GameMath.PercentOf(cost, percent);
+            return cost * Math.Min(percent, MaximumCrossResourceRestorePercent) / 100;
         }
 
         public static int GetNextAbilityFPCostAdjustment(uint creature, SkillType skillType)
@@ -9009,12 +9003,35 @@ namespace SWLOR.Game.Server.Service
             if (haste == 0 || duration <= 0)
                 return;
 
-            TemporaryStatModifier.Replace(
+            StatusEffect.ApplyStatusEffect(
                 activator,
-                StatType.AttackDelayReductionPercent,
-                haste,
-                duration,
-                StatType.AbilityRestoredFPHastePercentAdjustment);
+                activator,
+                new RestoredFPHasteStatusEffect(haste),
+                duration);
+        }
+
+        public static void ApplyFPRestoredEffects(uint creature)
+        {
+            if (Stat.GetStatAdjustment(creature, StatType.SaberstaffConduitForceLens) <= 0)
+                return;
+
+            StatusEffect.ApplyStatusEffect(
+                creature,
+                creature,
+                typeof(ForceLensForceAttackStatusEffect),
+                30f);
+        }
+
+        public static void ApplyStaminaRestoredEffects(uint creature)
+        {
+            if (Stat.GetStatAdjustment(creature, StatType.SaberstaffConduitForceLens) <= 0)
+                return;
+
+            StatusEffect.ApplyStatusEffect(
+                creature,
+                creature,
+                typeof(ForceLensAttackStatusEffect),
+                30f);
         }
 
         public static void ApplyAbilityRestoredBothResourcesEffects(uint activator)

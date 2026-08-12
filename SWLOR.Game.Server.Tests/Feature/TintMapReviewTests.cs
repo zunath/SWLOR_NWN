@@ -1822,7 +1822,11 @@ public class TintMapReviewTests
         foreach (var shader in new[] { legacyShader, mappedShader })
         {
             shader.Should().Contain("float referenceV = 0.000244;");
-            shader.Should().Contain("clamp(customTint.rgb * shadeScale, 0.0, 1.0)");
+            shader.Should().Contain(
+                "clamp((vec3(1.0) - customTint.rgb) * shadeScale, 0.0, 1.0)",
+                "direct RGB must enter NWN's standard PLT material pass in complementary color space");
+            shader.Should().NotContain("clamp(customTint.rgb * shadeScale, 0.0, 1.0)",
+                "passing additive editor RGB directly makes #B21406 render as its cyan complement");
             shader.Should().Contain("vec2(128.5 / 256.0, referenceV)",
                 "custom RGB is represented by the same midtone as the preset swatches");
             shader.Should().NotContain("vec2(255.5 / 256.0, referenceV)",

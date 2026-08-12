@@ -12,10 +12,17 @@ namespace SWLOR.Toolset.Domain.Render
     public sealed class TintMapCatalog
     {
         private readonly IReadOnlyDictionary<string, TintMapMaterialDefinition> _materials;
+        private readonly IReadOnlyDictionary<string, IReadOnlyList<TintMapMaterialDefinition>>
+            _materialsByModel;
+        private readonly TintMapEquipmentMaterialIndex _equipmentMaterialIndex;
 
-        private TintMapCatalog(IReadOnlyDictionary<string, TintMapMaterialDefinition> materials)
+        private TintMapCatalog(
+            IReadOnlyDictionary<string, TintMapMaterialDefinition> materials,
+            IReadOnlyDictionary<string, IReadOnlyList<TintMapMaterialDefinition>> materialsByModel)
         {
             _materials = materials;
+            _materialsByModel = materialsByModel;
+            _equipmentMaterialIndex = new TintMapEquipmentMaterialIndex(materialsByModel);
         }
 
         public static TintMapCatalog? Load(ResourceIndex resourceIndex)
@@ -33,11 +40,16 @@ namespace SWLOR.Toolset.Domain.Render
                 var table = TwoDAReader.Read(handle.GetBytes());
                 var layersByMaterial = new Dictionary<string, HashSet<TintMapLayerType>>(
                     StringComparer.OrdinalIgnoreCase);
+                var materialsByModel = new Dictionary<string, List<TintMapMaterialDefinition>>(
+                    StringComparer.OrdinalIgnoreCase);
                 for (var row = 0; row < table.RowCount; row++)
                 {
+                    var model = table.GetValue(row, "MODEL");
                     var material = table.GetValue(row, "MATERIAL");
                     var layerList = table.GetValue(row, "LAYERS");
-                    if (string.IsNullOrWhiteSpace(material) || string.IsNullOrWhiteSpace(layerList))
+                    if (string.IsNullOrWhiteSpace(model) ||
+                        string.IsNullOrWhiteSpace(material) ||
+                        string.IsNullOrWhiteSpace(layerList))
                         continue;
 
                     if (!layersByMaterial.TryGetValue(material, out var layers))
@@ -54,6 +66,28 @@ namespace SWLOR.Toolset.Domain.Render
                             layers.Add((TintMapLayerType)value);
                         }
                     }
+
+                    var rowLayers = layerList
+                        .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                        .Select(rawLayer => int.TryParse(rawLayer, out var value) &&
+                                            Enum.IsDefined(typeof(TintMapLayerType), value)
+                            ? (TintMapLayerType?)value
+                            : null)
+                        .Where(layer => layer.HasValue)
+                        .Select(layer => layer!.Value)
+                        .Distinct()
+                        .ToArray();
+                    if (rowLayers.Length == 0)
+                        continue;
+                    if (!materialsByModel.TryGetValue(model, out var modelMaterials))
+                    {
+                        modelMaterials = new List<TintMapMaterialDefinition>();
+                        materialsByModel[model] = modelMaterials;
+                    }
+                    modelMaterials.Add(new TintMapMaterialDefinition(
+                        material,
+                        material,
+                        rowLayers));
                 }
 
                 var materials = layersByMaterial
@@ -65,7 +99,12 @@ namespace SWLOR.Toolset.Domain.Render
                             pair.Key,
                             pair.Value.OrderBy(layer => layer).ToArray()),
                         StringComparer.OrdinalIgnoreCase);
-                return new TintMapCatalog(materials);
+                return new TintMapCatalog(
+                    materials,
+                    materialsByModel.ToDictionary(
+                        pair => pair.Key,
+                        pair => (IReadOnlyList<TintMapMaterialDefinition>)pair.Value,
+                        StringComparer.OrdinalIgnoreCase));
             }
             catch (Exception)
             {
@@ -131,6 +170,33 @@ namespace SWLOR.Toolset.Domain.Render
                     pair.Value.OrderBy(layer => layer).ToArray()))
                 .OrderBy(material => material.Name, StringComparer.OrdinalIgnoreCase)
                 .ToArray();
+        }
+
+        /// <summary>
+        /// Matches generated equipment materials by their tint-layer slot on corresponding wearer
+        /// variants. A destination material reused by unrelated model identities is ambiguous and
+        /// deliberately fails closed.
+        /// </summary>
+        public bool AreEquipmentMaterialSlotsEquivalent(
+            string sourceMaterialResref,
+            string destinationMaterialResref,
+            TintMapLayerType layer)
+        {
+            var destinationModels = _materialsByModel
+                .Where(pair => pair.Value.Any(material =>
+                    material.Resref.Equals(destinationMaterialResref, StringComparison.OrdinalIgnoreCase) &&
+                    material.Layers.Contains(layer)))
+                .ToList();
+            var matchingVariantIdentities = destinationModels
+                .Where(pair => _equipmentMaterialIndex.AreEquivalent(
+                    sourceMaterialResref,
+                    pair.Key,
+                    destinationMaterialResref,
+                    layer))
+                .Select(pair => TintMapEquipmentMaterialMatcher.GetVariantIdentity(pair.Key))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+            return matchingVariantIdentities.Count == 1;
         }
     }
 }

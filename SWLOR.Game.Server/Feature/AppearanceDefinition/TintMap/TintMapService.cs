@@ -453,18 +453,17 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             }
 
             MarkPendingItemColorEdit(item, layer, armorPart);
-            var activeOtherPartVariables = TintMapModelResolver.GetCurrentSelections(creature)
-                .Where(selection =>
-                    selection.GetPaletteSource(layer) == item &&
-                    selection.ArmorPart != armorPart &&
-                    selection.Material.Layers.Contains(layer))
-                .Select(selection => TintMapVariable.GetName(selection.Material.Resref, layer))
-                .ToHashSet(StringComparer.Ordinal);
             foreach (var variableName in GetItemTintOverrides(item).Keys)
             {
-                if (activeOtherPartVariables.Contains(variableName) ||
-                    !TintMapVariable.TryParse(variableName, out _, out var variableLayer) ||
-                    variableLayer != layer)
+                if (!TintMapVariable.TryParse(
+                        variableName,
+                        out var materialResref,
+                        out var variableLayer) ||
+                    variableLayer != layer ||
+                    !TintMapMaterialRegistry.IsEquipmentMaterialExclusiveToArmorPart(
+                        materialResref,
+                        layer,
+                        armorPart))
                 {
                     continue;
                 }
@@ -1134,6 +1133,33 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     return savedColor;
             }
 
+            // A race or gender-specific worn cloak can use a generated material resref that is
+            // unrelated to the generic cloakmodel material. Match its semantic material slot and
+            // accept the fallback only when it identifies one unambiguous stored color.
+            var overrideMaterials = TintMapMaterialRegistry
+                .GetMaterials(selection.OverrideModelResref)
+                .Where(material => material.Layers.Contains(layer))
+                .ToList();
+            var equivalentColors = GetItemTintOverrides(paletteSource)
+                .Where(entry =>
+                    TintMapVariable.TryParse(
+                        entry.Key,
+                        out var materialResref,
+                        out var variableLayer) &&
+                    variableLayer == layer &&
+                    overrideMaterials.Any(material =>
+                        TintMapMaterialRegistry.AreEquipmentMaterialSlotsEquivalent(
+                            materialResref,
+                            selection.OverrideModelResref,
+                            material.Resref,
+                            layer)))
+                .Select(entry => entry.Value)
+                .Where(value => value > 0)
+                .Distinct()
+                .ToList();
+            if (equivalentColors.Count == 1)
+                return equivalentColors[0];
+
             return 0;
         }
 
@@ -1397,6 +1423,13 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                             destinationColor > 0 &&
                             destinationColor <= TintMapMaterialRegistry.PaletteColorCount)
                         {
+                            continue;
+                        }
+
+                        if (HasExplicitItemPresetColor(selection, layer, destinationColor))
+                        {
+                            // A per-part palette marker is an explicit opt-out from the item-wide
+                            // RGB tint, including while the part's former material is inactive.
                             continue;
                         }
 

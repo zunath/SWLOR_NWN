@@ -1303,6 +1303,48 @@ public class TintMapReviewTests
     }
 
     [Test]
+    public void NaturalMaterialIdentitySurvivesShiftedWearerVariantLayerSlots()
+    {
+        var catalog = new Dictionary<string, IReadOnlyList<TintMapMaterialDefinition>>(
+            StringComparer.OrdinalIgnoreCase)
+        {
+            ["pfh0_pelvis268"] = new[]
+            {
+                new TintMapMaterialDefinition(
+                    "extra female material",
+                    "pfh0_p_pe_714899",
+                    TintMapLayerType.Leather2),
+                new TintMapMaterialDefinition(
+                    "female pelvis",
+                    "pfh0_pelvis268",
+                    TintMapLayerType.Leather2)
+            },
+            ["pmh0_pelvis268"] = new[]
+            {
+                new TintMapMaterialDefinition(
+                    "male pelvis",
+                    "pmh0_pelvis268",
+                    TintMapLayerType.Leather2)
+            }
+        };
+
+        var index = new TintMapEquipmentMaterialIndex(catalog);
+        index.AreEquivalent(
+                "pfh0_pelvis268",
+                "pmh0_pelvis268",
+                "pmh0_pelvis268",
+                TintMapLayerType.Leather2)
+            .Should().BeTrue(
+                "the extra female material shifts the layer slot but not the natural pelvis identity");
+        index.AreEquivalent(
+                "pfh0_p_pe_714899",
+                "pmh0_pelvis268",
+                "pmh0_pelvis268",
+                TintMapLayerType.Leather2)
+            .Should().BeFalse("the unrelated extra material must not win by list position");
+    }
+
+    [Test]
     public void EquipmentMaterialSlotsAreIndexedIndependentlyForEachLayer()
     {
         var catalog = new Dictionary<string, IReadOnlyList<TintMapMaterialDefinition>>(
@@ -1342,6 +1384,94 @@ public class TintMapReviewTests
                 "pfh0_b_rb_805035",
                 TintMapLayerType.Metal1)
             .Should().BeEquivalentTo("pfh0_b_rb_805035", "pfh0_bicepr122");
+    }
+
+    [Test]
+    public void InactivePartCleanupRequiresExclusiveMaterialOwnership()
+    {
+        var sharedMaterial = "shared_hand";
+        var catalog = new Dictionary<string, IReadOnlyList<TintMapMaterialDefinition>>(
+            StringComparer.OrdinalIgnoreCase)
+        {
+            ["pmh0_handl153"] = new[]
+            {
+                new TintMapMaterialDefinition(
+                    "left only",
+                    "left_hand_a",
+                    TintMapLayerType.Cloth1),
+                new TintMapMaterialDefinition("shared", sharedMaterial, TintMapLayerType.Cloth1)
+            },
+            ["pfh0_handl153"] = new[]
+            {
+                new TintMapMaterialDefinition(
+                    "left female",
+                    "left_hand_b",
+                    TintMapLayerType.Cloth1),
+                new TintMapMaterialDefinition("shared", sharedMaterial, TintMapLayerType.Cloth1)
+            },
+            ["pmh0_handr153"] = new[]
+            {
+                new TintMapMaterialDefinition(
+                    "right only",
+                    "right_hand_a",
+                    TintMapLayerType.Cloth1),
+                new TintMapMaterialDefinition("shared", sharedMaterial, TintMapLayerType.Cloth1)
+            }
+        };
+
+        var index = new TintMapEquipmentMaterialIndex(catalog);
+        index.IsExclusiveToArmorPart(
+                "left_hand_a",
+                TintMapLayerType.Cloth1,
+                AppearanceArmor.LeftHand)
+            .Should().BeTrue();
+        index.IsExclusiveToArmorPart(
+                "left_hand_b",
+                TintMapLayerType.Cloth1,
+                AppearanceArmor.LeftHand)
+            .Should().BeTrue("wearer variants remain owned by the same modular part");
+        index.IsExclusiveToArmorPart(
+                "right_hand_a",
+                TintMapLayerType.Cloth1,
+                AppearanceArmor.LeftHand)
+            .Should().BeFalse("an inactive sibling part must retain its stored tint");
+        index.IsExclusiveToArmorPart(
+                sharedMaterial,
+                TintMapLayerType.Cloth1,
+                AppearanceArmor.LeftHand)
+            .Should().BeFalse("ambiguous shared material variables must fail closed");
+    }
+
+    [Test]
+    public void InactiveResetAndRefreshHonorPartScopedPresetIntent()
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapService.cs");
+        var reset = FindMethod(source, nameof(TintMapService.ResetInactiveItemCustomColor));
+        reset.ToString().Should().Contain("IsEquipmentMaterialExclusiveToArmorPart");
+        reset.ToString().Should().NotContain("activeOtherPartVariables",
+            "inactive sibling parts cannot be protected by looking only at current selections");
+
+        var carry = FindMethod(source, "CarryStoredEquipmentCustomColors");
+        var presetCheck = carry.ToString().IndexOf(
+            "HasExplicitItemPresetColor(selection, layer, destinationColor)",
+            StringComparison.Ordinal);
+        var globalCheck = carry.ToString().IndexOf(
+            "GetItemGlobalColorStateName(layer)",
+            StringComparison.Ordinal);
+        presetCheck.Should().BeGreaterThan(-1);
+        presetCheck.Should().BeLessThan(globalCheck,
+            "a per-part palette opt-out must win before restoring an item-wide RGB tint");
+
+        var getSavedColor = FindMethod(source, "GetSavedColor");
+        getSavedColor.ToString().Should().Contain("AreEquipmentMaterialSlotsEquivalent",
+            "dropped generic cloaks must resolve race-specific worn material slots");
+        getSavedColor.ToString().Should().Contain("equivalentColors.Count == 1",
+            "ambiguous race-specific material colors must fail closed");
     }
 
     [Test]

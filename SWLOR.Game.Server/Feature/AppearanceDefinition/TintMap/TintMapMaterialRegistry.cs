@@ -111,6 +111,17 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 layer);
         }
 
+        public static bool IsEquipmentMaterialExclusiveToArmorPart(
+            string materialResref,
+            TintMapLayerType layer,
+            SWLOR.NWN.API.NWScript.Enum.Item.AppearanceArmor armorPart)
+        {
+            return _equipmentMaterialIndex.IsExclusiveToArmorPart(
+                materialResref,
+                layer,
+                armorPart);
+        }
+
         public static TintMapLayerDefinition GetLayer(TintMapLayerType layer)
         {
             if (!LayerDefinitions.TryGetValue(layer, out var definition))

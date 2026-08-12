@@ -221,9 +221,53 @@ namespace SWLOR.Toolset.Editors.TintMaps
                 var replacementDestinations = rows
                     .Where(row => row.Layer == layer && !sourceKeys.Contains(row.Key))
                     .GroupBy(row => row.Key, StringComparer.Ordinal)
-                    .Select(group => group.Key)
+                    .Select(group => group.First())
                     .ToList();
-                var distinctCustomColors = replacedSources
+
+                // Prefer the equipment registry's wearer-variant material slots. Generated female,
+                // male, race, and phenotype materials are not guaranteed to appear in the same
+                // alphabetic order, so list position alone can move a custom tint to the wrong mesh.
+                var semanticCandidates = new List<(
+                    ItemColorSource Source,
+                    TintMapColorRowViewModel Destination)>();
+                foreach (var source in replacedSources.Where(source => source.SavedColor.HasValue))
+                {
+                    if (!TintMapVariable.TryParse(source.Key, out var sourceMaterial, out _))
+                        continue;
+
+                    foreach (var destination in replacementDestinations.Where(destination =>
+                                 _catalog?.AreEquipmentMaterialSlotsEquivalent(
+                                     sourceMaterial,
+                                     destination.MaterialName,
+                                     layer) == true))
+                    {
+                        semanticCandidates.Add((source, destination));
+                    }
+                }
+                var matchedSourceKeys = new HashSet<string>(StringComparer.Ordinal);
+                var matchedDestinationKeys = new HashSet<string>(StringComparer.Ordinal);
+                foreach (var candidate in semanticCandidates)
+                {
+                    if (semanticCandidates.Count(entry =>
+                            entry.Source.Key == candidate.Source.Key) != 1 ||
+                        semanticCandidates.Count(entry =>
+                            entry.Destination.Key == candidate.Destination.Key) != 1)
+                    {
+                        continue;
+                    }
+
+                    assignments[candidate.Destination.Key] = candidate.Source.SavedColor!.Value;
+                    matchedSourceKeys.Add(candidate.Source.Key);
+                    matchedDestinationKeys.Add(candidate.Destination.Key);
+                }
+
+                var unmatchedSources = replacedSources
+                    .Where(source => !matchedSourceKeys.Contains(source.Key))
+                    .ToList();
+                var unmatchedDestinations = replacementDestinations
+                    .Where(destination => !matchedDestinationKeys.Contains(destination.Key))
+                    .ToList();
+                var distinctCustomColors = unmatchedSources
                     .Where(source => source.SavedColor.HasValue)
                     .Select(source => source.SavedColor!.Value)
                     .Distinct()
@@ -232,11 +276,11 @@ namespace SWLOR.Toolset.Editors.TintMaps
                 if (distinctCustomColors.Count == 1)
                 {
                     for (var index = 0;
-                         index < replacedSources.Count && index < replacementDestinations.Count;
+                         index < unmatchedSources.Count && index < unmatchedDestinations.Count;
                          index++)
                     {
-                        if (replacedSources[index].SavedColor is int savedColor)
-                            assignments[replacementDestinations[index]] = savedColor;
+                        if (unmatchedSources[index].SavedColor is int savedColor)
+                            assignments[unmatchedDestinations[index].Key] = savedColor;
                     }
                 }
 

@@ -1374,6 +1374,65 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void ItemModelReplacementMatchesWearerVariantMaterialSlotsBeforeListPosition()
+        {
+            var catalog = TintMapCatalog.Load(Resources());
+            catalog.Should().NotBeNull();
+            catalog!.AreEquipmentMaterialSlotsEquivalent(
+                    "pfh0_pelvis268",
+                    "pmh0_pelvis268",
+                    TintMapLayerType.Leather2)
+                .Should().BeTrue();
+
+            var variables = new VarTable(new JsonGffStruct());
+            var editor = new TintMapEditorViewModel(
+                variables,
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                catalog);
+            var femaleModel = new RenderModel
+            {
+                Meshes = new[]
+                {
+                    ModelWith("pfh0_p_pe_714899").Meshes.Single(),
+                    ModelWith("pfh0_pelvis268").Meshes.Single()
+                }
+            };
+            var maleModel = ModelWith("pmh0_pelvis268");
+            foreach (var mesh in femaleModel.Meshes.Concat(maleModel.Meshes))
+                mesh.UsesItemTintOverrides = true;
+            var color = new TintMapColor(12, 34, 56);
+            variables.SetInt(
+                TintMapVariable.GetName("pfh0_pelvis268", TintMapLayerType.Leather2),
+                color.ToStoredValue());
+
+            editor.Reload(
+                femaleModel,
+                includeNonItemOwnedMaterials: false,
+                carryItemCustomColorsAcrossMaterials: true);
+            editor.Reload(
+                null,
+                includeNonItemOwnedMaterials: false,
+                carryItemCustomColorsAcrossMaterials: true);
+            editor.Reload(
+                maleModel,
+                includeNonItemOwnedMaterials: false,
+                carryItemCustomColorsAcrossMaterials: true);
+
+            var stored = variables.GetInt(
+                TintMapVariable.GetName("pmh0_pelvis268", TintMapLayerType.Leather2));
+            stored.Should().NotBeNull();
+            TintMapColor.TryFromStoredValue(stored!.Value, out var carried).Should().BeTrue();
+            carried.Should().Be(color);
+            variables.GetInt(
+                    TintMapVariable.GetName("pfh0_p_pe_714899", TintMapLayerType.Leather2))
+                .Should().BeNull("the first female list position was never the custom source");
+        }
+
+        [Test]
         public void CatalogReloadClearsStaleRowsBeforeTheNewModelIsResolved()
         {
             var catalog = TintMapCatalog.Load(Resources());

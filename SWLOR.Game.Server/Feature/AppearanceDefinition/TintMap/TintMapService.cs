@@ -219,19 +219,30 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 paletteSource,
                 selection,
                 layer);
-            if (resetVariables.Count == 0)
+            if (!resetVariables.Contains(variableName, StringComparer.Ordinal))
                 resetVariables.Add(variableName);
+            var savedPaletteColor = GetObjectType(paletteSource) == ObjectType.Item &&
+                                    TintMapColor.TryFromStoredValue(
+                                        GetLocalInt(
+                                            paletteSource,
+                                            TintMapVariable.GetItemGlobalColorStateName(layer)),
+                                        out _)
+                ? GetStandardColor(creature, selection, layer) + 1
+                : 0;
             foreach (var resetVariable in resetVariables)
             {
-                DeleteLocalInt(paletteSource, resetVariable);
+                if (savedPaletteColor > 0)
+                    SetLocalInt(paletteSource, resetVariable, savedPaletteColor);
+                else
+                    DeleteLocalInt(paletteSource, resetVariable);
             }
 
-            SaveDroidOverride(creature, selection, layer, variableName, 0);
+            SaveDroidOverride(creature, selection, layer, variableName, savedPaletteColor);
             ApplyColor(
                 creature,
                 selection,
                 layer,
-                new TintMapColorSelection(GetStandardColor(creature, selection, layer), null));
+                GetEffectiveColor(creature, selection, layer));
         }
 
         public static void SetGlobalItemCustomColor(

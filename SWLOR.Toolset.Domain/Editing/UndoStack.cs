@@ -113,6 +113,26 @@ namespace SWLOR.Toolset.Domain.Editing
                 return false;
 
             _entries[originIndex] = new CoalescedDocumentEdit(_entries[originIndex], continuation);
+            var continuationTargets = GetMutationTargets(continuation)
+                .ToHashSet(ReferenceEqualityComparer.Instance);
+            for (var index = _position; index < _entries.Count; index++)
+            {
+                var redoTargets = GetMutationTargets(_entries[index]).ToList();
+                if (continuationTargets.Count > 0 &&
+                    redoTargets.Count > 0 &&
+                    !redoTargets.Any(continuationTargets.Contains))
+                {
+                    continue;
+                }
+
+                // A redo entry that touches the same object captured its before-state before the
+                // continuation existed. Its undo would resurrect that stale state, so this point
+                // becomes a normal history branch. Earlier unrelated redo entries remain valid.
+                if (_savedPosition.HasValue && _savedPosition.Value > index)
+                    _savedPosition = null;
+                _entries.RemoveRange(index, _entries.Count - index);
+                break;
+            }
             if (_savedPosition.HasValue && _savedPosition.Value > originIndex)
             {
                 // A saved state between the originating edit and its deferred continuation is no
@@ -133,6 +153,13 @@ namespace SWLOR.Toolset.Domain.Editing
         {
             return ReferenceEquals(entry, origin) ||
                    entry is CoalescedDocumentEdit coalesced && coalesced.Contains(origin);
+        }
+
+        internal static IEnumerable<object> GetMutationTargets(IDocumentEdit edit)
+        {
+            return edit is IDocumentEditTargetProvider provider
+                ? provider.GetMutationTargets()
+                : Array.Empty<object>();
         }
 
         public void Undo()
@@ -211,7 +238,7 @@ namespace SWLOR.Toolset.Domain.Editing
             _savedPosition = 0;
         }
 
-        private sealed class CoalescedDocumentEdit : IDocumentEdit
+        private sealed class CoalescedDocumentEdit : IDocumentEdit, IDocumentEditTargetProvider
         {
             private readonly IDocumentEdit _origin;
             private readonly IDocumentEdit _continuation;
@@ -240,6 +267,12 @@ namespace SWLOR.Toolset.Domain.Editing
             {
                 return ReferenceEquals(_origin, origin) ||
                        _origin is CoalescedDocumentEdit coalesced && coalesced.Contains(origin);
+            }
+
+            public IEnumerable<object> GetMutationTargets()
+            {
+                return UndoStack.GetMutationTargets(_origin)
+                    .Concat(UndoStack.GetMutationTargets(_continuation));
             }
         }
     }

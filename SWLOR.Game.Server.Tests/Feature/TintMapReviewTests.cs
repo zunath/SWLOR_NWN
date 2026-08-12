@@ -1063,6 +1063,14 @@ public class TintMapReviewTests
             "reset sequencing must be scoped to the edited armor part as well as its layer");
         resetColorMethod.ToString().Should().Contain("GetEquivalentItemTintVariables",
             "resetting a carried color must remove inactive wearer-variant keys that could resurrect it");
+        resetColorMethod.ToString().Should().Contain("GetItemGlobalColorStateName(layer)",
+            "a part reset beneath an active global tint must record that it no longer inherits it");
+        resetColorMethod.ToString().Should().Contain("GetStandardColor(creature, selection, layer) + 1",
+            "the explicit non-inheriting value must use the compatibility palette encoding");
+        resetColorMethod.ToString().Should().Contain("SetLocalInt(paletteSource, resetVariable, savedPaletteColor)",
+            "equivalent inactive wearer-variant materials must retain the per-part preset too");
+        resetColorMethod.ToString().Should().Contain("!resetVariables.Contains(variableName, StringComparer.Ordinal)",
+            "the current material must record its preset even when inactive equivalent keys already exist");
         FindMethod(serviceSource, "MarkPendingItemColorEdit").ParameterList.Parameters
             .Select(parameter => parameter.Identifier.Text)
             .Should().Contain("armorPart");

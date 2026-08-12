@@ -8,7 +8,7 @@ namespace SWLOR.Toolset.Domain.Editing
     /// <see cref="EditScope.EnterTransaction"/>); group unrelated edits under one description
     /// instead of nesting.
     /// </summary>
-    public sealed class DocumentTransaction : IDocumentEdit, IDisposable
+    public sealed class DocumentTransaction : IDocumentEdit, IDocumentEditTargetProvider, IDisposable
     {
         private readonly UndoStack _stack;
         private readonly List<IDocumentEdit> _edits = new();
@@ -136,6 +136,11 @@ namespace SWLOR.Toolset.Domain.Editing
         public string Describe()
         {
             return Description;
+        }
+
+        IEnumerable<object> IDocumentEditTargetProvider.GetMutationTargets()
+        {
+            return _edits.SelectMany(UndoStack.GetMutationTargets);
         }
     }
 }

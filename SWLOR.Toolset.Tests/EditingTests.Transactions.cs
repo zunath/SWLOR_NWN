@@ -127,6 +127,34 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void ExecuteCoalesced_RebasesAnOverlappingRedoBeforeState()
+        {
+            var path = CorpusFiles.FindFileWithMutableInteger("utc");
+            var document = JsonGffDocument.Parse(File.ReadAllBytes(path));
+            using var session = new DocumentSession(path, document);
+            var field = CorpusFiles.FindFirstMutableInteger(document.Root)!;
+            var original = field.GetInteger();
+
+            session.Execute("origin", () => field.SetInteger(original + 1));
+            var origin = session.UndoStack.CurrentAppliedEntry;
+            origin.Should().NotBeNull();
+            session.Execute("later overlapping edit", () => field.SetInteger(original + 2));
+            session.Undo();
+
+            session.ExecuteCoalesced(
+                    origin!,
+                    "deferred continuation",
+                    () => field.SetInteger(original + 3))
+                .Should().BeTrue();
+
+            session.UndoStack.CanRedo.Should().BeFalse(
+                "an overlapping redo captured a stale before-state and must become a normal history branch");
+            field.GetInteger().Should().Be(original + 3);
+            session.Undo();
+            field.GetInteger().Should().Be(original);
+        }
+
+        [Test]
         public void Execute_WhenMutationThrows_RollsBackCapturedEditsAndLeavesHistoryClean()
         {
             var path = CorpusFiles.FindFileWithMutableInteger("utc");

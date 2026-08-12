@@ -695,7 +695,29 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 creature,
                 variableNames.Concat(new[] { stateVariable }).ToList(),
                 savedColor);
-            ApplyCurrentColors(creature);
+
+            // A live NUI color edit must not clear and rebuild the object's complete uniform
+            // table. On the game client, a reset followed by replacement vec4 values in the same
+            // update can leave the previous RGB value active even though the stored color has
+            // changed. Overwrite only this semantic channel on the currently rendered materials.
+            // Reapply once after the model refresh interval, resolving the selections again, so a
+            // body-part replacement that completes during the edit receives the latest value too.
+            ApplyCreatureColor(
+                creature,
+                currentSelections,
+                layer,
+                new TintMapColorSelection(GetCreatureStandardColor(creature, layer), color));
+            DelayCommand(RefreshDelaySeconds, () =>
+            {
+                if (!GetIsObjectValid(creature))
+                    return;
+
+                ApplyCreatureColor(
+                    creature,
+                    TintMapModelResolver.GetCurrentSelections(creature),
+                    layer,
+                    GetEffectiveCreatureColor(creature, layer));
+            });
         }
 
         private static void ApplyCreatureCustomColors(

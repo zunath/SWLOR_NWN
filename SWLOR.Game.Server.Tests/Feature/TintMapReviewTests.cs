@@ -581,8 +581,12 @@ public class TintMapReviewTests
         synchronizeCalls.Should().Contain("SetLocalInt");
         synchronizeCalls.Should().Contain("SaveDroidOverrides",
             "inactive semantic keys must remain synchronized after a droid respawns");
-        synchronizeCalls.Should().Contain(nameof(TintMapService.ApplyCurrentColors),
-            "the active creature must immediately rebuild every equipment and body material");
+        synchronizeCalls.Should().Contain("ApplyCreatureColor",
+            "a live RGB edit must overwrite the active semantic channel without resetting unrelated uniforms");
+        synchronizeCalls.Should().NotContain(nameof(TintMapService.ApplyCurrentColors),
+            "resetting every material in the same update can leave the prior vec4 active on the game client");
+        synchronizeCalls.Should().Contain("DelayCommand",
+            "the latest semantic color must be reapplied after an in-flight body-part refresh");
         synchronize.ToString().Should().NotContain("string.Empty",
             "a semantic edit must not broadcast into unrelated equipment or NPC materials");
         synchronizeCalls.Should().Contain(nameof(TintMapModelResolver.GetCurrentSelections),
@@ -2008,10 +2012,10 @@ public class TintMapReviewTests
         {
             shader.Should().Contain("float referenceV = 0.000244;");
             shader.Should().Contain(
-                "clamp((vec3(1.0) - customTint.rgb) * shadeScale, 0.0, 1.0)",
-                "direct RGB must enter NWN's standard PLT material pass in complementary color space");
-            shader.Should().NotContain("clamp(customTint.rgb * shadeScale, 0.0, 1.0)",
-                "passing additive editor RGB directly makes #B21406 render as its cyan complement");
+                "clamp(customTint.rgb * shadeScale, 0.0, 1.0)",
+                "the selected RGB must retain its hue while the PLT shade curve supplies lighting detail");
+            shader.Should().NotContain("vec3(1.0) - customTint.rgb",
+                "complementing editor RGB turns red into cyan and green into purple");
             shader.Should().Contain("vec2(128.5 / 256.0, referenceV)",
                 "custom RGB is represented by the same midtone as the preset swatches");
             shader.Should().NotContain("vec2(255.5 / 256.0, referenceV)",

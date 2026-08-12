@@ -1061,8 +1061,10 @@ public class TintMapReviewTests
             "every replacement material needs an opportunity to inherit a persisted global tint");
         carryMethod.ToString().Should().Contain("index < replacedSources.Count",
             "an existing per-material color may migrate only to its corresponding replacement material");
-        carryMethod.ToString().Should().Contain("replacedSources[index].Color ?? globalColor",
-            "preset source slots must not be flattened to the layer's one custom color");
+        carryMethod.ToString().Should().Contain("replacedSources[index].Color",
+            "only explicit per-material colors are copied to replacement slots");
+        carryMethod.ToString().Should().NotContain("replacedSources[index].Color ?? globalColor",
+            "a global tint is inherited through TMG_* rather than copied into each TM_* slot");
         carryMethod.ToString().Should().Contain("GetItemGlobalColorStateName(layer)",
             "new replacement materials must inherit an explicitly global equipment tint");
         carryMethod.ToString().Should().Contain("distinctColors.Count == 1 || globalColor.HasValue",
@@ -1139,7 +1141,6 @@ public class TintMapReviewTests
         carryCalls.Should().Contain("GetItemTintOverrides");
         carryCalls.Should().Contain("TryParse");
         carryCalls.Should().Contain("TryFromStoredValue");
-        carryCalls.Should().Contain("SetColor");
         carryCalls.Should().Contain("AreEquipmentMaterialsEquivalent",
             "hashed generated material names must still migrate across wearer variants");
         carryMethod.ToString().Should().Contain("destinationVariable",
@@ -1154,8 +1155,10 @@ public class TintMapReviewTests
             "automatic migration must preserve either the RGB or legacy palette storage format");
         carryMethod.ToString().Should().Contain("GetItemGlobalColorStateName(layer)",
             "an explicit global tint must fill materials newly exposed by another wearer variant");
-        carryMethod.ToString().Should().Contain("out var globalColor",
-            "global intent must be distinguished from coincidentally uniform per-material colors");
+        carryMethod.ToString().Should().Contain("out _",
+            "the presence of global intent is sufficient because inherited materials keep no TM_* value");
+        carryMethod.ToString().Should().Contain("following ApplyCurrentColors pass resolves it through TMG_*",
+            "newly exposed inheriting materials must resolve global state without persisting a duplicate color");
         carryMethod.ToString().Should().Contain("invalidatePendingCarry: false",
             "automatic refresh migration must not look like a newer explicit color edit");
         carryMethod.ToString().Should().NotContain("Dictionary<TintMapLayerType",
@@ -1184,18 +1187,20 @@ public class TintMapReviewTests
         var setGlobalItemColor = FindMethod(serviceSource, nameof(TintMapService.SetGlobalItemCustomColor));
         setGlobalItemColor.ToString().Should().Contain("GetItemGlobalColorStateName(layer)",
             "global equipment tints need persisted intent distinct from per-part material keys");
-        setGlobalItemColor.ToString().Should().Contain("selectionColor == previousGlobalColor",
-            "changing a global RGB tint must preserve independently customized armor parts");
-        setGlobalItemColor.ToString().Should().Contain("!hasSelectionColor",
-            "a newly exposed material without a stored override still inherits the changed global tint");
+        setGlobalItemColor.ToString().Should().Contain("GetItemGlobalInheritanceStateName(layer)",
+            "global equipment tint inheritance must be persisted independently of RGB equality");
+        setGlobalItemColor.ToString().Should().Contain("GetLocalInt(item, inheritanceStateVariable) == 0",
+            "only markerless legacy global tints may use equality for one-time normalization");
+        setGlobalItemColor.ToString().Should().Contain("savedSelectionColor <= 0",
+            "only a material without its own override inherits a changed global tint");
+        setGlobalItemColor.ToString().Should().Contain("includeGlobalColor: false",
+            "explicit material intent must be inspected without the item-wide fallback");
         setGlobalItemColor.ToString().Should().Contain("HasExplicitItemPresetColor",
             "global RGB changes must preserve per-material and per-part preset dyes");
         setGlobalItemColor.ToString().Should().Contain("!hasExplicitPresetColor",
             "only genuinely inheriting materials may receive the global RGB tint");
-        setGlobalItemColor.ToString().Should().Contain("hasPreviousGlobalColor &&",
-            "the first global RGB tint must preserve existing per-part custom colors");
-        setGlobalItemColor.ToString().Should().NotContain("!hasPreviousGlobalColor ||",
-            "missing legacy global intent must not make every per-part custom color look inherited");
+        setGlobalItemColor.ToString().Should().NotContain("selectionColor == previousGlobalColor",
+            "an explicit material color equal to the global RGB is still an independent override");
         setGlobalItemColor.ToString().Should().Contain("Droid.UpdateEquippedItemSnapshot(creature, item)",
             "changing only the global marker must still persist equipped droid armor");
         var explicitPresetMethod = FindMethod(serviceSource, "HasExplicitItemPresetColor");
@@ -1528,6 +1533,19 @@ public class TintMapReviewTests
 
         TintMapVariable.TryParse("TM__5", out _, out _).Should().BeFalse();
         TintMapVariable.TryParse("APC_1_5", out _, out _).Should().BeFalse();
+    }
+
+    [Test]
+    public void TintMapVariableRecognizesTheItemGlobalInheritanceContract()
+    {
+        var variableName = TintMapVariable.GetItemGlobalInheritanceStateName(TintMapLayerType.Cloth1);
+
+        variableName.Should().Be($"TMI_{(int)TintMapLayerType.Cloth1}");
+        TintMapVariable.IsItemGlobalInheritanceStateName(variableName).Should().BeTrue();
+        TintMapVariable.IsItemGlobalInheritanceStateName(
+                TintMapVariable.GetItemGlobalColorStateName(TintMapLayerType.Cloth1))
+            .Should().BeFalse();
+        TintMapVariable.IsItemGlobalInheritanceStateName("TMI_not-a-layer").Should().BeFalse();
     }
 
     [Test]
@@ -2051,6 +2069,15 @@ public class TintMapReviewTests
                     "TintMapVariable",
                     nameof(TintMapVariable.IsItemGlobalColorStateName)),
                 "saved global tint intent must replace stale global state on the currently equipped armor");
+        getOverridesMethod.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Should()
+            .Contain(invocation =>
+                IsMemberInvocation(
+                    invocation,
+                    "TintMapVariable",
+                    nameof(TintMapVariable.IsItemGlobalInheritanceStateName)),
+                "saved global tint inheritance semantics must survive armor replacement and outfit loading");
         getOverridesMethod.DescendantNodes()
             .OfType<InvocationExpressionSyntax>()
             .Should()

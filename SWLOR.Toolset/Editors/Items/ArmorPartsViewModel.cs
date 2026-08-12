@@ -305,6 +305,8 @@ namespace SWLOR.Toolset.Editors.Items
         private void ClearGlobalCustomTint(TintMapLayerType layer)
         {
             var stateVariable = TintMapVariable.GetItemGlobalColorStateName(layer);
+            var inheritanceStateVariable = TintMapVariable.GetItemGlobalInheritanceStateName(layer);
+            var usesExplicitInheritance = _store.Locals.GetInt(inheritanceStateVariable) != null;
             var savedGlobalColor = _store.Locals.GetInt(stateVariable);
             var tintVariableKeys = GetTintVariableKeys(layer);
             int? globalColor = savedGlobalColor.HasValue &&
@@ -331,7 +333,7 @@ namespace SWLOR.Toolset.Editors.Items
                 }
             }
 
-            if (globalColor.HasValue)
+            if (globalColor.HasValue && !usesExplicitInheritance)
             {
                 foreach (var key in tintVariableKeys)
                 {
@@ -341,6 +343,7 @@ namespace SWLOR.Toolset.Editors.Items
             }
 
             _store.Locals.Remove(stateVariable);
+            _store.Locals.Remove(inheritanceStateVariable);
         }
 
         private IReadOnlyList<string> GetTintVariableKeys(TintMapLayerType layer) =>

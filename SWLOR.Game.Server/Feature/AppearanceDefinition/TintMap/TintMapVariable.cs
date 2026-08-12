@@ -8,6 +8,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         public const string Prefix = "TM_";
         private const string CreatureColorStatePrefix = "TMC_";
         private const string ItemGlobalColorStatePrefix = "TMG_";
+        private const string ItemGlobalInheritanceStatePrefix = "TMI_";
 
         public static string GetName(string materialResref, TintMapLayerType layer)
         {
@@ -33,11 +34,37 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             return $"{ItemGlobalColorStatePrefix}{(int)layer}";
         }
 
+        /// <summary>
+        /// Marks item-wide tint state that uses the current inheritance contract: a material
+        /// inherits <c>TMG_*</c> only while it has no material-specific <c>TM_*</c> value.
+        /// Older items lack this marker and require one-time equality-based compatibility cleanup.
+        /// </summary>
+        public static string GetItemGlobalInheritanceStateName(TintMapLayerType layer)
+        {
+            if (IsCreatureColorLayer(layer))
+                throw new ArgumentOutOfRangeException(nameof(layer), layer, "Layer is not an equipment color.");
+
+            return $"{ItemGlobalInheritanceStatePrefix}{(int)layer}";
+        }
+
         public static bool IsItemGlobalColorStateName(string variableName)
         {
             if (string.IsNullOrWhiteSpace(variableName) ||
                 !variableName.StartsWith(ItemGlobalColorStatePrefix, StringComparison.Ordinal) ||
                 !int.TryParse(variableName[ItemGlobalColorStatePrefix.Length..], out var value) ||
+                !Enum.IsDefined(typeof(TintMapLayerType), value))
+            {
+                return false;
+            }
+
+            return !IsCreatureColorLayer((TintMapLayerType)value);
+        }
+
+        public static bool IsItemGlobalInheritanceStateName(string variableName)
+        {
+            if (string.IsNullOrWhiteSpace(variableName) ||
+                !variableName.StartsWith(ItemGlobalInheritanceStatePrefix, StringComparison.Ordinal) ||
+                !int.TryParse(variableName[ItemGlobalInheritanceStatePrefix.Length..], out var value) ||
                 !Enum.IsDefined(typeof(TintMapLayerType), value))
             {
                 return false;

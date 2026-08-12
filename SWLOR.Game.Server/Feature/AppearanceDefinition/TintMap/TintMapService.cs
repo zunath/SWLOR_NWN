@@ -335,29 +335,49 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 .Where(selection => selection.GetPaletteSource(layer) == item)
                 .ToList();
             var stateVariable = TintMapVariable.GetItemGlobalColorStateName(layer);
+            var inheritanceStateVariable = TintMapVariable.GetItemGlobalInheritanceStateName(layer);
             var hasPreviousGlobalColor = TintMapColor.TryFromStoredValue(
                 GetLocalInt(item, stateVariable),
                 out var previousGlobalColor);
+
+            // Items created before inheritance intent was persisted copied the old global RGB
+            // into every inheriting TM_* entry. Normalize that representation once. From this
+            // point forward, absence of a material value means inheritance and an explicit TM_*
+            // remains independent even when its RGB happens to equal the global value.
+            if (hasPreviousGlobalColor && GetLocalInt(item, inheritanceStateVariable) == 0)
+            {
+                foreach (var legacyVariable in GetItemTintOverrides(item)
+                             .Where(entry =>
+                                 TintMapVariable.TryGetLayer(entry.Key, out var variableLayer) &&
+                                 variableLayer == layer &&
+                                 TintMapColor.TryFromStoredValue(entry.Value, out var legacyColor) &&
+                                 legacyColor == previousGlobalColor)
+                             .Select(entry => entry.Key)
+                             .ToList())
+                {
+                    DeleteLocalInt(item, legacyVariable);
+                }
+            }
+
             SetLocalInt(
                 item,
                 stateVariable,
                 color.ToStoredValue());
+            SetLocalInt(item, inheritanceStateVariable, 1);
             foreach (var selection in itemSelections)
             {
-                var savedSelectionColor = GetSavedColor(selection, layer);
-                var hasSelectionColor = TryGetCustomColor(
-                    selection,
-                    layer,
-                    out var selectionColor);
+                var savedSelectionColor = GetSavedColor(selection, layer, includeGlobalColor: false);
                 var hasExplicitPresetColor = HasExplicitItemPresetColor(
                     selection,
                     layer,
                     savedSelectionColor);
-                if (!hasExplicitPresetColor &&
-                    (!hasSelectionColor ||
-                     hasPreviousGlobalColor && selectionColor == previousGlobalColor))
+                if (!hasExplicitPresetColor && savedSelectionColor <= 0)
                 {
-                    SetColor(creature, selection, layer, color);
+                    ApplyColor(
+                        creature,
+                        selection,
+                        layer,
+                        new TintMapColorSelection(GetStandardColor(creature, selection, layer), color));
                 }
             }
 
@@ -397,6 +417,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             TintMapLayerType layer)
         {
             var stateVariable = TintMapVariable.GetItemGlobalColorStateName(layer);
+            var inheritanceStateVariable = TintMapVariable.GetItemGlobalInheritanceStateName(layer);
+            var usesExplicitInheritance = GetLocalInt(item, inheritanceStateVariable) != 0;
             var hasGlobalColor = TintMapColor.TryFromStoredValue(
                 GetLocalInt(item, stateVariable),
                 out var globalColor);
@@ -421,11 +443,26 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             }
 
             DeleteLocalInt(item, stateVariable);
+            DeleteLocalInt(item, inheritanceStateVariable);
             // Persist removal of the marker even when there is no inferred global color, or
             // when no active material still matches it closely enough to be reset below.
             Droid.UpdateEquippedItemSnapshot(creature, item);
             if (!hasGlobalColor)
                 return;
+
+            if (usesExplicitInheritance)
+            {
+                foreach (var selection in itemSelections)
+                {
+                    ApplyColor(
+                        creature,
+                        selection,
+                        layer,
+                        GetEffectiveColor(creature, selection, layer));
+                }
+
+                return;
+            }
 
             var resetSelections = itemSelections
                 .Where(selection =>
@@ -740,7 +777,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                         var variableName = TintMapVariable.GetName(
                             selection.Material.Resref,
                             layer);
-                        TintMapColor? color = TryGetCustomColor(selection, layer, out var customColor)
+                        var savedColor = GetSavedColor(selection, layer, includeGlobalColor: false);
+                        TintMapColor? color = TintMapColor.TryFromStoredValue(savedColor, out var customColor)
                             ? customColor
                             : null;
                         return new TintMapItemColorSource(variableName, color);
@@ -988,8 +1026,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                             for (var index = 0; index < replacementDestinations.Count; index++)
                             {
                                 var color = index < replacedSources.Count
-                                    ? replacedSources[index].Color ?? globalColor
-                                    : globalColor;
+                                    ? replacedSources[index].Color
+                                    : null;
                                 if (color is { } replacementColor)
                                 {
                                     SetColor(
@@ -1141,56 +1179,71 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
         private static int GetSavedColor(
             TintMapMaterialSelection selection,
-            TintMapLayerType layer)
+            TintMapLayerType layer,
+            bool includeGlobalColor = true)
         {
             var paletteSource = selection.GetPaletteSource(layer);
             var savedColor = GetLocalInt(
                 paletteSource,
                 TintMapVariable.GetName(selection.Material.Resref, layer));
-            if (savedColor > 0 || string.IsNullOrWhiteSpace(selection.OverrideModelResref))
+            if (savedColor > 0)
                 return savedColor;
 
             // A worn cloak renders the texture selected by cloakmodel.2da, while its dropped
             // ground model retains the appearance-number material. Read the worn material's
             // same semantic layer so dropping the item does not discard its visible tint.
-            foreach (var material in TintMapMaterialRegistry.GetMaterials(selection.OverrideModelResref))
+            if (!string.IsNullOrWhiteSpace(selection.OverrideModelResref))
             {
-                if (!material.Layers.Contains(layer))
-                    continue;
+                foreach (var material in TintMapMaterialRegistry.GetMaterials(selection.OverrideModelResref))
+                {
+                    if (!material.Layers.Contains(layer))
+                        continue;
 
-                savedColor = GetLocalInt(
-                    paletteSource,
-                    TintMapVariable.GetName(material.Resref, layer));
-                if (savedColor > 0)
-                    return savedColor;
+                    savedColor = GetLocalInt(
+                        paletteSource,
+                        TintMapVariable.GetName(material.Resref, layer));
+                    if (savedColor > 0)
+                        return savedColor;
+                }
+
+                // A race or gender-specific worn cloak can use a generated material resref that is
+                // unrelated to the generic cloakmodel material. Match its semantic material slot and
+                // accept the fallback only when it identifies one unambiguous stored color.
+                var overrideMaterials = TintMapMaterialRegistry
+                    .GetMaterials(selection.OverrideModelResref)
+                    .Where(material => material.Layers.Contains(layer))
+                    .ToList();
+                var equivalentColors = GetItemTintOverrides(paletteSource)
+                    .Where(entry =>
+                        TintMapVariable.TryParse(
+                            entry.Key,
+                            out var materialResref,
+                            out var variableLayer) &&
+                        variableLayer == layer &&
+                        overrideMaterials.Any(material =>
+                            TintMapMaterialRegistry.AreEquipmentMaterialSlotsEquivalent(
+                                materialResref,
+                                selection.OverrideModelResref,
+                                material.Resref,
+                                layer)))
+                    .Select(entry => entry.Value)
+                    .Where(value => value > 0)
+                    .Distinct()
+                    .ToList();
+                if (equivalentColors.Count == 1)
+                    return equivalentColors[0];
             }
 
-            // A race or gender-specific worn cloak can use a generated material resref that is
-            // unrelated to the generic cloakmodel material. Match its semantic material slot and
-            // accept the fallback only when it identifies one unambiguous stored color.
-            var overrideMaterials = TintMapMaterialRegistry
-                .GetMaterials(selection.OverrideModelResref)
-                .Where(material => material.Layers.Contains(layer))
-                .ToList();
-            var equivalentColors = GetItemTintOverrides(paletteSource)
-                .Where(entry =>
-                    TintMapVariable.TryParse(
-                        entry.Key,
-                        out var materialResref,
-                        out var variableLayer) &&
-                    variableLayer == layer &&
-                    overrideMaterials.Any(material =>
-                        TintMapMaterialRegistry.AreEquipmentMaterialSlotsEquivalent(
-                            materialResref,
-                            selection.OverrideModelResref,
-                            material.Resref,
-                            layer)))
-                .Select(entry => entry.Value)
-                .Where(value => value > 0)
-                .Distinct()
-                .ToList();
-            if (equivalentColors.Count == 1)
-                return equivalentColors[0];
+            if (includeGlobalColor &&
+                GetObjectType(paletteSource) == ObjectType.Item &&
+                !HasExplicitItemPresetColor(selection, layer, 0))
+            {
+                var globalColor = GetLocalInt(
+                    paletteSource,
+                    TintMapVariable.GetItemGlobalColorStateName(layer));
+                if (TintMapColor.TryFromStoredValue(globalColor, out _))
+                    return globalColor;
+            }
 
             return 0;
         }
@@ -1363,6 +1416,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 if (variable.Type != LocalVariableType.Int ||
                     (!variable.Key.StartsWith(TintMapVariable.Prefix, StringComparison.Ordinal) &&
                      !TintMapVariable.IsItemGlobalColorStateName(variable.Key) &&
+                     !TintMapVariable.IsItemGlobalInheritanceStateName(variable.Key) &&
                      !ArmorColorIndexCalculator.IsPerPartOverrideVariableName(variable.Key)))
                 {
                     continue;
@@ -1469,14 +1523,10 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                                 GetLocalInt(
                                     item,
                                     TintMapVariable.GetItemGlobalColorStateName(layer)),
-                                out var globalColor))
+                                out _))
                         {
-                            SetColor(
-                                creature,
-                                selection,
-                                layer,
-                                globalColor,
-                                invalidatePendingCarry: false);
+                            // The missing TM_* value is the durable inheritance signal. The
+                            // following ApplyCurrentColors pass resolves it through TMG_*.
                             continue;
                         }
 

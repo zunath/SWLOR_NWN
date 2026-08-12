@@ -30,7 +30,6 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
     public static class TintMapService
     {
-        private const float MaterialUniformReplacementDelaySeconds = 0.05f;
         private const float RefreshDelaySeconds = 0.2f;
         private const string AreaCompatibilityRefreshVariable = "TINT_MAP_COMPAT_REFRESHED";
 
@@ -726,52 +725,19 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 variableNames.Concat(new[] { stateVariable }).ToList(),
                 savedColor);
 
-            // Updating an existing concrete-material vec4 mutates NWN's stored parameter in
-            // place, but the client does not receive a new material-parameter update. This is why
-            // the first custom color remains visible until another appearance change rebuilds the
-            // creature. Remove only this semantic color parameter now and add its latest value on
-            // the next engine update. Keeping the phases separate makes the replacement a newly
-            // replicated parameter without disturbing the other tint layers.
-            ReplaceLiveCreatureColorUniform(creature, currentSelections, layer);
+            // Creature colors are semantic across the whole modular model: every registered
+            // material whose tint mask uses this layer must receive the same value. Keep the
+            // material-name-null tweak disabled: its concrete-material hook mutates the server's
+            // override list in place without publishing the changed value to connected clients.
+            ApplyCreatureColor(
+                creature,
+                currentSelections,
+                layer,
+                GetEffectiveCreatureColor(creature, layer));
 
             // Reapply once after the model refresh interval, resolving the selections again, so a
             // body-part replacement that completes during the edit receives the latest value too.
             DelayCommand(RefreshDelaySeconds, () =>
-            {
-                if (!GetIsObjectValid(creature))
-                    return;
-
-                ApplyCreatureColor(
-                    creature,
-                    TintMapModelResolver.GetCurrentSelections(creature),
-                    layer,
-                    GetEffectiveCreatureColor(creature, layer));
-            });
-        }
-
-        private static void ReplaceLiveCreatureColorUniform(
-            uint creature,
-            IReadOnlyList<TintMapMaterialSelection> selections,
-            TintMapLayerType layer)
-        {
-            var layerDefinition = TintMapMaterialRegistry.GetLayer(layer);
-            var resetMaterials = new HashSet<string>(StringComparer.Ordinal);
-            foreach (var selection in selections)
-            {
-                if (selection.GetPaletteSource(layer) != creature ||
-                    !selection.Material.Layers.Contains(layer) ||
-                    !resetMaterials.Add(selection.Material.Resref))
-                {
-                    continue;
-                }
-
-                ResetMaterialShaderUniforms(
-                    creature,
-                    selection.Material.Resref,
-                    layerDefinition.ColorUniformName);
-            }
-
-            DelayCommand(MaterialUniformReplacementDelaySeconds, () =>
             {
                 if (!GetIsObjectValid(creature))
                     return;
@@ -1489,6 +1455,22 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             var layerDefinition = TintMapMaterialRegistry.GetLayer(layer);
             var customColor = color.CustomColor;
 
+            // The native setter appends shader parameters. Remove the previous material-scoped
+            // values first so every edit installs one fresh entry, marks the object dirty for
+            // replication, and cannot exhaust the engine's per-object override capacity.
+            ResetMaterialShaderUniforms(
+                creature,
+                materialResref,
+                layerDefinition.UniformName);
+            ResetMaterialShaderUniforms(
+                creature,
+                materialResref,
+                layerDefinition.ColorUniformName);
+            ResetMaterialShaderUniforms(
+                creature,
+                materialResref,
+                layerDefinition.CustomModeUniformName);
+
             SetMaterialShaderUniformVec4(
                 creature,
                 materialResref,
@@ -1499,17 +1481,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
             if (!customColor.HasValue)
             {
-                // Presets only need the palette-row override. Removing stale custom values keeps
-                // modular creatures below the engine's per-object shader-override limit; writing
-                // zero-valued RGB and mode overrides here can otherwise crowd out later body parts.
-                ResetMaterialShaderUniforms(
-                    creature,
-                    materialResref,
-                    layerDefinition.ColorUniformName);
-                ResetMaterialShaderUniforms(
-                    creature,
-                    materialResref,
-                    layerDefinition.CustomModeUniformName);
+                // Presets only need the palette-row override. The stale custom RGB and mode
+                // entries were removed above and must not be re-added for preset selections.
                 return;
             }
 

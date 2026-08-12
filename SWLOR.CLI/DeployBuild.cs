@@ -12,8 +12,8 @@ namespace SWLOR.CLI
         private const string ModulesPath = DebugServerPath + "modules";
         private const string TlkPath = DebugServerPath + "tlk";
         private const string DebugServerEnvPath = DebugServerPath + "swlor.env";
-        private const string RequiredTweakVariable = "NWNX_TWEAKS_MATERIAL_NAME_NULL_IS_ALL";
-        private const string RequiredTweakValue = "true";
+        private const string MaterialNameNullTweakVariable = "NWNX_TWEAKS_MATERIAL_NAME_NULL_IS_ALL";
+        private const string MaterialNameNullTweakValue = "false";
 
         private readonly HakBuilder _hakBuilder = new();
 
@@ -37,7 +37,10 @@ namespace SWLOR.CLI
             var target = new DirectoryInfo(DebugServerPath);
 
             CopyAll(source, target, "swlor.env");
-            EnsureEnvironmentSetting(DebugServerEnvPath, RequiredTweakVariable, RequiredTweakValue);
+            EnsureEnvironmentSetting(
+                DebugServerEnvPath,
+                MaterialNameNullTweakVariable,
+                MaterialNameNullTweakValue);
         }
 
         private void CopyBinaries()

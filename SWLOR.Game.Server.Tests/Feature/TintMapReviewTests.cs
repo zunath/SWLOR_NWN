@@ -581,32 +581,27 @@ public class TintMapReviewTests
         synchronizeCalls.Should().Contain("SetLocalInt");
         synchronizeCalls.Should().Contain("SaveDroidOverrides",
             "inactive semantic keys must remain synchronized after a droid respawns");
-        synchronizeCalls.Should().Contain("ReplaceLiveCreatureColorUniform",
-            "a live RGB edit must replace the active semantic parameter without resetting unrelated uniforms");
+        synchronizeCalls.Should().Contain("ApplyCreatureColor",
+            "a live RGB edit must publish the active semantic parameter immediately");
         synchronizeCalls.Should().NotContain(nameof(TintMapService.ApplyCurrentColors),
             "resetting every material in the same update can leave the prior vec4 active on the game client");
         synchronizeCalls.Should().Contain("DelayCommand",
             "the latest semantic color must be reapplied after an in-flight body-part refresh");
-        synchronize.ToString().Should().NotContain("string.Empty",
-            "a semantic edit must not broadcast into unrelated equipment or NPC materials");
         synchronizeCalls.Should().Contain(nameof(TintMapModelResolver.GetCurrentSelections),
             "an RGB edit must re-resolve body parts that changed while the editor remained open");
 
-        var replaceUniform = FindMethod(serviceSource, "ReplaceLiveCreatureColorUniform");
-        var replacementSource = replaceUniform.ToString();
-        var replacementCalls = replaceUniform.DescendantNodes()
+        var applyCreatureColor = FindMethod(serviceSource, "ApplyCreatureColor");
+        var replacementSource = applyCreatureColor.ToString();
+        var replacementCalls = applyCreatureColor.DescendantNodes()
             .OfType<InvocationExpressionSyntax>()
             .Select(GetInvokedMethodName)
             .ToList();
-        replacementCalls.Should().Contain("ResetMaterialShaderUniforms",
-            "NWN only replicates a changed concrete-material vec4 reliably after its prior parameter is removed");
-        replacementCalls.Should().Contain("DelayCommand",
-            "the replacement parameter must be added in a later engine update than its removal");
-        replacementCalls.Should().Contain("ApplyCreatureColor");
-        replacementSource.IndexOf("ResetMaterialShaderUniforms", StringComparison.Ordinal).Should().BeLessThan(
-            replacementSource.IndexOf("DelayCommand", StringComparison.Ordinal));
-        replacementSource.Should().Contain("GetEffectiveCreatureColor(creature, layer)",
-            "queued picker events must all resolve the newest stored RGB rather than replaying stale captured colors");
+        replacementCalls.Should().Contain("ApplyMaterialColor",
+            "each registered semantic material must receive the live RGB edit");
+        replacementCalls.Should().NotContain("ResetMaterialShaderUniforms",
+            "one semantic edit must not clear rows belonging to other registered materials");
+        replacementSource.Should().NotContain("string.Empty",
+            "a semantic edit must not broadcast into unrelated equipment or NPC materials");
 
         var viewModelSource = ReadSource(
             "SWLOR.Game.Server",
@@ -1825,8 +1820,8 @@ public class TintMapReviewTests
             .Where(invocation =>
                 invocation.Expression.ToString() == "ResetMaterialShaderUniforms")
             .ToList();
-        resets.Should().HaveCount(2,
-            "a preset discards only its material-scoped RGB and mode overrides");
+        resets.Should().HaveCount(3,
+            "all material-scoped entries must be replaced before native shader writes so live edits replicate cleanly");
         resets.Should().NotContain(reset => reset.ToString().Contains("string.Empty"),
             "material writes must never broadcast to every material on the creature");
 
@@ -1839,11 +1834,17 @@ public class TintMapReviewTests
     }
 
     [Test]
-    public void RuntimeEnablesSafeMaterialShaderUniformUpdates()
+    public void RuntimeUsesNativeMaterialShaderUniformUpdates()
     {
         ReadSource("SWLOR.Game.Server", "Docker", "swlor.env")
-            .Should().Contain("NWNX_TWEAKS_MATERIAL_NAME_NULL_IS_ALL=true",
-                "tint-map refreshes must update existing uniforms and must not stop at the native override limit");
+            .Should().Contain("NWNX_TWEAKS_MATERIAL_NAME_NULL_IS_ALL=false",
+                "the tweak's concrete-material hook mutates existing values without publishing them to clients");
+        ReadSource("SWLOR.CLI", "DeployBuild.cs")
+            .Should().Contain("MaterialNameNullTweakValue = \"false\"",
+                "debug deployment must not silently re-enable the broken material hook");
+        ReadSource("scripts", "deployment", "swlor-deploy.sh")
+            .Should().Contain("REQUIRED_TWEAK_VALUE=\"false\"",
+                "production deployment must not silently re-enable the broken material hook");
     }
 
     [Test]

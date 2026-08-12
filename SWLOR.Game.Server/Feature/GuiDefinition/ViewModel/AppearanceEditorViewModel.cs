@@ -2268,7 +2268,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     (armorPart == AppearanceArmor.Invalid || selection.ArmorPart == armorPart))
                 .ToList();
             if (selections.Count == 0)
+            {
+                TintMapService.ResetInactiveItemCustomColor(
+                    _target,
+                    item,
+                    layerType,
+                    armorPart);
                 return;
+            }
 
             ResetCustomTintOverrides(
                 selections,

@@ -321,6 +321,17 @@ public class TintMapReviewTests
         method.ToString().Should().Contain(
             "ResetCustomTintOverrides(colorTarget, colorChannel)");
         method.ToString().Should().NotContain("ResetCurrentCustomTintOverrides()");
+
+        var rightClickReset = CSharpSyntaxTree.ParseText(source)
+            .GetRoot()
+            .DescendantNodes()
+            .OfType<MethodDeclarationSyntax>()
+            .Single(node =>
+                node.Identifier.ValueText == "ResetCustomTintOverrides" &&
+                node.ParameterList.Parameters.Count == 2);
+        rightClickReset.ToString().Should().Contain(
+            "TintMapService.ResetInactiveItemCustomColor",
+            "right-clicking a preset must clear stale custom state even when that armor part no longer exposes the layer");
     }
 
     [Test]

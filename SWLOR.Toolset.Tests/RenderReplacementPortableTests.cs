@@ -318,6 +318,18 @@ namespace SWLOR.Toolset.Tests
             shader.Should().NotContain(
                 "(ambientColor + diff * lightColor) * surfaceColor",
                 "lighting the combined passes incorrectly darkens reflective PLT regions");
+            shader.Should().Contain(
+                "(useTextureAlpha || hasTintAlpha) ? texColor.a : 1.0",
+                "additive meshes must preserve the authored diffuse alpha that controls their contribution");
+
+            var source = File.ReadAllText(Path.Combine(
+                CorpusLocator.RepositoryRoot,
+                "SWLOR.Toolset",
+                "Viewport",
+                "GlAreaControl.cs"));
+            source.Should().Contain(
+                "SetUniformBool(\"useTextureAlpha\", material.Blending == TxiBlendMode.Additive);",
+                "every mesh bind must select and reset diffuse-alpha use from its own TXI blend mode");
         }
 
         [Test]

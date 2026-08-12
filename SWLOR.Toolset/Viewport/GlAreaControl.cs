@@ -385,7 +385,7 @@ void main()
 
     // flatAlpha is 1.0 for every ordinary draw; the placement ghosts lower it so the scene reads
     // through the object about to be placed.
-    FragColor = vec4(result, flatAlpha * (hasTintAlpha ? texColor.a : 1.0));
+    FragColor = vec4(result, flatAlpha * ((useTextureAlpha || hasTintAlpha) ? texColor.a : 1.0));
 }
 ";
 
@@ -5049,6 +5049,10 @@ void main()
                 : ResolveTexture(textureName!, materialName);
 
             SetUniformBool("unlit", false);
+            // Additive TXI materials use the diffuse bitmap's authored alpha as their source
+            // contribution. Reset this on every mesh bind so the choice never leaks to the next
+            // ordinary opaque mesh.
+            SetUniformBool("useTextureAlpha", material.Blending == TxiBlendMode.Additive);
 
             if (material.TexId != 0)
             {

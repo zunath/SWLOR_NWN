@@ -1787,7 +1787,7 @@ public class TintMapReviewTests
     }
 
     [Test]
-    public void TintLayersUseDedicatedScalarCustomModeUniforms()
+    public void TintLayersUseDedicatedScalarCustomColorAndModeUniforms()
     {
         var expectedUniforms = new Dictionary<TintMapLayerType, string>
         {
@@ -1805,7 +1805,11 @@ public class TintMapReviewTests
 
         foreach (var (layer, uniformName) in expectedUniforms)
         {
-            TintMapMaterialRegistry.GetLayer(layer).CustomModeUniformName.Should().Be(uniformName);
+            var layerDefinition = TintMapMaterialRegistry.GetLayer(layer);
+            layerDefinition.CustomModeUniformName.Should().Be(uniformName);
+            layerDefinition.ColorRedUniformName.Should().Be($"{layerDefinition.ColorUniformName}R");
+            layerDefinition.ColorGreenUniformName.Should().Be($"{layerDefinition.ColorUniformName}G");
+            layerDefinition.ColorBlueUniformName.Should().Be($"{layerDefinition.ColorUniformName}B");
             TintMapMaterialRegistry.GetPaletteCoordinate(layer, 42).Should().BePositive();
         }
     }
@@ -1826,8 +1830,10 @@ public class TintMapReviewTests
                 invocation.Expression.ToString() == "SetMaterialShaderUniformVec4")
             .ToList();
 
-        materialWrites.Should().HaveCount(3);
-        applyColor.ToString().Should().Contain("layerDefinition.ColorUniformName");
+        materialWrites.Should().HaveCount(5);
+        applyColor.ToString().Should().Contain("layerDefinition.ColorRedUniformName");
+        applyColor.ToString().Should().Contain("layerDefinition.ColorGreenUniformName");
+        applyColor.ToString().Should().Contain("layerDefinition.ColorBlueUniformName");
         applyColor.ToString().Should().Contain("layerDefinition.CustomModeUniformName");
         applyColor.ToString().Should().Contain("if (!customColor.HasValue)");
         applyColor.ToString().Should().Contain("ResetMaterialShaderUniforms");
@@ -1841,16 +1847,21 @@ public class TintMapReviewTests
             .Where(invocation =>
                 invocation.Expression.ToString() == "ResetMaterialShaderUniforms")
             .ToList();
-        resets.Should().HaveCount(3,
+        resets.Should().HaveCount(6,
             "all material-scoped entries must be replaced before native shader writes so live edits replicate cleanly");
         resets.Should().NotContain(reset => reset.ToString().Contains("string.Empty"),
             "material writes must never broadcast to every material on the creature");
 
         foreach (var shaderName in new[] { "fs_plt_tinter.shd", "fs_plt_tinter_nm.shd" })
         {
-            ReadSource("SWLOR_Haks", "sw_shader", shaderName)
-                .Should().Contain("customTintMode > 0.5 || v <= 0.0",
+            var shader = ReadSource("SWLOR_Haks", "sw_shader", shaderName);
+            shader.Should().Contain("customTintMode > 0.5 || v <= 0.0",
                     "custom RGB must still activate when a client drops the scalar mode override");
+            shader.Should().Contain("uniform float tintSkinR");
+            shader.Should().Contain("uniform float tintSkinG");
+            shader.Should().Contain("uniform float tintSkinB");
+            shader.Should().NotContain("uniform vec4 tintSkin",
+                "the client was observed retaining the first vec4 value while scalar preset rows continued updating");
         }
     }
 
@@ -2077,15 +2088,15 @@ public class TintMapReviewTests
         {
             shader.Should().Contain("float referenceV = 0.000244;");
             shader.Should().Contain(
-                "clamp(customTint.rgb * shadeScale, 0.0, 1.0)",
+                "clamp(customTint * shadeScale, 0.0, 1.0)",
                 "the selected RGB must retain its hue while the PLT shade curve supplies lighting detail");
-            shader.Should().NotContain("vec3(1.0) - customTint.rgb",
+            shader.Should().NotContain("vec3(1.0) - customTint",
                 "complementing editor RGB turns red into cyan and green into purple");
             shader.Should().Contain("vec2(128.5 / 256.0, referenceV)",
                 "custom RGB is represented by the same midtone as the preset swatches");
             shader.Should().NotContain("vec2(255.5 / 256.0, referenceV)",
                 "normalizing at the brightest palette texel darkens ordinary skin texels");
-            shader.Should().NotContain("customTint.rgb * g",
+            shader.Should().NotContain("customTint * g",
                 "raw PLT intensity exaggerates seams between modular skin parts");
         }
     }

@@ -1500,6 +1500,18 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             ResetMaterialShaderUniforms(
                 creature,
                 materialResref,
+                layerDefinition.ColorRedUniformName);
+            ResetMaterialShaderUniforms(
+                creature,
+                materialResref,
+                layerDefinition.ColorGreenUniformName);
+            ResetMaterialShaderUniforms(
+                creature,
+                materialResref,
+                layerDefinition.ColorBlueUniformName);
+            ResetMaterialShaderUniforms(
+                creature,
+                materialResref,
                 layerDefinition.CustomModeUniformName);
 
             SetMaterialShaderUniformVec4(
@@ -1517,14 +1529,24 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 return;
             }
 
+            // Keep custom RGB on independent scalar uniforms. NWN reliably applies the first
+            // component of this API (the same path used by preset rows), but does not reliably
+            // transport the remaining components of a single vec4 to material parameters.
             SetMaterialShaderUniformVec4(
                 creature,
                 materialResref,
-                layerDefinition.ColorUniformName,
-                customColor.Value.Red / 255f,
-                customColor.Value.Green / 255f,
-                customColor.Value.Blue / 255f,
-                1f);
+                layerDefinition.ColorRedUniformName,
+                customColor.Value.Red / 255f);
+            SetMaterialShaderUniformVec4(
+                creature,
+                materialResref,
+                layerDefinition.ColorGreenUniformName,
+                customColor.Value.Green / 255f);
+            SetMaterialShaderUniformVec4(
+                creature,
+                materialResref,
+                layerDefinition.ColorBlueUniformName,
+                customColor.Value.Blue / 255f);
             // Keep a dedicated mode scalar, while the zero palette row above provides a second
             // activation signal for clients that drop that scalar override. Every real palette
             // coordinate is strictly positive, so zero cannot collide with a preset selection.

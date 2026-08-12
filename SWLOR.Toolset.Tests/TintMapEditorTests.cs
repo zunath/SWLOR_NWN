@@ -1181,7 +1181,10 @@ namespace SWLOR.Toolset.Tests
                 Color.FromRgb(12, 34, 56);
 
             editor.Appearance!.Armor!.Torso.Number = originalTorso + 1;
-            currentAppliedEdit = unrelatedOrigin;
+            editor.Appearance.Armor.Cloth1.Number =
+                ((editor.Appearance.Armor.Cloth1.Number ?? 0) + 1) % 176;
+            currentAppliedEdit.Should().BeSameAs(unrelatedOrigin,
+                "the later non-geometry appearance edit must be the active transaction");
             Dispatcher.UIThread.RunJobs();
             DrainUntil(() => !editor.IsModelPreviewLoading);
 

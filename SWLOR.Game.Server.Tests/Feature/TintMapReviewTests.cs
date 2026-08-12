@@ -1004,8 +1004,10 @@ public class TintMapReviewTests
             .Select(GetInvokedMethodName)
             .Should().Contain("Any",
                 "layers without custom colors need no carry state");
-        captureMethod.ToString().Should().Contain("TintMapItemColorSource(variableName, color)",
-            "preset slots must be retained so partial custom colors keep their material position");
+        captureMethod.ToString().Should().Contain("selection.Material.Resref",
+            "the carry must retain material identity rather than relying only on list position");
+        captureMethod.ToString().Should().Contain("storedValue",
+            "palette-format opt-outs must survive alongside custom RGB values");
         captureMethod.ToString().Should().NotContain("distinct.Count != 1",
             "ambiguous colors still need their source keys captured for stale cleanup");
 
@@ -1019,7 +1021,7 @@ public class TintMapReviewTests
             .OfType<InvocationExpressionSyntax>()
             .Select(GetInvokedMethodName)
             .ToList();
-        carryCalls.Should().Contain("SetColor");
+        carryCalls.Should().Contain("CarryStoredItemColor");
         carryCalls.Should().Contain("GetItemInSlot",
             "rapid model selections can destroy an intermediate item before its carry runs");
         carryMethod.ToString().Should().Contain("LinkPendingItemColorCarryReplacement(sourceItem, item)",
@@ -1049,8 +1051,9 @@ public class TintMapReviewTests
                     "registration.Revisions"
                 },
                 "a color edit on one armor part must not cancel another part's pending carry for the same layer");
-        carryMethod.ToString().Should().Contain("invalidatePendingCarry: false",
-            "the carry's own writes must not invalidate its remaining derived work");
+        FindMethod(serviceSource, "CarryStoredItemColor").ToString().Should()
+            .Contain("invalidatePendingCarry: false",
+                "the carry's own writes must not invalidate its remaining derived work");
         carryMethod.ToString().Should().Contain("selection.PaletteSource == targetItem");
         carryMethod.ToString().Should().Contain("DeleteLocalInt(targetItem, variableName)");
         carryCalls.Should().Contain("DeleteLocalInt",
@@ -1059,26 +1062,20 @@ public class TintMapReviewTests
             "cleanup must retain a material key that another equipped armor part still uses");
         carryMethod.ToString().Should().NotContain("if (destinations.Count == 0)",
             "a model with no destination for the layer must still discard inactive source keys");
-        carryMethod.ToString().Should().Contain("distinctColors.Count == 1",
-            "different per-material colors must not be guessed during a model replacement");
-        carryMethod.ToString().Should().Contain("index < replacementDestinations.Count",
-            "every replacement material needs an opportunity to inherit a persisted global tint");
-        carryMethod.ToString().Should().Contain("index < replacedSources.Count",
-            "an existing per-material color may migrate only to its corresponding replacement material");
-        carryMethod.ToString().Should().Contain("replacedSources[index].Color",
-            "only explicit per-material colors are copied to replacement slots");
-        carryMethod.ToString().Should().NotContain("replacedSources[index].Color ?? globalColor",
-            "a global tint is inherited through TMG_* rather than copied into each TM_* slot");
-        carryMethod.ToString().Should().Contain("GetItemGlobalColorStateName(layer)",
-            "new replacement materials must inherit an explicitly global equipment tint");
-        carryMethod.ToString().Should().Contain("distinctColors.Count == 1 || globalColor.HasValue",
-            "different per-material colors remain positional while unmatched materials use the global tint");
+        carryMethod.ToString().Should().Contain("AreEquipmentMaterialsEquivalent",
+            "replacement materials must be matched by semantic identity before positional fallback");
+        carryMethod.ToString().Should().Contain("unmatchedSources.Count == unmatchedDestinations.Count",
+            "positional fallback is safe only after identity matching leaves equal-sized lists");
+        carryMethod.ToString().Should().Contain("storedSources.Count == 1 && unmatchedDestinations.Count == 1",
+            "a custom source behind a preset slot must survive a count-changing replacement");
         carryMethod.ToString().Should().Contain("!destinationVariables.Contains(source.VariableName)",
             "shared source slots must be removed before replacement slots are aligned");
         carryMethod.ToString().Should().Contain("!sourceVariables.Contains",
             "shared destination slots must be removed before replacement slots are aligned");
-        carryMethod.ToString().Should().Contain("source.Color.HasValue",
-            "ambiguous custom source variables must still reach stale-key cleanup");
+        carryMethod.ToString().Should().Contain("source.StoredValue.HasValue",
+            "custom and palette-format source variables must both reach stale-key cleanup");
+        FindMethod(serviceSource, "CarryStoredItemColor").ToString().Should().Contain("SetStoredColor",
+            "carried palette opt-outs must retain their original storage format");
         carryCalls.Should().Contain("ApplyCurrentColors",
             "the equipped replacement must render its carried colors immediately");
         carryCalls.Should().Contain("PublishRefreshEvent",
@@ -1195,6 +1192,8 @@ public class TintMapReviewTests
             "global equipment tint inheritance must be persisted independently of RGB equality");
         setGlobalItemColor.ToString().Should().Contain("GetLocalInt(item, inheritanceStateVariable) == 0",
             "only markerless legacy global tints may use equality for one-time normalization");
+        setGlobalItemColor.ToString().Should().Contain("TryInferLegacyGlobalItemCustomColor",
+            "a complete uniform pre-marker representation must be recognized before replacement");
         setGlobalItemColor.ToString().Should().Contain("savedSelectionColor <= 0",
             "only a material without its own override inherits a changed global tint");
         setGlobalItemColor.ToString().Should().Contain("includeGlobalColor: false",
@@ -1217,8 +1216,8 @@ public class TintMapReviewTests
             .Single(method =>
                 method.Identifier.ValueText == nameof(TintMapService.ResetGlobalItemCustomColor) &&
                 method.ParameterList.Parameters.Count == 4);
-        resetGlobalItemColor.ToString().Should().Contain("customColors.All(color => color.HasValue)",
-            "legacy global state is safe to infer only when every active material is custom");
+        resetGlobalItemColor.ToString().Should().Contain("TryInferLegacyGlobalItemCustomColor",
+            "global set and reset must share the same conservative legacy inference");
         resetGlobalItemColor.ToString().Should().Contain("color == globalColor",
             "a global preset must preserve independently customized armor parts");
         resetGlobalItemColor.ToString().Should().Contain("GetItemTintOverrides(item)",
@@ -1236,6 +1235,27 @@ public class TintMapReviewTests
             "AppearanceEditorViewModel.cs");
         viewModelSource.Should().Contain(nameof(TintMapService.SetGlobalItemCustomColor));
         viewModelSource.Should().Contain(nameof(TintMapService.ResetGlobalItemCustomColor));
+    }
+
+    [Test]
+    public void DeploymentReexecutesUpdatedScriptBeforeRunningNewMigrations()
+    {
+        var source = ReadSource("scripts", "deployment", "swlor-deploy.sh");
+        var merge = source.IndexOf("git -C \"$SOURCE_ROOT\" merge --ff-only", StringComparison.Ordinal);
+        var reexec = source.IndexOf(
+            "exec \"$BASH\" \"$updated_deploy_script\" \"$@\"",
+            StringComparison.Ordinal);
+        var envMigration = source.IndexOf(
+            "if (( server_env_migration_required == 1 )); then",
+            StringComparison.Ordinal);
+
+        merge.Should().BeGreaterThan(-1);
+        reexec.Should().BeGreaterThan(merge,
+            "a fast-forward must transfer control to the fetched deployment implementation");
+        reexec.Should().BeLessThan(envMigration,
+            "new host migrations must execute from the updated script on their first rollout");
+        source.Should().Contain("flock --unlock 9",
+            "the replacement process must reacquire the deployment lock instead of deadlocking");
     }
 
     [Test]
@@ -1485,7 +1505,14 @@ public class TintMapReviewTests
         var globalCheck = carry.ToString().IndexOf(
             "GetItemGlobalColorStateName(layer)",
             StringComparison.Ordinal);
+        var matchingCheck = carry.ToString().IndexOf(
+            "var matchingColors = storedColors",
+            StringComparison.Ordinal);
         presetCheck.Should().BeGreaterThan(-1);
+        matchingCheck.Should().BeGreaterThan(presetCheck,
+            "preset intent must be checked before attempting a stored material carry");
+        matchingCheck.Should().BeLessThan(globalCheck,
+            "a stored palette opt-out must be restored before global inheritance is considered");
         presetCheck.Should().BeLessThan(globalCheck,
             "a per-part palette opt-out must win before restoring an item-wide RGB tint");
 

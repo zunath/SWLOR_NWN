@@ -41,6 +41,7 @@ namespace SWLOR.Toolset.Editors.Items
         private string? _cachedModelSignature;
         private string? _pendingModelSignature;
         private IDocumentEdit? _pendingModelEditOrigin;
+        private string? _pendingModelEditOriginSignature;
         private int _previewModelGeneration;
         private readonly SemaphoreSlim _previewModelGate = new(1);
         private bool _disposed;
@@ -653,8 +654,34 @@ namespace SWLOR.Toolset.Editors.Items
         /// </summary>
         private void OnAppearanceChanged()
         {
-            _pendingModelEditOrigin = _captureCoalesceOrigin?.Invoke();
+            var signature = GeometrySignature();
+            if (_cachedModelSignature != null &&
+                !string.Equals(_cachedModelSignature, signature, StringComparison.Ordinal) &&
+                !string.Equals(
+                    _pendingModelEditOriginSignature,
+                    signature,
+                    StringComparison.Ordinal))
+            {
+                _pendingModelEditOrigin = _captureCoalesceOrigin?.Invoke();
+                _pendingModelEditOriginSignature = signature;
+            }
+
             QueuePreviewUpdate();
+        }
+
+        private void ClearPendingModelEditOrigin(string? expectedSignature = null)
+        {
+            if (expectedSignature != null &&
+                !string.Equals(
+                    _pendingModelEditOriginSignature,
+                    expectedSignature,
+                    StringComparison.Ordinal))
+            {
+                return;
+            }
+
+            _pendingModelEditOrigin = null;
+            _pendingModelEditOriginSignature = null;
         }
 
         private void QueuePreviewSceneUpdate()
@@ -683,6 +710,7 @@ namespace SWLOR.Toolset.Editors.Items
             {
                 _previewModelGeneration++;
                 _pendingModelSignature = null;
+                ClearPendingModelEditOrigin();
                 IsModelPreviewLoading = false;
                 ApplyPreviewScene(null, carryItemCustomColorsAcrossMaterials: false);
                 return;
@@ -700,9 +728,8 @@ namespace SWLOR.Toolset.Editors.Items
             {
                 _previewModelGeneration++;
                 _pendingModelSignature = null;
+                ClearPendingModelEditOrigin();
                 IsModelPreviewLoading = false;
-                if (carryItemCustomColors)
-                    _pendingModelEditOrigin = null;
                 ApplyPreviewScene(
                     _cachedModel,
                     carryItemCustomColorsAcrossMaterials: carryItemCustomColors,
@@ -716,8 +743,6 @@ namespace SWLOR.Toolset.Editors.Items
             var generation = ++_previewModelGeneration;
             _pendingModelSignature = signature;
             IsModelPreviewLoading = true;
-            if (carryItemCustomColors)
-                _pendingModelEditOrigin = null;
             ApplyPreviewScene(
                 null,
                 carryItemCustomColorsAcrossMaterials: carryItemCustomColors,
@@ -744,6 +769,7 @@ namespace SWLOR.Toolset.Editors.Items
             _pendingModelSignature = null;
             _cachedModel = null;
             _cachedModelSignature = null;
+            ClearPendingModelEditOrigin();
             UpdatePreview();
         }
 
@@ -825,6 +851,7 @@ namespace SWLOR.Toolset.Editors.Items
                 _pendingModelSignature = null;
                 _cachedModel = model;
                 _cachedModelSignature = signature;
+                ClearPendingModelEditOrigin(signature);
                 IsModelPreviewLoading = false;
                 ApplyPreviewScene(
                     model,
@@ -947,6 +974,7 @@ namespace SWLOR.Toolset.Editors.Items
             _disposed = true;
             _previewModelGeneration++;
             _pendingModelSignature = null;
+            ClearPendingModelEditOrigin();
             IsModelPreviewLoading = false;
             foreach (var row in AllBasicRows())
                 row.Dispose();

@@ -691,6 +691,16 @@ if [[ "$local_commit" != "$remote_commit" ]]; then
         die "$GIT_REMOTE/$BRANCH diverged from the deployment source; only fast-forward updates are allowed."
     git -C "$SOURCE_ROOT" merge --ff-only \
         "refs/remotes/$GIT_REMOTE/$BRANCH"
+
+    # Continue with the just-fetched implementation rather than the old script body that was
+    # already open when this process began. Deployment migrations added by this commit must run
+    # during its first rollout, before the server is restarted.
+    updated_deploy_script="$SOURCE_ROOT/scripts/deployment/swlor-deploy.sh"
+    [[ -f "$updated_deploy_script" && ! -L "$updated_deploy_script" ]] ||
+        die "Updated deployment script is missing or is a symbolic link: $updated_deploy_script"
+    log "Re-executing deployment with the updated script from $remote_commit."
+    flock --unlock 9
+    exec "$BASH" "$updated_deploy_script" "$@"
 fi
 
 log "Synchronizing recursive submodules."

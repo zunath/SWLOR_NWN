@@ -24,8 +24,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
     }
 
     public readonly record struct TintMapItemColorSource(
+        string MaterialResref,
         string VariableName,
-        TintMapColor? Color);
+        int? StoredValue);
 
     public static class TintMapService
     {
@@ -339,6 +340,13 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             var hasPreviousGlobalColor = TintMapColor.TryFromStoredValue(
                 GetLocalInt(item, stateVariable),
                 out var previousGlobalColor);
+            if (!hasPreviousGlobalColor)
+            {
+                hasPreviousGlobalColor = TryInferLegacyGlobalItemCustomColor(
+                    itemSelections,
+                    layer,
+                    out previousGlobalColor);
+            }
 
             // Items created before inheritance intent was persisted copied the old global RGB
             // into every inheriting TM_* entry. Normalize that representation once. From this
@@ -426,21 +434,10 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             // Compatibility for items authored before the explicit global-intent marker existed:
             // only a complete, uniform set can safely be interpreted as a global custom color.
             if (!hasGlobalColor)
-            {
-                var customColors = itemSelections
-                    .Select(selection => TryGetCustomColor(selection, layer, out var color)
-                        ? (TintMapColor?)color
-                        : null)
-                    .ToList();
-                var distinctColors = customColors
-                    .Where(color => color.HasValue)
-                    .Select(color => color!.Value)
-                    .Distinct()
-                    .ToList();
-                hasGlobalColor = customColors.All(color => color.HasValue) && distinctColors.Count == 1;
-                if (hasGlobalColor)
-                    globalColor = distinctColors[0];
-            }
+                hasGlobalColor = TryInferLegacyGlobalItemCustomColor(
+                    itemSelections,
+                    layer,
+                    out globalColor);
 
             DeleteLocalInt(item, stateVariable);
             DeleteLocalInt(item, inheritanceStateVariable);
@@ -491,6 +488,38 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             }
 
             Droid.UpdateEquippedItemSnapshot(creature, item);
+        }
+
+        private static bool TryInferLegacyGlobalItemCustomColor(
+            IReadOnlyList<TintMapMaterialSelection> itemSelections,
+            TintMapLayerType layer,
+            out TintMapColor globalColor)
+        {
+            globalColor = default;
+            if (itemSelections.Count == 0)
+                return false;
+
+            var customColors = itemSelections
+                .Select(selection =>
+                {
+                    var savedColor = GetLocalInt(
+                        selection.GetPaletteSource(layer),
+                        TintMapVariable.GetName(selection.Material.Resref, layer));
+                    return TintMapColor.TryFromStoredValue(savedColor, out var color)
+                        ? (TintMapColor?)color
+                        : null;
+                })
+                .ToList();
+            var distinctColors = customColors
+                .Where(color => color.HasValue)
+                .Select(color => color!.Value)
+                .Distinct()
+                .ToList();
+            if (!customColors.All(color => color.HasValue) || distinctColors.Count != 1)
+                return false;
+
+            globalColor = distinctColors[0];
+            return true;
         }
 
         /// <summary>
@@ -800,13 +829,18 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                             selection.Material.Resref,
                             layer);
                         var savedColor = GetSavedColor(selection, layer, includeGlobalColor: false);
-                        TintMapColor? color = TintMapColor.TryFromStoredValue(savedColor, out var customColor)
-                            ? customColor
-                            : null;
-                        return new TintMapItemColorSource(variableName, color);
+                        var storedValue = TintMapColor.TryFromStoredValue(savedColor, out _) ||
+                                          savedColor > 0 &&
+                                          savedColor <= TintMapMaterialRegistry.PaletteColorCount
+                            ? savedColor
+                            : (int?)null;
+                        return new TintMapItemColorSource(
+                            selection.Material.Resref,
+                            variableName,
+                            storedValue);
                     })
                     .ToList();
-                if (!layerSources.Any(source => source.Color.HasValue))
+                if (!layerSources.Any(source => source.StoredValue.HasValue))
                     continue;
 
                 // Retain every source slot, including preset slots. The slot positions let the
@@ -1031,39 +1065,56 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                                 selection.Material.Resref,
                                 layer)))
                             .ToList();
-                        var distinctColors = replacedSources
-                            .Where(source => source.Color.HasValue)
-                            .Select(source => source.Color!.Value)
-                            .Distinct()
-                            .ToList();
-                        var globalColor = TintMapColor.TryFromStoredValue(
-                            GetLocalInt(
-                                targetItem,
-                                TintMapVariable.GetItemGlobalColorStateName(layer)),
-                            out var storedGlobalColor)
-                            ? storedGlobalColor
-                            : (TintMapColor?)null;
-                        if (distinctColors.Count == 1 || globalColor.HasValue)
+                        var unmatchedSources = replacedSources.ToList();
+                        var unmatchedDestinations = replacementDestinations.ToList();
+                        foreach (var destination in replacementDestinations)
                         {
-                            for (var index = 0; index < replacementDestinations.Count; index++)
+                            var equivalentSources = unmatchedSources
+                                .Where(source => AreEquipmentMaterialsEquivalent(
+                                    source.MaterialResref,
+                                    destination,
+                                    layer))
+                                .ToList();
+                            if (equivalentSources.Count != 1)
+                                continue;
+
+                            var source = equivalentSources[0];
+                            CarryStoredItemColor(creature, destination, layer, source);
+                            unmatchedSources.Remove(source);
+                            unmatchedDestinations.Remove(destination);
+                        }
+
+                        // Preserve positional carry only after material identity has consumed
+                        // every unambiguous pair. A count-changing replacement can still safely
+                        // carry one remaining explicit value to one remaining destination.
+                        if (unmatchedSources.Count == unmatchedDestinations.Count)
+                        {
+                            for (var index = 0; index < unmatchedDestinations.Count; index++)
                             {
-                                var color = index < replacedSources.Count
-                                    ? replacedSources[index].Color
-                                    : null;
-                                if (color is { } replacementColor)
-                                {
-                                    SetColor(
-                                        creature,
-                                        replacementDestinations[index],
-                                        layer,
-                                        replacementColor,
-                                        invalidatePendingCarry: false);
-                                }
+                                CarryStoredItemColor(
+                                    creature,
+                                    unmatchedDestinations[index],
+                                    layer,
+                                    unmatchedSources[index]);
+                            }
+                        }
+                        else
+                        {
+                            var storedSources = unmatchedSources
+                                .Where(source => source.StoredValue.HasValue)
+                                .ToList();
+                            if (storedSources.Count == 1 && unmatchedDestinations.Count == 1)
+                            {
+                                CarryStoredItemColor(
+                                    creature,
+                                    unmatchedDestinations[0],
+                                    layer,
+                                    storedSources[0]);
                             }
                         }
 
                         foreach (var variableName in sourceEntries
-                                     .Where(source => source.Color.HasValue)
+                                     .Where(source => source.StoredValue.HasValue)
                                      .Select(source => source.VariableName))
                         {
                             if (destinationVariables.Contains(variableName) ||
@@ -1089,6 +1140,23 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     CompletePendingItemColorCarry(registration.Lineage);
                 }
             });
+        }
+
+        private static void CarryStoredItemColor(
+            uint creature,
+            TintMapMaterialSelection destination,
+            TintMapLayerType layer,
+            TintMapItemColorSource source)
+        {
+            if (!source.StoredValue.HasValue)
+                return;
+
+            SetStoredColor(
+                creature,
+                destination,
+                layer,
+                source.StoredValue.Value,
+                invalidatePendingCarry: false);
         }
 
         public static void QueueRefresh(uint creature)
@@ -1541,17 +1609,6 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                             continue;
                         }
 
-                        if (TintMapColor.TryFromStoredValue(
-                                GetLocalInt(
-                                    item,
-                                    TintMapVariable.GetItemGlobalColorStateName(layer)),
-                                out _))
-                        {
-                            // The missing TM_* value is the durable inheritance signal. The
-                            // following ApplyCurrentColors pass resolves it through TMG_*.
-                            continue;
-                        }
-
                         var matchingColors = storedColors
                             .Where(stored =>
                                 stored.Layer == layer &&
@@ -1563,12 +1620,26 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                             .Distinct()
                             .ToList();
                         if (matchingColors.Count == 1)
+                        {
                             SetStoredColor(
                                 creature,
                                 selection,
                                 layer,
                                 matchingColors[0],
                                 invalidatePendingCarry: false);
+                            continue;
+                        }
+
+                        if (TintMapColor.TryFromStoredValue(
+                                GetLocalInt(
+                                    item,
+                                    TintMapVariable.GetItemGlobalColorStateName(layer)),
+                                out _))
+                        {
+                            // The missing TM_* value is the durable inheritance signal. The
+                            // following ApplyCurrentColors pass resolves it through TMG_*.
+                            continue;
+                        }
                     }
                 }
             }

@@ -153,7 +153,7 @@ public class TintMapReviewTests
     [TestCase(1, 0, true, 1)]
     [TestCase(27, 0, true, 27)]
     [TestCase(27, 168, true, 168)]
-    [TestCase(0, 168, true, 0)]
+    [TestCase(0, 168, true, 168)]
     [TestCase(27, 168, false, 27)]
     public void PartsBasedModelUsesCreaturePartWhenArmorLeavesSlotAtZero(
         int creaturePart,

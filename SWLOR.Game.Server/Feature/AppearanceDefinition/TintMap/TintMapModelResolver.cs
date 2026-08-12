@@ -225,7 +225,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
         private static int ResolvePartId(int creaturePartId, int armorPartId, bool usesItemColors)
         {
-            if (!usesItemColors || creaturePartId <= 0)
+            if (!usesItemColors)
                 return creaturePartId;
 
             return armorPartId > 0 ? armorPartId : creaturePartId;

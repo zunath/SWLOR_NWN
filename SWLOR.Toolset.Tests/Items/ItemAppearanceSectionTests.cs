@@ -298,6 +298,43 @@ namespace SWLOR.Toolset.Tests.Items
             }
 
             [Test]
+            public void ChoosingAnArmorPresetClearsUniformLegacyGlobalTintWithoutMarker()
+            {
+                var store = OpenStore("adren_harness");
+                var globalColor = new TintMapColor(12, 34, 56).ToStoredValue();
+                var first = TintMapVariable.GetName("pmh0_chest156", TintMapLayerType.Cloth1);
+                var second = TintMapVariable.GetName("pmh0_bicepl249", TintMapLayerType.Cloth1);
+                store.Locals.SetInt(first, globalColor);
+                store.Locals.SetInt(second, globalColor);
+                var section = Open(store, ArmorRow, new HashSet<string>());
+
+                section.Armor!.Cloth1.Number = 50;
+
+                store.Locals.GetInt(first).Should().BeNull();
+                store.Locals.GetInt(second).Should().BeNull(
+                    "a complete uniform pre-marker tint is the legacy global-color representation");
+            }
+
+            [Test]
+            public void ChoosingAnArmorPresetPreservesMixedLegacyPerMaterialTints()
+            {
+                var store = OpenStore("adren_harness");
+                var first = TintMapVariable.GetName("pmh0_chest156", TintMapLayerType.Cloth1);
+                var second = TintMapVariable.GetName("pmh0_bicepl249", TintMapLayerType.Cloth1);
+                var firstColor = new TintMapColor(12, 34, 56).ToStoredValue();
+                var secondColor = new TintMapColor(65, 43, 21).ToStoredValue();
+                store.Locals.SetInt(first, firstColor);
+                store.Locals.SetInt(second, secondColor);
+                var section = Open(store, ArmorRow, new HashSet<string>());
+
+                section.Armor!.Cloth1.Number = 50;
+
+                store.Locals.GetInt(first).Should().Be(firstColor);
+                store.Locals.GetInt(second).Should().Be(secondColor,
+                    "mixed legacy values are independent material edits, not global intent");
+            }
+
+            [Test]
             public void OutOfRangeDyeValueIsClampedToThePalette()
             {
                 var store = OpenStore("adren_harness");

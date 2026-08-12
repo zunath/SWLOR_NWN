@@ -3,7 +3,7 @@ using SWLOR.Toolset.Domain.Gff;
 namespace SWLOR.Toolset.Domain.Editing
 {
     /// <summary>Memento for inserting a struct into a list-typed field (JsonGffField.InsertElement).</summary>
-    public sealed class InsertElementEdit : IDocumentEdit
+    public sealed class InsertElementEdit : IDocumentEdit, IDocumentEditTargetProvider
     {
         private readonly JsonGffField _field;
         private readonly int _index;
@@ -30,10 +30,12 @@ namespace SWLOR.Toolset.Domain.Editing
         {
             return $"Insert list element at {_index}";
         }
+
+        public IEnumerable<object> GetMutationTargets() => new object[] { _field };
     }
 
     /// <summary>Memento for removing a struct from a list-typed field (JsonGffField.RemoveElementAt).</summary>
-    public sealed class RemoveElementEdit : IDocumentEdit
+    public sealed class RemoveElementEdit : IDocumentEdit, IDocumentEditTargetProvider
     {
         private readonly JsonGffField _field;
         private readonly int _index;
@@ -60,10 +62,12 @@ namespace SWLOR.Toolset.Domain.Editing
         {
             return $"Remove list element at {_index}";
         }
+
+        public IEnumerable<object> GetMutationTargets() => new object[] { _field };
     }
 
     /// <summary>Memento for reordering a list-typed field's elements (JsonGffField.MoveElement).</summary>
-    public sealed class MoveElementEdit : IDocumentEdit
+    public sealed class MoveElementEdit : IDocumentEdit, IDocumentEditTargetProvider
     {
         private readonly JsonGffField _field;
         private readonly int _fromIndex;
@@ -90,5 +94,7 @@ namespace SWLOR.Toolset.Domain.Editing
         {
             return $"Move list element {_fromIndex} -> {_toIndex}";
         }
+
+        public IEnumerable<object> GetMutationTargets() => new object[] { _field };
     }
 }

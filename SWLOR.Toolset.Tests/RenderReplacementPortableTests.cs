@@ -253,6 +253,31 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void AdditiveTxiUsesBlendModeInsteadOfAlphaCutoff()
+        {
+            File.WriteAllText(
+                Path.Combine(_resourceDirectory, "air_glow.txi"),
+                "blending additive");
+            var pixels = Enumerable.Range(0, 100)
+                .SelectMany(_ => new byte[] { 10, 20, 30, 24 })
+                .ToArray();
+            var image = new TextureImage
+            {
+                Width = 10,
+                Height = 10,
+                Pixels = pixels,
+                SourceFormat = TextureSourceFormat.Tga
+            };
+
+            var hints = TextureRenderPolicy.Resolve(Index(), "air_glow", image);
+
+            hints.EnvironmentMapTexture.Should().BeNull();
+            hints.AlphaCutoff.Should().Be(0f,
+                "low additive alpha controls contribution rather than discarding geometry");
+            hints.Blending.Should().Be(TxiBlendMode.Additive);
+        }
+
+        [Test]
         public void LitShaderKeepsTheEnvironmentPassOutOfDiffuseLighting()
         {
             var shader = typeof(SWLOR.Toolset.Viewport.GlAreaControl)

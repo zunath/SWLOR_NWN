@@ -299,19 +299,43 @@ namespace SWLOR.Toolset.Editors.Items
         /// Restores the selected global dye channel to its palette value without discarding an
         /// independently customized material in the same channel. The explicit global-intent
         /// marker identifies which material overrides were written by the previous global custom
-        /// color; without that marker there is no safe way to distinguish legacy global values
-        /// from per-material edits, so those values are preserved.
+        /// color. Older blueprints have no marker, so a complete uniform set of custom values is
+        /// the only legacy state that is safe to interpret as one global color.
         /// </summary>
         private void ClearGlobalCustomTint(TintMapLayerType layer)
         {
             var stateVariable = TintMapVariable.GetItemGlobalColorStateName(layer);
             var savedGlobalColor = _store.Locals.GetInt(stateVariable);
-            if (savedGlobalColor.HasValue &&
-                TintMapColor.TryFromStoredValue(savedGlobalColor.Value, out _))
+            var tintVariableKeys = GetTintVariableKeys(layer);
+            int? globalColor = savedGlobalColor.HasValue &&
+                               TintMapColor.TryFromStoredValue(savedGlobalColor.Value, out _)
+                ? savedGlobalColor.Value
+                : null;
+
+            if (!globalColor.HasValue && tintVariableKeys.Count > 1)
             {
-                foreach (var key in GetTintVariableKeys(layer))
+                var legacyColors = tintVariableKeys
+                    .Select(key => _store.Locals.GetInt(key))
+                    .ToList();
+                var distinctCustomColors = legacyColors
+                    .Where(value => value.HasValue &&
+                                    TintMapColor.TryFromStoredValue(value.Value, out _))
+                    .Select(value => value!.Value)
+                    .Distinct()
+                    .ToList();
+                if (legacyColors.All(value => value.HasValue &&
+                                              TintMapColor.TryFromStoredValue(value.Value, out _)) &&
+                    distinctCustomColors.Count == 1)
                 {
-                    if (_store.Locals.GetInt(key) == savedGlobalColor)
+                    globalColor = distinctCustomColors[0];
+                }
+            }
+
+            if (globalColor.HasValue)
+            {
+                foreach (var key in tintVariableKeys)
+                {
+                    if (_store.Locals.GetInt(key) == globalColor)
                         _store.Locals.Remove(key);
                 }
             }

@@ -472,6 +472,7 @@ void main()
         private readonly record struct MeshMaterial(
             uint TexId,
             float AlphaCutoff,
+            TxiBlendMode Blending,
             uint NormalTexId,
             uint SpecularTexId,
             uint RoughnessTexId,
@@ -485,7 +486,8 @@ void main()
         private readonly record struct UploadedDiffuse(
             uint TexId,
             float AlphaCutoff,
-            string? EnvironmentMapTexture);
+            string? EnvironmentMapTexture,
+            TxiBlendMode Blending);
 
         private GL? _gl;
         private uint _shaderProgram;
@@ -3191,13 +3193,14 @@ void main()
 
                             var worldMatrix = meshRange.MeshTransform * placement.Transform;
                             SetUniformMatrix4("model", worldMatrix);
-                            BindMeshTexture(meshRange.TextureName, meshRange.MaterialName);
+                            var blending = BindMeshTexture(meshRange.TextureName, meshRange.MaterialName);
 
                             unsafe
                             {
                                 _gl.DrawElements(PrimitiveType.Triangles, (uint)meshRange.IndexCount,
                                     DrawElementsType.UnsignedInt, (void*)meshRange.IndexOffset);
                             }
+                            RestoreMeshBlending(blending);
                         }
                     }
                 }
@@ -3359,7 +3362,7 @@ void main()
                             meshRange.LayerColorIndices, instance.LayerColorIndices, raw.Model);
                         var itemOwnedCreatureMesh = instance.Kind == InstanceMarkerKind.Creature &&
                                                     meshRange.UsesItemTintOverrides;
-                        BindMeshTexture(
+                        var blending = BindMeshTexture(
                             meshRange.TextureName,
                             meshRange.MaterialName,
                             meshRange.LayerColorIndices,
@@ -3374,6 +3377,7 @@ void main()
                                 DrawElementsType.UnsignedInt,
                                 (void*)PreviewMeshIndexOffset(meshRange, buffer, preview, idleElapsed));
                         }
+                        RestoreMeshBlending(blending);
                     }
                 }
             }
@@ -3933,6 +3937,7 @@ void main()
                     foreach (var meshRange in buffer.MeshRanges)
                     {
                         SetUniformMatrix4("model", meshRange.MeshTransform * transform);
+                        var blending = TxiBlendMode.None;
                         if (!refused)
                         {
                             UseLayerColors(
@@ -3949,7 +3954,7 @@ void main()
                                     creatureTintMapOverrides = placed.TintMapOverrides;
                             }
 
-                            BindMeshTexture(
+                            blending = BindMeshTexture(
                                 meshRange.TextureName,
                                 meshRange.MaterialName,
                                 null,
@@ -3962,6 +3967,7 @@ void main()
                             _gl.DrawElements(PrimitiveType.Triangles, (uint)meshRange.IndexCount,
                                 DrawElementsType.UnsignedInt, (void*)meshRange.IndexOffset);
                         }
+                        RestoreMeshBlending(blending, restoreStandardTransparency: true);
                     }
                 }
                 finally
@@ -4530,14 +4536,16 @@ void main()
                             continue;
 
                         SetUniformMatrix4("model", meshRange.MeshTransform * transform);
-                        if (fits)
-                            BindMeshTexture(meshRange.TextureName, meshRange.MaterialName);
+                        var blending = fits
+                            ? BindMeshTexture(meshRange.TextureName, meshRange.MaterialName)
+                            : TxiBlendMode.None;
 
                         unsafe
                         {
                             _gl.DrawElements(PrimitiveType.Triangles, (uint)meshRange.IndexCount,
                                 DrawElementsType.UnsignedInt, (void*)meshRange.IndexOffset);
                         }
+                        RestoreMeshBlending(blending, restoreStandardTransparency: true);
                     }
                 }
             }
@@ -5026,7 +5034,7 @@ void main()
                 ",", colors.OrderBy(pair => pair.Key).Select(pair => $"{pair.Key}:{pair.Value}"));
         }
 
-        private void BindMeshTexture(
+        private TxiBlendMode BindMeshTexture(
             string? textureName,
             string? materialName = null,
             IReadOnlyDictionary<int, int>? layerColorIndices = null,
@@ -5094,6 +5102,37 @@ void main()
                 SetUniformFloat("alphaCutoff", 0f);
                 SetUniformVec3("flatColor", UntexturedTileColor);
             }
+
+            ConfigureMeshBlending(material.Blending);
+            return material.Blending;
+        }
+
+        private void ConfigureMeshBlending(TxiBlendMode blending)
+        {
+            if (blending != TxiBlendMode.Additive)
+                return;
+
+            _gl!.Enable(EnableCap.Blend);
+            _gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.One);
+            _gl.DepthMask(false);
+        }
+
+        private void RestoreMeshBlending(
+            TxiBlendMode blending,
+            bool restoreStandardTransparency = false)
+        {
+            if (blending != TxiBlendMode.Additive)
+                return;
+
+            if (restoreStandardTransparency)
+            {
+                _gl!.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+                _gl.DepthMask(false);
+                return;
+            }
+
+            _gl!.DepthMask(true);
+            _gl.Disable(EnableCap.Blend);
         }
 
         private MeshMaterial ResolveTexture(string rawTextureName, string? materialName)
@@ -5152,10 +5191,11 @@ void main()
             var isTintMap = IsTintMapMaterial(parsedMaterial);
             var alphaSource = isTintMap ? parsedMaterial?.GetAlphaSource() : null;
             var material = cached.TexId == 0
-                ? new MeshMaterial(0, 0f, 0, 0, 0, 0, 0, 0, 0, false, 0f)
+                ? new MeshMaterial(0, 0f, TxiBlendMode.None, 0, 0, 0, 0, 0, 0, 0, false, 0f)
                 : new MeshMaterial(
                     cached.TexId,
                     cached.AlphaCutoff,
+                    cached.Blending,
                     ResolveMapTexture(maps.Normal),
                     ResolveMapTexture(maps.Specular),
                     ResolveMapTexture(maps.Roughness),
@@ -5320,7 +5360,8 @@ void main()
                 return new UploadedDiffuse(
                     texId,
                     hints.AlphaCutoff,
-                    hints.EnvironmentMapTexture);
+                    hints.EnvironmentMapTexture,
+                    hints.Blending);
             }
             catch (Exception)
             {

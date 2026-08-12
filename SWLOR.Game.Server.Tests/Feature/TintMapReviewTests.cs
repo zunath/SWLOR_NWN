@@ -529,7 +529,7 @@ public class TintMapReviewTests
             .OfType<MethodDeclarationSyntax>()
             .Single(method =>
                 method.Identifier.ValueText == "ResetCustomTintOverrides" &&
-                method.ParameterList.Parameters.Count == 3);
+                method.ParameterList.Parameters.Count == 4);
         resetEditor.ToString().Should().Contain("TintMapVariable.IsCreatureColorLayer(layerType)");
         resetEditor.DescendantNodes()
             .OfType<InvocationExpressionSyntax>()
@@ -1170,7 +1170,11 @@ public class TintMapReviewTests
             "palette-format TM values must remain explicit when a global RGB tint changes");
         explicitPresetMethod.ToString().Should().Contain("GetPerPartOverrideVariableName",
             "APC-marked standard dyes must remain explicit when a global RGB tint changes");
-        var resetGlobalItemColor = FindMethod(serviceSource, nameof(TintMapService.ResetGlobalItemCustomColor));
+        var resetGlobalItemColor = CSharpSyntaxTree.ParseText(serviceSource).GetRoot().DescendantNodes()
+            .OfType<MethodDeclarationSyntax>()
+            .Single(method =>
+                method.Identifier.ValueText == nameof(TintMapService.ResetGlobalItemCustomColor) &&
+                method.ParameterList.Parameters.Count == 4);
         resetGlobalItemColor.ToString().Should().Contain("customColors.All(color => color.HasValue)",
             "legacy global state is safe to infer only when every active material is custom");
         resetGlobalItemColor.ToString().Should().Contain("color == globalColor",

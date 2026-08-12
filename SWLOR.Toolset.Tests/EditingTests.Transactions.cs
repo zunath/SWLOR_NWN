@@ -155,6 +155,32 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void ExecuteCoalesced_DiscardsRedoThatMutatesTheSameListField()
+        {
+            var path = CorpusFiles.FindFileWithListOfSize("utc", 2, out var listFieldName);
+            var document = JsonGffDocument.Parse(File.ReadAllBytes(path));
+            using var session = new DocumentSession(path, document);
+            var listField = document.Root.Get(listFieldName);
+
+            session.Execute("origin", () =>
+                listField.InsertElement(0, JsonGffField.CreateStruct(0).Struct!));
+            var origin = session.UndoStack.CurrentAppliedEntry;
+            origin.Should().NotBeNull();
+            session.Execute("later list edit", () =>
+                listField.MoveElement(0, listField.Elements!.Count - 1));
+            session.Undo();
+
+            session.ExecuteCoalesced(
+                    origin!,
+                    "deferred list continuation",
+                    () => listField.InsertElement(1, JsonGffField.CreateStruct(0).Struct!))
+                .Should().BeTrue();
+
+            session.UndoStack.CanRedo.Should().BeFalse(
+                "the redo captured the same list before the continuation inserted another element");
+        }
+
+        [Test]
         public void Execute_WhenMutationThrows_RollsBackCapturedEditsAndLeavesHistoryClean()
         {
             var path = CorpusFiles.FindFileWithMutableInteger("utc");

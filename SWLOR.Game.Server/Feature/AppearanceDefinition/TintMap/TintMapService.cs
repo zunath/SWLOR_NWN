@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
     public static class TintMapService
     {
         private const float RefreshDelaySeconds = 0.2f;
+        private const string AreaCompatibilityRefreshVariable = "TINT_MAP_COMPAT_REFRESHED";
 
         private readonly record struct ItemColorCarryRevisionScope(
             TintMapLayerType Layer,
@@ -80,6 +81,13 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             if (GetIsPC(creature) || GetIsDM(creature) || GetIsDMPossessed(creature))
             {
                 var area = GetArea(creature);
+                if (!GetIsObjectValid(area) ||
+                    GetLocalInt(area, AreaCompatibilityRefreshVariable) != 0)
+                {
+                    return;
+                }
+
+                SetLocalInt(area, AreaCompatibilityRefreshVariable, 1);
                 QueueOtherCreaturesInArea(area, creature);
                 QueueWorldItemsInArea(area);
             }
@@ -234,7 +242,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         public static void ResetColor(
             uint creature,
             TintMapMaterialSelection selection,
-            TintMapLayerType layer)
+            TintMapLayerType layer,
+            int? paletteColor = null)
         {
             var variableName = TintMapVariable.GetName(selection.Material.Resref, layer);
             var paletteSource = selection.GetPaletteSource(layer);
@@ -251,7 +260,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                                             paletteSource,
                                             TintMapVariable.GetItemGlobalColorStateName(layer)),
                                         out _)
-                ? GetStandardColor(creature, selection, layer) + 1
+                ? paletteColor.HasValue
+                    ? paletteColor.Value + 1
+                    : GetStandardColor(creature, selection, layer) + 1
                 : 0;
             foreach (var resetVariable in resetVariables)
             {
@@ -344,6 +355,15 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             itemSelections = itemSelections
                 .Where(selection => selection.GetPaletteSource(layer) == item)
                 .ToList();
+            ResetGlobalItemCustomColor(creature, item, itemSelections, layer);
+        }
+
+        private static void ResetGlobalItemCustomColor(
+            uint creature,
+            uint item,
+            IReadOnlyList<TintMapMaterialSelection> itemSelections,
+            TintMapLayerType layer)
+        {
             var stateVariable = TintMapVariable.GetItemGlobalColorStateName(layer);
             var hasGlobalColor = TintMapColor.TryFromStoredValue(
                 GetLocalInt(item, stateVariable),
@@ -399,6 +419,66 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             foreach (var selection in resetSelections)
             {
                 ResetColor(creature, selection, layer);
+            }
+
+            Droid.UpdateEquippedItemSnapshot(creature, item);
+        }
+
+        /// <summary>
+        /// Clears persisted tint state when the selected armor part no longer exposes the chosen
+        /// channel. There is no material selection for the normal reset path in that case, but the
+        /// user's preset click still replaces the old custom color.
+        /// </summary>
+        public static void ResetInactiveItemCustomColor(
+            uint creature,
+            uint item,
+            TintMapLayerType layer,
+            AppearanceArmor armorPart)
+        {
+            if (!GetIsObjectValid(item) ||
+                GetObjectType(item) != ObjectType.Item ||
+                TintMapVariable.IsCreatureColorLayer(layer))
+            {
+                return;
+            }
+
+            if (armorPart == AppearanceArmor.Invalid)
+            {
+                ResetGlobalItemCustomColor(
+                    creature,
+                    item,
+                    Array.Empty<TintMapMaterialSelection>(),
+                    layer);
+                return;
+            }
+
+            MarkPendingItemColorEdit(item, layer, armorPart);
+            var activeOtherPartVariables = TintMapModelResolver.GetCurrentSelections(creature)
+                .Where(selection =>
+                    selection.GetPaletteSource(layer) == item &&
+                    selection.ArmorPart != armorPart &&
+                    selection.Material.Layers.Contains(layer))
+                .Select(selection => TintMapVariable.GetName(selection.Material.Resref, layer))
+                .ToHashSet(StringComparer.Ordinal);
+            foreach (var variableName in GetItemTintOverrides(item).Keys)
+            {
+                if (activeOtherPartVariables.Contains(variableName) ||
+                    !TintMapVariable.TryParse(variableName, out _, out var variableLayer) ||
+                    variableLayer != layer)
+                {
+                    continue;
+                }
+
+                DeleteLocalInt(item, variableName);
+            }
+
+            if (TryGetArmorColorChannel(layer, out var colorChannel))
+            {
+                DeleteLocalInt(
+                    item,
+                    ArmorColorIndexCalculator.GetPerPartOverrideVariableName(
+                        armorPart,
+                        colorChannel));
             }
 
             Droid.UpdateEquippedItemSnapshot(creature, item);

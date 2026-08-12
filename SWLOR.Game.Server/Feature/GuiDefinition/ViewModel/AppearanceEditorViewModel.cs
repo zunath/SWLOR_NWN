@@ -1861,7 +1861,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ResetCurrentCustomTintOverrides();
         };
 
-        private void ResetCurrentCustomTintOverrides()
+        private void ResetCurrentCustomTintOverrides(int? paletteColor = null)
         {
             if (!TryGetSelectedTintLayer(out var selectedLayerType))
                 return;
@@ -1876,6 +1876,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     TintMapService.ResetCreatureCustomColor(_target, selectedLayerType);
                     LoadTintMapEditor();
                 }
+                else if (IsEquipmentSelected && SelectedItemTypeIndex == 0)
+                {
+                    var item = GetItem();
+                    if (GetIsObjectValid(item))
+                    {
+                        TintMapService.ResetInactiveItemCustomColor(
+                            _target,
+                            item,
+                            selectedLayerType,
+                            _colorTarget == ColorTarget.Global
+                                ? AppearanceArmor.Invalid
+                                : GetArmorModelType(_colorTarget));
+                        LoadTintMapEditor();
+                    }
+                }
 
                 return;
             }
@@ -1889,14 +1904,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else
             {
-                ResetCustomTintOverrides(selections, layerType, layer);
+                ResetCustomTintOverrides(selections, layerType, layer, paletteColor);
             }
         }
 
         private void ResetCustomTintOverrides(
             IReadOnlyList<TintMapMaterialSelection> selections,
             TintMapLayerType layerType,
-            TintMapLayerDefinition layer)
+            TintMapLayerDefinition layer,
+            int? paletteColor = null)
         {
             if (TintMapVariable.IsCreatureColorLayer(layerType))
             {
@@ -1906,7 +1922,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 foreach (var selection in selections)
                 {
-                    TintMapService.ResetColor(_target, selection, layerType);
+                    TintMapService.ResetColor(_target, selection, layerType, paletteColor);
                 }
             }
 
@@ -2163,7 +2179,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (_colorTarget == ColorTarget.Invalid)
                 return;
 
-            ResetCurrentCustomTintOverrides();
+            ResetCurrentCustomTintOverrides(colorId);
 
             if (_colorTarget == ColorTarget.Global)
             {

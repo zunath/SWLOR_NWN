@@ -125,6 +125,13 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             if (!GetIsObjectValid(creature))
                 return;
 
+            // Rebuild the complete tint state in one pass. Parameter-scoped wildcard resets are
+            // not reliable for modular creatures: on the game client they can discard palette
+            // rows already written for other layers, which leaves equipped clothing at row zero.
+            // A complete reset also removes legacy wildcard values left by older implementations
+            // before the current material-scoped values are installed.
+            ResetMaterialShaderUniforms(creature);
+
             var selections = TintMapModelResolver.GetCurrentSelections(creature);
             var creatureLayers = new HashSet<TintMapLayerType>();
             foreach (var selection in selections)
@@ -488,11 +495,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             }
 
             RemoveDroidOverrides(creature, variableNames);
-            ApplyCreatureColor(
-                creature,
-                TintMapModelResolver.GetCurrentSelections(creature),
-                layer,
-                new TintMapColorSelection(GetCreatureStandardColor(creature, layer), null));
+            ApplyCurrentColors(creature);
         }
 
         public static void SetCreatureCustomColor(
@@ -544,11 +547,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 creature,
                 variableNames.Concat(new[] { stateVariable }).ToList(),
                 savedColor);
-            ApplyCreatureColor(
-                creature,
-                currentSelections,
-                layer,
-                new TintMapColorSelection(GetCreatureStandardColor(creature, layer), color));
+            ApplyCurrentColors(creature);
         }
 
         private static void ApplyCreatureCustomColors(
@@ -1151,8 +1150,6 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             TintMapLayerType layer,
             TintMapColorSelection color)
         {
-            ResetCreatureLayerShaderOverrides(creature, layer);
-
             var appliedMaterials = new HashSet<string>(StringComparer.Ordinal);
             foreach (var selection in selections)
             {
@@ -1165,17 +1162,6 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
                 ApplyMaterialColor(creature, selection.Material.Resref, layer, color);
             }
-        }
-
-        private static void ResetCreatureLayerShaderOverrides(uint creature, TintMapLayerType layer)
-        {
-            var layerDefinition = TintMapMaterialRegistry.GetLayer(layer);
-            // Empty material names on reset remove both the old wildcard entries and any stale
-            // per-material entries for this parameter. New values are then installed only on the
-            // registry-approved materials by ApplyCreatureColor.
-            ResetMaterialShaderUniforms(creature, string.Empty, layerDefinition.UniformName);
-            ResetMaterialShaderUniforms(creature, string.Empty, layerDefinition.ColorUniformName);
-            ResetMaterialShaderUniforms(creature, string.Empty, layerDefinition.CustomModeUniformName);
         }
 
         private static void ApplyMaterialColor(

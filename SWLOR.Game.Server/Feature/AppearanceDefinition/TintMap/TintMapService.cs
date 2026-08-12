@@ -125,10 +125,24 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             if (!GetIsObjectValid(creature))
                 return;
 
+            var appliedCreatureLayers = new HashSet<TintMapLayerType>();
             foreach (var selection in TintMapModelResolver.GetCurrentSelections(creature))
             {
                 foreach (var layer in selection.Material.Layers)
                 {
+                    if (TintMapVariable.IsCreatureColorLayer(layer))
+                    {
+                        if (!appliedCreatureLayers.Add(layer))
+                            continue;
+
+                        ApplyMaterialColor(
+                            creature,
+                            string.Empty,
+                            layer,
+                            GetEffectiveCreatureColor(creature, layer));
+                        continue;
+                    }
+
                     ApplyColor(creature, selection, layer, GetEffectiveColor(creature, selection, layer));
                 }
             }
@@ -471,23 +485,11 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             }
 
             RemoveDroidOverrides(creature, variableNames);
-
-            var appliedMaterials = new HashSet<string>(StringComparer.Ordinal);
-            foreach (var selection in TintMapModelResolver.GetCurrentSelections(creature))
-            {
-                if (selection.GetPaletteSource(layer) != creature ||
-                    !selection.Material.Layers.Contains(layer) ||
-                    !appliedMaterials.Add(selection.Material.Resref))
-                {
-                    continue;
-                }
-
-                ApplyColor(
-                    creature,
-                    selection,
-                    layer,
-                    new TintMapColorSelection(GetStandardColor(creature, selection, layer), null));
-            }
+            ApplyMaterialColor(
+                creature,
+                string.Empty,
+                layer,
+                new TintMapColorSelection(GetCreatureStandardColor(creature, layer), null));
         }
 
         public static void SetCreatureCustomColor(
@@ -506,26 +508,18 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             var savedColor = color.ToStoredValue();
             var stateVariable = GetCreatureCustomColorStateVariable(layer);
             SetLocalInt(creature, stateVariable, savedColor);
-            var existingVariables = GetCreatureCustomColorVariables(creature)
+            var variableNames = GetCreatureCustomColorVariables(creature)
                 .Where(variableName =>
                     TintMapVariable.TryGetLayer(variableName, out var variableLayer) &&
                     variableLayer == layer)
-                .ToList();
-            foreach (var variableName in existingVariables)
-            {
-                SetLocalInt(creature, variableName, savedColor);
-            }
-
-            SaveDroidOverrides(
-                creature,
-                existingVariables.Concat(new[] { stateVariable }).Distinct().ToList(),
-                savedColor);
+                .ToHashSet(StringComparer.Ordinal);
 
             // The NUI can remain open while an equipment or body-part replacement completes.
-            // Re-resolve here so an RGB edit always reaches the materials currently rendered by
-            // the creature instead of only the selections captured by the previous refresh.
+            // Persist every currently rendered semantic material so model swaps and droid
+            // snapshots retain the edit, then publish one creature-wide shader value. The
+            // MATERIAL_NAME_NULL_IS_ALL tweak applies it to all compatible body materials in one
+            // update instead of racing the engine's per-object uniform list one part at a time.
             var currentSelections = TintMapModelResolver.GetCurrentSelections(creature);
-            var appliedVariables = new HashSet<string>(StringComparer.Ordinal);
             foreach (var selection in selections.Concat(currentSelections))
             {
                 if (selection.GetPaletteSource(layer) != creature ||
@@ -535,9 +529,23 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 }
 
                 var variableName = TintMapVariable.GetName(selection.Material.Resref, layer);
-                if (appliedVariables.Add(variableName))
-                    SetColor(creature, selection, layer, color);
+                variableNames.Add(variableName);
             }
+
+            foreach (var variableName in variableNames)
+            {
+                SetLocalInt(creature, variableName, savedColor);
+            }
+
+            SaveDroidOverrides(
+                creature,
+                variableNames.Concat(new[] { stateVariable }).ToList(),
+                savedColor);
+            ApplyMaterialColor(
+                creature,
+                string.Empty,
+                layer,
+                new TintMapColorSelection(GetCreatureStandardColor(creature, layer), color));
         }
 
         private static void ApplyCreatureCustomColors(
@@ -547,21 +555,10 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             if (colors.Count == 0)
                 return;
 
-            var appliedVariables = new HashSet<string>(StringComparer.Ordinal);
-            foreach (var selection in TintMapModelResolver.GetCurrentSelections(creature))
+            var selections = TintMapModelResolver.GetCurrentSelections(creature);
+            foreach (var (layer, color) in colors)
             {
-                foreach (var (layer, color) in colors)
-                {
-                    if (selection.GetPaletteSource(layer) != creature ||
-                        !selection.Material.Layers.Contains(layer))
-                    {
-                        continue;
-                    }
-
-                    var variableName = TintMapVariable.GetName(selection.Material.Resref, layer);
-                    if (appliedVariables.Add(variableName))
-                        SetColor(creature, selection, layer, color);
-                }
+                SetCreatureCustomColor(creature, selections, layer, color);
             }
         }
 
@@ -1001,12 +998,30 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             return new TintMapColorSelection(paletteColor, null);
         }
 
+        private static TintMapColorSelection GetEffectiveCreatureColor(
+            uint creature,
+            TintMapLayerType layer)
+        {
+            if (TintMapColor.TryFromStoredValue(
+                    GetLocalInt(creature, GetCreatureCustomColorStateVariable(layer)),
+                    out var globalColor))
+            {
+                return new TintMapColorSelection(
+                    GetCreatureStandardColor(creature, layer),
+                    globalColor);
+            }
+
+            return new TintMapColorSelection(GetCreatureStandardColor(creature, layer), null);
+        }
+
         public static TintMapColor GetEffectiveDisplayColor(
             uint creature,
             TintMapMaterialSelection selection,
             TintMapLayerType layer)
         {
-            var effectiveColor = GetEffectiveColor(creature, selection, layer);
+            var effectiveColor = TintMapVariable.IsCreatureColorLayer(layer)
+                ? GetEffectiveCreatureColor(creature, layer)
+                : GetEffectiveColor(creature, selection, layer);
             return effectiveColor.CustomColor ??
                    TintMapPaletteColors.GetColor(layer, effectiveColor.PaletteColorId);
         }
@@ -1091,6 +1106,11 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 }
             }
 
+            return GetCreatureStandardColor(creature, layer);
+        }
+
+        private static int GetCreatureStandardColor(uint creature, TintMapLayerType layer)
+        {
             var creatureColor = layer switch
             {
                 TintMapLayerType.Skin => ColorChannel.Skin,
@@ -1119,31 +1139,67 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             TintMapLayerType layer,
             TintMapColorSelection color)
         {
+            ApplyMaterialColor(creature, selection.Material.Resref, layer, color);
+        }
+
+        private static void ApplyMaterialColor(
+            uint creature,
+            string materialResref,
+            TintMapLayerType layer,
+            TintMapColorSelection color)
+        {
             var layerDefinition = TintMapMaterialRegistry.GetLayer(layer);
             var customColor = color.CustomColor;
+
+            if (string.IsNullOrEmpty(materialResref))
+            {
+                // Creature-owned channels are semantic, not per-part. Clear any legacy
+                // per-material entries before publishing one wildcard value for the whole model.
+                ResetMaterialShaderUniforms(creature, string.Empty, layerDefinition.UniformName);
+                ResetMaterialShaderUniforms(creature, string.Empty, layerDefinition.ColorUniformName);
+                ResetMaterialShaderUniforms(creature, string.Empty, layerDefinition.CustomModeUniformName);
+            }
+
             SetMaterialShaderUniformVec4(
                 creature,
-                selection.Material.Resref,
+                materialResref,
                 layerDefinition.UniformName,
                 customColor.HasValue
                     ? 0f
                     : TintMapMaterialRegistry.GetPaletteCoordinate(layer, color.PaletteColorId));
+
+            if (!customColor.HasValue)
+            {
+                // Presets only need the palette-row override. Removing stale custom values keeps
+                // modular creatures below the engine's per-object shader-override limit; writing
+                // zero-valued RGB and mode overrides here can otherwise crowd out later body parts.
+                ResetMaterialShaderUniforms(
+                    creature,
+                    materialResref,
+                    layerDefinition.ColorUniformName);
+                ResetMaterialShaderUniforms(
+                    creature,
+                    materialResref,
+                    layerDefinition.CustomModeUniformName);
+                return;
+            }
+
             SetMaterialShaderUniformVec4(
                 creature,
-                selection.Material.Resref,
+                materialResref,
                 layerDefinition.ColorUniformName,
-                (customColor?.Red ?? 0) / 255f,
-                (customColor?.Green ?? 0) / 255f,
-                (customColor?.Blue ?? 0) / 255f,
-                customColor.HasValue ? 1f : 0f);
+                customColor.Value.Red / 255f,
+                customColor.Value.Green / 255f,
+                customColor.Value.Blue / 255f,
+                1f);
             // Keep a dedicated mode scalar, while the zero palette row above provides a second
             // activation signal for clients that drop that scalar override. Every real palette
             // coordinate is strictly positive, so zero cannot collide with a preset selection.
             SetMaterialShaderUniformVec4(
                 creature,
-                selection.Material.Resref,
+                materialResref,
                 layerDefinition.CustomModeUniformName,
-                customColor.HasValue ? 1f : 0f);
+                1f);
         }
 
         private static Dictionary<string, int> GetItemTintOverrides(uint item)

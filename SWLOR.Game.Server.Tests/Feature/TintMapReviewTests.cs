@@ -514,7 +514,7 @@ public class TintMapReviewTests
             "resetting to a preset must also remove the persisted global semantic tint marker");
         resetInvocations.Should().Contain("DeleteLocalInt");
         resetInvocations.Should().Contain("RemoveDroidOverrides");
-        resetInvocations.Should().Contain("ApplyColor");
+        resetInvocations.Should().Contain("ApplyMaterialColor");
 
         var viewModelSource = ReadSource(
             "SWLOR.Game.Server",
@@ -556,8 +556,10 @@ public class TintMapReviewTests
         synchronizeCalls.Should().Contain("SetLocalInt");
         synchronizeCalls.Should().Contain("SaveDroidOverrides",
             "inactive semantic keys must remain synchronized after a droid respawns");
-        synchronizeCalls.Should().Contain("SetColor",
-            "the active materials must update immediately in the game preview");
+        synchronizeCalls.Should().Contain("ApplyMaterialColor",
+            "the active creature must receive one immediate model-wide shader update");
+        synchronize.ToString().Should().Contain("string.Empty",
+            "semantic skin, hair and tattoo colors must target every compatible body material");
         synchronizeCalls.Should().Contain(nameof(TintMapModelResolver.GetCurrentSelections),
             "an RGB edit must re-resolve body parts that changed while the editor remained open");
 
@@ -1560,7 +1562,7 @@ public class TintMapReviewTests
     }
 
     [Test]
-    public void ApplyingAColorWritesRgbAndAnIndependentCustomModeScalar()
+    public void ApplyingAColorRemovesUnusedCustomOverridesForPresetColors()
     {
         var serviceSource = ReadSource(
             "SWLOR.Game.Server",
@@ -1568,7 +1570,7 @@ public class TintMapReviewTests
             "AppearanceDefinition",
             "TintMap",
             "TintMapService.cs");
-        var applyColor = FindMethod(serviceSource, "ApplyColor");
+        var applyColor = FindMethod(serviceSource, "ApplyMaterialColor");
         var materialWrites = applyColor.DescendantNodes()
             .OfType<InvocationExpressionSyntax>()
             .Where(invocation =>
@@ -1578,9 +1580,23 @@ public class TintMapReviewTests
         materialWrites.Should().HaveCount(3);
         applyColor.ToString().Should().Contain("layerDefinition.ColorUniformName");
         applyColor.ToString().Should().Contain("layerDefinition.CustomModeUniformName");
-        applyColor.ToString().Should().Contain("customColor.HasValue ? 1f : 0f");
-        applyColor.ToString().Should().Contain("customColor.HasValue");
+        applyColor.ToString().Should().Contain("if (!customColor.HasValue)");
+        applyColor.ToString().Should().Contain("ResetMaterialShaderUniforms");
+        applyColor.ToString().Should().Contain("customColor.Value.Red / 255f");
+        applyColor.ToString().Should().Contain("customColor.Value.Green / 255f");
+        applyColor.ToString().Should().Contain("customColor.Value.Blue / 255f");
         applyColor.ToString().Should().Contain("? 0f");
+
+        var resets = applyColor.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Where(invocation =>
+                invocation.Expression.ToString() == "ResetMaterialShaderUniforms")
+            .ToList();
+        resets.Should().HaveCount(5,
+            "a model-wide update clears three legacy per-material values before a preset discards its RGB/mode overrides");
+        resets.Count(reset => reset.ToString().Contains("string.Empty"))
+            .Should().Be(3,
+                "row, RGB and mode values from legacy per-part creature updates must all be cleared");
 
         foreach (var shaderName in new[] { "fs_plt_tinter.shd", "fs_plt_tinter_nm.shd" })
         {
@@ -1588,6 +1604,35 @@ public class TintMapReviewTests
                 .Should().Contain("customTintMode > 0.5 || v <= 0.0",
                     "custom RGB must still activate when a client drops the scalar mode override");
         }
+    }
+
+    [Test]
+    public void RuntimeEnablesSafeMaterialShaderUniformUpdates()
+    {
+        ReadSource("SWLOR.Game.Server", "Docker", "swlor.env")
+            .Should().Contain("NWNX_TWEAKS_MATERIAL_NAME_NULL_IS_ALL=true",
+                "tint-map refreshes must update existing uniforms and must not stop at the native override limit");
+    }
+
+    [Test]
+    public void CreatureSemanticColorsUseOneModelWideUniformUpdate()
+    {
+        var serviceSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapService.cs");
+        var applyCurrent = FindMethod(serviceSource, nameof(TintMapService.ApplyCurrentColors));
+        applyCurrent.ToString().Should().Contain("appliedCreatureLayers");
+        applyCurrent.ToString().Should().Contain("string.Empty");
+        applyCurrent.ToString().Should().Contain("GetEffectiveCreatureColor(creature, layer)");
+
+        var effectiveCreatureColor = FindMethod(serviceSource, "GetEffectiveCreatureColor");
+        effectiveCreatureColor.ToString().Should().Contain("GetCreatureCustomColorStateVariable(layer)");
+        effectiveCreatureColor.ToString().Should().Contain("GetCreatureStandardColor(creature, layer)");
+        effectiveCreatureColor.ToString().Should().NotContain("GetEffectiveColor",
+            "an old per-material value must not be promoted to every creature body part");
     }
 
     [Test]

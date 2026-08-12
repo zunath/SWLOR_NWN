@@ -581,8 +581,8 @@ public class TintMapReviewTests
         synchronizeCalls.Should().Contain("SetLocalInt");
         synchronizeCalls.Should().Contain("SaveDroidOverrides",
             "inactive semantic keys must remain synchronized after a droid respawns");
-        synchronizeCalls.Should().Contain("ApplyCreatureColor",
-            "a live RGB edit must overwrite the active semantic channel without resetting unrelated uniforms");
+        synchronizeCalls.Should().Contain("ReplaceLiveCreatureColorUniform",
+            "a live RGB edit must replace the active semantic parameter without resetting unrelated uniforms");
         synchronizeCalls.Should().NotContain(nameof(TintMapService.ApplyCurrentColors),
             "resetting every material in the same update can leave the prior vec4 active on the game client");
         synchronizeCalls.Should().Contain("DelayCommand",
@@ -591,6 +591,22 @@ public class TintMapReviewTests
             "a semantic edit must not broadcast into unrelated equipment or NPC materials");
         synchronizeCalls.Should().Contain(nameof(TintMapModelResolver.GetCurrentSelections),
             "an RGB edit must re-resolve body parts that changed while the editor remained open");
+
+        var replaceUniform = FindMethod(serviceSource, "ReplaceLiveCreatureColorUniform");
+        var replacementSource = replaceUniform.ToString();
+        var replacementCalls = replaceUniform.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Select(GetInvokedMethodName)
+            .ToList();
+        replacementCalls.Should().Contain("ResetMaterialShaderUniforms",
+            "NWN only replicates a changed concrete-material vec4 reliably after its prior parameter is removed");
+        replacementCalls.Should().Contain("DelayCommand",
+            "the replacement parameter must be added in a later engine update than its removal");
+        replacementCalls.Should().Contain("ApplyCreatureColor");
+        replacementSource.IndexOf("ResetMaterialShaderUniforms", StringComparison.Ordinal).Should().BeLessThan(
+            replacementSource.IndexOf("DelayCommand", StringComparison.Ordinal));
+        replacementSource.Should().Contain("GetEffectiveCreatureColor(creature, layer)",
+            "queued picker events must all resolve the newest stored RGB rather than replaying stale captured colors");
 
         var viewModelSource = ReadSource(
             "SWLOR.Game.Server",

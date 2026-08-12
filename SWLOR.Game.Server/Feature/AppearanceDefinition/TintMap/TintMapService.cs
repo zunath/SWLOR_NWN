@@ -30,6 +30,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
     public static class TintMapService
     {
+        private const float MaterialUniformReplacementDelaySeconds = 0.05f;
         private const float RefreshDelaySeconds = 0.2f;
         private const string AreaCompatibilityRefreshVariable = "TINT_MAP_COMPAT_REFRESHED";
 
@@ -725,18 +726,52 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 variableNames.Concat(new[] { stateVariable }).ToList(),
                 savedColor);
 
-            // A live NUI color edit must not clear and rebuild the object's complete uniform
-            // table. On the game client, a reset followed by replacement vec4 values in the same
-            // update can leave the previous RGB value active even though the stored color has
-            // changed. Overwrite only this semantic channel on the currently rendered materials.
+            // Updating an existing concrete-material vec4 mutates NWN's stored parameter in
+            // place, but the client does not receive a new material-parameter update. This is why
+            // the first custom color remains visible until another appearance change rebuilds the
+            // creature. Remove only this semantic color parameter now and add its latest value on
+            // the next engine update. Keeping the phases separate makes the replacement a newly
+            // replicated parameter without disturbing the other tint layers.
+            ReplaceLiveCreatureColorUniform(creature, currentSelections, layer);
+
             // Reapply once after the model refresh interval, resolving the selections again, so a
             // body-part replacement that completes during the edit receives the latest value too.
-            ApplyCreatureColor(
-                creature,
-                currentSelections,
-                layer,
-                new TintMapColorSelection(GetCreatureStandardColor(creature, layer), color));
             DelayCommand(RefreshDelaySeconds, () =>
+            {
+                if (!GetIsObjectValid(creature))
+                    return;
+
+                ApplyCreatureColor(
+                    creature,
+                    TintMapModelResolver.GetCurrentSelections(creature),
+                    layer,
+                    GetEffectiveCreatureColor(creature, layer));
+            });
+        }
+
+        private static void ReplaceLiveCreatureColorUniform(
+            uint creature,
+            IReadOnlyList<TintMapMaterialSelection> selections,
+            TintMapLayerType layer)
+        {
+            var layerDefinition = TintMapMaterialRegistry.GetLayer(layer);
+            var resetMaterials = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var selection in selections)
+            {
+                if (selection.GetPaletteSource(layer) != creature ||
+                    !selection.Material.Layers.Contains(layer) ||
+                    !resetMaterials.Add(selection.Material.Resref))
+                {
+                    continue;
+                }
+
+                ResetMaterialShaderUniforms(
+                    creature,
+                    selection.Material.Resref,
+                    layerDefinition.ColorUniformName);
+            }
+
+            DelayCommand(MaterialUniformReplacementDelaySeconds, () =>
             {
                 if (!GetIsObjectValid(creature))
                     return;

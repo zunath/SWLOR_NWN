@@ -912,6 +912,51 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void ItemPaletteOptOutFollowsAReplacementMaterialWhileGlobalTintRemains()
+        {
+            var catalog = TintMapCatalog.Load(Resources());
+            catalog.Should().NotBeNull();
+            var variables = new VarTable(new JsonGffStruct());
+            var editor = new TintMapEditorViewModel(
+                variables,
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                catalog!);
+            var layer = TintMapLayerType.Cloth1;
+            var oldModel = ItemOwnedModelWith("helm_004");
+            var newModel = ItemOwnedModelWith("helm_005");
+            var oldKey = TintMapVariable.GetName("helm_004", layer);
+            var newKey = TintMapVariable.GetName("helm_005", layer);
+            var paletteOverride = 38;
+            variables.SetInt(
+                TintMapVariable.GetItemGlobalColorStateName(layer),
+                new TintMapColor(12, 34, 56).ToStoredValue());
+            variables.SetInt(oldKey, paletteOverride);
+
+            editor.Reload(
+                oldModel,
+                includeNonItemOwnedMaterials: false,
+                carryItemCustomColorsAcrossMaterials: true);
+            editor.Reload(
+                null,
+                includeNonItemOwnedMaterials: false,
+                carryItemCustomColorsAcrossMaterials: true);
+            editor.Reload(
+                newModel,
+                includeNonItemOwnedMaterials: false,
+                carryItemCustomColorsAcrossMaterials: true);
+
+            variables.GetInt(newKey).Should().Be(paletteOverride,
+                "the replacement material must retain its explicit stock-color opt-out");
+            variables.GetInt(oldKey).Should().BeNull();
+            editor.Colors.Single(row => row.Key == newKey).HasOverride.Should().BeTrue();
+            editor.Colors.Single(row => row.Key == newKey).IsCustom.Should().BeFalse();
+        }
+
+        [Test]
         public void PresetEditDuringItemModelLoadCancelsTheOlderCustomColorCarry()
         {
             var catalog = TintMapCatalog.Load(Resources());
@@ -1044,6 +1089,48 @@ namespace SWLOR.Toolset.Tests
             carried.Should().Be(new TintMapColor(12, 34, 56));
             editor.TintMapEditor.Colors.Should().Contain(row =>
                 row.Key == femaleKey && row.IsCustom && row.Color == Color.FromRgb(12, 34, 56));
+        }
+
+        [AvaloniaTest]
+        public void MannequinSexChangeCarriesPaletteOptOutToTheVisibleWearerVariant()
+        {
+            var catalog = TintMapCatalog.Load(Resources());
+            catalog.Should().NotBeNull();
+            var item = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
+                ResourceType.Uti,
+                "gender_pal_tint",
+                "Gender Palette Tint")).Root;
+            var variables = new ItemValueStore(item).Locals;
+            var layer = TintMapLayerType.Cloth1;
+            var maleKey = TintMapVariable.GetName("pmh0_robe030", layer);
+            var femaleKey = TintMapVariable.GetName("pfh0_robe149", layer);
+            var paletteOverride = 38;
+            variables.SetInt(
+                TintMapVariable.GetItemGlobalColorStateName(layer),
+                new TintMapColor(12, 34, 56).ToStoredValue());
+            variables.SetInt(maleKey, paletteOverride);
+
+            using var editor = new ItemEditorViewModel(
+                item,
+                "gender_pal_tint",
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                resolveModel: (_, female) => ItemOwnedModelWith(
+                    female ? "pfh0_robe149" : "pmh0_robe030"),
+                tintMapCatalog: catalog);
+            DrainUntil(() => !editor.IsModelPreviewLoading);
+
+            editor.PreviewFemale = true;
+            Dispatcher.UIThread.RunJobs();
+            DrainUntil(() => !editor.IsModelPreviewLoading);
+
+            variables.GetInt(maleKey).Should().BeNull();
+            variables.GetInt(femaleKey).Should().Be(paletteOverride);
+            editor.TintMapEditor!.Colors.Should().Contain(row =>
+                row.Key == femaleKey && row.HasOverride && !row.IsCustom);
         }
 
         [AvaloniaTest]

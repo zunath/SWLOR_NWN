@@ -156,9 +156,9 @@ namespace SWLOR.Toolset.Editors.TintMaps
         }
 
         /// <summary>
-        /// Captures every material position for equipment layers that contain a custom RGB value.
-        /// Preset positions must remain in the sequence so a partial custom tint can be mapped to
-        /// the corresponding replacement material without tinting the entire layer.
+        /// Captures every material position for equipment layers that contain an explicit color.
+        /// Palette values include material-level opt-outs from an inherited global RGB tint, so
+        /// they must move with their material slot just like custom RGB values do.
         /// </summary>
         private ItemColorCarry CaptureItemCustomColors(
             IReadOnlyCollection<TintMapColorRowViewModel> rows,
@@ -176,7 +176,7 @@ namespace SWLOR.Toolset.Editors.TintMaps
                         var saved = _variables.GetInt(keyGroup.Key);
                         return new ItemColorSource(
                             keyGroup.Key,
-                            saved.HasValue && TintMapColor.TryFromStoredValue(saved.Value, out _)
+                            saved.HasValue && IsStoredColorOverride(saved.Value)
                                 ? saved.Value
                                 : null);
                     })
@@ -325,7 +325,7 @@ namespace SWLOR.Toolset.Editors.TintMaps
             {
                 var saved = _variables.GetInt(source.Key);
                 int? current = saved.HasValue &&
-                               TintMapColor.TryFromStoredValue(saved.Value, out _)
+                               IsStoredColorOverride(saved.Value)
                     ? saved.Value
                     : null;
                 if (current != source.SavedColor)
@@ -333,6 +333,12 @@ namespace SWLOR.Toolset.Editors.TintMaps
             }
 
             return true;
+        }
+
+        private static bool IsStoredColorOverride(int savedColor)
+        {
+            return TintMapColor.TryFromStoredValue(savedColor, out _) ||
+                   savedColor is > 0 and <= TintMapMaterialRegistry.PaletteColorCount;
         }
 
         public void ReloadCatalog(TintMapCatalog? catalog)

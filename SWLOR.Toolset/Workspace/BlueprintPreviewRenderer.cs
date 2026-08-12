@@ -842,11 +842,7 @@ namespace SWLOR.Toolset.Workspace
             foreach (var mesh in composed.GetMeshNodes())
             {
                 if (overrides.TryGetValue(mesh.Bitmap, out var textureResRef))
-                {
                     mesh.Bitmap = textureResRef;
-                    if (!string.IsNullOrWhiteSpace(mesh.MaterialName))
-                        mesh.MaterialName = textureResRef;
-                }
             }
         }
 
@@ -977,11 +973,7 @@ namespace SWLOR.Toolset.Workspace
                 return;
 
             foreach (var mesh in model.GetMeshNodes())
-            {
                 mesh.Bitmap = textureResRef;
-                if (!string.IsNullOrWhiteSpace(mesh.MaterialName))
-                    mesh.MaterialName = textureResRef;
-            }
         }
 
         /// <summary>

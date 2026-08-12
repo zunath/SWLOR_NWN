@@ -289,6 +289,36 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void CloakTextureMappingPreservesItsExplicitTintMaterial()
+        {
+            var creature = InstanceFieldMap.Duplicate(
+                _workspace.LoadBlueprint(ResourceType.Utc, "npc_l").Fields);
+            creature.SetInt("Gender", GffFieldType.Byte, 1);
+
+            var cloak = JsonGffField.CreateStruct(64).Struct!;
+            cloak.SetInt("BaseItem", GffFieldType.Int, 80);
+            cloak.SetInt("ModelPart1", GffFieldType.Byte, 70);
+            cloak.SetInt("xModelPart1", GffFieldType.Word, 70);
+            creature.Get("Equip_ItemList").InsertElement(
+                creature.GetListOrEmpty("Equip_ItemList").Count,
+                cloak);
+
+            var model = _renderer.BuildModel(ResourceType.Utc, creature);
+
+            model.Should().NotBeNull();
+            var cloakMeshes = model!.Meshes.Where(mesh =>
+                mesh.MaterialName.Equals("cloak__cl_c8ad14", StringComparison.OrdinalIgnoreCase)).ToList();
+            cloakMeshes.Should().NotBeEmpty(
+                "pfh0_cloak_150 explicitly binds the converted cloak tint material");
+            cloakMeshes.Should().OnlyContain(mesh => mesh.UsesItemTintOverrides);
+
+            var textures = new PreviewTextureCache(_resources);
+            cloakMeshes.Should().OnlyContain(mesh =>
+                textures.Get(mesh.MaterialName, mesh.LayerColorIndices, null, true) != null,
+                "cloakmodel texture selection must not replace a valid explicit MTR with the model resref");
+        }
+
+        [Test]
         public void EquippedHelmetKeepsItsOwnDyes()
         {
             var commando = _renderer.BuildModel(

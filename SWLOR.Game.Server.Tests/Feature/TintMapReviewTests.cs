@@ -1152,12 +1152,21 @@ public class TintMapReviewTests
             "changing a global RGB tint must preserve independently customized armor parts");
         setGlobalItemColor.ToString().Should().Contain("!hasSelectionColor",
             "a newly exposed material without a stored override still inherits the changed global tint");
+        setGlobalItemColor.ToString().Should().Contain("HasExplicitItemPresetColor",
+            "global RGB changes must preserve per-material and per-part preset dyes");
+        setGlobalItemColor.ToString().Should().Contain("!hasExplicitPresetColor",
+            "only genuinely inheriting materials may receive the global RGB tint");
         setGlobalItemColor.ToString().Should().Contain("hasPreviousGlobalColor &&",
             "the first global RGB tint must preserve existing per-part custom colors");
         setGlobalItemColor.ToString().Should().NotContain("!hasPreviousGlobalColor ||",
             "missing legacy global intent must not make every per-part custom color look inherited");
         setGlobalItemColor.ToString().Should().Contain("Droid.UpdateEquippedItemSnapshot(creature, item)",
             "changing only the global marker must still persist equipped droid armor");
+        var explicitPresetMethod = FindMethod(serviceSource, "HasExplicitItemPresetColor");
+        explicitPresetMethod.ToString().Should().Contain("savedColor <= TintMapMaterialRegistry.PaletteColorCount",
+            "palette-format TM values must remain explicit when a global RGB tint changes");
+        explicitPresetMethod.ToString().Should().Contain("GetPerPartOverrideVariableName",
+            "APC-marked standard dyes must remain explicit when a global RGB tint changes");
         var resetGlobalItemColor = FindMethod(serviceSource, nameof(TintMapService.ResetGlobalItemCustomColor));
         resetGlobalItemColor.ToString().Should().Contain("customColors.All(color => color.HasValue)",
             "legacy global state is safe to infer only when every active material is custom");

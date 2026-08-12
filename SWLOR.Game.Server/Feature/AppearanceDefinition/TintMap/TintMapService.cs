@@ -277,12 +277,18 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 color.ToStoredValue());
             foreach (var selection in itemSelections)
             {
+                var savedSelectionColor = GetSavedColor(selection, layer);
                 var hasSelectionColor = TryGetCustomColor(
                     selection,
                     layer,
                     out var selectionColor);
-                if (!hasSelectionColor ||
-                    hasPreviousGlobalColor && selectionColor == previousGlobalColor)
+                var hasExplicitPresetColor = HasExplicitItemPresetColor(
+                    selection,
+                    layer,
+                    savedSelectionColor);
+                if (!hasExplicitPresetColor &&
+                    (!hasSelectionColor ||
+                     hasPreviousGlobalColor && selectionColor == previousGlobalColor))
                 {
                     SetColor(creature, selection, layer, color);
                 }
@@ -381,6 +387,49 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         {
             var savedColor = GetSavedColor(selection, layer);
             return TintMapColor.TryFromStoredValue(savedColor, out color);
+        }
+
+        private static bool HasExplicitItemPresetColor(
+            TintMapMaterialSelection selection,
+            TintMapLayerType layer,
+            int savedColor)
+        {
+            // TM_* values in the legacy 1-176 format are explicit per-material presets. They are
+            // also written by ResetColor when a part opts out of an active global RGB tint.
+            if (savedColor > 0 && savedColor <= TintMapMaterialRegistry.PaletteColorCount)
+                return true;
+
+            if (selection.ArmorPart == AppearanceArmor.Invalid ||
+                !TryGetArmorColorChannel(layer, out var colorChannel))
+            {
+                return false;
+            }
+
+            var item = selection.GetPaletteSource(layer);
+            return GetIsObjectValid(item) &&
+                   GetObjectType(item) == ObjectType.Item &&
+                   GetLocalInt(
+                       item,
+                       ArmorColorIndexCalculator.GetPerPartOverrideVariableName(
+                           selection.ArmorPart,
+                           colorChannel)) > 0;
+        }
+
+        private static bool TryGetArmorColorChannel(
+            TintMapLayerType layer,
+            out AppearanceArmorColor colorChannel)
+        {
+            colorChannel = layer switch
+            {
+                TintMapLayerType.Metal1 => AppearanceArmorColor.Metal1,
+                TintMapLayerType.Metal2 => AppearanceArmorColor.Metal2,
+                TintMapLayerType.Cloth1 => AppearanceArmorColor.Cloth1,
+                TintMapLayerType.Cloth2 => AppearanceArmorColor.Cloth2,
+                TintMapLayerType.Leather1 => AppearanceArmorColor.Leather1,
+                TintMapLayerType.Leather2 => AppearanceArmorColor.Leather2,
+                _ => AppearanceArmorColor.NumColors
+            };
+            return colorChannel != AppearanceArmorColor.NumColors;
         }
 
         public static void CarryStoredCreatureCustomColors(uint creature)

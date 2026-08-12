@@ -280,6 +280,38 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 GetEffectiveColor(creature, selection, layer));
         }
 
+        /// <summary>
+        /// Removes a part-specific material override so the material can inherit an active
+        /// item-wide custom color. This is distinct from selecting a preset, which deliberately
+        /// stores a compatibility palette value beneath an active global tint.
+        /// </summary>
+        public static void ResetColorToInheritance(
+            uint creature,
+            TintMapMaterialSelection selection,
+            TintMapLayerType layer)
+        {
+            var variableName = TintMapVariable.GetName(selection.Material.Resref, layer);
+            var paletteSource = selection.GetPaletteSource(layer);
+            MarkPendingItemColorEdit(paletteSource, layer, selection.ArmorPart);
+            var resetVariables = GetEquivalentItemTintVariables(
+                paletteSource,
+                selection,
+                layer);
+            if (!resetVariables.Contains(variableName, StringComparer.Ordinal))
+                resetVariables.Add(variableName);
+            foreach (var resetVariable in resetVariables)
+            {
+                DeleteLocalInt(paletteSource, resetVariable);
+            }
+
+            SaveDroidOverride(creature, selection, layer, variableName, 0);
+            ApplyColor(
+                creature,
+                selection,
+                layer,
+                GetEffectiveColor(creature, selection, layer));
+        }
+
         public static void SetGlobalItemCustomColor(
             uint creature,
             IReadOnlyList<TintMapMaterialSelection> selections,

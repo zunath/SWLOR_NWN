@@ -332,6 +332,19 @@ public class TintMapReviewTests
         rightClickReset.ToString().Should().Contain(
             "TintMapService.ResetInactiveItemCustomColor",
             "right-clicking a preset must clear stale custom state even when that armor part no longer exposes the layer");
+        rightClickReset.ToString().Should().Contain(
+            "TintMapService.ResetColorToInheritance",
+            "an active material must delete its override so it can inherit an item-wide RGB tint");
+
+        var inheritReset = FindMethod(source: ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapService.cs"), nameof(TintMapService.ResetColorToInheritance));
+        inheritReset.ToString().Should().Contain("DeleteLocalInt(paletteSource, resetVariable)");
+        inheritReset.ToString().Should().NotContain("GetStandardColor",
+            "restoring inheritance must not persist the part's current preset beneath the global tint");
     }
 
     [Test]

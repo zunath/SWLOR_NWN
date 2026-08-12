@@ -2277,10 +2277,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            ResetCustomTintOverrides(
-                selections,
-                layerType,
-                TintMapMaterialRegistry.GetLayer(layerType));
+            foreach (var selection in selections)
+            {
+                TintMapService.ResetColorToInheritance(_target, selection, layerType);
+            }
+
+            LoadTintMapEditor();
         }
 
         private static bool TryGetArmorTintLayer(

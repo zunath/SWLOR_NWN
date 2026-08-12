@@ -184,6 +184,44 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void ExecuteCoalesced_RejectsChildEditBeneathNewerInsertedListElement()
+        {
+            var path = CorpusFiles.FindFileWithListOfSize("utc", 2, out var listFieldName);
+            var document = JsonGffDocument.Parse(File.ReadAllBytes(path));
+            var insertedElement = JsonGffField.CreateStruct(0).Struct!;
+            var childField = JsonGffField.CreateScalar(
+                GffFieldType.Int,
+                System.Text.Encoding.ASCII.GetBytes("7"));
+            insertedElement.Add("TM_TEST", childField);
+            using var session = new DocumentSession(path, document);
+            var listField = document.Root.Get(listFieldName);
+            var originField = CorpusFiles.FindFirstMutableInteger(document.Root)!;
+            var originValue = originField.GetInteger();
+
+            session.Execute("origin", () => originField.SetInteger(originValue + 1));
+            var origin = session.UndoStack.CurrentAppliedEntry;
+            origin.Should().NotBeNull();
+            session.Execute("newer inserted tint variable", () =>
+                listField.InsertElement(0, insertedElement));
+
+            session.ExecuteCoalesced(
+                    origin!,
+                    "late deferred tint carry",
+                    () => childField.SetInteger(9))
+                .Should().BeFalse();
+
+            childField.GetInteger().Should().Be(7,
+                "the rejected carry must not overwrite a value authored in the inserted element");
+            listField.Elements.Should().Contain(insertedElement);
+            session.UndoStack.Entries.Should().HaveCount(2);
+            session.Undo();
+            listField.Elements.Should().NotContain(insertedElement);
+            session.Redo();
+            listField.Elements.Should().Contain(insertedElement);
+            childField.GetInteger().Should().Be(7);
+        }
+
+        [Test]
         public void ExecuteCoalesced_DiscardsRedoThatMutatesTheSameListField()
         {
             var path = CorpusFiles.FindFileWithListOfSize("utc", 2, out var listFieldName);

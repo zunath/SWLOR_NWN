@@ -1,4 +1,6 @@
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Toolset.Domain.Documents;
 
 namespace SWLOR.Toolset.Domain.Render
@@ -16,7 +18,8 @@ namespace SWLOR.Toolset.Domain.Render
                     entry.IntValue is > 0 &&
                     (entry.Name.StartsWith(TintMapVariable.Prefix, StringComparison.Ordinal) ||
                      TintMapVariable.IsCreatureColorStateName(entry.Name) ||
-                     TintMapVariable.IsItemGlobalColorStateName(entry.Name)))
+                     TintMapVariable.IsItemGlobalColorStateName(entry.Name) ||
+                     ArmorColorIndexCalculator.IsPerPartOverrideVariableName(entry.Name)))
                 .ToDictionary(
                     entry => entry.Name,
                     entry => entry.IntValue!.Value,
@@ -62,7 +65,8 @@ namespace SWLOR.Toolset.Domain.Render
         public static int GetMaterialColor(
             IReadOnlyDictionary<string, int>? overrides,
             string materialName,
-            TintMapLayerType layer)
+            TintMapLayerType layer,
+            AppearanceArmor armorPart = AppearanceArmor.Invalid)
         {
             if (overrides == null)
                 return 0;
@@ -70,6 +74,9 @@ namespace SWLOR.Toolset.Domain.Render
             var materialKey = TintMapVariable.GetName(materialName, layer);
             if (overrides.TryGetValue(materialKey, out var saved))
                 return saved;
+
+            if (HasExplicitPerPartPreset(overrides, armorPart, layer))
+                return 0;
 
             var stateKey = TintMapVariable.IsCreatureColorLayer(layer)
                 ? TintMapVariable.GetCreatureColorStateName(layer)
@@ -80,7 +87,8 @@ namespace SWLOR.Toolset.Domain.Render
         public static int GetMaterialColor(
             VarTable variables,
             string materialName,
-            TintMapLayerType layer)
+            TintMapLayerType layer,
+            AppearanceArmor armorPart = AppearanceArmor.Invalid)
         {
             ArgumentNullException.ThrowIfNull(variables);
 
@@ -88,10 +96,52 @@ namespace SWLOR.Toolset.Domain.Render
             if (variables.GetInt(materialKey) is int saved)
                 return saved;
 
+            if (TryGetArmorColorChannel(layer, out var colorChannel) &&
+                armorPart != AppearanceArmor.Invalid &&
+                variables.GetInt(
+                    ArmorColorIndexCalculator.GetPerPartOverrideVariableName(
+                        armorPart,
+                        colorChannel)) is > 0)
+            {
+                return 0;
+            }
+
             var stateKey = TintMapVariable.IsCreatureColorLayer(layer)
                 ? TintMapVariable.GetCreatureColorStateName(layer)
                 : TintMapVariable.GetItemGlobalColorStateName(layer);
             return variables.GetInt(stateKey) ?? 0;
+        }
+
+        private static bool HasExplicitPerPartPreset(
+            IReadOnlyDictionary<string, int> overrides,
+            AppearanceArmor armorPart,
+            TintMapLayerType layer)
+        {
+            return armorPart != AppearanceArmor.Invalid &&
+                   TryGetArmorColorChannel(layer, out var colorChannel) &&
+                   overrides.TryGetValue(
+                       ArmorColorIndexCalculator.GetPerPartOverrideVariableName(
+                           armorPart,
+                           colorChannel),
+                       out var marker) &&
+                   marker > 0;
+        }
+
+        private static bool TryGetArmorColorChannel(
+            TintMapLayerType layer,
+            out AppearanceArmorColor colorChannel)
+        {
+            colorChannel = layer switch
+            {
+                TintMapLayerType.Metal1 => AppearanceArmorColor.Metal1,
+                TintMapLayerType.Metal2 => AppearanceArmorColor.Metal2,
+                TintMapLayerType.Cloth1 => AppearanceArmorColor.Cloth1,
+                TintMapLayerType.Cloth2 => AppearanceArmorColor.Cloth2,
+                TintMapLayerType.Leather1 => AppearanceArmorColor.Leather1,
+                TintMapLayerType.Leather2 => AppearanceArmorColor.Leather2,
+                _ => AppearanceArmorColor.NumColors
+            };
+            return colorChannel != AppearanceArmorColor.NumColors;
         }
     }
 }

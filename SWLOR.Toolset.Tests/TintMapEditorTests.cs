@@ -8,6 +8,8 @@ using Avalonia.VisualTree;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Editors.Creatures;
@@ -301,6 +303,60 @@ namespace SWLOR.Toolset.Tests
             };
 
             TintMapOverrides.GetMaterialColor(overrides, material, layer).Should().Be(exact);
+        }
+
+        [Test]
+        public void PerPartPresetMarkerOptsOnlyThatArmorPartOutOfGlobalRgbFallback()
+        {
+            var variables = new VarTable(new JsonGffStruct());
+            var layer = TintMapLayerType.Cloth1;
+            var global = new TintMapColor(4, 5, 6).ToStoredValue();
+            var torsoMarker = ArmorColorIndexCalculator.GetPerPartOverrideVariableName(
+                AppearanceArmor.Torso,
+                AppearanceArmorColor.Cloth1);
+            variables.SetInt(TintMapVariable.GetItemGlobalColorStateName(layer), global);
+            variables.SetInt(torsoMarker, 1);
+
+            var overrides = TintMapOverrides.Read(variables);
+
+            overrides.Should().Contain(torsoMarker, 1,
+                "the preview snapshot must retain the per-part preset intent");
+            TintMapOverrides.GetMaterialColor(
+                    overrides,
+                    "new_material",
+                    layer,
+                    AppearanceArmor.Torso)
+                .Should().Be(0,
+                    "the torso explicitly chose its ordinary palette color");
+            TintMapOverrides.GetMaterialColor(
+                    overrides,
+                    "new_material",
+                    layer,
+                    AppearanceArmor.RightHand)
+                .Should().Be(global,
+                    "a sibling part without a marker must still inherit the global RGB tint");
+        }
+
+        [Test]
+        public void ExactMaterialTintStillWinsOverPerPartPresetMarker()
+        {
+            var variables = new VarTable(new JsonGffStruct());
+            var material = "specific_material";
+            var layer = TintMapLayerType.Cloth1;
+            var exact = new TintMapColor(1, 2, 3).ToStoredValue();
+            variables.SetInt(TintMapVariable.GetName(material, layer), exact);
+            variables.SetInt(
+                ArmorColorIndexCalculator.GetPerPartOverrideVariableName(
+                    AppearanceArmor.Torso,
+                    AppearanceArmorColor.Cloth1),
+                1);
+
+            TintMapOverrides.GetMaterialColor(
+                    variables,
+                    material,
+                    layer,
+                    AppearanceArmor.Torso)
+                .Should().Be(exact);
         }
 
         [Test]

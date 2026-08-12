@@ -9,6 +9,7 @@ using SWLOR.Toolset.Domain.GameData.TwoDa;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.NWN.Formats.Plt;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Toolset.Tests
 {
@@ -266,6 +267,12 @@ namespace SWLOR.Toolset.Tests
             parts.Should().NotContainKey("belt", "creature belt 0 wins over armor belt 25");
             parts.Should().NotContainKey("shol");
             result.Parts.Single(part => part.PartType == "head").UsesItemTintOverrides.Should().BeFalse();
+            result.Parts.Single(part => part.PartType == "head").ArmorPart
+                .Should().Be(AppearanceArmor.Invalid);
+            result.Parts.Single(part => part.PartType == "chest").ArmorPart
+                .Should().Be(AppearanceArmor.Torso);
+            result.Parts.Single(part => part.PartType == "handl").ArmorPart
+                .Should().Be(AppearanceArmor.LeftHand);
             result.Parts.Where(part => part.PartType != "head")
                 .Should().OnlyContain(part => part.UsesItemTintOverrides,
                     "runtime stores equipped armor tint overrides on the chest item");

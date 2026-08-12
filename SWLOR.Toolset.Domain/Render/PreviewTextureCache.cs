@@ -1,4 +1,5 @@
 using SWLOR.Toolset.Domain.GameData.Resources;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Toolset.Domain.Render
 {
@@ -56,7 +57,8 @@ namespace SWLOR.Toolset.Domain.Render
             string? textureOrMaterialName,
             IReadOnlyDictionary<int, int>? layerColorIndices = null,
             IReadOnlyDictionary<string, int>? tintMapOverrides = null,
-            bool resolveMaterial = true)
+            bool resolveMaterial = true,
+            AppearanceArmor armorPart = AppearanceArmor.Invalid)
         {
             if (string.IsNullOrWhiteSpace(textureOrMaterialName))
                 return null;
@@ -65,7 +67,8 @@ namespace SWLOR.Toolset.Domain.Render
                 textureOrMaterialName,
                 layerColorIndices,
                 tintMapOverrides,
-                resolveMaterial);
+                resolveMaterial,
+                armorPart);
             lock (_gate)
             {
                 if (_entries.TryGetValue(key, out var node))
@@ -80,7 +83,8 @@ namespace SWLOR.Toolset.Domain.Render
                 textureOrMaterialName,
                 layerColorIndices,
                 tintMapOverrides,
-                resolveMaterial);
+                resolveMaterial,
+                armorPart);
 
             lock (_gate)
             {
@@ -124,7 +128,8 @@ namespace SWLOR.Toolset.Domain.Render
             string textureOrMaterialName,
             IReadOnlyDictionary<int, int>? layerColorIndices,
             IReadOnlyDictionary<string, int>? tintMapOverrides,
-            bool resolveMaterial)
+            bool resolveMaterial,
+            AppearanceArmor armorPart)
         {
             try
             {
@@ -137,7 +142,8 @@ namespace SWLOR.Toolset.Domain.Render
                         textureOrMaterialName,
                         material,
                         layerColorIndices,
-                        tintMapOverrides) is { } tintMap)
+                        tintMapOverrides,
+                        armorPart) is { } tintMap)
                 {
                     return tintMap;
                 }
@@ -159,11 +165,12 @@ namespace SWLOR.Toolset.Domain.Render
             string textureOrMaterialName,
             IReadOnlyDictionary<int, int>? layerColorIndices,
             IReadOnlyDictionary<string, int>? tintMapOverrides = null,
-            bool resolveMaterial = true)
+            bool resolveMaterial = true,
+            AppearanceArmor armorPart = AppearanceArmor.Invalid)
         {
             if ((layerColorIndices == null || layerColorIndices.Count == 0) &&
                 (tintMapOverrides == null || tintMapOverrides.Count == 0))
-                return (resolveMaterial ? "m|" : "t|") + textureOrMaterialName;
+                return $"{(resolveMaterial ? 'm' : 't')}|{textureOrMaterialName}|p:{(int)armorPart}";
 
             var layers = layerColorIndices == null
                 ? string.Empty
@@ -173,7 +180,7 @@ namespace SWLOR.Toolset.Domain.Render
                 ? string.Empty
                 : string.Join(",", tintMapOverrides.OrderBy(pair => pair.Key, StringComparer.Ordinal)
                     .Select(pair => $"{pair.Key}:{pair.Value}"));
-            return $"{(resolveMaterial ? 'm' : 't')}|{textureOrMaterialName}|{layers}|{overrides}";
+            return $"{(resolveMaterial ? 'm' : 't')}|{textureOrMaterialName}|p:{(int)armorPart}|{layers}|{overrides}";
         }
 
         private readonly record struct Entry(string Key, TextureImage? Texture, long SizeBytes);

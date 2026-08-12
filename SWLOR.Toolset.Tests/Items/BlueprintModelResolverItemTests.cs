@@ -2,6 +2,7 @@ using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.NWN.Formats.Plt;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Render;
@@ -217,6 +218,12 @@ namespace SWLOR.Toolset.Tests.Items
 
             result.Parts.Single(part => part.PartType == "bicepl").ModelResRef
                 .Should().Be("pmh0_bicepl270");
+            result.Parts.Single(part => part.PartType == "bicepl").ArmorPart
+                .Should().Be(AppearanceArmor.LeftBicep);
+            result.Parts.Single(part => part.PartType == "chest").ArmorPart
+                .Should().Be(AppearanceArmor.Torso);
+            result.Parts.Single(part => part.PartType == "head").ArmorPart
+                .Should().Be(AppearanceArmor.Invalid);
         }
 
         [Test]

@@ -6,6 +6,7 @@ using Avalonia.OpenGL.Controls;
 using Avalonia.Threading;
 using Silk.NET.OpenGL;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Render;
 
@@ -426,6 +427,8 @@ void main()
 
             public IReadOnlyDictionary<string, int> TintMapOverrides { get; init; } =
                 new Dictionary<string, int>(StringComparer.Ordinal);
+
+            public AppearanceArmor ArmorPart { get; init; } = AppearanceArmor.Invalid;
 
             /// <summary>
             /// The source node's MDL <c>tilefade</c> flag - see <see cref="RenderMesh.TileFade"/>.
@@ -3369,7 +3372,8 @@ void main()
                             itemOwnedCreatureMesh
                                 ? meshRange.TintMapOverrides
                                 : instance.TintMapOverrides,
-                            itemOwnedCreatureMesh ? instance.TintMapOverrides : null);
+                            itemOwnedCreatureMesh ? instance.TintMapOverrides : null,
+                            meshRange.ArmorPart);
 
                         unsafe
                         {
@@ -3959,7 +3963,8 @@ void main()
                                 meshRange.MaterialName,
                                 null,
                                 tintMapOverrides,
-                                creatureTintMapOverrides);
+                                creatureTintMapOverrides,
+                                meshRange.ArmorPart);
                         }
 
                         unsafe
@@ -4969,6 +4974,7 @@ void main()
                     LayerColorIndices = mesh.LayerColorIndices,
                     UsesItemTintOverrides = mesh.UsesItemTintOverrides,
                     TintMapOverrides = mesh.TintMapOverrides,
+                    ArmorPart = mesh.ArmorPart,
                     TileFade = mesh.TileFade
                 });
             }
@@ -5039,7 +5045,8 @@ void main()
             string? materialName = null,
             IReadOnlyDictionary<int, int>? layerColorIndices = null,
             IReadOnlyDictionary<string, int>? tintMapOverrides = null,
-            IReadOnlyDictionary<string, int>? creatureTintMapOverrides = null)
+            IReadOnlyDictionary<string, int>? creatureTintMapOverrides = null,
+            AppearanceArmor armorPart = AppearanceArmor.Invalid)
         {
             var surfaceName = !string.IsNullOrWhiteSpace(materialName)
                 ? materialName
@@ -5065,7 +5072,8 @@ void main()
                     material,
                     activeLayerColors,
                     tintMapOverrides,
-                    creatureTintMapOverrides);
+                    creatureTintMapOverrides,
+                    armorPart);
                 SetUniformFloat(
                     "alphaCutoff",
                     material.TintAlphaTexId != 0
@@ -5259,7 +5267,8 @@ void main()
             MeshMaterial material,
             IReadOnlyDictionary<int, int>? layerColorIndices,
             IReadOnlyDictionary<string, int>? tintMapOverrides,
-            IReadOnlyDictionary<string, int>? creatureTintMapOverrides)
+            IReadOnlyDictionary<string, int>? creatureTintMapOverrides,
+            AppearanceArmor armorPart)
         {
             var hasTintMap = material.TintMapTexId != 0 && material.TintPaletteTexId != 0;
             var hasTintAlpha = hasTintMap && material.TintAlphaTexId != 0;
@@ -5289,7 +5298,8 @@ void main()
                 var savedValue = TintMapOverrides.GetMaterialColor(
                     activeOverrides,
                     materialName,
-                    layer);
+                    layer,
+                    armorPart);
 
                 if (TintMapColor.TryFromStoredValue(savedValue, out var custom))
                 {

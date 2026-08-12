@@ -4,6 +4,7 @@ using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.NWN.Formats.Plt;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Toolset.Domain.Render
 {
@@ -43,7 +44,8 @@ namespace SWLOR.Toolset.Domain.Render
         IReadOnlyDictionary<int, int>? LayerColorIndices = null,
         string? TextureResRef = null,
         bool UsesItemTintOverrides = false,
-        IReadOnlyDictionary<string, int>? TintMapOverrides = null);
+        IReadOnlyDictionary<string, int>? TintMapOverrides = null,
+        AppearanceArmor ArmorPart = AppearanceArmor.Invalid);
 
     /// <summary>
     /// The resolved preview-model description for a blueprint, produced by <see cref="BlueprintModelResolver"/>.
@@ -346,7 +348,8 @@ namespace SWLOR.Toolset.Domain.Render
                 if (partModelExists?.Invoke(robeResRef) ?? true)
                 {
                     parts.Add(new BlueprintModelPart(
-                        "robe", robeResRef, UsesItemTintOverrides: true));
+                        "robe", robeResRef, UsesItemTintOverrides: true,
+                        ArmorPart: AppearanceArmor.Robe));
                 }
             }
 
@@ -368,7 +371,8 @@ namespace SWLOR.Toolset.Domain.Render
                     parts.Add(new BlueprintModelPart(
                         partType,
                         BuildPartName(prefix, partType, number),
-                        UsesItemTintOverrides: true));
+                        UsesItemTintOverrides: true,
+                        ArmorPart: GetArmorPart(partType)));
                 }
             }
 
@@ -527,7 +531,8 @@ namespace SWLOR.Toolset.Domain.Render
                 {
                     parts.Add(new BlueprintModelPart(
                         "robe", robeResRef, UsesItemTintOverrides: true,
-                        TintMapOverrides: armorTintMapOverrides));
+                        TintMapOverrides: armorTintMapOverrides,
+                        ArmorPart: AppearanceArmor.Robe));
                 }
             }
 
@@ -551,7 +556,10 @@ namespace SWLOR.Toolset.Domain.Render
                         partType,
                         BuildPartName(prefix, partType, number),
                         UsesItemTintOverrides: armor != null,
-                        TintMapOverrides: armorTintMapOverrides));
+                        TintMapOverrides: armorTintMapOverrides,
+                        ArmorPart: armor == null
+                            ? AppearanceArmor.Invalid
+                            : GetArmorPart(partType)));
                 }
             }
 
@@ -567,6 +575,33 @@ namespace SWLOR.Toolset.Domain.Render
                 SkeletonResRef = prefix,
                 Parts = parts,
                 LayerColorIndices = ResolveLayerColors(root, armor)
+            };
+        }
+
+        private static AppearanceArmor GetArmorPart(string partType)
+        {
+            return partType switch
+            {
+                "footr" => AppearanceArmor.RightFoot,
+                "footl" => AppearanceArmor.LeftFoot,
+                "shinr" => AppearanceArmor.RightShin,
+                "shinl" => AppearanceArmor.LeftShin,
+                "legl" => AppearanceArmor.LeftThigh,
+                "legr" => AppearanceArmor.RightThigh,
+                "pelvis" => AppearanceArmor.Pelvis,
+                "chest" => AppearanceArmor.Torso,
+                "belt" => AppearanceArmor.Belt,
+                "neck" => AppearanceArmor.Neck,
+                "forer" => AppearanceArmor.RightForearm,
+                "forel" => AppearanceArmor.LeftForearm,
+                "bicepr" => AppearanceArmor.RightBicep,
+                "bicepl" => AppearanceArmor.LeftBicep,
+                "shor" => AppearanceArmor.RightShoulder,
+                "shol" => AppearanceArmor.LeftShoulder,
+                "handr" => AppearanceArmor.RightHand,
+                "handl" => AppearanceArmor.LeftHand,
+                "robe" => AppearanceArmor.Robe,
+                _ => AppearanceArmor.Invalid
             };
         }
 

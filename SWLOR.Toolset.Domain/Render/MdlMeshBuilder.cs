@@ -2,6 +2,7 @@
 
 using System.Numerics;
 using SWLOR.NWN.Formats.Mdl;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Toolset.Domain.Render
 {
@@ -124,6 +125,12 @@ namespace SWLOR.Toolset.Domain.Render
         /// </summary>
         public IReadOnlyDictionary<string, int> TintMapOverrides { get; set; } =
             new Dictionary<string, int>(StringComparer.Ordinal);
+
+        /// <summary>
+        /// Modular armor slot that supplied this mesh. The slot disambiguates a part that opted
+        /// into a preset palette color from sibling parts that still inherit a global RGB tint.
+        /// </summary>
+        public AppearanceArmor ArmorPart { get; set; } = AppearanceArmor.Invalid;
 
         public int VertexCount => Positions.Length / 3;
         public int TriangleCount => Indices.Length / 3;

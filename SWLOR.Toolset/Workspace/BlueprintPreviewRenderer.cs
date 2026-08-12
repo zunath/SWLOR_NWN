@@ -1,5 +1,6 @@
 using SWLOR.NWN.Formats.Mdl;
 using SWLOR.NWN.Formats.Plt;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
@@ -515,7 +516,8 @@ namespace SWLOR.Toolset.Workspace
                 // Only generated tint materials may use the same-resref MTR fallback. Ordinary
                 // bitmap-only meshes must retain their authored bitmap even when an unrelated MTR
                 // happens to share its resref.
-                resolveMaterial);
+                resolveMaterial,
+                mesh.ArmorPart);
         }
 
         private bool IsGeneratedTintMaterial(string surfaceName)
@@ -748,6 +750,7 @@ namespace SWLOR.Toolset.Workspace
                 IReadOnlyList<bool> rigidItemTintOwnership = Array.Empty<bool>();
                 IReadOnlyList<IReadOnlyDictionary<string, int>?> rigidTintMapOverrides =
                     Array.Empty<IReadOnlyDictionary<string, int>?>();
+                IReadOnlyList<AppearanceArmor> rigidArmorParts = Array.Empty<AppearanceArmor>();
                 lock (_composerGate)
                 {
                     // _partTextures is filled by LoadComposerModel as the composer pulls each part in,
@@ -762,6 +765,7 @@ namespace SWLOR.Toolset.Workspace
                         rigidLayerColors = CaptureComposedLayerColors(composed, rigidParts);
                         rigidItemTintOwnership = CaptureComposedItemTintOwnership(composed, rigidParts);
                         rigidTintMapOverrides = CaptureComposedTintMapOverrides(composed, rigidParts);
+                        rigidArmorParts = CaptureComposedArmorParts(composed, rigidParts);
                         ApplyComposedTextureOverrides(composed, rigidParts);
                         _partTextures.Restore(composed, TextureExists);
                     }
@@ -776,6 +780,7 @@ namespace SWLOR.Toolset.Workspace
                     ApplyLayerColors(rigidModel, rigidLayerColors);
                     ApplyItemTintOwnership(rigidModel, rigidItemTintOwnership);
                     ApplyTintMapOverrides(rigidModel, rigidTintMapOverrides);
+                    ApplyArmorParts(rigidModel, rigidArmorParts);
                     renderModels.Add(rigidModel);
                 }
             }
@@ -811,6 +816,7 @@ namespace SWLOR.Toolset.Workspace
                         mesh.UsesItemTintOverrides = true;
                         mesh.TintMapOverrides = part.Part.TintMapOverrides ??
                                                 new Dictionary<string, int>(StringComparer.Ordinal);
+                        mesh.ArmorPart = part.Part.ArmorPart;
                     }
                 }
 
@@ -964,6 +970,45 @@ namespace SWLOR.Toolset.Workspace
                 if (overrides[index] is { Count: > 0 } values)
                     model.Meshes[index].TintMapOverrides = values;
             }
+        }
+
+        private static IReadOnlyList<AppearanceArmor> CaptureComposedArmorParts(
+            MdlModel composed,
+            IReadOnlyList<BlueprintModelPart> parts)
+        {
+            var armorPartsByModel = parts
+                .Where(part => part.ArmorPart != AppearanceArmor.Invalid)
+                .GroupBy(part => part.ModelResRef, StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.Last().ArmorPart,
+                    StringComparer.OrdinalIgnoreCase);
+            var result = new List<AppearanceArmor>();
+            foreach (var mesh in composed.GetMeshNodes())
+            {
+                if (!MdlMeshBuilder.IsRenderableMesh(mesh))
+                    continue;
+
+                result.Add(armorPartsByModel.GetValueOrDefault(
+                    mesh.Bitmap,
+                    AppearanceArmor.Invalid));
+            }
+
+            return result;
+        }
+
+        private static void ApplyArmorParts(
+            RenderModel model,
+            IReadOnlyList<AppearanceArmor> armorParts)
+        {
+            if (model.Meshes.Count != armorParts.Count)
+            {
+                throw new InvalidDataException(
+                    $"Composed mesh armor part count {armorParts.Count} does not match rendered mesh count {model.Meshes.Count}.");
+            }
+
+            for (var index = 0; index < model.Meshes.Count; index++)
+                model.Meshes[index].ArmorPart = armorParts[index];
         }
 
         /// <summary>Applies a selected surface to a weighted garment before its meshes are built.</summary>

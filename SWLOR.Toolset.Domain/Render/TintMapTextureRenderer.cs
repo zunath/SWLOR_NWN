@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Toolset.Domain.GameData.Resources;
 
 namespace SWLOR.Toolset.Domain.Render
@@ -25,7 +26,8 @@ namespace SWLOR.Toolset.Domain.Render
             string materialName,
             MtrMaterial material,
             IReadOnlyDictionary<int, int>? layerColorIndices,
-            IReadOnlyDictionary<string, int>? overrides)
+            IReadOnlyDictionary<string, int>? overrides,
+            AppearanceArmor armorPart = AppearanceArmor.Invalid)
         {
             if (!IsTintMapMaterial(material))
                 return null;
@@ -57,7 +59,8 @@ namespace SWLOR.Toolset.Domain.Render
                 var savedValue = TintMapOverrides.GetMaterialColor(
                     overrides,
                     materialName,
-                    layer);
+                    layer,
+                    armorPart);
 
                 if (TintMapColor.TryFromStoredValue(savedValue, out var customColor))
                 {

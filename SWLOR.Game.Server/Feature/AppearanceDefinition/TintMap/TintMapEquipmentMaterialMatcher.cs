@@ -32,5 +32,37 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
             return resref[(separator + 1)..];
         }
+
+        /// <summary>
+        /// Produces a side-neutral identity for a material used by one member of a mirrored body
+        /// part pair. This lets asymmetric material lists match their actual left/right material
+        /// instead of relying on unrelated list positions.
+        /// </summary>
+        public static string GetMirroredPartIdentity(string materialResref, string partName)
+        {
+            var identity = GetVariantIdentity(materialResref)?.ToLowerInvariant() ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(partName))
+                return identity;
+
+            identity = identity.Replace(partName.ToLowerInvariant(), "{part}", StringComparison.Ordinal);
+            var abbreviatedToken = partName.ToLowerInvariant() switch
+            {
+                "forel" => "_lf_",
+                "forer" => "_rf_",
+                "bicepl" => "_lb_",
+                "bicepr" => "_rb_",
+                "handl" => "_lh_",
+                "handr" => "_rh_",
+                "shol" => "_ls_",
+                "shor" => "_rs_",
+                "legl" => "_ll_",
+                "legr" => "_rl_",
+                _ => string.Empty
+            };
+            if (!string.IsNullOrEmpty(abbreviatedToken))
+                identity = identity.Replace(abbreviatedToken, "_{part}_", StringComparison.Ordinal);
+
+            return identity;
+        }
     }
 }

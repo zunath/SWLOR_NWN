@@ -112,9 +112,26 @@ namespace SWLOR.Toolset.Domain.Editing
             if (originIndex < 0)
                 return false;
 
-            _entries[originIndex] = new CoalescedDocumentEdit(_entries[originIndex], continuation);
             var continuationTargets = GetMutationTargets(continuation)
                 .ToHashSet(ReferenceEqualityComparer.Instance);
+            for (var index = originIndex + 1; index < _position; index++)
+            {
+                var appliedTargets = GetMutationTargets(_entries[index]).ToList();
+                if (continuationTargets.Count > 0 &&
+                    appliedTargets.Count > 0 &&
+                    !appliedTargets.Any(continuationTargets.Contains))
+                {
+                    continue;
+                }
+
+                // The continuation was captured against the current document, after this entry.
+                // Moving it before an overlapping applied edit would make the history replay a
+                // different order from the live mutation. Reject it so CommitCoalescedInto rolls
+                // the deferred mutation back and preserves the builder's newer authored value.
+                return false;
+            }
+
+            _entries[originIndex] = new CoalescedDocumentEdit(_entries[originIndex], continuation);
             for (var index = _position; index < _entries.Count; index++)
             {
                 var redoTargets = GetMutationTargets(_entries[index]).ToList();

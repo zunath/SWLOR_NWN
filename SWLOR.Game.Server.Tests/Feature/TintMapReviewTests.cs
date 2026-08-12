@@ -855,16 +855,25 @@ public class TintMapReviewTests
             "cleanup must inspect the model that was actually rendered before mirroring");
         method.ToString().Should().NotContain("destinationPartId > 0",
             "a zero-valued destination still has a rendered fallback model whose stale tints must be removed");
-        method.ToString().Should().Contain("sourceLayerMaterials.Count == 1",
-            "one source material can intentionally map to several destination materials");
-        method.ToString().Should().Contain("sourceLayerMaterials[index]",
-            "multi-material parts must retain the corresponding material's distinct color");
-        method.ToString().Should().Contain("index < sourceLayerMaterials.Count",
-            "an unmatched destination material must be cleared rather than borrowing another color");
         method.ToString().Should().Contain("GetEquivalentMaterialVariables",
             "mirroring and cleanup must include the corresponding material slots for inactive wearer variants");
         FindMethod(resolverSource, "GetEquivalentMaterialVariables").ToString().Should()
             .Contain(nameof(TintMapMaterialRegistry.GetEquivalentEquipmentMaterialResrefs));
+
+        TintMapEquipmentMaterialMatcher.GetMirroredPartIdentity("pmh0_forel153", "forel")
+            .Should().Be(TintMapEquipmentMaterialMatcher.GetMirroredPartIdentity("pmh0_forer153", "forer"));
+        TintMapEquipmentMaterialMatcher.GetMirroredPartIdentity("pfh0_f_lf_931556", "forel")
+            .Should().NotBe(TintMapEquipmentMaterialMatcher.GetMirroredPartIdentity("pmh0_forer153", "forer"),
+                "an unrelated material preceding the real mirrored source must not win by list position");
+        var mirroredSourceMethod = FindMethod(resolverSource, "FindMirroredSourceMaterial").ToString();
+        mirroredSourceMethod.Should().Contain("identityMatches.Count == 1",
+            "asymmetric material lists must select the actual mirrored material by identity");
+        mirroredSourceMethod.Should().Contain("sourceMaterials.Count == 1",
+            "one source material can intentionally map to several destination materials");
+        mirroredSourceMethod.Should().Contain("sourceMaterials.Count == destinationMaterials.Count",
+            "positional fallback is safe only for parallel material lists");
+        mirroredSourceMethod.Should().Contain("sourceMaterials[destinationIndex]",
+            "parallel multi-material parts must retain the corresponding material's distinct color");
 
         var copyColorMethod = FindMethod(viewModelSource, "CopyColor");
         var copyColorBody = copyColorMethod.ToString();

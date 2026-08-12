@@ -363,15 +363,13 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                         destinationModelResref,
                         destination,
                         layer);
-                    // Most mirrored parts declare corresponding left/right materials in the same
-                    // tintmap.2da order. Preserve each material's own color in that case. A few
-                    // legacy parts expose one source material but several destination materials;
-                    // those intentionally broadcast the single source color to every destination.
-                    var source = sourceLayerMaterials.Count == 1
-                        ? sourceLayerMaterials[0]
-                        : index < sourceLayerMaterials.Count
-                            ? sourceLayerMaterials[index]
-                            : null;
+                    var source = FindMirroredSourceMaterial(
+                        sourceLayerMaterials,
+                        destinationLayerMaterials,
+                        destination,
+                        index,
+                        sourcePartName,
+                        destinationPartName);
                     var sourceValue = source == null
                         ? 0
                         : GetLocalInt(
@@ -401,6 +399,38 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     }
                 }
             }
+        }
+
+        private static TintMapMaterialDefinition FindMirroredSourceMaterial(
+            IReadOnlyList<TintMapMaterialDefinition> sourceMaterials,
+            IReadOnlyList<TintMapMaterialDefinition> destinationMaterials,
+            TintMapMaterialDefinition destination,
+            int destinationIndex,
+            string sourcePartName,
+            string destinationPartName)
+        {
+            var destinationIdentity = TintMapEquipmentMaterialMatcher.GetMirroredPartIdentity(
+                destination.Resref,
+                destinationPartName);
+            var identityMatches = sourceMaterials
+                .Where(source => string.Equals(
+                    TintMapEquipmentMaterialMatcher.GetMirroredPartIdentity(source.Resref, sourcePartName),
+                    destinationIdentity,
+                    StringComparison.OrdinalIgnoreCase))
+                .ToList();
+            if (identityMatches.Count == 1)
+                return identityMatches[0];
+
+            // One source material intentionally broadcasts to each destination material. For
+            // genuinely parallel lists, position remains the only stable identity for generated
+            // hashed materials. Never use position for asymmetric lists: an extra material on one
+            // side would copy an unrelated tint, which is worse than clearing an unmatched slot.
+            if (sourceMaterials.Count == 1)
+                return sourceMaterials[0];
+            return sourceMaterials.Count == destinationMaterials.Count &&
+                   destinationIndex < sourceMaterials.Count
+                ? sourceMaterials[destinationIndex]
+                : null;
         }
 
         private static IReadOnlyList<string> GetEquivalentMaterialVariables(

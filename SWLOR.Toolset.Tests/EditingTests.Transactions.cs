@@ -155,6 +155,35 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void ExecuteCoalesced_RejectsContinuationOverlappingANewerAppliedEdit()
+        {
+            var path = CorpusFiles.FindFileWithMutableInteger("utc");
+            var document = JsonGffDocument.Parse(File.ReadAllBytes(path));
+            using var session = new DocumentSession(path, document);
+            var field = CorpusFiles.FindFirstMutableInteger(document.Root)!;
+            var original = field.GetInteger();
+
+            session.Execute("origin", () => field.SetInteger(original + 1));
+            var origin = session.UndoStack.CurrentAppliedEntry;
+            origin.Should().NotBeNull();
+            session.Execute("newer authored choice", () => field.SetInteger(original + 2));
+
+            session.ExecuteCoalesced(
+                    origin!,
+                    "late deferred continuation",
+                    () => field.SetInteger(original + 3))
+                .Should().BeFalse();
+
+            field.GetInteger().Should().Be(original + 2,
+                "the rejected continuation must roll back instead of overwriting the newer edit");
+            session.UndoStack.Entries.Should().HaveCount(2);
+            session.Undo();
+            field.GetInteger().Should().Be(original + 1);
+            session.Undo();
+            field.GetInteger().Should().Be(original);
+        }
+
+        [Test]
         public void ExecuteCoalesced_DiscardsRedoThatMutatesTheSameListField()
         {
             var path = CorpusFiles.FindFileWithListOfSize("utc", 2, out var listFieldName);

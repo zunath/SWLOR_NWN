@@ -9,6 +9,9 @@ using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using CNWSCreature = NWN.Native.API.CNWSCreature;
+using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
+using NWNXLib = NWN.Native.API.NWNXLib;
 
 namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 {
@@ -729,7 +732,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             // material whose tint mask uses this layer must receive the same value. Keep the
             // material-name-null tweak disabled: its concrete-material hook mutates the server's
             // override list in place without publishing the changed value to connected clients.
-            ApplyCreatureColor(
+            ApplyCreatureColorAndPublish(
                 creature,
                 currentSelections,
                 layer,
@@ -742,7 +745,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 if (!GetIsObjectValid(creature))
                     return;
 
-                ApplyCreatureColor(
+                ApplyCreatureColorAndPublish(
                     creature,
                     TintMapModelResolver.GetCurrentSelections(creature),
                     layer,
@@ -1444,6 +1447,28 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
                 ApplyMaterialColor(creature, selection.Material.Resref, layer, color);
             }
+        }
+
+        private static void ApplyCreatureColorAndPublish(
+            uint creature,
+            IReadOnlyList<TintMapMaterialSelection> selections,
+            TintMapLayerType layer,
+            TintMapColorSelection color)
+        {
+            // A body-part edit updates the creature's appearance before OnAppearanceEdit reapplies
+            // the tint uniforms. That appearance update is why an RGB tint previously became
+            // visible only after changing a body part. Reproduce that successful ordering here:
+            // invalidate the composed appearance, install the current shader values, then force
+            // the server to compare and publish the changed material-parameter list this tick.
+            var creaturePointer = NWNXUtils.GetGameObject(creature);
+            if (creaturePointer != nint.Zero)
+            {
+                var nativeCreature = CNWSCreature.FromPointer(creaturePointer);
+                nativeCreature?.UpdateAppearanceDependantInfo();
+            }
+
+            ApplyCreatureColor(creature, selections, layer, color);
+            NWNXLib.g_pAppManager.m_pServerExoApp.SetForceUpdate();
         }
 
         private static void ApplyMaterialColor(

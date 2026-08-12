@@ -581,7 +581,7 @@ public class TintMapReviewTests
         synchronizeCalls.Should().Contain("SetLocalInt");
         synchronizeCalls.Should().Contain("SaveDroidOverrides",
             "inactive semantic keys must remain synchronized after a droid respawns");
-        synchronizeCalls.Should().Contain("ApplyCreatureColor",
+        synchronizeCalls.Should().Contain("ApplyCreatureColorAndPublish",
             "a live RGB edit must publish the active semantic parameter immediately");
         synchronizeCalls.Should().NotContain(nameof(TintMapService.ApplyCurrentColors),
             "resetting every material in the same update can leave the prior vec4 active on the game client");
@@ -589,6 +589,21 @@ public class TintMapReviewTests
             "the latest semantic color must be reapplied after an in-flight body-part refresh");
         synchronizeCalls.Should().Contain(nameof(TintMapModelResolver.GetCurrentSelections),
             "an RGB edit must re-resolve body parts that changed while the editor remained open");
+
+        var publish = FindMethod(serviceSource, "ApplyCreatureColorAndPublish");
+        var publishCalls = publish.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Select(GetInvokedMethodName)
+            .ToList();
+        publish.ToString().Should().Contain("UpdateAppearanceDependantInfo",
+            "custom RGB edits must invalidate the composed creature appearance just like a body-part edit");
+        publishCalls.Should().Contain("ApplyCreatureColor");
+        publishCalls.Should().Contain("SetForceUpdate",
+            "the changed material-parameter list must be compared and sent to clients immediately");
+        publish.ToString().IndexOf("UpdateAppearanceDependantInfo", StringComparison.Ordinal)
+            .Should().BeLessThan(
+                publish.ToString().IndexOf("ApplyCreatureColor(creature", StringComparison.Ordinal),
+                "the proven body-part refresh ordering invalidates appearance before reapplying tint uniforms");
 
         var applyCreatureColor = FindMethod(serviceSource, "ApplyCreatureColor");
         var replacementSource = applyCreatureColor.ToString();

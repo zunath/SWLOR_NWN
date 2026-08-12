@@ -1052,7 +1052,10 @@ public class TintMapReviewTests
             .OfType<MethodDeclarationSyntax>()
             .Single(method => method.Identifier.Text == nameof(TintMapService.SetColor) &&
                               method.ParameterList.Parameters.Count == 5);
-        privateSetColorMethod.ToString().Should().Contain("GetEquivalentItemTintVariables",
+        privateSetColorMethod.ToString().Should().Contain("SetStoredColor",
+            "custom RGB colors and compatibility palette values must share the same propagation path");
+        var setStoredColorMethod = FindMethod(serviceSource, "SetStoredColor");
+        setStoredColorMethod.ToString().Should().Contain("GetEquivalentItemTintVariables",
             "a new custom color must replace stale equivalent wearer-variant values too");
         var resetColorMethod = FindMethod(serviceSource, nameof(TintMapService.ResetColor));
         resetColorMethod.ToString().Should().Contain(
@@ -1101,6 +1104,10 @@ public class TintMapReviewTests
             "compatibility-format palette overrides are authoritative destination values too");
         carryMethod.ToString().Should().Contain("matchingColors.Count == 1",
             "only an unambiguous color for the corresponding material may migrate");
+        carryMethod.ToString().Should().Contain("savedColor > TintMapMaterialRegistry.PaletteColorCount",
+            "legacy palette values must be carried across equivalent wearer-variant materials");
+        carryMethod.ToString().Should().Contain("SetStoredColor",
+            "automatic migration must preserve either the RGB or legacy palette storage format");
         carryMethod.ToString().Should().Contain("GetItemGlobalColorStateName(layer)",
             "an explicit global tint must fill materials newly exposed by another wearer variant");
         carryMethod.ToString().Should().Contain("out var globalColor",
@@ -1148,6 +1155,10 @@ public class TintMapReviewTests
             "legacy global state is safe to infer only when every active material is custom");
         resetGlobalItemColor.ToString().Should().Contain("color == globalColor",
             "a global preset must preserve independently customized armor parts");
+        resetGlobalItemColor.ToString().Should().Contain("GetItemTintOverrides(item)",
+            "global reset must inspect inactive wearer-variant material keys too");
+        resetGlobalItemColor.ToString().Should().Contain("DeleteLocalInt(item, resetVariable)",
+            "global reset must remove matching inactive keys before they can resurrect the tint");
         resetGlobalItemColor.ToString().Should().Contain("Droid.UpdateEquippedItemSnapshot(creature, item)",
             "removing only the global marker must still persist equipped droid armor");
 

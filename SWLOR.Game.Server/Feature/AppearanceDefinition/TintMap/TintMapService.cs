@@ -168,11 +168,25 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             TintMapColor color,
             bool invalidatePendingCarry)
         {
+            SetStoredColor(
+                creature,
+                selection,
+                layer,
+                color.ToStoredValue(),
+                invalidatePendingCarry);
+        }
+
+        private static void SetStoredColor(
+            uint creature,
+            TintMapMaterialSelection selection,
+            TintMapLayerType layer,
+            int savedColor,
+            bool invalidatePendingCarry)
+        {
             var paletteSource = selection.GetPaletteSource(layer);
             if (invalidatePendingCarry)
                 MarkPendingItemColorEdit(paletteSource, layer, selection.ArmorPart);
 
-            var savedColor = color.ToStoredValue();
             var variableName = TintMapVariable.GetName(selection.Material.Resref, layer);
             var setVariables = GetEquivalentItemTintVariables(
                 paletteSource,
@@ -190,7 +204,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 creature,
                 selection,
                 layer,
-                new TintMapColorSelection(GetStandardColor(creature, selection, layer), color));
+                GetEffectiveColor(creature, selection, layer));
         }
 
         public static void ResetColor(
@@ -320,11 +334,33 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             if (!hasGlobalColor)
                 return;
 
-            foreach (var selection in itemSelections)
+            var resetSelections = itemSelections
+                .Where(selection =>
+                    TryGetCustomColor(selection, layer, out var color) &&
+                    color == globalColor)
+                .ToList();
+            var resetVariables = GetItemTintOverrides(item)
+                .Where(entry =>
+                    TintMapVariable.TryParse(
+                        entry.Key,
+                        out _,
+                        out var variableLayer) &&
+                    variableLayer == layer &&
+                    TintMapColor.TryFromStoredValue(entry.Value, out var color) &&
+                    color == globalColor)
+                .Select(entry => entry.Key)
+                .ToList();
+            foreach (var resetVariable in resetVariables)
             {
-                if (TryGetCustomColor(selection, layer, out var color) && color == globalColor)
-                    ResetColor(creature, selection, layer);
+                DeleteLocalInt(item, resetVariable);
             }
+
+            foreach (var selection in resetSelections)
+            {
+                ResetColor(creature, selection, layer);
+            }
+
+            Droid.UpdateEquippedItemSnapshot(creature, item);
         }
 
         public static bool TryGetCustomColor(
@@ -1120,7 +1156,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 var storedColors = new List<(
                     string MaterialResref,
                     TintMapLayerType Layer,
-                    TintMapColor Color)>();
+                    int StoredValue)>();
                 foreach (var (variableName, savedColor) in GetItemTintOverrides(item))
                 {
                     if (!TintMapVariable.TryParse(
@@ -1128,12 +1164,14 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                             out var materialResref,
                             out var layer) ||
                         TintMapVariable.IsCreatureColorLayer(layer) ||
-                        !TintMapColor.TryFromStoredValue(savedColor, out var color))
+                        !TintMapColor.TryFromStoredValue(savedColor, out _) &&
+                        (savedColor <= 0 ||
+                         savedColor > TintMapMaterialRegistry.PaletteColorCount))
                     {
                         continue;
                     }
 
-                    storedColors.Add((materialResref, layer, color));
+                    storedColors.Add((materialResref, layer, savedColor));
                 }
 
                 foreach (var selection in itemSelections)
@@ -1175,11 +1213,11 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                                     stored.MaterialResref,
                                     selection,
                                     layer))
-                            .Select(stored => stored.Color)
+                            .Select(stored => stored.StoredValue)
                             .Distinct()
                             .ToList();
                         if (matchingColors.Count == 1)
-                            SetColor(
+                            SetStoredColor(
                                 creature,
                                 selection,
                                 layer,

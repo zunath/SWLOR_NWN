@@ -581,21 +581,20 @@ public class TintMapReviewTests
         synchronizeCalls.Should().Contain("SetLocalInt");
         synchronizeCalls.Should().Contain("SaveDroidOverrides",
             "inactive semantic keys must remain synchronized after a droid respawns");
-        synchronizeCalls.Should().Contain("ApplyCreatureColorAndPublish",
-            "a live RGB edit must publish the active semantic parameter immediately");
-        synchronizeCalls.Should().NotContain(nameof(TintMapService.ApplyCurrentColors),
-            "resetting every material in the same update can leave the prior vec4 active on the game client");
+        synchronizeCalls.Should().Contain("ApplyCurrentColorsAndPublish",
+            "a live RGB edit must rebuild and publish the complete composed tint state immediately");
         synchronizeCalls.Should().Contain("DelayCommand",
             "the latest semantic color must be reapplied after an in-flight body-part refresh");
         synchronizeCalls.Should().Contain(nameof(TintMapModelResolver.GetCurrentSelections),
             "an RGB edit must re-resolve body parts that changed while the editor remained open");
 
-        var publish = FindMethod(serviceSource, "ApplyCreatureColorAndPublish");
+        var publish = FindMethod(serviceSource, "ApplyCurrentColorsAndPublish");
         var publishCalls = publish.DescendantNodes()
             .OfType<InvocationExpressionSyntax>()
             .Select(GetInvokedMethodName)
             .ToList();
-        publishCalls.Should().Contain("ApplyCreatureColor");
+        publishCalls.Should().Contain(nameof(TintMapService.ApplyCurrentColors),
+            "the appearance rebuild must be followed by all current palette and custom rows");
         publishCalls.Should().Contain("GetFirstPC",
             "every connected observer can retain the old shader-parameter snapshot");
         publish.ToString().Should().Contain("GetLastUpdateObject(creature)",
@@ -604,12 +603,12 @@ public class TintMapReviewTests
             "clearing only the cached material parameters forces the live RGB values to replicate without recreating the creature");
         publishCalls.Should().Contain("SetForceUpdate",
             "the changed material-parameter list must be compared and sent to clients immediately");
-        publish.ToString().IndexOf("ApplyCreatureColor(creature", StringComparison.Ordinal)
+        publish.ToString().IndexOf("ApplyCurrentColors(creature)", StringComparison.Ordinal)
             .Should().BeLessThan(
                 publish.ToString().IndexOf("m_lMaterialShaderParameters.Clear()", StringComparison.Ordinal),
                 "the server's live tint list must contain the replacement before observer snapshots are invalidated");
-        publish.ToString().Should().NotContain("UpdateAppearanceDependantInfo",
-            "a color edit must not rebuild the creature or disturb the player's view state");
+        publish.ToString().Should().Contain("UpdateAppearanceDependantInfo",
+            "the game must invalidate the composed appearance just as the body-part change that made stale tints visible");
 
         var applyCreatureColor = FindMethod(serviceSource, "ApplyCreatureColor");
         var replacementSource = applyCreatureColor.ToString();
@@ -1815,7 +1814,7 @@ public class TintMapReviewTests
     }
 
     [Test]
-    public void ApplyingAColorPacksCustomModeAndRgbIntoTheReplicatedRowUniform()
+    public void ApplyingAColorPacksCustomRgbIntoTheReplicatedScalarRowUniform()
     {
         var serviceSource = ReadSource(
             "SWLOR.Game.Server",
@@ -1831,13 +1830,10 @@ public class TintMapReviewTests
             .ToList();
 
         materialWrites.Should().ContainSingle(
-            "custom mode, palette coordinate, and RGB must use the same material key that live preset changes replicate");
+            "custom RGB must use the same scalar material key that live preset changes replicate");
         var materialWrite = materialWrites.Single().ToString();
         materialWrite.Should().Contain("layerDefinition.UniformName");
-        materialWrite.Should().Contain("? 0f");
-        materialWrite.Should().Contain("customColor.Value.Red / 255f");
-        materialWrite.Should().Contain("customColor.Value.Green / 255f");
-        materialWrite.Should().Contain("customColor.Value.Blue / 255f");
+        materialWrite.Should().Contain("GetCustomColorUniformValue(customColor.Value)");
         materialWrite.Should().NotContain("layerDefinition.ColorUniformName");
         materialWrite.Should().NotContain("layerDefinition.CustomModeUniformName");
         applyColor.ToString().Should().Contain("ResetMaterialShaderUniforms");
@@ -1856,14 +1852,29 @@ public class TintMapReviewTests
         {
             var shader = ReadSource("SWLOR_Haks", "sw_shader", shaderName);
             shader.Should().Contain("uniform vec4 rowSkin");
-            shader.Should().Contain("bool useCustomTint = tintState.x <= 0.0");
+            shader.Should().Contain("bool useCustomTint = tintState.x < 0.0");
             shader.Should().Contain("float v = useCustomTint ? referenceV : tintState.x");
-            shader.Should().Contain("vec3 customTint = tintState.yzw");
+            shader.Should().Contain("float packedColor = max(-tintState.x - 1.0, 0.0)");
+            shader.Should().Contain("floor(packedColor / 65536.0)");
+            shader.Should().Contain("mod(packedColor, 256.0)");
         }
 
         var material = ReadSource("SWLOR_Haks", "sw_tint_mtr", "pmh0_head001.mtr");
         material.Should().Contain("parameter float rowSkin 0.000244 0.0 0.0 0.0",
-            "the packaged material must expose rowSkin as a vec4 or NWN drops the packed RGB components");
+            "the packed RGB must travel through the existing vec4 material override used by presets");
+    }
+
+    [TestCase(0, 0, 0, -1f)]
+    [TestCase(13, 127, 153, -884634f)]
+    [TestCase(255, 255, 255, -16777216f)]
+    public void CustomRgbPackingIsLosslessAcrossTheFullFloatExactIntegerRange(
+        byte red,
+        byte green,
+        byte blue,
+        float expected)
+    {
+        TintMapMaterialRegistry.GetCustomColorUniformValue(new TintMapColor(red, green, blue))
+            .Should().Be(expected);
     }
 
     [Test]
@@ -1918,6 +1929,20 @@ public class TintMapReviewTests
         effectiveCreatureColor.ToString().Should().Contain("GetCreatureStandardColor(creature, layer)");
         effectiveCreatureColor.ToString().Should().NotContain("GetEffectiveColor",
             "an old per-material value must not be promoted to every creature body part");
+
+        var publishCreatureColor = FindMethod(serviceSource, "ApplyCurrentColorsAndPublish");
+        var publishText = publishCreatureColor.ToString();
+        publishText.Should().Contain("UpdateAppearanceDependantInfo()",
+            "live tint edits must invalidate the same composed appearance that a body-part edit rebuilds");
+        publishText.IndexOf("UpdateAppearanceDependantInfo()", StringComparison.Ordinal)
+            .Should().BeLessThan(publishText.IndexOf("ApplyCurrentColors(creature)", StringComparison.Ordinal),
+                "the complete tint state must be installed after the native appearance rebuild");
+        publishText.Should().NotContain("ApplyCreatureColor(creature",
+            "publishing only the edited layer can leave other rows on invalidated defaults");
+        publishText.Should().Contain("m_lMaterialShaderParameters.Clear()",
+            "each observer's stale material snapshot must be discarded before the forced update");
+        publishText.Should().Contain("SetForceUpdate()",
+            "the rebuilt material state must be published in the current server update");
     }
 
     [Test]

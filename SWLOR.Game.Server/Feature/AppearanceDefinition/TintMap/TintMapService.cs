@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using CNWSCreature = NWN.Native.API.CNWSCreature;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using NWNXLib = NWN.Native.API.NWNXLib;
 
@@ -731,11 +732,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             // material whose tint mask uses this layer must receive the same value. Keep the
             // material-name-null tweak disabled: its concrete-material hook mutates the server's
             // override list in place without publishing the changed value to connected clients.
-            ApplyCreatureColorAndPublish(
-                creature,
-                currentSelections,
-                layer,
-                GetEffectiveCreatureColor(creature, layer));
+            ApplyCurrentColorsAndPublish(creature);
 
             // Reapply once after the model refresh interval, resolving the selections again, so a
             // body-part replacement that completes during the edit receives the latest value too.
@@ -744,11 +741,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 if (!GetIsObjectValid(creature))
                     return;
 
-                ApplyCreatureColorAndPublish(
-                    creature,
-                    TintMapModelResolver.GetCurrentSelections(creature),
-                    layer,
-                    GetEffectiveCreatureColor(creature, layer));
+                ApplyCurrentColorsAndPublish(creature);
             });
         }
 
@@ -1448,13 +1441,24 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             }
         }
 
-        private static void ApplyCreatureColorAndPublish(
-            uint creature,
-            IReadOnlyList<TintMapMaterialSelection> selections,
-            TintMapLayerType layer,
-            TintMapColorSelection color)
+        private static void ApplyCurrentColorsAndPublish(uint creature)
         {
-            ApplyCreatureColor(creature, selections, layer, color);
+            // Changing a modular body part is the operation that reliably makes NWN publish a
+            // replacement material parameter to clients. Perform that same native appearance
+            // invalidation before writing the tint. This rebuilds the composed appearance without
+            // changing any selected part, then the current RGB is installed onto the rebuilt
+            // material list below.
+            var creaturePointer = NWNXUtils.GetGameObject(creature);
+            if (creaturePointer != nint.Zero)
+            {
+                var nativeCreature = CNWSCreature.FromPointer(creaturePointer);
+                nativeCreature?.UpdateAppearanceDependantInfo();
+            }
+
+            // Re-resolve the model after invalidation and rebuild every material row. Reapplying
+            // only the edited semantic layer can leave the remaining skin/hair/equipment rows on
+            // the invalidated appearance's defaults.
+            ApplyCurrentColors(creature);
 
             // NWN compares an object's shader parameters with the copy stored in each connected
             // player's last-update object. Replacing a vec4 under the same material/parameter
@@ -1519,18 +1523,15 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 materialResref,
                 layerDefinition.UniformName,
                 customColor.HasValue
-                    ? 0f
+                    ? TintMapMaterialRegistry.GetCustomColorUniformValue(customColor.Value)
                     : TintMapMaterialRegistry.GetPaletteCoordinate(layer, color.PaletteColorId),
-                customColor.HasValue ? customColor.Value.Red / 255f : 0f,
-                customColor.HasValue ? customColor.Value.Green / 255f : 0f,
-                customColor.HasValue ? customColor.Value.Blue / 255f : 0f);
+                0f,
+                0f,
+                0f);
 
-            // Palette coordinate, custom-mode sentinel, and RGB deliberately share the one
-            // row* vec4. That row key is the material parameter NWN demonstrably replicates for
-            // live preset changes. Sending custom RGB through additional keys allowed the row to
-            // switch to the atlas's cyan edge while the color itself was silently dropped.
-            // A zero X selects custom mode; YZW carry normalized RGB. Presets use a positive
-            // texel-centered X and clear YZW.
+            // Presets already prove that NWN publishes the first component of row*. Put custom
+            // RGB on that identical path as one exact negative 24-bit integer and let the shader
+            // decode it. Presets remain positive texel-centered coordinates.
         }
 
         private static Dictionary<string, int> GetItemTintOverrides(uint item)

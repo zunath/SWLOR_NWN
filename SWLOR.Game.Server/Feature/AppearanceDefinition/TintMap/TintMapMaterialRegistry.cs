@@ -11,6 +11,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         public const int PaletteColorCount = 176;
         public const int PaletteTextureHeight = 2048;
         public const int CustomColorReferenceIntensity = 128;
+        private const int CustomColorRedMultiplier = 65536;
+        private const int CustomColorGreenMultiplier = 256;
         private const string TintMap2DA = "tintmap";
 
         private static readonly Dictionary<string, IReadOnlyList<TintMapMaterialDefinition>> MaterialsByModel =
@@ -85,6 +87,19 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             return MaterialsByModel.TryGetValue(modelResref, out var materials)
                 ? materials
                 : Array.Empty<TintMapMaterialDefinition>();
+        }
+
+        /// <summary>
+        /// Packs an RGB color into the scalar row parameter that NWN replicates for live
+        /// material overrides. Every 24-bit RGB value is exactly representable by a 32-bit
+        /// float; the negative sign distinguishes custom colors from positive palette rows.
+        /// </summary>
+        public static float GetCustomColorUniformValue(TintMapColor color)
+        {
+            var packedColor = color.Red * CustomColorRedMultiplier +
+                              color.Green * CustomColorGreenMultiplier +
+                              color.Blue;
+            return -(packedColor + 1f);
         }
 
         public static bool AreEquipmentMaterialSlotsEquivalent(

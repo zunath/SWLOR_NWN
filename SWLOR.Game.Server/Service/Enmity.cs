@@ -24,6 +24,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<uint, DateTime> _attackCommandTimes = new();
         private const float MinimumStaleAttackRecoverySeconds = 4.5f;
         private const float AttackMoveRangeTolerance = 0.25f;
+        private const float DefaultRangedAttackMoveRange = 10f;
         private const float MeleeAttackMoveThreshold = 2.25f;
         private const float MeleeAttackMoveRange = 1.5f;
 
@@ -685,7 +686,14 @@ namespace SWLOR.Game.Server.Service
             if (!Combat.IsRangedDamageSkill(skillType))
                 return MeleeAttackMoveRange;
 
-            return Math.Max(MeleeAttackMoveRange, preferredAttackDistance);
+            if (float.IsNaN(preferredAttackDistance) ||
+                float.IsInfinity(preferredAttackDistance) ||
+                preferredAttackDistance <= MeleeAttackMoveRange)
+            {
+                return DefaultRangedAttackMoveRange;
+            }
+
+            return preferredAttackDistance;
         }
 
         private static bool ShouldRemoveStaleProximityTarget(uint enemy, uint target)

@@ -1117,10 +1117,13 @@ def description_stat_entries(row, base):
         add_stat(stats, "LowHPDamageDealtHPRestoreThresholdPercent", parse_percent(r"below (\d+)% HP", description))
         add_stat(stats, "LowHPDamageDealtHPPercentRestore", parse_count(r"heal you for (\d+) HP", description))
     if base == "Force Lens":
-        add_stat(stats, "SaberstaffConduitForceLens", 1)
+        add_stat(stats, "RestoredFPForceAttackPercentAdjustment", parse_percent(r"\+(\d+)% Force Attack", description))
+        add_stat(stats, "RestoredFPForceAttackDurationSeconds", parse_duration(description) or 30)
+        add_stat(stats, "RestoredStaminaAttackPercentAdjustment", parse_percent(r"\+(\d+)% Attack", description))
+        add_stat(stats, "RestoredStaminaAttackDurationSeconds", parse_duration(description) or 30)
     if base == "Balanced Attunement":
-        add_stat(stats, "HighFPAndStaminaAttackThresholdPercent", parse_percent(r"both above (\d+)%", description))
-        add_stat(stats, "HighFPAndStaminaAttackPercentAdjustment", parse_percent(r"deal \+(\d+)% damage", description))
+        add_stat(stats, "HighFPAndStaminaAbilityDamagePercentAdjustmentThresholdPercent", parse_percent(r"both above (\d+)%", description))
+        add_stat(stats, "HighFPAndStaminaAbilityDamagePercentAdjustment", parse_percent(r"deal \+(\d+)% damage", description))
     if base == "Conduit Training":
         add_stat(stats, "AbilityStaminaCostFPRestorePercentSkillType", skill_expr)
         add_stat(stats, "AbilityStaminaCostFPRestorePercent", parse_percent(r"restore FP equal to (\d+)%", description))
@@ -2116,6 +2119,9 @@ def profile_property_lines(row, level, primary_status):
         add_profile_property("SelfDefensePercent", guarded_channel.group(1))
         add_profile_property("SelfStatResourceAboveThresholdPercent", guarded_channel.group(2))
         add_profile_property("SelfStatDurationSeconds", "30")
+        add_profile_property(
+            "SelfStatusEffectFactory",
+            f"() => new GuardedChannelStatusEffect({guarded_channel.group(1)})")
 
     hp_cost = first_int(r"(?:costs?|spending) (\d+)% (?:current )?HP", description)
     if hp_cost:

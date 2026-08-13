@@ -94,6 +94,7 @@ public class CombatReleaseBalanceAuditTests
         StatType.DamageToDisorientedDazedTargetPercentAdjustment,
         StatType.RangedDamageToNearbyTargetPercentAdjustment,
         StatType.HighFPAndStaminaAttackPercentAdjustment,
+        StatType.HighFPAndStaminaAbilityDamagePercentAdjustment,
         StatType.AttackToBleedingTargetPercentAdjustment,
         StatType.TwinBladeSingleTargetAbilityDamagePercentAdjustment,
         StatType.TwinBladeAreaAbilityDamagePercentAdjustment,

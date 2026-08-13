@@ -92,9 +92,12 @@ namespace SWLOR.Game.Server.Service
 
         public static int AggregateStatAdjustment(StatType statType, int current, int adjustment)
         {
-            return GetStatTypeAggregation(statType) == StatTypeAggregation.BitwiseOr
-                ? current | adjustment
-                : current + adjustment;
+            return GetStatTypeAggregation(statType) switch
+            {
+                StatTypeAggregation.BitwiseOr => current | adjustment,
+                StatTypeAggregation.Maximum => Math.Max(current, adjustment),
+                _ => current + adjustment
+            };
         }
 
         public static bool IsBeneficialStatAdjustment(StatType statType, int value)
@@ -320,14 +323,16 @@ namespace SWLOR.Game.Server.Service
         /// <param name="creature">The creature to modify.</param>
         /// <param name="amount">The amount of FP to restore.</param>
         /// <param name="dbPlayer">The player entity to modify. If this is not set, a call to the DB will be made. Leave null for NPCs.</param>
-        public static void RestoreFP(uint creature, int amount, Player dbPlayer = null)
+        /// <returns>The amount of FP actually restored after modifiers and the maximum-FP cap.</returns>
+        public static int RestoreFP(uint creature, int amount, Player dbPlayer = null)
         {
-            if (amount <= 0) return;
+            if (amount <= 0) return 0;
 
             amount = ApplyFPRestoreAdjustment(creature, amount);
-            if (amount <= 0) return;
+            if (amount <= 0) return 0;
 
             var maxFP = GetMaxFP(creature);
+            var restored = 0;
 
             // Players
             if (GetIsPC(creature) && !GetIsDM(creature))
@@ -338,26 +343,27 @@ namespace SWLOR.Game.Server.Service
                     dbPlayer = DB.Get<Player>(playerId);
                 }
 
-                dbPlayer.FP += amount;
-
-                if (dbPlayer.FP > maxFP)
-                    dbPlayer.FP = maxFP;
+                var current = dbPlayer.FP;
+                dbPlayer.FP = Math.Min(maxFP, current + amount);
+                restored = Math.Max(0, dbPlayer.FP - current);
 
                 DB.Set(dbPlayer);
             }
             // NPCs
             else
             {
-                var fp = GetLocalInt(creature, "FP");
-                fp += amount;
-
-                if (fp > maxFP)
-                    fp = maxFP;
+                var current = GetLocalInt(creature, "FP");
+                var fp = Math.Min(maxFP, current + amount);
+                restored = Math.Max(0, fp - current);
 
                 SetLocalInt(creature, "FP", fp);
             }
 
             ExecuteScript("pc_fp_adjusted", creature);
+            if (restored > 0)
+                Combat.ApplyFPRestoredEffects(creature);
+
+            return restored;
         }
 
         /// <summary>
@@ -405,11 +411,13 @@ namespace SWLOR.Game.Server.Service
         /// <param name="creature">The creature to modify.</param>
         /// <param name="amount">The amount of Stamina to restore.</param>
         /// <param name="dbPlayer">The player entity to modify. If this is not set, a DB call will be made. Leave null for NPCs.</param>
-        public static void RestoreStamina(uint creature, int amount, Player dbPlayer = null)
+        /// <returns>The amount of Stamina actually restored after the maximum-Stamina cap.</returns>
+        public static int RestoreStamina(uint creature, int amount, Player dbPlayer = null)
         {
-            if (amount <= 0) return;
+            if (amount <= 0) return 0;
 
             var maxSTM = GetMaxStamina(creature);
+            var restored = 0;
 
             // Players
             if (GetIsPC(creature) && !GetIsDM(creature))
@@ -420,26 +428,27 @@ namespace SWLOR.Game.Server.Service
                     dbPlayer = DB.Get<Player>(playerId);
                 }
 
-                dbPlayer.Stamina += amount;
-
-                if (dbPlayer.Stamina > maxSTM)
-                    dbPlayer.Stamina = maxSTM;
+                var current = dbPlayer.Stamina;
+                dbPlayer.Stamina = Math.Min(maxSTM, current + amount);
+                restored = Math.Max(0, dbPlayer.Stamina - current);
 
                 DB.Set(dbPlayer);
             }
             // NPCs
             else
             {
-                var fp = GetLocalInt(creature, "STAMINA");
-                fp += amount;
-
-                if (fp > maxSTM)
-                    fp = maxSTM;
+                var current = GetLocalInt(creature, "STAMINA");
+                var fp = Math.Min(maxSTM, current + amount);
+                restored = Math.Max(0, fp - current);
 
                 SetLocalInt(creature, "STAMINA", fp);
             }
 
             ExecuteScript("pc_stm_adjusted", creature);
+            if (restored > 0)
+                Combat.ApplyStaminaRestoredEffects(creature);
+
+            return restored;
         }
 
         /// <summary>

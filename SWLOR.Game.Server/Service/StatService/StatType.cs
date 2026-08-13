@@ -2126,7 +2126,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value whose Stamina ability costs restore FP by percent.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         AbilityStaminaCostFPRestorePercentSkillType = 378,
 
         /// <summary>
@@ -2138,7 +2138,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value whose FP ability costs restore Stamina by percent.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         AbilityFPCostStaminaRestorePercentSkillType = 380,
 
         /// <summary>
@@ -3030,10 +3030,10 @@ namespace SWLOR.Game.Server.Service.StatService
         SaberstaffTempestForceGyre = 532,
 
         /// <summary>
-        /// Enables Conduit ally buffs to apply Force Lens.
+        /// Force Attack percent granted whenever FP is actually restored.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SaberstaffConduitForceLens = 533,
+        RestoredFPForceAttackPercentAdjustment = 533,
 
         /// <summary>
         /// Enables Spear Damage attacks to apply Breach.
@@ -3818,7 +3818,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Percent of maximum FP and Stamina both required to enable HighFPAndStaminaAbilityDamageBonus.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         HighFPAndStaminaAbilityDamageBonusThresholdPercent = 667,
 
         /// <summary>
@@ -5763,6 +5763,38 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.NonBeneficial, deflectionSource: DeflectionSource.Melee)]
         MeleeDeflectionFPRestoreCooldownSeconds = 1000,
 
+        /// <summary>
+        /// Percent hostile ability damage bonus granted while FP and Stamina are both above
+        /// HighFPAndStaminaAbilityDamagePercentAdjustmentThresholdPercent.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        HighFPAndStaminaAbilityDamagePercentAdjustment = 1001,
+
+        /// <summary>
+        /// Percent of maximum FP and Stamina both required to enable
+        /// HighFPAndStaminaAbilityDamagePercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        HighFPAndStaminaAbilityDamagePercentAdjustmentThresholdPercent = 1002,
+
+        /// <summary>
+        /// Duration in seconds for RestoredFPForceAttackPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        RestoredFPForceAttackDurationSeconds = 1003,
+
+        /// <summary>
+        /// Attack percent granted whenever Stamina is actually restored.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RestoredStaminaAttackPercentAdjustment = 1004,
+
+        /// <summary>
+        /// Duration in seconds for RestoredStaminaAttackPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        RestoredStaminaAttackDurationSeconds = 1005,
+
     }
 
     public class StatTypeAttribute : Attribute
@@ -5785,6 +5817,7 @@ namespace SWLOR.Game.Server.Service.StatService
     public enum StatTypeAggregation
     {
         Additive = 0,
-        BitwiseOr = 1
+        BitwiseOr = 1,
+        Maximum = 2
     }
 }

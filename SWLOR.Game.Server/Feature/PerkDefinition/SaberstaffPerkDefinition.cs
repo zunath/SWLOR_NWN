@@ -158,7 +158,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ForceLensTrait)
                 .Description("Restoring FP also grants +8% Force Attack for 30 seconds. Restoring STM also grants +8% Attack for 30 seconds.")
-                .IncreasesStat(StatType.SaberstaffConduitForceLens, 1)
+                .IncreasesStat(StatType.RestoredFPForceAttackPercentAdjustment, 8)
+                .IncreasesStat(StatType.RestoredFPForceAttackDurationSeconds, 30)
+                .IncreasesStat(StatType.RestoredStaminaAttackPercentAdjustment, 8)
+                .IncreasesStat(StatType.RestoredStaminaAttackDurationSeconds, 30)
                 .Price(4)
                 .RequirementSkill(SkillType.Saberstaff, 15)
                 .RequirementCharacterType(CharacterType.ForceSensitive);
@@ -220,8 +223,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BalancedAttunementTrait)
                 .Description("When FP and STM are both above 60%, hostile combat abilities deal +8% damage.")
-                .IncreasesStat(StatType.HighFPAndStaminaAttackThresholdPercent, 60)
-                .IncreasesStat(StatType.HighFPAndStaminaAttackPercentAdjustment, 8)
+                .IncreasesStat(StatType.HighFPAndStaminaAbilityDamagePercentAdjustmentThresholdPercent, 60)
+                .IncreasesStat(StatType.HighFPAndStaminaAbilityDamagePercentAdjustment, 8)
                 .Price(2)
                 .RequirementSkill(SkillType.Saberstaff, 35)
                 .RequirementCharacterType(CharacterType.ForceSensitive);

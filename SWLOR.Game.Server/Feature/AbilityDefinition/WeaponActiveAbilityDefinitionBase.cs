@@ -365,8 +365,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     Stat.RestoreStamina(activator, RestoreStaminaOnHit);
                 if (RestoreFPOnHit > 0)
                 {
-                    Stat.RestoreFP(activator, RestoreFPOnHit);
-                    Combat.ApplyAbilityRestoredFPEffects(activator);
+                    if (Stat.RestoreFP(activator, RestoreFPOnHit) > 0)
+                        Combat.ApplyAbilityRestoredFPEffects(activator);
                 }
                 if (DrainStaminaOnHit > 0)
                     Stat.ReduceStamina(target, DrainStaminaOnHit);
@@ -496,8 +496,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     Stat.RestoreStamina(activator, RestoreStaminaIfAnyCriticalHit);
                 if (RestoreFPAfterImpact > 0)
                 {
-                    Stat.RestoreFP(activator, RestoreFPAfterImpact);
-                    Combat.ApplyAbilityRestoredFPEffects(activator);
+                    if (Stat.RestoreFP(activator, RestoreFPAfterImpact) > 0)
+                        Combat.ApplyAbilityRestoredFPEffects(activator);
                 }
                 if (HitCount > 1 && successfulHitCount >= HitCount)
                 {
@@ -505,8 +505,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         Stat.RestoreStamina(activator, RestoreStaminaIfAllHitsLand);
                     if (RestoreFPIfAllHitsLand > 0)
                     {
-                        Stat.RestoreFP(activator, RestoreFPIfAllHitsLand);
-                        Combat.ApplyAbilityRestoredFPEffects(activator);
+                        if (Stat.RestoreFP(activator, RestoreFPIfAllHitsLand) > 0)
+                            Combat.ApplyAbilityRestoredFPEffects(activator);
                     }
                     if (SelfHastePercentIfAllHitsLand > 0 && SelfHasteDurationSecondsIfAllHitsLand > 0)
                     {
@@ -593,6 +593,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 if (SelfStatResourceAboveThresholdPercent > 0 &&
                     !Combat.IsCurrentFPAndStaminaAtOrAbovePercent(activator, SelfStatResourceAboveThresholdPercent))
                 {
+                    return;
+                }
+
+                if (SelfStatusEffectFactory != null)
+                {
+                    StatusEffect.ApplyStatusEffect(
+                        activator,
+                        activator,
+                        SelfStatusEffectFactory(),
+                        duration);
                     return;
                 }
 
@@ -772,15 +782,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     return;
                 }
 
-                if (RestoreFPIfResourcesBelow > 0)
-                {
-                    Stat.RestoreFP(activator, RestoreFPIfResourcesBelow);
-                    Combat.ApplyAbilityRestoredFPEffects(activator);
-                }
-                if (RestoreStaminaIfResourcesBelow > 0)
-                    Stat.RestoreStamina(activator, RestoreStaminaIfResourcesBelow);
+                var restoredFP = RestoreFPIfResourcesBelow > 0
+                    ? Stat.RestoreFP(activator, RestoreFPIfResourcesBelow)
+                    : 0;
+                var restoredStamina = RestoreStaminaIfResourcesBelow > 0
+                    ? Stat.RestoreStamina(activator, RestoreStaminaIfResourcesBelow)
+                    : 0;
 
-                if (RestoreFPIfResourcesBelow > 0 && RestoreStaminaIfResourcesBelow > 0)
+                if (restoredFP > 0)
+                    Combat.ApplyAbilityRestoredFPEffects(activator);
+
+                if (restoredFP > 0 && restoredStamina > 0)
                     Combat.ApplyAbilityRestoredBothResourcesEffects(activator);
             }
 
@@ -1124,9 +1136,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 }
             }
 
-            public bool HasSelfStatusEffect()
+            public bool HasImmediateSelfStatusEffect()
             {
-                return SelfStatusEffectFactory != null;
+                return SelfStatusEffectFactory != null && SelfStatDurationSeconds <= 0;
             }
 
             public void ApplySelfStatusEffect(uint activator, int duration)
@@ -1220,7 +1232,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                             return;
                         }
 
-                        if (profile.HasSelfStatusEffect())
+                        if (profile.HasImmediateSelfStatusEffect())
                         {
                             profile.ApplySelfStatusEffect(activator, duration);
                         }

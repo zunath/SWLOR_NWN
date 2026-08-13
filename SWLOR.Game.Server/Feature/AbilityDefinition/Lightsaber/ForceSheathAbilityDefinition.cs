@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                     .Level(2)
                     .HasRecastDelay(RecastGroup.ForceSheath, 16.0f),
                 SkillType.Lightsaber,
-                15,
+                17,
                 0,
                 null,
                 null,
@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                     .Level(3)
                     .HasRecastDelay(RecastGroup.ForceSheath, 16.0f),
                 SkillType.Lightsaber,
-                18,
+                23,
                 0,
                 null,
                 null,
@@ -113,7 +113,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                     .Level(4)
                     .HasRecastDelay(RecastGroup.ForceSheath, 18.0f),
                 SkillType.Lightsaber,
-                21,
+                30,
                 0,
                 null,
                 null,

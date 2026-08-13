@@ -935,6 +935,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             AddStat("Critical Damage", FormatPercent(Stat.GetStatAdjustment(_target, StatType.CriticalDamagePercentAdjustment)), "Increases the amount of damage a critical hit deals.");
             AddStat("Damage Dealt", FormatPercent(Stat.GetStatAdjustment(_target, StatType.DamageDealtPercentAdjustment)), "Adjusts all outgoing damage.");
             AddStat("Weapon/Force Damage", FormatPercent(Stat.GetStatAdjustment(_target, StatType.WeaponAndForceDamageDealtPercentAdjustment)), "Adjusts outgoing weapon and Force damage. Stacks with Damage Dealt.");
+            AddHighResourceAbilityDamageStats(AddStat);
             AddStat("Healing Received", FormatPercent(Stat.GetStatAdjustment(_target, StatType.HealingReceivedPercentAdjustment)), "Adjusts the amount of healing you receive from all sources.");
             AddStat("Enmity", FormatPercent(Stat.GetStatAdjustment(_target, StatType.EnmityPercentAdjustment)), "Increases or decreases the rate at which enmity is acquired.");
             AddStat("FP Cost", FormatPercent(Stat.GetStatAdjustment(_target, StatType.FPCostPercentAdjustment)), "Adjusts the FP cost of abilities. Lower is better.");
@@ -954,6 +955,39 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             StatNames = names;
             StatValues = values;
             StatTooltips = tooltips;
+        }
+
+        private void AddHighResourceAbilityDamageStats(Action<string, string, string> addStat)
+        {
+            var flatBonus = Stat.GetStatAdjustment(
+                _target,
+                StatType.HighFPAndStaminaAbilityDamageBonus);
+            var flatThreshold = Stat.GetStatAdjustment(
+                _target,
+                StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent);
+            if (flatBonus > 0 && flatThreshold > 0)
+            {
+                var active = Combat.IsCurrentFPAndStaminaAtOrAbovePercent(_target, flatThreshold);
+                addStat(
+                    "Balanced Current",
+                    active ? $"Active (+{flatBonus} DMG)" : $"Inactive ({flatThreshold}% required)",
+                    $"Hostile combat abilities gain +{flatBonus} DMG while FP and STM are both at least {flatThreshold}%.");
+            }
+
+            var percentBonus = Stat.GetStatAdjustment(
+                _target,
+                StatType.HighFPAndStaminaAbilityDamagePercentAdjustment);
+            var percentThreshold = Stat.GetStatAdjustment(
+                _target,
+                StatType.HighFPAndStaminaAbilityDamagePercentAdjustmentThresholdPercent);
+            if (percentBonus > 0 && percentThreshold > 0)
+            {
+                var active = Combat.IsCurrentFPAndStaminaAtOrAbovePercent(_target, percentThreshold);
+                addStat(
+                    "Balanced Attunement",
+                    active ? $"Active (+{percentBonus}% DMG)" : $"Inactive ({percentThreshold}% required)",
+                    $"Hostile combat abilities deal +{percentBonus}% damage while FP and STM are both at least {percentThreshold}%.");
+            }
         }
 
         private (AbilityType DamageAbility, AbilityType AccuracyAbilityOverride, SkillType Skill, uint AccuracyWeapon) GetPrimaryCombatProfile()

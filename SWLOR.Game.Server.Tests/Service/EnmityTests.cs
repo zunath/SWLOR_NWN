@@ -1,6 +1,7 @@
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -455,9 +456,42 @@ public class EnmityTests
     }
 
     [Test]
-    public void GetAttackMoveRange_FallsBackToMeleeRangeWhenRangedPreferredDistanceIsMissing()
+    public void GetAttackMoveRange_KeepsRangedEnemiesAtRangeWhenPreferredDistanceIsMissing()
     {
-        GetAttackMoveRange(SkillType.Rifle, 0f).Should().Be(1.5f);
+        GetAttackMoveRange(SkillType.Rifle, 0f).Should().Be(10f);
+        GetAttackMoveRange(SkillType.Rifle, -1f).Should().Be(10f);
+        GetAttackMoveRange(SkillType.Rifle, float.NaN).Should().Be(10f);
+        GetAttackMoveRange(SkillType.Rifle, float.PositiveInfinity).Should().Be(10f);
+    }
+
+    [Test]
+    public void NativeRangedAttackPath_RepairsInvalidDesiredDistanceBeforePathing()
+    {
+        var source = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot().FullName,
+            "SWLOR.Game.Server",
+            "Native",
+            "OnAIActionAttackObject.cs"));
+
+        source.Should().Contain("fDesiredAttackRange = ResolveDesiredAttackRange(");
+        source.Should().Contain("pCreature.GetRangeWeaponEquipped() == 1");
+        source.Should().Contain("private static float ResolveDesiredAttackRange(");
+        source.Should().Contain("fMaxAttackRange = ResolveMaximumAttackRange(");
+        source.Should().Contain("private static float ResolveMaximumAttackRange(");
+        source.Should().Contain("DEFAULT_RANGED_DESIRED_ATTACK_RANGE = 10f");
+
+        ResolveNativeDesiredAttackRange(0f, 30f, true).Should().Be(10f);
+        ResolveNativeDesiredAttackRange(float.NaN, 5f, true).Should().BeApproximately(4.99f, 0.001f);
+        ResolveNativeDesiredAttackRange(0f, 0f, true).Should().Be(10f,
+            "missing ranged metadata must not collapse a ranged creature to melee distance");
+        ResolveNativeDesiredAttackRange(8f, 30f, true).Should().Be(8f);
+        ResolveNativeDesiredAttackRange(0f, 30f, false).Should().Be(0f);
+
+        ResolveNativeMaximumAttackRange(10f, 0f, true).Should().Be(10f,
+            "missing ranged metadata must repair the maximum range as well as the desired range");
+        ResolveNativeMaximumAttackRange(4.99f, 5f, true).Should().Be(5f);
+        ResolveNativeMaximumAttackRange(8f, 30f, true).Should().Be(30f);
+        ResolveNativeMaximumAttackRange(0f, 0f, false).Should().Be(0f);
     }
 
     [Test]
@@ -588,6 +622,38 @@ public class EnmityTests
                 method.GetParameters().Length == 1 &&
                 method.GetParameters()[0].ParameterType == typeof(int))
             .Invoke(null, new object[] { effectiveDelayMilliseconds })!;
+    }
+
+    private static float ResolveNativeDesiredAttackRange(
+        float desiredAttackRange,
+        float maxAttackRange,
+        bool hasRangedWeapon)
+    {
+        return (float)typeof(OnAIActionAttackObject)
+            .GetMethod("ResolveDesiredAttackRange", BindingFlags.Static | BindingFlags.NonPublic)!
+            .Invoke(null, new object[] { desiredAttackRange, maxAttackRange, hasRangedWeapon })!;
+    }
+
+    private static float ResolveNativeMaximumAttackRange(
+        float desiredAttackRange,
+        float maxAttackRange,
+        bool hasRangedWeapon)
+    {
+        return (float)typeof(OnAIActionAttackObject)
+            .GetMethod("ResolveMaximumAttackRange", BindingFlags.Static | BindingFlags.NonPublic)!
+            .Invoke(null, new object[] { desiredAttackRange, maxAttackRange, hasRangedWeapon })!;
+    }
+
+    private static DirectoryInfo FindRepositoryRoot()
+    {
+        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
+        {
+            directory = directory.Parent;
+        }
+
+        directory.Should().NotBeNull();
+        return directory!;
     }
 
     private static bool HasOnlyProximityEnmity(uint creature, uint enemy)

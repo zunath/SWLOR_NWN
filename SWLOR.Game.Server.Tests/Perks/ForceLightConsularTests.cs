@@ -116,16 +116,25 @@ public class ForceLightConsularTests
         const int fullLightAffinityHitChance = 5;
         const double fullLightAffinityMagnitude = 1.5;
 
+        var hitChanceAdjustments = new[]
+        {
+            GetAbilityConstant<int>(typeof(ThrowRockAbilityDefinition), "HitChancePercentAdjustment"),
+            GetAbilityConstant<int>(typeof(ForceJudgmentAbilityDefinition), "HitChancePercentAdjustment"),
+            GetAbilityConstant<int>(typeof(RadiantLanceAbilityDefinition), "HitChancePercentAdjustment"),
+            GetAbilityConstant<int>(typeof(ForceBurstAbilityDefinition), "HitChancePercentAdjustment")
+        };
+        hitChanceAdjustments.Should().OnlyContain(adjustment => adjustment == 10);
+
         var hitRate = Combat.CalculateHitRate(
             attackerAttackAndAccuracy,
             squellbugEvasion,
-            LightConsularPowerSupport.OffensiveHitChancePercentAdjustment + fullLightAffinityHitChance);
+            hitChanceAdjustments[0] + fullLightAffinityHitChance);
 
         hitRate.Should().BeGreaterThanOrEqualTo(75);
 
         var expectedDamagePerSecond =
             ExpectedDamagePerUse(
-                LightConsularPowerSupport.ThrowRock3BaseDamage,
+                GetAbilityConstant<int>(typeof(ThrowRockAbilityDefinition), "Rank3BaseDamage"),
                 attackerAttackAndAccuracy,
                 attackerWillpower,
                 squellbugPhysicalDefense,
@@ -133,7 +142,7 @@ public class ForceLightConsularTests
                 hitRate,
                 fullLightAffinityMagnitude) / 6f +
             ExpectedDamagePerUse(
-                LightConsularPowerSupport.ForceJudgment3BaseDamage,
+                GetAbilityConstant<int>(typeof(ForceJudgmentAbilityDefinition), "Rank3BaseDamage"),
                 attackerAttackAndAccuracy,
                 attackerWillpower,
                 squellbugForceDefense,
@@ -141,7 +150,7 @@ public class ForceLightConsularTests
                 hitRate,
                 fullLightAffinityMagnitude) / 15f +
             ExpectedDamagePerUse(
-                LightConsularPowerSupport.RadiantLance3BaseDamage,
+                GetAbilityConstant<int>(typeof(RadiantLanceAbilityDefinition), "Rank3BaseDamage"),
                 attackerAttackAndAccuracy,
                 attackerWillpower,
                 squellbugForceDefense,
@@ -149,7 +158,7 @@ public class ForceLightConsularTests
                 hitRate,
                 fullLightAffinityMagnitude) / 18f +
             ExpectedDamagePerUse(
-                LightConsularPowerSupport.ForceBurst3BaseDamage,
+                GetAbilityConstant<int>(typeof(ForceBurstAbilityDefinition), "Rank3BaseDamage"),
                 attackerAttackAndAccuracy,
                 attackerWillpower,
                 squellbugForceDefense,
@@ -339,6 +348,17 @@ public class ForceLightConsularTests
             0);
 
         return (minimumDamage + maximumDamage) / 2d * affinityMagnitude * hitRate / 100d;
+    }
+
+    private static T GetAbilityConstant<T>(Type abilityDefinitionType, string fieldName)
+    {
+        var field = abilityDefinitionType.GetField(
+            fieldName,
+            BindingFlags.NonPublic | BindingFlags.Static);
+
+        field.Should().NotBeNull($"{abilityDefinitionType.Name} should declare {fieldName}");
+        field!.IsLiteral.Should().BeTrue();
+        return (T)field.GetRawConstantValue()!;
     }
 
     private static void AssertAbility(

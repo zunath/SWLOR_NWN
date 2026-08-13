@@ -15,6 +15,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
     public sealed class ForceBurstAbilityDefinition : IAbilityListDefinition
     {
         private const float RadiusMeters = 5f;
+        private const int HitChancePercentAdjustment = 10;
+        private const int Rank1BaseDamage = 18;
+        private const int Rank2BaseDamage = 34;
+        private const int Rank3BaseDamage = 50;
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -26,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 Spell.ForceBurst1,
                 "Force Burst I",
                 1,
-                LightConsularPowerSupport.ForceBurst1BaseDamage,
+                Rank1BaseDamage,
                 4);
             ConfigureForceBurst(
                 builder,
@@ -34,7 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 Spell.ForceBurst2,
                 "Force Burst II",
                 2,
-                LightConsularPowerSupport.ForceBurst2BaseDamage,
+                Rank2BaseDamage,
                 5);
             ConfigureForceBurst(
                 builder,
@@ -42,7 +46,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 Spell.ForceBurst3,
                 "Force Burst III",
                 3,
-                LightConsularPowerSupport.ForceBurst3BaseDamage,
+                Rank3BaseDamage,
                 6);
 
             return builder.Build();
@@ -105,7 +109,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 damageType: CombatDamageType.Force,
                 targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Wind,
                 areaVisualEffect: VisualEffect.Vfx_Fnf_Screen_Bump,
-                hitChancePercentAdjustment: LightConsularPowerSupport.OffensiveHitChancePercentAdjustment);
+                hitChancePercentAdjustment: HitChancePercentAdjustment);
         }
     }
 }

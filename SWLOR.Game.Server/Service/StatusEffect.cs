@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.StatService;
@@ -570,6 +571,7 @@ namespace SWLOR.Game.Server.Service
 
             ApplyTrackedNWNEffect(creature, statusEffect, durationTicks, isPermanent);
             Combat.ApplyStatusAppliedTargetStaminaDrain(source, creature, statusEffect.Categories);
+            PublishStatusEffectReceivedRefresh(creature);
 
             if (!string.IsNullOrWhiteSpace(durationResistanceMessage) &&
                 (GetIsPC(source) || GetIsDM(source)))
@@ -1556,6 +1558,11 @@ namespace SWLOR.Game.Server.Service
             {
                 DelayCommand(0.1f, () => Stat.ApplyCreatureMovementRate(creature));
             }
+
+            if (!isReplacement)
+            {
+                PublishStatusEffectRemovedRefresh(creature);
+            }
         }
 
         /// <summary>
@@ -1640,6 +1647,24 @@ namespace SWLOR.Game.Server.Service
         private static bool HasStatAdjustment(IStatusEffect statusEffect)
         {
             return statusEffect.StatGroup.Stats.Any(stat => stat.Value != 0);
+        }
+
+        private static void PublishStatusEffectReceivedRefresh(uint creature)
+        {
+            if (GetIsPC(creature))
+            {
+                DelayCommand(0.0f, () =>
+                    Gui.PublishRefreshEvent(creature, new StatusEffectReceivedRefreshEvent()));
+            }
+        }
+
+        private static void PublishStatusEffectRemovedRefresh(uint creature)
+        {
+            if (GetIsPC(creature))
+            {
+                DelayCommand(0.0f, () =>
+                    Gui.PublishRefreshEvent(creature, new StatusEffectRemovedRefreshEvent()));
+            }
         }
 
         private static void RemoveNativeStatusEffect(uint creature, string statusEffectId)

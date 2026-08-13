@@ -238,6 +238,21 @@ public class CombatUpgradeBibleSyncTests
     };
 
     [Test]
+    public void ForceAndDevices_HaveEqualSkillPointAndAbilityBudgets()
+    {
+        var root = FindRepositoryRoot();
+        var rows = ReadManifest(root / "SWLOR.Game.Server" / "Readmes" / "CombatUpgradeBiblePerkManifest.csv");
+        var forceRows = rows.Where(row => row.Tab == "Force").ToArray();
+        var deviceRows = rows.Where(row => row.Tab == "Devices").ToArray();
+
+        forceRows.Sum(row => ParseWholeNumber(row.Price)).Should().Be(240);
+        deviceRows.Sum(row => ParseWholeNumber(row.Price)).Should().Be(240);
+        forceRows.Length.Should().Be(deviceRows.Length);
+        forceRows.Count(row => row.Type == "Combat")
+            .Should().Be(deviceRows.Count(row => row.Type == "Combat"));
+    }
+
+    [Test]
     public void CombatUpgradeBibleManifest_MatchesLivePerkAndAbilityRegistries()
     {
         var root = FindRepositoryRoot();

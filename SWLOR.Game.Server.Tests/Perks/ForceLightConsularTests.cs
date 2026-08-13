@@ -76,30 +76,42 @@ public class ForceLightConsularTests
     }
 
     [Test]
-    public void ForceBurstAbilities_RestoreTargetedTelekineticAreaDamage()
+    public void ForceBurst_RestoresSingleTargetedTelekineticAreaDamagePower()
     {
         var forceBurst = new ForceBurstAbilityDefinition().BuildAbilities();
 
-        AssertAbility(forceBurst[FeatType.ForceBurst1], "Force Burst I", 1, RecastGroup.ForceBurst, 15f, 1.5f, 4, true, true, false, true, AbilityActivationType.Casted, 15f);
-        AssertAbility(forceBurst[FeatType.ForceBurst2], "Force Burst II", 2, RecastGroup.ForceBurst, 15f, 1.5f, 5, true, true, false, true, AbilityActivationType.Casted, 15f);
-        AssertAbility(forceBurst[FeatType.ForceBurst3], "Force Burst III", 3, RecastGroup.ForceBurst, 15f, 1.5f, 6, true, true, false, true, AbilityActivationType.Casted, 15f);
+        forceBurst.Should().ContainSingle();
+        AssertAbility(forceBurst[FeatType.ForceBurst1], "Force Burst", 1, RecastGroup.ForceBurst, 15f, 1.5f, 6, true, true, false, true, AbilityActivationType.Casted, 15f);
 
-        var expectations = new[]
-        {
-            (FeatType.ForceBurst1, Spell.ForceBurst1),
-            (FeatType.ForceBurst2, Spell.ForceBurst2),
-            (FeatType.ForceBurst3, Spell.ForceBurst3)
-        };
-        foreach (var (feat, spell) in expectations)
-        {
-            var targeting = forceBurst[feat].Targeting;
-            targeting.Should().NotBeNull();
-            targeting!.Spell.Should().Be(spell);
-            targeting.Shape.Should().Be(AbilityTargetingShapeType.Sphere);
-            targeting.SizeX.Should().Be(5f);
-            targeting.SizeY.Should().Be(0f);
-            targeting.Flags.Should().Be(AbilityTargetingFlags.HarmsEnemies);
-        }
+        var targeting = forceBurst[FeatType.ForceBurst1].Targeting;
+        targeting.Should().NotBeNull();
+        targeting!.Spell.Should().Be(Spell.ForceBurst1);
+        targeting.Shape.Should().Be(AbilityTargetingShapeType.Sphere);
+        targeting.SizeX.Should().Be(5f);
+        targeting.SizeY.Should().Be(0f);
+        targeting.Flags.Should().Be(AbilityTargetingFlags.HarmsEnemies);
+    }
+
+    [Test]
+    public void ForceBurst_UsesOneThreePointPerkLevelAtForceThirty()
+    {
+        var perks = BuildForceLightConsularPerksWithout2daLookup();
+        var forceBurst = perks[PerkType.ForceBurst];
+
+        forceBurst.PerkLevels.Should().ContainSingle();
+        AssertPerkLevel(
+            forceBurst,
+            "Force Burst",
+            1,
+            3,
+            30,
+            FeatType.ForceBurst1,
+            "Deals 50 force DMG plus WIL scaling to the selected target and enemies within 5m.");
+
+        var forceJudgment = perks[PerkType.ForceJudgment];
+        forceJudgment.PerkLevels[1].Price.Should().Be(2);
+        forceJudgment.PerkLevels[2].Price.Should().Be(3);
+        forceJudgment.PerkLevels[3].Price.Should().Be(3);
     }
 
     [Test]
@@ -163,7 +175,7 @@ public class ForceLightConsularTests
                 hitRate,
                 fullLightAffinityMagnitude) / 18f +
             ExpectedDamagePerUse(
-                GetAbilityConstant<int>(typeof(ForceBurstAbilityDefinition), "Rank3BaseDamage"),
+                GetAbilityConstant<int>(typeof(ForceBurstAbilityDefinition), "BaseDamage"),
                 attackerAttackAndAccuracy,
                 attackerWillpower,
                 squellbugForceDefense,
@@ -258,7 +270,6 @@ public class ForceLightConsularTests
             (FeatType.ThrowRock1, "ife_throwrock1", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.ForceJudgment1, "ife_forcejdg1", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.Benevolence2, "ife_bnvlnc2", "M", "0x03", "0", "****", "****", "****", "****"),
-            (FeatType.ForceBurst2, "ife_fburst2", "M", "0x02", "1", "sphere", "5", "****", "1"),
             (FeatType.ThrowRock2, "ife_throwrock2", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.ForceJudgment2, "ife_forcejdg2", "M", "0x02", "1", "sphere", "5", "****", "1"),
             (FeatType.Renewal2, "ife_rnwl2", "M", "0x03", "0", "****", "****", "****", "****"),
@@ -266,7 +277,6 @@ public class ForceLightConsularTests
             (FeatType.ForceSanctuary1, "ife_forcesnctry1", "M", "0x3E", "0", "sphere", "4", "****", "1"),
             (FeatType.Benevolence3, "ife_bnvlnc3", "M", "0x03", "0", "****", "****", "****", "****"),
             (FeatType.Renewal3, "ife_rnwl3", "M", "0x03", "0", "****", "****", "****", "****"),
-            (FeatType.ForceBurst3, "ife_fburst3", "M", "0x02", "1", "sphere", "5", "****", "1"),
             (FeatType.ThrowRock3, "ife_throwrock3", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.ForceJudgment3, "ife_forcejdg3", "M", "0x02", "1", "sphere", "5", "****", "1"),
             (FeatType.RadiantLance1, "ife_radlance1", "M", "0x3E", "1", "rectangle", "8", "2.5", "17"),
@@ -293,7 +303,7 @@ public class ForceLightConsularTests
             abilityRow["TargetSizeY"].Should().Be(targetSizeY);
             abilityRow["TargetFlags"].Should().Be(targetFlags);
 
-            if (featType is FeatType.ForceBurst1 or FeatType.ForceBurst2 or FeatType.ForceBurst3)
+            if (featType == FeatType.ForceBurst1)
             {
                 classFeatRows.Should().ContainSingle(
                     row => row.Value["FeatIndex"] == ((int)featType).ToString(),

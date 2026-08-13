@@ -15,9 +15,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
     public sealed class ForceBurstAbilityDefinition : IAbilityListDefinition
     {
         private const float RadiusMeters = 5f;
-        private const int Rank1BaseDamage = 18;
-        private const int Rank2BaseDamage = 34;
-        private const int Rank3BaseDamage = 50;
+        private const int BaseDamage = 50;
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -27,25 +25,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 builder,
                 FeatType.ForceBurst1,
                 Spell.ForceBurst1,
-                "Force Burst I",
+                "Force Burst",
                 1,
-                Rank1BaseDamage,
-                4);
-            ConfigureForceBurst(
-                builder,
-                FeatType.ForceBurst2,
-                Spell.ForceBurst2,
-                "Force Burst II",
-                2,
-                Rank2BaseDamage,
-                5);
-            ConfigureForceBurst(
-                builder,
-                FeatType.ForceBurst3,
-                Spell.ForceBurst3,
-                "Force Burst III",
-                3,
-                Rank3BaseDamage,
+                BaseDamage,
                 6);
 
             return builder.Build();

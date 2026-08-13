@@ -63,25 +63,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
-                .Description("Deals 18 force DMG plus WIL scaling to the selected target and enemies within 5m.")
+                .Description("Deals 50 force DMG plus WIL scaling to the selected target and enemies within 5m.")
                 .Price(3)
-                .RequirementSkill(SkillType.Force, 10)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.ForceBurst1)
-
-                .AddPerkLevel()
-                .Description("Deals 34 force DMG plus WIL scaling to the selected target and enemies within 5m.")
-                .Price(4)
                 .RequirementSkill(SkillType.Force, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.ForceBurst2)
-
-                .AddPerkLevel()
-                .Description("Deals 50 force DMG plus WIL scaling to the selected target and enemies within 5m.")
-                .Price(4)
-                .RequirementSkill(SkillType.Force, 46)
-                .RequirementCharacterType(CharacterType.ForceSensitive)
-                .GrantsFeat(FeatType.ForceBurst3);
+                .GrantsFeat(FeatType.ForceBurst1);
         }
 
         private void Benevolence()
@@ -119,21 +105,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Deals 18 force DMG plus WIL scaling to one target and reduces outgoing weapon and force damage by 4% for 30 seconds.")
-                .Price(3)
+                .Price(2)
                 .RequirementSkill(SkillType.Force, 5)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceJudgment1)
 
                 .AddPerkLevel()
                 .Description("Deals 32 force DMG plus WIL scaling to the selected target and one enemy within 5m, reducing outgoing weapon and force damage by 6% for 30 seconds.")
-                .Price(4)
+                .Price(3)
                 .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceJudgment2)
 
                 .AddPerkLevel()
                 .Description("Deals 48 force DMG plus WIL scaling to the selected target and enemies within 5m, reducing outgoing weapon and force damage by 8% for 30 seconds.")
-                .Price(4)
+                .Price(3)
                 .RequirementSkill(SkillType.Force, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceJudgment3);

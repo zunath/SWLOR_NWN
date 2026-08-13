@@ -1787,7 +1787,7 @@ public class TintMapReviewTests
     }
 
     [Test]
-    public void TintLayersUseCompatibleVectorScalarAndModeUniforms()
+    public void TintLayersUsePackedRowStateAndRetainLegacyCleanupNames()
     {
         var expectedUniforms = new Dictionary<TintMapLayerType, string>
         {
@@ -1815,7 +1815,7 @@ public class TintMapReviewTests
     }
 
     [Test]
-    public void ApplyingAColorRemovesUnusedCustomOverridesForPresetColors()
+    public void ApplyingAColorPacksCustomModeAndRgbIntoTheReplicatedRowUniform()
     {
         var serviceSource = ReadSource(
             "SWLOR.Game.Server",
@@ -1830,19 +1830,17 @@ public class TintMapReviewTests
                 invocation.Expression.ToString() == "SetMaterialShaderUniformVec4")
             .ToList();
 
-        materialWrites.Should().HaveCount(6,
-            "custom colors must be sent through both the legacy vec4 and scalar HAK contracts");
-        applyColor.ToString().Should().Contain("layerDefinition.ColorUniformName");
-        applyColor.ToString().Should().Contain("layerDefinition.ColorRedUniformName");
-        applyColor.ToString().Should().Contain("layerDefinition.ColorGreenUniformName");
-        applyColor.ToString().Should().Contain("layerDefinition.ColorBlueUniformName");
-        applyColor.ToString().Should().Contain("layerDefinition.CustomModeUniformName");
-        applyColor.ToString().Should().Contain("if (!customColor.HasValue)");
+        materialWrites.Should().ContainSingle(
+            "custom mode, palette coordinate, and RGB must use the same material key that live preset changes replicate");
+        var materialWrite = materialWrites.Single().ToString();
+        materialWrite.Should().Contain("layerDefinition.UniformName");
+        materialWrite.Should().Contain("? 0f");
+        materialWrite.Should().Contain("customColor.Value.Red / 255f");
+        materialWrite.Should().Contain("customColor.Value.Green / 255f");
+        materialWrite.Should().Contain("customColor.Value.Blue / 255f");
+        materialWrite.Should().NotContain("layerDefinition.ColorUniformName");
+        materialWrite.Should().NotContain("layerDefinition.CustomModeUniformName");
         applyColor.ToString().Should().Contain("ResetMaterialShaderUniforms");
-        applyColor.ToString().Should().Contain("customColor.Value.Red / 255f");
-        applyColor.ToString().Should().Contain("customColor.Value.Green / 255f");
-        applyColor.ToString().Should().Contain("customColor.Value.Blue / 255f");
-        applyColor.ToString().Should().Contain("? 0f");
 
         var resets = applyColor.DescendantNodes()
             .OfType<InvocationExpressionSyntax>()
@@ -1857,18 +1855,15 @@ public class TintMapReviewTests
         foreach (var shaderName in new[] { "fs_plt_tinter.shd", "fs_plt_tinter_nm.shd" })
         {
             var shader = ReadSource("SWLOR_Haks", "sw_shader", shaderName);
-            shader.Should().Contain("customTintMode > 0.5 || v <= 0.0",
-                    "custom RGB must still activate when a client drops the scalar mode override");
-            shader.Should().Contain("uniform float tintSkinR");
-            shader.Should().Contain("uniform float tintSkinG");
-            shader.Should().Contain("uniform float tintSkinB");
-            shader.Should().Contain("uniform vec4 tintSkin",
-                "clients with the original tint HAK must still receive custom colors");
-            shader.Should().Contain("useCustomSkin > 0.5 ? vec3(tintSkinR, tintSkinG, tintSkinB) : tintSkin.rgb",
-                "the current scalar contract must win while the original vec4 remains a fallback");
-            shader.Should().Contain("max(useCustomSkin, tintSkin.a)",
-                "either custom-color contract must activate custom rendering");
+            shader.Should().Contain("uniform vec4 rowSkin");
+            shader.Should().Contain("bool useCustomTint = tintState.x <= 0.0");
+            shader.Should().Contain("float v = useCustomTint ? referenceV : tintState.x");
+            shader.Should().Contain("vec3 customTint = tintState.yzw");
         }
+
+        var material = ReadSource("SWLOR_Haks", "sw_tint_mtr", "pmh0_head001.mtr");
+        material.Should().Contain("parameter float rowSkin 0.000244 0.0 0.0 0.0",
+            "the packaged material must expose rowSkin as a vec4 or NWN drops the packed RGB components");
     }
 
     [Test]

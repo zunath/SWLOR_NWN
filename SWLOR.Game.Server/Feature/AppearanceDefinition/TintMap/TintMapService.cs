@@ -1520,52 +1520,17 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 layerDefinition.UniformName,
                 customColor.HasValue
                     ? 0f
-                    : TintMapMaterialRegistry.GetPaletteCoordinate(layer, color.PaletteColorId));
+                    : TintMapMaterialRegistry.GetPaletteCoordinate(layer, color.PaletteColorId),
+                customColor.HasValue ? customColor.Value.Red / 255f : 0f,
+                customColor.HasValue ? customColor.Value.Green / 255f : 0f,
+                customColor.HasValue ? customColor.Value.Blue / 255f : 0f);
 
-            if (!customColor.HasValue)
-            {
-                // Presets only need the palette-row override. The stale custom RGB and mode
-                // entries were removed above and must not be re-added for preset selections.
-                return;
-            }
-
-            // Write the original vec4 contract as well as the scalar compatibility contract.
-            // Existing clients can still have a previously-downloaded sw_tint_mtr/sw_shader HAK
-            // loaded, whose materials expose tintSkin/tintHair/etc. as vec4 parameters. Sending
-            // only the newer tint*R/G/B parameters leaves those clients sampling palette row zero
-            // (cyan) no matter which custom RGB is selected. Newer clients consume the scalar
-            // values below, avoiding the engine's unreliable replacement of an existing vec4.
-            SetMaterialShaderUniformVec4(
-                creature,
-                materialResref,
-                layerDefinition.ColorUniformName,
-                customColor.Value.Red / 255f,
-                customColor.Value.Green / 255f,
-                customColor.Value.Blue / 255f,
-                1f);
-            SetMaterialShaderUniformVec4(
-                creature,
-                materialResref,
-                layerDefinition.ColorRedUniformName,
-                customColor.Value.Red / 255f);
-            SetMaterialShaderUniformVec4(
-                creature,
-                materialResref,
-                layerDefinition.ColorGreenUniformName,
-                customColor.Value.Green / 255f);
-            SetMaterialShaderUniformVec4(
-                creature,
-                materialResref,
-                layerDefinition.ColorBlueUniformName,
-                customColor.Value.Blue / 255f);
-            // Keep a dedicated mode scalar, while the zero palette row above provides a second
-            // activation signal for clients that drop that scalar override. Every real palette
-            // coordinate is strictly positive, so zero cannot collide with a preset selection.
-            SetMaterialShaderUniformVec4(
-                creature,
-                materialResref,
-                layerDefinition.CustomModeUniformName,
-                1f);
+            // Palette coordinate, custom-mode sentinel, and RGB deliberately share the one
+            // row* vec4. That row key is the material parameter NWN demonstrably replicates for
+            // live preset changes. Sending custom RGB through additional keys allowed the row to
+            // switch to the atlas's cyan edge while the color itself was silently dropped.
+            // A zero X selects custom mode; YZW carry normalized RGB. Presets use a positive
+            // texel-centered X and clear YZW.
         }
 
         private static Dictionary<string, int> GetItemTintOverrides(uint item)

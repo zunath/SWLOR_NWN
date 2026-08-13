@@ -1529,9 +1529,20 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 return;
             }
 
-            // Keep custom RGB on independent scalar uniforms. NWN reliably applies the first
-            // component of this API (the same path used by preset rows), but does not reliably
-            // transport the remaining components of a single vec4 to material parameters.
+            // Write the original vec4 contract as well as the scalar compatibility contract.
+            // Existing clients can still have a previously-downloaded sw_tint_mtr/sw_shader HAK
+            // loaded, whose materials expose tintSkin/tintHair/etc. as vec4 parameters. Sending
+            // only the newer tint*R/G/B parameters leaves those clients sampling palette row zero
+            // (cyan) no matter which custom RGB is selected. Newer clients consume the scalar
+            // values below, avoiding the engine's unreliable replacement of an existing vec4.
+            SetMaterialShaderUniformVec4(
+                creature,
+                materialResref,
+                layerDefinition.ColorUniformName,
+                customColor.Value.Red / 255f,
+                customColor.Value.Green / 255f,
+                customColor.Value.Blue / 255f,
+                1f);
             SetMaterialShaderUniformVec4(
                 creature,
                 materialResref,

@@ -1787,7 +1787,7 @@ public class TintMapReviewTests
     }
 
     [Test]
-    public void TintLayersUseDedicatedScalarCustomColorAndModeUniforms()
+    public void TintLayersUseCompatibleVectorScalarAndModeUniforms()
     {
         var expectedUniforms = new Dictionary<TintMapLayerType, string>
         {
@@ -1830,7 +1830,9 @@ public class TintMapReviewTests
                 invocation.Expression.ToString() == "SetMaterialShaderUniformVec4")
             .ToList();
 
-        materialWrites.Should().HaveCount(5);
+        materialWrites.Should().HaveCount(6,
+            "custom colors must be sent through both the legacy vec4 and scalar HAK contracts");
+        applyColor.ToString().Should().Contain("layerDefinition.ColorUniformName");
         applyColor.ToString().Should().Contain("layerDefinition.ColorRedUniformName");
         applyColor.ToString().Should().Contain("layerDefinition.ColorGreenUniformName");
         applyColor.ToString().Should().Contain("layerDefinition.ColorBlueUniformName");
@@ -1860,8 +1862,12 @@ public class TintMapReviewTests
             shader.Should().Contain("uniform float tintSkinR");
             shader.Should().Contain("uniform float tintSkinG");
             shader.Should().Contain("uniform float tintSkinB");
-            shader.Should().NotContain("uniform vec4 tintSkin",
-                "the client was observed retaining the first vec4 value while scalar preset rows continued updating");
+            shader.Should().Contain("uniform vec4 tintSkin",
+                "clients with the original tint HAK must still receive custom colors");
+            shader.Should().Contain("useCustomSkin > 0.5 ? vec3(tintSkinR, tintSkinG, tintSkinB) : tintSkin.rgb",
+                "the current scalar contract must win while the original vec4 remains a fallback");
+            shader.Should().Contain("max(useCustomSkin, tintSkin.a)",
+                "either custom-color contract must activate custom rendering");
         }
     }
 

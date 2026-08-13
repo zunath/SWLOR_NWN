@@ -1653,8 +1653,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (GetIsPC(creature))
             {
-                DelayCommand(0.0f, () =>
-                    Gui.PublishRefreshEvent(creature, new StatusEffectReceivedRefreshEvent()));
+                Gui.PublishRefreshEvent(creature, new StatusEffectReceivedRefreshEvent());
             }
         }
 
@@ -1662,8 +1661,7 @@ namespace SWLOR.Game.Server.Service
         {
             if (GetIsPC(creature))
             {
-                DelayCommand(0.0f, () =>
-                    Gui.PublishRefreshEvent(creature, new StatusEffectRemovedRefreshEvent()));
+                Gui.PublishRefreshEvent(creature, new StatusEffectRemovedRefreshEvent());
             }
         }
 

@@ -114,14 +114,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             if (!GetIsObjectValid(target))
                 return;
 
-            var destination = GetLeapDestination(activator, target);
             AssignCommand(target, () => ClearAllActions());
             AssignCommand(activator, () =>
             {
                 ClearAllActions();
                 ActionPlayAnimation(Animation.ForceLeap, LeapAnimationSpeed, LeapAnimationDurationSeconds);
-                ActionJumpToLocation(destination);
-                ActionDoCommand(() => SetFacingPoint(GetPosition(target)));
+                ActionDoCommand(() =>
+                {
+                    if (!GetIsObjectValid(target))
+                        return;
+
+                    var destination = GetLeapDestination(activator, target);
+                    JumpToLocation(destination);
+                    SetFacingPoint(GetPosition(target));
+                });
             });
         }
 

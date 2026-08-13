@@ -139,7 +139,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Arc Projector")
 
                 .AddPerkLevel()
-                .Description("Projects a focused electrical arc up to 15m, dealing 18 electrical DMG plus PER scaling to one target.")
+                .Description("Projects a focused electrical arc up to 15m, dealing 22 electrical DMG plus PER scaling to one target.")
                 .Price(2)
                 .RequirementSkill(SkillType.Devices, 12)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -147,7 +147,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ArcProjector1)
 
                 .AddPerkLevel()
-                .Description("Projects a stronger electrical arc up to 15m, dealing 32 electrical DMG plus PER scaling to one target.")
+                .Description("Projects a stronger electrical arc up to 15m, dealing 40 electrical DMG plus PER scaling to one target.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 30)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -155,7 +155,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ArcProjector2)
 
                 .AddPerkLevel()
-                .Description("Projects an overcharged electrical arc up to 15m, dealing 46 electrical DMG plus PER scaling to one target.")
+                .Description("Projects an overcharged electrical arc up to 15m, dealing 60 electrical DMG plus PER scaling to one target.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 45)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -169,7 +169,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Ion Lance")
 
                 .AddPerkLevel()
-                .Description("Fires a focused ion beam from a wrist projector in an 8m x 2.5m line, dealing 12 electrical DMG plus PER scaling to hostile targets in the line.")
+                .Description("Fires a focused ion beam from a wrist projector in an 8m x 2.5m line, dealing 16 electrical DMG plus PER scaling to hostile targets in the line.")
                 .Price(2)
                 .RequirementSkill(SkillType.Devices, 15)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -177,7 +177,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.IonLance1)
 
                 .AddPerkLevel()
-                .Description("Fires a focused ion beam from a wrist projector in an 8m x 2.5m line, dealing 22 electrical DMG plus PER scaling to hostile targets in the line.")
+                .Description("Fires a focused ion beam from a wrist projector in an 8m x 2.5m line, dealing 30 electrical DMG plus PER scaling to hostile targets in the line.")
                 .Price(2)
                 .RequirementSkill(SkillType.Devices, 32)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -185,7 +185,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.IonLance2)
 
                 .AddPerkLevel()
-                .Description("Fires a focused ion beam from a wrist projector in an 8m x 2.5m line, dealing 32 electrical DMG plus PER scaling to hostile targets in the line.")
+                .Description("Fires a focused ion beam from a wrist projector in an 8m x 2.5m line, dealing 44 electrical DMG plus PER scaling to hostile targets in the line.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 48)
                 .RequirementCharacterType(CharacterType.Standard)

@@ -115,6 +115,24 @@ public class ForceLightConsularTests
     }
 
     [Test]
+    public void ForceBurst_IsInsideGeneratedFeatToolBounds()
+    {
+        var root = FindRepositoryRoot();
+        var scripts = new[]
+        {
+            "GenerateCooldownIcons.ps1",
+            "LinkCombatUpgradeFeatSpells.ps1",
+            "UpdateGameplayIconStandards.ps1"
+        };
+
+        foreach (var script in scripts)
+        {
+            var source = File.ReadAllText((root / "tools" / script).FullName);
+            source.Should().Contain("[int]$GeneratedFeatEnd = 2899", $"{script} must include Force Burst feat 2899");
+        }
+    }
+
+    [Test]
     public void OffensiveLightConsularPowers_UseSharedForceAccuracyAndMeetOrdinaryDathomirSoloTargets()
     {
         const int attackerAttackAndAccuracy = 148;

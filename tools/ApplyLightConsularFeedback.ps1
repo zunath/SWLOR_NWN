@@ -26,6 +26,15 @@ $existingDescriptions = [ordered]@{
     "Radiant Lance III" = "Fires a focused lance of radiant Force energy in an 8m x 2.5m line, dealing 44 force DMG plus WIL scaling to hostile targets in the line."
 }
 
+$deviceTwinDescriptions = [ordered]@{
+    "Arc Projector I" = "Projects a focused electrical arc up to 15m, dealing 22 electrical DMG plus PER scaling to one target."
+    "Arc Projector II" = "Projects a stronger electrical arc up to 15m, dealing 40 electrical DMG plus PER scaling to one target."
+    "Arc Projector III" = "Projects an overcharged electrical arc up to 15m, dealing 60 electrical DMG plus PER scaling to one target."
+    "Ion Lance I" = "Fires a focused ion beam from a wrist projector in an 8m x 2.5m line, dealing 16 electrical DMG plus PER scaling to hostile targets in the line."
+    "Ion Lance II" = "Fires a focused ion beam from a wrist projector in an 8m x 2.5m line, dealing 30 electrical DMG plus PER scaling to hostile targets in the line."
+    "Ion Lance III" = "Fires a focused ion beam from a wrist projector in an 8m x 2.5m line, dealing 44 electrical DMG plus PER scaling to hostile targets in the line."
+}
+
 $existingPrices = [ordered]@{
     "Force Judgment I" = "2.0"
     "Force Judgment II" = "3.0"
@@ -131,6 +140,20 @@ function Set-FormulaCell {
     $Cell.Add([System.Xml.Linq.XElement]::new(
         $Namespace + "v",
         $CachedValue.ToString("0.###", [Globalization.CultureInfo]::InvariantCulture)))
+}
+
+function Set-NumericCellValue {
+    param(
+        [System.Xml.Linq.XElement]$Cell,
+        [double]$Value,
+        [System.Xml.Linq.XNamespace]$Namespace
+    )
+
+    $Cell.SetAttributeValue("t", $null)
+    $Cell.RemoveNodes()
+    $Cell.Add([System.Xml.Linq.XElement]::new(
+        $Namespace + "v",
+        $Value.ToString("0.###", [Globalization.CultureInfo]::InvariantCulture)))
 }
 
 function Get-RowsByPerkName {
@@ -394,7 +417,7 @@ try {
             $priceCell = $row.Elements($namespace + "c") | Where-Object {
                 $_.Attribute("r").Value -eq "$($headerColumns['SP Price'])$rowNumber"
             } | Select-Object -First 1
-            Set-InlineCellText $priceCell ([string]$entry.Value) $namespace
+            Set-NumericCellValue $priceCell ([double]$entry.Value) $namespace
         }
 
         $sheetData = $worksheet.Descendants($namespace + "sheetData") | Select-Object -First 1
@@ -449,6 +472,9 @@ try {
                 }
             }
 
+            if (-not $rowsByPerkName.ContainsKey("Throw Rock II")) {
+                throw "Template row 'Throw Rock II' was not found on the Force sheet."
+            }
             $forceBurstWorksheetRow = [System.Xml.Linq.XElement]::new($rowsByPerkName["Throw Rock II"])
             $forceBurstWorksheetRow.SetAttributeValue("r", $rowNumber)
             foreach ($cell in $forceBurstWorksheetRow.Elements($namespace + "c")) {
@@ -481,7 +507,12 @@ try {
             if ($null -eq $cell) {
                 throw "Cell '$reference' was not found in the Force Burst row."
             }
-            Set-InlineCellText $cell ([string]$forceBurstRow[$field]) $namespace
+            if ($field -eq "SP Price") {
+                Set-NumericCellValue $cell ([double]$forceBurstRow[$field]) $namespace
+            }
+            else {
+                Set-InlineCellText $cell ([string]$forceBurstRow[$field]) $namespace
+            }
         }
 
         Update-SheetFormulaCaches $worksheet $headerColumns $sharedStrings $namespace
@@ -505,6 +536,18 @@ try {
             $column = ([regex]::Match($cell.Attribute("r").Value, "^[A-Z]+")).Value
             $devicesHeaderColumns[(Get-CellText $cell $sharedStrings $namespace)] = $column
         }
+        $devicesRowsByPerkName = Get-RowsByPerkName $devicesWorksheet $devicesHeaderColumns $sharedStrings $namespace
+        foreach ($entry in $deviceTwinDescriptions.GetEnumerator()) {
+            if (-not $devicesRowsByPerkName.ContainsKey($entry.Key)) {
+                throw "Perk '$($entry.Key)' was not found on the Devices sheet."
+            }
+            $row = $devicesRowsByPerkName[$entry.Key]
+            $rowNumber = $row.Attribute("r").Value
+            $descriptionCell = $row.Elements($namespace + "c") | Where-Object {
+                $_.Attribute("r").Value -eq "$($devicesHeaderColumns['Description'])$rowNumber"
+            } | Select-Object -First 1
+            Set-InlineCellText $descriptionCell ([string]$entry.Value) $namespace
+        }
         Update-SheetFormulaCaches $devicesWorksheet $devicesHeaderColumns $sharedStrings $namespace
         Write-WorksheetEntry $zip $devicesEntryPath $devicesWorksheet
     }
@@ -520,4 +563,4 @@ finally {
     }
 }
 
-Write-Host "Updated Light Consular balance, ensured one Force Burst row, and refreshed Force/Devices formula caches."
+Write-Host "Updated Light Consular balance, synchronized Devices twin damage, ensured one Force Burst row, and refreshed Force/Devices formula caches."

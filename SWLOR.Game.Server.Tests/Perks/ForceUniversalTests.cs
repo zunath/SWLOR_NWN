@@ -134,8 +134,13 @@ public class ForceUniversalTests
 
         source.Should().Contain("ActionPlayAnimation(Animation.ForceLeap, LeapAnimationSpeed, LeapAnimationDurationSeconds)");
         source.Should().Contain("private const float ArrivalDistanceMeters = 1.5f;");
-        source.Should().Contain("ActionJumpToLocation(destination)");
-        source.Should().Contain("ActionDoCommand(() => SetFacingPoint(GetPosition(target)))");
+        source.IndexOf("var destination = GetLeapDestination(activator, target)", StringComparison.Ordinal)
+            .Should().BeGreaterThan(
+                source.IndexOf("ActionPlayAnimation(Animation.ForceLeap", StringComparison.Ordinal),
+                "the target position must be sampled after the leap animation completes");
+        source.Should().Contain("JumpToLocation(destination)");
+        source.Should().Contain("SetFacingPoint(GetPosition(target))");
+        source.Should().NotContain("ActionJumpToLocation(destination)");
         source.Should().NotContain("ActionJumpToObject(target)");
         source.Should().NotContain("UsesImpactAnimation(Animation.ForceLeap)");
         source.Should().NotContain("VisualEffect.Vfx_Fnf_Summon_Monster_1");

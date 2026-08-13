@@ -56,6 +56,61 @@ public class CombatUpgradeBibleWorkbookFormattingTests
     }
 
     [Test]
+    public void ForceAndDevices_StoreSkillPointPricesAsNumericCells()
+    {
+        var root = FindRepositoryRoot();
+        var workbookPath = Path.Combine(
+            root.FullName,
+            "design",
+            "bible",
+            "SWLOR Design Bible - Combat Upgrade.xlsx");
+
+        using var archive = ZipFile.OpenRead(workbookPath);
+        var worksheetsByName = ReadWorksheetsByName(archive);
+        var sharedStrings = ReadSharedStrings(archive);
+        var failures = new List<string>();
+
+        foreach (var sheetName in new[] { "Force", "Devices" })
+        {
+            var worksheet = ReadWorkbookXml(archive, worksheetsByName[sheetName]);
+            var rows = worksheet.Descendants(SpreadsheetNs + "row").ToArray();
+            var headerRow = rows.Single(row => row
+                .Elements(SpreadsheetNs + "c")
+                .Any(cell => GetCellText(cell, sharedStrings) == "Perk Name"));
+            var headers = headerRow
+                .Elements(SpreadsheetNs + "c")
+                .Where(cell => !string.IsNullOrWhiteSpace(GetCellText(cell, sharedStrings)))
+                .ToDictionary(
+                    cell => GetCellText(cell, sharedStrings),
+                    cell => new string(((string)cell.Attribute("r")!).TakeWhile(char.IsLetter).ToArray()));
+
+            foreach (var row in rows.Where(row => row != headerRow))
+            {
+                var rowNumber = (string)row.Attribute("r")!;
+                var nameCell = row.Elements(SpreadsheetNs + "c")
+                    .SingleOrDefault(cell => (string)cell.Attribute("r")! == $"{headers["Perk Name"]}{rowNumber}");
+                var perkName = nameCell == null ? string.Empty : GetCellText(nameCell, sharedStrings);
+                if (string.IsNullOrWhiteSpace(perkName))
+                    continue;
+
+                var priceCell = row.Elements(SpreadsheetNs + "c")
+                    .SingleOrDefault(cell => (string)cell.Attribute("r")! == $"{headers["SP Price"]}{rowNumber}");
+                if (priceCell == null || priceCell.Attribute("t") != null ||
+                    !decimal.TryParse(
+                        GetCellText(priceCell, sharedStrings),
+                        System.Globalization.NumberStyles.Number,
+                        System.Globalization.CultureInfo.InvariantCulture,
+                        out _))
+                {
+                    failures.Add($"{sheetName} row {rowNumber} ({perkName}): SP Price must be a numeric cell.");
+                }
+            }
+        }
+
+        failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));
+    }
+
+    [Test]
     public void CharacterStats_DocumentsRuntimeCombatLimits()
     {
         var root = FindRepositoryRoot();

@@ -1814,7 +1814,7 @@ public class TintMapReviewTests
     }
 
     [Test]
-    public void ApplyingAColorPublishesCustomRgbThroughAnIntegerMaterialUniform()
+    public void ApplyingAColorPublishesCustomRgbThroughTheReplicatedPaletteRowVector()
     {
         var serviceSource = ReadSource(
             "SWLOR.Game.Server",
@@ -1838,11 +1838,13 @@ public class TintMapReviewTests
             .Where(invocation =>
                 invocation.Expression.ToString() == "SetMaterialShaderUniformInt")
             .ToList();
-        customWrites.Should().ContainSingle(
-            "custom RGB needs NWN's dedicated integer material parameter rather than an invalid negative palette row");
-        var customWrite = customWrites.Single().ToString();
-        customWrite.Should().Contain("layerDefinition.CustomModeUniformName");
-        customWrite.Should().Contain("GetCustomColorUniformValue(customColor.Value)");
+        customWrites.Should().BeEmpty(
+            "custom RGB must use the same row vec4 that presets prove is replicated to composed creature parts");
+        var rowWrite = rowWrites.Single().ToString();
+        rowWrite.Should().Contain("paletteCoordinate + 1f");
+        rowWrite.Should().Contain("customColor.Value.Red / 255f");
+        rowWrite.Should().Contain("customColor.Value.Green / 255f");
+        rowWrite.Should().Contain("customColor.Value.Blue / 255f");
         applyColor.ToString().Should().Contain("ResetMaterialShaderUniforms");
 
         var resets = applyColor.DescendantNodes()
@@ -1860,29 +1862,11 @@ public class TintMapReviewTests
             var shader = ReadSource("SWLOR_Haks", "sw_shader", shaderName);
             shader.Should().Contain("uniform vec4 rowSkin");
             shader.Should().Contain("uniform int useCustomSkin");
-            shader.Should().Contain("bool useCustomTint = customTintState > 0");
+            shader.Should().Contain("bool useCustomTint = tintState.x >= 1.0");
             shader.Should().Contain("float v = useCustomTint ? referenceV : tintState.x");
-            shader.Should().Contain("float packedColor = float(max(customTintState - 1, 0))");
-            shader.Should().Contain("floor(packedColor / 65536.0)");
-            shader.Should().Contain("mod(packedColor, 256.0)");
+            shader.Should().Contain("vec3 customTint = tintState.yzw");
         }
 
-        var material = ReadSource("SWLOR_Haks", "sw_tint_mtr", "pmh0_head001.mtr");
-        material.Should().Contain("parameter int useCustomSkin 0",
-            "the runtime integer setter only works when the parameter is declared with the matching material type");
-    }
-
-    [TestCase(0, 0, 0, 1)]
-    [TestCase(13, 127, 153, 884634)]
-    [TestCase(255, 255, 255, 16777216)]
-    public void CustomRgbPackingIsLosslessAndReservesZeroForPresetMode(
-        byte red,
-        byte green,
-        byte blue,
-        int expected)
-    {
-        TintMapMaterialRegistry.GetCustomColorUniformValue(new TintMapColor(red, green, blue))
-            .Should().Be(expected);
     }
 
     [Test]

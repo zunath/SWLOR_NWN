@@ -1518,26 +1518,23 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 materialResref,
                 layerDefinition.CustomModeUniformName);
 
+            var paletteCoordinate = TintMapMaterialRegistry.GetPaletteCoordinate(
+                layer,
+                color.PaletteColorId);
             SetMaterialShaderUniformVec4(
                 creature,
                 materialResref,
                 layerDefinition.UniformName,
-                TintMapMaterialRegistry.GetPaletteCoordinate(layer, color.PaletteColorId),
-                0f,
-                0f,
-                0f);
+                customColor.HasValue ? paletteCoordinate + 1f : paletteCoordinate,
+                customColor.HasValue ? customColor.Value.Red / 255f : 0f,
+                customColor.HasValue ? customColor.Value.Green / 255f : 0f,
+                customColor.HasValue ? customColor.Value.Blue / 255f : 0f);
 
-            // Keep row* on its documented palette-coordinate path. Custom RGB is independent
-            // state and travels through NWN's integer material-uniform setter; the previous
-            // negative-float encoding was treated as an invalid palette coordinate by the live
-            // client and left the creature displaying its preset color.
-            SetMaterialShaderUniformInt(
-                creature,
-                materialResref,
-                layerDefinition.CustomModeUniformName,
-                customColor.HasValue
-                    ? TintMapMaterialRegistry.GetCustomColorUniformValue(customColor.Value)
-                    : 0);
+            // Preset colors already prove that row* is replicated to composed creature parts.
+            // Carry custom mode and RGB through that same vec4: palette rows are below 1.0, so
+            // adding 1.0 gives the shader an unambiguous positive custom marker without relying
+            // on a second material parameter or a zero/negative value that the live client left
+            // at the material default.
         }
 
         private static Dictionary<string, int> GetItemTintOverrides(uint item)

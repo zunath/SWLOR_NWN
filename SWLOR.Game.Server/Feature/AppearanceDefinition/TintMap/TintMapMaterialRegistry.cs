@@ -11,8 +11,6 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         public const int PaletteColorCount = 176;
         public const int PaletteTextureHeight = 2048;
         public const int CustomColorReferenceIntensity = 128;
-        private const int CustomColorRedMultiplier = 65536;
-        private const int CustomColorGreenMultiplier = 256;
         private const string TintMap2DA = "tintmap";
 
         private static readonly Dictionary<string, IReadOnlyList<TintMapMaterialDefinition>> MaterialsByModel =
@@ -87,18 +85,6 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             return MaterialsByModel.TryGetValue(modelResref, out var materials)
                 ? materials
                 : Array.Empty<TintMapMaterialDefinition>();
-        }
-
-        /// <summary>
-        /// Packs an RGB color into a positive integer material parameter. Zero remains the
-        /// preset sentinel, so adding one also represents custom black without ambiguity.
-        /// </summary>
-        public static int GetCustomColorUniformValue(TintMapColor color)
-        {
-            var packedColor = color.Red * CustomColorRedMultiplier +
-                              color.Green * CustomColorGreenMultiplier +
-                              color.Blue;
-            return packedColor + 1;
         }
 
         public static bool AreEquipmentMaterialSlotsEquivalent(

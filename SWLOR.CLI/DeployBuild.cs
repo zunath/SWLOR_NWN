@@ -13,7 +13,7 @@ namespace SWLOR.CLI
         private const string TlkPath = DebugServerPath + "tlk";
         private const string DebugServerEnvPath = DebugServerPath + "swlor.env";
         private const string MaterialNameNullTweakVariable = "NWNX_TWEAKS_MATERIAL_NAME_NULL_IS_ALL";
-        private const string MaterialNameNullTweakValue = "true";
+        private const string MaterialNameNullTweakValue = "false";
 
         private readonly HakBuilder _hakBuilder = new();
 

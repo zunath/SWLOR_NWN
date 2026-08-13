@@ -1427,20 +1427,23 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             TintMapLayerType layer,
             TintMapColorSelection color)
         {
-            // Modular creature parts are composed into child render meshes. Their source material
-            // resrefs are useful for persistence, but they are not reliable targets for a live
-            // material override on the parent creature. Once the current appearance proves that
-            // this semantic channel exists, publish it model-wide through NWNX's
-            // MATERIAL_NAME_NULL_IS_ALL path so the head, torso, limbs, hands, and exposed skin on
-            // equipment all receive the same value.
-            if (!selections.Any(selection =>
-                    selection.GetPaletteSource(layer) == creature &&
-                    selection.Material.Layers.Contains(layer)))
+            // tintmap.2da identifies the concrete material resrefs used by every currently
+            // rendered modular part. Publish each semantic creature color through those exact
+            // material names so NWN's native setter records and replicates the replacement.
+            // A blank material name relies on MATERIAL_NAME_NULL_IS_ALL, whose hook mutates the
+            // override list without publishing the replacement to connected clients.
+            var appliedMaterials = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var selection in selections)
             {
-                return;
-            }
+                if (selection.GetPaletteSource(layer) != creature ||
+                    !selection.Material.Layers.Contains(layer) ||
+                    !appliedMaterials.Add(selection.Material.Resref))
+                {
+                    continue;
+                }
 
-            ApplyMaterialColor(creature, string.Empty, layer, color);
+                ApplyMaterialColor(creature, selection.Material.Resref, layer, color);
+            }
         }
 
         private static void ApplyCurrentColorsAndPublish(uint creature)

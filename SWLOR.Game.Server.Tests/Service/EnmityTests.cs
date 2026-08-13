@@ -476,6 +476,8 @@ public class EnmityTests
         source.Should().Contain("fDesiredAttackRange = ResolveDesiredAttackRange(");
         source.Should().Contain("pCreature.GetRangeWeaponEquipped() == 1");
         source.Should().Contain("private static float ResolveDesiredAttackRange(");
+        source.Should().Contain("fMaxAttackRange = ResolveMaximumAttackRange(");
+        source.Should().Contain("private static float ResolveMaximumAttackRange(");
         source.Should().Contain("DEFAULT_RANGED_DESIRED_ATTACK_RANGE = 10f");
 
         ResolveNativeDesiredAttackRange(0f, 30f, true).Should().Be(10f);
@@ -484,6 +486,12 @@ public class EnmityTests
             "missing ranged metadata must not collapse a ranged creature to melee distance");
         ResolveNativeDesiredAttackRange(8f, 30f, true).Should().Be(8f);
         ResolveNativeDesiredAttackRange(0f, 30f, false).Should().Be(0f);
+
+        ResolveNativeMaximumAttackRange(10f, 0f, true).Should().Be(10f,
+            "missing ranged metadata must repair the maximum range as well as the desired range");
+        ResolveNativeMaximumAttackRange(4.99f, 5f, true).Should().Be(5f);
+        ResolveNativeMaximumAttackRange(8f, 30f, true).Should().Be(30f);
+        ResolveNativeMaximumAttackRange(0f, 0f, false).Should().Be(0f);
     }
 
     [Test]
@@ -623,6 +631,16 @@ public class EnmityTests
     {
         return (float)typeof(OnAIActionAttackObject)
             .GetMethod("ResolveDesiredAttackRange", BindingFlags.Static | BindingFlags.NonPublic)!
+            .Invoke(null, new object[] { desiredAttackRange, maxAttackRange, hasRangedWeapon })!;
+    }
+
+    private static float ResolveNativeMaximumAttackRange(
+        float desiredAttackRange,
+        float maxAttackRange,
+        bool hasRangedWeapon)
+    {
+        return (float)typeof(OnAIActionAttackObject)
+            .GetMethod("ResolveMaximumAttackRange", BindingFlags.Static | BindingFlags.NonPublic)!
             .Invoke(null, new object[] { desiredAttackRange, maxAttackRange, hasRangedWeapon })!;
     }
 

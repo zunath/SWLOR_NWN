@@ -182,6 +182,10 @@ namespace SWLOR.Game.Server.Native
                         fDesiredAttackRange,
                         fMaxAttackRange,
                         pCreature.GetRangeWeaponEquipped() == 1);
+                    fMaxAttackRange = ResolveMaximumAttackRange(
+                        fDesiredAttackRange,
+                        fMaxAttackRange,
+                        pCreature.GetRangeWeaponEquipped() == 1);
                     if (pCreature.m_oidAttemptedAttackTarget == OBJECT_INVALID)
                     {
                         pCreature.m_oidAttemptedAttackTarget = oidAttackTarget;
@@ -846,6 +850,24 @@ namespace SWLOR.Game.Server.Native
 
             var maximumUsableRange = maxAttackRange - CNW_PATHFIND_TOLERANCE;
             return Math.Min(DEFAULT_RANGED_DESIRED_ATTACK_RANGE, maximumUsableRange);
+        }
+
+        private static float ResolveMaximumAttackRange(
+            float desiredAttackRange,
+            float maxAttackRange,
+            bool hasRangedWeapon)
+        {
+            if (!hasRangedWeapon)
+                return maxAttackRange;
+
+            if (float.IsNaN(maxAttackRange) ||
+                float.IsInfinity(maxAttackRange) ||
+                maxAttackRange <= MELEE_ATTACK_RANGE)
+            {
+                return desiredAttackRange;
+            }
+
+            return Math.Max(maxAttackRange, desiredAttackRange);
         }
 
         private static bool TryCancelAttackForCombatLeash(CNWSCreature pCreature, CNWSObjectActionNode pNode, uint target)

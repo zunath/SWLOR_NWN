@@ -1117,7 +1117,10 @@ def description_stat_entries(row, base):
         add_stat(stats, "LowHPDamageDealtHPRestoreThresholdPercent", parse_percent(r"below (\d+)% HP", description))
         add_stat(stats, "LowHPDamageDealtHPPercentRestore", parse_count(r"heal you for (\d+) HP", description))
     if base == "Force Lens":
-        add_stat(stats, "SaberstaffConduitForceLens", 1)
+        add_stat(stats, "RestoredFPForceAttackPercentAdjustment", parse_percent(r"\+(\d+)% Force Attack", description))
+        add_stat(stats, "RestoredFPForceAttackDurationSeconds", parse_duration(description) or 30)
+        add_stat(stats, "RestoredStaminaAttackPercentAdjustment", parse_percent(r"\+(\d+)% Attack", description))
+        add_stat(stats, "RestoredStaminaAttackDurationSeconds", parse_duration(description) or 30)
     if base == "Balanced Attunement":
         add_stat(stats, "HighFPAndStaminaAttackThresholdPercent", parse_percent(r"both above (\d+)%", description))
         add_stat(stats, "HighFPAndStaminaAttackPercentAdjustment", parse_percent(r"deal \+(\d+)% damage", description))

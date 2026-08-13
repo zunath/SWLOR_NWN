@@ -4,24 +4,23 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
-    public sealed class ForceMomentumStatusEffect : StatusEffectBase
+    public sealed class RestoredFPForceAttackStatusEffect : StatusEffectBase
     {
         private readonly int _forceAttack;
 
-        public int ForceAttack => _forceAttack;
-        public override string Name => "Force Momentum";
-        public override EffectIconType Icon => EffectIconType.ForceMomentumStatusEffect;
+        public override string Name => "Restored FP Force Attack";
+        public override EffectIconType Icon => EffectIconType.RestoredFPForceAttackStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
         public override bool PersistsOnLogout => false;
         public override bool SendsApplicationMessage => false;
         public override bool SendsWornOffMessage => false;
 
-        public ForceMomentumStatusEffect()
-            : this(5)
+        public RestoredFPForceAttackStatusEffect()
+            : this(8)
         {
         }
 
-        public ForceMomentumStatusEffect(int forceAttack)
+        public RestoredFPForceAttackStatusEffect(int forceAttack)
         {
             _forceAttack = forceAttack;
             StatGroup.Stats[StatType.ForceAttackPercentAdjustment] = forceAttack;
@@ -29,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public override IStatusEffect Clone()
         {
-            return new ForceMomentumStatusEffect(_forceAttack);
+            return new RestoredFPForceAttackStatusEffect(_forceAttack);
         }
     }
 }

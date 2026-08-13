@@ -138,6 +138,10 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.AbilityStaminaCostFPRestorePercent, "35");
         AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.AbilityFPCostStaminaRestorePercentSkillType, "(int)SkillType.Force");
         AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.AbilityFPCostStaminaRestorePercent, "35");
+        AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.RestoredFPForceAttackPercentAdjustment, "8");
+        AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.RestoredFPForceAttackDurationSeconds, "30");
+        AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.RestoredStaminaAttackPercentAdjustment, "8");
+        AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.RestoredStaminaAttackDurationSeconds, "30");
         AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.HighFPAndStaminaAbilityDamageBonus, "12");
         AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.HighFPAndStaminaAbilityDamagePercentAdjustmentThresholdPercent, "60");
         AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.HighFPAndStaminaAbilityDamagePercentAdjustment, "8");
@@ -301,21 +305,21 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertStatusStat(infiniteConduit, StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent, 70);
         AssertStatusStat(infiniteConduit, StatType.HighFPAndStaminaAbilityDamageBonus, 20);
 
-        var forceLensForceAttack = new ForceLensForceAttackStatusEffect();
-        AssertStatusStat(forceLensForceAttack, StatType.ForceAttackPercentAdjustment, 8);
-        forceLensForceAttack.Icon.Should().Be(EffectIconType.ForceLensForceAttackStatusEffect);
+        var restoredFPForceAttack = new RestoredFPForceAttackStatusEffect(8);
+        AssertStatusStat(restoredFPForceAttack, StatType.ForceAttackPercentAdjustment, 8);
+        restoredFPForceAttack.Icon.Should().Be(EffectIconType.RestoredFPForceAttackStatusEffect);
 
-        var forceLensAttack = new ForceLensAttackStatusEffect();
-        AssertStatusStat(forceLensAttack, StatType.AttackPercentAdjustment, 8);
-        forceLensAttack.Icon.Should().Be(EffectIconType.ForceLensAttackStatusEffect);
+        var restoredStaminaAttack = new RestoredStaminaAttackStatusEffect(8);
+        AssertStatusStat(restoredStaminaAttack, StatType.AttackPercentAdjustment, 8);
+        restoredStaminaAttack.Icon.Should().Be(EffectIconType.RestoredStaminaAttackStatusEffect);
 
         var restoredFPHaste = new RestoredFPHasteStatusEffect(10);
         AssertStatusStat(restoredFPHaste, StatType.AttackDelayReductionPercent, 10);
         restoredFPHaste.Icon.Should().Be(EffectIconType.RestoredFPHasteStatusEffect);
 
-        var forceMomentum = new ForceMomentumStatusEffect(15);
-        AssertStatusStat(forceMomentum, StatType.ForceAttackPercentAdjustment, 15);
-        forceMomentum.Icon.Should().Be(EffectIconType.ForceMomentumStatusEffect);
+        var hostileAbilityForceAttack = new HostileAbilityForceAttackStatusEffect(15);
+        AssertStatusStat(hostileAbilityForceAttack, StatType.ForceAttackPercentAdjustment, 15);
+        hostileAbilityForceAttack.Icon.Should().Be(EffectIconType.HostileAbilityForceAttackStatusEffect);
 
         var guardedChannel = new GuardedChannelStatusEffect(20);
         AssertStatusStat(guardedChannel, StatType.PhysicalDefensePercentAdjustment, 20);
@@ -661,10 +665,12 @@ public class GeneratedWeaponPerkBehaviorTests
         combatSource.Should().Contain("ApplyCriticalBleedingStatusDurationExtension(attacker, defender)");
         combatSource.Should().Contain("StatType.HighFPAndStaminaAbilityDamagePercentAdjustmentThresholdPercent");
         combatSource.Should().Contain("StatType.HighFPAndStaminaAbilityDamagePercentAdjustment");
-        combatSource.Should().Contain("new ForceMomentumStatusEffect(total)");
+        combatSource.Should().Contain("new HostileAbilityForceAttackStatusEffect(total)");
         combatSource.Should().Contain("new RestoredFPHasteStatusEffect(haste)");
-        combatSource.Should().Contain("typeof(ForceLensForceAttackStatusEffect)");
-        combatSource.Should().Contain("typeof(ForceLensAttackStatusEffect)");
+        combatSource.Should().Contain("new RestoredFPForceAttackStatusEffect(forceAttack)");
+        combatSource.Should().Contain("new RestoredStaminaAttackStatusEffect(attack)");
+        combatSource.Should().NotContain("SaberstaffConduitForceLens",
+            "shared resource restoration must remain stat-driven rather than checking a specific perk identity");
         combatSource.Should().Contain("ApplyHostileAbilitySequenceEffects(activator, feat, ability)");
         combatSource.Should().Contain("ApplySameTargetHostileAbilityHitEffects(activator, target, ability)");
         combatSource.Should().Contain("ApplyNextDamageDealtBleedEffect(attacker, defender, damageType)");

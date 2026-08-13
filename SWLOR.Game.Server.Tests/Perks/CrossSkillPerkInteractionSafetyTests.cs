@@ -306,6 +306,21 @@ public class CrossSkillPerkInteractionSafetyTests
         ExtractMethod(combat, "public static void ApplyAbilityStaminaCostFPRestore(")
             .Should().Contain("ApplyAbilityRestoredFPEffects(creature)",
                 "Energized Forms must trigger when Conduit restores FP");
+
+        var hostileRestore = ExtractMethod(combat, "private static void ApplyHostileAbilityResourceRestoreEffects(");
+        hostileRestore.Should().Contain("var restoredFP =");
+        hostileRestore.Should().Contain("var restoredStamina =");
+        hostileRestore.Should().Contain("if (restoredFP > 0)");
+        hostileRestore.Should().Contain("if (restoredFP > 0 && restoredStamina > 0)");
+
+        var deflectionRestore = ExtractMethod(combat, "public static void ApplyAbilityGrantedAttackDeflectionEffects(");
+        deflectionRestore.Should().Contain("if (Stat.RestoreFP(activator, fpRestore) > 0)");
+
+        var areaRestore = ExtractMethod(combat, "private static void ApplyAreaAbilityImpactEffects(");
+        areaRestore.Should().Contain("var restoredFP =");
+        areaRestore.Should().Contain("var restoredStamina =");
+        areaRestore.Should().Contain("if (restoredFP > 0)");
+        areaRestore.Should().Contain("if (restoredFP > 0 && restoredStamina > 0)");
     }
 
     private static int CalculateCrossResourceRestore(int cost, int percent)

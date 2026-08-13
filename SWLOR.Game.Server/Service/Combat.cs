@@ -4891,13 +4891,13 @@ namespace SWLOR.Game.Server.Service
 
             var current = StatusEffect.GetStatusEffect(
                 activator,
-                typeof(ForceMomentumStatusEffect)) as ForceMomentumStatusEffect;
+                typeof(HostileAbilityForceAttackStatusEffect)) as HostileAbilityForceAttackStatusEffect;
             var total = Math.Min(maximum, (current?.ForceAttack ?? 0) + forceAttack);
 
             StatusEffect.ApplyStatusEffect(
                 activator,
                 activator,
-                new ForceMomentumStatusEffect(total),
+                new HostileAbilityForceAttackStatusEffect(total),
                 duration);
         }
 
@@ -8984,15 +8984,17 @@ namespace SWLOR.Game.Server.Service
             var fpRestore = Stat.GetStatAdjustment(activator, StatType.HostileAbilityFPRestore);
             var staminaRestore = Stat.GetStatAdjustment(activator, StatType.HostileAbilityStaminaRestore);
 
-            if (fpRestore > 0)
-            {
-                Stat.RestoreFP(activator, fpRestore);
+            var restoredFP = fpRestore > 0
+                ? Stat.RestoreFP(activator, fpRestore)
+                : 0;
+            if (restoredFP > 0)
                 ApplyAbilityRestoredFPEffects(activator);
-            }
-            if (staminaRestore > 0)
-                Stat.RestoreStamina(activator, staminaRestore);
 
-            if (fpRestore > 0 && staminaRestore > 0)
+            var restoredStamina = staminaRestore > 0
+                ? Stat.RestoreStamina(activator, staminaRestore)
+                : 0;
+
+            if (restoredFP > 0 && restoredStamina > 0)
                 ApplyAbilityRestoredBothResourcesEffects(activator);
         }
 
@@ -9012,26 +9014,30 @@ namespace SWLOR.Game.Server.Service
 
         public static void ApplyFPRestoredEffects(uint creature)
         {
-            if (Stat.GetStatAdjustment(creature, StatType.SaberstaffConduitForceLens) <= 0)
+            var forceAttack = Stat.GetStatAdjustment(creature, StatType.RestoredFPForceAttackPercentAdjustment);
+            var duration = Stat.GetStatAdjustment(creature, StatType.RestoredFPForceAttackDurationSeconds);
+            if (forceAttack == 0 || duration <= 0)
                 return;
 
             StatusEffect.ApplyStatusEffect(
                 creature,
                 creature,
-                typeof(ForceLensForceAttackStatusEffect),
-                30f);
+                new RestoredFPForceAttackStatusEffect(forceAttack),
+                duration);
         }
 
         public static void ApplyStaminaRestoredEffects(uint creature)
         {
-            if (Stat.GetStatAdjustment(creature, StatType.SaberstaffConduitForceLens) <= 0)
+            var attack = Stat.GetStatAdjustment(creature, StatType.RestoredStaminaAttackPercentAdjustment);
+            var duration = Stat.GetStatAdjustment(creature, StatType.RestoredStaminaAttackDurationSeconds);
+            if (attack == 0 || duration <= 0)
                 return;
 
             StatusEffect.ApplyStatusEffect(
                 creature,
                 creature,
-                typeof(ForceLensAttackStatusEffect),
-                30f);
+                new RestoredStaminaAttackStatusEffect(attack),
+                duration);
         }
 
         public static void ApplyAbilityRestoredBothResourcesEffects(uint activator)
@@ -9190,8 +9196,8 @@ namespace SWLOR.Game.Server.Service
             if (fpRestore <= 0 || !TryUseStatTrigger(activator, StatType.AbilityGrantedAttackDeflectionFPRestore, cooldown))
                 return;
 
-            Stat.RestoreFP(activator, fpRestore);
-            ApplyAbilityRestoredFPEffects(activator);
+            if (Stat.RestoreFP(activator, fpRestore) > 0)
+                ApplyAbilityRestoredFPEffects(activator);
         }
 
         private static void ApplyThrowingAreaAbilityImpactEffects(uint activator, AbilityImpactSummary summary)
@@ -9228,15 +9234,17 @@ namespace SWLOR.Game.Server.Service
                 summary.ImpactedTargetCount >= restoreThreshold &&
                 TryUseStatTrigger(activator, StatType.AreaAbilityFPRestore, restoreCooldown))
             {
-                if (fpRestore > 0)
-                {
-                    Stat.RestoreFP(activator, fpRestore);
+                var restoredFP = fpRestore > 0
+                    ? Stat.RestoreFP(activator, fpRestore)
+                    : 0;
+                if (restoredFP > 0)
                     ApplyAbilityRestoredFPEffects(activator);
-                }
-                if (staminaRestore > 0)
-                    Stat.RestoreStamina(activator, staminaRestore);
 
-                if (fpRestore > 0 && staminaRestore > 0)
+                var restoredStamina = staminaRestore > 0
+                    ? Stat.RestoreStamina(activator, staminaRestore)
+                    : 0;
+
+                if (restoredFP > 0 && restoredStamina > 0)
                     ApplyAbilityRestoredBothResourcesEffects(activator);
             }
 

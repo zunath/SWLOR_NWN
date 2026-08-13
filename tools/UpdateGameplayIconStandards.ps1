@@ -1326,7 +1326,13 @@ function New-StatusIcon([pscustomobject]$entry, [string]$outputPath) {
 
     Draw-IconBackdrop $g $semantic $motif $hash
 
-    $sourcePath = Join-Path (Resolve-RepoPath $StatusIconSourcePath) "$($entry.IconResRef).png"
+    $sourceDirectory = if ([System.IO.Path]::IsPathRooted($StatusIconSourcePath)) {
+        $StatusIconSourcePath
+    }
+    else {
+        Join-Path (Get-Location).Path $StatusIconSourcePath
+    }
+    $sourcePath = Join-Path $sourceDirectory "$($entry.IconResRef).png"
     if (Test-Path -LiteralPath $sourcePath) {
         $source = [System.Drawing.Image]::FromFile($sourcePath)
         try {

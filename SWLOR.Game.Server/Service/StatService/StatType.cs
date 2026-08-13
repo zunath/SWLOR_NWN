@@ -3030,10 +3030,10 @@ namespace SWLOR.Game.Server.Service.StatService
         SaberstaffTempestForceGyre = 532,
 
         /// <summary>
-        /// Enables Conduit ally buffs to apply Force Lens.
+        /// Force Attack percent granted whenever FP is actually restored.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SaberstaffConduitForceLens = 533,
+        RestoredFPForceAttackPercentAdjustment = 533,
 
         /// <summary>
         /// Enables Spear Damage attacks to apply Breach.
@@ -5776,6 +5776,24 @@ namespace SWLOR.Game.Server.Service.StatService
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         HighFPAndStaminaAbilityDamagePercentAdjustmentThresholdPercent = 1002,
+
+        /// <summary>
+        /// Duration in seconds for RestoredFPForceAttackPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        RestoredFPForceAttackDurationSeconds = 1003,
+
+        /// <summary>
+        /// Attack percent granted whenever Stamina is actually restored.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RestoredStaminaAttackPercentAdjustment = 1004,
+
+        /// <summary>
+        /// Duration in seconds for RestoredStaminaAttackPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        RestoredStaminaAttackDurationSeconds = 1005,
 
     }
 

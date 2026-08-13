@@ -95,7 +95,8 @@ public class CombatUpgradeBibleWorkbookFormattingTests
 
                 var priceCell = row.Elements(SpreadsheetNs + "c")
                     .SingleOrDefault(cell => (string)cell.Attribute("r")! == $"{headers["SP Price"]}{rowNumber}");
-                if (priceCell == null || priceCell.Attribute("t") != null ||
+                var priceCellType = priceCell?.Attribute("t")?.Value;
+                if (priceCell == null || (priceCellType != null && priceCellType != "n") ||
                     !decimal.TryParse(
                         GetCellText(priceCell, sharedStrings),
                         System.Globalization.NumberStyles.Number,

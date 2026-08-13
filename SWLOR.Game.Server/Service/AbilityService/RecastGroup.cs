@@ -13,6 +13,8 @@ namespace SWLOR.Game.Server.Service.AbilityService
         FortressStrike = 5,
         [RecastGroup("Interruption Strike", "Interrupt Str.", true)]
         InterruptionStrike = 8,
+        [RecastGroup("Force Burst", "Force Burst", true)]
+        ForceBurst = 9,
         [RecastGroup("Saber Storm", "Saber Storm", true)]
         SaberStorm = 10,
         [RecastGroup("Rest", "Rest", true)]

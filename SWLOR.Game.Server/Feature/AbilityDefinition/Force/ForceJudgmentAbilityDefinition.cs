@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 Spell.ForceJudgment1,
                 "Force Judgment I",
                 1,
-                14,
+                LightConsularPowerSupport.ForceJudgment1BaseDamage,
                 2,
                 12f,
                 typeof(ForceJudgment1StatusEffect),
@@ -52,7 +52,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 Spell.ForceJudgment2,
                 "Force Judgment II",
                 2,
-                24,
+                LightConsularPowerSupport.ForceJudgment2BaseDamage,
                 3,
                 12f,
                 typeof(ForceJudgment2StatusEffect),
@@ -67,7 +67,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 Spell.ForceJudgment3,
                 "Force Judgment III",
                 3,
-                36,
+                LightConsularPowerSupport.ForceJudgment3BaseDamage,
                 4,
                 15f,
                 typeof(ForceJudgment3StatusEffect),
@@ -142,7 +142,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     false,
                     Array.Empty<Type>(),
                     damageType: CombatDamageType.Force,
-                    targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative);
+                    targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
+                    hitChancePercentAdjustment: LightConsularPowerSupport.OffensiveHitChancePercentAdjustment);
                 return;
             }
 
@@ -162,7 +163,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 damageType: CombatDamageType.Force,
                 targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
                 areaVisualEffect: VisualEffect.None,
-                maxTargets: maxTargets);
+                maxTargets: maxTargets,
+                hitChancePercentAdjustment: LightConsularPowerSupport.OffensiveHitChancePercentAdjustment);
         }
     }
 }

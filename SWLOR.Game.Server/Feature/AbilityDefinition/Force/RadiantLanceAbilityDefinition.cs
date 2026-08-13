@@ -31,17 +31,41 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void RadiantLance1(AbilityBuilder builder)
         {
-            ConfigureRadiantLance(builder, FeatType.RadiantLance1, Spell.RadiantLance1, "Radiant Lance I", 1, 12, 4, 15f);
+            ConfigureRadiantLance(
+                builder,
+                FeatType.RadiantLance1,
+                Spell.RadiantLance1,
+                "Radiant Lance I",
+                1,
+                LightConsularPowerSupport.RadiantLance1BaseDamage,
+                4,
+                15f);
         }
 
         private static void RadiantLance2(AbilityBuilder builder)
         {
-            ConfigureRadiantLance(builder, FeatType.RadiantLance2, Spell.RadiantLance2, "Radiant Lance II", 2, 22, 5, 15f);
+            ConfigureRadiantLance(
+                builder,
+                FeatType.RadiantLance2,
+                Spell.RadiantLance2,
+                "Radiant Lance II",
+                2,
+                LightConsularPowerSupport.RadiantLance2BaseDamage,
+                5,
+                15f);
         }
 
         private static void RadiantLance3(AbilityBuilder builder)
         {
-            ConfigureRadiantLance(builder, FeatType.RadiantLance3, Spell.RadiantLance3, "Radiant Lance III", 3, 32, 6, 18f);
+            ConfigureRadiantLance(
+                builder,
+                FeatType.RadiantLance3,
+                Spell.RadiantLance3,
+                "Radiant Lance III",
+                3,
+                LightConsularPowerSupport.RadiantLance3BaseDamage,
+                6,
+                18f);
         }
 
         private static void ConfigureRadiantLance(
@@ -96,7 +120,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Force,
                 targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
-                areaVisualEffect: VisualEffect.None);
+                areaVisualEffect: VisualEffect.None,
+                hitChancePercentAdjustment: LightConsularPowerSupport.OffensiveHitChancePercentAdjustment);
         }
     }
 }

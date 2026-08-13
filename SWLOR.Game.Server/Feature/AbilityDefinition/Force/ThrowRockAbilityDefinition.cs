@@ -28,17 +28,35 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ThrowRock1(AbilityBuilder builder)
         {
-            ConfigureThrowRock(builder, FeatType.ThrowRock1, "Throw Rock I", 1, 18, 3);
+            ConfigureThrowRock(
+                builder,
+                FeatType.ThrowRock1,
+                "Throw Rock I",
+                1,
+                LightConsularPowerSupport.ThrowRock1BaseDamage,
+                3);
         }
 
         private static void ThrowRock2(AbilityBuilder builder)
         {
-            ConfigureThrowRock(builder, FeatType.ThrowRock2, "Throw Rock II", 2, 32, 4);
+            ConfigureThrowRock(
+                builder,
+                FeatType.ThrowRock2,
+                "Throw Rock II",
+                2,
+                LightConsularPowerSupport.ThrowRock2BaseDamage,
+                4);
         }
 
         private static void ThrowRock3(AbilityBuilder builder)
         {
-            ConfigureThrowRock(builder, FeatType.ThrowRock3, "Throw Rock III", 3, 46, 5);
+            ConfigureThrowRock(
+                builder,
+                FeatType.ThrowRock3,
+                "Throw Rock III",
+                3,
+                LightConsularPowerSupport.ThrowRock3BaseDamage,
+                5);
         }
 
         private static void ConfigureThrowRock(
@@ -87,6 +105,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Physical,
                 targetVisualEffect: VisualEffect.Vfx_Imp_Dust_Explosion,
+                hitChancePercentAdjustment: LightConsularPowerSupport.OffensiveHitChancePercentAdjustment,
                 playImpactAnimation: false);
         }
 

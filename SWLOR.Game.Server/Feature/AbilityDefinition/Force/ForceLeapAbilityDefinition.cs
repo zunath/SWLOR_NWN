@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
+using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Creature;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -18,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
     {
         private const float LeapAnimationSpeed = 2.0f;
         private const float LeapAnimationDurationSeconds = 1.0f;
+        private const float ArrivalDistanceMeters = 1.5f;
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -112,13 +114,39 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             if (!GetIsObjectValid(target))
                 return;
 
+            var destination = GetLeapDestination(activator, target);
             AssignCommand(target, () => ClearAllActions());
             AssignCommand(activator, () =>
             {
                 ClearAllActions();
                 ActionPlayAnimation(Animation.ForceLeap, LeapAnimationSpeed, LeapAnimationDurationSeconds);
-                ActionJumpToObject(target);
+                ActionJumpToLocation(destination);
+                ActionDoCommand(() => SetFacingPoint(GetPosition(target)));
             });
+        }
+
+        private static Location GetLeapDestination(uint activator, uint target)
+        {
+            var activatorPosition = GetPosition(activator);
+            var targetPosition = GetPosition(target);
+            var offsetX = activatorPosition.X - targetPosition.X;
+            var offsetY = activatorPosition.Y - targetPosition.Y;
+            var distance = Math.Sqrt(offsetX * offsetX + offsetY * offsetY);
+
+            if (distance < 0.01)
+            {
+                var targetFacingRadians = GetFacing(target) * Math.PI / 180.0;
+                offsetX = -(float)Math.Cos(targetFacingRadians);
+                offsetY = -(float)Math.Sin(targetFacingRadians);
+                distance = 1.0;
+            }
+
+            var destinationPosition = Vector3(
+                targetPosition.X + offsetX / (float)distance * ArrivalDistanceMeters,
+                targetPosition.Y + offsetY / (float)distance * ArrivalDistanceMeters,
+                targetPosition.Z);
+
+            return Location(GetArea(target), destinationPosition, GetFacing(activator));
         }
     }
 }

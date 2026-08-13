@@ -1,6 +1,6 @@
 # Combat Upgrade Release Validation Matrix
 
-Last reviewed: 2026-08-11
+Last reviewed: 2026-08-13
 
 ## Purpose
 
@@ -118,6 +118,7 @@ Do not tune mobs from hologram results. Use these real profiles first:
 | Starter ordinary | `mynock`, `czcryo_mynock` | Low-stat baseline, starter pacing, simple special ability check. |
 | Ordinary humanoid ranged/melee | `man_ranger_2`, `man_warrior_2` | Real weapon delays and basic humanoid defenses. |
 | Mid-tier Force/caster pressure | `s_app_m`, `korr_frostbind` | Force Attack/Defense interaction, shutdown and resource-pressure value. |
+| Dathomir ordinary fauna | `vdathswampland`, `vdathshear`, `vdathsquell`, `vgapingspider` | Late-game solo baseline. A full Light Consular damage rotation should maintain at least 75% hit chance and defeat these ordinary enemies in roughly 20-30 seconds; they are not group-gated elites. |
 | Elite/scary | `byysk_guard002` | High HP, shield/weapon profile, sustained incoming pressure. |
 | Boss chain | `bf_butcher`, `bf_kess` | High HP boss pacing and capstone encounter pressure. |
 | Optional stress boss | `frogboss` | Extreme boss profile only; do not balance baseline combat around it. |
@@ -139,6 +140,8 @@ Manual checks should focus on:
 - Throwing Ordnance and Flurry target-density cadence.
 - Lightsaber Severance and Ward before and after capstones.
 - Heavy Vibroblade sustain under real incoming damage.
+- Force Leap against large Dathomir fauna, confirming the player lands 1.5m from the target and both models remain selectable.
+- Full Light Consular rotations against the four ordinary Dathomir fauna profiles, then the named Tuskens and Hutlar Byysks, confirming the ordinary baseline does not inherit elite pacing.
 
 If a timed payoff still feels bad, tune in this order: extend the window, lower the spike if needed, then consider next-N-hit mechanics only if duration tuning cannot solve the engine feel.
 

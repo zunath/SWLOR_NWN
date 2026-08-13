@@ -2427,5 +2427,8 @@ namespace SWLOR.NWN.API.NWScript.Enum
         RazorTrap1 = 2896,
         RazorTrap2 = 2897,
         ShockTrap = 2898,
+        ForceBurst1 = 2899,
+        ForceBurst2 = 2900,
+        ForceBurst3 = 2901,
 }
 }

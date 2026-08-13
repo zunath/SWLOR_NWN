@@ -90,16 +90,15 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         }
 
         /// <summary>
-        /// Packs an RGB color into the scalar row parameter that NWN replicates for live
-        /// material overrides. Every 24-bit RGB value is exactly representable by a 32-bit
-        /// float; the negative sign distinguishes custom colors from positive palette rows.
+        /// Packs an RGB color into a positive integer material parameter. Zero remains the
+        /// preset sentinel, so adding one also represents custom black without ambiguity.
         /// </summary>
-        public static float GetCustomColorUniformValue(TintMapColor color)
+        public static int GetCustomColorUniformValue(TintMapColor color)
         {
             var packedColor = color.Red * CustomColorRedMultiplier +
                               color.Green * CustomColorGreenMultiplier +
                               color.Blue;
-            return -(packedColor + 1f);
+            return packedColor + 1;
         }
 
         public static bool AreEquipmentMaterialSlotsEquivalent(

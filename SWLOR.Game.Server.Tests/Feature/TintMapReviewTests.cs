@@ -1786,7 +1786,7 @@ public class TintMapReviewTests
     }
 
     [Test]
-    public void TintLayersUsePackedRowStateAndRetainLegacyCleanupNames()
+    public void TintLayersUseDedicatedIntegerCustomStateAndRetainLegacyCleanupNames()
     {
         var expectedUniforms = new Dictionary<TintMapLayerType, string>
         {
@@ -1814,7 +1814,7 @@ public class TintMapReviewTests
     }
 
     [Test]
-    public void ApplyingAColorPacksCustomRgbIntoTheReplicatedScalarRowUniform()
+    public void ApplyingAColorPublishesCustomRgbThroughAnIntegerMaterialUniform()
     {
         var serviceSource = ReadSource(
             "SWLOR.Game.Server",
@@ -1823,19 +1823,26 @@ public class TintMapReviewTests
             "TintMap",
             "TintMapService.cs");
         var applyColor = FindMethod(serviceSource, "ApplyMaterialColor");
-        var materialWrites = applyColor.DescendantNodes()
+        var rowWrites = applyColor.DescendantNodes()
             .OfType<InvocationExpressionSyntax>()
             .Where(invocation =>
                 invocation.Expression.ToString() == "SetMaterialShaderUniformVec4")
             .ToList();
 
-        materialWrites.Should().ContainSingle(
-            "custom RGB must use the same scalar material key that live preset changes replicate");
-        var materialWrite = materialWrites.Single().ToString();
-        materialWrite.Should().Contain("layerDefinition.UniformName");
-        materialWrite.Should().Contain("GetCustomColorUniformValue(customColor.Value)");
-        materialWrite.Should().NotContain("layerDefinition.ColorUniformName");
-        materialWrite.Should().NotContain("layerDefinition.CustomModeUniformName");
+        rowWrites.Should().ContainSingle(
+            "the palette row must stay on its documented vec4 material parameter");
+        rowWrites.Single().ToString().Should().Contain("GetPaletteCoordinate");
+
+        var customWrites = applyColor.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Where(invocation =>
+                invocation.Expression.ToString() == "SetMaterialShaderUniformInt")
+            .ToList();
+        customWrites.Should().ContainSingle(
+            "custom RGB needs NWN's dedicated integer material parameter rather than an invalid negative palette row");
+        var customWrite = customWrites.Single().ToString();
+        customWrite.Should().Contain("layerDefinition.CustomModeUniformName");
+        customWrite.Should().Contain("GetCustomColorUniformValue(customColor.Value)");
         applyColor.ToString().Should().Contain("ResetMaterialShaderUniforms");
 
         var resets = applyColor.DescendantNodes()
@@ -1852,26 +1859,27 @@ public class TintMapReviewTests
         {
             var shader = ReadSource("SWLOR_Haks", "sw_shader", shaderName);
             shader.Should().Contain("uniform vec4 rowSkin");
-            shader.Should().Contain("bool useCustomTint = tintState.x < 0.0");
+            shader.Should().Contain("uniform int useCustomSkin");
+            shader.Should().Contain("bool useCustomTint = customTintState > 0");
             shader.Should().Contain("float v = useCustomTint ? referenceV : tintState.x");
-            shader.Should().Contain("float packedColor = max(-tintState.x - 1.0, 0.0)");
+            shader.Should().Contain("float packedColor = float(max(customTintState - 1, 0))");
             shader.Should().Contain("floor(packedColor / 65536.0)");
             shader.Should().Contain("mod(packedColor, 256.0)");
         }
 
         var material = ReadSource("SWLOR_Haks", "sw_tint_mtr", "pmh0_head001.mtr");
-        material.Should().Contain("parameter float rowSkin 0.000244 0.0 0.0 0.0",
-            "the packed RGB must travel through the existing vec4 material override used by presets");
+        material.Should().Contain("parameter int useCustomSkin 0",
+            "the runtime integer setter only works when the parameter is declared with the matching material type");
     }
 
-    [TestCase(0, 0, 0, -1f)]
-    [TestCase(13, 127, 153, -884634f)]
-    [TestCase(255, 255, 255, -16777216f)]
-    public void CustomRgbPackingIsLosslessAcrossTheFullFloatExactIntegerRange(
+    [TestCase(0, 0, 0, 1)]
+    [TestCase(13, 127, 153, 884634)]
+    [TestCase(255, 255, 255, 16777216)]
+    public void CustomRgbPackingIsLosslessAndReservesZeroForPresetMode(
         byte red,
         byte green,
         byte blue,
-        float expected)
+        int expected)
     {
         TintMapMaterialRegistry.GetCustomColorUniformValue(new TintMapColor(red, green, blue))
             .Should().Be(expected);

@@ -1522,16 +1522,22 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 creature,
                 materialResref,
                 layerDefinition.UniformName,
-                customColor.HasValue
-                    ? TintMapMaterialRegistry.GetCustomColorUniformValue(customColor.Value)
-                    : TintMapMaterialRegistry.GetPaletteCoordinate(layer, color.PaletteColorId),
+                TintMapMaterialRegistry.GetPaletteCoordinate(layer, color.PaletteColorId),
                 0f,
                 0f,
                 0f);
 
-            // Presets already prove that NWN publishes the first component of row*. Put custom
-            // RGB on that identical path as one exact negative 24-bit integer and let the shader
-            // decode it. Presets remain positive texel-centered coordinates.
+            // Keep row* on its documented palette-coordinate path. Custom RGB is independent
+            // state and travels through NWN's integer material-uniform setter; the previous
+            // negative-float encoding was treated as an invalid palette coordinate by the live
+            // client and left the creature displaying its preset color.
+            SetMaterialShaderUniformInt(
+                creature,
+                materialResref,
+                layerDefinition.CustomModeUniformName,
+                customColor.HasValue
+                    ? TintMapMaterialRegistry.GetCustomColorUniformValue(customColor.Value)
+                    : 0);
         }
 
         private static Dictionary<string, int> GetItemTintOverrides(uint item)

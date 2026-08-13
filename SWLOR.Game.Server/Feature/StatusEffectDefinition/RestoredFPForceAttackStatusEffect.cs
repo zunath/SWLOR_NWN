@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         private readonly int _forceAttack;
 
-        public override string Name => "Restored FP Force Attack";
+        public override string Name => "FP Recovery: Force Attack";
         public override EffectIconType Icon => EffectIconType.RestoredFPForceAttackStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
         public override bool PersistsOnLogout => false;

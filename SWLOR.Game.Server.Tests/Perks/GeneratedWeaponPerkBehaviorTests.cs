@@ -307,14 +307,17 @@ public class GeneratedWeaponPerkBehaviorTests
 
         var restoredFPForceAttack = new RestoredFPForceAttackStatusEffect(8);
         AssertStatusStat(restoredFPForceAttack, StatType.ForceAttackPercentAdjustment, 8);
+        restoredFPForceAttack.Name.Should().Be("FP Recovery: Force Attack");
         restoredFPForceAttack.Icon.Should().Be(EffectIconType.RestoredFPForceAttackStatusEffect);
 
         var restoredStaminaAttack = new RestoredStaminaAttackStatusEffect(8);
         AssertStatusStat(restoredStaminaAttack, StatType.AttackPercentAdjustment, 8);
+        restoredStaminaAttack.Name.Should().Be("STM Recovery: Attack");
         restoredStaminaAttack.Icon.Should().Be(EffectIconType.RestoredStaminaAttackStatusEffect);
 
         var restoredFPHaste = new RestoredFPHasteStatusEffect(10);
         AssertStatusStat(restoredFPHaste, StatType.AttackDelayReductionPercent, 10);
+        restoredFPHaste.Name.Should().Be("FP Recovery: Haste");
         restoredFPHaste.Icon.Should().Be(EffectIconType.RestoredFPHasteStatusEffect);
 
         var hostileAbilityForceAttack = new HostileAbilityForceAttackStatusEffect(15);

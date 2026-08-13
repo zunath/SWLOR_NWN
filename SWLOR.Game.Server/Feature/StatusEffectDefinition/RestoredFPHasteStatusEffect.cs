@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         private readonly int _haste;
 
-        public override string Name => "Restored FP Haste";
+        public override string Name => "FP Recovery: Haste";
         public override EffectIconType Icon => EffectIconType.RestoredFPHasteStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
         public override bool PersistsOnLogout => false;

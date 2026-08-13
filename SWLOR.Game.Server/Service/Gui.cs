@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
+using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -372,6 +373,32 @@ namespace SWLOR.Game.Server.Service
 
                 if(NuiFindWindow(player, windowId) != 0)
                     ((IGuiRefreshable<T>)playerWindow.ViewModel).Refresh(payload);
+            }
+        }
+
+        /// <summary>
+        /// Refreshes every open character sheet currently displaying the supplied target.
+        /// This includes sheets opened by another player, such as DM-inspected creatures.
+        /// </summary>
+        public static void PublishCharacterSheetRefreshEvent<T>(uint target, T payload)
+            where T : IGuiRefreshEvent
+        {
+            var windowId = BuildWindowId(GuiWindowType.CharacterSheet);
+
+            for (var observer = GetFirstPC(); GetIsObjectValid(observer); observer = GetNextPC())
+            {
+                var observerId = GetObjectUUID(observer);
+                if (!_playerWindows.TryGetValue(observerId, out var windows) ||
+                    !windows.TryGetValue(GuiWindowType.CharacterSheet, out var playerWindow) ||
+                    NuiFindWindow(observer, windowId) == 0 ||
+                    playerWindow.ViewModel is not CharacterSheetViewModel viewModel ||
+                    !viewModel.IsViewingTarget(target) ||
+                    viewModel is not IGuiRefreshable<T> refreshable)
+                {
+                    continue;
+                }
+
+                refreshable.Refresh(payload);
             }
         }
 

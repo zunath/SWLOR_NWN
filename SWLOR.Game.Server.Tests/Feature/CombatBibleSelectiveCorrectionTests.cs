@@ -7,8 +7,12 @@ using NUnit.Framework;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
+[Platform(Include = "Win")]
 public class CombatBibleSelectiveCorrectionTests
 {
+    private static readonly TimeSpan CorrectionTimeout = TimeSpan.FromMinutes(2);
+    private static readonly TimeSpan ProcessTerminationTimeout = TimeSpan.FromSeconds(10);
+
     private static readonly XNamespace SpreadsheetNs =
         "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
     private static readonly XNamespace DocumentRelationshipNs =
@@ -17,7 +21,7 @@ public class CombatBibleSelectiveCorrectionTests
         "http://schemas.openxmlformats.org/package/2006/relationships";
 
     [Test]
-    public void SelectivePerkMode_ChangesOnlyOneSelectedPerk()
+    public async Task SelectivePerkMode_ChangesOnlyOneSelectedPerk()
     {
         var workbook = CopyBibleToTemporaryFile();
         try
@@ -27,7 +31,7 @@ public class CombatBibleSelectiveCorrectionTests
             var characterStatsBefore = ReadSheetXml(workbook, "Character Stats");
             var auditBefore = ReadSheetXml(workbook, "Combat Balance Findings");
 
-            var result = RunCorrection(workbook, new[] { "Force Sheath II" });
+            var result = await RunCorrection(workbook, new[] { "Force Sheath II" });
 
             result.ExitCode.Should().Be(0, result.Error);
             ReadPerkDescription(workbook, "Lightsaber", "Force Sheath II")
@@ -44,7 +48,7 @@ public class CombatBibleSelectiveCorrectionTests
     }
 
     [Test]
-    public void SelectivePerkMode_ChangesOnlyMultipleSelectedPerks()
+    public async Task SelectivePerkMode_ChangesOnlyMultipleSelectedPerks()
     {
         var workbook = CopyBibleToTemporaryFile();
         try
@@ -55,7 +59,7 @@ public class CombatBibleSelectiveCorrectionTests
             var characterStatsBefore = ReadSheetXml(workbook, "Character Stats");
             var auditBefore = ReadSheetXml(workbook, "Combat Balance Findings");
 
-            var result = RunCorrection(workbook, new[] { "Force Sheath II", "Force Sheath III" });
+            var result = await RunCorrection(workbook, new[] { "Force Sheath II", "Force Sheath III" });
 
             result.ExitCode.Should().Be(0, result.Error);
             ReadPerkDescription(workbook, "Lightsaber", "Force Sheath II")
@@ -75,15 +79,15 @@ public class CombatBibleSelectiveCorrectionTests
 
     [TestCase(false)]
     [TestCase(true)]
-    public void SelectivePerkMode_InvalidOrConflictingArgumentsDoNotModifyWorkbook(bool conflictingModes)
+    public async Task SelectivePerkMode_InvalidOrConflictingArgumentsDoNotModifyWorkbook(bool conflictingModes)
     {
         var workbook = CopyBibleToTemporaryFile();
         try
         {
             var before = File.ReadAllBytes(workbook);
             var result = conflictingModes
-                ? RunCorrection(workbook, new[] { "Force Sheath II" }, espionageStealthOnly: true)
-                : RunCorrection(workbook, new[] { "Not A Real Perk" });
+                ? await RunCorrection(workbook, new[] { "Force Sheath II" }, espionageStealthOnly: true)
+                : await RunCorrection(workbook, new[] { "Not A Real Perk" });
 
             result.ExitCode.Should().NotBe(0);
             File.ReadAllBytes(workbook).Should().Equal(before,
@@ -104,7 +108,7 @@ public class CombatBibleSelectiveCorrectionTests
         return destination;
     }
 
-    private static (int ExitCode, string Output, string Error) RunCorrection(
+    private static async Task<(int ExitCode, string Output, string Error)> RunCorrection(
         string workbook,
         IReadOnlyCollection<string> perkNames,
         bool espionageStealthOnly = false)
@@ -134,9 +138,44 @@ public class CombatBibleSelectiveCorrectionTests
         startInfo.ArgumentList.Add(command);
 
         using var process = Process.Start(startInfo)!;
-        var output = process.StandardOutput.ReadToEnd();
-        var error = process.StandardError.ReadToEnd();
-        process.WaitForExit();
+        var outputTask = process.StandardOutput.ReadToEndAsync();
+        var errorTask = process.StandardError.ReadToEndAsync();
+        var completionTask = Task.WhenAll(process.WaitForExitAsync(), outputTask, errorTask);
+
+        try
+        {
+            await completionTask.WaitAsync(CorrectionTimeout);
+        }
+        catch (TimeoutException timeoutException)
+        {
+            try
+            {
+                process.Kill(entireProcessTree: true);
+            }
+            catch (InvalidOperationException)
+            {
+                // The process exited after the timeout fired but before it could be killed.
+            }
+
+            try
+            {
+                await completionTask.WaitAsync(ProcessTerminationTimeout);
+            }
+            catch (TimeoutException terminationTimeoutException)
+            {
+                throw new TimeoutException(
+                    $"Combat Bible correction exceeded its {CorrectionTimeout.TotalSeconds:0}-second limit " +
+                    $"and did not terminate within {ProcessTerminationTimeout.TotalSeconds:0} seconds after being killed.",
+                    new AggregateException(timeoutException, terminationTimeoutException));
+            }
+
+            throw new TimeoutException(
+                $"Combat Bible correction exceeded its {CorrectionTimeout.TotalSeconds:0}-second limit.",
+                timeoutException);
+        }
+
+        var output = await outputTask;
+        var error = await errorTask;
         return (process.ExitCode, output, error);
     }
 

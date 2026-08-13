@@ -47,6 +47,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private uint _target;
         private bool _isSynchronizingTabRows;
 
+        public bool IsViewingTarget(uint target)
+        {
+            return _target == target;
+        }
+
         public int SelectedTabId
         {
             get => Get<int>();
@@ -969,9 +974,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var active = Combat.IsCurrentFPAndStaminaAtOrAbovePercent(_target, flatThreshold);
                 addStat(
-                    "Balanced Current",
+                    "High-Resource Ability DMG",
                     active ? $"Active (+{flatBonus} DMG)" : $"Inactive ({flatThreshold}% required)",
-                    $"Hostile combat abilities gain +{flatBonus} DMG while FP and STM are both at least {flatThreshold}%.");
+                    $"Combined conditional bonus: hostile combat abilities gain +{flatBonus} DMG while FP and STM are both at least {flatThreshold}%.");
             }
 
             var percentBonus = Stat.GetStatAdjustment(

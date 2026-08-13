@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         private readonly int _attack;
 
-        public override string Name => "STM Recovery: Attack";
+        public override string Name => "Force Lens: Attack";
         public override EffectIconType Icon => EffectIconType.RestoredStaminaAttackStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
         public override bool PersistsOnLogout => false;

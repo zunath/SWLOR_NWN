@@ -1427,18 +1427,20 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             TintMapLayerType layer,
             TintMapColorSelection color)
         {
-            var appliedMaterials = new HashSet<string>(StringComparer.Ordinal);
-            foreach (var selection in selections)
+            // Modular creature parts are composed into child render meshes. Their source material
+            // resrefs are useful for persistence, but they are not reliable targets for a live
+            // material override on the parent creature. Once the current appearance proves that
+            // this semantic channel exists, publish it model-wide through NWNX's
+            // MATERIAL_NAME_NULL_IS_ALL path so the head, torso, limbs, hands, and exposed skin on
+            // equipment all receive the same value.
+            if (!selections.Any(selection =>
+                    selection.GetPaletteSource(layer) == creature &&
+                    selection.Material.Layers.Contains(layer)))
             {
-                if (selection.GetPaletteSource(layer) != creature ||
-                    !selection.Material.Layers.Contains(layer) ||
-                    !appliedMaterials.Add(selection.Material.Resref))
-                {
-                    continue;
-                }
-
-                ApplyMaterialColor(creature, selection.Material.Resref, layer, color);
+                return;
             }
+
+            ApplyMaterialColor(creature, string.Empty, layer, color);
         }
 
         private static void ApplyCurrentColorsAndPublish(uint creature)

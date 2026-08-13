@@ -1870,21 +1870,21 @@ public class TintMapReviewTests
     }
 
     [Test]
-    public void RuntimeUsesNativeMaterialShaderUniformUpdates()
+    public void RuntimeUsesModelWideMaterialShaderUniformUpdates()
     {
         ReadSource("SWLOR.Game.Server", "Docker", "swlor.env")
-            .Should().Contain("NWNX_TWEAKS_MATERIAL_NAME_NULL_IS_ALL=false",
-                "the tweak's concrete-material hook mutates existing values without publishing them to clients");
+            .Should().Contain("NWNX_TWEAKS_MATERIAL_NAME_NULL_IS_ALL=true",
+                "semantic creature colors must reach every composed child material");
         ReadSource("SWLOR.CLI", "DeployBuild.cs")
-            .Should().Contain("MaterialNameNullTweakValue = \"false\"",
-                "debug deployment must not silently re-enable the broken material hook");
+            .Should().Contain("MaterialNameNullTweakValue = \"true\"",
+                "debug deployment must enable model-wide creature color updates");
         ReadSource("scripts", "deployment", "swlor-deploy.sh")
-            .Should().Contain("REQUIRED_TWEAK_VALUE=\"false\"",
-                "production deployment must not silently re-enable the broken material hook");
+            .Should().Contain("REQUIRED_TWEAK_VALUE=\"true\"",
+                "production deployment must enable model-wide creature color updates");
     }
 
     [Test]
-    public void CreatureSemanticColorsUseRegistryScopedMaterialUpdates()
+    public void CreatureSemanticColorsUseModelWideMaterialUpdates()
     {
         var serviceSource = ReadSource(
             "SWLOR.Game.Server",
@@ -1906,10 +1906,10 @@ public class TintMapReviewTests
             "a full reset removes stale legacy wildcards without erasing rows later in the rebuild");
 
         var applyCreatureColor = FindMethod(serviceSource, "ApplyCreatureColor");
-        applyCreatureColor.ToString().Should().Contain("selection.GetPaletteSource(layer) != creature");
-        applyCreatureColor.ToString().Should().Contain("!selection.Material.Layers.Contains(layer)");
-        applyCreatureColor.ToString().Should().Contain("selection.Material.Resref");
-        applyCreatureColor.ToString().Should().Contain("appliedMaterials");
+        applyCreatureColor.ToString().Should().Contain("selection.GetPaletteSource(layer) == creature");
+        applyCreatureColor.ToString().Should().Contain("selection.Material.Layers.Contains(layer)");
+        applyCreatureColor.ToString().Should().Contain("string.Empty");
+        applyCreatureColor.ToString().Should().NotContain("selection.Material.Resref");
         applyCreatureColor.DescendantNodes()
             .OfType<InvocationExpressionSyntax>()
             .Count(invocation => invocation.Expression.ToString() == "ResetMaterialShaderUniforms")

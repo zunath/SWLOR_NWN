@@ -1651,18 +1651,12 @@ namespace SWLOR.Game.Server.Service
 
         private static void PublishStatusEffectReceivedRefresh(uint creature)
         {
-            if (GetIsPC(creature))
-            {
-                Gui.PublishRefreshEvent(creature, new StatusEffectReceivedRefreshEvent());
-            }
+            Gui.PublishCharacterSheetRefreshEvent(creature, new StatusEffectReceivedRefreshEvent());
         }
 
         private static void PublishStatusEffectRemovedRefresh(uint creature)
         {
-            if (GetIsPC(creature))
-            {
-                Gui.PublishRefreshEvent(creature, new StatusEffectRemovedRefreshEvent());
-            }
+            Gui.PublishCharacterSheetRefreshEvent(creature, new StatusEffectRemovedRefreshEvent());
         }
 
         private static void RemoveNativeStatusEffect(uint creature, string statusEffectId)

@@ -108,10 +108,15 @@ public class CharacterSheetStatCoverageTests
         viewModel.Should().Contain("public void Refresh(StatusEffectReceivedRefreshEvent payload)");
         viewModel.Should().Contain("public void Refresh(StatusEffectRemovedRefreshEvent payload)");
         statusEffects.Should().Contain(
-            "Gui.PublishRefreshEvent(creature, new StatusEffectReceivedRefreshEvent())");
+            "Gui.PublishCharacterSheetRefreshEvent(creature, new StatusEffectReceivedRefreshEvent())");
         statusEffects.Should().Contain(
-            "Gui.PublishRefreshEvent(creature, new StatusEffectRemovedRefreshEvent())");
+            "Gui.PublishCharacterSheetRefreshEvent(creature, new StatusEffectRemovedRefreshEvent())");
         statusEffects.Should().Contain("if (!isReplacement)");
+
+        var gui = ReadService("Gui.cs");
+        gui.Should().Contain("public static void PublishCharacterSheetRefreshEvent<T>(uint target, T payload)");
+        gui.Should().Contain("for (var observer = GetFirstPC(); GetIsObjectValid(observer); observer = GetNextPC())");
+        gui.Should().Contain("!viewModel.IsViewingTarget(target)");
     }
 
     [Test]

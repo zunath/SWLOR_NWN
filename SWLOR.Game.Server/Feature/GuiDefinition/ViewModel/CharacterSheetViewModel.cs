@@ -47,6 +47,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private uint _target;
         private bool _isSynchronizingTabRows;
 
+        public bool IsViewingTarget(uint target)
+        {
+            return _target == target;
+        }
+
         public int SelectedTabId
         {
             get => Get<int>();

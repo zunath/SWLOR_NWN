@@ -1122,8 +1122,8 @@ def description_stat_entries(row, base):
         add_stat(stats, "RestoredStaminaAttackPercentAdjustment", parse_percent(r"\+(\d+)% Attack", description))
         add_stat(stats, "RestoredStaminaAttackDurationSeconds", parse_duration(description) or 30)
     if base == "Balanced Attunement":
-        add_stat(stats, "HighFPAndStaminaAttackThresholdPercent", parse_percent(r"both above (\d+)%", description))
-        add_stat(stats, "HighFPAndStaminaAttackPercentAdjustment", parse_percent(r"deal \+(\d+)% damage", description))
+        add_stat(stats, "HighFPAndStaminaAbilityDamagePercentAdjustmentThresholdPercent", parse_percent(r"both above (\d+)%", description))
+        add_stat(stats, "HighFPAndStaminaAbilityDamagePercentAdjustment", parse_percent(r"deal \+(\d+)% damage", description))
     if base == "Conduit Training":
         add_stat(stats, "AbilityStaminaCostFPRestorePercentSkillType", skill_expr)
         add_stat(stats, "AbilityStaminaCostFPRestorePercent", parse_percent(r"restore FP equal to (\d+)%", description))

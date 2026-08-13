@@ -671,6 +671,10 @@ public class GeneratedWeaponPerkBehaviorTests
         combatSource.Should().Contain("new RestoredStaminaAttackStatusEffect(attack)");
         combatSource.Should().NotContain("SaberstaffConduitForceLens",
             "shared resource restoration must remain stat-driven rather than checking a specific perk identity");
+        generatorSource.Should().Contain(
+            "add_stat(stats, \"HighFPAndStaminaAbilityDamagePercentAdjustmentThresholdPercent\"");
+        generatorSource.Should().Contain(
+            "add_stat(stats, \"HighFPAndStaminaAbilityDamagePercentAdjustment\"");
         combatSource.Should().Contain("ApplyHostileAbilitySequenceEffects(activator, feat, ability)");
         combatSource.Should().Contain("ApplySameTargetHostileAbilityHitEffects(activator, target, ability)");
         combatSource.Should().Contain("ApplyNextDamageDealtBleedEffect(attacker, defender, damageType)");
@@ -954,6 +958,7 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertAbilitySourceContains(root, "Saberstaff", "FocusedArcAbilityDefinition.cs", "HighResourceExtraDamageThresholdPercent = 60");
         AssertAbilitySourceContains(root, "Saberstaff", "FocusedArcAbilityDefinition.cs", "ExtraDamageIfHighResources = 10");
         AssertAbilitySourceContains(root, "Saberstaff", "GuardedChannelAbilityDefinition.cs", "SelfStatResourceAboveThresholdPercent = 40");
+        AssertAbilitySourceContains(root, "Saberstaff", "GuardedChannelAbilityDefinition.cs", "SelfStatDurationSeconds = 30");
         AssertAbilitySourceContains(root, "Saberstaff", "GuardedChannelAbilityDefinition.cs", "SelfStatusEffectFactory = () => new GuardedChannelStatusEffect");
         AssertAbilitySourceContains(root, "Saberstaff", "SeverFocusAbilityDefinition.cs", "DrainTargetResourceAboveThresholdPercent = 80");
         AssertAbilitySourceContains(root, "Saberstaff", "InfiniteConduitAbilityDefinition.cs", "typeof(InfiniteConduitStatusEffect)");
@@ -1003,6 +1008,10 @@ public class GeneratedWeaponPerkBehaviorTests
             "WeaponActiveAbilityDefinitionBase.cs"));
         weaponBaseSource.Should().Contain("UsePerkFeat.InterruptAbilityActivation(target)");
         weaponBaseSource.Should().Contain("Extended {extendedCount} {statusLabel} by {SourceStatusExtensionSeconds}s");
+        weaponBaseSource.Should().Contain("public bool HasImmediateSelfStatusEffect()");
+        weaponBaseSource.Should().Contain("SelfStatusEffectFactory != null && SelfStatDurationSeconds <= 0",
+            "resource-gated status factories must be applied by ApplySelfModifiers after the gate, not as permanent immediate statuses");
+        weaponBaseSource.Should().Contain("if (profile.HasImmediateSelfStatusEffect())");
     }
 
     [Test]

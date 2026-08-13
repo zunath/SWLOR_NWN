@@ -1136,9 +1136,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 }
             }
 
-            public bool HasSelfStatusEffect()
+            public bool HasImmediateSelfStatusEffect()
             {
-                return SelfStatusEffectFactory != null;
+                return SelfStatusEffectFactory != null && SelfStatDurationSeconds <= 0;
             }
 
             public void ApplySelfStatusEffect(uint activator, int duration)
@@ -1232,7 +1232,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                             return;
                         }
 
-                        if (profile.HasSelfStatusEffect())
+                        if (profile.HasImmediateSelfStatusEffect())
                         {
                             profile.ApplySelfStatusEffect(activator, duration);
                         }

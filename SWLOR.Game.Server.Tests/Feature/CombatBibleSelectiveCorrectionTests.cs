@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Tests.Feature;
 public class CombatBibleSelectiveCorrectionTests
 {
     private static readonly TimeSpan CorrectionTimeout = TimeSpan.FromMinutes(2);
+    private static readonly TimeSpan ProcessTerminationTimeout = TimeSpan.FromSeconds(10);
 
     private static readonly XNamespace SpreadsheetNs =
         "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
@@ -154,6 +155,18 @@ public class CombatBibleSelectiveCorrectionTests
             catch (InvalidOperationException)
             {
                 // The process exited after the timeout fired but before it could be killed.
+            }
+
+            try
+            {
+                await completionTask.WaitAsync(ProcessTerminationTimeout);
+            }
+            catch (TimeoutException terminationTimeoutException)
+            {
+                throw new TimeoutException(
+                    $"Combat Bible correction exceeded its {CorrectionTimeout.TotalSeconds:0}-second limit " +
+                    $"and did not terminate within {ProcessTerminationTimeout.TotalSeconds:0} seconds after being killed.",
+                    new AggregateException(timeoutException, terminationTimeoutException));
             }
 
             throw new TimeoutException(

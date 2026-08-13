@@ -15,7 +15,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
     public sealed class ForceBurstAbilityDefinition : IAbilityListDefinition
     {
         private const float RadiusMeters = 5f;
-        private const int HitChancePercentAdjustment = 10;
         private const int Rank1BaseDamage = 18;
         private const int Rank2BaseDamage = 34;
         private const int Rank3BaseDamage = 50;
@@ -108,8 +107,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Force,
                 targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Wind,
-                areaVisualEffect: VisualEffect.Vfx_Fnf_Screen_Bump,
-                hitChancePercentAdjustment: HitChancePercentAdjustment);
+                areaVisualEffect: VisualEffect.Vfx_Fnf_Screen_Bump);
         }
     }
 }

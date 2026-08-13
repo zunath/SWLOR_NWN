@@ -17,7 +17,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
     public sealed class ForceJudgmentAbilityDefinition : IAbilityListDefinition
     {
         private const float RadiusMeters = 5f;
-        private const int HitChancePercentAdjustment = 10;
         private const int Rank1BaseDamage = 18;
         private const int Rank2BaseDamage = 32;
         private const int Rank3BaseDamage = 48;
@@ -146,8 +145,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     false,
                     Array.Empty<Type>(),
                     damageType: CombatDamageType.Force,
-                    targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
-                    hitChancePercentAdjustment: HitChancePercentAdjustment);
+                    targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative);
                 return;
             }
 
@@ -167,8 +165,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 damageType: CombatDamageType.Force,
                 targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
                 areaVisualEffect: VisualEffect.None,
-                maxTargets: maxTargets,
-                hitChancePercentAdjustment: HitChancePercentAdjustment);
+                maxTargets: maxTargets);
         }
     }
 }

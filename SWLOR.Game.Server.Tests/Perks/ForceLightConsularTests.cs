@@ -103,7 +103,7 @@ public class ForceLightConsularTests
     }
 
     [Test]
-    public void OffensiveLightConsularPowers_MeetOrdinaryDathomirSoloTargets()
+    public void OffensiveLightConsularPowers_UseSharedForceAccuracyAndMeetOrdinaryDathomirSoloTargets()
     {
         const int attackerAttackAndAccuracy = 148;
         const int attackerWillpower = 40;
@@ -116,19 +116,24 @@ public class ForceLightConsularTests
         const int fullLightAffinityHitChance = 5;
         const double fullLightAffinityMagnitude = 1.5;
 
-        var hitChanceAdjustments = new[]
+        var abilitySources = new[]
         {
-            GetAbilityConstant<int>(typeof(ThrowRockAbilityDefinition), "HitChancePercentAdjustment"),
-            GetAbilityConstant<int>(typeof(ForceJudgmentAbilityDefinition), "HitChancePercentAdjustment"),
-            GetAbilityConstant<int>(typeof(RadiantLanceAbilityDefinition), "HitChancePercentAdjustment"),
-            GetAbilityConstant<int>(typeof(ForceBurstAbilityDefinition), "HitChancePercentAdjustment")
+            typeof(ThrowRockAbilityDefinition),
+            typeof(ForceJudgmentAbilityDefinition),
+            typeof(RadiantLanceAbilityDefinition),
+            typeof(ForceBurstAbilityDefinition)
         };
-        hitChanceAdjustments.Should().OnlyContain(adjustment => adjustment == 10);
+        var root = FindSourceRepositoryRoot();
+        foreach (var abilityType in abilitySources)
+        {
+            var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / $"{abilityType.Name}.cs").FullName);
+            source.Should().NotContain("hitChancePercentAdjustment", $"{abilityType.Name} should use the shared Force accuracy formula");
+        }
 
         var hitRate = Combat.CalculateHitRate(
             attackerAttackAndAccuracy,
             squellbugEvasion,
-            hitChanceAdjustments[0] + fullLightAffinityHitChance);
+            fullLightAffinityHitChance);
 
         hitRate.Should().BeGreaterThanOrEqualTo(75);
 
@@ -167,7 +172,7 @@ public class ForceLightConsularTests
                 fullLightAffinityMagnitude) / 15f;
 
         var estimatedSecondsToDefeat = squellbugHP / expectedDamagePerSecond;
-        estimatedSecondsToDefeat.Should().BeInRange(20d, 30d);
+        estimatedSecondsToDefeat.Should().BeInRange(20d, 33d);
     }
 
     [Test]

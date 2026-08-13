@@ -15,15 +15,15 @@ else {
 }
 
 $existingDescriptions = [ordered]@{
-    "Throw Rock I" = "Hurls stone or loose debris with the Force up to 15m, dealing 22 physical DMG plus WIL/PER scaling to one target. This power gains +10% hit chance."
-    "Throw Rock II" = "Hurls a heavier stone or debris with the Force up to 15m, dealing 40 physical DMG plus WIL/PER scaling to one target. This power gains +10% hit chance."
-    "Throw Rock III" = "Hurls a crushing mass of stone and debris with the Force up to 15m, dealing 60 physical DMG plus WIL/PER scaling to one target. This power gains +10% hit chance."
-    "Force Judgment I" = "Deals 18 force DMG plus WIL scaling to one target and reduces outgoing weapon and force damage by 4% for 30 seconds. This power gains +10% hit chance."
-    "Force Judgment II" = "Deals 32 force DMG plus WIL scaling to the selected target and one enemy within 5m, reducing outgoing weapon and force damage by 6% for 30 seconds. This power gains +10% hit chance."
-    "Force Judgment III" = "Deals 48 force DMG plus WIL scaling to the selected target and enemies within 5m, reducing outgoing weapon and force damage by 8% for 30 seconds. This power gains +10% hit chance."
-    "Radiant Lance I" = "Fires a focused lance of radiant Force energy in an 8m x 2.5m line, dealing 16 force DMG plus WIL scaling to hostile targets in the line. This power gains +10% hit chance."
-    "Radiant Lance II" = "Fires a focused lance of radiant Force energy in an 8m x 2.5m line, dealing 30 force DMG plus WIL scaling to hostile targets in the line. This power gains +10% hit chance."
-    "Radiant Lance III" = "Fires a focused lance of radiant Force energy in an 8m x 2.5m line, dealing 44 force DMG plus WIL scaling to hostile targets in the line. This power gains +10% hit chance."
+    "Throw Rock I" = "Hurls stone or loose debris with the Force up to 15m, dealing 22 physical DMG plus WIL/PER scaling to one target."
+    "Throw Rock II" = "Hurls a heavier stone or debris with the Force up to 15m, dealing 40 physical DMG plus WIL/PER scaling to one target."
+    "Throw Rock III" = "Hurls a crushing mass of stone and debris with the Force up to 15m, dealing 60 physical DMG plus WIL/PER scaling to one target."
+    "Force Judgment I" = "Deals 18 force DMG plus WIL scaling to one target and reduces outgoing weapon and force damage by 4% for 30 seconds."
+    "Force Judgment II" = "Deals 32 force DMG plus WIL scaling to the selected target and one enemy within 5m, reducing outgoing weapon and force damage by 6% for 30 seconds."
+    "Force Judgment III" = "Deals 48 force DMG plus WIL scaling to the selected target and enemies within 5m, reducing outgoing weapon and force damage by 8% for 30 seconds."
+    "Radiant Lance I" = "Fires a focused lance of radiant Force energy in an 8m x 2.5m line, dealing 16 force DMG plus WIL scaling to hostile targets in the line."
+    "Radiant Lance II" = "Fires a focused lance of radiant Force energy in an 8m x 2.5m line, dealing 30 force DMG plus WIL scaling to hostile targets in the line."
+    "Radiant Lance III" = "Fires a focused lance of radiant Force energy in an 8m x 2.5m line, dealing 44 force DMG plus WIL scaling to hostile targets in the line."
 }
 
 $forceBurstRows = @(
@@ -31,7 +31,7 @@ $forceBurstRows = @(
         _AfterPerkName = "Force Lightning I"
         Style = "Alter"; "SP Price" = "3.0"; "Perk Name" = "Force Burst I"; "Skill Reqs." = "Force 10"
         "Char. Type" = "Force"; Type = "Combat"; Alignment = "Light"; "Affinity Shift" = "+1"
-        Description = "Deals 18 force DMG plus WIL scaling to the selected target and enemies within 5m. This power gains +10% hit chance."
+        Description = "Deals 18 force DMG plus WIL scaling to the selected target and enemies within 5m."
         "Primary Stat" = "WIL"; "Secondary Stat" = "None"; "Scaling Source" = "Combat Formula"
         FP = "4.0"; STM = "-"; "Casting Time" = "1.5 seconds"; "Cooldown Time" = "15 seconds"
         "Dev Status" = "Implemented"; "Additional Requirements" = ""
@@ -41,7 +41,7 @@ $forceBurstRows = @(
         _AfterPerkName = "Force Choke III"
         Style = "Alter"; "SP Price" = "4.0"; "Perk Name" = "Force Burst II"; "Skill Reqs." = "Force 30"
         "Char. Type" = "Force"; Type = "Combat"; Alignment = "Light"; "Affinity Shift" = "+1"
-        Description = "Deals 34 force DMG plus WIL scaling to the selected target and enemies within 5m. This power gains +10% hit chance."
+        Description = "Deals 34 force DMG plus WIL scaling to the selected target and enemies within 5m."
         "Primary Stat" = "WIL"; "Secondary Stat" = "None"; "Scaling Source" = "Combat Formula"
         FP = "5.0"; STM = "-"; "Casting Time" = "1.5 seconds"; "Cooldown Time" = "15 seconds"
         "Dev Status" = "Implemented"; "Additional Requirements" = ""
@@ -51,7 +51,7 @@ $forceBurstRows = @(
         _AfterPerkName = "Throw Lightsaber III"
         Style = "Alter"; "SP Price" = "4.0"; "Perk Name" = "Force Burst III"; "Skill Reqs." = "Force 46"
         "Char. Type" = "Force"; Type = "Combat"; Alignment = "Light"; "Affinity Shift" = "+1"
-        Description = "Deals 50 force DMG plus WIL scaling to the selected target and enemies within 5m. This power gains +10% hit chance."
+        Description = "Deals 50 force DMG plus WIL scaling to the selected target and enemies within 5m."
         "Primary Stat" = "WIL"; "Secondary Stat" = "None"; "Scaling Source" = "Combat Formula"
         FP = "6.0"; STM = "-"; "Casting Time" = "1.5 seconds"; "Cooldown Time" = "15 seconds"
         "Dev Status" = "Implemented"; "Additional Requirements" = ""
@@ -236,17 +236,31 @@ try {
         )
         $sheetData = $worksheet.Descendants($namespace + "sheetData") | Select-Object -First 1
 
-        foreach ($values in $forceBurstRows) {
-            $perkName = $values["Perk Name"]
-            if ($rowsByPerkName.ContainsKey($perkName)) {
-                $rowsByPerkName[$perkName].Remove()
-                $rowsByPerkName.Remove($perkName)
-            }
-        }
-
         for ($index = 0; $index -lt $forceBurstRows.Count; $index++) {
             $values = $forceBurstRows[$index]
             $perkName = $values["Perk Name"]
+            if ($rowsByPerkName.ContainsKey($perkName)) {
+                $row = $rowsByPerkName[$perkName]
+                $rowNumber = $row.Attribute("r").Value
+                foreach ($field in $values.Keys) {
+                    if ($field.StartsWith("_")) {
+                        continue
+                    }
+                    if (-not $headerColumns.ContainsKey($field)) {
+                        throw "Column '$field' was not found on the Force sheet."
+                    }
+                    $reference = "$($headerColumns[$field])$rowNumber"
+                    $cell = $row.Elements($namespace + "c") | Where-Object {
+                        $_.Attribute("r").Value -eq $reference
+                    } | Select-Object -First 1
+                    if ($null -eq $cell) {
+                        throw "Cell '$reference' was not found in the existing Force Burst row."
+                    }
+                    Set-InlineCellText $cell ([string]$values[$field]) $namespace
+                }
+                continue
+            }
+
             $afterPerkName = $values["_AfterPerkName"]
             if (-not $rowsByPerkName.ContainsKey($afterPerkName)) {
                 throw "Insertion anchor '$afterPerkName' was not found on the Force sheet."
@@ -345,4 +359,4 @@ finally {
     }
 }
 
-Write-Host "Updated 9 Light Consular rows and restored 3 Force Burst rows in the Combat Upgrade Design Bible."
+Write-Host "Updated 9 Light Consular rows and ensured 3 Force Burst rows in the Combat Upgrade Design Bible."

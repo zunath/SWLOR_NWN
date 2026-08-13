@@ -118,7 +118,7 @@ Do not tune mobs from hologram results. Use these real profiles first:
 | Starter ordinary | `mynock`, `czcryo_mynock` | Low-stat baseline, starter pacing, simple special ability check. |
 | Ordinary humanoid ranged/melee | `man_ranger_2`, `man_warrior_2` | Real weapon delays and basic humanoid defenses. |
 | Mid-tier Force/caster pressure | `s_app_m`, `korr_frostbind` | Force Attack/Defense interaction, shutdown and resource-pressure value. |
-| Dathomir ordinary fauna | `vdathswampland`, `vdathshear`, `vdathsquell`, `vgapingspider` | Late-game solo baseline. A full Light Consular damage rotation should maintain at least 75% hit chance and defeat these ordinary enemies in roughly 20-30 seconds; they are not group-gated elites. |
+| Dathomir ordinary fauna | `vdathswampland`, `vdathshear`, `vdathsquell`, `vgapingspider` | Late-game solo baseline. A full Light Consular damage rotation should maintain at least 75% hit chance through the shared Force accuracy and affinity rules, without ability-specific hit bonuses, and defeat these ordinary enemies in roughly 20-30 seconds; they are not group-gated elites. |
 | Elite/scary | `byysk_guard002` | High HP, shield/weapon profile, sustained incoming pressure. |
 | Boss chain | `bf_butcher`, `bf_kess` | High HP boss pacing and capstone encounter pressure. |
 | Optional stress boss | `frogboss` | Extreme boss profile only; do not balance baseline combat around it. |

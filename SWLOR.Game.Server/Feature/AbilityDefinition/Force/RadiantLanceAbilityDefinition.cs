@@ -17,7 +17,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
     {
         private const float LineLengthMeters = 8f;
         private const float LineWidthMeters = 2.5f;
-        private const int HitChancePercentAdjustment = 10;
         private const int Rank1BaseDamage = 16;
         private const int Rank2BaseDamage = 30;
         private const int Rank3BaseDamage = 44;
@@ -124,8 +123,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Force,
                 targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
-                areaVisualEffect: VisualEffect.None,
-                hitChancePercentAdjustment: HitChancePercentAdjustment);
+                areaVisualEffect: VisualEffect.None);
         }
     }
 }

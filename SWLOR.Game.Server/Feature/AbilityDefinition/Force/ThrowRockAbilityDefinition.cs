@@ -15,7 +15,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public sealed class ThrowRockAbilityDefinition : IAbilityListDefinition
     {
-        private const int HitChancePercentAdjustment = 10;
         private const int Rank1BaseDamage = 22;
         private const int Rank2BaseDamage = 40;
         private const int Rank3BaseDamage = 60;
@@ -110,7 +109,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Physical,
                 targetVisualEffect: VisualEffect.Vfx_Imp_Dust_Explosion,
-                hitChancePercentAdjustment: HitChancePercentAdjustment,
                 playImpactAnimation: false);
         }
 

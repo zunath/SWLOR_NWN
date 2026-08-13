@@ -1427,23 +1427,58 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             TintMapLayerType layer,
             TintMapColorSelection color)
         {
-            // tintmap.2da identifies the concrete material resrefs used by every currently
-            // rendered modular part. Publish each semantic creature color through those exact
-            // material names so NWN's native setter records and replicates the replacement.
-            // A blank material name relies on MATERIAL_NAME_NULL_IS_ALL, whose hook mutates the
-            // override list without publishing the replacement to connected clients.
-            var appliedMaterials = new HashSet<string>(StringComparer.Ordinal);
-            foreach (var selection in selections)
+            // Modular creature parts are composed into child render meshes. The material names
+            // recorded in tintmap.2da identify source assets, but the parent creature cannot
+            // reliably address every composed child by those names at runtime. Once the resolved
+            // appearance proves this semantic channel exists, publish it through NWNX's model-wide
+            // material hook so the head, torso, limbs, hands, and exposed skin all receive it.
+            if (!selections.Any(selection =>
+                    selection.GetPaletteSource(layer) == creature &&
+                    selection.Material.Layers.Contains(layer)))
             {
-                if (selection.GetPaletteSource(layer) != creature ||
-                    !selection.Material.Layers.Contains(layer) ||
-                    !appliedMaterials.Add(selection.Material.Resref))
-                {
-                    continue;
-                }
-
-                ApplyMaterialColor(creature, selection.Material.Resref, layer, color);
+                return;
             }
+
+            ApplyCreatureMaterialColor(creature, layer, color);
+        }
+
+        private static void ApplyCreatureMaterialColor(
+            uint creature,
+            TintMapLayerType layer,
+            TintMapColorSelection color)
+        {
+            var layerDefinition = TintMapMaterialRegistry.GetLayer(layer);
+            var customColor = color.CustomColor;
+            const string allMaterials = "";
+
+            // Keep the palette row, custom-mode flag, and RGB in separately typed parameters.
+            // Presets continue to use row*, while custom RGB no longer depends on the client
+            // preserving Y/Z/W from the palette-row vec4 override.
+            ResetMaterialShaderUniforms(creature, allMaterials, layerDefinition.UniformName);
+            ResetMaterialShaderUniforms(creature, allMaterials, layerDefinition.ColorUniformName);
+            ResetMaterialShaderUniforms(creature, allMaterials, layerDefinition.CustomModeUniformName);
+
+            SetMaterialShaderUniformVec4(
+                creature,
+                allMaterials,
+                layerDefinition.UniformName,
+                TintMapMaterialRegistry.GetPaletteCoordinate(layer, color.PaletteColorId),
+                0f,
+                0f,
+                0f);
+            SetMaterialShaderUniformVec4(
+                creature,
+                allMaterials,
+                layerDefinition.ColorUniformName,
+                customColor.HasValue ? customColor.Value.Red / 255f : 0f,
+                customColor.HasValue ? customColor.Value.Green / 255f : 0f,
+                customColor.HasValue ? customColor.Value.Blue / 255f : 0f,
+                1f);
+            SetMaterialShaderUniformInt(
+                creature,
+                allMaterials,
+                layerDefinition.CustomModeUniformName,
+                customColor.HasValue ? 1 : 0);
         }
 
         private static void ApplyCurrentColorsAndPublish(uint creature)

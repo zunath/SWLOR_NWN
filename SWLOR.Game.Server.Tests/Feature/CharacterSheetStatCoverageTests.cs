@@ -112,6 +112,9 @@ public class CharacterSheetStatCoverageTests
         statusEffects.Should().Contain(
             "Gui.PublishCharacterSheetRefreshEvent(creature, new StatusEffectRemovedRefreshEvent())");
         statusEffects.Should().Contain("if (!isReplacement)");
+        statusEffects.Should().Contain("isReplacement: true");
+        statusEffects.Should().Contain("bool isReplacement = false");
+        statusEffects.Should().MatchRegex(@"removeNativeEffect,\s+isReplacement\);");
 
         var gui = ReadService("Gui.cs");
         gui.Should().Contain("public static void PublishCharacterSheetRefreshEvent<T>(uint target, T payload)");

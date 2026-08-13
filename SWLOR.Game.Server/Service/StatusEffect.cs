@@ -1394,7 +1394,8 @@ namespace SWLOR.Game.Server.Service
                 sendsWornOffMessage,
                 statusEffectType,
                 removeNativeEffect,
-                source);
+                source,
+                isReplacement: true);
         }
 
         public static List<Type> GetStatusEffectsFromIcon(EffectIconType effectIcon)
@@ -1684,7 +1685,8 @@ namespace SWLOR.Game.Server.Service
             bool sendsWornOffMessage = true,
             Type excludedStatusEffectType = null,
             bool removeNativeEffect = true,
-            uint filterBySource = OBJECT_INVALID)
+            uint filterBySource = OBJECT_INVALID,
+            bool isReplacement = false)
         {
             var creatureEffects = GetCreatureStatusEffects(creature);
             var effects = creatureEffects.GetAllBySourceType(sourceType);
@@ -1696,7 +1698,13 @@ namespace SWLOR.Game.Server.Service
                 if (filterBySource != OBJECT_INVALID && effect.Source != filterBySource)
                     continue;
 
-                RemoveStatusEffect(effect.GetType(), creature, effect.Source, sendsWornOffMessage, removeNativeEffect);
+                RemoveStatusEffect(
+                    effect.GetType(),
+                    creature,
+                    effect.Source,
+                    sendsWornOffMessage,
+                    removeNativeEffect,
+                    isReplacement);
             }
         }
 

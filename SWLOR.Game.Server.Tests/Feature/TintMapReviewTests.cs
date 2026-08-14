@@ -1841,7 +1841,7 @@ public class TintMapReviewTests
         customWrites.Should().BeEmpty(
             "custom RGB must use the same row vec4 that presets prove is replicated to composed creature parts");
         var rowWrite = rowWrites.Single().ToString();
-        rowWrite.Should().Contain("paletteCoordinate + 1f");
+        rowWrite.Should().Contain("customColor.HasValue ? 0f : paletteCoordinate");
         rowWrite.Should().Contain("customColor.Value.Red / 255f");
         rowWrite.Should().Contain("customColor.Value.Green / 255f");
         rowWrite.Should().Contain("customColor.Value.Blue / 255f");
@@ -1862,9 +1862,9 @@ public class TintMapReviewTests
             var shader = ReadSource("SWLOR_Haks", "sw_shader", shaderName);
             shader.Should().Contain("uniform vec4 rowSkin");
             shader.Should().Contain("uniform int useCustomSkin");
-            shader.Should().Contain("bool useCustomTint = tintState.x >= 1.0");
+            shader.Should().Contain("tintState.x <= 0.0 || tintState.x >= 1.0");
             shader.Should().Contain("float v = useCustomTint ? referenceV : tintState.x");
-            shader.Should().Contain("vec3 customTint = tintState.yzw");
+            shader.Should().Contain("semanticCustomTint.rgb : tintState.yzw");
         }
 
     }

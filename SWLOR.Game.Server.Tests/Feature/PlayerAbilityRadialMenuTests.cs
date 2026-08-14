@@ -10,19 +10,6 @@ public class PlayerAbilityRadialMenuTests
     private const int GeneratedFeatStart = 2000;
     private const int GeneratedFeatEnd = 2899;
 
-    private static readonly HashSet<FeatType> ManualHotbarFeats =
-    [
-        FeatType.ForceLightning3,
-        FeatType.ForceJudgment1,
-        FeatType.ForceJudgment2,
-        FeatType.ForceJudgment3,
-        FeatType.ForceBurst1,
-        FeatType.PurifyingWave1,
-        FeatType.RadiantLance1,
-        FeatType.RadiantLance2,
-        FeatType.RadiantLance3
-    ];
-
     [Test]
     public void CustomPlayerAbilityFeats_AreLinkedAndAvailableOnFighterMenu()
     {
@@ -30,13 +17,12 @@ public class PlayerAbilityRadialMenuTests
         var featRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "feat.2da");
         var spellRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "spells.2da");
         var classFeatRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "CLS_FEAT_FIGHT.2da");
-        var linkerSource = File.ReadAllText((root / "tools" / "LinkCombatUpgradeFeatSpells.ps1").FullName);
-        var playerAbilityFeats = BuildPlayerAbilityFeats()
-            .Where(feat => (int)feat >= GeneratedFeatStart)
-            .OrderBy(feat => (int)feat)
+        var playerAbilities = BuildPlayerAbilities()
+            .Where(entry => (int)entry.Key >= GeneratedFeatStart)
+            .OrderBy(entry => (int)entry.Key)
             .ToArray();
-        var playerAbilityFeatIds = playerAbilityFeats
-            .Select(feat => (int)feat)
+        var playerAbilityFeatIds = playerAbilities
+            .Select(entry => (int)entry.Key)
             .ToHashSet();
         var npcAbilityFeatIds = BuildNpcAbilityFeats()
             .Select(feat => (int)feat)
@@ -47,9 +33,9 @@ public class PlayerAbilityRadialMenuTests
         var mimicryTraitFeatIds = BuildMimicryTraitFeatIds();
         var failures = new List<string>();
 
-        playerAbilityFeats.Should().NotBeEmpty();
+        playerAbilities.Should().NotBeEmpty();
 
-        foreach (var feat in playerAbilityFeats)
+        foreach (var (feat, ability) in playerAbilities)
         {
             var featId = (int)feat;
             featRows.Should().ContainKey(featId, $"{feat} must exist in feat.2da");
@@ -77,10 +63,25 @@ public class PlayerAbilityRadialMenuTests
             classFeatRow["List"].Should().Be("1");
             classFeatRow["GrantedOnLevel"].Should().Be("99");
             classFeatRow["OnMenu"].Should().Be("1");
-            if (ManualHotbarFeats.Contains(feat))
+            var requiresManualTargetCursor =
+                ability.IsHostileAbility &&
+                ability.ActivationType != AbilityActivationType.Weapon &&
+                (ability.RequiresTarget || ability.RequiresLocationTarget);
+            if (requiresManualTargetCursor)
             {
-                classFeatEntry.Key.Should().BeLessThan(1024, $"{feat} must be within the class feat rows scanned for manual hotbar selection");
-                linkerSource.Should().Contain($"\"{feat}\"", $"the linker must relocate existing {feat} entries above the manual-hotbar row limit");
+                if (featRow["TARGETSELF"] != "****" || featRow["HostileFeat"] != "1")
+                {
+                    failures.Add(
+                        $"{feat} requires a manual hostile cursor but feat.2da has " +
+                        $"TARGETSELF={featRow["TARGETSELF"]} HostileFeat={featRow["HostileFeat"]}.");
+                }
+
+                if (classFeatEntry.Key >= 1024)
+                {
+                    failures.Add(
+                        $"{feat} requires a manual targeting cursor but its class-feat row is " +
+                        $"{classFeatEntry.Key}, outside the client hotbar scan range.");
+                }
             }
         }
 
@@ -130,10 +131,10 @@ public class PlayerAbilityRadialMenuTests
         failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));
     }
 
-    private static HashSet<FeatType> BuildPlayerAbilityFeats()
+    private static Dictionary<FeatType, AbilityDetail> BuildPlayerAbilities()
     {
         var definitionType = typeof(IAbilityListDefinition);
-        var feats = new HashSet<FeatType>();
+        var abilities = new Dictionary<FeatType, AbilityDetail>();
         var definitions = definitionType.Assembly
             .GetTypes()
             .Where(type =>
@@ -145,13 +146,13 @@ public class PlayerAbilityRadialMenuTests
 
         foreach (var definition in definitions)
         {
-            foreach (var feat in definition.BuildAbilities().Keys)
+            foreach (var (feat, ability) in definition.BuildAbilities())
             {
-                feats.Add(feat);
+                abilities[feat] = ability;
             }
         }
 
-        return feats;
+        return abilities;
     }
 
     private static HashSet<int> BuildMimicryTraitFeatIds()

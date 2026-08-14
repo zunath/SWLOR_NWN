@@ -7,18 +7,7 @@ param(
     [string]$FeatEnumPath = "SWLOR.NWN.API\NWScript\Enum\FeatType.cs",
     [int]$GeneratedFeatStart = 2000,
     [int]$GeneratedFeatEnd = 2899,
-    [int]$ManualHotbarClassFeatRowLimit = 1024,
-    [string[]]$ManualHotbarFeatLabels = @(
-        "ForceLightning3",
-        "ForceJudgment1",
-        "ForceJudgment2",
-        "ForceJudgment3",
-        "ForceBurst1",
-        "PurifyingWave1",
-        "RadiantLance1",
-        "RadiantLance2",
-        "RadiantLance3"
-    )
+    [int]$ManualHotbarClassFeatRowLimit = 1024
 )
 
 Set-StrictMode -Version Latest
@@ -271,6 +260,7 @@ $linkedFeatRows = 0
 $createdSpellRows = 0
 $spellIdsByLabel = [ordered]@{}
 $linkedPlayerFeats = [ordered]@{}
+$manualHotbarFeatLabels = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
 
 for ($i = $featHeaderIndex + 1; $i -lt $featLines.Count; $i++) {
     $tokens = Convert-ToStringList $featLines[$i]
@@ -320,6 +310,15 @@ for ($i = $featHeaderIndex + 1; $i -lt $featLines.Count; $i++) {
 
     if ($featTargetSelfByLabel.ContainsKey($label)) {
         Set-TokenByHeader $tokens $featHeaders "TARGETSELF" $featTargetSelfByLabel[$label]
+    }
+
+    # TARGETSELF/HostileFeat are the client-facing materialization of the ability definition's
+    # targeting metadata. Derive manual-cursor placement from them so a new hostile object cast or
+    # aimed area is automatically kept within the class-feat rows the client scans for hotbar use.
+    $targetSelf = Get-TokenByHeader -Tokens $tokens -Headers $featHeaders -Header "TARGETSELF"
+    $hostileFeat = Get-TokenByHeader -Tokens $tokens -Headers $featHeaders -Header "HostileFeat"
+    if ($targetSelf -ne "1" -and $hostileFeat -eq "1") {
+        $manualHotbarFeatLabels.Add($label) | Out-Null
     }
 
     $spellId = 0
@@ -472,7 +471,7 @@ if ([System.IO.File]::Exists($classFeatPath)) {
     foreach ($entry in $linkedPlayerFeats.GetEnumerator()) {
         $featLabel = $entry.Key
         $featIndex = $entry.Value.ToString()
-        $isManualHotbarFeat = $ManualHotbarFeatLabels -contains $featLabel
+        $isManualHotbarFeat = $manualHotbarFeatLabels.Contains($featLabel)
 
         if ($classFeatLineByFeatIndex.ContainsKey($featIndex)) {
             $lineIndex = $classFeatLineByFeatIndex[$featIndex]

@@ -1442,8 +1442,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             // The model-wide target covers composed aliases when the NWNX null-material tweak is
             // active. Modular body materials are also addressable by the concrete MTR resrefs from
             // the resolved appearance, and those exact writes are required on clients where an
-            // empty material name does not match the child mesh. Write the packed row/RGB payload
-            // to both targets, with the concrete materials last.
+            // empty material name does not match the child mesh. Write the current palette row and
+            // custom tint payload to both targets, with the concrete materials last.
             ApplyMaterialColor(creature, string.Empty, layer, color);
             foreach (var materialResref in materialResrefs)
             {
@@ -1519,24 +1519,26 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             var paletteCoordinate = TintMapMaterialRegistry.GetPaletteCoordinate(
                 layer,
                 color.PaletteColorId);
-            var packedCustomRgb = customColor.HasValue
-                ? -(((customColor.Value.Red << 16) |
-                     (customColor.Value.Green << 8) |
-                     customColor.Value.Blue) + 1f)
-                : paletteCoordinate;
             SetMaterialShaderUniformVec4(
                 creature,
                 materialResref,
                 layerDefinition.UniformName,
-                packedCustomRgb,
+                paletteCoordinate,
                 0f,
                 0f,
                 0f);
 
-            // Preset colors already prove that row* is replicated to composed creature parts.
-            // Carry custom mode and all 24 RGB bits through row*.x, the scalar component the game
-            // demonstrably publishes for preset edits. Every 24-bit integer is exactly representable
-            // by a float; the negative sign distinguishes it from native positive palette rows.
+            if (customColor.HasValue)
+            {
+                SetMaterialShaderUniformVec4(
+                    creature,
+                    materialResref,
+                    layerDefinition.ColorUniformName,
+                    customColor.Value.Red / 255f,
+                    customColor.Value.Green / 255f,
+                    customColor.Value.Blue / 255f,
+                    1f);
+            }
         }
 
         private static Dictionary<string, int> GetItemTintOverrides(uint item)

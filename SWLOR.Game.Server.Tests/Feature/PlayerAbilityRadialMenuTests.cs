@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Tests.Feature;
 public class PlayerAbilityRadialMenuTests
 {
     private const int GeneratedFeatStart = 2000;
-    private const int GeneratedFeatEnd = 2717;
+    private const int GeneratedFeatEnd = 2899;
 
     private static readonly HashSet<FeatType> ManualHotbarFeats =
     [
@@ -29,6 +29,7 @@ public class PlayerAbilityRadialMenuTests
         var featRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "feat.2da");
         var spellRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "spells.2da");
         var classFeatRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "CLS_FEAT_FIGHT.2da");
+        var linkerSource = File.ReadAllText((root / "tools" / "LinkCombatUpgradeFeatSpells.ps1").FullName);
         var playerAbilityFeats = BuildPlayerAbilityFeats()
             .Where(feat => (int)feat >= GeneratedFeatStart)
             .OrderBy(feat => (int)feat)
@@ -78,6 +79,7 @@ public class PlayerAbilityRadialMenuTests
             if (ManualHotbarFeats.Contains(feat))
             {
                 classFeatEntry.Key.Should().BeLessThan(1024, $"{feat} must be within the class feat rows scanned for manual hotbar selection");
+                linkerSource.Should().Contain($"\"{feat}\"", $"the linker must relocate existing {feat} entries above the manual-hotbar row limit");
             }
         }
 

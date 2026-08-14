@@ -7,7 +7,17 @@ param(
     [string]$FeatEnumPath = "SWLOR.NWN.API\NWScript\Enum\FeatType.cs",
     [int]$GeneratedFeatStart = 2000,
     [int]$GeneratedFeatEnd = 2899,
-    [int]$ManualHotbarClassFeatRowLimit = 1024
+    [int]$ManualHotbarClassFeatRowLimit = 1024,
+    [string[]]$ManualHotbarFeatLabels = @(
+        "ForceJudgment1",
+        "ForceJudgment2",
+        "ForceJudgment3",
+        "ForceBurst1",
+        "PurifyingWave1",
+        "RadiantLance1",
+        "RadiantLance2",
+        "RadiantLance3"
+    )
 )
 
 Set-StrictMode -Version Latest
@@ -461,11 +471,31 @@ if ([System.IO.File]::Exists($classFeatPath)) {
     foreach ($entry in $linkedPlayerFeats.GetEnumerator()) {
         $featLabel = $entry.Key
         $featIndex = $entry.Value.ToString()
+        $isManualHotbarFeat = $ManualHotbarFeatLabels -contains $featLabel
 
         if ($classFeatLineByFeatIndex.ContainsKey($featIndex)) {
             $lineIndex = $classFeatLineByFeatIndex[$featIndex]
             $tokens = Convert-ToStringList $classFeatLines[$lineIndex]
+            $classFeatRowNumber = Get-RowNumber $tokens
+            if ($isManualHotbarFeat -and $classFeatRowNumber -ge $ManualHotbarClassFeatRowLimit) {
+                if ($availableManualClassFeatLines.Count -eq 0) {
+                    throw "No empty class-feat row below $ManualHotbarClassFeatRowLimit is available for manual hotbar feat '$featLabel'."
+                }
+
+                $sourceLineIndex = $lineIndex
+                $lineIndex = $availableManualClassFeatLines.Dequeue()
+                $tokens = Convert-ToStringList $classFeatLines[$lineIndex]
+
+                $sourceTokens = Convert-ToStringList $classFeatLines[$sourceLineIndex]
+                for ($j = 1; $j -lt $classFeatExpectedTokens; $j++) {
+                    $sourceTokens[$j] = "****"
+                }
+                $classFeatLines[$sourceLineIndex] = Format-2DARow $sourceTokens.ToArray() $classFeatColumnWidths
+                $classFeatLineByFeatIndex[$featIndex] = $lineIndex
+            }
+
             Set-TokenByHeader $tokens $classFeatHeaders "FeatLabel" $featLabel
+            Set-TokenByHeader $tokens $classFeatHeaders "FeatIndex" $featIndex
             Set-TokenByHeader $tokens $classFeatHeaders "List" "1"
             Set-TokenByHeader $tokens $classFeatHeaders "GrantedOnLevel" "99"
             Set-TokenByHeader $tokens $classFeatHeaders "OnMenu" "1"
@@ -474,7 +504,11 @@ if ([System.IO.File]::Exists($classFeatPath)) {
         }
 
         $lineIndex = $null
-        if ($availableManualClassFeatLines.Count -gt 0) {
+        if ($isManualHotbarFeat) {
+            if ($availableManualClassFeatLines.Count -eq 0) {
+                throw "No empty class-feat row below $ManualHotbarClassFeatRowLimit is available for manual hotbar feat '$featLabel'."
+            }
+
             $lineIndex = $availableManualClassFeatLines.Dequeue()
             $tokens = Convert-ToStringList $classFeatLines[$lineIndex]
         }
@@ -497,8 +531,8 @@ if ([System.IO.File]::Exists($classFeatPath)) {
         }
         else {
             $classFeatLines.Add((Format-2DARow $tokens.ToArray() $classFeatColumnWidths)) | Out-Null
+            $addedClassFeatRows++
         }
-        $addedClassFeatRows++
     }
 
     [System.IO.File]::WriteAllLines($classFeatPath, $classFeatLines)

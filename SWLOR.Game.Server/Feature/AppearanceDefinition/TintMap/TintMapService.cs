@@ -1427,67 +1427,19 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             TintMapLayerType layer,
             TintMapColorSelection color)
         {
-            var materialResrefs = selections
-                .Where(selection =>
+            if (!selections.Any(selection =>
                     selection.GetPaletteSource(layer) == creature &&
-                    selection.Material.Layers.Contains(layer))
-                .Select(selection => selection.Material.Resref)
-                .Where(materialResref => !string.IsNullOrWhiteSpace(materialResref))
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .ToList();
-            if (materialResrefs.Count == 0)
+                    selection.Material.Layers.Contains(layer)))
             {
                 return;
             }
 
-            // The blank material target covers composed aliases when the NWNX material-name-null
-            // tweak is active. It is not sufficient by itself for modular body parts: their MTR
-            // parameters are attached to the concrete source material names. Write both, with the
-            // concrete writes last so the head, torso, limbs, and hands receive the actual RGB.
-            ApplyCreatureMaterialColor(creature, string.Empty, layer, color);
-            foreach (var materialResref in materialResrefs)
-            {
-                ApplyCreatureMaterialColor(creature, materialResref, layer, color);
-            }
-        }
-
-        private static void ApplyCreatureMaterialColor(
-            uint creature,
-            string materialResref,
-            TintMapLayerType layer,
-            TintMapColorSelection color)
-        {
-            var layerDefinition = TintMapMaterialRegistry.GetLayer(layer);
-            var customColor = color.CustomColor;
-
-            // Keep the palette row, custom-mode flag, and RGB in separately typed parameters.
-            // Presets continue to use row*, while custom RGB no longer depends on the client
-            // preserving Y/Z/W from the palette-row vec4 override.
-            ResetMaterialShaderUniforms(creature, materialResref, layerDefinition.UniformName);
-            ResetMaterialShaderUniforms(creature, materialResref, layerDefinition.ColorUniformName);
-            ResetMaterialShaderUniforms(creature, materialResref, layerDefinition.CustomModeUniformName);
-
-            SetMaterialShaderUniformVec4(
-                creature,
-                materialResref,
-                layerDefinition.UniformName,
-                TintMapMaterialRegistry.GetPaletteCoordinate(layer, color.PaletteColorId),
-                0f,
-                0f,
-                0f);
-            SetMaterialShaderUniformVec4(
-                creature,
-                materialResref,
-                layerDefinition.ColorUniformName,
-                customColor.HasValue ? customColor.Value.Red / 255f : 0f,
-                customColor.HasValue ? customColor.Value.Green / 255f : 0f,
-                customColor.HasValue ? customColor.Value.Blue / 255f : 0f,
-                1f);
-            SetMaterialShaderUniformInt(
-                creature,
-                materialResref,
-                layerDefinition.CustomModeUniformName,
-                customColor.HasValue ? 1 : 0);
+            // Creature appearances are composed from child render meshes, so their source MTR
+            // resrefs are not valid live override targets on the parent creature. Publish the
+            // same packed row* vec4 used by item tints through NWNX's blank-material wildcard.
+            // This keeps preset and custom RGB values on one replicated parameter and applies the
+            // semantic layer to every composed head, torso, limb, hand, and equipped skin mesh.
+            ApplyMaterialColor(creature, string.Empty, layer, color);
         }
 
         private static void ApplyCurrentColorsAndPublish(uint creature)

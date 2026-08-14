@@ -63,8 +63,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
-                .Description("Deals 50 force DMG plus WIL scaling to the selected target and enemies within 5m.")
-                .Price(3)
+                .Description("Deals 44 force DMG plus WIL scaling to the selected target and enemies within 5m.")
+                .Price(4)
                 .RequirementSkill(SkillType.Force, 30)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceBurst1);
@@ -112,7 +112,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Deals 32 force DMG plus WIL scaling to the selected target and one enemy within 5m, reducing outgoing weapon and force damage by 6% for 30 seconds.")
-                .Price(3)
+                .Price(2)
                 .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceJudgment2)

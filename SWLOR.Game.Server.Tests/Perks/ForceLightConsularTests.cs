@@ -93,7 +93,7 @@ public class ForceLightConsularTests
     }
 
     [Test]
-    public void ForceBurst_UsesOneThreePointPerkLevelAtForceThirty()
+    public void ForceBurst_UsesOneFourPointPerkLevelAtForceThirty()
     {
         var perks = BuildForceLightConsularPerksWithout2daLookup();
         var forceBurst = perks[PerkType.ForceBurst];
@@ -103,14 +103,19 @@ public class ForceLightConsularTests
             forceBurst,
             "Force Burst",
             1,
-            3,
+            4,
             30,
             FeatType.ForceBurst1,
-            "Deals 50 force DMG plus WIL scaling to the selected target and enemies within 5m.");
+            "Deals 44 force DMG plus WIL scaling to the selected target and enemies within 5m.");
+
+        GetAbilityConstant<int>(typeof(ForceBurstAbilityDefinition), "BaseDamage")
+            .Should().BeLessThan(
+                GetAbilityConstant<int>(typeof(ForceJudgmentAbilityDefinition), "Rank3BaseDamage"),
+                "the earlier, rider-free Force Burst should not outdamage Force Judgment III");
 
         var forceJudgment = perks[PerkType.ForceJudgment];
         forceJudgment.PerkLevels[1].Price.Should().Be(2);
-        forceJudgment.PerkLevels[2].Price.Should().Be(3);
+        forceJudgment.PerkLevels[2].Price.Should().Be(2);
         forceJudgment.PerkLevels[3].Price.Should().Be(3);
     }
 

@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
     public sealed class ForceBurstAbilityDefinition : IAbilityListDefinition
     {
         private const float RadiusMeters = 5f;
-        private const int BaseDamage = 50;
+        private const int BaseDamage = 44;
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {

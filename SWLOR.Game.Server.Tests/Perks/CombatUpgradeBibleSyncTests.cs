@@ -250,6 +250,34 @@ public class CombatUpgradeBibleSyncTests
         forceRows.Length.Should().Be(deviceRows.Length);
         forceRows.Count(row => row.Type == "Combat")
             .Should().Be(deviceRows.Count(row => row.Type == "Combat"));
+
+        deviceRows
+            .GroupBy(row => row.Style)
+            .ToDictionary(group => group.Key, group => group.Sum(row => ParseWholeNumber(row.Price)))
+            .Should().OnlyContain(pair => pair.Value == 60,
+                "each Devices archetype must retain the same 60-SP completion cost");
+
+        AssertTwinPrices(forceRows, deviceRows, "Throw Rock", "Arc Projector");
+        AssertTwinPrices(forceRows, deviceRows, "Radiant Lance", "Ion Lance");
+    }
+
+    private static void AssertTwinPrices(
+        IReadOnlyCollection<BiblePerkRow> forceRows,
+        IReadOnlyCollection<BiblePerkRow> deviceRows,
+        string forcePerkName,
+        string devicePerkName)
+    {
+        var forcePrices = forceRows
+            .Where(row => GetBaseName(row.PerkName).Equals(forcePerkName, StringComparison.OrdinalIgnoreCase))
+            .OrderBy(row => GetExpectedLevel(row.PerkName))
+            .Select(row => ParseWholeNumber(row.Price));
+        var devicePrices = deviceRows
+            .Where(row => GetBaseName(row.PerkName).Equals(devicePerkName, StringComparison.OrdinalIgnoreCase))
+            .OrderBy(row => GetExpectedLevel(row.PerkName))
+            .Select(row => ParseWholeNumber(row.Price));
+
+        devicePrices.Should().Equal(forcePrices,
+            $"{devicePerkName} must retain the same rank prices as its Force twin {forcePerkName}");
     }
 
     [Test]

@@ -37,19 +37,37 @@ $deviceTwinDescriptions = [ordered]@{
 
 $existingPrices = [ordered]@{
     "Force Judgment I" = "2.0"
-    "Force Judgment II" = "3.0"
+    "Force Judgment II" = "2.0"
     "Force Judgment III" = "3.0"
+}
+
+$devicePrices = [ordered]@{
+    "Wrist Rocket II" = "2.0"
+    "Sonic Burst II" = "2.0"
+    "Ion Lance I" = "3.0"
+    "Ion Lance II" = "4.0"
+    "Ion Lance III" = "4.0"
+    "Rail Dart II" = "2.0"
+    "Rail Dart III" = "3.0"
+}
+
+$deviceNotes = [ordered]@{
+    "Ion Lance I" = "Line AoE Devices twin priced 3/4/4 with Radiant Lance. The four narrower core Assault Gadget lines use 2/2/3 pricing so every Devices archetype remains at 60 SP. Droid instruction AI slots: 1."
+    "Wrist Rocket II" = "The 2/2/3 core Assault Gadget curve prices this single-target control line below the twin line AoE package. Droid instruction AI slots: 2."
+    "Sonic Burst II" = "The 2/2/3 core Assault Gadget curve prices Sonic Burst for low damage with interrupt and accuracy control. Droid instruction AI slots: 2."
+    "Rail Dart II" = "The 2/2/3 core Assault Gadget curve prices this single-target damage-over-time line below the twin line AoE package. Droid instruction AI slots: 2."
+    "Rail Dart III" = "Top rank of the 2/2/3 core Assault Gadget curve; its single-target Bleed package remains below the twin line AoE package. Droid instruction AI slots: 3."
 }
 
 $forceBurstRow = [ordered]@{
     _AfterPerkName = "Force Choke III"
-    Style = "Alter"; "SP Price" = "3.0"; "Perk Name" = "Force Burst"; "Skill Reqs." = "Force 30"
+    Style = "Alter"; "SP Price" = "4.0"; "Perk Name" = "Force Burst"; "Skill Reqs." = "Force 30"
     "Char. Type" = "Force"; Type = "Combat"; Alignment = "Light"; "Affinity Shift" = "+1"
-    Description = "Deals 50 force DMG plus WIL scaling to the selected target and enemies within 5m."
+    Description = "Deals 44 force DMG plus WIL scaling to the selected target and enemies within 5m."
     "Primary Stat" = "WIL"; "Secondary Stat" = "None"; "Scaling Source" = "Combat Formula"
     FP = "6.0"; STM = "-"; "Casting Time" = "1.5 seconds"; "Cooldown Time" = "15 seconds"
     "Dev Status" = "Implemented"; "Additional Requirements" = ""
-    Notes = "Single-rank Light Alter area damage restores telekinetic group pressure while preserving Force and Devices SP and ability-count parity."
+    Notes = "Single-rank Light Alter area damage priced as a Force-30 power; its rider-free damage stays below Force Judgment III while preserving Force and Devices SP and ability-count parity."
 }
 
 Add-Type -AssemblyName System.IO.Compression
@@ -547,6 +565,28 @@ try {
                 $_.Attribute("r").Value -eq "$($devicesHeaderColumns['Description'])$rowNumber"
             } | Select-Object -First 1
             Set-InlineCellText $descriptionCell ([string]$entry.Value) $namespace
+        }
+        foreach ($entry in $devicePrices.GetEnumerator()) {
+            if (-not $devicesRowsByPerkName.ContainsKey($entry.Key)) {
+                throw "Perk '$($entry.Key)' was not found on the Devices sheet."
+            }
+            $row = $devicesRowsByPerkName[$entry.Key]
+            $rowNumber = $row.Attribute("r").Value
+            $priceCell = $row.Elements($namespace + "c") | Where-Object {
+                $_.Attribute("r").Value -eq "$($devicesHeaderColumns['SP Price'])$rowNumber"
+            } | Select-Object -First 1
+            Set-NumericCellValue $priceCell ([double]$entry.Value) $namespace
+        }
+        foreach ($entry in $deviceNotes.GetEnumerator()) {
+            if (-not $devicesRowsByPerkName.ContainsKey($entry.Key)) {
+                throw "Perk '$($entry.Key)' was not found on the Devices sheet."
+            }
+            $row = $devicesRowsByPerkName[$entry.Key]
+            $rowNumber = $row.Attribute("r").Value
+            $notesCell = $row.Elements($namespace + "c") | Where-Object {
+                $_.Attribute("r").Value -eq "$($devicesHeaderColumns['Notes'])$rowNumber"
+            } | Select-Object -First 1
+            Set-InlineCellText $notesCell ([string]$entry.Value) $namespace
         }
         Update-SheetFormulaCaches $devicesWorksheet $devicesHeaderColumns $sharedStrings $namespace
         Write-WorksheetEntry $zip $devicesEntryPath $devicesWorksheet

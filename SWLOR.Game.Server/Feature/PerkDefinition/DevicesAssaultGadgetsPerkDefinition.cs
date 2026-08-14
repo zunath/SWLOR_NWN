@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Deals 34 fire DMG plus PER scaling to one target and knocks down for 2 seconds.")
-                .Price(3)
+                .Price(2)
                 .RequirementSkill(SkillType.Devices, 25)
                 .RequirementCharacterType(CharacterType.Standard)
                 .DroidAISlots(2)
@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Deals 14 sonic DMG to hostile targets within 5m, interrupts activation, and reduces Accuracy by 6% for 30 seconds.")
-                .Price(3)
+                .Price(2)
                 .RequirementSkill(SkillType.Devices, 28)
                 .RequirementCharacterType(CharacterType.Standard)
                 .DroidAISlots(2)
@@ -170,7 +170,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Fires a focused ion beam from a wrist projector in an 8m x 2.5m line, dealing 16 electrical DMG plus PER scaling to hostile targets in the line.")
-                .Price(2)
+                .Price(3)
                 .RequirementSkill(SkillType.Devices, 15)
                 .RequirementCharacterType(CharacterType.Standard)
                 .DroidAISlots(1)
@@ -178,7 +178,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Fires a focused ion beam from a wrist projector in an 8m x 2.5m line, dealing 30 electrical DMG plus PER scaling to hostile targets in the line.")
-                .Price(2)
+                .Price(4)
                 .RequirementSkill(SkillType.Devices, 32)
                 .RequirementCharacterType(CharacterType.Standard)
                 .DroidAISlots(2)
@@ -186,7 +186,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Fires a focused ion beam from a wrist projector in an 8m x 2.5m line, dealing 44 electrical DMG plus PER scaling to hostile targets in the line.")
-                .Price(3)
+                .Price(4)
                 .RequirementSkill(SkillType.Devices, 48)
                 .RequirementCharacterType(CharacterType.Standard)
                 .DroidAISlots(3)
@@ -208,7 +208,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Fires a dart that deals 34 physical DMG plus PER scaling and attempts to inflict Bleed for 12 seconds.")
-                .Price(3)
+                .Price(2)
                 .RequirementSkill(SkillType.Devices, 38)
                 .RequirementCharacterType(CharacterType.Standard)
                 .DroidAISlots(2)
@@ -216,7 +216,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Fires a dart that deals 48 physical DMG plus PER scaling and attempts to inflict Bleed for 12 seconds.")
-                .Price(4)
+                .Price(3)
                 .RequirementSkill(SkillType.Devices, 44)
                 .RequirementCharacterType(CharacterType.Standard)
                 .DroidAISlots(3)

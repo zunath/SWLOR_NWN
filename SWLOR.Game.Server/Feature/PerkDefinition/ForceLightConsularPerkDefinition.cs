@@ -65,7 +65,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .Description("Deals 44 force DMG plus WIL scaling to the selected target and enemies within 5m.")
                 .Price(4)
-                .RequirementSkill(SkillType.Force, 30)
+                .RequirementSkill(SkillType.Force, 32)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceBurst1);
         }

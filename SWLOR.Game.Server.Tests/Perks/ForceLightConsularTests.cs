@@ -93,7 +93,7 @@ public class ForceLightConsularTests
     }
 
     [Test]
-    public void ForceBurst_UsesOneFourPointPerkLevelAtForceThirty()
+    public void ForceBurst_UsesOneFourPointPerkLevelAtForceThirtyTwo()
     {
         var perks = BuildForceLightConsularPerksWithout2daLookup();
         var forceBurst = perks[PerkType.ForceBurst];
@@ -104,7 +104,7 @@ public class ForceLightConsularTests
             "Force Burst",
             1,
             4,
-            30,
+            32,
             FeatType.ForceBurst1,
             "Deals 44 force DMG plus WIL scaling to the selected target and enemies within 5m.");
 

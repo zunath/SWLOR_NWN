@@ -9,6 +9,7 @@ param(
     [int]$GeneratedFeatEnd = 2899,
     [int]$ManualHotbarClassFeatRowLimit = 1024,
     [string[]]$ManualHotbarFeatLabels = @(
+        "ForceLightning3",
         "ForceJudgment1",
         "ForceJudgment2",
         "ForceJudgment3",

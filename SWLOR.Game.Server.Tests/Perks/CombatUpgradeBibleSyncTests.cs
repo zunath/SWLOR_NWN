@@ -251,6 +251,26 @@ public class CombatUpgradeBibleSyncTests
         forceRows.Count(row => row.Type == "Combat")
             .Should().Be(deviceRows.Count(row => row.Type == "Combat"));
 
+        forceRows
+            .GroupBy(row => row.Style)
+            .ToDictionary(group => group.Key, group => group.Sum(row => ParseWholeNumber(row.Price)))
+            .Should().BeEquivalentTo(new Dictionary<string, int>
+            {
+                ["Alter"] = 98,
+                ["Control"] = 87,
+                ["Sense"] = 55
+            }, "the documented Force section totals must match the manifest");
+
+        forceRows
+            .GroupBy(row => new
+            {
+                row.Style,
+                Rank = TryParseSkillRequirement(row.SkillRequirements)?.Rank ?? 0
+            })
+            .Where(group => group.Count() > 2)
+            .Select(group => $"{group.Key.Style} Force {group.Key.Rank}: {string.Join(", ", group.Select(row => row.PerkName))}")
+            .Should().BeEmpty("no Force section may place more than two perks at the same skill step");
+
         deviceRows
             .GroupBy(row => row.Style)
             .ToDictionary(group => group.Key, group => group.Sum(row => ParseWholeNumber(row.Price)))

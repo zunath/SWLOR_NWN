@@ -61,13 +61,13 @@ $deviceNotes = [ordered]@{
 
 $forceBurstRow = [ordered]@{
     _AfterPerkName = "Force Choke III"
-    Style = "Alter"; "SP Price" = "4.0"; "Perk Name" = "Force Burst"; "Skill Reqs." = "Force 30"
+    Style = "Alter"; "SP Price" = "4.0"; "Perk Name" = "Force Burst"; "Skill Reqs." = "Force 32"
     "Char. Type" = "Force"; Type = "Combat"; Alignment = "Light"; "Affinity Shift" = "+1"
     Description = "Deals 44 force DMG plus WIL scaling to the selected target and enemies within 5m."
     "Primary Stat" = "WIL"; "Secondary Stat" = "None"; "Scaling Source" = "Combat Formula"
     FP = "6.0"; STM = "-"; "Casting Time" = "1.5 seconds"; "Cooldown Time" = "15 seconds"
     "Dev Status" = "Implemented"; "Additional Requirements" = ""
-    Notes = "Single-rank Light Alter area damage priced as a Force-30 power; its rider-free damage stays below Force Judgment III while preserving Force and Devices SP and ability-count parity."
+    Notes = "Single-rank Light Alter area damage priced as a Force-32 power; its rider-free damage stays below Force Judgment III while preserving Force and Devices SP and ability-count parity."
 }
 
 Add-Type -AssemblyName System.IO.Compression

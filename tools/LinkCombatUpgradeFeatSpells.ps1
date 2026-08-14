@@ -6,7 +6,8 @@ param(
     [string]$SpellEnumPath = "SWLOR.NWN.API\NWScript\Enum\spell.cs",
     [string]$FeatEnumPath = "SWLOR.NWN.API\NWScript\Enum\FeatType.cs",
     [int]$GeneratedFeatStart = 2000,
-    [int]$GeneratedFeatEnd = 2899
+    [int]$GeneratedFeatEnd = 2899,
+    [int]$ManualHotbarClassFeatRowLimit = 1024
 )
 
 Set-StrictMode -Version Latest
@@ -404,6 +405,7 @@ if ([System.IO.File]::Exists($classFeatPath)) {
     $classFeatHeaders = $classFeatLines[$classFeatHeaderIndex].Trim() -split "\s+"
     $classFeatExpectedTokens = $classFeatHeaders.Count + 1
     $classFeatLineByFeatIndex = @{}
+    $availableManualClassFeatLines = [System.Collections.Generic.Queue[int]]::new()
     $activePlayerFeatIndexes = [System.Collections.Generic.HashSet[int]]::new()
     foreach ($featIndexValue in $linkedPlayerFeats.Values) {
         $activePlayerFeatIndexes.Add([int]$featIndexValue) | Out-Null
@@ -422,9 +424,15 @@ if ([System.IO.File]::Exists($classFeatPath)) {
         }
 
         if ($tokens.Count -eq $classFeatExpectedTokens) {
+            $featLabel = Get-TokenByHeader $tokens $classFeatHeaders "FeatLabel"
             $featIndex = Get-TokenByHeader $tokens $classFeatHeaders "FeatIndex"
             if ($featIndex -ne "****" -and !$classFeatLineByFeatIndex.ContainsKey($featIndex)) {
                 $classFeatLineByFeatIndex[$featIndex] = $i
+            }
+            elseif ($featLabel -eq "****" -and
+                    $featIndex -eq "****" -and
+                    $rowNumber -lt $ManualHotbarClassFeatRowLimit) {
+                $availableManualClassFeatLines.Enqueue($i)
             }
         }
     }
@@ -465,19 +473,31 @@ if ([System.IO.File]::Exists($classFeatPath)) {
             continue
         }
 
-        $maxClassFeatRow++
-        $tokens = New-Object System.Collections.Generic.List[string]
-        for ($j = 0; $j -lt $classFeatExpectedTokens; $j++) {
-            $tokens.Add("****") | Out-Null
+        $lineIndex = $null
+        if ($availableManualClassFeatLines.Count -gt 0) {
+            $lineIndex = $availableManualClassFeatLines.Dequeue()
+            $tokens = Convert-ToStringList $classFeatLines[$lineIndex]
+        }
+        else {
+            $maxClassFeatRow++
+            $tokens = New-Object System.Collections.Generic.List[string]
+            for ($j = 0; $j -lt $classFeatExpectedTokens; $j++) {
+                $tokens.Add("****") | Out-Null
+            }
+            $tokens[0] = $maxClassFeatRow.ToString()
         }
 
-        $tokens[0] = $maxClassFeatRow.ToString()
         Set-TokenByHeader $tokens $classFeatHeaders "FeatLabel" $featLabel
         Set-TokenByHeader $tokens $classFeatHeaders "FeatIndex" $featIndex
         Set-TokenByHeader $tokens $classFeatHeaders "List" "1"
         Set-TokenByHeader $tokens $classFeatHeaders "GrantedOnLevel" "99"
         Set-TokenByHeader $tokens $classFeatHeaders "OnMenu" "1"
-        $classFeatLines.Add((Format-2DARow $tokens.ToArray() $classFeatColumnWidths)) | Out-Null
+        if ($null -ne $lineIndex) {
+            $classFeatLines[$lineIndex] = Format-2DARow $tokens.ToArray() $classFeatColumnWidths
+        }
+        else {
+            $classFeatLines.Add((Format-2DARow $tokens.ToArray() $classFeatColumnWidths)) | Out-Null
+        }
         $addedClassFeatRows++
     }
 

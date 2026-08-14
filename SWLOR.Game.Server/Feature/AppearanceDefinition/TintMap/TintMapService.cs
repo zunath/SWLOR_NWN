@@ -9,7 +9,6 @@ using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
-using CNWSCreature = NWN.Native.API.CNWSCreature;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using NWNXLib = NWN.Native.API.NWNXLib;
 
@@ -1454,21 +1453,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
         private static void ApplyCurrentColorsAndPublish(uint creature)
         {
-            // Changing a modular body part is the operation that reliably makes NWN publish a
-            // replacement material parameter to clients. Perform that same native appearance
-            // invalidation before writing the tint. This rebuilds the composed appearance without
-            // changing any selected part, then the current RGB is installed onto the rebuilt
-            // material list below.
-            var creaturePointer = NWNXUtils.GetGameObject(creature);
-            if (creaturePointer != nint.Zero)
-            {
-                var nativeCreature = CNWSCreature.FromPointer(creaturePointer);
-                nativeCreature?.UpdateAppearanceDependantInfo();
-            }
-
-            // Re-resolve the model after invalidation and rebuild every material row. Reapplying
-            // only the edited semantic layer can leave the remaining skin/hair/equipment rows on
-            // the invalidated appearance's defaults.
+            // Rebuild every material row before publishing. Rebuilding the creature appearance
+            // here despawns and respawns client-side scene state; it is not needed to replace a
+            // material parameter and can temporarily invalidate the surrounding area render.
             ApplyCurrentColors(creature);
 
             // NWN compares an object's shader parameters with the copy stored in each connected
@@ -1532,20 +1519,24 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             var paletteCoordinate = TintMapMaterialRegistry.GetPaletteCoordinate(
                 layer,
                 color.PaletteColorId);
+            var packedCustomRgb = customColor.HasValue
+                ? -(((customColor.Value.Red << 16) |
+                     (customColor.Value.Green << 8) |
+                     customColor.Value.Blue) + 1f)
+                : paletteCoordinate;
             SetMaterialShaderUniformVec4(
                 creature,
                 materialResref,
                 layerDefinition.UniformName,
-                customColor.HasValue ? paletteCoordinate + 1f : paletteCoordinate,
-                customColor.HasValue ? customColor.Value.Red / 255f : 0f,
-                customColor.HasValue ? customColor.Value.Green / 255f : 0f,
-                customColor.HasValue ? customColor.Value.Blue / 255f : 0f);
+                packedCustomRgb,
+                0f,
+                0f,
+                0f);
 
             // Preset colors already prove that row* is replicated to composed creature parts.
-            // Carry custom mode and RGB through that same vec4: palette rows are below 1.0, so
-            // adding 1.0 gives the shader an unambiguous positive custom marker without relying
-            // on a second material parameter or a zero/negative value that the live client left
-            // at the material default.
+            // Carry custom mode and all 24 RGB bits through row*.x, the scalar component the game
+            // demonstrably publishes for preset edits. Every 24-bit integer is exactly representable
+            // by a float; the negative sign distinguishes it from native positive palette rows.
         }
 
         private static Dictionary<string, int> GetItemTintOverrides(uint item)

@@ -607,8 +607,8 @@ public class TintMapReviewTests
             .Should().BeLessThan(
                 publish.ToString().IndexOf("m_lMaterialShaderParameters.Clear()", StringComparison.Ordinal),
                 "the server's live tint list must contain the replacement before observer snapshots are invalidated");
-        publish.ToString().Should().Contain("UpdateAppearanceDependantInfo",
-            "the game must invalidate the composed appearance just as the body-part change that made stale tints visible");
+        publish.ToString().Should().NotContain("UpdateAppearanceDependantInfo",
+            "a tint edit must not rebuild the creature or invalidate the client's scene state");
 
         var applyCreatureColor = FindMethod(serviceSource, "ApplyCreatureColor");
         var replacementSource = applyCreatureColor.ToString();
@@ -1843,10 +1843,10 @@ public class TintMapReviewTests
         customWrites.Should().BeEmpty(
             "custom RGB must use the same row vec4 that presets prove is replicated to composed creature parts");
         var rowWrite = rowWrites.Single().ToString();
-        rowWrite.Should().Contain("paletteCoordinate + 1f");
-        rowWrite.Should().Contain("customColor.Value.Red / 255f");
-        rowWrite.Should().Contain("customColor.Value.Green / 255f");
-        rowWrite.Should().Contain("customColor.Value.Blue / 255f");
+        rowWrite.Should().Contain("packedCustomRgb");
+        applyColor.ToString().Should().Contain("customColor.Value.Red << 16");
+        applyColor.ToString().Should().Contain("customColor.Value.Green << 8");
+        applyColor.ToString().Should().Contain("customColor.Value.Blue");
         applyColor.ToString().Should().Contain("ResetMaterialShaderUniforms");
 
         var resets = applyColor.DescendantNodes()
@@ -1864,9 +1864,11 @@ public class TintMapReviewTests
             var shader = ReadSource("SWLOR_Haks", "sw_shader", shaderName);
             shader.Should().Contain("uniform vec4 rowSkin");
             shader.Should().Contain("uniform int useCustomSkin");
-            shader.Should().Contain("bool useCustomTint = tintState.x >= 1.0");
+            shader.Should().Contain("bool usePackedCustomTint = tintState.x < 0.0");
+            shader.Should().Contain("float packedRed = floor(packedRgb / 65536.0)");
+            shader.Should().Contain("float packedGreen = floor(packedRgb / 256.0)");
             shader.Should().Contain("float v = useCustomTint ? referenceV : tintState.x");
-            shader.Should().Contain("vec3 customTint = tintState.yzw");
+            shader.Should().Contain("vec3 packedCustomTint = vec3(packedRed, packedGreen, packedBlue) / 255.0");
         }
 
     }
@@ -1926,11 +1928,8 @@ public class TintMapReviewTests
 
         var publishCreatureColor = FindMethod(serviceSource, "ApplyCurrentColorsAndPublish");
         var publishText = publishCreatureColor.ToString();
-        publishText.Should().Contain("UpdateAppearanceDependantInfo()",
-            "live tint edits must invalidate the same composed appearance that a body-part edit rebuilds");
-        publishText.IndexOf("UpdateAppearanceDependantInfo()", StringComparison.Ordinal)
-            .Should().BeLessThan(publishText.IndexOf("ApplyCurrentColors(creature)", StringComparison.Ordinal),
-                "the complete tint state must be installed after the native appearance rebuild");
+        publishText.Should().NotContain("UpdateAppearanceDependantInfo()",
+            "a color edit must not rebuild the creature appearance or invalidate client scene state");
         publishText.Should().NotContain("ApplyCreatureColor(creature",
             "publishing only the edited layer can leave other rows on invalidated defaults");
         publishText.Should().Contain("m_lMaterialShaderParameters.Clear()",

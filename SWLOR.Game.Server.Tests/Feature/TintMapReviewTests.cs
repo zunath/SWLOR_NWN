@@ -620,8 +620,10 @@ public class TintMapReviewTests
             "each registered semantic material must receive the live RGB edit");
         replacementCalls.Should().NotContain("ResetMaterialShaderUniforms",
             "one semantic edit must not clear rows belonging to other registered materials");
-        replacementSource.Should().NotContain("string.Empty",
-            "a semantic edit must not broadcast into unrelated equipment or NPC materials");
+        replacementSource.Should().Contain("string.Empty",
+            "composed aliases still need the model-wide target when that NWNX behavior is available");
+        replacementSource.Should().Contain("selection.Material.Resref",
+            "resolved body materials need exact writes when an empty material name does not match child meshes");
 
         var viewModelSource = ReadSource(
             "SWLOR.Game.Server",
@@ -1909,7 +1911,7 @@ public class TintMapReviewTests
         applyCreatureColor.ToString().Should().Contain("selection.GetPaletteSource(layer) == creature");
         applyCreatureColor.ToString().Should().Contain("selection.Material.Layers.Contains(layer)");
         applyCreatureColor.ToString().Should().Contain("string.Empty");
-        applyCreatureColor.ToString().Should().NotContain("selection.Material.Resref");
+        applyCreatureColor.ToString().Should().Contain("selection.Material.Resref");
         applyCreatureColor.DescendantNodes()
             .OfType<InvocationExpressionSyntax>()
             .Count(invocation => invocation.Expression.ToString() == "ResetMaterialShaderUniforms")

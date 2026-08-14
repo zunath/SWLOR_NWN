@@ -1427,19 +1427,29 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             TintMapLayerType layer,
             TintMapColorSelection color)
         {
-            if (!selections.Any(selection =>
+            var materialResrefs = selections
+                .Where(selection =>
                     selection.GetPaletteSource(layer) == creature &&
-                    selection.Material.Layers.Contains(layer)))
+                    selection.Material.Layers.Contains(layer))
+                .Select(selection => selection.Material.Resref)
+                .Where(materialResref => !string.IsNullOrWhiteSpace(materialResref))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+            if (materialResrefs.Count == 0)
             {
                 return;
             }
 
-            // Creature appearances are composed from child render meshes, so their source MTR
-            // resrefs are not valid live override targets on the parent creature. Publish the
-            // same packed row* vec4 used by item tints through NWNX's blank-material wildcard.
-            // This keeps preset and custom RGB values on one replicated parameter and applies the
-            // semantic layer to every composed head, torso, limb, hand, and equipped skin mesh.
+            // The model-wide target covers composed aliases when the NWNX null-material tweak is
+            // active. Modular body materials are also addressable by the concrete MTR resrefs from
+            // the resolved appearance, and those exact writes are required on clients where an
+            // empty material name does not match the child mesh. Write the packed row/RGB payload
+            // to both targets, with the concrete materials last.
             ApplyMaterialColor(creature, string.Empty, layer, color);
+            foreach (var materialResref in materialResrefs)
+            {
+                ApplyMaterialColor(creature, materialResref, layer, color);
+            }
         }
 
         private static void ApplyCurrentColorsAndPublish(uint creature)

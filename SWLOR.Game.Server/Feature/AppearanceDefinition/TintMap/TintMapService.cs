@@ -1460,9 +1460,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             var layerDefinition = TintMapMaterialRegistry.GetLayer(layer);
             var customColor = color.CustomColor;
 
-            // Keep the semantic parameters for current shaders, but also pack custom RGB into
-            // row*. Deployed shader HAKs used 0 as the custom sentinel before the semantic
-            // parameters were added, so this keeps live clients compatible with either shader.
+            // Keep the palette row, custom-mode flag, and RGB in separately typed parameters.
+            // Presets continue to use row*, while custom RGB no longer depends on the client
+            // preserving Y/Z/W from the palette-row vec4 override.
             ResetMaterialShaderUniforms(creature, materialResref, layerDefinition.UniformName);
             ResetMaterialShaderUniforms(creature, materialResref, layerDefinition.ColorUniformName);
             ResetMaterialShaderUniforms(creature, materialResref, layerDefinition.CustomModeUniformName);
@@ -1471,12 +1471,10 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 creature,
                 materialResref,
                 layerDefinition.UniformName,
-                customColor.HasValue
-                    ? 0f
-                    : TintMapMaterialRegistry.GetPaletteCoordinate(layer, color.PaletteColorId),
-                customColor.HasValue ? customColor.Value.Red / 255f : 0f,
-                customColor.HasValue ? customColor.Value.Green / 255f : 0f,
-                customColor.HasValue ? customColor.Value.Blue / 255f : 0f);
+                TintMapMaterialRegistry.GetPaletteCoordinate(layer, color.PaletteColorId),
+                0f,
+                0f,
+                0f);
             SetMaterialShaderUniformVec4(
                 creature,
                 materialResref,
@@ -1576,14 +1574,16 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 creature,
                 materialResref,
                 layerDefinition.UniformName,
-                customColor.HasValue ? 0f : paletteCoordinate,
+                customColor.HasValue ? paletteCoordinate + 1f : paletteCoordinate,
                 customColor.HasValue ? customColor.Value.Red / 255f : 0f,
                 customColor.HasValue ? customColor.Value.Green / 255f : 0f,
                 customColor.HasValue ? customColor.Value.Blue / 255f : 0f);
 
             // Preset colors already prove that row* is replicated to composed creature parts.
-            // Zero is outside the native palette-row range and is the custom marker understood
-            // by the originally deployed shader; Y/Z/W carry the selected RGB.
+            // Carry custom mode and RGB through that same vec4: palette rows are below 1.0, so
+            // adding 1.0 gives the shader an unambiguous positive custom marker without relying
+            // on a second material parameter or a zero/negative value that the live client left
+            // at the material default.
         }
 
         private static Dictionary<string, int> GetItemTintOverrides(uint item)

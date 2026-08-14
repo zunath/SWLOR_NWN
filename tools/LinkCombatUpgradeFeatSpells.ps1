@@ -435,8 +435,8 @@ if ([System.IO.File]::Exists($classFeatPath)) {
         }
 
         if ($tokens.Count -eq $classFeatExpectedTokens) {
-            $featLabel = Get-TokenByHeader $tokens $classFeatHeaders "FeatLabel"
-            $featIndex = Get-TokenByHeader $tokens $classFeatHeaders "FeatIndex"
+            $featLabel = Get-TokenByHeader -Tokens $tokens -Headers $classFeatHeaders -Header "FeatLabel"
+            $featIndex = Get-TokenByHeader -Tokens $tokens -Headers $classFeatHeaders -Header "FeatIndex"
             if ($featIndex -ne "****" -and !$classFeatLineByFeatIndex.ContainsKey($featIndex)) {
                 $classFeatLineByFeatIndex[$featIndex] = $i
             }
@@ -464,8 +464,8 @@ if ([System.IO.File]::Exists($classFeatPath)) {
 
         $lineIndex = $entry.Value
         $tokens = Convert-ToStringList $classFeatLines[$lineIndex]
-        Set-TokenByHeader $tokens $classFeatHeaders "List" "0"
-        Set-TokenByHeader $tokens $classFeatHeaders "OnMenu" "0"
+        Set-TokenByHeader -Tokens $tokens -Headers $classFeatHeaders -Header "List" -Value "0"
+        Set-TokenByHeader -Tokens $tokens -Headers $classFeatHeaders -Header "OnMenu" -Value "0"
         $classFeatLines[$lineIndex] = Format-2DARow $tokens.ToArray() $classFeatColumnWidths
     }
 
@@ -495,11 +495,11 @@ if ([System.IO.File]::Exists($classFeatPath)) {
                 $classFeatLineByFeatIndex[$featIndex] = $lineIndex
             }
 
-            Set-TokenByHeader $tokens $classFeatHeaders "FeatLabel" $featLabel
-            Set-TokenByHeader $tokens $classFeatHeaders "FeatIndex" $featIndex
-            Set-TokenByHeader $tokens $classFeatHeaders "List" "1"
-            Set-TokenByHeader $tokens $classFeatHeaders "GrantedOnLevel" "99"
-            Set-TokenByHeader $tokens $classFeatHeaders "OnMenu" "1"
+            Set-TokenByHeader -Tokens $tokens -Headers $classFeatHeaders -Header "FeatLabel" -Value $featLabel
+            Set-TokenByHeader -Tokens $tokens -Headers $classFeatHeaders -Header "FeatIndex" -Value $featIndex
+            Set-TokenByHeader -Tokens $tokens -Headers $classFeatHeaders -Header "List" -Value "1"
+            Set-TokenByHeader -Tokens $tokens -Headers $classFeatHeaders -Header "GrantedOnLevel" -Value "99"
+            Set-TokenByHeader -Tokens $tokens -Headers $classFeatHeaders -Header "OnMenu" -Value "1"
             $classFeatLines[$lineIndex] = Format-2DARow $tokens.ToArray() $classFeatColumnWidths
             continue
         }
@@ -522,11 +522,11 @@ if ([System.IO.File]::Exists($classFeatPath)) {
             $tokens[0] = $maxClassFeatRow.ToString()
         }
 
-        Set-TokenByHeader $tokens $classFeatHeaders "FeatLabel" $featLabel
-        Set-TokenByHeader $tokens $classFeatHeaders "FeatIndex" $featIndex
-        Set-TokenByHeader $tokens $classFeatHeaders "List" "1"
-        Set-TokenByHeader $tokens $classFeatHeaders "GrantedOnLevel" "99"
-        Set-TokenByHeader $tokens $classFeatHeaders "OnMenu" "1"
+        Set-TokenByHeader -Tokens $tokens -Headers $classFeatHeaders -Header "FeatLabel" -Value $featLabel
+        Set-TokenByHeader -Tokens $tokens -Headers $classFeatHeaders -Header "FeatIndex" -Value $featIndex
+        Set-TokenByHeader -Tokens $tokens -Headers $classFeatHeaders -Header "List" -Value "1"
+        Set-TokenByHeader -Tokens $tokens -Headers $classFeatHeaders -Header "GrantedOnLevel" -Value "99"
+        Set-TokenByHeader -Tokens $tokens -Headers $classFeatHeaders -Header "OnMenu" -Value "1"
         if ($null -ne $lineIndex) {
             $classFeatLines[$lineIndex] = Format-2DARow $tokens.ToArray() $classFeatColumnWidths
         }

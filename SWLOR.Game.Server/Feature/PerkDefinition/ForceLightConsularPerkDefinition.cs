@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
         public Dictionary<PerkType, PerkDetail> BuildPerks()
         {
             ThrowRock();
+            ForceBurst();
             Benevolence();
             ForceJudgment();
             RadiantLance();
@@ -35,24 +36,38 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
-                .Description("Hurls stone or loose debris with the Force up to 15m, dealing 18 physical DMG plus WIL/PER scaling to one target.")
+                .Description("Hurls stone or loose debris with the Force up to 15m, dealing 22 physical DMG plus WIL/PER scaling to one target.")
                 .Price(2)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ThrowRock1)
 
                 .AddPerkLevel()
-                .Description("Hurls a heavier stone or debris with the Force up to 15m, dealing 32 physical DMG plus WIL/PER scaling to one target.")
+                .Description("Hurls a heavier stone or debris with the Force up to 15m, dealing 40 physical DMG plus WIL/PER scaling to one target.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 18)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ThrowRock2)
 
                 .AddPerkLevel()
-                .Description("Hurls a crushing mass of stone and debris with the Force up to 15m, dealing 46 physical DMG plus WIL/PER scaling to one target.")
+                .Description("Hurls a crushing mass of stone and debris with the Force up to 15m, dealing 60 physical DMG plus WIL/PER scaling to one target.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ThrowRock3);
+        }
+
+        private void ForceBurst()
+        {
+            _builder.Create(PerkCategoryType.ForceAlter, PerkType.ForceBurst)
+                .Name("Force Burst")
+                .ForceAffinity(ForceAffinityType.Light)
+
+                .AddPerkLevel()
+                .Description("Deals 44 force DMG plus WIL scaling to the selected target and enemies within 5m.")
+                .Price(4)
+                .RequirementSkill(SkillType.Force, 30)
+                .RequirementCharacterType(CharacterType.ForceSensitive)
+                .GrantsFeat(FeatType.ForceBurst1);
         }
 
         private void Benevolence()
@@ -89,22 +104,22 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
-                .Description("Deals 14 force DMG plus WIL scaling to one target and reduces outgoing weapon and force damage by 4% for 30 seconds.")
-                .Price(3)
+                .Description("Deals 18 force DMG plus WIL scaling to one target and reduces outgoing weapon and force damage by 4% for 30 seconds.")
+                .Price(2)
                 .RequirementSkill(SkillType.Force, 5)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceJudgment1)
 
                 .AddPerkLevel()
-                .Description("Deals 24 force DMG plus WIL scaling to the selected target and one enemy within 5m, reducing outgoing weapon and force damage by 6% for 30 seconds.")
-                .Price(4)
+                .Description("Deals 32 force DMG plus WIL scaling to the selected target and one enemy within 5m, reducing outgoing weapon and force damage by 6% for 30 seconds.")
+                .Price(2)
                 .RequirementSkill(SkillType.Force, 25)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceJudgment2)
 
                 .AddPerkLevel()
-                .Description("Deals 36 force DMG plus WIL scaling to the selected target and enemies within 5m, reducing outgoing weapon and force damage by 8% for 30 seconds.")
-                .Price(4)
+                .Description("Deals 48 force DMG plus WIL scaling to the selected target and enemies within 5m, reducing outgoing weapon and force damage by 8% for 30 seconds.")
+                .Price(3)
                 .RequirementSkill(SkillType.Force, 45)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ForceJudgment3);
@@ -117,21 +132,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
-                .Description("Fires a focused lance of radiant Force energy in an 8m x 2.5m line, dealing 12 force DMG plus WIL scaling to hostile targets in the line.")
+                .Description("Fires a focused lance of radiant Force energy in an 8m x 2.5m line, dealing 16 force DMG plus WIL scaling to hostile targets in the line.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 8)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.RadiantLance1)
 
                 .AddPerkLevel()
-                .Description("Fires a focused lance of radiant Force energy in an 8m x 2.5m line, dealing 22 force DMG plus WIL scaling to hostile targets in the line.")
+                .Description("Fires a focused lance of radiant Force energy in an 8m x 2.5m line, dealing 30 force DMG plus WIL scaling to hostile targets in the line.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 35)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.RadiantLance2)
 
                 .AddPerkLevel()
-                .Description("Fires a focused lance of radiant Force energy in an 8m x 2.5m line, dealing 32 force DMG plus WIL scaling to hostile targets in the line.")
+                .Description("Fires a focused lance of radiant Force energy in an 8m x 2.5m line, dealing 44 force DMG plus WIL scaling to hostile targets in the line.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 48)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

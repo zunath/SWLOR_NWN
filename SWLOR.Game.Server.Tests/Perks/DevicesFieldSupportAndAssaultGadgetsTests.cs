@@ -4,6 +4,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Devices;
+using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
@@ -18,6 +19,18 @@ namespace SWLOR.Game.Server.Tests.Perks;
 
 public class DevicesFieldSupportAndAssaultGadgetsTests
 {
+    [Test]
+    public void AssaultGadgetTwins_MatchForceBaseDamage()
+    {
+        foreach (var fieldName in new[] { "Rank1BaseDamage", "Rank2BaseDamage", "Rank3BaseDamage" })
+        {
+            GetAbilityConstant<int>(typeof(ArcProjectorAbilityDefinition), fieldName)
+                .Should().Be(GetAbilityConstant<int>(typeof(ThrowRockAbilityDefinition), fieldName));
+            GetAbilityConstant<int>(typeof(IonLanceAbilityDefinition), fieldName)
+                .Should().Be(GetAbilityConstant<int>(typeof(RadiantLanceAbilityDefinition), fieldName));
+        }
+    }
+
     [Test]
     public void DevicesFieldSupportAndAssaultGadgetsBibleManifest_ContainsBatch()
     {
@@ -448,6 +461,17 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         };
 
         return BuildPerksWithout2daLookup(definition, methodNames);
+    }
+
+    private static T GetAbilityConstant<T>(Type abilityDefinitionType, string fieldName)
+    {
+        var field = abilityDefinitionType.GetField(
+            fieldName,
+            BindingFlags.NonPublic | BindingFlags.Static);
+
+        field.Should().NotBeNull($"{abilityDefinitionType.Name} should declare {fieldName}");
+        field!.IsLiteral.Should().BeTrue();
+        return (T)field.GetRawConstantValue()!;
     }
 
     private static Dictionary<PerkType, PerkDetail> BuildDevicesAssaultGadgetsPerksWithout2daLookup()

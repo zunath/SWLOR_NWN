@@ -122,7 +122,7 @@ public class ForceUniversalTests
     }
 
     [Test]
-    public void ForceLeap_UsesLegacyLeapAnimationBeforeJump()
+    public void ForceLeap_UsesLegacyLeapAnimationAndLandsOutsideTheTarget()
     {
         var abilities = new ForceLeapAbilityDefinition().BuildAbilities();
 
@@ -133,7 +133,15 @@ public class ForceUniversalTests
         var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ForceLeapAbilityDefinition.cs").FullName);
 
         source.Should().Contain("ActionPlayAnimation(Animation.ForceLeap, LeapAnimationSpeed, LeapAnimationDurationSeconds)");
-        source.Should().Contain("ActionJumpToObject(target)");
+        source.Should().Contain("private const float ArrivalDistanceMeters = 1.5f;");
+        source.IndexOf("var destination = GetLeapDestination(activator, target)", StringComparison.Ordinal)
+            .Should().BeGreaterThan(
+                source.IndexOf("ActionPlayAnimation(Animation.ForceLeap", StringComparison.Ordinal),
+                "the target position must be sampled after the leap animation completes");
+        source.Should().Contain("JumpToLocation(destination)");
+        source.Should().Contain("SetFacingPoint(GetPosition(target))");
+        source.Should().NotContain("ActionJumpToLocation(destination)");
+        source.Should().NotContain("ActionJumpToObject(target)");
         source.Should().NotContain("UsesImpactAnimation(Animation.ForceLeap)");
         source.Should().NotContain("VisualEffect.Vfx_Fnf_Summon_Monster_1");
     }

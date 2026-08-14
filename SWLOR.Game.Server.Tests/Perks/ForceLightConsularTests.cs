@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -18,6 +19,15 @@ namespace SWLOR.Game.Server.Tests.Perks;
 
 public class ForceLightConsularTests
 {
+    [OneTimeSetUp]
+    public void OneTimeSetUp()
+    {
+        Environment.SetEnvironmentVariable(
+            "SWLOR_APP_LOG_DIRECTORY",
+            Path.Combine(TestContext.CurrentContext.WorkDirectory, "logs") + Path.DirectorySeparatorChar);
+        Log.Register();
+    }
+
     [Test]
     public void ForceLightConsularStatusEffects_MatchCombatBible()
     {
@@ -63,6 +73,141 @@ public class ForceLightConsularTests
             ability.ImpactAnimationType.Should().Be(Animation.Invalid);
             ability.ActivationVisualEffect.Should().Be(VisualEffect.None);
         }
+    }
+
+    [Test]
+    public void ForceBurst_RestoresSingleTargetedTelekineticAreaDamagePower()
+    {
+        var forceBurst = new ForceBurstAbilityDefinition().BuildAbilities();
+
+        forceBurst.Should().ContainSingle();
+        AssertAbility(forceBurst[FeatType.ForceBurst1], "Force Burst", 1, RecastGroup.ForceBurst, 15f, 1.5f, 6, true, true, false, true, AbilityActivationType.Casted, 15f);
+
+        var targeting = forceBurst[FeatType.ForceBurst1].Targeting;
+        targeting.Should().NotBeNull();
+        targeting!.Spell.Should().Be(Spell.ForceBurst1);
+        targeting.Shape.Should().Be(AbilityTargetingShapeType.Sphere);
+        targeting.SizeX.Should().Be(5f);
+        targeting.SizeY.Should().Be(0f);
+        targeting.Flags.Should().Be(AbilityTargetingFlags.HarmsEnemies);
+    }
+
+    [Test]
+    public void ForceBurst_UsesOneFourPointPerkLevelAtForceThirty()
+    {
+        var perks = BuildForceLightConsularPerksWithout2daLookup();
+        var forceBurst = perks[PerkType.ForceBurst];
+
+        forceBurst.PerkLevels.Should().ContainSingle();
+        AssertPerkLevel(
+            forceBurst,
+            "Force Burst",
+            1,
+            4,
+            30,
+            FeatType.ForceBurst1,
+            "Deals 44 force DMG plus WIL scaling to the selected target and enemies within 5m.");
+
+        GetAbilityConstant<int>(typeof(ForceBurstAbilityDefinition), "BaseDamage")
+            .Should().BeLessThan(
+                GetAbilityConstant<int>(typeof(ForceJudgmentAbilityDefinition), "Rank3BaseDamage"),
+                "the earlier, rider-free Force Burst should not outdamage Force Judgment III");
+
+        var forceJudgment = perks[PerkType.ForceJudgment];
+        forceJudgment.PerkLevels[1].Price.Should().Be(2);
+        forceJudgment.PerkLevels[2].Price.Should().Be(2);
+        forceJudgment.PerkLevels[3].Price.Should().Be(3);
+    }
+
+    [Test]
+    public void ForceBurst_IsInsideGeneratedFeatToolBounds()
+    {
+        var root = FindRepositoryRoot();
+        var scripts = new[]
+        {
+            "GenerateCooldownIcons.ps1",
+            "LinkCombatUpgradeFeatSpells.ps1",
+            "UpdateGameplayIconStandards.ps1"
+        };
+
+        foreach (var script in scripts)
+        {
+            var source = File.ReadAllText((root / "tools" / script).FullName);
+            source.Should().Contain("[int]$GeneratedFeatEnd = 2899", $"{script} must include Force Burst feat 2899");
+        }
+    }
+
+    [Test]
+    public void OffensiveLightConsularPowers_UseSharedForceAccuracyAndMeetOrdinaryDathomirSoloTargets()
+    {
+        const int attackerAttackAndAccuracy = 148;
+        const int attackerWillpower = 40;
+        const int squellbugEvasion = 155;
+        const int squellbugPhysicalDefense = 111;
+        const int squellbugVitality = 31;
+        const int squellbugForceDefense = 101;
+        const int squellbugWillpower = 21;
+        const int squellbugHP = 897;
+        const int fullLightAffinityHitChance = 5;
+        const double fullLightAffinityMagnitude = 1.5;
+
+        var abilitySources = new[]
+        {
+            typeof(ThrowRockAbilityDefinition),
+            typeof(ForceJudgmentAbilityDefinition),
+            typeof(RadiantLanceAbilityDefinition),
+            typeof(ForceBurstAbilityDefinition)
+        };
+        var root = FindSourceRepositoryRoot();
+        foreach (var abilityType in abilitySources)
+        {
+            var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / $"{abilityType.Name}.cs").FullName);
+            source.Should().NotContain("hitChancePercentAdjustment", $"{abilityType.Name} should use the shared Force accuracy formula");
+        }
+
+        var hitRate = Combat.CalculateHitRate(
+            attackerAttackAndAccuracy,
+            squellbugEvasion,
+            fullLightAffinityHitChance);
+
+        hitRate.Should().BeGreaterThanOrEqualTo(75);
+
+        var expectedDamagePerSecond =
+            ExpectedDamagePerUse(
+                GetAbilityConstant<int>(typeof(ThrowRockAbilityDefinition), "Rank3BaseDamage"),
+                attackerAttackAndAccuracy,
+                attackerWillpower,
+                squellbugPhysicalDefense,
+                squellbugVitality,
+                hitRate,
+                fullLightAffinityMagnitude) / 6f +
+            ExpectedDamagePerUse(
+                GetAbilityConstant<int>(typeof(ForceJudgmentAbilityDefinition), "Rank3BaseDamage"),
+                attackerAttackAndAccuracy,
+                attackerWillpower,
+                squellbugForceDefense,
+                squellbugWillpower,
+                hitRate,
+                fullLightAffinityMagnitude) / 15f +
+            ExpectedDamagePerUse(
+                GetAbilityConstant<int>(typeof(RadiantLanceAbilityDefinition), "Rank3BaseDamage"),
+                attackerAttackAndAccuracy,
+                attackerWillpower,
+                squellbugForceDefense,
+                squellbugWillpower,
+                hitRate,
+                fullLightAffinityMagnitude) / 18f +
+            ExpectedDamagePerUse(
+                GetAbilityConstant<int>(typeof(ForceBurstAbilityDefinition), "BaseDamage"),
+                attackerAttackAndAccuracy,
+                attackerWillpower,
+                squellbugForceDefense,
+                squellbugWillpower,
+                hitRate,
+                fullLightAffinityMagnitude) / 15f;
+
+        var estimatedSecondsToDefeat = squellbugHP / expectedDamagePerSecond;
+        estimatedSecondsToDefeat.Should().BeInRange(20d, 33d);
     }
 
     [Test]
@@ -137,12 +282,14 @@ public class ForceLightConsularTests
         var root = FindRepositoryRoot();
         var featRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "feat.2da");
         var abilityRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "spells.2da");
+        var classFeatRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "CLS_FEAT_FIGHT.2da");
 
         var feats = new[]
         {
             (FeatType.Benevolence1, "ife_bnvlnc1", "M", "0x03", "0", "****", "****", "****", "****"),
             (FeatType.Renewal1, "ife_rnwl1", "M", "0x03", "0", "****", "****", "****", "****"),
             (FeatType.MindTrick1, "ife_mndtrck1", "M", "0x02", "1", "****", "****", "****", "****"),
+            (FeatType.ForceBurst1, "ife_fburst1", "M", "0x02", "1", "sphere", "5", "****", "1"),
             (FeatType.ThrowRock1, "ife_throwrock1", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.ForceJudgment1, "ife_forcejdg1", "M", "0x02", "1", "****", "****", "****", "****"),
             (FeatType.Benevolence2, "ife_bnvlnc2", "M", "0x03", "0", "****", "****", "****", "****"),
@@ -178,6 +325,13 @@ public class ForceLightConsularTests
             abilityRow["TargetSizeX"].Should().Be(targetSizeX);
             abilityRow["TargetSizeY"].Should().Be(targetSizeY);
             abilityRow["TargetFlags"].Should().Be(targetFlags);
+
+            if (featType == FeatType.ForceBurst1)
+            {
+                classFeatRows.Should().ContainSingle(
+                    row => row.Value["FeatIndex"] == ((int)featType).ToString(),
+                    $"{featType} must be available from the fighter radial menu");
+            }
         }
     }
 
@@ -212,6 +366,37 @@ public class ForceLightConsularTests
             perkLevel.StatBonuses.Select(x => x.Stat).Should().HaveCount(statTypes.Length).And.Contain(statTypes);
         else
             perkLevel.StatBonuses.Should().BeEmpty();
+    }
+
+    private static double ExpectedDamagePerUse(
+        int baseDamage,
+        int attackerAttack,
+        int attackerStat,
+        int defenderDefense,
+        int defenderStat,
+        int hitRate,
+        double affinityMagnitude)
+    {
+        var (minimumDamage, maximumDamage) = Combat.CalculateDamageRange(
+            attackerAttack,
+            baseDamage,
+            attackerStat,
+            defenderDefense,
+            defenderStat,
+            0);
+
+        return (minimumDamage + maximumDamage) / 2d * affinityMagnitude * hitRate / 100d;
+    }
+
+    private static T GetAbilityConstant<T>(Type abilityDefinitionType, string fieldName)
+    {
+        var field = abilityDefinitionType.GetField(
+            fieldName,
+            BindingFlags.NonPublic | BindingFlags.Static);
+
+        field.Should().NotBeNull($"{abilityDefinitionType.Name} should declare {fieldName}");
+        field!.IsLiteral.Should().BeTrue();
+        return (T)field.GetRawConstantValue()!;
     }
 
     private static void AssertAbility(
@@ -293,6 +478,7 @@ public class ForceLightConsularTests
         var methodNames = new[]
         {
             "Benevolence",
+            "ForceBurst",
             "ForceJudgment",
             "ForceMend",
             "ForceSanctuary",

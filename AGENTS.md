@@ -13,6 +13,10 @@ This file is the shared rule set for all coding agents. Codex reads it natively;
 
 - The Unified solution (`C:\Projects\unified`) is read-only reference material. Do not make changes to it.
 
+## Pull Requests and Submodules
+
+- When a parent-repository pull request changes a git submodule pointer, publishing is not complete until every modified submodule also has its own pull request. Push the submodule branch, open its companion pull request against the branch corresponding to the parent pull request's base branch, and link the parent and companion pull requests in both descriptions. Do not treat a pushed submodule branch by itself as a complete handoff.
+
 ## Background Processes
 
 - Do not start background jobs, watchers, dev servers, publish tasks, or long-lived helper processes unless the user explicitly asks for them or they are strictly required for the current task. Prefer foreground commands with bounded timeouts. If a long-lived process is necessary, record what was started, track its PID when available, stop it before handing off, and report the cleanup. Do not use `Start-Process`, shell backgrounding, persistent REPL helpers, or detached commands to continue work after the turn unless the user has explicitly approved that behavior.

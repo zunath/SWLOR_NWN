@@ -1492,29 +1492,50 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             var paletteCoordinate = TintMapMaterialRegistry.GetPaletteCoordinate(
                 layer,
                 color.PaletteColorId);
-            var rowCoordinate = paletteCoordinate;
-            var red = 0f;
-            var green = 0f;
-            var blue = 0f;
-            if (customColor.HasValue)
+
+            // The generated MTRs declare row* and tint*RGB as scalar floats, while
+            // useCustom* is an int. Send every live override using that exact shape;
+            // otherwise the client silently retains the preset palette row.
+            if (!customColor.HasValue)
             {
-                // Use the same material uniform that the proven preset path uses. A negative row
-                // coordinate marks a custom tint and y/z/w carry normalized RGB. Keeping the
-                // complete payload in one vec4 makes the color update atomic for the client.
-                rowCoordinate = -1f;
-                red = customColor.Value.Red / 255f;
-                green = customColor.Value.Green / 255f;
-                blue = customColor.Value.Blue / 255f;
+                SetMaterialShaderUniformVec4(
+                    creature,
+                    materialResref,
+                    layerDefinition.UniformName,
+                    paletteCoordinate);
+                SetMaterialShaderUniformInt(
+                    creature,
+                    materialResref,
+                    layerDefinition.CustomModeUniformName,
+                    0);
+                return;
             }
 
             SetMaterialShaderUniformVec4(
                 creature,
                 materialResref,
                 layerDefinition.UniformName,
-                rowCoordinate,
-                red,
-                green,
-                blue);
+                0f);
+            SetMaterialShaderUniformVec4(
+                creature,
+                materialResref,
+                layerDefinition.ColorRedUniformName,
+                customColor.Value.Red / 255f);
+            SetMaterialShaderUniformVec4(
+                creature,
+                materialResref,
+                layerDefinition.ColorGreenUniformName,
+                customColor.Value.Green / 255f);
+            SetMaterialShaderUniformVec4(
+                creature,
+                materialResref,
+                layerDefinition.ColorBlueUniformName,
+                customColor.Value.Blue / 255f);
+            SetMaterialShaderUniformInt(
+                creature,
+                materialResref,
+                layerDefinition.CustomModeUniformName,
+                1);
         }
 
         private static Dictionary<string, int> GetItemTintOverrides(uint item)

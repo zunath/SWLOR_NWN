@@ -1471,10 +1471,6 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             ResetMaterialShaderUniforms(
                 creature,
                 materialResref,
-                layerDefinition.ColorUniformName);
-            ResetMaterialShaderUniforms(
-                creature,
-                materialResref,
                 layerDefinition.ColorRedUniformName);
             ResetMaterialShaderUniforms(
                 creature,

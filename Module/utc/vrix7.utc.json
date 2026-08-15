@@ -213,7 +213,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 2197
+    "value": 1717
   },
   "Int": {
     "type": "byte",

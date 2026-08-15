@@ -155,7 +155,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Leader of a slaver convoy cell operating out of Nar Shaddaa’s shadow ports. Experienced, well-equipped, and protected by hired muscle."
+      "0": "Leader of a slaver convoy cell operating out of Nar Shaddaaï¿½s shadow ports. Experienced, well-equipped, and protected by hired muscle."
     }
   },
   "Dex": {
@@ -326,7 +326,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 1680
+    "value": 1640
   },
   "Int": {
     "type": "byte",
@@ -360,7 +360,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 1720
+    "value": 1680
   },
   "NaturalAC": {
     "type": "byte",

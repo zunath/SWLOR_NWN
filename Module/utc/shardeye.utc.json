@@ -178,7 +178,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 350
+    "value": 320
   },
   "Int": {
     "type": "byte",

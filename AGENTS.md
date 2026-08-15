@@ -45,6 +45,12 @@ This file is the shared rule set for all coding agents. Codex reads it natively;
 - `StatType` classification, polarity, or category decisions must be declared with `StatTypeAttribute` on the enum entry. Do not add large `if`/`switch` lists elsewhere to infer stat meaning; shared systems should read the enum metadata instead.
 - Attack Deflection, Shield Deflection, and Guard are separate combat mechanics. Attack Deflection and Shield Deflection are attack-roll outcomes that negate the hit and do not stack with each other; Guard is a damage-stage outcome that reduces damage and increases enmity. Do not implement one by reusing the state, stats, logs, or triggers of another.
 
+## NPC Hit Point Budgets
+
+- A stat skin's `NPCHP` is the NPC's final maximum HP budget. NWN stores `HitPoints` as base HP, then derives maximum HP by applying the Constitution modifier (SWLOR Vitality) once per class level, Toughness once per level, and 20 HP for each Epic Toughness feat. Do not set UTC `HitPoints` directly to `NPCHP`: set `CurrentHitPoints` and `MaxHitPoints` to `NPCHP`, and set `HitPoints` to `NPCHP` minus those native bonuses.
+- Apply runtime NPC HP budgets through `Stat.SetNPCMaxHitPoints` only, after the raw Vitality score has been finalized. `ObjectPlugin.SetMaxHitPoints` writes native base HP and therefore must not receive an `NPCHP` final budget directly.
+- After adding or restatting NPCHP-backed creatures, run `powershell -ExecutionPolicy Bypass -File tools/NormalizeNpcHitPoints.ps1`. Use `-CheckOnly` in audits. `NPCEnemyBalanceAuditTests.AllNpcHpBudgets_AccountForNativeVitalityAndToughnessRules` protects the complete corpus.
+
 ## Player Identity
 
 - Player-facing surfaces must use the `PlayerName` service instead of raw player names. For live player objects, use `PlayerName.GetDisplayName(observer, target)` or `PlayerName.GetColoredDisplayName(observer, target)`. For offline/persisted player records, use `PlayerName.GetDisplayNameByPlayerId(observer, playerId, fallbackName)`.

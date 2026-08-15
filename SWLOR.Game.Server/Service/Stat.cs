@@ -32,6 +32,8 @@ namespace SWLOR.Game.Server.Service
         private const float DefaultPlayerMovementSpeedIncrease = 0.25f;
         private const float DefaultCompanionMovementSpeedIncrease = 0.25f;
         private const float DefaultNPCMovementSpeedIncrease = 0.30f;
+        private const int MaximumNPCHitPoints = 30000;
+        private const int MaximumNPCHitPointAlignmentPasses = 4;
         public const int DefaultMeleeDeflectionChanceCap = 50;
         public const int DefaultRangedDeflectionChanceCap = 50;
         public const int MaximumDeflectionChanceCap = 100;
@@ -2446,17 +2448,67 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            if (maxHP > 30000)
-                maxHP = 30000;
+            if (maxHP > MaximumNPCHitPoints)
+                maxHP = MaximumNPCHitPoints;
 
             if (maxHP > 0)
             {
-                ObjectPlugin.SetMaxHitPoints(self, maxHP);
-                ObjectPlugin.SetCurrentHitPoints(self, maxHP);
+                SetNPCMaxHitPoints(self, maxHP, true);
             }
 
             SetLocalInt(self, "FP", GetMaxFP(self));
             SetLocalInt(self, "STAMINA", GetMaxStamina(self));
+        }
+
+        /// <summary>
+        /// Sets an NPC's final maximum HP after accounting for the native NWN bonuses
+        /// derived from Constitution (SWLOR Vitality), Toughness, and similar rules.
+        /// ObjectPlugin.SetMaxHitPoints writes the engine's base HP, not its final maximum.
+        /// </summary>
+        /// <param name="creature">The NPC whose HP budget is being applied.</param>
+        /// <param name="desiredMaxHitPoints">The final maximum HP the NPC should have.</param>
+        /// <param name="restoreToFull">If true, restore current HP to the final maximum.</param>
+        public static void SetNPCMaxHitPoints(uint creature, int desiredMaxHitPoints, bool restoreToFull = false)
+        {
+            desiredMaxHitPoints = System.Math.Clamp(desiredMaxHitPoints, 1, MaximumNPCHitPoints);
+            var originalCurrentHitPoints = GetCurrentHitPoints(creature);
+
+            // Probe with the final budget, observe the engine-derived adjustment, then
+            // compensate the base value. Repeating also handles NWN's one-HP-per-level
+            // floor for creatures with a negative Constitution modifier.
+            var baseHitPoints = desiredMaxHitPoints;
+            for (var pass = 0; pass < MaximumNPCHitPointAlignmentPasses; pass++)
+            {
+                ObjectPlugin.SetMaxHitPoints(creature, baseHitPoints);
+                var actualMaxHitPoints = GetMaxHitPoints(creature);
+                if (actualMaxHitPoints == desiredMaxHitPoints)
+                    break;
+
+                baseHitPoints = System.Math.Clamp(
+                    baseHitPoints + desiredMaxHitPoints - actualMaxHitPoints,
+                    1,
+                    short.MaxValue);
+            }
+
+            var alignedMaxHitPoints = GetMaxHitPoints(creature);
+            if (alignedMaxHitPoints != desiredMaxHitPoints)
+            {
+                Log.Write(
+                    LogGroup.Error,
+                    $"Unable to align NPC HP budget for {GetResRef(creature)}. " +
+                    $"Expected {desiredMaxHitPoints}, received {alignedMaxHitPoints}.");
+            }
+
+            if (restoreToFull)
+            {
+                ObjectPlugin.SetCurrentHitPoints(creature, alignedMaxHitPoints);
+            }
+            else
+            {
+                ObjectPlugin.SetCurrentHitPoints(
+                    creature,
+                    System.Math.Min(originalCurrentHitPoints, alignedMaxHitPoints));
+            }
         }
 
         /// <summary>

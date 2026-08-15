@@ -1871,6 +1871,24 @@ function Get-GeneratedEnemyItemName($row, [string]$itemKind) {
     return "Level 50 $($row.Role) $($row.StepLabel) $itemKind"
 }
 
+function Get-NativeNpcHitPointAdjustment($utc) {
+    $level = 0
+    foreach ($classEntry in @($utc.ClassList.value)) {
+        $level += [int]$classEntry.ClassLevel.value
+    }
+
+    $constitutionModifier = [int][Math]::Floor(([int]$utc.Con.value - 10) / 2)
+    $adjustment = $constitutionModifier * $level
+    $featIds = @($utc.FeatList.value | ForEach-Object { [int]$_.Feat.value })
+
+    if ($featIds -contains 40) {
+        $adjustment += $level
+    }
+
+    $adjustment += 20 * @($featIds | Where-Object { $_ -ge 754 -and $_ -le 763 }).Count
+    return $adjustment
+}
+
 function Get-AbilityPackageText($package, [string]$signatureDisplayName = "", [string]$capstoneDisplayName = "") {
     $names = New-Object System.Collections.Generic.List[string]
     if (-not [string]::IsNullOrWhiteSpace($signatureDisplayName)) {
@@ -1919,9 +1937,6 @@ function Update-ModuleAssets($rows, $featMap) {
         Set-JsonTypedValue $utc "Int" $stats.PER
         Set-JsonTypedValue $utc "Wis" $stats.WIL
         Set-JsonTypedValue $utc "Cha" $stats.WIL
-        Set-JsonTypedValue $utc "CurrentHitPoints" $stats.HP
-        Set-JsonTypedValue $utc "HitPoints" $stats.HP
-        Set-JsonTypedValue $utc "MaxHitPoints" $stats.HP
 
         $keptFeats = New-Object System.Collections.Generic.List[object]
         foreach ($feat in @($utc.FeatList.value)) {
@@ -1954,6 +1969,10 @@ function Update-ModuleAssets($rows, $featMap) {
             }
         })
         $utc.FeatList.value = @($keptFeats.ToArray())
+
+        Set-JsonTypedValue $utc "CurrentHitPoints" $stats.HP
+        Set-JsonTypedValue $utc "HitPoints" ($stats.HP - (Get-NativeNpcHitPointAdjustment $utc))
+        Set-JsonTypedValue $utc "MaxHitPoints" $stats.HP
 
         Set-ItemPropertyCost $skin 99 43 50
         Set-ItemPropertyCost $skin 96 39 $stats.HP

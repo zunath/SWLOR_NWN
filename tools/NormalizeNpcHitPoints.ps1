@@ -8,6 +8,25 @@ $repositoryRoot = (Resolve-Path (Join-Path $PSScriptRoot "..")).Path
 $utcDirectory = Join-Path $repositoryRoot "Module\utc"
 $utiDirectory = Join-Path $repositoryRoot "Module\uti"
 $utf8NoBom = [Text.UTF8Encoding]::new($false)
+$strictUtf8NoBom = [Text.UTF8Encoding]::new($false, $true)
+$windows1252 = [Text.Encoding]::GetEncoding(1252)
+
+function Read-TextFilePreservingEncoding([string]$path) {
+    $bytes = [IO.File]::ReadAllBytes($path)
+
+    try {
+        return [PSCustomObject]@{
+            Text = $strictUtf8NoBom.GetString($bytes)
+            Encoding = $utf8NoBom
+        }
+    }
+    catch [Text.DecoderFallbackException] {
+        return [PSCustomObject]@{
+            Text = $windows1252.GetString($bytes)
+            Encoding = $windows1252
+        }
+    }
+}
 
 function Get-EquippedStatSkinResref($utc) {
     $skin = @($utc.Equip_ItemList.value | Where-Object { $_.__struct_id -eq 131072 }) |
@@ -80,7 +99,8 @@ $changed = New-Object System.Collections.Generic.List[string]
 $failures = New-Object System.Collections.Generic.List[string]
 
 foreach ($utcFile in Get-ChildItem -LiteralPath $utcDirectory -Filter "*.utc.json" | Sort-Object Name) {
-    $utcText = [IO.File]::ReadAllText($utcFile.FullName)
+    $utcDocument = Read-TextFilePreservingEncoding $utcFile.FullName
+    $utcText = $utcDocument.Text
     $utc = $utcText | ConvertFrom-Json
     $skinResref = Get-EquippedStatSkinResref $utc
     if ([string]::IsNullOrWhiteSpace($skinResref)) {
@@ -92,7 +112,8 @@ foreach ($utcFile in Get-ChildItem -LiteralPath $utcDirectory -Filter "*.utc.jso
         continue
     }
 
-    $skin = [IO.File]::ReadAllText($skinPath) | ConvertFrom-Json
+    $skinDocument = Read-TextFilePreservingEncoding $skinPath
+    $skin = $skinDocument.Text | ConvertFrom-Json
     $finalHp = Get-NpcHpBudget $skin
     if ($finalHp -le 0) {
         continue
@@ -112,7 +133,7 @@ foreach ($utcFile in Get-ChildItem -LiteralPath $utcDirectory -Filter "*.utc.jso
     if ($normalizedText -ne $utcText) {
         $changed.Add($utcFile.Name)
         if (-not $CheckOnly) {
-            [IO.File]::WriteAllText($utcFile.FullName, $normalizedText, $utf8NoBom)
+            [IO.File]::WriteAllText($utcFile.FullName, $normalizedText, $utcDocument.Encoding)
         }
     }
 }

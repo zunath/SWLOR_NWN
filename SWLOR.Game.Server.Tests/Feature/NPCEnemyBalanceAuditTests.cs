@@ -1,5 +1,7 @@
+using System.Diagnostics;
 using System.Globalization;
 using System.IO.Compression;
+using System.Text;
 using System.Text.Json;
 using System.Xml.Linq;
 using FluentAssertions;
@@ -483,6 +485,120 @@ public class NPCEnemyBalanceAuditTests
         audited.Should().BeGreaterThan(450, "every terrestrial combat creature with an NPCHP stat skin should be audited");
         failures.Should().BeEmpty(
             "UTC HitPoints must exclude NWN's native Vitality/Constitution and Toughness bonuses while CurrentHitPoints and MaxHitPoints remain the final NPCHP budget");
+    }
+
+    [Test]
+    public async Task NpcHpNormalizer_PreservesWindows1252AssetText()
+    {
+        var root = FindRepositoryRoot();
+        var temporaryRoot = Path.Combine(Path.GetTempPath(), $"swlor-npc-hp-{Guid.NewGuid():N}");
+        var toolsDirectory = Path.Combine(temporaryRoot, "tools");
+        var utcDirectory = Path.Combine(temporaryRoot, "Module", "utc");
+        var utiDirectory = Path.Combine(temporaryRoot, "Module", "uti");
+
+        Directory.CreateDirectory(toolsDirectory);
+        Directory.CreateDirectory(utcDirectory);
+        Directory.CreateDirectory(utiDirectory);
+
+        try
+        {
+            var script = Path.Combine(toolsDirectory, "NormalizeNpcHitPoints.ps1");
+            File.Copy(Path.Combine(root.FullName, "tools", "NormalizeNpcHitPoints.ps1"), script);
+
+            const string utcText = """
+                                   {
+                                     "Equip_ItemList": {
+                                       "value": [
+                                         {
+                                           "__struct_id": 131072,
+                                           "EquippedRes": { "value": "legacy_skin" }
+                                         }
+                                       ]
+                                     },
+                                     "ClassList": { "value": [{ "ClassLevel": { "value": 2 } }] },
+                                     "Con": { "value": 14 },
+                                     "FeatList": { "value": [] },
+                                     "Description": { "value": { "0": "Nar Shaddaa’s shadow ports" } },
+                                     "CurrentHitPoints": { "type": "short", "value": 1 },
+                                     "HitPoints": { "type": "short", "value": 1 },
+                                     "MaxHitPoints": { "type": "short", "value": 1 }
+                                   }
+                                   """;
+            const string skinText = """
+                                    {
+                                      "PropertiesList": {
+                                        "value": [
+                                          {
+                                            "PropertyName": { "value": 96 },
+                                            "CostValue": { "value": 100 }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                    """;
+
+            var utcPath = Path.Combine(utcDirectory, "legacy.utc.json");
+            File.WriteAllBytes(utcPath, EncodeWindows1252Fixture(utcText));
+            File.WriteAllText(Path.Combine(utiDirectory, "legacy_skin.uti.json"), skinText);
+
+            var startInfo = new ProcessStartInfo("powershell.exe")
+            {
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+            startInfo.ArgumentList.Add("-NoProfile");
+            startInfo.ArgumentList.Add("-ExecutionPolicy");
+            startInfo.ArgumentList.Add("Bypass");
+            startInfo.ArgumentList.Add("-File");
+            startInfo.ArgumentList.Add(script);
+
+            string output;
+            string error;
+            int exitCode;
+            using (var process = Process.Start(startInfo)!)
+            {
+                var outputTask = process.StandardOutput.ReadToEndAsync();
+                var errorTask = process.StandardError.ReadToEndAsync();
+                await process.WaitForExitAsync().WaitAsync(TimeSpan.FromSeconds(30));
+                output = await outputTask;
+                error = await errorTask;
+                exitCode = process.ExitCode;
+            }
+
+            exitCode.Should().Be(0, $"the normalizer should succeed. Output: {output} Error: {error}");
+
+            var normalizedBytes = File.ReadAllBytes(utcPath);
+            normalizedBytes.Should().Contain((byte)0x92,
+                "the original Windows-1252 apostrophe must remain encoded as 0x92");
+            normalizedBytes.AsSpan().IndexOf(new byte[] { 0xEF, 0xBF, 0xBD }).Should().Be(-1,
+                "the normalizer must not write an encoded Unicode replacement character");
+
+            var normalizedAscii = Encoding.ASCII.GetString(normalizedBytes);
+            normalizedAscii.Should().Contain("\"CurrentHitPoints\": { \"type\": \"short\", \"value\": 100 }");
+            normalizedAscii.Should().Contain("\"HitPoints\": { \"type\": \"short\", \"value\": 96 }");
+            normalizedAscii.Should().Contain("\"MaxHitPoints\": { \"type\": \"short\", \"value\": 100 }");
+        }
+        finally
+        {
+            Directory.Delete(temporaryRoot, true);
+        }
+    }
+
+    private static byte[] EncodeWindows1252Fixture(string text)
+    {
+        var bytes = new List<byte>();
+        var segments = text.Split('’');
+
+        for (var index = 0; index < segments.Length; index++)
+        {
+            bytes.AddRange(Encoding.ASCII.GetBytes(segments[index]));
+            if (index < segments.Length - 1)
+                bytes.Add(0x92);
+        }
+
+        return bytes.ToArray();
     }
 
     [Test]

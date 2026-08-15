@@ -189,7 +189,7 @@ namespace SWLOR.Game.Server.Feature
 
                 if (maxHP > 0)
                 {
-                    ObjectPlugin.SetMaxHitPoints(creature, maxHP);
+                    Stat.SetNPCMaxHitPoints(creature, maxHP);
                 }
 
                 if (GetCurrentHitPoints(creature) > GetMaxHitPoints(creature))

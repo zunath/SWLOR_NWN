@@ -1,6 +1,6 @@
 # World NPC Balance Audit
 
-Last full audit: 2026-07-09 (feature/combat-upgrade)
+Last full audit: 2026-08-15 (feature/combat-upgrade)
 
 ## What the audit verifies
 
@@ -8,7 +8,13 @@ Every `World NPCs` Bible row must match its module assets exactly:
 
 - UTC `Str/Dex/Wis/Con/Int` = Bible `MGT/PER/WIL/VIT/AGI` (runtime mapping:
   Might=STR, Perception=DEX, Vitality=CON, Agility=INT, Willpower=WIS).
-- UTC `HitPoints`/`CurrentHitPoints`/`MaxHitPoints` = Bible `HP`.
+- The stat skin's `NPCHP`, UTC `CurrentHitPoints`, and UTC `MaxHitPoints` = Bible
+  `HP`, which is the final combat budget. UTC `HitPoints` is deliberately lower:
+  NWN treats it as base HP and adds the Constitution modifier (SWLOR Vitality) once
+  per class level, one HP per level for Toughness, and 20 HP per Epic Toughness feat.
+  Its required value is `NPCHP - native HP bonuses`. `LoadNPCStats` applies the same
+  final budget through `Stat.SetNPCMaxHitPoints`, which compensates the engine-derived
+  bonuses instead of passing the final budget to NWNX as though it were base HP.
 - Stat skin item properties (`NPCLevel`, `NPCHP`, `STM`, `FP`, `Attack`,
   `Force Attack`, `Evasion`, `Defense` physical/force, all 8 `Resistance`
   subtypes) = Bible columns. Negative resistances encode as `100 + abs(value)`.
@@ -32,6 +38,12 @@ Every `World NPCs` Bible row must match its module assets exactly:
 Regression coverage lives in `NPCEnemyBalanceAuditTests`,
 `CombatAttackDelayTests`, and `CapstoneQuestDefinitionTests`.
 
+`NPCEnemyBalanceAuditTests` also audits every NPCHP-backed creature in the module,
+not only the documented World NPC rows, against the native-adjusted UTC base and
+final HP budget. Focused effective-Evasion coverage includes UTC `NaturalAC`, which
+contributes five Evasion rating per point through the native AC term and must not
+silently inflate reviewed NPC profiles.
+
 ## Intentionally out of scope for the World NPCs tab
 
 - Starship combat NPCs (`t1bomber`..`t6platform`, `mandocap1-3`, `sithcap1-7`):
@@ -50,8 +62,10 @@ Regression coverage lives in `NPCEnemyBalanceAuditTests`,
 ## 2026-07 audit outcomes
 
 - 120 NPCs had Perception/Agility (DEX/INT) transposed on their UTCs.
-- 70 NPCs had stale `MaxHitPoints` (engine Con-bonus values) above the NPC-HP
-  budget; all three HP fields now match the Bible.
+- HP serialization was later strengthened module-wide: every NPCHP-backed UTC now
+  stores native-adjusted base `HitPoints`, while `CurrentHitPoints`/`MaxHitPoints`
+  match the final NPCHP budget. This prevents Vitality and Toughness from being
+  counted a second time by NWN and is enforced by the normalization tool and corpus test.
 - ~50 NPCs carried delay-pressure-nerfed weapon damage below preset; restored
   to preset values (matching the earlier fast-cadence restoration pass).
 - Five named rares (`reefmaw`, `sable_quarr`, `kael_drox`, `inkveil`,

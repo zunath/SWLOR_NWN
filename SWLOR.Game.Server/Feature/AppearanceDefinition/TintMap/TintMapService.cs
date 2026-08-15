@@ -701,9 +701,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
             // The NUI can remain open while an equipment or body-part replacement completes.
             // Persist every currently rendered semantic material so model swaps and droid
-            // snapshots retain the edit. Shader values remain scoped to materials which the
-            // tint-map registry explicitly declares for this semantic layer; publishing an empty
-            // material name would also recolor unrelated equipment and full-body NPC materials.
+            // snapshots retain the edit. ApplyCurrentColors publishes the semantic layer through
+            // the model-wide material target; the server's null-material tweak expands that target
+            // across every composed child mesh without rebuilding the creature appearance.
             var currentSelections = TintMapModelResolver.GetCurrentSelections(creature);
             foreach (var selection in selections.Concat(currentSelections))
             {
@@ -1439,44 +1439,17 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 return;
             }
 
-            // The model-wide target covers composed aliases when the NWNX null-material tweak is
-            // active. Modular body materials are also addressable by the concrete MTR resrefs from
-            // the resolved appearance, and those exact writes are required on clients where an
-            // empty material name does not match the child mesh. Write the current palette row and
-            // custom tint payload to both targets, with the concrete materials last.
+            // The server enables NWNX_TWEAKS_MATERIAL_NAME_NULL_IS_ALL, so the model-wide target
+            // is the authoritative material override for composed creatures. Writing the same
+            // parameter again for concrete MTR resrefs creates duplicate overrides which can leave
+            // child meshes reading an older value.
             ApplyMaterialColor(creature, string.Empty, layer, color);
-            foreach (var materialResref in materialResrefs)
-            {
-                ApplyMaterialColor(creature, materialResref, layer, color);
-            }
         }
 
         private static void ApplyCurrentColorsAndPublish(uint creature)
         {
-            // Rebuild every material row before publishing. Rebuilding the creature appearance
-            // here despawns and respawns client-side scene state; it is not needed to replace a
-            // material parameter and can temporarily invalidate the surrounding area render.
             ApplyCurrentColors(creature);
-
-            // NWN compares an object's shader parameters with the copy stored in each connected
-            // player's last-update object. Replacing a vec4 under the same material/parameter
-            // key can leave that cached copy equal by identity even though the server-side value
-            // changed; the client then keeps the first custom color until an unrelated appearance
-            // rebuild recreates the snapshot. Clear only the cached shader-parameter list after
-            // installing the new values. The next forced update now compares the live list with an
-            // empty snapshot and sends every current tint without despawning the creature or
-            // disturbing its camera/appearance state.
-            var server = NWNXLib.g_pAppManager.m_pServerExoApp;
-            for (var playerObject = GetFirstPC();
-                 GetIsObjectValid(playerObject);
-                 playerObject = GetNextPC())
-            {
-                var nativePlayer = server.GetClientObjectByObjectId(playerObject);
-                var lastUpdateObject = nativePlayer?.GetLastUpdateObject(creature);
-                lastUpdateObject?.m_lMaterialShaderParameters.Clear();
-            }
-
-            server.SetForceUpdate();
+            NWNXLib.g_pAppManager.m_pServerExoApp.SetForceUpdate();
         }
 
         private static void ApplyMaterialColor(
@@ -1519,26 +1492,29 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             var paletteCoordinate = TintMapMaterialRegistry.GetPaletteCoordinate(
                 layer,
                 color.PaletteColorId);
+            var rowCoordinate = paletteCoordinate;
+            var red = 0f;
+            var green = 0f;
+            var blue = 0f;
+            if (customColor.HasValue)
+            {
+                // Use the same material uniform that the proven preset path uses. A negative row
+                // coordinate marks a custom tint and y/z/w carry normalized RGB. Keeping the
+                // complete payload in one vec4 makes the color update atomic for the client.
+                rowCoordinate = -1f;
+                red = customColor.Value.Red / 255f;
+                green = customColor.Value.Green / 255f;
+                blue = customColor.Value.Blue / 255f;
+            }
+
             SetMaterialShaderUniformVec4(
                 creature,
                 materialResref,
                 layerDefinition.UniformName,
-                paletteCoordinate,
-                0f,
-                0f,
-                0f);
-
-            if (customColor.HasValue)
-            {
-                SetMaterialShaderUniformVec4(
-                    creature,
-                    materialResref,
-                    layerDefinition.ColorUniformName,
-                    customColor.Value.Red / 255f,
-                    customColor.Value.Green / 255f,
-                    customColor.Value.Blue / 255f,
-                    1f);
-            }
+                rowCoordinate,
+                red,
+                green,
+                blue);
         }
 
         private static Dictionary<string, int> GetItemTintOverrides(uint item)

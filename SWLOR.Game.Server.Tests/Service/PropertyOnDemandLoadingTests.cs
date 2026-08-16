@@ -594,6 +594,12 @@ public class PropertyOnDemandLoadingTests
         var commandBody = ExtractMethod(adminChatSource, "private void PropertyDiagnosticsCommand()");
         commandBody.Should().Contain("_builder.Create(\"propertydiagnostics\")");
         commandBody.Should().Contain(".Permissions(AuthorizationLevel.Admin)");
+        commandBody.Should().Contain("Log.WriteStructured(");
+        commandBody.Should().Contain("LogGroup.Property");
+        commandBody.Should().Contain("GetName(user)");
+        commandBody.Should().Contain("GetObjectUUID(user)");
+        commandBody.IndexOf("Log.WriteStructured(", StringComparison.Ordinal)
+            .Should().BeLessThan(commandBody.IndexOf("Gui.TogglePlayerWindow(user, GuiWindowType.PropertyDiagnostics);", StringComparison.Ordinal));
         commandBody.Should().Contain("Gui.TogglePlayerWindow(user, GuiWindowType.PropertyDiagnostics);");
         staffDefinitionSource.Should().NotContain("OnClickPropertyDiagnostics");
         staffViewModelSource.Should().NotContain("GuiWindowType.PropertyDiagnostics");

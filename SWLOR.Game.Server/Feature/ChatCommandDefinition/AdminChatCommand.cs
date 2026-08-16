@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.LogService;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {
@@ -48,6 +49,11 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.Admin)
                 .Action((user, target, location, args) =>
                 {
+                    Log.WriteStructured(
+                        LogGroup.Property,
+                        "Property diagnostics opened: PlayerName={PlayerName} PlayerId={PlayerId}",
+                        GetName(user),
+                        GetObjectUUID(user));
                     Gui.TogglePlayerWindow(user, GuiWindowType.PropertyDiagnostics);
                 });
         }

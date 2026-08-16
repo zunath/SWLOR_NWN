@@ -134,7 +134,7 @@ Use short, non-technical messages:
 
 ## Admin Diagnostic NUI Checklist
 
-Create an admin-only diagnostic NUI, not chat commands.
+Open the admin-only diagnostic NUI with `/propertydiagnostics`; keep diagnostic and repair operations out of chat-command verbs.
 
 Minimum views:
 

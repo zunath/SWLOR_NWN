@@ -49,12 +49,25 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Permissions(AuthorizationLevel.Admin)
                 .Action((user, target, location, args) =>
                 {
+                    var player = user;
+                    var uiTarget = OBJECT_INVALID;
+                    if (GetIsDMPossessed(player))
+                    {
+                        uiTarget = player;
+                        player = GetMaster(player);
+                    }
+
                     Log.WriteStructured(
                         LogGroup.Property,
-                        "Property diagnostics opened: PlayerName={PlayerName} PlayerId={PlayerId}",
-                        GetName(user),
-                        GetObjectUUID(user));
-                    Gui.TogglePlayerWindow(user, GuiWindowType.PropertyDiagnostics);
+                        "Property diagnostics toggled: PlayerName={PlayerName} PlayerId={PlayerId}",
+                        GetName(player),
+                        GetObjectUUID(player));
+                    Gui.TogglePlayerWindow(
+                        player,
+                        GuiWindowType.PropertyDiagnostics,
+                        null,
+                        OBJECT_INVALID,
+                        uiTarget);
                 });
         }
 

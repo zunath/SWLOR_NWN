@@ -594,13 +594,19 @@ public class PropertyOnDemandLoadingTests
         var commandBody = ExtractMethod(adminChatSource, "private void PropertyDiagnosticsCommand()");
         commandBody.Should().Contain("_builder.Create(\"propertydiagnostics\")");
         commandBody.Should().Contain(".Permissions(AuthorizationLevel.Admin)");
+        commandBody.Should().Contain("var player = user;");
+        commandBody.Should().Contain("if (GetIsDMPossessed(player))");
+        commandBody.Should().Contain("uiTarget = player;");
+        commandBody.Should().Contain("player = GetMaster(player);");
         commandBody.Should().Contain("Log.WriteStructured(");
         commandBody.Should().Contain("LogGroup.Property");
-        commandBody.Should().Contain("GetName(user)");
-        commandBody.Should().Contain("GetObjectUUID(user)");
+        commandBody.Should().Contain("Property diagnostics toggled:");
+        commandBody.Should().Contain("GetName(player)");
+        commandBody.Should().Contain("GetObjectUUID(player)");
         commandBody.IndexOf("Log.WriteStructured(", StringComparison.Ordinal)
-            .Should().BeLessThan(commandBody.IndexOf("Gui.TogglePlayerWindow(user, GuiWindowType.PropertyDiagnostics);", StringComparison.Ordinal));
-        commandBody.Should().Contain("Gui.TogglePlayerWindow(user, GuiWindowType.PropertyDiagnostics);");
+            .Should().BeLessThan(commandBody.IndexOf("Gui.TogglePlayerWindow(", StringComparison.Ordinal));
+        commandBody.Should().Contain("GuiWindowType.PropertyDiagnostics,");
+        commandBody.Should().Contain("uiTarget);");
         staffDefinitionSource.Should().NotContain("OnClickPropertyDiagnostics");
         staffViewModelSource.Should().NotContain("GuiWindowType.PropertyDiagnostics");
     }

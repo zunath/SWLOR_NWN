@@ -55,10 +55,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetText("Delete User")
                             .BindOnClicked(model => model.OnClickDeleteUser())
                             .BindIsEnabled(model => model.IsDeleteEnabled);
-
-                        row.AddButton()
-                            .SetText("Properties")
-                            .BindOnClicked(model => model.OnClickPropertyDiagnostics());
                     });
                 })
 

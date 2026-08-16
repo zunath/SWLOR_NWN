@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         {
             ManageStaffCommand();
             ManageBansCommand();
+            PropertyDiagnosticsCommand();
 
             return _builder.Build();
         }
@@ -37,6 +38,17 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Action((user, target, location, args) =>
                 {
                     Gui.TogglePlayerWindow(user, GuiWindowType.ManageBans);
+                });
+        }
+
+        private void PropertyDiagnosticsCommand()
+        {
+            _builder.Create("propertydiagnostics")
+                .Description("Toggles the property loading diagnostics window.")
+                .Permissions(AuthorizationLevel.Admin)
+                .Action((user, target, location, args) =>
+                {
+                    Gui.TogglePlayerWindow(user, GuiWindowType.PropertyDiagnostics);
                 });
         }
 

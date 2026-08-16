@@ -563,8 +563,13 @@ public class PropertyOnDemandLoadingTests
     }
 
     [Test]
-    public void PropertyDiagnostics_AreNotExposedAsChatCommands()
+    public void PropertyDiagnostics_AreExposedThroughDedicatedAdminCommand()
     {
+        var commands = new SWLOR.Game.Server.Feature.ChatCommandDefinition.AdminChatCommand().BuildChatCommands();
+        commands.Should().ContainKey("propertydiagnostics");
+        commands["propertydiagnostics"].Authorization
+            .Should().Be(SWLOR.Game.Server.Enumeration.AuthorizationLevel.Admin);
+
         var root = FindRepositoryRoot();
         var adminChatSource = File.ReadAllText(Path.Combine(
             root.FullName,
@@ -586,9 +591,12 @@ public class PropertyOnDemandLoadingTests
             "ViewModel",
             "ManageDMsViewModel.cs"));
 
-        adminChatSource.Should().NotContain("PropertyDiagnostics");
-        staffDefinitionSource.Should().Contain("OnClickPropertyDiagnostics");
-        staffViewModelSource.Should().Contain("GuiWindowType.PropertyDiagnostics");
+        var commandBody = ExtractMethod(adminChatSource, "private void PropertyDiagnosticsCommand()");
+        commandBody.Should().Contain("_builder.Create(\"propertydiagnostics\")");
+        commandBody.Should().Contain(".Permissions(AuthorizationLevel.Admin)");
+        commandBody.Should().Contain("Gui.TogglePlayerWindow(user, GuiWindowType.PropertyDiagnostics);");
+        staffDefinitionSource.Should().NotContain("OnClickPropertyDiagnostics");
+        staffViewModelSource.Should().NotContain("GuiWindowType.PropertyDiagnostics");
     }
 
     private static string ExtractMethod(string source, string signature)

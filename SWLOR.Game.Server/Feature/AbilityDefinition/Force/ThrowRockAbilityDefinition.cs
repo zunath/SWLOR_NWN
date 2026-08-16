@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating(VisualEffect.None)
                 .PlaysSoundOnImpact("ksfx_gravity")
                 .IsSingleTargetAbility()
-                .HasMaxRange(15f)
+                .HasMaxRange(30f)
                 .RequiresTarget()
                 .HasImpactAction((activator, target, _, targetLocation) =>
                     ApplyThrowRock(activator, target, targetLocation, level, baseDamage))

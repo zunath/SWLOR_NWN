@@ -63,9 +63,9 @@ public class ForceLightConsularTests
     {
         var throwRock = new ThrowRockAbilityDefinition().BuildAbilities();
 
-        AssertAbility(throwRock[FeatType.ThrowRock1], "Throw Rock I", 1, RecastGroup.ThrowRock, 6f, 1.5f, 3, true, true, true, false, AbilityActivationType.Casted, 15f);
-        AssertAbility(throwRock[FeatType.ThrowRock2], "Throw Rock II", 2, RecastGroup.ThrowRock, 6f, 1.5f, 4, true, true, true, false, AbilityActivationType.Casted, 15f);
-        AssertAbility(throwRock[FeatType.ThrowRock3], "Throw Rock III", 3, RecastGroup.ThrowRock, 6f, 1.5f, 5, true, true, true, false, AbilityActivationType.Casted, 15f);
+        AssertAbility(throwRock[FeatType.ThrowRock1], "Throw Rock I", 1, RecastGroup.ThrowRock, 6f, 1.5f, 3, true, true, true, false, AbilityActivationType.Casted, 30f);
+        AssertAbility(throwRock[FeatType.ThrowRock2], "Throw Rock II", 2, RecastGroup.ThrowRock, 6f, 1.5f, 4, true, true, true, false, AbilityActivationType.Casted, 30f);
+        AssertAbility(throwRock[FeatType.ThrowRock3], "Throw Rock III", 3, RecastGroup.ThrowRock, 6f, 1.5f, 5, true, true, true, false, AbilityActivationType.Casted, 30f);
 
         foreach (var ability in throwRock.Values)
         {

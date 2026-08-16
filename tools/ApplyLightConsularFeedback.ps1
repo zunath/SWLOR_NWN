@@ -15,9 +15,9 @@ else {
 }
 
 $existingDescriptions = [ordered]@{
-    "Throw Rock I" = "Hurls stone or loose debris with the Force up to 15m, dealing 22 physical DMG plus WIL/PER scaling to one target."
-    "Throw Rock II" = "Hurls a heavier stone or debris with the Force up to 15m, dealing 40 physical DMG plus WIL/PER scaling to one target."
-    "Throw Rock III" = "Hurls a crushing mass of stone and debris with the Force up to 15m, dealing 60 physical DMG plus WIL/PER scaling to one target."
+    "Throw Rock I" = "Hurls stone or loose debris with the Force up to 30m, dealing 22 physical DMG plus WIL/PER scaling to one target."
+    "Throw Rock II" = "Hurls a heavier stone or debris with the Force up to 30m, dealing 40 physical DMG plus WIL/PER scaling to one target."
+    "Throw Rock III" = "Hurls a crushing mass of stone and debris with the Force up to 30m, dealing 60 physical DMG plus WIL/PER scaling to one target."
     "Force Judgment I" = "Deals 18 force DMG plus WIL scaling to one target and reduces outgoing weapon and force damage by 4% for 30 seconds."
     "Force Judgment II" = "Deals 32 force DMG plus WIL scaling to the selected target and one enemy within 5m, reducing outgoing weapon and force damage by 6% for 30 seconds."
     "Force Judgment III" = "Deals 48 force DMG plus WIL scaling to the selected target and enemies within 5m, reducing outgoing weapon and force damage by 8% for 30 seconds."

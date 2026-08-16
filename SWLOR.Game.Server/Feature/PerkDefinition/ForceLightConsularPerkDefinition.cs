@@ -36,20 +36,20 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
-                .Description("Hurls stone or loose debris with the Force up to 15m, dealing 22 physical DMG plus WIL/PER scaling to one target.")
+                .Description("Hurls stone or loose debris with the Force up to 30m, dealing 22 physical DMG plus WIL/PER scaling to one target.")
                 .Price(2)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ThrowRock1)
 
                 .AddPerkLevel()
-                .Description("Hurls a heavier stone or debris with the Force up to 15m, dealing 40 physical DMG plus WIL/PER scaling to one target.")
+                .Description("Hurls a heavier stone or debris with the Force up to 30m, dealing 40 physical DMG plus WIL/PER scaling to one target.")
                 .Price(3)
                 .RequirementSkill(SkillType.Force, 18)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
                 .GrantsFeat(FeatType.ThrowRock2)
 
                 .AddPerkLevel()
-                .Description("Hurls a crushing mass of stone and debris with the Force up to 15m, dealing 60 physical DMG plus WIL/PER scaling to one target.")
+                .Description("Hurls a crushing mass of stone and debris with the Force up to 30m, dealing 60 physical DMG plus WIL/PER scaling to one target.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive)

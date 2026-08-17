@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -1975,7 +1976,11 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            AssignCommand(activator, () => ActionPlayAnimation(animation));
+            AssignCommand(
+                activator,
+                () => PistolAnimationRemap.PlayAnimationPreservingExplicitThrow(
+                    activator,
+                    animation));
         }
 
         public static int ApplyHostileCombatImpact(

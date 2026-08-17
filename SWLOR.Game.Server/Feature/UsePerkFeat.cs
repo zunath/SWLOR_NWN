@@ -427,7 +427,13 @@ namespace SWLOR.Game.Server.Feature
                         return;
                     }
 
-                    AssignCommand(activator, () => ActionPlayAnimation(ability.AnimationType, 1.0f, animationLength));
+                    AssignCommand(
+                        activator,
+                        () => PistolAnimationRemap.PlayAnimationPreservingExplicitThrow(
+                            activator,
+                            ability.AnimationType,
+                            1.0f,
+                            animationLength));
                 }
 
                 // Force out of stealth unless the activation must inspect or toggle the current

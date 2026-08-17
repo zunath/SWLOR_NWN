@@ -53,6 +53,27 @@ namespace SWLOR.Game.Server.Service.AIService
             };
         }
 
+        private static AITargetSelector SelfCenteredHostileArea(AbilityDetail ability, int minimumTargets)
+        {
+            return context =>
+            {
+                if (!GetIsObjectValid(context.CurrentEnmityTarget))
+                    return OBJECT_INVALID;
+
+                var radius = ability.Targeting?.ResolveSizeX(context.Self, true) ?? 0f;
+                if (radius <= 0f)
+                    radius = ability.MaxRange;
+
+                // Self-centered areas must evaluate the creatures actually inside the caster's
+                // effect, not a cluster around the current target. Returning self also keeps the
+                // activation location anchored on the caster.
+                context.SetEvaluatedTarget(context.Self);
+                return radius > 0f && context.CountHostilesNearTarget(radius) >= minimumTargets
+                    ? context.Self
+                    : OBJECT_INVALID;
+            };
+        }
+
         public static AITargetSelector AllyAttacker(float maxRange = 10f)
         {
             return context =>
@@ -93,9 +114,12 @@ namespace SWLOR.Game.Server.Service.AIService
         {
             if (ability.IsHostileAbility)
             {
-                return ability.IsAreaAbility
-                    ? HostileCluster(ability.MaxRange, 2)
-                    : HighestEnmity();
+                if (!ability.IsAreaAbility)
+                    return HighestEnmity();
+
+                return ability.Targeting?.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf) == true
+                    ? SelfCenteredHostileArea(ability, 2)
+                    : HostileCluster(ability.MaxRange, 2);
             }
 
             if (ability.RequiresTarget)

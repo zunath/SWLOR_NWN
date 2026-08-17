@@ -56,10 +56,13 @@ namespace SWLOR.Game.Server.Service.AIService
         {
             if (ability.IsHostileAbility && ability.IsAreaAbility)
             {
-                return Cluster(
-                    AIScoreBand.AreaDamage + ability.AbilityLevel,
-                    25,
-                    ability.MaxRange);
+                return context =>
+                {
+                    var count = context.CountHostilesInAbilityArea(ability);
+                    return count <= 0
+                        ? 0
+                        : AIScoreBand.AreaDamage + ability.AbilityLevel + count * 25;
+                };
             }
 
             if (ability.IsHostileAbility)

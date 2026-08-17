@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -110,6 +111,23 @@ namespace SWLOR.Game.Server.Service.AIService
             }
 
             return count;
+        }
+
+        public int CountHostilesInAbilityArea(AbilityDetail ability)
+        {
+            if (ability?.Targeting == null)
+                return CountHostilesNearTarget(ability?.MaxRange ?? 0f);
+
+            var target = GetIsObjectValid(EvaluatedTarget)
+                ? EvaluatedTarget
+                : Self;
+
+            return Ability.GetHostileCreaturesInTargetingArea(
+                    Self,
+                    target,
+                    GetLocation(target),
+                    ability.Targeting)
+                .Count;
         }
 
         public uint GetLowestHealthAlly(bool includeSelf, float maxRange)

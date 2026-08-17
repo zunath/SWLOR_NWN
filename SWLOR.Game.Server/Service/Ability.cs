@@ -509,21 +509,16 @@ namespace SWLOR.Game.Server.Service
         {
             var targeting = ability.Targeting;
             if (targeting == null ||
-                !targeting.Flags.HasFlag(AbilityTargetingFlags.HarmsEnemies) ||
-                !TryGetCombatImpactShape(targeting.Shape, out var shape))
+                !targeting.Flags.HasFlag(AbilityTargetingFlags.HarmsEnemies))
             {
                 return string.Empty;
             }
 
-            var creatures = GetHostileCreaturesInCombatImpactShape(
-                    activator,
-                    target,
-                    targetLocation,
-                    shape,
-                    targeting.ResolveSizeX(activator, true),
-                    targeting.ResolveSizeY(),
-                    targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf))
-                .ToList();
+            var creatures = GetHostileCreaturesInTargetingArea(
+                activator,
+                target,
+                targetLocation,
+                targeting);
 
             if (creatures.Count <= 0 ||
                 creatures.Any(creature => HasAbilityLineOfSight(activator, creature)))
@@ -532,6 +527,32 @@ namespace SWLOR.Game.Server.Service
             }
 
             return "You cannot see any enemies in the target area.";
+        }
+
+        /// <summary>
+        /// Returns the living hostile creatures inside the resolved targeting geometry.
+        /// </summary>
+        public static IReadOnlyList<uint> GetHostileCreaturesInTargetingArea(
+            uint activator,
+            uint target,
+            Location targetLocation,
+            AbilityTargetingDetail targeting)
+        {
+            if (targeting == null ||
+                !TryGetCombatImpactShape(targeting.Shape, out var shape))
+            {
+                return Array.Empty<uint>();
+            }
+
+            return GetHostileCreaturesInCombatImpactShape(
+                    activator,
+                    target,
+                    targetLocation,
+                    shape,
+                    targeting.ResolveSizeX(activator, true),
+                    targeting.ResolveSizeY(),
+                    targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf))
+                .ToList();
         }
 
         private static bool TryGetCombatImpactShape(AbilityTargetingShapeType targetingShape, out CombatImpactAreaShape shape)

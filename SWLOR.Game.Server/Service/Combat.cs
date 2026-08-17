@@ -4592,6 +4592,16 @@ namespace SWLOR.Game.Server.Service
                    skillType == SkillType.Throwing;
         }
 
+        public static float GetWeaponEngagementRange(SkillType skillType)
+        {
+            const float meleeWeaponRange = 1.5f;
+            const float rangedWeaponRange = 10f;
+
+            return IsRangedWeaponSkill(skillType)
+                ? rangedWeaponRange
+                : meleeWeaponRange;
+        }
+
         public static bool IsMeleeWeaponSkill(SkillType skillType)
         {
             return IsWeaponSkillType(skillType) && !IsRangedWeaponSkill(skillType);

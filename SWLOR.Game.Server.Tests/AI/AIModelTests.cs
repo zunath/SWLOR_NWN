@@ -482,8 +482,8 @@ public class AIModelTests
             .BeGreaterThan(issueBody.LastIndexOf("AI.TryStartCombatLeashEvade(creature, target)", StringComparison.Ordinal));
         issueBody.Should().Contain("ClearAllActions(true);");
         issueBody.Should().Contain("ActionMoveToObject(target, true, GetAttackMoveRange(creature));");
-        enmitySource.Should().Contain("CreaturePlugin.GetPreferredAttackDistance(creature)");
-        enmitySource.Should().Contain("private static float GetAttackMoveRange(SkillType skillType, float preferredAttackDistance)");
+        enmitySource.Should().Contain("Combat.GetWeaponEngagementRange(skillType)");
+        enmitySource.Should().NotContain("GetPreferredAttackDistance");
         attackActionBody.Should().Contain("Enmity.AttackHighestEnmityTarget(context.Self);");
         attackActionBody.Should().NotContain("ClearAllActions");
         attackActionBody.Should().NotContain("ActionAttack");

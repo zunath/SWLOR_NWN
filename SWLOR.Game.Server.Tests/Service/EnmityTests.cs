@@ -448,44 +448,46 @@ public class EnmityTests
     }
 
     [Test]
-    public void GetAttackMoveRange_UsesPreferredDistanceForRangedWeaponSkills()
+    public void GetWeaponEngagementRange_UsesTheEquippedWeaponSkill()
     {
-        GetAttackMoveRange(SkillType.Rifle, 10f).Should().Be(10f);
-        GetAttackMoveRange(SkillType.Pistol, 12f).Should().Be(12f);
-        GetAttackMoveRange(SkillType.Throwing, 8f).Should().Be(8f);
+        Combat.GetWeaponEngagementRange(SkillType.Rifle).Should().Be(10f);
+        Combat.GetWeaponEngagementRange(SkillType.Pistol).Should().Be(10f);
+        Combat.GetWeaponEngagementRange(SkillType.Throwing).Should().Be(10f);
+        Combat.GetWeaponEngagementRange(SkillType.Lightsaber).Should().Be(1.5f);
+        Combat.GetWeaponEngagementRange(SkillType.Katar).Should().Be(1.5f);
+        Combat.GetWeaponEngagementRange(SkillType.Invalid).Should().Be(1.5f);
     }
 
     [Test]
-    public void GetAttackMoveRange_KeepsRangedEnemiesAtRangeWhenPreferredDistanceIsMissing()
+    public void AttackMovement_UsesWeaponRangeInsteadOfAppearancePreferredDistance()
     {
-        GetAttackMoveRange(SkillType.Rifle, 0f).Should().Be(10f);
-        GetAttackMoveRange(SkillType.Rifle, -1f).Should().Be(10f);
-        GetAttackMoveRange(SkillType.Rifle, float.NaN).Should().Be(10f);
-        GetAttackMoveRange(SkillType.Rifle, float.PositiveInfinity).Should().Be(10f);
-    }
-
-    [Test]
-    public void NativeRangedAttackPath_RepairsInvalidDesiredDistanceBeforePathing()
-    {
-        var source = File.ReadAllText(Path.Combine(
-            FindRepositoryRoot().FullName,
+        var repositoryRoot = FindRepositoryRoot().FullName;
+        var nativeSource = File.ReadAllText(Path.Combine(
+            repositoryRoot,
             "SWLOR.Game.Server",
             "Native",
             "OnAIActionAttackObject.cs"));
+        var enmitySource = File.ReadAllText(Path.Combine(
+            repositoryRoot,
+            "SWLOR.Game.Server",
+            "Service",
+            "Enmity.cs"));
 
-        source.Should().Contain("fDesiredAttackRange = ResolveDesiredAttackRange(");
-        source.Should().Contain("pCreature.GetRangeWeaponEquipped() == 1");
-        source.Should().Contain("private static float ResolveDesiredAttackRange(");
-        source.Should().Contain("fMaxAttackRange = ResolveMaximumAttackRange(");
-        source.Should().Contain("private static float ResolveMaximumAttackRange(");
-        source.Should().Contain("DEFAULT_RANGED_DESIRED_ATTACK_RANGE = 10f");
+        nativeSource.Should().Contain("Combat.GetWeaponEngagementRange(attackSkillType)");
+        nativeSource.Should().Contain("Combat.IsRangedWeaponSkill(attackSkillType)");
+        nativeSource.Should().NotContain("pCreature.DesiredAttackRange(");
+        nativeSource.Should().NotContain("pCreature.GetRangeWeaponEquipped()");
+        enmitySource.Should().Contain("Combat.GetWeaponEngagementRange(skillType)");
+        enmitySource.Should().NotContain("GetPreferredAttackDistance");
 
-        ResolveNativeDesiredAttackRange(0f, 30f, true).Should().Be(10f);
-        ResolveNativeDesiredAttackRange(float.NaN, 5f, true).Should().BeApproximately(4.99f, 0.001f);
-        ResolveNativeDesiredAttackRange(0f, 0f, true).Should().Be(10f,
+        ResolveNativeDesiredAttackRange(10f, 30f, true).Should().Be(10f);
+        ResolveNativeDesiredAttackRange(10f, 5f, true).Should().BeApproximately(4.99f, 0.001f,
+            "a ranged weapon's real maximum range must cap the standard engagement distance");
+        ResolveNativeDesiredAttackRange(10f, 1.5f, true).Should().BeApproximately(1.49f, 0.001f,
+            "even a very short real ranged weapon range must be respected");
+        ResolveNativeDesiredAttackRange(10f, 0f, true).Should().Be(10f,
             "missing ranged metadata must not collapse a ranged creature to melee distance");
-        ResolveNativeDesiredAttackRange(8f, 30f, true).Should().Be(8f);
-        ResolveNativeDesiredAttackRange(0f, 30f, false).Should().Be(0f);
+        ResolveNativeDesiredAttackRange(1.5f, 30f, false).Should().Be(1.5f);
 
         ResolveNativeMaximumAttackRange(10f, 0f, true).Should().Be(10f,
             "missing ranged metadata must repair the maximum range as well as the desired range");
@@ -495,14 +497,7 @@ public class EnmityTests
     }
 
     [Test]
-    public void GetAttackMoveRange_KeepsMeleeEnemiesAtCloseRange()
-    {
-        GetAttackMoveRange(SkillType.Lightsaber, 10f).Should().Be(1.5f);
-        GetAttackMoveRange(SkillType.Katar, 10f).Should().Be(1.5f);
-    }
-
-    [Test]
-    public void ShouldMoveIntoAttackRange_UsesPreferredRangeForRangedEnemies()
+    public void ShouldMoveIntoAttackRange_UsesWeaponRangeForRangedEnemies()
     {
         ShouldMoveIntoAttackRange(10.25f, SkillType.Rifle, 10f).Should().BeFalse();
         ShouldMoveIntoAttackRange(10.26f, SkillType.Rifle, 10f).Should().BeTrue();
@@ -591,16 +586,6 @@ public class EnmityTests
                 hasRecentAttack,
                 recoverySeconds
             })!;
-    }
-
-    private static float GetAttackMoveRange(SkillType skillType, float preferredAttackDistance)
-    {
-        return (float)typeof(Enmity)
-            .GetMethods(BindingFlags.Static | BindingFlags.NonPublic)
-            .Single(method =>
-                method.Name == "GetAttackMoveRange" &&
-                method.GetParameters().Length == 2)
-            .Invoke(null, new object[] { skillType, preferredAttackDistance })!;
     }
 
     private static bool ShouldMoveIntoAttackRange(float distance, SkillType skillType, float moveRange)

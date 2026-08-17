@@ -62,9 +62,7 @@ namespace SWLOR.Game.Server.Service.AIService
                 if (!GetIsObjectValid(target))
                     return OBJECT_INVALID;
 
-                var isSelfCentered = ability.Targeting?.Shape == AbilityTargetingShapeType.Sphere &&
-                                     ability.Targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf);
-                var areaTarget = isSelfCentered
+                var areaTarget = ability.IsSelfCenteredArea
                     ? context.Self
                     : target;
 

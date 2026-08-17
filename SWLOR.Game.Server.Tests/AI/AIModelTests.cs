@@ -284,13 +284,35 @@ public class AIModelTests
             targetSource.IndexOf("private static AITargetSelector HostileArea", StringComparison.Ordinal));
 
         targetSource.Should().Contain("private const int DefaultAreaAbilityMinimumTargets = 2;");
-        hostileAreaBody.Should().Contain("ability.Targeting?.Shape == AbilityTargetingShapeType.Sphere");
-        hostileAreaBody.Should().Contain("AbilityTargetingFlags.OriginOnSelf");
+        hostileAreaBody.Should().Contain("ability.IsSelfCenteredArea");
         hostileAreaBody.Should().Contain("context.CountHostilesInAbilityArea(ability) >= DefaultAreaAbilityMinimumTargets");
         targetSource.Should().Contain("return HostileArea(ability);");
         targetSource.Should().NotContain("HostileCluster(ability.MaxRange, 2)");
         contextSource.Should().Contain("Ability.GetHostileCreaturesInTargetingArea(");
         scoreSource.Should().Contain("context.CountHostilesInAbilityArea(ability)");
+    }
+
+    [TestCase(AbilityTargetingShapeType.Sphere, true)]
+    [TestCase(AbilityTargetingShapeType.HSphere, true)]
+    [TestCase(AbilityTargetingShapeType.Cone, false)]
+    [TestCase(AbilityTargetingShapeType.Rect, false)]
+    public void AbilityDetail_IsSelfCenteredAreaRecognizesOnlySphericalSelfOrigins(
+        AbilityTargetingShapeType shape,
+        bool expected)
+    {
+        var ability = new AbilityDetail
+        {
+            IsAreaAbility = true,
+            Targeting = new AbilityTargetingDetail(
+                Spell.Invalid,
+                shape,
+                2f,
+                0f,
+                AbilityTargetingFlags.OriginOnSelf,
+                null)
+        };
+
+        ability.IsSelfCenteredArea.Should().Be(expected);
     }
 
     [Test]

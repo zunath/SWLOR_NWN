@@ -80,6 +80,15 @@ namespace SWLOR.Game.Server.Service.AbilityService
              !Targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf));
 
         /// <summary>
+        /// True when a spherical area originates on the ability user rather than a selected target.
+        /// </summary>
+        public bool IsSelfCenteredArea =>
+            IsAreaAbility &&
+            Targeting != null &&
+            Targeting.Shape is AbilityTargetingShapeType.Sphere or AbilityTargetingShapeType.HSphere &&
+            Targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf);
+
+        /// <summary>
         /// When true the activation delay is a channel: the ability's impact, costs, and recast delay
         /// all apply when the channel starts and the granted effects run for the channel itself.
         /// Interrupting the channel ends it early via <see cref="ChannelInterruptAction"/> without

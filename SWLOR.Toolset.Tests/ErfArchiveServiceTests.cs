@@ -459,6 +459,19 @@ namespace SWLOR.Toolset.Tests
                     extension,
                     $"{resRef}.{extension}.json")).Should().BeTrue();
             }
+
+            importViewModel.ShowImportAction.Should().BeFalse();
+            importViewModel.ShowRestartImportAction.Should().BeTrue();
+            importViewModel.CanGoBack.Should().BeFalse();
+
+            importViewModel.RestartImportCommand.Execute(null);
+
+            importViewModel.CurrentStep.Should().Be(0);
+            importViewModel.IsComplete.Should().BeFalse();
+            importViewModel.ImportArchivePath.Should().BeEmpty();
+            importViewModel.Assets.Should().BeEmpty();
+            importViewModel.CanGoNext.Should().BeFalse();
+            importViewModel.StatusText.Should().Be("Choose an ERF file to begin.");
         }
 
         [Test]

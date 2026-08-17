@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 
@@ -80,11 +81,23 @@ namespace SWLOR.Game.Server.Feature
                     SlingAttackAnimation,
                     FormerPistolAttackAnimation);
                 SetLocalBool(creature, PistolAnimationRemapActiveVariable, true);
+                Log.WriteStructured(
+                    LogGroup.Server,
+                    "Pistol animation remap changed: Creature={Creature} Action={Action} Animation={Animation}",
+                    creature,
+                    "Apply",
+                    FormerPistolAttackAnimation);
             }
             else if (!shouldUseFormerAnimation && isRemapActive)
             {
                 ReplaceObjectAnimation(creature, SlingAttackAnimation);
                 DeleteLocalBool(creature, PistolAnimationRemapActiveVariable);
+                Log.WriteStructured(
+                    LogGroup.Server,
+                    "Pistol animation remap changed: Creature={Creature} Action={Action} Animation={Animation}",
+                    creature,
+                    "Restore",
+                    SlingAttackAnimation);
             }
         }
     }

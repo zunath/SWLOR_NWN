@@ -99,14 +99,13 @@ public class AbilityImpactAnimationAuditTests
             source.IndexOf("// Force out of stealth", StringComparison.Ordinal) -
             source.IndexOf("List<string> ProcessAnimationAndVisualEffects", StringComparison.Ordinal));
 
-        var playIndex = processAnimationBody.IndexOf(
-            "PistolAnimationRemap.PlayAnimationWithTemporaryReplacementPreservingExplicitThrow",
-            StringComparison.Ordinal);
+        var helperCall = System.Text.RegularExpressions.Regex.Match(
+            processAnimationBody,
+            @"PlayAnimationWithTemporaryReplacementPreservingExplicitThrow\s*\(\s*activator,\s*ability\.AnimationType,\s*1\.0f,\s*animationLength,\s*sourceAnimationName,\s*replacementAnimationName,\s*ability\.AnimationRestoreDelaySeconds\s*\)",
+            System.Text.RegularExpressions.RegexOptions.CultureInvariant);
 
-        playIndex.Should().BeGreaterThanOrEqualTo(0);
-        processAnimationBody.Should().Contain("sourceAnimationName");
-        processAnimationBody.Should().Contain("replacementAnimationName");
-        processAnimationBody.Should().Contain("ability.AnimationRestoreDelaySeconds");
+        helperCall.Success.Should().BeTrue(
+            "the configured activation helper must receive the carrier, replacement, and restore delay in order");
     }
 
     /// <summary>
@@ -126,14 +125,13 @@ public class AbilityImpactAnimationAuditTests
             source.IndexOf("public static int ApplyHostileCombatImpact", StringComparison.Ordinal) -
             source.IndexOf("private static void PlayCombatImpactAnimation", StringComparison.Ordinal));
 
-        var playIndex = impactAnimationBody.IndexOf(
-            "PistolAnimationRemap.PlayAnimationWithTemporaryReplacementPreservingExplicitThrow",
-            StringComparison.Ordinal);
+        var helperCall = System.Text.RegularExpressions.Regex.Match(
+            impactAnimationBody,
+            @"PlayAnimationWithTemporaryReplacementPreservingExplicitThrow\s*\(\s*activator,\s*animation,\s*1\.0f,\s*restoreDelaySeconds,\s*sourceAnimationName,\s*replacementAnimationName,\s*restoreDelaySeconds\s*\)",
+            System.Text.RegularExpressions.RegexOptions.CultureInvariant);
 
-        playIndex.Should().BeGreaterThanOrEqualTo(0);
-        impactAnimationBody.Should().Contain("sourceAnimationName");
-        impactAnimationBody.Should().Contain("replacementAnimationName");
-        impactAnimationBody.Should().Contain("restoreDelaySeconds");
+        helperCall.Success.Should().BeTrue(
+            "the configured impact helper must receive the carrier, replacement, and restore delay in order");
     }
 
     private static bool UsesCastedActionWithoutOwnedAnimation(AbilityDetail ability, string source)

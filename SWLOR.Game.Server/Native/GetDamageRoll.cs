@@ -307,7 +307,7 @@ namespace SWLOR.Game.Server.Native
         {
             var damageType = CombatDamageType.Physical;
             var damage = 0;
-            var foundDMG = false;
+            var hasDamageProperty = false;
 
             if (weapon != null)
             {
@@ -320,42 +320,23 @@ namespace SWLOR.Game.Server.Native
                     if (ip.m_nPropertyName == (ushort)ItemPropertyType.DMG)
                     {
                         damage += ip.m_nCostTableValue;
-                        foundDMG = true;
+                        hasDamageProperty = true;
                     }
                     else if (ip.m_nPropertyName == (ushort)ItemPropertyType.WeaponDamageType)
                     {
                         damageType = ResolveWeaponDamageType(damageType, ip.m_nSubType);
                     }
                 }
-
-                if (!foundDMG && IsWeapon(weapon))
-                {
-                    damage += DefaultPhysicalDamage;
-                    foundDMG = true;
-                }
             }
 
-            if (!foundDMG)
+            // A damage type only selects the type of a real DMG property. Items without DMG use
+            // the unarmed/default physical fallback instead of manufacturing elemental damage.
+            if (!hasDamageProperty)
             {
                 return new WeaponDamageProfile(CombatDamageType.Physical, DefaultPhysicalDamage);
             }
 
             return new WeaponDamageProfile(damageType, damage);
-        }
-
-        private static bool IsWeapon(CNWSItem item)
-        {
-            if (item == null)
-                return false;
-
-            var baseItem = (BaseItem)item.m_nBaseItem;
-            foreach (var weaponType in Item.WeaponBaseItemTypes)
-            {
-                if (weaponType == baseItem)
-                    return true;
-            }
-
-            return false;
         }
 
         private static CombatDamageType ResolveWeaponDamageType(CombatDamageType current, int damageTypeId)

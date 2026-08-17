@@ -854,6 +854,11 @@ public class CombatDamageTests
         damageRollSource.Should().Contain("var damageProfile = ExtractWeaponDamageProfile(weapon);");
         damageRollSource.Should().NotContain("ExtractAttackDamageProfile");
         damageRollSource.Should().NotContain("ExtractWeaponDamageProfile(rightHand, leftHand)");
+
+        var extractor = ExtractMethod(damageRollSource, "private static WeaponDamageProfile ExtractWeaponDamageProfile(");
+        extractor.Should().Contain("var hasDamageProperty = false;");
+        extractor.Should().Contain("if (!hasDamageProperty)");
+        extractor.Should().Contain("return new WeaponDamageProfile(CombatDamageType.Physical, DefaultPhysicalDamage);");
     }
 
     [Test]

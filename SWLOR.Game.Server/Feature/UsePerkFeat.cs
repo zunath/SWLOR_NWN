@@ -97,11 +97,7 @@ namespace SWLOR.Game.Server.Feature
             }
 
             if (!GetIsPC(activator) && !GetIsPC(GetMaster(activator)))
-            {
-                var enmityTarget = Enmity.GetHighestEnmityTarget(activator);
-                if (GetIsObjectValid(enmityTarget))
-                    target = enmityTarget;
-            }
+                target = Enmity.GetHighestEnmityTarget(activator);
 
             if (!GetIsObjectValid(target) ||
                 GetCurrentHitPoints(target) <= 0 ||

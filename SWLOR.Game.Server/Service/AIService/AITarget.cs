@@ -117,7 +117,8 @@ namespace SWLOR.Game.Server.Service.AIService
                 if (!ability.IsAreaAbility)
                     return HighestEnmity();
 
-                return ability.Targeting?.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf) == true
+                return ability.Targeting?.Shape == AbilityTargetingShapeType.Sphere &&
+                       ability.Targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf)
                     ? SelfCenteredHostileArea(ability, 2)
                     : HostileCluster(ability.MaxRange, 2);
             }

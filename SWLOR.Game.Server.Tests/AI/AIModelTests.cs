@@ -286,6 +286,7 @@ public class AIModelTests
         selfCenteredBody.Should().Contain("context.SetEvaluatedTarget(context.Self);");
         selfCenteredBody.Should().Contain("context.CountHostilesNearTarget(radius) >= minimumTargets");
         selfCenteredBody.Should().Contain("? context.Self");
+        inferDefaultBody.Should().Contain("ability.Targeting?.Shape == AbilityTargetingShapeType.Sphere");
         inferDefaultBody.Should().Contain("AbilityTargetingFlags.OriginOnSelf");
         inferDefaultBody.Should().Contain("SelfCenteredHostileArea(ability, 2)");
     }
@@ -453,11 +454,7 @@ public class AIModelTests
             source.IndexOf("private static void ResumeAttackAfterDelay", StringComparison.Ordinal));
 
         resumeBody.Should().Contain("Enmity.IssueAttackCommand(activator, target, clearActions);");
-        resumeBody.Should().Contain("var enmityTarget = Enmity.GetHighestEnmityTarget(activator);");
-        resumeBody.IndexOf("if (GetIsObjectValid(enmityTarget))", StringComparison.Ordinal)
-            .Should()
-            .BeLessThan(resumeBody.IndexOf("target = enmityTarget;", StringComparison.Ordinal),
-                "a valid saved cast target must survive a transiently empty enmity table");
+        resumeBody.Should().Contain("target = Enmity.GetHighestEnmityTarget(activator);");
         delayedResumeBody.Should().Contain("GetIsPC(activator) || GetIsPC(GetMaster(activator))");
         delayedResumeBody.Should().Contain("DelayCommand(delay, () =>");
         animationBody.Should().Contain("if (GetIsPC(activator))");

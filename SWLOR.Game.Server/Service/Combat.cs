@@ -43,6 +43,8 @@ namespace SWLOR.Game.Server.Service
 
         public const int StandardCriticalRating = 2;
         public const int BaseAttackDelayMilliseconds = 1750;
+        public const float MeleeWeaponEngagementRange = 1.5f;
+        public const float RangedWeaponEngagementRange = 10f;
 
         // The engine/client cannot play swing animations faster than the base attack delay.
         // Delays below it are honored by resolving multiple attack rolls within a single swing,
@@ -4590,6 +4592,13 @@ namespace SWLOR.Game.Server.Service
             return skillType == SkillType.Pistol ||
                    skillType == SkillType.Rifle ||
                    skillType == SkillType.Throwing;
+        }
+
+        public static float GetWeaponEngagementRange(SkillType skillType)
+        {
+            return IsRangedWeaponSkill(skillType)
+                ? RangedWeaponEngagementRange
+                : MeleeWeaponEngagementRange;
         }
 
         public static bool IsMeleeWeaponSkill(SkillType skillType)

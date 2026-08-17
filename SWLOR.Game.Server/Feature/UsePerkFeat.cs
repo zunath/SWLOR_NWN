@@ -97,7 +97,11 @@ namespace SWLOR.Game.Server.Feature
             }
 
             if (!GetIsPC(activator) && !GetIsPC(GetMaster(activator)))
-                target = Enmity.GetHighestEnmityTarget(activator);
+            {
+                var enmityTarget = Enmity.GetHighestEnmityTarget(activator);
+                if (GetIsObjectValid(enmityTarget))
+                    target = enmityTarget;
+            }
 
             if (!GetIsObjectValid(target) ||
                 GetCurrentHitPoints(target) <= 0 ||
@@ -172,8 +176,13 @@ namespace SWLOR.Game.Server.Feature
 
         private static void ResumeAttackAfterDelay(uint activator, uint target, float delay, bool clearActions = true)
         {
-            if (!GetIsObjectValid(target))
+            // Autonomous NPCs reacquire their highest-enmity target inside ResumeAttack. Schedule
+            // the callback even when the target saved before the cast has since become invalid.
+            if (!GetIsObjectValid(target) &&
+                (GetIsPC(activator) || GetIsPC(GetMaster(activator))))
+            {
                 return;
+            }
 
             DelayCommand(delay, () =>
             {

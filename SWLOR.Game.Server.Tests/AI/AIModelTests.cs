@@ -270,6 +270,27 @@ public class AIModelTests
     }
 
     [Test]
+    public void AITarget_SelfCenteredHostileAreasEvaluateEnemiesAroundTheCaster()
+    {
+        var source = ReadSource("SWLOR.Game.Server", "Service", "AIService", "AITarget.cs")
+            .Replace("\r\n", "\n");
+        var selfCenteredBody = source.Substring(
+            source.IndexOf("private static AITargetSelector SelfCenteredHostileArea", StringComparison.Ordinal),
+            source.IndexOf("public static AITargetSelector AllyAttacker", StringComparison.Ordinal) -
+            source.IndexOf("private static AITargetSelector SelfCenteredHostileArea", StringComparison.Ordinal));
+        var inferDefaultBody = source.Substring(
+            source.IndexOf("public static AITargetSelector InferDefault", StringComparison.Ordinal));
+
+        selfCenteredBody.Should().Contain("GetIsObjectValid(context.CurrentEnmityTarget)");
+        selfCenteredBody.Should().Contain("ability.Targeting?.ResolveSizeX(context.Self, true)");
+        selfCenteredBody.Should().Contain("context.SetEvaluatedTarget(context.Self);");
+        selfCenteredBody.Should().Contain("context.CountHostilesNearTarget(radius) >= minimumTargets");
+        selfCenteredBody.Should().Contain("? context.Self");
+        inferDefaultBody.Should().Contain("AbilityTargetingFlags.OriginOnSelf");
+        inferDefaultBody.Should().Contain("SelfCenteredHostileArea(ability, 2)");
+    }
+
+    [Test]
     public void CreatureAggroEnter_EnforcesAggroRangeBeforeAddingProximityEnmity()
     {
         var aiSource = File.ReadAllText(Path.Combine(
@@ -426,8 +447,19 @@ public class AIModelTests
             source.IndexOf("void CompleteActivation", StringComparison.Ordinal),
             source.IndexOf("// Begin the main process", StringComparison.Ordinal) -
             source.IndexOf("void CompleteActivation", StringComparison.Ordinal));
+        var delayedResumeBody = source.Substring(
+            source.IndexOf("private static void ResumeAttackAfterDelay", StringComparison.Ordinal),
+            source.IndexOf("/// <summary>\n        /// Breaks stealth", StringComparison.Ordinal) -
+            source.IndexOf("private static void ResumeAttackAfterDelay", StringComparison.Ordinal));
 
         resumeBody.Should().Contain("Enmity.IssueAttackCommand(activator, target, clearActions);");
+        resumeBody.Should().Contain("var enmityTarget = Enmity.GetHighestEnmityTarget(activator);");
+        resumeBody.IndexOf("if (GetIsObjectValid(enmityTarget))", StringComparison.Ordinal)
+            .Should()
+            .BeLessThan(resumeBody.IndexOf("target = enmityTarget;", StringComparison.Ordinal),
+                "a valid saved cast target must survive a transiently empty enmity table");
+        delayedResumeBody.Should().Contain("GetIsPC(activator) || GetIsPC(GetMaster(activator))");
+        delayedResumeBody.Should().Contain("DelayCommand(delay, () =>");
         animationBody.Should().Contain("if (GetIsPC(activator))");
         animationBody.Should().Contain("ClearAllActions(true);");
         completeBody.Should().Contain("ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f);");

@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Service.AIService
         private uint _currentEnmityTarget;
         private bool _currentEnmityTargetLoaded;
         private int? _selfHealthPercent;
+        private readonly Dictionary<(AbilityDetail Ability, uint Target), int> _hostileAbilityAreaCountCache = new();
 
         public uint Self { get; }
         public AITriggerType Trigger { get; }
@@ -115,19 +116,25 @@ namespace SWLOR.Game.Server.Service.AIService
 
         public int CountHostilesInAbilityArea(AbilityDetail ability)
         {
-            if (ability?.Targeting == null)
-                return CountHostilesNearTarget(ability?.MaxRange ?? 0f);
-
             var target = GetIsObjectValid(EvaluatedTarget)
                 ? EvaluatedTarget
                 : Self;
+            var cacheKey = (ability, target);
 
-            return Ability.GetHostileCreaturesInTargetingArea(
-                    Self,
-                    target,
-                    GetLocation(target),
-                    ability.Targeting)
-                .Count;
+            if (_hostileAbilityAreaCountCache.TryGetValue(cacheKey, out var cachedCount))
+                return cachedCount;
+
+            var count = ability?.Targeting == null
+                ? CountHostilesNearTarget(ability?.MaxRange ?? 0f)
+                : Ability.GetHostileCreaturesInTargetingArea(
+                        Self,
+                        target,
+                        GetLocation(target),
+                        ability.Targeting)
+                    .Count(creature => Ability.IsAbilityTargetVisible(Self, creature));
+
+            _hostileAbilityAreaCountCache[cacheKey] = count;
+            return count;
         }
 
         public uint GetLowestHealthAlly(bool includeSelf, float maxRange)

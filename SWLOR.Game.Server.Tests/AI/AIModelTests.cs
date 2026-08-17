@@ -289,6 +289,9 @@ public class AIModelTests
         targetSource.Should().Contain("return HostileArea(ability);");
         targetSource.Should().NotContain("HostileCluster(ability.MaxRange, 2)");
         contextSource.Should().Contain("Ability.GetHostileCreaturesInTargetingArea(");
+        contextSource.Should().Contain("Ability.IsAbilityTargetVisible(Self, creature)");
+        contextSource.Should().Contain("_hostileAbilityAreaCountCache.TryGetValue(cacheKey, out var cachedCount)");
+        contextSource.Should().Contain("_hostileAbilityAreaCountCache[cacheKey] = count;");
         scoreSource.Should().Contain("context.CountHostilesInAbilityArea(ability)");
     }
 

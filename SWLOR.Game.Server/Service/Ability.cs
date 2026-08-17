@@ -495,6 +495,14 @@ namespace SWLOR.Game.Server.Service
             return true;
         }
 
+        /// <summary>
+        /// Returns whether an ability can reach the target through both object and walkmesh visibility.
+        /// </summary>
+        public static bool IsAbilityTargetVisible(uint activator, uint target)
+        {
+            return HasAbilityLineOfSight(activator, target);
+        }
+
         private static bool HasAbilityLineOfSight(uint activator, uint target)
         {
             return LineOfSightObject(activator, target) &&

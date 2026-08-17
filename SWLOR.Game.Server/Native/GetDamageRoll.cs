@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Native
                 var damageFlags = attackerStats.m_pBaseCreature.GetDamageFlags();
                 var pCombatRound = attacker.m_pcCombatRound;
                 var pAttackData = pCombatRound.GetAttack(pCombatRound.m_nCurrentAttack);
-                var weapon = pCombatRound.GetCurrentAttackWeapon();
+                var weapon = pCombatRound.GetCurrentAttackWeapon(bOffHand);
 
                 var attackType = attacker.GetRangeWeaponEquipped() == 1 ? (uint)AttackType.Ranged : (uint)AttackType.Melee;
 

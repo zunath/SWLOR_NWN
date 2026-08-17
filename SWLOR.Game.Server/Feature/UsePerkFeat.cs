@@ -172,8 +172,13 @@ namespace SWLOR.Game.Server.Feature
 
         private static void ResumeAttackAfterDelay(uint activator, uint target, float delay, bool clearActions = true)
         {
-            if (!GetIsObjectValid(target))
+            // Autonomous NPCs reacquire their highest-enmity target inside ResumeAttack. Schedule
+            // the callback even when the target saved before the cast has since become invalid.
+            if (!GetIsObjectValid(target) &&
+                (GetIsPC(activator) || GetIsPC(GetMaster(activator))))
+            {
                 return;
+            }
 
             DelayCommand(delay, () =>
             {

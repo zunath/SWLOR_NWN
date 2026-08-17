@@ -270,6 +270,29 @@ public class AIModelTests
     }
 
     [Test]
+    public void AITarget_SelfCenteredHostileAreasUseCasterAndNamedTargetPolicy()
+    {
+        var source = ReadSource("SWLOR.Game.Server", "Service", "AIService", "AITarget.cs")
+            .Replace("\r\n", "\n");
+        var selectorBody = source.Substring(
+            source.IndexOf("private static AITargetSelector SelfCenteredHostileArea", StringComparison.Ordinal),
+            source.IndexOf("public static AITargetSelector AllyAttacker", StringComparison.Ordinal) -
+            source.IndexOf("private static AITargetSelector SelfCenteredHostileArea", StringComparison.Ordinal));
+        var inferDefaultBody = source.Substring(
+            source.IndexOf("public static AITargetSelector InferDefault", StringComparison.Ordinal));
+
+        source.Should().Contain("private const int DefaultAreaAbilityMinimumTargets = 2;");
+        source.Should().NotContain("HostileCluster(ability.MaxRange, 2)");
+        selectorBody.Should().Contain("ability.Targeting.ResolveSizeX(context.Self, true)");
+        selectorBody.Should().Contain("context.SetEvaluatedTarget(context.Self);");
+        selectorBody.Should().Contain("context.CountHostilesNearTarget(radius) >= DefaultAreaAbilityMinimumTargets");
+        inferDefaultBody.Should().Contain("ability.Targeting?.Shape == AbilityTargetingShapeType.Sphere");
+        inferDefaultBody.Should().Contain("AbilityTargetingFlags.OriginOnSelf");
+        inferDefaultBody.Should().Contain("SelfCenteredHostileArea(ability)");
+        inferDefaultBody.Should().Contain("HostileCluster(ability.MaxRange, DefaultAreaAbilityMinimumTargets)");
+    }
+
+    [Test]
     public void CreatureAggroEnter_EnforcesAggroRangeBeforeAddingProximityEnmity()
     {
         var aiSource = File.ReadAllText(Path.Combine(
@@ -426,8 +449,15 @@ public class AIModelTests
             source.IndexOf("void CompleteActivation", StringComparison.Ordinal),
             source.IndexOf("// Begin the main process", StringComparison.Ordinal) -
             source.IndexOf("void CompleteActivation", StringComparison.Ordinal));
+        var delayedResumeBody = source.Substring(
+            source.IndexOf("private static void ResumeAttackAfterDelay", StringComparison.Ordinal),
+            source.IndexOf("/// <summary>\n        /// Breaks stealth", StringComparison.Ordinal) -
+            source.IndexOf("private static void ResumeAttackAfterDelay", StringComparison.Ordinal));
 
         resumeBody.Should().Contain("Enmity.IssueAttackCommand(activator, target, clearActions);");
+        resumeBody.Should().Contain("target = Enmity.GetHighestEnmityTarget(activator);");
+        delayedResumeBody.Should().Contain("GetIsPC(activator) || GetIsPC(GetMaster(activator))");
+        delayedResumeBody.Should().Contain("DelayCommand(delay, () =>");
         animationBody.Should().Contain("if (GetIsPC(activator))");
         animationBody.Should().Contain("ClearAllActions(true);");
         completeBody.Should().Contain("ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f);");

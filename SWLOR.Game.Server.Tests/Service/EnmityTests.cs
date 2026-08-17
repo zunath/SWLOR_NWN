@@ -475,19 +475,26 @@ public class EnmityTests
 
         nativeSource.Should().Contain("Combat.GetWeaponEngagementRange(attackSkillType)");
         nativeSource.Should().Contain("Combat.IsRangedWeaponSkill(attackSkillType)");
-        nativeSource.Should().NotContain("pCreature.DesiredAttackRange(");
-        nativeSource.Should().NotContain("pCreature.GetRangeWeaponEquipped()");
+        nativeSource.Should().Contain("var isPlayerCreature = pCreature.m_bPlayerCharacter == 1");
+        nativeSource.Should().Contain("? pCreature.GetRangeWeaponEquipped() == 1");
+        nativeSource.Should().Contain("? ResolveEngineDesiredAttackRange(");
+        nativeSource.Should().Contain(": ResolveWeaponEngagementRange(");
         enmitySource.Should().Contain("Combat.GetWeaponEngagementRange(skillType)");
         enmitySource.Should().NotContain("GetPreferredAttackDistance");
 
-        ResolveNativeDesiredAttackRange(10f, 30f, true).Should().Be(10f);
-        ResolveNativeDesiredAttackRange(10f, 5f, true).Should().BeApproximately(4.99f, 0.001f,
+        ResolveNativeWeaponEngagementRange(10f, 30f, true).Should().Be(10f);
+        ResolveNativeWeaponEngagementRange(10f, 5f, true).Should().BeApproximately(4.99f, 0.001f,
             "a ranged weapon's real maximum range must cap the standard engagement distance");
-        ResolveNativeDesiredAttackRange(10f, 1.5f, true).Should().BeApproximately(1.49f, 0.001f,
+        ResolveNativeWeaponEngagementRange(10f, 1.5f, true).Should().BeApproximately(1.49f, 0.001f,
             "even a very short real ranged weapon range must be respected");
-        ResolveNativeDesiredAttackRange(10f, 0f, true).Should().Be(10f,
+        ResolveNativeWeaponEngagementRange(10f, 0f, true).Should().Be(10f,
             "missing ranged metadata must not collapse a ranged creature to melee distance");
-        ResolveNativeDesiredAttackRange(1.5f, 30f, false).Should().Be(1.5f);
+        ResolveNativeWeaponEngagementRange(1.5f, 30f, false).Should().Be(1.5f);
+
+        ResolveNativeEngineDesiredAttackRange(8f, 30f, true).Should().Be(8f,
+            "players must retain the engine's weapon- and target-specific desired range");
+        ResolveNativeEngineDesiredAttackRange(0f, 30f, true).Should().Be(10f);
+        ResolveNativeEngineDesiredAttackRange(1.25f, 30f, false).Should().Be(1.25f);
 
         ResolveNativeMaximumAttackRange(10f, 0f, true).Should().Be(10f,
             "missing ranged metadata must repair the maximum range as well as the desired range");
@@ -609,13 +616,23 @@ public class EnmityTests
             .Invoke(null, new object[] { effectiveDelayMilliseconds })!;
     }
 
-    private static float ResolveNativeDesiredAttackRange(
+    private static float ResolveNativeWeaponEngagementRange(
         float desiredAttackRange,
         float maxAttackRange,
         bool hasRangedWeapon)
     {
         return (float)typeof(OnAIActionAttackObject)
-            .GetMethod("ResolveDesiredAttackRange", BindingFlags.Static | BindingFlags.NonPublic)!
+            .GetMethod("ResolveWeaponEngagementRange", BindingFlags.Static | BindingFlags.NonPublic)!
+            .Invoke(null, new object[] { desiredAttackRange, maxAttackRange, hasRangedWeapon })!;
+    }
+
+    private static float ResolveNativeEngineDesiredAttackRange(
+        float desiredAttackRange,
+        float maxAttackRange,
+        bool hasRangedWeapon)
+    {
+        return (float)typeof(OnAIActionAttackObject)
+            .GetMethod("ResolveEngineDesiredAttackRange", BindingFlags.Static | BindingFlags.NonPublic)!
             .Invoke(null, new object[] { desiredAttackRange, maxAttackRange, hasRangedWeapon })!;
     }
 

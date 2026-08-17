@@ -78,7 +78,10 @@ namespace SWLOR.Game.Server.Native
                 var pNode = CNWSObjectActionNode.FromPointer(node);
                 var pArea = pCreature.GetArea();
                 var attackSkillType = Combat.GetEquippedWeaponSkillType(pCreature.m_idSelf);
-                var usesRangedWeapon = Combat.IsRangedWeaponSkill(attackSkillType);
+                var isPlayerCreature = pCreature.m_bPlayerCharacter == 1;
+                var usesRangedWeapon = isPlayerCreature
+                    ? pCreature.GetRangeWeaponEquipped() == 1
+                    : Combat.IsRangedWeaponSkill(attackSkillType);
 
                 // Clean up attack delay entry if creature no longer exists
                 if (_creatureAttackDelays.ContainsKey(pCreature.m_idSelf) && !GetIsObjectValid(pCreature.m_idSelf))
@@ -177,11 +180,15 @@ namespace SWLOR.Game.Server.Native
                     var pTargetArea = pTarget.GetArea();
 
                     var fMaxAttackRange = pCreature.MaxAttackRange(oidAttackTarget);
-                    var fDesiredAttackRange = Combat.GetWeaponEngagementRange(attackSkillType);
-                    fDesiredAttackRange = ResolveDesiredAttackRange(
-                        fDesiredAttackRange,
-                        fMaxAttackRange,
-                        usesRangedWeapon);
+                    var fDesiredAttackRange = isPlayerCreature
+                        ? ResolveEngineDesiredAttackRange(
+                            pCreature.DesiredAttackRange(oidAttackTarget),
+                            fMaxAttackRange,
+                            usesRangedWeapon)
+                        : ResolveWeaponEngagementRange(
+                            Combat.GetWeaponEngagementRange(attackSkillType),
+                            fMaxAttackRange,
+                            usesRangedWeapon);
                     fMaxAttackRange = ResolveMaximumAttackRange(
                         fDesiredAttackRange,
                         fMaxAttackRange,
@@ -827,7 +834,7 @@ namespace SWLOR.Game.Server.Native
 
         private readonly record struct RepositionDestination(float X, float Y, float Z);
 
-        private static float ResolveDesiredAttackRange(
+        private static float ResolveWeaponEngagementRange(
             float weaponEngagementRange,
             float maxAttackRange,
             bool usesRangedWeapon)
@@ -844,6 +851,30 @@ namespace SWLOR.Game.Server.Native
 
             var maximumUsableRange = maxAttackRange - CNW_PATHFIND_TOLERANCE;
             return Math.Min(weaponEngagementRange, maximumUsableRange);
+        }
+
+        private static float ResolveEngineDesiredAttackRange(
+            float desiredAttackRange,
+            float maxAttackRange,
+            bool usesRangedWeapon)
+        {
+            if (!usesRangedWeapon ||
+                !float.IsNaN(desiredAttackRange) &&
+                !float.IsInfinity(desiredAttackRange) &&
+                desiredAttackRange > Combat.MeleeWeaponEngagementRange)
+            {
+                return desiredAttackRange;
+            }
+
+            if (float.IsNaN(maxAttackRange) ||
+                float.IsInfinity(maxAttackRange) ||
+                maxAttackRange <= Combat.MeleeWeaponEngagementRange)
+            {
+                return Combat.RangedWeaponEngagementRange;
+            }
+
+            var maximumUsableRange = maxAttackRange - CNW_PATHFIND_TOLERANCE;
+            return Math.Min(Combat.RangedWeaponEngagementRange, maximumUsableRange);
         }
 
         private static float ResolveMaximumAttackRange(

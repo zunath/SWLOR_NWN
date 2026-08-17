@@ -96,7 +96,10 @@ namespace SWLOR.Game.Server.Native
                 LogAttackInfo(attacker, defender, attackType, weapon);
 
                 // Extract weapon damage properties and get ability stats
-                var damageProfile = ExtractAttackDamageProfile(attacker, weapon);
+                // ResolveAttack already emits distinct main-hand and off-hand rolls. Keep the
+                // damage profile tied to that roll's current weapon so an elemental weapon cannot
+                // re-type or absorb the other hand's DMG.
+                var damageProfile = ExtractWeaponDamageProfile(weapon);
                 var weaponSkillType = weapon == null
                     ? SkillType.Invalid
                     : SWLOR.Game.Server.Service.Skill.GetSkillTypeByBaseItem((BaseItem)weapon.m_nBaseItem);
@@ -263,19 +266,6 @@ namespace SWLOR.Game.Server.Native
             attackData.AddDamage((ushort)damageType.GetNativeDamageType(), damage);
         }
 
-        private static WeaponDamageProfile ExtractAttackDamageProfile(CNWSCreature attacker, CNWSItem currentWeapon)
-        {
-            var rightHand = attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.RightHand);
-            var leftHand = attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.LeftHand);
-
-            if (HasDelayProperty(rightHand) && HasDelayProperty(leftHand))
-            {
-                return ExtractWeaponDamageProfile(rightHand, leftHand);
-            }
-
-            return ExtractWeaponDamageProfile(currentWeapon);
-        }
-
         // While Imbuement Stance is active, the wearer's hostile weapon auto-attacks deal Force damage instead of
         // their normal type and cost FP per swing. This only affects real auto-attacks against creatures; queued
         // weapon abilities apply their own damage and are excluded so they are neither converted nor charged.
@@ -313,18 +303,14 @@ namespace SWLOR.Game.Server.Native
             return new WeaponDamageProfile(CombatDamageType.Force, damageProfile.Damage);
         }
 
-        private static WeaponDamageProfile ExtractWeaponDamageProfile(params CNWSItem[] weapons)
+        private static WeaponDamageProfile ExtractWeaponDamageProfile(CNWSItem weapon)
         {
             var damageType = CombatDamageType.Physical;
             var damage = 0;
             var foundDMG = false;
 
-            foreach (var weapon in weapons)
+            if (weapon != null)
             {
-                if (weapon == null)
-                    continue;
-
-                var foundWeaponDMG = false;
                 for (var index = 0; index < weapon.m_lstPassiveProperties.Count; index++)
                 {
                     var ip = weapon.GetPassiveProperty(index);
@@ -334,7 +320,6 @@ namespace SWLOR.Game.Server.Native
                     if (ip.m_nPropertyName == (ushort)ItemPropertyType.DMG)
                     {
                         damage += ip.m_nCostTableValue;
-                        foundWeaponDMG = true;
                         foundDMG = true;
                     }
                     else if (ip.m_nPropertyName == (ushort)ItemPropertyType.WeaponDamageType)
@@ -343,7 +328,7 @@ namespace SWLOR.Game.Server.Native
                     }
                 }
 
-                if (!foundWeaponDMG && IsWeapon(weapon))
+                if (!foundDMG && IsWeapon(weapon))
                 {
                     damage += DefaultPhysicalDamage;
                     foundDMG = true;
@@ -356,21 +341,6 @@ namespace SWLOR.Game.Server.Native
             }
 
             return new WeaponDamageProfile(damageType, damage);
-        }
-
-        private static bool HasDelayProperty(CNWSItem weapon)
-        {
-            if (!IsWeapon(weapon))
-                return false;
-
-            for (var index = 0; index < weapon.m_lstPassiveProperties.Count; index++)
-            {
-                var ip = weapon.GetPassiveProperty(index);
-                if (ip?.m_nPropertyName == (ushort)ItemPropertyType.Delay)
-                    return true;
-            }
-
-            return false;
         }
 
         private static bool IsWeapon(CNWSItem item)

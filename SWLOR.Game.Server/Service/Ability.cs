@@ -1930,6 +1930,9 @@ namespace SWLOR.Game.Server.Service
                    Math.Abs(rotatedY) <= width * 0.5f;
         }
 
+        /// <summary>
+        /// Plays a non-weapon combat impact animation while preserving explicit throw carriers.
+        /// </summary>
         private static void PlayCombatImpactAnimation(uint activator, Animation impactAnimation)
         {
             var trackedAbility = GetTrackedAbilityImpact(activator)?.Ability;
@@ -1963,15 +1966,14 @@ namespace SWLOR.Game.Server.Service
             {
                 AssignCommand(activator, () =>
                 {
-                    ReplaceObjectAnimation(
+                    PistolAnimationRemap.PlayAnimationWithTemporaryReplacementPreservingExplicitThrow(
                         activator,
+                        animation,
+                        1.0f,
+                        restoreDelaySeconds,
                         sourceAnimationName,
-                        replacementAnimationName);
-                    ActionPlayAnimation(animation, 1.0f, restoreDelaySeconds);
-                    DelayCommand(restoreDelaySeconds, () =>
-                    {
-                        ReplaceObjectAnimation(activator, sourceAnimationName);
-                    });
+                        replacementAnimationName,
+                        restoreDelaySeconds);
                 });
                 return;
             }

@@ -21,36 +21,54 @@ namespace SWLOR.Game.Server.Feature
         public const string SlingAttackAnimation = "throwr";
         public const string FormerPistolAttackAnimation = "bowshot";
 
+        /// <summary>
+        /// Synchronizes a player creature's pistol animation when it enters the module.
+        /// </summary>
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void OnClientEnter()
         {
             SyncAnimationState(GetEnteringObject(), true);
         }
 
+        /// <summary>
+        /// Synchronizes a spawned creature's pistol animation.
+        /// </summary>
         [NWNEventHandler(ScriptName.OnCreatureSpawnAfter)]
         public static void OnCreatureSpawn()
         {
             SyncAnimationState(OBJECT_SELF, true);
         }
 
+        /// <summary>
+        /// Reapplies the correct pistol animation after a player respawns.
+        /// </summary>
         [NWNEventHandler(ScriptName.OnModuleRespawn)]
         public static void OnPlayerRespawn()
         {
             SyncAnimationState(GetLastRespawnButtonPresser(), true);
         }
 
+        /// <summary>
+        /// Synchronizes the pistol animation after an item is equipped.
+        /// </summary>
         [NWNEventHandler(ScriptName.OnItemEquipValidateAfter)]
         public static void OnItemEquip()
         {
             SyncAnimationState(OBJECT_SELF, false);
         }
 
+        /// <summary>
+        /// Synchronizes the pistol animation after an item is unequipped.
+        /// </summary>
         [NWNEventHandler(ScriptName.OnItemUnequipAfter)]
         public static void OnItemUnequip()
         {
             SyncAnimationState(OBJECT_SELF, false);
         }
 
+        /// <summary>
+        /// Determines whether the equipped loadout can safely use the former two-handed pistol attack.
+        /// </summary>
         public static bool ShouldUseFormerPistolAttackAnimation(
             BaseItem? rightHandBaseItem,
             BaseItem? leftHandBaseItem)
@@ -60,6 +78,9 @@ namespace SWLOR.Game.Server.Feature
                    !leftHandBaseItem.HasValue;
         }
 
+        /// <summary>
+        /// Determines whether an explicit animation needs the persistent pistol remap suspended.
+        /// </summary>
         public static bool ShouldSuspendForExplicitThrow(
             Animation animation,
             bool isPistolRemapActive)
@@ -67,6 +88,9 @@ namespace SWLOR.Game.Server.Feature
             return animation == Animation.ThrowGrenade && isPistolRemapActive;
         }
 
+        /// <summary>
+        /// Plays an animation while preserving explicit throws from the persistent pistol remap.
+        /// </summary>
         public static void PlayAnimationPreservingExplicitThrow(
             uint creature,
             Animation animation)
@@ -78,6 +102,9 @@ namespace SWLOR.Game.Server.Feature
                 ScheduleRemapAfterExplicitThrow(creature, MinimumExplicitThrowRestoreDelaySeconds);
         }
 
+        /// <summary>
+        /// Plays a timed animation while preserving explicit throws from the persistent pistol remap.
+        /// </summary>
         public static void PlayAnimationPreservingExplicitThrow(
             uint creature,
             Animation animation,
@@ -95,6 +122,40 @@ namespace SWLOR.Game.Server.Feature
             }
         }
 
+        /// <summary>
+        /// Plays an animation with its configured temporary replacement while preserving explicit
+        /// throws from the persistent pistol remap.
+        /// </summary>
+        public static void PlayAnimationWithTemporaryReplacementPreservingExplicitThrow(
+            uint creature,
+            Animation animation,
+            float speed,
+            float durationSeconds,
+            string sourceAnimationName,
+            string replacementAnimationName,
+            float replacementRestoreDelaySeconds)
+        {
+            var suspendedRemap = SuspendForExplicitThrow(creature, animation);
+            ReplaceObjectAnimation(creature, sourceAnimationName, replacementAnimationName);
+            ActionPlayAnimation(animation, speed, durationSeconds);
+            DelayCommand(replacementRestoreDelaySeconds, () =>
+            {
+                ReplaceObjectAnimation(creature, sourceAnimationName);
+            });
+
+            if (suspendedRemap)
+            {
+                ScheduleRemapAfterExplicitThrow(
+                    creature,
+                    Math.Max(
+                        Math.Max(durationSeconds, replacementRestoreDelaySeconds),
+                        MinimumExplicitThrowRestoreDelaySeconds));
+            }
+        }
+
+        /// <summary>
+        /// Applies or removes the persistent pistol remap to match the creature's current loadout.
+        /// </summary>
         private static void SyncAnimationState(uint creature, bool forceApply)
         {
             if (!GetIsObjectValid(creature))
@@ -130,6 +191,9 @@ namespace SWLOR.Game.Server.Feature
             }
         }
 
+        /// <summary>
+        /// Determines whether a creature's current equipped loadout qualifies for the remap.
+        /// </summary>
         private static bool ShouldUseFormerPistolAttackAnimation(uint creature)
         {
             var rightHand = GetItemInSlot(InventorySlot.RightHand, creature);
@@ -146,6 +210,9 @@ namespace SWLOR.Game.Server.Feature
                 leftHandBaseItem);
         }
 
+        /// <summary>
+        /// Temporarily removes the persistent remap when the requested animation uses its carrier.
+        /// </summary>
         private static bool SuspendForExplicitThrow(uint creature, Animation animation)
         {
             var isRemapActive = GetIsObjectValid(creature) &&
@@ -161,6 +228,9 @@ namespace SWLOR.Game.Server.Feature
             return true;
         }
 
+        /// <summary>
+        /// Restores a suspended remap after all overlapping explicit throws have completed.
+        /// </summary>
         private static void ScheduleRemapAfterExplicitThrow(uint creature, float delaySeconds)
         {
             DelayCommand(delaySeconds, () =>

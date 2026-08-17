@@ -9,6 +9,9 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class PistolAnimationRemapTests
 {
+    /// <summary>
+    /// Verifies the native sling carrier and former pistol replacement animation identifiers.
+    /// </summary>
     [Test]
     public void RemapsTheSlingAttackToTheFormerPistolAttack()
     {
@@ -16,6 +19,9 @@ public class PistolAnimationRemapTests
         PistolAnimationRemap.FormerPistolAttackAnimation.Should().Be("bowshot");
     }
 
+    /// <summary>
+    /// Verifies every pistol-compatible base item uses the former animation with an empty offhand.
+    /// </summary>
     [TestCase(BaseItem.Pistol)]
     [TestCase(BaseItem.LegacyPistol)]
     [TestCase(BaseItem.Sling)]
@@ -28,6 +34,9 @@ public class PistolAnimationRemapTests
         result.Should().BeTrue();
     }
 
+    /// <summary>
+    /// Verifies shielded pistol loadouts retain the sling-compatible animation.
+    /// </summary>
     [TestCase(BaseItem.Pistol, BaseItem.SmallShield)]
     [TestCase(BaseItem.LegacyPistol, BaseItem.LargeShield)]
     [TestCase(BaseItem.Sling, BaseItem.TowerShield)]
@@ -42,6 +51,9 @@ public class PistolAnimationRemapTests
         result.Should().BeFalse();
     }
 
+    /// <summary>
+    /// Verifies any non-shield offhand item also prevents the two-handed replacement animation.
+    /// </summary>
     [Test]
     public void PistolsWithAnotherOffhandItem_KeepTheSlingAttackAnimation()
     {
@@ -52,6 +64,9 @@ public class PistolAnimationRemapTests
         result.Should().BeFalse();
     }
 
+    /// <summary>
+    /// Verifies non-pistol loadouts are never remapped.
+    /// </summary>
     [TestCase(BaseItem.Longsword)]
     [TestCase(BaseItem.Rifle)]
     [TestCase(null)]
@@ -64,6 +79,9 @@ public class PistolAnimationRemapTests
         result.Should().BeFalse();
     }
 
+    /// <summary>
+    /// Verifies only explicit throws with an active pistol remap require suspension.
+    /// </summary>
     [TestCase(Animation.ThrowGrenade, true, true)]
     [TestCase(Animation.ThrowGrenade, false, false)]
     [TestCase(Animation.PointPistol, true, false)]
@@ -80,6 +98,9 @@ public class PistolAnimationRemapTests
         result.Should().Be(expected);
     }
 
+    /// <summary>
+    /// Verifies fallback and configured activation and impact paths preserve explicit throws.
+    /// </summary>
     [Test]
     public void ExplicitThrows_ArePreservedAcrossSharedAnimationPipelines()
     {
@@ -97,12 +118,25 @@ public class PistolAnimationRemapTests
 
         activationSource.Should().Contain(
             "PistolAnimationRemap.PlayAnimationPreservingExplicitThrow",
-            "activation animations must bypass the persistent pistol remap for explicit throws");
+            "fallback activation animations must bypass the persistent pistol remap for explicit throws");
+        System.Text.RegularExpressions.Regex.IsMatch(
+            activationSource,
+            @"PlayAnimationWithTemporaryReplacementPreservingExplicitThrow\s*\(\s*activator,\s*ability\.AnimationType,\s*1\.0f,\s*animationLength,\s*sourceAnimationName,\s*replacementAnimationName,\s*ability\.AnimationRestoreDelaySeconds\s*\)")
+            .Should().BeTrue(
+                "configured activation replacements must bypass the persistent pistol remap for explicit throws");
         impactSource.Should().Contain(
             "PistolAnimationRemap.PlayAnimationPreservingExplicitThrow",
-            "impact animations must bypass the persistent pistol remap for explicit throws");
+            "fallback impact animations must bypass the persistent pistol remap for explicit throws");
+        System.Text.RegularExpressions.Regex.IsMatch(
+            impactSource,
+            @"PlayAnimationWithTemporaryReplacementPreservingExplicitThrow\s*\(\s*activator,\s*animation,\s*1\.0f,\s*restoreDelaySeconds,\s*sourceAnimationName,\s*replacementAnimationName,\s*restoreDelaySeconds\s*\)")
+            .Should().BeTrue(
+                "configured impact replacements must bypass the persistent pistol remap for explicit throws");
     }
 
+    /// <summary>
+    /// Verifies the remap synchronizes at every equipment and creature lifecycle boundary.
+    /// </summary>
     [TestCase(nameof(PistolAnimationRemap.OnClientEnter), ScriptName.OnModuleEnter)]
     [TestCase(nameof(PistolAnimationRemap.OnCreatureSpawn), ScriptName.OnCreatureSpawnAfter)]
     [TestCase(nameof(PistolAnimationRemap.OnPlayerRespawn), ScriptName.OnModuleRespawn)]
@@ -121,6 +155,9 @@ public class PistolAnimationRemapTests
         scripts.Should().Contain(expectedScript);
     }
 
+    /// <summary>
+    /// Locates the repository root used by the shared-pipeline source assertions.
+    /// </summary>
     private static DirectoryInfo FindRepositoryRoot()
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);

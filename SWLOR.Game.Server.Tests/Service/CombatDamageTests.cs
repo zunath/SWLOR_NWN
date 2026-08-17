@@ -845,6 +845,24 @@ public class CombatDamageTests
     }
 
     [Test]
+    public void DamageRoll_DualWieldKeepsDamageProfileOnCurrentAttackWeapon()
+    {
+        var root = FindRepositoryRoot();
+        var damageRollSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
+
+        damageRollSource.Should().Contain("var weapon = pCombatRound.GetCurrentAttackWeapon(bOffHand);");
+        damageRollSource.Should().NotContain("var weapon = pCombatRound.GetCurrentAttackWeapon();");
+        damageRollSource.Should().Contain("var damageProfile = ExtractWeaponDamageProfile(weapon);");
+        damageRollSource.Should().NotContain("ExtractAttackDamageProfile");
+        damageRollSource.Should().NotContain("ExtractWeaponDamageProfile(rightHand, leftHand)");
+
+        var extractor = ExtractMethod(damageRollSource, "private static WeaponDamageProfile ExtractWeaponDamageProfile(");
+        extractor.Should().Contain("var hasDamageProperty = false;");
+        extractor.Should().Contain("if (!hasDamageProperty)");
+        extractor.Should().Contain("return new WeaponDamageProfile(CombatDamageType.Physical, DefaultPhysicalDamage);");
+    }
+
+    [Test]
     public void ModuleWeaponItems_UseUntypedDmgAndSeparateDamageTypeProperty()
     {
         var root = FindRepositoryRoot();

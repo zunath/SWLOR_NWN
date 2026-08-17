@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Service.AIService
             };
         }
 
-        private static AITargetSelector HostileArea(AbilityDetail ability)
+        private static AITargetSelector SelfCenteredHostileArea(AbilityDetail ability)
         {
             return context =>
             {
@@ -62,13 +62,12 @@ namespace SWLOR.Game.Server.Service.AIService
                 if (!GetIsObjectValid(target))
                     return OBJECT_INVALID;
 
-                var areaTarget = ability.IsSelfCenteredArea
-                    ? context.Self
-                    : target;
+                var radius = ability.Targeting.ResolveSizeX(context.Self, true);
 
-                context.SetEvaluatedTarget(areaTarget);
-                return context.CountHostilesInAbilityArea(ability) >= DefaultAreaAbilityMinimumTargets
-                    ? areaTarget
+                context.SetEvaluatedTarget(context.Self);
+                return radius > 0f &&
+                       context.CountHostilesNearTarget(radius) >= DefaultAreaAbilityMinimumTargets
+                    ? context.Self
                     : OBJECT_INVALID;
             };
         }
@@ -116,7 +115,10 @@ namespace SWLOR.Game.Server.Service.AIService
                 if (!ability.IsAreaAbility)
                     return HighestEnmity();
 
-                return HostileArea(ability);
+                return ability.Targeting?.Shape == AbilityTargetingShapeType.Sphere &&
+                       ability.Targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf)
+                    ? SelfCenteredHostileArea(ability)
+                    : HostileCluster(ability.MaxRange, DefaultAreaAbilityMinimumTargets);
             }
 
             if (ability.RequiresTarget)

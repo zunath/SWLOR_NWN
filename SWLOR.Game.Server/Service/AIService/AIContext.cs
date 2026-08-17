@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -11,7 +10,6 @@ namespace SWLOR.Game.Server.Service.AIService
         private uint _currentEnmityTarget;
         private bool _currentEnmityTargetLoaded;
         private int? _selfHealthPercent;
-        private readonly Dictionary<(AbilityDetail Ability, uint Target), int> _hostileAbilityAreaCountCache = new();
 
         public uint Self { get; }
         public AITriggerType Trigger { get; }
@@ -111,29 +109,6 @@ namespace SWLOR.Game.Server.Service.AIService
                 creature = GetNextObjectInShape(Shape.Sphere, radius, origin, true, ObjectType.Creature);
             }
 
-            return count;
-        }
-
-        public int CountHostilesInAbilityArea(AbilityDetail ability)
-        {
-            var target = GetIsObjectValid(EvaluatedTarget)
-                ? EvaluatedTarget
-                : Self;
-            var cacheKey = (ability, target);
-
-            if (_hostileAbilityAreaCountCache.TryGetValue(cacheKey, out var cachedCount))
-                return cachedCount;
-
-            var count = ability?.Targeting == null
-                ? CountHostilesNearTarget(ability?.MaxRange ?? 0f)
-                : Ability.GetHostileCreaturesInTargetingArea(
-                        Self,
-                        target,
-                        GetLocation(target),
-                        ability.Targeting)
-                    .Count(creature => Ability.IsAbilityTargetVisible(Self, creature));
-
-            _hostileAbilityAreaCountCache[cacheKey] = count;
             return count;
         }
 

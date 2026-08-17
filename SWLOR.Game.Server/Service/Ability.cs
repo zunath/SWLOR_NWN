@@ -495,14 +495,6 @@ namespace SWLOR.Game.Server.Service
             return true;
         }
 
-        /// <summary>
-        /// Returns whether an ability can reach the target through both object and walkmesh visibility.
-        /// </summary>
-        public static bool IsAbilityTargetVisible(uint activator, uint target)
-        {
-            return HasAbilityLineOfSight(activator, target);
-        }
-
         private static bool HasAbilityLineOfSight(uint activator, uint target)
         {
             return LineOfSightObject(activator, target) &&
@@ -517,42 +509,13 @@ namespace SWLOR.Game.Server.Service
         {
             var targeting = ability.Targeting;
             if (targeting == null ||
-                !targeting.Flags.HasFlag(AbilityTargetingFlags.HarmsEnemies))
-            {
-                return string.Empty;
-            }
-
-            var creatures = GetHostileCreaturesInTargetingArea(
-                activator,
-                target,
-                targetLocation,
-                targeting);
-
-            if (creatures.Count <= 0 ||
-                creatures.Any(creature => HasAbilityLineOfSight(activator, creature)))
-            {
-                return string.Empty;
-            }
-
-            return "You cannot see any enemies in the target area.";
-        }
-
-        /// <summary>
-        /// Returns the living hostile creatures inside the resolved targeting geometry.
-        /// </summary>
-        public static IReadOnlyList<uint> GetHostileCreaturesInTargetingArea(
-            uint activator,
-            uint target,
-            Location targetLocation,
-            AbilityTargetingDetail targeting)
-        {
-            if (targeting == null ||
+                !targeting.Flags.HasFlag(AbilityTargetingFlags.HarmsEnemies) ||
                 !TryGetCombatImpactShape(targeting.Shape, out var shape))
             {
-                return Array.Empty<uint>();
+                return string.Empty;
             }
 
-            return GetHostileCreaturesInCombatImpactShape(
+            var creatures = GetHostileCreaturesInCombatImpactShape(
                     activator,
                     target,
                     targetLocation,
@@ -561,6 +524,14 @@ namespace SWLOR.Game.Server.Service
                     targeting.ResolveSizeY(),
                     targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf))
                 .ToList();
+
+            if (creatures.Count <= 0 ||
+                creatures.Any(creature => HasAbilityLineOfSight(activator, creature)))
+            {
+                return string.Empty;
+            }
+
+            return "You cannot see any enemies in the target area.";
         }
 
         private static bool TryGetCombatImpactShape(AbilityTargetingShapeType targetingShape, out CombatImpactAreaShape shape)

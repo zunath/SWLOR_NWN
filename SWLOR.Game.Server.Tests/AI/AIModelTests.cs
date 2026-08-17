@@ -270,52 +270,26 @@ public class AIModelTests
     }
 
     [Test]
-    public void AITarget_HostileAreasUseNamedPolicyAndTargetingGeometry()
+    public void AITarget_SelfCenteredHostileAreasUseCasterAndNamedTargetPolicy()
     {
-        var targetSource = ReadSource("SWLOR.Game.Server", "Service", "AIService", "AITarget.cs")
+        var source = ReadSource("SWLOR.Game.Server", "Service", "AIService", "AITarget.cs")
             .Replace("\r\n", "\n");
-        var scoreSource = ReadSource("SWLOR.Game.Server", "Service", "AIService", "AIScore.cs")
-            .Replace("\r\n", "\n");
-        var contextSource = ReadSource("SWLOR.Game.Server", "Service", "AIService", "AIContext.cs")
-            .Replace("\r\n", "\n");
-        var hostileAreaBody = targetSource.Substring(
-            targetSource.IndexOf("private static AITargetSelector HostileArea", StringComparison.Ordinal),
-            targetSource.IndexOf("public static AITargetSelector AllyAttacker", StringComparison.Ordinal) -
-            targetSource.IndexOf("private static AITargetSelector HostileArea", StringComparison.Ordinal));
+        var selectorBody = source.Substring(
+            source.IndexOf("private static AITargetSelector SelfCenteredHostileArea", StringComparison.Ordinal),
+            source.IndexOf("public static AITargetSelector AllyAttacker", StringComparison.Ordinal) -
+            source.IndexOf("private static AITargetSelector SelfCenteredHostileArea", StringComparison.Ordinal));
+        var inferDefaultBody = source.Substring(
+            source.IndexOf("public static AITargetSelector InferDefault", StringComparison.Ordinal));
 
-        targetSource.Should().Contain("private const int DefaultAreaAbilityMinimumTargets = 2;");
-        hostileAreaBody.Should().Contain("ability.IsSelfCenteredArea");
-        hostileAreaBody.Should().Contain("context.CountHostilesInAbilityArea(ability) >= DefaultAreaAbilityMinimumTargets");
-        targetSource.Should().Contain("return HostileArea(ability);");
-        targetSource.Should().NotContain("HostileCluster(ability.MaxRange, 2)");
-        contextSource.Should().Contain("Ability.GetHostileCreaturesInTargetingArea(");
-        contextSource.Should().Contain("Ability.IsAbilityTargetVisible(Self, creature)");
-        contextSource.Should().Contain("_hostileAbilityAreaCountCache.TryGetValue(cacheKey, out var cachedCount)");
-        contextSource.Should().Contain("_hostileAbilityAreaCountCache[cacheKey] = count;");
-        scoreSource.Should().Contain("context.CountHostilesInAbilityArea(ability)");
-    }
-
-    [TestCase(AbilityTargetingShapeType.Sphere, true)]
-    [TestCase(AbilityTargetingShapeType.HSphere, true)]
-    [TestCase(AbilityTargetingShapeType.Cone, false)]
-    [TestCase(AbilityTargetingShapeType.Rect, false)]
-    public void AbilityDetail_IsSelfCenteredAreaRecognizesOnlySphericalSelfOrigins(
-        AbilityTargetingShapeType shape,
-        bool expected)
-    {
-        var ability = new AbilityDetail
-        {
-            IsAreaAbility = true,
-            Targeting = new AbilityTargetingDetail(
-                Spell.Invalid,
-                shape,
-                2f,
-                0f,
-                AbilityTargetingFlags.OriginOnSelf,
-                null)
-        };
-
-        ability.IsSelfCenteredArea.Should().Be(expected);
+        source.Should().Contain("private const int DefaultAreaAbilityMinimumTargets = 2;");
+        source.Should().NotContain("HostileCluster(ability.MaxRange, 2)");
+        selectorBody.Should().Contain("ability.Targeting.ResolveSizeX(context.Self, true)");
+        selectorBody.Should().Contain("context.SetEvaluatedTarget(context.Self);");
+        selectorBody.Should().Contain("context.CountHostilesNearTarget(radius) >= DefaultAreaAbilityMinimumTargets");
+        inferDefaultBody.Should().Contain("ability.Targeting?.Shape == AbilityTargetingShapeType.Sphere");
+        inferDefaultBody.Should().Contain("AbilityTargetingFlags.OriginOnSelf");
+        inferDefaultBody.Should().Contain("SelfCenteredHostileArea(ability)");
+        inferDefaultBody.Should().Contain("HostileCluster(ability.MaxRange, DefaultAreaAbilityMinimumTargets)");
     }
 
     [Test]

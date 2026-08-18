@@ -262,8 +262,10 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         ability.Targeting.Flags.Should().NotHaveFlag(AbilityTargetingFlags.OriginOnSelf);
 
         var root = FindRepositoryRoot();
-        var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "PowerCellAbilityDefinition.cs").FullName);
-        source.Should().Contain("GetLocation(selected)");
+        var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "PowerCellAbilityDefinition.cs").FullName)
+            .Replace("\r\n", "\n");
+        source.Should().Contain("GetPowerCell3Targets(activator, target, targetLocation)");
+        source.Should().Contain("GetFriendlyTargetsNearLocation(\n                         activator,\n                         targetLocation,");
         source.Should().NotContain("GetFriendlyTargets(activator, activator, true)");
     }
 

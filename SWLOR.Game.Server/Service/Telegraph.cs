@@ -39,7 +39,8 @@ namespace SWLOR.Game.Server.Service
             float duration,
             bool isHostile,
             TelegraphType type,
-            ApplyTelegraphEffect action)
+            ApplyTelegraphEffect action,
+            bool isPersistentAreaIndicator = false)
         {
             var data = new TelegraphData
             {
@@ -50,6 +51,7 @@ namespace SWLOR.Game.Server.Service
                 Size = size,
                 Duration = duration,
                 IsHostile = isHostile,
+                IsPersistentAreaIndicator = isPersistentAreaIndicator,
                 Action = action
             };
 
@@ -411,17 +413,11 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            var telegraphs = _telegraphsByArea[area];
-            var telegraphCountToRender = telegraphs.Count > MaxRenderCount
-                ? MaxRenderCount
-                : telegraphs.Count;
+            var telegraphs = SelectTelegraphsForRendering(_telegraphsByArea[area].Values);
 
             var i = 0;
-            foreach (var (_, telegraph) in telegraphs)
+            foreach (var telegraph in telegraphs)
             {
-                if (i >= MaxRenderCount)
-                    break;
-
                 var data = telegraph.Data;
                 var position = data.Position;
                 var size = data.Size;
@@ -445,7 +441,15 @@ namespace SWLOR.Game.Server.Service
                 i++;
             }
 
-            ResetTelegraphShaderSlots(player, telegraphCountToRender);
+            ResetTelegraphShaderSlots(player, telegraphs.Length);
+        }
+
+        private static ActiveTelegraph[] SelectTelegraphsForRendering(IEnumerable<ActiveTelegraph> telegraphs)
+        {
+            return telegraphs
+                .OrderBy(telegraph => telegraph.Data.IsPersistentAreaIndicator)
+                .Take(MaxRenderCount)
+                .ToArray();
         }
 
         private static void ResetTelegraphShaderSlots(uint player, int startIndex)
@@ -473,7 +477,8 @@ namespace SWLOR.Game.Server.Service
             float radius,
             float duration,
             bool isHostile,
-            ApplyTelegraphEffect action)
+            ApplyTelegraphEffect action,
+            bool isPersistentAreaIndicator = false)
         {
             return CreateTelegraph(
                 creator,
@@ -483,7 +488,8 @@ namespace SWLOR.Game.Server.Service
                 duration,
                 isHostile,
                 TelegraphType.Sphere,
-                action);
+                action,
+                isPersistentAreaIndicator);
         }
 
         /// <summary>

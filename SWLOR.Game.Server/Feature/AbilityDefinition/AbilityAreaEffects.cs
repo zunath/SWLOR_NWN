@@ -37,7 +37,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 radius,
                 durationSeconds,
                 isHostile,
-                null);
+                null,
+                isPersistentAreaIndicator: true);
         }
 
         public static void ScheduleFriendlyZoneStatus(

@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         private static void PowerCell3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var isInitialTarget = true;
-            foreach (var friendly in GetPowerCell3Targets(activator, target))
+            foreach (var friendly in GetPowerCell3Targets(activator, target, targetLocation))
             {
                 Stat.RestoreStamina(friendly, GameMath.PercentOf(Stat.GetMaxStamina(friendly), 18));
                 StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PowerCell3StatusEffect), 30f);
@@ -133,7 +133,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             }
         }
 
-        private static IEnumerable<uint> GetPowerCell3Targets(uint activator, uint target)
+        private static IEnumerable<uint> GetPowerCell3Targets(uint activator, uint target, Location targetLocation)
         {
             var seen = new HashSet<uint>();
             var selected = AbilityTargeting.ResolveFriendlyTarget(activator, target);
@@ -147,7 +147,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargetsNearLocation(
                          activator,
-                         GetLocation(selected),
+                         targetLocation,
                          5f))
             {
                 if (seen.Add(friendly))

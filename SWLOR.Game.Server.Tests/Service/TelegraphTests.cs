@@ -68,6 +68,33 @@ public class TelegraphTests
             .Should().BeGreaterThan(-1, "the instant-cast path must flash the area it just struck");
     }
 
+    [Test]
+    public void PersistentAreaIndicators_DoNotDisplaceActivationWarnings()
+    {
+        var persistentIndicator = new ActiveTelegraph(
+            1,
+            0,
+            100,
+            new TelegraphData { IsPersistentAreaIndicator = true });
+        var activationWarnings = Enumerable.Range(1, Telegraph.MaxRenderCount)
+            .Select(start => new ActiveTelegraph(
+                1,
+                start,
+                100,
+                new TelegraphData { IsPersistentAreaIndicator = false }))
+            .ToArray();
+        var candidates = new[] { persistentIndicator }
+            .Concat(activationWarnings)
+            .ToArray();
+        var selector = typeof(Telegraph)
+            .GetMethod("SelectTelegraphsForRendering", BindingFlags.Static | BindingFlags.NonPublic)!;
+
+        var selected = (ActiveTelegraph[])selector.Invoke(null, new object[] { candidates })!;
+
+        selected.Should().HaveCount(Telegraph.MaxRenderCount);
+        selected.Should().OnlyContain(telegraph => !telegraph.Data.IsPersistentAreaIndicator);
+    }
+
     /// <summary>
     /// Returns the brace-delimited block that opens after <paramref name="searchFrom"/>, excluding the
     /// braces themselves.

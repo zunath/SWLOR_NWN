@@ -268,6 +268,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             {
                 row.SetHeight(40f);
 
+                row.AddLabel()
+                    .SetText($"Quantity (1-{QuestContractBoard.MaxObjectiveQuantity}):")
+                    .SetWidth(135f);
+
+                row.AddTextEdit()
+                    .SetPlaceholder("Quantity")
+                    .BindValue(model => model.NewObjectiveQuantityText)
+                    .SetHeight(32f)
+                    .SetWidth(80f);
+
                 row.AddButton()
                     .SetId(AddObjectiveButtonId)
                     .SetText("Add as Objective")
@@ -338,8 +348,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 row.BindIsVisible(model => model.IsObjectiveDetailVisible);
 
                 row.AddLabel()
-                    .SetText("Quantity:")
-                    .SetWidth(70f);
+                    .SetText("Selected quantity:")
+                    .SetWidth(135f);
 
                 row.AddTextEdit()
                     .SetPlaceholder("Quantity")

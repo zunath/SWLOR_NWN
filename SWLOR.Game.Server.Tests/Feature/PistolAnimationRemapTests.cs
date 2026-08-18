@@ -219,9 +219,14 @@ public class PistolAnimationRemapTests
         var remapRestorationMethod = ExtractMethod(
             source,
             "private static void ScheduleRemapAfterExplicitThrow(");
+        const string generationCapture =
+            "var callbackGeneration = GetLocalInt(creature, AnimationCallbackGenerationVariable);";
 
-        temporaryReplacementMethod.Should().Contain(
-            "var callbackGeneration = GetLocalInt(creature, AnimationCallbackGenerationVariable);");
+        temporaryReplacementMethod.Should().Contain(generationCapture);
+        temporaryReplacementMethod.IndexOf(generationCapture, StringComparison.Ordinal)
+            .Should().BeLessThan(temporaryReplacementMethod.IndexOf(
+                "DelayCommand(",
+                StringComparison.Ordinal));
         temporaryReplacementMethod.Should().Contain(
             "if (!ShouldApplyDelayedAnimationCallback(creature, callbackGeneration))");
         temporaryReplacementMethod.IndexOf(
@@ -230,8 +235,11 @@ public class PistolAnimationRemapTests
             .Should().BeLessThan(temporaryReplacementMethod.IndexOf(
                 "ReplaceObjectAnimation(creature, sourceAnimationName);",
                 StringComparison.Ordinal));
-        remapRestorationMethod.Should().Contain(
-            "var callbackGeneration = GetLocalInt(creature, AnimationCallbackGenerationVariable);");
+        remapRestorationMethod.Should().Contain(generationCapture);
+        remapRestorationMethod.IndexOf(generationCapture, StringComparison.Ordinal)
+            .Should().BeLessThan(remapRestorationMethod.IndexOf(
+                "DelayCommand(",
+                StringComparison.Ordinal));
         remapRestorationMethod.Should().Contain(
             "if (!ShouldApplyDelayedAnimationCallback(creature, callbackGeneration))");
         remapRestorationMethod.IndexOf(

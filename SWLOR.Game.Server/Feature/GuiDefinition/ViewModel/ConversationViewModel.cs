@@ -249,12 +249,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!string.IsNullOrWhiteSpace(node.PortraitResref))
                 return _session.ResolveText(node.PortraitResref);
 
-            if (!GetIsObjectValid(speaker))
+            if (!GetIsObjectValid(speaker) || !SupportsAutomaticPortrait(GetObjectType(speaker)))
                 return string.Empty;
 
             var portrait = GetPortraitResRef(speaker);
             return string.IsNullOrWhiteSpace(portrait) ? string.Empty : portrait + "l";
         }
+
+        private static bool SupportsAutomaticPortrait(ObjectType objectType) =>
+            objectType == ObjectType.Creature;
 
         private static void PlayPresentation(
             uint actor,

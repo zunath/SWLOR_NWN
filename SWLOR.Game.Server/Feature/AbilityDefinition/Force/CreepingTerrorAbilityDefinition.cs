@@ -181,6 +181,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 baseDamage,
                 GetAbilityScore(activator, AbilityType.Willpower),
                 source: activator);
+            AbilityAreaEffects.CreatePersistentSphereIndicator(
+                activator,
+                location,
+                radius,
+                durationSeconds,
+                true);
             ApplyEffectAtLocation(DurationType.Temporary, EffectAreaOfEffect(areaOfEffect), location, durationSeconds);
 
             CombatAreaPulses.SchedulePulses(

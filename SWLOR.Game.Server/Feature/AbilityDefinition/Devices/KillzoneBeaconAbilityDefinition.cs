@@ -80,7 +80,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 CombatDamageType.Electrical,
                 VisualEffect.Vfx_Imp_Lightning_M,
                 VisualEffect.Vfx_Imp_Mirv_Electric,
-                appliesBeaconPulseBonuses: true);
+                appliesBeaconPulseBonuses: true,
+                showAreaIndicator: false);
         }
 
     }

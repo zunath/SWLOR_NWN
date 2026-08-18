@@ -426,7 +426,7 @@ $perkChanges = @(
         Sheet = "Devices"
         PerkName = "Emergency Bunker"
         Values = @{
-            Description = "Deploys a 4m-radius shield bunker at the target location for 45 seconds. Allies inside gain 60 temporary HP plus 8% of each target's maximum HP and take 15% less ranged physical damage."
+            Description = "Deploys an 8m-radius shield bunker at the target location for 45 seconds. Allies inside gain 60 temporary HP plus 8% of each target's maximum HP and take 15% less physical and Force damage."
         }
     },
     @{

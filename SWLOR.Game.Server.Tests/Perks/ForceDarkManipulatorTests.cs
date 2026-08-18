@@ -119,6 +119,7 @@ public class ForceDarkManipulatorTests
         creepingTerror.Should().Contain("GetDistanceBetweenLocations(GetLocation(activator), location) <= FieldRange");
         creepingTerror.Should().Contain("var scaledPulseDamage = AbilityEffectScaling.ScaleDirectEffect");
         creepingTerror.Should().Contain("ApplyCreepingTerrorPulse(activator, pulseLocation, scaledPulseDamage, radius)");
+        creepingTerror.Should().Contain("AbilityAreaEffects.CreatePersistentSphereIndicator(");
         creepingTerror.Should().Contain("ApplyCreepingTerrorDamage");
         creepingTerror.Should().Contain("Ability.ApplyHostileCombatImpact");
         creepingTerror.Should().Contain("statusEffect: typeof(HobbleStatusEffect)");

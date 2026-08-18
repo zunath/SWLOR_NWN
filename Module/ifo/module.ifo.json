@@ -3107,6 +3107,20 @@
           "type": "resref",
           "value": "pw_sc_smarena"
         }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "pw_sc_dantmedsub"
+        }
+      },
+      {
+        "__struct_id": 6,
+        "Area_Name": {
+          "type": "resref",
+          "value": "pw_sc_dantprowar"
+        }
       }
     ]
   },

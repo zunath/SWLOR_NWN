@@ -28,6 +28,7 @@ public class TeleportPlaceableConfigurationTests
         enabledTeleporters.Should().BeEquivalentTo(new[]
         {
             "Module/git/veles_sewers.git.json|Enter Sewers Depths|VISC_SEWER_DEPTHS_INSIDE|tele_obj|tele_obj",
+            "Module/git/dan_warehouse.git.json|Dantooine Medical Sublevel|to_medsublevel|tele_obj|tele_obj",
             "Module/git/dathgrottocavern.git.json|Enter the Grotto Apex Den|DATH_APEX_DEN_INSIDE|tele_obj|tele_obj",
             "Module/git/pw_ar_nsficlub.git.json|[Back Rooms]|SMUG_BACKROOMS|tele_obj|tele_obj",
             "Module/git/czs220_maintlvl.git.json|Enter the Breaker Bay|CZ220_MAINT_ENTRANCE_BREAKER|tele_obj|tele_obj",

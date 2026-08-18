@@ -145,7 +145,7 @@ public class PlaceableModelIntegrityTests
     {
         var path = Path.Combine(root.FullName, "SWLOR_Haks", "sw_2da", "placeables.2da");
         var rows = new Dictionary<int, PlaceableRow>();
-        var rowIndex = 0;
+        var physicalRowIndex = 0;
 
         foreach (var line in File.ReadLines(path))
         {
@@ -156,8 +156,9 @@ public class PlaceableModelIntegrityTests
             }
 
             var label = match.Groups["label"].Value.Trim('"');
-            rows[rowIndex] = new PlaceableRow(label, match.Groups["model"].Value);
-            rowIndex++;
+            // NWN ignores the human-readable row label and assigns IDs by physical row order.
+            rows[physicalRowIndex] = new PlaceableRow(label, match.Groups["model"].Value);
+            physicalRowIndex++;
         }
 
         return rows;

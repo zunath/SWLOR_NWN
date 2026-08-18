@@ -42,7 +42,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 VisualEffect markerVisualEffect,
                 float markerVisualEffectScale,
                 bool isAreaPulse,
-                bool appliesBeaconPulseBonuses)
+                bool appliesBeaconPulseBonuses,
+                bool showAreaIndicator)
             {
                 Activator = activator;
                 Location = location;
@@ -59,7 +60,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 MarkerVisualEffectScale = markerVisualEffectScale;
                 IsAreaPulse = isAreaPulse;
                 AppliesBeaconPulseBonuses = appliesBeaconPulseBonuses;
+                ShowAreaIndicator = showAreaIndicator;
                 MarkerObject = OBJECT_INVALID;
+                AreaIndicatorId = string.Empty;
             }
 
             public uint Activator { get; }
@@ -77,7 +80,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public float MarkerVisualEffectScale { get; }
             public bool IsAreaPulse { get; }
             public bool AppliesBeaconPulseBonuses { get; }
+            public bool ShowAreaIndicator { get; }
             public uint MarkerObject { get; set; }
+            public string AreaIndicatorId { get; set; }
         }
 
         public static void ApplyPowerSurge(uint activator, uint target)
@@ -287,7 +292,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             VisualEffect targetVisualEffect,
             VisualEffect areaVisualEffect = VisualEffect.None,
             VisualEffect markerVisualEffect = VisualEffect.None,
-            float markerVisualEffectScale = 1f)
+            float markerVisualEffectScale = 1f,
+            bool showAreaIndicator = true)
         {
             TrackFieldEngineerPulseEmitter(new FieldEngineerPulseEmitter(
                 activator,
@@ -304,7 +310,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 markerVisualEffect,
                 markerVisualEffectScale,
                 false,
-                true));
+                true,
+                showAreaIndicator));
         }
 
         public static void ScheduleAreaHostilePulses(
@@ -321,7 +328,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             VisualEffect areaVisualEffect = VisualEffect.None,
             VisualEffect markerVisualEffect = VisualEffect.None,
             float markerVisualEffectScale = 1f,
-            bool appliesBeaconPulseBonuses = false)
+            bool appliesBeaconPulseBonuses = false,
+            bool showAreaIndicator = true)
         {
             TrackFieldEngineerPulseEmitter(new FieldEngineerPulseEmitter(
                 activator,
@@ -338,7 +346,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 markerVisualEffect,
                 markerVisualEffectScale,
                 true,
-                appliesBeaconPulseBonuses));
+                appliesBeaconPulseBonuses,
+                showAreaIndicator));
         }
 
         public static uint CreateTemporaryFieldEngineerMarker(
@@ -399,6 +408,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 }
 
                 emitter.RemainingSeconds += seconds;
+                RefreshFieldEngineerPulseEmitterIndicator(emitter);
                 extendedAny = true;
             }
 
@@ -441,9 +451,30 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             }
 
             emitters.Add(emitter);
+            RefreshFieldEngineerPulseEmitterIndicator(emitter);
+
             EnsureFieldEngineerPulseEmitterMarker(emitter);
             ApplyFieldEngineerPulseEmitterVisual(emitter);
             ScheduleNextFieldEngineerPulse(emitter);
+        }
+
+        private static void RefreshFieldEngineerPulseEmitterIndicator(FieldEngineerPulseEmitter emitter)
+        {
+            if (!emitter.ShowAreaIndicator)
+                return;
+
+            if (!string.IsNullOrWhiteSpace(emitter.AreaIndicatorId))
+                Telegraph.CancelTelegraph(emitter.AreaIndicatorId);
+
+            var indicatorRadius = emitter.AppliesBeaconPulseBonuses
+                ? ApplyBeaconPulseRangeBonus(emitter.Activator, emitter.Radius)
+                : emitter.Radius;
+            emitter.AreaIndicatorId = AbilityAreaEffects.CreatePersistentSphereIndicator(
+                emitter.Activator,
+                emitter.Location,
+                indicatorRadius,
+                emitter.RemainingSeconds,
+                true);
         }
 
         private static void ScheduleNextFieldEngineerPulse(FieldEngineerPulseEmitter emitter)
@@ -632,6 +663,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 return;
 
             emitters.Remove(emitter);
+            if (!string.IsNullOrWhiteSpace(emitter.AreaIndicatorId))
+                Telegraph.CancelTelegraph(emitter.AreaIndicatorId);
+
             if (GetIsObjectValid(emitter.MarkerObject))
                 DestroyObject(emitter.MarkerObject);
 

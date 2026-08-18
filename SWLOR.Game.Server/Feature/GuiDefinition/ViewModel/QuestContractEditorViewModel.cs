@@ -122,6 +122,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public string NewObjectiveQuantityText
+        {
+            get => Get<string>();
+            set
+            {
+                var sanitized = SanitizeNumber(value, 1, QuestContractBoard.MaxObjectiveQuantity);
+                Set(sanitized);
+
+                if (sanitized != value)
+                    OnPropertyChanged();
+            }
+        }
+
         public bool IsObjectiveDetailVisible
         {
             get => Get<bool>();
@@ -228,6 +241,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SearchResultLabels = new GuiBindingList<string>();
             SearchResultToggles = new GuiBindingList<bool>();
             SearchResultIconResrefs = new GuiBindingList<string>();
+            NewObjectiveQuantityText = "1";
             ObjectiveQuantityText = "1";
             IsObjectiveDetailVisible = false;
 
@@ -243,6 +257,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.Description);
             WatchOnClient(model => model.RewardCreditsText);
             WatchOnClient(model => model.ItemSearchText);
+            WatchOnClient(model => model.NewObjectiveQuantityText);
             WatchOnClient(model => model.ObjectiveQuantityText);
         }
 
@@ -427,14 +442,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
+            if (!int.TryParse(NewObjectiveQuantityText, out var quantity) || quantity < 1)
+                quantity = 1;
+            if (quantity > QuestContractBoard.MaxObjectiveQuantity)
+                quantity = QuestContractBoard.MaxObjectiveQuantity;
+
             draft.Objectives.Add(new QuestContractObjective
             {
                 ItemResref = selected.Resref,
                 ItemName = selected.Name,
-                Quantity = 1
+                Quantity = quantity
             });
             DB.Set(draft);
 
+            NewObjectiveQuantityText = "1";
             StatusText = string.Empty;
             LoadObjectives();
         };

@@ -117,6 +117,12 @@ public class DevicesFieldEngineerTests
         effects.Should().Contain("DestroyObject(emitter.MarkerObject)");
         effects.Should().Contain("CreateTemporaryFieldEngineerMarker");
         effects.Should().Contain("appliesBeaconPulseBonuses");
+        effects.Should().Contain("CreatePersistentSphereIndicator");
+        effects.Should().Contain("Telegraph.CancelTelegraph(emitter.AreaIndicatorId)");
+
+        var killzoneBeaconSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "KillzoneBeaconAbilityDefinition.cs").FullName);
+        killzoneBeaconSource.Should().Contain("showAreaIndicator: false",
+            "the second damage channel must reuse the killzone's single persistent boundary");
 
         var signalJammer = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "SignalJammerAbilityDefinition.cs").FullName);
         signalJammer.Should().Contain("typeof(SignalJammerStatusEffect)");

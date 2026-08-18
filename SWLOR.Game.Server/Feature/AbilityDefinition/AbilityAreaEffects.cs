@@ -10,6 +10,30 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 {
     public static class AbilityAreaEffects
     {
+        public static string CreatePersistentSphereIndicator(
+            uint activator,
+            Location location,
+            float radius,
+            float durationSeconds,
+            bool isHostile)
+        {
+            if (!GetIsObjectValid(activator) ||
+                !GetIsObjectValid(GetAreaFromLocation(location)) ||
+                radius <= 0f ||
+                durationSeconds <= 0f)
+            {
+                return string.Empty;
+            }
+
+            return Telegraph.CreateSphereTelegraph(
+                activator,
+                GetPositionFromLocation(location),
+                radius,
+                durationSeconds,
+                isHostile,
+                null);
+        }
+
         public static void ScheduleFriendlyZoneStatus(
             uint activator,
             Location location,
@@ -21,6 +45,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             VisualEffect areaMarkerVisualEffect = VisualEffect.None,
             float areaMarkerVisualEffectScale = 1f)
         {
+            CreatePersistentSphereIndicator(
+                activator,
+                location,
+                radius,
+                durationSeconds,
+                false);
+
             if (areaMarkerVisualEffect != VisualEffect.None)
             {
                 ApplyEffectAtLocation(

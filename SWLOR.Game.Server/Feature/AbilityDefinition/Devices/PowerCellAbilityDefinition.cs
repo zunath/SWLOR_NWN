@@ -79,12 +79,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UsesAnimation(Animation.CastOutAnimation)
                 .HasRecastDelay(RecastGroup.PowerCell, 30f)
                 .SkillType(SkillType.Devices)
+                .HasMaxRange(DeviceAbilityRange.Standard)
                 .IsAreaAbility()
+                .RequiresTarget()
+                .HasCustomValidation((activator, target, _, _) =>
+                    AbilityTargeting.ValidateFriendlyTarget(activator, target))
                 .HasImpactAction(PowerCell3ImpactAction)
                 .HasTargetingSphere(
                     Spell.PowerCell3,
                     5f,
-                    AbilityTargetingFlags.HelpsAllies | AbilityTargetingFlags.OriginOnSelf)
+                    AbilityTargetingFlags.HelpsAllies)
                 .IsCastedAbility()
                 .BreaksStealth()
                 .RequirementStamina(7);
@@ -141,7 +145,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 yield return selected;
             }
 
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, activator, true))
+            foreach (var friendly in AbilityTargeting.GetFriendlyTargetsNearLocation(
+                         activator,
+                         GetLocation(selected),
+                         5f))
             {
                 if (seen.Add(friendly))
                     yield return friendly;

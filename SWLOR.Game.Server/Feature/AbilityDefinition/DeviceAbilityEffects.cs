@@ -408,6 +408,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 }
 
                 emitter.RemainingSeconds += seconds;
+                RefreshFieldEngineerPulseEmitterIndicator(emitter);
                 extendedAny = true;
             }
 
@@ -450,22 +451,30 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             }
 
             emitters.Add(emitter);
-            if (emitter.ShowAreaIndicator)
-            {
-                var indicatorRadius = emitter.AppliesBeaconPulseBonuses
-                    ? ApplyBeaconPulseRangeBonus(emitter.Activator, emitter.Radius)
-                    : emitter.Radius;
-                emitter.AreaIndicatorId = AbilityAreaEffects.CreatePersistentSphereIndicator(
-                    emitter.Activator,
-                    emitter.Location,
-                    indicatorRadius,
-                    emitter.RemainingSeconds,
-                    true);
-            }
+            RefreshFieldEngineerPulseEmitterIndicator(emitter);
 
             EnsureFieldEngineerPulseEmitterMarker(emitter);
             ApplyFieldEngineerPulseEmitterVisual(emitter);
             ScheduleNextFieldEngineerPulse(emitter);
+        }
+
+        private static void RefreshFieldEngineerPulseEmitterIndicator(FieldEngineerPulseEmitter emitter)
+        {
+            if (!emitter.ShowAreaIndicator)
+                return;
+
+            if (!string.IsNullOrWhiteSpace(emitter.AreaIndicatorId))
+                Telegraph.CancelTelegraph(emitter.AreaIndicatorId);
+
+            var indicatorRadius = emitter.AppliesBeaconPulseBonuses
+                ? ApplyBeaconPulseRangeBonus(emitter.Activator, emitter.Radius)
+                : emitter.Radius;
+            emitter.AreaIndicatorId = AbilityAreaEffects.CreatePersistentSphereIndicator(
+                emitter.Activator,
+                emitter.Location,
+                indicatorRadius,
+                emitter.RemainingSeconds,
+                true);
         }
 
         private static void ScheduleNextFieldEngineerPulse(FieldEngineerPulseEmitter emitter)

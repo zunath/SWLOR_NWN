@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -17,11 +18,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             float durationSeconds,
             bool isHostile)
         {
+            var area = GetAreaFromLocation(location);
             if (!GetIsObjectValid(activator) ||
-                !GetIsObjectValid(GetAreaFromLocation(location)) ||
+                !GetIsObjectValid(area) ||
                 radius <= 0f ||
                 durationSeconds <= 0f)
             {
+                Log.Write(
+                    LogGroup.Error,
+                    $"Skipped persistent sphere indicator: activator={activator}, area={area}, " +
+                    $"radius={radius}, durationSeconds={durationSeconds}.");
                 return string.Empty;
             }
 

@@ -169,6 +169,26 @@ public class DantooineMedicalSublevelPlacementTests
     }
 
     [Test]
+    public void InfiniteConduitWardenEncounter_IsOnTheElevatedTileWalkmesh()
+    {
+        using var dungeon = LoadModuleJson("git", DungeonArea);
+        var activator = EnumerateObjects(dungeon.RootElement)
+            .Single(element => GetString(element, "Tag") == "infconduit_wd_call");
+        var spawn = dungeon.RootElement
+            .GetProperty("WaypointList")
+            .GetProperty("value")
+            .EnumerateArray()
+            .Single(element => GetString(element, "Tag") == "CAPSTONE_INFCONDUIT_WD_SPAWN");
+
+        GetFloat(activator, "X").Should().Be(115f);
+        GetFloat(activator, "Y").Should().Be(115f);
+        GetFloat(activator, "Z").Should().BeApproximately(3.99f, 0.001f);
+        GetFloat(spawn, "XPosition").Should().Be(117f);
+        GetFloat(spawn, "YPosition").Should().Be(115f);
+        GetFloat(spawn, "ZPosition").Should().BeApproximately(3.99f, 0.001f);
+    }
+
+    [Test]
     public void ProtectedWard_HoldsTheThreeMasterEncounters()
     {
         using var arena = LoadModuleJson("git", ArenaArea);
@@ -273,6 +293,11 @@ public class DantooineMedicalSublevelPlacementTests
     private static int GetLocalInt(JsonElement json, string variableName)
     {
         return GetLocal(json, variableName).GetProperty("Value").GetProperty("value").GetInt32();
+    }
+
+    private static float GetFloat(JsonElement json, string propertyName)
+    {
+        return json.GetProperty(propertyName).GetProperty("value").GetSingle();
     }
 
     private static JsonElement GetLocal(JsonElement json, string variableName)

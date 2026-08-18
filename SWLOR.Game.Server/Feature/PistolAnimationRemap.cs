@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler(ScriptName.OnModuleEnter)]
         public static void OnClientEnter()
         {
-            SyncAnimationState(GetEnteringObject(), true);
+            ResetTransientSuspensionAndSyncAnimationState(GetEnteringObject());
         }
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler(ScriptName.OnCreatureSpawnAfter)]
         public static void OnCreatureSpawn()
         {
-            SyncAnimationState(OBJECT_SELF, true);
+            ResetTransientSuspensionAndSyncAnimationState(OBJECT_SELF);
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler(ScriptName.OnModuleRespawn)]
         public static void OnPlayerRespawn()
         {
-            SyncAnimationState(GetLastRespawnButtonPresser(), true);
+            ResetTransientSuspensionAndSyncAnimationState(GetLastRespawnButtonPresser());
         }
 
         /// <summary>
@@ -151,6 +151,19 @@ namespace SWLOR.Game.Server.Feature
                         Math.Max(durationSeconds, replacementRestoreDelaySeconds),
                         MinimumExplicitThrowRestoreDelaySeconds));
             }
+        }
+
+        /// <summary>
+        /// Clears throw state that cannot survive an export or lifecycle transition, then reapplies
+        /// the persistent remap for the creature's current loadout.
+        /// </summary>
+        private static void ResetTransientSuspensionAndSyncAnimationState(uint creature)
+        {
+            if (!GetIsObjectValid(creature))
+                return;
+
+            DeleteLocalInt(creature, ExplicitThrowSuspendCountVariable);
+            SyncAnimationState(creature, true);
         }
 
         /// <summary>

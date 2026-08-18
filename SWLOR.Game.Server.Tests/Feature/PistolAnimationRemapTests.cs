@@ -156,6 +156,32 @@ public class PistolAnimationRemapTests
     }
 
     /// <summary>
+    /// Verifies persistent lifecycle boundaries discard stale throw state before forcing a remap.
+    /// </summary>
+    [Test]
+    public void PersistentLifecycleBoundaries_ResetTransientThrowSuspension()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "PistolAnimationRemap.cs"));
+
+        source.Should().Contain(
+            "ResetTransientSuspensionAndSyncAnimationState(GetEnteringObject());");
+        source.Should().Contain(
+            "ResetTransientSuspensionAndSyncAnimationState(OBJECT_SELF);");
+        source.Should().Contain(
+            "ResetTransientSuspensionAndSyncAnimationState(GetLastRespawnButtonPresser());");
+        System.Text.RegularExpressions.Regex.IsMatch(
+                source,
+                @"DeleteLocalInt\(creature, ExplicitThrowSuspendCountVariable\);\s*SyncAnimationState\(creature, true\);")
+            .Should().BeTrue(
+                "the stale persisted counter must be cleared before the persistent remap is reapplied");
+    }
+
+    /// <summary>
     /// Locates the repository root used by the shared-pipeline source assertions.
     /// </summary>
     private static DirectoryInfo FindRepositoryRoot()

@@ -1,6 +1,6 @@
 # Combat Upgrade Release Balance Plan
 
-Last reviewed: 2026-07-19
+Last reviewed: 2026-08-17
 
 ## Purpose
 
@@ -100,7 +100,7 @@ Weapon skill perk lines should follow the default 18-slot, 60 SP progression pat
 
 The intended template uses three ranked combat abilities, two general traits, three cross-skill traits, one stance, and one capstone. The corrected type for `Ability 3 Rank I` is `Combat`.
 
-The local Bible and manifest now match the full template for every weapon style: 18 rows, 60 SP, a skill-rank 2 `Combat` opener, a skill-rank 50 `Capstone`, and the corrected `Ability 3 Rank I` `Combat` slot. The current mismatch is implementation-side: live C# definitions still need to be aligned to the new Bible names, descriptions, skill requirements, SP prices, resources, cooldowns, and effects.
+The local Bible, regenerated manifest, generated perk/ability code, and supporting TLK/2DA data now match the full template for every weapon style: 18 rows, 60 SP, a skill-rank 2 `Combat` opener, a skill-rank 50 `Capstone`, and the corrected `Ability 3 Rank I` `Combat` slot. The static alignment pass is complete; the remaining gate is live balance and engine-behavior validation.
 
 ### Audit Rules And Config
 
@@ -265,7 +265,7 @@ Examples:
 Use positive-baseline trees as feel anchors, not as templates to clone:
 
 - Vibroblade Frenzy: satisfying throughput and clear combat loop.
-- Heavy Vibroblade: strong risk/sustain identity, but still needs stacking guardrails.
+- Heavy Vibroblade: strong risk/sustain identity, with implemented stacking guardrails retained as a release-validation focus.
 - Staff Sentinel: clear control and temporary-deflection identity.
 - Katar Scrapper: strong control identity, with cooldown windows to review.
 
@@ -325,7 +325,7 @@ Examples:
 
 - Permanent Attack Deflection can approach or reach cap.
 - A weapon tree requires positional uptime to function at baseline.
-- Spear Disabler remains too Force-only.
+- Spear Disabler regresses to Force-only value.
 - A weapon tree's mechanics contradict its intended playstyle.
 - A cross-tree passive becomes mandatory for most builds.
 - Attack Deflection, Shield Deflection, and Guard are blurred into the same role.

@@ -1,6 +1,6 @@
 # Combat Upgrade Release Validation Matrix
 
-Last reviewed: 2026-08-13
+Last reviewed: 2026-08-17
 
 ## Purpose
 
@@ -60,9 +60,9 @@ Use this as the default cleanup pattern for weapon skill perk lines. Deviations 
 | 17 | 4 | Cross-skill Trait 1 Rank III | Trait | 45 |
 | 18 | 6 | Capstone | Capstone | 50 |
 
-The local Bible and regenerated manifest now adopt this progression pattern for every weapon style: 18 rows, 60 SP, skill-rank 2 opens with an active `Combat` ability, skill-rank 50 is a 6 SP `Capstone`, and no adjacent ranked ability rows are intended. The code alignment pass is still pending, so audit rows that report missing or stale live perk definitions are expected until the C# definitions are updated to match the Bible.
+The local Bible, regenerated manifest, generated perk/ability code, and supporting TLK/2DA data now adopt this progression pattern for every weapon style: 18 rows, 60 SP, skill-rank 2 opens with an active `Combat` ability, skill-rank 50 is a 6 SP `Capstone`, and no adjacent ranked ability rows are intended. The static alignment pass is complete and the scoped audit has no implementation findings.
 
-Adoption rule: keep the normalized SP costs and active-first opener unless playtesting proves the new pricing or early-combat cadence creates a release blocker. Future cleanup should focus on code alignment, engine feel, and real-enemy validation rather than another blind cost pass.
+Adoption rule: keep the normalized SP costs and active-first opener unless playtesting proves the new pricing or early-combat cadence creates a release blocker. Future cleanup should focus on engine feel and real-enemy validation rather than another blind cost pass.
 
 ## Curated Archetypes
 
@@ -147,7 +147,7 @@ If a timed payoff still feels bad, tune in this order: extend the window, lower 
 
 ## Weapon Identity Status
 
-The screenshot identity list is now the Bible target for weapon styles. Code alignment is still pending, so this table describes the intended local Bible identity and the release check each style still needs.
+The screenshot identity list is now aligned across the Bible, generated perk/ability code, TLK/2DA data, and regression coverage. This table records each implemented identity and the remaining live release check.
 
 ## Status Glossary
 

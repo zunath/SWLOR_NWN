@@ -1,6 +1,6 @@
 # Combat Upgrade Current-State Balance Audit
 
-Last reviewed: 2026-08-11 (split weapon-deflection review)
+Last reviewed: 2026-08-17
 
 ## Scope
 
@@ -162,7 +162,7 @@ The Bible workbook and `CombatUpgradeBiblePerkManifest.csv` are the source of tr
 
 ## 2026-07-19 Addendum: Full Static Review And Deflecting Return Correction
 
-The refreshed workbook review contains 1,003 rows: 998 in-scope rows pass and only the five unimplemented, first-iteration-out-of-scope Agriculture rows are skipped. Mimicry is 98/98 pass, including all 88 techniques; Espionage is 41/41 pass.
+The refreshed workbook review contains 1,004 rows: 999 in-scope rows pass and only the five unimplemented, first-iteration-out-of-scope Agriculture rows are skipped. Mimicry is 98/98 pass, including all 88 techniques; Espionage is 41/41 pass.
 
 The production-consumer audit found one real stat wiring defect: `EmbattledHighStackDeflectionReflectionBonusPercent` was granted by Center of the Storm but never consumed. It is now applied at the documented Embattled stack threshold. The same review found that Aegis Eternal's Perfect Aegis status added its reflection and cap values on top of Deflecting Return instead of setting the documented final values. Perfect Aegis now uses stat-driven override values, so the capstone resolves to exactly its documented reflection and cap values while normal Center of the Storm behavior remains additive at the Embattled threshold.
 

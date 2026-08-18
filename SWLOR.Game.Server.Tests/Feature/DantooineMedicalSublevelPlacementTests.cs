@@ -98,6 +98,31 @@ public class DantooineMedicalSublevelPlacementTests
     }
 
     [Test]
+    public void MedicalSublevelGitFloatFields_UseFloatingPointJsonTokens()
+    {
+        foreach (var area in new[] { DungeonArea, ArenaArea })
+        {
+            using var git = LoadModuleJson("git", area);
+            var integerTokens = EnumerateObjects(git.RootElement)
+                .Where(element =>
+                    element.TryGetProperty("type", out var type) &&
+                    type.ValueKind == JsonValueKind.String &&
+                    type.GetString() == "float" &&
+                    element.TryGetProperty("value", out var value) &&
+                    value.ValueKind == JsonValueKind.Number)
+                .Select(element => element.GetProperty("value").GetRawText())
+                .Where(rawValue =>
+                    !rawValue.Contains('.') &&
+                    !rawValue.Contains('e') &&
+                    !rawValue.Contains('E'))
+                .ToArray();
+
+            integerTokens.Should().BeEmpty(
+                $"{area} float fields must use floating-point JSON tokens accepted by nwn_gff");
+        }
+    }
+
+    [Test]
     public void MedicalSublevelAccess_UsesTheStandardCapstoneKeyGate()
     {
         ((int)KeyItemType.CapstoneDantooineMedicalSublevelKey).Should().Be(117);

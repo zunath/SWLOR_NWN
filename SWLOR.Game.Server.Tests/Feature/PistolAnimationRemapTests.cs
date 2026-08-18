@@ -99,6 +99,26 @@ public class PistolAnimationRemapTests
     }
 
     /// <summary>
+    /// Verifies a lifecycle reset invalidates pending callbacks without rejecting a subsequent throw.
+    /// </summary>
+    [Test]
+    public void LifecycleReset_InvalidatesPendingCallbackButAllowsSubsequentThrowCallback()
+    {
+        const int pendingCallbackGeneration = 7;
+        const int currentGenerationAfterReset = pendingCallbackGeneration + 1;
+        const int subsequentThrowCallbackGeneration = currentGenerationAfterReset;
+
+        PistolAnimationRemap.ShouldApplyDelayedAnimationCallback(
+                pendingCallbackGeneration,
+                currentGenerationAfterReset)
+            .Should().BeFalse();
+        PistolAnimationRemap.ShouldApplyDelayedAnimationCallback(
+                subsequentThrowCallbackGeneration,
+                currentGenerationAfterReset)
+            .Should().BeTrue();
+    }
+
+    /// <summary>
     /// Verifies fallback and configured activation and impact paths preserve explicit throws.
     /// </summary>
     [Test]
@@ -176,9 +196,75 @@ public class PistolAnimationRemapTests
             "ResetTransientSuspensionAndSyncAnimationState(GetLastRespawnButtonPresser());");
         System.Text.RegularExpressions.Regex.IsMatch(
                 source,
-                @"DeleteLocalInt\(creature, ExplicitThrowSuspendCountVariable\);\s*SyncAnimationState\(creature, true\);")
+                @"SetLocalInt\(\s*creature,\s*AnimationCallbackGenerationVariable,\s*unchecked\(GetLocalInt\(creature, AnimationCallbackGenerationVariable\) \+ 1\)\);\s*DeleteLocalInt\(creature, ExplicitThrowSuspendCountVariable\);\s*SyncAnimationState\(creature, true\);")
             .Should().BeTrue(
-                "the stale persisted counter must be cleared before the persistent remap is reapplied");
+                "pending callbacks must be invalidated and the stale counter cleared before the remap is reapplied");
+    }
+
+    /// <summary>
+    /// Verifies both delayed restoration paths reject callbacks from a prior lifecycle generation.
+    /// </summary>
+    [Test]
+    public void DelayedRestorationCallbacks_ValidateCapturedLifecycleGeneration()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "PistolAnimationRemap.cs"));
+        var temporaryReplacementMethod = ExtractMethod(
+            source,
+            "public static void PlayAnimationWithTemporaryReplacementPreservingExplicitThrow(");
+        var remapRestorationMethod = ExtractMethod(
+            source,
+            "private static void ScheduleRemapAfterExplicitThrow(");
+
+        temporaryReplacementMethod.Should().Contain(
+            "var callbackGeneration = GetLocalInt(creature, AnimationCallbackGenerationVariable);");
+        temporaryReplacementMethod.Should().Contain(
+            "if (!ShouldApplyDelayedAnimationCallback(creature, callbackGeneration))");
+        temporaryReplacementMethod.IndexOf(
+                "if (!ShouldApplyDelayedAnimationCallback(creature, callbackGeneration))",
+                StringComparison.Ordinal)
+            .Should().BeLessThan(temporaryReplacementMethod.IndexOf(
+                "ReplaceObjectAnimation(creature, sourceAnimationName);",
+                StringComparison.Ordinal));
+        remapRestorationMethod.Should().Contain(
+            "var callbackGeneration = GetLocalInt(creature, AnimationCallbackGenerationVariable);");
+        remapRestorationMethod.Should().Contain(
+            "if (!ShouldApplyDelayedAnimationCallback(creature, callbackGeneration))");
+        remapRestorationMethod.IndexOf(
+                "if (!ShouldApplyDelayedAnimationCallback(creature, callbackGeneration))",
+                StringComparison.Ordinal)
+            .Should().BeLessThan(remapRestorationMethod.IndexOf(
+                "var suspendCount = GetLocalInt(creature, ExplicitThrowSuspendCountVariable);",
+                StringComparison.Ordinal));
+    }
+
+    /// <summary>
+    /// Extracts a method body for source-level animation callback assertions.
+    /// </summary>
+    private static string ExtractMethod(string source, string signature)
+    {
+        var methodStart = source.IndexOf(signature, StringComparison.Ordinal);
+        methodStart.Should().BeGreaterThanOrEqualTo(0, $"{signature} should exist");
+        var openingBrace = source.IndexOf('{', methodStart);
+        openingBrace.Should().BeGreaterThan(methodStart);
+
+        var depth = 0;
+        for (var index = openingBrace; index < source.Length; index++)
+        {
+            if (source[index] == '{')
+                depth++;
+            else if (source[index] == '}')
+                depth--;
+
+            if (depth == 0)
+                return source.Substring(methodStart, index - methodStart + 1);
+        }
+
+        throw new InvalidOperationException($"Could not find the end of {signature}.");
     }
 
     /// <summary>

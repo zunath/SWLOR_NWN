@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Feature
     {
         private const string PistolAnimationRemapActiveVariable = "PISTOL_ANIM_REMAP_ACTIVE";
         private const string ExplicitThrowSuspendCountVariable = "PISTOL_ANIM_THROW_SUSPEND_COUNT";
+        private const string AnimationCallbackGenerationVariable = "PISTOL_ANIM_CALLBACK_GENERATION";
         private const float MinimumExplicitThrowRestoreDelaySeconds = 1.1f;
         public const string SlingAttackAnimation = "throwr";
         public const string FormerPistolAttackAnimation = "bowshot";
@@ -89,6 +90,16 @@ namespace SWLOR.Game.Server.Feature
         }
 
         /// <summary>
+        /// Determines whether a delayed animation callback belongs to the current lifecycle.
+        /// </summary>
+        public static bool ShouldApplyDelayedAnimationCallback(
+            int callbackGeneration,
+            int currentGeneration)
+        {
+            return callbackGeneration == currentGeneration;
+        }
+
+        /// <summary>
         /// Plays an animation while preserving explicit throws from the persistent pistol remap.
         /// </summary>
         public static void PlayAnimationPreservingExplicitThrow(
@@ -138,8 +149,12 @@ namespace SWLOR.Game.Server.Feature
             var suspendedRemap = SuspendForExplicitThrow(creature, animation);
             ReplaceObjectAnimation(creature, sourceAnimationName, replacementAnimationName);
             ActionPlayAnimation(animation, speed, durationSeconds);
+            var callbackGeneration = GetLocalInt(creature, AnimationCallbackGenerationVariable);
             DelayCommand(replacementRestoreDelaySeconds, () =>
             {
+                if (!ShouldApplyDelayedAnimationCallback(creature, callbackGeneration))
+                    return;
+
                 ReplaceObjectAnimation(creature, sourceAnimationName);
             });
 
@@ -162,6 +177,10 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsObjectValid(creature))
                 return;
 
+            SetLocalInt(
+                creature,
+                AnimationCallbackGenerationVariable,
+                unchecked(GetLocalInt(creature, AnimationCallbackGenerationVariable) + 1));
             DeleteLocalInt(creature, ExplicitThrowSuspendCountVariable);
             SyncAnimationState(creature, true);
         }
@@ -246,9 +265,10 @@ namespace SWLOR.Game.Server.Feature
         /// </summary>
         private static void ScheduleRemapAfterExplicitThrow(uint creature, float delaySeconds)
         {
+            var callbackGeneration = GetLocalInt(creature, AnimationCallbackGenerationVariable);
             DelayCommand(delaySeconds, () =>
             {
-                if (!GetIsObjectValid(creature))
+                if (!ShouldApplyDelayedAnimationCallback(creature, callbackGeneration))
                     return;
 
                 var suspendCount = GetLocalInt(creature, ExplicitThrowSuspendCountVariable);
@@ -268,6 +288,19 @@ namespace SWLOR.Game.Server.Feature
                         FormerPistolAttackAnimation);
                 }
             });
+        }
+
+        /// <summary>
+        /// Determines whether a delayed callback still belongs to the creature's current lifecycle.
+        /// </summary>
+        private static bool ShouldApplyDelayedAnimationCallback(
+            uint creature,
+            int callbackGeneration)
+        {
+            return GetIsObjectValid(creature) &&
+                   ShouldApplyDelayedAnimationCallback(
+                       callbackGeneration,
+                       GetLocalInt(creature, AnimationCallbackGenerationVariable));
         }
     }
 }

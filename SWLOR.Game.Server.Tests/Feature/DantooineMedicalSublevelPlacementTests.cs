@@ -104,7 +104,9 @@ public class DantooineMedicalSublevelPlacementTests
 
         using var accessArea = LoadModuleJson("git", AccessArea);
         var gate = FindTeleport(accessArea.RootElement, "to_medsublevel");
+        var accessAreaProperties = accessArea.RootElement.GetProperty("AreaProperties").GetProperty("value");
 
+        GetLocalInt(accessAreaProperties, "PLANET_TYPE_ID").Should().Be((int)PlanetType.Dantooine);
         GetString(gate, "Tag").Should().Be("tele_obj");
         GetString(gate, "TemplateResRef").Should().Be("tele_obj");
         GetString(gate, "OnHeartbeat").Should().BeEmpty();

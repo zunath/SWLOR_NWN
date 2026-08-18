@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ConversationService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -196,6 +197,20 @@ public class ConversationArchitectureTests
         segments.Should().HaveCountGreaterThan(1);
         segments.Should().OnlyContain(segment => segment.Length <= 320);
         string.Join(" ", segments).Should().Be(source);
+    }
+
+    [Test]
+    public void AutomaticConversationPortraits_AreLimitedToCreatures()
+    {
+        var method = typeof(ConversationViewModel).GetMethod(
+            "SupportsAutomaticPortrait",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+        method.Should().NotBeNull();
+
+        ((bool)method!.Invoke(null, new object[] { ObjectType.Creature })!).Should().BeTrue();
+        ((bool)method.Invoke(null, new object[] { ObjectType.Placeable })!).Should().BeFalse(
+            "placeables such as shuttle status consoles do not have renderable creature portraits");
+        ((bool)method.Invoke(null, new object[] { ObjectType.Door })!).Should().BeFalse();
     }
 
     private static bool IsGeneratedShell(string fileName)

@@ -407,6 +407,9 @@ namespace SWLOR.Game.Server.Feature
             // Handles displaying animation and visual effects.
             List<string> ProcessAnimationAndVisualEffects(float delay)
             {
+                /// <summary>
+                /// Plays the configured activation animation without corrupting explicit throws.
+                /// </summary>
                 void PlayActivationAnimation(float animationLength)
                 {
                     var sourceAnimationName = ability.AnimationSourceAnimationName;
@@ -417,17 +420,25 @@ namespace SWLOR.Game.Server.Feature
                     {
                         AssignCommand(activator, () =>
                         {
-                            ReplaceObjectAnimation(activator, sourceAnimationName, replacementAnimationName);
-                            ActionPlayAnimation(ability.AnimationType, 1.0f, animationLength);
-                            DelayCommand(ability.AnimationRestoreDelaySeconds, () =>
-                            {
-                                ReplaceObjectAnimation(activator, sourceAnimationName);
-                            });
+                            PistolAnimationRemap.PlayAnimationWithTemporaryReplacementPreservingExplicitThrow(
+                                activator,
+                                ability.AnimationType,
+                                1.0f,
+                                animationLength,
+                                sourceAnimationName,
+                                replacementAnimationName,
+                                ability.AnimationRestoreDelaySeconds);
                         });
                         return;
                     }
 
-                    AssignCommand(activator, () => ActionPlayAnimation(ability.AnimationType, 1.0f, animationLength));
+                    AssignCommand(
+                        activator,
+                        () => PistolAnimationRemap.PlayAnimationPreservingExplicitThrow(
+                            activator,
+                            ability.AnimationType,
+                            1.0f,
+                            animationLength));
                 }
 
                 // Force out of stealth unless the activation must inspect or toggle the current

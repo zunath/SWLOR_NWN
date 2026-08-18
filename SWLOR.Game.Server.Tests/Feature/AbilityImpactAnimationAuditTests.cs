@@ -46,6 +46,9 @@ public class AbilityImpactAnimationAuditTests
             "shared combat-impact helpers should never choose a default animation for an ability");
     }
 
+    /// <summary>
+    /// Verifies queued weapon impacts return before every scripted animation playback path.
+    /// </summary>
     [Test]
     public void QueuedWeaponAbilityImpact_UsesEngineAttackAnimationOnly()
     {
@@ -66,7 +69,7 @@ public class AbilityImpactAnimationAuditTests
             System.Text.RegularExpressions.RegexOptions.CultureInvariant);
         var playAnimationCalls = System.Text.RegularExpressions.Regex.Matches(
                 impactAnimationBody,
-                @"ActionPlayAnimation\s*\(",
+                @"(?:ActionPlayAnimation|PistolAnimationRemap\.PlayAnimation\w*)\s*\(",
                 System.Text.RegularExpressions.RegexOptions.CultureInvariant)
             .Cast<System.Text.RegularExpressions.Match>()
             .ToArray();
@@ -79,8 +82,11 @@ public class AbilityImpactAnimationAuditTests
             "the unconditional queued-weapon return must dominate every scripted animation call");
     }
 
+    /// <summary>
+    /// Verifies configured activation replacements use explicit-throw-preserving playback.
+    /// </summary>
     [Test]
-    public void ActivationAnimationOverwrite_ReplacesCarrierBeforePlayingAnimation()
+    public void ActivationAnimationOverwrite_UsesExplicitThrowPreservingPlayback()
     {
         var root = FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
@@ -93,25 +99,20 @@ public class AbilityImpactAnimationAuditTests
             source.IndexOf("// Force out of stealth", StringComparison.Ordinal) -
             source.IndexOf("List<string> ProcessAnimationAndVisualEffects", StringComparison.Ordinal));
 
-        var replaceIndex = processAnimationBody.IndexOf(
-            "ReplaceObjectAnimation(activator, sourceAnimationName, replacementAnimationName)",
-            StringComparison.Ordinal);
-        var playIndex = processAnimationBody.IndexOf(
-            "ActionPlayAnimation(ability.AnimationType, 1.0f, animationLength)",
-            StringComparison.Ordinal);
-        var restoreIndex = processAnimationBody.IndexOf(
-            "ReplaceObjectAnimation(activator, sourceAnimationName);",
-            StringComparison.Ordinal);
+        var helperCall = System.Text.RegularExpressions.Regex.Match(
+            processAnimationBody,
+            @"PlayAnimationWithTemporaryReplacementPreservingExplicitThrow\s*\(\s*activator,\s*ability\.AnimationType,\s*1\.0f,\s*animationLength,\s*sourceAnimationName,\s*replacementAnimationName,\s*ability\.AnimationRestoreDelaySeconds\s*\)",
+            System.Text.RegularExpressions.RegexOptions.CultureInvariant);
 
-        replaceIndex.Should().BeGreaterThanOrEqualTo(0);
-        playIndex.Should().BeGreaterThanOrEqualTo(0);
-        restoreIndex.Should().BeGreaterThanOrEqualTo(0);
-        replaceIndex.Should().BeLessThan(playIndex);
-        playIndex.Should().BeLessThan(restoreIndex);
+        helperCall.Success.Should().BeTrue(
+            "the configured activation helper must receive the carrier, replacement, and restore delay in order");
     }
 
+    /// <summary>
+    /// Verifies configured impact replacements use explicit-throw-preserving playback.
+    /// </summary>
     [Test]
-    public void ImpactAnimationOverwrite_ReplacesCarrierBeforePlayingAnimation()
+    public void ImpactAnimationOverwrite_UsesExplicitThrowPreservingPlayback()
     {
         var root = FindRepositoryRoot();
         var source = File.ReadAllText(Path.Combine(
@@ -124,21 +125,13 @@ public class AbilityImpactAnimationAuditTests
             source.IndexOf("public static int ApplyHostileCombatImpact", StringComparison.Ordinal) -
             source.IndexOf("private static void PlayCombatImpactAnimation", StringComparison.Ordinal));
 
-        var replaceIndex = impactAnimationBody.IndexOf(
-            "ReplaceObjectAnimation(\n                        activator,\n                        sourceAnimationName,\n                        replacementAnimationName)",
-            StringComparison.Ordinal);
-        var playIndex = impactAnimationBody.IndexOf(
-            "ActionPlayAnimation(animation, 1.0f, restoreDelaySeconds)",
-            StringComparison.Ordinal);
-        var restoreIndex = impactAnimationBody.IndexOf(
-            "ReplaceObjectAnimation(activator, sourceAnimationName);",
-            StringComparison.Ordinal);
+        var helperCall = System.Text.RegularExpressions.Regex.Match(
+            impactAnimationBody,
+            @"PlayAnimationWithTemporaryReplacementPreservingExplicitThrow\s*\(\s*activator,\s*animation,\s*1\.0f,\s*restoreDelaySeconds,\s*sourceAnimationName,\s*replacementAnimationName,\s*restoreDelaySeconds\s*\)",
+            System.Text.RegularExpressions.RegexOptions.CultureInvariant);
 
-        replaceIndex.Should().BeGreaterThanOrEqualTo(0);
-        playIndex.Should().BeGreaterThanOrEqualTo(0);
-        restoreIndex.Should().BeGreaterThanOrEqualTo(0);
-        replaceIndex.Should().BeLessThan(playIndex);
-        playIndex.Should().BeLessThan(restoreIndex);
+        helperCall.Success.Should().BeTrue(
+            "the configured impact helper must receive the carrier, replacement, and restore delay in order");
     }
 
     private static bool UsesCastedActionWithoutOwnedAnimation(AbilityDetail ability, string source)

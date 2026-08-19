@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cache all of the GUI windows for later retrieval.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnSwlorSkillCache)]
+        [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
         public static void CacheData()
         {
             LoadWindowTemplates();
@@ -365,10 +365,18 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player))
                 return;
 
-            foreach (var windowType in _windowTypesByRefreshEvent[typeof(T)])
+            if (!_windowTypesByRefreshEvent.TryGetValue(typeof(T), out var windowTypes))
+                return;
+
+            var playerId = GetObjectUUID(player);
+            if (!_playerWindows.TryGetValue(playerId, out var playerWindows))
+                return;
+
+            foreach (var windowType in windowTypes)
             {
-                var playerId = GetObjectUUID(player);
-                var playerWindow = _playerWindows[playerId][windowType];
+                if (!playerWindows.TryGetValue(windowType, out var playerWindow))
+                    continue;
+
                 var windowId = BuildWindowId(windowType);
 
                 if(NuiFindWindow(player, windowId) != 0)

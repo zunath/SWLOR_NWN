@@ -133,7 +133,16 @@ public class PistolAnimationRemapTests
         registrationSource.Should().Contain(
             "EventsPlugin.SubscribeEvent(\n                \"NWNX_ON_BROADCAST_SAFE_PROJECTILE_BEFORE\",\n                ScriptName.OnBroadcastSafeProjectileBefore);");
         registrationSource.Should().Contain(
-            "EventsPlugin.AddIDToWhitelist(\n                    \"NWNX_ON_BROADCAST_SAFE_PROJECTILE_TYPE\",\n                    projectileType);");
+            "foreach (var projectileType in WeaponProjectileTypes)");
+        registrationSource.Should().Contain(
+            "EventsPlugin.AddIDToWhitelist(\n                    \"NWNX_ON_BROADCAST_SAFE_PROJECTILE_TYPE\",\n                    (int)projectileType);");
+        registrationSource.Should().ContainAll(
+            "BroadcastSafeProjectileType.WeaponVfxNone",
+            "BroadcastSafeProjectileType.WeaponVfxAcid",
+            "BroadcastSafeProjectileType.WeaponVfxCold",
+            "BroadcastSafeProjectileType.WeaponVfxElectrical",
+            "BroadcastSafeProjectileType.WeaponVfxFire",
+            "BroadcastSafeProjectileType.WeaponVfxSonic");
         registrationSource.Should().Contain(
             "EventsPlugin.ToggleIDWhitelist(\"NWNX_ON_BROADCAST_SAFE_PROJECTILE_TYPE\", true);");
     }

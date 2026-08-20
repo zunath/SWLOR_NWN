@@ -134,6 +134,8 @@ public class PistolAnimationRemapTests
             "EventsPlugin.SubscribeEvent(\n                \"NWNX_ON_BROADCAST_SAFE_PROJECTILE_BEFORE\",\n                ScriptName.OnBroadcastSafeProjectileBefore);");
         registrationSource.Should().Contain(
             "EventsPlugin.AddIDToWhitelist(\n                    \"NWNX_ON_BROADCAST_SAFE_PROJECTILE_TYPE\",\n                    projectileType);");
+        registrationSource.Should().Contain(
+            "EventsPlugin.ToggleIDWhitelist(\"NWNX_ON_BROADCAST_SAFE_PROJECTILE_TYPE\", true);");
     }
 
     /// <summary>

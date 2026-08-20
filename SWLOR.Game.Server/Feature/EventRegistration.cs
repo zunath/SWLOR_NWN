@@ -539,6 +539,7 @@ namespace SWLOR.Game.Server.Feature
                     "NWNX_ON_BROADCAST_SAFE_PROJECTILE_TYPE",
                     projectileType);
             }
+            EventsPlugin.ToggleIDWhitelist("NWNX_ON_BROADCAST_SAFE_PROJECTILE_TYPE", true);
 
             // RunScript Debug Events
             EventsPlugin.SubscribeEvent("NWNX_ON_DEBUG_RUN_SCRIPT_BEFORE", ScriptName.OnDebugRunScriptBefore);

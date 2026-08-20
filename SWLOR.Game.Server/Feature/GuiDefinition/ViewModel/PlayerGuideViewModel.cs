@@ -1111,7 +1111,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Guide Button",
                             "The Character Sheet also has a Guide button, so you can return here while reviewing your character."),
                         new ArticleBlock("Character Sheet Actions",
-                            "The Character Sheet action list opens Skills, Perks, Techniques, Recipes, Quests, Open Trash, Currencies, Achievements, Notes, Appearance, Disguises, Settings, HoloCom, Key Items, and this Guide."),
+                            "The Character Sheet action list opens Skills, Perks, Techniques, Appearance, Disguises, Quests, Open Trash, HoloCom, Recipes, Currencies, Key Items, Notes, this Guide, Achievements, and Settings."),
                         new ArticleBlock("Skills and Perks",
                             "Skills shows ranks, XP, XP debt, decay locks, and RP XP distribution. Perks shows player perks and, when you have an active beast, beast perks."),
                         new ArticleBlock("Quests and Progress",

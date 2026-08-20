@@ -422,18 +422,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         AddActionButton(actions, "Skills", model => model.OnClickSkills());
                         AddActionButton(actions, "Perks", model => model.OnClickPerks());
                         AddActionButton(actions, "Techniques", model => model.OnClickTechniques(), model => model.IsTechniquesEnabled);
-                        AddActionButton(actions, "Recipes", model => model.OnClickRecipes());
-                        AddActionButton(actions, "Quests", model => model.OnClickQuests());
-                        AddActionButton(actions, "Open Trash", model => model.OnClickOpenTrash());
-                        AddActionButton(actions, "Currencies", model => model.OnClickCurrencies());
-                        AddActionButton(actions, "Achievements", model => model.OnClickAchievements());
-                        AddActionButton(actions, "Notes", model => model.OnClickNotes());
                         AddActionButton(actions, "Appearance", model => model.OnClickAppearance());
                         AddActionButton(actions, "Disguises", model => model.OnClickDisguises());
-                        AddActionButton(actions, "Settings", model => model.OnClickSettings());
+                        AddActionButton(actions, "Quests", model => model.OnClickQuests());
+                        AddActionButton(actions, "Open Trash", model => model.OnClickOpenTrash());
                         AddActionButton(actions, "HoloCom", model => model.OnClickHoloCom(), model => model.IsHolocomEnabled);
+                        AddActionButton(actions, "Recipes", model => model.OnClickRecipes());
+                        AddActionButton(actions, "Currencies", model => model.OnClickCurrencies());
                         AddActionButton(actions, "Key Items", model => model.OnClickKeyItems());
+                        AddActionButton(actions, "Notes", model => model.OnClickNotes());
                         AddActionButton(actions, "Guide", model => model.OnClickGuide());
+                        AddActionButton(actions, "Achievements", model => model.OnClickAchievements());
+                        AddActionButton(actions, "Settings", model => model.OnClickSettings());
                     });
                 })
                     .SetWidth(128f);

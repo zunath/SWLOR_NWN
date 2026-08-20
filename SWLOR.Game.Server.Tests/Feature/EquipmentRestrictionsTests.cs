@@ -216,7 +216,7 @@ public class EquipmentRestrictionsTests
             "wamar_001",
             "pistol bullets use the existing single-emitter arrow blaster model");
         ammunitionRows[2]["ShotSound"].Should().Be(
-            "cb_sh_blstrfire1",
+            PistolAnimationRemap.PistolShotSound,
             "pistol bullets use the existing single-shot blaster sound");
 
         rows[514]["label"].Should().Be("legacy_smallarms");

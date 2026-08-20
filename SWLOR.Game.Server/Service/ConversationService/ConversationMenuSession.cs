@@ -152,6 +152,7 @@ namespace SWLOR.Game.Server.Service.ConversationService
             CurrentNode = new ConversationNode
             {
                 Id = _currentPageId,
+                PortraitResref = Menu.PortraitResref,
                 Text = ConversationMarkup.ParseLegacyColors(page.Header, ConversationTextStyle.Normal)
             };
         }

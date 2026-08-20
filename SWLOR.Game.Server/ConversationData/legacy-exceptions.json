@@ -6,12 +6,6 @@
     ]
   },
   {
-    "ConversationId": "capn_sluuk",
-    "Reasons": [
-      "Uses custom action script 'enter_world'."
-    ]
-  },
-  {
     "ConversationId": "crystal",
     "Reasons": [
       "Uses custom action script 'at_002'."

@@ -103,6 +103,7 @@ public static class DlgConversationMigrator
             ["accept_quest_1"] = [SetLocal("player", "SWLOR_ABANDONED_STATION_QUEST", "1")],
             ["accept_quest_2"] = [SetLocal("player", "SWLOR_EXAMPLE_QUEST_2", "1")],
             ["finish_quest_1"] = [SetLocal("player", "SWLOR_ABANDONED_STATION_QUEST", "3")],
+            ["enter_world"] = [new OperationMapping("action-teleport", "ENTRY_STARTING_WP")],
             ["tel_aban_station"] = [new OperationMapping("action-teleport", "ABAN_STATION_LANDING")],
             ["spawnb_sc_activ"] = [SetLocal("owner", "SWLOR_SPAWN_ACTIVE", "1")],
             ["spawnb_sc_dactiv"] = [SetLocal("owner", "SWLOR_SPAWN_ACTIVE", "0")],

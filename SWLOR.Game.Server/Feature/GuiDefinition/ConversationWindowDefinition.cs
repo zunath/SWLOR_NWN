@@ -37,7 +37,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 row.AddImage()
                                     .BindResref(model => model.PortraitResref)
                                     .BindIsVisible(model => model.HasPortrait)
-                                    .SetAspect(NuiAspect.ExactScaled)
+                                    .SetAspect(NuiAspect.Fit)
                                     .SetWidth(128f)
                                     .SetHeight(200f);
                             });

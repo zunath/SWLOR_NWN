@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         public override ConversationMenuSpec Build()
         {
             var builder = new ConversationMenuBuilder()
+                .WithPortrait("p_256x128_medic1")
                 .AddPage(MainPageId, MainPageInit);
 
             return builder.Build();

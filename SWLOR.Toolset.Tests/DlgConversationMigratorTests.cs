@@ -59,6 +59,22 @@ public sealed class DlgConversationMigratorTests
             issue.Message.Contains("open_train_store", StringComparison.Ordinal));
     }
 
+    [Test]
+    public void Convert_MapsCaptainSluuksExitShipActionToTheStartingWaypoint()
+    {
+        var result = DlgConversationMigrator.Convert("capn_sluuk", Load("capn_sluuk"));
+
+        result.CanRunInNui.Should().BeTrue();
+        var exitShip = result.Graph.Choices.Values.Single(choice =>
+            choice.Text.Text.Contains("EXIT SHIP", StringComparison.Ordinal));
+        exitShip.EndsConversation.Should().BeTrue();
+        exitShip.Actions.Should().ContainSingle().Which.Should().BeEquivalentTo(new
+        {
+            Key = "action-teleport",
+            Arguments = new[] { "ENTRY_STARTING_WP" }
+        });
+    }
+
     [TestCase("dt_barman_gen03")]
     [TestCase("dt_doc_velpo")]
     [TestCase("q1_nikka_larson")]

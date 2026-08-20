@@ -6,6 +6,7 @@ namespace SWLOR.Game.Server.Service.ConversationService
     public sealed class ConversationMenuSpec
     {
         public string Title { get; set; } = "Conversation";
+        public string PortraitResref { get; set; } = string.Empty;
         public string DefaultPageId { get; set; } = string.Empty;
         public Dictionary<string, ConversationMenuPage> Pages { get; } = new();
         public List<Action> InitializationActions { get; } = new();

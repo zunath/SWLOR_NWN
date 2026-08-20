@@ -57,14 +57,8 @@
   },
   {
     "ConversationId": "capn_sluuk",
-    "Status": "RequiresLegacyException",
-    "Issues": [
-      {
-        "Severity": 1,
-        "Location": "reply 1",
-        "Message": "Uses custom action script 'enter_world'."
-      }
-    ]
+    "Status": "Converted",
+    "Issues": []
   },
   {
     "ConversationId": "cavedweller",

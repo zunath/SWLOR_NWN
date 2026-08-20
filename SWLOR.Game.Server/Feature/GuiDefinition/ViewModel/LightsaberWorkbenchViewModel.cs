@@ -606,7 +606,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 RemoveItemProperty(item, light);
             }
 
-            var bladeLight = ItemPropertyLight(LightBrightness.LIGHTBRIGHTNESS_DIM, lightColor);
+            var bladeLight = ItemPropertyLight(LightBrightness.Dim, lightColor);
             AddItemProperty(DurationType.Permanent, bladeLight, item);
         }
 

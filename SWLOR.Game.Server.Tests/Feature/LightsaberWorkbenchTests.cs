@@ -349,20 +349,20 @@ public class LightsaberWorkbenchTests
     {
         var expected = new Dictionary<string, LightColor>
         {
-            ["Orange"] = LightColor.ORANGE,
-            ["Blue"] = LightColor.BLUE,
-            ["Green 1"] = LightColor.GREEN,
-            ["Red"] = LightColor.RED,
-            ["White"] = LightColor.WHITE,
-            ["Yellow"] = LightColor.YELLOW,
-            ["Purple 1"] = LightColor.PURPLE,
-            ["Teal"] = LightColor.WHITE,
-            ["Pink"] = LightColor.WHITE,
-            ["Brown"] = LightColor.WHITE,
-            ["Green 2"] = LightColor.GREEN,
-            ["Purple 2"] = LightColor.PURPLE,
-            ["Lavender"] = LightColor.WHITE,
-            ["Cyan"] = LightColor.WHITE,
+            ["Orange"] = LightColor.Orange,
+            ["Blue"] = LightColor.Blue,
+            ["Green 1"] = LightColor.Green,
+            ["Red"] = LightColor.Red,
+            ["White"] = LightColor.White,
+            ["Yellow"] = LightColor.Yellow,
+            ["Purple 1"] = LightColor.Purple,
+            ["Teal"] = LightColor.White,
+            ["Pink"] = LightColor.White,
+            ["Brown"] = LightColor.White,
+            ["Green 2"] = LightColor.Green,
+            ["Purple 2"] = LightColor.Purple,
+            ["Lavender"] = LightColor.White,
+            ["Cyan"] = LightColor.White,
         };
 
         var colors = LightsaberWorkbench.GetBladeColors(BaseItem.Lightsaber, false)
@@ -383,7 +383,7 @@ public class LightsaberWorkbenchTests
             "ViewModel",
             "LightsaberWorkbenchViewModel.cs"));
         viewModel.Should().Contain("ApplyBladeLight(item, top.LightColor);");
-        viewModel.Should().Contain("ItemPropertyLight(LightBrightness.LIGHTBRIGHTNESS_DIM, lightColor)");
+        viewModel.Should().Contain("ItemPropertyLight(LightBrightness.Dim, lightColor)");
         viewModel.Should().Contain("GetItemPropertyType(ip) == ItemPropertyType.Light");
     }
 

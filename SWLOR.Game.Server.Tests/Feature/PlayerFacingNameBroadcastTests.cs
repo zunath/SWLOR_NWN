@@ -37,7 +37,7 @@ public class PlayerFacingNameBroadcastTests
         normalizedSource.Should().Contain("if (!GetIsPC(player))");
 
         source.Should().NotContain("finalMessage.Append(\"[Comms] \");");
-        source.Should().Contain("ChatPlugin.SendMessage(channel, message, speaker, receiver)");
+        source.Should().Contain("ChatPlugin.SendMessage(channel, message, transportSpeaker, receiver)");
         source.Should().NotContain("ChatChannel.DMTalk");
     }
 
@@ -166,7 +166,7 @@ public class PlayerFacingNameBroadcastTests
         communicationSource.Should().Contain("else if (channel == ChatChannel.PlayerWhisper)");
         communicationSource.Should().NotContain("finalMessage.Append(\"[Whisper] \");");
         communicationSource.Should().NotContain("finalMessage.Append(\"[Holonet] \");");
-        communicationSource.Should().Contain("SendProcessedChatMessage(channel, receiver, speaker, finalMessageColored);");
+        communicationSource.Should().Contain("SendProcessedChatMessage(channel, receiver, sender, speaker, finalMessageColored);");
         communicationSource.Should().Contain("private static void SendProcessedChatMessage(");
         communicationSource.Should().NotContain("SendMessageToPC(receiver");
         // NWNX_Rename only patches the per-observer name override around the native Party/Shout/Tell
@@ -175,7 +175,7 @@ public class PlayerFacingNameBroadcastTests
         // DM_* channel. Comms must dispatch on the native PlayerParty channel, not DMTalk, or the
         // override never applies and the speaker's true name leaks once they leave the receiver's area.
         communicationSource.Should().NotContain("ChatChannel.DMTalk");
-        communicationSource.Should().Contain("ChatPlugin.SendMessage(channel, message, speaker, receiver)");
+        communicationSource.Should().Contain("ChatPlugin.SendMessage(channel, message, transportSpeaker, receiver)");
         communicationSource.Should().NotContain("PlayerName.SendWithChatNameOverride");
         communicationSource.Should().NotContain("ChatPlugin.SendMessage(ChatChannel.PlayerDM");
         communicationSource.Should().NotContain("ChatChannel.PlayerDM, finalMessageColored");
@@ -418,6 +418,32 @@ public class PlayerFacingNameBroadcastTests
         propertySource.Should().NotContain("**Mayor**:");
         propertySource.Should().NotContain("**New Mayor**:");
         propertySource.Should().NotContain("**Founding Mayor**:");
+    }
+
+    [Test]
+    public void HoloComDialogue_UsesTheAreaLocalHologramAsItsTransportSpeaker()
+    {
+        var root = FindRepositoryRoot();
+        var communicationSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Communication.cs"));
+        var normalizedCommunicationSource = communicationSource.Replace("\r\n", "\n");
+
+        communicationSource.Should().Contain("var speaker = GetEffectiveChatSpeaker(sender);");
+        communicationSource.Should().Contain(
+            "SendProcessedChatMessage(channel, receiver, sender, speaker, finalMessageColored);");
+        communicationSource.Should().Contain("uint transportSpeaker,");
+        communicationSource.Should().Contain("uint identitySpeaker,");
+        normalizedCommunicationSource.Should().Contain(
+            "PlayerName.SendChatMessageWithChatNameOverride(\n" +
+            "                receiver,\n" +
+            "                identitySpeaker,");
+        communicationSource.Should().Contain(
+            "ChatPlugin.SendMessage(channel, message, transportSpeaker, receiver)");
+        communicationSource.Should().NotContain(
+            "ChatPlugin.SendMessage(channel, message, identitySpeaker, receiver)");
     }
 
     [Test]

@@ -451,16 +451,21 @@ namespace SWLOR.Game.Server.Service
                     finalMessageColored = ColorToken.Orange(finalMessageColored);
                 }
 
-                SendProcessedChatMessage(channel, receiver, speaker, finalMessageColored);
+                SendProcessedChatMessage(channel, receiver, sender, speaker, finalMessageColored);
             }
         }
 
         private static void SendProcessedChatMessage(
             ChatChannel channel,
             uint receiver,
-            uint speaker,
+            uint transportSpeaker,
+            uint identitySpeaker,
             string message)
         {
+            // A HoloCom message is spoken by a copied creature in the receiver's area. The hologram's
+            // owner supplies the player-facing identity and language, but the area-local hologram must
+            // remain the native transport speaker or Talk/Whisper packets from the distant owner are
+            // discarded by the engine. Holograms retain their generic, display-safe object name.
             // NWNX_Rename only patches the per-observer PC name override around three native chat
             // functions - Party, Shout, and Tell (see the plugin's HOOK_CHAT registrations). Talk and
             // Whisper are not among them; they render correctly today only because the speaker's
@@ -472,8 +477,8 @@ namespace SWLOR.Game.Server.Service
             // boundaries the same way DMTalk did.
             PlayerName.SendChatMessageWithChatNameOverride(
                 receiver,
-                speaker,
-                () => ChatPlugin.SendMessage(channel, message, speaker, receiver));
+                identitySpeaker,
+                () => ChatPlugin.SendMessage(channel, message, transportSpeaker, receiver));
         }
 
         private static bool IsChatCommandMessage(string message)

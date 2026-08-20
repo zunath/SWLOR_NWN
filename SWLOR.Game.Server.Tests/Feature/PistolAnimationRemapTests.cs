@@ -17,6 +17,7 @@ public class PistolAnimationRemapTests
     {
         PistolAnimationRemap.SlingAttackAnimation.Should().Be("throwr");
         PistolAnimationRemap.FormerPistolAttackAnimation.Should().Be("bowshot");
+        PistolAnimationRemap.PistolShotSound.Should().Be("cb_sh_blstrfire1");
     }
 
     /// <summary>
@@ -77,6 +78,62 @@ public class PistolAnimationRemapTests
             null);
 
         result.Should().BeFalse();
+    }
+
+    /// <summary>
+    /// Verifies only an active replacement animation needs a scripted pistol shot sound.
+    /// </summary>
+    [TestCase(true, BaseItem.Pistol, null, true)]
+    [TestCase(true, BaseItem.LegacyPistol, null, true)]
+    [TestCase(true, BaseItem.Sling, null, true)]
+    [TestCase(false, BaseItem.Pistol, null, false)]
+    [TestCase(true, BaseItem.Pistol, BaseItem.SmallShield, false)]
+    [TestCase(true, BaseItem.Rifle, null, false)]
+    public void ReplacementShotSound_PlaysOnlyForAnActiveEligiblePistolRemap(
+        bool isRemapActive,
+        BaseItem? rightHandBaseItem,
+        BaseItem? leftHandBaseItem,
+        bool expected)
+    {
+        var result = PistolAnimationRemap.ShouldPlayRemappedPistolShotSound(
+            isRemapActive,
+            rightHandBaseItem,
+            leftHandBaseItem);
+
+        result.Should().Be(expected);
+    }
+
+    /// <summary>
+    /// Verifies weapon projectile launches use the handler that restores the remapped pistol shot sound.
+    /// </summary>
+    [Test]
+    public void WeaponProjectiles_RestoreTheRemappedPistolShotSound()
+    {
+        var method = typeof(PistolAnimationRemap).GetMethod(nameof(PistolAnimationRemap.OnWeaponProjectileCreated));
+        var scripts = method!
+            .GetCustomAttributes(typeof(NWNEventHandler), false)
+            .Cast<NWNEventHandler>()
+            .Select(attribute => attribute.Script);
+
+        scripts.Should().Contain(ScriptName.OnBroadcastSafeProjectileBefore);
+
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "PistolAnimationRemap.cs"));
+        source.Should().Contain("AssignCommand(attacker, () => PlaySound(PistolShotSound));");
+
+        var registrationSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "EventRegistration.cs")).ReplaceLineEndings("\n");
+        registrationSource.Should().Contain(
+            "EventsPlugin.SubscribeEvent(\n                \"NWNX_ON_BROADCAST_SAFE_PROJECTILE_BEFORE\",\n                ScriptName.OnBroadcastSafeProjectileBefore);");
+        registrationSource.Should().Contain(
+            "EventsPlugin.AddIDToWhitelist(\n                    \"NWNX_ON_BROADCAST_SAFE_PROJECTILE_TYPE\",\n                    projectileType);");
     }
 
     /// <summary>

@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Feature
         private const float MinimumExplicitThrowRestoreDelaySeconds = 1.1f;
         public const string SlingAttackAnimation = "throwr";
         public const string FormerPistolAttackAnimation = "bowshot";
+        public const string PistolShotSound = "cb_sh_blstrfire1";
 
         /// <summary>
         /// Synchronizes a player creature's pistol animation when it enters the module.
@@ -68,6 +69,26 @@ namespace SWLOR.Game.Server.Feature
         }
 
         /// <summary>
+        /// Restores the ammunition shot sound skipped by the replacement bow animation.
+        /// Native sling attacks continue to play their configured sound and must not be doubled.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnBroadcastSafeProjectileBefore)]
+        public static void OnWeaponProjectileCreated()
+        {
+            var attacker = OBJECT_SELF;
+            if (!GetIsObjectValid(attacker) ||
+                !ShouldPlayRemappedPistolShotSound(
+                    GetLocalBool(attacker, PistolAnimationRemapActiveVariable),
+                    GetEquippedBaseItem(attacker, InventorySlot.RightHand),
+                    GetEquippedBaseItem(attacker, InventorySlot.LeftHand)))
+            {
+                return;
+            }
+
+            AssignCommand(attacker, () => PlaySound(PistolShotSound));
+        }
+
+        /// <summary>
         /// Determines whether the equipped loadout can safely use the former two-handed pistol attack.
         /// </summary>
         public static bool ShouldUseFormerPistolAttackAnimation(
@@ -77,6 +98,18 @@ namespace SWLOR.Game.Server.Feature
             return rightHandBaseItem.HasValue &&
                    Item.PistolBaseItemTypes.Contains(rightHandBaseItem.Value) &&
                    !leftHandBaseItem.HasValue;
+        }
+
+        /// <summary>
+        /// Determines whether an attack needs the shot sound normally emitted by the sling animation.
+        /// </summary>
+        public static bool ShouldPlayRemappedPistolShotSound(
+            bool isRemapActive,
+            BaseItem? rightHandBaseItem,
+            BaseItem? leftHandBaseItem)
+        {
+            return isRemapActive &&
+                   ShouldUseFormerPistolAttackAnimation(rightHandBaseItem, leftHandBaseItem);
         }
 
         /// <summary>
@@ -228,18 +261,20 @@ namespace SWLOR.Game.Server.Feature
         /// </summary>
         private static bool ShouldUseFormerPistolAttackAnimation(uint creature)
         {
-            var rightHand = GetItemInSlot(InventorySlot.RightHand, creature);
-            var leftHand = GetItemInSlot(InventorySlot.LeftHand, creature);
-            var rightHandBaseItem = GetIsObjectValid(rightHand)
-                ? GetBaseItemType(rightHand)
-                : (BaseItem?)null;
-            var leftHandBaseItem = GetIsObjectValid(leftHand)
-                ? GetBaseItemType(leftHand)
-                : (BaseItem?)null;
-
             return ShouldUseFormerPistolAttackAnimation(
-                rightHandBaseItem,
-                leftHandBaseItem);
+                GetEquippedBaseItem(creature, InventorySlot.RightHand),
+                GetEquippedBaseItem(creature, InventorySlot.LeftHand));
+        }
+
+        /// <summary>
+        /// Returns the equipped base item in a slot, or null when the slot is empty.
+        /// </summary>
+        private static BaseItem? GetEquippedBaseItem(uint creature, InventorySlot slot)
+        {
+            var item = GetItemInSlot(slot, creature);
+            return GetIsObjectValid(item)
+                ? GetBaseItemType(item)
+                : (BaseItem?)null;
         }
 
         /// <summary>

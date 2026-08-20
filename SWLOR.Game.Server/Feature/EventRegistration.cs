@@ -529,6 +529,17 @@ namespace SWLOR.Game.Server.Feature
             EventsPlugin.SubscribeEvent("NWNX_ON_BROADCAST_CAST_SPELL_BEFORE", ScriptName.OnBroadcastCastSpellBefore);
             EventsPlugin.SubscribeEvent("NWNX_ON_BROADCAST_CAST_SPELL_AFTER", ScriptName.OnBroadcastCastSpellAfter);
 
+            // Weapon projectile events
+            EventsPlugin.SubscribeEvent(
+                "NWNX_ON_BROADCAST_SAFE_PROJECTILE_BEFORE",
+                ScriptName.OnBroadcastSafeProjectileBefore);
+            for (var projectileType = 0; projectileType <= 5; projectileType++)
+            {
+                EventsPlugin.AddIDToWhitelist(
+                    "NWNX_ON_BROADCAST_SAFE_PROJECTILE_TYPE",
+                    projectileType);
+            }
+
             // RunScript Debug Events
             EventsPlugin.SubscribeEvent("NWNX_ON_DEBUG_RUN_SCRIPT_BEFORE", ScriptName.OnDebugRunScriptBefore);
             EventsPlugin.SubscribeEvent("NWNX_ON_DEBUG_RUN_SCRIPT_AFTER", ScriptName.OnDebugRunScriptAfter);

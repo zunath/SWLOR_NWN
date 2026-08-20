@@ -645,6 +645,7 @@ namespace SWLOR.Game.Server.Core
         // NWNX Events - Broadcast spell cast events
         public const string OnBroadcastCastSpellBefore = "cast_spell_bef";
         public const string OnBroadcastCastSpellAfter = "cast_spell_aft";
+        public const string OnBroadcastSafeProjectileBefore = "safe_proj_bef";
 
         // NWNX Events - Debug events
         public const string OnDebugRunScriptBefore = "debug_script_bef";

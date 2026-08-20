@@ -20,6 +20,75 @@ namespace SWLOR.Game.Server.Tests.Perks;
 public class GeneratedWeaponPerkBehaviorTests
 {
     [Test]
+    public void ReportedFailPerks_ExposeTheirPromisedStatusStatsAndTargeting()
+    {
+        AssertStatusStat(new FlashStatusEffect(20), StatType.PhysicalAndForceAbilityHitChancePercentAdjustment, -20);
+        AssertStatusStat(new FlashStatusEffect(20), StatType.AbilityHitChancePercentAdjustment, 0);
+
+        var soulAscension = new SoulAscensionStatusEffect();
+        AssertStatusStat(soulAscension, StatType.AttackPercentAdjustment, 8);
+        AssertStatusStat(soulAscension, StatType.PhysicalDamageDealtHPPercentRestore, 8);
+        soulAscension.Categories.Should().HaveFlag(StatusEffectCategory.Buff);
+
+        AssertStatusStat(new AdamantineGuardStatusEffect(), StatType.GuardDamageReductionPercentAdjustment, 20);
+        Combat.MaximumGuardDamageReductionPercent.Should().BeGreaterThanOrEqualTo(55);
+
+        AssertStatusStat(new DisarmingShotStatusEffect(18), StatType.AttackPercentAdjustment, -18);
+        AssertStatusStat(new PointBlankBurstStatusEffect(15), StatType.EvasionPercentAdjustment, 15);
+        AssertStatusStat(new SnapRollStatusEffect(12), StatType.RangedDeflection, 12);
+        AssertStatusStat(new DuelistsDistanceStatusEffect(10), StatType.DamageDealtPercentAdjustment, -10);
+        AssertStatusStat(new ReloadTempoStatusEffect(20, 2), StatType.AttackDelayReductionPercent, 20);
+        AssertStatusStat(new DeadMansHandStatusEffect(), StatType.RangedCriticalRatePercentAdjustment, 20);
+
+        var deadMansHand = new DeadMansHandAbilityDefinition().BuildAbilities()[FeatType.DeadMansHand1];
+        deadMansHand.IsHostileAbility.Should().BeTrue();
+        deadMansHand.IsAreaAbility.Should().BeFalse();
+        deadMansHand.RequiresTarget.Should().BeTrue();
+        deadMansHand.Targeting.Should().BeNull();
+    }
+
+    [Test]
+    public void ReportedFailPerks_WireVisibleEffectsAndCombatFeedback()
+    {
+        var root = FindRepositoryRoot();
+        var disarmingShot = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Pistol", "DisarmingShotAbilityDefinition.cs"));
+        (disarmingShot.Split("StatusEffectFactory = () => new DisarmingShotStatusEffect(").Length - 1).Should().Be(4);
+
+        var pointBlankBurst = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Pistol", "PointBlankBurstAbilityDefinition.cs"));
+        (pointBlankBurst.Split("SelfStatusEffectFactory = () => new PointBlankBurstStatusEffect(").Length - 1).Should().Be(2);
+
+        var quickDraw = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Pistol", "QuickDrawAbilityDefinition.cs"));
+        (quickDraw.Split("CriticalRateIfNotRecentTargetFeedbackLabel = \"Quick Draw\"").Length - 1).Should().Be(4);
+
+        var doubleShot = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Pistol", "DoubleShotAbilityDefinition.cs"));
+        (doubleShot.Split("RestoreStaminaIfAnyCriticalHitFeedbackLabel = \"Double Shot\"").Length - 1).Should().Be(3);
+
+        var combat = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        combat.Should().Contain("High Noon +{adjustment}% critical damage");
+        combat.Should().Contain("Deadeye Reload +{currentTotal}% Critical Rate");
+        combat.Should().Contain("Lucky Chamber +{criticalRate}% Critical Rate");
+        combat.Should().Contain("new DuelistsDistanceStatusEffect(Math.Abs(damageDealt))");
+        combat.Should().Contain("new ReloadTempoStatusEffect(hastePercent, attackCount)");
+
+        var tagIn = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Katar", "TagInAbilityDefinition.cs"));
+        tagIn.Should().Contain("FriendlyTargetTemporaryHPUsesActivatorMaximum = true");
+
+        var flash = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "HeavyVibroblade", "FlashAbilityDefinition.cs"));
+        flash.Should().Contain("statusEffectFactory: () => new FlashStatusEffect(20)");
+        flash.Should().Contain("damagePercentAdjustment: _ => -100");
+        flash.Should().Contain("canCritical: false");
+
+        combat.Should().Contain("StatType.PhysicalDamageDealtHPPercentRestore");
+        combat.Should().Contain("ApplyDamageDerivedHealing(attacker, damage, hpRestorePercent)");
+    }
+
+    [Test]
     public void SaberCyclone_IsASelfBuffWithoutHostileAreaTargeting()
     {
         var ability = new SaberCycloneAbilityDefinition().BuildAbilities()[FeatType.SaberCyclone1];
@@ -180,9 +249,9 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("PistolPerkDefinition.cs", StatType.SecondaryAbilityUsedEvasionPercentAdjustmentSkillType, "(int)SkillType.Pistol");
         AssertSourceStat("PistolPerkDefinition.cs", StatType.SecondaryAbilityUsedEvasionPercentAdjustment, "8");
         AssertSourceStat("PistolPerkDefinition.cs", StatType.SecondaryAbilityUsedEvasionDurationSeconds, "30");
-        AssertSourceStat("PistolPerkDefinition.cs", StatType.AbilityUsedRangedEvasionPercentAdjustmentSkillType, "(int)SkillType.Pistol");
-        AssertSourceStat("PistolPerkDefinition.cs", StatType.AbilityUsedRangedEvasionPercentAdjustment, "12");
-        AssertSourceStat("PistolPerkDefinition.cs", StatType.AbilityUsedRangedEvasionDurationSeconds, "30");
+        AssertSourceStat("PistolPerkDefinition.cs", StatType.AbilityUsedRangedDeflectionSkillType, "(int)SkillType.Pistol");
+        AssertSourceStat("PistolPerkDefinition.cs", StatType.AbilityUsedRangedDeflection, "12");
+        AssertSourceStat("PistolPerkDefinition.cs", StatType.AbilityUsedRangedDeflectionDurationSeconds, "30");
         AssertSourceStat("PistolPerkDefinition.cs", StatType.RangedAutoAttackCycleCriticalRateRequiredCount, "4");
         AssertSourceStat("PistolPerkDefinition.cs", StatType.CriticalDamageHighHPTargetPercentAdjustment, "15");
 
@@ -589,12 +658,16 @@ public class GeneratedWeaponPerkBehaviorTests
             .Should().Be(StatTypeCategory.NonBeneficial);
         Stat.GetStatTypeCategory(StatType.WardAbilityDefenseCategoryId)
             .Should().Be(StatTypeCategory.NonBeneficial);
-        Stat.GetStatTypeCategory(StatType.AbilityUsedRangedEvasionPercentAdjustmentSkillType)
+        Stat.GetStatTypeCategory(StatType.AbilityUsedRangedDeflectionSkillType)
             .Should().Be(StatTypeCategory.NonBeneficial);
-        Stat.GetStatTypeCategory(StatType.AbilityUsedRangedEvasionPercentAdjustment)
+        Stat.GetStatTypeCategory(StatType.AbilityUsedRangedDeflection)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
-        Stat.GetStatTypeCategory(StatType.AbilityUsedRangedEvasionDurationSeconds)
+        Stat.GetStatTypeCategory(StatType.AbilityUsedRangedDeflectionDurationSeconds)
             .Should().Be(StatTypeCategory.NonBeneficial);
+        Stat.GetStatTypeCategory(StatType.RangedCriticalRatePercentAdjustment)
+            .Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.CriticalHitLimitedHastePercentAdjustment)
+            .Should().Be(StatTypeCategory.BeneficialWhenPositive);
         Stat.GetStatTypeCategory(StatType.ForceDamageTakenForceDefense)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
         Stat.GetStatTypeCategory(StatType.ForceDamageTakenForceDefenseDurationSeconds)
@@ -726,7 +799,7 @@ public class GeneratedWeaponPerkBehaviorTests
         combatSource.Should().Contain("StatType.AbilityUsedPerkCategorySelfDefenseCategoryId");
         combatSource.Should().NotContain("KatarIronGuardPulseDamageBonus");
         combatSource.Should().NotContain("StaffSentinelGuardCategoryId");
-        combatSource.Should().Contain("StatType.RangedEvasionPercentAdjustment");
+        combatSource.Should().Contain("StatType.AbilityUsedRangedDeflection");
         usePerkFeatSource.Should().Contain("Combat.ApplyAbilityRecastDelayModifiers(");
         nativeAttackSource.Should().Contain("Combat.GetHitChanceAgainstSunderedTargetAdjustment(");
         nativeAttackSource.Should().Contain("Combat.GetCriticalRateAgainstSunderedTargetAdjustment(");

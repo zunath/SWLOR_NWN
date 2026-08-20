@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     public sealed class SnapRollStatusEffect : StatusEffectBase
     {
-        private readonly int _evasionPercent;
+        private readonly int _deflection;
 
         public override string Name => "Snap Roll";
         public override EffectIconType Icon => EffectIconType.SnapRollStatusEffect;
@@ -18,15 +18,15 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
         }
 
-        public SnapRollStatusEffect(int evasionPercent)
+        public SnapRollStatusEffect(int deflection)
         {
-            _evasionPercent = evasionPercent;
-            StatGroup.Stats[StatType.RangedEvasionPercentAdjustment] = evasionPercent;
+            _deflection = deflection;
+            StatGroup.Stats[StatType.RangedDeflection] = deflection;
         }
 
         public override IStatusEffect Clone()
         {
-            return new SnapRollStatusEffect(_evasionPercent);
+            return new SnapRollStatusEffect(_deflection);
         }
     }
 }

@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Service
     {
         private const float DamageStatDeltaMultiplier = 0.35f;
         public const int BaseGuardDamageReductionPercent = 20;
-        public const int MaximumGuardDamageReductionPercent = 40;
+        public const int MaximumGuardDamageReductionPercent = 85;
         public const int MaximumNormalDamageReductionPercent = 95;
         public const int MaximumDamageBonusPercent = 100;
         private const int MaximumCrossResourceRestorePercent = 95;
@@ -482,9 +482,18 @@ namespace SWLOR.Game.Server.Service
             if (threshold <= 0 || adjustment == 0 || maximumHP <= 0)
                 return 0;
 
-            return GetCurrentHitPoints(defender) >= maximumHP * (threshold / 100f)
-                ? adjustment
-                : 0;
+            if (GetCurrentHitPoints(defender) < maximumHP * (threshold / 100f))
+                return 0;
+
+            if (GetIsPC(attacker))
+            {
+                FloatingTextStringOnCreature(
+                    ColorToken.Combat($"High Noon +{adjustment}% critical damage"),
+                    attacker,
+                    false);
+            }
+
+            return adjustment;
         }
 
         private static int GetTargetStatusCriticalDamageAdjustment(uint attacker, uint defender)
@@ -521,6 +530,9 @@ namespace SWLOR.Game.Server.Service
                 SkillType.Staff => Stat.GetStatAdjustment(attacker, StatType.StaffCriticalRatePercentAdjustment),
                 _ => 0
             };
+
+            if (IsRangedWeaponSkill(skillType))
+                adjustment += Stat.GetStatAdjustment(attacker, StatType.RangedCriticalRatePercentAdjustment);
 
             adjustment += GetLowHPCriticalRateAdjustment(attacker);
             return adjustment;
@@ -1811,7 +1823,7 @@ namespace SWLOR.Game.Server.Service
 
             ApplyCriticalNextAbilityDamageBonus(attacker, skillType);
             ApplyCriticalNextSkillAbilityDefenseIgnore(attacker, skillType);
-            ApplyCriticalNextAbilityNoDelay(attacker, skillType);
+            ApplyCriticalHitLimitedHaste(attacker, skillType);
             ApplyCriticalNextAutoAttackNoDelay(attacker, skillType);
             ApplyCriticalSideAttackStaminaRestore(attacker, defender);
             ApplyCriticalBleedingStatusDurationExtension(attacker, defender);
@@ -1967,6 +1979,18 @@ namespace SWLOR.Game.Server.Service
                 maximum,
                 StatType.NextSkillAbilitySkillType,
                 1);
+
+            var currentTotal = TemporaryStatModifier.GetStatAdjustment(
+                activator,
+                StatType.NextSkillAbilityCriticalRatePercentAdjustment,
+                StatType.NextSkillAbilitySkillType);
+            if (GetIsPC(activator) && currentTotal > 0)
+            {
+                FloatingTextStringOnCreature(
+                    ColorToken.Combat($"Deadeye Reload +{currentTotal}% Critical Rate"),
+                    activator,
+                    false);
+            }
         }
 
         private static void ApplyCriticalBleedingStatusDurationExtension(uint attacker, uint defender)
@@ -2064,25 +2088,23 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private static void ApplyCriticalNextAbilityNoDelay(uint attacker, SkillType skillType)
+        private static void ApplyCriticalHitLimitedHaste(uint attacker, SkillType skillType)
         {
-            var triggerSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(attacker, StatType.CriticalNextAbilityNoDelayTriggerSkillType));
+            var triggerSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(attacker, StatType.CriticalHitLimitedHasteTriggerSkillType));
             if (!SkillTypeMatches(skillType, triggerSkillType))
                 return;
 
-            var noDelaySkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(attacker, StatType.CriticalNextAbilityNoDelaySkillType));
-            var duration = Stat.GetStatAdjustment(attacker, StatType.CriticalNextAbilityNoDelayDurationSeconds);
-            var cooldown = Stat.GetStatAdjustment(attacker, StatType.CriticalNextAbilityNoDelayCooldownSeconds);
-            if (noDelaySkillType == SkillType.Invalid || duration <= 0)
+            var hastePercent = Stat.GetStatAdjustment(attacker, StatType.CriticalHitLimitedHastePercentAdjustment);
+            var duration = Stat.GetStatAdjustment(attacker, StatType.CriticalHitLimitedHasteDurationSeconds);
+            var attackCount = Stat.GetStatAdjustment(attacker, StatType.CriticalHitLimitedHasteAttackCount);
+            if (hastePercent <= 0 || duration <= 0 || attackCount <= 0)
                 return;
 
-            if (TryUseStatTrigger(attacker, StatType.CriticalNextAbilityNoDelaySkillType, cooldown))
-            {
-                var delayReductionPercent = Stat.GetStatAdjustment(
-                    attacker,
-                    StatType.CriticalNextAbilityDelayReductionPercent);
-                GrantNextAbilityNoDelay(attacker, noDelaySkillType, duration, delayReductionPercent);
-            }
+            StatusEffect.ApplyStatusEffect(
+                attacker,
+                attacker,
+                new ReloadTempoStatusEffect(hastePercent, attackCount),
+                duration);
         }
 
         private static void ApplyCriticalNextAutoAttackNoDelay(uint attacker, SkillType skillType)
@@ -2994,6 +3016,13 @@ namespace SWLOR.Game.Server.Service
             }
 
             _autoAttackCycleCriticalCounts[attacker] = 0;
+            if (GetIsPC(attacker))
+            {
+                FloatingTextStringOnCreature(
+                    ColorToken.Combat($"Lucky Chamber +{criticalRate}% Critical Rate"),
+                    attacker,
+                    false);
+            }
             return criticalRate;
         }
 
@@ -4754,7 +4783,7 @@ namespace SWLOR.Game.Server.Service
             ApplyAbilityUsedSkillEvasion(activator, ability);
             ApplyHostileAbilityUsedEvasion(activator, ability, skillType);
             ApplyCostlyAbilityUsedEvasion(activator, ability, skillType);
-            ApplyAbilityUsedSkillRangedEvasion(activator, ability);
+            ApplyAbilityUsedSkillRangedDeflection(activator, ability);
             ApplyAbilityUsedMovementSpeed(activator, ability, skillType);
             ApplyAbilityUsedSkillAttackDeflection(activator, ability);
             ApplyAbilityUsedPerkCategoryAttackDeflection(activator, ability);
@@ -5258,12 +5287,12 @@ namespace SWLOR.Game.Server.Service
             if (GetDistanceBetween(activator, target) > range)
                 return;
 
-            TemporaryStatModifier.Replace(
+            StatusEffect.ApplyStatusEffect(
+                activator,
                 target,
-                StatType.DamageDealtPercentAdjustment,
-                damageDealt,
+                new DuelistsDistanceStatusEffect(Math.Abs(damageDealt)),
                 duration,
-                StatType.RangedAbilityHitNearTargetDamageDealtPercentAdjustment);
+                CombatDamageType.Physical);
         }
 
         private static void ApplySameTargetHostileAbilityHitEffects(
@@ -6312,12 +6341,16 @@ namespace SWLOR.Game.Server.Service
             if (rank <= 0)
                 return;
 
-            StatusEffect.ApplyStatusEffect(
-                activator,
-                target,
-                rank >= 2 ? typeof(MarkTarget2StatusEffect) : typeof(MarkTarget1StatusEffect),
-                18f,
-                ResistanceType.Mind);
+            var radius = LeadershipAbilityEffects.GetLeadershipCommandRadius(activator);
+            var duration = LeadershipAbilityEffects.ApplyLeadershipCommandDurationBonus(activator, 30f);
+            var statusEffectType = rank >= 2
+                ? typeof(MarkTarget2StatusEffect)
+                : typeof(MarkTarget1StatusEffect);
+
+            foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, activator, true, radius))
+            {
+                StatusEffect.ApplyStatusEffect(activator, friendly, statusEffectType, duration);
+            }
         }
 
         private static void ApplyPistolSkirmisherImpactRiders(
@@ -8824,23 +8857,32 @@ namespace SWLOR.Game.Server.Service
                 duration);
         }
 
-        private static void ApplyAbilityUsedSkillRangedEvasion(uint activator, AbilityDetail ability)
+        private static void ApplyAbilityUsedSkillRangedDeflection(uint activator, AbilityDetail ability)
         {
             if (ability?.IsHostileAbility != true)
                 return;
 
             var triggerSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
                 activator,
-                StatType.AbilityUsedRangedEvasionPercentAdjustmentSkillType));
+                StatType.AbilityUsedRangedDeflectionSkillType));
             var abilitySkillType = GetAbilitySkillType(activator, ability);
             if (!SkillTypeMatches(abilitySkillType, triggerSkillType))
                 return;
 
-            ApplyAbilityUsedEvasion(
+            var deflection = Stat.GetStatAdjustment(
                 activator,
-                StatType.AbilityUsedRangedEvasionPercentAdjustment,
-                StatType.AbilityUsedRangedEvasionDurationSeconds,
-                StatType.RangedEvasionPercentAdjustment);
+                StatType.AbilityUsedRangedDeflection);
+            var duration = Stat.GetStatAdjustment(
+                activator,
+                StatType.AbilityUsedRangedDeflectionDurationSeconds);
+            if (deflection <= 0 || duration <= 0)
+                return;
+
+            StatusEffect.ApplyStatusEffect(
+                activator,
+                activator,
+                new SnapRollStatusEffect(deflection),
+                duration);
         }
 
         private static void ApplySingleTargetAbilityUsedAttackDeflection(

@@ -8,6 +8,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         public override string Name => "Soul Ascension";
         public override EffectIconType Icon => EffectIconType.SoulAscensionStatusEffect;
+        public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
+        public override bool PersistsOnLogout => false;
 
         public SoulAscensionStatusEffect()
         {

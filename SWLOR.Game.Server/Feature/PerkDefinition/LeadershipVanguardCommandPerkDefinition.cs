@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -104,13 +105,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.MarkTargetTrait)
-                .Description("Vanguard Command offensive commands mark affected enemies for 30 seconds. Party members deal +8% damage to marked targets. SOC scaling can raise this to +10%.")
+                .Description("When a Vanguard Command offensive command affects an enemy, party members within Leadership range (5m base) gain +8% damage for 30 seconds. SOC scaling can raise this to +10%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 12)
                 .IncreasesStat(StatType.LeadershipVanguardMarkTargetRank, 1)
 
                 .AddPerkLevel()
-                .Description("Vanguard Command offensive commands mark affected enemies for 30 seconds. Party members deal +12% damage to marked targets, and marked targets suffer -10% evasion chance. SOC scaling can raise these to +15% damage and -12% evasion.")
+                .Description("When a Vanguard Command offensive command affects an enemy, party members within Leadership range (5m base) gain +12% damage and +10% Ability Accuracy for 30 seconds. SOC scaling can raise these to +15% damage and +12% Ability Accuracy.")
                 .Price(4)
                 .RequirementSkill(SkillType.Leadership, 35)
                 .IncreasesStat(StatType.LeadershipVanguardMarkTargetRank, 2);
@@ -174,7 +175,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Leadership, 48)
                 .IncreasesStat(StatType.LeadershipCommandRadiusBonusMeters, 4)
                 .IncreasesStat(StatType.LeadershipCommandDurationBonusBaseSeconds, 4)
-                .IncreasesStat(StatType.LeadershipCommandDurationBonusMaximumSeconds, 5);
+                .IncreasesStat(StatType.LeadershipCommandDurationBonusMaximumSeconds, 5)
+                .TriggerPurchase(AbilityTargeting.RefreshClientTargeting)
+                .TriggerRefund(AbilityTargeting.RefreshClientTargeting);
         }
 
         private void DecisiveCommand()

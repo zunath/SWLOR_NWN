@@ -614,19 +614,25 @@ def update_spell_targeting(spell_updates):
             continue
 
         inferred = infer_targeting_from_description(row)
-        if not inferred:
-            continue
-
-        shape_expression, size_x_literal, size_y_literal, _ = inferred
-        shape = {
-            "AbilityTargetingShapeType.Sphere": "sphere",
-            "AbilityTargetingShapeType.Rect": "rectangle",
-            "AbilityTargetingShapeType.Cone": "cone",
-        }[shape_expression]
-        size_x = f"{float(size_x_literal[:-1]):g}"
-        size_y_value = float(size_y_literal[:-1])
-        size_y = f"{size_y_value:g}" if size_y_value > 0 else "****"
-        flags = "1" if shape == "sphere" and is_aimed_area(row) else "17"
+        if inferred:
+            shape_expression, size_x_literal, size_y_literal, _ = inferred
+            shape = {
+                "AbilityTargetingShapeType.Sphere": "sphere",
+                "AbilityTargetingShapeType.Rect": "rectangle",
+                "AbilityTargetingShapeType.Cone": "cone",
+            }[shape_expression]
+            size_x = f"{float(size_x_literal[:-1]):g}"
+            size_y_value = float(size_y_literal[:-1])
+            size_y = f"{size_y_value:g}" if size_y_value > 0 else "****"
+            flags = "1" if shape == "sphere" and is_aimed_area(row) else "17"
+        else:
+            # A spell row may have belonged to an older area implementation. Generated
+            # single-target abilities must actively clear that stale marker metadata;
+            # merely updating feat.2da leaves the client presenting an area cursor.
+            shape = "****"
+            size_x = "****"
+            size_y = "****"
+            flags = "****"
 
         line_index = row_line[int(spell_id)]
         new_line = lines[line_index]
@@ -1343,7 +1349,11 @@ def description_stat_entries(row, base):
         add_stat(stats, "AbilityUsedMovementSpeedPercentAdjustment", parse_percent(r"gain \+(\d+)% Movement Speed", description))
         add_stat(stats, "AbilityUsedMovementSpeedDurationSeconds", parse_duration(description) or 30)
     if base == "Duelist's Distance":
-        add_stat(stats, "RangedAbilityHitNearTargetDamageDealtPercentAdjustment", -parse_percent(r"deal -(\d+)% damage", description))
+        damage_penalty = (
+            parse_percent(r"deal -(\d+)% damage", description) or
+            parse_percent(r"deal (\d+)% less damage", description)
+        )
+        add_stat(stats, "RangedAbilityHitNearTargetDamageDealtPercentAdjustment", -damage_penalty)
         add_stat(stats, "RangedAbilityHitNearTargetRangeMeters", parse_count(r"within (\d+)m", description) or 5)
         add_stat(stats, "RangedAbilityHitNearTargetDurationSeconds", parse_duration(description) or 30)
     if base == "Lucky Chamber":
@@ -1359,12 +1369,10 @@ def description_stat_entries(row, base):
         add_stat(stats, "CriticalDamageHighHPTargetThresholdPercent", parse_percent(r"above (\d+)% HP", description))
         add_stat(stats, "CriticalDamageHighHPTargetPercentAdjustment", parse_percent(r"deal \+(\d+)% damage", description))
     if base == "Reload Tempo":
-        add_stat(stats, "CriticalNextAbilityNoDelayTriggerSkillType", skill_expr)
-        add_stat(stats, "CriticalNextAbilityNoDelaySkillType", skill_expr)
-        add_stat(stats, "CriticalNextAbilityNoDelayDurationSeconds", parse_count(r"within (\d+) seconds", description) or 30)
-        # An absent percent means the armed buff removes the delay entirely, so the described
-        # partial reduction has to be emitted or a regeneration silently promotes 20% to 100%.
-        add_stat(stats, "CriticalNextAbilityDelayReductionPercent", parse_percent(r"attack delay reduced by (\d+)%", description))
+        add_stat(stats, "CriticalHitLimitedHasteTriggerSkillType", skill_expr)
+        add_stat(stats, "CriticalHitLimitedHastePercentAdjustment", parse_percent(r"gain \+(\d+)% Haste", description))
+        add_stat(stats, "CriticalHitLimitedHasteDurationSeconds", parse_duration(description) or 30)
+        add_stat(stats, "CriticalHitLimitedHasteAttackCount", 2)
     if base == "Spotter's Rhythm":
         add_stat(stats, "SameTargetPressureBuildSkillType", skill_expr)
         add_stat(stats, "SameTargetPressureBuildSeconds", parse_count(r"same target for (\d+) seconds", description) or 12)
@@ -1560,10 +1568,10 @@ def description_stat_entries(row, base):
             add_stat(stats, "ThrowingDeadeyeRicochetDamageBonus", parse_count(r"\+(\d+) DMG", description))
             add_stat(stats, "ThrowingDeadeyeRicochetMaximumTargets", 1)
 
-    if "gain +8% Ranged Evasion" in description or "gain +12% Ranged Evasion" in description or "gain +5% Ranged Evasion" in description:
-        add_stat(stats, "AbilityUsedRangedEvasionPercentAdjustmentSkillType", skill_expr)
-        add_stat(stats, "AbilityUsedRangedEvasionPercentAdjustment", parse_percent(r"\+(\d+)% Ranged Evasion", description))
-        add_stat(stats, "AbilityUsedRangedEvasionDurationSeconds", parse_duration(description) or 30)
+    if "Ranged Deflection" in description and "After using a hostile ranged ability" in description:
+        add_stat(stats, "AbilityUsedRangedDeflectionSkillType", skill_expr)
+        add_stat(stats, "AbilityUsedRangedDeflection", parse_count(r"\+(\d+) Ranged Deflection", description))
+        add_stat(stats, "AbilityUsedRangedDeflectionDurationSeconds", parse_duration(description) or 30)
     if base == "Mobile Footwork":
         add_stat(stats, "SecondaryAbilityUsedEvasionPercentAdjustmentSkillType", skill_expr)
         add_stat(stats, "SecondaryAbilityUsedEvasionPercentAdjustment", parse_percent(r"\+(\d+)% Evasion", description))
@@ -1945,12 +1953,14 @@ def profile_property_lines(row, level, primary_status):
         "automatically applies to your guarded target" in lowered or
         "automatically targets your current guarded ally" in lowered
     ):
-        temporary_hp_percent = parse_percent(r"temporary HP equal to (\d+)% of maximum HP", description)
+        temporary_hp_percent = parse_percent(r"temporary HP equal to (\d+)% of (?:your )?maximum HP", description)
         guard = parse_percent(r"grants you \+(\d+) Guard", description)
         duration = parse_duration(description) or 12
         add_profile_property("RequiresGuardedTarget", "true")
         add_profile_property("FriendlyTargetTemporaryHPPercent", str(temporary_hp_percent))
         add_profile_property("FriendlyTargetTemporaryHPDurationSeconds", str(duration))
+        if "of your maximum HP" in description:
+            add_profile_property("FriendlyTargetTemporaryHPUsesActivatorMaximum", "true")
         add_profile_property("SelfGuardPercent", str(guard))
         add_profile_property("SelfGuardDurationSeconds", str(duration))
     if "you and your Guarded target" in description or "Guarded target automatically receives" in description:
@@ -2005,6 +2015,7 @@ def profile_property_lines(row, level, primary_status):
     if switch_match:
         properties.append(("CriticalRateIfNotRecentTarget", switch_match.group(1)))
         properties.append(("NotRecentTargetWindowSeconds", f"{int(switch_match.group(2))}.0f"))
+        properties.append(("CriticalRateIfNotRecentTargetFeedbackLabel", '"Quick Draw"'))
 
     if "bleeding" in lowered or "hemorrhag" in lowered:
         bleeding_damage = first_int(r"(?:deal|deals|gain|gains) \+(\d+) DMG .*?(?:bleeding|hemorrhag\w*)", description)
@@ -2115,6 +2126,11 @@ def profile_property_lines(row, level, primary_status):
                 any_self_stat = True
     if any_self_stat and self_stat_duration:
         properties.append(("SelfStatDurationSeconds", str(self_stat_duration)))
+    if base == "Point Blank Burst":
+        evasion = first_int(r"\+(\d+)% Evasion", description)
+        if evasion:
+            add_profile_property("SelfStatusEffectFactory", f"() => new PointBlankBurstStatusEffect({evasion})")
+            add_profile_property("SelfStatDurationSeconds", str(parse_duration(description) or 30))
     if guarded_channel:
         add_profile_property("SelfDefensePercent", guarded_channel.group(1))
         add_profile_property("SelfStatResourceAboveThresholdPercent", guarded_channel.group(2))
@@ -2147,6 +2163,8 @@ def profile_property_lines(row, level, primary_status):
             properties.append(("RestoreStaminaIfAllHitsLand", str(stamina_restore)))
         elif "either shot" in lowered and "critically hits" in lowered:
             properties.append(("RestoreStaminaIfAnyCriticalHit", str(stamina_restore)))
+            if base == "Double Shot":
+                properties.append(("RestoreStaminaIfAnyCriticalHitFeedbackLabel", '"Double Shot"'))
         elif "either shot" in lowered or "per activation" in lowered:
             properties.append(("RestoreStaminaAfterImpact", str(stamina_restore)))
         else:
@@ -2201,10 +2219,15 @@ def profile_property_lines(row, level, primary_status):
     if "interrupt" in lowered or "clear all actions" in lowered:
         properties.append(("ClearTargetActionsOnHit", "true"))
 
-    target_attack_reduction = first_int(r"reduces? the target's Attack by (\d+)%", description)
+    target_attack_reduction = first_int(r"reduc(?:es?|ing) the target's Attack by (\d+)%", description)
     if target_attack_reduction:
-        add_profile_property("TargetAttackPercent", f"-{target_attack_reduction}")
-        add_profile_property("TargetAttackDurationSeconds", str(parse_duration(description) or 30))
+        if base == "Disarming Shot":
+            add_profile_property(
+                "StatusEffectFactory",
+                f"() => new DisarmingShotStatusEffect({target_attack_reduction})")
+        else:
+            add_profile_property("TargetAttackPercent", f"-{target_attack_reduction}")
+            add_profile_property("TargetAttackDurationSeconds", str(parse_duration(description) or 30))
 
     target_ability_accuracy_reduction = first_int(r"-(\d+)% Ability Accuracy", description)
     if target_ability_accuracy_reduction:
@@ -2391,6 +2414,10 @@ def profile_property_lines(row, level, primary_status):
     factory = primary_status_factory(description, primary_status)
     if factory:
         properties.append(("StatusEffectFactory", factory))
+
+    if base == "Dead Man's Hand":
+        add_profile_property("SelfStatusEffectOnCriticalHitFactory", "() => new DeadMansHandStatusEffect()")
+        add_profile_property("SelfStatusEffectOnCriticalHitDurationSeconds", "30")
 
     return properties
 
@@ -2770,7 +2797,6 @@ def add_missing_feats(rows):
             is_automatic_guarded_target = is_automatic_guarded_target_active(row["Description"])
             no_manual_target = target_self or is_queued or is_self_origin_area or is_automatic_guarded_target
             hostile = (
-                row["Type"] == "Combat" and
                 not is_friendly_target_active(row["Description"]) and
                 not no_manual_target
             )

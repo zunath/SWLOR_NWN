@@ -16,10 +16,12 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         protected override void Apply(uint creature, int durationTicks)
         {
             var reduction = -ScaleBySourceSocial(12, 15);
-            StatGroup.Stats[StatType.DamageTakenPercentAdjustment] = reduction;
+            StatGroup.Stats[StatType.PhysicalDamageTakenPercentAdjustment] = reduction;
+            StatGroup.Stats[StatType.ForceDamageTakenPercentAdjustment] = reduction;
             LeadershipDamageReductionStats = new Dictionary<StatType, int>
             {
-                [StatType.DamageTakenPercentAdjustment] = reduction,
+                [StatType.PhysicalDamageTakenPercentAdjustment] = reduction,
+                [StatType.ForceDamageTakenPercentAdjustment] = reduction,
             };
         }
     }

@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 AbilityType.Perception,
                 new GeneratedWeaponAbilityProfile
                 {
-                    SelfEvasionPercent = 10,
+                    SelfStatusEffectFactory = () => new PointBlankBurstStatusEffect(10),
                     SelfStatDurationSeconds = 30
                 });
 
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 AbilityType.Perception,
                 new GeneratedWeaponAbilityProfile
                 {
-                    SelfEvasionPercent = 15,
+                    SelfStatusEffectFactory = () => new PointBlankBurstStatusEffect(15),
                     SelfStatDurationSeconds = 30
                 });
 

@@ -173,6 +173,7 @@ public class CombatReleaseBalanceAuditTests
     private static readonly StatType[] CriticalRateStats =
     {
         StatType.CriticalRatePercentAdjustment,
+        StatType.RangedCriticalRatePercentAdjustment,
         StatType.StaffCriticalRatePercentAdjustment,
         StatType.DeflectionNextSkillAbilityCriticalRatePercentAdjustment,
         StatType.NextSkillAbilityCriticalRatePercentAdjustment,
@@ -258,7 +259,7 @@ public class CombatReleaseBalanceAuditTests
         StatType.StatusAppliedSelfDefensePercentAdjustment,
         StatType.StatusAppliedSelfEvasionPercentAdjustment,
         StatType.AreaAbilityUsedEvasionPercentAdjustment,
-        StatType.AbilityUsedRangedEvasionPercentAdjustment,
+        StatType.AbilityUsedRangedDeflection,
         StatType.CriticalHitSelfEvasionPercentAdjustment,
         StatType.AbilityUsedNearbyAllyDefensePercentAdjustment,
         StatType.AbilityUsedNearbyAllyForceDefensePercentAdjustment,

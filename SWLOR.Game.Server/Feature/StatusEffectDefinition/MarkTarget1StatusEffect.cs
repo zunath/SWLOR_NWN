@@ -10,10 +10,11 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         public override string Name => "Mark Target I";
         public override EffectIconType Icon => EffectIconType.MarkTarget1StatusEffect;
+        public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
 
         protected override void Apply(uint creature, int durationTicks)
         {
-            StatGroup.Stats[StatType.DamageTakenFromStatusSourcePartyPercentAdjustment] = ScaleBySourceSocial(8, 10);
+            StatGroup.Stats[StatType.DamageDealtPercentAdjustment] = ScaleBySourceSocial(8, 10);
         }
     }
 }

@@ -41,7 +41,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 Animation.PointPistol,
                 25.0f,
                 AbilityType.Perception,
-                null);
+                new GeneratedWeaponAbilityProfile
+                {
+                    SelfStatusEffectOnCriticalHitFactory = () => new DeadMansHandStatusEffect(),
+                    SelfStatusEffectOnCriticalHitDurationSeconds = 30
+                });
 
             return builder.Build();
         }

@@ -1653,5 +1653,6 @@ namespace SWLOR.NWN.API.NWScript.Enum
         RazorTrap1 = 1720,
         RazorTrap2 = 1721,
         ShockTrap = 1722,
+        Overload = 1710,
     }
 }

@@ -60,18 +60,55 @@ public class LeadershipCombatUpgradeTests
         AssertStatusStat(new FlashStatusEffect(10), StatType.PhysicalAndForceAbilityHitChancePercentAdjustment, -10);
         AssertStatusStat(new FlashStatusEffect(10), StatType.AbilityHitChancePercentAdjustment, 0);
 
+        AssertAppliedStat(new MarkTarget1StatusEffect(), StatType.DamageDealtPercentAdjustment, 8);
+        AssertAppliedStat(new MarkTarget2StatusEffect(), StatType.DamageDealtPercentAdjustment, 12);
+        AssertAppliedStat(new MarkTarget2StatusEffect(), StatType.PhysicalAndForceAbilityHitChancePercentAdjustment, 10);
+
         AssertAppliedStat(new WatchfulPresence3StatusEffect(), StatType.PhysicalDamageTakenPercentAdjustment, -8);
         AssertAppliedStat(new WatchfulPresence3StatusEffect(), StatType.ForceDamageTakenPercentAdjustment, -8);
         AssertAppliedStat(new SteadyFormation2StatusEffect(), StatType.EvasionPercentAdjustment, 5);
         AssertAppliedStat(new SteadyFormation2StatusEffect(), StatType.MindResistance, 50);
         AssertAppliedStat(new SteadyFormation2StatusEffect(), StatType.MobilityResistance, 50);
-        AssertAppliedStat(new RousingShout3StatusEffect(), StatType.DamageTakenPercentAdjustment, -20);
-        AssertAppliedStat(new BolsterResolve2StatusEffect(), StatType.DamageTakenPercentAdjustment, -12);
-        AssertAppliedStat(new CleanseOrder2StatusEffect(), StatType.DamageTakenPercentAdjustment, -12);
+        AssertAppliedStat(new RousingShout1StatusEffect(), StatType.PhysicalDamageTakenPercentAdjustment, -10);
+        AssertAppliedStat(new RousingShout1StatusEffect(), StatType.ForceDamageTakenPercentAdjustment, -10);
+        AssertAppliedStat(new RousingShout2StatusEffect(), StatType.PhysicalDamageTakenPercentAdjustment, -15);
+        AssertAppliedStat(new RousingShout2StatusEffect(), StatType.ForceDamageTakenPercentAdjustment, -15);
+        AssertAppliedStat(new RousingShout3StatusEffect(), StatType.PhysicalDamageTakenPercentAdjustment, -20);
+        AssertAppliedStat(new RousingShout3StatusEffect(), StatType.ForceDamageTakenPercentAdjustment, -20);
+        AssertAppliedStat(new RousingShout3StatusEffect(), StatType.DamageTakenPercentAdjustment, 0);
+        AssertAppliedStat(new BolsterResolve2StatusEffect(), StatType.PhysicalDamageTakenPercentAdjustment, -12);
+        AssertAppliedStat(new BolsterResolve2StatusEffect(), StatType.ForceDamageTakenPercentAdjustment, -12);
+        AssertAppliedStat(new BolsterResolve2StatusEffect(), StatType.DamageTakenPercentAdjustment, 0);
+        AssertAppliedStat(new CleanseOrder2StatusEffect(), StatType.DamageTakenPercentAdjustment, 0);
+        AssertAppliedStat(new CleanseOrder2StatusEffect(), StatType.PhysicalDamageTakenPercentAdjustment, 0);
+        AssertAppliedStat(new CleanseOrder2StatusEffect(), StatType.ForceDamageTakenPercentAdjustment, 0);
         AssertAppliedStat(new TriageProtocol2StatusEffect(), StatType.HealingReceivedPercentAdjustment, 12);
         AssertAppliedStat(new HoldTheLine1StatusEffect(), StatType.DamageTakenPercentAdjustment, -18);
         AssertAppliedResistance(new HoldTheLine1StatusEffect(), ResistanceType.Mind, 100);
         AssertAppliedResistance(new HoldTheLine1StatusEffect(), ResistanceType.Mobility, 100);
+    }
+
+    [Test]
+    public void ReportedLeadershipFailPerks_UseDynamicRadiusAndTemporaryHitPoints()
+    {
+        var root = FindRepositoryRoot();
+        var breakMorale = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Leadership" / "BreakMoraleAbilityDefinition.cs").FullName);
+        (breakMorale.Split("LeadershipAbilityEffects.ApplyLeadershipCommandRadiusBonus").Length - 1).Should().Be(2);
+
+        var leadershipPerks = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "LeadershipVanguardCommandPerkDefinition.cs").FullName);
+        var commandPresence = leadershipPerks[leadershipPerks.IndexOf("private void CommandPresence()", StringComparison.Ordinal)..];
+        commandPresence = commandPresence[..commandPresence.IndexOf("private void ", 1, StringComparison.Ordinal)];
+        (commandPresence.Split(".TriggerPurchase(AbilityTargeting.RefreshClientTargeting)").Length - 1).Should().Be(1);
+        (commandPresence.Split(".TriggerRefund(AbilityTargeting.RefreshClientTargeting)").Length - 1).Should().Be(1);
+
+        var cleanseOrder = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Leadership" / "CleanseOrderAbilityDefinition.cs").FullName);
+        cleanseOrder.Should().Contain("AbilityEffectScaling.ScaleValueBySourceSocial(activator, 12, 15)");
+        cleanseOrder.Should().Contain("GameMath.PercentOf(GetMaxHitPoints(target), percent)");
+
+        var combat = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
+        combat.Should().Contain("typeof(MarkTarget2StatusEffect)");
+        combat.Should().Contain("typeof(MarkTarget1StatusEffect)");
+        combat.Should().Contain("AbilityTargeting.GetFriendlyTargets(activator, activator, true, radius)");
     }
 
     [Test]
@@ -142,16 +179,16 @@ public class LeadershipCombatUpgradeTests
             (FeatType.CoordinatedFocus3, "Aura: Party members within Leadership range (5m base) gain +6% critical hit chance and +8% critical damage. SOC scaling can raise these to +7% and +10%."),
             (FeatType.DecisiveCommand1, "For 45 seconds, party members within Leadership range (5m base), including you, gain +12% damage, +6% physical and Force ability hit chance, +6% critical hit chance, and restore 1 STM every 3 seconds. SOC scaling can raise the bonuses to +15%, +8%, and +8%."),
             (FeatType.WatchfulPresence1, "Aura: Party members within Leadership range (5m base) take 4% less physical and Force damage. SOC scaling can raise this to 5%."),
-            (FeatType.RousingShout1, "Bolsters one living ally, granting temporary HP equal to 10% of maximum HP for 30 seconds. SOC scaling can raise this to 13%. If the target is at or below 35% HP, they also take 10% less damage, scaling up to 12%."),
+            (FeatType.RousingShout1, "Bolsters one living ally, granting temporary HP equal to 10% of maximum HP for 30 seconds. SOC scaling can raise this to 13%. If the target is at or below 35% HP, they also take 10% less physical and Force damage, scaling up to 12%."),
             (FeatType.SteadyFormation1, "Aura: Party members within Leadership range (5m base) gain +3% evasion chance, +30 Mind Resistance, and +30 Mobility Resistance. SOC scaling can raise these to +4% evasion chance, +40 Mind Resistance, and +40 Mobility Resistance."),
             (FeatType.FieldRecovery1, "Aura: Party members within Leadership range (5m base) restore 1 STM every 4 seconds. SOC scaling can raise this to 2 STM per tick."),
-            (FeatType.RousingShout2, "Bolsters one living ally, granting temporary HP equal to 15% of maximum HP for 30 seconds. SOC scaling can raise this to 19%. If the target is at or below 35% HP, they also take 15% less damage, scaling up to 18%."),
+            (FeatType.RousingShout2, "Bolsters one living ally, granting temporary HP equal to 15% of maximum HP for 30 seconds. SOC scaling can raise this to 19%. If the target is at or below 35% HP, they also take 15% less physical and Force damage, scaling up to 18%."),
             (FeatType.WatchfulPresence2, "Aura: Party members within Leadership range (5m base) take 6% less physical and Force damage. SOC scaling can raise this to 7%."),
             (FeatType.CleanseOrder1, "Removes one standard elemental or trauma ailment from party members within Leadership range (5m base) and grants temporary HP equal to 6% of maximum HP for 30 seconds. SOC scaling can raise temporary HP to 8%."),
             (FeatType.SteadyFormation2, "Aura: Party members within Leadership range (5m base) gain +5% evasion chance, +50 Mind Resistance, and +50 Mobility Resistance. SOC scaling can raise these to +6% evasion chance, +65 Mind Resistance, and +65 Mobility Resistance."),
             (FeatType.FieldRecovery2, "Aura: Party members within Leadership range (5m base) restore 2 STM every 4 seconds. SOC scaling can raise this to 3 STM per tick."),
-            (FeatType.RousingShout3, "Bolsters one living ally, granting temporary HP equal to 20% of maximum HP for 30 seconds. SOC scaling can raise this to 25%. If the target is at or below 35% HP, they also take 20% less damage, scaling up to 25%."),
-            (FeatType.CleanseOrder2, "Removes one major negative status effect from party members within Leadership range (5m base) and grants 12% damage reduction for 30 seconds. SOC scaling can raise this to 15%."),
+            (FeatType.RousingShout3, "Bolsters one living ally, granting temporary HP equal to 20% of maximum HP for 30 seconds. SOC scaling can raise this to 25%. If the target is at or below 35% HP, they also take 20% less physical and Force damage, scaling up to 25%."),
+            (FeatType.CleanseOrder2, "Removes one major negative status effect from party members within Leadership range (5m base) and grants temporary HP equal to 12% of maximum HP for 30 seconds. SOC scaling can raise temporary HP to 15%."),
             (FeatType.WatchfulPresence3, "Aura: Party members within Leadership range (5m base) take 8% less physical and Force damage. SOC scaling can raise this to 10%."),
             (FeatType.HoldTheLine1, "For 45 seconds, party members within Leadership range (5m base), including you, gain temporary HP equal to 18% of maximum HP, take 18% less damage, and become immune to Mind and Mobility effects. SOC scaling can raise temporary HP and damage reduction to 22%.")
         };

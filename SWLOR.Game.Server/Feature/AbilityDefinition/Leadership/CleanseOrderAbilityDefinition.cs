@@ -102,6 +102,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, true, radius))
             {
                 StatusEffect.RemoveFirstCleanseableStatusEffect(friendly, StatusEffectCleanseType.Purify, false);
+                ApplyTemporaryHP(
+                    friendly,
+                    AbilityEffectScaling.ScaleValueBySourceSocial(activator, 12, 15),
+                    duration);
                 StatusEffect.ApplyStatusEffect(activator, friendly, typeof(CleanseOrder2StatusEffect), duration);
                 LeadershipAbilityEffects.ApplyTriageProtocol(activator, friendly, duration);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), friendly);

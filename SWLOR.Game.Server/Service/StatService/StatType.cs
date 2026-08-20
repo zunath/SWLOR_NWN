@@ -1338,28 +1338,28 @@ namespace SWLOR.Game.Server.Service.StatService
         DeflectionNextSkillAbilityNoDelayWindowSeconds = 243,
 
         /// <summary>
-        /// SkillType id required before a critical hit grants no activation delay to the next ability.
+        /// SkillType id required before a critical hit grants limited Haste.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        CriticalNextAbilityNoDelayTriggerSkillType = 244,
+        CriticalHitLimitedHasteTriggerSkillType = 244,
 
         /// <summary>
-        /// SkillType id that receives no activation delay after the critical-hit trigger.
+        /// Percent Haste granted by a matching critical hit.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
-        CriticalNextAbilityNoDelaySkillType = 245,
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CriticalHitLimitedHastePercentAdjustment = 245,
 
         /// <summary>
-        /// Duration in seconds for CriticalNextAbilityNoDelaySkillType.
+        /// Duration in seconds for CriticalHitLimitedHastePercentAdjustment.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        CriticalNextAbilityNoDelayDurationSeconds = 246,
+        CriticalHitLimitedHasteDurationSeconds = 246,
 
         /// <summary>
-        /// Cooldown in seconds for the critical-hit no-delay trigger.
+        /// Number of direct attacks that retain the critical-hit Haste effect.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        CriticalNextAbilityNoDelayCooldownSeconds = 247,
+        CriticalHitLimitedHasteAttackCount = 247,
 
         /// <summary>
         /// Percent adjustment applied to FP restored to the creature.
@@ -3360,22 +3360,22 @@ namespace SWLOR.Game.Server.Service.StatService
         AbilityUsedEvasionDurationSeconds = 588,
 
         /// <summary>
-        /// SkillType value of abilities that trigger AbilityUsedRangedEvasionPercentAdjustment.
+        /// SkillType value of abilities that trigger AbilityUsedRangedDeflection.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        AbilityUsedRangedEvasionPercentAdjustmentSkillType = 826,
+        AbilityUsedRangedDeflectionSkillType = 826,
 
         /// <summary>
-        /// Temporary percent Ranged Evasion adjustment applied after using a matching ability.
+        /// Temporary Ranged Deflection granted after using a matching ability.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        AbilityUsedRangedEvasionPercentAdjustment = 827,
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Ranged)]
+        AbilityUsedRangedDeflection = 827,
 
         /// <summary>
-        /// Duration in seconds for AbilityUsedRangedEvasionPercentAdjustment.
+        /// Duration in seconds for AbilityUsedRangedDeflection.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        AbilityUsedRangedEvasionDurationSeconds = 828,
+        AbilityUsedRangedDeflectionDurationSeconds = 828,
 
         /// <summary>
         /// SkillType value of single-target abilities that trigger SingleTargetAbilityAttackDeflection.
@@ -5679,12 +5679,10 @@ namespace SWLOR.Game.Server.Service.StatService
         SkillAbilityBleedingTargetStaminaRestoreCooldownSeconds = 987,
 
         /// <summary>
-        /// Percent (1-99) the critical-hit next-ability trigger reduces the activation delay by
-        /// instead of removing it entirely. Zero or absent keeps the full no-delay behavior for
-        /// perks whose wording removes the delay outright.
+        /// Percent critical-rate adjustment applied to ranged weapon attacks and abilities.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        CriticalNextAbilityDelayReductionPercent = 988,
+        RangedCriticalRatePercentAdjustment = 988,
 
         /// <summary>
         /// Internal temporary partner to NextAttackNoDelay: the percent (1-99) the armed next

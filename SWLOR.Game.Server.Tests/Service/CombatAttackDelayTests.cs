@@ -386,19 +386,18 @@ public class CombatAttackDelayTests
     }
 
     [Test]
-    public void ReloadTempo_DeclaresThePartialDelayReductionItsDescriptionPromises()
+    public void ReloadTempo_DeclaresLimitedHasteForTheNextTwoAttacks()
     {
-        // The stat family it shares with full-no-delay perks zeroes the delay when this magnitude
-        // is absent, which is how the perk shipped at 100% while describing 20%.
         var source = File.ReadAllText(Path.Combine(
             FindRepositoryRoot().FullName,
             "SWLOR.Game.Server", "Feature", "PerkDefinition", "PistolPerkDefinition.cs"));
         var reloadTempo = source[source.IndexOf("private void ReloadTempo()", StringComparison.Ordinal)..];
         reloadTempo = reloadTempo[..reloadTempo.IndexOf("private void ", 1, StringComparison.Ordinal)];
 
-        reloadTempo.Should().Contain("attack delay reduced by 20%");
-        reloadTempo.Should().Contain(
-            ".IncreasesStat(StatType.CriticalNextAbilityDelayReductionPercent, 20)");
+        reloadTempo.Should().Contain("gain +20% Haste for your next two attacks");
+        reloadTempo.Should().Contain(".IncreasesStat(StatType.CriticalHitLimitedHastePercentAdjustment, 20)");
+        reloadTempo.Should().Contain(".IncreasesStat(StatType.CriticalHitLimitedHasteDurationSeconds, 30)");
+        reloadTempo.Should().Contain(".IncreasesStat(StatType.CriticalHitLimitedHasteAttackCount, 2)");
     }
 
     [Test]

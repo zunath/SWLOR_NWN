@@ -76,7 +76,7 @@ public class ConversationArchitectureTests
     }
 
     [Test]
-    public void EveryAuthoredDialog_IsEitherMigratedOrAnExplicitLegacyException()
+    public void EveryAuthoredDialog_IsMigratedWithNoLegacyExceptions()
     {
         var root = FindRepositoryRoot().FullName;
         var graphDirectory = Path.Combine(root, "SWLOR.Game.Server", "ConversationData");
@@ -94,10 +94,10 @@ public class ConversationArchitectureTests
             .Select(path => Path.GetFileName(path)[..^".dlg.json".Length])
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-        graphIds.Should().NotIntersectWith(exceptionIds,
-            "a conversation cannot be both NUI-owned and delegated to native DLG");
-        graphIds.Concat(exceptionIds).Should().BeEquivalentTo(authoredIds,
-            "every authored conversation must have an explicit runtime path");
+        exceptionIds.Should().BeEmpty(
+            "every authored conversation must use the NUI runtime without native DLG exceptions");
+        graphIds.Should().BeEquivalentTo(authoredIds,
+            "every authored conversation must have a NUI graph");
     }
 
     [Test]

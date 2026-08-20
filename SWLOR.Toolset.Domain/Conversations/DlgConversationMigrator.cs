@@ -31,6 +31,7 @@ public sealed record ConversationMigrationResult(
 public static class DlgConversationMigrator
 {
     private const string OwnerScriptAction = "system.execute-owner-script";
+    private const string OwnerConditionScript = "system.execute-owner-condition-script";
     private sealed record OperationMapping(string Key, params string[] Arguments);
     private static readonly Regex MarkupPattern = new(
         "(<StartAction>|<StartHighlight>|</Start>)",
@@ -39,11 +40,36 @@ public static class DlgConversationMigrator
         "<[^>]+>",
         RegexOptions.Compiled);
 
-    private static readonly Dictionary<string, string> SupportedRootScripts =
+    private static readonly Dictionary<string, OperationMapping[]> SupportedRootScripts =
         new(StringComparer.OrdinalIgnoreCase)
         {
-            ["nw_walk_wp"] = OwnerScriptAction
+            ["nw_walk_wp"] = [new OperationMapping(OwnerScriptAction, "nw_walk_wp")],
+            ["tk_odye_con_end"] = [],
+            // These hooks belonged to retired drink and item-maker systems. Neither script is
+            // shipped by the module anymore, so there is no state left for a NUI close to clean.
+            ["dial_end_drink"] = [],
+            ["x2_im_cancel"] = [],
+            ["x2_im_finished"] = []
         };
+
+    private static readonly HashSet<string> PreservedConditionScripts = new(
+        new[]
+        {
+            "dmfi_cond_dmw", "dmfi_uncnd_nam01", "dmfi_uncnd_nam05",
+            "dmfi_univ_cond", "dmfi_univ_dmw"
+        },
+        StringComparer.OrdinalIgnoreCase);
+
+    private static readonly HashSet<string> PreservedActionScripts = new(
+        new[]
+        {
+            "dmfi_unact_nam02", "dmfi_unact_nam03", "dmfi_unact_nam04",
+            "dmfi_unact_nam06", "dmfi_unact_nam07", "dmfi_unact_nam08",
+            "dmfi_univ_1", "dmfi_univ_2", "dmfi_univ_3", "dmfi_univ_4",
+            "dmfi_univ_5", "dmfi_univ_6", "dmfi_univ_7", "dmfi_univ_8",
+            "dmfi_univ_9", "dmfi_univ_10"
+        },
+        StringComparer.OrdinalIgnoreCase);
 
     // These old one-off scripts are no longer present in the module. Only scripts whose complete
     // behavior can be expressed by registered NUI operations are translated here; anything else
@@ -77,7 +103,9 @@ public static class DlgConversationMigrator
             ["spawnb_cc_sdlog"] = [LocalCondition("area", "SWLOR_SPAWN_DELAY_LOG", "=", "0")],
             ["spawnb_cc_nsdlog"] = [LocalCondition("area", "SWLOR_SPAWN_DELAY_LOG", "!=", "0")],
             ["spawnb_cc_sclog"] = [LocalCondition("area", "SWLOR_SPAWN_COUNT_LOG", "=", "0")],
-            ["spawnb_cc_nsclog"] = [LocalCondition("area", "SWLOR_SPAWN_COUNT_LOG", "!=", "0")]
+            ["spawnb_cc_nsclog"] = [LocalCondition("area", "SWLOR_SPAWN_COUNT_LOG", "!=", "0")],
+            ["dt_test_canaille"] = [new OperationMapping("condition-player-class", "Rogue")],
+            ["x2_con_false"] = [new OperationMapping("system.always-false")]
         };
 
     private static readonly Dictionary<string, OperationMapping[]> CustomActions =
@@ -98,6 +126,41 @@ public static class DlgConversationMigrator
                 AdjustLocal("module", "SWLOR_SKYRACE_PARTICIPANTS", "1")
             ],
             ["ouvmag_bar_gen"] = [new OperationMapping("action-open-store")],
+            ["ouvmag_cntrbande"] = [new OperationMapping("action-open-store")],
+            ["ouvmag_cntrbnd_c"] = [new OperationMapping("action-open-store")],
+            ["ouvmag_verpex"] = [new OperationMapping("action-open-store")],
+            ["open_store"] = [new OperationMapping("action-open-store", "mag_lenny")],
+            ["magasinscript1"] = [new OperationMapping("action-open-store")],
+            ["at_001"] = [new OperationMapping("action-take-player-credits", "50")],
+            ["at_002"] = [new OperationMapping("action-take-player-credits", "5")],
+            ["nw_coop_1000cred"] = [new OperationMapping("action-take-player-credits", "1000")],
+            ["nw_coop_100credi"] = [new OperationMapping("action-take-player-credits", "100")],
+            ["nw_coop_10credit"] = [new OperationMapping("action-take-player-credits", "10")],
+            ["next_state_1"] = [new OperationMapping("action-advance-quest", "first_rites")],
+            ["open_train_store"] = [new OperationMapping("action-open-training-store")],
+            ["buy_stat_rebuild"] = [new OperationMapping("action-open-stat-rebuild")],
+            ["buy_rebuild"] = [new OperationMapping("action-purchase-full-rebuild")],
+            ["launch_race"] =
+            [
+                new OperationMapping(
+                    "action-notify-player",
+                    "Sky races are not currently available.")
+            ],
+            ["tk_odye_at_ind_0"] = [],
+            ["tk_odye_at_ind_1"] = [],
+            ["tk_odye_at_ind_2"] = [],
+            ["tk_odye_at_ind_3"] = [],
+            ["tk_odye_at_ind_4"] = [],
+            ["tk_odye_at_ind_5"] = [],
+            ["tk_odye_at_ind_6"] = [],
+            ["tk_odye_at_ind_7"] = [],
+            ["tk_odye_at_ind_8"] = [],
+            ["tk_odye_at_ind_9"] = [],
+            ["tk_odye_at_ind_b"] = [],
+            ["tk_odye_at_ind_x"] = [],
+            ["tk_odye_at_sampl"] = [],
+            ["tk_odye_at_set_c"] = [],
+            ["tk_odye_at_set_i"] = [],
             ["doc_pc_mort_d_0"] = [SetLocal("player", "SWLOR_DOCTOR_RESCUE", "0")],
             ["doc_soigne_pc"] = [new OperationMapping("action-heal-player", "50")],
             ["accept_quest_1"] = [SetLocal("player", "SWLOR_ABANDONED_STATION_QUEST", "1")],
@@ -133,7 +196,8 @@ public static class DlgConversationMigrator
         (new Regex("<CUSTOM4003>", RegexOptions.IgnoreCase | RegexOptions.Compiled), "{{skyrace.prize}}"),
         (new Regex("<CUSTOM1000>", RegexOptions.IgnoreCase | RegexOptions.Compiled), "Spawn controls for "),
         (new Regex("<CUSTOM999>", RegexOptions.IgnoreCase | RegexOptions.Compiled), "{{owner.name}}"),
-        (new Regex("<CUSTOM1001>", RegexOptions.IgnoreCase | RegexOptions.Compiled), ".")
+        (new Regex("<CUSTOM1001>", RegexOptions.IgnoreCase | RegexOptions.Compiled), "."),
+        (new Regex("<CUSTOM(?<id>[0-9]+)>", RegexOptions.IgnoreCase | RegexOptions.Compiled), "{{custom.${id}}}")
     };
 
     public static ConversationMigrationResult Convert(string conversationId, DlgDocument document)
@@ -264,6 +328,16 @@ public static class DlgConversationMigrator
                 return;
             }
 
+            if (PreservedConditionScripts.Contains(link.Active))
+            {
+                destination.Add(new ConversationCondition
+                {
+                    Key = OwnerConditionScript,
+                    Arguments = { link.Active }
+                });
+                return;
+            }
+
             issues.Add(new ConversationMigrationIssue(
                 ConversationMigrationIssueSeverity.RequiresLegacyException,
                 location,
@@ -312,6 +386,16 @@ public static class DlgConversationMigrator
                 return;
             }
 
+            if (PreservedActionScripts.Contains(node.Script))
+            {
+                destination.Add(new ConversationAction
+                {
+                    Key = OwnerScriptAction,
+                    Arguments = { node.Script }
+                });
+                return;
+            }
+
             issues.Add(new ConversationMigrationIssue(
                 ConversationMigrationIssueSeverity.RequiresLegacyException,
                 location,
@@ -348,7 +432,7 @@ public static class DlgConversationMigrator
         if (string.IsNullOrWhiteSpace(script))
             return;
 
-        if (!SupportedRootScripts.TryGetValue(script, out var actionKey))
+        if (!SupportedRootScripts.TryGetValue(script, out var mapped))
         {
             issues.Add(new ConversationMigrationIssue(
                 ConversationMigrationIssueSeverity.RequiresLegacyException,
@@ -357,11 +441,14 @@ public static class DlgConversationMigrator
             return;
         }
 
-        destination.Add(new ConversationAction
+        foreach (var operation in mapped)
         {
-            Key = actionKey,
-            Arguments = { script }
-        });
+            destination.Add(new ConversationAction
+            {
+                Key = operation.Key,
+                Arguments = operation.Arguments.ToList()
+            });
+        }
     }
 
     private static List<ConversationTextBlock> ConvertText(

@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Service
     public static class Conversation
     {
         private const string NuiConversationHandledLocal = "SWLOR_NUI_CONVO";
+        private const string NuiConversationPlayerLocal = "SWLOR_NUI_CONVERSATION_PLAYER";
         private static readonly Dictionary<string, ConversationGraph> Graphs = new();
         public static ConversationRuntime Runtime { get; } = new();
 
@@ -35,16 +36,62 @@ namespace SWLOR.Game.Server.Service
             Runtime.RegisterToken("skyrace.record-time", _ => ResolveModuleText("SWLOR_SKYRACE_RECORD_TIME", "No time recorded"));
             Runtime.RegisterToken("skyrace.entry-fee", _ => "50");
             Runtime.RegisterToken("skyrace.prize", _ => "250");
-            Runtime.RegisterAction("system.execute-owner-script", (context, arguments) =>
-            {
-                if (arguments.Count == 0 || string.IsNullOrWhiteSpace(arguments[0]))
-                    throw new InvalidOperationException("The owner-script action requires a script resref.");
-                if (!GetIsObjectValid(context.Owner))
-                    return false;
+            Runtime.RegisterTokenPrefix("custom.", (_, suffix) =>
+                int.TryParse(suffix, out var tokenId) ? UtilPlugin.GetCustomToken(tokenId) : string.Empty);
+            Runtime.RegisterCondition("system.always-false", (_, _) => false);
+            Runtime.RegisterCondition("system.execute-owner-condition-script", ExecuteOwnerConditionScript);
+            Runtime.RegisterAction("system.execute-owner-script", ExecuteOwnerScript);
+        }
 
-                ExecuteScript(arguments[0], context.Owner);
+        private static bool ExecuteOwnerScript(
+            ConversationContext context,
+            IReadOnlyList<string> arguments)
+        {
+            if (!TryPrepareOwnerScript(context, arguments, out var script))
+                return false;
+
+            try
+            {
+                ExecuteScript(script, context.Owner);
                 return true;
-            });
+            }
+            finally
+            {
+                DeleteLocalObject(context.Owner, NuiConversationPlayerLocal);
+            }
+        }
+
+        private static bool ExecuteOwnerConditionScript(
+            ConversationContext context,
+            IReadOnlyList<string> arguments)
+        {
+            if (!TryPrepareOwnerScript(context, arguments, out var script))
+                return false;
+
+            try
+            {
+                ExecuteScript(script, context.Owner);
+                return UtilPlugin.GetScriptReturnValue() != 0;
+            }
+            finally
+            {
+                DeleteLocalObject(context.Owner, NuiConversationPlayerLocal);
+            }
+        }
+
+        private static bool TryPrepareOwnerScript(
+            ConversationContext context,
+            IReadOnlyList<string> arguments,
+            out string script)
+        {
+            script = arguments.Count > 0 ? arguments[0] : string.Empty;
+            if (string.IsNullOrWhiteSpace(script))
+                throw new InvalidOperationException("The owner-script operation requires a script resref.");
+            if (!GetIsObjectValid(context.Owner) || !GetIsObjectValid(context.Player))
+                return false;
+
+            SetLocalObject(context.Owner, NuiConversationPlayerLocal, context.Player);
+            return true;
         }
 
         // Snippet handlers are registered during OnModuleCacheBefore. Graphs must load in the

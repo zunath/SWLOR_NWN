@@ -1,8 +1,10 @@
+#include "dmfi_nui_inc"
+
 //DMFI Universal Wand scripts by hahnsoo
 int DMW_START_CUSTOM_TOKEN = 8000;
 
 //Retrieve targetting information
-object oMySpeaker = GetLastSpeaker();
+object oMySpeaker = DMFI_GetConversationLastSpeaker();
 object oMyTarget = GetLocalObject(oMySpeaker, "dmfi_univ_target");
 location lMyLoc = GetLocalLocation(oMySpeaker, "dmfi_univ_location");
 
@@ -304,7 +306,7 @@ void dmwand_StartConversation()
 
 int StartingConditional()
 {
-   object oPC = GetPCSpeaker();
+   object oPC = DMFI_GetConversationPlayer();
    int nMyNum = 0;
 
    DeleteLocalInt(oPC, "Tens");

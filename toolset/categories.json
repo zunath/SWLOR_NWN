@@ -1302,6 +1302,7 @@
             "dmfi_execute",
             "dmfi_getln_inc",
             "dmfi_init_inc",
+            "dmfi_nui_inc",
             "dmfi_onclienter",
             "dmfi_onplychat",
             "dmfi_plchlishk_i",

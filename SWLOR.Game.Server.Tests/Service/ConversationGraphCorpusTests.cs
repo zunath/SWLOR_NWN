@@ -21,8 +21,8 @@ public sealed class ConversationGraphCorpusTests
                            name.EndsWith(".conversation.json", StringComparison.OrdinalIgnoreCase))
             .ToArray();
 
-        resources.Should().HaveCount(328,
-            "dt_barman_gen and dt_cntr_magasin remain native until their missing race and store behavior can be implemented faithfully");
+        resources.Should().HaveCount(346,
+            "every authored non-shell DLG must be embedded as a NUI conversation graph");
         foreach (var resource in resources)
         {
             using var stream = assembly.GetManifestResourceStream(resource);

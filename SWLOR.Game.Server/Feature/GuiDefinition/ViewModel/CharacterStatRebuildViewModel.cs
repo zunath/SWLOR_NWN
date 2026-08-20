@@ -14,29 +14,33 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         [NWNEventHandler(ScriptName.OnBuyStatRebuild)]
         public static void LoadCharacterStatRebuild()
         {
-            var terminal = OBJECT_SELF;
-            var player = GetPCSpeaker();
+            OpenCharacterStatRebuild(GetPCSpeaker(), OBJECT_SELF);
+        }
+
+        public static bool OpenCharacterStatRebuild(uint player, uint terminal)
+        {
 
             if (!GetIsPC(player))
             {
                 SendMessageToPC(player, ColorToken.Red("This terminal may only be used by players."));
-                return;
+                return false;
             }
 
             if (Currency.GetCurrency(player, CurrencyType.StatRefundToken) <= 0)
             {
                 FloatingTextStringOnCreature(ColorToken.Red("Insufficient stat refund tokens!"), player, false);
-                return;
+                return false;
             }
 
             var (isOnDelay, timeToWait) = Recast.IsOnRecastDelay(player, RecastGroup.StatRebuild);
             if (isOnDelay)
             {
                 FloatingTextStringOnCreature(ColorToken.Red($"Another stat rebuild can be performed in {timeToWait}."), player, false);
-                return;
+                return false;
             }
 
             Gui.TogglePlayerWindow(player, GuiWindowType.StatRebuild, null, terminal);
+            return true;
         }
 
         private const int MaxAbilityIncreases = 15;

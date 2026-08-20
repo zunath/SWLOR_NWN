@@ -55,6 +55,14 @@ namespace SWLOR.NWN.API.NWNX
         }
 
         /// <summary>
+        /// Gets the return value produced by the last native StartingConditional script.
+        /// </summary>
+        public static int GetScriptReturnValue()
+        {
+            return global::NWN.Core.NWNX.UtilPlugin.GetScriptReturnValue();
+        }
+
+        /// <summary>
         /// Convert an effect type to an itemproperty type.
         /// </summary>
         /// <param name="effect">The effect to convert to an itemproperty.</param>

@@ -16,8 +16,8 @@ using SWLOR.Toolset.Workspace;
 namespace SWLOR.Toolset.Tests;
 
 /// <summary>
-/// Opening a conversation is a corpus-level contract: every Explorer row gets an editable NUI or
-/// native-exception editor. Ordinary module conversations must use the graph-native editor.
+/// Opening a conversation is a corpus-level contract: every Explorer row gets the graph-native
+/// editor used by the NUI runtime.
 /// </summary>
 public sealed class ConversationEditorOpeningTests
 {
@@ -45,15 +45,8 @@ public sealed class ConversationEditorOpeningTests
         routes.Should().NotContain(route => route.Kind == ConversationEditorRouteKind.Missing);
         routes.Should().OnlyContain(route => route.OpensEditor,
             "every authored conversation shown in Module Contents must open an editor");
-        routes.Count(route => route.Kind == ConversationEditorRouteKind.NuiGraph).Should().Be(327);
-        routes.Count(route => route.Kind == ConversationEditorRouteKind.LegacyDialog).Should().Be(16);
-        routes.Count(route => route.Kind == ConversationEditorRouteKind.LegacyException).Should().Be(3);
-        routes.Where(route => route.Kind == ConversationEditorRouteKind.LegacyException)
-            .Select(route => Path.GetFileName(route.Path))
-            .Should().BeEquivalentTo(
-                "dmfi_universal.dlg.json",
-                "dt_barman_gen.dlg.json",
-                "dt_cntr_magasin.dlg.json");
+        routes.Should().OnlyContain(route => route.Kind == ConversationEditorRouteKind.NuiGraph,
+            "the legacy exception manifest is empty and every authored DLG has a generated graph");
     }
 
     [Test]
@@ -94,50 +87,24 @@ public sealed class ConversationEditorOpeningTests
     }
 
     [Test]
-    public void EveryLegacyConversationConstructsTheEditableLegacyViewModel()
+    public void NoAuthoredConversationRequiresTheLegacyEditor()
     {
         var graphDirectory = Path.Combine(
             CorpusLocator.RepositoryRoot,
             "SWLOR.Game.Server",
             "ConversationData");
         var dialogDirectory = Path.Combine(CorpusLocator.ModuleDirectory, "dlg");
-        var snippets = SnippetCatalog.Build();
-        var failures = new List<string>();
-
-        foreach (var path in Directory.EnumerateFiles(dialogDirectory, "*.dlg.json")
-                     .Where(path => !File.Exists(Path.Combine(
-                         graphDirectory,
-                         Path.GetFileName(path)[..^".dlg.json".Length] + ".conversation.json")))
-                     .Where(path => !IsGeneratedShell(
-                         Path.GetFileName(path)[..^".dlg.json".Length]))
-                     .OrderBy(path => path, StringComparer.Ordinal))
-        {
-            var id = Path.GetFileName(path)[..^".dlg.json".Length];
-            try
-            {
-                var editor = new ConversationEditorViewModel(
-                    path,
-                    id,
-                    snippets,
-                    null,
-                    new OutputLogService(),
-                    new StubPrompts());
-
-                editor.LiveDialog.Should().NotBeNull(id);
-                editor.OnClose();
-            }
-            catch (Exception ex)
-            {
-                failures.Add($"{id}: {ex}");
-            }
-        }
-
-        failures.Should().BeEmpty(
-            "native exceptions must remain editable while their dedicated systems are retained");
+        Directory.EnumerateFiles(dialogDirectory, "*.dlg.json")
+            .Where(path => !IsGeneratedShell(
+                Path.GetFileName(path)[..^".dlg.json".Length]))
+            .Where(path => !File.Exists(Path.Combine(
+                graphDirectory,
+                Path.GetFileName(path)[..^".dlg.json".Length] + ".conversation.json")))
+            .Should().BeEmpty("every authored conversation must have a NUI graph");
     }
 
     [Test]
-    public void SkyRaceConversationStaysLegacyUntilRaceStartGameplayExists()
+    public void SkyRaceConversationUsesNuiWhileUnavailableGameplayIsReportedToThePlayer()
     {
         const string id = "dt_barman_gen";
         var graphPath = Path.Combine(
@@ -147,9 +114,15 @@ public sealed class ConversationEditorOpeningTests
             graphPath,
             Path.Combine(CorpusLocator.ModuleDirectory, "dlg", id + ".dlg.json"));
 
-        File.Exists(graphPath).Should().BeFalse();
-        route.Kind.Should().Be(ConversationEditorRouteKind.LegacyException);
-        route.Details.Should().Contain(detail => detail.Contains("launch_race", StringComparison.Ordinal));
+        File.Exists(graphPath).Should().BeTrue();
+        route.Kind.Should().Be(ConversationEditorRouteKind.NuiGraph);
+
+        var graph = Newtonsoft.Json.JsonConvert.DeserializeObject<ConversationGraph>(File.ReadAllText(graphPath));
+        graph.Should().NotBeNull();
+        graph!.Choices.Values.SelectMany(choice => choice.Actions)
+            .Should().Contain(action =>
+                action.Key == "action-notify-player" &&
+                action.Arguments.Contains("Sky races are not currently available."));
     }
 
     [AvaloniaTest]

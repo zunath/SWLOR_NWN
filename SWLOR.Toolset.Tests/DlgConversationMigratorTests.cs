@@ -49,14 +49,15 @@ public sealed class DlgConversationMigratorTests
     }
 
     [Test]
-    public void Convert_ReportsCustomNwScriptAsAnExplicitLegacyException()
+    public void Convert_MapsTrainingTerminalActionsToNuiOperations()
     {
         var result = DlgConversationMigrator.Convert("train_terminal", Load("train_terminal"));
 
-        result.CanRunInNui.Should().BeFalse();
-        result.Issues.Should().Contain(issue =>
-            issue.Severity == ConversationMigrationIssueSeverity.RequiresLegacyException &&
-            issue.Message.Contains("open_train_store", StringComparison.Ordinal));
+        result.CanRunInNui.Should().BeTrue();
+        AllActions(result.Graph).Select(action => action.Key).Should().Contain(
+            "action-open-training-store",
+            "action-open-stat-rebuild",
+            "action-purchase-full-rebuild");
     }
 
     [Test]
@@ -95,28 +96,26 @@ public sealed class DlgConversationMigratorTests
     }
 
     [Test]
-    public void Convert_KeepsContrabandMerchantAsLegacyWhenItsPredicateAndStoresAreUnknown()
+    public void Convert_MapsContrabandMerchantClassGateAndStores()
     {
         var result = DlgConversationMigrator.Convert("dt_cntr_magasin", Load("dt_cntr_magasin"));
 
-        result.CanRunInNui.Should().BeFalse();
-        result.Issues.Where(issue =>
-                issue.Severity == ConversationMigrationIssueSeverity.RequiresLegacyException)
-            .Select(issue => issue.Message)
-            .Should().Contain(message => message.Contains("dt_test_canaille", StringComparison.Ordinal))
-            .And.Contain(message => message.Contains("ouvmag_cntrbande", StringComparison.Ordinal))
-            .And.Contain(message => message.Contains("ouvmag_cntrbnd_c", StringComparison.Ordinal));
+        result.CanRunInNui.Should().BeTrue();
+        AllConditions(result.Graph).Should().Contain(condition =>
+            condition.Key == "condition-player-class" &&
+            condition.Arguments.SequenceEqual(new[] { "Rogue" }));
+        AllActions(result.Graph).Count(action => action.Key == "action-open-store").Should().Be(2);
     }
 
     [Test]
-    public void Convert_KeepsSkyRaceAsLegacyUntilRaceStartGameplayExists()
+    public void Convert_ReportsUnavailableSkyRaceGameplayInsideNui()
     {
         var result = DlgConversationMigrator.Convert("dt_barman_gen", Load("dt_barman_gen"));
 
-        result.CanRunInNui.Should().BeFalse();
-        result.Issues.Should().Contain(issue =>
-            issue.Severity == ConversationMigrationIssueSeverity.RequiresLegacyException &&
-            issue.Message.Contains("launch_race", StringComparison.Ordinal));
+        result.CanRunInNui.Should().BeTrue();
+        AllActions(result.Graph).Should().Contain(action =>
+            action.Key == "action-notify-player" &&
+            action.Arguments.SequenceEqual(new[] { "Sky races are not currently available." }));
     }
 
     [Test]
@@ -135,13 +134,31 @@ public sealed class DlgConversationMigratorTests
     }
 
     [Test]
-    public void Convert_KeepsDmfiAsTheExplicitNativeException()
+    public void Convert_PreservesDmfiScriptsAndCustomTokensInNui()
     {
         var result = DlgConversationMigrator.Convert("dmfi_universal", Load("dmfi_universal"));
 
-        result.CanRunInNui.Should().BeFalse();
-        result.Issues.Should().Contain(issue =>
-            issue.Severity == ConversationMigrationIssueSeverity.RequiresLegacyException);
+        result.CanRunInNui.Should().BeTrue();
+        AllConditions(result.Graph).Should().Contain(condition =>
+            condition.Key == "system.execute-owner-condition-script");
+        AllActions(result.Graph).Should().Contain(action => action.Key == "system.execute-owner-script");
+
+        var text = result.Graph.Nodes.Values.SelectMany(node => node.Text)
+            .Concat(result.Graph.Choices.Values.Select(choice => choice.Text))
+            .Select(block => block.Text)
+            .ToArray();
+        text.Should().Contain(value => value.Contains("{{custom.", StringComparison.Ordinal));
+        text.Should().NotContain(value => value.Contains("<CUSTOM", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Test]
+    public void Convert_RetiresOmniDyeHooksOwnedByTheAppearanceEditor()
+    {
+        var result = DlgConversationMigrator.Convert("tk_omnidye", Load("tk_omnidye"));
+
+        result.CanRunInNui.Should().BeTrue();
+        AllActions(result.Graph).Should().BeEmpty(
+            "the appearance editor replaced every OmniDye action and close hook");
     }
 
     [Test]
@@ -202,6 +219,26 @@ public sealed class DlgConversationMigratorTests
     private static DlgDocument Load(string id)
     {
         return DlgDocument.Load(Path.Combine(CorpusLocator.ModuleDirectory, "dlg", id + ".dlg.json"));
+    }
+
+    private static IEnumerable<ConversationAction> AllActions(ConversationGraph graph)
+    {
+        return graph.OnStartActions
+            .Concat(graph.OnEndActions)
+            .Concat(graph.OnAbortActions)
+            .Concat(graph.Nodes.Values.SelectMany(node => node.OnEnterActions))
+            .Concat(graph.Choices.Values.SelectMany(choice => choice.Actions));
+    }
+
+    private static IEnumerable<ConversationCondition> AllConditions(ConversationGraph graph)
+    {
+        return graph.EntryPoints.SelectMany(link => link.Conditions)
+            .Concat(graph.Nodes.Values
+                .SelectMany(node => node.Choices)
+                .SelectMany(link => link.Conditions))
+            .Concat(graph.Choices.Values
+                .SelectMany(choice => choice.Next)
+                .SelectMany(link => link.Conditions));
     }
 
     private static bool IsGeneratedShell(string id)

@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Service
         private const int PartyChatMessagePrefixStrRef = 10303;
         private const string CommsChannelName = "Comms";
         private const string CommsMessagePrefix = "[Comms] ";
+        private const string WhisperMessagePrefix = "[Whisper] ";
 
         public static (byte, byte, byte) OOCChatColor { get; } = (64, 64, 64);
         public static (byte, byte, byte) EmoteChatColor { get; } = (0, 255, 0);
@@ -385,6 +386,7 @@ namespace SWLOR.Game.Server.Service
                 // hologram's shared object name or globally renaming it.
                 if (isHoloComRelay)
                 {
+                    finalMessage.Append(GetHoloComRelayChannelPrefix(channel));
                     finalMessage.Append(PlayerName.GetColoredChatDisplayName(receiver, speaker));
                     finalMessage.Append(": ");
                 }
@@ -465,6 +467,17 @@ namespace SWLOR.Game.Server.Service
 
                 SendProcessedChatMessage(channel, receiver, sender, speaker, finalMessageColored);
             }
+        }
+
+        private static string GetHoloComRelayChannelPrefix(ChatChannel channel)
+        {
+            if (channel == ChatChannel.PlayerWhisper)
+                return WhisperMessagePrefix;
+
+            if (channel == ChatChannel.PlayerParty)
+                return CommsMessagePrefix;
+
+            return string.Empty;
         }
 
         private static void SendProcessedChatMessage(

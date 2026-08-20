@@ -321,6 +321,7 @@ namespace SWLOR.Game.Server.Service
             // them once before dispatching rather than recomputing (and re-writing language state)
             // per receiver.
             var speaker = GetEffectiveChatSpeaker(sender);
+            var isHoloComRelay = sender != speaker;
             var language = Language.GetActiveLanguage(speaker);
 
             // Wookiees cannot speak any other language (but they can understand them).
@@ -377,6 +378,17 @@ namespace SWLOR.Game.Server.Service
                         finalMessage.Append(" } ");
                     }
                 }
+
+                // HoloCom holograms have a deliberately generic object name because the nearby
+                // observers may know their owner by different names. Render the owner's chat name
+                // into the direct relay message separately for each observer instead of exposing the
+                // hologram's shared object name or globally renaming it.
+                if (isHoloComRelay)
+                {
+                    finalMessage.Append(PlayerName.GetColoredChatDisplayName(receiver, speaker));
+                    finalMessage.Append(": ");
+                }
+
                 var (r, g, b) = Language.GetColor(language);
 
                 if (dbReceiver?.Settings?.LanguageChatColors != null &&
@@ -462,10 +474,17 @@ namespace SWLOR.Game.Server.Service
             uint identitySpeaker,
             string message)
         {
-            // A HoloCom message is spoken by a copied creature in the receiver's area. The hologram's
-            // owner supplies the player-facing identity and language, but the area-local hologram must
-            // remain the native transport speaker or Talk/Whisper packets from the distant owner are
-            // discarded by the engine. Holograms retain their generic, display-safe object name.
+            // Native Talk/Whisper packets cannot use the distant HoloCom owner as their sender, while
+            // using the area-local hologram would expose its generic shared object name. The caller has
+            // already rendered the owner's observer-specific chat name into the message, so deliver it
+            // directly without a native sender label. The hologram's ActionSpeakString still supplies
+            // the visible speaking animation that initiated this processed relay.
+            if (transportSpeaker != identitySpeaker)
+            {
+                ChatPlugin.SendMessage(ChatChannel.ServerMessage, message, transportSpeaker, receiver);
+                return;
+            }
+
             // NWNX_Rename only patches the per-observer PC name override around three native chat
             // functions - Party, Shout, and Tell (see the plugin's HOOK_CHAT registrations). Talk and
             // Whisper are not among them; they render correctly today only because the speaker's
@@ -478,7 +497,7 @@ namespace SWLOR.Game.Server.Service
             PlayerName.SendChatMessageWithChatNameOverride(
                 receiver,
                 identitySpeaker,
-                () => ChatPlugin.SendMessage(channel, message, transportSpeaker, receiver));
+                () => ChatPlugin.SendMessage(channel, message, identitySpeaker, receiver));
         }
 
         private static bool IsChatCommandMessage(string message)

@@ -37,7 +37,7 @@ public class PlayerFacingNameBroadcastTests
         normalizedSource.Should().Contain("if (!GetIsPC(player))");
 
         source.Should().NotContain("finalMessage.Append(\"[Comms] \");");
-        source.Should().Contain("ChatPlugin.SendMessage(channel, message, transportSpeaker, receiver)");
+        source.Should().Contain("ChatPlugin.SendMessage(channel, message, identitySpeaker, receiver)");
         source.Should().NotContain("ChatChannel.DMTalk");
     }
 
@@ -175,7 +175,7 @@ public class PlayerFacingNameBroadcastTests
         // DM_* channel. Comms must dispatch on the native PlayerParty channel, not DMTalk, or the
         // override never applies and the speaker's true name leaks once they leave the receiver's area.
         communicationSource.Should().NotContain("ChatChannel.DMTalk");
-        communicationSource.Should().Contain("ChatPlugin.SendMessage(channel, message, transportSpeaker, receiver)");
+        communicationSource.Should().Contain("ChatPlugin.SendMessage(channel, message, identitySpeaker, receiver)");
         communicationSource.Should().NotContain("PlayerName.SendWithChatNameOverride");
         communicationSource.Should().NotContain("ChatPlugin.SendMessage(ChatChannel.PlayerDM");
         communicationSource.Should().NotContain("ChatChannel.PlayerDM, finalMessageColored");
@@ -432,18 +432,25 @@ public class PlayerFacingNameBroadcastTests
         var normalizedCommunicationSource = communicationSource.Replace("\r\n", "\n");
 
         communicationSource.Should().Contain("var speaker = GetEffectiveChatSpeaker(sender);");
+        communicationSource.Should().Contain("var isHoloComRelay = sender != speaker;");
         communicationSource.Should().Contain(
             "SendProcessedChatMessage(channel, receiver, sender, speaker, finalMessageColored);");
         communicationSource.Should().Contain("uint transportSpeaker,");
         communicationSource.Should().Contain("uint identitySpeaker,");
+        communicationSource.Should().Contain("if (isHoloComRelay)");
+        communicationSource.Should().Contain(
+            "finalMessage.Append(PlayerName.GetColoredChatDisplayName(receiver, speaker));");
+        communicationSource.Should().Contain("if (transportSpeaker != identitySpeaker)");
+        communicationSource.Should().Contain(
+            "ChatPlugin.SendMessage(ChatChannel.ServerMessage, message, transportSpeaker, receiver);");
         normalizedCommunicationSource.Should().Contain(
             "PlayerName.SendChatMessageWithChatNameOverride(\n" +
             "                receiver,\n" +
             "                identitySpeaker,");
         communicationSource.Should().Contain(
-            "ChatPlugin.SendMessage(channel, message, transportSpeaker, receiver)");
-        communicationSource.Should().NotContain(
             "ChatPlugin.SendMessage(channel, message, identitySpeaker, receiver)");
+        communicationSource.Should().NotContain(
+            "ChatPlugin.SendMessage(channel, message, transportSpeaker, receiver)");
     }
 
     [Test]

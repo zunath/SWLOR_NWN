@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Service
         private const int PartyChatMessagePrefixStrRef = 10303;
         private const string CommsChannelName = "Comms";
         private const string CommsMessagePrefix = "[Comms] ";
+        private const string WhisperMessagePrefix = "[Whisper] ";
 
         public static (byte, byte, byte) OOCChatColor { get; } = (64, 64, 64);
         public static (byte, byte, byte) EmoteChatColor { get; } = (0, 255, 0);
@@ -321,6 +322,7 @@ namespace SWLOR.Game.Server.Service
             // them once before dispatching rather than recomputing (and re-writing language state)
             // per receiver.
             var speaker = GetEffectiveChatSpeaker(sender);
+            var isHoloComRelay = sender != speaker;
             var language = Language.GetActiveLanguage(speaker);
 
             // Wookiees cannot speak any other language (but they can understand them).
@@ -377,6 +379,18 @@ namespace SWLOR.Game.Server.Service
                         finalMessage.Append(" } ");
                     }
                 }
+
+                // HoloCom holograms have a deliberately generic object name because the nearby
+                // observers may know their owner by different names. Render the owner's chat name
+                // into the direct relay message separately for each observer instead of exposing the
+                // hologram's shared object name or globally renaming it.
+                if (isHoloComRelay)
+                {
+                    finalMessage.Append(GetHoloComRelayChannelPrefix(channel));
+                    finalMessage.Append(PlayerName.GetColoredChatDisplayName(receiver, speaker));
+                    finalMessage.Append(": ");
+                }
+
                 var (r, g, b) = Language.GetColor(language);
 
                 if (dbReceiver?.Settings?.LanguageChatColors != null &&
@@ -451,16 +465,39 @@ namespace SWLOR.Game.Server.Service
                     finalMessageColored = ColorToken.Orange(finalMessageColored);
                 }
 
-                SendProcessedChatMessage(channel, receiver, speaker, finalMessageColored);
+                SendProcessedChatMessage(channel, receiver, sender, speaker, finalMessageColored);
             }
+        }
+
+        private static string GetHoloComRelayChannelPrefix(ChatChannel channel)
+        {
+            if (channel == ChatChannel.PlayerWhisper)
+                return WhisperMessagePrefix;
+
+            if (channel == ChatChannel.PlayerParty)
+                return CommsMessagePrefix;
+
+            return string.Empty;
         }
 
         private static void SendProcessedChatMessage(
             ChatChannel channel,
             uint receiver,
-            uint speaker,
+            uint transportSpeaker,
+            uint identitySpeaker,
             string message)
         {
+            // Native Talk/Whisper packets cannot use the distant HoloCom owner as their sender, while
+            // using the area-local hologram would expose its generic shared object name. The caller has
+            // already rendered the owner's observer-specific chat name into the message, so deliver it
+            // directly without a native sender label. The hologram's ActionSpeakString still supplies
+            // the visible speaking animation that initiated this processed relay.
+            if (transportSpeaker != identitySpeaker)
+            {
+                ChatPlugin.SendMessage(ChatChannel.ServerMessage, message, transportSpeaker, receiver);
+                return;
+            }
+
             // NWNX_Rename only patches the per-observer PC name override around three native chat
             // functions - Party, Shout, and Tell (see the plugin's HOOK_CHAT registrations). Talk and
             // Whisper are not among them; they render correctly today only because the speaker's
@@ -472,8 +509,8 @@ namespace SWLOR.Game.Server.Service
             // boundaries the same way DMTalk did.
             PlayerName.SendChatMessageWithChatNameOverride(
                 receiver,
-                speaker,
-                () => ChatPlugin.SendMessage(channel, message, speaker, receiver));
+                identitySpeaker,
+                () => ChatPlugin.SendMessage(channel, message, identitySpeaker, receiver));
         }
 
         private static bool IsChatCommandMessage(string message)

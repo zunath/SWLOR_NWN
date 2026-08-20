@@ -35,15 +35,39 @@
       "Choices": [
         {
           "ChoiceId": "reply-00005",
-          "Conditions": []
+          "Conditions": [
+            {
+              "Key": "condition-player-credits",
+              "Arguments": [
+                "10"
+              ],
+              "IsNegated": false
+            }
+          ]
         },
         {
           "ChoiceId": "reply-00004",
-          "Conditions": []
+          "Conditions": [
+            {
+              "Key": "condition-player-credits",
+              "Arguments": [
+                "100"
+              ],
+              "IsNegated": false
+            }
+          ]
         },
         {
           "ChoiceId": "reply-00001",
-          "Conditions": []
+          "Conditions": [
+            {
+              "Key": "condition-player-credits",
+              "Arguments": [
+                "1000"
+              ],
+              "IsNegated": false
+            }
+          ]
         },
         {
           "ChoiceId": "reply-00000",

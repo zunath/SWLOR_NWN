@@ -1,9 +1,7 @@
-#include "dmfi_nui_inc"
-
 int StartingConditional()
 {
     // set the custom tokens
-    object oPC = DMFI_GetConversationPlayer();
+    object oPC = GetPCSpeaker();
     object oTarget = GetLocalObject(oPC, "dmfi_univ_target");
 
     string sName = GetName(oTarget);

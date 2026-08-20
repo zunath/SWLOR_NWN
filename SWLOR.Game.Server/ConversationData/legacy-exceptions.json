@@ -1,1 +1,8 @@
-[]
+[
+  {
+    "ConversationId": "dmfi_universal",
+    "Reasons": [
+      "DMFI wands launch and restart this conversation through native ActionStartConversation calls."
+    ]
+  }
+]

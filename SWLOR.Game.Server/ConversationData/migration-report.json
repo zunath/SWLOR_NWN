@@ -2440,8 +2440,14 @@
   },
   {
     "ConversationId": "dmfi_universal",
-    "Status": "Converted",
-    "Issues": []
+    "Status": "RequiresLegacyException",
+    "Issues": [
+      {
+        "Severity": 1,
+        "Location": "conversation",
+        "Message": "DMFI wands launch and restart this conversation through native ActionStartConversation calls."
+      }
+    ]
   },
   {
     "ConversationId": "docjoe",

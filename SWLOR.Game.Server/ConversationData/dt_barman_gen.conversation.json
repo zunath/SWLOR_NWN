@@ -59,6 +59,11 @@
                 "0"
               ],
               "IsNegated": false
+            },
+            {
+              "Key": "system.always-false",
+              "Arguments": [],
+              "IsNegated": false
             }
           ]
         },
@@ -264,30 +269,7 @@
           "Color": null
         }
       ],
-      "OnEnterActions": [
-        {
-          "Key": "action-take-player-credits",
-          "Arguments": [
-            "50"
-          ]
-        },
-        {
-          "Key": "action-set-local-number",
-          "Arguments": [
-            "player",
-            "SWLOR_SKYRACE_REGISTERED",
-            "1"
-          ]
-        },
-        {
-          "Key": "action-adjust-local-number",
-          "Arguments": [
-            "module",
-            "SWLOR_SKYRACE_PARTICIPANTS",
-            "1"
-          ]
-        }
-      ],
+      "OnEnterActions": [],
       "Choices": []
     },
     "entry-00007": {

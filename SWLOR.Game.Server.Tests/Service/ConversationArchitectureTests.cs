@@ -76,7 +76,7 @@ public class ConversationArchitectureTests
     }
 
     [Test]
-    public void EveryAuthoredDialog_IsMigratedWithNoLegacyExceptions()
+    public void EveryAuthoredDialog_IsMigratedOrUsesTheApprovedDmfiNativePath()
     {
         var root = FindRepositoryRoot().FullName;
         var graphDirectory = Path.Combine(root, "SWLOR.Game.Server", "ConversationData");
@@ -94,10 +94,10 @@ public class ConversationArchitectureTests
             .Select(path => Path.GetFileName(path)[..^".dlg.json".Length])
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-        exceptionIds.Should().BeEmpty(
-            "every authored conversation must use the NUI runtime without native DLG exceptions");
-        graphIds.Should().BeEquivalentTo(authoredIds,
-            "every authored conversation must have a NUI graph");
+        exceptionIds.Should().BeEquivalentTo(new[] { "dmfi_universal" },
+            "DMFI intentionally keeps its native wand-driven conversation path");
+        graphIds.Union(exceptionIds).Should().BeEquivalentTo(authoredIds,
+            "every authored conversation must have either a NUI graph or the approved DMFI native path");
     }
 
     [Test]

@@ -1,12 +1,10 @@
-#include "dmfi_nui_inc"
-
 
 int StartingConditional()
 {
    int nMyNum = GetLocalInt(OBJECT_SELF, "dmfi_dmwOffset");
    SetLocalInt(OBJECT_SELF, "dmfi_dmwOffset", nMyNum+1);
 
-   object oMySpeaker = DMFI_GetConversationPlayer();
+   object oMySpeaker = GetPCSpeaker();
    object oMyTarget = GetLocalObject(oMySpeaker, "dmfi_univ_target");
    location lMyLoc = GetLocalLocation(oMySpeaker, "dmfi_univ_location");
 

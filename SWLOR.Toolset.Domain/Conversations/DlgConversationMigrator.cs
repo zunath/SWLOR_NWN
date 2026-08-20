@@ -31,7 +31,6 @@ public sealed record ConversationMigrationResult(
 public static class DlgConversationMigrator
 {
     private const string OwnerScriptAction = "system.execute-owner-script";
-    private const string OwnerConditionScript = "system.execute-owner-condition-script";
     private sealed record OperationMapping(string Key, params string[] Arguments);
     private static readonly Regex MarkupPattern = new(
         "(<StartAction>|<StartHighlight>|</Start>)",
@@ -52,24 +51,12 @@ public static class DlgConversationMigrator
             ["x2_im_finished"] = []
         };
 
-    private static readonly HashSet<string> PreservedConditionScripts = new(
-        new[]
+    private static readonly Dictionary<string, string> NativeConversations = new(
+        StringComparer.OrdinalIgnoreCase)
         {
-            "dmfi_cond_dmw", "dmfi_uncnd_nam01", "dmfi_uncnd_nam05",
-            "dmfi_univ_cond", "dmfi_univ_dmw"
-        },
-        StringComparer.OrdinalIgnoreCase);
-
-    private static readonly HashSet<string> PreservedActionScripts = new(
-        new[]
-        {
-            "dmfi_unact_nam02", "dmfi_unact_nam03", "dmfi_unact_nam04",
-            "dmfi_unact_nam06", "dmfi_unact_nam07", "dmfi_unact_nam08",
-            "dmfi_univ_1", "dmfi_univ_2", "dmfi_univ_3", "dmfi_univ_4",
-            "dmfi_univ_5", "dmfi_univ_6", "dmfi_univ_7", "dmfi_univ_8",
-            "dmfi_univ_9", "dmfi_univ_10"
-        },
-        StringComparer.OrdinalIgnoreCase);
+            ["dmfi_universal"] =
+                "DMFI wands launch and restart this conversation through native ActionStartConversation calls."
+        };
 
     // These old one-off scripts are no longer present in the module. Only scripts whose complete
     // behavior can be expressed by registered NUI operations are translated here; anything else
@@ -78,7 +65,11 @@ public static class DlgConversationMigrator
         new(StringComparer.OrdinalIgnoreCase)
         {
             ["var_courreur_a_1"] = [LocalCondition("player", "SWLOR_SKYRACE_REGISTERED", ">=", "1")],
-            ["var_courreur_a_0"] = [LocalCondition("player", "SWLOR_SKYRACE_REGISTERED", "=", "0")],
+            ["var_courreur_a_0"] =
+            [
+                LocalCondition("player", "SWLOR_SKYRACE_REGISTERED", "=", "0"),
+                new OperationMapping("system.always-false")
+            ],
             ["pc_a_50_or"] = [new OperationMapping("condition-player-credits", "50")],
             ["var_encour_a_1"] = [LocalCondition("module", "SWLOR_SKYRACE_RUNNING", ">=", "1")],
             ["var_skyracer_a_6"] = [LocalCondition("module", "SWLOR_SKYRACE_PARTICIPANTS", ">=", "6")],
@@ -119,15 +110,11 @@ public static class DlgConversationMigrator
                 SetLocal("player", "SWLOR_SKYRACE_REGISTERED", "0"),
                 AdjustLocal("module", "SWLOR_SKYRACE_PARTICIPANTS", "-1")
             ],
-            ["inscript_skyrace"] =
-            [
-                new OperationMapping("action-take-player-credits", "50"),
-                SetLocal("player", "SWLOR_SKYRACE_REGISTERED", "1"),
-                AdjustLocal("module", "SWLOR_SKYRACE_PARTICIPANTS", "1")
-            ],
+            ["inscript_skyrace"] = [],
             ["ouvmag_bar_gen"] = [new OperationMapping("action-open-store")],
-            ["ouvmag_cntrbande"] = [new OperationMapping("action-open-store")],
-            ["ouvmag_cntrbnd_c"] = [new OperationMapping("action-open-store")],
+            ["ouvmag_cntrbande"] =
+                [new OperationMapping("action-open-store", "TATOOINE_GENERAL_STORE_MERCHANT")],
+            ["ouvmag_cntrbnd_c"] = [new OperationMapping("action-open-store", "visc_smuggler")],
             ["ouvmag_verpex"] = [new OperationMapping("action-open-store")],
             ["open_store"] = [new OperationMapping("action-open-store", "mag_lenny")],
             ["magasinscript1"] = [new OperationMapping("action-open-store")],
@@ -196,14 +183,23 @@ public static class DlgConversationMigrator
         (new Regex("<CUSTOM4003>", RegexOptions.IgnoreCase | RegexOptions.Compiled), "{{skyrace.prize}}"),
         (new Regex("<CUSTOM1000>", RegexOptions.IgnoreCase | RegexOptions.Compiled), "Spawn controls for "),
         (new Regex("<CUSTOM999>", RegexOptions.IgnoreCase | RegexOptions.Compiled), "{{owner.name}}"),
-        (new Regex("<CUSTOM1001>", RegexOptions.IgnoreCase | RegexOptions.Compiled), "."),
-        (new Regex("<CUSTOM(?<id>[0-9]+)>", RegexOptions.IgnoreCase | RegexOptions.Compiled), "{{custom.${id}}}")
+        (new Regex("<CUSTOM1001>", RegexOptions.IgnoreCase | RegexOptions.Compiled), ".")
     };
 
     public static ConversationMigrationResult Convert(string conversationId, DlgDocument document)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(conversationId);
         ArgumentNullException.ThrowIfNull(document);
+
+        if (NativeConversations.TryGetValue(conversationId, out var nativeReason))
+        {
+            return new ConversationMigrationResult(
+                new ConversationGraph { Id = conversationId, Title = conversationId },
+                [new ConversationMigrationIssue(
+                    ConversationMigrationIssueSeverity.RequiresLegacyException,
+                    "conversation",
+                    nativeReason)]);
+        }
 
         var issues = new List<ConversationMigrationIssue>();
         var graph = new ConversationGraph
@@ -296,6 +292,8 @@ public static class DlgConversationMigrator
             graph.EntryPoints.Add(link);
         }
 
+        AddChoiceActionPreconditions(graph);
+
         foreach (var validationError in ConversationGraphValidator.Validate(graph))
         {
             issues.Add(new ConversationMigrationIssue(
@@ -325,16 +323,6 @@ public static class DlgConversationMigrator
                         Arguments = operation.Arguments.ToList()
                     });
                 }
-                return;
-            }
-
-            if (PreservedConditionScripts.Contains(link.Active))
-            {
-                destination.Add(new ConversationCondition
-                {
-                    Key = OwnerConditionScript,
-                    Arguments = { link.Active }
-                });
                 return;
             }
 
@@ -383,16 +371,6 @@ public static class DlgConversationMigrator
                         Arguments = operation.Arguments.ToList()
                     });
                 }
-                return;
-            }
-
-            if (PreservedActionScripts.Contains(node.Script))
-            {
-                destination.Add(new ConversationAction
-                {
-                    Key = OwnerScriptAction,
-                    Arguments = { node.Script }
-                });
                 return;
             }
 
@@ -505,6 +483,37 @@ public static class DlgConversationMigrator
             Style = blocks.FirstOrDefault(block => block.Style != ConversationTextStyle.PlayerReply)?.Style
                     ?? ConversationTextStyle.PlayerReply
         };
+    }
+
+    private static void AddChoiceActionPreconditions(ConversationGraph graph)
+    {
+        foreach (var node in graph.Nodes.Values)
+        {
+            foreach (var link in node.Choices)
+            {
+                if (!graph.Choices.TryGetValue(link.ChoiceId, out var choice))
+                    continue;
+
+                foreach (var action in choice.Actions.Where(action =>
+                             action.Key.Equals("action-take-player-credits", StringComparison.Ordinal) &&
+                             action.Arguments.Count > 0))
+                {
+                    var amount = action.Arguments[0];
+                    if (link.Conditions.Any(condition =>
+                            condition.Key.Equals("condition-player-credits", StringComparison.Ordinal) &&
+                            condition.Arguments.SequenceEqual(new[] { amount })))
+                    {
+                        continue;
+                    }
+
+                    link.Conditions.Add(new ConversationCondition
+                    {
+                        Key = "condition-player-credits",
+                        Arguments = { amount }
+                    });
+                }
+            }
+        }
     }
 
     private static string FriendlyReplyText(DlgNode reply)

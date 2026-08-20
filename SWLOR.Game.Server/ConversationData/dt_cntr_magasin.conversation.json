@@ -200,7 +200,9 @@
       "Actions": [
         {
           "Key": "action-open-store",
-          "Arguments": []
+          "Arguments": [
+            "TATOOINE_GENERAL_STORE_MERCHANT"
+          ]
         }
       ],
       "Next": [],
@@ -241,7 +243,9 @@
       "Actions": [
         {
           "Key": "action-open-store",
-          "Arguments": []
+          "Arguments": [
+            "visc_smuggler"
+          ]
         }
       ],
       "Next": [],

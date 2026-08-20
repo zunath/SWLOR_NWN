@@ -1,5 +1,6 @@
 using FluentAssertions;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service.ConversationService;
 using SWLOR.Toolset.Domain.Conversations;
@@ -104,18 +105,74 @@ public sealed class DlgConversationMigratorTests
         AllConditions(result.Graph).Should().Contain(condition =>
             condition.Key == "condition-player-class" &&
             condition.Arguments.SequenceEqual(new[] { "Rogue" }));
-        AllActions(result.Graph).Count(action => action.Key == "action-open-store").Should().Be(2);
+        var storeTags = AllActions(result.Graph)
+            .Where(action => action.Key == "action-open-store")
+            .Select(action => action.Arguments.Single())
+            .ToArray();
+        storeTags.Should().BeEquivalentTo(
+                "TATOOINE_GENERAL_STORE_MERCHANT",
+                "visc_smuggler");
+
+        new[]
+            {
+                Path.Combine(CorpusLocator.ModuleDirectory, "git", "tat_anc_southdis.git.json"),
+                Path.Combine(CorpusLocator.ModuleDirectory, "git", "veles_exterior.git.json")
+            }
+            .SelectMany(path =>
+                ((JArray?)JObject.Parse(File.ReadAllText(path))["StoreList"]?["value"] ?? new JArray())
+                .Select(store => store["Tag"]?["value"]?.Value<string>()))
+            .Where(tag => !string.IsNullOrWhiteSpace(tag))
+            .Should().Contain(storeTags,
+                "every mapped store tag must resolve to a placed module store");
     }
 
     [Test]
-    public void Convert_ReportsUnavailableSkyRaceGameplayInsideNui()
+    public void Convert_DisablesSkyRaceRegistrationWithoutChargingPlayers()
     {
         var result = DlgConversationMigrator.Convert("dt_barman_gen", Load("dt_barman_gen"));
 
         result.CanRunInNui.Should().BeTrue();
+        AllActions(result.Graph).Should().NotContain(action =>
+            action.Key == "action-take-player-credits" ||
+            action.Key == "action-adjust-local-number" &&
+            action.Arguments.SequenceEqual(new[] { "module", "SWLOR_SKYRACE_PARTICIPANTS", "1" }));
+        result.Graph.Nodes["entry-00000"].Choices
+            .Single(link => link.ChoiceId == "reply-00005")
+            .Conditions.Should().Contain(condition => condition.Key == "system.always-false");
         AllActions(result.Graph).Should().Contain(action =>
             action.Key == "action-notify-player" &&
             action.Arguments.SequenceEqual(new[] { "Sky races are not currently available." }));
+    }
+
+    [TestCase("spy2")]
+    [TestCase("crystal")]
+    [TestCase("refugee")]
+    [TestCase("nw_convo_coopemm")]
+    public void Convert_GatesEveryCreditSpendingReplyByAffordability(string id)
+    {
+        var result = DlgConversationMigrator.Convert(id, Load(id));
+
+        foreach (var choice in result.Graph.Choices.Values)
+        {
+            var amounts = choice.Actions
+                .Where(action => action.Key == "action-take-player-credits")
+                .Select(action => action.Arguments.Single())
+                .ToArray();
+            if (amounts.Length == 0)
+                continue;
+
+            var incomingLinks = result.Graph.Nodes.Values
+                .SelectMany(node => node.Choices)
+                .Where(link => link.ChoiceId == choice.Id)
+                .ToArray();
+            incomingLinks.Should().NotBeEmpty(choice.Id);
+            foreach (var amount in amounts)
+            {
+                incomingLinks.Should().OnlyContain(link => link.Conditions.Any(condition =>
+                    condition.Key == "condition-player-credits" &&
+                    condition.Arguments.SequenceEqual(new[] { amount })));
+            }
+        }
     }
 
     [Test]
@@ -134,21 +191,14 @@ public sealed class DlgConversationMigratorTests
     }
 
     [Test]
-    public void Convert_PreservesDmfiScriptsAndCustomTokensInNui()
+    public void Convert_LeavesDmfiOnItsNativeConversationPath()
     {
         var result = DlgConversationMigrator.Convert("dmfi_universal", Load("dmfi_universal"));
 
-        result.CanRunInNui.Should().BeTrue();
-        AllConditions(result.Graph).Should().Contain(condition =>
-            condition.Key == "system.execute-owner-condition-script");
-        AllActions(result.Graph).Should().Contain(action => action.Key == "system.execute-owner-script");
-
-        var text = result.Graph.Nodes.Values.SelectMany(node => node.Text)
-            .Concat(result.Graph.Choices.Values.Select(choice => choice.Text))
-            .Select(block => block.Text)
-            .ToArray();
-        text.Should().Contain(value => value.Contains("{{custom.", StringComparison.Ordinal));
-        text.Should().NotContain(value => value.Contains("<CUSTOM", StringComparison.OrdinalIgnoreCase));
+        result.CanRunInNui.Should().BeFalse();
+        result.Issues.Should().ContainSingle(issue =>
+            issue.Severity == ConversationMigrationIssueSeverity.RequiresLegacyException &&
+            issue.Message.Contains("ActionStartConversation", StringComparison.Ordinal));
     }
 
     [Test]

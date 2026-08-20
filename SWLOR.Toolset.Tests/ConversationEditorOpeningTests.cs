@@ -16,8 +16,8 @@ using SWLOR.Toolset.Workspace;
 namespace SWLOR.Toolset.Tests;
 
 /// <summary>
-/// Opening a conversation is a corpus-level contract: every Explorer row gets the graph-native
-/// editor used by the NUI runtime.
+/// Opening a conversation is a corpus-level contract: every Explorer row gets an editor, with
+/// DMFI remaining on its approved native DLG path and all other authored conversations using NUI.
 /// </summary>
 public sealed class ConversationEditorOpeningTests
 {
@@ -45,8 +45,11 @@ public sealed class ConversationEditorOpeningTests
         routes.Should().NotContain(route => route.Kind == ConversationEditorRouteKind.Missing);
         routes.Should().OnlyContain(route => route.OpensEditor,
             "every authored conversation shown in Module Contents must open an editor");
-        routes.Should().OnlyContain(route => route.Kind == ConversationEditorRouteKind.NuiGraph,
-            "the legacy exception manifest is empty and every authored DLG has a generated graph");
+        routes.Count(route => route.Kind == ConversationEditorRouteKind.NuiGraph).Should().Be(345);
+        routes.Where(route => route.Kind == ConversationEditorRouteKind.LegacyException)
+            .Should().ContainSingle()
+            .Which.Path.Should().EndWith("dmfi_universal.dlg.json",
+                "DMFI intentionally keeps its native wand-driven conversation path");
     }
 
     [Test]
@@ -87,7 +90,7 @@ public sealed class ConversationEditorOpeningTests
     }
 
     [Test]
-    public void NoAuthoredConversationRequiresTheLegacyEditor()
+    public void OnlyDmfiRequiresTheLegacyEditor()
     {
         var graphDirectory = Path.Combine(
             CorpusLocator.RepositoryRoot,
@@ -100,7 +103,9 @@ public sealed class ConversationEditorOpeningTests
             .Where(path => !File.Exists(Path.Combine(
                 graphDirectory,
                 Path.GetFileName(path)[..^".dlg.json".Length] + ".conversation.json")))
-            .Should().BeEmpty("every authored conversation must have a NUI graph");
+            .Select(Path.GetFileName)
+            .Should().Equal(new[] { "dmfi_universal.dlg.json" },
+                "DMFI is the only approved native conversation");
     }
 
     [Test]

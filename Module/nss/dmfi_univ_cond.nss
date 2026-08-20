@@ -1,5 +1,3 @@
-#include "dmfi_nui_inc"
-
 //DMFI Universal Wand scripts by hahnsoo
 
 ////////////////////////////////////////////////////////////////////////
@@ -211,7 +209,7 @@ void SetRestTokens(object oPC)
 ////////////////////////////////////////////////////////////////////////
 int StartingConditional()
 {
-    object oPC = DMFI_GetConversationPlayer();
+    object oPC = GetPCSpeaker();
     DeleteLocalInt(oPC, "Tens");
     int iOffset = GetLocalInt(oPC, "dmfi_univ_offset")+1;
     string sOffset = GetLocalString(oPC, "dmfi_univ_conv");

@@ -1,8 +1,6 @@
-#include "dmfi_nui_inc"
-
 void main()
 {
-    object oPC = DMFI_GetConversationPlayer();
+    object oPC = GetPCSpeaker();
     object oTarget = GetLocalObject(oPC, "dmfi_univ_target");
     SetName(oTarget, "");
 }

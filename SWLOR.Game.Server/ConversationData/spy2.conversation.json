@@ -60,7 +60,15 @@
       "Choices": [
         {
           "ChoiceId": "reply-00003",
-          "Conditions": []
+          "Conditions": [
+            {
+              "Key": "condition-player-credits",
+              "Arguments": [
+                "50"
+              ],
+              "IsNegated": false
+            }
+          ]
         },
         {
           "ChoiceId": "reply-00002",

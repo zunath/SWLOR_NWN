@@ -1,8 +1,6 @@
-#include "dmfi_nui_inc"
-
 void main()
 {
-    object oPC = DMFI_GetConversationPlayer();
+    object oPC = GetPCSpeaker();
     object oTarget = GetLocalObject(oPC, "dmfi_univ_target");
     location lLocation = GetLocalLocation(oPC, "dmfi_univ_location");
     string sConv = GetLocalString(oPC, "dmfi_univ_conv");

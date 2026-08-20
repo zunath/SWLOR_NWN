@@ -79,6 +79,7 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsObjectValid(attacker) ||
                 !ShouldPlayRemappedPistolShotSound(
                     GetLocalBool(attacker, PistolAnimationRemapActiveVariable),
+                    GetLocalInt(attacker, ExplicitThrowSuspendCountVariable),
                     GetEquippedBaseItem(attacker, InventorySlot.RightHand),
                     GetEquippedBaseItem(attacker, InventorySlot.LeftHand)))
             {
@@ -105,10 +106,12 @@ namespace SWLOR.Game.Server.Feature
         /// </summary>
         public static bool ShouldPlayRemappedPistolShotSound(
             bool isRemapActive,
+            int explicitThrowSuspendCount,
             BaseItem? rightHandBaseItem,
             BaseItem? leftHandBaseItem)
         {
             return isRemapActive &&
+                   explicitThrowSuspendCount == 0 &&
                    ShouldUseFormerPistolAttackAnimation(rightHandBaseItem, leftHandBaseItem);
         }
 

@@ -83,20 +83,24 @@ public class PistolAnimationRemapTests
     /// <summary>
     /// Verifies only an active replacement animation needs a scripted pistol shot sound.
     /// </summary>
-    [TestCase(true, BaseItem.Pistol, null, true)]
-    [TestCase(true, BaseItem.LegacyPistol, null, true)]
-    [TestCase(true, BaseItem.Sling, null, true)]
-    [TestCase(false, BaseItem.Pistol, null, false)]
-    [TestCase(true, BaseItem.Pistol, BaseItem.SmallShield, false)]
-    [TestCase(true, BaseItem.Rifle, null, false)]
+    [TestCase(true, 0, BaseItem.Pistol, null, true)]
+    [TestCase(true, 0, BaseItem.LegacyPistol, null, true)]
+    [TestCase(true, 0, BaseItem.Sling, null, true)]
+    [TestCase(true, 1, BaseItem.Pistol, null, false)]
+    [TestCase(true, 2, BaseItem.Pistol, null, false)]
+    [TestCase(false, 0, BaseItem.Pistol, null, false)]
+    [TestCase(true, 0, BaseItem.Pistol, BaseItem.SmallShield, false)]
+    [TestCase(true, 0, BaseItem.Rifle, null, false)]
     public void ReplacementShotSound_PlaysOnlyForAnActiveEligiblePistolRemap(
         bool isRemapActive,
+        int explicitThrowSuspendCount,
         BaseItem? rightHandBaseItem,
         BaseItem? leftHandBaseItem,
         bool expected)
     {
         var result = PistolAnimationRemap.ShouldPlayRemappedPistolShotSound(
             isRemapActive,
+            explicitThrowSuspendCount,
             rightHandBaseItem,
             leftHandBaseItem);
 

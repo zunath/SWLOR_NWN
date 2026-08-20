@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LightsaberWorkbenchService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 using Player = SWLOR.Game.Server.Entity.Player;
 
 namespace SWLOR.Game.Server.Service
@@ -94,20 +95,20 @@ namespace SWLOR.Game.Server.Service
 
         private static readonly List<SaberBladeColor> _bladeColors = new()
         {
-            new SaberBladeColor("Orange", 11, 31, 11, "ui_lsc_orange"),
-            new SaberBladeColor("Blue", 12, 32, 12, "ui_lsc_blue"),
-            new SaberBladeColor("Green 1", 13, 33, 13, "ui_lsc_green"),
-            new SaberBladeColor("Red", 14, 34, 14, "ui_lsc_red"),
-            new SaberBladeColor("White", 15, 35, 25, "ui_lsc_white"),
-            new SaberBladeColor("Yellow", 21, 71, 21, "ui_lsc_yellow"),
-            new SaberBladeColor("Purple 1", 22, 72, 22, "ui_lsc_purple"),
-            new SaberBladeColor("Teal", 23, 73, 23, "ui_lsc_teal"),
-            new SaberBladeColor("Pink", 24, 74, 24, "ui_lsc_pink"),
-            new SaberBladeColor("Brown", 51, 61, 51, "ui_lsc_brown"),
-            new SaberBladeColor("Green 2", 52, 62, 52, "ui_lsc_rotjgrn"),
-            new SaberBladeColor("Purple 2", 53, 63, 53, "ui_lsc_windu"),
-            new SaberBladeColor("Lavender", 54, 64, 54, "ui_lsc_lavendr"),
-            new SaberBladeColor("Cyan", 55, 65, 55, "ui_lsc_cyan"),
+            new SaberBladeColor("Orange", 11, 31, 11, "ui_lsc_orange", LightColor.Orange),
+            new SaberBladeColor("Blue", 12, 32, 12, "ui_lsc_blue", LightColor.Blue),
+            new SaberBladeColor("Green 1", 13, 33, 13, "ui_lsc_green", LightColor.Green),
+            new SaberBladeColor("Red", 14, 34, 14, "ui_lsc_red", LightColor.Red),
+            new SaberBladeColor("White", 15, 35, 25, "ui_lsc_white", LightColor.White),
+            new SaberBladeColor("Yellow", 21, 71, 21, "ui_lsc_yellow", LightColor.Yellow),
+            new SaberBladeColor("Purple 1", 22, 72, 22, "ui_lsc_purple", LightColor.Purple),
+            new SaberBladeColor("Teal", 23, 73, 23, "ui_lsc_teal", LightColor.White),
+            new SaberBladeColor("Pink", 24, 74, 24, "ui_lsc_pink", LightColor.White),
+            new SaberBladeColor("Brown", 51, 61, 51, "ui_lsc_brown", LightColor.White),
+            new SaberBladeColor("Green 2", 52, 62, 52, "ui_lsc_rotjgrn", LightColor.Green),
+            new SaberBladeColor("Purple 2", 53, 63, 53, "ui_lsc_windu", LightColor.Purple),
+            new SaberBladeColor("Lavender", 54, 64, 54, "ui_lsc_lavendr", LightColor.White),
+            new SaberBladeColor("Cyan", 55, 65, 55, "ui_lsc_cyan", LightColor.White),
         };
 
         /// <summary>

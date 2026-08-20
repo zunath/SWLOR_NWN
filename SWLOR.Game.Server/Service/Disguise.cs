@@ -201,6 +201,19 @@ namespace SWLOR.Game.Server.Service
             };
 
             DB.Set(disguise);
+
+            Log.WriteStructured(
+                LogGroup.PlayerName,
+                "Disguise created: PlayerId={PlayerId} PlayerName={PlayerName} DisguiseId={DisguiseId} PrivateName={PrivateName} Descriptor={Descriptor} PortraitInternalId={PortraitInternalId} SoundSetId={SoundSetId} ScrambleAccountId={ScrambleAccountId}",
+                playerId,
+                GetName(player),
+                disguise.Id,
+                disguise.PrivateName,
+                disguise.Descriptor,
+                disguise.PortraitInternalId,
+                disguise.SoundSetId,
+                disguise.ScrambleAccountId);
+
             return disguise;
         }
 
@@ -232,12 +245,35 @@ namespace SWLOR.Game.Server.Service
             portraitInternalId = Math.Clamp(portraitInternalId, 1, GetMaxPortraitCount());
             soundSetId = ResolveSoundSetId(soundSetId);
 
+            var previousPrivateName = disguise.PrivateName;
+            var previousDescriptor = disguise.Descriptor;
+            var previousPortraitInternalId = disguise.PortraitInternalId;
+            var previousSoundSetId = disguise.SoundSetId;
+            var previousScrambleAccountId = disguise.ScrambleAccountId;
+
             disguise.PrivateName = PlayerName.SanitizeKnownName(privateName);
             disguise.Descriptor = PlayerName.SanitizeKnownName(descriptor);
             disguise.PortraitInternalId = portraitInternalId;
             disguise.SoundSetId = soundSetId;
             disguise.ScrambleAccountId = scrambleAccountId;
             DB.Set(disguise);
+
+            Log.WriteStructured(
+                LogGroup.PlayerName,
+                "Disguise saved: PlayerId={PlayerId} PlayerName={PlayerName} DisguiseId={DisguiseId} PreviousPrivateName={PreviousPrivateName} PrivateName={PrivateName} PreviousDescriptor={PreviousDescriptor} Descriptor={Descriptor} PreviousPortraitInternalId={PreviousPortraitInternalId} PortraitInternalId={PortraitInternalId} PreviousSoundSetId={PreviousSoundSetId} SoundSetId={SoundSetId} PreviousScrambleAccountId={PreviousScrambleAccountId} ScrambleAccountId={ScrambleAccountId}",
+                playerId,
+                GetName(player),
+                disguise.Id,
+                previousPrivateName,
+                disguise.PrivateName,
+                previousDescriptor,
+                disguise.Descriptor,
+                previousPortraitInternalId,
+                disguise.PortraitInternalId,
+                previousSoundSetId,
+                disguise.SoundSetId,
+                previousScrambleAccountId,
+                disguise.ScrambleAccountId);
 
             if (IsActiveDisguise(player, disguise.Id))
             {
@@ -275,6 +311,8 @@ namespace SWLOR.Game.Server.Service
             if (!string.IsNullOrWhiteSpace(delayError))
                 return ActivateDisguiseResult.Failure(delayError);
 
+            var previousDisguiseId = dbPlayer.ActiveDisguiseId;
+
             // Only snapshot the undisguised baseline when transitioning from no active disguise.
             // Keying off the stored id (rather than a resolved disguise) avoids capturing an
             // already-applied disguise appearance as the baseline if the stored id is ever stale.
@@ -289,6 +327,19 @@ namespace SWLOR.Game.Server.Service
             disguise.DateLastActivated = DateTime.UtcNow;
             DB.Set(disguise);
             DB.Set(dbPlayer);
+
+            Log.WriteStructured(
+                LogGroup.PlayerName,
+                "Disguise activated: PlayerId={PlayerId} PlayerName={PlayerName} PreviousDisguiseId={PreviousDisguiseId} DisguiseId={DisguiseId} PrivateName={PrivateName} Descriptor={Descriptor} PortraitInternalId={PortraitInternalId} SoundSetId={SoundSetId} ScrambleAccountId={ScrambleAccountId}",
+                playerId,
+                GetName(player),
+                previousDisguiseId,
+                disguise.Id,
+                disguise.PrivateName,
+                disguise.Descriptor,
+                disguise.PortraitInternalId,
+                disguise.SoundSetId,
+                disguise.ScrambleAccountId);
 
             ApplyAppearance(player, disguise);
             RefreshDisguiseDisplay(player);
@@ -305,6 +356,9 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
+            var activeDisguiseId = dbPlayer.ActiveDisguiseId;
+            var activeDisguise = GetActiveDisguise(dbPlayer);
+
             if (!string.IsNullOrWhiteSpace(dbPlayer.UndisguisedPortraitResref))
                 SetPortraitResRef(player, dbPlayer.UndisguisedPortraitResref);
             else if (dbPlayer.UndisguisedPortraitId >= 0)
@@ -318,6 +372,18 @@ namespace SWLOR.Game.Server.Service
             dbPlayer.UndisguisedPortraitResref = string.Empty;
             dbPlayer.UndisguisedSoundSetId = -1;
             DB.Set(dbPlayer);
+
+            Log.WriteStructured(
+                LogGroup.PlayerName,
+                "Disguise deactivated: PlayerId={PlayerId} PlayerName={PlayerName} DisguiseId={DisguiseId} PrivateName={PrivateName} Descriptor={Descriptor} PortraitInternalId={PortraitInternalId} SoundSetId={SoundSetId} ScrambleAccountId={ScrambleAccountId}",
+                playerId,
+                GetName(player),
+                activeDisguiseId,
+                activeDisguise?.PrivateName ?? string.Empty,
+                activeDisguise?.Descriptor ?? string.Empty,
+                activeDisguise?.PortraitInternalId ?? -1,
+                activeDisguise?.SoundSetId ?? -1,
+                activeDisguise?.ScrambleAccountId ?? false);
 
             RefreshDisguiseDisplay(player);
             return true;

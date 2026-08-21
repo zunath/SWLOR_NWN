@@ -3242,11 +3242,15 @@ namespace SWLOR.Game.Server.Service
             if (deflection <= 0 || statusEffectIcon == EffectIconType.Invalid)
                 return;
 
-            StatusEffect.ApplyStatusEffect(
-                creature,
-                creature,
-                new RangedDeflectionStatusEffect(deflection, statusEffectIcon),
-                duration);
+            if (StatusEffect.ApplyStatusEffect(
+                    creature,
+                    creature,
+                    new RangedDeflectionStatusEffect(deflection, statusEffectIcon),
+                    duration))
+            {
+                var source = Stat.GetStatTypeDeflectionSource(StatType.AbilityUsedRangedDeflection);
+                ApplyAbilityGrantedAttackDeflectionEffects(creature, source);
+            }
         }
 
         private static void ApplyAvoidedAttackNextAutoAttackNoDelay(uint creature)

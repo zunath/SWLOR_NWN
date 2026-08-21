@@ -1003,8 +1003,9 @@ namespace SWLOR.Toolset.Editors
                     ? workspace.LoadBlueprint(type, sourceResRef)
                     : workspace.LoadIndexedBlueprint(type, sourceResRef);
                 var copyResRef = BlueprintCopyFactory.NextResRef(
-                    sourceResRef,
-                    workspace.EnumerateResRefs(type));
+                    workspace,
+                    type,
+                    sourceResRef);
                 var copyPath = workspace.GetResourcePath(type, copyResRef);
                 var content = BlueprintCopyFactory.CreateFileContent(type, source.Document, copyResRef);
 
@@ -1012,6 +1013,7 @@ namespace SWLOR.Toolset.Editors
                 SaveService.WriteNewAtomic(copyPath, content);
                 _workspaceContext.RefreshCatalogEntry(type, copyResRef);
 
+                var categoryNotificationRaised = false;
                 if (_categories != null)
                 {
                     var sourceSection = isCustomSource
@@ -1027,6 +1029,7 @@ namespace SWLOR.Toolset.Editors
                         var targetFolder = EnsureBlueprintCopyFolder(customSection, categoryPath);
                         targetFolder.AddMember(copyResRef);
                         var save = _categories.SaveChanges();
+                        categoryNotificationRaised = save.Saved;
                         if (!save.Saved)
                         {
                             _log.AppendLine(
@@ -1034,6 +1037,12 @@ namespace SWLOR.Toolset.Editors
                                 $"but could not file it under '{categoryPath[^1]}': {save.Problem}");
                         }
                     }
+
+                    // A successful category save raises Changed itself. An unfiled copy, or a failed
+                    // category save restored to Unsorted, still needs that notification so an open
+                    // palette re-enumerates the newly created module resource immediately.
+                    if (!categoryNotificationRaised)
+                        _categories.NotifyChanged();
                 }
 
                 _log.AppendLine(

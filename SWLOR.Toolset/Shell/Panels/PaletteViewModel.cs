@@ -765,8 +765,9 @@ namespace SWLOR.Toolset.Shell.Panels
             try
             {
                 copyResRef = BlueprintCopyFactory.NextResRef(
-                    tile.ResRef,
-                    workspace.EnumerateResRefs(SelectedType));
+                    workspace,
+                    SelectedType,
+                    tile.ResRef);
                 copyPath = workspace.GetResourcePath(SelectedType, copyResRef);
 
                 var source = tile.Source == PaletteSource.Standard

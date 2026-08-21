@@ -422,7 +422,22 @@ namespace SWLOR.Toolset.Editors
             _mutationLock?.IsLocked != true &&
             SelectedSceneInstance is { } instance &&
             !string.IsNullOrWhiteSpace(instance.TemplateResRef) &&
-            MapKindToSectionType(instance.Kind) != null;
+            MapKindToSectionType(instance.Kind) is { } type &&
+            CanResolveBlueprint(type, instance.TemplateResRef);
+
+        private bool CanResolveBlueprint(ResourceType type, string resRef)
+        {
+            if (File.Exists(_workspace.GetResourcePath(type, resRef)))
+                return true;
+
+            if (ResourceIndex == null)
+                return false;
+
+            var identity = new ResourceIdentity(
+                resRef,
+                ResourceIdentity.TypeFromExtension(type.Extension()));
+            return ResourceIndex.TryLookup(identity, out _);
+        }
 
         private void OnMutationLockChanged() =>
             EditCopySelectedBlueprintCommand.NotifyCanExecuteChanged();

@@ -1,8 +1,10 @@
+using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
+using SWLOR.Toolset.Editors;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Shell.Panels;
 using SWLOR.Toolset.Workspace;
@@ -120,6 +122,49 @@ namespace SWLOR.Toolset.Tests
             mutationLock.Set(true);
 
             palette.CanEditCopy.Should().BeFalse();
+        }
+
+        [Test]
+        public void ViewportCopyOfAnUnfiledBlueprintRefreshesTheOpenPalette()
+        {
+            const string sourceResRef = "loose_crate";
+            const string copyResRef = "loose_crate001";
+            File.WriteAllBytes(
+                Path.Combine(_moduleRoot, "utp", sourceResRef + ".utp.json"),
+                BlueprintTemplateFactory.CreateFileContent(
+                    ResourceType.Utp,
+                    sourceResRef,
+                    "Loose Crate"));
+
+            var log = new OutputLogService();
+            var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
+            workspace.Open(_moduleRoot);
+            var categories = new CategoryService(workspace, log);
+            var palette = new PaletteViewModel(workspace, categories, log)
+            {
+                SelectedType = ResourceType.Utp
+            };
+            palette.Refresh();
+            palette.SelectedRow = palette.Rows.Single(row => row.IsUnsorted);
+            palette.Tiles.Should().Contain(tile => tile.ResRef == sourceResRef);
+            palette.Tiles.Should().NotContain(tile => tile.ResRef == copyResRef);
+
+            var editors = new EditorService(
+                workspace,
+                new LookupOptionProvider(workspace),
+                log,
+                factory: null!,
+                prompts: null!,
+                categories: categories);
+            var editCopy = typeof(EditorService).GetMethod(
+                "TryEditCopyAndOpenBlueprint",
+                BindingFlags.Instance | BindingFlags.NonPublic)!;
+
+            editCopy.Invoke(editors, new object[] { ResourceType.Utp, sourceResRef })
+                .Should().Be(copyResRef);
+
+            palette.Tiles.Should().Contain(tile => tile.ResRef == copyResRef,
+                "the viewport copy must appear under Unsorted without an unrelated palette refresh");
         }
     }
 }

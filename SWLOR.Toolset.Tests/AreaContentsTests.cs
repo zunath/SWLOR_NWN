@@ -110,19 +110,26 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void ViewportEditCopyRoutesTheSelectedBlueprintWithoutChangingTheInstance()
         {
+            const string sourceResRef = "source_plc";
+            File.WriteAllBytes(
+                Path.Combine(_moduleRoot, "utp", sourceResRef + ".utp.json"),
+                BlueprintTemplateFactory.CreateFileContent(
+                    ResourceType.Utp,
+                    sourceResRef,
+                    "Source Placeable"));
             (ResourceType Type, string ResRef)? request = null;
             var mutationLock = new ModuleMutationLock();
             var editor = CreateEditor(
                 editCopyBlueprint: (type, resRef) =>
                 {
                     request = (type, resRef);
-                    return "source_plc001";
+                    return sourceResRef + "001";
                 },
                 mutationLock: mutationLock);
             var marker = new InstanceMarker
             {
                 Kind = InstanceMarkerKind.Placeable,
-                TemplateResRef = "source_plc",
+                TemplateResRef = sourceResRef,
                 Tag = "placed_instance",
                 Position = Vector3.Zero,
                 Orientation = Vector2.UnitX
@@ -132,12 +139,28 @@ namespace SWLOR.Toolset.Tests
             editor.EditCopySelectedBlueprintCommand.CanExecute(null).Should().BeTrue();
             editor.EditCopySelectedBlueprintCommand.Execute(null);
 
-            request.Should().Be((ResourceType.Utp, "source_plc"));
-            marker.TemplateResRef.Should().Be("source_plc",
+            request.Should().Be((ResourceType.Utp, sourceResRef));
+            marker.TemplateResRef.Should().Be(sourceResRef,
                 "Edit Copy creates a blueprint and must not retarget the placed instance");
-            editor.SceneStatus.Should().Contain("source_plc001");
+            editor.SceneStatus.Should().Contain(sourceResRef + "001");
 
             mutationLock.Set(true);
+            editor.EditCopySelectedBlueprintCommand.CanExecute(null).Should().BeFalse();
+        }
+
+        [Test]
+        public void ViewportEditCopyIsDisabledWhenTheSourceBlueprintCannotResolve()
+        {
+            var editor = CreateEditor(editCopyBlueprint: (_, _) => "never_created");
+            editor.SelectSceneInstance(new InstanceMarker
+            {
+                Kind = InstanceMarkerKind.Placeable,
+                TemplateResRef = "missing_source",
+                Tag = "broken_instance",
+                Position = Vector3.Zero,
+                Orientation = Vector2.UnitX
+            });
+
             editor.EditCopySelectedBlueprintCommand.CanExecute(null).Should().BeFalse();
         }
 

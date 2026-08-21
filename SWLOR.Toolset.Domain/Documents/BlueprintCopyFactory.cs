@@ -1,4 +1,5 @@
 using SWLOR.Toolset.Domain.Editing;
+using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
 
@@ -14,6 +15,32 @@ namespace SWLOR.Toolset.Domain.Documents
         private const int InitialCopyNumberWidth = 3;
 
         /// <summary>
+        /// Returns the next available copy ResRef across the module and every indexed Standard/HAK
+        /// layer. A module blueprint with an indexed identity overrides that resource, so excluding the
+        /// index could silently retarget existing instances when the copy is created.
+        /// </summary>
+        public static string NextResRef(
+            ModuleWorkspace workspace,
+            ResourceType type,
+            string sourceResRef)
+        {
+            ArgumentNullException.ThrowIfNull(workspace);
+            if (!ModuleWorkspace.BlueprintTypes.Contains(type))
+                throw new ArgumentOutOfRangeException(nameof(type), type, "Not a blueprint resource type.");
+
+            var moduleResRefs = workspace.EnumerateResRefs(type)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var indexedType = ResourceIdentity.TypeFromExtension(type.Extension());
+
+            return NextResRef(
+                sourceResRef,
+                candidate =>
+                    moduleResRefs.Contains(candidate) ||
+                    workspace.ResourceIndex?.TryLookup(
+                        new ResourceIdentity(candidate, indexedType), out _) == true);
+        }
+
+        /// <summary>
         /// Returns the next available Aurora-style copy ResRef. A source without a three-or-more digit
         /// suffix gets <c>001</c>; an already numbered copy increments its suffix.
         /// </summary>
@@ -21,6 +48,15 @@ namespace SWLOR.Toolset.Domain.Documents
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(sourceResRef);
             ArgumentNullException.ThrowIfNull(existingResRefs);
+
+            var existing = existingResRefs.ToHashSet(StringComparer.OrdinalIgnoreCase);
+            return NextResRef(sourceResRef, existing.Contains);
+        }
+
+        private static string NextResRef(string sourceResRef, Func<string, bool> exists)
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(sourceResRef);
+            ArgumentNullException.ThrowIfNull(exists);
 
             var normalized = NormalizeSourceResRef(sourceResRef);
             if (normalized.Length == 0)
@@ -43,7 +79,6 @@ namespace SWLOR.Toolset.Domain.Documents
                 minimumNumberWidth = trailingDigitCount;
             }
 
-            var existing = existingResRefs.ToHashSet(StringComparer.OrdinalIgnoreCase);
             var fellBackFromOversizedNumber = false;
             for (var attempt = 0; attempt < 1_000_000; attempt++, copyNumber++)
             {
@@ -68,7 +103,7 @@ namespace SWLOR.Toolset.Domain.Documents
 
                 var prefixLength = Math.Min(prefix.Length, MaximumResRefLength - digits.Length);
                 var candidate = prefix[..prefixLength] + digits;
-                if (!existing.Contains(candidate))
+                if (!exists(candidate))
                     return candidate;
             }
 

@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editing;
+using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
 
@@ -58,6 +59,38 @@ namespace SWLOR.Toolset.Tests
                     "crate",
                     new[] { "crate001", "CRATE002", "crate003" })
                 .Should().Be("crate004");
+        }
+
+        [Test]
+        public void WorkspaceCopyNumberSkipsModuleAndIndexedBlueprints()
+        {
+            var root = Path.Combine(
+                Path.GetTempPath(),
+                "swlor-copy-collision-" + Guid.NewGuid().ToString("N"));
+            var moduleRoot = Path.Combine(root, "Module");
+            var indexedRoot = Path.Combine(root, "Indexed");
+            foreach (var folder in new[] { "are", "utc", "utp" })
+                Directory.CreateDirectory(Path.Combine(moduleRoot, folder));
+            Directory.CreateDirectory(indexedRoot);
+            File.WriteAllBytes(
+                Path.Combine(moduleRoot, "utp", "crate001.utp.json"),
+                BlueprintTemplateFactory.CreateFileContent(ResourceType.Utp, "crate001", "Module Copy"));
+            File.WriteAllBytes(Path.Combine(indexedRoot, "crate002.utp"), Array.Empty<byte>());
+
+            try
+            {
+                var resources = new ResourceIndex(
+                    baseLayer: null,
+                    hakLayersInOrder: new[] { new ResourceIndex.HakLayer("fixture", indexedRoot) });
+                var workspace = new ModuleWorkspace(moduleRoot, resources);
+
+                BlueprintCopyFactory.NextResRef(workspace, ResourceType.Utp, "crate")
+                    .Should().Be("crate003");
+            }
+            finally
+            {
+                Directory.Delete(root, recursive: true);
+            }
         }
 
         [Test]

@@ -5833,6 +5833,13 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenNegative)]
         LeadershipOtherDamageTakenPercentAdjustment = 1011,
 
+        /// <summary>
+        /// When enabled, positive attack-delay-reduction effects cannot accelerate attacks or
+        /// hostile weapon abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative, StatTypeAggregation.Maximum)]
+        AttackDelayReductionSuppressed = 1012,
+
     }
 
     public class StatTypeAttribute : Attribute

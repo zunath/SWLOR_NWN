@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment] = -6;
             StatGroup.Stats[StatType.AttackDelayReductionPercent] = 0;
+            StatGroup.Stats[StatType.AttackDelayReductionSuppressed] = 1;
         }
 
         protected override void Apply(uint creature, int durationTicks)

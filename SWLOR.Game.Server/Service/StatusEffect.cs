@@ -1863,6 +1863,13 @@ namespace SWLOR.Game.Server.Service
             out int reductionPercent,
             out int remainingAttacks)
         {
+            if (Stat.GetStatAdjustment(attacker, StatType.AttackDelayReductionSuppressed) > 0)
+            {
+                reductionPercent = 0;
+                remainingAttacks = 0;
+                return false;
+            }
+
             var effects = GetCreatureStatusEffects(attacker)
                 .GetAllEffects()
                 .OfType<ILimitedAttackDelayReductionStatusEffect>()

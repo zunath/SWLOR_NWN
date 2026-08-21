@@ -7924,9 +7924,10 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Consumes the armed next-ability delay buff and returns the percent (1-100) the
-        /// activation delay is reduced by, or 0 when nothing is armed for this ability. An armed
-        /// buff with no partial-reduction partner removes the delay entirely (100).
+        /// Consumes the armed next-ability delay buff and combines it with active limited Haste,
+        /// returning the percent (1-100) the activation delay is reduced by, or 0 when neither
+        /// applies. An armed buff with no partial-reduction partner removes the delay entirely
+        /// (100).
         /// </summary>
         public static int ConsumeNextAbilityDelayReductionPercent(uint creature, AbilityDetail ability)
         {
@@ -7939,7 +7940,16 @@ namespace SWLOR.Game.Server.Service
             if (hasRangedStatusNoDelay)
                 return 100;
 
-            return ConsumeNextAbilityDelayReductionPercent(creature, skillType);
+            var temporaryReductionPercent = ConsumeNextAbilityDelayReductionPercent(creature, skillType);
+            var hasLimitedReduction = StatusEffect.TryGetLimitedAttackDelayReduction(
+                creature,
+                skillType,
+                out var limitedReductionPercent,
+                out _);
+
+            return hasLimitedReduction
+                ? Math.Clamp(temporaryReductionPercent + limitedReductionPercent, 0, 100)
+                : temporaryReductionPercent;
         }
 
         private static int ConsumeNextAbilityDelayReductionPercent(uint creature, SkillType skillType)

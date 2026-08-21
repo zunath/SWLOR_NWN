@@ -1,14 +1,18 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -417,13 +421,65 @@ public class CombatAttackDelayTests
 
         var rangedStatusGuard = method.IndexOf("if (hasRangedStatusNoDelay)", System.StringComparison.Ordinal);
         var consumingCall = method.IndexOf(
-            "return ConsumeNextAbilityDelayReductionPercent(creature, skillType);",
+            "var temporaryReductionPercent = ConsumeNextAbilityDelayReductionPercent(creature, skillType);",
             System.StringComparison.Ordinal);
 
         rangedStatusGuard.Should().BeGreaterThanOrEqualTo(0);
         method[(rangedStatusGuard)..consumingCall].Should().Contain("return 100;");
         consumingCall.Should().BeGreaterThan(rangedStatusGuard,
             "the ranged status must return before the temporary next-ability arm can be consumed");
+    }
+
+    [Test]
+    public void LimitedHaste_ReducesCastDelayUnlessAttackDelayReductionIsSuppressed()
+    {
+        const uint creature = 311;
+        var creatureEffects = GetCreatureEffects();
+
+        try
+        {
+            var tracker = new CreatureStatusEffect();
+            creatureEffects[creature] = tracker;
+            tracker.Add(new LimitedHasteStatusEffect(
+                20,
+                2,
+                SkillType.Pistol,
+                EffectIconType.ReloadTempoStatusEffect,
+                new AbilityImpactSummary()));
+
+            Combat.ConsumeNextAbilityDelayReductionPercent(creature, new AbilityDetail
+            {
+                IsHostileAbility = true,
+                SkillType = SkillType.Pistol
+            }).Should().Be(20);
+
+            var signalJammer = new SignalJammerStatusEffect();
+            tracker.Add(signalJammer);
+            signalJammer.StatGroup.Stats[StatType.AttackDelayReductionSuppressed].Should().Be(1);
+            Stat.GetStatTypeCategory(StatType.AttackDelayReductionSuppressed)
+                .Should().Be(StatTypeCategory.BeneficialWhenNegative);
+            Stat.GetStatTypeAggregation(StatType.AttackDelayReductionSuppressed)
+                .Should().Be(StatTypeAggregation.Maximum);
+
+            StatusEffect.TryGetLimitedAttackDelayReduction(
+                    creature,
+                    SkillType.Pistol,
+                    out var reductionPercent,
+                    out var remainingAttacks)
+                .Should()
+                .BeFalse();
+            reductionPercent.Should().Be(0);
+            remainingAttacks.Should().Be(0);
+            Combat.ConsumeNextAbilityDelayReductionPercent(creature, new AbilityDetail
+            {
+                IsHostileAbility = true,
+                SkillType = SkillType.Pistol
+            }).Should().Be(0);
+        }
+        finally
+        {
+            creatureEffects.Remove(creature);
+        }
     }
 
     [Test]
@@ -530,6 +586,13 @@ public class CombatAttackDelayTests
 
         directory.Should().NotBeNull("the repository root should be discoverable from the test directory");
         return directory!;
+    }
+
+    private static Dictionary<uint, CreatureStatusEffect> GetCreatureEffects()
+    {
+        return (Dictionary<uint, CreatureStatusEffect>)typeof(StatusEffect)
+            .GetField("_creatureEffects", BindingFlags.NonPublic | BindingFlags.Static)!
+            .GetValue(null)!;
     }
 
     private static readonly IReadOnlyDictionary<int, int> WeaponDelayCostByBaseItem = BuildWeaponDelayCostByBaseItem();

@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 ? $"{Disguise.WipeCreditCost:N0} credits"
                 : $"{Disguise.WipeRoleplayXPCost:N0} RP XP";
 
-            page.Header = $"{ColorToken.Red("Last chance.")} Once I send this job, the identity comes apart: the retired disguise record, the paper trail, and the names people attached to it. No refund, no restore, no quiet undo.\n\n" +
+            page.Header = "Last chance. Once I send this job, the identity comes apart: the retired disguise record, the paper trail, and the names people attached to it. No refund, no restore, no quiet undo.\n\n" +
                           BuildDisguiseSummary(disguise) +
                           $"\n\nCost: {paymentText}";
 
@@ -122,8 +122,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
         private static string BuildDisguiseSummary(PlayerDisguise disguise)
         {
-            return $"{ColorToken.Green("Private Slot Label:")} {disguise.PrivateName}\n" +
-                   $"{ColorToken.Green("Public Description:")} {disguise.Descriptor}";
+            return $"Private Slot Label: {disguise.PrivateName}\n" +
+                   $"Public Description: {disguise.Descriptor}";
         }
 
         private static bool CanUseDisguise(uint player, PlayerDisguise disguise)

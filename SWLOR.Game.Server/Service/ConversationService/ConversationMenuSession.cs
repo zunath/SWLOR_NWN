@@ -153,10 +153,7 @@ namespace SWLOR.Game.Server.Service.ConversationService
             {
                 Id = _currentPageId,
                 PortraitResref = Menu.PortraitResref,
-                Text = new List<ConversationTextBlock>
-                {
-                    ConversationMarkup.CollapseForHeader(page.Header, ConversationTextStyle.Normal)
-                }
+                Text = ConversationMarkup.ParseLegacyColors(page.Header, ConversationTextStyle.Normal)
             };
         }
     }

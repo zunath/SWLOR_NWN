@@ -65,7 +65,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (initialPayload?.Session == null)
                 throw new InvalidOperationException("A conversation session is required to open the conversation window.");
 
-            EnsureReadableWindowGeometry();
             _session = initialPayload.Session;
             _controllerPlayer = initialPayload.ControllerPlayer;
             _isClosing = false;
@@ -82,8 +81,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void OnClientPropertyUpdated(string propertyName)
         {
-            if (propertyName == nameof(Geometry))
-                EnsureReadableWindowGeometry();
+            if (propertyName != nameof(Geometry) ||
+                _session == null ||
+                _session.HasEnded ||
+                _isClosing)
+            {
+                return;
+            }
+
+            try
+            {
+                RefreshConversation(false);
+            }
+            catch (Exception ex)
+            {
+                HandleRuntimeError(ex);
+            }
         }
 
         public Action OnClickChoice() => () =>
@@ -136,7 +149,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _isClosing = false;
         };
 
-        private void RefreshConversation()
+        private void RefreshConversation(bool playPresentation = true)
         {
             var node = _session.CurrentNode;
             if (node == null)
@@ -146,17 +159,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SpeakerName = ResolveSpeakerName(node, speaker);
             PortraitResref = ResolvePortrait(node, speaker);
             HasPortrait = !string.IsNullOrWhiteSpace(PortraitResref);
-            PlayPresentation(speaker, node.SoundResref, node.Animation, node.AnimationLoops);
+            if (playPresentation)
+                PlayPresentation(speaker, node.SoundResref, node.Animation, node.AnimationLoops);
 
             var lineTexts = new GuiBindingList<string>();
             var lineColors = new GuiBindingList<GuiColor>();
+            var segmentCharacterLimit = CalculateDialogueSegmentLimit(Geometry?.Width ?? 650f);
             foreach (var block in _session.CurrentText)
             {
                 if (block == null || string.IsNullOrWhiteSpace(block.Text))
                     continue;
 
                 var resolvedText = NormalizeNuiText(_session.ResolveText(block.Text));
-                foreach (var segment in SplitDialogueText(resolvedText))
+                foreach (var segment in SplitDialogueText(resolvedText, segmentCharacterLimit))
                 {
                     lineTexts.Add(segment);
                     lineColors.Add(ToGuiColor(block));
@@ -193,23 +208,32 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ChoiceColors = choiceColors;
         }
 
-        private void EnsureReadableWindowGeometry()
+        private static int CalculateDialogueSegmentLimit(float windowWidth)
         {
-            var current = Geometry;
-            if (current == null || current.Width >= ConversationWindowDefinition.MinimumWindowWidth)
-                return;
+            const float defaultWindowWidth = 650f;
+            const float nonDialogueWidth = 190f;
+            const float minimumDialogueWidth = 18f;
+            const float estimatedCharacterWidth = 9f;
+            const int renderedLinesPerRow = 2;
+            const int minimumSegmentLength = 4;
+            const int maximumSegmentLength = 80;
 
-            Geometry = new GuiRectangle(
-                current.X,
-                current.Y,
-                ConversationWindowDefinition.MinimumWindowWidth,
-                current.Height);
+            // NUI lists require a fixed row height and do not expose font measurement. Budget two
+            // conservative text lines from the dialogue column's current width so resizing creates
+            // more compact rows instead of clipping wrapped text or forcing the window wider.
+            var effectiveWindowWidth = windowWidth > 0f ? windowWidth : defaultWindowWidth;
+            var dialogueWidth = Math.Max(minimumDialogueWidth, effectiveWindowWidth - nonDialogueWidth);
+            var charactersPerLine = (int)Math.Floor(dialogueWidth / estimatedCharacterWidth);
+
+            return Math.Clamp(
+                charactersPerLine * renderedLinesPerRow,
+                minimumSegmentLength,
+                maximumSegmentLength);
         }
 
-        private static IEnumerable<string> SplitDialogueText(string text)
+        private static IEnumerable<string> SplitDialogueText(string text, int segmentCharacterLimit)
         {
-            const int segmentCharacterLimit = 80;
-            const int minimumPreferredSegmentLength = segmentCharacterLimit / 2;
+            var minimumPreferredSegmentLength = segmentCharacterLimit / 2;
 
             if (string.IsNullOrWhiteSpace(text))
                 yield break;

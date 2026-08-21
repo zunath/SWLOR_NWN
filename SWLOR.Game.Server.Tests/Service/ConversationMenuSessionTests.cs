@@ -70,7 +70,7 @@ public class ConversationMenuSessionTests
     }
 
     [Test]
-    public void NuiMenu_CollapsesMixedInlineHeaderColorsWithoutBreakingTextFlow()
+    public void NuiMenu_DoesNotSilentlyFlattenMixedInlineHeaderColors()
     {
         var menu = new ConversationMenuBuilder()
             .AddPage("main", page =>
@@ -83,10 +83,13 @@ public class ConversationMenuSessionTests
 
         session.Start();
 
-        session.CurrentNode.Text.Should().ContainSingle();
-        session.CurrentNode.Text[0].Text.Should().Be("Status: danger");
+        session.CurrentNode.Text.Should().HaveCount(2);
+        session.CurrentNode.Text[0].Text.Should().Be("Status: ");
         session.CurrentNode.Text[0].Style.Should().Be(ConversationTextStyle.Normal);
         session.CurrentNode.Text[0].Color.Should().BeNull();
+        session.CurrentNode.Text[1].Text.Should().Be("danger");
+        session.CurrentNode.Text[1].Style.Should().Be(ConversationTextStyle.Custom);
+        session.CurrentNode.Text[1].Color.Red.Should().Be(255);
         session.VisibleChoices[0].Text.Text.Should().Be("Proceed");
         session.VisibleChoices[0].Text.Style.Should().Be(ConversationTextStyle.Custom);
         session.VisibleChoices[0].Text.Color.Green.Should().Be(255);

@@ -98,13 +98,13 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             switch (colorId)
             {
                 case 1: // Blue
-                    colorText = ColorToken.Blue("BLUE");
+                    colorText = "BLUE";
                     break;
                 case 2: // Green
-                    colorText = ColorToken.Green("GREEN");
+                    colorText = "GREEN";
                     break;
                 case 3: // Red
-                    colorText = ColorToken.Red("RED");
+                    colorText = "RED";
                     break;
                 default: return string.Empty;
             }

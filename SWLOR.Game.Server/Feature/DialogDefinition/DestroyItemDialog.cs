@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         private void MainPageInit(ConversationMenuPage page)
         {
             var model = Data<Model>();
-            page.Header = $"{ColorToken.Green("Item:")} {model.ItemName}\n\n" +
+            page.Header = $"Item: {model.ItemName}\n\n" +
                           "Are you sure you want to destroy this item? This action is irreversible!";
 
             page.AddResponse("Destroy Item", () =>
@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         private void ConfirmPageInit(ConversationMenuPage page)
         {
             var model = Data<Model>();
-            page.Header = $"{ColorToken.Green("Item:")} {model.ItemName}\n\n" +
+            page.Header = $"Item: {model.ItemName}\n\n" +
                           "Are you sure you want to destroy this item? This action is irreversible!";
 
             page.AddResponse(ColorToken.Red("CONFIRM DESTROY ITEM"), () =>

@@ -446,6 +446,49 @@ public class CombatAttackDelayTests
     }
 
     [Test]
+    public void ConsumeAttacksPerSwing_SuppressedLimitedSpeedCalculatesFromBaselineDebt()
+    {
+        const uint attacker = 0x7F000008;
+        const int acceleratedDelay = 1000;
+        const int baselineDelay = 1400;
+        Combat.ClearAttackSwingDebt(attacker);
+
+        var debts = (Dictionary<uint, float>)typeof(Combat)
+            .GetField("_attackSwingDebts", BindingFlags.NonPublic | BindingFlags.Static)!
+            .GetValue(null)!;
+
+        try
+        {
+            var acceleratedAttacks = Combat.ConsumeAttacksPerSwing(
+                attacker,
+                acceleratedDelay,
+                baselineDelay,
+                false,
+                baselineDelay,
+                2);
+            acceleratedAttacks.Should().Be(1);
+            debts[attacker].Should().BeApproximately(0.75f, 0.0001f);
+
+            var suppressedAttacks = Combat.ConsumeAttacksPerSwing(
+                attacker,
+                baselineDelay,
+                baselineDelay,
+                false,
+                baselineDelay,
+                0);
+
+            suppressedAttacks.Should().Be(1,
+                "Signal Jammer must not turn accelerated debt into a second roll on the suppressed swing");
+            debts[attacker].Should().BeApproximately(0.5f, 0.0001f,
+                "only debt earned at the unsuppressed baseline cadence may survive the final charge");
+        }
+        finally
+        {
+            Combat.ClearAttackSwingDebt(attacker);
+        }
+    }
+
+    [Test]
     public void CalculateAttacksPerSwing_CapsAttacksAtMaxPerSwing()
     {
         var attacks = Combat.CalculateAttacksPerSwing(Combat.MinimumAttackDelayMilliseconds, 5f, out var attackDebt);

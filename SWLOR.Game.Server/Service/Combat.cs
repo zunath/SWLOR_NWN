@@ -10612,6 +10612,16 @@ namespace SWLOR.Game.Server.Service
             int limitedReductionRemainingAttacks)
         {
             _attackSwingDebts.TryGetValue(attacker, out var attackDebt);
+            var hasTrackedBaselineAttackDebt = _attackSwingDebtsWithoutLimitedReduction.TryGetValue(
+                attacker,
+                out var trackedBaselineAttackDebt);
+            if (limitedReductionRemainingAttacks <= 0 && hasTrackedBaselineAttackDebt)
+            {
+                // Suppression or an externally removed limited-speed effect must not calculate the
+                // current swing from debt created by an acceleration that no longer applies.
+                attackDebt = trackedBaselineAttackDebt;
+            }
+
             var attacks = CalculateAttacksPerSwing(effectiveDelayMilliseconds, attackDebt, out var updatedAttackDebt);
 
             if (hasNoDelayBuff)
@@ -10629,9 +10639,7 @@ namespace SWLOR.Game.Server.Service
 
             if (limitedReductionRemainingAttacks > 0)
             {
-                var baselineAttackDebt = _attackSwingDebtsWithoutLimitedReduction.TryGetValue(
-                    attacker,
-                    out var trackedBaselineAttackDebt)
+                var baselineAttackDebt = hasTrackedBaselineAttackDebt
                     ? trackedBaselineAttackDebt
                     : attackDebt;
                 var baselineAttacks = CalculateAttacksPerSwing(

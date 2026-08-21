@@ -1640,7 +1640,8 @@ namespace SWLOR.Game.Server.Service
                             nextAbilityCriticalRatePercentAdjustment,
                             nextAbilityDefenseIgnorePercentAdjustment,
                             nextAttackEnmityBonus,
-                            statusAppliedNextAttackDamageBonus);
+                            statusAppliedNextAttackDamageBonus,
+                            countsAsAttackAttempt: false);
                         impactStarted = true;
                         RecordAbilityImpactShape(creator, skillType, true);
                     }

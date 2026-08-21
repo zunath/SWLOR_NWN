@@ -1,3 +1,4 @@
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Gff;
@@ -11,7 +12,6 @@ namespace SWLOR.Toolset.Domain.Documents
     /// </summary>
     public static class BlueprintCopyFactory
     {
-        private const int MaximumResRefLength = 16;
         private const int InitialCopyNumberWidth = 3;
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace SWLOR.Toolset.Domain.Documents
 
                 // An all-numeric 16-character ResRef can overflow to 17 digits. At that point it is no
                 // longer useful as a numeric sequence, so start a conventional 001 suffix from it.
-                if (digits.Length > MaximumResRefLength)
+                if (digits.Length > NwnResRef.MaxLength)
                 {
                     if (fellBackFromOversizedNumber)
                         break;
@@ -101,7 +101,7 @@ namespace SWLOR.Toolset.Domain.Documents
                     continue;
                 }
 
-                var prefixLength = Math.Min(prefix.Length, MaximumResRefLength - digits.Length);
+                var prefixLength = Math.Min(prefix.Length, NwnResRef.MaxLength - digits.Length);
                 var candidate = prefix[..prefixLength] + digits;
                 if (!exists(candidate))
                     return candidate;
@@ -126,10 +126,11 @@ namespace SWLOR.Toolset.Domain.Documents
                     nameof(type), type, "Edit Copy is only available for blueprint resource types.");
             }
 
-            if (!IsValidResRef(copyResRef))
+            if (!NwnResRef.IsCanonical(copyResRef))
             {
                 throw new ArgumentException(
-                    "The copy ResRef must be 1-16 characters of a-z, 0-9, or underscore.",
+                    $"The copy ResRef must be 1-{NwnResRef.MaxLength} characters " +
+                    "of a-z, 0-9, or underscore.",
                     nameof(copyResRef));
             }
 
@@ -158,25 +159,18 @@ namespace SWLOR.Toolset.Domain.Documents
 
         private static string NormalizeSourceResRef(string sourceResRef)
         {
-            var builder = new System.Text.StringBuilder(MaximumResRefLength);
+            var builder = new System.Text.StringBuilder(NwnResRef.MaxLength);
             foreach (var character in sourceResRef.Trim())
             {
                 if (char.IsAsciiLetterOrDigit(character) || character == '_')
                     builder.Append(char.ToLowerInvariant(character));
 
-                if (builder.Length == MaximumResRefLength)
+                if (builder.Length == NwnResRef.MaxLength)
                     break;
             }
 
             return builder.ToString();
         }
 
-        private static bool IsValidResRef(string resRef) =>
-            !string.IsNullOrWhiteSpace(resRef) &&
-            resRef.Length <= MaximumResRefLength &&
-            resRef.All(character =>
-                char.IsAsciiDigit(character) ||
-                character == '_' ||
-                character is >= 'a' and <= 'z');
     }
 }

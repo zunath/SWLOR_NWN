@@ -1,5 +1,6 @@
 using System.Text;
 using SWLOR.NWN.Formats;
+using SWLOR.NWN.Formats.Common;
 
 namespace SWLOR.Toolset.Domain.GameData.Resources
 {
@@ -84,7 +85,7 @@ namespace SWLOR.Toolset.Domain.GameData.Resources
             stream.Position = keyOffset;
             for (var index = 0; index < entryCount; index++)
             {
-                var rawResRef = reader.ReadBytes(16);
+                var rawResRef = reader.ReadBytes(NwnResRef.MaxLength);
                 var terminator = Array.IndexOf(rawResRef, (byte)0);
                 var length = terminator < 0 ? rawResRef.Length : terminator;
                 var resRef = Encoding.ASCII.GetString(rawResRef, 0, length);

@@ -1,3 +1,4 @@
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Gff;
@@ -305,7 +306,7 @@ namespace SWLOR.Toolset.Domain.Editors.Doors
                 new DoorFieldDefinition
                 {
                     Label = "Conversation", Name = "Conversation", Kind = BehaviorFieldKind.Text,
-                    FieldType = GffFieldType.ResRef, MaxLength = DoorEditorLayout.MaxResRefLength
+                    FieldType = GffFieldType.ResRef, MaxLength = NwnResRef.MaxLength
                 },
                 Check("Plot", "Plot"),
                 Check("Locked", "Locked"),
@@ -365,7 +366,7 @@ namespace SWLOR.Toolset.Domain.Editors.Doors
             new()
             {
                 Label = label, Name = name, Kind = BehaviorFieldKind.Script,
-                FieldType = GffFieldType.ResRef, MaxLength = DoorEditorLayout.MaxResRefLength
+                FieldType = GffFieldType.ResRef, MaxLength = NwnResRef.MaxLength
             };
 
         private static BehaviorManagedValue Pinned(

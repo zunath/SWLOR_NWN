@@ -1,3 +1,4 @@
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Gff;
 
@@ -6,7 +7,6 @@ namespace SWLOR.Toolset.Domain.Editors.Doors
     /// <summary>The fixed Basic rows shared by every door behavior.</summary>
     public static class DoorEditorLayout
     {
-        public const int MaxResRefLength = 16;
         public const int MaxTagLength = 32;
         public const int MaxNameLength = 64;
 
@@ -48,7 +48,7 @@ namespace SWLOR.Toolset.Domain.Editors.Doors
             new DoorFieldDefinition
             {
                 Label = "ResRef", Name = "TemplateResRef", Kind = BehaviorFieldKind.Text,
-                FieldType = GffFieldType.ResRef, MaxLength = MaxResRefLength, IsRequired = true
+                FieldType = GffFieldType.ResRef, MaxLength = NwnResRef.MaxLength, IsRequired = true
             },
             new DoorFieldDefinition
             {

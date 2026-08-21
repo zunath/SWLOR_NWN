@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 
+using SWLOR.NWN.Formats.Common;
 using SWLOR.NWN.Formats.Internal;
 
 namespace SWLOR.NWN.Formats.Gff;
@@ -228,7 +229,8 @@ public static class GffReader
                 GffField.FLOAT => BitConverter.Int32BitsToSingle(unchecked((int)data)),
                 GffField.DOUBLE => ReadFieldDouble(data, $"GFF DOUBLE field {index}"),
                 GffField.CExoString => ReadLengthPrefixedString(data, 4, int.MaxValue, $"GFF string field {index}"),
-                GffField.CResRef => ReadLengthPrefixedString(data, 1, 16, $"GFF ResRef field {index}"),
+                GffField.CResRef => ReadLengthPrefixedString(
+                    data, 1, NwnResRef.MaxLength, $"GFF ResRef field {index}"),
                 GffField.CExoLocString => ReadLocString(data, index),
                 GffField.VOID => ReadVoid(data, index),
                 GffField.Struct => ReadStruct(data, depth + 1),
@@ -255,7 +257,8 @@ public static class GffReader
                 case GffField.CExoString:
                     return EstimateLengthPrefixedString(data, 4, int.MaxValue, $"GFF string field {fieldIndex}");
                 case GffField.CResRef:
-                    return EstimateLengthPrefixedString(data, 1, 16, $"GFF ResRef field {fieldIndex}");
+                    return EstimateLengthPrefixedString(
+                        data, 1, NwnResRef.MaxLength, $"GFF ResRef field {fieldIndex}");
                 case GffField.CExoLocString:
                 {
                     ValidateRelativeRange(data, 12, _fieldDataCount, $"GFF locstring field {fieldIndex}");

@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Settings;
 
@@ -305,7 +306,7 @@ namespace SWLOR.Toolset.Archives
         private static string SuggestedRename(string resRef)
         {
             const string suffix = "_imp";
-            var prefixLength = Math.Max(1, 16 - suffix.Length);
+            var prefixLength = Math.Max(1, NwnResRef.MaxLength - suffix.Length);
             return resRef[..Math.Min(resRef.Length, prefixLength)] + suffix;
         }
 
@@ -922,14 +923,11 @@ namespace SWLOR.Toolset.Archives
                     continue;
 
                 var value = row.RenameResRef;
-                if (string.IsNullOrWhiteSpace(value) || value.Length > 16 ||
-                    value.Any(character => character is not (>= 'a' and <= 'z'
-                        or >= 'A' and <= 'Z'
-                        or >= '0' and <= '9'
-                        or '_')))
+                if (!NwnResRef.IsValid(value))
                 {
                     StatusText =
-                        $"'{row.FileName}' needs a new 1-16 character resref using letters, digits, or underscores.";
+                        $"'{row.FileName}' needs a new 1-{NwnResRef.MaxLength} character resref " +
+                        "using letters, digits, or underscores.";
                     return false;
                 }
             }

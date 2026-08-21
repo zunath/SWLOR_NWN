@@ -1093,7 +1093,8 @@ namespace SWLOR.Toolset.Shell.Panels
             var kind = SelectedType.SingularDisplayName();
             var name = await _prompts.PromptForTextAsync(
                 $"New {kind}",
-                "The ResRef is derived from this name: lowercase, no spaces, 16 characters at most - " +
+                $"The ResRef is derived from this name: lowercase, no spaces, " +
+                $"{NwnResRef.MaxLength} characters at most - " +
                 "NWN's own limit.",
                 string.Empty,
                 "Create").ConfigureAwait(true);
@@ -1177,7 +1178,7 @@ namespace SWLOR.Toolset.Shell.Panels
                 else if (character is ' ' or '_' or '-' && builder.Length > 0 && builder[^1] != '_')
                     builder.Append('_');
 
-                if (builder.Length == 16)
+                if (builder.Length == NwnResRef.MaxLength)
                     break;
             }
 

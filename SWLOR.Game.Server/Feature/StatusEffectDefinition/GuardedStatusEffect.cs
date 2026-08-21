@@ -256,6 +256,16 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             return OBJECT_INVALID;
         }
 
+        public static uint GetActiveGuardSource(uint target)
+        {
+            if (!SourceByGuardedTarget.TryGetValue(target, out var source))
+                return OBJECT_INVALID;
+
+            return IsActiveGuardedBySource(target, source)
+                ? source
+                : OBJECT_INVALID;
+        }
+
         public static void RefreshGuardBenefitsFromSource(uint source)
         {
             if (!GuardedTargetsBySource.TryGetValue(source, out var targets))

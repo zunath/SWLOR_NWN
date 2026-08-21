@@ -384,6 +384,8 @@ namespace SWLOR.Game.Server.Service
             {
                 Deactivate(record);
                 GrantDisarmXP(user, record.Tier);
+                if (record.Tier >= 5)
+                    Achievement.GiveAchievement(user, AchievementService.AchievementType.TrapWhisperer);
                 SendMessageToPC(user, "You disarm the trap.");
                 return;
             }

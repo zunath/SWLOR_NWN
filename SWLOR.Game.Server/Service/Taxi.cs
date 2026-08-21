@@ -62,6 +62,8 @@ namespace SWLOR.Game.Server.Service
             SendMessageToPC(player, $"'{detail.Name}' registered into taxi destinations!");
 
             DB.Set(dbPlayer);
+            if (AchievementService.AchievementTracking.HasAllTaxiDestinations(dbPlayer))
+                Achievement.GiveAchievement(player, AchievementService.AchievementType.LocalKnowledge);
         }
 
         /// <summary>

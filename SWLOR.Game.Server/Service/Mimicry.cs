@@ -418,6 +418,8 @@ namespace SWLOR.Game.Server.Service
             // Persist the learned techniques before GiveSkillXP runs - it performs its own
             // DB.Get/DB.Set of this player, so saving our stale copy afterward would clobber the XP.
             DB.Set(dbPlayer);
+            if (dbPlayer.LearnedTechniques.Count >= 10)
+                Achievement.GiveAchievement(player, AchievementService.AchievementType.LearnedBehavior);
 
             foreach (var detail in learnedDetails)
             {

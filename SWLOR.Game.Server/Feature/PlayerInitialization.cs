@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AchievementService;
 using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -27,6 +28,12 @@ namespace SWLOR.Game.Server.Feature
 
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId) ?? new Player(playerId);
+            var accountId = GetPCPublicCDKey(player);
+            if (dbPlayer.AccountId != accountId)
+            {
+                dbPlayer.AccountId = accountId;
+                DB.Set(dbPlayer);
+            }
 
             // Already been initialized. Don't do it again.
             if (dbPlayer.Version >= 1 || dbPlayer.Version == -1) // Note: -1 signifies legacy characters. The Migration service handles upgrading legacy characters.
@@ -35,6 +42,8 @@ namespace SWLOR.Game.Server.Feature
                     PlayerName.RefreshNameOverridesForPlayer(player);
 
                 InitializeSavingThrows(player);
+                Achievement.FlushPendingAchievements(player);
+                AchievementTracking.EvaluatePersistedAchievements(player);
                 ExecuteScript(ScriptName.OnCharacterInitAfter, OBJECT_SELF);
                 return;
             }
@@ -61,6 +70,8 @@ namespace SWLOR.Game.Server.Feature
             if (PlayerDescriptor.EnsureUnknownDisplayName(player))
                 PlayerName.RefreshNameOverridesForPlayer(player);
 
+            Achievement.FlushPendingAchievements(player);
+            AchievementTracking.EvaluatePersistedAchievements(player);
             ExecuteScript(ScriptName.OnCharacterInitAfter, OBJECT_SELF);
         }
 

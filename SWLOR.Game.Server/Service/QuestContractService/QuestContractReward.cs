@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
+using SWLOR.Game.Server.Service.AchievementService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.NWN.API.NWNX;
@@ -63,6 +64,11 @@ namespace SWLOR.Game.Server.Service.QuestContractService
             }
 
             DB.Set(contract);
+            if (!string.IsNullOrWhiteSpace(contract.AuthorCDKey) &&
+                contract.AuthorCDKey != GetPCPublicCDKey(player))
+            {
+                Achievement.GiveAchievement(player, AchievementType.ContractualObligation);
+            }
 
             // Refresh the completing player's contract board (if open) so the fulfilled contract
             // disappears from the Browse list immediately.

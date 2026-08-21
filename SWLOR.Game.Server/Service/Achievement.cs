@@ -49,21 +49,83 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player)) return;
 
             var cdKey = GetPCPublicCDKey(player);
-            var account = DB.Get<Account>(cdKey) ?? new Account(cdKey);
-            if (account.Achievements.ContainsKey(achievementType)) return;
+            if (!GiveAchievementByAccountId(cdKey, achievementType)) return;
 
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
-            var now = DateTime.UtcNow;
-            account.Achievements[achievementType] = now;
-            DB.Set(account);
 
             // Player turned off achievement notifications. Nothing left to do here.
-            if (!dbPlayer.Settings.DisplayAchievementNotification) return;
+            if (dbPlayer?.Settings?.DisplayAchievementNotification == true &&
+                _activeAchievements.TryGetValue(achievementType, out var achievement))
+            {
+                DisplayAchievementNotificationWindow(player, achievement.Name);
+                PlayerPlugin.PlaySound(player, "gui_prompt", OBJECT_INVALID);
+            }
 
-            var achievement = _activeAchievements[achievementType];
-            DisplayAchievementNotificationWindow(player, achievement.Name);
-            PlayerPlugin.PlaySound(player, "gui_prompt", OBJECT_INVALID);
+            AchievementTracking.OnAchievementGranted(player, achievementType);
+        }
+
+        /// <summary>
+        /// Gives an achievement directly to an account. This supports achievements earned while
+        /// their recipient is offline, such as completed market sales.
+        /// </summary>
+        /// <returns>true when the achievement was newly granted.</returns>
+        public static bool GiveAchievementByAccountId(string accountId, AchievementType achievementType)
+        {
+            if (string.IsNullOrWhiteSpace(accountId) || achievementType == AchievementType.Invalid)
+                return false;
+
+            var detail = achievementType.GetAttribute<AchievementType, AchievementAttribute>();
+            if (!detail.IsActive)
+                return false;
+
+            var account = DB.Get<Account>(accountId) ?? new Account(accountId);
+            account.Achievements ??= new Dictionary<AchievementType, DateTime>();
+            if (account.Achievements.ContainsKey(achievementType))
+                return false;
+
+            account.Achievements[achievementType] = DateTime.UtcNow;
+            DB.Set(account);
+            return true;
+        }
+
+        /// <summary>
+        /// Queues an achievement on a persisted character when only its player ID is known.
+        /// The achievement is moved to the owner's account the next time that character enters.
+        /// </summary>
+        public static void QueueAchievementForPlayerId(string playerId, AchievementType achievementType)
+        {
+            if (string.IsNullOrWhiteSpace(playerId) || achievementType == AchievementType.Invalid)
+                return;
+
+            var dbPlayer = DB.Get<Player>(playerId);
+            if (dbPlayer == null)
+                return;
+
+            dbPlayer.PendingAchievements ??= new HashSet<int>();
+            if (dbPlayer.PendingAchievements.Add((int)achievementType))
+                DB.Set(dbPlayer);
+        }
+
+        public static void FlushPendingAchievements(uint player)
+        {
+            if (!GetIsPC(player) || GetIsDM(player))
+                return;
+
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            if (dbPlayer?.PendingAchievements == null || dbPlayer.PendingAchievements.Count == 0)
+                return;
+
+            var pending = dbPlayer.PendingAchievements.ToList();
+            dbPlayer.PendingAchievements.Clear();
+            DB.Set(dbPlayer);
+
+            foreach (var achievementId in pending)
+            {
+                if (Enum.IsDefined(typeof(AchievementType), achievementId))
+                    GiveAchievement(player, (AchievementType)achievementId);
+            }
         }
 
         /// <summary>

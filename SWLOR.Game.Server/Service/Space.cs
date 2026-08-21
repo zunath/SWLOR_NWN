@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service.AchievementService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LogService;
@@ -1690,6 +1691,14 @@ namespace SWLOR.Game.Server.Service
             // Apply death if shield and hull have reached zero.
             if (targetShipStatus.Shield <= 0 && targetShipStatus.Hull <= 0)
             {
+                if (GetIsPC(attacker) &&
+                    !GetIsPC(target) &&
+                    (GetIsReactionTypeHostile(target, attacker) || GetIsEnemy(target, attacker)) &&
+                    AchievementTracking.IsLowHull(GetShipStatus(attacker)))
+                {
+                    Achievement.GiveAchievement(attacker, AchievementType.NeverTellMeTheOdds);
+                }
+
                 // Lexicon Note regarding GetFirstObjectInShape/GetNextObjectInShape
                 // Do not apply EffectDamage without a DelayCommand (do DelayCommand(0.0, Apply...) at minimum).
                 // If you do fire it the OnDamaged or OnDeath OnPlayerDeath script may fire, causing this loop to reset

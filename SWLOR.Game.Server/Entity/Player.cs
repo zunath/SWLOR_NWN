@@ -63,6 +63,7 @@ namespace SWLOR.Game.Server.Entity
             Resistances = Resistance.CreateDefaultResistanceValues();
 
             ActiveShipId = Guid.Empty.ToString();
+            AccountId = string.Empty;
             UnknownDisplayName = string.Empty;
             IsUsingDualPistolMode = false;
             EmoteStyle = EmoteStyle.Regular;
@@ -79,6 +80,7 @@ namespace SWLOR.Game.Server.Entity
             UnlockedRecipes = new Dictionary<RecipeType, DateTime>();
             CraftedRecipes = new Dictionary<RecipeType, DateTime>();
             LearnedTechniques = new Dictionary<FeatType, DateTime>();
+            PendingAchievements = new HashSet<int>();
             EquippedTechniques = new List<FeatType>();
             CharacterType = CharacterType.Invalid;
             KeyItems = new Dictionary<KeyItemType, DateTime>();
@@ -106,6 +108,7 @@ namespace SWLOR.Game.Server.Entity
         public int Version { get; set; }
         [Indexed]
         public string Name { get; set; }
+        public string AccountId { get; set; }
         public int MaxHP { get; set; }
         public int MaxFP { get; set; }
         public int MaxStamina { get; set; }
@@ -193,6 +196,7 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<RecipeType, DateTime> UnlockedRecipes { get; set; }
         public Dictionary<RecipeType, DateTime> CraftedRecipes { get; set; }
         public Dictionary<FeatType, DateTime> LearnedTechniques { get; set; }
+        public HashSet<int> PendingAchievements { get; set; }
         public List<FeatType> EquippedTechniques { get; set; }
         public Dictionary<KeyItemType, DateTime> KeyItems{ get; set; }
         public Dictionary<GuildType, PlayerGuild> Guilds { get; set; }

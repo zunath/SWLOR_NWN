@@ -677,6 +677,8 @@ namespace SWLOR.Game.Server.Service
 
             // Inventory / Equipment
             var constructedDroid = LoadConstructedDroid(controller);
+            if (AchievementService.AchievementTracking.IsFullyOperational(constructedDroid))
+                Achievement.GiveAchievement(player, AchievementService.AchievementType.FullyOperational);
 
             foreach (var (slot, serialized) in constructedDroid.EquippedItems)
             {

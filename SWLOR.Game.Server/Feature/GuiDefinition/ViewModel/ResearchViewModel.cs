@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AchievementService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.DBService;
@@ -543,6 +544,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Gui.TogglePlayerWindow(Player, GuiWindowType.Research);
 
             DB.Delete<ResearchJob>(dbJob.Id);
+            Achievement.GiveAchievement(Player, AchievementType.FirstPrinciples);
         };
     }
 }

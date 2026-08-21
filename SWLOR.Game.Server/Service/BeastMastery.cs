@@ -217,6 +217,8 @@ namespace SWLOR.Game.Server.Service
             }
 
             DB.Set(dbBeast);
+            if (dbBeast.Level >= MaxLevel)
+                Achievement.GiveAchievement(player, AchievementService.AchievementType.ApexCompanion);
             ApplyStats(beast);
 
             Gui.PublishRefreshEvent(player, new BeastGainXPRefreshEvent());
@@ -801,6 +803,7 @@ namespace SWLOR.Game.Server.Service
             if (mutation != BeastType.Invalid)
             {
                 IncubationFieldNote.GrantDiscoveredNote(player, mutation);
+                Achievement.GiveAchievement(player, AchievementService.AchievementType.SurvivalOfTheStrangest);
             }
 
             var egg = CreateBeastEgg(beastType, player);

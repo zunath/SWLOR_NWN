@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Service.ActivityService;
+using SWLOR.Game.Server.Service.AchievementService;
 using SWLOR.Game.Server.Service.FishingService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
@@ -424,6 +425,7 @@ namespace SWLOR.Game.Server.Service
                 CreateItemOnObject(fish.Resref, player);
 
                 SendMessageToPC(player, $"You landed a {fish.Name}!");
+                AchievementTracking.RecordFishCaught(player, fish.Level, skill, locationId);
             }
 
             SendMessageToPC(player, $"Bait Remaining: {remainingBait}x {baitName}");

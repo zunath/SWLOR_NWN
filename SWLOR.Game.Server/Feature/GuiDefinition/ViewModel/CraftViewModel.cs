@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AchievementService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.GuiService;
@@ -1438,6 +1439,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 dbPlayer.CraftedRecipes[_recipe] = DateTime.UtcNow;
                 DB.Set(dbPlayer);
             }
+
+            if (AchievementTracking.HasCraftedAllDisciplines(dbPlayer))
+                Achievement.GiveAchievement(Player, AchievementType.RenaissanceCrafter);
 
             // Give XP plus a percent bonus based on the quality achieved.
             var xp = CalculateXP(

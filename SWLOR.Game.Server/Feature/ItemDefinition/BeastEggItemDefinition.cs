@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AchievementService;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.DBService;
@@ -160,6 +161,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
 
                     dbPlayer.ActiveBeastId = dbBeast.Id;
                     DB.Set(dbPlayer);
+                    Achievement.GiveAchievement(user, AchievementType.ANewBond);
 
                     DestroyObject(item);
                 });

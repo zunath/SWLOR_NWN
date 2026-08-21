@@ -111,6 +111,8 @@ namespace SWLOR.Game.Server.Service
             }
 
             DB.Set(dbPlayer);
+            if (dbPlayer.Factions[faction].Standing >= MaximumFaction)
+                Achievement.GiveAchievement(player, AchievementService.AchievementType.AKnownQuantity);
         }
 
         /// <summary>

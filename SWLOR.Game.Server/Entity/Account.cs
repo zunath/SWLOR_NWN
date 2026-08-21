@@ -35,10 +35,18 @@ namespace SWLOR.Game.Server.Entity
 
     public class AchievementProgress
     {
+        public AchievementProgress()
+        {
+            SlicingSourcesCompleted = new HashSet<int>();
+            FishingPlanetsCaught = new HashSet<int>();
+        }
+
         public ulong EnemiesKilled { get; set; }
         public ulong PerksLearned { get; set; }
         public ulong SkillsLearned { get; set; }
         public ulong QuestsCompleted { get; set; }
         public ulong ItemsCrafted { get; set; }
+        public HashSet<int> SlicingSourcesCompleted { get; set; }
+        public HashSet<int> FishingPlanetsCaught { get; set; }
     }
 }

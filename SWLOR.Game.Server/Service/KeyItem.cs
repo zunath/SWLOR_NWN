@@ -161,6 +161,12 @@ namespace SWLOR.Game.Server.Service
             dbPlayer.KeyItems[keyItem] = DateTime.UtcNow;
             DB.Set(dbPlayer);
 
+            if (IncubationFieldNote.TryGetNoteForKeyItem(keyItem, out _) &&
+                dbPlayer.KeyItems.Keys.Count(x => IncubationFieldNote.TryGetNoteForKeyItem(x, out _)) >= 10)
+            {
+                Achievement.GiveAchievement(player, AchievementService.AchievementType.FieldResearcher);
+            }
+
             var keyItemDetail = _allKeyItems[keyItem];
             SendMessageToPC(player, $"You acquire the '{keyItemDetail.Name}' key item.");
             Gui.PublishRefreshEvent(player, new KeyItemReceivedRefreshEvent(keyItem));

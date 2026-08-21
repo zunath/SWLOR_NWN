@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Extension;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.ActivityService;
+using SWLOR.Game.Server.Service.AchievementService;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.LogService;
@@ -3241,6 +3242,18 @@ namespace SWLOR.Game.Server.Service
             var reductionPercent = GetGuardDamageReductionPercent(defender);
             var preventedDamage = Math.Min(damage, GameMath.PercentOf(damage, reductionPercent));
             var adjustedDamage = Math.Max(0, damage - preventedDamage);
+
+            var guardSource = GuardedStatusEffect.GetActiveGuardSource(defender);
+            if (GetIsObjectValid(guardSource) &&
+                guardSource != defender &&
+                GetIsPC(guardSource) &&
+                !GetIsDM(guardSource) &&
+                GetIsPC(defender) &&
+                !GetIsDM(defender) &&
+                AchievementTracking.GuardPreventedLethalHit(GetCurrentHitPoints(defender), damage, adjustedDamage))
+            {
+                Achievement.GiveAchievement(guardSource, AchievementType.BehindMe);
+            }
 
             TrackGuardedHit(defender);
             StatusEffect.OnGuardedHit(defender, attacker, preventedDamage);

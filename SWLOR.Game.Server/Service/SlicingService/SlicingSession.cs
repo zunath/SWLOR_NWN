@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Service.AchievementService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.ItemService;
@@ -592,6 +593,7 @@ namespace SWLOR.Game.Server.Service.SlicingService
             Log.Write(LogGroup.Crafting,
                 $"Player '{GetName(session.Player)}' ({playerId}) completed {session.Source} slicing board {session.Board.BoardId} and received {reward.Quantity}x '{reward.Resref}'.");
             SendMessageToPC(session.Player, $"You recover {reward.Quantity}x {Cache.GetItemNameByResref(reward.Resref)}.");
+            AchievementTracking.RecordSlicingSuccess(session.Player, session.Source, session.HasUsedTool);
 
             Release(session);
             if (session.Source == SlicingSourceType.Lockbox)

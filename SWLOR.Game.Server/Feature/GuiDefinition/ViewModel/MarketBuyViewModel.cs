@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AchievementService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -332,6 +333,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 var proceeds = (int)(price - (price * market.TaxRate));
                 dbSeller.MarketTill += proceeds;
                 DB.Set(dbSeller);
+
+                if (!string.IsNullOrWhiteSpace(dbItem.SellerCDKey))
+                {
+                    Achievement.GiveAchievement(Player, AchievementType.CreditsWillDoFine);
+                    Achievement.GiveAchievementByAccountId(dbItem.SellerCDKey, AchievementType.AFairDeal);
+                }
             });
         };
 

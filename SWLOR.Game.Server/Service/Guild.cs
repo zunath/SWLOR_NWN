@@ -119,6 +119,8 @@ namespace SWLOR.Game.Server.Service
 
             dbPlayer.Guilds[guild] = dbGuild;
             DB.Set(dbPlayer);
+            if (AchievementService.AchievementTracking.HasGuildBreadth(dbPlayer))
+                Achievement.GiveAchievement(player, AchievementService.AchievementType.TheGuildedAge);
         }
 
         /// <summary>

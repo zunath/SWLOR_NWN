@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.AchievementService;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.DBService;
@@ -140,6 +141,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
                     dbPlayer.ActiveBeastId = dbBeast.Id;
                     DB.Set(dbPlayer);
+                    Achievement.GiveAchievement(activator, AchievementType.ANewBond);
 
                     SendMessageToPC(activator, ColorToken.Green($"Successfully tamed {GetName(target)}!"));
                     DestroyObject(target);

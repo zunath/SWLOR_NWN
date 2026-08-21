@@ -162,6 +162,10 @@ namespace SWLOR.Game.Server.Feature
             {
                 Achievement.GiveAchievement(player, AchievementType.GainSkills6);
             }
+
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
+            if (AchievementTracking.HasThreeMasteredLanguages(dbPlayer))
+                Achievement.GiveAchievement(player, AchievementType.Polyglot);
         }
 
         /// <summary>
@@ -221,6 +225,9 @@ namespace SWLOR.Game.Server.Feature
             {
                 Achievement.GiveAchievement(player, AchievementType.CompleteQuests10);
             }
+
+            if (AchievementTracking.HasEligiblePartyMember(player))
+                Achievement.GiveAchievement(player, AchievementType.StrongerTogether);
         }
 
         /// <summary>

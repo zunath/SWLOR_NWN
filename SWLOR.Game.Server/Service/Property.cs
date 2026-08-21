@@ -2880,6 +2880,9 @@ namespace SWLOR.Game.Server.Service
             var position = new Vector3(entrance.X, entrance.Y, entrance.Z);
             var location = Location(instance.Area, position, entrance.W);
 
+            if (property.IsPubliclyAccessible)
+                AchievementService.AchievementTracking.RecordPublicPropertyVisit(player, property.OwnerPlayerId);
+
             StoreOriginalLocation(player);
             AssignCommand(player, () =>
             {
@@ -3292,6 +3295,9 @@ namespace SWLOR.Game.Server.Service
                 var entrance = GetEntrancePosition(interior.Layout);
                 var position = Vector3(entrance.X, entrance.Y, entrance.Z);
                 var location = Location(instance.Area, position, entrance.W);
+
+                if (interior.IsPubliclyAccessible)
+                    AchievementService.AchievementTracking.RecordPublicPropertyVisit(player, interior.OwnerPlayerId);
 
                 StoreOriginalLocation(player);
                 AssignCommand(player, () => ActionJumpToLocation(location));

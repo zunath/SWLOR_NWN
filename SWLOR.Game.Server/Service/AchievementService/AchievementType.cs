@@ -468,6 +468,67 @@ namespace SWLOR.Game.Server.Service.AchievementService
         UntouchableInstinct = 179,
         [Achievement("Force-Bonded Beast", "Completed the Force-Bonded Beast capstone quest line.", true)]
         ForceBondedBeast = 180,
+
+        [Achievement("A New Bond", "Register any beast in your stable.", true)]
+        ANewBond = 181,
+        [Achievement("Survival of the Strangest", "Produce a mutated beast through incubation.", true)]
+        SurvivalOfTheStrangest = 182,
+        [Achievement("Apex Companion", "Raise a beast to level 50.", true)]
+        ApexCompanion = 183,
+        [Achievement("Fully Operational", "Deploy a droid with a CPU, head, body, arms, legs, and an active AI instruction.", true)]
+        FullyOperational = 184,
+        [Achievement("Learned Behavior", "Learn 10 distinct Mimicry techniques.", true)]
+        LearnedBehavior = 185,
+        [Achievement("Field Researcher", "Collect 10 incubation field notes.", true)]
+        FieldResearcher = 186,
+        [Achievement("Ghost in the Machine", "Complete an infiltration undetected and without entering combat.", true)]
+        GhostInTheMachine = 187,
+        [Achievement("Trap Whisperer", "Disarm a concealed tier 5 trap.", true)]
+        TrapWhisperer = 188,
+        [Achievement("Clean Slice", "Solve a slicing board without using a slicing tool.", true)]
+        CleanSlice = 189,
+        [Achievement("Two Kinds of Trouble", "Successfully slice both a lockbox and a terminal.", true)]
+        TwoKindsOfTrouble = 190,
+        [Achievement("No Such Thing as Luck", "Catch a hidden level 52 fish.", true)]
+        NoSuchThingAsLuck = 191,
+        [Achievement("Against the Current", "Catch a fish at least 5 levels above your Agriculture rank.", true)]
+        AgainstTheCurrent = 192,
+        [Achievement("Galactic Angler", "Catch fish on 5 different planets.", true)]
+        GalacticAngler = 193,
+        [Achievement("First Principles", "Complete and claim a research job.", true)]
+        FirstPrinciples = 194,
+        [Achievement("Renaissance Crafter", "Craft a recipe in Smithery, Engineering, Fabrication, and Agriculture.", true)]
+        RenaissanceCrafter = 195,
+        [Achievement("Clear for Departure", "Register your first starship.", true)]
+        ClearForDeparture = 196,
+        [Achievement("Never Tell Me the Odds", "Destroy hostile NPC spacecraft while your own ship is at 10% hull or less.", true)]
+        NeverTellMeTheOdds = 197,
+        [Achievement("All Systems Green", "Equip a high-power, low-power, and configuration module on the same ship.", true)]
+        AllSystemsGreen = 198,
+        [Achievement("The Grand Tour", "Explore the orbits of Hutlar, Mon Cala, Tatooine, Viscara, Korriban, Dathomir, Dantooine, and Nar Shaddaa.", true)]
+        TheGrandTour = 199,
+        [Achievement("Local Knowledge", "Unlock all 14 taxi destinations.", true)]
+        LocalKnowledge = 200,
+        [Achievement("The Guilded Age", "Reach rank 1 in all five active guilds.", true)]
+        TheGuildedAge = 201,
+        [Achievement("A Known Quantity", "Reach maximum standing with any faction.", true)]
+        AKnownQuantity = 202,
+        [Achievement("Credits Will Do Fine", "Buy a market listing from another account.", true)]
+        CreditsWillDoFine = 203,
+        [Achievement("Polyglot", "Reach rank 20 in three non-Basic languages on one character.", true)]
+        Polyglot = 204,
+        [Achievement("A Fair Deal", "Have another account buy one of your market listings.", true)]
+        AFairDeal = 205,
+        [Achievement("Contractual Obligation", "Complete a quest contract authored by another player.", true)]
+        ContractualObligation = 206,
+        [Achievement("Open Door Policy", "Have another player enter one of your publicly accessible properties.", true)]
+        OpenDoorPolicy = 207,
+        [Achievement("Stronger Together", "Complete a non-contract quest while grouped with another eligible player.", true)]
+        StrongerTogether = 208,
+        [Achievement("Not on My Watch", "Resuscitate another player.", true)]
+        NotOnMyWatch = 209,
+        [Achievement("Behind Me!", "Prevent an otherwise lethal hit against another player with Guard.", true)]
+        BehindMe = 210,
 	}
 
     public class AchievementAttribute: Attribute

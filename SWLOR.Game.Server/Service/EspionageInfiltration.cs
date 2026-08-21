@@ -136,6 +136,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            Achievement.GiveAchievement(player, AchievementService.AchievementType.GhostInTheMachine);
             GrantXp(player, npc, wasDetected: false);
         }
 

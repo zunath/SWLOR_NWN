@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AchievementService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PropertyService;
@@ -1382,6 +1383,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     }
                 };
                 DB.Set(ship);
+                Achievement.GiveAchievement(Player, AchievementType.ClearForDeparture);
 
                 // Update the UI with the new ship details.
                 ShipCountRegistered = $"Ships: {dbPlayerShips.Count + 1} / {Space.MaxRegisteredShips}";
@@ -1574,6 +1576,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     moduleDetails.ModuleEquippedAction?.Invoke(dbShip.Status, moduleBonus);
 
                     DB.Set(dbShip);
+                    if (AchievementTracking.HasCompleteModuleSet(dbShip.Status))
+                        Achievement.GiveAchievement(Player, AchievementType.AllSystemsGreen);
 
                     DestroyObject(item);
                     LoadShip();
@@ -1645,6 +1649,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     moduleDetails.ModuleEquippedAction?.Invoke(dbShip.Status, moduleBonus);
 
                     DB.Set(dbShip);
+                    if (AchievementTracking.HasCompleteModuleSet(dbShip.Status))
+                        Achievement.GiveAchievement(Player, AchievementType.AllSystemsGreen);
 
                     DestroyObject(item);
                     LoadShip();
@@ -1715,6 +1721,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         moduleDetails.ModuleEquippedAction?.Invoke(dbShip.Status, moduleBonus);
 
                         DB.Set(dbShip);
+                        if (AchievementTracking.HasCompleteModuleSet(dbShip.Status))
+                            Achievement.GiveAchievement(Player, AchievementType.AllSystemsGreen);
 
                         DestroyObject(item);
                         LoadShip();

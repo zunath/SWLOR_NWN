@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AchievementService;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -76,6 +77,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 return;
 
             ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
+            if (activator != target && GetIsPC(target) && !GetIsDM(target))
+                Achievement.GiveAchievement(activator, AchievementType.NotOnMyWatch);
             FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, target);
             DelayCommand(0.1f, () => Ability.ReapplyAuraEffectsForCreature(target));
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Raise_Dead), target);
@@ -88,6 +91,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 return;
 
             ApplyEffectToObject(DurationType.Instant, EffectResurrection(), target);
+            if (activator != target && GetIsPC(target) && !GetIsDM(target))
+                Achievement.GiveAchievement(activator, AchievementType.NotOnMyWatch);
             FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, target);
             // Resurrection is not settled until after the current engine command finishes.
             // Healing in the same tick is silently discarded because the target is still dead.

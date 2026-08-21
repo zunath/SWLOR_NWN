@@ -40,7 +40,23 @@ public class GeneratedWeaponPerkBehaviorTests
             new RangedDeflectionStatusEffect(12, EffectIconType.SnapRollStatusEffect),
             StatType.RangedDeflection,
             12);
-        AssertStatusStat(new DuelistsDistanceStatusEffect(10), StatType.DamageDealtPercentAdjustment, -10);
+        var damageDealtAdjustment = new DamageDealtAdjustmentStatusEffect(
+            -10,
+            16780744,
+            EffectIconType.DuelistsDistanceStatusEffect,
+            StatusEffectCleanseType.TreatmentKit1,
+            ResistanceType.Trauma);
+        AssertStatusStat(damageDealtAdjustment, StatType.DamageDealtPercentAdjustment, -10);
+        damageDealtAdjustment.Icon.Should().Be(EffectIconType.DuelistsDistanceStatusEffect);
+        damageDealtAdjustment.Categories.Should().Be(StatusEffectCategory.Debuff);
+        damageDealtAdjustment.CleanseTypes.Should().Be(StatusEffectCleanseType.TreatmentKit1);
+        damageDealtAdjustment.ResistanceType.Should().Be(ResistanceType.Trauma);
+        damageDealtAdjustment.CanApply(0).Should().BeEmpty();
+        var clonedDamageDealtAdjustment = damageDealtAdjustment.Clone();
+        AssertStatusStat(clonedDamageDealtAdjustment, StatType.DamageDealtPercentAdjustment, -10);
+        clonedDamageDealtAdjustment.Icon.Should().Be(EffectIconType.DuelistsDistanceStatusEffect);
+        clonedDamageDealtAdjustment.CleanseTypes.Should().Be(StatusEffectCleanseType.TreatmentKit1);
+        clonedDamageDealtAdjustment.ResistanceType.Should().Be(ResistanceType.Trauma);
         var limitedHaste = new LimitedHasteStatusEffect(
             20,
             2,
@@ -123,7 +139,17 @@ public class GeneratedWeaponPerkBehaviorTests
         combat.Should().Contain("High Noon +{adjustment}% critical damage");
         combat.Should().Contain("Deadeye Reload +{currentTotal}% Critical Rate");
         combat.Should().Contain("Lucky Chamber +{criticalRate}% Critical Rate");
-        combat.Should().Contain("new DuelistsDistanceStatusEffect(Math.Abs(damageDealt))");
+        combat.Should().Contain("new DamageDealtAdjustmentStatusEffect(");
+        combat.Should().NotContain("new DuelistsDistanceStatusEffect(",
+            "shared combat must not couple generic near-target stats to one perk-specific status class");
+        var configuredDamageDealtStatus = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "StatusEffectDefinition",
+            "DamageDealtAdjustmentStatusEffect.cs"));
+        configuredDamageDealtStatus.Should().NotContain("Duelist",
+            "the reusable damage-dealt status must not inherit any perk identity or metadata");
         combat.Should().Contain("new LimitedHasteStatusEffect(");
         combat.Should().NotContain("new ReloadTempoStatusEffect(");
         combat.Should().NotContain("new SnapRollStatusEffect(");
@@ -608,6 +634,10 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("StaffPerkDefinition.cs", StatType.AbilityUsedAttackDeflection, "8");
 
         AssertSourceStat("PistolPerkDefinition.cs", StatType.RangedAbilityHitNearTargetDamageDealtPercentAdjustment, "-10");
+        AssertSourceStat("PistolPerkDefinition.cs", StatType.RangedAbilityHitNearTargetStatusEffectNameStrRef, "16780744");
+        AssertSourceStat("PistolPerkDefinition.cs", StatType.RangedAbilityHitNearTargetStatusEffectIcon, "(int)EffectIconType.DuelistsDistanceStatusEffect");
+        AssertSourceStat("PistolPerkDefinition.cs", StatType.RangedAbilityHitNearTargetStatusEffectCleanseTypes, "(int)StatusEffectCleanseType.TreatmentKit1");
+        AssertSourceStat("PistolPerkDefinition.cs", StatType.RangedAbilityHitNearTargetStatusEffectResistanceType, "(int)ResistanceType.Trauma");
         AssertSourceStat("PistolPerkDefinition.cs", StatType.SecondaryAbilityUsedEvasionPercentAdjustmentSkillType, "(int)SkillType.Pistol");
         AssertSourceStat("PistolPerkDefinition.cs", StatType.SecondaryAbilityUsedEvasionPercentAdjustment, "8");
         AssertSourceStat("PistolPerkDefinition.cs", StatType.SecondaryAbilityUsedEvasionDurationSeconds, "30");

@@ -200,6 +200,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.RangedAbilityHitNearTargetDamageDealtPercentAdjustment, -10)
                 .IncreasesStat(StatType.RangedAbilityHitNearTargetRangeMeters, 5)
                 .IncreasesStat(StatType.RangedAbilityHitNearTargetDurationSeconds, 30)
+                .IncreasesStat(StatType.RangedAbilityHitNearTargetStatusEffectNameStrRef, 16780744)
+                .IncreasesStat(StatType.RangedAbilityHitNearTargetStatusEffectIcon, (int)EffectIconType.DuelistsDistanceStatusEffect)
+                .IncreasesStat(StatType.RangedAbilityHitNearTargetStatusEffectCleanseTypes, (int)StatusEffectCleanseType.TreatmentKit1)
+                .IncreasesStat(StatType.RangedAbilityHitNearTargetStatusEffectResistanceType, (int)ResistanceType.Trauma)
                 .Price(4)
                 .RequirementSkill(SkillType.Pistol, 25);
         }

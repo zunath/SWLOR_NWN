@@ -5840,6 +5840,34 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenNegative, StatTypeAggregation.Maximum)]
         AttackDelayReductionSuppressed = 1012,
 
+        /// <summary>
+        /// String reference displayed by the configured status applied through
+        /// RangedAbilityHitNearTargetDamageDealtPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        RangedAbilityHitNearTargetStatusEffectNameStrRef = 1013,
+
+        /// <summary>
+        /// Effect icon displayed by the configured status applied through
+        /// RangedAbilityHitNearTargetDamageDealtPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        RangedAbilityHitNearTargetStatusEffectIcon = 1014,
+
+        /// <summary>
+        /// Cleanse channels supported by the configured status applied through
+        /// RangedAbilityHitNearTargetDamageDealtPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.BitwiseOr)]
+        RangedAbilityHitNearTargetStatusEffectCleanseTypes = 1015,
+
+        /// <summary>
+        /// Resistance channel used by the configured status applied through
+        /// RangedAbilityHitNearTargetDamageDealtPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        RangedAbilityHitNearTargetStatusEffectResistanceType = 1016,
+
     }
 
     public class StatTypeAttribute : Attribute

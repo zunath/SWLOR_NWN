@@ -5348,8 +5348,26 @@ namespace SWLOR.Game.Server.Service
                 activator,
                 StatType.RangedAbilityHitNearTargetDamageDealtPercentAdjustment);
             var duration = Stat.GetStatAdjustment(activator, StatType.RangedAbilityHitNearTargetDurationSeconds);
-            if (range <= 0 || damageDealt == 0 || duration <= 0)
+            var nameStrRef = Stat.GetStatAdjustment(
+                activator,
+                StatType.RangedAbilityHitNearTargetStatusEffectNameStrRef);
+            var icon = (EffectIconType)Stat.GetStatAdjustment(
+                activator,
+                StatType.RangedAbilityHitNearTargetStatusEffectIcon);
+            var cleanseTypes = (StatusEffectCleanseType)Stat.GetStatAdjustment(
+                activator,
+                StatType.RangedAbilityHitNearTargetStatusEffectCleanseTypes);
+            var resistanceType = (ResistanceType)Stat.GetStatAdjustment(
+                activator,
+                StatType.RangedAbilityHitNearTargetStatusEffectResistanceType);
+            if (range <= 0 ||
+                damageDealt == 0 ||
+                duration <= 0 ||
+                nameStrRef <= 0 ||
+                icon == EffectIconType.Invalid)
+            {
                 return;
+            }
 
             if (GetDistanceBetween(activator, target) > range)
                 return;
@@ -5357,7 +5375,12 @@ namespace SWLOR.Game.Server.Service
             StatusEffect.ApplyStatusEffect(
                 activator,
                 target,
-                new DuelistsDistanceStatusEffect(Math.Abs(damageDealt)),
+                new DamageDealtAdjustmentStatusEffect(
+                    damageDealt,
+                    nameStrRef,
+                    icon,
+                    cleanseTypes,
+                    resistanceType),
                 duration,
                 CombatDamageType.Physical);
         }

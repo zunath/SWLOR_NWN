@@ -1413,6 +1413,10 @@ def description_stat_entries(row, base):
         add_stat(stats, "RangedAbilityHitNearTargetDamageDealtPercentAdjustment", -damage_penalty)
         add_stat(stats, "RangedAbilityHitNearTargetRangeMeters", parse_count(r"within (\d+)m", description) or 5)
         add_stat(stats, "RangedAbilityHitNearTargetDurationSeconds", parse_duration(description) or 30)
+        add_stat(stats, "RangedAbilityHitNearTargetStatusEffectNameStrRef", 16780744)
+        add_stat(stats, "RangedAbilityHitNearTargetStatusEffectIcon", "(int)EffectIconType.DuelistsDistanceStatusEffect")
+        add_stat(stats, "RangedAbilityHitNearTargetStatusEffectCleanseTypes", "(int)StatusEffectCleanseType.TreatmentKit1")
+        add_stat(stats, "RangedAbilityHitNearTargetStatusEffectResistanceType", "(int)ResistanceType.Trauma")
     if base == "Lucky Chamber":
         # "Every fourth ranged attack" is cross-skill ranged, mirroring the melee cycle family.
         add_stat(stats, "RangedAutoAttackCycleCriticalRateRequiredCount", 4)

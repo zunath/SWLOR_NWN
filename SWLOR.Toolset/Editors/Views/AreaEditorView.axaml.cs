@@ -247,8 +247,9 @@ namespace SWLOR.Toolset.Editors
         }
 
         /// <summary>
-        /// Delete removes whatever the map has selected. Not handled when nothing is selected, so
-        /// the key still reaches a field or grid that wants it.
+        /// Area-object shortcuts that remain after the focused control has had first refusal. Delete
+        /// removes the selection; Ctrl+C snapshots it; Ctrl+V arms that snapshot on the map cursor.
+        /// An inapplicable shortcut is not handled, so it may continue to a field or grid that wants it.
         /// </summary>
         /// <remarks>
         /// On the view rather than the GL control because the control is only hit-testable through
@@ -259,10 +260,22 @@ namespace SWLOR.Toolset.Editors
         {
             base.OnKeyDown(e);
 
-            if (e.Handled || e.Key != Avalonia.Input.Key.Delete || _viewModel == null)
+            if (e.Handled || _viewModel == null)
                 return;
 
-            e.Handled = _viewModel.DeleteSelectedSceneInstance();
+            if (e.KeyModifiers == Avalonia.Input.KeyModifiers.Control)
+            {
+                if (e.Key == Avalonia.Input.Key.C)
+                    e.Handled = _viewModel.CopySelectedSceneInstance();
+                else if (e.Key == Avalonia.Input.Key.V)
+                    e.Handled = _viewModel.PasteCopiedSceneInstance();
+
+                if (e.Handled)
+                    return;
+            }
+
+            if (e.Key == Avalonia.Input.Key.Delete)
+                e.Handled = _viewModel.DeleteSelectedSceneInstance();
         }
 
         /// <summary>

@@ -22,7 +22,17 @@ namespace SWLOR.Toolset.Workspace
 
         public event Action? WorkspaceOpened;
         public event Action? CatalogBuildCompleted;
+        /// <summary>
+        /// Raised for every saved, reloaded, created, or removed resource so content-dependent
+        /// caches can invalidate even when its catalog Name/Tag did not change.
+        /// </summary>
         public event Action<ResourceType, string>? CatalogEntryRefreshed;
+        /// <summary>
+        /// Raised only when the ordered catalog's indexed metadata or membership actually changed.
+        /// Explorer and Search subscribe here so an ordinary content-only save does not make them
+        /// regroup and requery the entire catalog.
+        /// </summary>
+        public event Action<ResourceType, string>? CatalogEntriesChanged;
         public event Action? PlacementIndexInvalidated;
         public event Action? ScriptUsagesInvalidated;
         public event Action? TagIndexInvalidated;
@@ -188,9 +198,12 @@ namespace SWLOR.Toolset.Workspace
         {
             InvalidateTagIndexWhenRelevant(type);
             InvalidateScriptUsagesWhenRelevant(type);
-            if (IsCatalogIndexedType(type))
-                Catalog?.RefreshEntry(type, resRef);
+            var catalogChanged = false;
+            if (IsCatalogIndexedType(type) && Catalog is { } catalog)
+                catalog.RefreshEntry(type, resRef, out catalogChanged);
             CatalogEntryRefreshed?.Invoke(type, resRef);
+            if (catalogChanged)
+                CatalogEntriesChanged?.Invoke(type, resRef);
         }
 
         /// <summary>
@@ -206,9 +219,12 @@ namespace SWLOR.Toolset.Workspace
             if (type == ResourceType.Area)
                 InvalidatePlacementIndex();
             InvalidateScriptUsagesWhenRelevant(type);
-            if (IsCatalogIndexedType(type))
-                Catalog?.RemoveEntry(type, resRef);
+            var catalogChanged = false;
+            if (IsCatalogIndexedType(type) && Catalog is { } catalog)
+                catalogChanged = catalog.RemoveEntry(type, resRef);
             CatalogEntryRefreshed?.Invoke(type, resRef);
+            if (catalogChanged)
+                CatalogEntriesChanged?.Invoke(type, resRef);
         }
 
         /// <summary>
@@ -231,6 +247,7 @@ namespace SWLOR.Toolset.Workspace
         {
             InvalidateTagIndex();
             InvalidatePlacementIndex();
+            InvalidateScriptUsages();
         }
 
         /// <summary>
@@ -247,7 +264,7 @@ namespace SWLOR.Toolset.Workspace
 
         /// <summary>
         /// Drops the lazy script-usage snapshot. Paired GIT files are not first-class resource types,
-        /// so the file watcher calls this directly when a placed-instance script slot changes.
+        /// so their grouped invalidation routes here directly when a placed-instance script slot changes.
         /// </summary>
         public void InvalidateScriptUsages() => ScriptUsagesInvalidated?.Invoke();
 

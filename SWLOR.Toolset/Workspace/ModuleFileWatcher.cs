@@ -84,8 +84,9 @@ namespace SWLOR.Toolset.Workspace
                     _workspaceContext.InvalidatePaletteChoices(paletteResRef);
 
                 // Resolved scripted resources invalidate through Refresh/Remove below. GIT has no
-                // ResourceType, so its placed-instance script slots need the direct path.
+                // ResourceType, but InvalidateGitIndexes above already covers its script slots.
                 if (affectsScriptUsages &&
+                    !affectsPlacementIndex &&
                     (!resolved || !Domain.Script.ScriptUsageIndex.ScriptedTypes.Contains(type)))
                 {
                     _workspaceContext.InvalidateScriptUsages();

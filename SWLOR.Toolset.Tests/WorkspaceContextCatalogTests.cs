@@ -150,7 +150,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void PairedGitInvalidationPublishesTagAndPlacementRefreshNotifications()
+        public void PairedGitInvalidationPublishesEveryGitDerivedRefreshNotification()
         {
             var workspace = new WorkspaceContext(
                 root => new ModuleWorkspace(root),
@@ -158,13 +158,59 @@ namespace SWLOR.Toolset.Tests
             OpenWorkspace(workspace);
             var tagNotifications = 0;
             var placementNotifications = 0;
+            var scriptNotifications = 0;
             workspace.TagIndexInvalidated += () => tagNotifications++;
             workspace.PlacementIndexInvalidated += () => placementNotifications++;
+            workspace.ScriptUsagesInvalidated += () => scriptNotifications++;
 
             workspace.InvalidateGitIndexes();
 
             tagNotifications.Should().Be(1);
             placementNotifications.Should().Be(1);
+            scriptNotifications.Should().Be(1);
+        }
+
+        [Test]
+        public void ContentOnlyCatalogRefreshDoesNotPublishAnOrderedCatalogChange()
+        {
+            var path = Path.Combine(_root, "utc", "existing_creature.utc.json");
+            File.WriteAllText(path, "not valid GFF JSON");
+            var workspace = new WorkspaceContext(
+                root => new ModuleWorkspace(root),
+                new OutputLogService());
+            OpenWorkspace(workspace);
+            workspace.Catalog!.BuildTask.GetAwaiter().GetResult();
+            var contentNotifications = 0;
+            var catalogNotifications = 0;
+            workspace.CatalogEntryRefreshed += (_, _) => contentNotifications++;
+            workspace.CatalogEntriesChanged += (_, _) => catalogNotifications++;
+
+            workspace.RefreshCatalogEntry(ResourceType.Utc, "existing_creature");
+
+            contentNotifications.Should().Be(1,
+                "content-dependent caches still need to hear about a saved blueprint");
+            catalogNotifications.Should().Be(0,
+                "unchanged indexed metadata must not regroup Explorer or requery Search");
+        }
+
+        [Test]
+        public void NewCatalogMembershipPublishesAnOrderedCatalogChange()
+        {
+            var workspace = new WorkspaceContext(
+                root => new ModuleWorkspace(root),
+                new OutputLogService());
+            OpenWorkspace(workspace);
+            workspace.Catalog!.BuildTask.GetAwaiter().GetResult();
+            File.WriteAllText(
+                Path.Combine(_root, "utc", "new_creature.utc.json"),
+                "not valid GFF JSON");
+            var notifications = 0;
+            workspace.CatalogEntriesChanged += (_, _) => notifications++;
+
+            workspace.RefreshCatalogEntry(ResourceType.Utc, "new_creature");
+
+            notifications.Should().Be(1,
+                "adding an entry changes the ordered catalog consumed by Explorer and Search");
         }
 
         [Test]

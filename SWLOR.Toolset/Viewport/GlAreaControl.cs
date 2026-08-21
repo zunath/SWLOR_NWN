@@ -562,6 +562,8 @@ void main()
         private Point _pressStartPos;
         private bool _isClickCandidate;
         private InstanceMarker? _selectedInstance;
+        private Point _hoverPointerPos;
+        private bool _hasHoverPointerPos;
 
         // ----- Move/rotate gizmo -----
         private InstanceMarker? _manipulationOriginal;
@@ -627,7 +629,14 @@ void main()
         public bool IsPlacementActive
         {
             get => _isPlacementActive;
-            set => _isPlacementActive = value;
+            set
+            {
+                if (_isPlacementActive == value)
+                    return;
+
+                _isPlacementActive = value;
+                RefreshPlacementGhostAtCursor();
+            }
         }
 
         /// <summary>Raised when placement mode is active and a plain click (not a camera drag) lands in the viewport: the world-space ground point (ray intersected with the Z=0 plane). Clears <see cref="IsPlacementActive"/> before raising.</summary>
@@ -654,7 +663,7 @@ void main()
 
                 _placementGhost = value;
                 _ghostPosition = null;
-                RequestNextFrameRendering();
+                RefreshPlacementGhostAtCursor();
             }
         }
 
@@ -1348,14 +1357,18 @@ void main()
 
         public void HandlePointerMoved(PointerEventArgs e)
         {
+            var pointerPos = e.GetPosition(this);
+            _hoverPointerPos = pointerPos;
+            _hasHoverPointerPos = true;
+
             // The ghost must track the pointer with no button held - the one case the drag-mode
             // guard below rejects - so it is updated first and independently of it.
             if (_isPlacementActive && _placementGhost != null)
-                UpdatePlacementGhost(e.GetPosition(this));
+                UpdatePlacementGhost(pointerPos);
 
             // The cell highlight is a cursor too, and tracks with no button held for the same reason.
             if (_isTilePlacementActive && !_isPlacementActive)
-                UpdateTileHoverCell(e.GetPosition(this));
+                UpdateTileHoverCell(pointerPos);
 
             if (_dragMode == DragMode.None)
                 return;
@@ -1368,7 +1381,7 @@ void main()
                     (e.KeyModifiers & KeyModifiers.Shift) != 0) is { } liveDrag)
                 _dragMode = liveDrag;
 
-            var pos = e.GetPosition(this);
+            var pos = pointerPos;
             var dx = (float)(pos.X - _lastPointerPos.X);
             var dy = (float)(pos.Y - _lastPointerPos.Y);
             _lastPointerPos = pos;
@@ -1774,6 +1787,18 @@ void main()
             // put the preview off where the builder was not looking.
             _snappedDoorAnchor = SnapsToDoorAnchors ? NearestDoorAnchor(hit) : null;
             _ghostPosition = _snappedDoorAnchor?.Position ?? hit;
+
+            RequestNextFrameRendering();
+        }
+
+        /// <summary>
+        /// Reuses the last passive hover position when placement is armed from the keyboard, so the
+        /// ghost appears under a stationary cursor rather than waiting for another mouse move.
+        /// </summary>
+        private void RefreshPlacementGhostAtCursor()
+        {
+            if (_isPlacementActive && _placementGhost != null && _hasHoverPointerPos)
+                UpdatePlacementGhost(_hoverPointerPos);
 
             RequestNextFrameRendering();
         }

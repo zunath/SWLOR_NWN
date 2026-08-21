@@ -98,6 +98,7 @@ namespace SWLOR.Toolset.Editors
         private readonly Dictionary<string, BlueprintEditorViewModel> _openEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, AreaEditorViewModel> _openAreaEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly HashSet<string> _openingAreaEditors = new(StringComparer.OrdinalIgnoreCase);
+        private readonly AreaInstanceClipboard _areaInstanceClipboard = new();
         private readonly Dictionary<string, ObjectPlacement> _pendingAreaReveals =
             new(StringComparer.OrdinalIgnoreCase);
         private readonly List<WeakReference<Sources.ObjectSourceSectionViewModel>> _objectSources = new();
@@ -3433,13 +3434,14 @@ namespace SWLOR.Toolset.Editors
                     SoundPreviews(),
                     loadedDocuments,
                     TryEditCopyAndOpenBlueprint,
-                    _mutationLock);
+                    _mutationLock,
+                    _areaInstanceClipboard);
                 editor.Closed += _ => _openAreaEditors.Remove(resRef);
                 editor.TilesetChanged += () => _factory.NotifyActiveAreaChanged();
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);
                 editor.CatalogEntryChanged += () =>
                     _workspaceContext.RefreshCatalogEntry(ResourceType.Area, resRef);
-                editor.PlacementsChanged += _workspaceContext.InvalidatePlacementIndex;
+                editor.PlacementsChanged += _workspaceContext.InvalidateGitIndexes;
                 _openAreaEditors[resRef] = editor;
                 _factory.OpenDocument(editor);
                 DispatchPendingAreaReveal(editor);

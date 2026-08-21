@@ -205,9 +205,17 @@ namespace SWLOR.Toolset.Domain.Workspace
         /// current catalog snapshot immediately. A concurrent initial build also merges the
         /// refreshed entry before publishing its final snapshot, so the update cannot be lost.
         /// </summary>
-        public CatalogEntry? RefreshEntry(ResourceType type, string resRef)
+        public CatalogEntry? RefreshEntry(ResourceType type, string resRef) =>
+            RefreshEntry(type, resRef, out _);
+
+        /// <summary>
+        /// Re-reads one resource and reports whether its indexed metadata or membership changed.
+        /// Content-only edits return the existing entry without invalidating the ordered snapshot.
+        /// </summary>
+        public CatalogEntry? RefreshEntry(ResourceType type, string resRef, out bool changed)
         {
             var key = IdentityKey(type, resRef);
+            changed = false;
 
             // Recreating a resref that was deleted earlier has to lift its tombstone, or the entry
             // would be published here and then dropped again by a still-running build.
@@ -216,12 +224,16 @@ namespace SWLOR.Toolset.Domain.Workspace
             var entry = BuildEntry(type, resRef);
             if (entry == null)
             {
-                RemoveEntry(type, resRef);
+                changed = RemoveEntry(type, resRef);
                 return null;
             }
 
+            if (_indexedEntries.TryGetValue(key, out var existing) && existing == entry)
+                return existing;
+
             _indexedEntries[key] = entry;
             PublishSnapshot();
+            changed = true;
 
             return entry;
         }
@@ -229,13 +241,18 @@ namespace SWLOR.Toolset.Domain.Workspace
         /// <summary>
         /// Drops a resource that no longer exists, so panels stop listing a file that has been deleted.
         /// </summary>
-        public void RemoveEntry(ResourceType type, string resRef)
+        public bool RemoveEntry(ResourceType type, string resRef)
         {
             var key = IdentityKey(type, resRef);
             _removed[key] = true;
 
             if (_indexedEntries.TryRemove(key, out _))
+            {
                 PublishSnapshot();
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>

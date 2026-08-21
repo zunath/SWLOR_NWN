@@ -65,6 +65,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (initialPayload?.Session == null)
                 throw new InvalidOperationException("A conversation session is required to open the conversation window.");
 
+            EnsureReadableWindowGeometry();
             _session = initialPayload.Session;
             _controllerPlayer = initialPayload.ControllerPlayer;
             _isClosing = false;
@@ -77,6 +78,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 HandleRuntimeError(ex);
             }
+        }
+
+        protected override void OnClientPropertyUpdated(string propertyName)
+        {
+            if (propertyName == nameof(Geometry))
+                EnsureReadableWindowGeometry();
         }
 
         public Action OnClickChoice() => () =>
@@ -184,6 +191,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LineColors = lineColors;
             ChoiceTexts = choiceTexts;
             ChoiceColors = choiceColors;
+        }
+
+        private void EnsureReadableWindowGeometry()
+        {
+            var current = Geometry;
+            if (current == null || current.Width >= ConversationWindowDefinition.MinimumWindowWidth)
+                return;
+
+            Geometry = new GuiRectangle(
+                current.X,
+                current.Y,
+                ConversationWindowDefinition.MinimumWindowWidth,
+                current.Height);
         }
 
         private static IEnumerable<string> SplitDialogueText(string text)

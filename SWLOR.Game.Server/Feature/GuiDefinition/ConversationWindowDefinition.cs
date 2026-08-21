@@ -7,6 +7,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 {
     public sealed class ConversationWindowDefinition : IGuiWindowDefinition
     {
+        internal const float MinimumWindowWidth = 650f;
+
         private readonly GuiWindowBuilder<ConversationViewModel> _builder = new();
 
         public GuiConstructedWindow BuildWindow()

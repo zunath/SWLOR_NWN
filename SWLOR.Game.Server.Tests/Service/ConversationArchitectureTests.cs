@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ConversationService;
+using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -203,6 +204,35 @@ public class ConversationArchitectureTests
         segments.Should().HaveCountGreaterThan(1);
         segments.Should().OnlyContain(segment => segment.Length <= 80);
         string.Join(" ", segments).Should().Be(source);
+    }
+
+    [Test]
+    public void ConversationWindow_RejectsWidthsThatCouldClipWrappedRows()
+    {
+        var method = typeof(ConversationViewModel).GetMethod(
+            "EnsureReadableWindowGeometry",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        method.Should().NotBeNull();
+
+        var viewModel = new ConversationViewModel
+        {
+            Geometry = new GuiRectangle(17f, 23f, 300f, 410f)
+        };
+
+        method!.Invoke(viewModel, null);
+
+        viewModel.Geometry.X.Should().Be(17f);
+        viewModel.Geometry.Y.Should().Be(23f);
+        viewModel.Geometry.Width.Should().Be(650f);
+        viewModel.Geometry.Height.Should().Be(410f);
+
+        viewModel.Geometry = new GuiRectangle(29f, 31f, 780f, 470f);
+        method.Invoke(viewModel, null);
+
+        viewModel.Geometry.X.Should().Be(29f);
+        viewModel.Geometry.Y.Should().Be(31f);
+        viewModel.Geometry.Width.Should().Be(780f);
+        viewModel.Geometry.Height.Should().Be(470f);
     }
 
     [Test]

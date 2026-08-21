@@ -222,14 +222,19 @@ public class ConversationArchitectureTests
 
         var textPanelSource = definitionSource[textPanelStart..textPanelEnd];
         textPanelSource.Should().Contain(".SetScrollbars(NuiScrollbars.None)",
-            "dialogue text must wrap without adding a nested scrollbar");
+            "individual dialogue lines must not add a nested scrollbar");
         textPanelSource.Should().Contain(".SetScrollbars(NuiScrollbars.Y)",
             "the containing dialogue list owns the panel's only scrollbar");
         textPanelSource.Should().NotContain(".SetScrollbars(NuiScrollbars.Auto)");
-        textPanelSource.Should().Contain(".SetHeight(48f)",
-            "each text widget should fit a compact wrapped segment rather than reserve the full panel height");
-        textPanelSource.Should().Contain(".SetRowHeight(56f)",
-            "styled dialogue blocks should consume space in proportion to their rendered text");
+        textPanelSource.Should().Contain(".SetPadding(4f)",
+            "compact dialogue rows must retain reduced text padding");
+        textPanelSource.Should().NotContain(".SetPadding(8f)");
+        textPanelSource.Should().Contain(".SetHeight(24f)",
+            "each text widget should fit one display line rather than wrapping inside a fixed-height row");
+        textPanelSource.Should().Contain(".SetRowHeight(28f)",
+            "successive dialogue lines should flow without multi-line row spacing");
+        textPanelSource.Should().NotContain(".SetHeight(48f)");
+        textPanelSource.Should().NotContain(".SetRowHeight(56f)");
         textPanelSource.Should().NotContain(".SetHeight(196f)");
         textPanelSource.Should().NotContain(".SetRowHeight(208f)");
 
@@ -272,19 +277,49 @@ public class ConversationArchitectureTests
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
         limitMethod.Should().NotBeNull();
 
-        ((int)limitMethod!.Invoke(null, new object[] { 650f })!).Should().Be(80);
-        ((int)limitMethod.Invoke(null, new object[] { 400f })!).Should().Be(46);
-        ((int)limitMethod.Invoke(null, new object[] { 300f })!).Should().Be(24);
-        ((int)limitMethod.Invoke(null, new object[] { 200f })!).Should().Be(4);
+        ((int)limitMethod!.Invoke(null, new object[] { 650f })!).Should().Be(57);
+        ((int)limitMethod.Invoke(null, new object[] { 400f })!).Should().Be(26);
+        ((int)limitMethod.Invoke(null, new object[] { 300f })!).Should().Be(13);
+        ((int)limitMethod.Invoke(null, new object[] { 208f })!).Should().Be(2);
+        ((int)limitMethod.Invoke(null, new object[] { 200f })!).Should().Be(1);
+        ((int)limitMethod.Invoke(null, new object[] { 180f })!).Should().Be(1);
 
         var splitMethod = typeof(ConversationViewModel).GetMethod(
             "SplitDialogueText",
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
         var source = string.Join(" ", Enumerable.Repeat("responsive", 30));
-        var segments = ((IEnumerable<string>)splitMethod!.Invoke(null, new object[] { source, 46 })!).ToArray();
+        var segmentLimit = (int)limitMethod.Invoke(null, new object[] { 400f })!;
+        var segments = ((IEnumerable<string>)splitMethod!.Invoke(
+            null,
+            new object[] { source, segmentLimit })!).ToArray();
 
-        segments.Should().OnlyContain(segment => segment.Length <= 46);
+        segments.Should().OnlyContain(segment => segment.Length <= segmentLimit);
         string.Join(" ", segments).Should().Be(source);
+    }
+
+    [Test]
+    public void DefaultWidthConversationText_FlowsThroughSingleLineRows()
+    {
+        var limitMethod = typeof(ConversationViewModel).GetMethod(
+            "CalculateDialogueSegmentLimit",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+        var splitMethod = typeof(ConversationViewModel).GetMethod(
+            "SplitDialogueText",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+        limitMethod.Should().NotBeNull();
+        splitMethod.Should().NotBeNull();
+
+        const string source =
+            "We will be landing onto CZ-220 shortly. Please make sure you have all your belongings before exiting the ship.";
+        var segmentLimit = (int)limitMethod!.Invoke(null, new object[] { 650f })!;
+        var segments = ((IEnumerable<string>)splitMethod!.Invoke(
+            null,
+            new object[] { source, segmentLimit })!).ToArray();
+
+        segments.Should().Equal(
+            "We will be landing onto CZ-220 shortly. Please make sure",
+            "you have all your belongings before exiting the ship.");
+        segments.Should().OnlyContain(segment => segment.Length <= segmentLimit);
     }
 
     [Test]
@@ -322,10 +357,15 @@ public class ConversationArchitectureTests
     [Test]
     public void EveryAuthoredConversationBlock_FitsCompactRows()
     {
-        var method = typeof(ConversationViewModel).GetMethod(
+        var splitMethod = typeof(ConversationViewModel).GetMethod(
             "SplitDialogueText",
             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
-        method.Should().NotBeNull();
+        var limitMethod = typeof(ConversationViewModel).GetMethod(
+            "CalculateDialogueSegmentLimit",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+        splitMethod.Should().NotBeNull();
+        limitMethod.Should().NotBeNull();
+        var defaultSegmentLimit = (int)limitMethod!.Invoke(null, new object[] { 650f })!;
 
         var conversationDirectory = Path.Combine(
             FindRepositoryRoot().FullName,
@@ -341,10 +381,15 @@ public class ConversationArchitectureTests
                 foreach (var block in node.Value["Text"]?.Children<JObject>() ?? [])
                 {
                     var source = block["Text"]?.Value<string>() ?? string.Empty;
-                    var segments = ((IEnumerable<string>)method!.Invoke(null, new object[] { source, 80 })!).ToArray();
+                    var segments = ((IEnumerable<string>)splitMethod!.Invoke(
+                        null,
+                        new object[] { source, defaultSegmentLimit })!).ToArray();
                     if (!string.IsNullOrWhiteSpace(source) && segments.Length == 0)
                         errors.Add($"{Path.GetFileName(path)}:{node.Name} produced no display rows");
-                    if (segments.Any(segment => segment.Length > 80 || segment.Contains('\n') || segment.Contains('\r')))
+                    if (segments.Any(segment =>
+                            segment.Length > defaultSegmentLimit ||
+                            segment.Contains('\n') ||
+                            segment.Contains('\r')))
                         errors.Add($"{Path.GetFileName(path)}:{node.Name} produced an oversized display row");
                 }
             }

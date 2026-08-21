@@ -2512,6 +2512,8 @@ namespace SWLOR.Game.Server.Service
             // Saber Ward / Aegis Eternal: re-type a share of an incoming physical hit into a real Force
             // instance (mitigated by Force resistance, shown as Force) before physical resistance.
             Combat.ApplyIncomingPhysicalToForceConversion(activator, target, damageType, ref calculatedDamage);
+            // Conversion must split first so each portion receives only its own typed Leadership channel.
+            calculatedDamage = Combat.ApplyTypedLeadershipDamageTakenModifier(target, calculatedDamage, damageType);
             calculatedDamage = Resistance.ApplyResistanceToDamage(target, damageType, calculatedDamage);
             calculatedDamage = Combat.ApplyDamageTakenModifiers(
                 target,
@@ -2740,6 +2742,8 @@ namespace SWLOR.Game.Server.Service
             // Saber Ward / Aegis Eternal: re-type a share of an incoming physical hit into a real Force
             // instance (mitigated by Force resistance, shown as Force) before physical resistance.
             Combat.ApplyIncomingPhysicalToForceConversion(activator, target, damageType, ref calculatedDamage);
+            // Conversion must split first so each portion receives only its own typed Leadership channel.
+            calculatedDamage = Combat.ApplyTypedLeadershipDamageTakenModifier(target, calculatedDamage, damageType);
             calculatedDamage = Resistance.ApplyResistanceToDamage(target, damageType, calculatedDamage);
             calculatedDamage = Combat.ApplyDamageTakenModifiers(
                 target,

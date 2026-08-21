@@ -202,8 +202,8 @@ public class LightsaberPerkBehaviorTests
             "the converted Force share must be dispatched as real damage");
         conversion.Should().Contain("forcePortion",
             "the amount carved from physical damage must be the amount dispatched as Force damage");
-        conversion.Should().Contain("typedLeadershipReductionAlreadyApplied: true",
-            "the direct physical pipeline already applied its typed Leadership reduction before splitting the Force share");
+        conversion.Should().Contain("typedLeadershipReductionAlreadyApplied: false",
+            "the converted Force share must receive its own typed Leadership channel after the split");
 
         // The Force portion must be deferred off the native damage-roll hook (DelayCommand), not applied
         // synchronously mid-hook, or it re-enters the damage/AI chain and cascades with reflect effects.
@@ -211,11 +211,44 @@ public class LightsaberPerkBehaviorTests
 
         // The native auto-attack path splits the physical hit before physical resistance.
         var native = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
-        native.Should().Contain("Combat.ApplyIncomingPhysicalToForceConversion(attacker.m_idSelf, target.m_idSelf, damageType, ref damage)");
+        var nativeConversion = native.IndexOf(
+            "Combat.ApplyIncomingPhysicalToForceConversion(attacker.m_idSelf, target.m_idSelf, damageType, ref damage)",
+            StringComparison.Ordinal);
+        var nativeLeadership = native.IndexOf(
+            "Combat.ApplyTypedLeadershipDamageTakenModifier(target.m_idSelf, damage, damageType)",
+            StringComparison.Ordinal);
+        var nativeResistance = native.IndexOf(
+            "Resistance.ApplyResistanceToDamageNative(target, damageType, damage)",
+            StringComparison.Ordinal);
+        nativeConversion.Should().BeGreaterThanOrEqualTo(0);
+        nativeLeadership.Should().BeGreaterThan(nativeConversion,
+            "typed Leadership mitigation must run after the physical/Force split");
+        nativeLeadership.Should().BeLessThan(nativeResistance,
+            "the explicit typed stage must preserve the existing pre-resistance ordering");
 
         // Both ability damage paths do the same before their physical resistance stage.
         var ability = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "Ability.cs"));
-        ability.Should().Contain("Combat.ApplyIncomingPhysicalToForceConversion(activator, target, damageType, ref calculatedDamage)");
+        const string abilityConversionCall =
+            "Combat.ApplyIncomingPhysicalToForceConversion(activator, target, damageType, ref calculatedDamage)";
+        const string abilityLeadershipCall =
+            "Combat.ApplyTypedLeadershipDamageTakenModifier(target, calculatedDamage, damageType)";
+        const string abilityResistanceCall =
+            "Resistance.ApplyResistanceToDamage(target, damageType, calculatedDamage)";
+        var abilitySearchStart = 0;
+        for (var path = 0; path < 2; path++)
+        {
+            var abilityConversion = ability.IndexOf(abilityConversionCall, abilitySearchStart, StringComparison.Ordinal);
+            abilityConversion.Should().BeGreaterThanOrEqualTo(0);
+            var abilityLeadership = ability.IndexOf(abilityLeadershipCall, abilityConversion, StringComparison.Ordinal);
+            abilityLeadership.Should().BeGreaterThan(abilityConversion);
+            var abilityResistance = ability.IndexOf(abilityResistanceCall, abilityLeadership, StringComparison.Ordinal);
+            abilityLeadership.Should().BeLessThan(abilityResistance,
+                "both player and NPC ability paths must mitigate the post-split physical remainder before resistance");
+            abilitySearchStart = abilityResistance + abilityResistanceCall.Length;
+        }
+
+        ability.IndexOf(abilityConversionCall, abilitySearchStart, StringComparison.Ordinal).Should().Be(-1);
+        ability.IndexOf(abilityLeadershipCall, abilitySearchStart, StringComparison.Ordinal).Should().Be(-1);
     }
 
     [Test]

@@ -229,6 +229,24 @@ public class LeadershipCombatUpgradeTests
                 typedLeadershipReductionAlreadyApplied: true)
             .Should().Be(90,
                 "the guard must skip the typed stage rather than applying Leadership reduction twice");
+
+        var forcePortion = Combat.GetIncomingPhysicalToForceConversionPortion(100, 40);
+        var physicalPortion = 100 - forcePortion;
+        var adjustedPhysicalPortion = ApplyTypedLeadershipDamageTakenPercentageModifier(
+                physicalPortion,
+                CombatDamageType.Physical,
+                physicalAdjustment: -20,
+                forceAdjustment: -15);
+        var adjustedForcePortion = ApplyTypedLeadershipDamageTakenPercentageModifier(
+                forcePortion,
+                CombatDamageType.Force,
+                physicalAdjustment: -20,
+                forceAdjustment: -15);
+        adjustedPhysicalPortion.Should().Be(48);
+        adjustedForcePortion.Should().Be(34,
+                "the converted share must use Force Leadership rather than inheriting the physical reduction");
+        (adjustedPhysicalPortion + adjustedForcePortion).Should().Be(82,
+            "different typed channels must reduce their own post-split portions exactly once");
     }
 
     [Test]
@@ -257,23 +275,35 @@ public class LeadershipCombatUpgradeTests
         genericStage.Should().Contain("StatType.LeadershipPhysicalDamageTakenPercentAdjustment");
         genericStage.Should().Contain("StatType.LeadershipForceDamageTakenPercentAdjustment");
         genericStage.Should().Contain("StatType.LeadershipOtherDamageTakenPercentAdjustment");
-        percentageStage.Should().Contain("!typedLeadershipReductionAlreadyApplied && damageType.IsPhysicalDamageType()");
-        percentageStage.Should().Contain("!typedLeadershipReductionAlreadyApplied && damageType == CombatDamageType.Force");
-        percentageStage.IndexOf("damage = ApplyPercentDamageAdjustment(damage, typedLeadershipAdjustment)", StringComparison.Ordinal)
+        percentageStage.Should().Contain("if (!typedLeadershipReductionAlreadyApplied)");
+        percentageStage.Should().Contain("damage = ApplyTypedLeadershipDamageTakenPercentageModifier(");
+        percentageStage.IndexOf("damage = ApplyTypedLeadershipDamageTakenPercentageModifier(", StringComparison.Ordinal)
             .Should().BeLessThan(percentageStage.IndexOf(
                 "return genericAdjustment == 0",
                 StringComparison.Ordinal),
                 "typed Leadership and generic damage reduction must remain separate multiplicative stages");
-        typedStage.Should().Contain("StatType.LeadershipPhysicalDamageTakenPercentAdjustment");
-        typedStage.Should().Contain("StatType.LeadershipForceDamageTakenPercentAdjustment");
+        typedStage.Should().NotContain("StatType.LeadershipPhysicalDamageTakenPercentAdjustment");
+        typedStage.Should().NotContain("StatType.LeadershipForceDamageTakenPercentAdjustment");
+
+        var directTypedStage = combat[combat.IndexOf(
+            "public static int ApplyTypedLeadershipDamageTakenModifier(",
+            StringComparison.Ordinal)..combat.IndexOf(
+            "private static int ApplyTypedLeadershipDamageTakenPercentageModifier(",
+            StringComparison.Ordinal)];
+        directTypedStage.Should().Contain("StatType.LeadershipPhysicalDamageTakenPercentAdjustment");
+        directTypedStage.Should().Contain("StatType.LeadershipForceDamageTakenPercentAdjustment");
 
         var ability = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Ability.cs").FullName);
         (ability.Split("typedLeadershipReductionAlreadyApplied: true").Length - 1).Should().Be(2,
-            "both direct ability damage paths already apply typed Leadership reductions in ApplyDamageDealtModifiers");
+            "both direct ability damage paths apply typed Leadership in the explicit post-conversion stage");
+        (ability.Split("ApplyTypedLeadershipDamageTakenModifier(target, calculatedDamage, damageType)").Length - 1)
+            .Should().Be(2);
 
         var nativeDamageRoll = File.ReadAllText((root / "SWLOR.Game.Server" / "Native" / "GetDamageRoll.cs").FullName);
         nativeDamageRoll.Should().Contain("typedLeadershipReductionAlreadyApplied: true",
-            "the direct weapon pipeline already applies typed Leadership reductions in ApplyDamageDealtModifiers");
+            "the direct weapon pipeline applies typed Leadership in the explicit post-conversion stage");
+        nativeDamageRoll.Should().Contain(
+            "ApplyTypedLeadershipDamageTakenModifier(target.m_idSelf, damage, damageType)");
 
         var triggeredDamage = combat[combat.IndexOf(
             "public static int ApplyTriggeredDamage(",
@@ -288,8 +318,8 @@ public class LeadershipCombatUpgradeTests
             StringComparison.Ordinal)..combat.IndexOf(
             "public static int ApplyStatusSourceAccuracyModifiers(",
             StringComparison.Ordinal)];
-        conversion.Should().Contain("typedLeadershipReductionAlreadyApplied: true",
-            "the converted portion was split after direct physical typed modifiers already ran");
+        conversion.Should().Contain("typedLeadershipReductionAlreadyApplied: false",
+            "the converted Force portion must apply its own typed Leadership channel");
     }
 
     [Test]
@@ -453,6 +483,25 @@ public class LeadershipCombatUpgradeTests
             -18,
             -10,
             typedLeadershipReductionAlreadyApplied,
+        })!;
+    }
+
+    private static int ApplyTypedLeadershipDamageTakenPercentageModifier(
+        int damage,
+        CombatDamageType damageType,
+        int physicalAdjustment,
+        int forceAdjustment)
+    {
+        var method = typeof(Combat).GetMethod(
+            "ApplyTypedLeadershipDamageTakenPercentageModifier",
+            BindingFlags.Static | BindingFlags.NonPublic);
+        method.Should().NotBeNull();
+        return (int)method!.Invoke(null, new object[]
+        {
+            damage,
+            damageType,
+            physicalAdjustment,
+            forceAdjustment,
         })!;
     }
 

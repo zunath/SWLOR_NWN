@@ -570,6 +570,9 @@ namespace SWLOR.Game.Server.Native
                 Combat.ApplyIncomingPhysicalToForceConversion(attacker.m_idSelf, target.m_idSelf, damageType, ref damage);
             }
 
+            // Conversion must split first so each portion receives only its own typed Leadership channel.
+            damage = Combat.ApplyTypedLeadershipDamageTakenModifier(target.m_idSelf, damage, damageType);
+
             damage = Resistance.ApplyResistanceToDamageNative(target, damageType, damage);
 
             // Apply droid electrical damage bonus

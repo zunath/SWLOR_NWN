@@ -642,17 +642,17 @@ namespace SWLOR.Game.Server.Service
             int genericAdjustment,
             bool typedLeadershipReductionAlreadyApplied)
         {
-            var typedLeadershipAdjustment = 0;
-            if (!typedLeadershipReductionAlreadyApplied && damageType.IsPhysicalDamageType())
-                typedLeadershipAdjustment = leadershipPhysicalAdjustment;
-            else if (!typedLeadershipReductionAlreadyApplied && damageType == CombatDamageType.Force)
-                typedLeadershipAdjustment = leadershipForceAdjustment;
-
-            // Direct damage applies this channel in ApplyTargetStatusDamageModifiers. Damage that
-            // bypasses that pipeline must still use the same separate stage so its Leadership and
-            // generic reductions remain multiplicative rather than collapsing into one percentage.
-            if (typedLeadershipAdjustment != 0)
-                damage = ApplyPercentDamageAdjustment(damage, typedLeadershipAdjustment);
+            // Direct damage applies this channel explicitly after physical-to-Force conversion.
+            // Damage that bypasses that pipeline must still use the same separate stage so its
+            // Leadership and generic reductions remain multiplicative.
+            if (!typedLeadershipReductionAlreadyApplied)
+            {
+                damage = ApplyTypedLeadershipDamageTakenPercentageModifier(
+                    damage,
+                    damageType,
+                    leadershipPhysicalAdjustment,
+                    leadershipForceAdjustment);
+            }
 
             if (!damageType.IsPhysicalDamageType() && damageType != CombatDamageType.Force)
                 genericAdjustment += leadershipOtherAdjustment;
@@ -660,6 +660,40 @@ namespace SWLOR.Game.Server.Service
             return genericAdjustment == 0
                 ? damage
                 : ApplyPercentDamageAdjustment(damage, genericAdjustment);
+        }
+
+        public static int ApplyTypedLeadershipDamageTakenModifier(
+            uint defender,
+            int damage,
+            CombatDamageType damageType)
+        {
+            var leadershipPhysicalAdjustment = damageType.IsPhysicalDamageType()
+                ? Stat.GetStatAdjustment(defender, StatType.LeadershipPhysicalDamageTakenPercentAdjustment)
+                : 0;
+            var leadershipForceAdjustment = damageType == CombatDamageType.Force
+                ? Stat.GetStatAdjustment(defender, StatType.LeadershipForceDamageTakenPercentAdjustment)
+                : 0;
+            return ApplyTypedLeadershipDamageTakenPercentageModifier(
+                damage,
+                damageType,
+                leadershipPhysicalAdjustment,
+                leadershipForceAdjustment);
+        }
+
+        private static int ApplyTypedLeadershipDamageTakenPercentageModifier(
+            int damage,
+            CombatDamageType damageType,
+            int leadershipPhysicalAdjustment,
+            int leadershipForceAdjustment)
+        {
+            var adjustment = damageType.IsPhysicalDamageType()
+                ? leadershipPhysicalAdjustment
+                : damageType == CombatDamageType.Force
+                    ? leadershipForceAdjustment
+                    : 0;
+            return adjustment == 0
+                ? damage
+                : ApplyPercentDamageAdjustment(damage, adjustment);
         }
 
         private static int ApplyDamageTakenRedirectToStatusSource(
@@ -4058,9 +4092,6 @@ namespace SWLOR.Game.Server.Service
             if (damageType.IsPhysicalDamageType())
             {
                 adjustment += Stat.GetStatAdjustment(defender, StatType.PhysicalDamageTakenPercentAdjustment);
-                adjustment += Stat.GetStatAdjustment(
-                    defender,
-                    StatType.LeadershipPhysicalDamageTakenPercentAdjustment);
             }
 
             if (isAbilityDamage && damageType.IsPhysicalDamageType())
@@ -4069,9 +4100,6 @@ namespace SWLOR.Game.Server.Service
             if (damageType == CombatDamageType.Force)
             {
                 adjustment += Stat.GetStatAdjustment(defender, StatType.ForceDamageTakenPercentAdjustment);
-                adjustment += Stat.GetStatAdjustment(
-                    defender,
-                    StatType.LeadershipForceDamageTakenPercentAdjustment);
             }
 
             if (damageType.IsPhysicalDamageType() && IsRangedDamageSkill(skillType))
@@ -4633,7 +4661,8 @@ namespace SWLOR.Game.Server.Service
         /// the converted share from <paramref name="physicalDamage"/> (so it is not also dealt as physical) and
         /// deals it as Force damage, so it is reduced by the defender's Force resistance and shown as Force in
         /// the combat log. Runs before the physical-resistance stage; the Force portion is routed through
-        /// <see cref="ApplyTriggeredDamage"/>, which applies Force resistance and the damage-taken pipeline.
+        /// <see cref="ApplyTriggeredDamage"/>, which applies Force resistance, the Force-specific Leadership
+        /// channel, and the remaining damage-taken pipeline.
         /// Returns the pre-resistance Force amount split off (0 when nothing converts).
         /// </summary>
         public static int ApplyIncomingPhysicalToForceConversion(
@@ -4667,7 +4696,7 @@ namespace SWLOR.Game.Server.Service
                         defender,
                         forcePortion,
                         CombatDamageType.Force,
-                        typedLeadershipReductionAlreadyApplied: true);
+                        typedLeadershipReductionAlreadyApplied: false);
             });
             return forcePortion;
         }

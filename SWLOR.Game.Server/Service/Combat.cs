@@ -82,6 +82,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<uint, DateTime> _stealthOpeningWindows = new();
         private static readonly Dictionary<(uint, uint), TargetHitSequenceState> _areaAbilityTargetHitSequences = new();
         private static readonly Dictionary<uint, float> _attackSwingDebts = new();
+        private static readonly Dictionary<uint, float> _attackSwingDebtsWithoutLimitedReduction = new();
         private static readonly Dictionary<uint, RepeatedTargetDamageState> _repeatedTargetDamageStates = new();
         private static readonly Dictionary<uint, RepeatedTargetDamageState> _meleeRepeatedTargetDamageStates = new();
         private static readonly Dictionary<uint, RepeatedTargetDamageState> _rangedRepeatedTargetDamageStates = new();
@@ -4809,6 +4810,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             _attackSwingDebts.Remove(creature);
+            _attackSwingDebtsWithoutLimitedReduction.Remove(creature);
             _repeatedTargetDamageStates.Remove(creature);
             _meleeRepeatedTargetDamageStates.Remove(creature);
             _rangedRepeatedTargetDamageStates.Remove(creature);
@@ -10627,9 +10629,14 @@ namespace SWLOR.Game.Server.Service
 
             if (limitedReductionRemainingAttacks > 0)
             {
+                var baselineAttackDebt = _attackSwingDebtsWithoutLimitedReduction.TryGetValue(
+                    attacker,
+                    out var trackedBaselineAttackDebt)
+                    ? trackedBaselineAttackDebt
+                    : attackDebt;
                 var baselineAttacks = CalculateAttacksPerSwing(
                     effectiveDelayWithoutLimitedReductionMilliseconds,
-                    attackDebt,
+                    baselineAttackDebt,
                     out var baselineUpdatedAttackDebt);
                 attacks = CapAttacksPerSwingForLimitedAttackEffect(
                     attacks,
@@ -10641,7 +10648,20 @@ namespace SWLOR.Game.Server.Service
                 // discard fractional debt created by the expiring reduction while retaining debt
                 // earned without it.
                 if (attacks >= limitedReductionRemainingAttacks)
+                {
                     updatedAttackDebt = baselineUpdatedAttackDebt;
+                    _attackSwingDebtsWithoutLimitedReduction.Remove(attacker);
+                }
+                else
+                {
+                    // Preserve zero as an explicit tracked value. Falling back to the accelerated
+                    // ledger on the next swing would re-contaminate this baseline.
+                    _attackSwingDebtsWithoutLimitedReduction[attacker] = baselineUpdatedAttackDebt;
+                }
+            }
+            else
+            {
+                _attackSwingDebtsWithoutLimitedReduction.Remove(attacker);
             }
 
             if (updatedAttackDebt <= 0f)
@@ -10673,6 +10693,7 @@ namespace SWLOR.Game.Server.Service
         public static void ClearAttackSwingDebt(uint attacker)
         {
             _attackSwingDebts.Remove(attacker);
+            _attackSwingDebtsWithoutLimitedReduction.Remove(attacker);
         }
 
         private static int ApplyOffhandAttackDelayReduction(uint attacker, int offhandDelay)

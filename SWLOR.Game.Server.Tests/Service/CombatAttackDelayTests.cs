@@ -368,6 +368,48 @@ public class CombatAttackDelayTests
     }
 
     [Test]
+    public void ConsumeAttacksPerSwing_DropsAcceleratedDebtAccumulatedBeforeTheFinalCharge()
+    {
+        const uint attacker = 0x7F000006;
+        const int acceleratedDelay = 1400;
+        const int baselineDelay = 1750;
+        Combat.ClearAttackSwingDebt(attacker);
+
+        var debts = (Dictionary<uint, float>)typeof(Combat)
+            .GetField("_attackSwingDebts", BindingFlags.NonPublic | BindingFlags.Static)!
+            .GetValue(null)!;
+
+        try
+        {
+            var firstSwingAttacks = Combat.ConsumeAttacksPerSwing(
+                attacker,
+                acceleratedDelay,
+                baselineDelay,
+                false,
+                baselineDelay,
+                2);
+            firstSwingAttacks.Should().Be(1);
+            debts[attacker].Should().BeApproximately(0.25f, 0.0001f,
+                "the first accelerated one-roll swing carries fractional debt while one charge remains");
+
+            var finalSwingAttacks = Combat.ConsumeAttacksPerSwing(
+                attacker,
+                acceleratedDelay,
+                baselineDelay,
+                false,
+                baselineDelay,
+                1);
+            finalSwingAttacks.Should().Be(1);
+            debts.Should().NotContainKey(attacker,
+                "the parallel baseline ledger must replace debt accumulated over earlier limited-speed swings");
+        }
+        finally
+        {
+            Combat.ClearAttackSwingDebt(attacker);
+        }
+    }
+
+    [Test]
     public void CalculateAttacksPerSwing_CapsAttacksAtMaxPerSwing()
     {
         var attacks = Combat.CalculateAttacksPerSwing(Combat.MinimumAttackDelayMilliseconds, 5f, out var attackDebt);

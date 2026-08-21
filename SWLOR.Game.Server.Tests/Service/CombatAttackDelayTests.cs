@@ -284,9 +284,9 @@ public class CombatAttackDelayTests
         }
     }
 
-    [TestCase(2, 1, 1, 2)]
-    [TestCase(3, 1, 2, 3)]
-    [TestCase(3, 2, 1, 3)]
+    [TestCase(2, 1, 1, 1)]
+    [TestCase(3, 1, 2, 2)]
+    [TestCase(3, 2, 1, 2)]
     [TestCase(3, 2, 3, 3)]
     public void CapAttacksPerSwingForLimitedAttackEffect_DoesNotOverscheduleCharges(
         int acceleratedAttacks,
@@ -326,6 +326,42 @@ public class CombatAttackDelayTests
             attacks.Should().Be(2);
             debts.Should().NotContainKey(attacker,
                 "both matching rolls consume the two remaining charges, so accelerated debt must expire with the effect");
+        }
+        finally
+        {
+            Combat.ClearAttackSwingDebt(attacker);
+        }
+    }
+
+    [Test]
+    public void ConsumeAttacksPerSwing_DoesNotScheduleAnAcceleratedRollBeyondTheFinalCharge()
+    {
+        const uint attacker = 0x7F000007;
+        const int acceleratedDelay = 875;
+        const int baselineDelay = 1750;
+        Combat.ClearAttackSwingDebt(attacker);
+
+        var debts = (Dictionary<uint, float>)typeof(Combat)
+            .GetField("_attackSwingDebts", BindingFlags.NonPublic | BindingFlags.Static)!
+            .GetValue(null)!;
+
+        try
+        {
+            // One carried roll makes this swing worth three accelerated rolls but two baseline
+            // rolls. The one remaining charge is consumed by the first baseline roll, so it must
+            // not add a third roll to the count passed to ResolveAttack.
+            debts[attacker] = 1f;
+            var attacks = Combat.ConsumeAttacksPerSwing(
+                attacker,
+                acceleratedDelay,
+                baselineDelay,
+                false,
+                baselineDelay,
+                1);
+
+            attacks.Should().Be(2);
+            debts.Should().NotContainKey(attacker,
+                "the uncharged third roll must not be pre-scheduled and limited-speed debt expires with the charge");
         }
         finally
         {

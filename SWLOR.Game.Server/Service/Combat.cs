@@ -10682,7 +10682,10 @@ namespace SWLOR.Game.Server.Service
             if (remainingAttacks <= 0)
                 return baselineAttacks;
 
-            return Math.Min(acceleratedAttacks, baselineAttacks + remainingAttacks);
+            // Baseline rolls still happen after the limited effect expires, but they must not
+            // create extra charged rolls. Only the portion covered by remaining charges may use
+            // the accelerated schedule.
+            return Math.Min(acceleratedAttacks, Math.Max(baselineAttacks, remainingAttacks));
         }
 
         /// <summary>

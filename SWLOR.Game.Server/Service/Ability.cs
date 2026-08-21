@@ -98,7 +98,10 @@ namespace SWLOR.Game.Server.Service
             return _abilities[featType];
         }
 
-        public static void BeginAbilityImpact(uint activator, AbilityDetail ability)
+        public static void BeginAbilityImpact(
+            uint activator,
+            AbilityDetail ability,
+            bool countsAsAttackAttempt = true)
         {
             if (!GetIsObjectValid(activator) || ability == null)
                 return;
@@ -122,7 +125,8 @@ namespace SWLOR.Game.Server.Service
                 nextSkillAbilityBonuses.CriticalRatePercentAdjustment + guardedHitBonuses.CriticalRatePercentAdjustment,
                 nextSkillAbilityBonuses.DefenseIgnorePercentAdjustment,
                 guardedHitBonuses.EnmityBonus,
-                statusAppliedNextAttackDamageBonus);
+                statusAppliedNextAttackDamageBonus,
+                countsAsAttackAttempt);
         }
 
         private static void BeginAbilityImpact(
@@ -132,7 +136,8 @@ namespace SWLOR.Game.Server.Service
             int nextAbilityCriticalRatePercentAdjustment,
             int nextAbilityDefenseIgnorePercentAdjustment = 0,
             int nextAttackEnmityBonus = 0,
-            int statusAppliedNextAttackDamageBonus = 0)
+            int statusAppliedNextAttackDamageBonus = 0,
+            bool countsAsAttackAttempt = true)
         {
             if (!GetIsObjectValid(activator) || ability == null)
                 return;
@@ -143,7 +148,8 @@ namespace SWLOR.Game.Server.Service
                 nextAbilityCriticalRatePercentAdjustment,
                 nextAbilityDefenseIgnorePercentAdjustment,
                 nextAttackEnmityBonus,
-                statusAppliedNextAttackDamageBonus);
+                statusAppliedNextAttackDamageBonus,
+                countsAsAttackAttempt);
         }
 
         public static AbilityImpactSummary EndAbilityImpact(uint activator)
@@ -153,7 +159,7 @@ namespace SWLOR.Game.Server.Service
 
             _trackedAbilityImpacts.Remove(activator);
             impact.FlushDamageEffects(activator);
-            if (impact.Ability.IsHostileAbility)
+            if (impact.Ability.IsHostileAbility && impact.CountsAsAttackAttempt)
             {
                 StatusEffect.NotifyAttackAttemptStatusEffects(
                     activator,
@@ -3050,6 +3056,7 @@ namespace SWLOR.Game.Server.Service
 
             public AbilityDetail Ability { get; }
             public AbilityImpactSummary Summary { get; }
+            public bool CountsAsAttackAttempt { get; }
             public int NextAbilityDamageBonus { get; private set; }
             public int NextAbilityCriticalRatePercentAdjustment { get; }
             public int NextAbilityDefenseIgnorePercentAdjustment { get; }
@@ -3064,7 +3071,8 @@ namespace SWLOR.Game.Server.Service
                 int nextAbilityCriticalRatePercentAdjustment,
                 int nextAbilityDefenseIgnorePercentAdjustment,
                 int nextAttackEnmityBonus,
-                int statusAppliedNextAttackDamageBonus)
+                int statusAppliedNextAttackDamageBonus,
+                bool countsAsAttackAttempt)
             {
                 Ability = ability;
                 NextAbilityDamageBonus = nextAbilityDamageBonus;
@@ -3072,6 +3080,7 @@ namespace SWLOR.Game.Server.Service
                 NextAbilityDefenseIgnorePercentAdjustment = nextAbilityDefenseIgnorePercentAdjustment;
                 NextAttackEnmityBonus = nextAttackEnmityBonus;
                 StatusAppliedNextAttackDamageBonus = statusAppliedNextAttackDamageBonus;
+                CountsAsAttackAttempt = countsAsAttackAttempt;
                 Summary = new AbilityImpactSummary
                 {
                     SkillType = ability.SkillType,

@@ -203,11 +203,36 @@ public class GeneratedWeaponPerkBehaviorTests
         nativeSource.Should().Contain("StatusEffect.NotifyAttackAttemptStatusEffects(");
         nativeSource.Should().Contain("UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType)");
         nativeSource.Should().Contain("GetCurrentAttackWeapon(isOffHandAttack ? 1 : 0)");
+        var placeableBranchIndex = nativeSource.IndexOf(
+            "if (targetObject.m_nObjectType != (int)ObjectType.Creature)",
+            StringComparison.Ordinal);
+        var placeableReturnIndex = nativeSource.IndexOf(
+            "ProfilerPlugin.PopPerfScope();",
+            placeableBranchIndex,
+            StringComparison.Ordinal);
+        var placeableNotificationIndex = nativeSource.IndexOf(
+            "StatusEffect.NotifyAttackAttemptStatusEffects(",
+            placeableBranchIndex,
+            StringComparison.Ordinal);
+        placeableNotificationIndex.Should().BeGreaterThan(placeableBranchIndex);
+        placeableNotificationIndex.Should().BeLessThan(placeableReturnIndex,
+            "automatic hits against destructible placeables must spend attack charges");
 
         var abilitySource = File.ReadAllText(Path.Combine(
             root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
-        abilitySource.Should().Contain("if (impact.Ability.IsHostileAbility)");
+        abilitySource.Should().Contain(
+            "if (impact.Ability.IsHostileAbility && impact.CountsAsAttackAttempt)");
         abilitySource.Should().Contain("impact.Summary.SkillType");
+
+        var creepingTerrorSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "Force",
+            "CreepingTerrorAbilityDefinition.cs"));
+        creepingTerrorSource.Should().Contain("countsAsAttackAttempt: false",
+            "periodic field pulses are effects, not new attack attempts");
 
         var statusEffectSource = File.ReadAllText(Path.Combine(
             root.FullName, "SWLOR.Game.Server", "Service", "StatusEffect.cs"));

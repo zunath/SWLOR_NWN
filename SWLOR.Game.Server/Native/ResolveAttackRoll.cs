@@ -120,12 +120,20 @@ namespace SWLOR.Game.Server.Native
                 Log.Write(LogGroup.Attack, "Attacker: " + attacker.GetFirstName().GetSimple(0) + ", defender " + targetObject.GetFirstName().GetSimple(0));
 
                 var pAttackData = pCombatRound.GetAttack(pCombatRound.m_nCurrentAttack);
+                var isOffHandAttack = pCombatRound.GetWeaponAttackType() == WeaponAttackTypeOffHand;
+                var weapon = pCombatRound.GetCurrentAttackWeapon(isOffHandAttack ? 1 : 0);
+                var weaponSkillType = weapon == null
+                    ? SkillType.Invalid
+                    : SWLOR.Game.Server.Service.Skill.GetSkillTypeByBaseItem((BaseItem)weapon.m_nBaseItem);
 
                 if (targetObject.m_nObjectType != (int)ObjectType.Creature)
                 {
                     // Automatically hit non-creature targets.  Do not apply criticals.
                     Log.Write(LogGroup.Attack, "Placeable target.  Auto hit.");
                     pAttackData.m_nAttackResult = AttackResultAutomaticHit;
+                    StatusEffect.NotifyAttackAttemptStatusEffects(
+                        attacker.m_idSelf,
+                        weaponSkillType);
                     ProfilerPlugin.PopPerfScope();
                     return;
                 }
@@ -142,11 +150,6 @@ namespace SWLOR.Game.Server.Native
                 }
 
                 var attackType = (uint)AttackType.Melee;
-                var isOffHandAttack = pCombatRound.GetWeaponAttackType() == WeaponAttackTypeOffHand;
-                var weapon = pCombatRound.GetCurrentAttackWeapon(isOffHandAttack ? 1 : 0);
-                var weaponSkillType = weapon == null
-                    ? SkillType.Invalid
-                    : SWLOR.Game.Server.Service.Skill.GetSkillTypeByBaseItem((BaseItem)weapon.m_nBaseItem);
 
                 // Check whether this is a ranged weapon.
                 if (weapon != null && pAttackData.m_bRangedAttack == 1 && attacker.GetRangeWeaponEquipped() == 1)

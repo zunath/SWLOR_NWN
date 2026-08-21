@@ -302,12 +302,44 @@ public class CombatAttackDelayTests
     }
 
     [Test]
-    public void ConsumeAttacksPerSwing_PreservesAcceleratedDebtUntilEveryRemainingChargeIsScheduled()
+    public void ConsumeAttacksPerSwing_DropsAcceleratedDebtWhenTheSwingConsumesEveryRemainingCharge()
     {
         const uint attacker = 0x7F000004;
         const int acceleratedDelay = 750;
         const int baselineDelay = 1750;
         const int remainingCharges = 2;
+        Combat.ClearAttackSwingDebt(attacker);
+
+        var attacks = Combat.ConsumeAttacksPerSwing(
+            attacker,
+            acceleratedDelay,
+            baselineDelay,
+            false,
+            baselineDelay,
+            remainingCharges);
+
+        var debts = (Dictionary<uint, float>)typeof(Combat)
+            .GetField("_attackSwingDebts", BindingFlags.NonPublic | BindingFlags.Static)!
+            .GetValue(null)!;
+        try
+        {
+            attacks.Should().Be(2);
+            debts.Should().NotContainKey(attacker,
+                "both matching rolls consume the two remaining charges, so accelerated debt must expire with the effect");
+        }
+        finally
+        {
+            Combat.ClearAttackSwingDebt(attacker);
+        }
+    }
+
+    [Test]
+    public void ConsumeAttacksPerSwing_PreservesAcceleratedDebtWhenChargesRemainAfterTheSwing()
+    {
+        const uint attacker = 0x7F000005;
+        const int acceleratedDelay = 750;
+        const int baselineDelay = 1750;
+        const int remainingCharges = 3;
         Combat.ClearAttackSwingDebt(attacker);
 
         var attacks = Combat.ConsumeAttacksPerSwing(
@@ -327,7 +359,7 @@ public class CombatAttackDelayTests
         {
             attacks.Should().Be(2);
             debts[attacker].Should().BeApproximately(expectedAcceleratedDebt, 0.0001f,
-                "only one of the two remaining limited-effect charges was scheduled beyond the baseline attack");
+                "two matching rolls leave one charge active, so its accelerated debt still belongs to the live effect");
         }
         finally
         {

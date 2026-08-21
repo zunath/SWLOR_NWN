@@ -172,6 +172,11 @@ public class LeadershipCombatUpgradeTests
         genericStage.Should().Contain("StatType.LeadershipPhysicalDamageTakenPercentAdjustment");
         genericStage.Should().Contain("StatType.LeadershipForceDamageTakenPercentAdjustment");
         genericStage.Should().Contain("StatType.LeadershipOtherDamageTakenPercentAdjustment");
+        genericStage.IndexOf("damage = ApplyPercentDamageAdjustment(damage, typedLeadershipAdjustment)", StringComparison.Ordinal)
+            .Should().BeLessThan(genericStage.IndexOf(
+                "var percentAdjustment = Stat.GetStatAdjustment(defender, StatType.DamageTakenPercentAdjustment)",
+                StringComparison.Ordinal),
+                "typed Leadership and generic damage reduction must remain separate multiplicative stages");
         typedStage.Should().Contain("StatType.LeadershipPhysicalDamageTakenPercentAdjustment");
         typedStage.Should().Contain("StatType.LeadershipForceDamageTakenPercentAdjustment");
 
@@ -187,9 +192,17 @@ public class LeadershipCombatUpgradeTests
             "public static int ApplyTriggeredDamage(",
             StringComparison.Ordinal)..];
         triggeredDamage = triggeredDamage[..triggeredDamage.IndexOf("public static ", 1, StringComparison.Ordinal)];
-        triggeredDamage.Should().Contain("ApplyDamageTakenModifiers(target, damage, activator, damageType)");
-        triggeredDamage.Should().NotContain("typedLeadershipReductionAlreadyApplied: true",
-            "triggered damage bypasses ApplyDamageDealtModifiers and must receive its typed Leadership reduction here");
+        triggeredDamage.Should().Contain("bool typedLeadershipReductionAlreadyApplied = false");
+        triggeredDamage.Should().Contain(
+            "typedLeadershipReductionAlreadyApplied: typedLeadershipReductionAlreadyApplied");
+
+        var conversion = combat[combat.IndexOf(
+            "public static int ApplyIncomingPhysicalToForceConversion(",
+            StringComparison.Ordinal)..combat.IndexOf(
+            "public static int ApplyStatusSourceAccuracyModifiers(",
+            StringComparison.Ordinal)];
+        conversion.Should().Contain("typedLeadershipReductionAlreadyApplied: true",
+            "the converted portion was split after direct physical typed modifiers already ran");
     }
 
     [Test]

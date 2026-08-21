@@ -579,20 +579,28 @@ namespace SWLOR.Game.Server.Service
             if (HasDamageImmunity(defender, damageType))
                 return 0;
 
-            var percentAdjustment = Stat.GetStatAdjustment(defender, StatType.DamageTakenPercentAdjustment);
+            var typedLeadershipAdjustment = 0;
             if (!typedLeadershipReductionAlreadyApplied && damageType.IsPhysicalDamageType())
             {
-                percentAdjustment += Stat.GetStatAdjustment(
+                typedLeadershipAdjustment = Stat.GetStatAdjustment(
                     defender,
                     StatType.LeadershipPhysicalDamageTakenPercentAdjustment);
             }
             else if (!typedLeadershipReductionAlreadyApplied && damageType == CombatDamageType.Force)
             {
-                percentAdjustment += Stat.GetStatAdjustment(
+                typedLeadershipAdjustment = Stat.GetStatAdjustment(
                     defender,
                     StatType.LeadershipForceDamageTakenPercentAdjustment);
             }
-            else if (!damageType.IsPhysicalDamageType() && damageType != CombatDamageType.Force)
+
+            // Direct damage applies this channel in ApplyTargetStatusDamageModifiers. Damage that
+            // bypasses that pipeline must still use the same separate stage so its Leadership and
+            // generic reductions remain multiplicative rather than collapsing into one percentage.
+            if (typedLeadershipAdjustment != 0)
+                damage = ApplyPercentDamageAdjustment(damage, typedLeadershipAdjustment);
+
+            var percentAdjustment = Stat.GetStatAdjustment(defender, StatType.DamageTakenPercentAdjustment);
+            if (!damageType.IsPhysicalDamageType() && damageType != CombatDamageType.Force)
             {
                 percentAdjustment += Stat.GetStatAdjustment(
                     defender,
@@ -4630,7 +4638,12 @@ namespace SWLOR.Game.Server.Service
             DelayCommand(0.0f, () =>
             {
                 if (GetIsObjectValid(attacker) && GetIsObjectValid(defender))
-                    ApplyTriggeredDamage(attacker, defender, forcePortion, CombatDamageType.Force);
+                    ApplyTriggeredDamage(
+                        attacker,
+                        defender,
+                        forcePortion,
+                        CombatDamageType.Force,
+                        typedLeadershipReductionAlreadyApplied: true);
             });
             return forcePortion;
         }
@@ -6911,7 +6924,8 @@ namespace SWLOR.Game.Server.Service
             uint target,
             int damage,
             CombatDamageType damageType,
-            SkillType skillType = SkillType.Invalid)
+            SkillType skillType = SkillType.Invalid,
+            bool typedLeadershipReductionAlreadyApplied = false)
         {
             if (damage <= 0)
                 return 0;
@@ -6921,7 +6935,12 @@ namespace SWLOR.Game.Server.Service
             if (damage <= 0)
                 return 0;
 
-            damage = ApplyDamageTakenModifiers(target, damage, activator, damageType);
+            damage = ApplyDamageTakenModifiers(
+                target,
+                damage,
+                activator,
+                damageType,
+                typedLeadershipReductionAlreadyApplied: typedLeadershipReductionAlreadyApplied);
             if (damage <= 0)
                 return 0;
 
@@ -10617,10 +10636,11 @@ namespace SWLOR.Game.Server.Service
                     baselineAttacks,
                     limitedReductionRemainingAttacks);
 
-                // Once this swing spends every remaining charge, discard fractional attack debt
-                // created by the expiring reduction while retaining debt earned without it.
-                var acceleratedAttacks = attacks - baselineAttacks;
-                if (acceleratedAttacks >= limitedReductionRemainingAttacks)
+                // Every matching roll in the swing consumes one charge, including rolls the
+                // baseline cadence would have scheduled. Once all remaining charges will be spent,
+                // discard fractional debt created by the expiring reduction while retaining debt
+                // earned without it.
+                if (attacks >= limitedReductionRemainingAttacks)
                     updatedAttackDebt = baselineUpdatedAttackDebt;
             }
 

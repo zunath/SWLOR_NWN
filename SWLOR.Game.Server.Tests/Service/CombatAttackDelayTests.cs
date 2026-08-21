@@ -431,7 +431,7 @@ public class CombatAttackDelayTests
     }
 
     [Test]
-    public void LimitedHaste_ReducesCastDelayUnlessAttackDelayReductionIsSuppressed()
+    public void LimitedAttackSpeedBonuses_AreSuppressedByAttackDelayReductionSuppression()
     {
         const uint creature = 311;
         var creatureEffects = GetCreatureEffects();
@@ -453,6 +453,21 @@ public class CombatAttackDelayTests
                 SkillType = SkillType.Pistol
             }).Should().Be(20);
 
+            tracker.Add(new DeadMansHandStatusEffect());
+            StatusEffect.TryGetLimitedAttackNoDelay(
+                    creature,
+                    SkillType.Pistol,
+                    out var noDelayRemainingAttacks)
+                .Should()
+                .BeTrue();
+            noDelayRemainingAttacks.Should().Be(3);
+            Combat.HasNextAutoAttackNoDelay(creature, SkillType.Pistol).Should().BeTrue();
+            Combat.ConsumeNextAbilityDelayReductionPercent(creature, new AbilityDetail
+            {
+                IsHostileAbility = true,
+                SkillType = SkillType.Pistol
+            }).Should().Be(100);
+
             var signalJammer = new SignalJammerStatusEffect();
             tracker.Add(signalJammer);
             signalJammer.StatGroup.Stats[StatType.AttackDelayReductionSuppressed].Should().Be(1);
@@ -470,6 +485,14 @@ public class CombatAttackDelayTests
                 .BeFalse();
             reductionPercent.Should().Be(0);
             remainingAttacks.Should().Be(0);
+            StatusEffect.TryGetLimitedAttackNoDelay(
+                    creature,
+                    SkillType.Pistol,
+                    out noDelayRemainingAttacks)
+                .Should()
+                .BeFalse();
+            noDelayRemainingAttacks.Should().Be(0);
+            Combat.HasNextAutoAttackNoDelay(creature, SkillType.Pistol).Should().BeFalse();
             Combat.ConsumeNextAbilityDelayReductionPercent(creature, new AbilityDetail
             {
                 IsHostileAbility = true,

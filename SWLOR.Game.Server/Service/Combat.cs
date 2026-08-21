@@ -7940,6 +7940,9 @@ namespace SWLOR.Game.Server.Service
             if (!CanConsumeNextAbilityNoDelay(ability))
                 return 0;
 
+            if (IsAttackDelayReductionSuppressed(creature))
+                return 0;
+
             var skillType = GetAbilitySkillType(creature, ability);
             var hasRangedStatusNoDelay = IsRangedWeaponSkill(skillType) &&
                                          Stat.GetStatAdjustment(creature, StatType.RangedAttackNoDelay) > 0;
@@ -7989,6 +7992,9 @@ namespace SWLOR.Game.Server.Service
 
         public static bool HasNextAutoAttackNoDelay(uint creature, SkillType skillType)
         {
+            if (IsAttackDelayReductionSuppressed(creature))
+                return false;
+
             if (IsRangedWeaponSkill(skillType) &&
                 Stat.GetStatAdjustment(creature, StatType.RangedAttackNoDelay) > 0)
             {
@@ -8000,6 +8006,9 @@ namespace SWLOR.Game.Server.Service
 
         public static bool HasTemporaryNextAutoAttackNoDelay(uint creature, SkillType skillType)
         {
+            if (IsAttackDelayReductionSuppressed(creature))
+                return false;
+
             var appliesToAllSkills = TemporaryStatModifier.GetStatAdjustment(
                 creature,
                 StatType.NextAutoAttackNoDelayAllSkills,
@@ -8074,6 +8083,11 @@ namespace SWLOR.Game.Server.Service
                 StatType.NextAutoAttackCriticalRateSkillType);
 
             return criticalRate;
+        }
+
+        public static bool IsAttackDelayReductionSuppressed(uint creature)
+        {
+            return Stat.GetStatAdjustment(creature, StatType.AttackDelayReductionSuppressed) > 0;
         }
 
         public static void GrantNextAutoAttackNoDelay(uint creature, SkillType skillType, int durationSeconds)

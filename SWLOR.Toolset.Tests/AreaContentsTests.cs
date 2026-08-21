@@ -9,6 +9,7 @@ using NUnit.Framework;
 using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Gff;
+using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors;
 using SWLOR.Toolset.Services;
@@ -60,7 +61,10 @@ namespace SWLOR.Toolset.Tests
                 Directory.Delete(_moduleRoot, recursive: true);
         }
 
-        private AreaEditorViewModel CreateEditor(IEditorPromptService? prompts = null)
+        private AreaEditorViewModel CreateEditor(
+            IEditorPromptService? prompts = null,
+            Func<ResourceType, string, string?>? editCopyBlueprint = null,
+            ModuleMutationLock? mutationLock = null)
         {
             var log = new OutputLogService();
             return new AreaEditorViewModel(
@@ -69,7 +73,9 @@ namespace SWLOR.Toolset.Tests
                 new LookupOptionProvider(new WorkspaceContext(_ => throw new NotSupportedException(), log)),
                 gameCodeIndex: null,
                 log,
-                prompts: prompts ?? new StubPrompts());
+                prompts: prompts ?? new StubPrompts(),
+                editCopyBlueprint: editCopyBlueprint,
+                mutationLock: mutationLock);
         }
 
         private static AreaContentsViewModel CreatePanel(
@@ -99,6 +105,40 @@ namespace SWLOR.Toolset.Tests
             placeables.Children.Count.Should().BeLessThan(
                 instances / 4,
                 "grouping exists so the branch is readable - a row per instance is what it replaces");
+        }
+
+        [Test]
+        public void ViewportEditCopyRoutesTheSelectedBlueprintWithoutChangingTheInstance()
+        {
+            (ResourceType Type, string ResRef)? request = null;
+            var mutationLock = new ModuleMutationLock();
+            var editor = CreateEditor(
+                editCopyBlueprint: (type, resRef) =>
+                {
+                    request = (type, resRef);
+                    return "source_plc001";
+                },
+                mutationLock: mutationLock);
+            var marker = new InstanceMarker
+            {
+                Kind = InstanceMarkerKind.Placeable,
+                TemplateResRef = "source_plc",
+                Tag = "placed_instance",
+                Position = Vector3.Zero,
+                Orientation = Vector2.UnitX
+            };
+            editor.SelectSceneInstance(marker);
+
+            editor.EditCopySelectedBlueprintCommand.CanExecute(null).Should().BeTrue();
+            editor.EditCopySelectedBlueprintCommand.Execute(null);
+
+            request.Should().Be((ResourceType.Utp, "source_plc"));
+            marker.TemplateResRef.Should().Be("source_plc",
+                "Edit Copy creates a blueprint and must not retarget the placed instance");
+            editor.SceneStatus.Should().Contain("source_plc001");
+
+            mutationLock.Set(true);
+            editor.EditCopySelectedBlueprintCommand.CanExecute(null).Should().BeFalse();
         }
 
         [Test]

@@ -80,6 +80,12 @@ namespace SWLOR.Toolset.Editors
         /// <summary>Opens a blueprint in its own editor tab - the selection bar's one action.</summary>
         private readonly Action<ResourceType, string>? _openBlueprint;
 
+        /// <summary>Creates and opens an independent custom copy of a selected instance's blueprint.</summary>
+        private readonly Func<ResourceType, string, string?>? _editCopyBlueprint;
+
+        /// <summary>The shared pack/build/validation lock governing module writes.</summary>
+        private readonly ModuleMutationLock? _mutationLock;
+
         /// <summary>
         /// Which session each still-undoable edit went to, oldest first.
         /// </summary>
@@ -238,6 +244,7 @@ namespace SWLOR.Toolset.Editors
                 OnPropertyChanged(nameof(SelectionCoordinates));
                 OnPropertyChanged(nameof(IDocumentStatusSource.StatusDetail));
                 EditSelectedBlueprintCommand.NotifyCanExecuteChanged();
+                EditCopySelectedBlueprintCommand.NotifyCanExecuteChanged();
                 OpenSelectedInstancePropertiesCommand.NotifyCanExecuteChanged();
             }
         }
@@ -390,6 +397,35 @@ namespace SWLOR.Toolset.Editors
             !string.IsNullOrWhiteSpace(instance.TemplateResRef) &&
             MapKindToSectionType(instance.Kind) is { } type &&
             File.Exists(_workspace.GetResourcePath(type, instance.TemplateResRef));
+
+        /// <summary>
+        /// Creates a new Custom blueprint from the selected instance's source and opens the new copy.
+        /// The placed instance remains linked to its original blueprint.
+        /// </summary>
+        [RelayCommand(CanExecute = nameof(CanEditCopySelectedBlueprint))]
+        private void EditCopySelectedBlueprint()
+        {
+            if (SelectedSceneInstance is not { } instance ||
+                string.IsNullOrWhiteSpace(instance.TemplateResRef) ||
+                MapKindToSectionType(instance.Kind) is not { } type ||
+                _editCopyBlueprint == null)
+                return;
+
+            var copyResRef = _editCopyBlueprint(type, instance.TemplateResRef);
+            SceneStatus = copyResRef == null
+                ? $"Could not copy {SelectionName} - see Output."
+                : $"Created and opened blueprint copy {copyResRef}.";
+        }
+
+        private bool CanEditCopySelectedBlueprint() =>
+            _editCopyBlueprint != null &&
+            _mutationLock?.IsLocked != true &&
+            SelectedSceneInstance is { } instance &&
+            !string.IsNullOrWhiteSpace(instance.TemplateResRef) &&
+            MapKindToSectionType(instance.Kind) != null;
+
+        private void OnMutationLockChanged() =>
+            EditCopySelectedBlueprintCommand.NotifyCanExecuteChanged();
 
         /// <summary>
         /// Maps a 3D-view instance's kind to the blueprint type of the section that lists it, or
@@ -1503,7 +1539,9 @@ namespace SWLOR.Toolset.Editors
             Func<string, IReadOnlyList<BehaviorChoice>>? resolveSoundChoices = null,
             IReadOnlyList<string>? audioResources = null,
             Services.SoundPreviewService? soundPreview = null,
-            AreaEditorDocumentLoad? loadedDocuments = null)
+            AreaEditorDocumentLoad? loadedDocuments = null,
+            Func<ResourceType, string, string?>? editCopyBlueprint = null,
+            ModuleMutationLock? mutationLock = null)
         {
             _scriptSlotHost = scriptSlotHost;
             _resolveBlueprintModel = resolveBlueprintModel;
@@ -1511,6 +1549,10 @@ namespace SWLOR.Toolset.Editors
             _waypointAppearances = waypointAppearances;
             _resolveBlueprintName = resolveBlueprintName;
             _openBlueprint = openBlueprint;
+            _editCopyBlueprint = editCopyBlueprint;
+            _mutationLock = mutationLock;
+            if (_mutationLock != null)
+                _mutationLock.Changed += OnMutationLockChanged;
             _log = log;
             _workspace = workspace;
             _areResRef = areResRef;
@@ -2635,6 +2677,8 @@ namespace SWLOR.Toolset.Editors
                 return base.OnClose();
 
             _disposed = true;
+            if (_mutationLock != null)
+                _mutationLock.Changed -= OnMutationLockChanged;
             foreach (var section in Sections)
                 section.Dispose();
             _areSession.Dispose();

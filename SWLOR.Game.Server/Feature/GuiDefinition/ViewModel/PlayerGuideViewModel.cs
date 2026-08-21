@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 
@@ -686,7 +687,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Critical Hits",
                             "Critical Rate raises your chance to critically hit, while Critical Damage makes critical hits stronger. The target's Vitality can affect the final critical chance."),
                         new ArticleBlock("Deflection and Guard",
-                            "Melee Deflection can negate hostile melee weapon auto-attacks, and Ranged Deflection can negate hostile ranged weapon auto-attacks. Both require a weapon and no shield. Shield Deflection covers both melee and ranged weapon auto-attacks and completely replaces weapon deflection while a shield is equipped; the chances never stack or roll in sequence. Deflection does not work against activated combat abilities or Force powers, and only one deflection attempt can occur in an incoming combat round. Guard is a separate damage-stage outcome that reduces incoming physical damage by 20 to 40 percent and increases enmity."),
+                            $"Melee Deflection can negate hostile melee weapon auto-attacks, and Ranged Deflection can negate hostile ranged weapon auto-attacks. Both require a weapon and no shield. Shield Deflection covers both melee and ranged weapon auto-attacks and completely replaces weapon deflection while a shield is equipped; the chances never stack or roll in sequence. Deflection does not work against activated combat abilities or Force powers, and only one deflection attempt can occur in an incoming combat round. Guard is a separate damage-stage outcome that reduces incoming physical damage by {Combat.BaseGuardDamageReductionPercent} to {Combat.MaximumGuardDamageReductionPercent} percent and increases enmity."),
                         new ArticleBlock("Combat Readiness",
                             "Combat Readiness increases activated ability damage, healing, and temporary HP. It does not reduce cooldowns.")
                     },

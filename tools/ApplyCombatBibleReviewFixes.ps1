@@ -1005,7 +1005,7 @@ foreach ($entry in $mimicryCastingTimes.GetEnumerator()) {
 $characterStatChanges = @(
     @{ Cell = "J49"; Type = "Number"; Value = 100 },
     @{ Cell = "K49"; Type = "Text"; Value = "Default chance cap is 50%. Specific temporary or capstone effects can raise that cap, up to the 100% hard limit. Does not stack with Shield Deflection." },
-    @{ Cell = "K50"; Type = "Text"; Value = "Guard chance is capped at 100%. A successful Guard reduces damage by 20% by default; bonuses can raise the reduction to a 40% hard limit." },
+    @{ Cell = "K50"; Type = "Text"; Value = "Guard chance is capped at 100%. A successful Guard reduces damage by 20% by default; bonuses can raise the reduction to an 85% hard limit." },
     @{ Cell = "I51"; Type = "Number"; Value = 5 },
     @{ Cell = "J51"; Type = "Number"; Value = 50 },
     @{ Cell = "K51"; Type = "Text"; Value = "Final critical-hit chance is clamped between 5% and 50% after all modifiers." },

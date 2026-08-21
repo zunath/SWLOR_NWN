@@ -26,6 +26,19 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Combat
     {
+        public sealed class GuardedHitOutcome
+        {
+            public GuardedHitOutcome(uint source, int damageWithoutGuard)
+            {
+                Source = source;
+                DamageWithoutGuard = damageWithoutGuard;
+            }
+
+            public uint Source { get; }
+            public int DamageWithoutGuard { get; internal set; }
+            public int TemporaryHitPointsGranted { get; internal set; }
+        }
+
         private const float DamageStatDeltaMultiplier = 0.35f;
         public const int BaseGuardDamageReductionPercent = 20;
         public const int MaximumGuardDamageReductionPercent = 40;
@@ -559,16 +572,92 @@ namespace SWLOR.Game.Server.Service
             CombatDamageType damageType = CombatDamageType.Physical,
             CombatDamageDeliveryType deliveryType = CombatDamageDeliveryType.Direct,
             int? preTargetStatusStageDamage = null,
-            bool isLandedAttack = true)
+            bool isLandedAttack = true,
+            GuardedHitOutcome guardedHitOutcome = null)
+        {
+            if (damage <= 0 && (guardedHitOutcome == null || guardedHitOutcome.DamageWithoutGuard <= 0))
+                return damage;
+
+            if (HasDamageImmunity(defender, damageType))
+            {
+                if (guardedHitOutcome != null)
+                    guardedHitOutcome.DamageWithoutGuard = 0;
+                return 0;
+            }
+
+            damage = ApplyDamageTakenValueModifiers(defender, damage, preTargetStatusStageDamage);
+            if (guardedHitOutcome != null)
+            {
+                guardedHitOutcome.DamageWithoutGuard = ApplyDamageTakenValueModifiers(
+                    defender,
+                    guardedHitOutcome.DamageWithoutGuard,
+                    preTargetStatusStageDamage);
+            }
+
+            // The math above is pure; everything below consumes one-shot effects or deals real
+            // damage to third parties. A swing the engine later discards must not burn a redirect
+            // or fatal-prevention charge, transfer damage to a protector, or grant temporary HP.
+            if (!isLandedAttack)
+                return damage;
+
+            damage = ApplyDamageTakenRedirectToStatusSource(
+                defender,
+                attacker,
+                damage,
+                damageType,
+                guardedHitOutcome);
+            if (deliveryType != CombatDamageDeliveryType.Transferred)
+            {
+                damage = ApplyDamageTakenShareToStatusSource(
+                    defender,
+                    attacker,
+                    damage,
+                    damageType,
+                    guardedHitOutcome);
+            }
+
+            if (damage <= 0 && (guardedHitOutcome == null || guardedHitOutcome.DamageWithoutGuard <= 0))
+                return 0;
+
+            var fatalDamageWouldBePreventedWithoutGuard = guardedHitOutcome != null &&
+                                                          CanPreventFatalDamageAndGrantTemporaryHP(
+                                                              defender,
+                                                              guardedHitOutcome.DamageWithoutGuard);
+            if (TryPreventFatalDamageAndGrantTemporaryHP(defender, damage, restoreToOneHP: false))
+            {
+                if (guardedHitOutcome != null)
+                    guardedHitOutcome.DamageWithoutGuard = 0;
+                return 0;
+            }
+
+            if (fatalDamageWouldBePreventedWithoutGuard)
+                guardedHitOutcome.DamageWithoutGuard = 0;
+
+            if (guardedHitOutcome != null && guardedHitOutcome.DamageWithoutGuard > 0)
+            {
+                var counterfactualTemporaryHP = GetLowHPTemporaryHPBeforeFatalDamage(
+                    defender,
+                    guardedHitOutcome.DamageWithoutGuard);
+                guardedHitOutcome.DamageWithoutGuard = Math.Max(
+                    0,
+                    guardedHitOutcome.DamageWithoutGuard - counterfactualTemporaryHP);
+            }
+
+            var temporaryHitPointsGranted = ApplyLowHPTemporaryHPBeforeFatalDamage(defender, damage);
+            if (guardedHitOutcome != null)
+                guardedHitOutcome.TemporaryHitPointsGranted = temporaryHitPointsGranted;
+            return damage;
+        }
+
+        private static int ApplyDamageTakenValueModifiers(
+            uint defender,
+            int damage,
+            int? preTargetStatusStageDamage)
         {
             if (damage <= 0)
                 return damage;
 
-            if (HasDamageImmunity(defender, damageType))
-                return 0;
-
             var percentAdjustment = Stat.GetStatAdjustment(defender, StatType.DamageTakenPercentAdjustment);
-
             if (percentAdjustment != 0)
                 damage = ApplyPercentDamageAdjustment(damage, percentAdjustment);
 
@@ -582,35 +671,17 @@ namespace SWLOR.Game.Server.Service
                     damage = minimumCombinedDamage;
             }
 
-            damage = Math.Max(1, damage);
-
-            // The math above is pure; everything below consumes one-shot effects or deals real
-            // damage to third parties. A swing the engine later discards must not burn a redirect
-            // or fatal-prevention charge, transfer damage to a protector, or grant temporary HP.
-            if (!isLandedAttack)
-                return damage;
-
-            damage = ApplyDamageTakenRedirectToStatusSource(defender, attacker, damage, damageType);
-            if (deliveryType != CombatDamageDeliveryType.Transferred)
-                damage = ApplyDamageTakenShareToStatusSource(defender, attacker, damage, damageType);
-
-            if (damage <= 0)
-                return 0;
-
-            if (TryPreventFatalDamageAndGrantTemporaryHP(defender, damage, restoreToOneHP: false))
-                return 0;
-
-            ApplyLowHPTemporaryHPBeforeFatalDamage(defender, damage);
-            return damage;
+            return Math.Max(1, damage);
         }
 
         private static int ApplyDamageTakenRedirectToStatusSource(
             uint defender,
             uint attacker,
             int damage,
-            CombatDamageType damageType)
+            CombatDamageType damageType,
+            GuardedHitOutcome guardedHitOutcome)
         {
-            if (damage <= 0)
+            if (damage <= 0 && (guardedHitOutcome == null || guardedHitOutcome.DamageWithoutGuard <= 0))
                 return damage;
 
             var redirectPercent = Stat.GetStatAdjustment(defender, StatType.DamageTakenRedirectToStatusSourcePercent);
@@ -621,6 +692,19 @@ namespace SWLOR.Game.Server.Service
                 defender,
                 StatType.DamageTakenRedirectToStatusSourcePercent);
             if (!GetIsObjectValid(redirectTarget) || GetIsDead(redirectTarget) || redirectTarget == defender)
+                return damage;
+
+            if (guardedHitOutcome != null && guardedHitOutcome.DamageWithoutGuard > 0)
+            {
+                var redirectedDamageWithoutGuard = Math.Min(
+                    guardedHitOutcome.DamageWithoutGuard,
+                    GameMath.PercentOf(
+                        guardedHitOutcome.DamageWithoutGuard,
+                        Math.Min(100, redirectPercent)));
+                guardedHitOutcome.DamageWithoutGuard -= redirectedDamageWithoutGuard;
+            }
+
+            if (damage <= 0)
                 return damage;
 
             var redirectedDamage = Math.Min(
@@ -666,9 +750,10 @@ namespace SWLOR.Game.Server.Service
             uint defender,
             uint attacker,
             int damage,
-            CombatDamageType damageType)
+            CombatDamageType damageType,
+            GuardedHitOutcome guardedHitOutcome)
         {
-            if (damage <= 0)
+            if (damage <= 0 && (guardedHitOutcome == null || guardedHitOutcome.DamageWithoutGuard <= 0))
                 return damage;
 
             var sharePercent = Stat.GetStatAdjustment(defender, StatType.DamageTakenShareToStatusSourcePercent);
@@ -685,6 +770,19 @@ namespace SWLOR.Game.Server.Service
             {
                 return damage;
             }
+
+            if (guardedHitOutcome != null && guardedHitOutcome.DamageWithoutGuard > 0)
+            {
+                var sharedDamageWithoutGuard = Math.Min(
+                    guardedHitOutcome.DamageWithoutGuard,
+                    GameMath.PercentOf(
+                        guardedHitOutcome.DamageWithoutGuard,
+                        Math.Min(100, sharePercent)));
+                guardedHitOutcome.DamageWithoutGuard -= sharedDamageWithoutGuard;
+            }
+
+            if (damage <= 0)
+                return damage;
 
             var sharedDamage = Math.Min(
                 damage,
@@ -839,6 +937,24 @@ namespace SWLOR.Game.Server.Service
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), defender);
 
             return true;
+        }
+
+        private static bool CanPreventFatalDamageAndGrantTemporaryHP(uint defender, int damage)
+        {
+            if (!GetIsObjectValid(defender) || damage <= 0)
+                return false;
+
+            var temporaryHPPercent = Stat.GetStatAdjustment(defender, StatType.FatalDamageTemporaryHPPercent);
+            var duration = Stat.GetStatAdjustment(defender, StatType.FatalDamageTemporaryHPDurationSeconds);
+            var currentHP = GetCurrentHitPoints(defender);
+            if (temporaryHPPercent <= 0 || duration <= 0 || currentHP <= 0 || damage < currentHP)
+                return false;
+
+            var cooldown = Stat.GetStatAdjustment(defender, StatType.FatalDamageTemporaryHPCooldownSeconds);
+            return CanUseStatTrigger(
+                defender,
+                StatType.FatalDamageTemporaryHPPercent,
+                TimeSpan.FromSeconds(cooldown));
         }
 
         public static int ApplyTargetStatusAttackModifiers(uint attacker, uint defender, int attack, SkillType skillType)
@@ -2701,33 +2817,52 @@ namespace SWLOR.Game.Server.Service
             TemporaryHitPointEffects.ApplyFlat(defender, "LOW_HP_SHIELD", temporaryHP, duration);
         }
 
-        private static void ApplyLowHPTemporaryHPBeforeFatalDamage(uint defender, int damage)
+        private static int ApplyLowHPTemporaryHPBeforeFatalDamage(uint defender, int damage)
+        {
+            var temporaryHP = GetLowHPTemporaryHPBeforeFatalDamage(defender, damage);
+            if (temporaryHP <= 0)
+                return 0;
+
+            var cooldown = Stat.GetStatAdjustment(defender, StatType.LowHPTemporaryHPCooldownSeconds);
+            if (!TryUseStatTrigger(defender, StatType.LowHPTemporaryHPPercent, cooldown))
+                return 0;
+
+            var duration = Stat.GetStatAdjustment(defender, StatType.LowHPTemporaryHPDurationSeconds);
+            TemporaryHitPointEffects.ApplyFlat(defender, "LOW_HP_SHIELD", temporaryHP, duration);
+            return temporaryHP;
+        }
+
+        private static int GetLowHPTemporaryHPBeforeFatalDamage(uint defender, int damage)
         {
             if (!GetIsObjectValid(defender) || GetIsDead(defender) || damage <= 0)
-                return;
+                return 0;
 
             var threshold = Stat.GetStatAdjustment(defender, StatType.LowHPTemporaryHPThresholdPercent);
             var temporaryHPPercent = Stat.GetStatAdjustment(defender, StatType.LowHPTemporaryHPPercent);
             var duration = Stat.GetStatAdjustment(defender, StatType.LowHPTemporaryHPDurationSeconds);
             var cooldown = Stat.GetStatAdjustment(defender, StatType.LowHPTemporaryHPCooldownSeconds);
             if (threshold <= 0 || temporaryHPPercent <= 0 || duration <= 0)
-                return;
+                return 0;
 
             var maxHP = GetMaxHitPoints(defender);
             var currentHP = GetCurrentHitPoints(defender);
             if (maxHP <= 0 || currentHP <= 0)
-                return;
+                return 0;
 
             var thresholdHP = maxHP * (threshold / 100f);
             var projectedHP = currentHP - damage;
             if (currentHP < thresholdHP || projectedHP >= thresholdHP || projectedHP > 0)
-                return;
+                return 0;
 
-            if (!TryUseStatTrigger(defender, StatType.LowHPTemporaryHPPercent, cooldown))
-                return;
+            if (!CanUseStatTrigger(
+                    defender,
+                    StatType.LowHPTemporaryHPPercent,
+                    TimeSpan.FromSeconds(cooldown)))
+            {
+                return 0;
+            }
 
-            var temporaryHP = GameMath.PercentOf(maxHP, temporaryHPPercent);
-            TemporaryHitPointEffects.ApplyFlat(defender, "LOW_HP_SHIELD", temporaryHP, duration);
+            return GameMath.PercentOf(maxHP, temporaryHPPercent);
         }
 
         private static void ApplyLowHPNoSaveTemporaryHPEffect(uint defender, int damage)
@@ -3224,8 +3359,10 @@ namespace SWLOR.Game.Server.Service
             uint attacker,
             int damage,
             CombatDamageType damageType,
-            bool isLandedAttack)
+            bool isLandedAttack,
+            out GuardedHitOutcome guardedHitOutcome)
         {
+            guardedHitOutcome = null;
             if (!isLandedAttack ||
                 !GetIsObjectValid(defender) ||
                 !GetIsObjectValid(attacker) ||
@@ -3249,10 +3386,9 @@ namespace SWLOR.Game.Server.Service
                 GetIsPC(guardSource) &&
                 !GetIsDM(guardSource) &&
                 GetIsPC(defender) &&
-                !GetIsDM(defender) &&
-                AchievementTracking.GuardPreventedLethalHit(GetCurrentHitPoints(defender), damage, adjustedDamage))
+                !GetIsDM(defender))
             {
-                Achievement.GiveAchievement(guardSource, AchievementType.BehindMe);
+                guardedHitOutcome = new GuardedHitOutcome(guardSource, damage);
             }
 
             TrackGuardedHit(defender);
@@ -3263,6 +3399,34 @@ namespace SWLOR.Game.Server.Service
             SendGuardedHitFeedback(defender, attacker, preventedDamage);
 
             return adjustedDamage;
+        }
+
+        public static void EvaluateGuardedHitOutcome(
+            uint defender,
+            GuardedHitOutcome guardedHitOutcome,
+            int finalDamage)
+        {
+            if (guardedHitOutcome == null ||
+                !GetIsObjectValid(defender) ||
+                !GetIsPC(defender) ||
+                GetIsDM(defender) ||
+                !GetIsObjectValid(guardedHitOutcome.Source) ||
+                !GetIsPC(guardedHitOutcome.Source) ||
+                GetIsDM(guardedHitOutcome.Source))
+            {
+                return;
+            }
+
+            var finalDamageToHitPoints = Math.Max(
+                0,
+                finalDamage - guardedHitOutcome.TemporaryHitPointsGranted);
+            if (AchievementTracking.GuardPreventedLethalHit(
+                    GetCurrentHitPoints(defender),
+                    guardedHitOutcome.DamageWithoutGuard,
+                    finalDamageToHitPoints))
+            {
+                Achievement.GiveAchievement(guardedHitOutcome.Source, AchievementType.BehindMe);
+            }
         }
 
         internal static bool IsHostileAttackSource(uint defender, uint attacker)
@@ -4663,16 +4827,21 @@ namespace SWLOR.Game.Server.Service
 
         internal static bool TryUseStatTrigger(uint creature, StatType statType, TimeSpan cooldown)
         {
+            if (!CanUseStatTrigger(creature, statType, cooldown))
+                return false;
+
+            if (cooldown > TimeSpan.Zero)
+                _statTriggerCooldowns[(creature, statType)] = DateTime.UtcNow.Add(cooldown);
+            return true;
+        }
+
+        private static bool CanUseStatTrigger(uint creature, StatType statType, TimeSpan cooldown)
+        {
             if (cooldown <= TimeSpan.Zero)
                 return true;
 
-            var key = (creature, statType);
-            var now = DateTime.UtcNow;
-            if (_statTriggerCooldowns.TryGetValue(key, out var nextAvailable) && nextAvailable > now)
-                return false;
-
-            _statTriggerCooldowns[key] = now.Add(cooldown);
-            return true;
+            return !_statTriggerCooldowns.TryGetValue((creature, statType), out var nextAvailable) ||
+                   nextAvailable <= DateTime.UtcNow;
         }
 
         private static void RemoveStatTriggerCooldowns(uint creature)

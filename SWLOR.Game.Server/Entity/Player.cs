@@ -81,6 +81,7 @@ namespace SWLOR.Game.Server.Entity
             CraftedRecipes = new Dictionary<RecipeType, DateTime>();
             LearnedTechniques = new Dictionary<FeatType, DateTime>();
             PendingAchievements = new HashSet<int>();
+            PendingPublicPropertyVisitorAccountIds = new HashSet<string>();
             EquippedTechniques = new List<FeatType>();
             CharacterType = CharacterType.Invalid;
             KeyItems = new Dictionary<KeyItemType, DateTime>();
@@ -197,6 +198,7 @@ namespace SWLOR.Game.Server.Entity
         public Dictionary<RecipeType, DateTime> CraftedRecipes { get; set; }
         public Dictionary<FeatType, DateTime> LearnedTechniques { get; set; }
         public HashSet<int> PendingAchievements { get; set; }
+        public HashSet<string> PendingPublicPropertyVisitorAccountIds { get; set; }
         public List<FeatType> EquippedTechniques { get; set; }
         public Dictionary<KeyItemType, DateTime> KeyItems{ get; set; }
         public Dictionary<GuildType, PlayerGuild> Guilds { get; set; }

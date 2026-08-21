@@ -42,6 +42,7 @@ namespace SWLOR.Game.Server.Feature
                     PlayerName.RefreshNameOverridesForPlayer(player);
 
                 InitializeSavingThrows(player);
+                AchievementTracking.ResolvePendingPublicPropertyVisits(player);
                 Achievement.FlushPendingAchievements(player);
                 AchievementTracking.EvaluatePersistedAchievements(player);
                 ExecuteScript(ScriptName.OnCharacterInitAfter, OBJECT_SELF);
@@ -70,6 +71,7 @@ namespace SWLOR.Game.Server.Feature
             if (PlayerDescriptor.EnsureUnknownDisplayName(player))
                 PlayerName.RefreshNameOverridesForPlayer(player);
 
+            AchievementTracking.ResolvePendingPublicPropertyVisits(player);
             Achievement.FlushPendingAchievements(player);
             AchievementTracking.EvaluatePersistedAchievements(player);
             ExecuteScript(ScriptName.OnCharacterInitAfter, OBJECT_SELF);

@@ -619,8 +619,8 @@ public class CombatDamageTests
         var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
         var damageRollSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
 
-        combatSource.Should().Contain("bool isLandedAttack)");
         var guard = ExtractMethod(combatSource, "public static int ApplyGuardedHitModifiers(");
+        guard.Should().Contain("out GuardedHitOutcome guardedHitOutcome");
         guard.Should().Contain("!isLandedAttack");
         guard.Should().Contain("!GetIsObjectValid(attacker)");
         guard.Should().Contain("defender == attacker");
@@ -630,6 +630,10 @@ public class CombatDamageTests
         guard.IndexOf("!isLandedAttack", StringComparison.Ordinal).Should().BeLessThan(
             guard.IndexOf("var guardChance", StringComparison.Ordinal),
             "discarded swings must never enter the Guard roll");
+        guard.Should().NotContain("Achievement.GiveAchievement");
+        var evaluateGuardOutcome = ExtractMethod(combatSource, "public static void EvaluateGuardedHitOutcome(");
+        evaluateGuardOutcome.Should().Contain("guardedHitOutcome.DamageWithoutGuard");
+        evaluateGuardOutcome.Should().Contain("AchievementType.BehindMe");
         var hostileSource = ExtractMethod(combatSource, "internal static bool IsHostileAttackSource(");
         hostileSource.Should().Contain("GetIsPC(attacker)");
         hostileSource.Should().Contain("GetIsDM(attacker)");
@@ -641,7 +645,19 @@ public class CombatDamageTests
         damageRollSource.Should().Contain("private static bool IsLandedAttackOnDamageableTarget(");
         damageRollSource.Should().Contain("targetObject.m_bPlotObject == 1");
         damageRollSource.Should().Contain("ResolveAttackRoll.IsSuccessfulAttackResult(attackData.m_nAttackResult)");
-        damageRollSource.Should().Contain("isLandedAttack);");
+        damageRollSource.Should().Contain("out var guardedHitOutcome");
+        damageRollSource.Should().Contain("guardedHitOutcome: guardedHitOutcome");
+        var guardedHitIndex = damageRollSource.IndexOf(
+            "damage = Combat.ApplyGuardedHitModifiers(",
+            StringComparison.Ordinal);
+        var damageTakenIndex = damageRollSource.IndexOf(
+            "damage = Combat.ApplyDamageTakenModifiers(",
+            StringComparison.Ordinal);
+        var guardOutcomeIndex = damageRollSource.IndexOf(
+            "Combat.EvaluateGuardedHitOutcome(target.m_idSelf, guardedHitOutcome, damage);",
+            StringComparison.Ordinal);
+        damageTakenIndex.Should().BeGreaterThan(guardedHitIndex);
+        guardOutcomeIndex.Should().BeGreaterThan(damageTakenIndex);
     }
 
     [Test]

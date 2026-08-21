@@ -224,14 +224,61 @@ namespace SWLOR.Game.Server.Service.AchievementService
             }
 
             var owner = DB.Get<Player>(ownerPlayerId);
-            if (owner == null ||
-                string.IsNullOrWhiteSpace(owner.AccountId) ||
-                owner.AccountId == GetPCPublicCDKey(visitor))
+            if (owner == null)
             {
                 return;
             }
 
+            var visitorAccountId = GetPCPublicCDKey(visitor);
+            if (string.IsNullOrWhiteSpace(visitorAccountId))
+                return;
+
+            if (string.IsNullOrWhiteSpace(owner.AccountId))
+            {
+                owner.PendingPublicPropertyVisitorAccountIds ??= new HashSet<string>();
+                if (owner.PendingPublicPropertyVisitorAccountIds.Add(visitorAccountId))
+                    DB.Set(owner);
+                return;
+            }
+
+            if (owner.AccountId == visitorAccountId)
+                return;
+
             Achievement.QueueAchievementForPlayerId(ownerPlayerId, AchievementType.OpenDoorPolicy);
+        }
+
+        public static void ResolvePendingPublicPropertyVisits(uint owner)
+        {
+            if (!GetIsPC(owner) || GetIsDM(owner))
+                return;
+
+            var dbPlayer = DB.Get<Player>(GetObjectUUID(owner));
+            if (dbPlayer?.PendingPublicPropertyVisitorAccountIds == null ||
+                dbPlayer.PendingPublicPropertyVisitorAccountIds.Count == 0)
+            {
+                return;
+            }
+
+            var ownerAccountId = GetPCPublicCDKey(owner);
+            var shouldAward = HasDifferentAccountVisitor(
+                dbPlayer.PendingPublicPropertyVisitorAccountIds,
+                ownerAccountId);
+
+            dbPlayer.PendingPublicPropertyVisitorAccountIds.Clear();
+            DB.Set(dbPlayer);
+
+            if (shouldAward)
+                Achievement.GiveAchievement(owner, AchievementType.OpenDoorPolicy);
+        }
+
+        public static bool HasDifferentAccountVisitor(
+            IEnumerable<string> visitorAccountIds,
+            string ownerAccountId)
+        {
+            return !string.IsNullOrWhiteSpace(ownerAccountId) &&
+                   visitorAccountIds?.Any(visitorAccountId =>
+                       !string.IsNullOrWhiteSpace(visitorAccountId) &&
+                       visitorAccountId != ownerAccountId) == true;
         }
 
         public static bool HasCraftedAllDisciplines(Player dbPlayer)

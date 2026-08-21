@@ -590,7 +590,8 @@ namespace SWLOR.Game.Server.Native
                 attacker.m_idSelf,
                 damage,
                 damageType,
-                isLandedAttack);
+                isLandedAttack,
+                out var guardedHitOutcome);
             if (isLandedAttack && damage > 0 && attackType == (uint)AttackType.Melee)
             {
                 Combat.ApplyMeleeDamageTakenEffects(target.m_idSelf, attacker.m_idSelf);
@@ -602,7 +603,9 @@ namespace SWLOR.Game.Server.Native
                 attacker.m_idSelf,
                 damageType,
                 preTargetStatusStageDamage: damageBeforeTargetStatusStage,
-                isLandedAttack: isLandedAttack);
+                isLandedAttack: isLandedAttack,
+                guardedHitOutcome: guardedHitOutcome);
+            Combat.EvaluateGuardedHitOutcome(target.m_idSelf, guardedHitOutcome, damage);
             if (isLandedAttack)
             {
                 Combat.ApplyNextAttackGuardedHitEnmityBonus(

@@ -14,6 +14,22 @@ namespace SWLOR.Game.Server.Tests.Service;
 
 public sealed class AchievementTrackingTests
 {
+    [Test]
+    public void PublicPropertyVisits_RequireAVisitorFromAnotherAccount()
+    {
+        new Player().PendingPublicPropertyVisitorAccountIds.Should().BeEmpty();
+
+        AchievementTracking.HasDifferentAccountVisitor(
+                new[] { "owner-account", "owner-account" },
+                "owner-account")
+            .Should().BeFalse();
+
+        AchievementTracking.HasDifferentAccountVisitor(
+                new[] { "owner-account", "visitor-account" },
+                "owner-account")
+            .Should().BeTrue();
+    }
+
     [TestCase(FishingLocationType.ViscaraLake, PlanetType.Viscara)]
     [TestCase(FishingLocationType.MonCalaDacCitySurface, PlanetType.MonCala)]
     [TestCase(FishingLocationType.HutlarQionTundra, PlanetType.Hutlar)]

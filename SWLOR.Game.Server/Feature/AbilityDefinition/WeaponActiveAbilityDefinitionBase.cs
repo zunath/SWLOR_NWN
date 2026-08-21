@@ -119,7 +119,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public int TemporaryHighFPAndStaminaAbilityDamageBonus { get; init; }
             public int TemporaryHighFPAndStaminaAbilityDamageBonusThresholdPercent { get; init; }
             public int TemporaryFrenzySlashHasteRefreshDurationSeconds { get; init; }
-            public int TemporaryAvoidedAttackAbilityUsedEvasionRefreshDurationSeconds { get; init; }
+            public int TemporaryAvoidedAttackAbilityUsedRangedDeflectionRefreshDurationSeconds { get; init; }
             public int TemporaryAvoidedAttackNextAutoAttackNoDelaySkillType { get; init; }
             public int TemporaryAvoidedAttackNextAutoAttackNoDelayDurationSeconds { get; init; }
             public int TemporaryRangedHitSuppressionStackDurationSeconds { get; init; }
@@ -698,8 +698,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     duration);
                 ReplaceTemporary(
                     activator,
-                    StatType.AvoidedAttackAbilityUsedEvasionRefreshDurationSeconds,
-                    TemporaryAvoidedAttackAbilityUsedEvasionRefreshDurationSeconds,
+                    StatType.AvoidedAttackAbilityUsedRangedDeflectionRefreshDurationSeconds,
+                    TemporaryAvoidedAttackAbilityUsedRangedDeflectionRefreshDurationSeconds,
                     duration);
                 ReplaceTemporary(
                     activator,

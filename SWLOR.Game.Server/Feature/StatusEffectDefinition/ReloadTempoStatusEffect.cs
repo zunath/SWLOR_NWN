@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class ReloadTempoStatusEffect : StatusEffectBase
     {
         private readonly int _hastePercent;
-        private int _remainingAttacks;
+        private readonly LimitedAttackCounter _attackCounter;
 
         public override string Name => "Reload Tempo";
         public override EffectIconType Icon => EffectIconType.ReloadTempoStatusEffect;
@@ -25,7 +25,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public ReloadTempoStatusEffect(int hastePercent, int attackCount)
         {
             _hastePercent = hastePercent;
-            _remainingAttacks = attackCount;
+            _attackCounter = new LimitedAttackCounter(attackCount);
             StatGroup.Stats[StatType.AttackDelayReductionPercent] = _hastePercent;
         }
 
@@ -44,13 +44,16 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 return;
             }
 
-            if (--_remainingAttacks <= 0)
+            if (!_attackCounter.TryConsume(Ability.GetActiveAbilityImpactSummary(attacker)))
+                return;
+
+            if (_attackCounter.RemainingAttacks <= 0)
                 IsFlaggedForRemoval = true;
         }
 
         public override IStatusEffect Clone()
         {
-            return new ReloadTempoStatusEffect(_hastePercent, _remainingAttacks);
+            return new ReloadTempoStatusEffect(_hastePercent, _attackCounter.RemainingAttacks);
         }
     }
 }

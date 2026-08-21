@@ -3139,7 +3139,7 @@ namespace SWLOR.Game.Server.Service
                 StatusEffect.RemoveStatusEffectsWithStat(creature, StatType.AvoidedAttackSingleStaminaRestore, false);
             }
 
-            ApplyAvoidedAttackAbilityUsedEvasionRefresh(creature);
+            ApplyAvoidedAttackAbilityUsedRangedDeflectionRefresh(creature);
             ApplyAvoidedAttackNextAutoAttackNoDelay(creature);
             ApplyAvoidedAttackAccuracy(creature);
         }
@@ -3159,26 +3159,25 @@ namespace SWLOR.Game.Server.Service
                 StatType.AvoidedAttackAccuracyPercentAdjustment);
         }
 
-        private static void ApplyAvoidedAttackAbilityUsedEvasionRefresh(uint creature)
+        private static void ApplyAvoidedAttackAbilityUsedRangedDeflectionRefresh(uint creature)
         {
             var duration = Stat.GetStatAdjustment(
                 creature,
-                StatType.AvoidedAttackAbilityUsedEvasionRefreshDurationSeconds);
+                StatType.AvoidedAttackAbilityUsedRangedDeflectionRefreshDurationSeconds);
             if (duration <= 0)
                 return;
 
-            var evasionPercent = Stat.GetStatAdjustment(
+            var deflection = Stat.GetStatAdjustment(
                 creature,
-                StatType.AbilityUsedEvasionPercentAdjustment);
-            if (evasionPercent <= 0)
+                StatType.AbilityUsedRangedDeflection);
+            if (deflection <= 0)
                 return;
 
-            TemporaryStatModifier.Replace(
+            StatusEffect.ApplyStatusEffect(
                 creature,
-                StatType.EvasionPercentAdjustment,
-                evasionPercent,
-                duration,
-                StatType.EvasionPercentAdjustment);
+                creature,
+                new SnapRollStatusEffect(deflection),
+                duration);
         }
 
         private static void ApplyAvoidedAttackNextAutoAttackNoDelay(uint creature)

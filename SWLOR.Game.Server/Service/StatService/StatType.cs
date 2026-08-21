@@ -3900,10 +3900,10 @@ namespace SWLOR.Game.Server.Service.StatService
         BleedingTargetAbilityBleedSpreadMaxTargets = 680,
 
         /// <summary>
-        /// Duration used to refresh ability-used Evasion after avoiding an attack.
+        /// Duration used to refresh ability-used Ranged Deflection after avoiding an attack.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        AvoidedAttackAbilityUsedEvasionRefreshDurationSeconds = 681,
+        AvoidedAttackAbilityUsedRangedDeflectionRefreshDurationSeconds = 681,
 
         /// <summary>
         /// SkillType value whose next auto-attack is quickened after avoiding an attack.

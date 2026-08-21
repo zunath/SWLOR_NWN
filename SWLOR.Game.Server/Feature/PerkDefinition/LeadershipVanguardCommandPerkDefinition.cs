@@ -168,6 +168,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.LeadershipCommandRadiusBonusMeters, 2)
                 .IncreasesStat(StatType.LeadershipCommandDurationBonusBaseSeconds, 2)
                 .IncreasesStat(StatType.LeadershipCommandDurationBonusMaximumSeconds, 3)
+                .TriggerPurchase(AbilityTargeting.RefreshClientTargeting)
+                .TriggerRefund(AbilityTargeting.RefreshClientTargeting)
 
                 .AddPerkLevel()
                 .Description("All Leadership auras and area commands have +4m range. Non-capstone Leadership command buffs last 4 seconds longer. SOC scaling can raise the duration bonus to +5 seconds.")

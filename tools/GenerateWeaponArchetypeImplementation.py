@@ -1109,7 +1109,10 @@ def description_stat_entries(row, base):
         add_stat(stats, "LightsaberOffenseCenteringAccuracyPercent", parse_percent(r"\+(\d+)% Accuracy", description))
         add_stat(stats, "LightsaberOffenseCenteringDurationSeconds", parse_duration(description) or 30)
         add_stat(stats, "LightsaberOffenseCenteringEnmityReductionPercent", parse_percent(r"Enmity by (\d+)%", description))
-    if "After using a hostile" in description and has_deflection_description(description):
+    if (
+            "After using a hostile" in description and
+            has_deflection_description(description) and
+            "Ranged Deflection" not in description):
         add_stat(stats, "AbilityUsedAttackDeflectionSkillType", skill_expr)
         add_stat(stats, "AbilityUsedAttackDeflection", parse_deflection_count(description))
         add_stat(stats, "AbilityUsedAttackDeflectionDurationSeconds", parse_duration(description) or 30)
@@ -2376,7 +2379,7 @@ def profile_property_lines(row, level, primary_status):
             add_profile_property("TemporaryHighFPAndStaminaAbilityDamageBonusThresholdPercent", high_resource_bonus.group(1))
             add_profile_property("TemporaryHighFPAndStaminaAbilityDamageBonus", high_resource_bonus.group(2))
     if "evading an attack refreshes Snap Roll" in description:
-        add_profile_property("TemporaryAvoidedAttackAbilityUsedEvasionRefreshDurationSeconds", "30")
+        add_profile_property("TemporaryAvoidedAttackAbilityUsedRangedDeflectionRefreshDurationSeconds", "30")
         add_profile_property("TemporaryAvoidedAttackNextAutoAttackNoDelaySkillType", skill_type_expression(row))
         add_profile_property("TemporaryAvoidedAttackNextAutoAttackNoDelayDurationSeconds", "30")
         add_profile_property("TemporaryDefeatedEnemyEffectDurationSeconds", str(parse_duration(description) or 45))

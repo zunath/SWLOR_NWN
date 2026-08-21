@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class DeadMansHandStatusEffect : StatusEffectBase
     {
         private const int CriticalRatePercent = 20;
-        private int _remainingAttacks;
+        private readonly LimitedAttackCounter _attackCounter;
 
         public override string Name => "Dead Man's Hand";
         public override EffectIconType Icon => EffectIconType.DeadMansHandStatusEffect;
@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         private DeadMansHandStatusEffect(int remainingAttacks)
         {
-            _remainingAttacks = remainingAttacks;
+            _attackCounter = new LimitedAttackCounter(remainingAttacks);
             StatGroup.Stats[StatType.RangedCriticalRatePercentAdjustment] = CriticalRatePercent;
         }
 
@@ -56,7 +56,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 return;
             }
 
-            if (--_remainingAttacks <= 0)
+            if (!_attackCounter.TryConsume(Ability.GetActiveAbilityImpactSummary(attacker)))
+                return;
+
+            if (_attackCounter.RemainingAttacks <= 0)
             {
                 IsFlaggedForRemoval = true;
                 return;
@@ -70,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public override IStatusEffect Clone()
         {
-            return new DeadMansHandStatusEffect(_remainingAttacks);
+            return new DeadMansHandStatusEffect(_attackCounter.RemainingAttacks);
         }
     }
 }

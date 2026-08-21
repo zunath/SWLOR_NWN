@@ -10,6 +10,7 @@ using SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -86,6 +87,46 @@ public class GeneratedWeaponPerkBehaviorTests
 
         combat.Should().Contain("StatType.PhysicalDamageDealtHPPercentRestore");
         combat.Should().Contain("ApplyDamageDerivedHealing(attacker, damage, hpRestorePercent)");
+    }
+
+    [Test]
+    public void LimitedAttackBuffs_ConsumeOneChargePerOriginatingAttack()
+    {
+        var counter = new LimitedAttackCounter(3);
+        var firstAbilityImpact = new AbilityImpactSummary();
+        var secondAbilityImpact = new AbilityImpactSummary();
+
+        counter.TryConsume(firstAbilityImpact).Should().BeTrue();
+        counter.TryConsume(firstAbilityImpact).Should().BeFalse("additional hits and targets belong to the same attack");
+        counter.RemainingAttacks.Should().Be(2);
+
+        counter.TryConsume(secondAbilityImpact).Should().BeTrue();
+        counter.RemainingAttacks.Should().Be(1);
+
+        counter.TryConsume(null).Should().BeTrue("each native auto-attack arrives without an ability impact");
+        counter.RemainingAttacks.Should().Be(0);
+        counter.TryConsume(null).Should().BeFalse();
+    }
+
+    [Test]
+    public void SnapRoll_GrantsOnlyRangedDeflectionAndLastWordRefreshesIt()
+    {
+        var pistolPerks = ReadPerkDefinition("PistolPerkDefinition.cs");
+        var start = pistolPerks.IndexOf("private void SnapRoll()", StringComparison.Ordinal);
+        var end = pistolPerks.IndexOf("private void InterruptingShot()", start, StringComparison.Ordinal);
+        var snapRoll = pistolPerks[start..end];
+
+        snapRoll.Should().Contain("StatType.AbilityUsedRangedDeflection");
+        snapRoll.Should().NotContain("StatType.AbilityUsedAttackDeflection");
+
+        var root = FindRepositoryRoot();
+        var lastWord = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Pistol", "LastWordAbilityDefinition.cs"));
+        lastWord.Should().Contain("TemporaryAvoidedAttackAbilityUsedRangedDeflectionRefreshDurationSeconds = 30");
+
+        var combat = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        combat.Should().Contain("new SnapRollStatusEffect(deflection)");
+        combat.Should().NotContain("ApplyAvoidedAttackAbilityUsedEvasionRefresh");
     }
 
     [Test]

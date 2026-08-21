@@ -10609,13 +10609,17 @@ namespace SWLOR.Game.Server.Service
             int unbuffedDelayMilliseconds,
             bool hasNoDelayBuff,
             int effectiveDelayWithoutLimitedReductionMilliseconds,
-            int limitedReductionRemainingAttacks)
+            int limitedReductionRemainingAttacks,
+            int limitedNoDelayRemainingAttacks = 0)
         {
+            var limitedSpeedRemainingAttacks = Math.Max(
+                limitedReductionRemainingAttacks,
+                limitedNoDelayRemainingAttacks);
             _attackSwingDebts.TryGetValue(attacker, out var attackDebt);
             var hasTrackedBaselineAttackDebt = _attackSwingDebtsWithoutLimitedReduction.TryGetValue(
                 attacker,
                 out var trackedBaselineAttackDebt);
-            if (limitedReductionRemainingAttacks <= 0 && hasTrackedBaselineAttackDebt)
+            if (limitedSpeedRemainingAttacks <= 0 && hasTrackedBaselineAttackDebt)
             {
                 // Suppression or an externally removed limited-speed effect must not calculate the
                 // current swing from debt created by an acceleration that no longer applies.
@@ -10637,7 +10641,7 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            if (limitedReductionRemainingAttacks > 0)
+            if (limitedSpeedRemainingAttacks > 0)
             {
                 var baselineAttackDebt = hasTrackedBaselineAttackDebt
                     ? trackedBaselineAttackDebt
@@ -10649,13 +10653,14 @@ namespace SWLOR.Game.Server.Service
                 attacks = CapAttacksPerSwingForLimitedAttackEffect(
                     attacks,
                     baselineAttacks,
-                    limitedReductionRemainingAttacks);
+                    limitedReductionRemainingAttacks,
+                    limitedNoDelayRemainingAttacks);
 
                 // Every matching roll in the swing consumes one charge, including rolls the
                 // baseline cadence would have scheduled. Once all remaining charges will be spent,
                 // discard fractional debt created by the expiring reduction while retaining debt
                 // earned without it.
-                if (attacks >= limitedReductionRemainingAttacks)
+                if (attacks >= limitedSpeedRemainingAttacks)
                 {
                     updatedAttackDebt = baselineUpdatedAttackDebt;
                     _attackSwingDebtsWithoutLimitedReduction.Remove(attacker);
@@ -10683,17 +10688,31 @@ namespace SWLOR.Game.Server.Service
         public static int CapAttacksPerSwingForLimitedAttackEffect(
             int acceleratedAttacks,
             int baselineAttacks,
-            int remainingAttacks)
+            int remainingAttacks,
+            int limitedNoDelayRemainingAttacks = 0)
         {
             acceleratedAttacks = Math.Max(1, acceleratedAttacks);
             baselineAttacks = Math.Clamp(baselineAttacks, 1, acceleratedAttacks);
-            if (remainingAttacks <= 0)
+            remainingAttacks = Math.Max(0, remainingAttacks);
+            limitedNoDelayRemainingAttacks = Math.Max(0, limitedNoDelayRemainingAttacks);
+            if (remainingAttacks <= 0 && limitedNoDelayRemainingAttacks <= 0)
                 return baselineAttacks;
 
             // Baseline rolls still happen after the limited effect expires, but they must not
             // create extra charged rolls. Only the portion covered by remaining charges may use
             // the accelerated schedule.
-            return Math.Min(acceleratedAttacks, Math.Max(baselineAttacks, remainingAttacks));
+            var cappedAttacks = Math.Max(baselineAttacks, remainingAttacks);
+            if (limitedNoDelayRemainingAttacks > 0)
+            {
+                // A no-delay charge guarantees one extra roll even at the swing-delay floor. Keep
+                // that single promised roll while still preventing the rest of the accelerated
+                // schedule from escaping its remaining charges.
+                cappedAttacks = Math.Max(
+                    cappedAttacks,
+                    Math.Max(baselineAttacks + 1, limitedNoDelayRemainingAttacks));
+            }
+
+            return Math.Min(acceleratedAttacks, cappedAttacks);
         }
 
         /// <summary>

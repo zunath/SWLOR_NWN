@@ -301,6 +301,23 @@ public class CombatAttackDelayTests
             .Should().Be(expectedAttacks);
     }
 
+    [TestCase(2, 1, 1, 2)]
+    [TestCase(3, 2, 1, 3)]
+    [TestCase(4, 1, 3, 3)]
+    public void CapAttacksPerSwingForLimitedNoDelay_PreservesTheGuaranteedExtraRoll(
+        int acceleratedAttacks,
+        int baselineAttacks,
+        int remainingAttacks,
+        int expectedAttacks)
+    {
+        Combat.CapAttacksPerSwingForLimitedAttackEffect(
+                acceleratedAttacks,
+                baselineAttacks,
+                0,
+                remainingAttacks)
+            .Should().Be(expectedAttacks);
+    }
+
     [Test]
     public void ConsumeAttacksPerSwing_DropsAcceleratedDebtWhenTheSwingConsumesEveryRemainingCharge()
     {
@@ -362,6 +379,32 @@ public class CombatAttackDelayTests
             attacks.Should().Be(2);
             debts.Should().NotContainKey(attacker,
                 "the uncharged third roll must not be pre-scheduled and limited-speed debt expires with the charge");
+        }
+        finally
+        {
+            Combat.ClearAttackSwingDebt(attacker);
+        }
+    }
+
+    [Test]
+    public void ConsumeAttacksPerSwing_FinalLimitedNoDelayChargeStillGrantsAnExtraFloorRoll()
+    {
+        const uint attacker = 0x7F000009;
+        Combat.ClearAttackSwingDebt(attacker);
+
+        try
+        {
+            var attacks = Combat.ConsumeAttacksPerSwing(
+                attacker,
+                Combat.MinimumAttackDelayMilliseconds,
+                Combat.MinimumAttackDelayMilliseconds,
+                true,
+                Combat.MinimumAttackDelayMilliseconds,
+                0,
+                1);
+
+            attacks.Should().Be(Combat.MaxAttacksPerSwing,
+                "the final Dead Man's Hand charge guarantees one extra roll even when baseline cadence is already at the floor");
         }
         finally
         {

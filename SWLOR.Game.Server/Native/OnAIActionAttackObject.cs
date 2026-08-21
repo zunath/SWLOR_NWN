@@ -473,16 +473,17 @@ namespace SWLOR.Game.Server.Native
                     calculatedDelayWithoutLimitedReduction,
                     hasArmedNoDelay);
 
-                var limitedSpeedRemainingAttacks = new[]
-                    {
-                        hasLimitedAttackDelayReduction ? limitedAttackDelayReductionRemainingAttacks : 0,
-                        hasLimitedAttackNoDelay ? limitedAttackNoDelayRemainingAttacks : 0,
-                    }
-                    .Where(remaining => remaining > 0)
-                    .DefaultIfEmpty(0)
-                    .Min();
+                var limitedDelayReductionRemainingAttacks = hasLimitedAttackDelayReduction
+                    ? limitedAttackDelayReductionRemainingAttacks
+                    : 0;
+                var limitedNoDelayRemainingAttacks = hasLimitedAttackNoDelay
+                    ? limitedAttackNoDelayRemainingAttacks
+                    : 0;
                 if (hasArmedNoDelay)
-                    limitedSpeedRemainingAttacks = 0;
+                {
+                    limitedDelayReductionRemainingAttacks = 0;
+                    limitedNoDelayRemainingAttacks = 0;
+                }
 
                 // The delay the attacker would have without a no-delay buff. Lowering the delay to
                 // the floor is meaningless for a build already at the floor, so this is passed to
@@ -641,7 +642,8 @@ namespace SWLOR.Game.Server.Native
                                                         unbuffedAttackDelay,
                                                         useDefaultMinimumDelay,
                                                         effectiveDelayWithoutLimitedReduction,
-                                                        limitedSpeedRemainingAttacks);
+                                                        limitedDelayReductionRemainingAttacks,
+                                                        limitedNoDelayRemainingAttacks);
 
                                                     if (nAttacks > 1)
                                                     {

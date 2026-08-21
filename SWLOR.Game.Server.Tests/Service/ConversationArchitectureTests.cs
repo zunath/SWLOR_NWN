@@ -226,6 +226,9 @@ public class ConversationArchitectureTests
         textPanelSource.Should().Contain(".SetScrollbars(NuiScrollbars.Y)",
             "the containing dialogue list owns the panel's only scrollbar");
         textPanelSource.Should().NotContain(".SetScrollbars(NuiScrollbars.Auto)");
+        textPanelSource.Should().Contain(".SetPadding(4f)",
+            "compact dialogue rows must retain reduced text padding");
+        textPanelSource.Should().NotContain(".SetPadding(8f)");
         textPanelSource.Should().Contain(".SetHeight(24f)",
             "each text widget should fit one display line rather than wrapping inside a fixed-height row");
         textPanelSource.Should().Contain(".SetRowHeight(28f)",
@@ -277,7 +280,9 @@ public class ConversationArchitectureTests
         ((int)limitMethod!.Invoke(null, new object[] { 650f })!).Should().Be(57);
         ((int)limitMethod.Invoke(null, new object[] { 400f })!).Should().Be(26);
         ((int)limitMethod.Invoke(null, new object[] { 300f })!).Should().Be(13);
-        ((int)limitMethod.Invoke(null, new object[] { 200f })!).Should().Be(4);
+        ((int)limitMethod.Invoke(null, new object[] { 208f })!).Should().Be(2);
+        ((int)limitMethod.Invoke(null, new object[] { 200f })!).Should().Be(1);
+        ((int)limitMethod.Invoke(null, new object[] { 180f })!).Should().Be(1);
 
         var splitMethod = typeof(ConversationViewModel).GetMethod(
             "SplitDialogueText",

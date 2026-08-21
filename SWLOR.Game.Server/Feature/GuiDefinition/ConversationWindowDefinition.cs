@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .BindRowCount(model => model.LineTexts)
                                     .SetRowHeight(208f)
                                     .SetShowBorders(false)
-                                    .SetScrollbars(NuiScrollbars.Y);
+                                    .SetScrollbars(NuiScrollbars.Auto);
                             });
                         });
                     });
@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .BindRowCount(model => model.ChoiceTexts)
                             .SetRowHeight(42f)
                             .SetShowBorders(false)
-                            .SetScrollbars(NuiScrollbars.Y);
+                            .SetScrollbars(NuiScrollbars.Auto);
                     });
                 });
 

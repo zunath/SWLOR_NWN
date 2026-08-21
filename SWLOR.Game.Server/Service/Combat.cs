@@ -579,6 +579,11 @@ namespace SWLOR.Game.Server.Service
                 return 0;
 
             var percentAdjustment = Stat.GetStatAdjustment(defender, StatType.DamageTakenPercentAdjustment);
+            percentAdjustment += damageType.IsPhysicalDamageType()
+                ? Stat.GetStatAdjustment(defender, StatType.LeadershipPhysicalDamageTakenPercentAdjustment)
+                : damageType == CombatDamageType.Force
+                    ? Stat.GetStatAdjustment(defender, StatType.LeadershipForceDamageTakenPercentAdjustment)
+                    : Stat.GetStatAdjustment(defender, StatType.LeadershipOtherDamageTakenPercentAdjustment);
 
             if (percentAdjustment != 0)
                 damage = ApplyPercentDamageAdjustment(damage, percentAdjustment);
@@ -7929,7 +7934,10 @@ namespace SWLOR.Game.Server.Service
                 return 0;
 
             var skillType = GetAbilitySkillType(creature, ability);
-            return ConsumeNextAbilityDelayReductionPercent(creature, skillType);
+            var hasRangedStatusNoDelay = IsRangedWeaponSkill(skillType) &&
+                                         Stat.GetStatAdjustment(creature, StatType.RangedAttackNoDelay) > 0;
+            var temporaryReduction = ConsumeNextAbilityDelayReductionPercent(creature, skillType);
+            return hasRangedStatusNoDelay ? 100 : temporaryReduction;
         }
 
         private static int ConsumeNextAbilityDelayReductionPercent(uint creature, SkillType skillType)
@@ -7963,6 +7971,17 @@ namespace SWLOR.Game.Server.Service
 
         public static bool HasNextAutoAttackNoDelay(uint creature, SkillType skillType)
         {
+            if (IsRangedWeaponSkill(skillType) &&
+                Stat.GetStatAdjustment(creature, StatType.RangedAttackNoDelay) > 0)
+            {
+                return true;
+            }
+
+            return HasTemporaryNextAutoAttackNoDelay(creature, skillType);
+        }
+
+        public static bool HasTemporaryNextAutoAttackNoDelay(uint creature, SkillType skillType)
+        {
             var appliesToAllSkills = TemporaryStatModifier.GetStatAdjustment(
                 creature,
                 StatType.NextAutoAttackNoDelayAllSkills,
@@ -7982,6 +8001,8 @@ namespace SWLOR.Game.Server.Service
 
         public static bool ConsumeNextAutoAttackNoDelay(uint creature, SkillType skillType)
         {
+            var appliesToRangedStatus = IsRangedWeaponSkill(skillType) &&
+                                        Stat.GetStatAdjustment(creature, StatType.RangedAttackNoDelay) > 0;
             var appliesToAllSkills = TemporaryStatModifier.GetStatAdjustment(
                 creature,
                 StatType.NextAutoAttackNoDelayAllSkills,
@@ -7991,7 +8012,7 @@ namespace SWLOR.Game.Server.Service
                 StatType.NextAutoAttackNoDelaySkillType,
                 StatType.NextAutoAttackNoDelaySkillType));
             var appliesToSkill = skillType != SkillType.Invalid && storedSkillType == skillType;
-            if (!appliesToAllSkills && !appliesToSkill)
+            if (!appliesToRangedStatus && !appliesToAllSkills && !appliesToSkill)
                 return false;
 
             if (appliesToAllSkills)

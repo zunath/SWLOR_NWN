@@ -41,16 +41,20 @@ public class GeneratedWeaponPerkBehaviorTests
             StatType.RangedDeflection,
             12);
         AssertStatusStat(new DuelistsDistanceStatusEffect(10), StatType.DamageDealtPercentAdjustment, -10);
-        AssertStatusStat(
-            new LimitedHasteStatusEffect(
-                20,
-                2,
-                SkillType.Pistol,
-                EffectIconType.ReloadTempoStatusEffect,
-                new AbilityImpactSummary()),
-            StatType.AttackDelayReductionPercent,
-            20);
-        AssertStatusStat(new DeadMansHandStatusEffect(), StatType.RangedCriticalRatePercentAdjustment, 20);
+        var limitedHaste = new LimitedHasteStatusEffect(
+            20,
+            2,
+            SkillType.Pistol,
+            EffectIconType.ReloadTempoStatusEffect,
+            new AbilityImpactSummary());
+        limitedHaste.AttackDelayReductionPercent.Should().Be(20);
+        limitedHaste.AppliesToSkill(SkillType.Pistol).Should().BeTrue();
+        limitedHaste.AppliesToSkill(SkillType.Rifle).Should().BeFalse();
+        AssertStatusStat(limitedHaste, StatType.AttackDelayReductionPercent, 0);
+
+        var deadMansHandStatus = new DeadMansHandStatusEffect();
+        AssertStatusStat(deadMansHandStatus, StatType.RangedCriticalRatePercentAdjustment, 20);
+        AssertStatusStat(deadMansHandStatus, StatType.RangedAttackNoDelay, 1);
 
         var deadMansHand = new DeadMansHandAbilityDefinition().BuildAbilities()[FeatType.DeadMansHand1];
         deadMansHand.IsHostileAbility.Should().BeTrue();
@@ -95,9 +99,11 @@ public class GeneratedWeaponPerkBehaviorTests
         var deadMansHandStatus = File.ReadAllText(Path.Combine(
             root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "DeadMansHandStatusEffect.cs"));
         deadMansHandStatus.Should().Contain("Combat.IsRangedWeaponSkill(skillType)");
-        deadMansHandStatus.Should().Contain("Combat.GrantNextAutoAttackNoDelay(");
+        deadMansHandStatus.Should().Contain("StatType.RangedAttackNoDelay");
+        deadMansHandStatus.Should().Contain("ILimitedAttackNoDelayStatusEffect");
+        deadMansHandStatus.Should().NotContain("Combat.GrantNextAutoAttackNoDelay(");
         deadMansHandStatus.Should().NotContain("Combat.GetEquippedWeaponSkillType(attacker)",
-            "resolved attacks must retain the exact native or ability weapon skill");
+            "the no-delay stat must follow every ranged skill rather than the initially equipped weapon");
 
         var tagIn = File.ReadAllText(Path.Combine(
             root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Katar", "TagInAbilityDefinition.cs"));
@@ -214,6 +220,9 @@ public class GeneratedWeaponPerkBehaviorTests
             "StatusEffect.NotifyAttackAttemptStatusEffects(",
             placeableBranchIndex,
             StringComparison.Ordinal);
+        var placeableBranch = nativeSource[placeableBranchIndex..placeableReturnIndex];
+        placeableBranch.Should().Contain("!UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType)",
+            "queued placeable hits are finalized by Ability.EndAbilityImpact and must not spend two charges");
         placeableNotificationIndex.Should().BeGreaterThan(placeableBranchIndex);
         placeableNotificationIndex.Should().BeLessThan(placeableReturnIndex,
             "automatic hits against destructible placeables must spend attack charges");
@@ -239,6 +248,7 @@ public class GeneratedWeaponPerkBehaviorTests
         statusEffectSource.Should().Contain("effect.IsFlaggedForRemoval");
         statusEffectSource.Should().Contain("effect.SendsWornOffMessage");
         statusEffectSource.Should().Contain("TryGetLimitedAttackDelayReduction(");
+        statusEffectSource.Should().Contain("TryGetLimitedAttackNoDelay(");
 
         var deadMansHandSource = File.ReadAllText(Path.Combine(
             root.FullName,
@@ -246,9 +256,18 @@ public class GeneratedWeaponPerkBehaviorTests
             "Feature",
             "StatusEffectDefinition",
             "DeadMansHandStatusEffect.cs"));
-        deadMansHandSource.Should().Contain("Combat.GrantNextAutoAttackNoDelay(");
-        deadMansHandSource.Should().Contain("Combat.GrantNextAbilityNoDelay(");
-        deadMansHandSource.Should().Contain("Combat.ClearNextAttackNoDelay(");
+        deadMansHandSource.Should().Contain("StatType.RangedAttackNoDelay");
+        deadMansHandSource.Should().Contain("ILimitedAttackNoDelayStatusEffect");
+
+        var attackHookSource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Native", "OnAIActionAttackObject.cs"));
+        var combatRoundGuardIndex = attackHookSource.IndexOf("if (pCombatRound == null)", StringComparison.Ordinal);
+        var weaponLookupIndex = attackHookSource.IndexOf("pCombatRound.GetWeaponAttackType()", StringComparison.Ordinal);
+        combatRoundGuardIndex.Should().BeGreaterThanOrEqualTo(0);
+        combatRoundGuardIndex.Should().BeLessThan(weaponLookupIndex,
+            "the unmanaged hook must reject a missing combat round before dereferencing it");
+        attackHookSource.Should().Contain("Combat.CalculateAttackDelay(pCreature.m_idSelf, limitedAttackDelayReductionPercent)",
+            "Limited Haste must be applied only after the swing's actual weapon skill matches");
 
         var combatSource = File.ReadAllText(Path.Combine(
             root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));

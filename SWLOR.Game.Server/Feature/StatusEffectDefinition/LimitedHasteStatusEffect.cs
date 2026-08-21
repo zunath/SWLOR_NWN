@@ -55,7 +55,6 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             _skillType = skillType;
             _attackCounter = attackCounter;
             Icon = icon;
-            StatGroup.Stats[StatType.AttackDelayReductionPercent] = hastePercent;
         }
 
         public override string CanApply(uint creature)

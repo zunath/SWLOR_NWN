@@ -17,12 +17,16 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         protected override void Apply(uint creature, int durationTicks)
         {
             var reduction = -ScaleBySourceSocial(18, 22);
-            StatGroup.Stats[StatType.DamageTakenPercentAdjustment] = reduction;
+            StatGroup.Stats[StatType.LeadershipPhysicalDamageTakenPercentAdjustment] = reduction;
+            StatGroup.Stats[StatType.LeadershipForceDamageTakenPercentAdjustment] = reduction;
+            StatGroup.Stats[StatType.LeadershipOtherDamageTakenPercentAdjustment] = reduction;
             StatGroup.Resists[ResistanceType.Mind] = Resistance.MaximumResistance;
             StatGroup.Resists[ResistanceType.Mobility] = Resistance.MaximumResistance;
             LeadershipDamageReductionStats = new Dictionary<StatType, int>
             {
-                [StatType.DamageTakenPercentAdjustment] = reduction,
+                [StatType.LeadershipPhysicalDamageTakenPercentAdjustment] = reduction,
+                [StatType.LeadershipForceDamageTakenPercentAdjustment] = reduction,
+                [StatType.LeadershipOtherDamageTakenPercentAdjustment] = reduction,
             };
         }
     }

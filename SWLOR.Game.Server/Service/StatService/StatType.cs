@@ -5805,6 +5805,34 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.NonBeneficial)]
         AbilityUsedRangedDeflectionStatusEffectIcon = 1007,
 
+        /// <summary>
+        /// When enabled, ranged weapon auto-attacks and hostile ranged weapon abilities use no
+        /// activation delay. Limited status effects that grant this stat account for attempts.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        RangedAttackNoDelay = 1008,
+
+        /// <summary>
+        /// Leadership-family percent adjustment to incoming physical damage. Leadership effects
+        /// reconcile this channel independently so only its strongest contribution applies.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative)]
+        LeadershipPhysicalDamageTakenPercentAdjustment = 1009,
+
+        /// <summary>
+        /// Leadership-family percent adjustment to incoming Force damage. Leadership effects
+        /// reconcile this channel independently so only its strongest contribution applies.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative)]
+        LeadershipForceDamageTakenPercentAdjustment = 1010,
+
+        /// <summary>
+        /// Leadership-family percent adjustment to damage that is neither physical nor Force.
+        /// Leadership effects reconcile this channel independently.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative)]
+        LeadershipOtherDamageTakenPercentAdjustment = 1011,
+
     }
 
     public class StatTypeAttribute : Attribute

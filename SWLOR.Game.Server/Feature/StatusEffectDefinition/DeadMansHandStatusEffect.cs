@@ -8,7 +8,9 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
-    public sealed class DeadMansHandStatusEffect : StatusEffectBase, IAttackAttemptStatusEffect
+    public sealed class DeadMansHandStatusEffect : StatusEffectBase,
+        IAttackAttemptStatusEffect,
+        ILimitedAttackNoDelayStatusEffect
     {
         private const int CriticalRatePercent = 20;
         private readonly LimitedAttackCounter _attackCounter;
@@ -33,18 +35,12 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             _attackCounter = attackCounter;
             StatGroup.Stats[StatType.RangedCriticalRatePercentAdjustment] = CriticalRatePercent;
+            StatGroup.Stats[StatType.RangedAttackNoDelay] = 1;
         }
 
-        protected override void Apply(uint creature, int durationTicks)
+        public bool AppliesToSkill(SkillType skillType)
         {
-            var skillType = Combat.GetEquippedWeaponSkillType(creature);
-            if (!Combat.IsRangedWeaponSkill(skillType))
-                return;
-
-            GrantNextRangedAttackNoDelay(
-                creature,
-                skillType,
-                Math.Max(1, (int)Math.Ceiling(GetDurationSeconds(durationTicks))));
+            return Combat.IsRangedWeaponSkill(skillType);
         }
 
         public void OnAttackAttemptedEffect(
@@ -52,7 +48,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             SkillType skillType,
             AbilityImpactSummary abilityImpact)
         {
-            if (!Combat.IsRangedWeaponSkill(skillType))
+            if (!AppliesToSkill(skillType))
                 return;
 
             if (!_attackCounter.TryConsume(abilityImpact))
@@ -60,24 +56,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
             if (_attackCounter.RemainingAttacks <= 0)
             {
-                Combat.ClearNextAttackNoDelay(attacker, skillType);
                 IsFlaggedForRemoval = true;
-                return;
             }
-
-            GrantNextRangedAttackNoDelay(
-                attacker,
-                skillType,
-                Math.Max(1, (int)Math.Ceiling(GetDurationSeconds(DurationTicks))));
-        }
-
-        private static void GrantNextRangedAttackNoDelay(
-            uint attacker,
-            SkillType skillType,
-            int durationSeconds)
-        {
-            Combat.GrantNextAutoAttackNoDelay(attacker, skillType, durationSeconds);
-            Combat.GrantNextAbilityNoDelay(attacker, skillType, durationSeconds);
         }
 
         public override IStatusEffect Clone()

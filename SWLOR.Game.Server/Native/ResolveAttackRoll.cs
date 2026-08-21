@@ -131,9 +131,12 @@ namespace SWLOR.Game.Server.Native
                     // Automatically hit non-creature targets.  Do not apply criticals.
                     Log.Write(LogGroup.Attack, "Placeable target.  Auto hit.");
                     pAttackData.m_nAttackResult = AttackResultAutomaticHit;
-                    StatusEffect.NotifyAttackAttemptStatusEffects(
-                        attacker.m_idSelf,
-                        weaponSkillType);
+                    if (!UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType))
+                    {
+                        StatusEffect.NotifyAttackAttemptStatusEffects(
+                            attacker.m_idSelf,
+                            weaponSkillType);
+                    }
                     ProfilerPlugin.PopPerfScope();
                     return;
                 }

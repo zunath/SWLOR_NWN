@@ -1583,13 +1583,10 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Enforces take-the-max behavior across the Leadership damage-reduction family
-        /// (Watchful Presence, Cleanse Order, Bolster Resolve, Hold the Line): only the single
-        /// strongest active member's damage-reduction stats are ever contributed to the creature.
-        /// Weaker members remain applied so any other stats they grant (e.g. Hold the Line's
-        /// crowd-control immunity) still function, but their damage-reduction stat values are
-        /// zeroed while a stronger member is active. This is recomputed from scratch on every
-        /// application and removal of a family member, so a weaker member's damage reduction
-        /// resumes automatically once the stronger member expires or is removed.
+        /// independently for each damage channel. A physical/Force-only effect can supersede
+        /// Hold the Line in those channels without disabling Hold the Line's protection against
+        /// elemental and other damage. Weaker members remain applied so their unrelated stats
+        /// continue to function, and every channel is recomputed after application or removal.
         /// </summary>
         private static void ReconcileLeadershipDamageReduction(CreatureStatusEffect creatureEffects)
         {
@@ -1600,39 +1597,37 @@ namespace SWLOR.Game.Server.Service
             if (family.Count == 0)
                 return;
 
-            var strongestMagnitude = family
-                .Select(effect => GetLeadershipDamageReductionMagnitude((ILeadershipDamageReductionStatusEffect)effect))
-                .Min();
-
-            var winnerAssigned = false;
+            var winnerByStat = family
+                .SelectMany(effect =>
+                    ((ILeadershipDamageReductionStatusEffect)effect).LeadershipDamageReductionStats.Keys)
+                .Distinct()
+                .ToDictionary(
+                    statType => statType,
+                    statType => family
+                        .Where(effect =>
+                            ((ILeadershipDamageReductionStatusEffect)effect)
+                            .LeadershipDamageReductionStats.ContainsKey(statType))
+                        .OrderBy(effect =>
+                            ((ILeadershipDamageReductionStatusEffect)effect)
+                            .LeadershipDamageReductionStats[statType])
+                        .First());
 
             foreach (var effect in family)
             {
                 var drEffect = (ILeadershipDamageReductionStatusEffect)effect;
-                var magnitude = GetLeadershipDamageReductionMagnitude(drEffect);
-                var shouldBeActive = !winnerAssigned && magnitude == strongestMagnitude;
-
-                if (shouldBeActive)
-                    winnerAssigned = true;
-
-                ApplyLeadershipDamageReductionContribution(creatureEffects, effect, drEffect, shouldBeActive);
+                ApplyLeadershipDamageReductionContribution(creatureEffects, effect, drEffect, winnerByStat);
             }
-        }
-
-        private static int GetLeadershipDamageReductionMagnitude(ILeadershipDamageReductionStatusEffect drEffect)
-        {
-            return drEffect.LeadershipDamageReductionStats.Values.DefaultIfEmpty(0).Min();
         }
 
         private static void ApplyLeadershipDamageReductionContribution(
             CreatureStatusEffect creatureEffects,
             IStatusEffect effect,
             ILeadershipDamageReductionStatusEffect drEffect,
-            bool shouldBeActive)
+            IReadOnlyDictionary<StatType, IStatusEffect> winnerByStat)
         {
             var isAlreadyCorrect = drEffect.LeadershipDamageReductionStats.All(pair =>
                 effect.StatGroup.Stats.TryGetValue(pair.Key, out var current) &&
-                current == (shouldBeActive ? pair.Value : 0));
+                current == (ReferenceEquals(winnerByStat[pair.Key], effect) ? pair.Value : 0));
 
             if (isAlreadyCorrect)
                 return;
@@ -1641,7 +1636,9 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var (statType, nominalValue) in drEffect.LeadershipDamageReductionStats)
             {
-                effect.StatGroup.Stats[statType] = shouldBeActive ? nominalValue : 0;
+                effect.StatGroup.Stats[statType] = ReferenceEquals(winnerByStat[statType], effect)
+                    ? nominalValue
+                    : 0;
             }
 
             creatureEffects.Add(effect);
@@ -1873,6 +1870,27 @@ namespace SWLOR.Game.Server.Service
                 ? 0
                 : effects.Min(effect => effect.RemainingAttacks);
             return effects.Count > 0 && reductionPercent > 0;
+        }
+
+        /// <summary>
+        /// Gets the earliest remaining charge count supplied by active limited no-delay effects
+        /// that apply to the requested attack skill.
+        /// </summary>
+        public static bool TryGetLimitedAttackNoDelay(
+            uint attacker,
+            SkillType skillType,
+            out int remainingAttacks)
+        {
+            var effects = GetCreatureStatusEffects(attacker)
+                .GetAllEffects()
+                .OfType<ILimitedAttackNoDelayStatusEffect>()
+                .Where(effect => effect.AppliesToSkill(skillType) && effect.RemainingAttacks > 0)
+                .ToList();
+
+            remainingAttacks = effects.Count == 0
+                ? 0
+                : effects.Min(effect => effect.RemainingAttacks);
+            return effects.Count > 0;
         }
 
         public static void OnGuardedHit(uint defender, uint attacker, int preventedDamage)

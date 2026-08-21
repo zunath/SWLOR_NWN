@@ -64,27 +64,30 @@ public class LeadershipCombatUpgradeTests
         AssertAppliedStat(new MarkTarget2StatusEffect(), StatType.DamageDealtPercentAdjustment, 12);
         AssertAppliedStat(new MarkTarget2StatusEffect(), StatType.PhysicalAndForceAbilityHitChancePercentAdjustment, 10);
 
-        AssertAppliedStat(new WatchfulPresence3StatusEffect(), StatType.PhysicalDamageTakenPercentAdjustment, -8);
-        AssertAppliedStat(new WatchfulPresence3StatusEffect(), StatType.ForceDamageTakenPercentAdjustment, -8);
+        AssertAppliedStat(new WatchfulPresence3StatusEffect(), StatType.LeadershipPhysicalDamageTakenPercentAdjustment, -8);
+        AssertAppliedStat(new WatchfulPresence3StatusEffect(), StatType.LeadershipForceDamageTakenPercentAdjustment, -8);
         AssertAppliedStat(new SteadyFormation2StatusEffect(), StatType.EvasionPercentAdjustment, 5);
         AssertAppliedStat(new SteadyFormation2StatusEffect(), StatType.MindResistance, 50);
         AssertAppliedStat(new SteadyFormation2StatusEffect(), StatType.MobilityResistance, 50);
-        AssertAppliedStat(new RousingShout1StatusEffect(), StatType.PhysicalDamageTakenPercentAdjustment, -10);
-        AssertAppliedStat(new RousingShout1StatusEffect(), StatType.ForceDamageTakenPercentAdjustment, -10);
-        AssertAppliedStat(new RousingShout2StatusEffect(), StatType.PhysicalDamageTakenPercentAdjustment, -15);
-        AssertAppliedStat(new RousingShout2StatusEffect(), StatType.ForceDamageTakenPercentAdjustment, -15);
-        AssertAppliedStat(new RousingShout3StatusEffect(), StatType.PhysicalDamageTakenPercentAdjustment, -20);
-        AssertAppliedStat(new RousingShout3StatusEffect(), StatType.ForceDamageTakenPercentAdjustment, -20);
+        AssertAppliedStat(new RousingShout1StatusEffect(), StatType.LeadershipPhysicalDamageTakenPercentAdjustment, -10);
+        AssertAppliedStat(new RousingShout1StatusEffect(), StatType.LeadershipForceDamageTakenPercentAdjustment, -10);
+        AssertAppliedStat(new RousingShout2StatusEffect(), StatType.LeadershipPhysicalDamageTakenPercentAdjustment, -15);
+        AssertAppliedStat(new RousingShout2StatusEffect(), StatType.LeadershipForceDamageTakenPercentAdjustment, -15);
+        AssertAppliedStat(new RousingShout3StatusEffect(), StatType.LeadershipPhysicalDamageTakenPercentAdjustment, -20);
+        AssertAppliedStat(new RousingShout3StatusEffect(), StatType.LeadershipForceDamageTakenPercentAdjustment, -20);
         AssertAppliedStat(new RousingShout3StatusEffect(), StatType.DamageTakenPercentAdjustment, 0);
-        AssertAppliedStat(new BolsterResolve2StatusEffect(), StatType.PhysicalDamageTakenPercentAdjustment, -12);
-        AssertAppliedStat(new BolsterResolve2StatusEffect(), StatType.ForceDamageTakenPercentAdjustment, -12);
+        AssertAppliedStat(new BolsterResolve2StatusEffect(), StatType.LeadershipPhysicalDamageTakenPercentAdjustment, -12);
+        AssertAppliedStat(new BolsterResolve2StatusEffect(), StatType.LeadershipForceDamageTakenPercentAdjustment, -12);
         AssertAppliedStat(new BolsterResolve2StatusEffect(), StatType.DamageTakenPercentAdjustment, 0);
         AssertAppliedStat(new CleanseOrder2StatusEffect(), StatType.DamageTakenPercentAdjustment, 0);
         AssertAppliedStat(new CleanseOrder2StatusEffect(), StatType.PhysicalDamageTakenPercentAdjustment, 0);
         AssertAppliedStat(new CleanseOrder2StatusEffect(), StatType.ForceDamageTakenPercentAdjustment, 0);
         new CleanseOrder2StatusEffect().Categories.Should().Be(StatusEffectCategory.None);
         AssertAppliedStat(new TriageProtocol2StatusEffect(), StatType.HealingReceivedPercentAdjustment, 12);
-        AssertAppliedStat(new HoldTheLine1StatusEffect(), StatType.DamageTakenPercentAdjustment, -18);
+        AssertAppliedStat(new HoldTheLine1StatusEffect(), StatType.DamageTakenPercentAdjustment, 0);
+        AssertAppliedStat(new HoldTheLine1StatusEffect(), StatType.LeadershipPhysicalDamageTakenPercentAdjustment, -18);
+        AssertAppliedStat(new HoldTheLine1StatusEffect(), StatType.LeadershipForceDamageTakenPercentAdjustment, -18);
+        AssertAppliedStat(new HoldTheLine1StatusEffect(), StatType.LeadershipOtherDamageTakenPercentAdjustment, -18);
         AssertAppliedResistance(new HoldTheLine1StatusEffect(), ResistanceType.Mind, 100);
         AssertAppliedResistance(new HoldTheLine1StatusEffect(), ResistanceType.Mobility, 100);
     }
@@ -110,6 +113,13 @@ public class LeadershipCombatUpgradeTests
         combat.Should().Contain("typeof(MarkTarget2StatusEffect)");
         combat.Should().Contain("typeof(MarkTarget1StatusEffect)");
         combat.Should().Contain("AbilityTargeting.GetFriendlyTargets(activator, activator, true, radius)");
+        combat.Should().Contain("StatType.LeadershipPhysicalDamageTakenPercentAdjustment");
+        combat.Should().Contain("StatType.LeadershipForceDamageTakenPercentAdjustment");
+        combat.Should().Contain("StatType.LeadershipOtherDamageTakenPercentAdjustment");
+
+        var statusEffect = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "StatusEffect.cs").FullName);
+        statusEffect.Should().Contain("winnerByStat",
+            "Leadership damage reduction must choose the strongest effect independently per channel");
     }
 
     [Test]

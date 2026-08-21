@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
@@ -77,8 +78,15 @@ namespace SWLOR.Game.Server.Native
                 var pCreature = CNWSCreature.FromPointer(creature);
                 var pNode = CNWSObjectActionNode.FromPointer(node);
                 var pArea = pCreature.GetArea();
-                var currentWeaponAttackType = pCreature.m_pcCombatRound.GetWeaponAttackType();
-                var currentAttackWeapon = pCreature.m_pcCombatRound.GetCurrentAttackWeapon(
+                var pCombatRound = pCreature.m_pcCombatRound;
+                if (pCombatRound == null)
+                {
+                    pCreature.ChangeAttackTarget(pNode, OBJECT_INVALID);
+                    return ACTION_FAILED;
+                }
+
+                var currentWeaponAttackType = pCombatRound.GetWeaponAttackType();
+                var currentAttackWeapon = pCombatRound.GetCurrentAttackWeapon(
                     currentWeaponAttackType == WEAPON_ATTACK_TYPE_OFFHAND ? 1 : 0);
                 var attackSkillType = currentAttackWeapon == null
                     ? Combat.GetEquippedWeaponSkillType(pCreature.m_idSelf)
@@ -421,12 +429,6 @@ namespace SWLOR.Game.Server.Native
 
 
 
-                if (pCreature.m_pcCombatRound == null)
-                {
-                    pCreature.ChangeAttackTarget(pNode, OBJECT_INVALID);
-                    return ACTION_FAILED;
-                }
-
                 pCreature.m_vLastAttackPosition = new Vector();
 
                 // Check if target is dead - if so, skip delay and handle immediately
@@ -446,28 +448,50 @@ namespace SWLOR.Game.Server.Native
                     }
                 }
 
-                var useDefaultMinimumDelay = Combat.HasNextAutoAttackNoDelay(pCreature.m_idSelf, attackSkillType);
-                var calculatedDelay = Combat.CalculateAttackDelay(pCreature.m_idSelf);
-                var effectiveAttackDelay = Combat.CalculateEffectiveAttackDelay(calculatedDelay, useDefaultMinimumDelay);
-
                 var hasLimitedAttackDelayReduction = StatusEffect.TryGetLimitedAttackDelayReduction(
                     pCreature.m_idSelf,
                     attackSkillType,
                     out var limitedAttackDelayReductionPercent,
                     out var limitedAttackDelayReductionRemainingAttacks);
-                var calculatedDelayWithoutLimitedReduction = hasLimitedAttackDelayReduction
-                    ? Combat.CalculateAttackDelay(pCreature.m_idSelf, -limitedAttackDelayReductionPercent)
-                    : calculatedDelay;
+                var hasLimitedAttackNoDelay = StatusEffect.TryGetLimitedAttackNoDelay(
+                    pCreature.m_idSelf,
+                    attackSkillType,
+                    out var limitedAttackNoDelayRemainingAttacks);
+                var hasArmedNoDelay = Combat.HasTemporaryNextAutoAttackNoDelay(
+                    pCreature.m_idSelf,
+                    attackSkillType);
+                var useDefaultMinimumDelay = hasArmedNoDelay || hasLimitedAttackNoDelay;
+
+                // Limited Haste is skill-scoped. Supply it to this swing's delay calculation
+                // instead of contributing a creature-wide AttackDelayReductionPercent stat.
+                var calculatedDelayWithoutLimitedReduction = Combat.CalculateAttackDelay(pCreature.m_idSelf);
+                var calculatedDelay = hasLimitedAttackDelayReduction
+                    ? Combat.CalculateAttackDelay(pCreature.m_idSelf, limitedAttackDelayReductionPercent)
+                    : calculatedDelayWithoutLimitedReduction;
+                var effectiveAttackDelay = Combat.CalculateEffectiveAttackDelay(calculatedDelay, useDefaultMinimumDelay);
                 var effectiveDelayWithoutLimitedReduction = Combat.CalculateEffectiveAttackDelay(
                     calculatedDelayWithoutLimitedReduction,
-                    false);
+                    hasArmedNoDelay);
+
+                var limitedSpeedRemainingAttacks = new[]
+                    {
+                        hasLimitedAttackDelayReduction ? limitedAttackDelayReductionRemainingAttacks : 0,
+                        hasLimitedAttackNoDelay ? limitedAttackNoDelayRemainingAttacks : 0,
+                    }
+                    .Where(remaining => remaining > 0)
+                    .DefaultIfEmpty(0)
+                    .Min();
+                if (hasArmedNoDelay)
+                    limitedSpeedRemainingAttacks = 0;
 
                 // The delay the attacker would have without a no-delay buff. Lowering the delay to
                 // the floor is meaningless for a build already at the floor, so this is passed to
                 // ConsumeAttacksPerSwing alongside useDefaultMinimumDelay to guarantee the buff is
                 // worth an extra attack either way. Both values are equal for a build already at the
                 // floor, so the buff state has to travel separately from the delays.
-                var unbuffedAttackDelay = Combat.CalculateEffectiveAttackDelay(calculatedDelay, false);
+                var unbuffedAttackDelay = Combat.CalculateEffectiveAttackDelay(
+                    calculatedDelayWithoutLimitedReduction,
+                    false);
 
                 // Check attack delay before starting or processing combat
                 // First attack is always instant, subsequent attacks respect delay
@@ -617,9 +641,7 @@ namespace SWLOR.Game.Server.Native
                                                         unbuffedAttackDelay,
                                                         useDefaultMinimumDelay,
                                                         effectiveDelayWithoutLimitedReduction,
-                                                        useDefaultMinimumDelay
-                                                            ? 0
-                                                            : limitedAttackDelayReductionRemainingAttacks);
+                                                        limitedSpeedRemainingAttacks);
 
                                                     if (nAttacks > 1)
                                                     {

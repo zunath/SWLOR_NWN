@@ -525,10 +525,11 @@ public class AIModelTests
     public void NativeAttackAction_CancelsLeashedCreaturesBeforePathingOrResolvingAttack()
     {
         var source = ReadSource("SWLOR.Game.Server", "Native", "OnAIActionAttackObject.cs").Replace("\r\n", "\n");
+        var activeTargetIndex = source.IndexOf("if (bTargetActive)", StringComparison.Ordinal);
         var activeTargetBody = source.Substring(
-            source.IndexOf("if (bTargetActive)", StringComparison.Ordinal),
-            source.IndexOf("if (pCreature.m_pcCombatRound == null)", StringComparison.Ordinal) -
-            source.IndexOf("if (bTargetActive)", StringComparison.Ordinal));
+            activeTargetIndex,
+            source.IndexOf("pCreature.m_vLastAttackPosition = new Vector();", activeTargetIndex, StringComparison.Ordinal) -
+            activeTargetIndex);
         var pendingAttackIndex = source.IndexOf("case CNWSCOMBATROUND_TYPE_ATTACK:", StringComparison.Ordinal);
         var pendingAttackBody = source.Substring(
             pendingAttackIndex,

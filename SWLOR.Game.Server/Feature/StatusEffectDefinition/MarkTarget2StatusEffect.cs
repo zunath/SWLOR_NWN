@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         protected override void Apply(uint creature, int durationTicks)
         {
             StatGroup.Stats[StatType.DamageDealtPercentAdjustment] = ScaleBySourceSocial(12, 15);
-            StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment] = ScaleBySourceSocial(10, 12);
+            StatGroup.Stats[StatType.AccuracyPercentAdjustment] = ScaleBySourceSocial(10, 12);
         }
     }
 }

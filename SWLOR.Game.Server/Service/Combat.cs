@@ -27,7 +27,7 @@ namespace SWLOR.Game.Server.Service
     {
         private const float DamageStatDeltaMultiplier = 0.35f;
         public const int BaseGuardDamageReductionPercent = 20;
-        public const int MaximumGuardDamageReductionPercent = 85;
+        public const int MaximumGuardDamageReductionPercent = 55;
         public const int MaximumNormalDamageReductionPercent = 95;
         public const int MaximumDamageBonusPercent = 100;
         private const int MaximumCrossResourceRestorePercent = 95;
@@ -579,11 +579,12 @@ namespace SWLOR.Game.Server.Service
                 return 0;
 
             var percentAdjustment = Stat.GetStatAdjustment(defender, StatType.DamageTakenPercentAdjustment);
-            percentAdjustment += damageType.IsPhysicalDamageType()
-                ? Stat.GetStatAdjustment(defender, StatType.LeadershipPhysicalDamageTakenPercentAdjustment)
-                : damageType == CombatDamageType.Force
-                    ? Stat.GetStatAdjustment(defender, StatType.LeadershipForceDamageTakenPercentAdjustment)
-                    : Stat.GetStatAdjustment(defender, StatType.LeadershipOtherDamageTakenPercentAdjustment);
+            if (!damageType.IsPhysicalDamageType() && damageType != CombatDamageType.Force)
+            {
+                percentAdjustment += Stat.GetStatAdjustment(
+                    defender,
+                    StatType.LeadershipOtherDamageTakenPercentAdjustment);
+            }
 
             if (percentAdjustment != 0)
                 damage = ApplyPercentDamageAdjustment(damage, percentAdjustment);
@@ -2125,7 +2126,7 @@ namespace SWLOR.Game.Server.Service
                 new LimitedHasteStatusEffect(
                     hastePercent,
                     attackCount,
-                    triggerSkillType,
+                    SkillType.Invalid,
                     statusEffectIcon,
                     Ability.GetActiveAbilityImpactSummary(attacker)),
                 duration);
@@ -4010,13 +4011,23 @@ namespace SWLOR.Game.Server.Service
             }
 
             if (damageType.IsPhysicalDamageType())
+            {
                 adjustment += Stat.GetStatAdjustment(defender, StatType.PhysicalDamageTakenPercentAdjustment);
+                adjustment += Stat.GetStatAdjustment(
+                    defender,
+                    StatType.LeadershipPhysicalDamageTakenPercentAdjustment);
+            }
 
             if (isAbilityDamage && damageType.IsPhysicalDamageType())
                 adjustment += Stat.GetStatAdjustment(defender, StatType.PhysicalAbilityDamageTakenPercentAdjustment);
 
             if (damageType == CombatDamageType.Force)
+            {
                 adjustment += Stat.GetStatAdjustment(defender, StatType.ForceDamageTakenPercentAdjustment);
+                adjustment += Stat.GetStatAdjustment(
+                    defender,
+                    StatType.LeadershipForceDamageTakenPercentAdjustment);
+            }
 
             if (damageType.IsPhysicalDamageType() && IsRangedDamageSkill(skillType))
                 adjustment += Stat.GetStatAdjustment(defender, StatType.RangedPhysicalDamageTakenPercentAdjustment);

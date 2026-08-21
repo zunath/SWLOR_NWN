@@ -79,14 +79,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, true, radius))
             {
                 StatusEffect.RemoveFirstCleanseableStatusEffect(friendly, StatusEffectCleanseType.TreatmentKit2, false);
-                var temporaryHitPointApplicationId = ApplyTemporaryHP(
+                StatusEffect.RemoveStatusEffect(friendly, typeof(CleanseOrder2StatusEffect), false);
+                ApplyTemporaryHP(
                     friendly,
                     AbilityEffectScaling.ScaleValueBySourceSocial(activator, 6, 8),
-                    duration);
-                StatusEffect.ApplyStatusEffect(
-                    activator,
-                    friendly,
-                    new CleanseOrder1StatusEffect(temporaryHitPointApplicationId),
                     duration);
                 LeadershipAbilityEffects.ApplyTriageProtocol(activator, friendly, duration);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), friendly);
@@ -107,14 +103,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, true, radius))
             {
                 StatusEffect.RemoveFirstCleanseableStatusEffect(friendly, StatusEffectCleanseType.Purify, false);
-                var temporaryHitPointApplicationId = ApplyTemporaryHP(
-                    friendly,
-                    AbilityEffectScaling.ScaleValueBySourceSocial(activator, 12, 15),
-                    duration);
                 StatusEffect.ApplyStatusEffect(
                     activator,
                     friendly,
-                    new CleanseOrder2StatusEffect(temporaryHitPointApplicationId),
+                    typeof(CleanseOrder2StatusEffect),
+                    duration);
+                ApplyTemporaryHP(
+                    friendly,
+                    AbilityEffectScaling.ScaleValueBySourceSocial(activator, 12, 15),
                     duration);
                 LeadershipAbilityEffects.ApplyTriageProtocol(activator, friendly, duration);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), friendly);
@@ -126,11 +122,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
             if (affectedCount > 0) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership, 2);
         }
 
-        private static long ApplyTemporaryHP(uint target, int percent, float durationSeconds)
+        private static void ApplyTemporaryHP(uint target, int percent, float durationSeconds)
         {
-            return TemporaryHitPointEffects.ApplyFlatTracked(
+            TemporaryHitPointEffects.ApplyFlat(
                 target,
-                CleanseOrderTemporaryHitPointStatusEffectBase.TemporaryHitPointEffectKey,
+                CleanseOrder2StatusEffect.TemporaryHitPointEffectKey,
                 GameMath.PercentOf(GetMaxHitPoints(target), percent),
                 durationSeconds);
         }

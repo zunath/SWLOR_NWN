@@ -32,7 +32,7 @@ public class GeneratedWeaponPerkBehaviorTests
         soulAscension.Categories.Should().HaveFlag(StatusEffectCategory.Buff);
 
         AssertStatusStat(new AdamantineGuardStatusEffect(), StatType.GuardDamageReductionPercentAdjustment, 20);
-        Combat.MaximumGuardDamageReductionPercent.Should().BeGreaterThanOrEqualTo(55);
+        Combat.MaximumGuardDamageReductionPercent.Should().Be(55);
 
         AssertStatusStat(new DisarmingShotStatusEffect(18), StatType.AttackPercentAdjustment, -18);
         AssertStatusStat(new PointBlankBurstStatusEffect(15), StatType.EvasionPercentAdjustment, 15);
@@ -44,12 +44,13 @@ public class GeneratedWeaponPerkBehaviorTests
         var limitedHaste = new LimitedHasteStatusEffect(
             20,
             2,
-            SkillType.Pistol,
+            SkillType.Invalid,
             EffectIconType.ReloadTempoStatusEffect,
             new AbilityImpactSummary());
         limitedHaste.AttackDelayReductionPercent.Should().Be(20);
         limitedHaste.AppliesToSkill(SkillType.Pistol).Should().BeTrue();
-        limitedHaste.AppliesToSkill(SkillType.Rifle).Should().BeFalse();
+        limitedHaste.AppliesToSkill(SkillType.Rifle).Should().BeTrue(
+            "Reload Tempo promises Haste for the next two attacks, not only Pistol attacks");
         AssertStatusStat(limitedHaste, StatType.AttackDelayReductionPercent, 0);
 
         var deadMansHandStatus = new DeadMansHandStatusEffect();
@@ -61,6 +62,41 @@ public class GeneratedWeaponPerkBehaviorTests
         deadMansHand.IsAreaAbility.Should().BeFalse();
         deadMansHand.RequiresTarget.Should().BeTrue();
         deadMansHand.Targeting.Should().BeNull();
+    }
+
+    [Test]
+    public void SoulAscension_ContributesEightPercentToRuntimePhysicalDamageHealing()
+    {
+        const uint Creature = 418;
+        const int PhysicalDamage = 125;
+        var bindingFlags = System.Reflection.BindingFlags.NonPublic |
+                           System.Reflection.BindingFlags.Static;
+        var creatureEffects = (Dictionary<uint, CreatureStatusEffect>)typeof(StatusEffect)
+            .GetField("_creatureEffects", bindingFlags)!
+            .GetValue(null)!;
+
+        try
+        {
+            var tracker = new CreatureStatusEffect();
+            creatureEffects[Creature] = tracker;
+            tracker.Add(new SoulAscensionStatusEffect());
+
+            var restorePercent = Stat.GetStatAdjustment(
+                Creature,
+                StatType.PhysicalDamageDealtHPPercentRestore);
+            restorePercent.Should().Be(8,
+                "the applied status must participate in the same runtime stat aggregation Combat reads");
+
+            var requestedHealing = GameMath.PercentOf(PhysicalDamage, restorePercent);
+            requestedHealing.Should().Be(10);
+            Combat.CalculateCappedDamageDerivedHealingAmount(PhysicalDamage, 0, requestedHealing)
+                .Should()
+                .Be(10, "Soul Ascension is below the shared per-hit healing cap");
+        }
+        finally
+        {
+            creatureEffects.Remove(Creature);
+        }
     }
 
     [Test]
@@ -159,22 +195,19 @@ public class GeneratedWeaponPerkBehaviorTests
     }
 
     [Test]
-    public void LimitedAttackBuffs_ConsumeMissesAndRemoveOnTheFinalAttempt()
+    public void ReloadTempo_ConsumesAnyAttackSkillAndRemovesOnTheFinalAttempt()
     {
         var effect = new LimitedHasteStatusEffect(
             20,
             2,
-            SkillType.Pistol,
+            SkillType.Invalid,
             EffectIconType.ReloadTempoStatusEffect,
             null);
         var attemptEffect = (IAttackAttemptStatusEffect)effect;
 
         attemptEffect.OnAttackAttemptedEffect(0, SkillType.Rifle, null);
         effect.IsFlaggedForRemoval.Should().BeFalse(
-            "attacks from a different skill must not spend Reload Tempo charges");
-
-        attemptEffect.OnAttackAttemptedEffect(0, SkillType.Pistol, null);
-        effect.IsFlaggedForRemoval.Should().BeFalse();
+            "the first attack spends one of Reload Tempo's two charges");
 
         attemptEffect.OnAttackAttemptedEffect(0, SkillType.Pistol, null);
         effect.IsFlaggedForRemoval.Should().BeTrue(

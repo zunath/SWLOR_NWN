@@ -62,7 +62,8 @@ public class LeadershipCombatUpgradeTests
 
         AssertAppliedStat(new MarkTarget1StatusEffect(), StatType.DamageDealtPercentAdjustment, 8);
         AssertAppliedStat(new MarkTarget2StatusEffect(), StatType.DamageDealtPercentAdjustment, 12);
-        AssertAppliedStat(new MarkTarget2StatusEffect(), StatType.PhysicalAndForceAbilityHitChancePercentAdjustment, 10);
+        AssertAppliedStat(new MarkTarget2StatusEffect(), StatType.AccuracyPercentAdjustment, 10);
+        AssertAppliedStat(new MarkTarget2StatusEffect(), StatType.PhysicalAndForceAbilityHitChancePercentAdjustment, 0);
 
         AssertAppliedStat(new WatchfulPresence3StatusEffect(), StatType.LeadershipPhysicalDamageTakenPercentAdjustment, -8);
         AssertAppliedStat(new WatchfulPresence3StatusEffect(), StatType.LeadershipForceDamageTakenPercentAdjustment, -8);
@@ -82,7 +83,7 @@ public class LeadershipCombatUpgradeTests
         AssertAppliedStat(new CleanseOrder2StatusEffect(), StatType.DamageTakenPercentAdjustment, 0);
         AssertAppliedStat(new CleanseOrder2StatusEffect(), StatType.PhysicalDamageTakenPercentAdjustment, 0);
         AssertAppliedStat(new CleanseOrder2StatusEffect(), StatType.ForceDamageTakenPercentAdjustment, 0);
-        new CleanseOrder2StatusEffect().Categories.Should().Be(StatusEffectCategory.None);
+        new CleanseOrder2StatusEffect().Categories.Should().Be(StatusEffectCategory.Buff);
         AssertAppliedStat(new TriageProtocol2StatusEffect(), StatType.HealingReceivedPercentAdjustment, 12);
         AssertAppliedStat(new HoldTheLine1StatusEffect(), StatType.DamageTakenPercentAdjustment, 0);
         AssertAppliedStat(new HoldTheLine1StatusEffect(), StatType.LeadershipPhysicalDamageTakenPercentAdjustment, -18);
@@ -113,7 +114,7 @@ public class LeadershipCombatUpgradeTests
         var cleanseOrder = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Leadership" / "CleanseOrderAbilityDefinition.cs").FullName);
         cleanseOrder.Should().Contain("AbilityEffectScaling.ScaleValueBySourceSocial(activator, 12, 15)");
         cleanseOrder.Should().Contain("GameMath.PercentOf(GetMaxHitPoints(target), percent)");
-        cleanseOrder.Should().Contain("TemporaryHitPointEffects.ApplyFlatTracked(");
+        cleanseOrder.Should().Contain("TemporaryHitPointEffects.ApplyFlat(");
         var cleanseOrder1Impact = cleanseOrder[cleanseOrder.IndexOf(
             "private static void CleanseOrder1ImpactAction",
             StringComparison.Ordinal)..cleanseOrder.IndexOf(
@@ -122,20 +123,19 @@ public class LeadershipCombatUpgradeTests
         var cleanseOrder2Impact = cleanseOrder[cleanseOrder.IndexOf(
             "private static void CleanseOrder2ImpactAction",
             StringComparison.Ordinal)..];
-        cleanseOrder1Impact.IndexOf("ApplyTemporaryHP(", StringComparison.Ordinal)
-            .Should().BeLessThan(cleanseOrder1Impact.IndexOf(
-                    "new CleanseOrder1StatusEffect(temporaryHitPointApplicationId)",
-                    StringComparison.Ordinal),
-                "the rank-I marker must own the pool generation it follows");
-        cleanseOrder2Impact.IndexOf("ApplyTemporaryHP(", StringComparison.Ordinal)
-            .Should().BeLessThan(cleanseOrder2Impact.IndexOf(
-                    "new CleanseOrder2StatusEffect(temporaryHitPointApplicationId)",
-                    StringComparison.Ordinal),
-                "the rank-II marker must own the pool generation it follows");
+        cleanseOrder1Impact.IndexOf("StatusEffect.RemoveStatusEffect(friendly, typeof(CleanseOrder2StatusEffect), false)", StringComparison.Ordinal)
+            .Should().BeLessThan(cleanseOrder1Impact.IndexOf("ApplyTemporaryHP(", StringComparison.Ordinal),
+                "rank I must clear a prior rank-II marker and pool before applying its replacement");
+        cleanseOrder2Impact.IndexOf("typeof(CleanseOrder2StatusEffect)", StringComparison.Ordinal)
+            .Should().BeLessThan(cleanseOrder2Impact.IndexOf("ApplyTemporaryHP(", StringComparison.Ordinal),
+                "rank II must replace its marker before applying the new pool");
 
-        var cleanseOrderStatus = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "CleanseOrderTemporaryHitPointStatusEffectBase.cs").FullName);
-        cleanseOrderStatus.Should().Contain("TemporaryHitPointEffects.RemoveIfCurrent(",
-            "an older marker must not remove a newer Cleanse Order pool from either rank or source");
+        var rank2Marker = new CleanseOrder2StatusEffect();
+        rank2Marker.Icon.Should().Be(EffectIconType.CleanseOrder2StatusEffect);
+        rank2Marker.Categories.Should().Be(StatusEffectCategory.Buff);
+
+        var cleanseOrderStatus = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "CleanseOrder2StatusEffect.cs").FullName);
+        cleanseOrderStatus.Should().Contain("TemporaryHitPointEffects.Remove(creature, TemporaryHitPointEffectKey)");
 
         var combat = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
         combat.Should().Contain("typeof(MarkTarget2StatusEffect)");
@@ -148,6 +148,29 @@ public class LeadershipCombatUpgradeTests
         var statusEffect = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "StatusEffect.cs").FullName);
         statusEffect.Should().Contain("winnerByStat",
             "Leadership damage reduction must choose the strongest effect independently per channel");
+    }
+
+    [Test]
+    public void LeadershipPhysicalAndForceReduction_StayInTheTypedDamageStage()
+    {
+        var root = FindRepositoryRoot();
+        var combat = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
+        var genericStage = combat[combat.IndexOf(
+            "public static int ApplyDamageTakenModifiers(",
+            StringComparison.Ordinal)..combat.IndexOf(
+            "private static int ApplyDamageTakenRedirectToStatusSource(",
+            StringComparison.Ordinal)];
+        var typedStage = combat[combat.IndexOf(
+            "private static int ApplyTargetStatusDamageModifiers(",
+            StringComparison.Ordinal)..combat.IndexOf(
+            "public static int ApplyTwinBladeAbilityShapeDamageModifier(",
+            StringComparison.Ordinal)];
+
+        genericStage.Should().NotContain("StatType.LeadershipPhysicalDamageTakenPercentAdjustment");
+        genericStage.Should().NotContain("StatType.LeadershipForceDamageTakenPercentAdjustment");
+        genericStage.Should().Contain("StatType.LeadershipOtherDamageTakenPercentAdjustment");
+        typedStage.Should().Contain("StatType.LeadershipPhysicalDamageTakenPercentAdjustment");
+        typedStage.Should().Contain("StatType.LeadershipForceDamageTakenPercentAdjustment");
     }
 
     [Test]

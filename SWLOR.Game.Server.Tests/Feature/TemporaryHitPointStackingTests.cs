@@ -31,33 +31,6 @@ public class TemporaryHitPointStackingTests
             "stacking key (same ability replaces, different abilities stack) is always applied");
     }
 
-    [Test]
-    public void TrackedTemporaryHitPoints_IgnoreRemovalFromAnOlderApplication()
-    {
-        const uint Target = 419;
-        const string EffectKey = "TRACKED_TEST";
-        var key = (Target, EffectKey);
-        var trackedApplications = (System.Collections.IDictionary)typeof(TemporaryHitPointEffects)
-            .GetField(
-                "_trackedApplications",
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!
-            .GetValue(null)!;
-
-        try
-        {
-            trackedApplications[key] = 2L;
-
-            TemporaryHitPointEffects.RemoveIfCurrent(Target, EffectKey, 1L);
-
-            trackedApplications[key].Should().Be(2L,
-                "an older Cleanse Order marker must not remove a newer rank or caster's HP pool");
-        }
-        finally
-        {
-            trackedApplications.Remove(key);
-        }
-    }
-
     private static DirectoryInfo FindRepositoryRoot()
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);

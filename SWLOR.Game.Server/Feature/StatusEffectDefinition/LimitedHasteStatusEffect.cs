@@ -61,14 +61,12 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             return Icon == EffectIconType.Invalid
                 ? "Limited Haste requires a configured status icon."
-                : _skillType == SkillType.Invalid
-                    ? "Limited Haste requires a configured attack skill."
                 : string.Empty;
         }
 
         public bool AppliesToSkill(SkillType skillType)
         {
-            return skillType == _skillType;
+            return _skillType == SkillType.Invalid || skillType == _skillType;
         }
 
         public void OnAttackAttemptedEffect(

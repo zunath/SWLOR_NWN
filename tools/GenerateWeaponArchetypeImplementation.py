@@ -623,25 +623,19 @@ def update_spell_targeting(spell_updates):
             continue
 
         inferred = infer_targeting_from_description(row)
-        if inferred:
-            shape_expression, size_x_literal, size_y_literal, _ = inferred
-            shape = {
-                "AbilityTargetingShapeType.Sphere": "sphere",
-                "AbilityTargetingShapeType.Rect": "rectangle",
-                "AbilityTargetingShapeType.Cone": "cone",
-            }[shape_expression]
-            size_x = f"{float(size_x_literal[:-1]):g}"
-            size_y_value = float(size_y_literal[:-1])
-            size_y = f"{size_y_value:g}" if size_y_value > 0 else "****"
-            flags = "1" if shape == "sphere" and is_aimed_area(row) else "17"
-        else:
-            # A spell row may have belonged to an older area implementation. Generated
-            # single-target abilities must actively clear that stale marker metadata;
-            # merely updating feat.2da leaves the client presenting an area cursor.
-            shape = "****"
-            size_x = "****"
-            size_y = "****"
-            flags = "****"
+        if not inferred:
+            continue
+
+        shape_expression, size_x_literal, size_y_literal, _ = inferred
+        shape = {
+            "AbilityTargetingShapeType.Sphere": "sphere",
+            "AbilityTargetingShapeType.Rect": "rectangle",
+            "AbilityTargetingShapeType.Cone": "cone",
+        }[shape_expression]
+        size_x = f"{float(size_x_literal[:-1]):g}"
+        size_y_value = float(size_y_literal[:-1])
+        size_y = f"{size_y_value:g}" if size_y_value > 0 else "****"
+        flags = "1" if shape == "sphere" and is_aimed_area(row) else "17"
 
         line_index = row_line[int(spell_id)]
         new_line = lines[line_index]

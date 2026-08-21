@@ -520,6 +520,17 @@ public class CombatAttackDelayTests
         reloadTempo.Should().Contain(".IncreasesStat(StatType.CriticalHitLimitedHasteAttackCount, 2)");
         reloadTempo.Should().Contain(
             ".IncreasesStat(StatType.CriticalHitLimitedHasteStatusEffectIcon, (int)EffectIconType.ReloadTempoStatusEffect)");
+
+        var combat = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot().FullName,
+            "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var grant = combat[combat.IndexOf(
+            "private static void ApplyCriticalHitLimitedHaste(",
+            StringComparison.Ordinal)..combat.IndexOf(
+            "private static void ApplyCriticalNextAutoAttackNoDelay(",
+            StringComparison.Ordinal)];
+        grant.Should().Contain("SkillType.Invalid,",
+            "the triggering critical is Pistol-scoped, but the two promised Haste charges apply to any attacks");
     }
 
     [Test]

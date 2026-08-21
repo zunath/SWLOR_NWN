@@ -1126,27 +1126,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var typeAdjustment = damageType switch
             {
-                CombatDamageType.Physical => Stat.GetStatAdjustment(_target, StatType.PhysicalDamageTakenPercentAdjustment),
-                CombatDamageType.Force => Stat.GetStatAdjustment(_target, StatType.ForceDamageTakenPercentAdjustment),
+                CombatDamageType.Physical =>
+                    Stat.GetStatAdjustment(_target, StatType.PhysicalDamageTakenPercentAdjustment) +
+                    Stat.GetStatAdjustment(_target, StatType.LeadershipPhysicalDamageTakenPercentAdjustment),
+                CombatDamageType.Force =>
+                    Stat.GetStatAdjustment(_target, StatType.ForceDamageTakenPercentAdjustment) +
+                    Stat.GetStatAdjustment(_target, StatType.LeadershipForceDamageTakenPercentAdjustment),
                 _ => 0
             };
-            var leadershipAdjustment = damageType switch
-            {
-                CombatDamageType.Physical => Stat.GetStatAdjustment(
-                    _target,
-                    StatType.LeadershipPhysicalDamageTakenPercentAdjustment),
-                CombatDamageType.Force => Stat.GetStatAdjustment(
-                    _target,
-                    StatType.LeadershipForceDamageTakenPercentAdjustment),
-                _ => Stat.GetStatAdjustment(
-                    _target,
-                    StatType.LeadershipOtherDamageTakenPercentAdjustment)
-            };
+            var otherLeadershipAdjustment = damageType != CombatDamageType.Physical &&
+                                            damageType != CombatDamageType.Force
+                ? Stat.GetStatAdjustment(_target, StatType.LeadershipOtherDamageTakenPercentAdjustment)
+                : 0;
 
             var percent = ApplyDamageTakenPercentAdjustment(100, typeAdjustment);
             return ApplyDamageTakenPercentAdjustment(
                 percent,
-                Stat.GetStatAdjustment(_target, StatType.DamageTakenPercentAdjustment) + leadershipAdjustment);
+                Stat.GetStatAdjustment(_target, StatType.DamageTakenPercentAdjustment) + otherLeadershipAdjustment);
         }
 
         private static int ApplyDamageTakenPercentAdjustment(int percent, int adjustment)

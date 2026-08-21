@@ -142,7 +142,7 @@ public class CharacterSheetCombatUpgradeTests
         var damageTaken = ExtractMethod(viewModel, "private int GetDamageTakenPercent(CombatDamageType damageType)");
         damageTaken.Should().Contain("StatType.LeadershipPhysicalDamageTakenPercentAdjustment");
         damageTaken.Should().Contain("StatType.LeadershipForceDamageTakenPercentAdjustment");
-        damageTaken.Should().Contain("StatType.DamageTakenPercentAdjustment) + leadershipAdjustment");
+        damageTaken.Should().Contain("StatType.DamageTakenPercentAdjustment) + otherLeadershipAdjustment");
 
         var criticalRate = ExtractMethod(viewModel, "private int GetCriticalRate(SkillType skillType)");
         criticalRate.Should().Contain("Combat.GetSkillCriticalRatePercentAdjustment(_target, skillType)");

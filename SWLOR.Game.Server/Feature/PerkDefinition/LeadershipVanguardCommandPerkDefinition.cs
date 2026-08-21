@@ -111,7 +111,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.LeadershipVanguardMarkTargetRank, 1)
 
                 .AddPerkLevel()
-                .Description("When a Vanguard Command offensive command affects an enemy, party members within Leadership range (5m base) gain +12% damage and +10% Ability Accuracy for 30 seconds. SOC scaling can raise these to +15% damage and +12% Ability Accuracy.")
+                .Description("When a Vanguard Command offensive command affects an enemy, party members within Leadership range (5m base) gain +12% damage and +10% Accuracy for 30 seconds. SOC scaling can raise these to +15% damage and +12% Accuracy.")
                 .Price(4)
                 .RequirementSkill(SkillType.Leadership, 35)
                 .IncreasesStat(StatType.LeadershipVanguardMarkTargetRank, 2);

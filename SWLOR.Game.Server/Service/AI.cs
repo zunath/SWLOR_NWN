@@ -267,6 +267,9 @@ namespace SWLOR.Game.Server.Service
             }
 
             EspionageInfiltration.TryBegin(entering, self);
+            if (!Stealth.CanAcquireAggro(self, entering))
+                return;
+
             TryAcquireAggro(self, entering);
         }
 

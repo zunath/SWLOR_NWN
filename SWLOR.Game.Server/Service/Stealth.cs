@@ -151,12 +151,24 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            var detected = GetOrRollVerdict(observer, target);
-            EspionageInfiltration.RecordDetection(observer, target, detected);
+            var detected = ResolveDetection(observer, target);
             EventsPlugin.SetEventResult(detected ? "1" : "0");
+        }
 
-            if (detected)
-                ExitDetectedPlayerStealth(target);
+        /// <summary>
+        /// Prevents the custom hostile aggro aura from bypassing native stealth visibility. The
+        /// aura itself is positional and fires even when the hostile has not detected the player.
+        /// </summary>
+        public static bool CanAcquireAggro(uint observer, uint target)
+        {
+            if (!GetIsPC(target) ||
+                GetIsDM(target) ||
+                !GetActionMode(target, ActionMode.Stealth))
+            {
+                return true;
+            }
+
+            return ResolveDetection(observer, target);
         }
 
         [NWNEventHandler(ScriptName.OnDoListenDetectionBefore)]
@@ -182,6 +194,17 @@ namespace SWLOR.Game.Server.Service
                 PruneExpired(now);
 
             _verdicts[key] = (detected, now.AddSeconds(DetectionCheckIntervalSeconds));
+            return detected;
+        }
+
+        private static bool ResolveDetection(uint observer, uint target)
+        {
+            var detected = GetOrRollVerdict(observer, target);
+            EspionageInfiltration.RecordDetection(observer, target, detected);
+
+            if (detected)
+                ExitDetectedPlayerStealth(target);
+
             return detected;
         }
 

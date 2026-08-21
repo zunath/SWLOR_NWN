@@ -70,10 +70,14 @@ public class EspionageSystemTests
             "Stealth",
             PerkType.Stealth);
 
-        stealth.PerkLevels[1].StatBonuses.Single(x => x.Stat == StatType.Stealth).Calculate(0).Should().Be(5);
-        stealth.PerkLevels[2].StatBonuses.Single(x => x.Stat == StatType.Stealth).Calculate(0).Should().Be(10);
-        stealth.PerkLevels[3].StatBonuses.Single(x => x.Stat == StatType.Stealth).Calculate(0).Should().Be(15);
-        stealth.PerkLevels[4].StatBonuses.Single(x => x.Stat == StatType.Stealth).Calculate(0).Should().Be(20);
+        stealth.PerkLevels[1].StatBonuses.Single(x => x.Stat == StatType.ActiveStealthBonus).Calculate(0).Should().Be(5);
+        stealth.PerkLevels[2].StatBonuses.Single(x => x.Stat == StatType.ActiveStealthBonus).Calculate(0).Should().Be(10);
+        stealth.PerkLevels[3].StatBonuses.Single(x => x.Stat == StatType.ActiveStealthBonus).Calculate(0).Should().Be(15);
+        stealth.PerkLevels[4].StatBonuses.Single(x => x.Stat == StatType.ActiveStealthBonus).Calculate(0).Should().Be(20);
+        stealth.PerkLevels.Values
+            .SelectMany(x => x.StatBonuses)
+            .Should().NotContain(x => x.Stat == StatType.Stealth,
+                "the rank bonus applies only while the native stealth mode is active");
 
         var silentStride = BuildPerkWithout2daLookup(
             new EspionagePerkDefinition(),
@@ -95,6 +99,8 @@ public class EspionageSystemTests
             "StatusEffectDefinition",
             "StealthStatusEffect.cs"));
         statusSource.Should().Contain("StatType.StealthMovementSpeedPercentAdjustment");
+        statusSource.Should().Contain("Stat.GetStatAdjustment(creature, StatType.ActiveStealthBonus)");
+        statusSource.Should().Contain("StatGroup.Stats[StatType.Stealth] = stealthBonus;");
         statusSource.Should().Contain("StatGroup.Stats[StatType.MovementSpeedPercentAdjustment] = movementSpeedBonus;");
     }
 
@@ -283,7 +289,16 @@ public class EspionageSystemTests
         stealthSource.Should().Contain("EspionageInfiltration.RecordPlayerCombatInitiation(attacker);");
         stealthSource.Should().Contain("EspionageInfiltration.CancelPlayer(creature);");
         aiSource.Should().Contain("EspionageInfiltration.TryBegin(entering, self);");
+        aiSource.Should().Contain("if (!Stealth.CanAcquireAggro(self, entering))");
         aiSource.Should().Contain("EspionageInfiltration.Complete(exiting, self);");
+        aiSource.IndexOf("EspionageInfiltration.TryBegin(entering, self);", StringComparison.Ordinal)
+            .Should().BeLessThan(
+                aiSource.IndexOf("if (!Stealth.CanAcquireAggro(self, entering))", StringComparison.Ordinal),
+                "the attempt must exist before the first opposed detection result is recorded");
+        aiSource.IndexOf("if (!Stealth.CanAcquireAggro(self, entering))", StringComparison.Ordinal)
+            .Should().BeLessThan(
+                aiSource.IndexOf("TryAcquireAggro(self, entering);", StringComparison.Ordinal),
+                "an undetected stealthed player must not enter the hostile's enmity table");
         infiltrationSource.Should().Contain("private const float MovementSampleIntervalSeconds = 1f;");
         infiltrationSource.Should().Contain("DelayCommand(MovementSampleIntervalSeconds, () => SampleMovement(player, samplerId));");
         infiltrationSource.Should().Contain("CreaturePlugin.GetFaction(npc) != HostileFactionId");

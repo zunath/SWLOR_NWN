@@ -5868,6 +5868,13 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         RangedAbilityHitNearTargetStatusEffectResistanceType = 1016,
 
+        /// <summary>
+        /// Flat Stealth rating granted while the creature's native stealth mode is active.
+        /// The Stealth status effect transfers this value into the ordinary Stealth channel.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ActiveStealthBonus = 1017,
+
     }
 
     public class StatTypeAttribute : Attribute

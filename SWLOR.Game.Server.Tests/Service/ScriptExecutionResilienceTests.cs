@@ -45,6 +45,28 @@ public sealed class ScriptExecutionResilienceTests
             .Which.Should().Be(ScriptName.OnModuleCacheAfter);
     }
 
+    [Test]
+    public void GuiRefreshPublishing_ToleratesUnregisteredEventsAndClosedWindows()
+    {
+        var root = new DirectoryInfo(AppContext.BaseDirectory);
+        while (root != null && !Directory.Exists(Path.Combine(root.FullName, "SWLOR.Game.Server")))
+            root = root.Parent;
+
+        root.Should().NotBeNull();
+        var source = File.ReadAllText(Path.Combine(root!.FullName, "SWLOR.Game.Server", "Service", "Gui.cs"));
+        var start = source.IndexOf("public static void PublishRefreshEvent<T>", StringComparison.Ordinal);
+        var end = source.IndexOf("public static void PublishCharacterSheetRefreshEvent<T>", start, StringComparison.Ordinal);
+        start.Should().BeGreaterThanOrEqualTo(0);
+        end.Should().BeGreaterThan(start);
+
+        var method = source[start..end];
+        method.Should().Contain("_windowTypesByRefreshEvent.TryGetValue(typeof(T), out var windowTypes)");
+        method.Should().Contain("_playerWindows.TryGetValue(playerId, out var playerWindows)");
+        method.Should().Contain("playerWindows.TryGetValue(windowType, out var playerWindow)");
+        method.Should().NotContain("_windowTypesByRefreshEvent[typeof(T)]",
+            "a refresh event with no registered subscriber must be a no-op instead of throwing");
+    }
+
     private sealed class RecordingScriptExecutionProvider : IScriptExecutionProvider
     {
         public uint ObjectSelf { get; set; }

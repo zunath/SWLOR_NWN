@@ -1,0 +1,93 @@
+{
+  "Id": "leny",
+  "Title": "leny",
+  "EntryPoints": [
+    {
+      "TargetNodeId": "entry-00000",
+      "Conditions": []
+    }
+  ],
+  "Nodes": {
+    "entry-00000": {
+      "Id": "entry-00000",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "Welcome to my shop. Would you like to see my wares?",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": [
+        {
+          "ChoiceId": "reply-00000",
+          "Conditions": []
+        },
+        {
+          "ChoiceId": "reply-00001",
+          "Conditions": []
+        }
+      ]
+    }
+  },
+  "Choices": {
+    "reply-00000": {
+      "Id": "reply-00000",
+      "Text": {
+        "Text": "Yes. I'd like to see what you have for sale.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [
+        {
+          "Key": "action-open-store",
+          "Arguments": [
+            "mag_lenny"
+          ]
+        }
+      ],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    },
+    "reply-00001": {
+      "Id": "reply-00001",
+      "Text": {
+        "Text": "No, thanks.",
+        "Style": 4,
+        "Color": null
+      },
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Actions": [],
+      "Next": [],
+      "EndsConversation": true,
+      "IsAutomatic": false
+    }
+  },
+  "DefaultNpcDelay": 0,
+  "DefaultPlayerDelay": 0,
+  "PreventZoomIn": false,
+  "OnStartActions": [],
+  "OnEndActions": [],
+  "OnAbortActions": []
+}

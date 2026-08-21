@@ -39,10 +39,23 @@ public static class DlgConversationMigrator
         "<[^>]+>",
         RegexOptions.Compiled);
 
-    private static readonly Dictionary<string, string> SupportedRootScripts =
+    private static readonly Dictionary<string, OperationMapping[]> SupportedRootScripts =
         new(StringComparer.OrdinalIgnoreCase)
         {
-            ["nw_walk_wp"] = OwnerScriptAction
+            ["nw_walk_wp"] = [new OperationMapping(OwnerScriptAction, "nw_walk_wp")],
+            ["tk_odye_con_end"] = [],
+            // These hooks belonged to retired drink and item-maker systems. Neither script is
+            // shipped by the module anymore, so there is no state left for a NUI close to clean.
+            ["dial_end_drink"] = [],
+            ["x2_im_cancel"] = [],
+            ["x2_im_finished"] = []
+        };
+
+    private static readonly Dictionary<string, string> NativeConversations = new(
+        StringComparer.OrdinalIgnoreCase)
+        {
+            ["dmfi_universal"] =
+                "DMFI wands launch and restart this conversation through native ActionStartConversation calls."
         };
 
     // These old one-off scripts are no longer present in the module. Only scripts whose complete
@@ -52,7 +65,11 @@ public static class DlgConversationMigrator
         new(StringComparer.OrdinalIgnoreCase)
         {
             ["var_courreur_a_1"] = [LocalCondition("player", "SWLOR_SKYRACE_REGISTERED", ">=", "1")],
-            ["var_courreur_a_0"] = [LocalCondition("player", "SWLOR_SKYRACE_REGISTERED", "=", "0")],
+            ["var_courreur_a_0"] =
+            [
+                LocalCondition("player", "SWLOR_SKYRACE_REGISTERED", "=", "0"),
+                new OperationMapping("system.always-false")
+            ],
             ["pc_a_50_or"] = [new OperationMapping("condition-player-credits", "50")],
             ["var_encour_a_1"] = [LocalCondition("module", "SWLOR_SKYRACE_RUNNING", ">=", "1")],
             ["var_skyracer_a_6"] = [LocalCondition("module", "SWLOR_SKYRACE_PARTICIPANTS", ">=", "6")],
@@ -77,7 +94,9 @@ public static class DlgConversationMigrator
             ["spawnb_cc_sdlog"] = [LocalCondition("area", "SWLOR_SPAWN_DELAY_LOG", "=", "0")],
             ["spawnb_cc_nsdlog"] = [LocalCondition("area", "SWLOR_SPAWN_DELAY_LOG", "!=", "0")],
             ["spawnb_cc_sclog"] = [LocalCondition("area", "SWLOR_SPAWN_COUNT_LOG", "=", "0")],
-            ["spawnb_cc_nsclog"] = [LocalCondition("area", "SWLOR_SPAWN_COUNT_LOG", "!=", "0")]
+            ["spawnb_cc_nsclog"] = [LocalCondition("area", "SWLOR_SPAWN_COUNT_LOG", "!=", "0")],
+            ["dt_test_canaille"] = [new OperationMapping("condition-any-skill", "Espionage", "1")],
+            ["x2_con_false"] = [new OperationMapping("system.always-false")]
         };
 
     private static readonly Dictionary<string, OperationMapping[]> CustomActions =
@@ -91,18 +110,50 @@ public static class DlgConversationMigrator
                 SetLocal("player", "SWLOR_SKYRACE_REGISTERED", "0"),
                 AdjustLocal("module", "SWLOR_SKYRACE_PARTICIPANTS", "-1")
             ],
-            ["inscript_skyrace"] =
-            [
-                new OperationMapping("action-take-player-credits", "50"),
-                SetLocal("player", "SWLOR_SKYRACE_REGISTERED", "1"),
-                AdjustLocal("module", "SWLOR_SKYRACE_PARTICIPANTS", "1")
-            ],
+            ["inscript_skyrace"] = [],
             ["ouvmag_bar_gen"] = [new OperationMapping("action-open-store")],
+            ["ouvmag_cntrbande"] =
+                [new OperationMapping("action-open-store", "TATOOINE_GENERAL_STORE_MERCHANT")],
+            ["ouvmag_cntrbnd_c"] = [new OperationMapping("action-open-store", "visc_smuggler")],
+            ["ouvmag_verpex"] = [new OperationMapping("action-open-store")],
+            ["open_store"] = [new OperationMapping("action-open-store", "mag_lenny")],
+            ["magasinscript1"] = [new OperationMapping("action-open-store")],
+            ["at_001"] = [new OperationMapping("action-take-player-credits", "50")],
+            ["at_002"] = [new OperationMapping("action-take-player-credits", "5")],
+            ["nw_coop_1000cred"] = [new OperationMapping("action-take-player-credits", "1000")],
+            ["nw_coop_100credi"] = [new OperationMapping("action-take-player-credits", "100")],
+            ["nw_coop_10credit"] = [new OperationMapping("action-take-player-credits", "10")],
+            ["next_state_1"] = [new OperationMapping("action-advance-quest", "first_rites")],
+            ["open_train_store"] = [new OperationMapping("action-open-training-store")],
+            ["buy_stat_rebuild"] = [new OperationMapping("action-open-stat-rebuild")],
+            ["buy_rebuild"] = [new OperationMapping("action-purchase-full-rebuild")],
+            ["launch_race"] =
+            [
+                new OperationMapping(
+                    "action-notify-player",
+                    "Sky races are not currently available.")
+            ],
+            ["tk_odye_at_ind_0"] = [],
+            ["tk_odye_at_ind_1"] = [],
+            ["tk_odye_at_ind_2"] = [],
+            ["tk_odye_at_ind_3"] = [],
+            ["tk_odye_at_ind_4"] = [],
+            ["tk_odye_at_ind_5"] = [],
+            ["tk_odye_at_ind_6"] = [],
+            ["tk_odye_at_ind_7"] = [],
+            ["tk_odye_at_ind_8"] = [],
+            ["tk_odye_at_ind_9"] = [],
+            ["tk_odye_at_ind_b"] = [],
+            ["tk_odye_at_ind_x"] = [],
+            ["tk_odye_at_sampl"] = [],
+            ["tk_odye_at_set_c"] = [],
+            ["tk_odye_at_set_i"] = [],
             ["doc_pc_mort_d_0"] = [SetLocal("player", "SWLOR_DOCTOR_RESCUE", "0")],
             ["doc_soigne_pc"] = [new OperationMapping("action-heal-player", "50")],
             ["accept_quest_1"] = [SetLocal("player", "SWLOR_ABANDONED_STATION_QUEST", "1")],
             ["accept_quest_2"] = [SetLocal("player", "SWLOR_EXAMPLE_QUEST_2", "1")],
             ["finish_quest_1"] = [SetLocal("player", "SWLOR_ABANDONED_STATION_QUEST", "3")],
+            ["enter_world"] = [new OperationMapping("action-teleport", "ENTRY_STARTING_WP")],
             ["tel_aban_station"] = [new OperationMapping("action-teleport", "ABAN_STATION_LANDING")],
             ["spawnb_sc_activ"] = [SetLocal("owner", "SWLOR_SPAWN_ACTIVE", "1")],
             ["spawnb_sc_dactiv"] = [SetLocal("owner", "SWLOR_SPAWN_ACTIVE", "0")],
@@ -139,6 +190,16 @@ public static class DlgConversationMigrator
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(conversationId);
         ArgumentNullException.ThrowIfNull(document);
+
+        if (NativeConversations.TryGetValue(conversationId, out var nativeReason))
+        {
+            return new ConversationMigrationResult(
+                new ConversationGraph { Id = conversationId, Title = conversationId },
+                [new ConversationMigrationIssue(
+                    ConversationMigrationIssueSeverity.RequiresLegacyException,
+                    "conversation",
+                    nativeReason)]);
+        }
 
         var issues = new List<ConversationMigrationIssue>();
         var graph = new ConversationGraph
@@ -230,6 +291,8 @@ public static class DlgConversationMigrator
                 $"opening -> entry {opening.TargetIndex}", issues);
             graph.EntryPoints.Add(link);
         }
+
+        AddChoiceActionPreconditions(graph);
 
         foreach (var validationError in ConversationGraphValidator.Validate(graph))
         {
@@ -347,7 +410,7 @@ public static class DlgConversationMigrator
         if (string.IsNullOrWhiteSpace(script))
             return;
 
-        if (!SupportedRootScripts.TryGetValue(script, out var actionKey))
+        if (!SupportedRootScripts.TryGetValue(script, out var mapped))
         {
             issues.Add(new ConversationMigrationIssue(
                 ConversationMigrationIssueSeverity.RequiresLegacyException,
@@ -356,11 +419,14 @@ public static class DlgConversationMigrator
             return;
         }
 
-        destination.Add(new ConversationAction
+        foreach (var operation in mapped)
         {
-            Key = actionKey,
-            Arguments = { script }
-        });
+            destination.Add(new ConversationAction
+            {
+                Key = operation.Key,
+                Arguments = operation.Arguments.ToList()
+            });
+        }
     }
 
     private static List<ConversationTextBlock> ConvertText(
@@ -417,6 +483,37 @@ public static class DlgConversationMigrator
             Style = blocks.FirstOrDefault(block => block.Style != ConversationTextStyle.PlayerReply)?.Style
                     ?? ConversationTextStyle.PlayerReply
         };
+    }
+
+    private static void AddChoiceActionPreconditions(ConversationGraph graph)
+    {
+        foreach (var node in graph.Nodes.Values)
+        {
+            foreach (var link in node.Choices)
+            {
+                if (!graph.Choices.TryGetValue(link.ChoiceId, out var choice))
+                    continue;
+
+                foreach (var action in choice.Actions.Where(action =>
+                             action.Key.Equals("action-take-player-credits", StringComparison.Ordinal) &&
+                             action.Arguments.Count > 0))
+                {
+                    var amount = action.Arguments[0];
+                    if (link.Conditions.Any(condition =>
+                            condition.Key.Equals("condition-player-credits", StringComparison.Ordinal) &&
+                            condition.Arguments.SequenceEqual(new[] { amount })))
+                    {
+                        continue;
+                    }
+
+                    link.Conditions.Add(new ConversationCondition
+                    {
+                        Key = "condition-player-credits",
+                        Arguments = { amount }
+                    });
+                }
+            }
+        }
     }
 
     private static string FriendlyReplyText(DlgNode reply)

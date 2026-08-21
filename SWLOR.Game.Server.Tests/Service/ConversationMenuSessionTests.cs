@@ -94,6 +94,20 @@ public class ConversationMenuSessionTests
         session.VisibleChoices[0].Text.Color.Green.Should().Be(255);
     }
 
+    [Test]
+    public void NuiMenu_UsesItsAuthoredPortraitOnEveryPage()
+    {
+        var menu = new ConversationMenuBuilder()
+            .WithPortrait("p_256x128_medic1")
+            .AddPage("main", page => page.Header = "Register here.")
+            .Build();
+        var session = CreateSession(menu);
+
+        session.Start();
+
+        session.CurrentNode.PortraitResref.Should().Be("p_256x128_medic1");
+    }
+
     private static ConversationMenuSession CreateSession(ConversationMenuSpec menu) =>
         new(menu, new ConversationContext(1, 2), new FakeRuntime());
 

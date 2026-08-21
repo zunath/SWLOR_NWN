@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace SWLOR.Game.Server.Service.ConversationService
@@ -16,6 +17,7 @@ namespace SWLOR.Game.Server.Service.ConversationService
         private readonly Dictionary<string, Func<ConversationContext, IReadOnlyList<string>, bool>> _conditions = new();
         private readonly Dictionary<string, Func<ConversationContext, IReadOnlyList<string>, bool>> _actions = new();
         private readonly Dictionary<string, Func<ConversationContext, string>> _tokens = new();
+        private readonly Dictionary<string, Func<ConversationContext, string, string>> _tokenPrefixes = new();
 
         public void RegisterCondition(
             string key,
@@ -39,6 +41,14 @@ namespace SWLOR.Game.Server.Service.ConversationService
             _tokens.Add(key, resolver);
         }
 
+        public void RegisterTokenPrefix(
+            string prefix,
+            Func<ConversationContext, string, string> resolver)
+        {
+            ValidateRegistration(prefix, resolver);
+            _tokenPrefixes.Add(prefix, resolver);
+        }
+
         public bool HasCondition(string key) =>
             !string.IsNullOrWhiteSpace(key) && _conditions.ContainsKey(key);
 
@@ -46,7 +56,9 @@ namespace SWLOR.Game.Server.Service.ConversationService
             !string.IsNullOrWhiteSpace(key) && _actions.ContainsKey(key);
 
         public bool HasToken(string key) =>
-            !string.IsNullOrWhiteSpace(key) && _tokens.ContainsKey(key);
+            !string.IsNullOrWhiteSpace(key) &&
+            (_tokens.ContainsKey(key) ||
+             _tokenPrefixes.Keys.Any(prefix => key.StartsWith(prefix, StringComparison.Ordinal)));
 
         public bool EvaluateCondition(ConversationContext context, ConversationCondition condition)
         {
@@ -83,8 +95,15 @@ namespace SWLOR.Game.Server.Service.ConversationService
                 if (context.Tokens.TryGetValue(key, out var value))
                     return value ?? string.Empty;
 
-                return _tokens.TryGetValue(key, out var resolver)
-                    ? resolver(context) ?? string.Empty
+                if (_tokens.TryGetValue(key, out var resolver))
+                    return resolver(context) ?? string.Empty;
+
+                var prefix = _tokenPrefixes.Keys
+                    .Where(candidate => key.StartsWith(candidate, StringComparison.Ordinal))
+                    .OrderByDescending(candidate => candidate.Length)
+                    .FirstOrDefault();
+                return prefix != null
+                    ? _tokenPrefixes[prefix](context, key[prefix.Length..]) ?? string.Empty
                     : $"[Unknown token: {key}]";
             });
         }

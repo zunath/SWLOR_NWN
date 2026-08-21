@@ -1127,10 +1127,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var typeAdjustment = damageType switch
             {
                 CombatDamageType.Physical =>
-                    Stat.GetStatAdjustment(_target, StatType.PhysicalDamageTakenPercentAdjustment) +
+                    Stat.GetStatAdjustment(_target, StatType.PhysicalDamageTakenPercentAdjustment),
+                CombatDamageType.Force =>
+                    Stat.GetStatAdjustment(_target, StatType.ForceDamageTakenPercentAdjustment),
+                _ => 0
+            };
+            var leadershipAdjustment = damageType switch
+            {
+                CombatDamageType.Physical =>
                     Stat.GetStatAdjustment(_target, StatType.LeadershipPhysicalDamageTakenPercentAdjustment),
                 CombatDamageType.Force =>
-                    Stat.GetStatAdjustment(_target, StatType.ForceDamageTakenPercentAdjustment) +
                     Stat.GetStatAdjustment(_target, StatType.LeadershipForceDamageTakenPercentAdjustment),
                 _ => 0
             };
@@ -1140,6 +1146,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 : 0;
 
             var percent = ApplyDamageTakenPercentAdjustment(100, typeAdjustment);
+            percent = ApplyDamageTakenPercentAdjustment(percent, leadershipAdjustment);
             return ApplyDamageTakenPercentAdjustment(
                 percent,
                 Stat.GetStatAdjustment(_target, StatType.DamageTakenPercentAdjustment) + otherLeadershipAdjustment);

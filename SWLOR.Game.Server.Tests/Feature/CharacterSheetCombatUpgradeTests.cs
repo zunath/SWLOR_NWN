@@ -142,7 +142,20 @@ public class CharacterSheetCombatUpgradeTests
         var damageTaken = ExtractMethod(viewModel, "private int GetDamageTakenPercent(CombatDamageType damageType)");
         damageTaken.Should().Contain("StatType.LeadershipPhysicalDamageTakenPercentAdjustment");
         damageTaken.Should().Contain("StatType.LeadershipForceDamageTakenPercentAdjustment");
+        damageTaken.Should().Contain("percent = ApplyDamageTakenPercentAdjustment(percent, leadershipAdjustment);");
         damageTaken.Should().Contain("StatType.DamageTakenPercentAdjustment) + otherLeadershipAdjustment");
+        damageTaken.IndexOf("ApplyDamageTakenPercentAdjustment(100, typeAdjustment)", StringComparison.Ordinal)
+            .Should().BeLessThan(
+                damageTaken.IndexOf("ApplyDamageTakenPercentAdjustment(percent, leadershipAdjustment)", StringComparison.Ordinal));
+
+        var applyAdjustment = typeof(CharacterSheetViewModel).GetMethod(
+            "ApplyDamageTakenPercentAdjustment",
+            BindingFlags.Static | BindingFlags.NonPublic);
+        applyAdjustment.Should().NotBeNull();
+        var afterTypedAdjustment = (int)applyAdjustment!.Invoke(null, new object[] { 100, -20 })!;
+        var afterLeadershipAdjustment = (int)applyAdjustment.Invoke(null, new object[] { afterTypedAdjustment, -20 })!;
+        afterLeadershipAdjustment.Should().Be(64,
+            "the sheet must mirror runtime's separate multiplicative typed and Leadership stages");
 
         var criticalRate = ExtractMethod(viewModel, "private int GetCriticalRate(SkillType skillType)");
         criticalRate.Should().Contain("Combat.GetSkillCriticalRatePercentAdjustment(_target, skillType)");

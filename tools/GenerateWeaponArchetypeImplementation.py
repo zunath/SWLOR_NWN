@@ -465,6 +465,8 @@ def ensure_status_effect_tlk_entries(tlk, by_id, by_text):
     status_dir = ROOT / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition"
     for path in status_dir.glob("*StatusEffect.cs"):
         text = path.read_text()
+        if "[StatConfiguredIcon]" in text:
+            continue
         match = re.search(r'public\s+override\s+string\s+Name\s*=>\s*"([^"]+)"', text)
         if match:
             ensure_tlk_text(tlk, by_id, by_text, match.group(1))
@@ -1376,6 +1378,7 @@ def description_stat_entries(row, base):
         add_stat(stats, "CriticalHitLimitedHastePercentAdjustment", parse_percent(r"gain \+(\d+)% Haste", description))
         add_stat(stats, "CriticalHitLimitedHasteDurationSeconds", parse_duration(description) or 30)
         add_stat(stats, "CriticalHitLimitedHasteAttackCount", 2)
+        add_stat(stats, "CriticalHitLimitedHasteStatusEffectIcon", "(int)EffectIconType.ReloadTempoStatusEffect")
     if base == "Spotter's Rhythm":
         add_stat(stats, "SameTargetPressureBuildSkillType", skill_expr)
         add_stat(stats, "SameTargetPressureBuildSeconds", parse_count(r"same target for (\d+) seconds", description) or 12)
@@ -1575,6 +1578,7 @@ def description_stat_entries(row, base):
         add_stat(stats, "AbilityUsedRangedDeflectionSkillType", skill_expr)
         add_stat(stats, "AbilityUsedRangedDeflection", parse_count(r"\+(\d+) Ranged Deflection", description))
         add_stat(stats, "AbilityUsedRangedDeflectionDurationSeconds", parse_duration(description) or 30)
+        add_stat(stats, "AbilityUsedRangedDeflectionStatusEffectIcon", "(int)EffectIconType.SnapRollStatusEffect")
     if base == "Mobile Footwork":
         add_stat(stats, "SecondaryAbilityUsedEvasionPercentAdjustmentSkillType", skill_expr)
         add_stat(stats, "SecondaryAbilityUsedEvasionPercentAdjustment", parse_percent(r"\+(\d+)% Evasion", description))

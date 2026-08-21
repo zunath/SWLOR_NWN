@@ -10,16 +10,35 @@ namespace SWLOR.Game.Server.Service.CombatService
     public sealed class LimitedAttackCounter
     {
         private AbilityImpactSummary _lastAbilityImpact;
+        private readonly AbilityImpactSummary _ignoredAbilityImpact;
+        private bool _ignoreNextNativeAttack;
 
         public int RemainingAttacks { get; private set; }
 
-        public LimitedAttackCounter(int remainingAttacks)
+        public LimitedAttackCounter(
+            int remainingAttacks,
+            AbilityImpactSummary ignoredAbilityImpact = null,
+            bool ignoreNextNativeAttack = false)
         {
             RemainingAttacks = Math.Max(0, remainingAttacks);
+            _ignoredAbilityImpact = ignoredAbilityImpact;
+            _ignoreNextNativeAttack = ignoreNextNativeAttack;
         }
 
         public bool TryConsume(AbilityImpactSummary activeAbilityImpact)
         {
+            if (activeAbilityImpact != null &&
+                ReferenceEquals(activeAbilityImpact, _ignoredAbilityImpact))
+            {
+                return false;
+            }
+
+            if (activeAbilityImpact == null && _ignoreNextNativeAttack)
+            {
+                _ignoreNextNativeAttack = false;
+                return false;
+            }
+
             if (activeAbilityImpact != null &&
                 ReferenceEquals(activeAbilityImpact, _lastAbilityImpact))
             {
@@ -34,6 +53,16 @@ namespace SWLOR.Game.Server.Service.CombatService
 
             RemainingAttacks--;
             return true;
+        }
+
+        public LimitedAttackCounter Clone()
+        {
+            var clone = new LimitedAttackCounter(
+                RemainingAttacks,
+                _ignoredAbilityImpact,
+                _ignoreNextNativeAttack);
+            clone._lastAbilityImpact = _lastAbilityImpact;
+            return clone;
         }
     }
 }

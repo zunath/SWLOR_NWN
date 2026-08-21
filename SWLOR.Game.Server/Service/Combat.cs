@@ -2097,13 +2097,25 @@ namespace SWLOR.Game.Server.Service
             var hastePercent = Stat.GetStatAdjustment(attacker, StatType.CriticalHitLimitedHastePercentAdjustment);
             var duration = Stat.GetStatAdjustment(attacker, StatType.CriticalHitLimitedHasteDurationSeconds);
             var attackCount = Stat.GetStatAdjustment(attacker, StatType.CriticalHitLimitedHasteAttackCount);
-            if (hastePercent <= 0 || duration <= 0 || attackCount <= 0)
+            var statusEffectIcon = GetEffectIconTypeFromStat(Stat.GetStatAdjustment(
+                attacker,
+                StatType.CriticalHitLimitedHasteStatusEffectIcon));
+            if (hastePercent <= 0 ||
+                duration <= 0 ||
+                attackCount <= 0 ||
+                statusEffectIcon == EffectIconType.Invalid)
+            {
                 return;
+            }
 
             StatusEffect.ApplyStatusEffect(
                 attacker,
                 attacker,
-                new ReloadTempoStatusEffect(hastePercent, attackCount),
+                new LimitedHasteStatusEffect(
+                    hastePercent,
+                    attackCount,
+                    statusEffectIcon,
+                    Ability.GetActiveAbilityImpactSummary(attacker)),
                 duration);
         }
 
@@ -3170,13 +3182,16 @@ namespace SWLOR.Game.Server.Service
             var deflection = Stat.GetStatAdjustment(
                 creature,
                 StatType.AbilityUsedRangedDeflection);
-            if (deflection <= 0)
+            var statusEffectIcon = GetEffectIconTypeFromStat(Stat.GetStatAdjustment(
+                creature,
+                StatType.AbilityUsedRangedDeflectionStatusEffectIcon));
+            if (deflection <= 0 || statusEffectIcon == EffectIconType.Invalid)
                 return;
 
             StatusEffect.ApplyStatusEffect(
                 creature,
                 creature,
-                new SnapRollStatusEffect(deflection),
+                new RangedDeflectionStatusEffect(deflection, statusEffectIcon),
                 duration);
         }
 
@@ -7090,11 +7105,12 @@ namespace SWLOR.Game.Server.Service
             var evasion = Stat.GetStatAdjustment(activator, StatType.PistolSkirmisherEvasiveAbilityEvasionPercent);
             if (evasion != 0)
             {
-                StatusEffect.ApplyStatusEffect(
+                TemporaryStatModifier.Replace(
                     activator,
-                    activator,
-                    new SnapRollStatusEffect(evasion),
-                    duration);
+                    StatType.EvasionPercentAdjustment,
+                    evasion,
+                    duration,
+                    StatType.PistolSkirmisherEvasiveAbilityEvasionPercent);
             }
 
             var nextDamage = Stat.GetStatAdjustment(activator, StatType.PistolSkirmisherEvasiveAbilityNextAttackDamageBonus);
@@ -8874,13 +8890,16 @@ namespace SWLOR.Game.Server.Service
             var duration = Stat.GetStatAdjustment(
                 activator,
                 StatType.AbilityUsedRangedDeflectionDurationSeconds);
-            if (deflection <= 0 || duration <= 0)
+            var statusEffectIcon = GetEffectIconTypeFromStat(Stat.GetStatAdjustment(
+                activator,
+                StatType.AbilityUsedRangedDeflectionStatusEffectIcon));
+            if (deflection <= 0 || duration <= 0 || statusEffectIcon == EffectIconType.Invalid)
                 return;
 
             StatusEffect.ApplyStatusEffect(
                 activator,
                 activator,
-                new SnapRollStatusEffect(deflection),
+                new RangedDeflectionStatusEffect(deflection, statusEffectIcon),
                 duration);
         }
 

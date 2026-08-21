@@ -50,13 +50,14 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             if (deliveryType != CombatDamageDeliveryType.Direct)
                 return;
 
-            if (damage <= 0 ||
-                !Combat.IsRangedWeaponSkill(Combat.GetEquippedWeaponSkillType(attacker)))
+            var activeAbilityImpact = Ability.GetActiveAbilityImpactSummary(attacker);
+            var attackSkillType = activeAbilityImpact?.SkillType ?? Combat.GetEquippedWeaponSkillType(attacker);
+            if (damage <= 0 || !Combat.IsRangedWeaponSkill(attackSkillType))
             {
                 return;
             }
 
-            if (!_attackCounter.TryConsume(Ability.GetActiveAbilityImpactSummary(attacker)))
+            if (!_attackCounter.TryConsume(activeAbilityImpact))
                 return;
 
             if (_attackCounter.RemainingAttacks <= 0)

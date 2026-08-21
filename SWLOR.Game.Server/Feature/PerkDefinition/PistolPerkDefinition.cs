@@ -97,6 +97,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.AbilityUsedRangedDeflectionSkillType, (int)SkillType.Pistol)
                 .IncreasesStat(StatType.AbilityUsedRangedDeflection, 5)
                 .IncreasesStat(StatType.AbilityUsedRangedDeflectionDurationSeconds, 30)
+                .IncreasesStat(StatType.AbilityUsedRangedDeflectionStatusEffectIcon, (int)EffectIconType.SnapRollStatusEffect)
                 .Price(2)
                 .RequirementSkill(SkillType.Pistol, 8)
 
@@ -105,6 +106,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.AbilityUsedRangedDeflectionSkillType, (int)SkillType.Pistol)
                 .IncreasesStat(StatType.AbilityUsedRangedDeflection, 8)
                 .IncreasesStat(StatType.AbilityUsedRangedDeflectionDurationSeconds, 30)
+                .IncreasesStat(StatType.AbilityUsedRangedDeflectionStatusEffectIcon, (int)EffectIconType.SnapRollStatusEffect)
                 .Price(4)
                 .RequirementSkill(SkillType.Pistol, 22)
 
@@ -113,6 +115,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.AbilityUsedRangedDeflectionSkillType, (int)SkillType.Pistol)
                 .IncreasesStat(StatType.AbilityUsedRangedDeflection, 12)
                 .IncreasesStat(StatType.AbilityUsedRangedDeflectionDurationSeconds, 30)
+                .IncreasesStat(StatType.AbilityUsedRangedDeflectionStatusEffectIcon, (int)EffectIconType.SnapRollStatusEffect)
                 .Price(4)
                 .RequirementSkill(SkillType.Pistol, 45);
         }
@@ -397,6 +400,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.CriticalHitLimitedHastePercentAdjustment, 20)
                 .IncreasesStat(StatType.CriticalHitLimitedHasteDurationSeconds, 30)
                 .IncreasesStat(StatType.CriticalHitLimitedHasteAttackCount, 2)
+                .IncreasesStat(StatType.CriticalHitLimitedHasteStatusEffectIcon, (int)EffectIconType.ReloadTempoStatusEffect)
                 .Price(2)
                 .RequirementSkill(SkillType.Pistol, 35);
         }

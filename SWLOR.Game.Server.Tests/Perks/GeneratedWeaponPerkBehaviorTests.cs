@@ -36,9 +36,15 @@ public class GeneratedWeaponPerkBehaviorTests
 
         AssertStatusStat(new DisarmingShotStatusEffect(18), StatType.AttackPercentAdjustment, -18);
         AssertStatusStat(new PointBlankBurstStatusEffect(15), StatType.EvasionPercentAdjustment, 15);
-        AssertStatusStat(new SnapRollStatusEffect(12), StatType.RangedDeflection, 12);
+        AssertStatusStat(
+            new RangedDeflectionStatusEffect(12, EffectIconType.SnapRollStatusEffect),
+            StatType.RangedDeflection,
+            12);
         AssertStatusStat(new DuelistsDistanceStatusEffect(10), StatType.DamageDealtPercentAdjustment, -10);
-        AssertStatusStat(new ReloadTempoStatusEffect(20, 2), StatType.AttackDelayReductionPercent, 20);
+        AssertStatusStat(
+            new LimitedHasteStatusEffect(20, 2, EffectIconType.ReloadTempoStatusEffect, new AbilityImpactSummary()),
+            StatType.AttackDelayReductionPercent,
+            20);
         AssertStatusStat(new DeadMansHandStatusEffect(), StatType.RangedCriticalRatePercentAdjustment, 20);
 
         var deadMansHand = new DeadMansHandAbilityDefinition().BuildAbilities()[FeatType.DeadMansHand1];
@@ -73,7 +79,17 @@ public class GeneratedWeaponPerkBehaviorTests
         combat.Should().Contain("Deadeye Reload +{currentTotal}% Critical Rate");
         combat.Should().Contain("Lucky Chamber +{criticalRate}% Critical Rate");
         combat.Should().Contain("new DuelistsDistanceStatusEffect(Math.Abs(damageDealt))");
-        combat.Should().Contain("new ReloadTempoStatusEffect(hastePercent, attackCount)");
+        combat.Should().Contain("new LimitedHasteStatusEffect(");
+        combat.Should().NotContain("new ReloadTempoStatusEffect(");
+        combat.Should().NotContain("new SnapRollStatusEffect(");
+
+        var pistolPerks = ReadPerkDefinition("PistolPerkDefinition.cs");
+        pistolPerks.Should().Contain("StatType.CriticalHitLimitedHasteStatusEffectIcon");
+        pistolPerks.Should().Contain("EffectIconType.ReloadTempoStatusEffect");
+
+        var deadMansHandStatus = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "DeadMansHandStatusEffect.cs"));
+        deadMansHandStatus.Should().Contain("activeAbilityImpact?.SkillType ?? Combat.GetEquippedWeaponSkillType(attacker)");
 
         var tagIn = File.ReadAllText(Path.Combine(
             root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Katar", "TagInAbilityDefinition.cs"));
@@ -109,6 +125,26 @@ public class GeneratedWeaponPerkBehaviorTests
     }
 
     [Test]
+    public void LimitedAttackBuffs_DoNotConsumeTheAttackThatGrantedThem()
+    {
+        var triggeringAbilityImpact = new AbilityImpactSummary();
+        var followingAbilityImpact = new AbilityImpactSummary();
+        var abilityCounter = new LimitedAttackCounter(2, triggeringAbilityImpact);
+
+        abilityCounter.TryConsume(triggeringAbilityImpact).Should().BeFalse();
+        abilityCounter.TryConsume(triggeringAbilityImpact).Should().BeFalse("all damage callbacks belong to the triggering impact");
+        abilityCounter.RemainingAttacks.Should().Be(2);
+        abilityCounter.TryConsume(followingAbilityImpact).Should().BeTrue();
+        abilityCounter.RemainingAttacks.Should().Be(1);
+
+        var nativeCounter = new LimitedAttackCounter(2, ignoreNextNativeAttack: true);
+        nativeCounter.TryConsume(null).Should().BeFalse("the first callback is the native critical that granted the buff");
+        nativeCounter.RemainingAttacks.Should().Be(2);
+        nativeCounter.TryConsume(null).Should().BeTrue();
+        nativeCounter.RemainingAttacks.Should().Be(1);
+    }
+
+    [Test]
     public void SnapRoll_GrantsOnlyRangedDeflectionAndLastWordRefreshesIt()
     {
         var pistolPerks = ReadPerkDefinition("PistolPerkDefinition.cs");
@@ -117,6 +153,8 @@ public class GeneratedWeaponPerkBehaviorTests
         var snapRoll = pistolPerks[start..end];
 
         snapRoll.Should().Contain("StatType.AbilityUsedRangedDeflection");
+        snapRoll.Should().Contain("StatType.AbilityUsedRangedDeflectionStatusEffectIcon");
+        snapRoll.Should().Contain("EffectIconType.SnapRollStatusEffect");
         snapRoll.Should().NotContain("StatType.AbilityUsedAttackDeflection");
 
         var root = FindRepositoryRoot();
@@ -125,7 +163,8 @@ public class GeneratedWeaponPerkBehaviorTests
         lastWord.Should().Contain("TemporaryAvoidedAttackAbilityUsedRangedDeflectionRefreshDurationSeconds = 30");
 
         var combat = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
-        combat.Should().Contain("new SnapRollStatusEffect(deflection)");
+        combat.Should().Contain("new RangedDeflectionStatusEffect(deflection, statusEffectIcon)");
+        combat.Should().NotContain("new SnapRollStatusEffect(");
         combat.Should().NotContain("ApplyAvoidedAttackAbilityUsedEvasionRefresh");
     }
 
@@ -705,10 +744,14 @@ public class GeneratedWeaponPerkBehaviorTests
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
         Stat.GetStatTypeCategory(StatType.AbilityUsedRangedDeflectionDurationSeconds)
             .Should().Be(StatTypeCategory.NonBeneficial);
+        Stat.GetStatTypeCategory(StatType.AbilityUsedRangedDeflectionStatusEffectIcon)
+            .Should().Be(StatTypeCategory.NonBeneficial);
         Stat.GetStatTypeCategory(StatType.RangedCriticalRatePercentAdjustment)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
         Stat.GetStatTypeCategory(StatType.CriticalHitLimitedHastePercentAdjustment)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.CriticalHitLimitedHasteStatusEffectIcon)
+            .Should().Be(StatTypeCategory.NonBeneficial);
         Stat.GetStatTypeCategory(StatType.ForceDamageTakenForceDefense)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
         Stat.GetStatTypeCategory(StatType.ForceDamageTakenForceDefenseDurationSeconds)

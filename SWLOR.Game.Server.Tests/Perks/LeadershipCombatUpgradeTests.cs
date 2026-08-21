@@ -82,6 +82,7 @@ public class LeadershipCombatUpgradeTests
         AssertAppliedStat(new CleanseOrder2StatusEffect(), StatType.DamageTakenPercentAdjustment, 0);
         AssertAppliedStat(new CleanseOrder2StatusEffect(), StatType.PhysicalDamageTakenPercentAdjustment, 0);
         AssertAppliedStat(new CleanseOrder2StatusEffect(), StatType.ForceDamageTakenPercentAdjustment, 0);
+        new CleanseOrder2StatusEffect().Categories.Should().Be(StatusEffectCategory.None);
         AssertAppliedStat(new TriageProtocol2StatusEffect(), StatType.HealingReceivedPercentAdjustment, 12);
         AssertAppliedStat(new HoldTheLine1StatusEffect(), StatType.DamageTakenPercentAdjustment, -18);
         AssertAppliedResistance(new HoldTheLine1StatusEffect(), ResistanceType.Mind, 100);

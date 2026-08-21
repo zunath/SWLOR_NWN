@@ -5793,6 +5793,18 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.NonBeneficial)]
         RestoredStaminaAttackDurationSeconds = 1005,
 
+        /// <summary>
+        /// Effect icon displayed while CriticalHitLimitedHastePercentAdjustment is active.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        CriticalHitLimitedHasteStatusEffectIcon = 1006,
+
+        /// <summary>
+        /// Effect icon displayed while AbilityUsedRangedDeflection is active.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AbilityUsedRangedDeflectionStatusEffectIcon = 1007,
+
     }
 
     public class StatTypeAttribute : Attribute

@@ -95,7 +95,7 @@ public static class DlgConversationMigrator
             ["spawnb_cc_nsdlog"] = [LocalCondition("area", "SWLOR_SPAWN_DELAY_LOG", "!=", "0")],
             ["spawnb_cc_sclog"] = [LocalCondition("area", "SWLOR_SPAWN_COUNT_LOG", "=", "0")],
             ["spawnb_cc_nsclog"] = [LocalCondition("area", "SWLOR_SPAWN_COUNT_LOG", "!=", "0")],
-            ["dt_test_canaille"] = [new OperationMapping("condition-player-class", "Rogue")],
+            ["dt_test_canaille"] = [new OperationMapping("condition-any-skill", "Espionage", "1")],
             ["x2_con_false"] = [new OperationMapping("system.always-false")]
         };
 

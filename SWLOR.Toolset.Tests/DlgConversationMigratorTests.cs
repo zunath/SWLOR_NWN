@@ -97,14 +97,14 @@ public sealed class DlgConversationMigratorTests
     }
 
     [Test]
-    public void Convert_MapsContrabandMerchantClassGateAndStores()
+    public void Convert_MapsContrabandMerchantEligibilityAndStores()
     {
         var result = DlgConversationMigrator.Convert("dt_cntr_magasin", Load("dt_cntr_magasin"));
 
         result.CanRunInNui.Should().BeTrue();
         AllConditions(result.Graph).Should().Contain(condition =>
-            condition.Key == "condition-player-class" &&
-            condition.Arguments.SequenceEqual(new[] { "Rogue" }));
+            condition.Key == "condition-any-skill" &&
+            condition.Arguments.SequenceEqual(new[] { "Espionage", "1" }));
         var storeTags = AllActions(result.Graph)
             .Where(action => action.Key == "action-open-store")
             .Select(action => action.Arguments.Single())
@@ -123,7 +123,7 @@ public sealed class DlgConversationMigratorTests
                 .Select(store => store["Tag"]?["value"]?.Value<string>()))
             .Where(tag => !string.IsNullOrWhiteSpace(tag))
             .Should().Contain(storeTags,
-                "every mapped store tag must resolve to a placed module store");
+                "explicit store tags resolve module-wide, so every mapped tag must identify a placed store");
     }
 
     [Test]

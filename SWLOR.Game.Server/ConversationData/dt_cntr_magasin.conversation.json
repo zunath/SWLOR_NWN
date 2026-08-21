@@ -119,9 +119,10 @@
           "TargetNodeId": "entry-00002",
           "Conditions": [
             {
-              "Key": "condition-player-class",
+              "Key": "condition-any-skill",
               "Arguments": [
-                "Rogue"
+                "Espionage",
+                "1"
               ],
               "IsNegated": false
             }
@@ -150,9 +151,10 @@
           "TargetNodeId": "entry-00002",
           "Conditions": [
             {
-              "Key": "condition-player-class",
+              "Key": "condition-any-skill",
               "Arguments": [
-                "Rogue"
+                "Espionage",
+                "1"
               ],
               "IsNegated": false
             }

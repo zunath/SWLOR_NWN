@@ -89,7 +89,10 @@ public class GeneratedWeaponPerkBehaviorTests
 
         var deadMansHandStatus = File.ReadAllText(Path.Combine(
             root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "DeadMansHandStatusEffect.cs"));
-        deadMansHandStatus.Should().Contain("activeAbilityImpact?.SkillType ?? Combat.GetEquippedWeaponSkillType(attacker)");
+        deadMansHandStatus.Should().Contain("Combat.IsRangedWeaponSkill(skillType)");
+        deadMansHandStatus.Should().Contain("Combat.GrantNextAutoAttackNoDelay(");
+        deadMansHandStatus.Should().NotContain("Combat.GetEquippedWeaponSkillType(attacker)",
+            "resolved attacks must retain the exact native or ability weapon skill");
 
         var tagIn = File.ReadAllText(Path.Combine(
             root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Katar", "TagInAbilityDefinition.cs"));
@@ -142,6 +145,44 @@ public class GeneratedWeaponPerkBehaviorTests
         nativeCounter.RemainingAttacks.Should().Be(2);
         nativeCounter.TryConsume(null).Should().BeTrue();
         nativeCounter.RemainingAttacks.Should().Be(1);
+    }
+
+    [Test]
+    public void LimitedAttackBuffs_ConsumeMissesAndRemoveOnTheFinalAttempt()
+    {
+        var effect = new LimitedHasteStatusEffect(
+            20,
+            2,
+            EffectIconType.ReloadTempoStatusEffect,
+            null);
+        var attemptEffect = (IAttackAttemptStatusEffect)effect;
+
+        attemptEffect.OnAttackAttemptedEffect(0, SkillType.Pistol, null);
+        effect.IsFlaggedForRemoval.Should().BeFalse();
+
+        attemptEffect.OnAttackAttemptedEffect(0, SkillType.Pistol, null);
+        effect.IsFlaggedForRemoval.Should().BeTrue(
+            "an attempt is spent even when no damage callback was produced");
+    }
+
+    [Test]
+    public void AttackAttemptNotifications_CoverNativeMissesAndCompletedHostileAbilities()
+    {
+        var root = FindRepositoryRoot();
+        var nativeSource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
+        nativeSource.Should().Contain("StatusEffect.NotifyAttackAttemptStatusEffects(");
+        nativeSource.Should().Contain("UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType)");
+
+        var abilitySource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
+        abilitySource.Should().Contain("if (impact.Ability.IsHostileAbility)");
+        abilitySource.Should().Contain("impact.Summary.SkillType");
+
+        var statusEffectSource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Service", "StatusEffect.cs"));
+        statusEffectSource.Should().Contain("effect.IsFlaggedForRemoval");
+        statusEffectSource.Should().Contain("effect.SendsWornOffMessage");
     }
 
     [Test]

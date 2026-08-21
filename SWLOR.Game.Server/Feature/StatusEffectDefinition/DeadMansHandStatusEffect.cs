@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
@@ -7,7 +8,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
-    public sealed class DeadMansHandStatusEffect : StatusEffectBase
+    public sealed class DeadMansHandStatusEffect : StatusEffectBase, IAttackAttemptStatusEffect
     {
         private const int CriticalRatePercent = 20;
         private readonly LimitedAttackCounter _attackCounter;
@@ -40,24 +41,15 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 Math.Max(1, (int)Math.Ceiling(GetDurationSeconds(durationTicks))));
         }
 
-        protected override void OnDamageDealt(
+        public void OnAttackAttemptedEffect(
             uint attacker,
-            uint defender,
-            int damage,
-            CombatDamageType damageType,
-            CombatDamageDeliveryType deliveryType)
+            SkillType skillType,
+            AbilityImpactSummary abilityImpact)
         {
-            if (deliveryType != CombatDamageDeliveryType.Direct)
+            if (!Combat.IsRangedWeaponSkill(skillType))
                 return;
 
-            var activeAbilityImpact = Ability.GetActiveAbilityImpactSummary(attacker);
-            var attackSkillType = activeAbilityImpact?.SkillType ?? Combat.GetEquippedWeaponSkillType(attacker);
-            if (damage <= 0 || !Combat.IsRangedWeaponSkill(attackSkillType))
-            {
-                return;
-            }
-
-            if (!_attackCounter.TryConsume(activeAbilityImpact))
+            if (!_attackCounter.TryConsume(abilityImpact))
                 return;
 
             if (_attackCounter.RemainingAttacks <= 0)
@@ -68,7 +60,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
             Combat.GrantNextAutoAttackNoDelay(
                 attacker,
-                Combat.GetEquippedWeaponSkillType(attacker),
+                skillType,
                 Math.Max(1, (int)Math.Ceiling(GetDurationSeconds(DurationTicks))));
         }
 

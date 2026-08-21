@@ -153,6 +153,13 @@ namespace SWLOR.Game.Server.Service
 
             _trackedAbilityImpacts.Remove(activator);
             impact.FlushDamageEffects(activator);
+            if (impact.Ability.IsHostileAbility)
+            {
+                StatusEffect.NotifyAttackAttemptStatusEffects(
+                    activator,
+                    impact.Summary.SkillType,
+                    impact.Summary);
+            }
             _lastCompletedImpactSummaries[activator] = impact.Summary;
             return impact.Summary;
         }

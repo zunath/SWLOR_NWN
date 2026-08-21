@@ -351,6 +351,19 @@ namespace SWLOR.Game.Server.Native
                     Combat.TrackAvoidedAttack(defender.m_idSelf, attacker.m_idSelf);
                 }
 
+                // A landed queued weapon ability is finalized through Ability.EndAbilityImpact,
+                // which sends the single attempt notification for that originating swing. A miss
+                // or deflection never starts the queued ability, so notify it here instead.
+                var queuedWeaponAbilityWillResolve =
+                    IsSuccessfulAttackResult(pAttackData.m_nAttackResult) &&
+                    UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType);
+                if (!queuedWeaponAbilityWillResolve)
+                {
+                    StatusEffect.NotifyAttackAttemptStatusEffects(
+                        attacker.m_idSelf,
+                        weaponSkillType);
+                }
+
                 Log.Write(LogGroup.Attack, $"Building combat log message");
                 var attackerMessage = BuildAttackFeedbackMessage(
                     attacker.m_idSelf,

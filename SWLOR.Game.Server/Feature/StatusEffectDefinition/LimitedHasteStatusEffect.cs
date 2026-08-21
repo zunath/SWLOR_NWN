@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -8,7 +9,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     [StatConfiguredIcon]
-    public sealed class LimitedHasteStatusEffect : StatusEffectBase
+    public sealed class LimitedHasteStatusEffect : StatusEffectBase, IAttackAttemptStatusEffect
     {
         private readonly int _hastePercent;
         private readonly LimitedAttackCounter _attackCounter;
@@ -33,8 +34,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 icon,
                 new LimitedAttackCounter(
                     attackCount,
-                    triggeringAbilityImpact,
-                    triggeringAbilityImpact == null))
+                    triggeringAbilityImpact))
         {
         }
 
@@ -56,20 +56,12 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 : string.Empty;
         }
 
-        protected override void OnDamageDealt(
+        public void OnAttackAttemptedEffect(
             uint attacker,
-            uint defender,
-            int damage,
-            CombatDamageType damageType,
-            CombatDamageDeliveryType deliveryType)
+            SkillType skillType,
+            AbilityImpactSummary abilityImpact)
         {
-            if (deliveryType != CombatDamageDeliveryType.Direct)
-                return;
-
-            if (damage <= 0)
-                return;
-
-            if (!_attackCounter.TryConsume(Ability.GetActiveAbilityImpactSummary(attacker)))
+            if (!_attackCounter.TryConsume(abilityImpact))
                 return;
 
             if (_attackCounter.RemainingAttacks <= 0)

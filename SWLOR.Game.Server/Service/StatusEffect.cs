@@ -3,7 +3,9 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
@@ -1814,6 +1816,39 @@ namespace SWLOR.Game.Server.Service
             foreach (var effect in GetCreatureStatusEffects(defender).GetAllEffects())
             {
                 effect.OnDamageTakenEffect(defender, attacker, damage, damageType, deliveryType);
+            }
+        }
+
+        /// <summary>
+        /// Notifies limited-attack status effects once per originating hostile attack, including
+        /// misses and deflections. Effects exhausted by the attempt are removed immediately so
+        /// they cannot affect another attack before the next status-effect tick.
+        /// </summary>
+        public static void NotifyAttackAttemptStatusEffects(
+            uint attacker,
+            SkillType skillType,
+            AbilityImpactSummary abilityImpact = null)
+        {
+            if (!GetIsObjectValid(attacker))
+                return;
+
+            var effects = GetCreatureStatusEffects(attacker)
+                .GetAllEffects()
+                .OfType<IAttackAttemptStatusEffect>()
+                .ToList();
+
+            foreach (var effect in effects)
+            {
+                effect.OnAttackAttemptedEffect(attacker, skillType, abilityImpact);
+            }
+
+            foreach (var effect in effects.Where(effect => effect.IsFlaggedForRemoval))
+            {
+                RemoveStatusEffect(
+                    attacker,
+                    effect.GetType(),
+                    effect.Source,
+                    effect.SendsWornOffMessage);
             }
         }
 

@@ -1,5 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Toolset.Domain.Documents;
+using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Workspace;
 
@@ -174,12 +176,18 @@ namespace SWLOR.Toolset.Tests
         public void ContentOnlyCatalogRefreshDoesNotPublishAnOrderedCatalogChange()
         {
             var path = Path.Combine(_root, "utc", "existing_creature.utc.json");
-            File.WriteAllText(path, "not valid GFF JSON");
+            var blueprint = new JsonGffDocument("UTC ", new JsonGffStruct());
+            blueprint.Root.SetString("Tag", GffFieldType.CExoString, "same_catalog_tag");
+            blueprint.Root.SetString("Comment", GffFieldType.CExoString, "before refresh");
+            File.WriteAllBytes(path, blueprint.ToBytes());
             var workspace = new WorkspaceContext(
                 root => new ModuleWorkspace(root),
                 new OutputLogService());
             OpenWorkspace(workspace);
             workspace.Catalog!.BuildTask.GetAwaiter().GetResult();
+
+            blueprint.Root.SetString("Comment", GffFieldType.CExoString, "after refresh");
+            File.WriteAllBytes(path, blueprint.ToBytes());
             var contentNotifications = 0;
             var catalogNotifications = 0;
             workspace.CatalogEntryRefreshed += (_, _) => contentNotifications++;

@@ -4,6 +4,7 @@ using Avalonia.Input;
 using Avalonia.OpenGL;
 using Avalonia.OpenGL.Controls;
 using Avalonia.Threading;
+using Serilog;
 using Silk.NET.OpenGL;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Render;
@@ -634,8 +635,22 @@ void main()
                 if (_isPlacementActive == value)
                     return;
 
+                var templateResRef = _placementGhost?.TemplateResRef ?? _placementTemplateResRef;
                 _isPlacementActive = value;
+                if (!value)
+                {
+                    _ghostPosition = null;
+                    _snappedDoorAnchor = null;
+                }
+
+                Log.ForContext<GlAreaControl>().Information(
+                    "Area object placement mode changed to {IsPlacementActive} for {TemplateResRef}",
+                    value,
+                    templateResRef ?? "(none)");
                 RefreshPlacementGhostAtCursor();
+
+                if (!value)
+                    _placementTemplateResRef = null;
             }
         }
 
@@ -646,6 +661,7 @@ void main()
         public event Action? PlacementCancelled;
 
         private InstanceMarker? _placementGhost;
+        private string? _placementTemplateResRef;
 
         /// <summary>
         /// What to draw under the cursor while <see cref="IsPlacementActive"/>: the object about to
@@ -662,6 +678,8 @@ void main()
                     return;
 
                 _placementGhost = value;
+                if (!string.IsNullOrWhiteSpace(value?.TemplateResRef))
+                    _placementTemplateResRef = value.TemplateResRef;
                 _ghostPosition = null;
                 RefreshPlacementGhostAtCursor();
             }
@@ -1358,6 +1376,12 @@ void main()
         public void HandlePointerMoved(PointerEventArgs e)
         {
             var pointerPos = e.GetPosition(this);
+            if (!Bounds.Contains(pointerPos))
+            {
+                InvalidateHoverPointer("pointer moved outside viewport bounds");
+                return;
+            }
+
             _hoverPointerPos = pointerPos;
             _hasHoverPointerPos = true;
 
@@ -1754,13 +1778,10 @@ void main()
 
         private void CancelPlacement()
         {
-            _snappedDoorAnchor = null;
             if (!_isPlacementActive)
                 return;
 
-            _isPlacementActive = false;
-            _ghostPosition = null;
-            RequestNextFrameRendering();
+            IsPlacementActive = false;
             PlacementCancelled?.Invoke();
         }
 
@@ -1840,15 +1861,12 @@ void main()
                 if (NearestDoorAnchor(hit) is not { } anchor)
                     return;
 
-                _isPlacementActive = false;
-                _ghostPosition = null;
-                _snappedDoorAnchor = null;
+                IsPlacementActive = false;
                 PlacementPointPicked?.Invoke(new PlacementPick(anchor.Position, anchor.Orientation));
                 return;
             }
 
-            _isPlacementActive = false;
-            _ghostPosition = null;
+            IsPlacementActive = false;
             PlacementPointPicked?.Invoke(new PlacementPick(hit, null));
         }
 
@@ -2073,6 +2091,25 @@ void main()
             {
                 _previewAnimationStartedTicks = System.Diagnostics.Stopwatch.GetTimestamp();
             }
+        }
+
+        /// <summary>Clears cursor previews when the pointer leaves the map surface.</summary>
+        public void HandlePointerExited(PointerEventArgs e) =>
+            InvalidateHoverPointer("pointer exited viewport");
+
+        private void InvalidateHoverPointer(string reason)
+        {
+            if (!_hasHoverPointerPos)
+                return;
+
+            _hasHoverPointerPos = false;
+            _ghostPosition = null;
+            _snappedDoorAnchor = null;
+            _tileHoverCell = null;
+            _tileHoverEdge = null;
+            Log.ForContext<GlAreaControl>().Information(
+                "Area viewport hover cache invalidated: {Reason}", reason);
+            RequestNextFrameRendering();
         }
 
         private PreviewAnimationSnapshot PreviewAnimation()
@@ -2419,6 +2456,12 @@ void main()
         {
             base.OnPointerMoved(e);
             HandlePointerMoved(e);
+        }
+
+        protected override void OnPointerExited(PointerEventArgs e)
+        {
+            base.OnPointerExited(e);
+            HandlePointerExited(e);
         }
 
         protected override void OnPointerReleased(PointerReleasedEventArgs e)

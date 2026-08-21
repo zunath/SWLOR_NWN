@@ -1,5 +1,6 @@
 using System.Numerics;
 using Avalonia.Headless.NUnit;
+using Avalonia.Input;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.Documents;
@@ -144,6 +145,25 @@ namespace SWLOR.Toolset.Tests
                 .Placeables.Should().ContainSingle("undo removes the paired copied comment too");
         }
 
+        [AvaloniaTest]
+        public async Task AreaEditorViewRoutesControlCopyAndPasteToPlacement()
+        {
+            AddAuthoredSourcePlacement();
+            var editor = await CreateEditorAsync(new AreaInstanceClipboard());
+            editor.EnsureSceneBuilt();
+            await WaitUntilAsync(() => editor.AreaScene != null && !editor.IsBuildingScene);
+            editor.SelectSceneInstance(editor.AreaScene!.Instances.Should().ContainSingle(
+                marker => marker.Kind == InstanceMarkerKind.Placeable).Which);
+
+            var view = new ShortcutAreaEditorView { DataContext = editor };
+
+            view.SendControlKey(Key.C).Should().BeTrue();
+            view.SendControlKey(Key.V).Should().BeTrue();
+            editor.IsPlacementPending.Should().BeTrue();
+            editor.PlacementGhost.Should().NotBeNull();
+            editor.PlacementGhost!.TemplateResRef.Should().Be(PlaceableResRef);
+        }
+
         private void AddAuthoredSourcePlacement()
         {
             var gitPath = Path.Combine(_moduleRoot, "git", $"{AreaResRef}.git.json");
@@ -239,6 +259,21 @@ namespace SWLOR.Toolset.Tests
                 string message,
                 string confirmLabel) =>
                 Task.FromResult(false);
+        }
+
+        private sealed class ShortcutAreaEditorView : AreaEditorView
+        {
+            public bool SendControlKey(Key key)
+            {
+                var args = new KeyEventArgs
+                {
+                    RoutedEvent = KeyDownEvent,
+                    Key = key,
+                    KeyModifiers = KeyModifiers.Control
+                };
+                OnKeyDown(args);
+                return args.Handled;
+            }
         }
     }
 }

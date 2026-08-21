@@ -109,8 +109,8 @@ namespace SWLOR.Toolset.Editors
             AreaView.Scene = _viewModel.AreaScene;
             RestoreViewportStateWhenReady();
             AreaView.SelectedInstance = _viewModel.SelectedSceneInstance;
-            AreaView.IsPlacementActive = _viewModel.IsPlacementPending;
             AreaView.PlacementGhost = _viewModel.PlacementGhost;
+            AreaView.IsPlacementActive = _viewModel.IsPlacementPending;
             AreaView.IsTilePlacementActive = _viewModel.IsTilePlacementPending;
             AreaView.TilePlacementTargetsVertex = _viewModel.TilePlacementTargetsVertex;
             AreaView.TilePlacementTargetsEdge = _viewModel.TilePlacementTargetsEdge;
@@ -397,6 +397,9 @@ namespace SWLOR.Toolset.Editors
 
         private void OnViewportPointerMoved(object? sender, Avalonia.Input.PointerEventArgs e) =>
             AreaView.HandlePointerMoved(e);
+
+        private void OnViewportPointerExited(object? sender, Avalonia.Input.PointerEventArgs e) =>
+            AreaView.HandlePointerExited(e);
 
         private void OnViewportPointerReleased(object? sender, Avalonia.Input.PointerReleasedEventArgs e) =>
             AreaView.HandlePointerReleased(e);

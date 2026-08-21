@@ -124,6 +124,28 @@ public class CharacterSheetCombatUpgradeTests
     }
 
     [Test]
+    public void CharacterSheet_IncludesLimitedHasteAndLeadershipDamageReduction()
+    {
+        var viewModel = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot().FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "CharacterSheetViewModel.cs"));
+
+        var attackDelay = ExtractMethod(viewModel, "private (string Value, string Tooltip) GetAttackDelayInfo()");
+        attackDelay.Should().Contain("StatusEffect.TryGetLimitedAttackDelayReduction(");
+        attackDelay.Should().Contain("limitedAttackDelayReductionPercent");
+        attackDelay.Should().Contain("Combat.CalculateAttackDelay(");
+
+        var damageTaken = ExtractMethod(viewModel, "private int GetDamageTakenPercent(CombatDamageType damageType)");
+        damageTaken.Should().Contain("StatType.LeadershipPhysicalDamageTakenPercentAdjustment");
+        damageTaken.Should().Contain("StatType.LeadershipForceDamageTakenPercentAdjustment");
+        damageTaken.Should().Contain("StatType.DamageTakenPercentAdjustment) + leadershipAdjustment");
+    }
+
+    [Test]
     public void PlayerDamageRefresh_RunsDamageTakenEffectsBeforeRefreshingSheet()
     {
         var root = FindRepositoryRoot();

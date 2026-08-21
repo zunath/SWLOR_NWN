@@ -98,6 +98,11 @@ public class LeadershipCombatUpgradeTests
         var root = FindRepositoryRoot();
         var breakMorale = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Leadership" / "BreakMoraleAbilityDefinition.cs").FullName);
         (breakMorale.Split("LeadershipAbilityEffects.ApplyLeadershipCommandRadiusBonus").Length - 1).Should().Be(2);
+        var affectedTargetGuard = breakMorale.IndexOf("if (affectedCount <= 0)", StringComparison.Ordinal);
+        var markTargetRider = breakMorale.IndexOf("Combat.ApplyLeadershipVanguardImpactRiders(activator);", StringComparison.Ordinal);
+        affectedTargetGuard.Should().BeGreaterThanOrEqualTo(0);
+        markTargetRider.Should().BeGreaterThan(affectedTargetGuard,
+            "Break Morale must grant Mark Target once after at least one direct status application succeeds");
 
         var leadershipPerks = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "LeadershipVanguardCommandPerkDefinition.cs").FullName);
         var commandPresence = leadershipPerks[leadershipPerks.IndexOf("private void CommandPresence()", StringComparison.Ordinal)..];

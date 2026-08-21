@@ -877,8 +877,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private (string Value, string Tooltip) GetAttackDelayInfo()
         {
-            var attackerDelayMilliseconds = Combat.CalculateAttackDelay(_target);
             var attackSkillType = Combat.GetEquippedWeaponSkillType(_target);
+            StatusEffect.TryGetLimitedAttackDelayReduction(
+                _target,
+                attackSkillType,
+                out var limitedAttackDelayReductionPercent,
+                out _);
+            var attackerDelayMilliseconds = Combat.CalculateAttackDelay(
+                _target,
+                limitedAttackDelayReductionPercent);
             var useDefaultMinimumDelay = Combat.HasNextAutoAttackNoDelay(_target, attackSkillType);
             var effectiveDelayMilliseconds = Combat.CalculateEffectiveAttackDelay(attackerDelayMilliseconds, useDefaultMinimumDelay);
             var attackerDelaySeconds = attackerDelayMilliseconds / 1000f;
@@ -1118,11 +1125,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 CombatDamageType.Force => Stat.GetStatAdjustment(_target, StatType.ForceDamageTakenPercentAdjustment),
                 _ => 0
             };
+            var leadershipAdjustment = damageType switch
+            {
+                CombatDamageType.Physical => Stat.GetStatAdjustment(
+                    _target,
+                    StatType.LeadershipPhysicalDamageTakenPercentAdjustment),
+                CombatDamageType.Force => Stat.GetStatAdjustment(
+                    _target,
+                    StatType.LeadershipForceDamageTakenPercentAdjustment),
+                _ => Stat.GetStatAdjustment(
+                    _target,
+                    StatType.LeadershipOtherDamageTakenPercentAdjustment)
+            };
 
             var percent = ApplyDamageTakenPercentAdjustment(100, typeAdjustment);
             return ApplyDamageTakenPercentAdjustment(
                 percent,
-                Stat.GetStatAdjustment(_target, StatType.DamageTakenPercentAdjustment));
+                Stat.GetStatAdjustment(_target, StatType.DamageTakenPercentAdjustment) + leadershipAdjustment);
         }
 
         private static int ApplyDamageTakenPercentAdjustment(int percent, int adjustment)

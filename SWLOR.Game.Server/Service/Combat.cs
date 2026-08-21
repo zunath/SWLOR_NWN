@@ -6365,7 +6365,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private static void ApplyLeadershipVanguardImpactRiders(uint activator)
+        public static void ApplyLeadershipVanguardImpactRiders(uint activator)
         {
             var rank = Stat.GetStatAdjustment(activator, StatType.LeadershipVanguardMarkTargetRank);
             if (rank <= 0)

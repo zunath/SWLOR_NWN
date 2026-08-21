@@ -113,19 +113,29 @@ public class LeadershipCombatUpgradeTests
         var cleanseOrder = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Leadership" / "CleanseOrderAbilityDefinition.cs").FullName);
         cleanseOrder.Should().Contain("AbilityEffectScaling.ScaleValueBySourceSocial(activator, 12, 15)");
         cleanseOrder.Should().Contain("GameMath.PercentOf(GetMaxHitPoints(target), percent)");
+        cleanseOrder.Should().Contain("TemporaryHitPointEffects.ApplyFlatTracked(");
+        var cleanseOrder1Impact = cleanseOrder[cleanseOrder.IndexOf(
+            "private static void CleanseOrder1ImpactAction",
+            StringComparison.Ordinal)..cleanseOrder.IndexOf(
+            "private static void CleanseOrder2ImpactAction",
+            StringComparison.Ordinal)];
         var cleanseOrder2Impact = cleanseOrder[cleanseOrder.IndexOf(
             "private static void CleanseOrder2ImpactAction",
             StringComparison.Ordinal)..];
-        cleanseOrder2Impact.IndexOf(
-                "StatusEffect.ApplyStatusEffect(activator, friendly, typeof(CleanseOrder2StatusEffect), duration);",
-                StringComparison.Ordinal)
-            .Should().BeLessThan(cleanseOrder2Impact.IndexOf("ApplyTemporaryHP(", StringComparison.Ordinal),
-                "reapplying Cleanse Order must remove the old pool before granting the replacement pool");
+        cleanseOrder1Impact.IndexOf("ApplyTemporaryHP(", StringComparison.Ordinal)
+            .Should().BeLessThan(cleanseOrder1Impact.IndexOf(
+                    "new CleanseOrder1StatusEffect(temporaryHitPointApplicationId)",
+                    StringComparison.Ordinal),
+                "the rank-I marker must own the pool generation it follows");
+        cleanseOrder2Impact.IndexOf("ApplyTemporaryHP(", StringComparison.Ordinal)
+            .Should().BeLessThan(cleanseOrder2Impact.IndexOf(
+                    "new CleanseOrder2StatusEffect(temporaryHitPointApplicationId)",
+                    StringComparison.Ordinal),
+                "the rank-II marker must own the pool generation it follows");
 
-        var cleanseOrderStatus = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "CleanseOrder2StatusEffect.cs").FullName);
-        cleanseOrderStatus.Should().Contain("protected override void Remove(uint creature)");
-        cleanseOrderStatus.Should().Contain("TemporaryHitPointEffects.Remove(creature, TemporaryHitPointEffectKey)",
-            "replacing the command must remove its separately tagged temporary HP pool");
+        var cleanseOrderStatus = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "CleanseOrderTemporaryHitPointStatusEffectBase.cs").FullName);
+        cleanseOrderStatus.Should().Contain("TemporaryHitPointEffects.RemoveIfCurrent(",
+            "an older marker must not remove a newer Cleanse Order pool from either rank or source");
 
         var combat = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
         combat.Should().Contain("typeof(MarkTarget2StatusEffect)");

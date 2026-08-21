@@ -520,6 +520,21 @@ public class CombatAttackDelayTests
         limitedHasteTrigger.Should().BeGreaterThanOrEqualTo(0);
         limitedHasteTrigger.Should().BeLessThan(positiveDamageGuard,
             "a fully mitigated critical still earns Reload Tempo's next-two-attacks Haste");
+
+        var damageRoll = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot().FullName,
+            "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
+        var landedDamageHandlingStart = damageRoll.IndexOf(
+            "if (isLandedAttack)",
+            StringComparison.Ordinal);
+        var landedDamageHandlingEnd = damageRoll.IndexOf(
+            "ProfilerPlugin.PopPerfScope();",
+            landedDamageHandlingStart,
+            StringComparison.Ordinal);
+        var landedDamageHandling = damageRoll[landedDamageHandlingStart..landedDamageHandlingEnd];
+        landedDamageHandling.Should().Contain("Combat.ApplyCriticalHitEffects(");
+        landedDamageHandling.Should().NotContain("if (isLandedAttack && totalDamage > 0)",
+            "a fully mitigated landed native critical must still notify critical-hit effects");
     }
 
     [Test]

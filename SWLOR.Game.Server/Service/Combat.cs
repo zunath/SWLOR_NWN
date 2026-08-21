@@ -1808,7 +1808,14 @@ namespace SWLOR.Game.Server.Service
             bool isSingleTargetImpact = false,
             SkillType skillType = SkillType.Invalid)
         {
-            if (criticalRating <= 0 || damage <= 0)
+            if (criticalRating <= 0)
+                return;
+
+            // Limited Haste is earned by the critical result itself, even when mitigation reduces
+            // that critical's damage to zero. Damage-derived critical riders remain below.
+            ApplyCriticalHitLimitedHaste(attacker, skillType);
+
+            if (damage <= 0)
                 return;
 
             if (GetCriticalRateAgainstSunderedTargetAdjustment(attacker, defender) > 0)
@@ -1828,7 +1835,6 @@ namespace SWLOR.Game.Server.Service
 
             ApplyCriticalNextAbilityDamageBonus(attacker, skillType);
             ApplyCriticalNextSkillAbilityDefenseIgnore(attacker, skillType);
-            ApplyCriticalHitLimitedHaste(attacker, skillType);
             ApplyCriticalNextAutoAttackNoDelay(attacker, skillType);
             ApplyCriticalSideAttackStaminaRestore(attacker, defender);
             ApplyCriticalBleedingStatusDurationExtension(attacker, defender);

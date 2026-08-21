@@ -108,6 +108,19 @@ public class LeadershipCombatUpgradeTests
         var cleanseOrder = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Leadership" / "CleanseOrderAbilityDefinition.cs").FullName);
         cleanseOrder.Should().Contain("AbilityEffectScaling.ScaleValueBySourceSocial(activator, 12, 15)");
         cleanseOrder.Should().Contain("GameMath.PercentOf(GetMaxHitPoints(target), percent)");
+        var cleanseOrder2Impact = cleanseOrder[cleanseOrder.IndexOf(
+            "private static void CleanseOrder2ImpactAction",
+            StringComparison.Ordinal)..];
+        cleanseOrder2Impact.IndexOf(
+                "StatusEffect.ApplyStatusEffect(activator, friendly, typeof(CleanseOrder2StatusEffect), duration);",
+                StringComparison.Ordinal)
+            .Should().BeLessThan(cleanseOrder2Impact.IndexOf("ApplyTemporaryHP(", StringComparison.Ordinal),
+                "reapplying Cleanse Order must remove the old pool before granting the replacement pool");
+
+        var cleanseOrderStatus = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "CleanseOrder2StatusEffect.cs").FullName);
+        cleanseOrderStatus.Should().Contain("protected override void Remove(uint creature)");
+        cleanseOrderStatus.Should().Contain("TemporaryHitPointEffects.Remove(creature, TemporaryHitPointEffectKey)",
+            "replacing the command must remove its separately tagged temporary HP pool");
 
         var combat = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
         combat.Should().Contain("typeof(MarkTarget2StatusEffect)");

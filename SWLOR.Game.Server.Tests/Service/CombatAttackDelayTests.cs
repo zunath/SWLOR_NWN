@@ -500,6 +500,29 @@ public class CombatAttackDelayTests
     }
 
     [Test]
+    public void ReloadTempo_TriggersBeforeThePositiveCriticalDamageGuard()
+    {
+        var source = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot().FullName,
+            "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var method = source[source.IndexOf(
+            "public static void ApplyCriticalHitEffects(",
+            StringComparison.Ordinal)..];
+        method = method[..method.IndexOf(
+            "private static void ApplyCriticalHitSelfEffects(",
+            StringComparison.Ordinal)];
+
+        var limitedHasteTrigger = method.IndexOf(
+            "ApplyCriticalHitLimitedHaste(attacker, skillType);",
+            StringComparison.Ordinal);
+        var positiveDamageGuard = method.IndexOf("if (damage <= 0)", StringComparison.Ordinal);
+
+        limitedHasteTrigger.Should().BeGreaterThanOrEqualTo(0);
+        limitedHasteTrigger.Should().BeLessThan(positiveDamageGuard,
+            "a fully mitigated critical still earns Reload Tempo's next-two-attacks Haste");
+    }
+
+    [Test]
     public void WeaponDelayMigration_CoversLivePlayerInventoryAndSerializedItems()
     {
         var root = FindRepositoryRoot();

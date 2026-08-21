@@ -102,11 +102,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, true, radius))
             {
                 StatusEffect.RemoveFirstCleanseableStatusEffect(friendly, StatusEffectCleanseType.Purify, false);
+                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(CleanseOrder2StatusEffect), duration);
                 ApplyTemporaryHP(
                     friendly,
                     AbilityEffectScaling.ScaleValueBySourceSocial(activator, 12, 15),
                     duration);
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(CleanseOrder2StatusEffect), duration);
                 LeadershipAbilityEffects.ApplyTriageProtocol(activator, friendly, duration);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), friendly);
                 affectedCount++;
@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
         {
             TemporaryHitPointEffects.ApplyFlat(
                 target,
-                "CLEANSE_ORDER",
+                CleanseOrder2StatusEffect.TemporaryHitPointEffectKey,
                 GameMath.PercentOf(GetMaxHitPoints(target), percent),
                 durationSeconds);
         }

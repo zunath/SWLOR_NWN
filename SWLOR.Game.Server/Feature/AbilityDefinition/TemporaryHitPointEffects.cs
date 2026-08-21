@@ -63,5 +63,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             var visualEffect = TagEffect(EffectVisualEffect(barrierVisualEffect), visualEffectTag);
             ApplyEffectToObject(DurationType.Temporary, visualEffect, target, durationSeconds);
         }
+
+        public static void Remove(uint target, string effectKey)
+        {
+            if (string.IsNullOrWhiteSpace(effectKey))
+                throw new ArgumentException("Temporary HP effects must declare the ability key they stack under.", nameof(effectKey));
+
+            var effectTag = EffectTagPrefix + effectKey;
+            RemoveEffectByTag(target, effectTag);
+            RemoveEffectByTag(target, effectTag + BarrierVisualEffectTagSuffix);
+        }
     }
 }

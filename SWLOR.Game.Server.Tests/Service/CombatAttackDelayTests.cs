@@ -284,9 +284,9 @@ public class CombatAttackDelayTests
         }
     }
 
-    [TestCase(2, 1, 1, 1)]
-    [TestCase(3, 1, 2, 2)]
-    [TestCase(3, 2, 1, 2)]
+    [TestCase(2, 1, 1, 2)]
+    [TestCase(3, 1, 2, 3)]
+    [TestCase(3, 2, 1, 3)]
     [TestCase(3, 2, 3, 3)]
     public void CapAttacksPerSwingForLimitedAttackEffect_DoesNotOverscheduleCharges(
         int acceleratedAttacks,

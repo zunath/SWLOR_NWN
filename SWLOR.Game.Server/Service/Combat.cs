@@ -8954,11 +8954,15 @@ namespace SWLOR.Game.Server.Service
             if (deflection <= 0 || duration <= 0 || statusEffectIcon == EffectIconType.Invalid)
                 return;
 
-            StatusEffect.ApplyStatusEffect(
-                activator,
-                activator,
-                new RangedDeflectionStatusEffect(deflection, statusEffectIcon),
-                duration);
+            if (StatusEffect.ApplyStatusEffect(
+                    activator,
+                    activator,
+                    new RangedDeflectionStatusEffect(deflection, statusEffectIcon),
+                    duration))
+            {
+                var source = Stat.GetStatTypeDeflectionSource(StatType.AbilityUsedRangedDeflection);
+                ApplyAbilityGrantedAttackDeflectionEffects(activator, source);
+            }
         }
 
         private static void ApplySingleTargetAbilityUsedAttackDeflection(
@@ -10599,7 +10603,7 @@ namespace SWLOR.Game.Server.Service
             if (remainingAttacks <= 0)
                 return baselineAttacks;
 
-            return Math.Max(baselineAttacks, Math.Min(acceleratedAttacks, remainingAttacks));
+            return Math.Min(acceleratedAttacks, baselineAttacks + remainingAttacks);
         }
 
         /// <summary>

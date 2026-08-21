@@ -400,6 +400,21 @@ public class GeneratedWeaponPerkBehaviorTests
         combat.Should().Contain("new RangedDeflectionStatusEffect(deflection, statusEffectIcon)");
         combat.Should().NotContain("new SnapRollStatusEffect(");
         combat.Should().NotContain("ApplyAvoidedAttackAbilityUsedEvasionRefresh");
+
+        var applyStart = combat.IndexOf(
+            "private static void ApplyAbilityUsedSkillRangedDeflection(",
+            StringComparison.Ordinal);
+        var applyEnd = combat.IndexOf(
+            "private static void ApplySingleTargetAbilityUsedAttackDeflection(",
+            applyStart,
+            StringComparison.Ordinal);
+        applyStart.Should().BeGreaterThanOrEqualTo(0);
+        applyEnd.Should().BeGreaterThan(applyStart);
+        var applyRangedDeflection = combat[applyStart..applyEnd];
+        applyRangedDeflection.Should().Contain("if (StatusEffect.ApplyStatusEffect(");
+        applyRangedDeflection.Should().Contain(
+            "Stat.GetStatTypeDeflectionSource(StatType.AbilityUsedRangedDeflection)");
+        applyRangedDeflection.Should().Contain("ApplyAbilityGrantedAttackDeflectionEffects(activator, source)");
     }
 
     [Test]

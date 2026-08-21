@@ -1062,11 +1062,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private int GetCriticalRate(SkillType skillType)
         {
+            var criticalRateAdjustment = Stat.GetStatAdjustment(
+                _target,
+                StatType.CriticalRatePercentAdjustment);
+            criticalRateAdjustment += Combat.GetSkillCriticalRatePercentAdjustment(_target, skillType);
+
             return Combat.CalculateCriticalRate(
                 GetAbilityScore(_target, AbilityType.Perception),
                 GetAbilityScore(_target, AbilityType.Vitality),
                 GetSkillRank(skillType),
-                Stat.GetStatAdjustment(_target, StatType.CriticalRatePercentAdjustment));
+                criticalRateAdjustment);
         }
 
         private int GetAssaultGadgetCriticalRate()

@@ -188,30 +188,35 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private static IEnumerable<string> SplitDialogueText(string text)
         {
-            const int segmentCharacterLimit = 320;
+            const int segmentCharacterLimit = 80;
             const int minimumPreferredSegmentLength = segmentCharacterLimit / 2;
 
             if (string.IsNullOrWhiteSpace(text))
                 yield break;
 
-            var remaining = text.Trim();
-            while (remaining.Length > segmentCharacterLimit)
+            var normalizedText = text
+                .Replace("\r\n", "\n", StringComparison.Ordinal)
+                .Replace('\r', '\n');
+
+            foreach (var line in normalizedText.Split('\n'))
             {
-                var splitIndex = remaining.LastIndexOf('\n', segmentCharacterLimit);
-                if (splitIndex < minimumPreferredSegmentLength)
-                    splitIndex = remaining.LastIndexOf(' ', segmentCharacterLimit);
-                if (splitIndex < minimumPreferredSegmentLength)
-                    splitIndex = segmentCharacterLimit;
+                var remaining = line.Trim();
+                while (remaining.Length > segmentCharacterLimit)
+                {
+                    var splitIndex = remaining.LastIndexOf(' ', segmentCharacterLimit);
+                    if (splitIndex < minimumPreferredSegmentLength)
+                        splitIndex = segmentCharacterLimit;
 
-                var segment = remaining[..splitIndex].Trim();
-                if (segment.Length > 0)
-                    yield return segment;
+                    var segment = remaining[..splitIndex].Trim();
+                    if (segment.Length > 0)
+                        yield return segment;
 
-                remaining = remaining[splitIndex..].TrimStart();
+                    remaining = remaining[splitIndex..].TrimStart();
+                }
+
+                if (remaining.Length > 0)
+                    yield return remaining;
             }
-
-            if (remaining.Length > 0)
-                yield return remaining;
         }
 
         private uint ResolveSpeakerObject(ConversationNode node)

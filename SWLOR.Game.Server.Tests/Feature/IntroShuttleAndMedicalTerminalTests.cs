@@ -73,7 +73,7 @@ public sealed class IntroShuttleAndMedicalTerminalTests
         var blocks = ConversationMarkup.ParseLegacyColors(header, ConversationTextStyle.Normal);
 
         blocks.Should().ContainSingle(
-            "the NUI conversation list assigns a full-height row to every styled text block");
+            "the status labels and values should remain in one flowing styled block");
         blocks[0].Text.Should().Be("Destination: Dantooine\nArriving in: 5 minutes");
         blocks[0].Style.Should().Be(ConversationTextStyle.Custom);
         blocks[0].Color.Should().NotBeNull();

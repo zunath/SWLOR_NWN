@@ -157,7 +157,7 @@ public class ConversationArchitectureTests
     }
 
     [Test]
-    public void ConversationWindow_UsesOneNpcTextScrollbarAndAStableTitle()
+    public void ConversationWindow_UsesCompactNpcTextRowsAndAStableTitle()
     {
         var root = FindRepositoryRoot().FullName;
         var definitionSource = File.ReadAllText(Path.Combine(
@@ -181,6 +181,12 @@ public class ConversationArchitectureTests
         textPanelSource.Should().Contain(".SetScrollbars(NuiScrollbars.Y)",
             "the containing dialogue list owns the panel's only scrollbar");
         textPanelSource.Should().NotContain(".SetScrollbars(NuiScrollbars.Auto)");
+        textPanelSource.Should().Contain(".SetHeight(48f)",
+            "each text widget should fit a compact wrapped segment rather than reserve the full panel height");
+        textPanelSource.Should().Contain(".SetRowHeight(56f)",
+            "styled dialogue blocks should consume space in proportion to their rendered text");
+        textPanelSource.Should().NotContain(".SetHeight(196f)");
+        textPanelSource.Should().NotContain(".SetRowHeight(208f)");
     }
 
     [Test]
@@ -195,8 +201,60 @@ public class ConversationArchitectureTests
         var segments = ((IEnumerable<string>)method!.Invoke(null, new object[] { source })!).ToArray();
 
         segments.Should().HaveCountGreaterThan(1);
-        segments.Should().OnlyContain(segment => segment.Length <= 320);
+        segments.Should().OnlyContain(segment => segment.Length <= 80);
         string.Join(" ", segments).Should().Be(source);
+    }
+
+    [Test]
+    public void ExplicitConversationLines_AreSplitIntoSeparateCompactRows()
+    {
+        var method = typeof(ConversationViewModel).GetMethod(
+            "SplitDialogueText",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+        method.Should().NotBeNull();
+
+        const string source = "Destination: Dantooine\r\nArriving in: 5 minutes\n\nReady.";
+        var segments = ((IEnumerable<string>)method!.Invoke(null, new object[] { source })!).ToArray();
+
+        segments.Should().Equal(
+            "Destination: Dantooine",
+            "Arriving in: 5 minutes",
+            "Ready.");
+    }
+
+    [Test]
+    public void EveryAuthoredConversationBlock_FitsCompactRows()
+    {
+        var method = typeof(ConversationViewModel).GetMethod(
+            "SplitDialogueText",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+        method.Should().NotBeNull();
+
+        var conversationDirectory = Path.Combine(
+            FindRepositoryRoot().FullName,
+            "SWLOR.Game.Server",
+            "ConversationData");
+        var errors = new List<string>();
+
+        foreach (var path in Directory.EnumerateFiles(conversationDirectory, "*.conversation.json"))
+        {
+            var document = JObject.Parse(File.ReadAllText(path));
+            foreach (var node in document["Nodes"]?.Children<JProperty>() ?? [])
+            {
+                foreach (var block in node.Value["Text"]?.Children<JObject>() ?? [])
+                {
+                    var source = block["Text"]?.Value<string>() ?? string.Empty;
+                    var segments = ((IEnumerable<string>)method!.Invoke(null, new object[] { source })!).ToArray();
+                    if (!string.IsNullOrWhiteSpace(source) && segments.Length == 0)
+                        errors.Add($"{Path.GetFileName(path)}:{node.Name} produced no display rows");
+                    if (segments.Any(segment => segment.Length > 80 || segment.Contains('\n') || segment.Contains('\r')))
+                        errors.Add($"{Path.GetFileName(path)}:{node.Name} produced an oversized display row");
+                }
+            }
+        }
+
+        errors.Should().BeEmpty(
+            "all authored dialogue must pass through the compact, word-safe row layout");
     }
 
     [Test]

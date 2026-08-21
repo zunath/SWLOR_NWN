@@ -60,6 +60,27 @@ namespace SWLOR.Game.Server.Service.ConversationService
             };
         }
 
+        /// <summary>
+        /// Collapses a code-driven menu header into one flowing block. NUI cannot render NWN inline
+        /// color tokens, and displaying each parsed color run as a list row inserts a full row break
+        /// between labels and values. A header wrapped by one color token keeps that color; mixed
+        /// inline runs fall back to the supplied style so their text remains continuous and readable.
+        /// </summary>
+        public static ConversationTextBlock CollapseForHeader(
+            string text,
+            ConversationTextStyle defaultStyle)
+        {
+            var blocks = ParseLegacyColors(text, defaultStyle);
+            if (blocks.Count == 1)
+                return blocks[0];
+
+            return new ConversationTextBlock
+            {
+                Text = string.Concat(blocks.Select(block => block.Text)),
+                Style = defaultStyle
+            };
+        }
+
         private static void AddSegment(
             ICollection<ConversationTextBlock> blocks,
             string source,

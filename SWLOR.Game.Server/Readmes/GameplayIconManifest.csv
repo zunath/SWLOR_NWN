@@ -1165,6 +1165,7 @@
 "StatusEffect","CenteringStatusEffect","Centering","Beneficial","","ief_cent","SWLOR.Game.Server\Feature\StatusEffectDefinition\CenteringStatusEffect.cs",""
 "StatusEffect","ChargeOrder1StatusEffect","Charge Order I","Beneficial","1","ief_chrgord1","SWLOR.Game.Server\Feature\StatusEffectDefinition\ChargeOrder1StatusEffect.cs",""
 "StatusEffect","ChargeOrder2StatusEffect","Charge Order II","Beneficial","2","ief_chrgord2","SWLOR.Game.Server\Feature\StatusEffectDefinition\ChargeOrder2StatusEffect.cs",""
+"StatusEffect","CleanseOrder1StatusEffect","Cleanse Order I","Beneficial","1","ief_clnsord1","SWLOR.Game.Server\Feature\StatusEffectDefinition\CleanseOrder1StatusEffect.cs",""
 "StatusEffect","CleanseOrder2StatusEffect","Cleanse Order II","Beneficial","2","ief_clnsord2","SWLOR.Game.Server\Feature\StatusEffectDefinition\CleanseOrder2StatusEffect.cs",""
 "StatusEffect","Coagulant1StatusEffect","Coagulant I","Beneficial","1","ief_coag1","SWLOR.Game.Server\Feature\StatusEffectDefinition\Coagulant1StatusEffect.cs",""
 "StatusEffect","Coagulant2StatusEffect","Coagulant II","Beneficial","2","ief_coag2","SWLOR.Game.Server\Feature\StatusEffectDefinition\Coagulant2StatusEffect.cs",""

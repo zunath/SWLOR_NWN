@@ -79,7 +79,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, true, radius))
             {
                 StatusEffect.RemoveFirstCleanseableStatusEffect(friendly, StatusEffectCleanseType.TreatmentKit2, false);
-                StatusEffect.RemoveStatusEffect(friendly, typeof(CleanseOrder2StatusEffect), false);
+                StatusEffect.ApplyStatusEffect(
+                    activator,
+                    friendly,
+                    typeof(CleanseOrder1StatusEffect),
+                    duration);
                 ApplyTemporaryHP(
                     friendly,
                     AbilityEffectScaling.ScaleValueBySourceSocial(activator, 6, 8),
@@ -126,7 +130,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
         {
             TemporaryHitPointEffects.ApplyFlat(
                 target,
-                CleanseOrder2StatusEffect.TemporaryHitPointEffectKey,
+                CleanseOrder1StatusEffect.TemporaryHitPointEffectKey,
                 GameMath.PercentOf(GetMaxHitPoints(target), percent),
                 durationSeconds);
         }

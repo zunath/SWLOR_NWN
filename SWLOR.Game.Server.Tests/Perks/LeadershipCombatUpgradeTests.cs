@@ -124,19 +124,31 @@ public class LeadershipCombatUpgradeTests
         var cleanseOrder2Impact = cleanseOrder[cleanseOrder.IndexOf(
             "private static void CleanseOrder2ImpactAction",
             StringComparison.Ordinal)..];
-        cleanseOrder1Impact.IndexOf("StatusEffect.RemoveStatusEffect(friendly, typeof(CleanseOrder2StatusEffect), false)", StringComparison.Ordinal)
+        cleanseOrder1Impact.IndexOf("typeof(CleanseOrder1StatusEffect)", StringComparison.Ordinal)
             .Should().BeLessThan(cleanseOrder1Impact.IndexOf("ApplyTemporaryHP(", StringComparison.Ordinal),
-                "rank I must clear a prior rank-II marker and pool before applying its replacement");
+                "rank I must install its command marker before applying the temporary-HP pool");
         cleanseOrder2Impact.IndexOf("typeof(CleanseOrder2StatusEffect)", StringComparison.Ordinal)
             .Should().BeLessThan(cleanseOrder2Impact.IndexOf("ApplyTemporaryHP(", StringComparison.Ordinal),
                 "rank II must replace its marker before applying the new pool");
 
+        var rank1Marker = new CleanseOrder1StatusEffect();
+        rank1Marker.Icon.Should().Be(EffectIconType.CleanseOrder1StatusEffect);
+        rank1Marker.Categories.Should().Be(StatusEffectCategory.Buff);
+        rank1Marker.SourceType.Should().Be(StatusEffectSourceType.Command);
+
         var rank2Marker = new CleanseOrder2StatusEffect();
         rank2Marker.Icon.Should().Be(EffectIconType.CleanseOrder2StatusEffect);
         rank2Marker.Categories.Should().Be(StatusEffectCategory.Buff);
+        rank2Marker.SourceType.Should().Be(StatusEffectSourceType.Command);
 
-        var cleanseOrderStatus = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "CleanseOrder2StatusEffect.cs").FullName);
-        cleanseOrderStatus.Should().Contain("TemporaryHitPointEffects.Remove(creature, TemporaryHitPointEffectKey)");
+        CleanseOrder1StatusEffect.TemporaryHitPointEffectKey
+            .Should().Be(CleanseOrder2StatusEffect.TemporaryHitPointEffectKey);
+
+        foreach (var rank in new[] { "CleanseOrder1StatusEffect.cs", "CleanseOrder2StatusEffect.cs" })
+        {
+            var cleanseOrderStatus = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / rank).FullName);
+            cleanseOrderStatus.Should().Contain("TemporaryHitPointEffects.Remove(creature, TemporaryHitPointEffectKey)");
+        }
 
         var combat = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
         combat.Should().Contain("typeof(MarkTarget2StatusEffect)");

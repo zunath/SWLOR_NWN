@@ -476,6 +476,7 @@ namespace SWLOR.NWN.API.NWScript.Enum
         DuelistsDistanceStatusEffect = 470,
         PointBlankBurstStatusEffect = 471,
         ReloadTempoStatusEffect = 472,
+        CleanseOrder1StatusEffect = 473,
         // End custom status effect icons
     }
 }

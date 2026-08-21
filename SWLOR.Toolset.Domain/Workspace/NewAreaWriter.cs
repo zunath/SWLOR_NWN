@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using System.Security.Cryptography;
 using System.Text.Json;
 using SWLOR.NWN.Formats.Common;
@@ -26,8 +25,6 @@ namespace SWLOR.Toolset.Domain.Workspace
         /// <summary>The largest area NWN accepts on a side.</summary>
         public const int MaxDimension = 32;
 
-        /// <summary>NWN resource names are at most 16 characters, lowercase, alphanumeric/underscore.</summary>
-        private static readonly Regex ResRefPattern = new("^[a-z0-9_]{1,16}$", RegexOptions.Compiled);
         private const string PendingMarkerPrefix = ".swlor-toolset-new-area-";
 
         /// <summary>
@@ -57,9 +54,11 @@ namespace SWLOR.Toolset.Domain.Workspace
             error = string.Empty;
 
             resRef = (resRef ?? string.Empty).Trim().ToLowerInvariant();
-            if (!ResRefPattern.IsMatch(resRef))
+            if (!NwnResRef.IsCanonical(resRef))
             {
-                error = "ResRef must be 1-16 characters, lowercase letters/digits/underscore only.";
+                error =
+                    $"ResRef must be 1-{NwnResRef.MaxLength} characters, " +
+                    "lowercase letters/digits/underscore only.";
                 return false;
             }
 

@@ -21,8 +21,10 @@ public sealed class ConversationGraphCorpusTests
                            name.EndsWith(".conversation.json", StringComparison.OrdinalIgnoreCase))
             .ToArray();
 
-        resources.Should().HaveCount(327,
-            "dt_barman_gen and dt_cntr_magasin remain native until their missing race and store behavior can be implemented faithfully");
+        resources.Should().HaveCount(345,
+            "every authored non-shell DLG except the approved native DMFI conversation must be embedded");
+        resources.Should().NotContain(resource =>
+            resource.EndsWith(".dmfi_universal.conversation.json", StringComparison.OrdinalIgnoreCase));
         foreach (var resource in resources)
         {
             using var stream = assembly.GetManifestResourceStream(resource);

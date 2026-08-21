@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text;
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Editing;
 
 namespace SWLOR.Toolset.Domain.Gff
@@ -180,21 +181,19 @@ namespace SWLOR.Toolset.Domain.Gff
             if (type != GffFieldType.ResRef)
                 return;
 
-            if (value.Length > 16)
-                throw new ArgumentOutOfRangeException(nameof(value), value, "A ResRef cannot exceed 16 characters.");
-
-            foreach (var character in value)
+            if (value.Length > NwnResRef.MaxLength)
             {
-                var isValid = character is >= 'a' and <= 'z'
-                    or >= 'A' and <= 'Z'
-                    or >= '0' and <= '9'
-                    or '_';
-                if (!isValid)
-                {
-                    throw new ArgumentException(
-                        "A ResRef may contain only ASCII letters, digits, and underscores.",
-                        nameof(value));
-                }
+                throw new ArgumentOutOfRangeException(
+                    nameof(value),
+                    value,
+                    $"A ResRef cannot exceed {NwnResRef.MaxLength} characters.");
+            }
+
+            if (value.Length > 0 && !NwnResRef.IsValid(value))
+            {
+                throw new ArgumentException(
+                    "A ResRef may contain only ASCII letters, digits, and underscores.",
+                    nameof(value));
             }
         }
 

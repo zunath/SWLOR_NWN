@@ -1,3 +1,4 @@
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Gff;
 
@@ -8,7 +9,6 @@ namespace SWLOR.Toolset.Domain.Editors.Merchants
     {
         public const int MaxNameLength = 64;
         public const int MaxTagLength = 32;
-        public const int MaxResRefLength = 16;
 
         public static IReadOnlyList<BehaviorFieldDefinition> Details { get; } = new[]
         {
@@ -25,7 +25,7 @@ namespace SWLOR.Toolset.Domain.Editors.Merchants
             new BehaviorFieldDefinition
             {
                 Label = "ResRef", Name = "ResRef", Kind = BehaviorFieldKind.Text,
-                FieldType = GffFieldType.ResRef, MaxLength = MaxResRefLength,
+                FieldType = GffFieldType.ResRef, MaxLength = NwnResRef.MaxLength,
                 IsRequired = true
             },
             new BehaviorFieldDefinition

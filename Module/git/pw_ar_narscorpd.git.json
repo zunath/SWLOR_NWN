@@ -23316,7 +23316,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 3712
+          "value": 4385
         },
         "Race": {
           "type": "byte",
@@ -126928,7 +126928,7 @@
         },
         "OnUsed": {
           "type": "resref",
-          "value": "generic_convo"
+          "value": "dialog_start"
         },
         "OnUserDefined": {
           "type": "resref",

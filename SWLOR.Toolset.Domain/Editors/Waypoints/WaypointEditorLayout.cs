@@ -1,3 +1,4 @@
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Gff;
 
@@ -5,8 +6,6 @@ namespace SWLOR.Toolset.Domain.Editors.Waypoints
 {
     public static class WaypointEditorLayout
     {
-        public const int MaxResRefLength = 16;
-
         public static IReadOnlyList<BehaviorFieldDefinition> Basic { get; } = new[]
         {
             new BehaviorFieldDefinition
@@ -17,7 +16,7 @@ namespace SWLOR.Toolset.Domain.Editors.Waypoints
             new BehaviorFieldDefinition
             {
                 Label = "ResRef", Name = "TemplateResRef", Kind = BehaviorFieldKind.Text,
-                FieldType = GffFieldType.ResRef, MaxLength = MaxResRefLength, IsRequired = true
+                FieldType = GffFieldType.ResRef, MaxLength = NwnResRef.MaxLength, IsRequired = true
             },
             new BehaviorFieldDefinition
             {

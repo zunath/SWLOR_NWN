@@ -1,6 +1,7 @@
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Triggers;
@@ -402,9 +403,7 @@ namespace SWLOR.Toolset.Tests
             var resRef = TriggerEditorLayout.Basic.Single(row => row.Name == "TemplateResRef");
             var tag = TriggerEditorLayout.Basic.Single(row => row.Name == "Tag");
 
-            // 16 is the engine's own limit - the GFF ResRef field is a fixed 16 bytes.
-            resRef.MaxLength.Should().Be(16);
-            resRef.MaxLength.Should().Be(TriggerEditorLayout.MaxResRefLength);
+            resRef.MaxLength.Should().Be(NwnResRef.MaxLength);
             resRef.Label.Should().Be("ResRef");
             resRef.IsReadOnly.Should().BeFalse(
                 "rename-on-save keeps the internal identity, file name, and placements together");

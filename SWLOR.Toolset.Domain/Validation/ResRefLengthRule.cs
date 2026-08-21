@@ -1,4 +1,4 @@
-using System.Text.RegularExpressions;
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Workspace;
 
 namespace SWLOR.Toolset.Domain.Validation
@@ -8,14 +8,8 @@ namespace SWLOR.Toolset.Domain.Validation
     /// (NWN's resref limit) and lowercase. Purely file-name based - no file is parsed, so this
     /// rule is cheap to run over the entire corpus.
     /// </summary>
-    public sealed partial class ResRefLengthRule : IValidationRule
+    public sealed class ResRefLengthRule : IValidationRule
     {
-        private const int MaxResRefLength = 16;
-
-        /// <summary>The character set NWN can address: the same one <c>NewAreaWriter</c> enforces.</summary>
-        [GeneratedRegex("^[a-z0-9_]{1,16}$")]
-        private static partial Regex LegalResRef();
-
         public string RuleId => "ResRefLength";
 
         public IEnumerable<ValidationIssue> Validate(ValidationContext context)
@@ -28,12 +22,12 @@ namespace SWLOR.Toolset.Domain.Validation
                 {
                     var path = GetPathSafely(context, type, resRef);
 
-                    if (resRef.Length > MaxResRefLength)
+                    if (resRef.Length > NwnResRef.MaxLength)
                     {
                         issues.Add(new ValidationIssue(
                             ValidationSeverity.Error,
                             RuleId,
-                            $"ResRef '{resRef}' ({type}) is {resRef.Length} characters, exceeding NWN's {MaxResRefLength}-character limit.",
+                            $"ResRef '{resRef}' ({type}) is {resRef.Length} characters, exceeding NWN's {NwnResRef.MaxLength}-character limit.",
                             path,
                             resRef));
                     }
@@ -47,7 +41,7 @@ namespace SWLOR.Toolset.Domain.Validation
                             path,
                             resRef));
                     }
-                    else if (!LegalResRef().IsMatch(resRef))
+                    else if (!NwnResRef.IsCanonical(resRef))
                     {
                         // The length and case checks pass for a short lowercase name like
                         // "bad-name", and nothing else in the default rule set looks at the

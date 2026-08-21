@@ -1,4 +1,5 @@
 using System.Text;
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.TwoDa;
 
@@ -75,7 +76,7 @@ namespace SWLOR.Toolset.Editors.Creatures
                 if (index < 0 || index >= offsets.Length || offsets[index] > data.Length - 20L)
                     continue;
                 stream.Position = offsets[index];
-                var resRef = Encoding.ASCII.GetString(reader.ReadBytes(16)).TrimEnd('\0');
+                var resRef = Encoding.ASCII.GetString(reader.ReadBytes(NwnResRef.MaxLength)).TrimEnd('\0');
                 if (!string.IsNullOrWhiteSpace(resRef) && resRef != "****")
                     return resRef;
             }

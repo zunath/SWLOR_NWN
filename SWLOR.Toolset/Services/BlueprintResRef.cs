@@ -1,3 +1,4 @@
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Gff;
@@ -14,12 +15,11 @@ namespace SWLOR.Toolset.Services
         {
             var raw = session.Document.Root.GetStringOrNull(fieldName) ?? string.Empty;
             normalized = raw.Trim().ToLowerInvariant();
-            if (normalized.Length is < 1 or > 16 ||
-                normalized.Any(character =>
-                    character is not (>= 'a' and <= 'z' or >= '0' and <= '9' or '_')))
+            if (!NwnResRef.IsCanonical(normalized))
             {
                 problem =
-                    $"ResRef '{raw}' must be 1-16 characters of a-z, 0-9, or underscore.";
+                    $"ResRef '{raw}' must be 1-{NwnResRef.MaxLength} characters " +
+                    "of a-z, 0-9, or underscore.";
                 return false;
             }
 

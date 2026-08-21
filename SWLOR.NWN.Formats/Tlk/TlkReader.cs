@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 
+using SWLOR.NWN.Formats.Common;
 using SWLOR.NWN.Formats.Internal;
 
 namespace SWLOR.NWN.Formats.Tlk;
@@ -59,7 +60,8 @@ public static class TlkReader
             var flags = reader.ReadUInt32(entryOffset);
             var soundResRef = (flags & SoundPresent) == 0
                 ? string.Empty
-                : reader.ReadAscii(entryOffset + 4, 16, "TLK sound ResRef", trimNull: true);
+                : reader.ReadAscii(
+                    entryOffset + 4, NwnResRef.MaxLength, "TLK sound ResRef", trimNull: true);
             var relativeTextOffset = reader.ReadUInt32(entryOffset + 28);
             var textLength = reader.ReadUInt32(entryOffset + 32);
             var soundLength = (flags & SoundLengthPresent) == 0 ? 0f : reader.ReadSingle(entryOffset + 36);

@@ -1,3 +1,4 @@
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 
@@ -29,13 +30,6 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
     /// </remarks>
     public static class TriggerEditorLayout
     {
-        /// <summary>
-        /// A resref is 16 characters. This is a real engine limit rather than a convention: the GFF
-        /// ResRef field is a fixed 16 bytes, the longest resref anywhere in the module is exactly 16,
-        /// and <c>ResRefLengthRule</c> already validates against the same number.
-        /// </summary>
-        public const int MaxResRefLength = 16;
-
         /// <summary>
         /// A tag is a CExoString, so the <b>engine imposes no maximum</b> — this is the base
         /// toolset's own editor limit, adopted here for parity. Every trigger tag in the module fits
@@ -76,7 +70,7 @@ namespace SWLOR.Toolset.Domain.Editors.Triggers
             new BehaviorFieldDefinition
             {
                 Label = "ResRef", Name = "TemplateResRef", Kind = BehaviorFieldKind.Text,
-                FieldType = GffFieldType.ResRef, MaxLength = MaxResRefLength, IsRequired = true
+                FieldType = GffFieldType.ResRef, MaxLength = NwnResRef.MaxLength, IsRequired = true
             },
             new BehaviorFieldDefinition
             {

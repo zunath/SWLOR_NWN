@@ -1,3 +1,4 @@
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Gff;
@@ -84,10 +85,11 @@ namespace SWLOR.Toolset.Services
                     0, Array.Empty<string>());
             }
 
-            if (!IsValidResRef(targetResRef))
+            if (!NwnResRef.IsCanonical(targetResRef))
             {
                 _log.AppendLine(
-                    $"Cannot rename {currentResRef}: ResRef '{targetResRef}' must be 1-16 " +
+                    $"Cannot rename {currentResRef}: ResRef '{targetResRef}' must be " +
+                    $"1-{NwnResRef.MaxLength} " +
                     "characters of a-z, 0-9, or underscore.");
                 return failed;
             }
@@ -552,11 +554,6 @@ namespace SWLOR.Toolset.Services
                    ?? throw new InvalidOperationException(
                        $"Could not determine the module root for '{resourcePath}'.");
         }
-
-        private static bool IsValidResRef(string value) =>
-            value.Length is >= 1 and <= 16 &&
-            value.All(character =>
-                character is >= 'a' and <= 'z' or >= '0' and <= '9' or '_');
 
         private static bool HasMultipleCaseVariants(string path)
         {

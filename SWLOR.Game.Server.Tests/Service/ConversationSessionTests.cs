@@ -210,6 +210,17 @@ public class ConversationSessionTests
     }
 
     [Test]
+    public void ResolveText_UsesRegisteredTokenPrefixes()
+    {
+        var runtime = CreateRuntime();
+        runtime.RegisterTokenPrefix("custom.", (_, suffix) => $"Custom {suffix}");
+
+        runtime.HasToken("custom.20680").Should().BeTrue();
+        runtime.ResolveText(new ConversationContext(1, 2), "Target: {{custom.20680}}")
+            .Should().Be("Target: Custom 20680");
+    }
+
+    [Test]
     public void Validator_RejectsLinksToMissingNodes()
     {
         var graph = CreateGraph();

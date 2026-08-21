@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
         private void OpenStore()
         {
             _builder.Create("action-open-store")
-                .Description("Opens a store. If store tag isn't specified, the nearest store to the NPC will be opened.")
+                .Description("Opens the module-wide store matching the supplied tag, or the nearest store to the NPC when no tag is supplied.")
                 .Phrase("opens the shop")
                 .Argument("storeTag", SnippetArgumentType.StoreTag, isOptional: true)
                 .ActionsTakenAction((player, args) =>
@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     if (args.Length > 0)
                     {
                         var storeTag = args[0];
-                        store = GetNearestObjectByTag(storeTag, npc);
+                        store = GetObjectByTag(storeTag);
                     }
 
                     if (!GetIsObjectValid(store))

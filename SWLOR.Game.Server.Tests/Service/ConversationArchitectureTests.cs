@@ -157,7 +157,7 @@ public class ConversationArchitectureTests
     }
 
     [Test]
-    public void ConversationWindow_UsesOneNpcTextScrollbarAndAStableTitle()
+    public void ConversationWindow_ShowsScrollbarsOnlyWhenContentOverflowsAndUsesAStableTitle()
     {
         var root = FindRepositoryRoot().FullName;
         var definitionSource = File.ReadAllText(Path.Combine(
@@ -178,9 +178,14 @@ public class ConversationArchitectureTests
         var textPanelSource = definitionSource[textPanelStart..textPanelEnd];
         textPanelSource.Should().Contain(".SetScrollbars(NuiScrollbars.None)",
             "dialogue text must wrap without adding a nested scrollbar");
-        textPanelSource.Should().Contain(".SetScrollbars(NuiScrollbars.Y)",
-            "the containing dialogue list owns the panel's only scrollbar");
-        textPanelSource.Should().NotContain(".SetScrollbars(NuiScrollbars.Auto)");
+        textPanelSource.Should().Contain(".SetScrollbars(NuiScrollbars.Auto)",
+            "the containing dialogue list should scroll only when its text overflows");
+
+        definitionSource.Should().NotContain(".SetScrollbars(NuiScrollbars.Y)",
+            "short terminal pages must not display full-height scrollbars for content that already fits");
+        Regex.Matches(definitionSource, @"\.SetScrollbars\(NuiScrollbars\.Auto\)")
+            .Should().HaveCount(2,
+                "both the dialogue and response lists should add scrollbars only when needed");
     }
 
     [Test]

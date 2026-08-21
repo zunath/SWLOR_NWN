@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service.AIService;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -790,6 +791,12 @@ namespace SWLOR.Game.Server.Service
         {
             if (!IsAIEnabled(observer))
                 return;
+
+            Log.WriteStructured(
+                LogGroup.AI,
+                "Stealth detection handed off to normal aggro acquisition: Observer={Observer} Target={Target}",
+                observer,
+                target);
 
             TryAcquireAggro(observer, target);
         }

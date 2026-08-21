@@ -213,14 +213,14 @@ public class EspionageSystemTests
             "private static bool ResolveDetection(uint observer, uint target, bool acquireAggroOnDetection)",
             StringComparison.Ordinal);
         var resolveEnd = stealthSource.IndexOf(
-            "private static void ExitDetectedPlayerStealth(uint target)",
+            "private static void ExitDetectedPlayerStealth(uint observer, uint target)",
             resolveStart,
             StringComparison.Ordinal);
         resolveStart.Should().BeGreaterThanOrEqualTo(0);
         resolveEnd.Should().BeGreaterThan(resolveStart);
         var resolveDetection = stealthSource[resolveStart..resolveEnd];
 
-        var exitIndex = resolveDetection.IndexOf("ExitDetectedPlayerStealth(target);", StringComparison.Ordinal);
+        var exitIndex = resolveDetection.IndexOf("ExitDetectedPlayerStealth(observer, target);", StringComparison.Ordinal);
         var acquireGuardIndex = resolveDetection.IndexOf("if (acquireAggroOnDetection)", StringComparison.Ordinal);
         var acquireIndex = resolveDetection.IndexOf(
             "AI.TryAcquireAggroAfterDetection(observer, target);",
@@ -230,7 +230,7 @@ public class EspionageSystemTests
         exitIndex.Should().BeGreaterThanOrEqualTo(0);
         acquireGuardIndex.Should().BeGreaterThan(exitIndex);
         acquireIndex.Should().BeGreaterThan(acquireGuardIndex);
-        stealthSource.Should().Contain("private static void ExitDetectedPlayerStealth(uint target)");
+        stealthSource.Should().Contain("private static void ExitDetectedPlayerStealth(uint observer, uint target)");
         stealthSource.Should().Contain("!GetIsPC(target) ||");
         stealthSource.Should().Contain("GetIsDM(target) ||");
         stealthSource.Should().Contain("!GetActionMode(target, ActionMode.Stealth)");
@@ -239,8 +239,13 @@ public class EspionageSystemTests
         stealthSource.Should().Contain("StatusEffect.RemoveStatusEffect<StealthStatusEffect>(target);");
         stealthSource.Should().Contain("ResolveDetection(observer, target, true)");
         stealthSource.Should().Contain("ResolveDetection(observer, target, false)");
+        stealthSource.Should().Contain("Stealth perk refresh removed active status snapshot");
+        stealthSource.Should().Contain("Stealth perk refresh reapplied active status snapshot");
+        stealthSource.Should().Contain("Stealth perk full refund forced native stealth exit");
+        stealthSource.Should().Contain("Stealth detection forced native stealth exit");
         aiSource.Should().Contain("public static void TryAcquireAggroAfterDetection(uint observer, uint target)");
         aiSource.Should().Contain("if (!IsAIEnabled(observer))");
+        aiSource.Should().Contain("Stealth detection handed off to normal aggro acquisition");
         aiSource.Should().Contain("TryAcquireAggro(observer, target);");
     }
 

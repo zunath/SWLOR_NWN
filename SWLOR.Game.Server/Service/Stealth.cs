@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -95,13 +96,25 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(creature) || GetIsDM(creature))
                 return;
 
+            var hadActiveStatus = StatusEffect.HasStatusEffect<StealthStatusEffect>(creature);
             StatusEffect.RemoveStatusEffect<StealthStatusEffect>(creature);
+            if (hadActiveStatus)
+            {
+                Log.WriteStructured(
+                    LogGroup.AI,
+                    "Stealth perk refresh removed active status snapshot: Creature={Creature}",
+                    creature);
+            }
 
             if (!GetActionMode(creature, ActionMode.Stealth))
                 return;
 
             if (Perk.GetPerkLevel(creature, PerkType.Stealth) <= 0)
             {
+                Log.WriteStructured(
+                    LogGroup.AI,
+                    "Stealth perk full refund forced native stealth exit: Creature={Creature}",
+                    creature);
                 EspionageInfiltration.CancelPlayer(creature);
                 ClearVerdictsForTarget(creature);
                 AssignCommand(creature, () =>
@@ -113,6 +126,10 @@ namespace SWLOR.Game.Server.Service
 
             ClearVerdictsForTarget(creature);
             StatusEffect.ApplyStatusEffect<StealthStatusEffect>(creature, creature, 0f);
+            Log.WriteStructured(
+                LogGroup.AI,
+                "Stealth perk refresh reapplied active status snapshot: Creature={Creature}",
+                creature);
         }
 
         /// <summary>
@@ -234,7 +251,7 @@ namespace SWLOR.Game.Server.Service
 
             if (detected)
             {
-                ExitDetectedPlayerStealth(target);
+                ExitDetectedPlayerStealth(observer, target);
                 if (acquireAggroOnDetection)
                     AI.TryAcquireAggroAfterDetection(observer, target);
             }
@@ -247,12 +264,18 @@ namespace SWLOR.Game.Server.Service
         /// stealth keeps the engine's observer-specific behavior so creature encounters are not
         /// globally revealed when a single observer succeeds.
         /// </summary>
-        private static void ExitDetectedPlayerStealth(uint target)
+        private static void ExitDetectedPlayerStealth(uint observer, uint target)
         {
             if (!GetIsPC(target) ||
                 GetIsDM(target) ||
                 !GetActionMode(target, ActionMode.Stealth))
                 return;
+
+            Log.WriteStructured(
+                LogGroup.AI,
+                "Stealth detection forced native stealth exit: Observer={Observer} Target={Target}",
+                observer,
+                target);
 
             // Set the mode directly while the Spot hook is active, then retry after the native
             // detection call has unwound. Hostile AI can immediately start combat from a

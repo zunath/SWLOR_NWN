@@ -1,6 +1,5 @@
 using FluentAssertions;
 using NUnit.Framework;
-using SWLOR.Game.Server.Feature.AbilityDefinition;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 

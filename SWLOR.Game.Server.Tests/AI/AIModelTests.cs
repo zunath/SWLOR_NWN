@@ -535,6 +535,19 @@ public class AIModelTests
             pendingAttackIndex,
             source.IndexOf("case CNWSCOMBATROUND_TYPE_PARRY:", pendingAttackIndex, StringComparison.Ordinal) -
             pendingAttackIndex);
+        var combatRoundGuardIndex = source.IndexOf(
+            "var pCombatRound = pCreature.m_pcCombatRound;",
+            StringComparison.Ordinal);
+        var activeTargetPathingIndex = source.IndexOf(
+            "pCreature.AddActionToFront",
+            activeTargetIndex,
+            StringComparison.Ordinal);
+        var equippedWeaponFallbackIndex = source.IndexOf(
+            "var attackSkillType = Combat.GetEquippedWeaponSkillType(pCreature.m_idSelf);",
+            StringComparison.Ordinal);
+        var currentSwingWeaponIndex = source.IndexOf(
+            "var currentWeaponAttackType = pCombatRound.GetWeaponAttackType();",
+            StringComparison.Ordinal);
 
         source.Should().Contain("private static bool TryCancelAttackForCombatLeash");
         source.Should().Contain("AI.TryStartCombatLeashEvade(pCreature.m_idSelf, target)");
@@ -544,6 +557,12 @@ public class AIModelTests
         activeTargetBody.IndexOf("TryCancelAttackForCombatLeash(pCreature, pNode, oidAttackTarget)", StringComparison.Ordinal)
             .Should()
             .BeLessThan(activeTargetBody.IndexOf("pCreature.AddActionToFront", StringComparison.Ordinal));
+        combatRoundGuardIndex.Should().BeGreaterThan(activeTargetPathingIndex,
+            "a missing combat round must not bypass target validation, combat-leash cancellation, or pathing");
+        equippedWeaponFallbackIndex.Should().BeLessThan(combatRoundGuardIndex,
+            "pre-round range and pathing need the safe equipped-weapon fallback");
+        currentSwingWeaponIndex.Should().BeGreaterThan(combatRoundGuardIndex,
+            "the actual main-hand or off-hand weapon is only valid once a combat round exists");
         pendingAttackBody.Should().Contain("TryCancelAttackForCombatLeash(pCreature, pNode, oidTarget)");
         pendingAttackBody.IndexOf("TryCancelAttackForCombatLeash(pCreature, pNode, oidTarget)", StringComparison.Ordinal)
             .Should()

@@ -201,7 +201,7 @@ public class GeneratedWeaponPerkBehaviorTests
     }
 
     [Test]
-    public void LimitedAttackBuffs_DoNotConsumeTheAttackThatGrantedThem()
+    public void LimitedAttackBuffs_DoNotConsumeTheAbilityThatGrantedThem()
     {
         var triggeringAbilityImpact = new AbilityImpactSummary();
         var followingAbilityImpact = new AbilityImpactSummary();
@@ -212,12 +212,6 @@ public class GeneratedWeaponPerkBehaviorTests
         abilityCounter.RemainingAttacks.Should().Be(2);
         abilityCounter.TryConsume(followingAbilityImpact).Should().BeTrue();
         abilityCounter.RemainingAttacks.Should().Be(1);
-
-        var nativeCounter = new LimitedAttackCounter(2, ignoreNextNativeAttack: true);
-        nativeCounter.TryConsume(null).Should().BeFalse("the first callback is the native critical that granted the buff");
-        nativeCounter.RemainingAttacks.Should().Be(2);
-        nativeCounter.TryConsume(null).Should().BeTrue();
-        nativeCounter.RemainingAttacks.Should().Be(1);
     }
 
     [Test]

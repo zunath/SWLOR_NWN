@@ -580,36 +580,26 @@ namespace SWLOR.Game.Server.Service
             if (HasDamageImmunity(defender, damageType))
                 return 0;
 
-            var typedLeadershipAdjustment = 0;
-            if (!typedLeadershipReductionAlreadyApplied && damageType.IsPhysicalDamageType())
-            {
-                typedLeadershipAdjustment = Stat.GetStatAdjustment(
-                    defender,
-                    StatType.LeadershipPhysicalDamageTakenPercentAdjustment);
-            }
-            else if (!typedLeadershipReductionAlreadyApplied && damageType == CombatDamageType.Force)
-            {
-                typedLeadershipAdjustment = Stat.GetStatAdjustment(
-                    defender,
-                    StatType.LeadershipForceDamageTakenPercentAdjustment);
-            }
-
-            // Direct damage applies this channel in ApplyTargetStatusDamageModifiers. Damage that
-            // bypasses that pipeline must still use the same separate stage so its Leadership and
-            // generic reductions remain multiplicative rather than collapsing into one percentage.
-            if (typedLeadershipAdjustment != 0)
-                damage = ApplyPercentDamageAdjustment(damage, typedLeadershipAdjustment);
-
-            var percentAdjustment = Stat.GetStatAdjustment(defender, StatType.DamageTakenPercentAdjustment);
-            if (!damageType.IsPhysicalDamageType() && damageType != CombatDamageType.Force)
-            {
-                percentAdjustment += Stat.GetStatAdjustment(
-                    defender,
-                    StatType.LeadershipOtherDamageTakenPercentAdjustment);
-            }
-
-            if (percentAdjustment != 0)
-                damage = ApplyPercentDamageAdjustment(damage, percentAdjustment);
+            var leadershipPhysicalAdjustment = !typedLeadershipReductionAlreadyApplied &&
+                                               damageType.IsPhysicalDamageType()
+                ? Stat.GetStatAdjustment(defender, StatType.LeadershipPhysicalDamageTakenPercentAdjustment)
+                : 0;
+            var leadershipForceAdjustment = !typedLeadershipReductionAlreadyApplied &&
+                                            damageType == CombatDamageType.Force
+                ? Stat.GetStatAdjustment(defender, StatType.LeadershipForceDamageTakenPercentAdjustment)
+                : 0;
+            var leadershipOtherAdjustment = !damageType.IsPhysicalDamageType() &&
+                                            damageType != CombatDamageType.Force
+                ? Stat.GetStatAdjustment(defender, StatType.LeadershipOtherDamageTakenPercentAdjustment)
+                : 0;
+            damage = ApplyDamageTakenPercentageModifiers(
+                damage,
+                damageType,
+                leadershipPhysicalAdjustment,
+                leadershipForceAdjustment,
+                leadershipOtherAdjustment,
+                Stat.GetStatAdjustment(defender, StatType.DamageTakenPercentAdjustment),
+                typedLeadershipReductionAlreadyApplied);
 
             damage += Stat.GetStatAdjustment(defender, StatType.DamageTakenFlatAdjustment);
 
@@ -641,6 +631,35 @@ namespace SWLOR.Game.Server.Service
 
             ApplyLowHPTemporaryHPBeforeFatalDamage(defender, damage);
             return damage;
+        }
+
+        private static int ApplyDamageTakenPercentageModifiers(
+            int damage,
+            CombatDamageType damageType,
+            int leadershipPhysicalAdjustment,
+            int leadershipForceAdjustment,
+            int leadershipOtherAdjustment,
+            int genericAdjustment,
+            bool typedLeadershipReductionAlreadyApplied)
+        {
+            var typedLeadershipAdjustment = 0;
+            if (!typedLeadershipReductionAlreadyApplied && damageType.IsPhysicalDamageType())
+                typedLeadershipAdjustment = leadershipPhysicalAdjustment;
+            else if (!typedLeadershipReductionAlreadyApplied && damageType == CombatDamageType.Force)
+                typedLeadershipAdjustment = leadershipForceAdjustment;
+
+            // Direct damage applies this channel in ApplyTargetStatusDamageModifiers. Damage that
+            // bypasses that pipeline must still use the same separate stage so its Leadership and
+            // generic reductions remain multiplicative rather than collapsing into one percentage.
+            if (typedLeadershipAdjustment != 0)
+                damage = ApplyPercentDamageAdjustment(damage, typedLeadershipAdjustment);
+
+            if (!damageType.IsPhysicalDamageType() && damageType != CombatDamageType.Force)
+                genericAdjustment += leadershipOtherAdjustment;
+
+            return genericAdjustment == 0
+                ? damage
+                : ApplyPercentDamageAdjustment(damage, genericAdjustment);
         }
 
         private static int ApplyDamageTakenRedirectToStatusSource(
@@ -8182,20 +8201,6 @@ namespace SWLOR.Game.Server.Service
                 1,
                 durationSeconds,
                 StatType.NextAutoAttackNoDelayAllSkills);
-        }
-
-        /// <summary>
-        /// Clears pending auto-attack and cast-ability no-delay arms for a matching skill.
-        /// Limited-attack effects use this when their final charge is spent so the unused arm
-        /// from the other attack domain cannot accelerate an extra attack.
-        /// </summary>
-        public static void ClearNextAttackNoDelay(uint creature, SkillType skillType)
-        {
-            if (!GetIsObjectValid(creature) || skillType == SkillType.Invalid)
-                return;
-
-            ConsumeNextAutoAttackNoDelay(creature, skillType);
-            ConsumeNextAbilityDelayReductionPercent(creature, skillType);
         }
 
         public static void GrantNextAutoAttackCriticalRateBonus(

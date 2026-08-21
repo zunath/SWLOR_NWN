@@ -193,12 +193,21 @@ public class LightsaberPerkBehaviorTests
         // The converted share is dealt as a real Force damage instance (Force resistance + combat-log
         // visibility) via ApplyTriggeredDamage, not merely approximated by blending defense.
         var combat = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "Combat.cs"));
-        combat.Should().Contain("typedLeadershipReductionAlreadyApplied: true",
+        var conversion = combat[combat.IndexOf(
+            "public static int ApplyIncomingPhysicalToForceConversion(",
+            StringComparison.Ordinal)..combat.IndexOf(
+            "public static int ApplyStatusSourceAccuracyModifiers(",
+            StringComparison.Ordinal)];
+        conversion.Should().Contain("ApplyTriggeredDamage(",
+            "the converted Force share must be dispatched as real damage");
+        conversion.Should().Contain("forcePortion",
+            "the amount carved from physical damage must be the amount dispatched as Force damage");
+        conversion.Should().Contain("typedLeadershipReductionAlreadyApplied: true",
             "the direct physical pipeline already applied its typed Leadership reduction before splitting the Force share");
 
         // The Force portion must be deferred off the native damage-roll hook (DelayCommand), not applied
         // synchronously mid-hook, or it re-enters the damage/AI chain and cascades with reflect effects.
-        combat.Should().Contain("DelayCommand");
+        conversion.Should().Contain("DelayCommand");
 
         // The native auto-attack path splits the physical hit before physical resistance.
         var native = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));

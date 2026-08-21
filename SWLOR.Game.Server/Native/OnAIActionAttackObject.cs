@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
@@ -78,20 +77,7 @@ namespace SWLOR.Game.Server.Native
                 var pCreature = CNWSCreature.FromPointer(creature);
                 var pNode = CNWSObjectActionNode.FromPointer(node);
                 var pArea = pCreature.GetArea();
-                var pCombatRound = pCreature.m_pcCombatRound;
-                if (pCombatRound == null)
-                {
-                    pCreature.ChangeAttackTarget(pNode, OBJECT_INVALID);
-                    return ACTION_FAILED;
-                }
-
-                var currentWeaponAttackType = pCombatRound.GetWeaponAttackType();
-                var currentAttackWeapon = pCombatRound.GetCurrentAttackWeapon(
-                    currentWeaponAttackType == WEAPON_ATTACK_TYPE_OFFHAND ? 1 : 0);
-                var attackSkillType = currentAttackWeapon == null
-                    ? Combat.GetEquippedWeaponSkillType(pCreature.m_idSelf)
-                    : SWLOR.Game.Server.Service.Skill.GetSkillTypeByBaseItem(
-                        (SWLOR.NWN.API.NWScript.Enum.Item.BaseItem)currentAttackWeapon.m_nBaseItem);
+                var attackSkillType = Combat.GetEquippedWeaponSkillType(pCreature.m_idSelf);
                 var isPlayerCreature = pCreature.m_bPlayerCharacter == 1;
                 var usesRangedWeapon = isPlayerCreature
                     ? pCreature.GetRangeWeaponEquipped() == 1
@@ -427,7 +413,27 @@ namespace SWLOR.Game.Server.Native
 
                 _rangedRepositionDirections.Remove(pCreature.m_idSelf);
 
+                // Preserve the engine action's cleanup, target validation, leash, and pathing
+                // behavior before requiring a combat round. The active round is only needed once
+                // this action is ready to resolve a swing.
+                var pCombatRound = pCreature.m_pcCombatRound;
+                if (pCombatRound == null)
+                {
+                    pCreature.ChangeAttackTarget(pNode, OBJECT_INVALID);
+                    return ACTION_FAILED;
+                }
 
+                // The equipped-weapon skill above is the safe pre-round fallback used for range
+                // and pathing. At resolution time, prefer the weapon for the actual main-hand or
+                // off-hand swing so skill-scoped limited effects consume the correct charge.
+                var currentWeaponAttackType = pCombatRound.GetWeaponAttackType();
+                var currentAttackWeapon = pCombatRound.GetCurrentAttackWeapon(
+                    currentWeaponAttackType == WEAPON_ATTACK_TYPE_OFFHAND ? 1 : 0);
+                if (currentAttackWeapon != null)
+                {
+                    attackSkillType = SWLOR.Game.Server.Service.Skill.GetSkillTypeByBaseItem(
+                        (SWLOR.NWN.API.NWScript.Enum.Item.BaseItem)currentAttackWeapon.m_nBaseItem);
+                }
 
                 pCreature.m_vLastAttackPosition = new Vector();
 

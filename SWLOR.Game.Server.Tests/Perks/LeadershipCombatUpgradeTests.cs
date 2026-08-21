@@ -6,6 +6,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Leadership;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -144,10 +145,90 @@ public class LeadershipCombatUpgradeTests
         combat.Should().Contain("StatType.LeadershipPhysicalDamageTakenPercentAdjustment");
         combat.Should().Contain("StatType.LeadershipForceDamageTakenPercentAdjustment");
         combat.Should().Contain("StatType.LeadershipOtherDamageTakenPercentAdjustment");
+    }
 
-        var statusEffect = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "StatusEffect.cs").FullName);
-        statusEffect.Should().Contain("winnerByStat",
-            "Leadership damage reduction must choose the strongest effect independently per channel");
+    [Test]
+    public void LeadershipDamageReduction_ReconcilesEachChannelAndRestoresWeakerEffects()
+    {
+        var tracker = new CreatureStatusEffect();
+        var watchful = ApplyLeadershipEffect(tracker, new WatchfulPresence3StatusEffect());
+        tracker.StatGroup.Stats[StatType.LeadershipPhysicalDamageTakenPercentAdjustment].Should().Be(-8);
+
+        var rousing1 = ApplyLeadershipEffect(tracker, new RousingShout1StatusEffect());
+        tracker.StatGroup.Stats[StatType.LeadershipPhysicalDamageTakenPercentAdjustment].Should().Be(-10);
+        watchful.StatGroup.Stats[StatType.LeadershipPhysicalDamageTakenPercentAdjustment].Should().Be(0,
+            "the weaker Watchful Presence contribution must remain tracked without stacking");
+
+        var holdTheLine = ApplyLeadershipEffect(tracker, new HoldTheLine1StatusEffect());
+        tracker.StatGroup.Stats[StatType.LeadershipPhysicalDamageTakenPercentAdjustment].Should().Be(-18);
+        tracker.StatGroup.Stats[StatType.LeadershipForceDamageTakenPercentAdjustment].Should().Be(-18);
+        tracker.StatGroup.Stats[StatType.LeadershipOtherDamageTakenPercentAdjustment].Should().Be(-18);
+        rousing1.StatGroup.Stats[StatType.LeadershipPhysicalDamageTakenPercentAdjustment].Should().Be(0);
+
+        var rousing3 = ApplyLeadershipEffect(tracker, new RousingShout3StatusEffect());
+        tracker.StatGroup.Stats[StatType.LeadershipPhysicalDamageTakenPercentAdjustment].Should().Be(-20);
+        tracker.StatGroup.Stats[StatType.LeadershipForceDamageTakenPercentAdjustment].Should().Be(-20);
+        tracker.StatGroup.Stats[StatType.LeadershipOtherDamageTakenPercentAdjustment].Should().Be(-18,
+            "Rousing Shout does not cover Other damage, so Hold the Line must retain that channel");
+        holdTheLine.StatGroup.Stats[StatType.LeadershipPhysicalDamageTakenPercentAdjustment].Should().Be(0);
+        holdTheLine.StatGroup.Stats[StatType.LeadershipForceDamageTakenPercentAdjustment].Should().Be(0);
+        holdTheLine.StatGroup.Stats[StatType.LeadershipOtherDamageTakenPercentAdjustment].Should().Be(-18);
+
+        tracker.Remove(rousing3);
+        ReconcileLeadershipDamageReduction(tracker);
+        tracker.StatGroup.Stats[StatType.LeadershipPhysicalDamageTakenPercentAdjustment].Should().Be(-18,
+            "removing the stronger effect must restore Hold the Line's physical contribution");
+        tracker.StatGroup.Stats[StatType.LeadershipForceDamageTakenPercentAdjustment].Should().Be(-18);
+        tracker.StatGroup.Stats[StatType.LeadershipOtherDamageTakenPercentAdjustment].Should().Be(-18);
+        holdTheLine.StatGroup.Stats[StatType.LeadershipPhysicalDamageTakenPercentAdjustment].Should().Be(-18);
+
+        var tiedTracker = new CreatureStatusEffect();
+        var tiedA = ApplyLeadershipEffect(tiedTracker, new RousingShout1StatusEffect());
+        var tiedB = ApplyLeadershipEffect(tiedTracker, new RousingShout1StatusEffect());
+        tiedTracker.StatGroup.Stats[StatType.LeadershipPhysicalDamageTakenPercentAdjustment].Should().Be(-10);
+        new[]
+            {
+                tiedA.StatGroup.Stats[StatType.LeadershipPhysicalDamageTakenPercentAdjustment],
+                tiedB.StatGroup.Stats[StatType.LeadershipPhysicalDamageTakenPercentAdjustment],
+            }
+            .Should().BeEquivalentTo(new[] { -10, 0 },
+                "equal reductions must contribute once regardless of which tied effect wins");
+    }
+
+    [Test]
+    public void LeadershipDamageReduction_AppliesTypedChannelsExactlyOnceAcrossDeliveryPaths()
+    {
+        ApplyDamageTakenPercentageModifiers(
+                100,
+                CombatDamageType.Physical,
+                typedLeadershipReductionAlreadyApplied: false)
+            .Should().Be(72,
+                "triggered and periodic physical damage apply the 20% typed reduction and then the separate 10% generic reduction");
+        ApplyDamageTakenPercentageModifiers(
+                100,
+                CombatDamageType.Force,
+                typedLeadershipReductionAlreadyApplied: false)
+            .Should().Be(77,
+                "triggered and periodic Force damage apply 15% typed reduction before the separate generic reduction");
+        ApplyDamageTakenPercentageModifiers(
+                100,
+                CombatDamageType.Fire,
+                typedLeadershipReductionAlreadyApplied: false)
+            .Should().Be(72,
+                "Other damage combines Hold-the-Line-style coverage with generic damage reduction");
+
+        ApplyDamageTakenPercentageModifiers(
+                80,
+                CombatDamageType.Physical,
+                typedLeadershipReductionAlreadyApplied: true)
+            .Should().Be(72,
+                "direct damage that already reached 80 after the typed stage must receive only the generic stage");
+        ApplyDamageTakenPercentageModifiers(
+                100,
+                CombatDamageType.Physical,
+                typedLeadershipReductionAlreadyApplied: true)
+            .Should().Be(90,
+                "the guard must skip the typed stage rather than applying Leadership reduction twice");
     }
 
     [Test]
@@ -158,6 +239,11 @@ public class LeadershipCombatUpgradeTests
         var genericStage = combat[combat.IndexOf(
             "public static int ApplyDamageTakenModifiers(",
             StringComparison.Ordinal)..combat.IndexOf(
+            "private static int ApplyDamageTakenPercentageModifiers(",
+            StringComparison.Ordinal)];
+        var percentageStage = combat[combat.IndexOf(
+            "private static int ApplyDamageTakenPercentageModifiers(",
+            StringComparison.Ordinal)..combat.IndexOf(
             "private static int ApplyDamageTakenRedirectToStatusSource(",
             StringComparison.Ordinal)];
         var typedStage = combat[combat.IndexOf(
@@ -167,14 +253,15 @@ public class LeadershipCombatUpgradeTests
             StringComparison.Ordinal)];
 
         genericStage.Should().Contain("bool typedLeadershipReductionAlreadyApplied = false");
-        genericStage.Should().Contain("!typedLeadershipReductionAlreadyApplied && damageType.IsPhysicalDamageType()");
-        genericStage.Should().Contain("!typedLeadershipReductionAlreadyApplied && damageType == CombatDamageType.Force");
+        genericStage.Should().Contain("ApplyDamageTakenPercentageModifiers(");
         genericStage.Should().Contain("StatType.LeadershipPhysicalDamageTakenPercentAdjustment");
         genericStage.Should().Contain("StatType.LeadershipForceDamageTakenPercentAdjustment");
         genericStage.Should().Contain("StatType.LeadershipOtherDamageTakenPercentAdjustment");
-        genericStage.IndexOf("damage = ApplyPercentDamageAdjustment(damage, typedLeadershipAdjustment)", StringComparison.Ordinal)
-            .Should().BeLessThan(genericStage.IndexOf(
-                "var percentAdjustment = Stat.GetStatAdjustment(defender, StatType.DamageTakenPercentAdjustment)",
+        percentageStage.Should().Contain("!typedLeadershipReductionAlreadyApplied && damageType.IsPhysicalDamageType()");
+        percentageStage.Should().Contain("!typedLeadershipReductionAlreadyApplied && damageType == CombatDamageType.Force");
+        percentageStage.IndexOf("damage = ApplyPercentDamageAdjustment(damage, typedLeadershipAdjustment)", StringComparison.Ordinal)
+            .Should().BeLessThan(percentageStage.IndexOf(
+                "return genericAdjustment == 0",
                 StringComparison.Ordinal),
                 "typed Leadership and generic damage reduction must remain separate multiplicative stages");
         typedStage.Should().Contain("StatType.LeadershipPhysicalDamageTakenPercentAdjustment");
@@ -328,6 +415,45 @@ public class LeadershipCombatUpgradeTests
     {
         statusEffect.ApplyEffect(0, 0, -1);
         statusEffect.StatGroup.Stats[statType].Should().Be(expected);
+    }
+
+    private static T ApplyLeadershipEffect<T>(CreatureStatusEffect tracker, T effect)
+        where T : IStatusEffect, ILeadershipDamageReductionStatusEffect
+    {
+        effect.ApplyEffect(0, 0, -1);
+        tracker.Add(effect);
+        ReconcileLeadershipDamageReduction(tracker);
+        return effect;
+    }
+
+    private static void ReconcileLeadershipDamageReduction(CreatureStatusEffect tracker)
+    {
+        var method = typeof(StatusEffect).GetMethod(
+            "ReconcileLeadershipDamageReduction",
+            BindingFlags.Static | BindingFlags.NonPublic);
+        method.Should().NotBeNull();
+        method!.Invoke(null, new object[] { tracker });
+    }
+
+    private static int ApplyDamageTakenPercentageModifiers(
+        int damage,
+        CombatDamageType damageType,
+        bool typedLeadershipReductionAlreadyApplied)
+    {
+        var method = typeof(Combat).GetMethod(
+            "ApplyDamageTakenPercentageModifiers",
+            BindingFlags.Static | BindingFlags.NonPublic);
+        method.Should().NotBeNull();
+        return (int)method!.Invoke(null, new object[]
+        {
+            damage,
+            damageType,
+            -20,
+            -15,
+            -18,
+            -10,
+            typedLeadershipReductionAlreadyApplied,
+        })!;
     }
 
     private static void AssertAppliedResistance(IStatusEffect statusEffect, ResistanceType resistanceType, int expected)

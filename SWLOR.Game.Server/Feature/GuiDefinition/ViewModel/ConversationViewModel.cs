@@ -220,22 +220,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             const float defaultWindowWidth = 650f;
             const float nonDialogueWidth = 190f;
             const float minimumDialogueWidth = 18f;
-            const float estimatedCharacterWidth = 9f;
-            const int renderedLinesPerRow = 2;
+            const float estimatedCharacterWidth = 8f;
             const int minimumSegmentLength = 4;
-            const int maximumSegmentLength = 80;
 
-            // NUI lists require a fixed row height and do not expose font measurement. Budget two
-            // conservative text lines from the dialogue column's current width so resizing creates
-            // more compact rows instead of clipping wrapped text or forcing the window wider.
+            // NUI lists require a fixed row height and do not expose font measurement. Keep each
+            // segment to one estimated display line so the text widget cannot wrap within a row and
+            // introduce extra vertical space before the next segment.
             var effectiveWindowWidth = windowWidth > 0f ? windowWidth : defaultWindowWidth;
             var dialogueWidth = Math.Max(minimumDialogueWidth, effectiveWindowWidth - nonDialogueWidth);
             var charactersPerLine = (int)Math.Floor(dialogueWidth / estimatedCharacterWidth);
 
-            return Math.Clamp(
-                charactersPerLine * renderedLinesPerRow,
-                minimumSegmentLength,
-                maximumSegmentLength);
+            return Math.Max(charactersPerLine, minimumSegmentLength);
         }
 
         private static IEnumerable<string> SplitDialogueText(string text, int segmentCharacterLimit)

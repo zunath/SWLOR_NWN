@@ -793,8 +793,6 @@ namespace SWLOR.Game.Server.Service
 
         public static void CreateBeastEgg(IncubationJob job, uint player)
         {
-            var egg = CreateItemOnObject(BeastEggResref, player);
-
             var mutation = DetermineMutation(job.BeastDNAType, job);
             var beastType = mutation == BeastType.Invalid ? job.BeastDNAType : mutation;
 
@@ -805,10 +803,9 @@ namespace SWLOR.Game.Server.Service
                 IncubationFieldNote.GrantDiscoveredNote(player, mutation);
             }
 
+            var egg = CreateBeastEgg(beastType, player);
             var itemProperties = new List<ItemProperty>
             {
-                ItemPropertyCustom(ItemPropertyType.DNAType, (int)beastType),
-
                 ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.AttackPurity, job.AttackPurity),
                 ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.AccuracyPurity, job.AccuracyPurity),
                 ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.EvasionPurity, job.EvasionPurity),
@@ -838,13 +835,22 @@ namespace SWLOR.Game.Server.Service
                 BiowareXP2.IPSafeAddItemProperty(egg, ip, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             }
 
-            var beastDetail = GetBeastDetail(beastType);
-            SetName(egg, $"Beast Egg: {beastDetail.Name}");
-
             var addGoldPiece = CalculateEggVendorBonus(job);
             ItemPlugin.SetAddGoldPieceValue(egg, addGoldPiece);
 
             DB.Delete<IncubationJob>(job.Id);
+        }
+
+        public static uint CreateBeastEgg(BeastType beastType, uint player)
+        {
+            var egg = CreateItemOnObject(BeastEggResref, player);
+            var dnaType = ItemPropertyCustom(ItemPropertyType.DNAType, (int)beastType);
+            BiowareXP2.IPSafeAddItemProperty(egg, dnaType, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+
+            var beastDetail = GetBeastDetail(beastType);
+            SetName(egg, $"Beast Egg: {beastDetail.Name}");
+
+            return egg;
         }
 
         private static int CalculateEggVendorBonus(IncubationJob job)

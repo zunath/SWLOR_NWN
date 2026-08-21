@@ -24,6 +24,48 @@ public class DMChatCommandTests
     }
 
     [Test]
+    public void SpawnBeastEgg_AllowsStaffAndTestUsersToCreateTypedEggs()
+    {
+        var commands = new DMChatCommand().BuildChatCommands();
+
+        commands.Should().ContainKey("spawnegg");
+
+        var command = commands["spawnegg"];
+        command.Authorization.Should().Be(AuthorizationLevel.DM | AuthorizationLevel.Admin);
+        command.AvailableToAllOnTestEnvironment.Should().BeTrue();
+        command.RequiresTarget.Should().BeFalse();
+        command.Description.Should().Contain("/spawnegg help");
+        command.ValidateArguments.Should().NotBeNull();
+        command.DoAction.Should().NotBeNull();
+        command.ValidateArguments(0, "help").Should().BeEmpty();
+    }
+
+    [Test]
+    public void SpawnBeastEgg_HelpListsConfiguredTypesAndEggsReceiveTheDNATypeProperty()
+    {
+        var root = FindRepositoryRoot();
+        var dmChatCommandSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "ChatCommandDefinition",
+            "DMChatCommand.cs"));
+        var beastMasterySource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "BeastMastery.cs"));
+
+        dmChatCommandSource.Should().Contain("BeastMastery.GetAllBeastTypes()")
+            .And.Contain("Usage: /spawnegg <beast type>")
+            .And.Contain("[NWNEventHandler(ScriptName.OnModuleCacheAfter)]")
+            .And.Contain("_spawnBeastEggHelpMessages = messages.ToArray()")
+            .And.Contain("foreach (var message in _spawnBeastEggHelpMessages)")
+            .And.Contain("BeastMastery.CreateBeastEgg(beastType, user)");
+        beastMasterySource.Should().Contain("ItemPropertyCustom(ItemPropertyType.DNAType, (int)beastType)");
+    }
+
+    [Test]
     public void LocationTargeting_IsOptInForChatCommands()
     {
         var root = FindRepositoryRoot();

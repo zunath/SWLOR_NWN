@@ -1614,18 +1614,22 @@ namespace SWLOR.Game.Server.Service
 
             foreach (var effect in family)
             {
-                var drEffect = (ILeadershipDamageReductionStatusEffect)effect;
-                ApplyLeadershipDamageReductionContribution(creatureEffects, effect, drEffect, winnerByStat);
+                var leadershipDamageReductionEffect = (ILeadershipDamageReductionStatusEffect)effect;
+                ApplyLeadershipDamageReductionContribution(
+                    creatureEffects,
+                    effect,
+                    leadershipDamageReductionEffect,
+                    winnerByStat);
             }
         }
 
         private static void ApplyLeadershipDamageReductionContribution(
             CreatureStatusEffect creatureEffects,
             IStatusEffect effect,
-            ILeadershipDamageReductionStatusEffect drEffect,
+            ILeadershipDamageReductionStatusEffect leadershipDamageReductionEffect,
             IReadOnlyDictionary<StatType, IStatusEffect> winnerByStat)
         {
-            var isAlreadyCorrect = drEffect.LeadershipDamageReductionStats.All(pair =>
+            var isAlreadyCorrect = leadershipDamageReductionEffect.LeadershipDamageReductionStats.All(pair =>
                 effect.StatGroup.Stats.TryGetValue(pair.Key, out var current) &&
                 current == (ReferenceEquals(winnerByStat[pair.Key], effect) ? pair.Value : 0));
 
@@ -1634,7 +1638,7 @@ namespace SWLOR.Game.Server.Service
 
             creatureEffects.Remove(effect);
 
-            foreach (var (statType, nominalValue) in drEffect.LeadershipDamageReductionStats)
+            foreach (var (statType, nominalValue) in leadershipDamageReductionEffect.LeadershipDamageReductionStats)
             {
                 effect.StatGroup.Stats[statType] = ReferenceEquals(winnerByStat[statType], effect)
                     ? nominalValue

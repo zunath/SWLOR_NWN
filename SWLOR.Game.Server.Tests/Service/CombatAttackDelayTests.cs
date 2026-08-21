@@ -403,6 +403,30 @@ public class CombatAttackDelayTests
     }
 
     [Test]
+    public void ConsumeNextAbilityDelayReduction_PreservesArmedBuffWhileRangedNoDelayStatusApplies()
+    {
+        var source = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot().FullName,
+            "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var method = source[source.IndexOf(
+            "public static int ConsumeNextAbilityDelayReductionPercent(uint creature, AbilityDetail ability)",
+            System.StringComparison.Ordinal)..];
+        method = method[..method.IndexOf(
+            "private static int ConsumeNextAbilityDelayReductionPercent(uint creature, SkillType skillType)",
+            System.StringComparison.Ordinal)];
+
+        var rangedStatusGuard = method.IndexOf("if (hasRangedStatusNoDelay)", System.StringComparison.Ordinal);
+        var consumingCall = method.IndexOf(
+            "return ConsumeNextAbilityDelayReductionPercent(creature, skillType);",
+            System.StringComparison.Ordinal);
+
+        rangedStatusGuard.Should().BeGreaterThanOrEqualTo(0);
+        method[(rangedStatusGuard)..consumingCall].Should().Contain("return 100;");
+        consumingCall.Should().BeGreaterThan(rangedStatusGuard,
+            "the ranged status must return before the temporary next-ability arm can be consumed");
+    }
+
+    [Test]
     public void ReloadTempo_DeclaresLimitedHasteForTheNextTwoAttacks()
     {
         var source = File.ReadAllText(Path.Combine(

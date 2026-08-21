@@ -7936,8 +7936,10 @@ namespace SWLOR.Game.Server.Service
             var skillType = GetAbilitySkillType(creature, ability);
             var hasRangedStatusNoDelay = IsRangedWeaponSkill(skillType) &&
                                          Stat.GetStatAdjustment(creature, StatType.RangedAttackNoDelay) > 0;
-            var temporaryReduction = ConsumeNextAbilityDelayReductionPercent(creature, skillType);
-            return hasRangedStatusNoDelay ? 100 : temporaryReduction;
+            if (hasRangedStatusNoDelay)
+                return 100;
+
+            return ConsumeNextAbilityDelayReductionPercent(creature, skillType);
         }
 
         private static int ConsumeNextAbilityDelayReductionPercent(uint creature, SkillType skillType)

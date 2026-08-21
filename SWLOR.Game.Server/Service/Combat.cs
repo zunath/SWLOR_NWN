@@ -8173,6 +8173,11 @@ namespace SWLOR.Game.Server.Service
             if (!appliesToRangedStatus && !appliesToAllSkills && !appliesToSkill)
                 return false;
 
+            // The ranged status already supplies the minimum delay for this attack. Preserve any
+            // one-shot arm so it can benefit a later attack after the ranged status expires.
+            if (appliesToRangedStatus)
+                return true;
+
             if (appliesToAllSkills)
             {
                 TemporaryStatModifier.Consume(

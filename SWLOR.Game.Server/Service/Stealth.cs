@@ -181,7 +181,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            var detected = ResolveDetection(observer, target);
+            var detected = ResolveDetection(observer, target, true);
             EventsPlugin.SetEventResult(detected ? "1" : "0");
         }
 
@@ -198,7 +198,7 @@ namespace SWLOR.Game.Server.Service
                 return true;
             }
 
-            return ResolveDetection(observer, target);
+            return ResolveDetection(observer, target, false);
         }
 
         [NWNEventHandler(ScriptName.OnDoListenDetectionBefore)]
@@ -227,13 +227,17 @@ namespace SWLOR.Game.Server.Service
             return detected;
         }
 
-        private static bool ResolveDetection(uint observer, uint target)
+        private static bool ResolveDetection(uint observer, uint target, bool acquireAggroOnDetection)
         {
             var detected = GetOrRollVerdict(observer, target);
             EspionageInfiltration.RecordDetection(observer, target, detected);
 
             if (detected)
+            {
                 ExitDetectedPlayerStealth(target);
+                if (acquireAggroOnDetection)
+                    AI.TryAcquireAggroAfterDetection(observer, target);
+            }
 
             return detected;
         }

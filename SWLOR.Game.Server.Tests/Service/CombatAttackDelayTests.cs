@@ -716,6 +716,37 @@ public class CombatAttackDelayTests
     }
 
     [Test]
+    public void ConsumeNextAutoAttackNoDelay_PreservesArmedBuffWhileRangedNoDelayStatusApplies()
+    {
+        var source = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot().FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Combat.cs"));
+        var methodStart = source.IndexOf(
+            "public static bool ConsumeNextAutoAttackNoDelay(uint creature, SkillType skillType)",
+            System.StringComparison.Ordinal);
+        var methodEnd = source.IndexOf(
+            "public static int ConsumeNextAutoAttackCriticalRateBonus(uint creature, SkillType skillType)",
+            methodStart,
+            System.StringComparison.Ordinal);
+        methodStart.Should().BeGreaterThanOrEqualTo(0);
+        methodEnd.Should().BeGreaterThan(methodStart);
+
+        var method = source[methodStart..methodEnd];
+        var rangedStatusGuard = method.IndexOf(
+            "if (appliesToRangedStatus)",
+            System.StringComparison.Ordinal);
+        var firstConsume = method.IndexOf(
+            "TemporaryStatModifier.Consume(",
+            System.StringComparison.Ordinal);
+
+        rangedStatusGuard.Should().BeGreaterThanOrEqualTo(0);
+        firstConsume.Should().BeGreaterThan(rangedStatusGuard);
+        method[rangedStatusGuard..firstConsume].Should().Contain("return true;");
+    }
+
+    [Test]
     public void LimitedAttackSpeedBonuses_AreSuppressedByAttackDelayReductionSuppression()
     {
         const uint creature = 311;

@@ -197,13 +197,39 @@ public class EspionageSystemTests
     [Test]
     public void SuccessfulSpotDetection_ExitsPlayerStealth()
     {
+        var root = FindRepositoryRoot();
         var stealthSource = File.ReadAllText(Path.Combine(
-            FindRepositoryRoot(),
+            root,
             "SWLOR.Game.Server",
             "Service",
             "Stealth.cs"));
+        var aiSource = File.ReadAllText(Path.Combine(
+            root,
+            "SWLOR.Game.Server",
+            "Service",
+            "AI.cs"));
 
-        stealthSource.Should().MatchRegex(@"if \(detected\)\s+ExitDetectedPlayerStealth\(target\);");
+        var resolveStart = stealthSource.IndexOf(
+            "private static bool ResolveDetection(uint observer, uint target, bool acquireAggroOnDetection)",
+            StringComparison.Ordinal);
+        var resolveEnd = stealthSource.IndexOf(
+            "private static void ExitDetectedPlayerStealth(uint target)",
+            resolveStart,
+            StringComparison.Ordinal);
+        resolveStart.Should().BeGreaterThanOrEqualTo(0);
+        resolveEnd.Should().BeGreaterThan(resolveStart);
+        var resolveDetection = stealthSource[resolveStart..resolveEnd];
+
+        var exitIndex = resolveDetection.IndexOf("ExitDetectedPlayerStealth(target);", StringComparison.Ordinal);
+        var acquireGuardIndex = resolveDetection.IndexOf("if (acquireAggroOnDetection)", StringComparison.Ordinal);
+        var acquireIndex = resolveDetection.IndexOf(
+            "AI.TryAcquireAggroAfterDetection(observer, target);",
+            StringComparison.Ordinal);
+
+        resolveDetection.Should().Contain("if (detected)");
+        exitIndex.Should().BeGreaterThanOrEqualTo(0);
+        acquireGuardIndex.Should().BeGreaterThan(exitIndex);
+        acquireIndex.Should().BeGreaterThan(acquireGuardIndex);
         stealthSource.Should().Contain("private static void ExitDetectedPlayerStealth(uint target)");
         stealthSource.Should().Contain("!GetIsPC(target) ||");
         stealthSource.Should().Contain("GetIsDM(target) ||");
@@ -211,6 +237,11 @@ public class EspionageSystemTests
         stealthSource.Should().Contain("SetActionMode(target, ActionMode.Stealth, false);");
         stealthSource.Should().Contain("DelayCommand(0f, () =>");
         stealthSource.Should().Contain("StatusEffect.RemoveStatusEffect<StealthStatusEffect>(target);");
+        stealthSource.Should().Contain("ResolveDetection(observer, target, true)");
+        stealthSource.Should().Contain("ResolveDetection(observer, target, false)");
+        aiSource.Should().Contain("public static void TryAcquireAggroAfterDetection(uint observer, uint target)");
+        aiSource.Should().Contain("if (!IsAIEnabled(observer))");
+        aiSource.Should().Contain("TryAcquireAggro(observer, target);");
     }
 
     [Test]

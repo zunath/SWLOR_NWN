@@ -781,6 +781,19 @@ namespace SWLOR.Game.Server.Service
                    LineOfSightObject(target, creature);
         }
 
+        /// <summary>
+        /// Re-enters the normal proximity-aggro path when a later native Spot check reveals a
+        /// stealthed player who is still inside the observer's aggro aura. Non-AI observers and
+        /// targets that no longer satisfy the ordinary aggro guards are ignored.
+        /// </summary>
+        public static void TryAcquireAggroAfterDetection(uint observer, uint target)
+        {
+            if (!IsAIEnabled(observer))
+                return;
+
+            TryAcquireAggro(observer, target);
+        }
+
         private static void TryAcquireAggro(uint self, uint target)
         {
             if (self == target ||

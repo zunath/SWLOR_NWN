@@ -2512,7 +2512,12 @@ namespace SWLOR.Game.Server.Service
             // instance (mitigated by Force resistance, shown as Force) before physical resistance.
             Combat.ApplyIncomingPhysicalToForceConversion(activator, target, damageType, ref calculatedDamage);
             calculatedDamage = Resistance.ApplyResistanceToDamage(target, damageType, calculatedDamage);
-            calculatedDamage = Combat.ApplyDamageTakenModifiers(target, calculatedDamage, activator, damageType);
+            calculatedDamage = Combat.ApplyDamageTakenModifiers(
+                target,
+                calculatedDamage,
+                activator,
+                damageType,
+                typedLeadershipReductionAlreadyApplied: true);
 
             if (criticalRating > 0)
             {
@@ -2735,7 +2740,12 @@ namespace SWLOR.Game.Server.Service
             // instance (mitigated by Force resistance, shown as Force) before physical resistance.
             Combat.ApplyIncomingPhysicalToForceConversion(activator, target, damageType, ref calculatedDamage);
             calculatedDamage = Resistance.ApplyResistanceToDamage(target, damageType, calculatedDamage);
-            calculatedDamage = Combat.ApplyDamageTakenModifiers(target, calculatedDamage, activator, damageType);
+            calculatedDamage = Combat.ApplyDamageTakenModifiers(
+                target,
+                calculatedDamage,
+                activator,
+                damageType,
+                typedLeadershipReductionAlreadyApplied: true);
 
             if (criticalRating > 0)
             {

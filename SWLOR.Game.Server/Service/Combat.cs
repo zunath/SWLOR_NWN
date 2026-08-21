@@ -570,7 +570,8 @@ namespace SWLOR.Game.Server.Service
             CombatDamageType damageType = CombatDamageType.Physical,
             CombatDamageDeliveryType deliveryType = CombatDamageDeliveryType.Direct,
             int? preTargetStatusStageDamage = null,
-            bool isLandedAttack = true)
+            bool isLandedAttack = true,
+            bool typedLeadershipReductionAlreadyApplied = false)
         {
             if (damage <= 0)
                 return damage;
@@ -579,7 +580,19 @@ namespace SWLOR.Game.Server.Service
                 return 0;
 
             var percentAdjustment = Stat.GetStatAdjustment(defender, StatType.DamageTakenPercentAdjustment);
-            if (!damageType.IsPhysicalDamageType() && damageType != CombatDamageType.Force)
+            if (!typedLeadershipReductionAlreadyApplied && damageType.IsPhysicalDamageType())
+            {
+                percentAdjustment += Stat.GetStatAdjustment(
+                    defender,
+                    StatType.LeadershipPhysicalDamageTakenPercentAdjustment);
+            }
+            else if (!typedLeadershipReductionAlreadyApplied && damageType == CombatDamageType.Force)
+            {
+                percentAdjustment += Stat.GetStatAdjustment(
+                    defender,
+                    StatType.LeadershipForceDamageTakenPercentAdjustment);
+            }
+            else if (!damageType.IsPhysicalDamageType() && damageType != CombatDamageType.Force)
             {
                 percentAdjustment += Stat.GetStatAdjustment(
                     defender,
@@ -10606,7 +10619,8 @@ namespace SWLOR.Game.Server.Service
 
                 // Once this swing spends every remaining charge, discard fractional attack debt
                 // created by the expiring reduction while retaining debt earned without it.
-                if (attacks >= limitedReductionRemainingAttacks)
+                var acceleratedAttacks = attacks - baselineAttacks;
+                if (acceleratedAttacks >= limitedReductionRemainingAttacks)
                     updatedAttackDebt = baselineUpdatedAttackDebt;
             }
 

@@ -606,7 +606,8 @@ namespace SWLOR.Game.Server.Native
                 attacker.m_idSelf,
                 damageType,
                 preTargetStatusStageDamage: damageBeforeTargetStatusStage,
-                isLandedAttack: isLandedAttack);
+                isLandedAttack: isLandedAttack,
+                typedLeadershipReductionAlreadyApplied: true);
             if (isLandedAttack)
             {
                 Combat.ApplyNextAttackGuardedHitEnmityBonus(

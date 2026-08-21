@@ -302,6 +302,40 @@ public class CombatAttackDelayTests
     }
 
     [Test]
+    public void ConsumeAttacksPerSwing_PreservesAcceleratedDebtUntilEveryRemainingChargeIsScheduled()
+    {
+        const uint attacker = 0x7F000004;
+        const int acceleratedDelay = 750;
+        const int baselineDelay = 1750;
+        const int remainingCharges = 2;
+        Combat.ClearAttackSwingDebt(attacker);
+
+        var attacks = Combat.ConsumeAttacksPerSwing(
+            attacker,
+            acceleratedDelay,
+            baselineDelay,
+            false,
+            baselineDelay,
+            remainingCharges);
+
+        var debts = (Dictionary<uint, float>)typeof(Combat)
+            .GetField("_attackSwingDebts", BindingFlags.NonPublic | BindingFlags.Static)!
+            .GetValue(null)!;
+        Combat.CalculateAttacksPerSwing(acceleratedDelay, 0f, out var expectedAcceleratedDebt);
+
+        try
+        {
+            attacks.Should().Be(2);
+            debts[attacker].Should().BeApproximately(expectedAcceleratedDebt, 0.0001f,
+                "only one of the two remaining limited-effect charges was scheduled beyond the baseline attack");
+        }
+        finally
+        {
+            Combat.ClearAttackSwingDebt(attacker);
+        }
+    }
+
+    [Test]
     public void CalculateAttacksPerSwing_CapsAttacksAtMaxPerSwing()
     {
         var attacks = Combat.CalculateAttacksPerSwing(Combat.MinimumAttackDelayMilliseconds, 5f, out var attackDebt);

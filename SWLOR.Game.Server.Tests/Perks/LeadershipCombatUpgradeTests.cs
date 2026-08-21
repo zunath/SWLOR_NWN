@@ -151,7 +151,7 @@ public class LeadershipCombatUpgradeTests
     }
 
     [Test]
-    public void LeadershipPhysicalAndForceReduction_StayInTheTypedDamageStage()
+    public void LeadershipPhysicalAndForceReduction_CoversNonDirectDamageWithoutDoubleApplyingDirectDamage()
     {
         var root = FindRepositoryRoot();
         var combat = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
@@ -166,11 +166,30 @@ public class LeadershipCombatUpgradeTests
             "public static int ApplyTwinBladeAbilityShapeDamageModifier(",
             StringComparison.Ordinal)];
 
-        genericStage.Should().NotContain("StatType.LeadershipPhysicalDamageTakenPercentAdjustment");
-        genericStage.Should().NotContain("StatType.LeadershipForceDamageTakenPercentAdjustment");
+        genericStage.Should().Contain("bool typedLeadershipReductionAlreadyApplied = false");
+        genericStage.Should().Contain("!typedLeadershipReductionAlreadyApplied && damageType.IsPhysicalDamageType()");
+        genericStage.Should().Contain("!typedLeadershipReductionAlreadyApplied && damageType == CombatDamageType.Force");
+        genericStage.Should().Contain("StatType.LeadershipPhysicalDamageTakenPercentAdjustment");
+        genericStage.Should().Contain("StatType.LeadershipForceDamageTakenPercentAdjustment");
         genericStage.Should().Contain("StatType.LeadershipOtherDamageTakenPercentAdjustment");
         typedStage.Should().Contain("StatType.LeadershipPhysicalDamageTakenPercentAdjustment");
         typedStage.Should().Contain("StatType.LeadershipForceDamageTakenPercentAdjustment");
+
+        var ability = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Ability.cs").FullName);
+        (ability.Split("typedLeadershipReductionAlreadyApplied: true").Length - 1).Should().Be(2,
+            "both direct ability damage paths already apply typed Leadership reductions in ApplyDamageDealtModifiers");
+
+        var nativeDamageRoll = File.ReadAllText((root / "SWLOR.Game.Server" / "Native" / "GetDamageRoll.cs").FullName);
+        nativeDamageRoll.Should().Contain("typedLeadershipReductionAlreadyApplied: true",
+            "the direct weapon pipeline already applies typed Leadership reductions in ApplyDamageDealtModifiers");
+
+        var triggeredDamage = combat[combat.IndexOf(
+            "public static int ApplyTriggeredDamage(",
+            StringComparison.Ordinal)..];
+        triggeredDamage = triggeredDamage[..triggeredDamage.IndexOf("public static ", 1, StringComparison.Ordinal)];
+        triggeredDamage.Should().Contain("ApplyDamageTakenModifiers(target, damage, activator, damageType)");
+        triggeredDamage.Should().NotContain("typedLeadershipReductionAlreadyApplied: true",
+            "triggered damage bypasses ApplyDamageDealtModifiers and must receive its typed Leadership reduction here");
     }
 
     [Test]

@@ -1,0 +1,115 @@
+import importlib.util
+import unittest
+from pathlib import Path
+
+
+ROOT = Path(__file__).resolve().parents[2]
+GENERATOR_PATH = ROOT / "tools" / "GenerateWeaponArchetypeImplementation.py"
+SPEC = importlib.util.spec_from_file_location("weapon_generator", GENERATOR_PATH)
+GENERATOR = importlib.util.module_from_spec(SPEC)
+SPEC.loader.exec_module(GENERATOR)
+
+
+class GeneratedWeaponTargetingTests(unittest.TestCase):
+    def test_ownership_manifest_matches_current_inferred_area_rows(self):
+        rows = GENERATOR.read_manifest()
+        _, feat_values = GENERATOR.parse_enum_values(
+            ROOT / "SWLOR.NWN.API" / "NWScript" / "Enum" / "FeatType.cs")
+        feat_rows = GENERATOR.read_2da(ROOT / "SWLOR_Haks" / "sw_2da" / "feat.2da")
+        spell_rows = GENERATOR.read_2da(ROOT / "SWLOR_Haks" / "sw_2da" / "spells.2da")
+        inferred_spell_ids = set()
+
+        for row in rows:
+            if row["Type"] not in GENERATOR.ACTIVE_TYPES:
+                continue
+            if not GENERATOR.infer_targeting_from_description(row):
+                continue
+
+            feat = GENERATOR.active_feat_name(row, feat_values)
+            feat_id = feat_values.get(feat)
+            feat_row = feat_rows.get(str(feat_id))
+            if feat_row and feat_row["SPELLID"].isdigit():
+                spell_id = feat_row["SPELLID"]
+                inferred_spell_ids.add(spell_id)
+                expected_values, remains_owned = GENERATOR.generated_targeting_update(row, True)
+                self.assertTrue(remains_owned)
+                self.assertIsNotNone(expected_values)
+                for header, expected_value in expected_values.items():
+                    self.assertEqual(
+                        expected_value,
+                        spell_rows[spell_id][header],
+                        f"spell {spell_id} {header} must already match the generator-owned value")
+
+        self.assertEqual(
+            inferred_spell_ids,
+            GENERATOR.read_generated_targeting_spell_ids())
+
+    def test_area_to_single_target_transition_clears_only_owned_fields_and_is_idempotent(self):
+        area_row = {
+            "Tab": "Pistol",
+            "Description": "Deals damage to enemies within 5m.",
+        }
+        single_target_row = {
+            "Tab": "Pistol",
+            "Description": "Deals weapon DMG + 30 to one target.",
+        }
+
+        area_values, owns_area = GENERATOR.generated_targeting_update(area_row, False)
+        cleared_values, owns_single_target = GENERATOR.generated_targeting_update(single_target_row, owns_area)
+        repeated_values, remains_unowned = GENERATOR.generated_targeting_update(
+            single_target_row,
+            owns_single_target)
+
+        self.assertTrue(owns_area)
+        self.assertEqual("sphere", area_values["TargetShape"])
+        self.assertEqual("5", area_values["TargetSizeX"])
+        self.assertEqual(
+            {
+                "TargetShape": "****",
+                "TargetSizeX": "****",
+                "TargetSizeY": "****",
+                "TargetFlags": "****",
+            },
+            cleared_values)
+        self.assertFalse(owns_single_target)
+        self.assertIsNone(repeated_values)
+        self.assertFalse(remains_unowned)
+
+    def test_non_area_row_preserves_targeting_that_the_generator_does_not_own(self):
+        row = {
+            "Tab": "Pistol",
+            "Description": "Deals weapon DMG + 30 to one target.",
+        }
+
+        values, owns_targeting = GENERATOR.generated_targeting_update(row, False)
+
+        self.assertIsNone(values)
+        self.assertFalse(owns_targeting)
+
+
+class StatConfiguredIconPatternTests(unittest.TestCase):
+    def test_valid_attribute_and_class_combinations_are_detected(self):
+        fixtures = (
+            "[StatConfiguredIcon]\npublic class FirstStatusEffect {}",
+            "[StatConfiguredIcon]\n[SomeOther]\ninternal sealed class SecondStatusEffect {}",
+            "[SomeOther]\ninternal class Before {}\n"
+            "[StatConfiguredIcon]\n[AnotherAttribute]\npublic abstract partial class ThirdStatusEffect {}",
+        )
+
+        for fixture in fixtures:
+            with self.subTest(fixture=fixture):
+                self.assertIsNotNone(GENERATOR.STAT_CONFIGURED_ICON_CLASS_PATTERN.search(fixture))
+
+    def test_unrelated_or_argument_bearing_attributes_are_not_detected(self):
+        fixtures = (
+            "[SomeOther]\npublic class StatusEffect {}",
+            "[StatConfiguredIcon(12)]\npublic class InvalidStatusEffect {}",
+        )
+
+        for fixture in fixtures:
+            with self.subTest(fixture=fixture):
+                self.assertIsNone(GENERATOR.STAT_CONFIGURED_ICON_CLASS_PATTERN.search(fixture))
+
+
+if __name__ == "__main__":
+    unittest.main()

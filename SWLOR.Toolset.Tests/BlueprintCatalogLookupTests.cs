@@ -108,6 +108,23 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task RefreshWithUnchangedMetadataKeepsThePublishedSnapshot()
+        {
+            var catalog = await BuiltCatalogAsync();
+            var published = catalog.Entries;
+
+            var refreshed = catalog.RefreshEntry(
+                ResourceType.Utc,
+                "npc_guard",
+                out var changed);
+
+            refreshed.Should().NotBeNull();
+            changed.Should().BeFalse();
+            catalog.Entries.Should().BeSameAs(published,
+                "content-only saves must not re-sort and republish the full catalog");
+        }
+
+        [Test]
         public async Task RefreshRemovesAResourceThatDisappearedBeforeItCouldBeRead()
         {
             var catalog = await BuiltCatalogAsync();

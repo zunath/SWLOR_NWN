@@ -86,6 +86,9 @@ namespace SWLOR.Toolset.Editors
         /// <summary>The shared pack/build/validation lock governing module writes.</summary>
         private readonly ModuleMutationLock? _mutationLock;
 
+        /// <summary>Shared by open area tabs so copied placements can cross area boundaries.</summary>
+        private readonly AreaInstanceClipboard _instanceClipboard;
+
         /// <summary>
         /// Which session each still-undoable edit went to, oldest first.
         /// </summary>
@@ -585,9 +588,10 @@ namespace SWLOR.Toolset.Editors
         private InstanceListSectionViewModel? _pendingPlacementSection;
         private string? _pendingPlacementResRef;
         private bool _pendingPlacementUsesIndexedBlueprint;
+        private AreaInstanceClipboardEntry? _pendingPlacementCopy;
 
         /// <summary>True from the moment a palette blueprint is chosen for placement until the next viewport click (or Esc/right-click cancel) resolves it - drives GlAreaControl.IsPlacementActive.</summary>
-        public bool IsPlacementPending => _pendingPlacementResRef != null;
+        public bool IsPlacementPending => _pendingPlacementSection != null;
 
         /// <summary>
         /// 3D-view status line while a placement is pending, or empty otherwise. A door names the
@@ -1178,17 +1182,8 @@ namespace SWLOR.Toolset.Editors
             if (section == null || string.IsNullOrWhiteSpace(resRef))
                 return false;
 
-            // A door is hung in an empty doorway the tile declares, never on open floor and never in a
-            // doorway that already holds one, so an area laid entirely with doorless tiles - or one
-            // whose every doorway is filled - has nowhere to put another. Arming a placement that can
-            // never resolve would leave the builder clicking at a map that refuses every click.
-            if (type == ResourceType.Utd && AreaScene is { } scene && !scene.HasEmptyDoorway())
-            {
-                _log.AppendLine(scene.DoorAnchors.Count == 0
-                    ? $"'{resRef}' cannot be placed: no tile in this area declares a doorway to hang a door in."
-                    : $"'{resRef}' cannot be placed: every doorway in this area already has a door in it.");
+            if (!CanArmObjectPlacement(type, resRef))
                 return false;
-            }
 
             // The other half of the exclusion in ArmTilePlacement: only one thing follows the cursor, so a
             // builder always knows what the next click resolves.
@@ -1197,11 +1192,84 @@ namespace SWLOR.Toolset.Editors
             _pendingPlacementSection = section;
             _pendingPlacementResRef = resRef;
             _pendingPlacementUsesIndexedBlueprint = source == Shell.Panels.PaletteSource.Standard;
+            _pendingPlacementCopy = null;
             PlacementGhost = BuildPlacementGhost(type, resRef, _pendingPlacementUsesIndexedBlueprint);
+            NotifyPlacementChanged();
+            return true;
+        }
+
+        /// <summary>
+        /// Copies the selected placed object as an independent GIT/GIC snapshot.
+        /// </summary>
+        public bool CopySelectedSceneInstance()
+        {
+            if (SelectedSceneInstance is not { } instance ||
+                SectionForKind(instance.Kind) is not { } section)
+            {
+                return false;
+            }
+
+            var index = IndexWithinKind(instance);
+            var copy = index >= 0 ? section.CopyInstanceForPlacement(index, instance) : null;
+            if (copy == null)
+                return false;
+
+            _instanceClipboard.Set(copy);
+            SceneStatus = $"Copied {SelectionName}. Press Ctrl+V to place a copy.";
+            return true;
+        }
+
+        /// <summary>
+        /// Arms the copied object as the placement ghost. The next valid map click commits the clone.
+        /// </summary>
+        public bool PasteCopiedSceneInstance()
+        {
+            if (_instanceClipboard.Content is not { } copy ||
+                !string.Equals(copy.ModuleRoot, _workspace.ModuleRoot, StringComparison.OrdinalIgnoreCase) ||
+                Sections.FirstOrDefault(section => section.BlueprintType == copy.Type) is not { } section)
+            {
+                return false;
+            }
+
+            var resRef = InstanceFieldMap.GetTemplateResRef(copy.Type, copy.Instance);
+            var label = !string.IsNullOrWhiteSpace(resRef)
+                ? resRef
+                : InstanceFieldMap.GetTag(copy.Instance) ?? copy.Type.SingularDisplayName();
+            if (!CanArmObjectPlacement(copy.Type, label))
+                return false;
+
+            CancelTilePlacement();
+            CancelPlacement();
+
+            _pendingPlacementSection = section;
+            _pendingPlacementResRef = label;
+            _pendingPlacementUsesIndexedBlueprint = false;
+            _pendingPlacementCopy = copy;
+            PlacementGhost = copy.Preview;
+            NotifyPlacementChanged();
+            return true;
+        }
+
+        /// <summary>
+        /// A door is hung in an empty doorway the tile declares, never on open floor and never in a
+        /// doorway that already holds one. Other object kinds have no arm-time placement constraint.
+        /// </summary>
+        private bool CanArmObjectPlacement(ResourceType type, string label)
+        {
+            if (type != ResourceType.Utd || AreaScene is not { } scene || scene.HasEmptyDoorway())
+                return true;
+
+            _log.AppendLine(scene.DoorAnchors.Count == 0
+                ? $"'{label}' cannot be placed: no tile in this area declares a doorway to hang a door in."
+                : $"'{label}' cannot be placed: every doorway in this area already has a door in it.");
+            return false;
+        }
+
+        private void NotifyPlacementChanged()
+        {
             OnPropertyChanged(nameof(IsPlacementPending));
             OnPropertyChanged(nameof(PlacementStatus));
             OnPropertyChanged(nameof(HasViewportHud));
-            return true;
         }
 
         private InstanceMarker? _placementGhost;
@@ -1305,7 +1373,8 @@ namespace SWLOR.Toolset.Editors
         /// Called by the view when a viewport click resolves a pending placement
         /// (GlAreaControl.PlacementPointPicked): creates the instance at the clicked ground
         /// position through the pending section's InstanceFieldMap-based Add path (one RunGitEdit
-        /// transaction), then rebuilds the scene and selects the new instance.
+        /// transaction), then appends its one marker to the scene and selects it. A full rebuild is
+        /// retained as a fallback when the scene was already stale.
         /// </summary>
         /// <param name="orientation">
         /// The heading to hang the new instance at, when the viewport chose one - a door takes the
@@ -1316,48 +1385,133 @@ namespace SWLOR.Toolset.Editors
             var section = _pendingPlacementSection;
             var resRef = _pendingPlacementResRef;
             var useIndexedBlueprint = _pendingPlacementUsesIndexedBlueprint;
+            var copiedInstance = _pendingPlacementCopy;
             _pendingPlacementSection = null;
             _pendingPlacementResRef = null;
             _pendingPlacementUsesIndexedBlueprint = false;
+            _pendingPlacementCopy = null;
             PlacementGhost = null;
-            OnPropertyChanged(nameof(IsPlacementPending));
-            OnPropertyChanged(nameof(PlacementStatus));
-            OnPropertyChanged(nameof(HasViewportHud));
+            NotifyPlacementChanged();
 
-            if (section == null || resRef == null)
+            if (section == null || (copiedInstance == null && resRef == null))
                 return;
 
             // Orientation goes in with the add rather than as a follow-up edit, so hanging a door in a
-            // doorway is one undo step and not two.
-            var facing = orientation ?? new Vector2(1f, 0f);
-            if (!section.AddInstanceAt(
-                    resRef,
+            // doorway is one undo step and not two. A copied object retains its authored heading when
+            // no placement rule supplied one.
+            var copiedFacing = copiedInstance != null
+                ? InstanceFieldMap.GetOrientation(section.BlueprintType, copiedInstance.Instance)
+                : (1f, 0f);
+            var facing = orientation ?? new Vector2(copiedFacing.Item1, copiedFacing.Item2);
+            var previousRevision = Volatile.Read(ref _sceneInputRevision);
+            var canUpdateCurrentScene =
+                _sceneBuildRequested &&
+                AreaScene != null &&
+                Volatile.Read(ref _builtSceneInputRevision) == previousRevision;
+            var added = copiedInstance != null
+                ? section.AddCopiedInstanceAt(
+                    copiedInstance,
+                    position.X,
+                    position.Y,
+                    position.Z,
+                    facing.X,
+                    facing.Y)
+                : section.AddInstanceAt(
+                    resRef!,
                     position.X,
                     position.Y,
                     position.Z,
                     facing.X,
                     facing.Y,
-                    useIndexedBlueprint))
+                    useIndexedBlueprint);
+            if (!added)
                 return;
 
             var kind = MapSectionTypeToKind(section.BlueprintType);
             var reselect = kind != null ? (kind.Value, section.Rows.Count - 1) : ((InstanceMarkerKind, int)?)null;
+            if (kind != null && canUpdateCurrentScene &&
+                ApplyPlacementInPlace(section, section.Rows.Count - 1, previousRevision))
+            {
+                return;
+            }
+
             _ = BuildSceneAsync(reselect);
+        }
+
+        /// <summary>
+        /// Publishes one newly placed instance into the current scene without rebuilding the area.
+        /// </summary>
+        /// <remarks>
+        /// Placement changes one GIT list entry. The tiles, walkmeshes, lighting, diagnostics, door
+        /// anchors, and every pre-existing marker are already valid and are carried forward by
+        /// reference. The revision checks make this an optimization only: if any other edit was
+        /// pending, the caller falls back to authoritative full scene assembly.
+        /// </remarks>
+        private bool ApplyPlacementInPlace(
+            InstanceListSectionViewModel section,
+            int index,
+            long previousRevision)
+        {
+            var currentRevision = Volatile.Read(ref _sceneInputRevision);
+            if (currentRevision != previousRevision + 1 ||
+                Volatile.Read(ref _builtSceneInputRevision) != previousRevision ||
+                AreaScene is not { } scene ||
+                _tileModelCache == null ||
+                section.GetInstanceForScene(index) is not { } instance)
+            {
+                return false;
+            }
+
+            InstanceMarker marker;
+            try
+            {
+                marker = AreaSceneBuilder.BuildInstanceMarker(
+                    section.BlueprintType,
+                    instance,
+                    _tileModelCache,
+                    _placeableAppearances,
+                    _doorTypes,
+                    _waypointAppearances,
+                    ResolveCreatureModel,
+                    scene.Tiles);
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine(
+                    $"Placed {section.BlueprintType.SingularDisplayName().ToLowerInvariant()} marker " +
+                    $"could not be updated in place; rebuilding the scene: {ex.Message}");
+                return false;
+            }
+
+            // A background build or another edit may have won while model resolution ran. Never append
+            // to a scene that is no longer the one these revision checks described.
+            if (!ReferenceEquals(AreaScene, scene) ||
+                Volatile.Read(ref _sceneInputRevision) != currentRevision ||
+                Volatile.Read(ref _builtSceneInputRevision) != previousRevision)
+            {
+                return false;
+            }
+
+            var updated = scene.WithInstanceAdded(marker);
+            Volatile.Write(ref _builtSceneInputRevision, currentRevision);
+            AreaScene = updated;
+            ApplySelection(marker);
+            SceneStatus = string.Empty;
+            return true;
         }
 
         /// <summary>Called by the view when a pending placement is cancelled (Esc or right-click in the viewport, GlAreaControl.PlacementCancelled).</summary>
         public void CancelPlacement()
         {
-            if (_pendingPlacementResRef == null)
+            if (_pendingPlacementSection == null)
                 return;
 
             _pendingPlacementSection = null;
             _pendingPlacementResRef = null;
             _pendingPlacementUsesIndexedBlueprint = false;
+            _pendingPlacementCopy = null;
             PlacementGhost = null;
-            OnPropertyChanged(nameof(IsPlacementPending));
-            OnPropertyChanged(nameof(PlacementStatus));
-            OnPropertyChanged(nameof(HasViewportHud));
+            NotifyPlacementChanged();
         }
 
         /// <summary>
@@ -1556,7 +1710,8 @@ namespace SWLOR.Toolset.Editors
             Services.SoundPreviewService? soundPreview = null,
             AreaEditorDocumentLoad? loadedDocuments = null,
             Func<ResourceType, string, string?>? editCopyBlueprint = null,
-            ModuleMutationLock? mutationLock = null)
+            ModuleMutationLock? mutationLock = null,
+            AreaInstanceClipboard? instanceClipboard = null)
         {
             _scriptSlotHost = scriptSlotHost;
             _resolveBlueprintModel = resolveBlueprintModel;
@@ -1566,6 +1721,7 @@ namespace SWLOR.Toolset.Editors
             _openBlueprint = openBlueprint;
             _editCopyBlueprint = editCopyBlueprint;
             _mutationLock = mutationLock;
+            _instanceClipboard = instanceClipboard ?? new AreaInstanceClipboard();
             if (_mutationLock != null)
                 _mutationLock.Changed += OnMutationLockChanged;
             _log = log;
@@ -1924,9 +2080,9 @@ namespace SWLOR.Toolset.Editors
         /// This is what replaced the Rebuild button. Edits made anywhere - an instance's coordinates
         /// on the Properties tab, a local variable, an area property, undo/redo - all funnel through
         /// <see cref="RunEdit"/>, so hooking the refresh there covers every path instead of asking
-        /// each command to remember. Paths that already rebuild explicitly (placement and the
+        /// each command to remember. Paths that already refresh explicitly (placement and the
         /// gizmos, which also need to reselect what they touched) are not double-served: by the time
-        /// the delay elapses their build has either finished or is in flight for the same revision,
+        /// the delay elapses their incremental update or fallback build has claimed the same revision,
         /// and <see cref="IsSceneCurrent"/> drops the duplicate.
         /// </remarks>
         private void RequestSceneRefresh(bool immediate = false)
@@ -2183,9 +2339,10 @@ namespace SWLOR.Toolset.Editors
                     return false;
             }
 
-            var catalogEntryChanged =
-                _areSession.UndoStack.IsDirty ||
-                _gitSession.UndoStack.IsDirty;
+            // The area's catalog entry is parsed exclusively from ARE metadata. GIT carries placed
+            // instances, so treating a GIT-only save as an area catalog change makes Explorer and
+            // Search rebuild their catalog views for a file they never read.
+            var catalogEntryChanged = _areSession.UndoStack.IsDirty;
             var placementsChanged = _gitSession.UndoStack.IsDirty;
             var instancePairReloaded = false;
             var tilesetBefore = TilesetResRef;
@@ -2257,7 +2414,6 @@ namespace SWLOR.Toolset.Editors
                 if (!string.Equals(tilesetBefore, TilesetResRef, StringComparison.OrdinalIgnoreCase))
                     TilesetChanged?.Invoke();
                 AfterHistoryChange();
-                CatalogEntryChanged?.Invoke();
             }
 
             if (!CommitStagedWrites(staged, arePlan, gitPlan, gicPlan))
@@ -2296,10 +2452,7 @@ namespace SWLOR.Toolset.Editors
                 TilesetChanged?.Invoke();
 
             AfterHistoryChange();
-            if (catalogEntryChanged ||
-                areResult.Reloaded ||
-                gitResult.Reloaded ||
-                instancePairReloaded)
+            if (catalogEntryChanged || areResult.Reloaded)
             {
                 CatalogEntryChanged?.Invoke();
             }
@@ -2666,10 +2819,10 @@ namespace SWLOR.Toolset.Editors
         /// <summary>Raised after an async close prompt approves closing this tab.</summary>
         public event Action<AreaEditorViewModel>? CloseRequested;
 
-        /// <summary>Raised after ARE or GIT data is saved/reloaded so area-backed catalog indexes can refresh.</summary>
+        /// <summary>Raised after ARE data is saved or reloaded so the area's catalog metadata can refresh.</summary>
         public event Action? CatalogEntryChanged;
 
-        /// <summary>Raised after the paired GIT is saved or reloaded so object-source indexes can refresh.</summary>
+        /// <summary>Raised after the paired GIT is saved or reloaded so GIT-derived indexes can refresh.</summary>
         public event Action? PlacementsChanged;
 
         /// <summary>Suppresses a second tab-level prompt after the window-level discard decision.</summary>

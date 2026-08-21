@@ -49,7 +49,8 @@ namespace SWLOR.Toolset.Tests
                     }
                 },
                 Instances = instances,
-                Diagnostics = new AreaSceneDiagnostics()
+                Diagnostics = new AreaSceneDiagnostics(),
+                IsInteriorTileset = true
             };
 
         /// <summary>
@@ -232,6 +233,45 @@ namespace SWLOR.Toolset.Tests
             updated!.Tiles.Should().BeSameAs(scene.Tiles);
             updated.DoorAnchors.Should().BeSameAs(scene.DoorAnchors);
             updated.Lighting.Should().BeSameAs(scene.Lighting);
+            updated.IsInteriorTileset.Should().BeTrue();
+        }
+
+        [Test]
+        public void AddingAnInstanceLeavesAreaWideSceneInputsAlone()
+        {
+            var existing = Marker(InstanceMarkerKind.Placeable);
+            var added = Marker(InstanceMarkerKind.Waypoint, new Vector3(50, 60, 0));
+            var scene = SceneWith(existing);
+
+            var updated = scene.WithInstanceAdded(added);
+
+            updated.Should().NotBeSameAs(scene);
+            updated.Instances.Should().Equal(existing, added);
+            updated.Tiles.Should().BeSameAs(scene.Tiles);
+            updated.DoorAnchors.Should().BeSameAs(scene.DoorAnchors);
+            updated.Diagnostics.Should().BeSameAs(scene.Diagnostics);
+            updated.Lighting.Should().BeSameAs(scene.Lighting);
+            updated.IsInteriorTileset.Should().BeTrue();
+            scene.Instances.Should().ContainSingle().Which.Should().BeSameAs(
+                existing, "the published scene is immutable");
+        }
+
+        [Test]
+        public void AddingAnInstanceKeepsTheFullBuilderKindOrder()
+        {
+            var creature = Marker(InstanceMarkerKind.Creature);
+            var placeable = Marker(InstanceMarkerKind.Placeable);
+            var waypoint = Marker(InstanceMarkerKind.Waypoint);
+            var door = Marker(InstanceMarkerKind.Door);
+            var scene = SceneWith(creature, placeable, waypoint);
+
+            var updated = scene.WithInstanceAdded(door);
+
+            updated.Instances.Select(instance => instance.Kind).Should().Equal(
+                InstanceMarkerKind.Creature,
+                InstanceMarkerKind.Door,
+                InstanceMarkerKind.Placeable,
+                InstanceMarkerKind.Waypoint);
         }
 
         [Test]

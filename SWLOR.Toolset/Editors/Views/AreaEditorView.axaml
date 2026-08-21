@@ -35,6 +35,7 @@
           <Border Grid.Row="0" x:Name="ViewportInput" Background="Transparent"
                   PointerPressed="OnViewportPointerPressed"
                   PointerMoved="OnViewportPointerMoved"
+                  PointerExited="OnViewportPointerExited"
                   PointerReleased="OnViewportPointerReleased"
                   PointerWheelChanged="OnViewportPointerWheel"
                   ContextRequested="OnViewportContextRequested">

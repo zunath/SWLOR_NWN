@@ -132,6 +132,13 @@ namespace SWLOR.Toolset.Shell.Panels
                     QueueDialogueScan();
                 }
 
+                // Dialogs and scripts are intentionally absent from BlueprintCatalog. Their rows
+                // still follow file changes, but no full catalog regroup is needed to do that.
+                if (!WorkspaceContext.IsCatalogIndexedType(type))
+                    Refresh();
+            };
+            _workspaceContext.CatalogEntriesChanged += (_, _) =>
+            {
                 if (_workspaceContext.Catalog is { } catalog)
                     RefreshFromCatalog(catalog);
             };
@@ -1327,6 +1334,13 @@ namespace SWLOR.Toolset.Shell.Panels
 
         private void Publish(ExplorerNodeViewModel node)
         {
+            // Filtered folder counts already include every matching descendant. A zero therefore means
+            // neither this category nor anything beneath it can lead to a search result. Keep the full
+            // tree in _roots so clearing the search restores its expansion state, but do not publish
+            // dead-end categories (including an empty Unsorted bucket) while the builder is searching.
+            if (!string.IsNullOrWhiteSpace(Filter) && node.IsBranch && node.Count == 0)
+                return;
+
             Rows.Add(node);
             if (!node.IsExpanded)
                 return;

@@ -59,6 +59,28 @@ namespace SWLOR.Toolset.Domain.Documents
             AlignCount(list, type, expectedCount);
         }
 
+        /// <summary>
+        /// Inserts a deep copy of an object's paired comment, or a blank row when the source area had
+        /// no aligned comment entry.
+        /// </summary>
+        public void InsertCopiedComment(
+            string listFieldName,
+            ResourceType type,
+            int index,
+            int expectedCount,
+            JsonGffStruct? source)
+        {
+            var list = GetOrCreateList(listFieldName);
+            while (list.Elements!.Count < index)
+                list.InsertElement(list.Elements.Count, CreateBlankComment(type));
+
+            var entry = source != null
+                ? InstanceFieldMap.Duplicate(source)
+                : CreateBlankComment(type);
+            list.InsertElement(index, entry);
+            AlignCount(list, type, expectedCount);
+        }
+
         /// <summary>Duplicates the comment row paired with a duplicated GIT instance.</summary>
         public void DuplicateComment(
             string listFieldName,

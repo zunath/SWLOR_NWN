@@ -1138,18 +1138,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     Stat.GetStatAdjustment(_target, StatType.LeadershipPhysicalDamageTakenPercentAdjustment),
                 CombatDamageType.Force =>
                     Stat.GetStatAdjustment(_target, StatType.LeadershipForceDamageTakenPercentAdjustment),
-                _ => 0
+                _ => Stat.GetStatAdjustment(_target, StatType.LeadershipOtherDamageTakenPercentAdjustment)
             };
-            var otherLeadershipAdjustment = damageType != CombatDamageType.Physical &&
-                                            damageType != CombatDamageType.Force
-                ? Stat.GetStatAdjustment(_target, StatType.LeadershipOtherDamageTakenPercentAdjustment)
-                : 0;
 
             var percent = ApplyDamageTakenPercentAdjustment(100, typeAdjustment);
             percent = ApplyDamageTakenPercentAdjustment(percent, leadershipAdjustment);
             return ApplyDamageTakenPercentAdjustment(
                 percent,
-                Stat.GetStatAdjustment(_target, StatType.DamageTakenPercentAdjustment) + otherLeadershipAdjustment);
+                Stat.GetStatAdjustment(_target, StatType.DamageTakenPercentAdjustment));
         }
 
         private static int ApplyDamageTakenPercentAdjustment(int percent, int adjustment)

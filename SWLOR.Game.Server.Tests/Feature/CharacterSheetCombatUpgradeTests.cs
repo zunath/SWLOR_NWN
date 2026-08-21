@@ -142,11 +142,16 @@ public class CharacterSheetCombatUpgradeTests
         var damageTaken = ExtractMethod(viewModel, "private int GetDamageTakenPercent(CombatDamageType damageType)");
         damageTaken.Should().Contain("StatType.LeadershipPhysicalDamageTakenPercentAdjustment");
         damageTaken.Should().Contain("StatType.LeadershipForceDamageTakenPercentAdjustment");
+        damageTaken.Should().Contain("StatType.LeadershipOtherDamageTakenPercentAdjustment");
         damageTaken.Should().Contain("percent = ApplyDamageTakenPercentAdjustment(percent, leadershipAdjustment);");
-        damageTaken.Should().Contain("StatType.DamageTakenPercentAdjustment) + otherLeadershipAdjustment");
+        damageTaken.Should().NotContain("+ otherLeadershipAdjustment");
         damageTaken.IndexOf("ApplyDamageTakenPercentAdjustment(100, typeAdjustment)", StringComparison.Ordinal)
             .Should().BeLessThan(
                 damageTaken.IndexOf("ApplyDamageTakenPercentAdjustment(percent, leadershipAdjustment)", StringComparison.Ordinal));
+        damageTaken.IndexOf("ApplyDamageTakenPercentAdjustment(percent, leadershipAdjustment)", StringComparison.Ordinal)
+            .Should().BeLessThan(
+                damageTaken.IndexOf("Stat.GetStatAdjustment(_target, StatType.DamageTakenPercentAdjustment)", StringComparison.Ordinal),
+                "every Leadership channel must remain a separate multiplicative stage before the generic adjustment");
 
         var applyAdjustment = typeof(CharacterSheetViewModel).GetMethod(
             "ApplyDamageTakenPercentAdjustment",

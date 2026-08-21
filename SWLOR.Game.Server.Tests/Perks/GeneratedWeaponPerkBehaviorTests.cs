@@ -21,6 +21,38 @@ namespace SWLOR.Game.Server.Tests.Perks;
 public class GeneratedWeaponPerkBehaviorTests
 {
     [Test]
+    public void ConfiguredNearTargetStatusEnums_RejectUndefinedStatValues()
+    {
+        var bindingFlags = System.Reflection.BindingFlags.NonPublic |
+                           System.Reflection.BindingFlags.Static;
+        var cleanseMethod = typeof(Combat).GetMethod("GetStatusEffectCleanseTypeFromStat", bindingFlags);
+        var resistanceMethod = typeof(Combat).GetMethod("GetResistanceTypeFromStat", bindingFlags);
+        cleanseMethod.Should().NotBeNull();
+        resistanceMethod.Should().NotBeNull();
+        cleanseMethod!.GetParameters().Select(x => x.Name).Should().Equal("value");
+        resistanceMethod!.GetParameters().Select(x => x.Name).Should().Equal("value");
+
+        var supportedCleanseTypes = StatusEffectCleanseType.Purify | StatusEffectCleanseType.TreatmentKit1;
+        ((StatusEffectCleanseType)cleanseMethod.Invoke(null, new object[] { (int)supportedCleanseTypes })!)
+            .Should().Be(supportedCleanseTypes);
+        ((StatusEffectCleanseType)cleanseMethod.Invoke(null, new object[] { 16 })!)
+            .Should().Be(StatusEffectCleanseType.None);
+        ((ResistanceType)resistanceMethod.Invoke(null, new object[] { (int)ResistanceType.Trauma })!)
+            .Should().Be(ResistanceType.Trauma);
+        ((ResistanceType)resistanceMethod.Invoke(null, new object[] { 999 })!)
+            .Should().Be(ResistanceType.Invalid);
+
+        var combatSource = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot().FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Combat.cs"));
+        combatSource.Should().Contain("var icon = GetEffectIconTypeFromStat(");
+        combatSource.Should().Contain("var cleanseTypes = GetStatusEffectCleanseTypeFromStat(");
+        combatSource.Should().Contain("var resistanceType = GetResistanceTypeFromStat(");
+    }
+
+    [Test]
     public void ReportedFailPerks_ExposeTheirPromisedStatusStatsAndTargeting()
     {
         AssertStatusStat(new FlashStatusEffect(20), StatType.PhysicalAndForceAbilityHitChancePercentAdjustment, -20);

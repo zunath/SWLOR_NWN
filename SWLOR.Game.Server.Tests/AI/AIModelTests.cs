@@ -557,6 +557,10 @@ public class AIModelTests
         activeTargetBody.IndexOf("TryCancelAttackForCombatLeash(pCreature, pNode, oidAttackTarget)", StringComparison.Ordinal)
             .Should()
             .BeLessThan(activeTargetBody.IndexOf("pCreature.AddActionToFront", StringComparison.Ordinal));
+        combatRoundGuardIndex.Should().BeGreaterThanOrEqualTo(0);
+        activeTargetPathingIndex.Should().BeGreaterThanOrEqualTo(0);
+        equippedWeaponFallbackIndex.Should().BeGreaterThanOrEqualTo(0);
+        currentSwingWeaponIndex.Should().BeGreaterThanOrEqualTo(0);
         combatRoundGuardIndex.Should().BeGreaterThan(activeTargetPathingIndex,
             "a missing combat round must not bypass target validation, combat-leash cancellation, or pathing");
         equippedWeaponFallbackIndex.Should().BeLessThan(combatRoundGuardIndex,

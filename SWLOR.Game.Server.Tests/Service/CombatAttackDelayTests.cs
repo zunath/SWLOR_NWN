@@ -413,6 +413,31 @@ public class CombatAttackDelayTests
     }
 
     [Test]
+    public void NativeAttackAction_StillCapsLimitedChargesWhenAnArmedNoDelayOverlaps()
+    {
+        var source = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot().FullName,
+            "SWLOR.Game.Server",
+            "Native",
+            "OnAIActionAttackObject.cs"));
+        var countStart = source.IndexOf(
+            "var limitedDelayReductionRemainingAttacks = hasLimitedAttackDelayReduction",
+            System.StringComparison.Ordinal);
+        var countEnd = source.IndexOf(
+            "// The delay the attacker would have without a no-delay buff.",
+            countStart,
+            System.StringComparison.Ordinal);
+
+        countStart.Should().BeGreaterThanOrEqualTo(0);
+        countEnd.Should().BeGreaterThan(countStart);
+        var countSetup = source[countStart..countEnd];
+        countSetup.Should().Contain("limitedAttackDelayReductionRemainingAttacks");
+        countSetup.Should().Contain("limitedAttackNoDelayRemainingAttacks");
+        countSetup.Should().NotContain("if (hasArmedNoDelay)",
+            "an armed timing effect must not disable the cap that protects concurrently active limited charges");
+    }
+
+    [Test]
     public void ConsumeAttacksPerSwing_PreservesAcceleratedDebtWhenChargesRemainAfterTheSwing()
     {
         const uint attacker = 0x7F000005;
@@ -661,6 +686,36 @@ public class CombatAttackDelayTests
     }
 
     [Test]
+    public void ConsumeNextAutoAttackNoDelay_ChecksSuppressionBeforeReadingArmedState()
+    {
+        var source = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot().FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Combat.cs"));
+        var methodStart = source.IndexOf(
+            "public static bool ConsumeNextAutoAttackNoDelay(uint creature, SkillType skillType)",
+            System.StringComparison.Ordinal);
+        var methodEnd = source.IndexOf(
+            "public static int ConsumeNextAutoAttackCriticalRateBonus(uint creature, SkillType skillType)",
+            methodStart,
+            System.StringComparison.Ordinal);
+        methodStart.Should().BeGreaterThanOrEqualTo(0);
+        methodEnd.Should().BeGreaterThan(methodStart);
+
+        var method = source[methodStart..methodEnd];
+        var suppressionGuard = method.IndexOf(
+            "if (IsAttackDelayReductionSuppressed(creature))",
+            System.StringComparison.Ordinal);
+        var armedStateRead = method.IndexOf(
+            "StatType.NextAutoAttackNoDelayAllSkills",
+            System.StringComparison.Ordinal);
+        suppressionGuard.Should().BeGreaterThanOrEqualTo(0);
+        armedStateRead.Should().BeGreaterThan(suppressionGuard,
+            "suppressed timing must return before an armed all-skills or skill-specific modifier can be consumed");
+    }
+
+    [Test]
     public void LimitedAttackSpeedBonuses_AreSuppressedByAttackDelayReductionSuppression()
     {
         const uint creature = 311;
@@ -723,6 +778,7 @@ public class CombatAttackDelayTests
                 .BeFalse();
             noDelayRemainingAttacks.Should().Be(0);
             Combat.HasNextAutoAttackNoDelay(creature, SkillType.Pistol).Should().BeFalse();
+            Combat.ConsumeNextAutoAttackNoDelay(creature, SkillType.Pistol).Should().BeFalse();
             Combat.ConsumeNextAbilityDelayReductionPercent(creature, new AbilityDetail
             {
                 IsHostileAbility = true,

@@ -78,6 +78,10 @@ public class EspionageSystemTests
             .SelectMany(x => x.StatBonuses)
             .Should().NotContain(x => x.Stat == StatType.Stealth,
                 "the rank bonus applies only while the native stealth mode is active");
+        stealth.PurchasedTriggers.Should().ContainSingle()
+            .Which.Method.Name.Should().Be("RefreshActiveStatusAfterPerkLevelChange");
+        stealth.RefundedTriggers.Should().ContainSingle()
+            .Which.Method.Name.Should().Be("RefreshActiveStatusAfterPerkLevelChange");
 
         var silentStride = BuildPerkWithout2daLookup(
             new EspionagePerkDefinition(),
@@ -102,6 +106,31 @@ public class EspionageSystemTests
         statusSource.Should().Contain("Stat.GetStatAdjustment(creature, StatType.ActiveStealthBonus)");
         statusSource.Should().Contain("StatGroup.Stats[StatType.Stealth] = stealthBonus;");
         statusSource.Should().Contain("StatGroup.Stats[StatType.MovementSpeedPercentAdjustment] = movementSpeedBonus;");
+
+        var stealthServiceSource = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot(),
+            "SWLOR.Game.Server",
+            "Service",
+            "Stealth.cs"));
+        var refreshStart = stealthServiceSource.IndexOf(
+            "public static void RefreshActiveStatusAfterPerkLevelChange(uint creature)",
+            StringComparison.Ordinal);
+        var refreshEnd = stealthServiceSource.IndexOf(
+            "public static void RecordPlayerCombatInitiation()",
+            refreshStart,
+            StringComparison.Ordinal);
+        refreshStart.Should().BeGreaterThanOrEqualTo(0);
+        refreshEnd.Should().BeGreaterThan(refreshStart);
+        var refreshBody = stealthServiceSource[refreshStart..refreshEnd];
+        refreshBody.Should().Contain("StatusEffect.RemoveStatusEffect<StealthStatusEffect>(creature);");
+        refreshBody.Should().Contain("Perk.GetPerkLevel(creature, PerkType.Stealth) <= 0");
+        refreshBody.Should().Contain("SetActionMode(creature, ActionMode.Stealth, false);");
+        refreshBody.Should().Contain("StatusEffect.ApplyStatusEffect<StealthStatusEffect>(creature, creature, 0f);");
+        refreshBody.IndexOf("StatusEffect.RemoveStatusEffect<StealthStatusEffect>(creature);", StringComparison.Ordinal)
+            .Should().BeLessThan(refreshBody.IndexOf(
+                "StatusEffect.ApplyStatusEffect<StealthStatusEffect>(creature, creature, 0f);",
+                StringComparison.Ordinal),
+                "a rank change must remove the old stat snapshot before applying the new one");
     }
 
     [Test]

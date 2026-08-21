@@ -68,7 +68,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Price(4)
                 .RequirementSkill(SkillType.Espionage, 40)
                 .RequirementCharacterType(CharacterType.Standard)
-                .IncreasesStat(StatType.ActiveStealthBonus, 20);
+                .IncreasesStat(StatType.ActiveStealthBonus, 20)
+                .TriggerPurchase(Service.Stealth.RefreshActiveStatusAfterPerkLevelChange)
+                .TriggerRefund(Service.Stealth.RefreshActiveStatusAfterPerkLevelChange);
         }
 
         private void BackAttack()

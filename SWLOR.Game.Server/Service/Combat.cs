@@ -588,7 +588,8 @@ namespace SWLOR.Game.Server.Service
                                             damageType == CombatDamageType.Force
                 ? Stat.GetStatAdjustment(defender, StatType.LeadershipForceDamageTakenPercentAdjustment)
                 : 0;
-            var leadershipOtherAdjustment = !damageType.IsPhysicalDamageType() &&
+            var leadershipOtherAdjustment = !typedLeadershipReductionAlreadyApplied &&
+                                            !damageType.IsPhysicalDamageType() &&
                                             damageType != CombatDamageType.Force
                 ? Stat.GetStatAdjustment(defender, StatType.LeadershipOtherDamageTakenPercentAdjustment)
                 : 0;
@@ -651,11 +652,9 @@ namespace SWLOR.Game.Server.Service
                     damage,
                     damageType,
                     leadershipPhysicalAdjustment,
-                    leadershipForceAdjustment);
+                    leadershipForceAdjustment,
+                    leadershipOtherAdjustment);
             }
-
-            if (!damageType.IsPhysicalDamageType() && damageType != CombatDamageType.Force)
-                genericAdjustment += leadershipOtherAdjustment;
 
             return genericAdjustment == 0
                 ? damage
@@ -673,24 +672,30 @@ namespace SWLOR.Game.Server.Service
             var leadershipForceAdjustment = damageType == CombatDamageType.Force
                 ? Stat.GetStatAdjustment(defender, StatType.LeadershipForceDamageTakenPercentAdjustment)
                 : 0;
+            var leadershipOtherAdjustment = !damageType.IsPhysicalDamageType() &&
+                                            damageType != CombatDamageType.Force
+                ? Stat.GetStatAdjustment(defender, StatType.LeadershipOtherDamageTakenPercentAdjustment)
+                : 0;
             return ApplyTypedLeadershipDamageTakenPercentageModifier(
                 damage,
                 damageType,
                 leadershipPhysicalAdjustment,
-                leadershipForceAdjustment);
+                leadershipForceAdjustment,
+                leadershipOtherAdjustment);
         }
 
         private static int ApplyTypedLeadershipDamageTakenPercentageModifier(
             int damage,
             CombatDamageType damageType,
             int leadershipPhysicalAdjustment,
-            int leadershipForceAdjustment)
+            int leadershipForceAdjustment,
+            int leadershipOtherAdjustment)
         {
             var adjustment = damageType.IsPhysicalDamageType()
                 ? leadershipPhysicalAdjustment
                 : damageType == CombatDamageType.Force
                     ? leadershipForceAdjustment
-                    : 0;
+                    : leadershipOtherAdjustment;
             return adjustment == 0
                 ? damage
                 : ApplyPercentDamageAdjustment(damage, adjustment);
@@ -5403,20 +5408,22 @@ namespace SWLOR.Game.Server.Service
             var nameStrRef = Stat.GetStatAdjustment(
                 activator,
                 StatType.RangedAbilityHitNearTargetStatusEffectNameStrRef);
-            var icon = (EffectIconType)Stat.GetStatAdjustment(
+            var icon = GetEffectIconTypeFromStat(Stat.GetStatAdjustment(
                 activator,
-                StatType.RangedAbilityHitNearTargetStatusEffectIcon);
-            var cleanseTypes = (StatusEffectCleanseType)Stat.GetStatAdjustment(
+                StatType.RangedAbilityHitNearTargetStatusEffectIcon));
+            var cleanseTypes = GetStatusEffectCleanseTypeFromStat(Stat.GetStatAdjustment(
                 activator,
-                StatType.RangedAbilityHitNearTargetStatusEffectCleanseTypes);
-            var resistanceType = (ResistanceType)Stat.GetStatAdjustment(
+                StatType.RangedAbilityHitNearTargetStatusEffectCleanseTypes));
+            var resistanceType = GetResistanceTypeFromStat(Stat.GetStatAdjustment(
                 activator,
-                StatType.RangedAbilityHitNearTargetStatusEffectResistanceType);
+                StatType.RangedAbilityHitNearTargetStatusEffectResistanceType));
             if (range <= 0 ||
                 damageDealt == 0 ||
                 duration <= 0 ||
                 nameStrRef <= 0 ||
-                icon == EffectIconType.Invalid)
+                icon == EffectIconType.Invalid ||
+                cleanseTypes == StatusEffectCleanseType.None ||
+                resistanceType == ResistanceType.Invalid)
             {
                 return;
             }
@@ -8053,7 +8060,8 @@ namespace SWLOR.Game.Server.Service
         /// Consumes the armed next-ability delay buff and combines it with active limited Haste,
         /// returning the percent (1-100) the activation delay is reduced by, or 0 when neither
         /// applies. An armed buff with no partial-reduction partner removes the delay entirely
-        /// (100).
+        /// (100). A currently active ranged no-delay status preserves the temporary arm because
+        /// consuming it would provide no additional timing benefit.
         /// </summary>
         public static int ConsumeNextAbilityDelayReductionPercent(uint creature, AbilityDetail ability)
         {
@@ -8148,6 +8156,9 @@ namespace SWLOR.Game.Server.Service
 
         public static bool ConsumeNextAutoAttackNoDelay(uint creature, SkillType skillType)
         {
+            if (IsAttackDelayReductionSuppressed(creature))
+                return false;
+
             var appliesToRangedStatus = IsRangedWeaponSkill(skillType) &&
                                         Stat.GetStatAdjustment(creature, StatType.RangedAttackNoDelay) > 0;
             var appliesToAllSkills = TemporaryStatModifier.GetStatAdjustment(
@@ -9692,6 +9703,26 @@ namespace SWLOR.Game.Server.Service
             return value > 0 && Enum.IsDefined(typeof(EffectIconType), value)
                 ? (EffectIconType)value
                 : EffectIconType.Invalid;
+        }
+
+        private static StatusEffectCleanseType GetStatusEffectCleanseTypeFromStat(int value)
+        {
+            const StatusEffectCleanseType supportedTypes =
+                StatusEffectCleanseType.Purify |
+                StatusEffectCleanseType.TreatmentKit1 |
+                StatusEffectCleanseType.TreatmentKit2 |
+                StatusEffectCleanseType.SoothePet;
+            var cleanseTypes = (StatusEffectCleanseType)value;
+            return value >= 0 && (cleanseTypes & ~supportedTypes) == 0
+                ? cleanseTypes
+                : StatusEffectCleanseType.None;
+        }
+
+        private static ResistanceType GetResistanceTypeFromStat(int value)
+        {
+            return value > 0 && Enum.IsDefined(typeof(ResistanceType), value)
+                ? (ResistanceType)value
+                : ResistanceType.Invalid;
         }
 
         private static CombatDamageType GetCombatDamageTypeFromStat(int value)

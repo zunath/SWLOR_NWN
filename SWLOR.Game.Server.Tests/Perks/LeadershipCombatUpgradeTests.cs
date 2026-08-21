@@ -226,8 +226,8 @@ public class LeadershipCombatUpgradeTests
                 100,
                 CombatDamageType.Fire,
                 typedLeadershipReductionAlreadyApplied: false)
-            .Should().Be(72,
-                "Other damage combines Hold-the-Line-style coverage with generic damage reduction");
+            .Should().Be(74,
+                "Other damage applies Hold-the-Line-style coverage before the separate generic reduction");
 
         ApplyDamageTakenPercentageModifiers(
                 80,
@@ -241,6 +241,12 @@ public class LeadershipCombatUpgradeTests
                 typedLeadershipReductionAlreadyApplied: true)
             .Should().Be(90,
                 "the guard must skip the typed stage rather than applying Leadership reduction twice");
+        ApplyDamageTakenPercentageModifiers(
+                82,
+                CombatDamageType.Fire,
+                typedLeadershipReductionAlreadyApplied: true)
+            .Should().Be(74,
+                "direct Other damage that already received Leadership must receive only the generic stage");
 
         var forcePortion = Combat.GetIncomingPhysicalToForceConversionPortion(100, 40);
         var physicalPortion = 100 - forcePortion;
@@ -248,15 +254,25 @@ public class LeadershipCombatUpgradeTests
                 physicalPortion,
                 CombatDamageType.Physical,
                 physicalAdjustment: -20,
-                forceAdjustment: -15);
+                forceAdjustment: -15,
+                otherAdjustment: -18);
         var adjustedForcePortion = ApplyTypedLeadershipDamageTakenPercentageModifier(
                 forcePortion,
                 CombatDamageType.Force,
                 physicalAdjustment: -20,
-                forceAdjustment: -15);
+                forceAdjustment: -15,
+                otherAdjustment: -18);
+        var adjustedOtherDamage = ApplyTypedLeadershipDamageTakenPercentageModifier(
+            100,
+            CombatDamageType.Fire,
+            physicalAdjustment: -20,
+            forceAdjustment: -15,
+            otherAdjustment: -18);
         adjustedPhysicalPortion.Should().Be(48);
         adjustedForcePortion.Should().Be(34,
                 "the converted share must use Force Leadership rather than inheriting the physical reduction");
+        adjustedOtherDamage.Should().Be(82,
+            "the Other Leadership channel must use the same independent typed stage as Physical and Force");
         (adjustedPhysicalPortion + adjustedForcePortion).Should().Be(82,
             "different typed channels must reduce their own post-split portions exactly once");
     }
@@ -304,6 +320,7 @@ public class LeadershipCombatUpgradeTests
             StringComparison.Ordinal)];
         directTypedStage.Should().Contain("StatType.LeadershipPhysicalDamageTakenPercentAdjustment");
         directTypedStage.Should().Contain("StatType.LeadershipForceDamageTakenPercentAdjustment");
+        directTypedStage.Should().Contain("StatType.LeadershipOtherDamageTakenPercentAdjustment");
 
         var ability = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Ability.cs").FullName);
         (ability.Split("typedLeadershipReductionAlreadyApplied: true").Length - 1).Should().Be(2,
@@ -486,7 +503,15 @@ public class LeadershipCombatUpgradeTests
             "ApplyDamageTakenPercentageModifiers",
             BindingFlags.Static | BindingFlags.NonPublic);
         method.Should().NotBeNull();
-        return (int)method!.Invoke(null, new object[]
+        method!.GetParameters().Select(x => x.Name).Should().Equal(
+            "damage",
+            "damageType",
+            "leadershipPhysicalAdjustment",
+            "leadershipForceAdjustment",
+            "leadershipOtherAdjustment",
+            "genericAdjustment",
+            "typedLeadershipReductionAlreadyApplied");
+        return (int)method.Invoke(null, new object[]
         {
             damage,
             damageType,
@@ -502,18 +527,26 @@ public class LeadershipCombatUpgradeTests
         int damage,
         CombatDamageType damageType,
         int physicalAdjustment,
-        int forceAdjustment)
+        int forceAdjustment,
+        int otherAdjustment)
     {
         var method = typeof(Combat).GetMethod(
             "ApplyTypedLeadershipDamageTakenPercentageModifier",
             BindingFlags.Static | BindingFlags.NonPublic);
         method.Should().NotBeNull();
-        return (int)method!.Invoke(null, new object[]
+        method!.GetParameters().Select(x => x.Name).Should().Equal(
+            "damage",
+            "damageType",
+            "leadershipPhysicalAdjustment",
+            "leadershipForceAdjustment",
+            "leadershipOtherAdjustment");
+        return (int)method.Invoke(null, new object[]
         {
             damage,
             damageType,
             physicalAdjustment,
             forceAdjustment,
+            otherAdjustment,
         })!;
     }
 

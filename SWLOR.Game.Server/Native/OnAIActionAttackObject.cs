@@ -485,11 +485,6 @@ namespace SWLOR.Game.Server.Native
                 var limitedNoDelayRemainingAttacks = hasLimitedAttackNoDelay
                     ? limitedAttackNoDelayRemainingAttacks
                     : 0;
-                if (hasArmedNoDelay)
-                {
-                    limitedDelayReductionRemainingAttacks = 0;
-                    limitedNoDelayRemainingAttacks = 0;
-                }
 
                 // The delay the attacker would have without a no-delay buff. Lowering the delay to
                 // the floor is meaningless for a build already at the floor, so this is passed to

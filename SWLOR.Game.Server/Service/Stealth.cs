@@ -86,6 +86,36 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Rebuilds the active Stealth status after a rank purchase or refund so the status never
+        /// retains a stat snapshot from the previous perk level. A full refund also exits the
+        /// native action mode immediately because the ownership gate no longer passes.
+        /// </summary>
+        public static void RefreshActiveStatusAfterPerkLevelChange(uint creature)
+        {
+            if (!GetIsPC(creature) || GetIsDM(creature))
+                return;
+
+            StatusEffect.RemoveStatusEffect<StealthStatusEffect>(creature);
+
+            if (!GetActionMode(creature, ActionMode.Stealth))
+                return;
+
+            if (Perk.GetPerkLevel(creature, PerkType.Stealth) <= 0)
+            {
+                EspionageInfiltration.CancelPlayer(creature);
+                ClearVerdictsForTarget(creature);
+                AssignCommand(creature, () =>
+                {
+                    SetActionMode(creature, ActionMode.Stealth, false);
+                });
+                return;
+            }
+
+            ClearVerdictsForTarget(creature);
+            StatusEffect.ApplyStatusEffect<StealthStatusEffect>(creature, creature, 0f);
+        }
+
+        /// <summary>
         /// Records player-initiated combat before the attack event can add pair enmity. This lets
         /// infiltration distinguish the attack from combat caused by a successful detection.
         /// </summary>

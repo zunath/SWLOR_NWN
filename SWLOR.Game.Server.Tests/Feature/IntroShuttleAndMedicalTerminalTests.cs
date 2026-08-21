@@ -2,6 +2,8 @@ using FluentAssertions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Feature.DialogDefinition;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.ConversationService;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -57,6 +59,27 @@ public sealed class IntroShuttleAndMedicalTerminalTests
 
         var menu = new MedicalRegistrationDialog().Build();
         menu.PortraitResref.Should().Be(MedicalPortraitResref);
+    }
+
+    [Test]
+    public void ShuttleStatusHeader_RendersAsOneCompactNuiTextBlock()
+    {
+        var method = typeof(ShuttleStatusDialog).GetMethod(
+            "BuildStatusHeader",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+        method.Should().NotBeNull();
+
+        var header = (string)method!.Invoke(null, new object[] { "Dantooine", "5 minutes" })!;
+        var blocks = ConversationMarkup.ParseLegacyColors(header, ConversationTextStyle.Normal);
+
+        blocks.Should().ContainSingle(
+            "the NUI conversation list assigns a full-height row to every styled text block");
+        blocks[0].Text.Should().Be("Destination: Dantooine\nArriving in: 5 minutes");
+        blocks[0].Style.Should().Be(ConversationTextStyle.Custom);
+        blocks[0].Color.Should().NotBeNull();
+        blocks[0].Color.Red.Should().Be(0);
+        blocks[0].Color.Green.Should().Be(255);
+        blocks[0].Color.Blue.Should().Be(255);
     }
 
     private static IEnumerable<JObject> EnumerateResources(string root, string listName)

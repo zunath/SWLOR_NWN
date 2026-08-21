@@ -310,7 +310,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Travel and Companions",
                             "Complete the CZ-220 orientation to earn the shuttle pass used for interplanetary travel. Taxi terminals handle registered local routes. You may have only one active henchman companion at a time, either a beast or a droid."),
                         new ArticleBlock("Recognizing Players",
-                            "Other player characters may appear with a gray descriptor until you remember them. Type /name <name>, then click the player character when the target cursor appears. Use /forgetname and click the character to clear that personal name. To change how unnamed players see you, use /name <description> on yourself. Names and descriptions are limited to 64 characters and cannot include color codes.")
+                            "Names above other player characters are private memory labels, not global character names. An unrecognized character appears as a gray public description. Use /name <label> on another player to save a label only your character can see for that presented identity; this does not rename them for anyone else. Use /forgetname to remove only your private label. Use /name <description> on yourself to set the gray public description seen by players who have not labeled your current identity. Labels and descriptions are limited to 64 characters and cannot include color codes.")
                     },
                     new[]
                     {
@@ -322,7 +322,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new QuestionAnswer("Where do I go after death?", "Respawning returns you to your registered medical facility and adds XP debt."),
                         new QuestionAnswer("How do I leave CZ-220?", "Complete the orientation quest to earn the CZ-220 Shuttle Pass, then use a starport flights terminal."),
                         new QuestionAnswer("What should I open first?", "Press B for this guide, C for the Character Sheet, and J for active Quests."),
-                        new QuestionAnswer("How do I use /name?", "Type /name <name>, then click the player character when the target cursor appears. Target yourself to change the gray description shown to players who have not named you. Names and descriptions are limited to 64 characters and cannot include color codes. Name the intended player before sending tells if several characters share the same descriptor.")
+                        new QuestionAnswer("How do I use /name?", "Use /name <label> on another player to save a private label only you can see. Use it on yourself to set your gray public description. Neither action changes another player's character name. Labels and descriptions are limited to 64 characters and cannot include color codes. Label the intended player before sending tells if several characters share the same description.")
                     },
                     new[] { "Communication", "Skills", "Attributes", "Perks", "Skill Decay", "Perk Refunds", "XP Debt", "Death & Recovery", "Combat Basics", "Crafting", "Travel & Navigation", "Beasts & Stables", "Droids", "Quests & Key Items", "Useful Windows" }),
 
@@ -345,8 +345,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             "Settings controls achievement notifications, subdual mode, reset reminders, Mini-Vitals, chat and emote colors, language colors, character-description access, and identity/privacy options for descriptors and account names."),
                         new ArticleBlock("Notes",
                             "Notes are private player notes. You can keep up to 100 notes, and each note can hold up to 1000 characters. Notes can be searched, sorted into up to 25 categories you create yourself, and filtered by category."),
-                        new ArticleBlock("Names",
-                            "Unrecognized player characters appear with a gray descriptor until you personally set a known name. Type /name <name>, then click the player character when the target cursor appears. Use /forgetname and click the character to forget that personal name. Target yourself with /name <description> to set the gray text others see before they name you. Names and descriptions are limited to 64 characters and cannot include color codes."),
+                        new ArticleBlock("Remembering Other Characters",
+                            "Using /name <label> on another player saves a private label only your character can see. It does not rename the other character, and no other player sees the label you entered. The label can be a name your character was told, a nickname, or what your character believes that presented identity is called; it does not have to be the truth. Use /forgetname on the character to remove only your private label."),
+                        new ArticleBlock("Your Public Description",
+                            "An unrecognized player character appears as a gray public description. Use /name <description> on yourself to set the gray text shown to players who have not saved a label for your current identity. This does not change your real character name. Labels and public descriptions are limited to 64 characters and cannot include color codes."),
+                        new ArticleBlock("Example",
+                            "A masked character uses the public description 'Tall Armored Human.' Mira saves the private label 'Red Coat,' so only Mira sees Red Coat. Jax has not saved a label, so Jax still sees Tall Armored Human in gray. Neither player renamed the masked character. If the mask is a disguise, labels saved for the character's normal identity remain separate."),
                         new ArticleBlock("Emotes and Languages",
                             "Speech can include emote text, and /emotestyle toggles between regular and novel formatting. Use /emotes to list emotes or /emotegui to browse them in a window. Use /language help to list language aliases and /language <alias> to switch. Hearing a non-Basic language you do not fully know can grant language XP over time. Wookiees always speak Shyriiwook."),
                         new ArticleBlock("OOC and Speech Restrictions",
@@ -359,7 +363,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new QuestionAnswer("How far does talk carry?", "Talk reaches 20 meters. Whisper reaches 4 meters."),
                         new QuestionAnswer("What is party chat here?", "Party chat acts as scoped Comms for your party and can be overheard by nearby players in the same scope."),
                         new QuestionAnswer("Why can't I use Shout?", "The player Shout channel is disabled. Use Comms for in-character radio-style communication."),
-                        new QuestionAnswer("How do I name another player?", "Type /name <name>, then click that player character when the target cursor appears. Use /forgetname and click them again to clear it. Target yourself with /name to set your unnamed description. Names and descriptions are limited to 64 characters and cannot include color codes."),
+                        new QuestionAnswer("Can another player rename my character?", "No. They can only save a private label visible to their own character."),
+                        new QuestionAnswer("Can two players see different names for the same character?", "Yes. Each character keeps their own private labels."),
+                        new QuestionAnswer("Does /name reveal someone's real identity?", "No. It records what your character believes or calls the currently presented identity."),
+                        new QuestionAnswer("How do I label another player?", "Type /name <label>, then click that player character. Use /forgetname and click them again to remove only your private label. Target yourself with /name to set your gray public description."),
                         new QuestionAnswer("How do I change languages?", "Use /language help, then /language <alias>. Wookiees remain in Shyriiwook."),
                         new QuestionAnswer("How do languages improve?", "Listening to partially understood non-Basic speech can grant language XP over time."),
                         new QuestionAnswer("How do I report a bug?", "Use /bug and include what happened, where it happened, and how to reproduce it.")
@@ -738,7 +745,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     new[]
                     {
                         new ArticleBlock("Opening Disguises",
-                            "Open Disguises from the Character Sheet, or use /disguise or /disguises. A disguise stores a private label for your own list and a public descriptor, appearance, portrait, sound set, and optional scrambled account identifier."),
+                            "Open Disguises from the Character Sheet, or use /disguise or /disguises. A disguise stores a private slot label only you can see, plus a public description, appearance, portrait, sound set, and optional scrambled account identifier."),
+                        new ArticleBlock("Separate Presented Identities",
+                            "Your normal identity and every disguise are remembered separately. A private label someone saved for your normal identity does not carry over to a disguise, and a label saved for one disguise does not carry over to another. Each observer may label the same disguise differently. Activating or deactivating a disguise automatically restores the labels that observer previously saved for the identity you are presenting."),
                         new ArticleBlock("Identity Slots",
                             "You begin with 1 identity slot. Each False Identities rank adds 1, up to 4 total slots. Every saved identity, including a retired one, occupies a slot. Retiring does not free it; only permanently wiping it does."),
                         new ArticleBlock("Activating",
@@ -746,14 +755,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Retiring and Restoring",
                             "Retiring an identity deactivates it and prevents activation, but keeps its saved setup. You can restore a retired identity from the Disguises window if you want to use it again."),
                         new ArticleBlock("Permanently Wiping",
-                            "An Identity Broker can permanently wipe a retired identity for 100,000 credits or 25,000 Available RP XP. Wiping frees the slot and removes other characters' remembered-name references to that identity. This cannot be undone.")
+                            "An Identity Broker can permanently wipe a retired identity for 100,000 credits or 25,000 Available RP XP. Wiping frees the slot and removes other characters' private-label references to that identity. This cannot be undone."),
+                        new ArticleBlock("Staff Accountability",
+                            "A disguise does not hide your underlying character from staff. Staff tools and server audit logs retain the real character and account identity. Player-created labels are in-character memory aids, not proof of a character's real identity in an out-of-character dispute.")
                     },
                     new[]
                     {
                         new QuestionAnswer("How many disguises can I keep?", "One initially, up to four total with False Identities."),
                         new QuestionAnswer("Why can't I activate another disguise?", "The activation cooldown may still be running. Cover Story reduces it, but it cannot go below 5 minutes."),
                         new QuestionAnswer("Does retiring free the slot?", "No. Restore it for reuse, or permanently wipe it at an Identity Broker to free the slot."),
-                        new QuestionAnswer("What does a permanent wipe remove?", "The saved identity and remembered-name references to it. The wipe cannot be undone.")
+                        new QuestionAnswer("What does a permanent wipe remove?", "The saved identity and other characters' private-label references to it. The wipe cannot be undone."),
+                        new QuestionAnswer("Does a saved name carry between disguises?", "No. Your normal identity and every disguise are remembered separately."),
+                        new QuestionAnswer("Can a disguise hide my identity from staff?", "No. Staff tools and audit logs retain your real character and account identity.")
                     },
                     new[] { "Communication", "Useful Windows", "Skills", "Perks" }),
 

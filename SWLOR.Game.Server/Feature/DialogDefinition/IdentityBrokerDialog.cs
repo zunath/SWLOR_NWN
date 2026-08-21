@@ -122,8 +122,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
         private static string BuildDisguiseSummary(PlayerDisguise disguise)
         {
-            return $"{ColorToken.Green("Private Slot Name:")} {disguise.PrivateName}\n" +
-                   $"{ColorToken.Green("Public Descriptor:")} {disguise.Descriptor}";
+            return $"{ColorToken.Green("Private Slot Label:")} {disguise.PrivateName}\n" +
+                   $"{ColorToken.Green("Public Description:")} {disguise.Descriptor}";
         }
 
         private static bool CanUseDisguise(uint player, PlayerDisguise disguise)

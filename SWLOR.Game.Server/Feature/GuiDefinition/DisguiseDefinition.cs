@@ -261,8 +261,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             group.SetScrollbars(NuiScrollbars.None);
             group.AddColumn(col =>
             {
-                AddTextField(col, "Private Name  (only you see this)", model => model.PrivateName, Disguise.MaxPrivateNameLength);
-                AddTextField(col, "Public Descriptor  (shown to others)", model => model.Descriptor, PlayerName.MaxKnownNameLength);
+                AddTextField(col, "Private Slot Label  (only you see this)", model => model.PrivateName, Disguise.MaxPrivateNameLength);
+                AddTextField(col, "Public Description  (shown to others)", model => model.Descriptor, PlayerName.MaxKnownNameLength);
                 AddSoundSetField(col);
 
                 col.AddRow(row =>

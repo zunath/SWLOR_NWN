@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 return;
             }
 
-            page.Header = $"{ColorToken.Green("Market: ")} {marketRegion.Name}\n\n" +
+            page.Header = $"Market: {marketRegion.Name}\n\n" +
                           $"Goods may be bought and sold on the market here. What would you like to do?";
 
             page.AddResponse("Buy", () =>

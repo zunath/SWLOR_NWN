@@ -32,13 +32,10 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 return;
             }
 
-            var selectedShipInfo = string.Empty;
             var spaceWaypointTag = GetLocalString(Owner, "STARPORT_TELEPORT_WAYPOINT");
             var landingWaypointTag = GetLocalString(Owner, "STARPORT_LANDING_WAYPOINT");
 
-            page.Header = ColorToken.Green("Starport Menu") + "\n" +
-                          selectedShipInfo + "\n" +
-                          "What would you like to do?";
+            page.Header = "Starport Menu\n\nWhat would you like to do?";
 
             if (!GetIsDM(player) && !GetIsDMPossessed(player))
             {

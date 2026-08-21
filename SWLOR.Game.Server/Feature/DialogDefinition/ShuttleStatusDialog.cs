@@ -34,13 +34,15 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 ? "momentarily"
                 : Time.GetTimeShortIntervals(remaining, false);
 
-            page.Header = ColorToken.Cyan("Destination: ") + destinationName + "\n" +
-                          ColorToken.Cyan("Arriving in: ") + countdown;
+            page.Header = BuildStatusHeader(destinationName, countdown);
 
             page.AddResponse("Refresh", () =>
             {
                 GoToPage(MainPageId, false);
             });
         }
+
+        private static string BuildStatusHeader(string destinationName, string countdown) =>
+            ColorToken.Cyan($"Destination: {destinationName}\nArriving in: {countdown}");
     }
 }

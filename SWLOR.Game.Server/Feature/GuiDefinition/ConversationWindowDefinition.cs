@@ -57,11 +57,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                             .SetShowBorder(false)
                                             .SetScrollbars(NuiScrollbars.None)
                                             .SetPadding(8f)
-                                            .SetHeight(196f);
+                                            .SetHeight(48f);
                                     });
                                 })
                                     .BindRowCount(model => model.LineTexts)
-                                    .SetRowHeight(208f)
+                                    .SetRowHeight(56f)
                                     .SetShowBorders(false)
                                     .SetScrollbars(NuiScrollbars.Y);
                             });

@@ -654,9 +654,6 @@ def update_spell_targeting(spell_updates):
     the marker's shape and size. Updating only the feat row leaves a valid-looking ability with a
     stale (or entirely blank) marker, so both halves are generated from the same wording.
     """
-    if not spell_updates:
-        return
-
     spells_path = ROOT / "SWLOR_Haks" / "sw_2da" / "spells.2da"
     lines = spells_path.read_text().splitlines()
     _, headers = get_2da_header(lines)

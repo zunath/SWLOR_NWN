@@ -1,4 +1,6 @@
 import importlib.util
+import json
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -85,6 +87,36 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
 
         self.assertIsNone(values)
         self.assertFalse(owns_targeting)
+
+    def test_empty_update_clears_all_previously_owned_rows_and_ownership(self):
+        with tempfile.TemporaryDirectory() as directory:
+            temporary_root = Path(directory)
+            spells_path = temporary_root / "SWLOR_Haks" / "sw_2da" / "spells.2da"
+            spells_path.parent.mkdir(parents=True)
+            spells_path.write_text(
+                "2DA V2.0\n\n"
+                "Label TargetShape TargetSizeX TargetSizeY TargetFlags\n"
+                "123 Owned sphere 5 2 17\n")
+            ownership_path = temporary_root / "tools" / "GeneratedWeaponSpellTargeting.json"
+            ownership_path.parent.mkdir(parents=True)
+            ownership_path.write_text(json.dumps({"spell_ids": [123]}))
+
+            original_root = GENERATOR.ROOT
+            original_ownership_path = GENERATOR.GENERATED_TARGETING_OWNERSHIP
+            try:
+                GENERATOR.ROOT = temporary_root
+                GENERATOR.GENERATED_TARGETING_OWNERSHIP = ownership_path
+                GENERATOR.update_spell_targeting({})
+            finally:
+                GENERATOR.ROOT = original_root
+                GENERATOR.GENERATED_TARGETING_OWNERSHIP = original_ownership_path
+
+            row = GENERATOR.read_2da(spells_path)["123"]
+            self.assertEqual("****", row["TargetShape"])
+            self.assertEqual("****", row["TargetSizeX"])
+            self.assertEqual("****", row["TargetSizeY"])
+            self.assertEqual("****", row["TargetFlags"])
+            self.assertEqual({"spell_ids": []}, json.loads(ownership_path.read_text()))
 
 
 class StatConfiguredIconPatternTests(unittest.TestCase):

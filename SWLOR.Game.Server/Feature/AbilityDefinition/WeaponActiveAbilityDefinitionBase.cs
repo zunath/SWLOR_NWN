@@ -179,7 +179,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public int TargetAbilityHitChanceDurationSeconds { get; init; }
             public Func<IStatusEffect> StatusEffectFactory { get; init; }
             public Func<IStatusEffect> SelfStatusEffectFactory { get; init; }
-            public Func<IStatusEffect> SelfStatusEffectOnCriticalHitFactory { get; init; }
+            public Func<AbilityImpactSummary, IStatusEffect> SelfStatusEffectOnCriticalHitFactory { get; init; }
             public int SelfStatusEffectOnCriticalHitDurationSeconds { get; init; }
             public Type[] SelfStatusEffectsToReplace { get; init; }
             public int SelfEnmityPercentIfTargetRecentlyDamagedActivator { get; init; }
@@ -491,6 +491,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             public void AfterImpact(uint activator, int totalDamage, int successfulHitCount = 0, AbilityImpactSummary summary = null)
             {
+                if (SelfStatusEffectOnCriticalHitFactory != null &&
+                    SelfStatusEffectOnCriticalHitDurationSeconds > 0 &&
+                    (summary?.CriticalHitCount ?? 0) > 0)
+                {
+                    StatusEffect.ApplyStatusEffect(
+                        activator,
+                        activator,
+                        SelfStatusEffectOnCriticalHitFactory(summary),
+                        SelfStatusEffectOnCriticalHitDurationSeconds);
+                }
+
                 if (totalDamage <= 0)
                     return;
 
@@ -542,17 +553,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                             StatType.AttackDelayReductionPercent,
                             1);
                     }
-                }
-
-                if (SelfStatusEffectOnCriticalHitFactory != null &&
-                    SelfStatusEffectOnCriticalHitDurationSeconds > 0 &&
-                    (summary?.CriticalHitCount ?? 0) > 0)
-                {
-                    StatusEffect.ApplyStatusEffect(
-                        activator,
-                        activator,
-                        SelfStatusEffectOnCriticalHitFactory(),
-                        SelfStatusEffectOnCriticalHitDurationSeconds);
                 }
 
                 ApplySelfModifiers(activator);

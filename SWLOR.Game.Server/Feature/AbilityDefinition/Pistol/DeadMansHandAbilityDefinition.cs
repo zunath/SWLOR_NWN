@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 AbilityType.Perception,
                 new GeneratedWeaponAbilityProfile
                 {
-                    SelfStatusEffectOnCriticalHitFactory = () => new DeadMansHandStatusEffect(),
+                    SelfStatusEffectOnCriticalHitFactory = triggeringImpact => new DeadMansHandStatusEffect(triggeringImpact),
                     SelfStatusEffectOnCriticalHitDurationSeconds = 30
                 });
 

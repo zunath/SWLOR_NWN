@@ -17,15 +17,21 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override EffectIconType Icon => EffectIconType.DeadMansHandStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
         public override bool PersistsOnLogout => false;
+        public int RemainingAttacks => _attackCounter.RemainingAttacks;
 
         public DeadMansHandStatusEffect()
-            : this(3)
+            : this(new LimitedAttackCounter(3))
         {
         }
 
-        private DeadMansHandStatusEffect(int remainingAttacks)
+        public DeadMansHandStatusEffect(AbilityImpactSummary triggeringAbilityImpact)
+            : this(new LimitedAttackCounter(3, triggeringAbilityImpact))
         {
-            _attackCounter = new LimitedAttackCounter(remainingAttacks);
+        }
+
+        private DeadMansHandStatusEffect(LimitedAttackCounter attackCounter)
+        {
+            _attackCounter = attackCounter;
             StatGroup.Stats[StatType.RangedCriticalRatePercentAdjustment] = CriticalRatePercent;
         }
 
@@ -35,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             if (!Combat.IsRangedWeaponSkill(skillType))
                 return;
 
-            Combat.GrantNextAutoAttackNoDelay(
+            GrantNextRangedAttackNoDelay(
                 creature,
                 skillType,
                 Math.Max(1, (int)Math.Ceiling(GetDurationSeconds(durationTicks))));
@@ -54,19 +60,29 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
             if (_attackCounter.RemainingAttacks <= 0)
             {
+                Combat.ClearNextAttackNoDelay(attacker, skillType);
                 IsFlaggedForRemoval = true;
                 return;
             }
 
-            Combat.GrantNextAutoAttackNoDelay(
+            GrantNextRangedAttackNoDelay(
                 attacker,
                 skillType,
                 Math.Max(1, (int)Math.Ceiling(GetDurationSeconds(DurationTicks))));
         }
 
+        private static void GrantNextRangedAttackNoDelay(
+            uint attacker,
+            SkillType skillType,
+            int durationSeconds)
+        {
+            Combat.GrantNextAutoAttackNoDelay(attacker, skillType, durationSeconds);
+            Combat.GrantNextAbilityNoDelay(attacker, skillType, durationSeconds);
+        }
+
         public override IStatusEffect Clone()
         {
-            return new DeadMansHandStatusEffect(_attackCounter.RemainingAttacks);
+            return new DeadMansHandStatusEffect(_attackCounter.Clone());
         }
     }
 }

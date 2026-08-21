@@ -2423,7 +2423,10 @@ def profile_property_lines(row, level, primary_status):
         properties.append(("StatusEffectFactory", factory))
 
     if base == "Dead Man's Hand":
-        add_profile_property("SelfStatusEffectOnCriticalHitFactory", "() => new DeadMansHandStatusEffect()")
+        add_profile_property(
+            "SelfStatusEffectOnCriticalHitFactory",
+            "triggeringImpact => new DeadMansHandStatusEffect(triggeringImpact)",
+        )
         add_profile_property("SelfStatusEffectOnCriticalHitDurationSeconds", "30")
 
     return properties

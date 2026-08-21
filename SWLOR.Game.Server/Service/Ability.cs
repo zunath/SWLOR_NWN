@@ -2086,7 +2086,8 @@ namespace SWLOR.Game.Server.Service
                 statusApplied,
                 statusEffect,
                 additionalStatusEffects,
-                firstHostileAbilityHitDamageBonusApplied);
+                firstHostileAbilityHitDamageBonusApplied,
+                trackedImpact == null || trackedImpact.Summary.ImpactedTargetCount == 0);
 
             if ((damage > 0 || statusApplied) && targetVisualEffect != VisualEffect.None)
             {

@@ -2114,6 +2114,7 @@ namespace SWLOR.Game.Server.Service
                 new LimitedHasteStatusEffect(
                     hastePercent,
                     attackCount,
+                    triggerSkillType,
                     statusEffectIcon,
                     Ability.GetActiveAbilityImpactSummary(attacker)),
                 duration);
@@ -5189,7 +5190,8 @@ namespace SWLOR.Game.Server.Service
             bool statusApplied,
             Type primaryStatusEffect,
             IEnumerable<Type> additionalStatusEffects,
-            bool firstHostileAbilityHitDamageBonusApplied)
+            bool firstHostileAbilityHitDamageBonusApplied,
+            bool isFirstSuccessfulTarget)
         {
             if (!GetIsObjectValid(activator) || !GetIsObjectValid(target) || ability == null)
                 return;
@@ -5211,7 +5213,8 @@ namespace SWLOR.Game.Server.Service
                 damage,
                 statusApplied,
                 primaryStatusEffect,
-                additionalStatusEffects);
+                additionalStatusEffects,
+                isFirstSuccessfulTarget);
             ApplyStatusAppliedEffects(
                 activator,
                 target,
@@ -5372,7 +5375,8 @@ namespace SWLOR.Game.Server.Service
             int damage,
             bool statusApplied,
             Type primaryStatusEffect,
-            IEnumerable<Type> additionalStatusEffects)
+            IEnumerable<Type> additionalStatusEffects,
+            bool isFirstSuccessfulTarget)
         {
             switch (skillType)
             {
@@ -5386,7 +5390,8 @@ namespace SWLOR.Game.Server.Service
                     ApplyKatarVenomCurrentImpactRiders(activator, target);
                     break;
                 case SkillType.Leadership:
-                    ApplyLeadershipVanguardImpactRiders(activator, target);
+                    if (isFirstSuccessfulTarget)
+                        ApplyLeadershipVanguardImpactRiders(activator);
                     break;
                 case SkillType.Lightsaber:
                     ApplyLightsaberOffenseImpactRiders(activator, target, ability);
@@ -6349,7 +6354,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private static void ApplyLeadershipVanguardImpactRiders(uint activator, uint target)
+        private static void ApplyLeadershipVanguardImpactRiders(uint activator)
         {
             var rank = Stat.GetStatAdjustment(activator, StatType.LeadershipVanguardMarkTargetRank);
             if (rank <= 0)
@@ -8056,6 +8061,20 @@ namespace SWLOR.Game.Server.Service
                 1,
                 durationSeconds,
                 StatType.NextAutoAttackNoDelayAllSkills);
+        }
+
+        /// <summary>
+        /// Clears pending auto-attack and cast-ability no-delay arms for a matching skill.
+        /// Limited-attack effects use this when their final charge is spent so the unused arm
+        /// from the other attack domain cannot accelerate an extra attack.
+        /// </summary>
+        public static void ClearNextAttackNoDelay(uint creature, SkillType skillType)
+        {
+            if (!GetIsObjectValid(creature) || skillType == SkillType.Invalid)
+                return;
+
+            ConsumeNextAutoAttackNoDelay(creature, skillType);
+            ConsumeNextAbilityDelayReductionPercent(creature, skillType);
         }
 
         public static void GrantNextAutoAttackCriticalRateBonus(
@@ -10291,6 +10310,16 @@ namespace SWLOR.Game.Server.Service
         /// <returns>Attack delay in milliseconds.</returns>
         public static int CalculateAttackDelay(uint attacker)
         {
+            return CalculateAttackDelay(attacker, 0);
+        }
+
+        /// <summary>
+        /// Calculates attack delay while adjusting the creature's raw attack-delay reduction.
+        /// A negative adjustment is used to compare a swing with and without a limited-attack
+        /// speed effect without mutating the creature's active status effects.
+        /// </summary>
+        public static int CalculateAttackDelay(uint attacker, int attackDelayReductionAdjustment)
+        {
             var rightHand = GetItemInSlot(InventorySlot.RightHand, attacker);
             var leftHand = GetItemInSlot(InventorySlot.LeftHand, attacker);
 
@@ -10318,7 +10347,11 @@ namespace SWLOR.Game.Server.Service
             }
 
             var finalDelay = ConvertAttackDelayUnitsToMilliseconds(delay);
-            var reductionPercentage = CalculateAttackDelayReduction(attacker);
+            var reductionPercentage = Math.Clamp(
+                Stat.GetStatAdjustment(attacker, StatType.AttackDelayReductionPercent) +
+                attackDelayReductionAdjustment,
+                -MaximumAttackDelayAdjustmentPercent,
+                MaximumAttackDelayAdjustmentPercent);
 
             return ApplyAttackDelayReduction(finalDelay, reductionPercentage);
         }
@@ -10455,6 +10488,27 @@ namespace SWLOR.Game.Server.Service
             int unbuffedDelayMilliseconds,
             bool hasNoDelayBuff)
         {
+            return ConsumeAttacksPerSwing(
+                attacker,
+                effectiveDelayMilliseconds,
+                unbuffedDelayMilliseconds,
+                hasNoDelayBuff,
+                effectiveDelayMilliseconds,
+                0);
+        }
+
+        /// <summary>
+        /// Determines the attacks resolved by a swing while preventing a limited-attack speed
+        /// effect from pre-scheduling more accelerated attacks than its remaining charges cover.
+        /// </summary>
+        public static int ConsumeAttacksPerSwing(
+            uint attacker,
+            int effectiveDelayMilliseconds,
+            int unbuffedDelayMilliseconds,
+            bool hasNoDelayBuff,
+            int effectiveDelayWithoutLimitedReductionMilliseconds,
+            int limitedReductionRemainingAttacks)
+        {
             _attackSwingDebts.TryGetValue(attacker, out var attackDebt);
             var attacks = CalculateAttacksPerSwing(effectiveDelayMilliseconds, attackDebt, out var updatedAttackDebt);
 
@@ -10471,12 +10525,42 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
+            if (limitedReductionRemainingAttacks > 0)
+            {
+                var baselineAttacks = CalculateAttacksPerSwing(
+                    effectiveDelayWithoutLimitedReductionMilliseconds,
+                    attackDebt,
+                    out var baselineUpdatedAttackDebt);
+                attacks = CapAttacksPerSwingForLimitedAttackEffect(
+                    attacks,
+                    baselineAttacks,
+                    limitedReductionRemainingAttacks);
+
+                // Once this swing spends every remaining charge, discard fractional attack debt
+                // created by the expiring reduction while retaining debt earned without it.
+                if (attacks >= limitedReductionRemainingAttacks)
+                    updatedAttackDebt = baselineUpdatedAttackDebt;
+            }
+
             if (updatedAttackDebt <= 0f)
                 _attackSwingDebts.Remove(attacker);
             else
                 _attackSwingDebts[attacker] = updatedAttackDebt;
 
             return attacks;
+        }
+
+        public static int CapAttacksPerSwingForLimitedAttackEffect(
+            int acceleratedAttacks,
+            int baselineAttacks,
+            int remainingAttacks)
+        {
+            acceleratedAttacks = Math.Max(1, acceleratedAttacks);
+            baselineAttacks = Math.Clamp(baselineAttacks, 1, acceleratedAttacks);
+            if (remainingAttacks <= 0)
+                return baselineAttacks;
+
+            return Math.Max(baselineAttacks, Math.Min(acceleratedAttacks, remainingAttacks));
         }
 
         /// <summary>

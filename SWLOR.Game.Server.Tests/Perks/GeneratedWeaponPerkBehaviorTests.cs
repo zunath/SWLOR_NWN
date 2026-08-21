@@ -42,7 +42,12 @@ public class GeneratedWeaponPerkBehaviorTests
             12);
         AssertStatusStat(new DuelistsDistanceStatusEffect(10), StatType.DamageDealtPercentAdjustment, -10);
         AssertStatusStat(
-            new LimitedHasteStatusEffect(20, 2, EffectIconType.ReloadTempoStatusEffect, new AbilityImpactSummary()),
+            new LimitedHasteStatusEffect(
+                20,
+                2,
+                SkillType.Pistol,
+                EffectIconType.ReloadTempoStatusEffect,
+                new AbilityImpactSummary()),
             StatType.AttackDelayReductionPercent,
             20);
         AssertStatusStat(new DeadMansHandStatusEffect(), StatType.RangedCriticalRatePercentAdjustment, 20);
@@ -153,9 +158,14 @@ public class GeneratedWeaponPerkBehaviorTests
         var effect = new LimitedHasteStatusEffect(
             20,
             2,
+            SkillType.Pistol,
             EffectIconType.ReloadTempoStatusEffect,
             null);
         var attemptEffect = (IAttackAttemptStatusEffect)effect;
+
+        attemptEffect.OnAttackAttemptedEffect(0, SkillType.Rifle, null);
+        effect.IsFlaggedForRemoval.Should().BeFalse(
+            "attacks from a different skill must not spend Reload Tempo charges");
 
         attemptEffect.OnAttackAttemptedEffect(0, SkillType.Pistol, null);
         effect.IsFlaggedForRemoval.Should().BeFalse();
@@ -166,6 +176,25 @@ public class GeneratedWeaponPerkBehaviorTests
     }
 
     [Test]
+    public void DeadMansHand_PreservesThreeChargesAfterTheGrantingCritical()
+    {
+        var grantingImpact = new AbilityImpactSummary();
+        var effect = new DeadMansHandStatusEffect(grantingImpact);
+        var attemptEffect = (IAttackAttemptStatusEffect)effect;
+
+        attemptEffect.OnAttackAttemptedEffect(0, SkillType.Pistol, grantingImpact);
+        effect.RemainingAttacks.Should().Be(3,
+            "the critical impact that granted the status is not one of the next three attacks");
+        var clone = (DeadMansHandStatusEffect)effect.Clone();
+        ((IAttackAttemptStatusEffect)clone).OnAttackAttemptedEffect(
+            0,
+            SkillType.Pistol,
+            grantingImpact);
+        clone.RemainingAttacks.Should().Be(3,
+            "cloning must preserve the ignored granting impact and all remaining charges");
+    }
+
+    [Test]
     public void AttackAttemptNotifications_CoverNativeMissesAndCompletedHostileAbilities()
     {
         var root = FindRepositoryRoot();
@@ -173,6 +202,7 @@ public class GeneratedWeaponPerkBehaviorTests
             root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
         nativeSource.Should().Contain("StatusEffect.NotifyAttackAttemptStatusEffects(");
         nativeSource.Should().Contain("UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType)");
+        nativeSource.Should().Contain("GetCurrentAttackWeapon(isOffHandAttack ? 1 : 0)");
 
         var abilitySource = File.ReadAllText(Path.Combine(
             root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
@@ -183,6 +213,38 @@ public class GeneratedWeaponPerkBehaviorTests
             root.FullName, "SWLOR.Game.Server", "Service", "StatusEffect.cs"));
         statusEffectSource.Should().Contain("effect.IsFlaggedForRemoval");
         statusEffectSource.Should().Contain("effect.SendsWornOffMessage");
+        statusEffectSource.Should().Contain("TryGetLimitedAttackDelayReduction(");
+
+        var deadMansHandSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "StatusEffectDefinition",
+            "DeadMansHandStatusEffect.cs"));
+        deadMansHandSource.Should().Contain("Combat.GrantNextAutoAttackNoDelay(");
+        deadMansHandSource.Should().Contain("Combat.GrantNextAbilityNoDelay(");
+        deadMansHandSource.Should().Contain("Combat.ClearNextAttackNoDelay(");
+
+        var combatSource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        combatSource.Should().Contain("if (isFirstSuccessfulTarget)");
+        combatSource.Should().Contain("ApplyLeadershipVanguardImpactRiders(activator)");
+
+        var generatedWeaponSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "WeaponActiveAbilityDefinitionBase.cs"));
+        var criticalStatusIndex = generatedWeaponSource.IndexOf(
+            "SelfStatusEffectOnCriticalHitFactory(summary)",
+            StringComparison.Ordinal);
+        var positiveDamageGuardIndex = generatedWeaponSource.IndexOf(
+            "if (totalDamage <= 0)",
+            StringComparison.Ordinal);
+        criticalStatusIndex.Should().BeGreaterThanOrEqualTo(0);
+        criticalStatusIndex.Should().BeLessThan(positiveDamageGuardIndex,
+            "zero-damage critical hits must still grant their critical-triggered status");
     }
 
     [Test]

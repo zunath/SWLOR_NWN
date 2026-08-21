@@ -55,6 +55,7 @@ namespace SWLOR.Game.Server.Native
         private const int DefaultMissedBy = 1;
         private const int DefaultToHitMod = 1;
         private const int DefaultToHitRoll = 1;
+        private const int WeaponAttackTypeOffHand = 2;
         private const string DeflectionAttemptedDefendersVariable = "RESOLVE_ATTACK_ROLL_DEFLECTION_ATTEMPTED";
 
         internal delegate void ResolveAttackRollHook(void* thisPtr, void* pTarget);
@@ -141,7 +142,8 @@ namespace SWLOR.Game.Server.Native
                 }
 
                 var attackType = (uint)AttackType.Melee;
-                var weapon = pCombatRound.GetCurrentAttackWeapon();
+                var isOffHandAttack = pCombatRound.GetWeaponAttackType() == WeaponAttackTypeOffHand;
+                var weapon = pCombatRound.GetCurrentAttackWeapon(isOffHandAttack ? 1 : 0);
                 var weaponSkillType = weapon == null
                     ? SkillType.Invalid
                     : SWLOR.Game.Server.Service.Skill.GetSkillTypeByBaseItem((BaseItem)weapon.m_nBaseItem);

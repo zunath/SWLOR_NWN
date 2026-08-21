@@ -280,6 +280,23 @@ public class CombatAttackDelayTests
         }
     }
 
+    [TestCase(2, 1, 1, 1)]
+    [TestCase(3, 1, 2, 2)]
+    [TestCase(3, 2, 1, 2)]
+    [TestCase(3, 2, 3, 3)]
+    public void CapAttacksPerSwingForLimitedAttackEffect_DoesNotOverscheduleCharges(
+        int acceleratedAttacks,
+        int baselineAttacks,
+        int remainingAttacks,
+        int expectedAttacks)
+    {
+        Combat.CapAttacksPerSwingForLimitedAttackEffect(
+                acceleratedAttacks,
+                baselineAttacks,
+                remainingAttacks)
+            .Should().Be(expectedAttacks);
+    }
+
     [Test]
     public void CalculateAttacksPerSwing_CapsAttacksAtMaxPerSwing()
     {

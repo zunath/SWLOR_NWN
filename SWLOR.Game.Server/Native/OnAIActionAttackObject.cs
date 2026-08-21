@@ -77,7 +77,13 @@ namespace SWLOR.Game.Server.Native
                 var pCreature = CNWSCreature.FromPointer(creature);
                 var pNode = CNWSObjectActionNode.FromPointer(node);
                 var pArea = pCreature.GetArea();
-                var attackSkillType = Combat.GetEquippedWeaponSkillType(pCreature.m_idSelf);
+                var currentWeaponAttackType = pCreature.m_pcCombatRound.GetWeaponAttackType();
+                var currentAttackWeapon = pCreature.m_pcCombatRound.GetCurrentAttackWeapon(
+                    currentWeaponAttackType == WEAPON_ATTACK_TYPE_OFFHAND ? 1 : 0);
+                var attackSkillType = currentAttackWeapon == null
+                    ? Combat.GetEquippedWeaponSkillType(pCreature.m_idSelf)
+                    : SWLOR.Game.Server.Service.Skill.GetSkillTypeByBaseItem(
+                        (SWLOR.NWN.API.NWScript.Enum.Item.BaseItem)currentAttackWeapon.m_nBaseItem);
                 var isPlayerCreature = pCreature.m_bPlayerCharacter == 1;
                 var usesRangedWeapon = isPlayerCreature
                     ? pCreature.GetRangeWeaponEquipped() == 1
@@ -444,6 +450,18 @@ namespace SWLOR.Game.Server.Native
                 var calculatedDelay = Combat.CalculateAttackDelay(pCreature.m_idSelf);
                 var effectiveAttackDelay = Combat.CalculateEffectiveAttackDelay(calculatedDelay, useDefaultMinimumDelay);
 
+                var hasLimitedAttackDelayReduction = StatusEffect.TryGetLimitedAttackDelayReduction(
+                    pCreature.m_idSelf,
+                    attackSkillType,
+                    out var limitedAttackDelayReductionPercent,
+                    out var limitedAttackDelayReductionRemainingAttacks);
+                var calculatedDelayWithoutLimitedReduction = hasLimitedAttackDelayReduction
+                    ? Combat.CalculateAttackDelay(pCreature.m_idSelf, -limitedAttackDelayReductionPercent)
+                    : calculatedDelay;
+                var effectiveDelayWithoutLimitedReduction = Combat.CalculateEffectiveAttackDelay(
+                    calculatedDelayWithoutLimitedReduction,
+                    false);
+
                 // The delay the attacker would have without a no-delay buff. Lowering the delay to
                 // the floor is meaningless for a build already at the floor, so this is passed to
                 // ConsumeAttacksPerSwing alongside useDefaultMinimumDelay to guarantee the buff is
@@ -597,7 +615,11 @@ namespace SWLOR.Game.Server.Native
                                                         pCreature.m_idSelf,
                                                         effectiveAttackDelay,
                                                         unbuffedAttackDelay,
-                                                        useDefaultMinimumDelay);
+                                                        useDefaultMinimumDelay,
+                                                        effectiveDelayWithoutLimitedReduction,
+                                                        useDefaultMinimumDelay
+                                                            ? 0
+                                                            : limitedAttackDelayReductionRemainingAttacks);
 
                                                     if (nAttacks > 1)
                                                     {

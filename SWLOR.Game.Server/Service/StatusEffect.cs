@@ -1852,6 +1852,29 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        /// <summary>
+        /// Gets the attack-delay reduction and earliest remaining charge count supplied by active
+        /// limited-attack effects that apply to the requested skill.
+        /// </summary>
+        public static bool TryGetLimitedAttackDelayReduction(
+            uint attacker,
+            SkillType skillType,
+            out int reductionPercent,
+            out int remainingAttacks)
+        {
+            var effects = GetCreatureStatusEffects(attacker)
+                .GetAllEffects()
+                .OfType<ILimitedAttackDelayReductionStatusEffect>()
+                .Where(effect => effect.AppliesToSkill(skillType) && effect.RemainingAttacks > 0)
+                .ToList();
+
+            reductionPercent = effects.Sum(effect => effect.AttackDelayReductionPercent);
+            remainingAttacks = effects.Count == 0
+                ? 0
+                : effects.Min(effect => effect.RemainingAttacks);
+            return effects.Count > 0 && reductionPercent > 0;
+        }
+
         public static void OnGuardedHit(uint defender, uint attacker, int preventedDamage)
         {
             if (!_creatureEffects.TryGetValue(defender, out var creatureEffects))

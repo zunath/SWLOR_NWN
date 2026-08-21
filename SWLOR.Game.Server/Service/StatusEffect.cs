@@ -1868,7 +1868,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Marks the start of a synchronous native swing. Limited attack-delay effects granted
+        /// Marks the start of a synchronous native swing. Limited attack-timing effects granted
         /// while its already-scheduled rolls resolve are deferred until the outermost swing ends.
         /// </summary>
         public static void BeginNativeAttackSwing(uint attacker)
@@ -1878,7 +1878,7 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Ends a synchronous native swing and applies limited attack-delay effects that were
+        /// Ends a synchronous native swing and applies limited attack-timing effects that were
         /// granted by its precomputed rolls.
         /// </summary>
         public static void EndNativeAttackSwing(uint attacker)
@@ -1911,7 +1911,8 @@ namespace SWLOR.Game.Server.Service
             ResistanceType resistanceOverride,
             CombatDamageType sourceDamageType)
         {
-            if (statusEffect is not ILimitedAttackDelayReductionStatusEffect ||
+            if ((statusEffect is not ILimitedAttackDelayReductionStatusEffect &&
+                 statusEffect is not ILimitedAttackNoDelayStatusEffect) ||
                 !_nativeAttackSwingDepth.ContainsKey(creature))
             {
                 return false;

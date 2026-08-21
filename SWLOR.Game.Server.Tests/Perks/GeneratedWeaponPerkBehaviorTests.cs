@@ -317,6 +317,8 @@ public class GeneratedWeaponPerkBehaviorTests
         nativeAttackSource[resolveAttack..endSwing].Should().Contain("finally");
         statusEffectSource.Should().Contain(
             "statusEffect is not ILimitedAttackDelayReductionStatusEffect");
+        statusEffectSource.Should().Contain(
+            "statusEffect is not ILimitedAttackNoDelayStatusEffect");
         statusEffectSource.Should().Contain("_nativeAttackSwingDepth.Remove(attacker);");
         statusEffectSource.Should().Contain(
             "deferredEffects.Add(() => ApplyStatusEffectInternal(",
@@ -347,6 +349,40 @@ public class GeneratedWeaponPerkBehaviorTests
                         SkillType.Pistol,
                         EffectIconType.ReloadTempoStatusEffect,
                         null),
+                    30f)
+                .Should()
+                .BeTrue();
+
+            StatusEffect.GetCreatureStatusEffects(creature).GetAllEffects().Should().BeEmpty(
+                "the effect cannot benefit or be consumed by rolls that were scheduled before it was granted");
+            deferredEffects.Contains(creature).Should().BeTrue();
+        }
+        finally
+        {
+            swingDepth.Remove(creature);
+            deferredEffects.Remove(creature);
+        }
+    }
+
+    [Test]
+    public void LimitedNoDelayApplication_IsQueuedWhileNativeSwingResolves()
+    {
+        const uint creature = 313;
+        var bindingFlags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static;
+        var swingDepth = (System.Collections.IDictionary)typeof(StatusEffect)
+            .GetField("_nativeAttackSwingDepth", bindingFlags)!
+            .GetValue(null)!;
+        var deferredEffects = (System.Collections.IDictionary)typeof(StatusEffect)
+            .GetField("_deferredNativeAttackStatusEffects", bindingFlags)!
+            .GetValue(null)!;
+
+        try
+        {
+            StatusEffect.BeginNativeAttackSwing(creature);
+            StatusEffect.ApplyStatusEffect(
+                    creature,
+                    creature,
+                    new DeadMansHandStatusEffect(),
                     30f)
                 .Should()
                 .BeTrue();

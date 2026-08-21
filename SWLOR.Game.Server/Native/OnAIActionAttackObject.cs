@@ -656,7 +656,15 @@ namespace SWLOR.Game.Server.Native
                                                     }
                                                 }
 
-                                                pCreature.ResolveAttack(oidTarget, nAttacks, nTimeAnimation);
+                                                StatusEffect.BeginNativeAttackSwing(pCreature.m_idSelf);
+                                                try
+                                                {
+                                                    pCreature.ResolveAttack(oidTarget, nAttacks, nTimeAnimation);
+                                                }
+                                                finally
+                                                {
+                                                    StatusEffect.EndNativeAttackSwing(pCreature.m_idSelf);
+                                                }
                                                 bTargetActive = true;
 
                                                 // Set the delay timestamp after the attack resolves

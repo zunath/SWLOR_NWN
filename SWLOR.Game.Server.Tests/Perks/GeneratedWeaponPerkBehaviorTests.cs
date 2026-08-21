@@ -292,6 +292,77 @@ public class GeneratedWeaponPerkBehaviorTests
     }
 
     [Test]
+    public void LimitedHasteGrantedDuringNativeSwing_IsDeferredUntilPrecomputedRollsFinish()
+    {
+        var root = FindRepositoryRoot();
+        var nativeAttackSource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Native", "OnAIActionAttackObject.cs"));
+        var statusEffectSource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Service", "StatusEffect.cs"));
+
+        var beginSwing = nativeAttackSource.IndexOf(
+            "StatusEffect.BeginNativeAttackSwing(pCreature.m_idSelf);",
+            StringComparison.Ordinal);
+        var resolveAttack = nativeAttackSource.IndexOf(
+            "pCreature.ResolveAttack(oidTarget, nAttacks, nTimeAnimation);",
+            StringComparison.Ordinal);
+        var endSwing = nativeAttackSource.IndexOf(
+            "StatusEffect.EndNativeAttackSwing(pCreature.m_idSelf);",
+            StringComparison.Ordinal);
+
+        beginSwing.Should().BeGreaterThanOrEqualTo(0);
+        resolveAttack.Should().BeGreaterThan(beginSwing);
+        endSwing.Should().BeGreaterThan(resolveAttack);
+        nativeAttackSource[beginSwing..endSwing].Should().Contain("try");
+        nativeAttackSource[resolveAttack..endSwing].Should().Contain("finally");
+        statusEffectSource.Should().Contain(
+            "statusEffect is not ILimitedAttackDelayReductionStatusEffect");
+        statusEffectSource.Should().Contain("_nativeAttackSwingDepth.Remove(attacker);");
+        statusEffectSource.Should().Contain(
+            "deferredEffects.Add(() => ApplyStatusEffectInternal(",
+            "a speed effect granted by a precomputed roll must become active only after the swing ends");
+    }
+
+    [Test]
+    public void LimitedHasteApplication_IsQueuedWhileNativeSwingResolves()
+    {
+        const uint creature = 312;
+        var bindingFlags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static;
+        var swingDepth = (System.Collections.IDictionary)typeof(StatusEffect)
+            .GetField("_nativeAttackSwingDepth", bindingFlags)!
+            .GetValue(null)!;
+        var deferredEffects = (System.Collections.IDictionary)typeof(StatusEffect)
+            .GetField("_deferredNativeAttackStatusEffects", bindingFlags)!
+            .GetValue(null)!;
+
+        try
+        {
+            StatusEffect.BeginNativeAttackSwing(creature);
+            StatusEffect.ApplyStatusEffect(
+                    creature,
+                    creature,
+                    new LimitedHasteStatusEffect(
+                        20,
+                        2,
+                        SkillType.Pistol,
+                        EffectIconType.ReloadTempoStatusEffect,
+                        null),
+                    30f)
+                .Should()
+                .BeTrue();
+
+            StatusEffect.GetCreatureStatusEffects(creature).GetAllEffects().Should().BeEmpty(
+                "the effect cannot benefit or be consumed by rolls that were scheduled before it was granted");
+            deferredEffects.Contains(creature).Should().BeTrue();
+        }
+        finally
+        {
+            swingDepth.Remove(creature);
+            deferredEffects.Remove(creature);
+        }
+    }
+
+    [Test]
     public void SnapRoll_GrantsOnlyRangedDeflectionAndLastWordRefreshesIt()
     {
         var pistolPerks = ReadPerkDefinition("PistolPerkDefinition.cs");

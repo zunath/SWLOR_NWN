@@ -23,6 +23,8 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<string, LoggedOutStatusEffects> _loggedOutPlayerEffects = new();
         private static readonly Dictionary<Type, StatusEffectMetadata> _statusEffects = new();
         private static readonly HashSet<string> _suppressedStatusEffectRemovalIds = new();
+        private static readonly Dictionary<uint, int> _nativeAttackSwingDepth = new();
+        private static readonly Dictionary<uint, List<Action>> _deferredNativeAttackStatusEffects = new();
         private static readonly Dictionary<EffectIconType, AbilityType> _abilityIncreaseIconType = new()
         {
             { EffectIconType.AbilityIncreaseSTR, AbilityType.Might },
@@ -470,6 +472,18 @@ namespace SWLOR.Game.Server.Service
             ResistanceType resistanceOverride = ResistanceType.Invalid,
             CombatDamageType sourceDamageType = CombatDamageType.Invalid)
         {
+            if (TryDeferNativeAttackStatusEffect(
+                    statusEffect,
+                    source,
+                    creature,
+                    durationTicks,
+                    isPermanent,
+                    resistanceOverride,
+                    sourceDamageType))
+            {
+                return true;
+            }
+
             durationTicks = ApplyOutgoingStatusDurationAdjustments(statusEffect, source, durationTicks, isPermanent);
             ApplyOutgoingStatusStatAdjustments(statusEffect, source);
 
@@ -1851,6 +1865,73 @@ namespace SWLOR.Game.Server.Service
                     effect.Source,
                     effect.SendsWornOffMessage);
             }
+        }
+
+        /// <summary>
+        /// Marks the start of a synchronous native swing. Limited attack-delay effects granted
+        /// while its already-scheduled rolls resolve are deferred until the outermost swing ends.
+        /// </summary>
+        public static void BeginNativeAttackSwing(uint attacker)
+        {
+            _nativeAttackSwingDepth.TryGetValue(attacker, out var depth);
+            _nativeAttackSwingDepth[attacker] = depth + 1;
+        }
+
+        /// <summary>
+        /// Ends a synchronous native swing and applies limited attack-delay effects that were
+        /// granted by its precomputed rolls.
+        /// </summary>
+        public static void EndNativeAttackSwing(uint attacker)
+        {
+            if (!_nativeAttackSwingDepth.TryGetValue(attacker, out var depth))
+                return;
+
+            if (depth > 1)
+            {
+                _nativeAttackSwingDepth[attacker] = depth - 1;
+                return;
+            }
+
+            _nativeAttackSwingDepth.Remove(attacker);
+            if (!_deferredNativeAttackStatusEffects.Remove(attacker, out var deferredEffects))
+                return;
+
+            foreach (var applyDeferredEffect in deferredEffects)
+            {
+                applyDeferredEffect();
+            }
+        }
+
+        private static bool TryDeferNativeAttackStatusEffect(
+            IStatusEffect statusEffect,
+            uint source,
+            uint creature,
+            int durationTicks,
+            bool isPermanent,
+            ResistanceType resistanceOverride,
+            CombatDamageType sourceDamageType)
+        {
+            if (statusEffect is not ILimitedAttackDelayReductionStatusEffect ||
+                !_nativeAttackSwingDepth.ContainsKey(creature))
+            {
+                return false;
+            }
+
+            if (!_deferredNativeAttackStatusEffects.TryGetValue(creature, out var deferredEffects))
+            {
+                deferredEffects = new List<Action>();
+                _deferredNativeAttackStatusEffects[creature] = deferredEffects;
+            }
+
+            deferredEffects.Add(() => ApplyStatusEffectInternal(
+                statusEffect,
+                source,
+                creature,
+                durationTicks,
+                isPermanent,
+                resistanceOverride,
+                sourceDamageType));
+            return true;
         }
 
         /// <summary>

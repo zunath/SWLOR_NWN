@@ -328,46 +328,26 @@ public class GeneratedWeaponPerkBehaviorTests
     [Test]
     public void LimitedHasteApplication_IsQueuedWhileNativeSwingResolves()
     {
-        const uint creature = 312;
-        var bindingFlags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static;
-        var swingDepth = (System.Collections.IDictionary)typeof(StatusEffect)
-            .GetField("_nativeAttackSwingDepth", bindingFlags)!
-            .GetValue(null)!;
-        var deferredEffects = (System.Collections.IDictionary)typeof(StatusEffect)
-            .GetField("_deferredNativeAttackStatusEffects", bindingFlags)!
-            .GetValue(null)!;
-
-        try
-        {
-            StatusEffect.BeginNativeAttackSwing(creature);
-            StatusEffect.ApplyStatusEffect(
-                    creature,
-                    creature,
-                    new LimitedHasteStatusEffect(
-                        20,
-                        2,
-                        SkillType.Pistol,
-                        EffectIconType.ReloadTempoStatusEffect,
-                        null),
-                    30f)
-                .Should()
-                .BeTrue();
-
-            StatusEffect.GetCreatureStatusEffects(creature).GetAllEffects().Should().BeEmpty(
-                "the effect cannot benefit or be consumed by rolls that were scheduled before it was granted");
-            deferredEffects.Contains(creature).Should().BeTrue();
-        }
-        finally
-        {
-            swingDepth.Remove(creature);
-            deferredEffects.Remove(creature);
-        }
+        AssertLimitedAttackEffectIsQueuedWhileNativeSwingResolves(
+            312,
+            new LimitedHasteStatusEffect(
+                20,
+                2,
+                SkillType.Pistol,
+                EffectIconType.ReloadTempoStatusEffect,
+                null));
     }
 
     [Test]
     public void LimitedNoDelayApplication_IsQueuedWhileNativeSwingResolves()
     {
-        const uint creature = 313;
+        AssertLimitedAttackEffectIsQueuedWhileNativeSwingResolves(313, new DeadMansHandStatusEffect());
+    }
+
+    private static void AssertLimitedAttackEffectIsQueuedWhileNativeSwingResolves(
+        uint creature,
+        IStatusEffect statusEffect)
+    {
         var bindingFlags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static;
         var swingDepth = (System.Collections.IDictionary)typeof(StatusEffect)
             .GetField("_nativeAttackSwingDepth", bindingFlags)!
@@ -375,15 +355,14 @@ public class GeneratedWeaponPerkBehaviorTests
         var deferredEffects = (System.Collections.IDictionary)typeof(StatusEffect)
             .GetField("_deferredNativeAttackStatusEffects", bindingFlags)!
             .GetValue(null)!;
+        var creatureEffects = (System.Collections.IDictionary)typeof(StatusEffect)
+            .GetField("_creatureEffects", bindingFlags)!
+            .GetValue(null)!;
 
         try
         {
             StatusEffect.BeginNativeAttackSwing(creature);
-            StatusEffect.ApplyStatusEffect(
-                    creature,
-                    creature,
-                    new DeadMansHandStatusEffect(),
-                    30f)
+            StatusEffect.ApplyStatusEffect(creature, creature, statusEffect, 30f)
                 .Should()
                 .BeTrue();
 
@@ -395,6 +374,7 @@ public class GeneratedWeaponPerkBehaviorTests
         {
             swingDepth.Remove(creature);
             deferredEffects.Remove(creature);
+            creatureEffects.Remove(creature);
         }
     }
 

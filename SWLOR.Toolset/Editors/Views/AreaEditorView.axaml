@@ -62,6 +62,9 @@
                 <MenuItem Header="Edit blueprint..."
                           Command="{Binding EditSelectedBlueprintCommand}"
                           ToolTip.Tip="Open the blueprint this was placed from" />
+                <MenuItem Header="Edit Copy..."
+                          Command="{Binding EditCopySelectedBlueprintCommand}"
+                          ToolTip.Tip="Create and edit a new Custom blueprint from this object's source" />
               </ContextMenu>
             </Border.ContextMenu>
           </Border>

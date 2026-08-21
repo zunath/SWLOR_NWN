@@ -1,5 +1,6 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
@@ -34,7 +35,8 @@ namespace SWLOR.Toolset.Tests
             editor.DetailRows.Select(row => row.Definition.Name).Should().Equal(
                 "LocName", "Tag", "ResRef", "ID");
             editor.DetailRows.Single(row => row.Definition.Name == "Tag").MaxLength.Should().Be(32);
-            editor.DetailRows.Single(row => row.Definition.Name == "ResRef").MaxLength.Should().Be(16);
+            editor.DetailRows.Single(row => row.Definition.Name == "ResRef").MaxLength
+                .Should().Be(NwnResRef.MaxLength);
             editor.InventoryCategories.Select(category => category.Name).Should().Equal(
                 "Armor",
                 "Weapons",

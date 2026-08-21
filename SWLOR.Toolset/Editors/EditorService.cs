@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using SWLOR.Toolset.Domain.Editors;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Schemas;
+using SWLOR.Toolset.Domain.Categories;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.GameData.GameCode;
@@ -982,6 +983,97 @@ namespace SWLOR.Toolset.Editors
             {
                 _log.AppendLine($"Failed to open editor for {resRef}: {ex.Message}");
             }
+        }
+
+        /// <summary>
+        /// Aurora-style Edit Copy for an area instance: create a new module blueprint from its source,
+        /// retain the source category when possible, and open the independent copy.
+        /// </summary>
+        private string? TryEditCopyAndOpenBlueprint(ResourceType type, string sourceResRef)
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null || !ModuleWorkspace.BlueprintTypes.Contains(type))
+                return null;
+
+            try
+            {
+                var sourcePath = workspace.GetResourcePath(type, sourceResRef);
+                var isCustomSource = File.Exists(sourcePath);
+                var source = isCustomSource
+                    ? workspace.LoadBlueprint(type, sourceResRef)
+                    : workspace.LoadIndexedBlueprint(type, sourceResRef);
+                var copyResRef = BlueprintCopyFactory.NextResRef(
+                    workspace,
+                    type,
+                    sourceResRef);
+                var copyPath = workspace.GetResourcePath(type, copyResRef);
+                var content = BlueprintCopyFactory.CreateFileContent(type, source.Document, copyResRef);
+
+                Directory.CreateDirectory(Path.GetDirectoryName(copyPath)!);
+                SaveService.WriteNewAtomic(copyPath, content);
+                _workspaceContext.RefreshCatalogEntry(type, copyResRef);
+
+                var categoryNotificationRaised = false;
+                if (_categories != null)
+                {
+                    var sourceSection = isCustomSource
+                        ? _categories.Section(type)
+                        : _categories.StandardSection(type);
+                    var sourceFolder = sourceSection?.FoldersContaining(sourceResRef).FirstOrDefault();
+                    var categoryPath = sourceFolder == null || sourceSection == null
+                        ? Array.Empty<string>()
+                        : sourceSection.PathTo(sourceFolder).ToArray();
+
+                    if (categoryPath.Length > 0 && _categories.Section(type) is { } customSection)
+                    {
+                        var targetFolder = EnsureBlueprintCopyFolder(customSection, categoryPath);
+                        targetFolder.AddMember(copyResRef);
+                        var save = _categories.SaveChanges();
+                        categoryNotificationRaised = save.Saved;
+                        if (!save.Saved)
+                        {
+                            _log.AppendLine(
+                                $"Copied {type.Extension()} blueprint '{sourceResRef}' to '{copyResRef}', " +
+                                $"but could not file it under '{categoryPath[^1]}': {save.Problem}");
+                        }
+                    }
+
+                    // A successful category save raises Changed itself. An unfiled copy, or a failed
+                    // category save restored to Unsorted, still needs that notification so an open
+                    // palette re-enumerates the newly created module resource immediately.
+                    if (!categoryNotificationRaised)
+                        _categories.NotifyChanged();
+                }
+
+                _log.AppendLine(
+                    $"Copied {type.Extension()} blueprint '{sourceResRef}' to '{copyResRef}' ({copyPath}).");
+                TryOpenEditor(type, copyResRef);
+                return copyResRef;
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine(
+                    $"Edit Copy failed for {type.Extension()} blueprint '{sourceResRef}': {ex.Message}");
+                return null;
+            }
+        }
+
+        private static CategoryFolder EnsureBlueprintCopyFolder(
+            CategorySection section,
+            IReadOnlyList<string> path)
+        {
+            var current = section.Folders.FirstOrDefault(folder =>
+                              string.Equals(folder.Name, path[0], StringComparison.OrdinalIgnoreCase))
+                          ?? section.AddFolder(path[0]);
+            for (var index = 1; index < path.Count; index++)
+            {
+                var segment = path[index];
+                current = current.Children.FirstOrDefault(child =>
+                              string.Equals(child.Name, segment, StringComparison.OrdinalIgnoreCase))
+                          ?? current.AddChild(segment);
+            }
+
+            return current;
         }
 
         private Sources.ObjectSourceSectionViewModel CreateObjectSource(
@@ -3339,7 +3431,9 @@ namespace SWLOR.Toolset.Editors
                     ResolveSoundChoices,
                     SoundResources(),
                     SoundPreviews(),
-                    loadedDocuments);
+                    loadedDocuments,
+                    TryEditCopyAndOpenBlueprint,
+                    _mutationLock);
                 editor.Closed += _ => _openAreaEditors.Remove(resRef);
                 editor.TilesetChanged += () => _factory.NotifyActiveAreaChanged();
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);

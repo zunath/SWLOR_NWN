@@ -1,3 +1,4 @@
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Gff;
 
@@ -6,7 +7,6 @@ namespace SWLOR.Toolset.Domain.Editors.Creatures
     /// <summary>The stable field layout of the creature editor's direct UTC surfaces.</summary>
     public static class CreatureEditorLayout
     {
-        public const int MaxResRefLength = 16;
         public const int MaxTagLength = 32;
         public const int MaxNameLength = 64;
 
@@ -18,7 +18,7 @@ namespace SWLOR.Toolset.Domain.Editors.Creatures
                 maxLength: MaxNameLength),
             Field("Tag", "Tag", BehaviorFieldKind.Text, GffFieldType.CExoString, maxLength: MaxTagLength),
             Field("ResRef", "TemplateResRef", BehaviorFieldKind.Text, GffFieldType.ResRef,
-                maxLength: MaxResRefLength, readOnly: true),
+                maxLength: NwnResRef.MaxLength, readOnly: true),
             Choice("Category", "PaletteID", GffFieldType.Byte, CreatureChoiceKeys.PaletteCategories,
                 searchable: true, inlineSearch: true),
             Choice("Movement", "WalkRate", GffFieldType.Int, CreatureChoiceKeys.MovementRates),

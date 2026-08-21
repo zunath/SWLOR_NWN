@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Mvvm.Controls;
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Editors;
@@ -405,10 +406,11 @@ namespace SWLOR.Toolset.Editors
                 var targetResRef =
                     _session.Document.Root.GetStringOrNull("TemplateResRef")?.Trim().ToLowerInvariant()
                     ?? string.Empty;
-                if (!IsValidResRef(targetResRef))
+                if (!NwnResRef.IsCanonical(targetResRef))
                 {
                     _log.AppendLine(
-                        $"Cannot save {_resRef}: ResRef '{targetResRef}' must be 1-16 characters " +
+                        $"Cannot save {_resRef}: ResRef '{targetResRef}' must be " +
+                        $"1-{NwnResRef.MaxLength} characters " +
                         "of a-z, 0-9, or underscore.");
                     return false;
                 }
@@ -607,9 +609,5 @@ namespace SWLOR.Toolset.Editors
             Title = IsDirty ? $"{_resRef} *" : _resRef;
         }
 
-        private static bool IsValidResRef(string value) =>
-            value.Length is >= 1 and <= 16 &&
-            value.All(character =>
-                character is >= 'a' and <= 'z' or >= '0' and <= '9' or '_');
     }
 }

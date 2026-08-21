@@ -1,3 +1,4 @@
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Gff;
 
@@ -6,7 +7,6 @@ namespace SWLOR.Toolset.Domain.Editors.Items
     /// <summary>The fixed Basic rows every item shows regardless of family or role.</summary>
     public static class ItemEditorLayout
     {
-        public const int MaxResRefLength = 16;
         public const int MaxTagLength = 32;
         public const int MaxNameLength = 64;
 
@@ -30,7 +30,7 @@ namespace SWLOR.Toolset.Domain.Editors.Items
             new BehaviorFieldDefinition
             {
                 Label = "ResRef", Name = "TemplateResRef", Kind = BehaviorFieldKind.Text,
-                FieldType = GffFieldType.ResRef, MaxLength = MaxResRefLength, IsRequired = true
+                FieldType = GffFieldType.ResRef, MaxLength = NwnResRef.MaxLength, IsRequired = true
             },
             new BehaviorFieldDefinition
             {

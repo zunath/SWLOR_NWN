@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private uint _controllerPlayer;
         private bool _hasImplicitCloseChoice;
         private bool _isClosing;
+        private int _lastDialogueSegmentLimit;
 
         public string SpeakerName
         {
@@ -68,6 +69,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _session = initialPayload.Session;
             _controllerPlayer = initialPayload.ControllerPlayer;
             _isClosing = false;
+            _lastDialogueSegmentLimit = 0;
 
             try
             {
@@ -91,6 +93,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             try
             {
+                var segmentCharacterLimit = CalculateDialogueSegmentLimit(Geometry?.Width ?? 650f);
+                if (segmentCharacterLimit == _lastDialogueSegmentLimit)
+                    return;
+
                 RefreshConversation(false);
             }
             catch (Exception ex)
@@ -206,6 +212,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LineColors = lineColors;
             ChoiceTexts = choiceTexts;
             ChoiceColors = choiceColors;
+            _lastDialogueSegmentLimit = segmentCharacterLimit;
         }
 
         private static int CalculateDialogueSegmentLimit(float windowWidth)
@@ -233,8 +240,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private static IEnumerable<string> SplitDialogueText(string text, int segmentCharacterLimit)
         {
-            var minimumPreferredSegmentLength = segmentCharacterLimit / 2;
-
             if (string.IsNullOrWhiteSpace(text))
                 yield break;
 
@@ -248,7 +253,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 while (remaining.Length > segmentCharacterLimit)
                 {
                     var splitIndex = remaining.LastIndexOf(' ', segmentCharacterLimit);
-                    if (splitIndex < minimumPreferredSegmentLength)
+                    if (splitIndex <= 0)
                         splitIndex = segmentCharacterLimit;
 
                     var segment = remaining[..splitIndex].Trim();

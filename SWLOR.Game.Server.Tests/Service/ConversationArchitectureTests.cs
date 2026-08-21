@@ -242,6 +242,8 @@ public class ConversationArchitectureTests
             "ConversationViewModel.cs"));
         viewModelSource.Should().Contain("RefreshConversation(false)",
             "resizing should reflow the text for the available width");
+        viewModelSource.Should().Contain("segmentCharacterLimit == _lastDialogueSegmentLimit",
+            "position, height, and equivalent-width geometry events should not rebuild conversation bindings");
         viewModelSource.Should().NotContain("MinimumWindowWidth");
         viewModelSource.Should().NotContain("EnsureReadableWindowGeometry");
     }
@@ -282,6 +284,21 @@ public class ConversationArchitectureTests
         var segments = ((IEnumerable<string>)splitMethod!.Invoke(null, new object[] { source, 46 })!).ToArray();
 
         segments.Should().OnlyContain(segment => segment.Length <= 46);
+        string.Join(" ", segments).Should().Be(source);
+    }
+
+    [Test]
+    public void NarrowConversationRows_PreserveAvailableWordBoundaries()
+    {
+        var method = typeof(ConversationViewModel).GetMethod(
+            "SplitDialogueText",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+        method.Should().NotBeNull();
+
+        const string source = "A real wipe can end it";
+        var segments = ((IEnumerable<string>)method!.Invoke(null, new object[] { source, 4 })!).ToArray();
+
+        segments.Should().Equal("A", "real", "wipe", "can", "end", "it");
         string.Join(" ", segments).Should().Be(source);
     }
 

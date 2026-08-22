@@ -2,6 +2,7 @@ using System.Collections;
 using System.Globalization;
 using System.Reflection;
 using FluentAssertions;
+using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
@@ -172,6 +173,45 @@ public class PlayerGuideContentTests
         disguiseText.Should().Contain("do not change your equipped clothing or armor");
     }
 
+    [Test]
+    public void IdentityLoadHints_ExplainNamesDescriptionsAndDisguises()
+    {
+        const int customTlkOffset = 16777216;
+        var expectedHints = new Dictionary<int, string>
+        {
+            [79819] = "private label only your character can see",
+            [79820] = "gray public description",
+            [79821] = "not proof of the character's real name",
+            [79822] = "Each disguise has its own biography",
+            [79823] = "not your equipped clothing or armor",
+            [79824] = "staff and audit logs",
+            [79825] = "Use /forgetname",
+            [79826] = "Show Others' Public Descriptions"
+        };
+
+        var root = FindRepositoryRoot();
+        var loadHints = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR_Haks",
+            "sw_2da",
+            "loadhints.2da"));
+        var tlk = JObject.Parse(File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR_Haks",
+            "sw_tlk",
+            "sw_tlk.tlk.json")));
+        var entries = tlk["entries"]?
+            .OfType<JObject>()
+            .ToDictionary(entry => entry["id"]!.Value<int>(), entry => entry["text"]?.Value<string>() ?? string.Empty);
+
+        entries.Should().NotBeNull();
+        foreach (var (tlkId, expectedText) in expectedHints)
+        {
+            loadHints.Should().Contain((customTlkOffset + tlkId).ToString());
+            entries!.Should().ContainKey(tlkId).WhoseValue.Should().Contain(expectedText);
+        }
+    }
+
     private static List<object> GetTopics()
     {
         var field = typeof(PlayerGuideViewModel).GetField("Topics", BindingFlags.NonPublic | BindingFlags.Static);
@@ -214,5 +254,17 @@ public class PlayerGuideContentTests
             yield return GetString(question, "Question");
             yield return GetString(question, "Answer");
         }
+    }
+
+    private static DirectoryInfo FindRepositoryRoot()
+    {
+        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+
+        while (directory != null && !File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
+        {
+            directory = directory.Parent;
+        }
+
+        return directory ?? throw new DirectoryNotFoundException("Could not locate repository root.");
     }
 }

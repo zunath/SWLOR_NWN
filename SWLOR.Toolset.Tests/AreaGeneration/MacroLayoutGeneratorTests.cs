@@ -622,6 +622,43 @@ public class MacroLayoutGeneratorTests
             "the tileset exposes only flat road candidates for the sloped endpoint");
     }
 
+    [Test]
+    public void RoadLane_DoesNotUseAPlateauCandidateBelowItsMinimumHeight()
+    {
+        const string road = "Road";
+        const string fence = "Fence";
+        var corners = new CornerTerrainGrid(3, 1, "Floor");
+        corners.Heights[3, 1] = 1;
+        var layout = new MacroLayout(corners);
+        layout.Transitions.Add(new TransitionPoint { Kind = TransitionKind.Entrance, Tile = (0, 0) });
+        layout.Transitions.Add(new TransitionPoint { Kind = TransitionKind.Exit, Tile = (1, 0) });
+        layout.Crossers.SetEdge(0, 0, EdgeSlot.Top, fence);
+
+        var parameters = DefaultParameters(width: 3, height: 1, minRooms: 2, maxRooms: 2);
+        parameters.RoadCrosser = road;
+        parameters.RoadLanes = 1;
+        var plateauRoad = RoadTile(5, fence, road, "", "");
+        plateauRoad.CornerHeights = [1, 1, 1, 1];
+        var tileset = new TilesetModel
+        {
+            Crossers = [road, fence],
+            Tiles =
+            [
+                RoadTile(0, "", road, "", ""),
+                RoadTile(1, "", road, "", road),
+                RoadTile(2, road, "", "", road),
+                RoadTile(3, road, road, "", road),
+                RoadTile(4, road, road, road, road),
+                plateauRoad
+            ]
+        };
+
+        LayoutRoadCarver.CarveRoads(layout, parameters, tileset, new Random(1));
+
+        layout.Crossers.GetEdge(0, 0, EdgeSlot.Right).Should().BeEmpty(
+            "the only matching mixed-crosser tile starts above this cell's grid minimum");
+    }
+
     private static TileRecord RoadTile(
         int tileId,
         string top,

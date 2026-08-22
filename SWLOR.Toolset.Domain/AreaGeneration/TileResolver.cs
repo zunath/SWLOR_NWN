@@ -680,6 +680,9 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
                 From(BuildCandidateLookup(tileset, heightAware: true, extraDoorSlotCrossers, excludedTiles));
 
             internal bool HasCandidate(string key) => TryGetSet(key, out var set) && set.All.Count > 0;
+
+            internal bool HasCandidate(string key, int maximumTileMin) =>
+                TryGetSet(key, out var set) && set.All.Any(candidate => candidate.TileMin <= maximumTileMin);
         }
 
         /// <summary>Builds a <see cref="HeightAwareProbeCache"/> for repeated height-aware probes against
@@ -707,6 +710,24 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
 
             var key = MakeHeightAwareKey(tl, tr, br, bl, top, right, bottom, left, dTl, dTr, dBr, dBl);
             return cache.HasCandidate(key);
+        }
+
+        /// <summary>
+        /// Placement-aware cached height probe. In addition to matching the normalized corner-height
+        /// profile, requires a candidate whose authored minimum height does not exceed
+        /// <paramref name="gridMin"/>, exactly mirroring the viability filter in <see cref="TryResolve"/>.
+        /// </summary>
+        public static bool HasHeightAwareCandidate(
+            HeightAwareProbeCache cache,
+            string tl, string tr, string br, string bl,
+            string top, string right, string bottom, string left,
+            int dTl, int dTr, int dBr, int dBl,
+            int gridMin)
+        {
+            if (cache == null) throw new ArgumentNullException(nameof(cache));
+
+            var key = MakeHeightAwareKey(tl, tr, br, bl, top, right, bottom, left, dTl, dTr, dBr, dBl);
+            return cache.HasCandidate(key, gridMin);
         }
     }
 }

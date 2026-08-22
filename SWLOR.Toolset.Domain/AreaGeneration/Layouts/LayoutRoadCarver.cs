@@ -539,7 +539,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Layouts
                         _heightCache,
                         tl, tr, br, bl,
                         top, right, bottom, left,
-                        hTl - min, hTr - min, hBr - min, hBl - min);
+                        hTl - min, hTr - min, hBr - min, hBl - min,
+                        min);
                 }
 
                 var key = string.Join("\u001f", new[] { tl, tr, br, bl, top, right, bottom, left });

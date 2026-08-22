@@ -8053,7 +8053,8 @@ namespace SWLOR.Game.Server.Service
 
         public static bool CanConsumeNextAbilityNoDelay(AbilityDetail ability)
         {
-            return ability?.IsHostileAbility == true;
+            return ability?.IsHostileAbility == true &&
+                   ability.SkillType != SkillType.Invalid;
         }
 
         /// <summary>

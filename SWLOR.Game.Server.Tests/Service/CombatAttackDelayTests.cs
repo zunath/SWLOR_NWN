@@ -630,7 +630,8 @@ public class CombatAttackDelayTests
     {
         Combat.CanConsumeNextAbilityNoDelay(new AbilityDetail
         {
-            IsHostileAbility = true
+            IsHostileAbility = true,
+            SkillType = SkillType.Pistol
         })
             .Should()
             .BeTrue();
@@ -641,6 +642,14 @@ public class CombatAttackDelayTests
         })
             .Should()
             .BeFalse();
+
+        Combat.CanConsumeNextAbilityNoDelay(new AbilityDetail
+        {
+            IsHostileAbility = true,
+            SkillType = SkillType.Invalid
+        })
+            .Should()
+            .BeFalse("an equipped weapon must not turn a skillless cast into a weapon attack");
     }
 
     [Test]
@@ -659,6 +668,52 @@ public class CombatAttackDelayTests
             IsHostileAbility = false,
             SkillType = SkillType.Pistol
         }).Should().Be(0);
+    }
+
+    [Test]
+    public void ConsumeNextAbilityDelayReduction_RejectsSkilllessHostileCasts()
+    {
+        var skilllessHostileAbility = new AbilityDetail
+        {
+            IsHostileAbility = true,
+            SkillType = SkillType.Invalid
+        };
+
+        Combat.ConsumeNextAbilityDelayReductionPercent(310, skilllessHostileAbility)
+            .Should()
+            .Be(0);
+    }
+
+    [Test]
+    public void WeaponAbilitiesDeclareSkillsWhileSkilllessCastsStayOutsideWeaponTimingEffects()
+    {
+        var abilities = typeof(IAbilityListDefinition).Assembly
+            .GetTypes()
+            .Where(type => !type.IsAbstract &&
+                           !type.IsInterface &&
+                           typeof(IAbilityListDefinition).IsAssignableFrom(type))
+            .SelectMany(type =>
+                ((IAbilityListDefinition)System.Activator.CreateInstance(type)!)
+                .BuildAbilities()
+                .Select(pair => (Definition: type.Name, Feat: pair.Key, Detail: pair.Value)))
+            .ToArray();
+
+        var skilllessWeaponAbilities = abilities
+            .Where(ability => ability.Detail.ActivationType == AbilityActivationType.Weapon &&
+                              ability.Detail.SkillType == SkillType.Invalid)
+            .Select(ability => $"{ability.Definition}:{ability.Feat}")
+            .ToArray();
+        skilllessWeaponAbilities.Should().BeEmpty(
+            "weapon timing effects require an explicitly declared weapon skill");
+
+        var skilllessHostileCasts = abilities
+            .Where(ability => ability.Detail.IsHostileAbility &&
+                              ability.Detail.ActivationType != AbilityActivationType.Weapon &&
+                              ability.Detail.SkillType == SkillType.Invalid)
+            .ToArray();
+        skilllessHostileCasts.Should().NotBeEmpty("Provoke-style hostile casts are intentionally skillless");
+        skilllessHostileCasts.Should().OnlyContain(ability =>
+            !Combat.CanConsumeNextAbilityNoDelay(ability.Detail));
     }
 
     [Test]

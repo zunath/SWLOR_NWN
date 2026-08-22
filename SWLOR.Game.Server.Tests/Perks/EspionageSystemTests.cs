@@ -245,8 +245,12 @@ public class EspionageSystemTests
         stealthSource.Should().Contain("Stealth detection forced native stealth exit");
         aiSource.Should().Contain("public static void TryAcquireAggroAfterDetection(uint observer, uint target)");
         aiSource.Should().Contain("if (!IsAIEnabled(observer))");
-        aiSource.Should().Contain("Stealth detection handed off to normal aggro acquisition");
-        aiSource.Should().Contain("TryAcquireAggro(observer, target);");
+        aiSource.Should().Contain("if (!TryAcquireAggro(observer, target))");
+        var successfulAggroIndex = aiSource.IndexOf("if (!TryAcquireAggro(observer, target))", StringComparison.Ordinal);
+        var successfulAggroLogIndex = aiSource.IndexOf("Stealth detection acquired normal proximity aggro", StringComparison.Ordinal);
+        successfulAggroIndex.Should().BeGreaterThanOrEqualTo(0);
+        successfulAggroLogIndex.Should().BeGreaterThan(successfulAggroIndex,
+            "the handoff log must describe a completed acquisition, not a rejected attempt");
     }
 
     [Test]

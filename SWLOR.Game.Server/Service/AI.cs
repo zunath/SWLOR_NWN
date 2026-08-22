@@ -792,16 +792,17 @@ namespace SWLOR.Game.Server.Service
             if (!IsAIEnabled(observer))
                 return;
 
+            if (!TryAcquireAggro(observer, target))
+                return;
+
             Log.WriteStructured(
                 LogGroup.AI,
-                "Stealth detection handed off to normal aggro acquisition: Observer={Observer} Target={Target}",
+                "Stealth detection acquired normal proximity aggro: Observer={Observer} Target={Target}",
                 observer,
                 target);
-
-            TryAcquireAggro(observer, target);
         }
 
-        private static void TryAcquireAggro(uint self, uint target)
+        private static bool TryAcquireAggro(uint self, uint target)
         {
             if (self == target ||
                 !GetIsObjectValid(target) ||
@@ -812,11 +813,12 @@ namespace SWLOR.Game.Server.Service
                 TryStartLeashEvade(self, target) ||
                 !TryAddProximityEnmity(target, self))
             {
-                return;
+                return false;
             }
 
             ProcessTrigger(self, AITriggerType.Aggro, target);
             AddNearbyAllyProximityEnmity(self, target);
+            return true;
         }
 
         private static void AddNearbyAllyProximityEnmity(uint self, uint target)

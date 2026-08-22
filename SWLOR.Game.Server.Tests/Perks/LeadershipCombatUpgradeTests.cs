@@ -115,7 +115,7 @@ public class LeadershipCombatUpgradeTests
         var cleanseOrder = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Leadership" / "CleanseOrderAbilityDefinition.cs").FullName);
         cleanseOrder.Should().Contain("AbilityEffectScaling.ScaleValueBySourceSocial(activator, 12, 15)");
         cleanseOrder.Should().Contain("GameMath.PercentOf(GetMaxHitPoints(target), percent)");
-        cleanseOrder.Should().Contain("TemporaryHitPointEffects.ApplyFlat(");
+        cleanseOrder.Should().Contain("TemporaryHitPointEffects.ApplyFlatOwned(");
         var cleanseOrder1Impact = cleanseOrder[cleanseOrder.IndexOf(
             "private static void CleanseOrder1ImpactAction",
             StringComparison.Ordinal)..cleanseOrder.IndexOf(
@@ -124,12 +124,15 @@ public class LeadershipCombatUpgradeTests
         var cleanseOrder2Impact = cleanseOrder[cleanseOrder.IndexOf(
             "private static void CleanseOrder2ImpactAction",
             StringComparison.Ordinal)..];
-        cleanseOrder1Impact.IndexOf("typeof(CleanseOrder1StatusEffect)", StringComparison.Ordinal)
-            .Should().BeLessThan(cleanseOrder1Impact.IndexOf("ApplyTemporaryHP(", StringComparison.Ordinal),
-                "rank I must install its command marker before applying the temporary-HP pool");
-        cleanseOrder2Impact.IndexOf("typeof(CleanseOrder2StatusEffect)", StringComparison.Ordinal)
-            .Should().BeLessThan(cleanseOrder2Impact.IndexOf("ApplyTemporaryHP(", StringComparison.Ordinal),
-                "rank II must replace its marker before applying the new pool");
+        cleanseOrder1Impact.Should().Contain("new CleanseOrder1StatusEffect()");
+        cleanseOrder2Impact.Should().Contain("new CleanseOrder2StatusEffect()");
+        var helperStart = cleanseOrder.IndexOf("private static void ApplyCommandAndTemporaryHP", StringComparison.Ordinal);
+        helperStart.Should().BeGreaterThanOrEqualTo(0);
+        var helperBody = cleanseOrder[helperStart..];
+        helperBody.IndexOf("StatusEffect.ApplyStatusEffect", StringComparison.Ordinal)
+            .Should().BeLessThan(helperBody.IndexOf("TemporaryHitPointEffects.ApplyFlatOwned", StringComparison.Ordinal),
+                "the marker must be accepted before its ID claims ownership of the temporary-HP pool");
+        helperBody.Should().Contain("commandMarker.Id");
 
         var rank1Marker = new CleanseOrder1StatusEffect();
         rank1Marker.Icon.Should().Be(EffectIconType.CleanseOrder1StatusEffect);
@@ -147,8 +150,15 @@ public class LeadershipCombatUpgradeTests
         foreach (var rank in new[] { "CleanseOrder1StatusEffect.cs", "CleanseOrder2StatusEffect.cs" })
         {
             var cleanseOrderStatus = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / rank).FullName);
-            cleanseOrderStatus.Should().Contain("TemporaryHitPointEffects.Remove(creature, TemporaryHitPointEffectKey)");
+            cleanseOrderStatus.Should().Contain("TemporaryHitPointEffects.RemoveIfCurrent(creature, TemporaryHitPointEffectKey, Id)");
         }
+
+        var temporaryHitPoints = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "TemporaryHitPointEffects.cs").FullName);
+        temporaryHitPoints.Should().Contain("SetLocalString(target, GetOwnerVariable(effectKey), ownerId)");
+        temporaryHitPoints.Should().Contain("GetLocalString(target, GetOwnerVariable(effectKey)) != ownerId");
+        temporaryHitPoints.Should().Contain("DeleteLocalString(target, GetOwnerVariable(effectKey))");
+        temporaryHitPoints.Should().NotContain("Dictionary<(uint Target, string EffectKey)",
+            "ownership belongs to the game object and must not leak through process-global tracking");
 
         var combat = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
         combat.Should().Contain("typeof(MarkTarget2StatusEffect)");

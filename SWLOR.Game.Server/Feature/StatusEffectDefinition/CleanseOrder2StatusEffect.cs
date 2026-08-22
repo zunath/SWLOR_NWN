@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         // Removing the rank-II command early also removes its associated native temporary-HP pool.
         protected override void Remove(uint creature)
         {
-            TemporaryHitPointEffects.Remove(creature, TemporaryHitPointEffectKey);
+            TemporaryHitPointEffects.RemoveIfCurrent(creature, TemporaryHitPointEffectKey, Id);
         }
     }
 }

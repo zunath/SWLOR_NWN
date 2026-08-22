@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void Remove(uint creature)
         {
-            TemporaryHitPointEffects.Remove(creature, TemporaryHitPointEffectKey);
+            TemporaryHitPointEffects.RemoveIfCurrent(creature, TemporaryHitPointEffectKey, Id);
         }
     }
 }

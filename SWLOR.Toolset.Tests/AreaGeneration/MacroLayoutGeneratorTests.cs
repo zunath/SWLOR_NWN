@@ -391,6 +391,36 @@ public class MacroLayoutGeneratorTests
     }
 
     [Test]
+    public void AssignTransitions_ReducesCountsWhenDistinctRoomTilesAreExhausted()
+    {
+        var layout = new MacroLayout(new CornerTerrainGrid(2, 1, "Floor"));
+        layout.Rooms.Add(new LayoutRoom
+        {
+            Id = 1,
+            Role = RoomRole.Entrance,
+            CenterTile = (0, 0),
+            Tiles = [(0, 0)]
+        });
+        layout.Rooms.Add(new LayoutRoom
+        {
+            Id = 2,
+            Role = RoomRole.Standard,
+            CenterTile = (1, 0),
+            Tiles = [(1, 0)]
+        });
+        var parameters = DefaultParameters(width: 2, height: 1, minRooms: 2, maxRooms: 2);
+        parameters.EntranceCount = 3;
+        parameters.ExitCount = 3;
+
+        LayoutTransitionAssignment.AssignTransitions(layout, parameters, new Random(1));
+
+        layout.Transitions.Should().HaveCount(2);
+        layout.Transitions.Should().ContainSingle(point => point.Kind == TransitionKind.Entrance);
+        layout.Transitions.Should().ContainSingle(point => point.Kind == TransitionKind.Exit);
+        layout.Transitions.Select(point => point.Tile).Should().OnlyHaveUniqueItems();
+    }
+
+    [Test]
     public void FrontagePlanner_RimOverhangPublishesOnlyInBoundsOccupiedCells()
     {
         var layout = new ResolvedLayout

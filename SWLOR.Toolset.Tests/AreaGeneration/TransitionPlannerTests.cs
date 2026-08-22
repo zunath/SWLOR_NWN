@@ -61,6 +61,7 @@ public sealed class TransitionPlannerTests
         tiles[5].Orientation.Should().Be(3);
         transition.DoorX.Should().Be(20f);
         transition.DoorY.Should().Be(15f);
+        transition.DoorType.Should().Be(176);
     }
 
     [Test]
@@ -138,7 +139,7 @@ public sealed class TransitionPlannerTests
                 Tile(
                     1,
                     ["Floor", "Floor", "Floor", "Floor"],
-                    door: new TileDoorRecord { Y = -5f },
+                    door: new TileDoorRecord { Type = 176, Y = -5f },
                     groupIndex: 0),
                 Tile(2, ["Floor", "Floor", "Floor", "Floor"], groupIndex: 1)
             ],

@@ -6,8 +6,9 @@ using System.Linq;
 namespace SWLOR.Toolset.Domain.AreaGeneration.Layouts
 {
     /// <summary>
-    /// Shared transition-assignment post-pass: places EntranceCount arrival anchors and ExitCount
-    /// outbound exit points on fully-open room tiles. The first entrance is always the Entrance
+    /// Shared transition-assignment post-pass: places up to EntranceCount arrival anchors and
+    /// ExitCount outbound exit points on distinct, fully-open room tiles. Requested counts are
+    /// reduced when the layout does not contain enough distinct tiles. The first entrance is always the Entrance
     /// room's center (the primary arrival anchor, preserving single-entrance behavior). Additional
     /// transitions prefer distinct, geodesically far-apart rooms; boss rooms may host exits but
     /// never entrances. Runs after accent painting so tile openness is final, and before
@@ -25,6 +26,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Layouts
 
             var entranceCount = Math.Clamp(parameters.EntranceCount, 1, MaxPerKind);
             var exitCount = Math.Clamp(parameters.ExitCount, 1, MaxPerKind);
+            var distinctTileCount = layout.Rooms.SelectMany(room => room.Tiles).Distinct().Count();
+            entranceCount = Math.Min(entranceCount, Math.Max(1, distinctTileCount - (exitCount > 0 ? 1 : 0)));
 
             var entranceRoom = layout.Rooms.First(r => r.Role == RoomRole.Entrance);
             var usedTiles = new HashSet<(int X, int Y)>();
@@ -34,9 +37,11 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Layouts
             var entranceRooms = new List<LayoutRoom> { entranceRoom };
             for (var i = 1; i < entranceCount; i++)
             {
-                var room = PickRoom(layout, usedRooms: entranceRooms, allowBoss: false, random);
+                var room = PickRoom(layout, usedRooms: entranceRooms, usedTiles, allowBoss: false, random);
+                if (room == null)
+                    break;
                 entranceRooms.Add(room);
-                AddTransition(layout, TransitionKind.Entrance, room, PickTile(room, usedTiles, random), usedTiles);
+                AddTransition(layout, TransitionKind.Entrance, room, PickTile(room, usedTiles), usedTiles);
             }
 
             // Exits prefer rooms that host no entrance so leaving means traversing the layout;
@@ -44,9 +49,11 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Layouts
             var exitRooms = new List<LayoutRoom>(entranceRooms);
             for (var i = 0; i < exitCount; i++)
             {
-                var room = PickRoom(layout, usedRooms: exitRooms, allowBoss: true, random);
+                var room = PickRoom(layout, usedRooms: exitRooms, usedTiles, allowBoss: true, random);
+                if (room == null)
+                    break;
                 exitRooms.Add(room);
-                AddTransition(layout, TransitionKind.Exit, room, PickTile(room, usedTiles, random), usedTiles);
+                AddTransition(layout, TransitionKind.Exit, room, PickTile(room, usedTiles), usedTiles);
             }
         }
 
@@ -63,13 +70,18 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Layouts
 
         /// <summary>
         /// Picks the room whose center is farthest (geodesically) from every already-used room,
-        /// excluding used rooms while unused ones remain. Falls back to reusing rooms when the
-        /// layout has fewer rooms than requested transitions.
+        /// excluding used rooms while unused ones with free tiles remain. Falls back to reusing a
+        /// room only while that room still has an unclaimed tile.
         /// </summary>
-        private static LayoutRoom PickRoom(MacroLayout layout, List<LayoutRoom> usedRooms, bool allowBoss, System.Random random)
+        private static LayoutRoom PickRoom(
+            MacroLayout layout,
+            List<LayoutRoom> usedRooms,
+            HashSet<(int X, int Y)> usedTiles,
+            bool allowBoss,
+            System.Random random)
         {
             var candidates = layout.Rooms
-                .Where(r => r.Tiles.Count > 0)
+                .Where(r => r.Tiles.Any(tile => !usedTiles.Contains(tile)))
                 .Where(r => allowBoss || r.Role != RoomRole.Boss)
                 .Where(r => !usedRooms.Contains(r))
                 .ToList();
@@ -77,13 +89,10 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Layouts
             if (candidates.Count == 0)
             {
                 candidates = layout.Rooms
-                    .Where(r => r.Tiles.Count > 0)
+                    .Where(r => r.Tiles.Any(tile => !usedTiles.Contains(tile)))
                     .Where(r => allowBoss || r.Role != RoomRole.Boss)
                     .ToList();
             }
-
-            if (candidates.Count == 0)
-                candidates = layout.Rooms.Where(r => r.Tiles.Count > 0).ToList();
 
             LayoutRoom best = null;
             var bestScore = -1;
@@ -103,11 +112,9 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Layouts
             return best;
         }
 
-        private static (int X, int Y) PickTile(LayoutRoom room, HashSet<(int X, int Y)> usedTiles, System.Random random)
+        private static (int X, int Y) PickTile(LayoutRoom room, HashSet<(int X, int Y)> usedTiles)
         {
             var free = room.Tiles.Where(t => !usedTiles.Contains(t)).ToList();
-            if (free.Count == 0)
-                return room.CenterTile;
 
             // Prefer a tile away from the room center so transitions do not collide with
             // boss/treasure placement, which anchors on the center.

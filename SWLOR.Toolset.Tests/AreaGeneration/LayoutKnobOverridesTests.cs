@@ -25,4 +25,29 @@ public sealed class LayoutKnobOverridesTests
 
         parameters.CorridorWidth.Should().Be(2);
     }
+
+    [Test]
+    public void ApplyTo_DisablingAccentsClearsEveryAccentTerrainPass()
+    {
+        var parameters = new MacroLayoutParameters
+        {
+            AccentTerrain = "Water",
+            AccentDensity = 0.2,
+            ChannelTerrain = "Water",
+            AccentChannels = 2,
+            PoolTerrain = "Water",
+            PoolRegions = 2
+        };
+        var tileset = new DungeonTilesetProfile { AccentTerrain = "Water" };
+        var overrides = new LayoutKnobOverrides { AccentEnabled = false };
+
+        overrides.ApplyTo(parameters, tileset);
+
+        parameters.AccentTerrain.Should().BeEmpty();
+        parameters.AccentDensity.Should().Be(0);
+        parameters.ChannelTerrain.Should().BeEmpty();
+        parameters.AccentChannels.Should().Be(0);
+        parameters.PoolTerrain.Should().BeEmpty();
+        parameters.PoolRegions.Should().Be(0);
+    }
 }

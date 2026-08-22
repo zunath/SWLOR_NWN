@@ -62,6 +62,13 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             var accentActive = AccentEnabled && tileset != null && !string.IsNullOrEmpty(tileset.AccentTerrain);
             parameters.AccentTerrain = accentActive ? tileset.AccentTerrain : string.Empty;
             parameters.AccentDensity = accentActive ? AccentDensityPercent / 100.0 : 0.0;
+            if (!accentActive)
+            {
+                parameters.ChannelTerrain = string.Empty;
+                parameters.AccentChannels = 0;
+                parameters.PoolTerrain = string.Empty;
+                parameters.PoolRegions = 0;
+            }
 
             parameters.FeatureDensity = FeatureDensityPercent / 100.0;
 

@@ -109,6 +109,27 @@ public sealed class AreaGeneratorWindowRenderTests
         viewModel.AccentDensityPercent.Should().Be(0);
     }
 
+    [Test]
+    public void ChannelLayout_OnBlobCapableTileset_PreservesZeroBlobDensityWhileLoadingDefaults()
+    {
+        using var viewModel = CreateViewModel();
+        var mixedProfile = new AreaGeneratorViewModel.TilesetChoice(new DungeonTilesetProfile
+        {
+            Key = "mixed_accents",
+            DisplayName = "Mixed Accents",
+            TilesetResref = "unavailable_test_tileset",
+            AccentTerrain = "Water",
+            ChannelTerrain = "Pit"
+        });
+        viewModel.TilesetProfiles.Add(mixedProfile);
+        viewModel.SelectedTilesetProfile = mixedProfile;
+        viewModel.SelectedLayoutProfile = viewModel.LayoutProfiles.Single(choice =>
+            choice.Value.Key == StandardLayoutProfiles.Halls);
+
+        viewModel.AccentEnabled.Should().BeTrue();
+        viewModel.AccentDensityPercent.Should().Be(0);
+    }
+
     [AvaloniaTest]
     public void ChangingPreviewDisplayOptions_InvalidatesTheRenderedPreview()
     {

@@ -89,6 +89,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Layouts
             var crossers = layout.Crossers;
             var width = corners.Width;
             var height = corners.Height;
+            var candidateProbe = new RoadCandidateProbe(tileset, layout);
 
             // Anchors: every already-anchored transition's open interior tile, plus every room's own
             // representative center tile EXCEPT rooms big enough to plausibly host this composition's
@@ -152,13 +153,13 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Layouts
 
                 if (!TryBuildPath(corners, layout, width, height, open, a, b,
                         parameters.StraightStreetRouting, out var path)) continue;
-                if (!IsPathClear(layout, crossers, road, path)) continue;
+                if (!IsPathClear(layout, candidateProbe, road, path)) continue;
 
                 CommitPath(crossers, road, path);
                 placed++;
             }
 
-            CarvePlazaRingStreets(layout, parameters, road, open);
+            CarvePlazaRingStreets(layout, parameters, candidateProbe, road, open);
         }
 
         /// <summary>
@@ -196,7 +197,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Layouts
         /// pre-validate-then-commit convention.
         /// </summary>
         private static void CarvePlazaRingStreets(
-            MacroLayout layout, MacroLayoutParameters parameters, string road, string open)
+            MacroLayout layout, MacroLayoutParameters parameters, RoadCandidateProbe candidateProbe,
+            string road, string open)
         {
             if (parameters.Style != DungeonLayoutStyle.RoomsAndCorridors) return;
 
@@ -214,17 +216,10 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Layouts
                 if (placedRings >= PlazaRingMaxPerArea) break;
                 if (!TryBuildRectangularRing(room, layout, corners, width, height, open, out var ring)) continue;
 
-                // Ring edges: consecutive loop cells plus the closing edge. All-or-nothing validation.
-                var clear = true;
-                for (var i = 0; i < ring.Count && clear; i++)
-                {
-                    var slot = SlotTowards(ring[i], ring[(i + 1) % ring.Count]);
-                    var existing = crossers.GetEdge(ring[i].X, ring[i].Y, slot);
-                    if (existing.Length != 0 && !string.Equals(existing, road, System.StringComparison.OrdinalIgnoreCase))
-                        clear = false;
-                }
-
-                if (!clear) continue;
+                // Include the closing edge in the same all-or-nothing candidate validation used by
+                // ordinary lanes and post-stamp spurs.
+                var closedRing = new List<(int X, int Y)>(ring) { ring[0] };
+                if (!IsPathClear(layout, candidateProbe, road, closedRing)) continue;
 
                 for (var i = 0; i < ring.Count; i++)
                 {
@@ -491,29 +486,130 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Layouts
             cell.X >= 0 && cell.Y >= 0 && cell.X < width && cell.Y < height;
 
         /// <summary>
-        /// True when every cell in <paramref name="path"/> is unpinned (not already claimed by a
-        /// LayoutGroupStamper set piece / GroupExitPlanner exit -- exit pins don't exist yet at this
-        /// point in the pipeline, but a defensive check costs nothing) and every edge the path will
-        /// write is either blank or already carries this same road crosser (a legitimate T/X junction
-        /// with an earlier lane), never a different crosser some other post-pass already claimed.
+        /// Resolves exact post-write road shapes against the same candidate rules as TileResolver.
+        /// Flat lookups are memoized by full corner/edge key; height-aware layouts reuse one resolver
+        /// probe cache for the whole carving pass.
+        /// </summary>
+        private sealed class RoadCandidateProbe
+        {
+            private readonly TilesetModel _tileset;
+            private readonly MacroLayout _layout;
+            private readonly bool _heightAware;
+            private readonly TileResolver.HeightAwareProbeCache _heightCache;
+            private readonly Dictionary<string, bool> _flatResults = new();
+
+            public RoadCandidateProbe(TilesetModel tileset, MacroLayout layout)
+            {
+                _tileset = tileset;
+                _layout = layout;
+                _heightAware = layout.Corners.HasAnyHeight();
+                if (_heightAware)
+                {
+                    _heightCache = TileResolver.BuildHeightAwareProbeCache(
+                        tileset,
+                        layout.DoorSlotCrossers,
+                        layout.ExcludedTiles);
+                }
+            }
+
+            public bool HasCandidate((int X, int Y) cell, bool[] proposedRoadSlots, string road)
+            {
+                var corners = _layout.Corners;
+                var crossers = _layout.Crossers;
+                var x = cell.X;
+                var y = cell.Y;
+
+                var tl = corners.Labels[x, y + 1];
+                var tr = corners.Labels[x + 1, y + 1];
+                var br = corners.Labels[x + 1, y];
+                var bl = corners.Labels[x, y];
+                var top = proposedRoadSlots[EdgeSlot.Top] ? road : crossers.GetEdge(x, y, EdgeSlot.Top);
+                var right = proposedRoadSlots[EdgeSlot.Right] ? road : crossers.GetEdge(x, y, EdgeSlot.Right);
+                var bottom = proposedRoadSlots[EdgeSlot.Bottom] ? road : crossers.GetEdge(x, y, EdgeSlot.Bottom);
+                var left = proposedRoadSlots[EdgeSlot.Left] ? road : crossers.GetEdge(x, y, EdgeSlot.Left);
+
+                if (_heightAware)
+                {
+                    var hTl = corners.Heights[x, y + 1];
+                    var hTr = corners.Heights[x + 1, y + 1];
+                    var hBr = corners.Heights[x + 1, y];
+                    var hBl = corners.Heights[x, y];
+                    var min = System.Math.Min(System.Math.Min(hTl, hTr), System.Math.Min(hBr, hBl));
+                    return TileResolver.HasHeightAwareCandidate(
+                        _heightCache,
+                        tl, tr, br, bl,
+                        top, right, bottom, left,
+                        hTl - min, hTr - min, hBr - min, hBl - min);
+                }
+
+                var key = string.Join("\u001f", new[] { tl, tr, br, bl, top, right, bottom, left });
+                if (_flatResults.TryGetValue(key, out var result)) return result;
+
+                result = TileResolver.HasCandidate(
+                    _tileset,
+                    tl, tr, br, bl,
+                    top, right, bottom, left,
+                    _layout.DoorSlotCrossers,
+                    _layout.ExcludedTiles);
+                _flatResults[key] = result;
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// True when every cell in <paramref name="path"/> is unpinned and every edge the path will
+        /// write is blank or already carries this road. The complete post-write tile key is then
+        /// checked for every affected cell, including existing perpendicular crossers and corner
+        /// heights painted by earlier passes, so the resolver is guaranteed to have a candidate before
+        /// any edge is mutated.
         /// </summary>
         private static bool IsPathClear(
-            MacroLayout layout, EdgeCrosserGrid crossers, string road, List<(int X, int Y)> path)
+            MacroLayout layout, RoadCandidateProbe candidateProbe, string road, List<(int X, int Y)> path)
         {
             foreach (var cell in path)
             {
                 if (layout.PinnedTiles.ContainsKey(cell)) return false;
             }
 
+            var proposedRoadSlots = new Dictionary<(int X, int Y), bool[]>();
             for (var i = 0; i + 1 < path.Count; i++)
             {
                 var slot = SlotTowards(path[i], path[i + 1]);
-                var existing = crossers.GetEdge(path[i].X, path[i].Y, slot);
+                var existing = layout.Crossers.GetEdge(path[i].X, path[i].Y, slot);
                 if (existing.Length != 0 && !string.Equals(existing, road, System.StringComparison.OrdinalIgnoreCase))
                     return false;
+
+                AddProposedRoadSlot(proposedRoadSlots, path[i], slot);
+                AddProposedRoadSlot(proposedRoadSlots, path[i + 1], OppositeSlot(slot));
             }
 
+            foreach (var (cell, slots) in proposedRoadSlots)
+                if (!candidateProbe.HasCandidate(cell, slots, road)) return false;
+
             return true;
+        }
+
+        private static void AddProposedRoadSlot(
+            Dictionary<(int X, int Y), bool[]> proposedRoadSlots, (int X, int Y) cell, int slot)
+        {
+            if (!proposedRoadSlots.TryGetValue(cell, out var slots))
+            {
+                slots = new bool[4];
+                proposedRoadSlots[cell] = slots;
+            }
+
+            slots[slot] = true;
+        }
+
+        private static int OppositeSlot(int slot)
+        {
+            return slot switch
+            {
+                EdgeSlot.Top => EdgeSlot.Bottom,
+                EdgeSlot.Right => EdgeSlot.Left,
+                EdgeSlot.Bottom => EdgeSlot.Top,
+                _ => EdgeSlot.Right
+            };
         }
 
         private static void CommitPath(EdgeCrosserGrid crossers, string road, List<(int X, int Y)> path)
@@ -567,6 +663,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Layouts
             var crossers = layout.Crossers;
             var width = corners.Width;
             var height = corners.Height;
+            var candidateProbe = new RoadCandidateProbe(tileset, layout);
 
             foreach (var footprint in layout.StampedOpenSetPieceFootprints)
             {
@@ -588,7 +685,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Layouts
                         parameters.StraightStreetRouting, out var path))
                     continue;
 
-                if (!IsPathClear(layout, crossers, road, path))
+                if (!IsPathClear(layout, candidateProbe, road, path))
                     continue;
 
                 CommitPath(crossers, road, path);

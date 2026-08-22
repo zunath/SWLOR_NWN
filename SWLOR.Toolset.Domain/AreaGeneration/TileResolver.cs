@@ -611,11 +611,12 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
             TilesetModel tileset,
             string tl, string tr, string br, string bl,
             string top, string right, string bottom, string left,
-            IReadOnlyCollection<string> extraDoorSlotCrossers = null)
+            IReadOnlyCollection<string> extraDoorSlotCrossers = null,
+            IReadOnlyCollection<int> excludedTiles = null)
         {
             if (tileset == null) throw new ArgumentNullException(nameof(tileset));
 
-            var lookup = BuildCandidateLookup(tileset, heightAware: false, extraDoorSlotCrossers);
+            var lookup = BuildCandidateLookup(tileset, heightAware: false, extraDoorSlotCrossers, excludedTiles);
             var key = MakeKey(tl, tr, br, bl, top, right, bottom, left);
             return lookup.TryGetValue(key, out var set) && set.All.Count > 0;
         }
@@ -672,18 +673,24 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
 
             private bool TryGetSet(string key, out CandidateSet set) => Lookup.TryGetValue(key, out set);
 
-            internal static HeightAwareProbeCache Build(TilesetModel tileset) =>
-                From(BuildCandidateLookup(tileset, heightAware: true));
+            internal static HeightAwareProbeCache Build(
+                TilesetModel tileset,
+                IReadOnlyCollection<string> extraDoorSlotCrossers,
+                IReadOnlyCollection<int> excludedTiles) =>
+                From(BuildCandidateLookup(tileset, heightAware: true, extraDoorSlotCrossers, excludedTiles));
 
             internal bool HasCandidate(string key) => TryGetSet(key, out var set) && set.All.Count > 0;
         }
 
         /// <summary>Builds a <see cref="HeightAwareProbeCache"/> for repeated height-aware probes against
         /// <paramref name="tileset"/> within a single post-pass invocation.</summary>
-        public static HeightAwareProbeCache BuildHeightAwareProbeCache(TilesetModel tileset)
+        public static HeightAwareProbeCache BuildHeightAwareProbeCache(
+            TilesetModel tileset,
+            IReadOnlyCollection<string> extraDoorSlotCrossers = null,
+            IReadOnlyCollection<int> excludedTiles = null)
         {
             if (tileset == null) throw new ArgumentNullException(nameof(tileset));
-            return HeightAwareProbeCache.Build(tileset);
+            return HeightAwareProbeCache.Build(tileset, extraDoorSlotCrossers, excludedTiles);
         }
 
         /// <summary>Cache-based twin of <see cref="HasHeightAwareCandidate(TilesetModel,string,string,string,string,string,string,string,string,int,int,int,int)"/>

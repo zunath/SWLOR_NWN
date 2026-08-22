@@ -538,6 +538,73 @@ public class MacroLayoutGeneratorTests
         parameters.RoadCrosser = road;
         var tileset = new TilesetModel
         {
+            Crossers = [road, fence],
+            Tiles =
+            [
+                RoadTile(0, "", road, "", ""),
+                RoadTile(1, "", road, "", road),
+                RoadTile(2, road, "", "", road),
+                RoadTile(3, road, road, "", road),
+                RoadTile(4, road, road, road, road),
+                RoadTile(5, road, fence, "", "")
+            ]
+        };
+
+        LayoutRoadCarver.CarveSpurs(layout, parameters, tileset, new Random(1));
+
+        layout.Crossers.GetEdge(1, 0, EdgeSlot.Right).Should().Be(fence);
+        layout.Crossers.GetEdge(1, 0, EdgeSlot.Top).Should().Be(road,
+            "the spur must route around the pinned foreign-crosser edge and still be carved");
+    }
+
+    [Test]
+    public void RoadLane_DoesNotCreateAnUnsupportedMixedCrosserShape()
+    {
+        const string road = "Road";
+        const string fence = "Fence";
+        var layout = new MacroLayout(new CornerTerrainGrid(2, 1, "Floor"));
+        layout.Transitions.Add(new TransitionPoint { Kind = TransitionKind.Entrance, Tile = (0, 0) });
+        layout.Transitions.Add(new TransitionPoint { Kind = TransitionKind.Exit, Tile = (1, 0) });
+        layout.Crossers.SetEdge(0, 0, EdgeSlot.Top, fence);
+
+        var parameters = DefaultParameters(width: 2, height: 1, minRooms: 2, maxRooms: 2);
+        parameters.RoadCrosser = road;
+        parameters.RoadLanes = 1;
+        var tileset = new TilesetModel
+        {
+            Crossers = [road, fence],
+            Tiles =
+            [
+                RoadTile(0, "", road, "", ""),
+                RoadTile(1, "", road, "", road),
+                RoadTile(2, road, "", "", road),
+                RoadTile(3, road, road, "", road),
+                RoadTile(4, road, road, road, road)
+            ]
+        };
+
+        LayoutRoadCarver.CarveRoads(layout, parameters, tileset, new Random(1));
+
+        layout.Crossers.GetEdge(0, 0, EdgeSlot.Top).Should().Be(fence);
+        layout.Crossers.GetEdge(0, 0, EdgeSlot.Right).Should().BeEmpty(
+            "the tileset has no candidate combining a perpendicular Fence with the proposed Road");
+    }
+
+    [Test]
+    public void RoadLane_DoesNotCreateAnUnsupportedSlopedRoadShape()
+    {
+        const string road = "Road";
+        var corners = new CornerTerrainGrid(2, 1, "Floor");
+        corners.Heights[0, 1] = 1;
+        var layout = new MacroLayout(corners);
+        layout.Transitions.Add(new TransitionPoint { Kind = TransitionKind.Entrance, Tile = (0, 0) });
+        layout.Transitions.Add(new TransitionPoint { Kind = TransitionKind.Exit, Tile = (1, 0) });
+
+        var parameters = DefaultParameters(width: 2, height: 1, minRooms: 2, maxRooms: 2);
+        parameters.RoadCrosser = road;
+        parameters.RoadLanes = 1;
+        var tileset = new TilesetModel
+        {
             Crossers = [road],
             Tiles =
             [
@@ -549,11 +616,10 @@ public class MacroLayoutGeneratorTests
             ]
         };
 
-        LayoutRoadCarver.CarveSpurs(layout, parameters, tileset, new Random(1));
+        LayoutRoadCarver.CarveRoads(layout, parameters, tileset, new Random(1));
 
-        layout.Crossers.GetEdge(1, 0, EdgeSlot.Right).Should().Be(fence);
-        layout.Crossers.GetEdge(1, 0, EdgeSlot.Top).Should().Be(road,
-            "the spur must route around the pinned foreign-crosser edge and still be carved");
+        layout.Crossers.GetEdge(0, 0, EdgeSlot.Right).Should().BeEmpty(
+            "the tileset exposes only flat road candidates for the sloped endpoint");
     }
 
     private static TileRecord RoadTile(

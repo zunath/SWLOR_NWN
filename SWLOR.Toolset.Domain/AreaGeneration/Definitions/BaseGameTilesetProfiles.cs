@@ -8,7 +8,7 @@ using SWLOR.Toolset.Domain.AreaGeneration.Tileset;
 namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
 {
     /// <summary>
-    /// Pilot wave of base-game (non-hak) tileset profiles: Crypt (tdc01), Dungeon (tde01), and
+    /// Initial base-game (non-hak) tileset profiles: Crypt (tdc01), Dungeon (tde01), and
     /// City Interior (tin01), resolved from basegame_sets via the shared TilesetSetSource (see
     /// the base-game tileset census, SWLOR.Toolset.Tests/AreaGeneration/TileCoverageCensusTests.cs).
     /// These are tileset profiles only -- no theme/content is registered here; the existing themes
@@ -57,9 +57,9 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         public const string MinesAndCavernsDesertTracks = "minescaverns_desert_tracks";
         public const string MinesAndCavernsOrganicTracks = "minescaverns_organic_tracks";
 
-        // Wave-2 (Wave-1 READY-FLAT queue continued): ten more interior base-game tilesets, all
+        // Additional interior base-game tilesets, all
         // resolved to their SWLOR_Haks copy by TilesetSetSource (every one of these ten has been
-        // copied into a hak, unlike the pilot three where only Crypt/Dungeon had hak copies and City
+        // copied into a hak, unlike the initial three where only Crypt/Dungeon had hak copies and City
         // Interior stayed vanilla-only). See the base-game tileset census
         // (TileCoverageCensusTests.PilotTilesetKeys) for the coverage numbers and
         // TileCoverageCensusTests.PilotAlternateVocabTerrains/Crossers + PilotExpectedExemptions for
@@ -84,7 +84,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         public const string FortInterior = "fortinterior";
         public const string FortInteriorLegacy = "fortinterior_legacy";
 
-        // Wave-3: the first EXTERIOR base-game tilesets (ttd01/ttf01/ttf02) -- see the base-game tileset
+        // Exterior base-game tilesets (ttd01/ttf01/ttf02) -- see the base-game tileset
         // census (TileCoverageCensusTests.PilotTilesetKeys) for coverage numbers and
         // TileCoverageCensusTests.PilotExpectedExemptions for the exact accounting. Resolution note:
         // ttd01 and ttf01 have SWLOR hak copies (SWLOR_Haks/sw_t_tatooine/ttd01.set, 388 tiles, and
@@ -137,7 +137,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         public const string ForestRoad = "forest_road";
         public const string ForestStoneBridge = "forest_stonebridge";
 
-        // Wave-5: Jacoby's Jungle (jac01, SWLOR_Haks/sw_t_jungle -- a 380-tile HasHeightTransition=1
+        // Jacoby's Jungle (jac01, SWLOR_Haks/sw_t_jungle -- a 380-tile HasHeightTransition=1
         // hak-shipped exterior tileset). See the Jungle profile's own doc comment below for the full
         // probe writeup (a lean sibling of Forest/ttf01: same degenerate Default==Floor=="Forest"
         // GENERAL quirk, same inverted SolidTerrainOverride("Cliff")/PrimaryOpenTerrain("Forest")
@@ -147,10 +147,10 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         public const string Jungle = "jungle";
         public const string JunglePlatform = "jungle_platform";
 
-        // Wave-7: Rural Grass (ttr01, SWLOR_Haks/sw_t_rural -- a 653-tile HasHeightTransition=1
+        // Rural Grass (ttr01, SWLOR_Haks/sw_t_rural -- a 653-tile HasHeightTransition=1
         // hak-shipped exterior tileset, UnlocalizedName "Rural Grass*"). Same degenerate GENERAL quirk
         // as ttd01/ttf01/jac01 (Default=Floor=Border="Grass", the walkable ground), but UNLIKE every
-        // prior exterior wave, ttr01 has no Cliff-equivalent wall mass at all: Grass reaches full
+        // previous exterior tilesets, ttr01 has no Cliff-equivalent wall mass at all: Grass reaches full
         // 16-combo coverage against EVERY other terrain (Water/Trees/Forest/GentleHill/EvilCastle/
         // GoodCastle), and every one of those six is a minor accent/district family (1-8 uniform flat
         // tiles), not a genuine rock/wall inventory -- confirmed via a real LayoutSolver pipeline sweep
@@ -241,7 +241,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         public const string CastleExteriorRuralWater = "castleexteriorrural_water";
         public const string CastleExteriorRuralHarbor = "castleexteriorrural_harbor";
 
-        // Wave-10: City Exterior* (tcn01, SWLOR_Haks/sw_t_cityext -- hak wins over the basegame_sets
+        // City Exterior* (tcn01, SWLOR_Haks/sw_t_cityext -- hak wins over the basegame_sets
         // fallback, 1460 tiles / 295 groups, the largest onboarded set yet). See CityExterior's own doc
         // comment for the full composition writeup.
         public const string CityExterior = "cityexterior";
@@ -249,16 +249,16 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         public const string CityExteriorGothic = "cityexterior_gothic";
         public const string CityExteriorSigil = "cityexterior_sigil";
 
-        // Wave-11: Frozen Wastes* (tti01, SWLOR_Haks/sw_t_frozen -- hak-only, 510 tiles / 19 groups,
+        // Frozen Wastes* (tti01, SWLOR_Haks/sw_t_frozen -- hak-only, 510 tiles / 19 groups,
         // 0 crossers). See FrozenWastes' own doc comment for the full composition writeup: unlike
-        // every prior exterior wave, tti01's GENERAL Default ("Pit") and Floor ("Floor") are genuinely
+        // previous exterior tilesets, tti01's GENERAL Default ("Pit") and Floor ("Floor") are genuinely
         // DIFFERENT terrains (no degenerate Default==Floor quirk), so the PLAIN default composition
         // applies with no SolidTerrainOverride at all -- the same shape every interior tileset uses,
         // just on an exterior-flavored hak.
         public const string FrozenWastes = "frozenwastes";
         public const string FrozenWastesEvilCastle = "frozenwastes_evilcastle";
 
-        // Wave-12: Tropical* (ttz01, SWLOR_Haks/sw_t_coastal -- hak-only, 442 tiles / 94 groups, 4
+        // Tropical* (ttz01, SWLOR_Haks/sw_t_coastal -- hak-only, 442 tiles / 94 groups, 4
         // terrains, 4 crossers). See Tropical's own doc comment for the full composition writeup: the
         // ttr01/tts01 open-field shape (Border=Default=Floor="grass"), PLUS a second, equally-rich
         // native open ground ("sand") the SAME .set data offers -- recomposed here as a genuinely new
@@ -271,7 +271,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         public const string TropicalWater = "tropical_water";
         public const string TropicalSandWater = "tropical_sandwater";
 
-        // Wave-13: Underdark* (ttu01, SWLOR_Haks/sw_t_underdark -- hak wins over the basegame_sets
+        // Underdark* (ttu01, SWLOR_Haks/sw_t_underdark -- hak wins over the basegame_sets
         // fallback, 559 tiles / 53 groups, 7 terrains, 5 crossers). The hak copy also silently fixes a
         // genuine Bioware typo present in the vanilla basegame_sets/ttu01.set: vanilla declares a
         // terrain literally spelled "Chasym" (486+ occurrences), but SWLOR_Haks/sw_t_underdark/
@@ -280,13 +280,13 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         // the corrected "Chasm" spelling, which is what the runtime model actually reports.
         //
         // GENERAL: Border="Rock", Default="Floor", Floor="Floor" -- Default and Floor are the SAME
-        // terrain, the identical degenerate quirk the ttd01/ttf01/ttf02/jac01/fcx01 exterior wave
+        // terrain, the identical degenerate quirk the ttd01/ttf01/ttf02/jac01/fcx01 exterior profiles
         // documents, and pathnode data confirms it here too: Floor is overwhelmingly pathnode A
         // (134/181 pure tiles) while Rock's lone pure tile is pathnode R (restricted). Composing with
         // the engine's plain Solid=Default rule would carve unwalkable Rock "rooms" out of a walkable
         // Floor "wall" -- inverted for gameplay -- so this profile declares
         // SolidTerrainOverride("Rock") + PrimaryOpenTerrain("Floor"), the same inversion shape as that
-        // whole wave. Direct 16-combo probe confirms Rock/Floor reaches 16/16 in both orientations
+        // whole family. Direct 16-combo probe confirms Rock/Floor reaches 16/16 in both orientations
         // (ProbeTool "matrix2"), and PathNodeOpeningWidthAudit against Solid=Rock/Open=Floor returns 1
         // (MinimumOpeningWidth stays the default).
         //
@@ -308,7 +308,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         // /"Doorway" pair (verified directly: TunnelVocabularyCheck.SupportsTunnels returns FALSE for
         // every ordered Solid/Open pairing against every crosser), so Tunnel-mode composition has NO
         // wall-embedded corridor vocabulary here -- Complex's Tunnel mode downgrades to OpenLane, the
-        // same verdict as the whole ttd01/ttf01/ttf02/jac01/fcx01 wave. RoadVocabularyCheck.SupportsRoads
+        // same verdict as the ttd01/ttf01/ttf02/jac01/fcx01 profiles. RoadVocabularyCheck.SupportsRoads
         // confirms real lane support for Wall and Stream against Open=Floor; Wall is wired as
         // RoadCrosser (a plausible drow-built walkway/railing reading over open cavern floor). "RuinWall"
         // (the ruined-outpost gate family: Ruin - Gates/House 5/Entrance Straight 1&2/Entrance Corner)
@@ -363,9 +363,9 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         // flora), zep_geiser002 (a steam/mineral vent), crystalspire (a large crystal formation).
         public const string Underdark = "underdark";
 
-        // Wave-14: Early Winter 2 (trs02, basegame_sets/trs02.set -- BIF-only, NO SWLOR_Haks copy
+        // Early Winter 2 (trs02, basegame_sets/trs02.set -- BIF-only, NO SWLOR_Haks copy
         // exists, verified directly; 1306 tiles / 94 groups, 7 terrains, 4 crossers). UnlocalizedName
-        // is "Early Winter 2" verbatim (no trailing asterisk, unlike every hak-customized exterior wave
+        // is "Early Winter 2" verbatim (no trailing asterisk, unlike the hak-customized exterior profiles
         // -- the .set file itself carries this UnlocalizedName, no TLK fallback needed).
         //
         // GENERAL: Border=Default=Floor="Grass" -- a genuine open field (matching ttr01/tts01/ttz01's
@@ -413,7 +413,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         // Crossers: Stream/Wall/Ridge/Street -- NONE is a canonical or near-canonical "Corridor"/
         // "Doorway" pair (verified directly, TunnelVocabularyCheck.SupportsTunnels false for every
         // ordered pairing), so Complex downgrades to OpenLane, the same verdict as every prior exterior
-        // wave. RoadVocabularyCheck.SupportsRoads confirms Street supports lanes against Grass/Chasm/
+        // family. RoadVocabularyCheck.SupportsRoads confirms Street supports lanes against Grass/Chasm/
         // Grass2/Mountain (the broadest of the four) -- wired as RoadCrosser. Wall/Ridge/Stream all gate
         // real GROUP content (WallGate1/2 grass+wall+door, SmallCave1 grass2+ridge+door, Bridge1/2
         // grass+stream, RiverCave1/StreetCave mountain+stream/street+door, etc.) but none is declared a
@@ -429,7 +429,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
 
         // Early Winter 2 (Mountain) -- see EarlyWinter's own doc comment above for the shared shape
         // writeup. SolidTerrainOverride("mountain") + PrimaryOpenTerrain("grass") recomposes the SAME
-        // trs02 .set data as a genuine inversion (mirroring the ttd01/ttf01/jac01/fcx01/ttu01 wave's
+        // trs02 .set data as a genuine inversion (mirroring the ttd01/ttf01/jac01/fcx01/ttu01 profiles'
         // shape, not a PaletteVariant accent-slot recomposition): Mountain becomes real wall mass, and
         // its door/cave family (MountainCave1-5, Mine1/2, CornerCave1, InnerCornerCave1/3, SeaCave1 --
         // all flat, crosser-free, door-bearing 1x1 groups mixing mountain with grass/grass2/water
@@ -462,7 +462,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         // wiring closes them this pass.
         public const string EarlyWinterMountain = "earlywinter_mountain";
 
-        // Wave-15: Medieval Rural 2 (trm02, basegame_sets/trm02.set -- BIF-only, NO SWLOR_Haks copy
+        // Medieval Rural 2 (trm02, basegame_sets/trm02.set -- BIF-only, NO SWLOR_Haks copy
         // exists, verified directly; 1644 tiles / 161 groups, 7 terrains, 6 crossers). UnlocalizedName
         // is "Medieval Rural 2" verbatim (the .set file itself carries this UnlocalizedName, DisplayName
         // is the unset -1 sentinel, so no TLK fallback is needed).
@@ -525,7 +525,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         // Crossers: Road/Stream/Wall/Bridge/Ridge/Street -- NONE is a canonical or near-canonical
         // "Corridor"/"Doorway" pair (verified directly via ProbeTool "matrixtrm": TunnelVocabularyCheck
         // returns FALSE for every ordered pairing), so Complex downgrades to OpenLane, the same verdict
-        // as every prior exterior wave. RoadVocabularyCheck.SupportsRoads confirms Street supports lanes
+        // as the previous exterior profiles. RoadVocabularyCheck.SupportsRoads confirms Street supports lanes
         // against Grass/Grass2/Mountain (the broadest of the six, matching trs02's own Street pick) --
         // wired as RoadCrosser. Road/Stream/Wall/Bridge/Ridge all gate real GROUP content (WallGate1/2
         // grass+wall+door, Mill2x2 grass+road/stream, SmallCave1/2 grass2+ridge+door, Bridge1-3/
@@ -593,7 +593,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         // PilotAlternateVocabCrossers["trm02"] bucket the base profile documents) -- no additional wiring
         // closes them this pass.
         public const string MedievalRuralMountain = "medievalrural_mountain";
-        // Wave-15: Beholder Interior* (tib01, SWLOR_Haks/sw_t_beholder -- hak-only, 868 tiles / 43
+        // Beholder Interior* (tib01, SWLOR_Haks/sw_t_beholder -- hak-only, 868 tiles / 43
         // groups, 9 terrains, 11 crossers). See Beholder's own doc comment (below, next to the profile
         // itself) for the full composition writeup, the KNOWN CALIBRATION FINDING on Room-Big/Room-Pit/
         // Room-Pillar, and the ChultDoorway/ChultCorridor exemption.
@@ -604,7 +604,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         public const string BeholderUrine = "beholder_urine";
         public const string BeholderWater = "beholder_water";
 
-        // Wave-4: D20 Futuristic City SW (fcx01, SWLOR_Haks/sw_t_futcity -- a 239-tile hak-shipped
+        // D20 Futuristic City SW (fcx01, SWLOR_Haks/sw_t_futcity -- a 239-tile hak-shipped
         // exterior tileset; a 2026-07-12 offline probe called this "lacking coverage" using only the
         // pre-SolidTerrainOverride toolbox -- re-derived from scratch below with the current one).
         // GENERAL Default=Floor="Cobble" (the same degenerate quirk as ttd01/ttf01/ttf02): only THREE
@@ -638,13 +638,13 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         // "murs" ("walls"). None pairs as a Corridor/Doorway body+port set (verified directly: no crosser
         // named "Corridor" or "Doorway" exists at all), so Tunnel vocabulary is NONE under this
         // composition -- Complex's Tunnel mode downgrades to OpenLane, the same verdict as the ttd01/
-        // ttf01/ttf02 wave (locked in by TunnelVocabularyCheckTests.ExpectedUnsupported). "murs" is
+        // ttf01/ttf02 profiles (locked in by TunnelVocabularyCheckTests.ExpectedUnsupported). "murs" is
         // declared via DoorSlotCrossers("murs") -- it carries real door slots on the wall/road-gate
         // GROUPS (b_wall_door/d_wall_door/b_road_door/d_road_door) and on ten flat, ungrouped,
         // murs-edged ordinary tiles (ry TILE223-232), the same "district's own body-renamed door
         // crosser" shape as Barrows' "door_corridor" precedent. "pont" (Bridge-equivalent, gates the
         // holes chasm at TILE5-7/96-98/119-124) has no wired body/port or DoorSlotCrossers vocabulary in
-        // this wave -- see TileCoverageCensusTests' fcx01 PilotExpectedExemptions entries for the exact
+        // this profile -- see TileCoverageCensusTests' fcx01 PilotExpectedExemptions entries for the exact
         // accounting. "Routes" (flat road-marking lanes at TILE207-216, never door-bearing) is now wired
         // as a RoadCrosser (see LayoutRoadCarver/RoadVocabularyCheck): street lanes carved between
         // transition anchors and room centers, routed around LayoutGroupStamper's already-stamped
@@ -660,7 +660,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         // pw_ar_nsshipyard/velundr, randoncity_01/02), 3468 placed tiles total. TileLighting(0,0,0,0) is
         // the REAL sampled value -- 2629/3468 (76%) of all placed tiles across all 9 areas use exactly
         // (MainLight1,MainLight2,SrcLight1,SrcLight2)=(0,0,0,0), including 100% of pw_ar_narpromena's own
-        // 144 tiles (the confirmed-fcx01 reference area named for this onboarding); the two areas with
+        // 144 tiles (the confirmed-fcx01 reference area); the two areas with
         // other combos (pw_ar_velundr, randoncity_02) are hand-lit exceptions, not the tileset default.
         // Real usage also corroborates 22 of the 38 groups wired below (d_platform2, Tower06, b_platform,
         // Tower05, Tower02, Tower04, d_trans, b_road_door, Tower00, d_eau, d_road_door, b_fountain,
@@ -675,11 +675,11 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         public const string FutCity = "futcity";
         public const string FutCityPlaza = "futcity_plaza";
 
-        // Wave-5 (onboarding wave 1 of 2): four hak tilesets probed via a throwaway NUnit harness
-        // (ZZOnboardingProbe/ZZOnboardingProbe2, deleted after this pass -- their output is reproduced
+        // Four hak tilesets probed via a temporary NUnit harness
+        // (deleted after this audit -- its output is reproduced
         // in each profile's own doc comment below) rather than the interactive toolset. All four are
         // Interior=true, share the ordinary Default=Wall/Floor=<primary> GENERAL split (no
-        // SolidTerrainOverride inversion needed, unlike the ttd01/ttf01/fcx01 exterior wave), and all
+        // SolidTerrainOverride inversion needed, unlike the ttd01/ttf01/fcx01 exterior profiles), and all
         // four's PathNodeOpeningWidthAudit (run fresh against Solid=Wall/Open=<primary>) returns 1, so
         // MinimumOpeningWidth stays the machinery default.
         //
@@ -690,7 +690,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         // Corridor) returns TRUE -- full body/port shape inventory (straight/turn/T/X, with-port
         // variants, double-port variants) resolves with no Custom renaming needed, so this profile keeps
         // real wall-embedded Tunnel-mode corridors rather than downgrading to OpenLane, unlike every
-        // profile in the prior wave. "bridge" (gates the lava chasm, e.g. TILE112/TILE15) and "fence"
+        // profile in the earlier exterior set. "bridge" (gates the lava chasm, e.g. TILE112/TILE15) and "fence"
         // (TILE60/154 gate props) both stay undeclared: every door-bearing tile using them is already
         // GROUPed (BridgeDoor01/FenceDoor01/FenceDoor02) except TILE15, which pairs "doorway" (canonical,
         // already recognized) with "bridge" on separate edges -- Bridge is a first-class canonical
@@ -710,7 +710,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         // (350/992 tiles, 34.2%, including 100% of city_hall's 36 tiles and 119/121 of v_repubbase_hang's)
         // -- several areas (v_repubbase_1/2, sol_mandaloriani, manda_facility) are hand-lit with varied
         // SrcLight(3,3)-family accents, not the tileset default. Decoration palette: NOT mined this pass
-        // (time-boxed out of onboarding wave 1) -- generated tjsb0 content stays on accent-only/no
+        // (not included in the verified vocabulary) -- generated tjsb0 content stays on accent-only/no
         // tileset-keyed palette until a follow-up pass mines the 8 real areas' placeable inventories.
         public const string SecretBase = "secretbase";
 
@@ -721,7 +721,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         // match. Verified directly: TunnelVocabularyCheck.SupportsTunnels tried against every
         // body=corridor/port={doorway1,doorway2,doorway3} Custom pairing returns FALSE for all three (the
         // T-with-port/X-with-port shapes never resolve) -- Tunnel mode downgrades to OpenLane, the same
-        // verdict as the ttd01/ttf01/fcx01 wave. DoorSlotCrossers("doorway1","doorway2","doorway3",
+        // verdict as the ttd01/ttf01/fcx01 profiles. DoorSlotCrossers("doorway1","doorway2","doorway3",
         // "cell","raised") is declared so CornerEdgeResolver/LayoutGroupStamper recognize all five
         // non-canonical door-implying crossers (cell gates the facility's holding-cell tiles TILE36/38/
         // 40; raised gates TILE48/50's ramp doors). SetPieceRoomCornerFloor(7): the largest group is
@@ -729,8 +729,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         // machinery's own vanilla ceiling). Group-name quirk: three separate GROUP entries are all
         // literally named "room2x1" (footprints 1x2, 2x1, 2x1) -- wired once via SetPiece("room2x1"),
         // matched by name against all three real .set entries. ExitGroup("door_transition"): a 1x1
-        // group, the same "*_transition"/"*Trans"/"Door_Trans" naming convention this entire onboarding
-        // wave's tilesets share for their literal area-boundary marker group. Hand-built evidence: 8 real
+        // group, the same "*_transition"/"*Trans"/"Door_Trans" naming convention these tilesets share
+        // for their literal area-boundary marker group. Hand-built evidence: 8 real
         // tbx78 areas ship in the module (space_derelict_k, pw_ar_undrnasha, pw_ar_nscrafting,
         // pref_facility, pref_facilidark, nashadaa_czlabin, nanostation015, dan_crafterbase), 2475 placed
         // tiles. TileLighting(0,0,0,0) is the measured plurality (899/2475, 36.3%). Decoration palette:
@@ -785,7 +785,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         public const string LabStorageShop = "labstorage_shop";
 
         // D20 Office Interiors UDP (udp2, SWLOR_Haks/sw_t_office, 229 tiles, 93 groups -- the largest and
-        // most heavily districted of the four). KNOWN QUIRK (per this onboarding wave's brief): the raw
+        // most heavily districted of the four). KNOWN QUIRK: the raw
         // .set Doors= summary field is corrupt on several tiles (garbage counts up to ~1.8 billion);
         // TilesetSetParser.MaxDoorsPerTile already clamps this, and every door decision below is read
         // from real [TILEnDOORm] subsections, never the summary field. Wall + SEVEN parallel room-type
@@ -806,7 +806,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         // Office_Alum/Foyer_L/Foyer_U) are NOT registered as separate PaletteVariant profiles this pass
         // (time-boxed, the same descope as LabStorage's Livingroom/Kitchen/Shop) -- PilotAlternateVocab
         // Terrains auto-exempts them. No group here is literally named as a transition/exit marker (no
-        // "*Trans"/"*Exit" group exists in this .set, unlike the other three tilesets in this wave), so
+        // "*Trans"/"*Exit" group exists in this .set, unlike the other three tilesets in this set), so
         // ExitGroup is left unwired pending a follow-up probe of udp2's un-dumped door tiles (only the
         // first 30 of 134 were inspected this pass). SetPieceRoomCornerFloor(6): every wired group here
         // tops out at 2x1 (max dimension 2), matching FutCity's Tower00 2x2 rule. Hand-built evidence: 17
@@ -819,7 +819,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         public const string OfficeInteriors = "officeinteriors";
 
         // D20 Office Interiors UDP (udp2) district-closure pass: the six parallel room-type districts
-        // the Wave-5 doc comment above descoped (Service/Tiled/Office_Wood/Office_Alum/Foyer_L/Foyer_U)
+        // the profile comment above excludes (Service/Tiled/Office_Wood/Office_Alum/Foyer_L/Foyer_U)
         // are PaletteVariant profiles recomposing the SAME udp2 hak data the base OfficeInteriors
         // profile above uses -- the identical CastleInteriorStorage/Rich/Library/Jail and
         // CepCityInteriorElven/Sigil "declare PrimaryOpenTerrain(<district>), the ordinary resolver does
@@ -872,7 +872,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         public const string OfficeInteriorsFoyerL = "officeinteriors_foyer_l";
         public const string OfficeInteriorsFoyerU = "officeinteriors_foyer_u";
 
-        // Wave-6 (final CEP superset wave, 1 of 2): [CEP] Dungeon (zde01, SWLOR_Haks/sw_t_cepdungeon).
+        // [CEP] Dungeon (zde01, SWLOR_Haks/sw_t_cepdungeon).
         // zde01.set is BYTE-IDENTICAL to the already-onboarded SWLOR hak copy of tde01 (SWLOR_Haks/
         // sw_t_dungeon/tde01.set) except for the [GENERAL] Name/UnlocalizedName header fields (verified
         // directly: `diff` between the two .set files returns only those two lines) -- 1092 tiles, 60
@@ -890,22 +890,21 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         // Water/Sewer/Ice/Pit on the four PaletteVariants), same MazeMosaic-crosser alternate-vocabulary
         // gap (see TileCoverageCensusTests.PilotAlternateVocabCrossers["zde01"]).
         // TileLighting: UNLIKE tde01 (zero hand-built areas exist, so tde01's own (0,0,8,8) is an
-        // uncalibrated placeholder per this file's own pilot-wave doc comment above), zde01 ships with
+        // uncalibrated placeholder per this file's initial-profile comment above), zde01 ships with
         // real hand-built content: Module/are/dath_mountcaves.are.json (126 tiles) and
         // Module/are/valkorrdung1c.are.json (256 tiles), 382 placed tiles total. The measured plurality
         // across both is (MainLight1,MainLight2,SrcLight1,SrcLight2)=(0,0,0,0) at 31.2% (119/382) --
-        // ahead of (0,0,2,2)/(0,11,0,0) at 10.7% each -- so this wave uses that real sampled default
+        // ahead of (0,0,2,2)/(0,11,0,0) at 10.7% each -- so this profile uses that real sampled default
         // instead of copying tde01's placeholder value.
         // Display names: UnlocalizedName verbatim ("[CEP] Dungeon"), variants cascade
-        // "[CEP] Dungeon (<Qualifier>)" -- see this wave's own naming instruction, distinct from the
-        // pilot wave's "Dungeon*" asterisk convention above.
+        // "[CEP] Dungeon (<Qualifier>)" -- distinct from the initial "Dungeon*" asterisk convention above.
         public const string CepDungeon = "cep_dungeon";
         public const string CepDungeonWater = "cep_dungeon_water";
         public const string CepDungeonSewer = "cep_dungeon_sewer";
         public const string CepDungeonIce = "cep_dungeon_ice";
         public const string CepDungeonPit = "cep_dungeon_pit";
 
-        // Wave-6 (final CEP superset wave, 2 of 2): [CEP] City Interior 1 (zin01, SWLOR_Haks/
+        // [CEP] City Interior 1 (zin01, SWLOR_Haks/
         // sw_t_cepcityin). NOT byte-identical to tin01 (428KB vs 139KB) -- a genuinely larger,
         // independently-authored 961-tile/148-group superset that follows the SAME design convention
         // as tin01 (Livingroom/Kitchen/Inn/Shop/Home furnished-room families, WallAlcove door-corner
@@ -960,7 +959,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         public const string CepCityInteriorElven = "cep_cityinterior_elven";
         public const string CepCityInteriorSigil = "cep_cityinterior_sigil";
 
-        // Wave-15: Sea Ships (tss13, basegame_sets/tss13.set -- BIF-only, verified: no SWLOR_Haks/tss13
+        // Sea Ships (tss13, basegame_sets/tss13.set -- BIF-only, verified: no SWLOR_Haks/tss13
         // copy exists anywhere in the module). GENERAL Border=Default=Floor=Castle, HasHeightTransition=0,
         // 404 tiles / 132 groups, ONE declared crosser ("gangplank"). Verified directly against the raw
         // .set data: [TERRAIN TYPES] lists exactly four terrains -- Castle, City, Rural, Tropical -- and
@@ -1016,8 +1015,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         // RuralGrass's own family uses. All 44 are wired below only where FindGroup can actually reach
         // them (the Castle base profile) -- see this const's own duplicate-name paragraph above.
         //
-        // 88 gangplank-bearing groups (22/terrain: three waves of Boat 1-7, one gangplank edge per member
-        // in a different slot/count per wave, plus one standalone 1x1 "Gangplank" piece carrying two
+        // 88 gangplank-bearing groups (22/terrain: three series of Boat 1-7, one gangplank edge per member
+        // in a different slot/count per series, plus one standalone 1x1 "Gangplank" piece carrying two
         // gangplank edges) are EXEMPT: "gangplank" is not declared as Doorway, a stub/body crosser, or any
         // other recognized vocabulary anywhere on any of the four profiles, so
         // LayoutGroupStamper.TryClassify's IsAllowedMemberEdge rejects every one of these groups outright
@@ -1025,7 +1024,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         // group, the exact shape that method's own doc comment names and deliberately excludes without a
         // new GroupKind). See TileCoverageCensusTests.PilotExpectedExemptions' own "tss13" entries.
         //
-        // CorridorStubChain hypothesis (explicitly tested, not just asserted, per this onboarding pass'
+        // CorridorStubChain hypothesis (explicitly tested, not just asserted, per this profile audit's
         // own verification requirement): declaring "gangplank" as TunnelBodyCrosser under this same-
         // terrain composition DOES let a gangplank-bearing Boat group structurally CLASSIFY as
         // CorridorStubChain (hasAnyBodyCrosser + allCornersSolid + a perimeter body-crosser edge, all
@@ -1055,7 +1054,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         //
         // Theme pairing: an open dockside/harbor scene (moored boats, gangplanks, open water at the
         // shoreline edge) -- suited to coastal settlement or naval/smuggler-dock content on an ocean or
-        // river-adjacent world, alongside this project's existing exterior waves (CityExterior's own Dock
+        // river-adjacent world, alongside this project's existing exterior profiles (CityExterior's own Dock
         // district, CastleExteriorRuralHarbor).
         public const string SeaShips = "seaships";
         public const string SeaShipsCity = "seaships_city";
@@ -1369,13 +1368,13 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // reachable), (b)
             // four MORE Bridge-gated accent-channel terrain variants beyond Lava (Water/Sewer/Ice/Pit)
             // -- DungeonTilesetProfile has only one AccentTerrain slot, so only Lava is wired; the
-            // other three are the same proven Bridge-channel shape, just out of scope for this pilot's
+            // other three are the same proven Bridge-channel shape, just outside this profile's
             // single accent slot, and (c) a "MazeMosaic" crosser outside the canonical vocabulary.
             // AccentTerrain("Lava") mirrors Cavern's Water / Sewers' Pit pattern.
             // Group names verified directly against the .set data. Only the base/no-suffix and
             // "-Lava"-suffixed groups are wired (matching the single AccentTerrain("Lava") slot);
             // the analogous Water/Sewer/Ice/Pit-suffixed groups (Exit 2, Platform 4, Pillar 1/2, Door
-            // - Bridge 1) are the identical shape and are left for a future wave that either extends
+            // - Bridge 1) are the identical shape and are left for future work that either extends
             // DungeonTilesetProfile with more accent slots or ships a dedicated profile per palette.
             // The 1x1-GROUPed "Ramp - Straight"/"Ramp - Corner, *" pieces are now wired via
             // LayoutGroupStamper's ReliefPiece kind (non-flat 1x1 pieces stamped onto painted
@@ -1394,7 +1393,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // the real tileset regardless. MaxPoolRegions(2) similarly caps LayoutElevationPoolPainter's
             // depth pools (a small Lava-terrain interior sunk one story below a raised Floor rim,
             // reusing the identical rectangle/rim machinery) -- live-probed against the Floor/Lava
-            // mixed-terrain, mixed-height tile family (e.g. TILE505/506/510/521...) this pilot's earlier
+            // mixed-terrain, mixed-height tile family (e.g. TILE505/506/510/521...) this profile's earlier
             // census left height-exempted.
             _builder.Create(Dungeon, "Dungeon*")
                 .Tileset("tde01")
@@ -1622,7 +1621,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // [CEP] Dungeon (zde01) -- byte-identical tile data to tde01 (see the CepDungeon const's
             // own doc comment above for the full writeup), so this is the SAME wiring as the base
             // Dungeon profile above, just against Tileset("zde01") with the real sampled TileLighting
-            // and this wave's verbatim display-name convention.
+            // and this profile family's verbatim display-name convention.
             _builder.Create(CepDungeon, "[CEP] Dungeon")
                 .Tileset("zde01")
                 .MaxElevationRegions(2)
@@ -1974,7 +1973,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // pattern as Elven above); "SigilFloor" is ALSO used once as a crosser name on the
             // "Corridor - Entry" group's edges, a genuine tileset-authoring quirk -- declared alongside
             // SigilHallway so the mechanism gets a fair chance at it, but this is unverified pending
-            // the census run (see the wave's own follow-up note if it stays exempt).
+            // the census run (see the profile's own follow-up note if it stays exempt).
             _builder.Create(CepCityInteriorSigil, "[CEP] City Interior 1 (Sigil)")
                 .Tileset("zin01")
                 .Placeholder("gen_placeholder1")
@@ -2150,7 +2149,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // DesertCorridor/DesertTracks/OrganicCorridor/OrganicTracks/CityFence). Only "[Cave]" is
             // wired here (matching this profile's single AccentTerrain/PrimaryOpenTerrain slots); the
             // other three districts are the identical shape on alternate terrain/crosser vocabulary,
-            // left for a future wave that either extends multi-district support or ships dedicated
+            // left for future work that either extends multi-district support or ships dedicated
             // profiles per palette -- see TileCoverageCensusTests.PilotAlternateVocabTerrains["tdm01"].
             // AccentTerrain("Water") is the one wired accent channel of [Cave]'s Water/Pit/Lava/Ice
             // quartet (mirrors Dungeon/tde01's single-accent-slot precedent); "[Cave] Door - Bridge,
@@ -2289,7 +2288,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // itself independently shape-verified True) -- a tileset profile carries only one Tunnel
             // body/port slot, so wiring DesertCorridor here leaves DesertTracks's own four pieces
             // exempt; closing that second family needs a dedicated profile (same "one body crosser per
-            // composition" constraint LayoutTunnelCarver enforces), left for a future wave.
+            // composition" constraint LayoutTunnelCarver enforces), left for future work.
             // "[Desert] Ramp" and "[Desert] Cave Entrance" are both non-flat and wired via
             // LayoutGroupStamper's ReliefPiece kind (matching [Cave]'s own Ramp/Cave Entrance pieces
             // -- ReliefPiece now tolerates Cave Entrance's door slot, see the base profile's own
@@ -2298,7 +2297,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // mirrors [Cave]'s own wired set piece/feature-tile/exit-group shapes tile-for-tile.
             // IsPaletteVariant() excludes this profile from --matrix's full cross-product (see
             // SWLOR.ProcgenReview/Program.cs) -- it gets one showcase area instead. [Organic] and [City]
-            // remain unwired (left for a future wave; [Organic] mirrors [Desert]'s shape closely but
+            // remain unwired (left for future work; [Organic] mirrors [Desert]'s shape closely but
             // [City] has a much smaller, differently-shaped tile family and would need its own probe).
             _builder.Create(MinesAndCavernsDesert, "Mines and Caverns* (Desert)")
                 .Tileset("tdm01")
@@ -2636,11 +2635,11 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // Floor-and-Chasm-mixed corner tiles exist (verified directly against the .set data) -- an
             // Organic-style blob patch painted into open Floor space could never resolve, so
             // AccentTerrain stays empty and only ChannelTerrain is set, mirroring Ancient Ruin
-            // (vmr01)'s own Chasm-vs-Plaza precedent exactly. This is the first Wave-2 tileset with a
+            // (vmr01)'s own Chasm-vs-Plaza precedent exactly. This tileset also has a
             // verified Alley crosser (Doorway/Alley/Corridor/Fence/Bridge, 5 crossers) --
             // BigDoorAlley/ExteriorStairsDown/ExteriorStairsUp confirm Alley coverage, but Streets
-            // layout pairing is out of scope for this wave (only Complex/Halls/Organic per this
-            // onboarding's assignment) and left for a future wave. Excluded: Mosaic_Plaza_2x2,
+            // layout pairing is outside this profile's verified Complex/Halls/Organic scope and left
+            // for future work. Excluded: Mosaic_Plaza_2x2,
             // ExteriorStairsDown/Up_2x2, ExteriorStage_2x2, ExteriorRuinedTower_2x2,
             // ExteriorWalkway_2x2, Amphitheater_2x2 (all REJECT -- corners mix Wall/Plaza in shapes that
             // don't satisfy any current classifier), ExteriorFenceDoor (non-canonical crosser
@@ -2827,7 +2826,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // Empty/Decorated, Rich"/"Stairs - Up/Down, Rich Corner" (OpenSetPiece, a mostly-solid corner
             // mix with one district-terrain corner); Library has the same Round Corner/Stairs Corner
             // quartet. "Round Corner - Window, Library" is NOT wired: its tile carries a genuine "Window"
-            // edge crosser -- outside this pilot's wired vocabulary, the same exclusion as every other
+            // edge crosser -- outside this profile's wired vocabulary, the same exclusion as every other
             // Window-* piece on the base profile -- so it fails even the relaxed member-edge gate and
             // stays unclassified. The base profile's own terrain-agnostic pieces (Stairs - Up/Down,
             // Exit - Corridor/Big, Round Corner - Empty/Decorated Stone, Stairs - Up/Down Stone Corner,
@@ -2973,7 +2972,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 .VignetteMember("zep_tno_cliff_2", 1.0f, 0.3f);
 
             // Illithid Interior (tii01, SWLOR_Haks/sw_t_illithid). PrimaryOpenTerrain left empty
-            // (defaults to declared Floor "Floor"). The smallest Wave-2 tileset (79 tiles, 10 groups):
+            // (defaults to declared Floor "Floor"). This compact tileset has 79 tiles and 10 groups:
             // "Observation pit" and "Fighting Pit" (both 3x3, all-solid-cornered, door-bearing) clear as
             // WallAlcove. "Great Brain" (this tileset's signature centerpiece, 3x3), "Resting Pods"
             // (3x3), "Resting Pod" (1x1), "Cell" (1x1), and "Transition Door" (1x1) each carry a Doorway
@@ -3039,7 +3038,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 .VignetteMember("_mdrn_pl_lights2", 0.6f, 0.4f);
 
             // City Interior 2 / TNO: City Interior (tni01, SWLOR_Haks/sw_t_cityint2). Same
-            // Livingroom/Kitchen/Inn/Shop room-type family as City Interior (tin01, the vanilla pilot),
+            // Livingroom/Kitchen/Inn/Shop room-type family as the initial City Interior profile (tin01),
             // plus many more furnished-room pieces (Home/Slum/Smithy/Tent/Barracks/Temple/Thatch Hut).
             // PrimaryOpenTerrain left empty (defaults to declared Floor "inn"). Only "DoorInn01" (open=
             // inn) clears among the four single-tile Door* pieces -- DoorLivingroom01/DoorKitchen01/
@@ -3341,7 +3340,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
 
             // Desert (ttd01, SWLOR_Haks/sw_t_tatooine -- a 388-tile HasHeightTransition=1 superset of
             // the 212-tile vanilla version; hak copies win TilesetSetSource resolution). See the
-            // wave-level comment at the Desert/Forest/ForestFacelift constants above for the shared
+            // family-level comment at the Desert/Forest/ForestFacelift constants above for the shared
             // INVERTED composition: SolidTerrainOverride("Cliff") + PrimaryOpenTerrain("Desert"),
             // because the GENERAL Default ("Desert") is the WALKABLE ground here, not the wall.
             //
@@ -3510,7 +3509,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 .VignetteMember("zep_boulder003", 0f, 0f)
                 .VignetteMember("zep_boulder003", 0.6f, 0.4f);
 
-            // Desert (Road) -- ttd01's second raised-lane crosser family (see the ttf01 wave-level
+            // Desert (Road) -- ttd01's second raised-lane crosser family (see the ttf01 family-level
             // comment below for the shared "one RampCrosser slot
             // per composition" argument this mirrors). The base Desert profile above declares
             // RampCrosser("Dunes"); TILE239-241 are raised, ungrouped, doorless Road-edged lanes (all
@@ -4281,7 +4280,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 // rotation search covers both), TILE208 (T), TILE209 (X) are all uniformly Cobble-
                 // cornered, PathNode=A, doorless -- see LayoutRoadCarver/RoadVocabularyCheck's own doc
                 // comments. Was PilotAlternateVocabCrossers-exempt ("Routes ... have no wired body/port
-                // ... vocabulary in this wave", see this profile's own header comment) before this pass.
+                // ... vocabulary in this profile family", see this profile's own header comment) before this pass.
                 .RoadCrosser("Routes")
                 .Placeholder("gen_placeholder1")
                 .TileLighting(0, 0, 0, 0)
@@ -5121,7 +5120,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 .ExitGroup("d_tower")
                 .ExitGroup("d_house01");
 
-            // D20 Secret Base (tjsb0) -- see this file's own Wave-5 doc comment (SecretBase) for the full
+            // D20 Secret Base (tjsb0) -- see this file's SecretBase comment for the full
             // probe writeup (tunnel vocabulary, room-size floor, ExitGroup evidence, hand-built lighting).
             _builder.Create(SecretBase, "D20 Secret Base")
                 .Tileset("tjsb0")
@@ -5164,7 +5163,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 .ExitGroup("Exit01")
                 .ExitGroup("Exit02");
 
-            // D20 Modern Facility (tbx78) -- see this file's own Wave-5 doc comment (Facility) for the
+            // D20 Modern Facility (tbx78) -- see this file's Facility comment for the
             // full probe writeup (DoorSlotCrossers rationale, OpenLane-only Tunnel verdict, room-size
             // floor, ExitGroup evidence, hand-built lighting).
             _builder.Create(ModernFacility, "D20 Modern Facility")
@@ -5207,7 +5206,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 .SetPiece("pillar", 3);
 
             // Complex laps storage (tqq01) -- display name kept VERBATIM per the toolset's own
-            // UnlocalizedName typo. See this file's own Wave-5 doc comment (LabStorage) for the full
+            // UnlocalizedName typo. See this file's LabStorage comment for the full
             // probe writeup (real Tunnel-mode support, multi-district descope rationale, room-size floor,
             // ExitGroup evidence, hand-built lighting).
             _builder.Create(LabStorage, "Complex laps storage")
@@ -5339,7 +5338,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 .SetPiece("DoorShop01")
                 .ExitGroup("DoorTrans");
 
-            // D20 Office Interiors UDP (udp2) -- see this file's own Wave-5 doc comment
+            // D20 Office Interiors UDP (udp2) -- see this file's OfficeInteriors comment
             // (OfficeInteriors) for the full probe writeup (DoorSlotCrossers requirement, OpenLane-only
             // Tunnel verdict, multi-district descope rationale, room-size floor, hand-built lighting).
             _builder.Create(OfficeInteriors, "D20 Office Interiors UDP")
@@ -5719,7 +5718,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // RoadCrosser("Road") -- RoadVocabularyCheck.SupportsRoads(Grass, "Road") verified true
             // directly (stub/straight/turn/T/X all resolve). No canonical "Doorway"/"Corridor" crosser
             // exists anywhere in this tileset (verified directly), so Complex downgrades to OpenLane,
-            // the same verdict as every prior exterior wave (ttd01/ttf01/jac01).
+            // the same verdict as the earlier exterior profiles (ttd01/ttf01/jac01).
             //
             // FeatureTiles are the ~24 solo, flat, crosser-free, pathnode-'A', all-Grass 1x1 groups
             // (ambient dressing: Anthill/Chessboard/Cobbles/Crystal-Platform/Crystal-Sunken/Field/
@@ -6429,7 +6428,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // COMPOSITION (matrix + pipeline-sweep decided, mirroring ttd01/jac01's own inverted
             // Cliff-solid precedent -- see this file's own ttd01 doc comment). Full 16-combo probe
             // (TileResolver.HasCandidate, both orientations, all C(7,2)*2=42 ordered pairs of the seven
-            // terrains) found a MULTI-DISTRICT shape unlike any prior exterior wave: THREE separate
+            // terrains) found a MULTI-DISTRICT shape unlike the earlier exterior profiles: THREE separate
             // terrains each reach full 16/16 flat-corner coverage against "grass" open in BOTH
             // directions -- "cliff" (the tileset's genuine rock-wall family, 30 uniform-flat tiles plus a
             // large mixed-corner cliff/grass "sandbank"-edged shoreline-blend residue), "castlewall" (the
@@ -6456,9 +6455,9 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // rim/ramp crosser and not a road network, the same distinction ttr01's "Slope" draws).
             // RoadCrosser("road") -- SupportsRoads(grass, road) AND SupportsRoads(dirt, road) both
             // verified TRUE directly (stub/straight/turn/T/X all resolve on both open terrains).
-            // MaxReliefRegions(2) mirrors every other exterior wave's own cap. No canonical
+            // MaxReliefRegions(2) mirrors the other exterior profiles' cap. No canonical
             // "Doorway"/"Corridor" crosser exists anywhere in the inventory (verified directly), so
-            // Complex's Tunnel mode downgrades to OpenLane, the same verdict as every prior exterior wave.
+            // Complex's Tunnel mode downgrades to OpenLane, the same verdict as the earlier exterior profiles.
             // A live pipeline sweep (15 seeds x Complex/Halls/Organic) confirms this composition: 45/45
             // succeeded.
             //
@@ -6906,7 +6905,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // doorless, all-Cobble single-edge crosser, PathNode=C, minority Cobble/Water boundary,
             // PathNode=I) paired with "[City] Footbridge" (flat, all-Cobble, Stream-crossed, doorless) as
             // its crossing piece -- a decorative canal-through-downtown pair, same "no wired vocabulary
-            // this wave" verdict as Wall/Alley. Both stay unwired; their tiles fall through to the
+            // this profile family" verdict as Wall/Alley. Both stay unwired; their tiles fall through to the
             // automatic alternate-vocabulary/height exemption buckets.
             //
             // Lighting sampled directly from the one hand-built module area on this tileset
@@ -7281,7 +7280,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
 
             // Frozen Wastes* (tti01, SWLOR_Haks/sw_t_frozen, 510 tiles, HasHeightTransition=1,
             // Transition=5). GENERAL Border=Default="Pit", Floor="Floor" -- unlike EVERY prior exterior
-            // wave (ttd01/ttf01/ttf02/jac01/fcx01/tno01/tcn01), Default and Floor here are genuinely
+            // profiles (ttd01/ttf01/ttf02/jac01/fcx01/tno01/tcn01), Default and Floor here are genuinely
             // DIFFERENT terrains, so none of the usual "degenerate Default==Floor" inversion reasoning
             // applies. Pathnode data confirms this is the PLAIN case instead: the 4 pure-Pit tiles
             // never carry pathnode 'A' (G/T/N only, verified directly) -- Pit is a real impassable
@@ -7295,7 +7294,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // interior tileset uses (DungeonTilesetProfile.SolidTerrainOverride's own doc comment: "the
             // tileset's declared Default terrain, which is correct for every interior tileset") --
             // just happening to land on an exterior-flavored hak, a genuinely new shape among the
-            // exterior waves onboarded so far (neither RuralGrass/RuralWinter's "no wall concept at
+            // exterior profiles covered so far (neither RuralGrass/RuralWinter's "no wall concept at
             // all" open field, nor ttd01/ttf01/jac01's "invert because Default==Floor" degenerate case).
             //
             // Terrains(3)=Pit,Floor,EvilCastle; Crossers(0) -- literally none. No Road, no Tunnel body/
@@ -7328,7 +7327,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             //
             // MinimumOpeningWidth stays the verified default of 1 (PathNodeOpeningWidthAudit against
             // Solid=Pit/Open=Floor finds a pathnode-'A' candidate among the 14 partially-open corner
-            // combos), matching every prior exterior wave.
+            // combos), matching the earlier exterior profiles.
             //
             // Group census: "Chessboard"/"Portal" (FeatureTile, same names/role as RuralGrass/
             // RuralWinter's own) plus "Ice Creator"/"Market 1"/"Market 2"/"Crystal" (this tileset's own
@@ -7339,7 +7338,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // "Temple - Evil 1 (2x3)"/"Temple - Neutral (2x2)"/"Temple - Evil 2 (2x3)", "Ship - Air,
             // Docked (3x1)", and "Tower - Ice" (2x2 footprint, no "(2x2)" in its own GROUP Name unlike
             // its siblings) are ordinary all-Floor OpenSetPieces, maxPerArea 1
-            // each, matching the "one showcase building per area" convention every prior wave uses.
+            // each, matching the "one showcase building per area" convention the earlier profiles use.
             // "Ship - Air, Above Pit (3x1)" is all-Pit (door-bearing) -- unlike RuralGrass's own
             // "Ship - Air, Above Trees (3x1)" (exempt there because Trees is a totally unwired,
             // uncomposed terrain), Pit here IS this base profile's own composed Solid terrain, so this
@@ -7508,7 +7507,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // groups.
             //
             // MinimumOpeningWidth stays the verified default of 1 for all four Solid/Open pairings
-            // (grass/grass, sand/sand, water/grass, water/sand), matching every prior exterior wave.
+            // (grass/grass, sand/sand, water/grass, water/sand), matching the earlier exterior profiles.
             //
             // Lighting: all 442 tiles uniformly carry MainLight1=1, MainLight2=1, SourceLight1=1,
             // SourceLight2=1 (verified directly) -- no mixed hand-lit GROUP members exist here, unlike

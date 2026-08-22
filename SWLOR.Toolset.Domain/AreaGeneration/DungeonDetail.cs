@@ -36,7 +36,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
 
         /// <summary>
         /// Door blueprint spawned for Door-style transitions (doorway tiles embedded in room walls).
-        /// Every tile door slot the generator uses is generic (Type=0), so any generic-door utd fits.
+        /// Type=0 SET slots keep this blueprint's generic door appearance. Positive slot types select
+        /// the matching tileset-specific doortypes.2da row while retaining the blueprint's behavior.
         /// </summary>
         public string ExitDoorResref { get; set; } = "_mdrn_dt_wood";
 

@@ -11,6 +11,7 @@ using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.Tilesets;
+using SWLOR.Toolset.Domain.GameData.TwoDa;
 using SWLOR.Toolset.Domain.Workspace;
 using System.Numerics;
 
@@ -51,6 +52,31 @@ public class AreaGenerationToolsetIntegrationTests
         model.Tiles[7].Model.Should().Be(definition.Tiles[7].Model);
         model.Tiles[7].Corners.Should().Equal("Wall", "Wall", "Wall", "Floor");
         model.Groups[6].TileIds.Should().Equal(73, 74, 71, 72);
+    }
+
+    [Test]
+    public void MineCaveExitDoorType_MatchesTheTilesetSpecificAppearanceRow()
+    {
+        var definition = SetFileParser.ParseFile(
+            Path.Combine(RepoRoot, "SWLOR_Haks", "sw_t_minecave", "tdt01.set"));
+        var model = TilesetSetParser.FromDefinition("tdt01", definition);
+        var exitGroupTileIds = model.Groups
+            .Where(group => group.Name is "Exit01" or "Exit02" or "Exit03")
+            .Select(group => group.TileIds.Single())
+            .ToArray();
+
+        exitGroupTileIds.Should().BeEquivalentTo(new[] { 68, 131, 157 });
+        foreach (var tileId in exitGroupTileIds)
+        {
+            model.Tiles[tileId].Doors.Should().ContainSingle()
+                .Which.Type.Should().Be(176);
+        }
+
+        var doorTypes = new TwoDaService(
+                Path.Combine(RepoRoot, "SWLOR_Haks", "sw_2da"))
+            .GetTable("doortypes");
+        doorTypes.GetString(176, "TileSet").Should().Be("TDT01");
+        doorTypes.GetString(176, "Model").Should().Be("TDM_UDoor_09");
     }
 
     [Test]

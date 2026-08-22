@@ -323,7 +323,7 @@ public class AIModelTests
         var rangeStartIndex = aiSource.IndexOf("static bool IsInAggroRange", StringComparison.Ordinal);
         var rangeBody = aiSource.Substring(
             rangeStartIndex,
-            aiSource.IndexOf("private static void TryAcquireAggro", StringComparison.Ordinal) -
+            aiSource.IndexOf("public static void TryAcquireAggroAfterDetection", StringComparison.Ordinal) -
             rangeStartIndex);
 
         rangeBody.Should().Contain("LineOfSightObject(target, creature)");

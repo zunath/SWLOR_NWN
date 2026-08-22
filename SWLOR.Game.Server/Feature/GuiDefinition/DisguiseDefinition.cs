@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         // group does not stretch to fill a row - without them the fields collapse and the
         // longer labels clip.
         private const float WindowWidth = 792f;
-        private const float WindowHeight = 468f;
+        private const float WindowHeight = 600f;
 
         private const float RailWidth = 236f;
 
@@ -27,6 +27,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float HeaderHeight = 26f;
         private const float LabelHeight = 20f;
         private const float FieldHeight = 30f;
+        private const float BiographyFieldHeight = 120f;
         private const float ButtonHeight = 32f;
 
         private const float PortraitColWidth = 138f;
@@ -263,6 +264,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             {
                 AddTextField(col, "Private Slot Label  (only you see this)", model => model.PrivateName, Disguise.MaxPrivateNameLength);
                 AddTextField(col, "Public Description  (shown to others)", model => model.Descriptor, PlayerName.MaxKnownNameLength);
+                AddBiographyField(col);
                 AddSoundSetField(col);
 
                 col.AddRow(row =>
@@ -297,6 +299,29 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .SetMaxLength(maxLength)
                     .SetWidth(FormFieldWidth)
                     .SetHeight(FieldHeight)
+                    .BindIsEnabled(model => model.IsEditMode);
+            });
+        }
+
+        private static void AddBiographyField(GuiColumn<DisguiseViewModel> col)
+        {
+            col.AddRow(row =>
+            {
+                row.AddLabel()
+                    .SetText("Biography  (shown when examined)")
+                    .SetHeight(LabelHeight)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
+            });
+
+            col.AddRow(row =>
+            {
+                row.AddTextEdit()
+                    .BindValue(model => model.Biography)
+                    .SetPlaceholder("Describe what others can observe while this disguise is active.")
+                    .SetIsMultiline(true)
+                    .SetMaxLength(Disguise.MaxBiographyLength)
+                    .SetWidth(FormFieldWidth)
+                    .SetHeight(BiographyFieldHeight)
                     .BindIsEnabled(model => model.IsEditMode);
             });
         }

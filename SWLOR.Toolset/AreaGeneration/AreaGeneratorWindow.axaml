@@ -202,7 +202,7 @@
             </ComboBox.ItemTemplate>
           </ComboBox>
           <Button x:Name="GeneratePreviewButton" Grid.Row="0" Grid.Column="1" Classes="primary"
-                  Content="Generate Preview" Command="{Binding GeneratePreviewCommand}" />
+                  Content="Refresh Preview" Command="{Binding GeneratePreviewCommand}" />
           <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal" Spacing="10">
             <CheckBox x:Name="ShowRoomsToggle" VerticalAlignment="Center"
                       Content="Rooms" IsChecked="{Binding ShowRooms, Mode=TwoWay}" />

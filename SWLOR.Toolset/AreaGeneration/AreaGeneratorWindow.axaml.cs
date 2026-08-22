@@ -12,6 +12,7 @@ public partial class AreaGeneratorWindow : Window
     public AreaGeneratorWindow()
     {
         InitializeComponent();
+        Opened += OnOpened;
         Closed += OnClosed;
     }
 
@@ -38,6 +39,12 @@ public partial class AreaGeneratorWindow : Window
     }
 
     private void OnCloseClicked(object? sender, RoutedEventArgs e) => Close(null);
+
+    private void OnOpened(object? sender, EventArgs e)
+    {
+        if (DataContext is AreaGeneratorViewModel viewModel)
+            viewModel.EnableAutomaticPreview();
+    }
 
     private void OnClosing(object? sender, WindowClosingEventArgs e)
     {

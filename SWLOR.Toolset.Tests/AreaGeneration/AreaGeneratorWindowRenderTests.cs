@@ -128,6 +128,42 @@ public sealed class AreaGeneratorWindowRenderTests
         }
     }
 
+    [AvaloniaTest]
+    public async Task OpeningTheWindowAndChangingSettings_GeneratesPreviewsAutomatically()
+    {
+        using var viewModel = CreateGeneratableViewModel();
+        viewModel.PreviewMode = AreaPreviewMode.Schematic;
+        var window = new AreaGeneratorWindow(viewModel);
+
+        try
+        {
+            viewModel.TilesetProfiles.Should().NotBeEmpty();
+            viewModel.GeneratePreviewCommand.CanExecute(null).Should().BeTrue();
+            window.Show();
+            Dispatcher.UIThread.RunJobs();
+            viewModel.StatusMessage.Should().Be("Preparing the preview...");
+            await WaitUntilAsync(
+                () => viewModel.Preview != null && !viewModel.IsBusy,
+                () => viewModel.StatusMessage);
+
+            var firstPreview = viewModel.Preview;
+            viewModel.Seed += 1;
+            viewModel.Preview.Should().BeNull("changing generation settings invalidates the old result immediately");
+
+            await WaitUntilAsync(
+                () => viewModel.Preview != null && !viewModel.IsBusy,
+                () => viewModel.StatusMessage);
+
+            viewModel.Preview.Should().NotBeSameAs(firstPreview);
+            viewModel.StatusMessage.Should().StartWith("Seed ");
+        }
+        finally
+        {
+            window.Close();
+            Dispatcher.UIThread.RunJobs();
+        }
+    }
+
     [Test]
     public void EnablingAccentTerrain_SeedsAValidNonzeroDensity()
     {
@@ -253,7 +289,7 @@ public sealed class AreaGeneratorWindowRenderTests
 
         viewModel.Preview.Should().BeNull();
         viewModel.StatusMessage.Should().Be(
-            "Preview display options changed. Generate a new preview to refresh it.");
+            "Preview display options changed. Updating the preview...");
     }
 
     private static AreaGeneratorViewModel CreateViewModel()
@@ -266,5 +302,36 @@ public sealed class AreaGeneratorWindowRenderTests
             new AreaGenerationPreviewRenderer(resources: null),
             tilesets,
             new ModuleWorkspace(CorpusLocator.ModuleDirectory));
+    }
+
+    private static AreaGeneratorViewModel CreateGeneratableViewModel()
+    {
+        var resources = new ResourceIndex(
+            baseLayer: null,
+            new[]
+            {
+                new ResourceIndex.HakLayer(
+                    "area-generator-auto-preview-test",
+                    Path.Combine(CorpusLocator.RepositoryRoot, "SWLOR_Haks", "sw_t_minecave"))
+            });
+        resources.EnsureInitialized();
+        var tilesets = new TilesetCatalog(resources);
+        return new AreaGeneratorViewModel(
+            new AreaGenerationAuthoringService(tilesets),
+            new AreaGenerationPreviewRenderer(resources: null),
+            tilesets,
+            new ModuleWorkspace(CorpusLocator.ModuleDirectory));
+    }
+
+    private static async Task WaitUntilAsync(Func<bool> condition, Func<string> currentStatus)
+    {
+        var deadline = DateTime.UtcNow.AddSeconds(10);
+        while (!condition())
+        {
+            if (DateTime.UtcNow >= deadline)
+                Assert.Fail($"Timed out waiting for the automatic area preview. Status: {currentStatus()}");
+
+            await Task.Delay(25);
+        }
     }
 }

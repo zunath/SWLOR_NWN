@@ -18,6 +18,8 @@ namespace SWLOR.Toolset.AreaGeneration;
 /// <summary>Native toolset workflow for previewing and creating deterministic generated areas.</summary>
 public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
 {
+    private static readonly TimeSpan AutomaticPreviewDelay = TimeSpan.FromMilliseconds(300);
+
     public sealed record ThemeChoice(DungeonDetail Value)
     {
         public string Label => Value.DisplayName;
@@ -41,6 +43,9 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
     private readonly ModuleWorkspace _workspace;
     private bool _loadingDefaults;
     private bool _adjustingRanges;
+    private bool _automaticPreviewEnabled;
+    private bool _disposed;
+    private CancellationTokenSource? _automaticPreviewCancellation;
     private AreaGenerationDraft? _previewedDraft;
 
     private static readonly HashSet<string> GenerationInputProperties = new(StringComparer.Ordinal)
@@ -128,7 +133,7 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
     [ObservableProperty] private bool _enableDecorations = true;
     [ObservableProperty] private double _decorationDensityPercent = 100;
     [ObservableProperty] private Bitmap? _preview;
-    [ObservableProperty] private string _statusMessage = "Choose a composition, then generate a preview.";
+    [ObservableProperty] private string _statusMessage = "The preview generates automatically when this window opens.";
     [ObservableProperty] private bool _isBusy;
 
     public event Action<string>? AreaCreated;
@@ -338,7 +343,7 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
             ?? DecorationProfiles[0];
         _loadingDefaults = false;
         RefreshEffectiveRanges();
-        InvalidatePreview("Composition changed. Generate a preview to solve the area.");
+        InvalidateAndRequestPreview("Composition changed. Updating the preview...");
     }
 
     private bool SupportsBlobAccents() =>
@@ -355,6 +360,7 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
     [RelayCommand(CanExecute = nameof(CanGenerate))]
     private async Task GeneratePreview()
     {
+        CancelAutomaticPreviewRequest();
         SetPreviewedDraft(null);
         IsBusy = true;
         StatusMessage = "Generating area...";
@@ -398,7 +404,7 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
         var draft = _previewedDraft;
         if (draft == null)
         {
-            StatusMessage = "Generate a preview for the current settings before creating the area.";
+            StatusMessage = "Wait for the current settings to finish previewing before creating the area.";
             return;
         }
 
@@ -452,7 +458,30 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
             return;
         }
 
-        InvalidatePreview("Settings changed. Generate a new preview before creating the area.");
+        InvalidateAndRequestPreview("Settings changed. Updating the preview...");
+    }
+
+    /// <summary>
+    /// Starts the automatic preview lifecycle once the window is visible. Keeping this out of the
+    /// constructor avoids doing rendering work for view models that are prepared but never shown.
+    /// </summary>
+    public void EnableAutomaticPreview()
+    {
+        if (_automaticPreviewEnabled || _disposed)
+            return;
+
+        _automaticPreviewEnabled = true;
+        if (CanGenerate())
+        {
+            StatusMessage = "Preparing the preview...";
+            RequestAutomaticPreview();
+        }
+    }
+
+    private void InvalidateAndRequestPreview(string status)
+    {
+        InvalidatePreview(status);
+        RequestAutomaticPreview();
     }
 
     private void InvalidatePreview(string status)
@@ -464,10 +493,55 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
 
     private void InvalidatePreviewDisplay()
     {
-        if (_loadingDefaults || Preview == null)
+        if (_loadingDefaults)
             return;
 
-        InvalidatePreview("Preview display options changed. Generate a new preview to refresh it.");
+        if (Preview != null)
+            InvalidatePreview("Preview display options changed. Updating the preview...");
+
+        RequestAutomaticPreview();
+    }
+
+    private void RequestAutomaticPreview()
+    {
+        if (!_automaticPreviewEnabled || _loadingDefaults || _disposed || !CanGenerate())
+            return;
+
+        CancelAutomaticPreviewRequest();
+        var request = new CancellationTokenSource();
+        _automaticPreviewCancellation = request;
+        _ = GeneratePreviewAfterDelay(request, request.Token);
+    }
+
+    private async Task GeneratePreviewAfterDelay(CancellationTokenSource request, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await Task.Delay(AutomaticPreviewDelay, cancellationToken).ConfigureAwait(true);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            return;
+        }
+
+        if (cancellationToken.IsCancellationRequested || _disposed ||
+            !ReferenceEquals(_automaticPreviewCancellation, request) || !CanGenerate())
+        {
+            return;
+        }
+
+        await GeneratePreview().ConfigureAwait(true);
+    }
+
+    private void CancelAutomaticPreviewRequest()
+    {
+        var request = _automaticPreviewCancellation;
+        _automaticPreviewCancellation = null;
+        if (request == null)
+            return;
+
+        request.Cancel();
+        request.Dispose();
     }
 
     private (int Min, int Max) EffectiveRoomSizeBounds()
@@ -581,6 +655,11 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
 
     public void Dispose()
     {
+        if (_disposed)
+            return;
+
+        _disposed = true;
+        CancelAutomaticPreviewRequest();
         PropertyChanged -= OnGenerationInputChanged;
         Preview = null;
         SetPreviewedDraft(null);

@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override EffectIconType Icon => EffectIconType.DeflectingAuraStatusEffect;
         public DeflectingAuraStatusEffect()
         {
-            StatGroup.Stats[StatType.AttackDeflection] = 15;
+            StatGroup.Stats[StatType.RangedDeflection] = 15;
         }
 
     }

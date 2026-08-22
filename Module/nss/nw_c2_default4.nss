@@ -12,10 +12,20 @@
 
 #include "nw_i0_generic"
 
+void RunDialogueTailHooks()
+{
+    // Send the user-defined event if appropriate
+    if(GetSpawnInCondition(NW_FLAG_ON_DIALOGUE_EVENT))
+    {
+        SignalEvent(OBJECT_SELF, EventUserDefined(EVENT_DIALOGUE));
+    }
+
+    ExecuteScript("crea_convo_aft", OBJECT_SELF);
+}
+
 void main()
 {
-    ExecuteScript("crea_convo_bef", OBJECT_SELF);
-
+    DeleteLocalInt(OBJECT_SELF, "SWLOR_NUI_CONVO");
     // * if petrified, jump out
     if (GetHasEffect(EFFECT_TYPE_PETRIFY, OBJECT_SELF) == TRUE)
     {
@@ -38,18 +48,22 @@ void main()
     if (nMatch == -1)
     {
         // Not a match -- start an ordinary conversation
-        if (GetCommandable(OBJECT_SELF))
-        {
-            ClearActions(CLEAR_NW_C2_DEFAULT4_29);
-            BeginConversation();
-        }
-        else
         // * July 31 2004
         // * If only charmed then allow conversation
         // * so you can have a better chance of convincing
         // * people of lowering prices
-        if (GetHasEffect(EFFECT_TYPE_CHARMED) == TRUE)
+        if (GetCommandable(OBJECT_SELF) ||
+            GetHasEffect(EFFECT_TYPE_CHARMED) == TRUE)
         {
+            ExecuteScript("crea_convo_bef", OBJECT_SELF);
+            if (GetLocalInt(OBJECT_SELF, "SWLOR_NUI_CONVO"))
+            {
+                DeleteLocalInt(OBJECT_SELF, "SWLOR_NUI_CONVO");
+                ClearActions(CLEAR_NW_C2_DEFAULT4_29);
+                RunDialogueTailHooks();
+                return;
+            }
+
             ClearActions(CLEAR_NW_C2_DEFAULT4_29);
             BeginConversation();
         }
@@ -86,11 +100,5 @@ void main()
         //RespondToShout(oShouter, nMatch, oIntruder);
     }
 
-    // Send the user-defined event if appropriate
-    if(GetSpawnInCondition(NW_FLAG_ON_DIALOGUE_EVENT))
-    {
-        SignalEvent(OBJECT_SELF, EventUserDefined(EVENT_DIALOGUE));
-    }
-
-    ExecuteScript("crea_convo_aft", OBJECT_SELF);
+    RunDialogueTailHooks();
 }

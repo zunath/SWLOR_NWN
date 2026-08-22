@@ -485,11 +485,11 @@
               },
               "BaseItem": {
                 "type": "int",
-                "value": 0
+                "value": 512
               },
               "Charges": {
                 "type": "byte",
-                "value": 50
+                "value": 0
               },
               "Cost": {
                 "type": "dword",
@@ -513,19 +513,21 @@
               },
               "LocalizedName": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Sith Sorcerer, Initiate Saber"
+                }
               },
               "ModelPart1": {
                 "type": "byte",
-                "value": 0
+                "value": 11
               },
               "ModelPart2": {
                 "type": "byte",
-                "value": 0
+                "value": 11
               },
               "ModelPart3": {
                 "type": "byte",
-                "value": 0
+                "value": 14
               },
               "Plot": {
                 "type": "byte",
@@ -542,11 +544,104 @@
                     },
                     "CostTable": {
                       "type": "byte",
+                      "value": 42
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 50
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 118
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 26
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 2
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 82
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 5
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 34
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 43
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 93
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
                       "value": 52
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 22
+                      "value": 24
                     },
                     "Param1": {
                       "type": "byte",
@@ -577,23 +672,23 @@
               },
               "Tag": {
                 "type": "cexostring",
-                "value": ""
+                "value": "NPC1SorcerersSaber"
               },
               "TemplateResRef": {
                 "type": "resref",
-                "value": ""
+                "value": "sithsorcinit_wp"
               },
               "xModelPart1": {
                 "type": "word",
-                "value": 0
+                "value": 11
               },
               "xModelPart2": {
                 "type": "word",
-                "value": 0
+                "value": 11
               },
               "xModelPart3": {
                 "type": "word",
-                "value": 0
+                "value": 14
               },
               "XOrientation": {
                 "type": "float",
@@ -1458,7 +1553,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -2285,11 +2380,11 @@
               },
               "BaseItem": {
                 "type": "int",
-                "value": 0
+                "value": 512
               },
               "Charges": {
                 "type": "byte",
-                "value": 50
+                "value": 0
               },
               "Cost": {
                 "type": "dword",
@@ -2313,19 +2408,21 @@
               },
               "LocalizedName": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Sith Blademaster Lightsaber"
+                }
               },
               "ModelPart1": {
                 "type": "byte",
-                "value": 0
+                "value": 24
               },
               "ModelPart2": {
                 "type": "byte",
-                "value": 0
+                "value": 11
               },
               "ModelPart3": {
                 "type": "byte",
-                "value": 0
+                "value": 14
               },
               "Plot": {
                 "type": "byte",
@@ -2342,11 +2439,42 @@
                     },
                     "CostTable": {
                       "type": "byte",
+                      "value": 34
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 71
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 93
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
                       "value": 52
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 22
+                      "value": 24
                     },
                     "Param1": {
                       "type": "byte",
@@ -2377,23 +2505,23 @@
               },
               "Tag": {
                 "type": "cexostring",
-                "value": ""
+                "value": "NPC4SithLightsaber"
               },
               "TemplateResRef": {
                 "type": "resref",
-                "value": ""
+                "value": "sithblade_wp"
               },
               "xModelPart1": {
                 "type": "word",
-                "value": 0
+                "value": 24
               },
               "xModelPart2": {
                 "type": "word",
-                "value": 0
+                "value": 11
               },
               "xModelPart3": {
                 "type": "word",
-                "value": 0
+                "value": 14
               },
               "XOrientation": {
                 "type": "float",
@@ -3238,7 +3366,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -4065,11 +4193,11 @@
               },
               "BaseItem": {
                 "type": "int",
-                "value": 0
+                "value": 512
               },
               "Charges": {
                 "type": "byte",
-                "value": 50
+                "value": 0
               },
               "Cost": {
                 "type": "dword",
@@ -4093,19 +4221,21 @@
               },
               "LocalizedName": {
                 "type": "cexolocstring",
-                "value": {}
+                "value": {
+                  "0": "Tier 4 Sith Sorcerer Saber"
+                }
               },
               "ModelPart1": {
                 "type": "byte",
-                "value": 0
+                "value": 11
               },
               "ModelPart2": {
                 "type": "byte",
-                "value": 0
+                "value": 11
               },
               "ModelPart3": {
                 "type": "byte",
-                "value": 0
+                "value": 14
               },
               "Plot": {
                 "type": "byte",
@@ -4122,11 +4252,135 @@
                     },
                     "CostTable": {
                       "type": "byte",
+                      "value": 42
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 50
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 118
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 0
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 134
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 5
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 45
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 100
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 112
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
+                      "value": 34
+                    },
+                    "CostValue": {
+                      "type": "word",
+                      "value": 69
+                    },
+                    "Param1": {
+                      "type": "byte",
+                      "value": 255
+                    },
+                    "Param1Value": {
+                      "type": "byte",
+                      "value": 0
+                    },
+                    "PropertyName": {
+                      "type": "word",
+                      "value": 93
+                    },
+                    "Subtype": {
+                      "type": "word",
+                      "value": 0
+                    }
+                  },
+                  {
+                    "__struct_id": 0,
+                    "ChanceAppear": {
+                      "type": "byte",
+                      "value": 100
+                    },
+                    "CostTable": {
+                      "type": "byte",
                       "value": 52
                     },
                     "CostValue": {
                       "type": "word",
-                      "value": 22
+                      "value": 24
                     },
                     "Param1": {
                       "type": "byte",
@@ -4157,23 +4411,23 @@
               },
               "Tag": {
                 "type": "cexostring",
-                "value": ""
+                "value": "NPC4SorcerersSaber"
               },
               "TemplateResRef": {
                 "type": "resref",
-                "value": ""
+                "value": "sithsorc4_wp"
               },
               "xModelPart1": {
                 "type": "word",
-                "value": 0
+                "value": 11
               },
               "xModelPart2": {
                 "type": "word",
-                "value": 0
+                "value": 11
               },
               "xModelPart3": {
                 "type": "word",
-                "value": 0
+                "value": 14
               },
               "XOrientation": {
                 "type": "float",
@@ -4979,7 +5233,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -5630,7 +5884,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.356315642694011e-019
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -5894,7 +6148,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.356317839892513e-019
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -6097,7 +6351,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.356315642694011e-019
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -6377,7 +6631,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 2.3301325313696e-009
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -6823,7 +7077,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -7474,7 +7728,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.511017873323528e-013
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -7738,7 +7992,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.356315642694011e-019
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -7941,7 +8195,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.650446392886806e-007
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -8221,7 +8475,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.356315642694011e-019
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -8667,7 +8921,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -10065,7 +10319,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 2.662467082217152e-043
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -10511,7 +10765,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -11162,7 +11416,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 6.794945094928233e-033
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -11426,7 +11680,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.356315642694011e-019
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -11629,7 +11883,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.356315642694011e-019
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -11909,7 +12163,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.500311243727242e-019
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -12355,7 +12609,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -13006,7 +13260,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.356878125510547e-019
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -13270,7 +13524,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.356315642694011e-019
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -13473,7 +13727,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.356317839892513e-019
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -13753,7 +14007,7 @@
               },
               "XOrientation": {
                 "type": "float",
-                "value": 1.356315642694011e-019
+                "value": 0.0
               },
               "XPosition": {
                 "type": "float",
@@ -14199,7 +14453,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",

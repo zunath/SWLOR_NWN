@@ -166,8 +166,17 @@ public class FirstAidCombatUpgradeTests
             "                CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid);");
         treatmentKit.Split("CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid);").Length.Should().Be(2);
 
+        var resuscitation = File.ReadAllText(
+                (root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "ResuscitationAbilityDefinition.cs").FullName)
+            .Replace("\r\n", "\n");
+        resuscitation.Should().Contain(
+            "DelayCommand(0.1f, () =>\n" +
+            "            {\n" +
+            "                AbilityEffectScaling.ApplyActivatedScaledHeal(activator, target, 20);",
+            "the rank-II heal must run after EffectResurrection settles or the engine silently discards it");
+
         var pain = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "PainSuppressantAbilityDefinition.cs").FullName);
-        pain.Should().Contain("AbilityEffectScaling.ApplyTemporaryHPPercent(activator, target, percent, durationSeconds)");
+        pain.Should().Contain("AbilityEffectScaling.ApplyTemporaryHPPercent(activator, target, \"PAIN_SUPPRESSANT\", percent, durationSeconds)");
         pain.Should().NotContain("HealPercent(activator, friendly");
 
         var koltoMist = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "KoltoMistAbilityDefinition.cs").FullName);
@@ -175,7 +184,11 @@ public class FirstAidCombatUpgradeTests
         koltoMist.Should().Contain("private const float Rank1HealPercentPerTick = 1f;");
         koltoMist.Should().Contain("private const float Rank2HealPercentPerTick = 2f;");
         koltoMist.Should().Contain("VisualEffect.Vfx_Fnf_Gas_Explosion_Mind");
-        koltoMist.Should().Contain("VisualEffect.Vfx_Dur_Aura_Blue_Light");
+        koltoMist.Should().Contain("EffectAreaOfEffect(AreaOfEffect.KoltoMistCloud)");
+        koltoMist.Should().NotContain("AreaOfEffect.FogMind",
+            "the base game FogMind AoE runs the Mind Fog enter/heartbeat spell scripts; Kolto Mist must use the script-free cloud row");
+        koltoMist.Should().NotContain("VisualEffect.Vfx_Dur_Aura_Blue_Light",
+            "Kolto Mist needs the persistent blue gas cloud used by the live-server Kolto Bomb, not a body aura");
         koltoMist.Should().Contain("GetIsObjectValid(activator)");
         koltoMist.Should().Contain("GetCurrentHitPoints(activator) <= 0");
         koltoMist.Should().Contain("GetIsObjectValid(GetAreaFromLocation(location))");
@@ -228,7 +241,7 @@ public class FirstAidCombatUpgradeTests
         emergencySealantStatus.Should().Contain("AbilityEffectScaling.ApplyScaledHeal(Source, creature, 4);");
 
         var cocktail = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "EmergencyCocktailAbilityDefinition.cs").FullName);
-        cocktail.Should().Contain("AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, 12, duration)");
+        cocktail.Should().Contain("AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, \"EMERGENCY_COCKTAIL\", 12, duration)");
         cocktail.Should().Contain("CapstoneAbility.ActiveDurationSeconds");
         cocktail.Should().Contain("new[] { typeof(PoisonStatusEffect), typeof(ToxinStatusEffect) }");
     }
@@ -321,6 +334,26 @@ public class FirstAidCombatUpgradeTests
         visualEffects[842]["Label"].Should().Be("VFX_IMP_HEALING_M_SILENT");
         visualEffects[842]["Imp_HeadCon_Node"].Should().Be("vim_heal04");
         visualEffects[842]["SoundImpact"].Should().Be("****");
+    }
+
+    [Test]
+    public void KoltoMistPersistentVfx_IsVisualOnlyGasCloud()
+    {
+        var root = FindRepositoryRoot();
+        var persistentVfx = Read2da(root / "SWLOR_Haks" / "sw_2da" / "vfx_persistent.2da");
+        var row = persistentVfx[(int)AreaOfEffect.KoltoMistCloud];
+
+        row["LABEL"].Should().Be("AOE_KOLTO_MIST_CLOUD");
+        row["SHAPE"].Should().Be("C");
+        row["RADIUS"].Should().Be("8");
+        row["ONENTER"].Should().Be("****",
+            "the cloud must not run the base game Mind Fog enter script");
+        row["ONEXIT"].Should().Be("****");
+        row["HEARTBEAT"].Should().Be("****",
+            "the cloud must not run the base game Mind Fog heartbeat script");
+        row["MODEL01"].Should().Be("vps_fogmind");
+        row["MODEL02"].Should().Be("vps_fogmind");
+        row["MODEL03"].Should().Be("vps_fogmind");
     }
 
     [Test]

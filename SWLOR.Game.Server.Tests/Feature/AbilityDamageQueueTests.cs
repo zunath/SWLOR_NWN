@@ -168,6 +168,24 @@ public class AbilityDamageQueueTests
     }
 
     [Test]
+    public void DelayedTelegraphedImpacts_DoNotCountTheOriginatingCastTwice()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Ability.cs")).Replace("\r\n", "\n");
+        var delayedImpactBody = source.Substring(
+            source.IndexOf("return (creator, creatures) =>", StringComparison.Ordinal),
+            source.IndexOf("private static int ApplyCombatImpactToCreatures", StringComparison.Ordinal) -
+            source.IndexOf("return (creator, creatures) =>", StringComparison.Ordinal));
+
+        delayedImpactBody.Should().Contain("countsAsAttackAttempt: false",
+            "the originating cast already spends its one limited-speed charge before the telegraph resolves");
+    }
+
+    [Test]
     public void DelayedTelegraphedImpacts_RetainCostContextAndCleanUpEveryExitPath()
     {
         var root = FindRepositoryRoot();

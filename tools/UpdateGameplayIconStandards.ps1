@@ -3,12 +3,13 @@ param(
     [string]$Feat2daPath = "SWLOR_Haks\sw_2da\feat.2da",
     [string]$Spells2daPath = "SWLOR_Haks\sw_2da\spells.2da",
     [string]$IconPath = "SWLOR_Haks\sw_ability",
+    [string]$StatusIconSourcePath = "SWLOR_Haks\sw_ability_source",
     [string]$EffectIcons2daPath = "SWLOR_Haks\sw_2da\effecticons.2da",
     [string]$EffectIconTypePath = "SWLOR.NWN.API\NWScript\Enum\EffectIconType.cs",
     [string]$StatusEffectPath = "SWLOR.Game.Server\Feature\StatusEffectDefinition",
     [string]$TlkJsonPath = "SWLOR_Haks\sw_tlk\sw_tlk.tlk.json",
     [int]$GeneratedFeatStart = 2000,
-    [int]$GeneratedFeatEnd = 2898,
+    [int]$GeneratedFeatEnd = 2899,
     [int]$CustomFeatStart = 1116,
     [int]$CustomSpellStart = 1000,
     [int]$StatusEffectIconStart = 141,
@@ -671,11 +672,23 @@ function Get-StatusEffectClasses([string]$path) {
 
         $className = $Matches[2]
 
-        # Every status effect that can be applied to a creature must carry a gameplay icon so the
-        # player can see it is active; an effect with nothing worth showing on the icon bar should be
-        # modelled as a static stat contribution instead of a status effect. So no class is exempt
-        # here: a definition left on EffectIconType.Invalid is picked up, assigned a real icon by
-        # -UpdateStatusEffectCode, and required to carry an effecticons.2da row and TLK entry.
+        # A [StatConfiguredIcon] effect owns no icon identity of its own: its icon arrives per
+        # application from a StatType adjustment and belongs to the configuring perk, whose own
+        # anchor class carries the enum member, manifest row, TLK entry, and artwork. It therefore
+        # has no per-class row to audit or generate. See IconStandards.md, "Stat-Configured Icons".
+        # Only a real attribute declaration on the class counts: the marker must start its own line
+        # (never inside a comment or string) with nothing but other attributes between it and the
+        # class declaration.
+        if ($content -match '(?ms)^\s*\[StatConfiguredIcon\]\s*(?:^\s*\[[^\]\r\n]+\]\s*)*(?:public|internal)\s+(?:(?:sealed|abstract|partial)\s+)*class\s') {
+            continue
+        }
+
+        # Every other status effect that can be applied to a creature must carry a gameplay icon so
+        # the player can see it is active; an effect with nothing worth showing on the icon bar
+        # should be modelled as a static stat contribution instead of a status effect. So no class
+        # is otherwise exempt here: a definition left on EffectIconType.Invalid is picked up,
+        # assigned a real icon by -UpdateStatusEffectCode, and required to carry an
+        # effecticons.2da row and TLK entry.
 
         $name = $className -replace "StatusEffect$", ""
         if ($content -match 'public\s+override\s+string\s+Name\s*=>\s*"([^"]+)"') {
@@ -754,6 +767,36 @@ function New-StatusIconResRef([pscustomobject]$entry, [hashtable]$seen) {
 
     $seen[$candidate] = $entry.Key
     return $candidate
+}
+
+function Get-PreservedStatusIconResRef(
+    [hashtable]$existing,
+    [pscustomobject]$entry,
+    [hashtable]$seen) {
+    $manifestKey = Get-ManifestKey $entry.Type $entry.Key
+    $row = if ($existing.ContainsKey($manifestKey)) {
+        $existing[$manifestKey]
+    }
+    else {
+        Get-ManifestRowByKey $existing $entry.Key
+    }
+
+    if ($null -ne $row) {
+        $preserved = (Get-OptionalProperty $row "IconResRef").Trim().ToLowerInvariant()
+        if (![string]::IsNullOrWhiteSpace($preserved)) {
+            if ($preserved.Length -gt 16 -or $preserved -notmatch "^[a-z0-9_]+$") {
+                throw "Preserved status icon resref '$preserved' for '$($entry.Key)' is not a valid NWN resource name."
+            }
+            if ($seen.ContainsKey($preserved)) {
+                throw "Preserved status icon resref '$preserved' is shared by '$($seen[$preserved])' and '$($entry.Key)'."
+            }
+
+            $seen[$preserved] = $entry.Key
+            return $preserved
+        }
+    }
+
+    return New-StatusIconResRef $entry $seen
 }
 
 function Get-SemanticColor([string]$category) {
@@ -1283,9 +1326,39 @@ function New-StatusIcon([pscustomobject]$entry, [string]$outputPath) {
 
     Draw-IconBackdrop $g $semantic $motif $hash
 
-    Invoke-InContentBounds $g {
-        Draw-IllustrativeAccents $g $motif $semantic $hash
-        Draw-StatusMotif $g "$($entry.Key) $($entry.DisplayName)" $motif $semantic
+    $sourceDirectory = if ([System.IO.Path]::IsPathRooted($StatusIconSourcePath)) {
+        $StatusIconSourcePath
+    }
+    else {
+        Join-Path (Get-Location).Path $StatusIconSourcePath
+    }
+    $sourcePath = Join-Path $sourceDirectory "$($entry.IconResRef).png"
+    if (Test-Path -LiteralPath $sourcePath) {
+        $source = [System.Drawing.Image]::FromFile($sourcePath)
+        try {
+            $cropSize = [Math]::Min($source.Width, $source.Height)
+            $cropX = [int](($source.Width - $cropSize) / 2)
+            $cropY = [int](($source.Height - $cropSize) / 2)
+            $destination = [System.Drawing.RectangleF]::new(18, 18, 92, 92)
+            $sourceRectangle = [System.Drawing.Rectangle]::new($cropX, $cropY, $cropSize, $cropSize)
+
+            Invoke-InContentBounds $g {
+                $g.DrawImage(
+                    $source,
+                    $destination,
+                    $sourceRectangle,
+                    [System.Drawing.GraphicsUnit]::Pixel)
+            }
+        }
+        finally {
+            $source.Dispose()
+        }
+    }
+    else {
+        Invoke-InContentBounds $g {
+            Draw-IllustrativeAccents $g $motif $semantic $hash
+            Draw-StatusMotif $g "$($entry.Key) $($entry.DisplayName)" $motif $semantic
+        }
     }
     $badgeRank = ""
     $resrefKey = $entry.IconResRef.ToLowerInvariant()
@@ -1331,7 +1404,7 @@ function Build-ManifestRows([hashtable]$existing) {
     $rows += @(Get-CustomFeatSpellRows $abilityRows $existing)
 
     foreach ($status in Get-StatusEffectClasses (Resolve-RepoPath $StatusEffectPath)) {
-        $resref = New-StatusIconResRef $status $statusIconSeen
+        $resref = Get-PreservedStatusIconResRef $existing $status $statusIconSeen
         $relativePath = $status.SourcePath.Substring((Get-Location).Path.Length + 1)
         $rows += [pscustomobject]@{
             Type = $status.Type
@@ -1397,14 +1470,60 @@ function Get-StatusEffectStrRefsByKey([object[]]$statusRows, [hashtable]$tlkText
     return $map
 }
 
-function Update-EffectIconTypeEnum([object[]]$statusRows, [string]$path) {
+function Get-StatusEffectIconRowsByKey([object[]]$statusRows, [string]$path) {
+    $text = Get-Content -Path $path -Raw
+    $existingRowsByKey = @{}
+    $maximumExistingRow = $StatusEffectIconStart - 1
+    $assignmentPattern = [regex]::new("(?m)^\s*([A-Za-z][A-Za-z0-9_]*)\s*=\s*(\d+),\s*$")
+
+    foreach ($match in $assignmentPattern.Matches($text)) {
+        $row = [int]$match.Groups[2].Value
+        if ($row -lt $StatusEffectIconStart) {
+            continue
+        }
+
+        $key = $match.Groups[1].Value
+        $existingRowsByKey[$key] = $row
+        $maximumExistingRow = [Math]::Max($maximumExistingRow, $row)
+    }
+
+    $rowsByKey = @{}
+    $usedRows = [System.Collections.Generic.HashSet[int]]::new()
+    foreach ($entry in $statusRows) {
+        if (!$existingRowsByKey.ContainsKey($entry.Key)) {
+            continue
+        }
+
+        $row = [int]$existingRowsByKey[$entry.Key]
+        if (!$usedRows.Add($row)) {
+            throw "EffectIconType row $row is assigned to more than one status effect."
+        }
+
+        $rowsByKey[$entry.Key] = $row
+    }
+
+    foreach ($entry in $statusRows) {
+        if ($rowsByKey.ContainsKey($entry.Key)) {
+            continue
+        }
+
+        do {
+            $maximumExistingRow++
+        } while (!$usedRows.Add($maximumExistingRow))
+
+        $rowsByKey[$entry.Key] = $maximumExistingRow
+    }
+
+    return $rowsByKey
+}
+
+function Update-EffectIconTypeEnum([object[]]$statusRows, [string]$path, [hashtable]$statusEffectRowsByKey) {
     $text = Get-Content -Path $path -Raw
     $blockLines = [System.Collections.Generic.List[string]]::new()
     $blockLines.Add($GeneratedEnumStartMarker) | Out-Null
-    $row = $StatusEffectIconStart
-    foreach ($entry in $statusRows) {
+    foreach ($entry in @($statusRows | Sort-Object { [int]$statusEffectRowsByKey[$_.Key] })) {
+        $row = [int]$statusEffectRowsByKey[$entry.Key]
         $blockLines.Add("        $($entry.Key) = $row,") | Out-Null
-        $row++
     }
     $blockLines.Add($GeneratedEnumEndMarker) | Out-Null
     $block = ($blockLines -join [Environment]::NewLine)
@@ -1421,7 +1540,11 @@ function Update-EffectIconTypeEnum([object[]]$statusRows, [string]$path) {
     Set-Content -Path $path -Value $text -NoNewline
 }
 
-function Update-EffectIcons2da([object[]]$statusRows, [string]$path, [hashtable]$statusEffectStrRefsByKey) {
+function Update-EffectIcons2da(
+    [object[]]$statusRows,
+    [string]$path,
+    [hashtable]$statusEffectStrRefsByKey,
+    [hashtable]$statusEffectRowsByKey) {
     $baseLines = @()
     foreach ($line in Get-Content -Path $path) {
         $trimmed = $line.Trim()
@@ -1434,15 +1557,14 @@ function Update-EffectIcons2da([object[]]$statusRows, [string]$path, [hashtable]
         $baseLines += $line
     }
 
-    $row = $StatusEffectIconStart
-    foreach ($entry in $statusRows) {
+    foreach ($entry in @($statusRows | Sort-Object { [int]$statusEffectRowsByKey[$_.Key] })) {
+        $row = [int]$statusEffectRowsByKey[$entry.Key]
         $label = Get-EffectIconLabel $entry
         if (!$statusEffectStrRefsByKey.ContainsKey($entry.Key)) {
             throw "No TLK string ref found for status effect '$($entry.Key)'."
         }
 
         $baseLines += ("{0,-5} {1,-45} {2,-18} {3}" -f $row, $label, $entry.IconResRef, $statusEffectStrRefsByKey[$entry.Key])
-        $row++
     }
 
     # Write as UTF-8 without a BOM. NWN's 2DA parser rejects any file that
@@ -1937,8 +2059,9 @@ $tlkTextToStrRef = Get-CustomTlkTextToStrRef (Resolve-RepoPath $TlkJsonPath)
 $statusEffectStrRefsByKey = Get-StatusEffectStrRefsByKey $statusRows $tlkTextToStrRef
 
 if ($UpdateStatusEffectCode) {
-    Update-EffectIconTypeEnum $statusRows (Resolve-RepoPath $EffectIconTypePath)
-    Update-EffectIcons2da $statusRows (Resolve-RepoPath $EffectIcons2daPath) $statusEffectStrRefsByKey
+    $statusEffectRowsByKey = Get-StatusEffectIconRowsByKey $statusRows (Resolve-RepoPath $EffectIconTypePath)
+    Update-EffectIconTypeEnum $statusRows (Resolve-RepoPath $EffectIconTypePath) $statusEffectRowsByKey
+    Update-EffectIcons2da $statusRows (Resolve-RepoPath $EffectIcons2daPath) $statusEffectStrRefsByKey $statusEffectRowsByKey
     Update-StatusEffectCode $statusRows
     Write-Host "Updated EffectIconType, effecticons.2da, and $($statusRows.Count) status effect icon properties."
 }

@@ -10,12 +10,15 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         public override string Name => "Tranquilized";
         public override EffectIconType Icon => EffectIconType.TranquilizedStatusEffect;
-        public override StatusEffectCategory Categories => StatusEffectCategory.Debuff | StatusEffectCategory.Control;
+        public override StatusEffectCategory Categories => StatusEffectCategory.Debuff | StatusEffectCategory.Control | StatusEffectCategory.HardCrowdControl;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         public override ResistanceType ResistanceType => ResistanceType.Mind;
 
         public override string CanApply(uint creature)
         {
+            if (StatusEffect.HasStatusEffect(creature, GetType()))
+                return "Target is already tranquilized.";
+
             return Ability.HasHardCrowdControlImmunity(creature, ImmunityType.Sleep)
                 ? "Target is temporarily immune to tranquilization."
                 : string.Empty;
@@ -41,8 +44,19 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void Remove(uint creature)
         {
+            if (IsBeingReplaced)
+                return;
+
+            Ability.ApplyPostControlImmunity(
+                creature,
+                SecondsSinceNaturalExpiration,
+                ImmunityType.Sleep);
+
             var attackPenalty = Stat.GetStatAdjustment(Source, StatType.TranquilizeExpiredAttackPercentAdjustment);
-            var duration = Stat.GetStatAdjustment(Source, StatType.TranquilizeExpiredAttackDurationSeconds);
+            var duration = Math.Max(
+                0f,
+                Stat.GetStatAdjustment(Source, StatType.TranquilizeExpiredAttackDurationSeconds) -
+                SecondsSinceNaturalExpiration);
             if (attackPenalty == 0 || duration <= 0)
                 return;
 
@@ -58,7 +72,6 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             var effect = TagNativeEffect(IgnoreEffectImmunity(EffectSleep()));
             ApplyEffectToObject(DurationType.Temporary, effect, creature, duration);
-            Ability.ApplyTemporaryImmunity(creature, duration, ImmunityType.Sleep);
         }
     }
 }

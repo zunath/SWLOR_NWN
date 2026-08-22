@@ -6,6 +6,7 @@ namespace SWLOR.Game.Server.Service.QuestContractService
         {
             ItemResref = string.Empty;
             ItemName = string.Empty;
+            Quantity = 1;
         }
 
         public string ItemResref { get; set; }

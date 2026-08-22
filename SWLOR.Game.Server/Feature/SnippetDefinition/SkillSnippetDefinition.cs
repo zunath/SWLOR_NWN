@@ -25,6 +25,11 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
         {
             _builder.Create("condition-any-skill")
                 .Description("Checks whether a player has any skill at a minimum rank.")
+                .Phrase("the player has {skillId} at rank {rank} or better")
+                .NegatedPhrase("the player has no skill in {skillId} at rank {rank}")
+                .Argument("skillId", SnippetArgumentType.SkillId)
+                .Argument("rank", SnippetArgumentType.SkillRank)
+                .Repeats(2)
                 .AppearsWhenAction((player, args) =>
                 {
                     // Missing at least one pair of arguments.
@@ -93,6 +98,11 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
         {
             _builder.Create("condition-all-skills")
                 .Description("Checks whether a player has all skills at a minimum rank.")
+                .Phrase("the player has every one of {skillId} at rank {rank} or better")
+                .NegatedPhrase("the player is short of rank {rank} in at least one of {skillId}")
+                .Argument("skillId", SnippetArgumentType.SkillId)
+                .Argument("rank", SnippetArgumentType.SkillRank)
+                .Repeats(2)
                 .AppearsWhenAction((player, args) =>
                 {
                     // Missing at least one pair of arguments.

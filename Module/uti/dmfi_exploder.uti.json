@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "DM USE ONLY\n\nThis widget creates all of the DMFI equipment on you at the same time.\n\n~~\nBy Hahnsoo (hahns_shin@hotmail.com), based on an idea by OldManWhistler\n"
     }
   },
   "Identified": {

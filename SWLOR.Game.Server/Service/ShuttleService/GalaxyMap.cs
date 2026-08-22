@@ -13,6 +13,9 @@ namespace SWLOR.Game.Server.Service.ShuttleService
         // cheap shuttle hop rather than a full interplanetary flight.
         private const int OrbitalHopSeconds = 60;
         private const int OrbitalHopFare = 25;
+        private const int MinimumTransitSeconds = 300;
+        private const int MaximumTransitSeconds = 600;
+        private const int TransitRoundingSeconds = 15;
 
         /// <summary>
         /// Determines whether the route between two planets is a short orbital hop between a station
@@ -49,8 +52,8 @@ namespace SWLOR.Game.Server.Service.ShuttleService
 
         /// <summary>
         /// Calculates the shuttle transit time, in seconds, between two planets. The raw value is
-        /// rounded to the nearest 30 seconds and clamped between 600 (10 minutes) and 1200
-        /// (20 minutes) seconds.
+        /// rounded to the nearest 15 seconds and clamped between 300 (5 minutes) and 600
+        /// (10 minutes) seconds.
         /// </summary>
         /// <param name="origin">The origin planet.</param>
         /// <param name="destination">The destination planet.</param>
@@ -61,11 +64,13 @@ namespace SWLOR.Game.Server.Service.ShuttleService
                 return OrbitalHopSeconds;
 
             var distance = GetDistance(origin, destination);
-            var raw = 600.0 + 600.0 * (distance - 5.0) / 77.2;
-            var rounded = (int)(Math.Round(raw / 30.0, MidpointRounding.AwayFromZero) * 30.0);
+            var raw = MinimumTransitSeconds +
+                      (MaximumTransitSeconds - MinimumTransitSeconds) * (distance - 5.0) / 77.2;
+            var rounded = (int)(Math.Round(raw / TransitRoundingSeconds, MidpointRounding.AwayFromZero) *
+                                TransitRoundingSeconds);
 
-            if (rounded < 600) rounded = 600;
-            if (rounded > 1200) rounded = 1200;
+            if (rounded < MinimumTransitSeconds) rounded = MinimumTransitSeconds;
+            if (rounded > MaximumTransitSeconds) rounded = MaximumTransitSeconds;
 
             return rounded;
         }

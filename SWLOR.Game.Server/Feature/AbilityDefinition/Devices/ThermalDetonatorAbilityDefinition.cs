@@ -42,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     Spell.ThermalDetonator1,
                     5f,
                     AbilityTargetingFlags.HarmsEnemies,
-                    DeviceAbilityEffects.ApplyGrenadeRadiusBonus)
+                    DeviceAbilityEffects.ApplyBlastRadiusBonus)
                 .HasImpactAction(ThermalDetonator1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 typeof(BurnStatusEffect),
                 CombatImpactAreaShape.Sphere,
                 0f,
-                DeviceAbilityEffects.ApplyGrenadeRadiusBonus(activator, 5f),
+                DeviceAbilityEffects.ApplyBlastRadiusBonus(activator, 5f),
                 0f,
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Fire,

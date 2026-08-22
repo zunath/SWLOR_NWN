@@ -18,7 +18,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
     public sealed class IncendiaryFieldAbilityDefinition : IAbilityListDefinition
     {
         private const VisualEffect IncendiaryFieldTargetVisualEffect = VisualEffect.Vfx_Imp_Flame_S;
-        private const VisualEffect IncendiaryFieldMarkerVisualEffect = VisualEffect.Vfx_Dur_Aura_Fire;
+        private const float IncendiaryFieldRadiusMeters = 5f;
+        private const float IncendiaryFieldDurationSeconds = 30f;
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -99,53 +100,43 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private static void IncendiaryField1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            DeviceAbilityEffects.ScheduleAreaHostilePulses(
-                activator,
-                AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation),
-                SkillType.Devices,
-                8,
-                0,
-                null,
-                5f,
-                30f,
-                CombatDamageType.Fire,
-                targetVisualEffect: IncendiaryFieldTargetVisualEffect,
-                markerVisualEffect: IncendiaryFieldMarkerVisualEffect,
-                markerVisualEffectScale: 2f);
+            DeployIncendiaryField(activator, target, targetLocation, 8);
         }
 
         private static void IncendiaryField2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            DeviceAbilityEffects.ScheduleAreaHostilePulses(
-                activator,
-                AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation),
-                SkillType.Devices,
-                12,
-                0,
-                null,
-                5f,
-                30f,
-                CombatDamageType.Fire,
-                targetVisualEffect: IncendiaryFieldTargetVisualEffect,
-                markerVisualEffect: IncendiaryFieldMarkerVisualEffect,
-                markerVisualEffectScale: 2f);
+            DeployIncendiaryField(activator, target, targetLocation, 12);
         }
 
         private static void IncendiaryField3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            DeployIncendiaryField(activator, target, targetLocation, 16);
+        }
+
+        private static void DeployIncendiaryField(uint activator, uint target, Location targetLocation, int baseDamage)
+        {
+            var location = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
+
+            // Script-free custom AoE row: renders the live-server incendiary grenade's fire fog
+            // cloud visual only, without the base game fire cloud enter/heartbeat spell effects.
+            // Damage comes exclusively from the scheduled pulses below.
+            ApplyEffectAtLocation(
+                DurationType.Temporary,
+                EffectAreaOfEffect(AreaOfEffect.IncendiaryFieldCloud),
+                location,
+                IncendiaryFieldDurationSeconds);
+
             DeviceAbilityEffects.ScheduleAreaHostilePulses(
                 activator,
-                AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation),
+                location,
                 SkillType.Devices,
-                16,
+                baseDamage,
                 0,
                 null,
-                5f,
-                30f,
+                IncendiaryFieldRadiusMeters,
+                IncendiaryFieldDurationSeconds,
                 CombatDamageType.Fire,
-                targetVisualEffect: IncendiaryFieldTargetVisualEffect,
-                markerVisualEffect: IncendiaryFieldMarkerVisualEffect,
-                markerVisualEffectScale: 2f);
+                targetVisualEffect: IncendiaryFieldTargetVisualEffect);
         }
 
     }

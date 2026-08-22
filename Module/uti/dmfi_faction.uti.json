@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "This wand gives the DM several options for controlling NPCs, including changing factions, reputations, and corpse behavior. To use, target an NPC with this wand. Do *NOT* use this wand on PCs.\n\n~~\nBy Hahnsoo (hahns_shin@hotmail.com"
     }
   },
   "Identified": {

@@ -32,7 +32,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Medical Supplies are required to use many of the First Aid perks."
+    }
   },
   "Identified": {
     "type": "byte",

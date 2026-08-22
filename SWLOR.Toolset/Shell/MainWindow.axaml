@@ -1,0 +1,165 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:shell="using:SWLOR.Toolset.Shell"
+        xmlns:dockModel="using:Dock.Model.Controls"
+        mc:Ignorable="d"
+        x:Class="SWLOR.Toolset.Shell.MainWindow"
+        x:DataType="shell:ShellViewModel"
+        Title="{Binding WindowTitle, FallbackValue='SWLOR Toolset'}"
+        Icon="/Assets/swlor-logo.png"
+        Width="1280" Height="800"
+        WindowStartupLocation="CenterScreen">
+  <Grid RowDefinitions="Auto,Auto,*,Auto">
+    <!-- InputGesture only draws the shortcut next to the item; the shortcuts themselves are
+         registered as window KeyBindings in the code-behind (MenuItem.HotKey would not do, because
+         a submenu item is not attached to a tree that reaches this window until its popup has been
+         opened once, and a KeyBinding declared here has no DataContext to bind a command from). -->
+    <Menu Grid.Row="0">
+      <MenuItem Header="_File">
+        <MenuItem Header="_Save" Command="{Binding SaveCommand}" InputGesture="Ctrl+S" />
+        <MenuItem Header="Save _All" Command="{Binding SaveAllCommand}" InputGesture="Ctrl+Shift+S" />
+        <Separator />
+        <MenuItem x:Name="ErfManagerMenuItem" Header="ERF _Manager..."
+                  Command="{Binding ErfArchivesCommand}" />
+        <Separator />
+        <MenuItem Header="E_xit" Command="{Binding ExitCommand}" />
+      </MenuItem>
+      <MenuItem Header="_Edit">
+        <MenuItem Header="_Undo" Command="{Binding UndoCommand}" InputGesture="Ctrl+Z" />
+        <MenuItem Header="_Redo" Command="{Binding RedoCommand}" InputGesture="Ctrl+Y" />
+        <Separator />
+        <MenuItem x:Name="ModulePropertiesMenuItem" Header="Module _Properties..."
+                  Command="{Binding ModulePropertiesCommand}" />
+      </MenuItem>
+      <MenuItem Header="_Build">
+        <!-- Compiling ONE script is not here: it is an act on the document in front of you, so it
+             lives on the script editor itself (a Compile button plus Ctrl+B). What remains is genuinely
+             module-wide, which is what this menu is for. -->
+        <MenuItem Header="Build _All Scripts" Command="{Binding BuildAllScriptsCommand}"
+                  InputGesture="Ctrl+Shift+B" />
+        <Separator />
+        <MenuItem Header="_Pack Module" Command="{Binding PackModuleCommand}" />
+      </MenuItem>
+      <MenuItem Header="_Tools">
+        <MenuItem x:Name="FactionEditorMenuItem" Header="_Faction Editor..."
+                  Command="{Binding FactionEditorCommand}" />
+        <Separator />
+        <MenuItem Header="Run Validation" Command="{Binding FocusValidationCommand}" />
+        <Separator />
+        <MenuItem Header="Build _Preview Cache" Command="{Binding BuildPreviewCacheCommand}" />
+      </MenuItem>
+    </Menu>
+    <!-- Quick-access bar: the handful of actions a builder reaches for constantly, so they are one
+         click away rather than two menus deep. Icon-only with tooltips, in two groups - what changes
+         the module on the left, what changes how it is drawn on the right. -->
+    <Border Grid.Row="1"
+            Padding="6,3"
+            Background="{DynamicResource ChromeBrush}"
+            BorderBrush="{DynamicResource RuleBrush}"
+            BorderThickness="0,1,0,1">
+      <StackPanel Orientation="Horizontal" Spacing="2">
+        <Button Classes="tool" Command="{Binding SaveCommand}" ToolTip.Tip="Save (Ctrl+S)">
+          <Path Data="M4,4 H16 L20,8 V20 H4 Z M8,4 V10 H15 V4 M7,20 V14 H17 V20" />
+        </Button>
+        <Button Classes="tool" Command="{Binding SaveAllCommand}" ToolTip.Tip="Save all (Ctrl+Shift+S)">
+          <Path Data="M8,7 H18 L22,11 V22 H8 Z M11,7 V12 H17 V7 M10,22 V17 H20 V22 M4,18 V3 H15 L17,5" />
+        </Button>
+
+        <Border Width="1" Margin="5,3" Background="{DynamicResource RuleBrush}" />
+
+        <Button Classes="tool" Command="{Binding UndoCommand}" ToolTip.Tip="Undo (Ctrl+Z)">
+          <Path Data="M8,6 L3,11 L8,16 M3,11 H14 A6,6 0 0 1 14,23 H10" />
+        </Button>
+        <Button Classes="tool" Command="{Binding RedoCommand}" ToolTip.Tip="Redo (Ctrl+Y)">
+          <Path Data="M16,6 L21,11 L16,16 M21,11 H10 A6,6 0 0 0 10,23 H14" />
+        </Button>
+
+        <Border Width="1" Margin="5,3" Background="{DynamicResource RuleBrush}" />
+
+        <ToggleButton Classes="tool"
+                      IsChecked="{Binding Display.ShowShadows}"
+                      IsEnabled="{Binding Display.CanShowShadows}"
+                      ToolTip.Tip="Display shadows - the viewport renderer has no shadow pass yet">
+          <Path Data="M4,4 H14 V14 H4 Z M8,8 H20 V20 H8 Z" />
+        </ToggleButton>
+        <ToggleButton Classes="tool"
+                      IsChecked="{Binding Display.ShowCeilings, Mode=TwoWay}"
+                      ToolTip.Tip="Display ceilings - roof an interior area over instead of seeing into its rooms from above">
+          <Path Data="M3,11 L12,4 L21,11 M5,11 V20 H19 V11" />
+        </ToggleButton>
+        <ToggleButton Classes="tool"
+                      IsChecked="{Binding Display.ShowFog, Mode=TwoWay}"
+                      ToolTip.Tip="Display fog - draw the area's distance fog, which hides far geometry">
+          <Path Data="M3,7 H19 M5,11 H21 M3,15 H16 M7,19 H21" />
+        </ToggleButton>
+        <ToggleButton Classes="tool"
+                      IsChecked="{Binding Display.ShowAreaLighting, Mode=TwoWay}"
+                      ToolTip.Tip="Display area lighting - light the scene with the area's own sun/moon colours instead of neutral editor light">
+          <Path Data="M8,12 A4,4 0 1 0 16,12 A4,4 0 1 0 8,12 Z M12,2 V4 M12,20 V22 M2,12 H4 M20,12 H22 M5.5,5.5 L7,7 M17,17 L18.5,18.5 M18.5,5.5 L17,7 M7,17 L5.5,18.5" />
+        </ToggleButton>
+        <ToggleButton Classes="tool"
+                      IsChecked="{Binding Display.ShowMaterialMaps, Mode=TwoWay}"
+                      ToolTip.Tip="Display material maps - render normal, specular and roughness maps on textures instead of plain diffuse artwork">
+          <Path Data="M4,12 A8,8 0 1 0 20,12 A8,8 0 1 0 4,12 Z M7.5,9.5 A3.5,3.5 0 0 1 11,7 M4.5,15 C8,13 16,13 19.5,15" />
+        </ToggleButton>
+      </StackPanel>
+    </Border>
+    <Grid Grid.Row="2">
+      <!-- Do not instantiate DockControl until the shell has a real layout. Dock's theme binds several
+           control properties through Layout itself; constructing it for the lightweight startup view
+           makes those valid compiled bindings report five null-path errors before bootstrap finishes. -->
+      <ContentControl Content="{Binding Layout}"
+                      Margin="4"
+                      IsEnabled="{Binding !IsModuleMutationLocked}"
+                      IsHitTestVisible="{Binding !IsActiveEditorBusy}">
+        <ContentControl.ContentTemplate>
+          <DataTemplate x:DataType="dockModel:IRootDock">
+            <DockControl Layout="{Binding}" />
+          </DataTemplate>
+        </ContentControl.ContentTemplate>
+      </ContentControl>
+      <!-- First-paint surface. App composes the lightweight shell on a worker and removes this before
+           slower game-data indexes finish; individual features continue loading behind the workspace. -->
+      <Border x:Name="StartupPanel"
+              Margin="4"
+              Background="{DynamicResource ChromeBrush}">
+        <StackPanel Width="420"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Spacing="12">
+          <TextBlock Text="Loading toolset data..."
+                     HorizontalAlignment="Center"
+                     FontSize="18"
+                     FontWeight="SemiBold" />
+          <ProgressBar x:Name="StartupProgress"
+                       Height="4"
+                       IsIndeterminate="True" />
+          <TextBlock x:Name="StartupStatus"
+                     Text="Opening the workspace. Game resources will continue loading in the background."
+                     TextAlignment="Center"
+                     TextWrapping="Wrap"
+                     Foreground="{DynamicResource InkSecondaryBrush}" />
+        </StackPanel>
+      </Border>
+    </Grid>
+    <!-- Status bar: monospace, because everything that lands here is a count, a path or a coordinate. -->
+    <Border Grid.Row="3"
+            Padding="12,5"
+            Background="{DynamicResource ChromeBrush}"
+            BorderBrush="{DynamicResource RuleBrush}"
+            BorderThickness="0,1,0,0">
+      <StackPanel Orientation="Horizontal" Spacing="10">
+        <TextBlock Text="&#x25CF;" FontSize="9" VerticalAlignment="Center"
+                   Foreground="{DynamicResource GreenBrush}" />
+        <TextBlock Text="{Binding StatusText, FallbackValue='Loading toolset data...'}"
+                   Classes="mono"
+                   TextTrimming="CharacterEllipsis" />
+        <TextBlock Text="{Binding StatusDetail}" Classes="mono"
+                   Foreground="{DynamicResource InkSecondaryBrush}"
+                   IsVisible="{Binding StatusDetail, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+      </StackPanel>
+    </Border>
+  </Grid>
+</Window>

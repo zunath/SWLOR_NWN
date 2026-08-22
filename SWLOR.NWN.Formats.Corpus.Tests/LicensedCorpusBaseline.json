@@ -1,0 +1,117 @@
+{
+    "schemaVersion":  2,
+    "swlorHaksGitlink":  "137474e5000682cf7c7d90ac7842f055eca04d91",
+    "formats":  {
+                    "keyBif":  {
+                                   "keys":  2,
+                                   "declaredBifs":  61,
+                                   "uniqueBifs":  61,
+                                   "available":  113582,
+                                   "requested":  1060,
+                                   "executed":  1060,
+                                   "failed":  0,
+                                   "skipped":  0,
+                                   "inputSha256":  "2b445d3976a32feddb63e9d02b92f3ebe9dd2f53a244b1dba0ddae3ffd0b5b0d",
+                                   "semanticSha256":  "3f0cb444346873aceadebd2fbb0d9e66ae70a57938b244aa03be09d6d6679a72"
+                               },
+                    "twoDa":  {
+                                  "available":  1364,
+                                  "requested":  1364,
+                                  "executed":  1364,
+                                  "failed":  0,
+                                  "skipped":  0,
+                                  "expectedInvalid":  1,
+                                  "inputSha256":  "1fe9e2f7100e13be4c4039cb08b3deb511009af3024f9aa27bc4cfe8a7067493",
+                                  "semanticSha256":  "db97bfdc3b61a54765193d93da1ca92c8cda0459a634347781ac8585ba4d2e82"
+                              },
+                    "tlk":  {
+                                "available":  2,
+                                "requested":  2,
+                                "executed":  2,
+                                "failed":  0,
+                                "skipped":  0,
+                                "entryCounts":  [
+                                                    112228,
+                                                    192752
+                                                ],
+                                "inputSha256":  "e4fe03e348412c88d579fac6a8f17516e416d9b47d57abb30e2a396b11ff1134",
+                                "semanticSha256":  "a2e70ffc3a5020bdfc04997e8352d549ca081afb3ed962f8ac4c79a3fe3b1f87"
+                            },
+                    "gffItp":  {
+                                   "available":  75,
+                                   "requested":  75,
+                                   "executed":  75,
+                                   "failed":  0,
+                                   "skipped":  0,
+                                   "inputSha256":  "02ea667911dd2a728fcfa09c40364efd4525c23e7cc0a8a0138eb19057cc93f4",
+                                   "semanticSha256":  "847bcee1bdd44687d2218cc2e2f2aa683771987bd81d8e1da096707bb4790457"
+                               },
+                    "tga":  {
+                                "availableLoose":  49789,
+                                "availableArchive":  28231,
+                                "requested":  600,
+                                "executed":  600,
+                                "failed":  0,
+                                "skipped":  0,
+                                "expectedInvalid":  0,
+                                "inputSha256":  "c20bf0cf3bb34537e8952c828e6c62a2795952b6a3b7cb500eda34c48a980be1",
+                                "semanticSha256":  "6f66c1b61ebd7d29f1e650416a163511b44ab7dfaea887c5f0edf85c5df0aedd"
+                            },
+                    "plt":  {
+                                "availableLoose":  7893,
+                                "availableArchive":  1565,
+                                "requested":  601,
+                                "executed":  601,
+                                "failed":  0,
+                                "skipped":  0,
+                                "expectedInvalid":  2,
+                                "inputSha256":  "f29e4282c525b469a335a4df7788be4b8034e7f868c6cb8da17217922726495b",
+                                "semanticSha256":  "075d66de07365455bcd9cfb3a9540571d9674ffd398c6359a43e1f569579ba13"
+                            },
+                    "binaryMdl":  {
+                                      "available":  25598,
+                                      "requested":  600,
+                                      "executed":  600,
+                                      "failed":  0,
+                                      "skipped":  0,
+                                      "meshes":  5246,
+                                      "skins":  16,
+                                      "emitters":  141,
+                                      "animations":  708,
+                                      "inputSha256":  "09ea2f95650b3753b9dc6fe897a96bc645fc9ab5a571bb5bf2695d4151404ab3",
+                                      "semanticSha256":  "863877106d1bdc61a477f74f2925908e2cb47550eedd75c24afcb11cf3e904ed"
+                                  },
+                    "asciiMdl":  {
+                                     "available":  16078,
+                                     "requested":  16078,
+                                     "executed":  16078,
+                                     "failed":  0,
+                                     "skipped":  0,
+                                     "meshes":  156949,
+                                     "skins":  5670,
+                                     "emitters":  8352,
+                                     "animations":  11150,
+                                     "semanticSample":  600,
+                                     "inputSha256":  "91c768ff82ddcc4d7311296d86b52b6f017ecdedda16ab968acdeed68933c100",
+                                     "semanticSha256":  "2c81db3200007f9be0165de87352f757026e9c11883ba59264c1bb3c90759f43"
+                                 },
+                    "moduleJson":  {
+                                       "available":  16414,
+                                       "requested":  16414,
+                                       "executed":  16414,
+                                       "failed":  0,
+                                       "skipped":  0,
+                                       "bytes":  856892466,
+                                       "inputSha256":  "713bd5fc0551f14ea44199889087914c5020e5cc4274d55c4ba9f769ac9a1da6"
+                                   },
+                    "mdlScope":  {
+                                     "available":  96005,
+                                     "requested":  96005,
+                                     "executed":  96005,
+                                     "failed":  0,
+                                     "skipped":  0,
+                                     "binary":  79927,
+                                     "ascii":  16078
+                                 }
+                }
+}

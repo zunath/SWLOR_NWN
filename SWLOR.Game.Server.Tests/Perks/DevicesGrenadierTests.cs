@@ -20,9 +20,9 @@ public class DevicesGrenadierTests
     [Test]
     public void GrenadeRadiusCalculation_UsesTenthsAsMeterFractions()
     {
-        DeviceAbilityEffects.CalculateGrenadeRadius(3f, 10).Should().Be(4f);
-        DeviceAbilityEffects.CalculateGrenadeRadius(3f, 20).Should().Be(5f);
-        DeviceAbilityEffects.CalculateGrenadeRadius(3f, 30).Should().Be(6f);
+        DeviceAbilityEffects.CalculateBlastRadius(3f, 10).Should().Be(4f);
+        DeviceAbilityEffects.CalculateBlastRadius(3f, 20).Should().Be(5f);
+        DeviceAbilityEffects.CalculateBlastRadius(3f, 30).Should().Be(6f);
     }
 
     [Test]
@@ -90,8 +90,8 @@ public class DevicesGrenadierTests
             3,
             5,
             FeatType.BlastRadiusTrait,
-            "Grenade abilities gain +1m blast radius.",
-            (StatType.GrenadeRadiusBonusTenths, 10));
+            "Grenade abilities, Remote Charge, and Overload Barrage gain +1m blast radius.",
+            (StatType.BlastRadiusBonusTenths, 10));
         AssertPerkLevel(
             perks[PerkType.BlastRadius],
             "Blast Radius",
@@ -99,8 +99,8 @@ public class DevicesGrenadierTests
             4,
             22,
             null,
-            "Grenade abilities gain +2m blast radius.",
-            (StatType.GrenadeRadiusBonusTenths, 20));
+            "Grenade abilities, Remote Charge, and Overload Barrage gain +2m blast radius.",
+            (StatType.BlastRadiusBonusTenths, 20));
         AssertPerkLevel(
             perks[PerkType.BlastRadius],
             "Blast Radius",
@@ -108,8 +108,8 @@ public class DevicesGrenadierTests
             5,
             45,
             null,
-            "Grenade abilities gain +3m blast radius, and Flash Grenade and Adhesive Grenade non-save effect strength increases by 5%.",
-            (StatType.GrenadeRadiusBonusTenths, 30),
+            "Grenade abilities, Remote Charge, and Overload Barrage gain +3m blast radius, and Flash Grenade and Adhesive Grenade non-save effect strength increases by 5%.",
+            (StatType.BlastRadiusBonusTenths, 30),
             (StatType.GrenadeControlPotencyBonus, 5));
 
         AssertPerkLevel(
@@ -127,7 +127,7 @@ public class DevicesGrenadierTests
             4,
             25,
             FeatType.AdhesiveGrenade1,
-            "Slows enemies in a 4m blast for 30 seconds and immobilizes them for 30 seconds. Affects up to 5 targets. Consumes explosives.");
+            "Slows enemies in a 4m blast for 6 seconds. Affects up to 3 targets. Consumes explosives.");
         AssertPerkLevel(
             perks[PerkType.AdhesiveGrenade],
             "Adhesive Grenade",
@@ -135,7 +135,7 @@ public class DevicesGrenadierTests
             4,
             42,
             FeatType.AdhesiveGrenade2,
-            "Slows enemies in a 4m blast for 30 seconds and immobilizes them for 30 seconds. Affects up to 5 targets. Consumes explosives.");
+            "Slows enemies in a 4m blast for 12 seconds. Affects up to 5 targets. Consumes explosives.");
         AssertPerkLevel(
             perks[PerkType.ClusterGrenade],
             "Cluster Grenade",
@@ -237,15 +237,20 @@ public class DevicesGrenadierTests
         flashGrenade.Should().Contain("areaVisualEffect: VisualEffect.None");
 
         adhesiveGrenade.Should().Contain("EffectVisualEffect(VisualEffect.Vfx_Fnf_Gas_Explosion_Grease)");
-        adhesiveGrenade.Should().Contain("DeviceAbilityEffects.ApplyGrenadeRadiusBonus(activator, 4f)");
+        adhesiveGrenade.Should().Contain("DeviceAbilityEffects.ApplyBlastRadiusBonus(activator, 4f)");
         adhesiveGrenade.Should().NotContain("centerOnActivator: !GetIsObjectValid(target)");
 
         ionGrenade.Should().Contain("while (GetIsObjectValid(creature))");
         ionGrenade.Should().Contain("Ability.ApplyCombatImpact(");
         ionGrenade.Should().Contain("damageType: CombatDamageType.Electrical");
+        ionGrenade.Should().Contain("damagePercentAdjustment: impactedTarget => IsDroid(impactedTarget) ? droidBonusPercent : 0");
+        ionGrenade.Should().Contain("racialType == RacialType.Droid");
+        ionGrenade.Should().Contain("racialType == RacialType.Construct");
+        ionGrenade.Should().Contain("racialType == RacialType.Robot");
+        ionGrenade.Should().NotContain("GameMath.PercentOf(baseDamage, droidBonusPercent)");
 
         concussionGrenade.Should().Contain("Ability.ApplyTelegraphedCombatImpact(");
-        concussionGrenade.Should().Contain("DeviceAbilityEffects.ApplyGrenadeRadiusBonus(activator, 3f)");
+        concussionGrenade.Should().Contain("DeviceAbilityEffects.ApplyBlastRadiusBonus(activator, 3f)");
         concussionGrenade.Should().Contain("damageType: CombatDamageType.Electrical");
 
         clusterGrenade.Should().Contain("for (var grenadeIndex = 0; grenadeIndex < GrenadeCount; grenadeIndex++)");
@@ -259,8 +264,8 @@ public class DevicesGrenadierTests
         clusterGrenade.Should().Contain("damageType: CombatDamageType.Fire");
 
         disruptionPulse.Should().Contain("var impactLocation = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);");
-        disruptionPulse.Should().Contain("DeviceAbilityEffects.ApplyGrenadeRadiusBonus");
-        disruptionPulse.Should().Contain("var radius = DeviceAbilityEffects.ApplyGrenadeRadiusBonus(activator, RadiusMeters);");
+        disruptionPulse.Should().Contain("DeviceAbilityEffects.ApplyBlastRadiusBonus");
+        disruptionPulse.Should().Contain("var radius = DeviceAbilityEffects.ApplyBlastRadiusBonus(activator, RadiusMeters);");
         disruptionPulse.Should().Contain("areaVisualEffect: VisualEffect.Vfx_Fnf_Electric_Explosion");
         disruptionPulse.Should().Contain("alwaysApplyAreaVisualEffect: true");
         disruptionPulse.Should().Contain("afterImpactAction: _ => DeviceAbilityEffects.ApplyDiagnosticSweep(activator, impactLocation, radius)");
@@ -374,7 +379,7 @@ public class DevicesGrenadierTests
         targeting.SizeResolver.Should().NotBeNull();
         Assert.That(
             targeting.SizeResolver.Method,
-            Is.EqualTo(((AbilityTargetingSizeResolver)DeviceAbilityEffects.ApplyGrenadeRadiusBonus).Method));
+            Is.EqualTo(((AbilityTargetingSizeResolver)DeviceAbilityEffects.ApplyBlastRadiusBonus).Method));
     }
 
     private static void AssertSkillRequirement(PerkLevel level, SkillType skill, int rank)

@@ -79,12 +79,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .UsesAnimation(Animation.CastOutAnimation)
                 .HasRecastDelay(RecastGroup.PowerCell, 30f)
                 .SkillType(SkillType.Devices)
+                .HasMaxRange(DeviceAbilityRange.Standard)
                 .IsAreaAbility()
+                .RequiresTarget()
+                .HasCustomValidation((activator, target, _, _) =>
+                    AbilityTargeting.ValidateFriendlyTarget(activator, target))
                 .HasImpactAction(PowerCell3ImpactAction)
                 .HasTargetingSphere(
                     Spell.PowerCell3,
                     5f,
-                    AbilityTargetingFlags.HelpsAllies | AbilityTargetingFlags.OriginOnSelf)
+                    AbilityTargetingFlags.HelpsAllies)
                 .IsCastedAbility()
                 .BreaksStealth()
                 .RequirementStamina(7);
@@ -119,7 +123,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         private static void PowerCell3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var isInitialTarget = true;
-            foreach (var friendly in GetPowerCell3Targets(activator, target))
+            foreach (var friendly in GetPowerCell3Targets(activator, target, targetLocation))
             {
                 Stat.RestoreStamina(friendly, GameMath.PercentOf(Stat.GetMaxStamina(friendly), 18));
                 StatusEffect.ApplyStatusEffect(activator, friendly, typeof(PowerCell3StatusEffect), 30f);
@@ -129,7 +133,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             }
         }
 
-        private static IEnumerable<uint> GetPowerCell3Targets(uint activator, uint target)
+        private static IEnumerable<uint> GetPowerCell3Targets(uint activator, uint target, Location targetLocation)
         {
             var seen = new HashSet<uint>();
             var selected = AbilityTargeting.ResolveFriendlyTarget(activator, target);
@@ -141,7 +145,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 yield return selected;
             }
 
-            foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, activator, true))
+            foreach (var friendly in AbilityTargeting.GetFriendlyTargetsNearLocation(
+                         activator,
+                         targetLocation,
+                         5f))
             {
                 if (seen.Add(friendly))
                     yield return friendly;

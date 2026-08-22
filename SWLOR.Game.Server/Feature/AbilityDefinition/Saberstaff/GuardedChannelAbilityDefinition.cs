@@ -45,7 +45,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 {
                     SelfDefensePercent = 10,
                     SelfStatResourceAboveThresholdPercent = 40,
-                    SelfStatDurationSeconds = 30
+                    SelfStatDurationSeconds = 30,
+                    SelfStatusEffectFactory = () => new GuardedChannelStatusEffect(10)
                 });
 
             ConfigureGeneratedWeaponAbility(
@@ -76,7 +77,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 {
                     SelfDefensePercent = 15,
                     SelfStatResourceAboveThresholdPercent = 40,
-                    SelfStatDurationSeconds = 30
+                    SelfStatDurationSeconds = 30,
+                    SelfStatusEffectFactory = () => new GuardedChannelStatusEffect(15)
                 });
 
             ConfigureGeneratedWeaponAbility(
@@ -107,7 +109,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 {
                     SelfDefensePercent = 20,
                     SelfStatResourceAboveThresholdPercent = 40,
-                    SelfStatDurationSeconds = 30
+                    SelfStatDurationSeconds = 30,
+                    SelfStatusEffectFactory = () => new GuardedChannelStatusEffect(20)
                 });
 
             return builder.Build();

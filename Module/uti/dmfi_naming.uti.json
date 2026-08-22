@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Allows you to change the name and description of a creature, door, item, or placeable. Also allows you to change the deity of a player.\n\n~~\nBy tsunami282"
     }
   },
   "Identified": {

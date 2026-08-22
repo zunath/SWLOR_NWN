@@ -32,7 +32,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A drink that resembles a reactor core if you look down into the drink. It's quite better but goes down easy."
+    }
   },
   "Identified": {
     "type": "byte",

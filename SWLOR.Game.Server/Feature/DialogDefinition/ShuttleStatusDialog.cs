@@ -1,15 +1,15 @@
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DialogService;
+using SWLOR.Game.Server.Service.ConversationService;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
-    public class ShuttleStatusDialog: DialogBase
+    public class ShuttleStatusDialog: ConversationMenuDefinition
     {
         private const string MainPageId = "MAIN_PAGE";
 
-        public override PlayerDialog SetUp(uint player)
+        public override ConversationMenuSpec Build()
         {
-            var builder = new DialogBuilder()
+            var builder = new ConversationMenuBuilder()
                 .AddPage(MainPageId, MainPageInit);
 
             return builder.Build();
@@ -18,9 +18,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         /// <summary>
         /// Renders the shuttle's destination and remaining arrival time from the console.
         /// </summary>
-        private void MainPageInit(DialogPage page)
+        private void MainPageInit(ConversationMenuPage page)
         {
-            var console = GetDialogTarget();
+            var console = Owner;
 
             if (!Shuttle.TryGetFlightInfo(console, out var destination, out var arrivalUtc))
             {
@@ -34,13 +34,15 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 ? "momentarily"
                 : Time.GetTimeShortIntervals(remaining, false);
 
-            page.Header = ColorToken.Cyan("Destination: ") + destinationName + "\n" +
-                          ColorToken.Cyan("Arriving in: ") + countdown;
+            page.Header = BuildStatusHeader(destinationName, countdown);
 
             page.AddResponse("Refresh", () =>
             {
-                ChangePage(MainPageId, false);
+                GoToPage(MainPageId, false);
             });
         }
+
+        private static string BuildStatusHeader(string destinationName, string countdown) =>
+            ColorToken.Cyan($"Destination: {destinationName}\nArriving in: {countdown}");
     }
 }

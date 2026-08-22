@@ -1,6 +1,6 @@
 # Combat Upgrade Implementation Plan
 
-Last reviewed against the Combat Upgrade Bible on 2026-07-19.
+Last reviewed against the Combat Upgrade Bible on 2026-08-17.
 
 ## Source Of Truth
 
@@ -19,6 +19,10 @@ Current Bible `General` perks use Armor skill requirements because Armor is the 
 Do not carry over the Heavy Armor activation-time penalty. That mechanic was removed from the plan and should be ignored even if it appears in experimental branches or partial local carryover.
 
 Do not carry over the refactor-project branch as part of this plan.
+
+## Current Status
+
+The scoped static implementation phases in this document are complete: Bible rows, generated perk/ability code, stat consumers, feat/spell/TLK/icon/recast wiring, hotbar cooldown visuals, telegraph infrastructure, and migration entry points are implemented with no current scoped audit findings. The phase descriptions below remain as architecture and acceptance-criteria reference; they are not an open implementation queue. Use `CombatUpgradeImplementationStatus.md` for the current mechanic status and `CapstoneQuestLinePlan.md` for the remaining eight world-content packages.
 
 ## Tabs Reviewed
 
@@ -323,12 +327,12 @@ Apply haks changes only where required by the Bible:
 - TLK strings
 - shader/telegraph support assets
 - item and equipment 2DAs
-- Investigate hotbar cooldown readiness feedback:
-  - Asset approach: generate greyscale/progress variants for every ability icon, such as `pr0_` through `pr5_` TGA outputs, using ImageMagick overlays or a repo-managed equivalent script.
-  - Runtime approach: use `SetTextureOverride()` per player to swap hotbar icon textures between cooldown/progress variants and the normal icon, likely from a timer around every 0.5 seconds.
-  - Open questions: performance impact of frequent texture overrides, whether this belongs in the background worker or another scheduled server path, and the best automation path for newly added icons.
+- Hotbar cooldown readiness feedback is implemented:
+  - `tools/GenerateCooldownIcons.ps1` generates the standardized `pr0_` through `pr5_` cooldown variants from every source ability icon with ImageMagick.
+  - `AbilityCooldownVisual` applies and clears per-player texture overrides through `SetTextureOverride()` as recast state changes, including login restoration and DM cooldown resets.
+  - `AbilityCooldownVisualTests` and the gameplay icon audit cover cooldown-stage selection, resource naming, and generated-asset availability. New or changed ability icons must regenerate the cooldown variants through the standard icon workflow.
 
-The restored shader should remain only if the telegraph implementation still depends on it and it validates in game.
+Telegraph support is implemented through `Ability.ApplyTelegraphedCombatImpact`, shared weapon-area handling, and ability-specific integrations. The shader/support assets remain production dependencies while those integrations use them; only bespoke behavior and live presentation remain validation concerns.
 
 ### Phase 7: Verification
 
@@ -345,7 +349,7 @@ Before release:
 - Smoke-test Force, Devices, Leadership, First Aid, Beast Mastery, Mimicry, and Espionage, including the curated cross-skill danger profiles.
 - Run `CrossSkillPerkInteractionSafetyTests` and the active-context 400 SP support frontier so recursive procs, transfers, resource conversion, cooldown resets, and compound profiles remain statically bounded.
 
-## Current Known Local Follow-Up
+## Resolved Local Follow-Up
 
 The feature branch previously contained partial Heavy Armor activation-time penalty carryover:
 
@@ -362,8 +366,8 @@ Status: removed from the feature branch implementation on 2026-05-05.
 - `CombatUpgradePerkAudit.csv` compares Bible perk rows against current perk definitions by normalized perk name.
 - `CombatUpgradeBiblePerkManifest.csv` is the exported perk-row manifest from all audited Bible tabs with perk tables.
 - Current local-workbook audit summary from the checked-in workbook snapshot. The current manifest includes current Bible General rows that use Armor requirements, but excludes stale Heavy/Light Armor perk-tree rows from required-work totals:
-  - Manifest rows: 1003
-  - Scoped implemented rows: 998
+  - Manifest rows: 1004
+  - Scoped implemented rows: 999
   - Intentionally skipped unimplemented, first-iteration-out-of-scope Agriculture rows: 5
   - Scoped audit findings: 0
   - Missing Bible perk names in code: 0
@@ -390,7 +394,7 @@ Implemented cleanup so far:
 - Routed Marked for Death bonus damage through the shared triggered-damage path while preserving recursion protection.
 - Added static cross-skill feedback-loop coverage and an active-context 400 SP support frontier, with curated poison/trap/Mimicry, stealth, resource, sustain, reflection/deflection, and control profiles.
 
-Additional follow-up:
+Release-validation follow-up:
 
 - Droid instruction disc availability is covered by `CombatUpgradeBibleSyncTests.DroidInstructionResources_MatchCurrentRecipeDefinitionsAndMigration`. Retained or replacement disc availability still needs a release smoke test in game.
 - Migration entry points and storage-surface coverage are guarded by `CombatUpgradeMigrationCoverageTests`, including forced rebuild flagging, live player migrations, stored serialized items, constructed droids, and ship/module serialized items.

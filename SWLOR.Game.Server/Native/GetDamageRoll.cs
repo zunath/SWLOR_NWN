@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Native
                 var damageFlags = attackerStats.m_pBaseCreature.GetDamageFlags();
                 var pCombatRound = attacker.m_pcCombatRound;
                 var pAttackData = pCombatRound.GetAttack(pCombatRound.m_nCurrentAttack);
-                var weapon = pCombatRound.GetCurrentAttackWeapon();
+                var weapon = pCombatRound.GetCurrentAttackWeapon(bOffHand);
 
                 var attackType = attacker.GetRangeWeaponEquipped() == 1 ? (uint)AttackType.Ranged : (uint)AttackType.Melee;
 
@@ -96,16 +96,19 @@ namespace SWLOR.Game.Server.Native
                 LogAttackInfo(attacker, defender, attackType, weapon);
 
                 // Extract weapon damage properties and get ability stats
-                var damageProfile = ExtractAttackDamageProfile(attacker, weapon);
-
-                // Imbuement Stance converts the wearer's hostile weapon auto-attacks to Force damage for an FP cost.
-                damageProfile = ApplyForceConversionStance(attacker, defender, damageProfile);
-
-                var attackerStatType = GetWeaponDamageAbilityType(attacker.m_idSelf, weapon);
-                var weaponDeltaCap = GetWeaponDeltaCap(weapon);
+                // ResolveAttack already emits distinct main-hand and off-hand rolls. Keep the
+                // damage profile tied to that roll's current weapon so an elemental weapon cannot
+                // re-type or absorb the other hand's DMG.
+                var damageProfile = ExtractWeaponDamageProfile(weapon);
                 var weaponSkillType = weapon == null
                     ? SkillType.Invalid
                     : SWLOR.Game.Server.Service.Skill.GetSkillTypeByBaseItem((BaseItem)weapon.m_nBaseItem);
+
+                // Imbuement Stance converts the wearer's hostile weapon auto-attacks to Force damage for an FP cost.
+                damageProfile = ApplyForceConversionStance(attacker, defender, damageProfile, weaponSkillType);
+
+                var attackerStatType = GetWeaponDamageAbilityType(attacker.m_idSelf, weapon);
+                var weaponDeltaCap = GetWeaponDeltaCap(weapon);
 
                 var attackerStat = Stat.GetStatValueNative(attacker, attackerStatType);
 
@@ -139,17 +142,21 @@ namespace SWLOR.Game.Server.Native
                     out totalDamage,
                     out var effectiveCritical);
 
-                if (totalDamage > 0)
+                if (isLandedAttack)
                 {
                     using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(attacker.m_idSelf);
 
                     if (defender.m_nObjectType == (int)ObjectType.Creature)
                     {
-                        Combat.SendTemporaryHitPointDamageFeedback(attacker.m_idSelf, defender.m_idSelf, totalDamage);
+                        if (totalDamage > 0)
+                        {
+                            Combat.SendTemporaryHitPointDamageFeedback(attacker.m_idSelf, defender.m_idSelf, totalDamage);
+                        }
+
                         Combat.ApplyCriticalHitEffects(attacker.m_idSelf, defender.m_idSelf, totalDamage, effectiveCritical, true, weaponSkillType);
                     }
 
-                    if (defender.m_bPlotObject == 0)
+                    if (totalDamage > 0 && defender.m_bPlotObject == 0)
                     {
                         var weaponId = weapon?.m_idSelf ?? OBJECT_INVALID;
                         PublishDamageDealtEvent(attacker.m_idSelf, defender.m_idSelf, weaponId, totalDamage, weaponSkillType, damageProfile.DamageType);
@@ -214,7 +221,7 @@ namespace SWLOR.Game.Server.Native
             totalDamage = 0;
 
             if (targetObject.m_nObjectType == (int)ObjectType.Creature &&
-                UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf))
+                UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, skillType))
             {
                 Combat.ConsumeSuppressedAutoAttackDamageBonuses(attacker.m_idSelf, skillType);
                 return physicalDamage;
@@ -232,7 +239,7 @@ namespace SWLOR.Game.Server.Native
             if (damage < 0)
                 damage = 0;
 
-            if (damage > 0 && targetObject.m_nObjectType == (int)ObjectType.Creature)
+            if (isLandedAttack && damage > 0 && targetObject.m_nObjectType == (int)ObjectType.Creature)
             {
                 Combat.ApplyDamageReflectionEffects(
                     attacker.m_idSelf,
@@ -263,24 +270,14 @@ namespace SWLOR.Game.Server.Native
             attackData.AddDamage((ushort)damageType.GetNativeDamageType(), damage);
         }
 
-        private static WeaponDamageProfile ExtractAttackDamageProfile(CNWSCreature attacker, CNWSItem currentWeapon)
-        {
-            var rightHand = attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.RightHand);
-            var leftHand = attacker.m_pInventory.GetItemInSlot((uint)EquipmentSlot.LeftHand);
-
-            if (HasDelayProperty(rightHand) && HasDelayProperty(leftHand))
-            {
-                return ExtractWeaponDamageProfile(rightHand, leftHand);
-            }
-
-            return ExtractWeaponDamageProfile(currentWeapon);
-        }
-
         // While Imbuement Stance is active, the wearer's hostile weapon auto-attacks deal Force damage instead of
         // their normal type and cost FP per swing. This only affects real auto-attacks against creatures; queued
         // weapon abilities apply their own damage and are excluded so they are neither converted nor charged.
         private static WeaponDamageProfile ApplyForceConversionStance(
-            CNWSCreature attacker, CNWSObject defender, WeaponDamageProfile damageProfile)
+            CNWSCreature attacker,
+            CNWSObject defender,
+            WeaponDamageProfile damageProfile,
+            SkillType weaponSkillType)
         {
             if (defender.m_nObjectType != (int)ObjectType.Creature)
                 return damageProfile;
@@ -294,7 +291,7 @@ namespace SWLOR.Game.Server.Native
                 return damageProfile;
 
             // Weapon abilities apply their own combat impact and suppress the auto-attack; do not convert/charge them.
-            if (UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf))
+            if (UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType))
                 return damageProfile;
 
             var fpCost = Stat.GetStatAdjustment(attacker.m_idSelf, StatType.StanceHostileAutoAttackFPCost);
@@ -310,18 +307,14 @@ namespace SWLOR.Game.Server.Native
             return new WeaponDamageProfile(CombatDamageType.Force, damageProfile.Damage);
         }
 
-        private static WeaponDamageProfile ExtractWeaponDamageProfile(params CNWSItem[] weapons)
+        private static WeaponDamageProfile ExtractWeaponDamageProfile(CNWSItem weapon)
         {
             var damageType = CombatDamageType.Physical;
             var damage = 0;
-            var foundDMG = false;
+            var hasDamageProperty = false;
 
-            foreach (var weapon in weapons)
+            if (weapon != null)
             {
-                if (weapon == null)
-                    continue;
-
-                var foundWeaponDMG = false;
                 for (var index = 0; index < weapon.m_lstPassiveProperties.Count; index++)
                 {
                     var ip = weapon.GetPassiveProperty(index);
@@ -331,58 +324,23 @@ namespace SWLOR.Game.Server.Native
                     if (ip.m_nPropertyName == (ushort)ItemPropertyType.DMG)
                     {
                         damage += ip.m_nCostTableValue;
-                        foundWeaponDMG = true;
-                        foundDMG = true;
+                        hasDamageProperty = true;
                     }
                     else if (ip.m_nPropertyName == (ushort)ItemPropertyType.WeaponDamageType)
                     {
                         damageType = ResolveWeaponDamageType(damageType, ip.m_nSubType);
                     }
                 }
-
-                if (!foundWeaponDMG && IsWeapon(weapon))
-                {
-                    damage += DefaultPhysicalDamage;
-                    foundDMG = true;
-                }
             }
 
-            if (!foundDMG)
+            // A damage type only selects the type of a real DMG property. Items without DMG use
+            // the unarmed/default physical fallback instead of manufacturing elemental damage.
+            if (!hasDamageProperty)
             {
                 return new WeaponDamageProfile(CombatDamageType.Physical, DefaultPhysicalDamage);
             }
 
             return new WeaponDamageProfile(damageType, damage);
-        }
-
-        private static bool HasDelayProperty(CNWSItem weapon)
-        {
-            if (!IsWeapon(weapon))
-                return false;
-
-            for (var index = 0; index < weapon.m_lstPassiveProperties.Count; index++)
-            {
-                var ip = weapon.GetPassiveProperty(index);
-                if (ip?.m_nPropertyName == (ushort)ItemPropertyType.Delay)
-                    return true;
-            }
-
-            return false;
-        }
-
-        private static bool IsWeapon(CNWSItem item)
-        {
-            if (item == null)
-                return false;
-
-            var baseItem = (BaseItem)item.m_nBaseItem;
-            foreach (var weaponType in Item.WeaponBaseItemTypes)
-            {
-                if (weaponType == baseItem)
-                    return true;
-            }
-
-            return false;
         }
 
         private static CombatDamageType ResolveWeaponDamageType(CombatDamageType current, int damageTypeId)
@@ -540,11 +498,23 @@ namespace SWLOR.Game.Server.Native
                     target.m_idSelf,
                     Stat.GetDefenseNative(target, CombatDamageType.Force, CombatDamageType.Force.GetDefenseAbilityType())));
             defense = Combat.ApplyRangedAttackDefenseIgnore(attacker.m_idSelf, defense, skillType);
-            var guardedHitBonuses = Combat.ConsumeNextAttackGuardedHitAutoAttackBonuses(attacker.m_idSelf);
+            // Discarded swings must not burn one-shot buffs or advance cycle counters — the engine
+            // rolls damage for attacks it then throws away, so every consuming rider gates on the
+            // attack having actually landed.
+            var guardedHitBonuses = isLandedAttack
+                ? Combat.ConsumeNextAttackGuardedHitAutoAttackBonuses(attacker.m_idSelf)
+                : default;
+            var statusAppliedNextAttackDamageBonus = isLandedAttack
+                ? Combat.ConsumeStatusAppliedNextAttackDamageBonus(attacker.m_idSelf)
+                : 0;
+            var cycleDamageBonus = isLandedAttack
+                ? Combat.ConsumeAutoAttackCycleDamageBonus(attacker.m_idSelf, skillType)
+                : 0;
             var attackDamage = damageProfile.Damage +
                                Combat.GetRangedAttackDamageFlatAdjustment(attacker.m_idSelf, skillType) +
-                               Combat.ConsumeAutoAttackCycleDamageBonus(attacker.m_idSelf, skillType) +
-                               guardedHitBonuses.DMGBonus;
+                               cycleDamageBonus +
+                               guardedHitBonuses.DMGBonus +
+                               statusAppliedNextAttackDamageBonus;
 
             Log.Write(LogGroup.Attack, $"DAMAGE: attacker damage attribute: {damageProfile.Damage} defender defense attribute: {defense}, defender racial type {target.m_pStats.m_nRace}");
 
@@ -568,9 +538,17 @@ namespace SWLOR.Game.Server.Native
 
             damage = Combat.ApplyCriticalDamageModifier(attacker.m_idSelf, damage, effectiveCritical, skillType, target.m_idSelf);
 
-            damage = Combat.ApplyAutoAttackDamageModifiers(attacker.m_idSelf, target.m_idSelf, damage, skillType);
+            if (isLandedAttack)
+            {
+                damage = Combat.ApplyAutoAttackDamageModifiers(attacker.m_idSelf, target.m_idSelf, damage, skillType);
+            }
             damage = Combat.ApplySideAttackDamageModifier(attacker.m_idSelf, target.m_idSelf, skillType, damage);
-            damage = Combat.ApplyBackAttackDamageModifier(attacker.m_idSelf, target.m_idSelf, skillType, damage);
+            if (isLandedAttack)
+            {
+                // Unlike its pure side-attack sibling, the back-attack modifier also consumes
+                // Ghost Protocol's primed Exposed rider - a discarded swing must not burn it.
+                damage = Combat.ApplyBackAttackDamageModifier(attacker.m_idSelf, target.m_idSelf, skillType, damage);
+            }
 
             var canApplyRandomFlatBonusesThisDamage = damage > 0;
 
@@ -582,11 +560,18 @@ namespace SWLOR.Game.Server.Native
                 damageType,
                 false,
                 canApplyRandomFlatBonusesThisDamage,
+                isLandedAttack,
                 out var damageBeforeTargetStatusStage);
 
             // Saber Ward / Aegis Eternal: re-type a share of the physical hit into a real Force
             // instance (mitigated by Force resistance, shown as Force) before physical resistance.
-            Combat.ApplyIncomingPhysicalToForceConversion(attacker.m_idSelf, target.m_idSelf, damageType, ref damage);
+            if (isLandedAttack)
+            {
+                Combat.ApplyIncomingPhysicalToForceConversion(attacker.m_idSelf, target.m_idSelf, damageType, ref damage);
+            }
+
+            // Conversion must split first so each portion receives only its own typed Leadership channel.
+            damage = Combat.ApplyTypedLeadershipDamageTakenModifier(target.m_idSelf, damage, damageType);
 
             damage = Resistance.ApplyResistanceToDamageNative(target, damageType, damage);
 
@@ -613,7 +598,7 @@ namespace SWLOR.Game.Server.Native
                 damage,
                 damageType,
                 isLandedAttack);
-            if (damage > 0 && attackType == (uint)AttackType.Melee)
+            if (isLandedAttack && damage > 0 && attackType == (uint)AttackType.Melee)
             {
                 Combat.ApplyMeleeDamageTakenEffects(target.m_idSelf, attacker.m_idSelf);
             }
@@ -623,11 +608,16 @@ namespace SWLOR.Game.Server.Native
                 damage,
                 attacker.m_idSelf,
                 damageType,
-                preTargetStatusStageDamage: damageBeforeTargetStatusStage);
-            Combat.ApplyNextAttackGuardedHitEnmityBonus(
-                attacker.m_idSelf,
-                target.m_idSelf,
-                guardedHitBonuses.EnmityBonus);
+                preTargetStatusStageDamage: damageBeforeTargetStatusStage,
+                isLandedAttack: isLandedAttack,
+                typedLeadershipReductionAlreadyApplied: true);
+            if (isLandedAttack)
+            {
+                Combat.ApplyNextAttackGuardedHitEnmityBonus(
+                    attacker.m_idSelf,
+                    target.m_idSelf,
+                    guardedHitBonuses.EnmityBonus);
+            }
             return damage;
         }
 

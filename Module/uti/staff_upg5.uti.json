@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "This kit upgrades a saberstaff from tier 4 to tier 5. The saberstaff must be unequipped."
     }
   },
   "Identified": {

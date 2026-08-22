@@ -326,6 +326,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .IsHostileAbility()
                 .RequirementStamina(stamina);
 
+            // The AI only selects a targeted area ability when it has an enemy in hand, so the NPC
+            // original requires a target. The player-facing technique clears this in
+            // MimicryTechnique() - its cursor-aimed line/cone/placed area must allow empty-ground
+            // casts.
             if (!centerOnActivator)
             {
                 ability.RequiresTarget();

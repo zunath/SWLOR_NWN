@@ -3026,7 +3026,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -12803,7 +12803,8 @@
           "type": "float",
           "value": -2.384185791015625e-007
         }
-      },{
+      },
+      {
         "__struct_id": 9,
         "AnimationState": {
           "type": "byte",
@@ -13039,7 +13040,7 @@
         },
         "X": {
           "type": "float",
-          "value": 28.34728507995606
+          "value": 28.3472843170166
         },
         "Y": {
           "type": "float",

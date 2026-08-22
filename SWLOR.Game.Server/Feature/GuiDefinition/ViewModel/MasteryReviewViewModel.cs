@@ -37,6 +37,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const string ReviewQueuePartial = "mastery_review_queue";
         public const string CatalogManagePartial = "mastery_review_catalog";
 
+        private const int ReviewQueueTabId = 0;
+        private const int CatalogManageTabId = 1;
         private const int PageSize = 8;
         private const int CatalogPageSize = 10;
 
@@ -57,22 +59,32 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         /// </summary>
         private bool _isEditingNewDraft;
 
-        private string _currentPartial = ReviewQueuePartial;
+        private static readonly GuiTabGroup<MasteryReviewViewModel, GuiPayloadBase> Tabs =
+            new GuiTabGroup<MasteryReviewViewModel, GuiPayloadBase>()
+                .AddTab(ReviewQueueTabId, ReviewQueuePartial, model => model.LoadReviewQueueTab())
+                .AddTab(CatalogManageTabId, CatalogManagePartial, model => model.LoadCatalogManageTab());
+
+        private static readonly GuiToggleGroupSync TabToggles =
+            new(ReviewQueueTabId, CatalogManageTabId);
 
         // ---------------------------------------------------------------
         // Tabs
         // ---------------------------------------------------------------
 
-        public bool IsReviewQueueTabToggled
+        public int SelectedTabId
         {
-            get => Get<bool>();
+            get => Get<int>();
             set => Set(value);
         }
 
-        public bool IsCatalogTabToggled
+        public int TabToggleValue
         {
-            get => Get<bool>();
-            set => Set(value);
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                TabToggles.HandleClientChange(value, SelectTab);
+            }
         }
 
         // ---------------------------------------------------------------
@@ -359,10 +371,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CatalogEditName = string.Empty;
             CatalogEditDescription = string.Empty;
             CatalogStatusText = string.Empty;
+            TabToggleValue = ReviewQueueTabId;
 
             LoadSkillOptions();
-            ShowReviewQueue();
 
+            WatchOnClient(model => model.TabToggleValue);
             WatchOnClient(model => model.SearchText);
             WatchOnClient(model => model.SelectedStatusFilterId);
             WatchOnClient(model => model.ReplyText);
@@ -378,11 +391,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.CatalogEditRarityId);
             WatchOnClient(model => model.CatalogEditSkillId);
             WatchOnClient(model => model.CatalogEditIsActive);
+
+            SelectTab(ReviewQueueTabId);
         }
 
         protected override void OnClientPropertyUpdated(string propertyName)
         {
-            if (_currentPartial == ReviewQueuePartial)
+            if (SelectedTabId == ReviewQueueTabId)
             {
                 if (propertyName == nameof(SearchText) || propertyName == nameof(SelectedStatusFilterId))
                 {
@@ -394,7 +409,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     RefreshDecisionDuration();
                 }
             }
-            else if (_currentPartial == CatalogManagePartial)
+            else if (SelectedTabId == CatalogManageTabId)
             {
                 if (propertyName == nameof(CatalogSearchText) || propertyName == nameof(CatalogSelectedCategoryId))
                 {
@@ -404,47 +419,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         }
 
-        /// <summary>
-        /// A ShowModal confirmation (Approve/Deny) restores the window's static main
-        /// template, which resets the tab-content placeholder. Reapply whichever tab was
-        /// actually active - see MasteriesViewModel.OnMainViewRestored for the same fix.
-        /// </summary>
-        protected override void OnMainViewRestored()
-        {
-            ChangePartialView(ContentPartialElement, _currentPartial);
-        }
+        protected override void OnModalClosedRestore() =>
+            Tabs.Select(this, ContentPartialElement, SelectedTabId);
 
         // ---------------------------------------------------------------
         // Tab switching
         // ---------------------------------------------------------------
 
-        private void ShowReviewQueue()
+        private void SelectTab(int tabId)
         {
-            IsReviewQueueTabToggled = true;
-            IsCatalogTabToggled = false;
+            SelectedTabId = tabId;
+            TabToggles.SyncTo(tabId, value => TabToggleValue = value);
+            Tabs.Select(this, ContentPartialElement, tabId);
+        }
 
-            _currentPartial = ReviewQueuePartial;
-            ChangePartialView(ContentPartialElement, _currentPartial);
-
+        private void LoadReviewQueueTab()
+        {
             _page = 0;
             LoadQueue();
         }
 
-        private void ShowCatalogManage()
+        private void LoadCatalogManageTab()
         {
-            IsReviewQueueTabToggled = false;
-            IsCatalogTabToggled = true;
-
-            _currentPartial = CatalogManagePartial;
-            ChangePartialView(ContentPartialElement, _currentPartial);
-
             _catalogPage = 0;
             LoadCatalogManage();
         }
-
-        public Action OnClickReviewQueueTab() => ShowReviewQueue;
-
-        public Action OnClickCatalogManageTab() => ShowCatalogManage;
 
         // ---------------------------------------------------------------
         // Review queue - list

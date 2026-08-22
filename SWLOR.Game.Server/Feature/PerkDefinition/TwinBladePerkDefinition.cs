@@ -212,7 +212,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.EdgeRhythmTrait)
                 .Description("Every third auto-attack deals +15 DMG to one enemy within 5m.")
-                .IncreasesStat(StatType.AutoAttackCycleDamageSkillType, (int)SkillType.TwinBlade)
                 .IncreasesStat(StatType.AutoAttackCycleRequiredCount, 3)
                 .IncreasesStat(StatType.AutoAttackCycleDamage, 15)
                 .IncreasesStat(StatType.AutoAttackCycleRadiusMeters, 5)
@@ -385,8 +384,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SanguineTempoTrait)
                 .Description("Attacking a bleeding target restores 1 STM. This can trigger once every 4 seconds.")
-                .IncreasesStat(StatType.DamageDealtBleedingTargetStaminaRestoreChance, 100)
-                .IncreasesStat(StatType.DamageDealtBleedingTargetStaminaRestore, 1)
+                .IncreasesStat(StatType.SkillDamageBleedingTargetStaminaRestoreSkillType, (int)SkillType.TwinBlade)
+                .IncreasesStat(StatType.SkillDamageBleedingTargetStaminaRestoreChance, 100)
+                .IncreasesStat(StatType.SkillDamageBleedingTargetStaminaRestore, 1)
+                .IncreasesStat(StatType.SkillDamageBleedingTargetStaminaRestoreCooldownSeconds, 4)
                 .Price(4)
                 .RequirementSkill(SkillType.TwinBlade, 25);
         }

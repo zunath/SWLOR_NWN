@@ -18,6 +18,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SWLOR.Game.Server\SWLOR.Game.Server.csproj" />
+    <!-- The coverage ratchets (AbilityBehaviorCoverageTests, PerkCoverageTests) assert that
+         every registered ability/perk has an engine-test case, so they reference the
+         engine-test assembly's case sources. -->
+    <ProjectReference Include="..\SWLOR.Game.Server.EngineTests\SWLOR.Game.Server.EngineTests.csproj" />
   </ItemGroup>
 
 </Project>

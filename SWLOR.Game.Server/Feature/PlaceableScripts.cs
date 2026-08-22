@@ -153,9 +153,12 @@ namespace SWLOR.Game.Server.Feature
 
             if (!string.IsNullOrWhiteSpace(conversation))
             {
-                Dialog.StartConversation(user, target, conversation);
+                if (Conversation.TryGetGraph(conversation, out _))
+                    Conversation.Start(user, target, conversation);
+                else if (!ConversationMenu.TryStart(user, target, conversation))
+                    AssignCommand(user, () => ActionStartConversation(target, conversation, true, false));
             }
-            else
+            else if (!Conversation.TryStartAssigned(user, target))
             {
                 AssignCommand(user, () => ActionStartConversation(target, string.Empty, true, false));
             }
@@ -185,18 +188,22 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler(ScriptName.OnPlaceableBuyRebuild)]
         public static void PurchaseRebuild()
         {
-            var player = GetPCSpeaker();
+            PurchaseRebuild(GetPCSpeaker());
+        }
+
+        public static bool PurchaseRebuild(uint player)
+        {
 
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
             {
                 SendMessageToPC(player, $"Only players may use this terminal.");
-                return;
+                return false;
             }
 
             if (Currency.GetCurrency(player, CurrencyType.RebuildToken) <= 0)
             {
                 SendMessageToPC(player, ColorToken.Red($"You do not have any rebuild tokens."));
-                return;
+                return false;
             }
 
             Currency.TakeCurrency(player, CurrencyType.RebuildToken, 1);
@@ -207,6 +214,7 @@ namespace SWLOR.Game.Server.Feature
             AssignCommand(player, () => JumpToLocation(location));
 
             SendMessageToPC(player, $"Remaining rebuild tokens: {Currency.GetCurrency(player, CurrencyType.RebuildToken)}");
+            return true;
         }
 
         /// <summary>

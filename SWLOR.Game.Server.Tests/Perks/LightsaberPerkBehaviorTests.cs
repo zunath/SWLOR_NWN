@@ -29,12 +29,15 @@ public class LightsaberPerkBehaviorTests
         AssertPerkStat(StatType.HostileAbilityFPSpendForceAttackDurationSeconds, "30");
 
         // Deflecting Return (bounded reflection)
-        AssertPerkStat(StatType.RangedDeflectionReflectionPercent, "8");
-        AssertPerkStat(StatType.RangedDeflectionReflectionPercent, "12");
-        AssertPerkStat(StatType.RangedDeflectionReflectionPercent, "16");
-        AssertPerkStat(StatType.RangedDeflectionReflectionCapPercent, "25");
-        AssertPerkStat(StatType.RangedDeflectionReflectionCapPercent, "40");
+        AssertPerkStat(StatType.RangedDeflection, "5");
+        AssertPerkStat(StatType.RangedDeflection, "8");
+        AssertPerkStat(StatType.RangedDeflection, "12");
+        AssertPerkStat(StatType.RangedDeflectionReflectionPercent, "20");
+        AssertPerkStat(StatType.RangedDeflectionReflectionPercent, "30");
+        AssertPerkStat(StatType.RangedDeflectionReflectionPercent, "40");
         AssertPerkStat(StatType.RangedDeflectionReflectionCapPercent, "50");
+        AssertPerkStat(StatType.RangedDeflectionReflectionCapPercent, "75");
+        AssertPerkStat(StatType.RangedDeflectionReflectionCapPercent, "100");
 
         // Surrounded, Not Outmatched
         AssertPerkStat(StatType.EmbattledStackDefensePercent, "2");
@@ -166,8 +169,8 @@ public class LightsaberPerkBehaviorTests
         aegis.StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment].Should().Be(18);
         aegis.StatGroup.Stats[StatType.ForceDefensePercentAdjustment].Should().Be(22);
         aegis.StatGroup.Stats[StatType.EnmityPercentAdjustment].Should().Be(25);
-        aegis.StatGroup.Stats[StatType.RangedDeflectionReflectionOverridePercent].Should().Be(24);
-        aegis.StatGroup.Stats[StatType.RangedDeflectionReflectionCapOverridePercent].Should().Be(75);
+        aegis.StatGroup.Stats[StatType.RangedDeflectionReflectionOverridePercent].Should().Be(50);
+        aegis.StatGroup.Stats[StatType.RangedDeflectionReflectionCapOverridePercent].Should().Be(125);
     }
 
     [Test]
@@ -190,19 +193,62 @@ public class LightsaberPerkBehaviorTests
         // The converted share is dealt as a real Force damage instance (Force resistance + combat-log
         // visibility) via ApplyTriggeredDamage, not merely approximated by blending defense.
         var combat = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "Combat.cs"));
-        combat.Should().Contain("ApplyTriggeredDamage(attacker, defender, forcePortion, CombatDamageType.Force)");
+        var conversion = combat[combat.IndexOf(
+            "public static int ApplyIncomingPhysicalToForceConversion(",
+            StringComparison.Ordinal)..combat.IndexOf(
+            "public static int ApplyStatusSourceAccuracyModifiers(",
+            StringComparison.Ordinal)];
+        conversion.Should().Contain("ApplyTriggeredDamage(",
+            "the converted Force share must be dispatched as real damage");
+        conversion.Should().Contain("forcePortion",
+            "the amount carved from physical damage must be the amount dispatched as Force damage");
+        conversion.Should().Contain("typedLeadershipReductionAlreadyApplied: false",
+            "the converted Force share must receive its own typed Leadership channel after the split");
 
         // The Force portion must be deferred off the native damage-roll hook (DelayCommand), not applied
         // synchronously mid-hook, or it re-enters the damage/AI chain and cascades with reflect effects.
-        combat.Should().Contain("DelayCommand");
+        conversion.Should().Contain("DelayCommand");
 
         // The native auto-attack path splits the physical hit before physical resistance.
         var native = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
-        native.Should().Contain("Combat.ApplyIncomingPhysicalToForceConversion(attacker.m_idSelf, target.m_idSelf, damageType, ref damage)");
+        var nativeConversion = native.IndexOf(
+            "Combat.ApplyIncomingPhysicalToForceConversion(attacker.m_idSelf, target.m_idSelf, damageType, ref damage)",
+            StringComparison.Ordinal);
+        var nativeLeadership = native.IndexOf(
+            "Combat.ApplyTypedLeadershipDamageTakenModifier(target.m_idSelf, damage, damageType)",
+            StringComparison.Ordinal);
+        var nativeResistance = native.IndexOf(
+            "Resistance.ApplyResistanceToDamageNative(target, damageType, damage)",
+            StringComparison.Ordinal);
+        nativeConversion.Should().BeGreaterThanOrEqualTo(0);
+        nativeLeadership.Should().BeGreaterThan(nativeConversion,
+            "typed Leadership mitigation must run after the physical/Force split");
+        nativeLeadership.Should().BeLessThan(nativeResistance,
+            "the explicit typed stage must preserve the existing pre-resistance ordering");
 
         // Both ability damage paths do the same before their physical resistance stage.
         var ability = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "Ability.cs"));
-        ability.Should().Contain("Combat.ApplyIncomingPhysicalToForceConversion(activator, target, damageType, ref calculatedDamage)");
+        const string abilityConversionCall =
+            "Combat.ApplyIncomingPhysicalToForceConversion(activator, target, damageType, ref calculatedDamage)";
+        const string abilityLeadershipCall =
+            "Combat.ApplyTypedLeadershipDamageTakenModifier(target, calculatedDamage, damageType)";
+        const string abilityResistanceCall =
+            "Resistance.ApplyResistanceToDamage(target, damageType, calculatedDamage)";
+        var abilitySearchStart = 0;
+        for (var path = 0; path < 2; path++)
+        {
+            var abilityConversion = ability.IndexOf(abilityConversionCall, abilitySearchStart, StringComparison.Ordinal);
+            abilityConversion.Should().BeGreaterThanOrEqualTo(0);
+            var abilityLeadership = ability.IndexOf(abilityLeadershipCall, abilityConversion, StringComparison.Ordinal);
+            abilityLeadership.Should().BeGreaterThan(abilityConversion);
+            var abilityResistance = ability.IndexOf(abilityResistanceCall, abilityLeadership, StringComparison.Ordinal);
+            abilityLeadership.Should().BeLessThan(abilityResistance,
+                "both player and NPC ability paths must mitigate the post-split physical remainder before resistance");
+            abilitySearchStart = abilityResistance + abilityResistanceCall.Length;
+        }
+
+        ability.IndexOf(abilityConversionCall, abilitySearchStart, StringComparison.Ordinal).Should().Be(-1);
+        ability.IndexOf(abilityLeadershipCall, abilitySearchStart, StringComparison.Ordinal).Should().Be(-1);
     }
 
     [Test]
@@ -228,30 +274,30 @@ public class LightsaberPerkBehaviorTests
     [Test]
     public void DeflectingReturn_ReflectsCappedShareOfWeaponDamage()
     {
-        // 8% of a 50-DMG attack = 4, under the 25% cap of a 60-DMG saber (15).
-        Combat.GetRangedDeflectionReflectionAmount(50, 8, 60, 25).Should().Be(4);
-        // Cap binds: 16% of 100 = 16, capped at 50% of 20 = 10.
-        Combat.GetRangedDeflectionReflectionAmount(100, 16, 20, 50).Should().Be(10);
+        // 20% of a 50-DMG attack = 10, under the 50% cap of a 60-DMG saber (30).
+        Combat.GetRangedDeflectionReflectionAmount(50, 20, 60, 50).Should().Be(10);
+        // Cap binds: 40% of 100 = 40, capped at 100% of 20 = 20.
+        Combat.GetRangedDeflectionReflectionAmount(100, 40, 20, 100).Should().Be(20);
         // No reflection without a percent or without incoming damage.
-        Combat.GetRangedDeflectionReflectionAmount(50, 0, 60, 25).Should().Be(0);
-        Combat.GetRangedDeflectionReflectionAmount(0, 8, 60, 25).Should().Be(0);
+        Combat.GetRangedDeflectionReflectionAmount(50, 0, 60, 50).Should().Be(0);
+        Combat.GetRangedDeflectionReflectionAmount(0, 20, 60, 50).Should().Be(0);
         // No cap applied when the cap percent is 0.
-        Combat.GetRangedDeflectionReflectionAmount(100, 16, 20, 0).Should().Be(16);
+        Combat.GetRangedDeflectionReflectionAmount(100, 40, 20, 0).Should().Be(40);
     }
 
     [Test]
     public void DeflectingReturn_UsesEmbattledBonusAndPerfectAegisFinalOverrides()
     {
-        Combat.GetRangedDeflectionReflectionRates(16, 50, 2, 3, 4, 0, 0)
-            .Should().Be((16, 50));
-        Combat.GetRangedDeflectionReflectionRates(16, 50, 3, 3, 4, 0, 0)
-            .Should().Be((20, 50));
+        Combat.GetRangedDeflectionReflectionRates(40, 100, 2, 3, 4, 0, 0)
+            .Should().Be((40, 100));
+        Combat.GetRangedDeflectionReflectionRates(40, 100, 3, 3, 4, 0, 0)
+            .Should().Be((44, 100));
 
         // Stat totals remain additive globally, so Perfect Aegis uses separate final-override stats.
-        // This prevents its documented 24% / 75% ceiling from becoming 40% / 125% when the
+        // This prevents its documented 50% / 125% ceiling from becoming 94% / 225% when the
         // permanent Deflecting Return III values are also present.
-        Combat.GetRangedDeflectionReflectionRates(16, 50, 5, 3, 4, 24, 75)
-            .Should().Be((24, 75));
+        Combat.GetRangedDeflectionReflectionRates(40, 100, 5, 3, 4, 50, 125)
+            .Should().Be((50, 125));
     }
 
     [Test]
@@ -260,9 +306,12 @@ public class LightsaberPerkBehaviorTests
         var resolve = File.ReadAllText(Path.Combine(
             FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
 
-        // Only a deflected ranged attack reflects, and it does so through the stat-driven helper.
-        resolve.Should().Contain("attackType == (uint)AttackType.Ranged");
+        // Only Ranged Deflection reflects. A shield deflecting a ranged auto-attack cannot trigger it.
+        resolve.Should().Contain("deflectionSource == DeflectionSource.Ranged");
         resolve.Should().Contain("Combat.ApplyRangedDeflectionReflection(defender.m_idSelf, attacker.m_idSelf, weaponSkillType)");
+        File.ReadAllText(Path.Combine(
+                FindRepositoryRoot().FullName, "SWLOR.Game.Server", "Service", "Combat.cs"))
+            .Should().Contain("GetCombatImpactWeaponDamage(defender, GetEquippedWeaponSkillType(defender))");
     }
 
     [Test]

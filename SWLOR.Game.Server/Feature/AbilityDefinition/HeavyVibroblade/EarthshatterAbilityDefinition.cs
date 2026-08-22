@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 0.25f,
                 8f,
                 2.5f,
-                statusEffectFactory: () => new ForceDisruptionStatusEffect(true),
+                statusEffectFactory: () => new ForceDisruptionStatusEffect(),
                 baseDamageAdjustment: _ => Stat.GetStatAdjustment(activator, StatType.EarthshatterDamageBonus),
                 enmityBonus: Stat.GetStatAdjustment(activator, StatType.EarthshatterEnmityBonus));
         }

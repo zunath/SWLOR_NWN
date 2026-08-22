@@ -933,21 +933,29 @@ namespace SWLOR.Game.Server.Service
         /// <returns>true if the item is NPC/creature/internal and should not be shown to players.</returns>
         public static bool IsEconomyRestricted(uint item)
         {
-            if (EconomyRestrictedBaseItems.Contains(GetBaseItemType(item)))
+            var baseItem = GetBaseItemType(item);
+            var name = GetName(item);
+            var noEconomy = GetLocalInt(item, NoEconomyVariable) == 1;
+            if (IsEconomyRestricted(baseItem, name, noEconomy, hasInventoryIcon: true))
                 return true;
 
-            if (GetLocalInt(item, NoEconomyVariable) == 1)
-                return true;
+            return !HasInventoryIcon(item);
+        }
 
-            if (IsEconomyRestrictedName(GetName(item)))
-                return true;
-
-            // Post icon-resolution, an item with no real inventory icon is almost always an internal
-            // or prop item that was never meant to be seen by players.
-            if (!HasInventoryIcon(item))
-                return true;
-
-            return false;
+        /// <summary>
+        /// Data-only form of the shared economy classifier. Builder tools use this overload while
+        /// inspecting UTI data that has not been instantiated by the game engine.
+        /// </summary>
+        public static bool IsEconomyRestricted(
+            BaseItem baseItem,
+            string name,
+            bool noEconomy,
+            bool hasInventoryIcon)
+        {
+            return EconomyRestrictedBaseItems.Contains(baseItem) ||
+                   noEconomy ||
+                   IsEconomyRestrictedName(name) ||
+                   !hasInventoryIcon;
         }
 
         /// <summary>

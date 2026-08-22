@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     Spell.FlashGrenade1,
                     4f,
                     AbilityTargetingFlags.HarmsEnemies,
-                    DeviceAbilityEffects.ApplyGrenadeRadiusBonus)
+                    DeviceAbilityEffects.ApplyBlastRadiusBonus)
                 .HasImpactAction(FlashGrenade1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 typeof(FlashStatusEffect),
                 CombatImpactAreaShape.Sphere,
                 0f,
-                DeviceAbilityEffects.ApplyGrenadeRadiusBonus(activator, 4f),
+                DeviceAbilityEffects.ApplyBlastRadiusBonus(activator, 4f),
                 0f,
                 Array.Empty<Type>(),
                 statusEffectFactory: () => new FlashGrenade1StatusEffect(GetFlashPenalty(activator, 8)),

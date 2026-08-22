@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "This structure can be placed inside any player owned building for which you have permission."
     }
   },
   "Identified": {

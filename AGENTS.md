@@ -13,6 +13,10 @@ This file is the shared rule set for all coding agents. Codex reads it natively;
 
 - The Unified solution (`C:\Projects\unified`) is read-only reference material. Do not make changes to it.
 
+## Pull Requests and Submodules
+
+- When a parent-repository pull request changes a git submodule pointer, publishing is not complete until every modified submodule also has its own pull request. Push the submodule branch, open its companion pull request against the branch corresponding to the parent pull request's base branch, and link the parent and companion pull requests in both descriptions. Do not treat a pushed submodule branch by itself as a complete handoff.
+
 ## Background Processes
 
 - Do not start background jobs, watchers, dev servers, publish tasks, or long-lived helper processes unless the user explicitly asks for them or they are strictly required for the current task. Prefer foreground commands with bounded timeouts. If a long-lived process is necessary, record what was started, track its PID when available, stop it before handing off, and report the cleanup. Do not use `Start-Process`, shell backgrounding, persistent REPL helpers, or detached commands to continue work after the turn unless the user has explicitly approved that behavior.
@@ -31,11 +35,21 @@ This file is the shared rule set for all coding agents. Codex reads it natively;
 
 - Do not use internal initiative, milestone, or phase labels such as `CombatUpgrade` in production code identifiers, filenames, namespaces, classes, methods, or comments. Use domain terms that describe gameplay behavior, such as ability targeting, ability effects, Leadership, Devices, or the specific system being changed.
 
+## Toolset Option Lists
+
+- Builder-facing dropdowns, galleries, and searchable choice lists must never expose raw 2DA placeholder or sentinel rows such as `DELETED`, `USER`, `UNUSED`, `INVALID*`, `Bio_reserved`, `cep_reserved`, `Padding`, or numbered `NULL` slots. Route generic 2DA options through `TwoDaChoicePolicy`, declare table-specific required columns in `TwoDaLookupTables`, and fail closed when the metadata needed to prove a row is valid is unavailable. Add corpus or focused regression coverage whenever a new 2DA-backed option source is introduced.
+
 ## Stat-Driven Gameplay
 
 - Shared combat, ability, and status-effect infrastructure must not special-case specific perk types or perk-specific status-effect classes to unlock gameplay behavior. Model perk-driven behavior as `StatType` adjustments, then have shared systems read those stats. Direct perk checks are only appropriate for ownership, unlock, purchase, UI, or progression gates.
 - `StatType` classification, polarity, or category decisions must be declared with `StatTypeAttribute` on the enum entry. Do not add large `if`/`switch` lists elsewhere to infer stat meaning; shared systems should read the enum metadata instead.
 - Attack Deflection, Shield Deflection, and Guard are separate combat mechanics. Attack Deflection and Shield Deflection are attack-roll outcomes that negate the hit and do not stack with each other; Guard is a damage-stage outcome that reduces damage and increases enmity. Do not implement one by reusing the state, stats, logs, or triggers of another.
+
+## NPC Hit Point Budgets
+
+- A stat skin's `NPCHP` is the NPC's final maximum HP budget. NWN stores `HitPoints` as base HP, then derives maximum HP by applying the Constitution modifier (SWLOR Vitality) once per class level, Toughness once per level, and 20 HP for each Epic Toughness feat. Do not set UTC `HitPoints` directly to `NPCHP`: set `CurrentHitPoints` and `MaxHitPoints` to `NPCHP`, and set `HitPoints` to `NPCHP` minus those native bonuses.
+- Apply runtime NPC HP budgets through `Stat.SetNPCMaxHitPoints` only, after the raw Vitality score has been finalized. `ObjectPlugin.SetMaxHitPoints` writes native base HP and therefore must not receive an `NPCHP` final budget directly.
+- After adding or restatting NPCHP-backed creatures, run `powershell -ExecutionPolicy Bypass -File tools/NormalizeNpcHitPoints.ps1`. Use `-CheckOnly` in audits. `NPCEnemyBalanceAuditTests.AllNpcHpBudgets_AccountForNativeVitalityAndToughnessRules` protects the complete corpus.
 
 ## Player Identity
 

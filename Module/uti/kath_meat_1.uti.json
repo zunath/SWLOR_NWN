@@ -32,7 +32,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Meat from a Kath Hound. "
+    }
   },
   "Identified": {
     "type": "byte",

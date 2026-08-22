@@ -17,49 +17,71 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     public class MasteryReviewDefinition: IGuiWindowDefinition
     {
         private readonly GuiWindowBuilder<MasteryReviewViewModel> _builder = new();
+        private const float TabRowHeight = 28f;
+        private const float TabPanelHeight = 40f;
+        private const float QueueListPanelWidth = 300f;
+        private const float QueueDetailPanelWidth = 540f;
+        private const float CatalogListPanelWidth = 320f;
+        private const float CatalogEditPanelWidth = 520f;
 
         public GuiConstructedWindow BuildWindow()
         {
-            _builder.CreateWindow(GuiWindowType.MasteryReview)
+            var window = _builder.CreateWindow(GuiWindowType.MasteryReview)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
                 .SetInitialGeometry(0, 0, 900f, 620f)
                 .SetTitle("Mastery Review Queue")
 
                 .DefinePartialView(MasteryReviewViewModel.ReviewQueuePartial, AddReviewQueueTab)
-                .DefinePartialView(MasteryReviewViewModel.CatalogManagePartial, AddCatalogManageTab)
+                .DefinePartialView(MasteryReviewViewModel.CatalogManagePartial, AddCatalogManageTab);
 
-                .AddColumn(col =>
+            window.AddStandardLayout(layout =>
+            {
+                layout.SetTabPanelHeight(TabPanelHeight);
+                layout.AddTabRow(row =>
                 {
-                    col.AddRow(row =>
-                    {
-                        row.SetHeight(40f);
-                        row.AddSpacer();
-
-                        row.AddToggleButton()
-                            .SetText("Review Queue")
-                            .BindIsToggled(model => model.IsReviewQueueTabToggled)
-                            .BindOnClicked(model => model.OnClickReviewQueueTab())
-                            .SetHeight(32f)
-                            .SetWidth(160f);
-
-                        row.AddToggleButton()
-                            .SetText("Catalog")
-                            .BindIsToggled(model => model.IsCatalogTabToggled)
-                            .BindOnClicked(model => model.OnClickCatalogManageTab())
-                            .SetHeight(32f)
-                            .SetWidth(160f);
-
-                        row.AddSpacer();
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddPartialView(MasteryReviewViewModel.ContentPartialElement);
-                    });
+                    row.SetHeight(TabRowHeight);
+                    row.AddToggles()
+                        .AddOption("Review Queue")
+                        .AddOption("Catalog")
+                        .BindSelectedValue(model => model.TabToggleValue)
+                        .SetHeight(TabRowHeight)
+                        .SetWidth(320f);
                 });
+                layout.SetContentPartialElement(MasteryReviewViewModel.ContentPartialElement);
+            });
 
             return _builder.Build();
+        }
+
+        private static void AddTwoPanelTabShell(
+            GuiGroup<MasteryReviewViewModel> host,
+            float leftWidth,
+            float rightWidth,
+            Action<GuiColumn<MasteryReviewViewModel>> addLeft,
+            Action<GuiColumn<MasteryReviewViewModel>> addRight)
+        {
+            host.AddColumn(col =>
+            {
+                col.AddRow(row =>
+                {
+                    row.AddGroup(leftPanel =>
+                    {
+                        leftPanel.SetShowBorder(false);
+                        leftPanel.SetScrollbars(NuiScrollbars.None);
+                        leftPanel.AddColumn(addLeft);
+                    })
+                        .SetWidth(leftWidth);
+
+                    row.AddGroup(rightPanel =>
+                    {
+                        rightPanel.SetShowBorder(false);
+                        rightPanel.SetScrollbars(NuiScrollbars.None);
+                        rightPanel.AddColumn(addRight);
+                    })
+                        .SetWidth(rightWidth);
+                });
+            });
         }
 
         // ---------------------------------------------------------------
@@ -68,26 +90,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
         private static void AddReviewQueueTab(GuiGroup<MasteryReviewViewModel> group)
         {
-            group.SetShowBorder(false);
-            group.SetScrollbars(NuiScrollbars.None);
-            group.AddColumn(col =>
+            AddTwoPanelTabShell(
+                group,
+                QueueListPanelWidth,
+                QueueDetailPanelWidth,
+                left =>
             {
-                col.AddRow(row =>
-                {
-                    row.AddColumn(left =>
-                    {
-                        left.SetWidth(300f);
-
                         left.AddRow(r =>
                         {
-                            r.SetHeight(34f);
-
                             r.AddTextEdit()
                                 .SetPlaceholder("Search player...")
-                                .BindValue(model => model.SearchText);
+                                .BindValue(model => model.SearchText)
+                                .SetHeight(32f);
 
                             r.AddComboBox()
                                 .BindSelectedIndex(model => model.SelectedStatusFilterId)
+                                .SetHeight(32f)
                                 .SetWidth(150f)
                                 .AddOption("Pending", 0)
                                 .AddOption("In Review", 1)
@@ -113,10 +131,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         left.AddRow(r =>
                         {
-                            r.SetHeight(32f);
-
                             r.AddButton()
                                 .SetText("<< Prev")
+                                .SetHeight(32f)
                                 .SetWidth(90f)
                                 .BindIsEnabled(model => model.IsPrevEnabled)
                                 .BindOnClicked(model => model.OnClickPrevPage());
@@ -126,13 +143,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                             r.AddButton()
                                 .SetText("Next >>")
+                                .SetHeight(32f)
                                 .SetWidth(90f)
                                 .BindIsEnabled(model => model.IsNextEnabled)
                                 .BindOnClicked(model => model.OnClickNextPage());
                         });
-                    });
-
-                    row.AddColumn(right =>
+                    },
+                    right =>
                     {
                         right.AddRow(r =>
                         {
@@ -189,25 +206,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         right.AddRow(r =>
                         {
-                            r.SetHeight(50f);
                             r.AddTextEdit()
                                 .SetIsMultiline(true)
                                 .SetPlaceholder("Reply / staff comment...")
                                 .SetMaxLength(500)
+                                .SetHeight(50f)
                                 .BindValue(model => model.ReplyText);
                         });
 
                         right.AddRow(r =>
                         {
-                            r.SetHeight(32f);
-
                             r.AddCheckBox()
                                 .SetText("Use Quick Slot")
+                                .SetHeight(24f)
                                 .BindIsChecked(model => model.UseQuickSlot)
                                 .BindIsEnabled(model => model.IsQuickSlotCheckboxEnabled);
 
                             r.AddCheckBox()
                                 .SetText("Instant Grant")
+                                .SetHeight(24f)
                                 .BindIsChecked(model => model.IsInstantGrant);
 
                             r.AddLabel()
@@ -216,21 +233,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         right.AddRow(r =>
                         {
-                            r.SetHeight(32f);
                             r.AddTextEdit()
                                 .SetPlaceholder("Feedback to player (required to deny)")
                                 .SetMaxLength(1000)
+                                .SetHeight(32f)
                                 .BindValue(model => model.FeedbackText);
                         });
 
                         right.AddRow(r =>
                         {
-                            r.SetHeight(32f);
                             r.BindIsVisible(model => model.IsOverrideReasonVisible);
 
                             r.AddTextEdit()
                                 .SetPlaceholder("Override reason (required - a rule check failed)")
                                 .SetMaxLength(500)
+                                .SetHeight(32f)
                                 .BindValue(model => model.OverrideReasonText);
                         });
 
@@ -244,32 +261,32 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         right.AddRow(r =>
                         {
-                            r.SetHeight(36f);
-
                             r.AddButton()
                                 .SetText("Approve & Queue")
+                                .SetHeight(32f)
                                 .BindIsEnabled(model => model.IsApproveEnabled)
                                 .BindOnClicked(model => model.OnClickApprove());
 
                             r.AddButton()
                                 .SetText("Deny")
+                                .SetHeight(32f)
                                 .BindIsEnabled(model => model.IsRequestSelected)
                                 .BindOnClicked(model => model.OnClickDeny());
 
                             r.AddButton()
                                 .SetText("Comment Only")
+                                .SetHeight(32f)
                                 .BindIsEnabled(model => model.IsRequestSelected)
                                 .BindOnClicked(model => model.OnClickCommentOnly());
 
                             r.AddButton()
                                 .SetText("Open Full Profile")
+                                .SetHeight(32f)
                                 .BindIsEnabled(model => model.IsOpenProfileEnabled)
                                 .BindDisabledTooltip(model => model.OpenProfileDisabledTooltip)
                                 .BindOnClicked(model => model.OnClickOpenFullProfile());
                         });
                     });
-                });
-            });
         }
 
         // ---------------------------------------------------------------
@@ -278,26 +295,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
         private static void AddCatalogManageTab(GuiGroup<MasteryReviewViewModel> group)
         {
-            group.SetShowBorder(false);
-            group.SetScrollbars(NuiScrollbars.None);
-            group.AddColumn(col =>
+            AddTwoPanelTabShell(
+                group,
+                CatalogListPanelWidth,
+                CatalogEditPanelWidth,
+                left =>
             {
-                col.AddRow(row =>
-                {
-                    row.AddColumn(left =>
-                    {
-                        left.SetWidth(320f);
-
                         left.AddRow(r =>
                         {
-                            r.SetHeight(34f);
-
                             r.AddTextEdit()
                                 .SetPlaceholder("Search")
-                                .BindValue(model => model.CatalogSearchText);
+                                .BindValue(model => model.CatalogSearchText)
+                                .SetHeight(32f);
 
                             var categoryCombo = r.AddComboBox()
                                 .BindSelectedIndex(model => model.CatalogSelectedCategoryId)
+                                .SetHeight(32f)
                                 .SetWidth(200f)
                                 .AddOption("All Categories", -1);
 
@@ -327,10 +340,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         left.AddRow(r =>
                         {
-                            r.SetHeight(32f);
-
                             r.AddButton()
                                 .SetText("<< Prev")
+                                .SetHeight(32f)
                                 .SetWidth(90f)
                                 .BindIsEnabled(model => model.IsCatalogManagePrevEnabled)
                                 .BindOnClicked(model => model.OnClickCatalogPrevPage());
@@ -340,6 +352,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                             r.AddButton()
                                 .SetText("Next >>")
+                                .SetHeight(32f)
                                 .SetWidth(90f)
                                 .BindIsEnabled(model => model.IsCatalogManageNextEnabled)
                                 .BindOnClicked(model => model.OnClickCatalogNextPage());
@@ -347,31 +360,29 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         left.AddRow(r =>
                         {
-                            r.SetHeight(32f);
                             r.AddButton()
                                 .SetText("New Mastery")
+                                .SetHeight(32f)
                                 .BindOnClicked(model => model.OnClickNewMasteryEntry());
                         });
-                    });
-
-                    row.AddColumn(right =>
+                    },
+                    right =>
                     {
                         right.AddRow(r =>
                         {
-                            r.SetHeight(32f);
                             r.AddTextEdit()
                                 .SetPlaceholder("Name")
                                 .SetMaxLength(100)
+                                .SetHeight(32f)
                                 .BindIsEnabled(model => model.IsCatalogEntrySelected)
                                 .BindValue(model => model.CatalogEditName);
                         });
 
                         right.AddRow(r =>
                         {
-                            r.SetHeight(32f);
-
                             var categoryCombo = r.AddComboBox()
                                 .BindSelectedIndex(model => model.CatalogEditCategoryId)
+                                .SetHeight(32f)
                                 .BindIsEnabled(model => model.IsCatalogEntrySelected);
 
                             foreach (MasteryCategoryType category in Enum.GetValues(typeof(MasteryCategoryType)))
@@ -384,6 +395,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             var rarityCombo = r.AddComboBox()
                                 .BindSelectedIndex(model => model.CatalogEditRarityId)
                                 .BindIsEnabled(model => model.IsCatalogEntrySelected)
+                                .SetHeight(32f)
                                 .SetWidth(130f)
                                 .AddOption("Standard", (int)MasteryRarityType.Standard)
                                 .AddOption("Rare", (int)MasteryRarityType.Rare)
@@ -392,26 +404,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         right.AddRow(r =>
                         {
-                            r.SetHeight(32f);
-
                             r.AddComboBox()
                                 .BindOptions(model => model.SkillOptions)
                                 .BindSelectedIndex(model => model.CatalogEditSkillId)
+                                .SetHeight(32f)
                                 .BindIsEnabled(model => model.IsCatalogEntrySelected);
 
                             r.AddCheckBox()
                                 .SetText("Active")
+                                .SetHeight(24f)
                                 .BindIsChecked(model => model.CatalogEditIsActive)
                                 .BindIsEnabled(model => model.IsCatalogEntrySelected);
                         });
 
                         right.AddRow(r =>
                         {
-                            r.SetHeight(140f);
                             r.AddTextEdit()
                                 .SetIsMultiline(true)
                                 .SetPlaceholder("Description")
                                 .SetMaxLength(1000)
+                                .SetHeight(140f)
                                 .BindIsEnabled(model => model.IsCatalogEntrySelected)
                                 .BindValue(model => model.CatalogEditDescription);
                         });
@@ -426,15 +438,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         right.AddRow(r =>
                         {
-                            r.SetHeight(36f);
                             r.AddButton()
                                 .SetText("Save")
+                                .SetHeight(32f)
                                 .BindIsEnabled(model => model.IsCatalogEntrySelected)
                                 .BindOnClicked(model => model.OnClickSaveCatalogEntry());
                         });
                     });
-                });
-            });
         }
     }
 }

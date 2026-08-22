@@ -1,0 +1,31 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:panels="using:SWLOR.Toolset.Shell.Panels"
+             xmlns:workspace="using:SWLOR.Toolset.Domain.Workspace"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="120"
+             x:Class="SWLOR.Toolset.Shell.Views.SearchView"
+             x:DataType="panels:SearchViewModel">
+  <DockPanel>
+    <TextBox DockPanel.Dock="Top"
+             Watermark="Search ResRef / name / tag..."
+             Text="{Binding Query}"
+             Margin="4" />
+    <!-- Name first and widest; the type and resref sit beside it as supporting detail. -->
+    <ListBox ItemsSource="{Binding Results}" Background="Transparent" BorderThickness="0"
+             SelectedItem="{Binding SelectedResult}">
+      <ListBox.ItemTemplate>
+        <DataTemplate DataType="workspace:CatalogSearchResult">
+          <Grid ColumnDefinitions="*,150,110" ColumnSpacing="12">
+            <TextBlock Grid.Column="0" Classes="name" Text="{Binding Entry.Name}" />
+            <TextBlock Grid.Column="1" Classes="resref" VerticalAlignment="Center"
+                       Text="{Binding Entry.ResRef}" />
+            <TextBlock Grid.Column="2" Classes="dim" FontSize="11.5" VerticalAlignment="Center"
+                       Text="{Binding Entry.ResourceTypeDisplayName}" />
+          </Grid>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
+  </DockPanel>
+</UserControl>

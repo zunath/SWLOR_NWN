@@ -17,8 +17,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
     public sealed class EmergencyBunkerAbilityDefinition : IAbilityListDefinition
     {
+        private const float EmergencyBunkerRadiusMeters = 8f;
         private const VisualEffect EmergencyBunkerAreaMarkerVisualEffect = VisualEffect.Vfx_Dur_Aura_Pulse_Blue_White;
-        private const float EmergencyBunkerAreaMarkerVisualEffectScale = 2f;
+        private const float EmergencyBunkerAreaMarkerVisualEffectScale = 4f;
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -43,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .HasImpactAction(EmergencyBunker1ImpactAction)
                 .HasTargetingSphere(
                     Spell.EmergencyBunker1,
-                    4f,
+                    EmergencyBunkerRadiusMeters,
                     AbilityTargetingFlags.HelpsAllies)
                 .IsCastedAbility()
                 .BreaksStealth()
@@ -58,7 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             AbilityAreaEffects.ScheduleFriendlyZoneStatus(
                 activator,
                 location,
-                4f,
+                EmergencyBunkerRadiusMeters,
                 duration,
                 typeof(EmergencyBunker1StatusEffect),
                 VisualEffect.Vfx_Imp_Ac_Bonus,
@@ -70,8 +71,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         private static void ApplyBunkerTemporaryHP(uint activator, uint target, float durationSeconds)
         {
             var temporaryHP = 60 + GameMath.PercentOf(GetMaxHitPoints(target), 8);
-            temporaryHP = DeviceAbilityEffects.ApplyFieldSupportOutputBonus(activator, temporaryHP);
-            TemporaryHitPointEffects.ApplyFlat(target, temporaryHP, durationSeconds);
+            temporaryHP = Ability.ApplyCombatReadinessMagnitude(activator, temporaryHP);
+            TemporaryHitPointEffects.ApplyFlat(target, "EMERGENCY_BUNKER", temporaryHP, durationSeconds);
             DeviceAbilityEffects.ApplyFieldSupportAllyBuffRiders(activator, target);
         }
     }

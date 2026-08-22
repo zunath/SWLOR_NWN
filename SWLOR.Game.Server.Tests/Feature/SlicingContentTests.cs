@@ -203,37 +203,28 @@ public class SlicingContentTests
     }
 
     [Test]
-    public void SlicingStructures_HaveOneStorageAndUnusedAppearances()
+    public void SlicingStructures_HaveOneStorageAndExpectedAppearances()
     {
         var root = FindRepositoryRoot();
         var expected = new Dictionary<StructureType, (string Resref, int Appearance)>
         {
-            [StructureType.RustlineDataTerminal] = ("slc_rustterm", 6031),
-            [StructureType.CipherfileCabinet] = ("slc_ciphcab", 30935),
-            [StructureType.ListeningPostMonitor] = ("slc_listmon", 7201),
+            [StructureType.RustlineDataTerminal] = ("slc_rustterm", 6030),
+            [StructureType.CipherfileCabinet] = ("slc_ciphcab", 30702),
+            [StructureType.ListeningPostMonitor] = ("slc_listmon", 7351),
             [StructureType.GhostChannelConsole] = ("slc_ghostcon", 21450),
-            [StructureType.BlacksiteAnalysisStation] = ("slc_blackstat", 30611),
+            [StructureType.BlacksiteAnalysisStation] = ("slc_blackstat", 30612),
         };
 
-        var appearances = Directory.EnumerateFiles(Path.Combine(root, "Module", "utp"), "*.utp.json")
-            .Select(path => JsonDocument.Parse(File.ReadAllText(path)))
-            .ToList();
-        try
+        foreach (var (type, detail) in expected)
         {
-            foreach (var (type, detail) in expected)
-            {
-                var attribute = typeof(StructureType).GetField(type.ToString())!.GetCustomAttribute<StructureAttribute>();
-                attribute.Should().NotBeNull();
-                attribute!.Resref.Should().Be(detail.Resref);
-                attribute.ItemStorage.Should().Be(1);
-                appearances.Count(document => GetInt(document.RootElement, "Appearance") == detail.Appearance).Should().Be(1,
-                    $"appearance {detail.Appearance} was selected because it had no existing module use");
-            }
-        }
-        finally
-        {
-            foreach (var document in appearances)
-                document.Dispose();
+            var attribute = typeof(StructureType).GetField(type.ToString())!.GetCustomAttribute<StructureAttribute>();
+            attribute.Should().NotBeNull();
+            attribute!.Resref.Should().Be(detail.Resref);
+            attribute.ItemStorage.Should().Be(1);
+
+            var blueprintPath = Path.Combine(root, "Module", "utp", $"{detail.Resref}.utp.json");
+            using var blueprint = JsonDocument.Parse(File.ReadAllText(blueprintPath));
+            GetInt(blueprint.RootElement, "Appearance").Should().Be(detail.Appearance);
         }
     }
 

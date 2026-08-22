@@ -15,6 +15,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public sealed class ThrowRockAbilityDefinition : IAbilityListDefinition
     {
+        private const int Rank1BaseDamage = 22;
+        private const int Rank2BaseDamage = 40;
+        private const int Rank3BaseDamage = 60;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -28,17 +32,35 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ThrowRock1(AbilityBuilder builder)
         {
-            ConfigureThrowRock(builder, FeatType.ThrowRock1, "Throw Rock I", 1, 18, 3);
+            ConfigureThrowRock(
+                builder,
+                FeatType.ThrowRock1,
+                "Throw Rock I",
+                1,
+                Rank1BaseDamage,
+                3);
         }
 
         private static void ThrowRock2(AbilityBuilder builder)
         {
-            ConfigureThrowRock(builder, FeatType.ThrowRock2, "Throw Rock II", 2, 32, 4);
+            ConfigureThrowRock(
+                builder,
+                FeatType.ThrowRock2,
+                "Throw Rock II",
+                2,
+                Rank2BaseDamage,
+                4);
         }
 
         private static void ThrowRock3(AbilityBuilder builder)
         {
-            ConfigureThrowRock(builder, FeatType.ThrowRock3, "Throw Rock III", 3, 46, 5);
+            ConfigureThrowRock(
+                builder,
+                FeatType.ThrowRock3,
+                "Throw Rock III",
+                3,
+                Rank3BaseDamage,
+                5);
         }
 
         private static void ConfigureThrowRock(
@@ -61,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .DisplaysVisualEffectWhenActivating(VisualEffect.None)
                 .PlaysSoundOnImpact("ksfx_gravity")
                 .IsSingleTargetAbility()
-                .HasMaxRange(15f)
+                .HasMaxRange(30f)
                 .RequiresTarget()
                 .HasImpactAction((activator, target, _, targetLocation) =>
                     ApplyThrowRock(activator, target, targetLocation, level, baseDamage))

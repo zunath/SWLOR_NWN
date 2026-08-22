@@ -269,7 +269,7 @@ namespace SWLOR.NWN.API.NWScript.Enum
         ForceJudgment1StatusEffect = 263,
         ForceJudgment2StatusEffect = 264,
         ForceJudgment3StatusEffect = 265,
-        ForceLensStatusEffect = 266,
+        RestoredFPForceAttackStatusEffect = 266,
         ForceSanctuary1StatusEffect = 267,
         ForceSpark1StatusEffect = 268,
         ForceSpark2StatusEffect = 269,
@@ -469,6 +469,14 @@ namespace SWLOR.NWN.API.NWScript.Enum
         WorldbreakerStatusEffect = 463,
         GuardianReflexesStatusEffect = 464,
         EvasiveFootworkStatusEffect = 465,
+        RestoredStaminaAttackStatusEffect = 466,
+        HostileAbilityForceAttackStatusEffect = 467,
+        RestoredFPHasteStatusEffect = 468,
+        DisarmingShotStatusEffect = 469,
+        DuelistsDistanceStatusEffect = 470,
+        PointBlankBurstStatusEffect = 471,
+        ReloadTempoStatusEffect = 472,
+        CleanseOrder1StatusEffect = 473,
         // End custom status effect icons
     }
 }

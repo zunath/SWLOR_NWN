@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Take this item out of the container to exit the preview and return to the menu."
     }
   },
   "Identified": {

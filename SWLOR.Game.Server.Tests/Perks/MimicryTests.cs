@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry;
 using SWLOR.Game.Server.Feature.AbilityDefinition.NPC;
 using SWLOR.Game.Server.Feature.PerkDefinition;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -187,6 +188,79 @@ public class MimicryTests
         merciless.Should().Contain("if (StatusEffect.HasStatusEffect(target, typeof(BleedStatusEffect), typeof(HemorrhageStatusEffect)))");
         merciless.Should().Contain("StatusEffect.ApplyStatusEffect<HemorrhageStatusEffect>(activator, target, 30f");
         merciless.Should().NotContain("typeof(HemorrhageStatusEffect),\r\n                CombatImpactAreaShape.Cone");
+    }
+
+    [Test]
+    public void ShockTechniques_DescriptionsExposeTheirActualForceSuppressionContract()
+    {
+        var root = FindRepositoryRoot();
+        var featRows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
+            root.FullName, "SWLOR_Haks", "sw_2da", "feat.2da")));
+        var tlkEntries = ReadTlkEntries(new FileInfo(Path.Combine(
+            root.FullName, "SWLOR_Haks", "sw_tlk", "sw_tlk.tlk.json")));
+        var techniques = BuildAllAbilities(MimicryTechniqueNamespace)
+            .ToDictionary(technique => technique.Feat, technique => technique.Detail);
+
+        foreach (var feat in new[] { FeatType.DarkShockTechnique, FeatType.NullShockTechnique })
+        {
+            var ability = techniques[feat];
+            ability.SkillType.Should().Be(SkillType.Mimicry);
+            ability.CombatImpactDamageAbility.Should().Be(AbilityType.Willpower,
+                $"{feat}'s hostile hit check should use WIL even though the technique deals no direct damage");
+
+            var descriptionStrref = int.Parse(featRows[(int)feat]["DESCRIPTION"]);
+            var description = tlkEntries[descriptionStrref - CustomTlkStrrefOffset];
+            description.Should().Contain("separate WIL-based Mimicry hit checks");
+            description.Should().Contain(
+                "reducing Attack by 10% and Force Attack by an additional 15% (25% total)");
+            description.Should().Contain("Deals no direct damage.");
+        }
+
+        var suppression = new ForceSuppressionStatusEffect();
+        suppression.StatGroup.Stats[StatType.AttackPercentAdjustment].Should().Be(-10);
+        suppression.StatGroup.Stats[StatType.ForceAttackPercentAdjustment].Should().Be(-15);
+    }
+
+    [Test]
+    public void MimicryDescriptions_DistinguishAccuracyRatingSkillScalingAndDamageType()
+    {
+        var root = FindRepositoryRoot();
+        var featRows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
+            root.FullName, "SWLOR_Haks", "sw_2da", "feat.2da")));
+        var tlkEntries = ReadTlkEntries(new FileInfo(Path.Combine(
+            root.FullName, "SWLOR_Haks", "sw_tlk", "sw_tlk.tlk.json")));
+        var techniques = BuildAllAbilities(MimicryTechniqueNamespace)
+            .ToDictionary(technique => technique.Feat, technique => technique.Detail);
+
+        string Description(FeatType feat)
+        {
+            var descriptionStrref = int.Parse(featRows[(int)feat]["DESCRIPTION"]);
+            return tlkEntries[descriptionStrref - CustomTlkStrrefOffset];
+        }
+
+        foreach (var (feat, percent) in new[]
+                 {
+                     (FeatType.MindSpikeTechnique, 6),
+                     (FeatType.RangefinderShotTechnique, 8)
+                 })
+        {
+            techniques[feat].MimicryTraitStats[StatType.AccuracyPercentAdjustment].Should().Be(percent);
+            Description(feat).Should().Contain($"increases your Accuracy rating by {percent}%");
+            Description(feat).Should().Contain("including Force and Mimicry");
+            Description(feat).Should().Contain($"does not add {percent} percentage points directly to hit chance");
+        }
+
+        foreach (var feat in new[] { FeatType.FinalEclipseTechnique, FeatType.FinalLineTechnique })
+        {
+            techniques[feat].SkillType.Should().Be(SkillType.Mimicry);
+            techniques[feat].CombatImpactDamageAbility.Should().Be(AbilityType.Might);
+            Description(feat).Should().StartWith("Uses Mimicry rank and MGT for its hit check.");
+        }
+
+        Description(FeatType.FinalEclipseTechnique).Should().Contain(
+            "Force is the damage type; this remains a Mimicry ability.");
+        Description(FeatType.FinalLineTechnique).Should().Contain(
+            "After the normal damage roll, each hit gains +0% damage at full HP, scaling smoothly up to +35% as that target nears defeat.");
     }
 
     // Every damaging (active) technique must declare a scaling attribute so its damage tracks player
@@ -628,13 +702,17 @@ public class MimicryTests
     }
 
     // feat.2da targeting metadata must match each technique's shape so the client presents the
-    // correct activation UX. Mirrors the weapon-archetype generator convention:
+    // correct activation UX. Mirrors the AGENTS.md area-targeting convention:
     //   - single-target hostile cast  -> HostileFeat=1, TARGETSELF blank (shows a hostile cursor)
-    //   - self-origin area / stance / self-or-ally utility -> TARGETSELF=1, HostileFeat blank
-    //     (originates on the caster; SWLOR activation targeting drives any area placement)
+    //   - aimed area (line/cone, or a sphere placed at a chosen location) -> HostileFeat=1,
+    //     TARGETSELF blank: the player picks the direction or ground point with a cursor, exactly
+    //     like Earthshatter. A cone's geometry originating on the caster does not make it
+    //     self-cast - the cursor chooses where it points.
+    //   - self-centered area / stance / self-or-ally utility -> TARGETSELF=1, HostileFeat blank
     //   - passive trait -> both blank (never cast)
-    // Guards against techniques shipping with unset targeting columns (the client would then prompt
-    // the wrong cursor, e.g. a self-centered area asking for a manual target).
+    // Guards against techniques shipping with unset or inverted targeting columns (TARGETSELF=1 on
+    // an aimed shape silently kills its declared client targeting - no cursor, always fires from
+    // the caster's facing).
     [Test]
     public void MimicryTechniques_Feat2daTargetingMatchesAbilityShape()
     {
@@ -662,19 +740,24 @@ public class MimicryTests
                 continue;
             }
 
-            // Only a single-target hostile cast presents a manual target cursor; everything that
-            // originates on the caster (areas, stances, self/ally utility) must self-cast instead.
-            var originatesOnCaster = detail.IsAreaAbility || detail.IsMimicryStance || detail.IsMimicryUtility;
+            // An aimed area lets the player choose a direction or ground point, so it keeps the
+            // hostile cursor; only self-centered areas, stances, and self/ally utility self-cast.
+            var isAimedArea = detail.Targeting is { } targeting &&
+                              (targeting.Shape is AbilityTargetingShapeType.Rect or AbilityTargetingShapeType.Cone ||
+                               targeting.Shape == AbilityTargetingShapeType.Sphere &&
+                               !targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf));
+            var selfCasts = !isAimedArea &&
+                            (detail.IsAreaAbility || detail.IsMimicryStance || detail.IsMimicryUtility);
 
-            if (originatesOnCaster)
+            if (selfCasts)
             {
                 targetSelf.Should().Be("1", $"{feat} originates on the caster and must not present a target cursor (TARGETSELF=1)");
                 hostile.Should().Be("****", $"{feat} originates on the caster and must not be a hostile-cursor cast");
             }
             else
             {
-                hostile.Should().Be("1", $"{feat} is a single-target hostile cast and must present a hostile target cursor (HostileFeat=1)");
-                targetSelf.Should().Be("****", $"{feat} is a single-target cast and must not self-target");
+                hostile.Should().Be("1", $"{feat} presents a hostile target cursor (HostileFeat=1)");
+                targetSelf.Should().Be("****", $"{feat} takes a manual cursor and must not self-target");
             }
         }
     }

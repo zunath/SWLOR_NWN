@@ -71,7 +71,9 @@ public class PlayerNameChatCommandTests
         source.Should().Contain("You may only forget names for player characters.");
 
         source.Should().Contain("if (target == user)");
-        source.Should().Contain("Players who have not named you will now see you as");
+        source.Should().Contain("Players who have not labeled your current identity will see this in gray");
+        source.Should().Contain("Private label saved as");
+        source.Should().Contain("Only you can see this label");
         source.Should().NotContain("You already know your own name.");
         source.Should().Contain("You cannot forget your own name.");
     }

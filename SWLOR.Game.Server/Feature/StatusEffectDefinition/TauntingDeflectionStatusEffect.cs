@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override EffectIconType Icon => EffectIconType.TauntingDeflectionStatusEffect;
         public TauntingDeflectionStatusEffect()
         {
-            StatGroup.Stats[StatType.AttackDeflection] = 10;
+            StatGroup.Stats[StatType.RangedDeflection] = 10;
             StatGroup.Stats[StatType.DeflectionFPRestore] = 2;
             StatGroup.Stats[StatType.DeflectionEnmityPercentAdjustment] = 20;
         }

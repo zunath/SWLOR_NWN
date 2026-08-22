@@ -4,6 +4,13 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
+    /// <summary>
+    /// Anchors the Rundown icon identity for the gameplay-icon pipeline. Combat no longer applies
+    /// this class directly - the shared MeleeRepeatedTargetDamageStatusEffect carries the stacks
+    /// and shows this icon through StatType.MeleeRepeatedTargetDamageStatusEffectIcon - but the
+    /// manifest, EffectIconType.RundownStatusEffect, effecticons.2da, and the ief_rndwn artwork
+    /// all key off this definition, so it stays as their source of truth.
+    /// </summary>
     public sealed class RundownStatusEffect : StatusEffectBase
     {
         // No configured decay applies to Rundown, so this keeps the icon alive across normal attack

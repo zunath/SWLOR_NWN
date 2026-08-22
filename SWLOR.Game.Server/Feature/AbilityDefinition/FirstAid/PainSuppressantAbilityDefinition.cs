@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 
         private static void ApplyTemporaryHP(uint activator, uint target, int percent, float durationSeconds)
         {
-            AbilityEffectScaling.ApplyTemporaryHPPercent(activator, target, percent, durationSeconds);
+            AbilityEffectScaling.ApplyTemporaryHPPercent(activator, target, "PAIN_SUPPRESSANT", percent, durationSeconds);
         }
     }
 }

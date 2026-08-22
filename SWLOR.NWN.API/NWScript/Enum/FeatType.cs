@@ -2001,6 +2001,7 @@ namespace SWLOR.NWN.API.NWScript.Enum
         Bite2 = 2448,
         ForceSpark2 = 2449,
         ForceLightning2 = 2453,
+        ForceLightning3 = 2454,
         ForceDrain2 = 2455,
         RousingShout3 = 2456,
         RendingClaw2 = 2457,
@@ -2426,5 +2427,6 @@ namespace SWLOR.NWN.API.NWScript.Enum
         RazorTrap1 = 2896,
         RazorTrap2 = 2897,
         ShockTrap = 2898,
+        ForceBurst1 = 2899,
 }
 }

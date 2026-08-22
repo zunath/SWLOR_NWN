@@ -122,20 +122,20 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RayshieldScreenTrait)
-                .Description("Field Support ally buffs from Deflector Shield, Power Cell, Group Deflector, and Emergency Bunker also grant affected allies 8% reduced ranged physical damage for 30 seconds.")
+                .Description("Field Support ally buffs from Deflector Shield, Power Cell, Group Deflector, and Emergency Bunker also grant affected allies +8% Physical Defense for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 18)
                 .RequirementCharacterType(CharacterType.Standard)
-                .IncreasesStat(StatType.FieldSupportRangedPhysicalDamageReductionPercent, 8)
-                .IncreasesStat(StatType.FieldSupportRangedPhysicalDamageReductionDurationSeconds, 30)
+                .IncreasesStat(StatType.FieldSupportPhysicalDefensePercent, 8)
+                .IncreasesStat(StatType.FieldSupportPhysicalDefenseDurationSeconds, 30)
 
                 .AddPerkLevel()
-                .Description("Field Support ally buffs from Deflector Shield, Power Cell, Group Deflector, and Emergency Bunker also grant affected allies 12% reduced ranged physical damage for 30 seconds.")
+                .Description("Field Support ally buffs from Deflector Shield, Power Cell, Group Deflector, and Emergency Bunker also grant affected allies +12% Physical Defense for 30 seconds.")
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 38)
                 .RequirementCharacterType(CharacterType.Standard)
-                .IncreasesStat(StatType.FieldSupportRangedPhysicalDamageReductionPercent, 12)
-                .IncreasesStat(StatType.FieldSupportRangedPhysicalDamageReductionDurationSeconds, 30);
+                .IncreasesStat(StatType.FieldSupportPhysicalDefensePercent, 12)
+                .IncreasesStat(StatType.FieldSupportPhysicalDefenseDurationSeconds, 30);
         }
 
         private void DampeningField()
@@ -168,7 +168,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.OverclockRoutineTrait)
-                .Description("Field Support abilities that affect allies also grant Overclock Routine for 30 seconds. Affected allies gain +4% Device ability damage, healing, temporary HP, and damage absorption shield values.")
+                .Description("Field Support abilities that affect allies also grant Overclock Routine for 30 seconds. Affected allies gain +4% Combat Readiness, increasing their ability damage, healing, and temporary HP values.")
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 35)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -195,7 +195,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Emergency Bunker")
 
                 .AddPerkLevel()
-                .Description("Deploys a 4m-radius shield bunker at the target location for 45 seconds. Allies inside gain 60 temporary HP plus 8% of each target's maximum HP and take 15% less ranged physical damage.")
+                .Description("Deploys an 8m-radius shield bunker at the target location for 45 seconds. Allies inside gain 60 temporary HP plus 8% of each target's maximum HP and take 15% less physical and Force damage.")
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 50)
                 .RequirementCharacterType(CharacterType.Standard)

@@ -32,7 +32,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A teal-colored, bubbly wine that is produced on the planet of Alderaan and served across the galaxy."
+    }
   },
   "Identified": {
     "type": "byte",

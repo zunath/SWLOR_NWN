@@ -18,6 +18,7 @@ public class PlayerGuideContentTests
         "Skills",
         "Skill Decay",
         "Perks",
+        "Force Affinity",
         "Perk Refunds",
         "XP Debt",
         "Abilities",
@@ -117,6 +118,55 @@ public class PlayerGuideContentTests
 
         guideText.Should().Contain($"{Property.ElectionRegistrationDays}-day candidate-registration period");
         guideText.Should().Contain($"{Property.ElectionVotingDays} days of voting");
+    }
+
+    [Test]
+    public void ForceAffinityTopic_ExplainsContributionMagnitudeHitChanceAndDuration()
+    {
+        var topic = GetTopics().Single(topic => GetString(topic, "Name") == "Force Affinity");
+        var text = string.Join("\n", GetAllText(topic));
+
+        text.Should().Contain("-10 Dark to +10 Light");
+        text.Should().Contain("Additional ranks of the same perk do not contribute additional affinity");
+        text.Should().Contain("increases that power's damage, healing, shields, regeneration, or drain magnitude by 5 percent");
+        text.Should().Contain("At +10 Light, Light powers gain +5% hit chance and Dark powers suffer -5%");
+        text.Should().Contain("Universal Force powers");
+        text.Should().Contain("Force Affinity does not change effect duration");
+        text.Should().Contain("At +6 Light, a Light power uses 130% magnitude and gains +3% hit chance");
+    }
+
+    [Test]
+    public void CombatBasics_ExplainsCombatReadinessMagnitudeAndCooldownScope()
+    {
+        var topic = GetTopics().Single(topic => GetString(topic, "Name") == "Combat Basics");
+        var text = string.Join("\n", GetAllText(topic));
+
+        text.Should().Contain("activated ability damage, healing, and temporary HP");
+        text.Should().Contain("does not reduce cooldowns");
+    }
+
+    [Test]
+    public void NamesAndDisguises_ExplainObserverSpecificIdentityModel()
+    {
+        var communication = GetTopics().Single(topic => GetString(topic, "Name") == "Communication");
+        var communicationText = string.Join("\n", GetAllText(communication));
+
+        communicationText.Should().Contain("private label only your character can see");
+        communicationText.Should().Contain("It does not rename the other character");
+        communicationText.Should().Contain("no other player sees the label you entered");
+        communicationText.Should().Contain("does not have to be the truth");
+        communicationText.Should().Contain("Can two players see different names for the same character?");
+        communicationText.Should().Contain("It records what your character believes");
+        communicationText.Should().Contain("only Mira sees Red Coat");
+        communicationText.Should().Contain("Jax still sees Tall Armored Human in gray");
+
+        var disguises = GetTopics().Single(topic => GetString(topic, "Name") == "Disguises");
+        var disguiseText = string.Join("\n", GetAllText(disguises));
+
+        disguiseText.Should().Contain("normal identity and every disguise are remembered separately");
+        disguiseText.Should().Contain("Each observer may label the same disguise differently");
+        disguiseText.Should().Contain("does not hide your underlying character from staff");
+        disguiseText.Should().Contain("audit logs retain the real character and account identity");
     }
 
     private static List<object> GetTopics()

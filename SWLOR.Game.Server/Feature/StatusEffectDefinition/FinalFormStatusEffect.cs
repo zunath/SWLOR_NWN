@@ -11,7 +11,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public FinalFormStatusEffect()
         {
             StatGroup.Stats[StatType.SingleTargetPhysicalAbilityDamagePercentAdjustment] = 15;
-            StatGroup.Stats[StatType.AttackDeflection] = 15;
+            StatGroup.Stats[StatType.MeleeDeflection] = 15;
         }
 
     }

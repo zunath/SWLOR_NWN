@@ -1,0 +1,320 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="using:SWLOR.Toolset"
+             xmlns:core="using:Dock.Model.Core"
+             xmlns:editors="using:SWLOR.Toolset.Editors"
+             xmlns:waypoints="using:SWLOR.Toolset.Editors.Waypoints"
+             xmlns:placeables="using:SWLOR.Toolset.Editors.Placeables"
+             xmlns:behaviors="using:SWLOR.Toolset.Editors.Behaviors"
+             x:Class="SWLOR.Toolset.App"
+             RequestedThemeVariant="Dark">
+
+  <Application.DataTemplates>
+    <!-- Shared editor field templates: one app-wide copy for every blueprint/area field
+         editor, formerly duplicated verbatim in BlueprintEditorView and AreaEditorView. Listed
+         before the ViewLocator catch-all. -->
+    <!-- The strref is a watermark rather than a column. It exists to explain a blank box - the name
+         comes from the TLK and this field edits the override - and as a column it was a line of grey
+         text as wide as the box it explained, on every row, whether or not the box was blank. A
+         description then got what was left, which was a couple of characters. -->
+    <DataTemplate DataType="editors:LocStringFieldViewModel">
+      <behaviors:LabeledFieldPanel Margin="0,2">
+        <TextBlock Text="{Binding Label}" VerticalAlignment="Top" Margin="0,5,0,0"
+                   Classes="dim" TextWrapping="Wrap" />
+        <Panel>
+          <TextBox Text="{Binding Text, Mode=TwoWay}" IsReadOnly="{Binding IsReadOnly}"
+                   Watermark="{Binding StrRefDisplay}" IsVisible="{Binding IsSingleLine}" />
+          <TextBox Text="{Binding Text, Mode=TwoWay}" IsReadOnly="{Binding IsReadOnly}"
+                   Watermark="{Binding StrRefDisplay}"
+                   IsVisible="{Binding IsMultiline}" AcceptsReturn="True" TextWrapping="Wrap"
+                   MinHeight="140" VerticalContentAlignment="Top"
+                   ScrollViewer.VerticalScrollBarVisibility="Auto"
+                   ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
+        </Panel>
+      </behaviors:LabeledFieldPanel>
+    </DataTemplate>
+
+    <!-- Every behavior editor's row, from one control. The trigger, waypoint, door and sound
+         editors each used to carry their own copy of this markup. -->
+    <DataTemplate DataType="behaviors:BehaviorRowViewModel">
+      <behaviors:BehaviorRowView Margin="4,1" />
+    </DataTemplate>
+
+    <DataTemplate DataType="editors:CheckFieldViewModel">
+      <behaviors:LabeledFieldPanel Margin="0,2">
+        <TextBlock Text="{Binding Label}" VerticalAlignment="Top" Margin="0,4,0,0"
+                   Classes="dim" TextWrapping="Wrap" />
+        <StackPanel>
+          <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}" IsEnabled="{Binding !IsReadOnly}" />
+          <TextBlock Text="{Binding Description}" Classes="dim"
+                     FontSize="11" TextWrapping="Wrap" Margin="0,3,0,3"
+                     IsVisible="{Binding HasDescription}" />
+        </StackPanel>
+      </behaviors:LabeledFieldPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="editors:IntegerFieldViewModel">
+      <behaviors:LabeledFieldPanel Margin="0,2">
+        <TextBlock Text="{Binding Label}" VerticalAlignment="Top" Margin="0,7,0,0"
+                   Classes="dim" TextWrapping="Wrap" />
+        <NumericUpDown Value="{Binding Value, Mode=TwoWay}" MinWidth="110" MaxWidth="220"
+                       HorizontalAlignment="Left"
+                       FormatString="0" Increment="1" IsEnabled="{Binding !IsReadOnly}" />
+      </behaviors:LabeledFieldPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="editors:FloatFieldViewModel">
+      <behaviors:LabeledFieldPanel Margin="0,2">
+        <TextBlock Text="{Binding Label}" VerticalAlignment="Top" Margin="0,7,0,0"
+                   Classes="dim" TextWrapping="Wrap" />
+        <NumericUpDown Value="{Binding Value, Mode=TwoWay}" MinWidth="110" MaxWidth="220"
+                       HorizontalAlignment="Left"
+                       Increment="0.5" IsEnabled="{Binding !IsReadOnly}" />
+      </behaviors:LabeledFieldPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="editors:DropdownFieldViewModel">
+      <behaviors:LabeledFieldPanel Margin="0,2">
+        <TextBlock Text="{Binding Label}" VerticalAlignment="Top" Margin="0,7,0,0"
+                   Classes="dim" TextWrapping="Wrap" />
+        <StackPanel>
+          <ComboBox IsVisible="{Binding HasOptions}" HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Left"
+                    ItemsSource="{Binding Options}" SelectedItem="{Binding SelectedOption, Mode=TwoWay}"
+                    MaxDropDownHeight="400" />
+          <NumericUpDown IsVisible="{Binding !HasOptions}" MinWidth="110" MaxWidth="220"
+                         HorizontalAlignment="Left"
+                         Value="{Binding RawValue, Mode=OneWay}" FormatString="0" Increment="1"
+                         IsEnabled="False"
+                         ToolTip.Tip="2DA metadata unavailable; stored value shown read-only." />
+          <TextBlock IsVisible="{Binding !HasOptions}"
+                     Text="{Binding LookupUnavailableMessage}"
+                     Classes="dim" FontSize="11" TextWrapping="Wrap" Margin="0,3,0,0" />
+        </StackPanel>
+      </behaviors:LabeledFieldPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="editors:ScriptFieldViewModel">
+      <StackPanel Margin="0,2">
+        <behaviors:LabeledFieldPanel>
+          <TextBlock Text="{Binding Label}" VerticalAlignment="Top" Margin="0,7,0,0"
+                     Classes="dim" TextWrapping="Wrap" />
+          <Grid ColumnDefinitions="*,Auto,Auto">
+            <TextBox Grid.Column="0" Text="{Binding Text, Mode=TwoWay}"
+                     FontFamily="{DynamicResource MonoFont}" />
+            <Button Grid.Column="1" Content="..." Margin="4,0,0,0" Padding="8,4"
+                    Command="{Binding BrowseCommand}" IsVisible="{Binding CanBrowse}"
+                    ToolTip.Tip="Browse module scripts" />
+            <Button Grid.Column="2" Content="Open" Margin="4,0,0,0" Padding="8,4"
+                    Command="{Binding OpenScriptCommand}" IsVisible="{Binding CanBrowse}"
+                    ToolTip.Tip="Open this script in an editor tab" />
+          </Grid>
+        </behaviors:LabeledFieldPanel>
+        <!-- A slot naming a script that does not exist is a live, otherwise invisible bug across the
+             2,250 module resources that name one. -->
+        <TextBlock Margin="0,2,0,0" FontSize="11" TextWrapping="Wrap"
+                   Foreground="{DynamicResource AmberBrush}"
+                   IsVisible="{Binding IsMissing}" Text="{Binding MissingMessage}" />
+      </StackPanel>
+    </DataTemplate>
+
+    <!-- A resref that names another module resource. Editable text with the real list attached, so
+         a value from a hak stays typeable and an unknown one says so rather than being rejected. -->
+    <DataTemplate DataType="editors:ResourcePickerFieldViewModel">
+      <behaviors:LabeledFieldPanel Margin="0,2">
+        <TextBlock Text="{Binding Label}" VerticalAlignment="Top" Margin="0,7,0,0"
+                   Classes="dim" TextWrapping="Wrap" />
+        <StackPanel>
+          <AutoCompleteBox Text="{Binding Text, Mode=TwoWay}"
+                           ItemsSource="{Binding Choices}" FilterMode="Contains"
+                           FontFamily="Consolas,monospace" />
+          <TextBlock Text="{Binding UnknownHint}" Classes="label"
+                     Foreground="{DynamicResource AmberBrush}" Margin="0,3,0,0"
+                     IsVisible="{Binding IsUnknown}" TextWrapping="Wrap" />
+        </StackPanel>
+      </behaviors:LabeledFieldPanel>
+    </DataTemplate>
+
+    <DataTemplate DataType="editors:TextFieldViewModel">
+      <behaviors:LabeledFieldPanel Margin="0,2">
+        <TextBlock Text="{Binding Label}" VerticalAlignment="Top" Margin="0,7,0,0"
+                   Classes="dim" TextWrapping="Wrap" />
+        <TextBox Text="{Binding Text, Mode=TwoWay}" IsReadOnly="{Binding IsReadOnly}" />
+      </behaviors:LabeledFieldPanel>
+    </DataTemplate>
+
+    <!-- One behavior field. Seven shapes over the same row so the label column stays aligned with
+         the schema fields above: toggle, number, name-valued picker, table dropdown, searchable
+         select list, preview gallery, and free text.
+         A name picker is an AutoCompleteBox rather than a combo because the tag source alone offers
+         five figures of options and a stored value the source does not know must stay visible. -->
+    <DataTemplate DataType="placeables:BehaviorFieldViewModel">
+      <behaviors:LabeledFieldPanel Margin="0,2">
+        <StackPanel VerticalAlignment="Top" Margin="0,7,0,0">
+          <TextBlock Text="{Binding Label}" Classes="dim" TextWrapping="Wrap" />
+          <TextBlock Text="required" Classes="count" IsVisible="{Binding IsRequired}" />
+        </StackPanel>
+
+        <StackPanel Spacing="5">
+
+        <CheckBox IsVisible="{Binding IsToggle}" IsChecked="{Binding Flag, Mode=TwoWay}" />
+
+        <NumericUpDown IsVisible="{Binding IsInteger}" FormatString="0" Increment="1"
+                       MinWidth="110" MaxWidth="220" HorizontalAlignment="Left"
+                       Minimum="{Binding Minimum}" Maximum="{Binding Maximum}"
+                       Value="{Binding Number, Mode=TwoWay}" />
+
+        <AutoCompleteBox IsVisible="{Binding IsNameChoice}"
+                         ItemsSource="{Binding Options}"
+                         ValueMemberBinding="{Binding Value}"
+                         FilterMode="Contains" MaxDropDownHeight="360"
+                         Text="{Binding Text, Mode=TwoWay}" />
+
+        <StackPanel IsVisible="{Binding IsSearchableChoice}" Spacing="6">
+          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+            <TextBlock Grid.Column="0" Text="{Binding SelectedDisplay}"
+                       VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+            <Button Grid.Column="1" Content="{Binding ClearChoiceLabel}" Padding="10,4"
+                    Command="{Binding ClearChoiceCommand}"
+                    IsVisible="{Binding CanClearChoice}" />
+          </Grid>
+          <TextBox Text="{Binding ChoiceSearchText, Mode=TwoWay}"
+                   Watermark="{Binding ChoiceSearchWatermark}" />
+          <TextBlock Text="{Binding SearchableChoiceSummary}" Classes="count" />
+          <Border BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1"
+                  CornerRadius="2" ClipToBounds="True">
+            <ScrollViewer MaxHeight="240" VerticalScrollBarVisibility="Auto">
+              <ItemsControl ItemsSource="{Binding SearchableOptions}">
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate DataType="placeables:BehaviorChoiceOption">
+                    <Button Classes="behavior" Content="{Binding Display}"
+                            Margin="2" Padding="8,5"
+                            HorizontalAlignment="Stretch"
+                            HorizontalContentAlignment="Left"
+                            Command="{Binding $parent[ItemsControl].((placeables:BehaviorFieldViewModel)DataContext).PickSearchableChoiceCommand}"
+                            CommandParameter="{Binding}" />
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </ScrollViewer>
+          </Border>
+        </StackPanel>
+
+        <!-- The Clear button is the only way out of an optional id choice: a combo has no empty row,
+             assigning null to the selection is ignored, and a named behavior hides the managed local
+             from the raw Variables tab - so the awarded key item, once picked, could not be
+             un-picked without switching behaviors. -->
+        <Grid IsVisible="{Binding IsIdChoice}"
+              ColumnDefinitions="*,Auto" ColumnSpacing="8">
+          <ComboBox Grid.Column="0"
+                    ItemsSource="{Binding Options}" SelectedItem="{Binding SelectedOption, Mode=TwoWay}"
+                    MaxDropDownHeight="400" HorizontalAlignment="Stretch" />
+          <Button Grid.Column="1" Content="{Binding ClearChoiceLabel}" Padding="10,4"
+                  Command="{Binding ClearChoiceCommand}"
+                  IsVisible="{Binding CanClearChoice}" />
+        </Grid>
+
+        <TextBox IsVisible="{Binding IsText}" Text="{Binding Text, Mode=TwoWay}" />
+
+        <StackPanel IsVisible="{Binding IsGalleryChoice}" Spacing="6"
+                    HorizontalAlignment="Stretch">
+          <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+            <StackPanel Grid.Column="0" VerticalAlignment="Center">
+              <TextBlock Text="{Binding SelectedDisplay}" TextTrimming="CharacterEllipsis" />
+              <TextBlock Text="{Binding SelectedDetails}" Classes="dim" FontSize="11"
+                         TextWrapping="Wrap" MaxLines="2" IsVisible="{Binding HasSelectedDetails}" />
+            </StackPanel>
+            <Button Grid.Column="1" Content="{Binding ClearChoiceLabel}" Padding="10,4"
+                    Command="{Binding ClearChoiceCommand}"
+                    IsVisible="{Binding CanClearChoice}" />
+          </Grid>
+          <TextBox Text="{Binding GalleryQuery, Mode=TwoWay}"
+                   Watermark="{Binding GallerySearchWatermark}" />
+          <TextBlock Text="{Binding GallerySummary}" Classes="count" />
+          <!-- Gallery choices live on the form. They remain paged internally so opening a behavior
+               does not create hundreds of preview controls at once; scrolling publishes each next
+               page before the builder reaches the end. -->
+          <ScrollViewer MaxHeight="360" VerticalScrollBarVisibility="Auto"
+                        ScrollChanged="OnBehaviorGalleryScrollChanged">
+            <ItemsControl ItemsSource="{Binding GalleryTiles}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <WrapPanel />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="placeables:BehaviorGalleryTileViewModel">
+                  <Button Classes="behavior" Classes.on="{Binding IsSelected}"
+                          Margin="3" Padding="4"
+                          Command="{Binding $parent[ItemsControl].((placeables:BehaviorFieldViewModel)DataContext).PickChoiceCommand}"
+                          CommandParameter="{Binding}">
+                    <StackPanel Width="158" Spacing="3">
+                      <Border Height="112" ClipToBounds="True" CornerRadius="2"
+                              Background="{DynamicResource FieldBrush}"
+                              BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1">
+                        <Panel>
+                          <TextBlock Text="{Binding Glyph}" FontSize="28" Classes="dim"
+                                     HorizontalAlignment="Center" VerticalAlignment="Center" />
+                          <Image Source="{Binding Preview}" Stretch="Uniform" />
+                        </Panel>
+                      </Border>
+                      <TextBlock Text="{Binding Display}" FontSize="11"
+                                 TextTrimming="CharacterEllipsis" />
+                      <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock Grid.Column="0" Text="{Binding Details}" Classes="mono"
+                                   FontSize="10" TextTrimming="CharacterEllipsis" />
+                        <TextBlock Grid.Column="1" Text="{Binding Group}" Classes="count"
+                                   FontSize="10" IsVisible="{Binding HasGroup}" />
+                      </Grid>
+                    </StackPanel>
+                  </Button>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </ScrollViewer>
+        </StackPanel>
+
+        <TextBlock Classes="count" Margin="0,2,0,0" TextWrapping="Wrap"
+                   Text="{Binding StatusText}"
+                   IsVisible="{Binding StatusText, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+        <TextBlock Text="{Binding Description}" Classes="dim"
+                   FontSize="11" TextWrapping="Wrap" Margin="0,3,0,3"
+                   IsVisible="{Binding HasDescription}" />
+        </StackPanel>
+      </behaviors:LabeledFieldPanel>
+    </DataTemplate>
+
+    <local:ViewLocator />
+  </Application.DataTemplates>
+
+  <Application.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="avares://Dock.Avalonia.Themes.Fluent/Presets/Ide/Default.axaml" />
+        <!-- Last so the Toolset's icon aliases replace every close geometry consumed by Dock. -->
+        <ResourceInclude Source="avares://SWLOR.Toolset/Assets/Icons.axaml" />
+      </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+  </Application.Resources>
+
+  <Application.Styles>
+    <FluentTheme />
+    <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
+    <!-- AvaloniaEdit ships no default style: without this the script editor's TextEditor renders
+         as an unstyled blank control. Must precede ToolsetTheme so our overrides still win. -->
+    <StyleInclude Source="avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml" />
+    <DockFluentTheme DensityStyle="Compact" />
+
+    <Style Selector="ToolControl">
+      <Setter Property="HeaderTemplate">
+        <DataTemplate DataType="core:IDockable">
+          <TextBlock Text="{Binding Title}" Padding="2" />
+        </DataTemplate>
+      </Setter>
+    </Style>
+
+    <!-- Last, so it wins over both Fluent and the Dock preset. -->
+    <StyleInclude Source="avares://SWLOR.Toolset/Styles/ToolsetTheme.axaml" />
+  </Application.Styles>
+
+</Application>

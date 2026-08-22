@@ -1,7 +1,6 @@
 
 // dmfi_univ_listen
 
-// template: dmfi_getln_cbtpl
 // triggered from OnPlayerChat callback
 
 #include "dmfi_db_inc"

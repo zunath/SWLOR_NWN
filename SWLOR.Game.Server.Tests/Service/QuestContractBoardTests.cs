@@ -10,6 +10,12 @@ namespace SWLOR.Game.Server.Tests.Service;
 public class QuestContractBoardTests
 {
     [Test]
+    public void QuestContractObjective_DefaultsQuantityToOne()
+    {
+        new QuestContractObjective().Quantity.Should().Be(1);
+    }
+
+    [Test]
     public void SanitizeContractText_NullInputReturnsEmpty()
     {
         QuestContractBoard.SanitizeContractText(null, 100).Should().Be(string.Empty);
@@ -159,6 +165,16 @@ public class QuestContractBoardTests
 
         QuestContractBoard.ValidateDraft(draft, "Title", "Description", ResolveKnownItem)
             .Should().Be($"Objective quantities must be between 1 and {QuestContractBoard.MaxObjectiveQuantity}.");
+    }
+
+    [Test]
+    public void ValidateDraft_AcceptsMaximumObjectiveQuantity()
+    {
+        var draft = CreateValidDraft();
+        draft.Objectives[0].Quantity = QuestContractBoard.MaxObjectiveQuantity;
+
+        QuestContractBoard.ValidateDraft(draft, "Title", "Description", ResolveKnownItem)
+            .Should().Be(string.Empty);
     }
 
     [Test]

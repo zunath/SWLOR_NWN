@@ -1,31 +1,31 @@
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DialogService;
+using SWLOR.Game.Server.Service.ConversationService;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.TaxiService;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
-    public class TaxiTerminalDialog: DialogBase
+    public class TaxiTerminalDialog: ConversationMenuDefinition
     {
         private const string MainPageId = "MAIN_PAGE";
 
-        public override PlayerDialog SetUp(uint player)
+        public override ConversationMenuSpec Build()
         {
-            var builder = new DialogBuilder()
+            var builder = new ConversationMenuBuilder()
                 .AddPage(MainPageId, MainPageInit);
 
             return builder.Build();
         }
 
-        private void MainPageInit(DialogPage page)
+        private void MainPageInit(ConversationMenuPage page)
         {
             page.Header = BuildHeader();
 
-            var player = GetPC();
-            var regionId = GetLocalInt(OBJECT_SELF, "TAXI_REGION_ID");
+            var player = Player;
+            var regionId = GetLocalInt(Owner, "TAXI_REGION_ID");
             var destinations = Taxi.GetDestinationsByRegionId(regionId);
-            var destinationId = GetLocalInt(OBJECT_SELF, "TAXI_DESTINATION_ID");
+            var destinationId = GetLocalInt(Owner, "TAXI_DESTINATION_ID");
             var destinationType = (TaxiDestinationType) destinationId;
 
             // DMs or Non-Players: Display all destinations (no registration required)
@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
         private string BuildHeader()
         {
-            var player = GetPC();
+            var player = Player;
 
             if (KeyItem.HasKeyItem(player, KeyItemType.TaxiHailingDevice))
             {

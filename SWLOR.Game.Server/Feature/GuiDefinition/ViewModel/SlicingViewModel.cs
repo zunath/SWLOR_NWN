@@ -404,7 +404,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 parts.Add("Verified route tile");
             if (tile.IsOrientationRevealed)
             {
-                var clockwise = (tile.SolutionOrientation - tile.Orientation + 4) % 4;
+                var clockwise = Slicing.GetClockwiseSolutionRotationCost(tile);
                 parts.Add($"Correct orientation: {clockwise} clockwise turn(s)");
             }
 

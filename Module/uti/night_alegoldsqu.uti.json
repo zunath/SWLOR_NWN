@@ -32,7 +32,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Created by a coruscant local, this ale tastes sweet and is easy to drink. "
+    }
   },
   "Identified": {
     "type": "byte",

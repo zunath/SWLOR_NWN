@@ -32,7 +32,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Experience the vibrant fusion of tradition and innovation with Czerka Soda. Our artisanal drink combines timeless flavors with a secret spice blend, creating a bold and refreshing taste that's perfect for any occasion.\n\nEco-Chic Packaging Czerka Soda comes in stylish, sustainable bottles, making it the smart choice for the eco-conscious consumer.\n\nVersatile & Vibrant Ideal for mixology or as a standalone refreshment, Czerka Soda  is your go-to for celebrations or everyday enjoyment.\n\nBe Part of the Czerka Culture Embrace the movement that blends heritage with contemporary flair. Make a statement with every sip of Czerka Soda."
+    }
   },
   "Identified": {
     "type": "byte",

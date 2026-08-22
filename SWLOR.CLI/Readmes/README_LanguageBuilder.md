@@ -5,9 +5,9 @@ The LanguageBuilder generates randomized character substitution code for languag
 
 ## Command
 ```bash
-SWLOR.CLI.exe -l
+RunCLI.cmd -l
 # or
-SWLOR.CLI.exe --language
+RunCLI.cmd --language
 ```
 
 ## Functionality
@@ -71,4 +71,4 @@ This tool is used during development to:
 - Each run produces different randomization results
 - The tool is designed for one-time language generation
 - Generated code should be integrated into the game's language processing system
-- The randomization ensures unique language mappings for each generation 
+- The randomization ensures unique language mappings for each generation

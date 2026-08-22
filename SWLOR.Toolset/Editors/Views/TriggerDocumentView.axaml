@@ -1,0 +1,73 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:triggers="using:SWLOR.Toolset.Editors.Triggers"
+             xmlns:behaviors="using:SWLOR.Toolset.Editors.Behaviors"
+             xmlns:sources="using:SWLOR.Toolset.Editors.Sources"
+             x:Class="SWLOR.Toolset.Editors.Triggers.TriggerDocumentView"
+             x:DataType="triggers:TriggerDocumentViewModel">
+
+  <!-- A trigger blueprint, in the shape every behavior editor uses: header, tabs, and a Behavior
+       tab whose left rail picks what the trigger is for. Variables appear only under Custom - every
+       other behavior owns its locals and exposes them as named fields. -->
+  <DockPanel>
+    <behaviors:BehaviorEditorHeader DockPanel.Dock="Top"
+                                    BehaviorName="{Binding Editor.HeaderName}"
+                                    Kind="{Binding Editor.HeaderKind}"
+                                    Owner="{Binding Editor.HeaderOwner}"
+                                    IsDirty="{Binding IsDirty}" />
+
+    <Border DockPanel.Dock="Bottom" Padding="16,11"
+            BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1,0,0">
+      <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+        <TextBlock Grid.Column="0" VerticalAlignment="Center" Foreground="{DynamicResource AmberBrush}"
+                   FontSize="12" TextTrimming="CharacterEllipsis"
+                   DataContext="{Binding Editor}" x:DataType="triggers:TriggerEditorViewModel"
+                   Text="{Binding Incomplete}" IsVisible="{Binding IsIncomplete}" />
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+          <Button Content="Revert" MinWidth="86" Command="{Binding RevertCommand}" />
+          <Button Content="Save" MinWidth="86" Classes="primary" Command="{Binding SaveCommand}" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <TabControl DataContext="{Binding Editor}" x:DataType="triggers:TriggerEditorViewModel"
+                SelectedIndex="{Binding $parent[UserControl].((triggers:TriggerDocumentViewModel)DataContext).SelectedTabIndex, Mode=TwoWay}">
+      <TabItem Header="Basic">
+        <ScrollViewer>
+          <ItemsControl ItemsSource="{Binding BasicRows}" Margin="14,10" />
+        </ScrollViewer>
+      </TabItem>
+
+      <TabItem Header="Behavior">
+        <Grid ColumnDefinitions="210,*">
+          <behaviors:BehaviorRailView Grid.Column="0" Items="{Binding BehaviorList}"
+                                      ChooseCommand="{Binding ChooseBehaviorCommand}" />
+
+          <ScrollViewer Grid.Column="1" BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1,0,0,0">
+            <Border Classes="card" Margin="8,12">
+              <StackPanel>
+                <TextBlock Text="{Binding HeaderName}" Classes="section" Margin="16,12,16,2" />
+                <!-- What the behavior does, where the reader starts rather than after the fields. -->
+                <TextBlock Text="{Binding Behavior.Summary}" Classes="dim" Margin="16,0,16,8"
+                           TextWrapping="Wrap"
+                           IsVisible="{Binding Behavior.Summary, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+                <ItemsControl ItemsSource="{Binding BehaviorRows}" Margin="8,2,8,8" />
+              </StackPanel>
+            </Border>
+          </ScrollViewer>
+        </Grid>
+      </TabItem>
+
+      <!-- Variables exist only under Custom. -->
+      <TabItem Header="Variables" IsVisible="{Binding ShowsVariablesTab}">
+        <behaviors:VariablesSectionView DataContext="{Binding Variables}" />
+      </TabItem>
+
+      <TabItem Header="Source"
+               DataContext="{Binding $parent[UserControl].((triggers:TriggerDocumentViewModel)DataContext).Source}"
+               IsVisible="{Binding Converter={x:Static ObjectConverters.IsNotNull}}">
+        <sources:ObjectSourceView />
+      </TabItem>
+    </TabControl>
+  </DockPanel>
+</UserControl>

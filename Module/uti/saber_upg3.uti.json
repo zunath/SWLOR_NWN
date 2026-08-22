@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "This kit upgrades a lightsaber from tier 2 to tier 3. The lightsaber must be unequipped."
     }
   },
   "Identified": {

@@ -70,10 +70,12 @@ namespace SWLOR.Game.Server.Service.GuiService
         PlayerStatusPortraitSpace = 65,
         Techniques = 66,
         Slicing = 67,
-        Masteries = 68,
-        MasteryReview = 69,
+        Conversation = 68,
+        Masteries = 69,
+        MasteryReview = 70,
 
         DebugEnmity = 900,
+        DebugNuiGallery = 901,
         ChangePortrait = 9999
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -86,6 +87,52 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Rebuilds the active Stealth status after a rank purchase or refund so the status never
+        /// retains a stat snapshot from the previous perk level. A full refund also exits the
+        /// native action mode immediately because the ownership gate no longer passes.
+        /// </summary>
+        public static void RefreshActiveStatusAfterPerkLevelChange(uint creature)
+        {
+            if (!GetIsPC(creature) || GetIsDM(creature))
+                return;
+
+            var hadActiveStatus = StatusEffect.HasStatusEffect<StealthStatusEffect>(creature);
+            StatusEffect.RemoveStatusEffect<StealthStatusEffect>(creature);
+            if (hadActiveStatus)
+            {
+                Log.WriteStructured(
+                    LogGroup.AI,
+                    "Stealth perk refresh removed active status snapshot: Creature={Creature}",
+                    creature);
+            }
+
+            if (!GetActionMode(creature, ActionMode.Stealth))
+                return;
+
+            if (Perk.GetPerkLevel(creature, PerkType.Stealth) <= 0)
+            {
+                Log.WriteStructured(
+                    LogGroup.AI,
+                    "Stealth perk full refund forced native stealth exit: Creature={Creature}",
+                    creature);
+                EspionageInfiltration.CancelPlayer(creature);
+                ClearVerdictsForTarget(creature);
+                AssignCommand(creature, () =>
+                {
+                    SetActionMode(creature, ActionMode.Stealth, false);
+                });
+                return;
+            }
+
+            ClearVerdictsForTarget(creature);
+            StatusEffect.ApplyStatusEffect<StealthStatusEffect>(creature, creature, 0f);
+            Log.WriteStructured(
+                LogGroup.AI,
+                "Stealth perk refresh reapplied active status snapshot: Creature={Creature}",
+                creature);
+        }
+
+        /// <summary>
         /// Records player-initiated combat before the attack event can add pair enmity. This lets
         /// infiltration distinguish the attack from combat caused by a successful detection.
         /// </summary>
@@ -151,12 +198,24 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            var detected = GetOrRollVerdict(observer, target);
-            EspionageInfiltration.RecordDetection(observer, target, detected);
+            var detected = ResolveDetection(observer, target, true);
             EventsPlugin.SetEventResult(detected ? "1" : "0");
+        }
 
-            if (detected)
-                ExitDetectedPlayerStealth(target);
+        /// <summary>
+        /// Prevents the custom hostile aggro aura from bypassing native stealth visibility. The
+        /// aura itself is positional and fires even when the hostile has not detected the player.
+        /// </summary>
+        public static bool CanAcquireAggro(uint observer, uint target)
+        {
+            if (!GetIsPC(target) ||
+                GetIsDM(target) ||
+                !GetActionMode(target, ActionMode.Stealth))
+            {
+                return true;
+            }
+
+            return ResolveDetection(observer, target, false);
         }
 
         [NWNEventHandler(ScriptName.OnDoListenDetectionBefore)]
@@ -185,21 +244,52 @@ namespace SWLOR.Game.Server.Service
             return detected;
         }
 
+        private static bool ResolveDetection(uint observer, uint target, bool acquireAggroOnDetection)
+        {
+            var detected = GetOrRollVerdict(observer, target);
+            EspionageInfiltration.RecordDetection(observer, target, detected);
+
+            if (detected)
+            {
+                ExitDetectedPlayerStealth(observer, target);
+                if (acquireAggroOnDetection)
+                    AI.TryAcquireAggroAfterDetection(observer, target);
+            }
+
+            return detected;
+        }
+
         /// <summary>
         /// A successful detection reveals a player to everyone by ending their stealth mode. NPC
         /// stealth keeps the engine's observer-specific behavior so creature encounters are not
         /// globally revealed when a single observer succeeds.
         /// </summary>
-        private static void ExitDetectedPlayerStealth(uint target)
+        private static void ExitDetectedPlayerStealth(uint observer, uint target)
         {
             if (!GetIsPC(target) ||
                 GetIsDM(target) ||
                 !GetActionMode(target, ActionMode.Stealth))
                 return;
 
-            AssignCommand(target, () =>
+            Log.WriteStructured(
+                LogGroup.AI,
+                "Stealth detection forced native stealth exit: Observer={Observer} Target={Target}",
+                observer,
+                target);
+
+            // Set the mode directly while the Spot hook is active, then retry after the native
+            // detection call has unwound. Hostile AI can immediately start combat from a
+            // successful verdict, and the deferred pass prevents that transition from leaving
+            // the player's native mode and tracked status out of sync.
+            SetActionMode(target, ActionMode.Stealth, false);
+            StatusEffect.RemoveStatusEffect<StealthStatusEffect>(target);
+            DelayCommand(0f, () =>
             {
+                if (!GetIsObjectValid(target) || !GetActionMode(target, ActionMode.Stealth))
+                    return;
+
                 SetActionMode(target, ActionMode.Stealth, false);
+                StatusEffect.RemoveStatusEffect<StealthStatusEffect>(target);
             });
             SendMessageToPC(target, ColorToken.Red("You have been detected and are forced out of stealth."));
         }

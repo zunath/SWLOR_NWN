@@ -75819,7 +75819,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 1300
+          "value": 0
         },
         "Ref": {
           "type": "byte",

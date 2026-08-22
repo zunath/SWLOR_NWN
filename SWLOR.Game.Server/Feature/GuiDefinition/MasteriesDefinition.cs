@@ -19,10 +19,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     public class MasteriesDefinition: IGuiWindowDefinition
     {
         private readonly GuiWindowBuilder<MasteriesViewModel> _builder = new();
+        private const float TabRowHeight = 28f;
+        private const float TabPanelHeight = 40f;
+        private const float ContentPanelWidth = 560f;
 
         public GuiConstructedWindow BuildWindow()
         {
-            _builder.CreateWindow(GuiWindowType.Masteries)
+            var window = _builder.CreateWindow(GuiWindowType.Masteries)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
                 .SetInitialGeometry(0, 0, 820f, 580f)
@@ -31,46 +34,45 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .DefinePartialView(MasteriesViewModel.MyMasteriesPartial, AddMyMasteriesTab)
                 .DefinePartialView(MasteriesViewModel.CatalogPartial, AddCatalogTab)
                 .DefinePartialView(MasteriesViewModel.RequestFormPartial, AddRequestFormTab)
-                .DefinePartialView(MasteriesViewModel.MyRequestsPartial, AddMyRequestsTab)
+                .DefinePartialView(MasteriesViewModel.MyRequestsPartial, AddMyRequestsTab);
 
-                .AddColumn(col =>
+            window.AddStandardLayout(layout =>
+            {
+                layout.SetTabPanelHeight(TabPanelHeight);
+                layout.AddTabRow(row =>
                 {
-                    col.AddRow(row =>
-                    {
-                        row.SetHeight(40f);
-                        row.AddSpacer();
-
-                        row.AddToggleButton()
-                            .SetText("My Masteries")
-                            .BindIsToggled(model => model.IsMyMasteriesTabToggled)
-                            .BindOnClicked(model => model.OnClickMyMasteriesTab())
-                            .SetHeight(32f)
-                            .SetWidth(160f);
-
-                        row.AddToggleButton()
-                            .SetText("Catalog")
-                            .BindIsToggled(model => model.IsCatalogTabToggled)
-                            .BindOnClicked(model => model.OnClickCatalogTab())
-                            .SetHeight(32f)
-                            .SetWidth(160f);
-
-                        row.AddToggleButton()
-                            .SetText("My Requests")
-                            .BindIsToggled(model => model.IsMyRequestsTabToggled)
-                            .BindOnClicked(model => model.OnClickMyRequestsTab())
-                            .SetHeight(32f)
-                            .SetWidth(160f);
-
-                        row.AddSpacer();
-                    });
-
-                    col.AddRow(row =>
-                    {
-                        row.AddPartialView(MasteriesViewModel.ContentPartialElement);
-                    });
+                    row.SetHeight(TabRowHeight);
+                    row.AddToggles()
+                        .AddOption("My Masteries")
+                        .AddOption("Catalog")
+                        .AddOption("My Requests")
+                        .BindSelectedValue(model => model.TabToggleValue)
+                        .SetHeight(TabRowHeight)
+                        .SetWidth(480f);
                 });
+                layout.SetContentPartialElement(MasteriesViewModel.ContentPartialElement);
+            });
 
             return _builder.Build();
+        }
+
+        private static void AddTabShell(
+            GuiGroup<MasteriesViewModel> host,
+            Action<GuiColumn<MasteriesViewModel>> content)
+        {
+            host.AddColumn(col =>
+            {
+                col.AddRow(row =>
+                {
+                    row.AddGroup(panel =>
+                    {
+                        panel.SetShowBorder(false);
+                        panel.SetScrollbars(NuiScrollbars.None);
+                        panel.AddColumn(content);
+                    })
+                        .SetWidth(ContentPanelWidth);
+                });
+            });
         }
 
         // ---------------------------------------------------------------
@@ -79,9 +81,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
         private static void AddMyMasteriesTab(GuiGroup<MasteriesViewModel> group)
         {
-            group.SetShowBorder(false);
-            group.SetScrollbars(NuiScrollbars.None);
-            group.AddColumn(col =>
+            AddTabShell(group, col =>
             {
                 col.AddRow(row =>
                 {
@@ -101,11 +101,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                 col.AddRow(row =>
                 {
-                    row.SetHeight(16f);
                     row.BindIsVisible(model => model.IsTrainingVisible);
 
                     row.AddProgressBar()
-                        .BindValue(model => model.TrainingProgress);
+                        .BindValue(model => model.TrainingProgress)
+                        .SetHeight(16f);
                 });
 
                 col.AddRow(row =>
@@ -132,20 +132,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
         private static void AddCatalogTab(GuiGroup<MasteriesViewModel> group)
         {
-            group.SetShowBorder(false);
-            group.SetScrollbars(NuiScrollbars.None);
-            group.AddColumn(col =>
+            AddTabShell(group, col =>
             {
                 col.AddRow(row =>
                 {
-                    row.SetHeight(34f);
-
                     row.AddTextEdit()
                         .SetPlaceholder("Search")
-                        .BindValue(model => model.SearchText);
+                        .BindValue(model => model.SearchText)
+                        .SetHeight(32f);
 
                     var categoryCombo = row.AddComboBox()
                         .BindSelectedIndex(model => model.SelectedCategoryId)
+                        .SetHeight(32f)
                         .SetWidth(220f)
                         .AddOption("All Categories", -1);
 
@@ -158,6 +156,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                     row.AddButton()
                         .SetText("Request Unlisted Mastery")
+                        .SetHeight(32f)
                         .SetWidth(190f)
                         .BindOnClicked(model => model.OnClickRequestUnlisted());
                 });
@@ -192,10 +191,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                 col.AddRow(row =>
                 {
-                    row.SetHeight(32f);
-
                     row.AddButton()
                         .SetText("<< Prev")
+                        .SetHeight(32f)
                         .SetWidth(90f)
                         .BindIsEnabled(model => model.IsCatalogPrevEnabled)
                         .BindOnClicked(model => model.OnClickCatalogPrevPage());
@@ -205,6 +203,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                     row.AddButton()
                         .SetText("Next >>")
+                        .SetHeight(32f)
                         .SetWidth(90f)
                         .BindIsEnabled(model => model.IsCatalogNextEnabled)
                         .BindOnClicked(model => model.OnClickCatalogNextPage());
@@ -218,9 +217,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
         private static void AddRequestFormTab(GuiGroup<MasteriesViewModel> group)
         {
-            group.SetShowBorder(false);
-            group.SetScrollbars(NuiScrollbars.None);
-            group.AddColumn(col =>
+            AddTabShell(group, col =>
             {
                 col.AddRow(row =>
                 {
@@ -237,24 +234,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                 col.AddRow(row =>
                 {
-                    row.SetHeight(30f);
                     row.BindIsVisible(model => model.IsCustomFieldsVisible);
 
                     row.AddTextEdit()
                         .SetPlaceholder("Unlisted Mastery Name")
                         .SetMaxLength(MasteriesViewModel.MaxCustomNameLength)
+                        .SetHeight(32f)
                         .BindValue(model => model.CustomName);
                 });
 
                 col.AddRow(row =>
                 {
-                    row.SetHeight(70f);
                     row.BindIsVisible(model => model.IsCustomFieldsVisible);
 
                     row.AddTextEdit()
                         .SetIsMultiline(true)
                         .SetPlaceholder("Briefly describe this mastery")
                         .SetMaxLength(MasteriesViewModel.MaxCustomDescriptionLength)
+                        .SetHeight(70f)
                         .BindValue(model => model.CustomDescription);
                 });
 
@@ -268,10 +265,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                 col.AddRow(row =>
                 {
-                    row.SetHeight(120f);
                     row.AddTextEdit()
                         .SetIsMultiline(true)
                         .SetMaxLength(MasteriesViewModel.MaxJustificationLength)
+                        .SetHeight(120f)
                         .BindValue(model => model.Justification);
                 });
 
@@ -300,16 +297,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                 col.AddRow(row =>
                 {
-                    row.SetHeight(40f);
-
                     row.AddButton()
                         .SetText("Submit Request")
+                        .SetHeight(32f)
                         .SetWidth(150f)
                         .BindIsEnabled(model => model.IsSubmitEnabled)
                         .BindOnClicked(model => model.OnClickSubmitRequest());
 
                     row.AddButton()
                         .SetText("Back to Catalog")
+                        .SetHeight(32f)
                         .SetWidth(150f)
                         .BindOnClicked(model => model.OnClickBackToCatalog());
                 });
@@ -322,9 +319,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
         private static void AddMyRequestsTab(GuiGroup<MasteriesViewModel> group)
         {
-            group.SetShowBorder(false);
-            group.SetScrollbars(NuiScrollbars.None);
-            group.AddColumn(col =>
+            AddTabShell(group, col =>
             {
                 col.AddRow(row =>
                 {
@@ -368,26 +363,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         right.AddRow(r =>
                         {
-                            r.SetHeight(60f);
                             r.AddTextEdit()
                                 .SetIsMultiline(true)
                                 .SetPlaceholder("Write a reply...")
                                 .SetMaxLength(MasteriesViewModel.MaxReplyLength)
+                                .SetHeight(60f)
                                 .BindValue(model => model.ReplyText);
                         });
 
                         right.AddRow(r =>
                         {
-                            r.SetHeight(40f);
-
                             r.AddButton()
                                 .SetText("Send Reply")
+                                .SetHeight(32f)
                                 .SetWidth(120f)
                                 .BindIsEnabled(model => model.IsReplyEnabled)
                                 .BindOnClicked(model => model.OnClickSendReply());
 
                             r.AddButton()
                                 .SetText("Cancel Request")
+                                .SetHeight(32f)
                                 .SetWidth(140f)
                                 .BindIsEnabled(model => model.IsCancelEnabled)
                                 .BindOnClicked(model => model.OnClickCancelRequest());

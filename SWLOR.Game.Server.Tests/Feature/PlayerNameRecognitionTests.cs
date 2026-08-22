@@ -482,9 +482,9 @@ public class PlayerNameRecognitionTests
 
         definitionSource.Should().Contain("Identity");
         definitionSource.Should().NotContain("Nameplates");
-        definitionSource.Should().Contain("Show My Descriptor");
+        definitionSource.Should().Contain("Show My Public Description");
         definitionSource.Should().Contain("BindIsChecked(model => model.ShowOwnDescriptor)");
-        definitionSource.Should().Contain("Show Others' Descriptor");
+        definitionSource.Should().Contain("Show Others' Public Descriptions");
         definitionSource.Should().Contain("BindIsChecked(model => model.ShowDescriptorsForNamedPlayers)");
         definitionSource.Should().NotContain(".SetText(\"Account\")");
         definitionSource.Should().Contain("Hide My Account Name");
@@ -509,6 +509,54 @@ public class PlayerNameRecognitionTests
         playerNameSource.Should().Contain("Disguise.ShouldScrambleAccountName(player)");
         playerNameSource.Should().Contain("GetIsDM(observer) ||");
         playerNameSource.Should().Contain("GetIsDMPossessed(observer)");
+    }
+
+    [Test]
+    public void DisguiseIdentityMutations_AreAuditedWithCanonicalIdentityAndRelevantState()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Disguise.cs"));
+
+        var createMethod = ExtractMethod(source, "public static PlayerDisguise CreateDisguise(uint player)");
+        createMethod.Should().Contain("Disguise created: PlayerId={PlayerId} PlayerName={PlayerName} DisguiseId={DisguiseId}");
+        createMethod.Should().Contain("LogGroup.PlayerName");
+        createMethod.Should().Contain("GetName(player)");
+
+        var saveMethod = ExtractMethod(source, "public static SaveDisguiseResult SaveDisguise(");
+        saveMethod.Should().Contain("var previousPrivateName = disguise.PrivateName;");
+        saveMethod.Should().Contain("var previousDescriptor = disguise.Descriptor;");
+        saveMethod.Should().Contain("Disguise saved: PlayerId={PlayerId} PlayerName={PlayerName} DisguiseId={DisguiseId}");
+        saveMethod.Should().Contain("PreviousPrivateName={PreviousPrivateName} PrivateName={PrivateName}");
+        saveMethod.Should().Contain("PreviousDescriptor={PreviousDescriptor} Descriptor={Descriptor}");
+        saveMethod.Should().Contain("PreviousPortraitInternalId={PreviousPortraitInternalId} PortraitInternalId={PortraitInternalId}");
+        saveMethod.Should().Contain("PreviousSoundSetId={PreviousSoundSetId} SoundSetId={SoundSetId}");
+        saveMethod.Should().Contain("PreviousScrambleAccountId={PreviousScrambleAccountId} ScrambleAccountId={ScrambleAccountId}");
+        saveMethod.Should().Contain("LogGroup.PlayerName");
+        saveMethod.Should().Contain("GetName(player)");
+
+        var activateMethod = ExtractMethod(source, "public static ActivateDisguiseResult Activate(uint player, string disguiseId)");
+        activateMethod.Should().Contain("var previousDisguiseId = dbPlayer.ActiveDisguiseId;");
+        activateMethod.Should().Contain("Disguise activated: PlayerId={PlayerId} PlayerName={PlayerName} PreviousDisguiseId={PreviousDisguiseId} DisguiseId={DisguiseId}");
+        activateMethod.Should().Contain("LogGroup.PlayerName");
+        activateMethod.Should().Contain("GetName(player)");
+        activateMethod.IndexOf("return ActivateDisguiseResult.Success();", StringComparison.Ordinal)
+            .Should().BeLessThan(activateMethod.IndexOf("Disguise activated:", StringComparison.Ordinal));
+
+        var deactivateMethod = ExtractMethod(source, "public static bool Deactivate(uint player)");
+        deactivateMethod.Should().Contain("var activeDisguiseId = dbPlayer.ActiveDisguiseId;");
+        deactivateMethod.Should().Contain("var activeDisguise = GetActiveDisguise(dbPlayer);");
+        deactivateMethod.Should().Contain("Disguise deactivated: PlayerId={PlayerId} PlayerName={PlayerName} DisguiseId={DisguiseId}");
+        deactivateMethod.Should().Contain("activeDisguise?.PrivateName ?? string.Empty");
+        deactivateMethod.Should().Contain("activeDisguise?.Descriptor ?? string.Empty");
+        deactivateMethod.Should().Contain("activeDisguise?.PortraitInternalId ?? -1");
+        deactivateMethod.Should().Contain("activeDisguise?.SoundSetId ?? -1");
+        deactivateMethod.Should().Contain("activeDisguise?.ScrambleAccountId ?? false");
+        deactivateMethod.Should().Contain("LogGroup.PlayerName");
+        deactivateMethod.Should().Contain("GetName(player)");
     }
 
     [Test]
@@ -776,8 +824,8 @@ public class PlayerNameRecognitionTests
         disguiseDefinitionSource.Should().Contain(".SetWidth(FormFieldWidth)");
 
         // Field labels spell out who sees each value; lengths come from constants, never magic numbers.
-        disguiseDefinitionSource.Should().Contain("AddTextField(col, \"Private Name  (only you see this)\", model => model.PrivateName, Disguise.MaxPrivateNameLength);");
-        disguiseDefinitionSource.Should().Contain("AddTextField(col, \"Public Descriptor  (shown to others)\", model => model.Descriptor, PlayerName.MaxKnownNameLength);");
+        disguiseDefinitionSource.Should().Contain("AddTextField(col, \"Private Slot Label  (only you see this)\", model => model.PrivateName, Disguise.MaxPrivateNameLength);");
+        disguiseDefinitionSource.Should().Contain("AddTextField(col, \"Public Description  (shown to others)\", model => model.Descriptor, PlayerName.MaxKnownNameLength);");
         disguiseDefinitionSource.Should().NotContain(", model => model.PrivateName, 32)");
         disguiseDefinitionSource.Should().NotContain(", model => model.Descriptor, 64)");
         disguiseDefinitionSource.Should().Contain("Hide Account Name");

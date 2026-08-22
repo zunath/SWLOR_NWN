@@ -47,28 +47,30 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Enter stealth, increasing Stealth by 5 while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat.")
                 .Price(2)
                 .RequirementCharacterType(CharacterType.Standard)
-                .IncreasesStat(StatType.Stealth, 5)
+                .IncreasesStat(StatType.ActiveStealthBonus, 5)
 
                 .AddPerkLevel()
                 .Description("Enter stealth, increasing Stealth by 10 while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 15)
                 .RequirementCharacterType(CharacterType.Standard)
-                .IncreasesStat(StatType.Stealth, 10)
+                .IncreasesStat(StatType.ActiveStealthBonus, 10)
 
                 .AddPerkLevel()
                 .Description("Enter stealth, increasing Stealth by 15 while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat.")
                 .Price(3)
                 .RequirementSkill(SkillType.Espionage, 28)
                 .RequirementCharacterType(CharacterType.Standard)
-                .IncreasesStat(StatType.Stealth, 15)
+                .IncreasesStat(StatType.ActiveStealthBonus, 15)
 
                 .AddPerkLevel()
                 .Description("Enter stealth, increasing Stealth by 20 while active. Drains 2 STM every 6 seconds, breaks on hostile action, and can only be entered while out of combat.")
                 .Price(4)
                 .RequirementSkill(SkillType.Espionage, 40)
                 .RequirementCharacterType(CharacterType.Standard)
-                .IncreasesStat(StatType.Stealth, 20);
+                .IncreasesStat(StatType.ActiveStealthBonus, 20)
+                .TriggerPurchase(Service.Stealth.RefreshActiveStatusAfterPerkLevelChange)
+                .TriggerRefund(Service.Stealth.RefreshActiveStatusAfterPerkLevelChange);
         }
 
         private void BackAttack()

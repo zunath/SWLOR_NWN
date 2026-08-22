@@ -32,7 +32,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A beautiful red wine brewed on Corellia. It's sweet taste comes from the raspberry's that are infused inside."
+    }
   },
   "Identified": {
     "type": "byte",

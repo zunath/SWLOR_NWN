@@ -42,7 +42,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 VisualEffect markerVisualEffect,
                 float markerVisualEffectScale,
                 bool isAreaPulse,
-                bool appliesBeaconPulseBonuses)
+                bool appliesBeaconPulseBonuses,
+                bool showAreaIndicator)
             {
                 Activator = activator;
                 Location = location;
@@ -59,7 +60,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 MarkerVisualEffectScale = markerVisualEffectScale;
                 IsAreaPulse = isAreaPulse;
                 AppliesBeaconPulseBonuses = appliesBeaconPulseBonuses;
+                ShowAreaIndicator = showAreaIndicator;
                 MarkerObject = OBJECT_INVALID;
+                AreaIndicatorId = string.Empty;
             }
 
             public uint Activator { get; }
@@ -77,13 +80,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public float MarkerVisualEffectScale { get; }
             public bool IsAreaPulse { get; }
             public bool AppliesBeaconPulseBonuses { get; }
+            public bool ShowAreaIndicator { get; }
             public uint MarkerObject { get; set; }
-        }
-
-        public static int ApplyFieldSupportOutputBonus(uint activator, int amount)
-        {
-            var bonusPercent = Stat.GetStatAdjustment(activator, StatType.DeviceAbilityOutputPercentAdjustment);
-            return amount + amount * bonusPercent / 100;
+            public string AreaIndicatorId { get; set; }
         }
 
         public static void ApplyPowerSurge(uint activator, uint target)
@@ -162,16 +161,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
         private static void ApplyRayshieldScreenRider(uint activator, uint target)
         {
-            var reductionPercent = Stat.GetStatAdjustment(
+            var physicalDefensePercent = Stat.GetStatAdjustment(
                 activator,
-                StatType.FieldSupportRangedPhysicalDamageReductionPercent);
+                StatType.FieldSupportPhysicalDefensePercent);
             var durationSeconds = Stat.GetStatAdjustment(
                 activator,
-                StatType.FieldSupportRangedPhysicalDamageReductionDurationSeconds);
-            if (reductionPercent <= 0 || durationSeconds <= 0)
+                StatType.FieldSupportPhysicalDefenseDurationSeconds);
+            if (physicalDefensePercent <= 0 || durationSeconds <= 0)
                 return;
 
-            StatusEffectBase statusEffect = reductionPercent >= 12
+            StatusEffectBase statusEffect = physicalDefensePercent >= 12
                 ? new RayshieldScreen2StatusEffect()
                 : new RayshieldScreen1StatusEffect();
 
@@ -204,11 +203,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             StatusEffect.ApplyStatusEffect(activator, target, new OverclockRoutineStatusEffect(), 30f);
         }
 
-        public static float ApplyGrenadeRadiusBonus(uint activator, float baseRadius)
+        public static float ApplyBlastRadiusBonus(uint activator, float baseRadius)
         {
-            return CalculateGrenadeRadius(
+            return CalculateBlastRadius(
                 baseRadius,
-                Stat.GetStatAdjustment(activator, StatType.GrenadeRadiusBonusTenths));
+                Stat.GetStatAdjustment(activator, StatType.BlastRadiusBonusTenths));
         }
 
         public static float ApplyBeaconPulseRangeBonus(uint activator, float baseRadius)
@@ -216,7 +215,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             return baseRadius + Stat.GetStatAdjustment(activator, StatType.BeaconPulseRangeBonusMeters);
         }
 
-        public static float CalculateGrenadeRadius(float baseRadius, int radiusBonusTenths)
+        public static float CalculateBlastRadius(float baseRadius, int radiusBonusTenths)
         {
             return baseRadius + radiusBonusTenths / 10f;
         }
@@ -293,7 +292,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             VisualEffect targetVisualEffect,
             VisualEffect areaVisualEffect = VisualEffect.None,
             VisualEffect markerVisualEffect = VisualEffect.None,
-            float markerVisualEffectScale = 1f)
+            float markerVisualEffectScale = 1f,
+            bool showAreaIndicator = true)
         {
             TrackFieldEngineerPulseEmitter(new FieldEngineerPulseEmitter(
                 activator,
@@ -310,7 +310,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 markerVisualEffect,
                 markerVisualEffectScale,
                 false,
-                true));
+                true,
+                showAreaIndicator));
         }
 
         public static void ScheduleAreaHostilePulses(
@@ -327,7 +328,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             VisualEffect areaVisualEffect = VisualEffect.None,
             VisualEffect markerVisualEffect = VisualEffect.None,
             float markerVisualEffectScale = 1f,
-            bool appliesBeaconPulseBonuses = false)
+            bool appliesBeaconPulseBonuses = false,
+            bool showAreaIndicator = true)
         {
             TrackFieldEngineerPulseEmitter(new FieldEngineerPulseEmitter(
                 activator,
@@ -344,14 +346,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 markerVisualEffect,
                 markerVisualEffectScale,
                 true,
-                appliesBeaconPulseBonuses));
+                appliesBeaconPulseBonuses,
+                showAreaIndicator));
         }
 
         public static uint CreateTemporaryFieldEngineerMarker(
             Location location,
             VisualEffect markerVisualEffect,
             float markerVisualEffectScale,
-            float durationSeconds)
+            float durationSeconds,
+            string markerResref = FieldEngineerPulseMarkerResref)
         {
             if (markerVisualEffect == VisualEffect.None ||
                 durationSeconds <= 0f ||
@@ -362,14 +366,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             var marker = CreateObject(
                 ObjectType.Placeable,
-                FieldEngineerPulseMarkerResref,
+                markerResref,
                 location,
                 false,
                 FieldEngineerPulseMarkerTag);
             if (!GetIsObjectValid(marker))
             {
                 Log.Write(LogGroup.Error,
-                    $"Failed to create field marker placeable '{FieldEngineerPulseMarkerResref}' at the requested location.");
+                    $"Failed to create field marker placeable '{markerResref}' at the requested location.");
                 return OBJECT_INVALID;
             }
 
@@ -404,6 +408,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 }
 
                 emitter.RemainingSeconds += seconds;
+                RefreshFieldEngineerPulseEmitterIndicator(emitter);
                 extendedAny = true;
             }
 
@@ -446,9 +451,30 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             }
 
             emitters.Add(emitter);
+            RefreshFieldEngineerPulseEmitterIndicator(emitter);
+
             EnsureFieldEngineerPulseEmitterMarker(emitter);
             ApplyFieldEngineerPulseEmitterVisual(emitter);
             ScheduleNextFieldEngineerPulse(emitter);
+        }
+
+        private static void RefreshFieldEngineerPulseEmitterIndicator(FieldEngineerPulseEmitter emitter)
+        {
+            if (!emitter.ShowAreaIndicator)
+                return;
+
+            if (!string.IsNullOrWhiteSpace(emitter.AreaIndicatorId))
+                Telegraph.CancelTelegraph(emitter.AreaIndicatorId);
+
+            var indicatorRadius = emitter.AppliesBeaconPulseBonuses
+                ? ApplyBeaconPulseRangeBonus(emitter.Activator, emitter.Radius)
+                : emitter.Radius;
+            emitter.AreaIndicatorId = AbilityAreaEffects.CreatePersistentSphereIndicator(
+                emitter.Activator,
+                emitter.Location,
+                indicatorRadius,
+                emitter.RemainingSeconds,
+                true);
         }
 
         private static void ScheduleNextFieldEngineerPulse(FieldEngineerPulseEmitter emitter)
@@ -637,6 +663,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 return;
 
             emitters.Remove(emitter);
+            if (!string.IsNullOrWhiteSpace(emitter.AreaIndicatorId))
+                Telegraph.CancelTelegraph(emitter.AreaIndicatorId);
+
             if (GetIsObjectValid(emitter.MarkerObject))
                 DestroyObject(emitter.MarkerObject);
 

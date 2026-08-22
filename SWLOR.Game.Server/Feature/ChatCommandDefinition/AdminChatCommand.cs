@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.LogService;
 
 namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
 {
@@ -14,6 +15,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         {
             ManageStaffCommand();
             ManageBansCommand();
+            PropertyDiagnosticsCommand();
 
             return _builder.Build();
         }
@@ -37,6 +39,35 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Action((user, target, location, args) =>
                 {
                     Gui.TogglePlayerWindow(user, GuiWindowType.ManageBans);
+                });
+        }
+
+        private void PropertyDiagnosticsCommand()
+        {
+            _builder.Create("propertydiagnostics")
+                .Description("Toggles the property loading diagnostics window.")
+                .Permissions(AuthorizationLevel.Admin)
+                .Action((user, target, location, args) =>
+                {
+                    var player = user;
+                    var uiTarget = OBJECT_INVALID;
+                    if (GetIsDMPossessed(player))
+                    {
+                        uiTarget = player;
+                        player = GetMaster(player);
+                    }
+
+                    Log.WriteStructured(
+                        LogGroup.Property,
+                        "Property diagnostics toggled: PlayerName={PlayerName} PlayerId={PlayerId}",
+                        GetName(player),
+                        GetObjectUUID(player));
+                    Gui.TogglePlayerWindow(
+                        player,
+                        GuiWindowType.PropertyDiagnostics,
+                        null,
+                        OBJECT_INVALID,
+                        uiTarget);
                 });
         }
 

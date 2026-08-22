@@ -36,7 +36,7 @@ namespace SWLOR.CLI
 
         private void CopyBinaries()
         {
-            var binPath = "../SWLOR.Game.Server/bin/Debug/net10.0/";
+            var binPath = "../SWLOR.Game.Server/bin/Release/net10.0/";
 
             var source = new DirectoryInfo(binPath);
             var target = new DirectoryInfo(DotnetPath);

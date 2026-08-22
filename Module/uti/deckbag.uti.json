@@ -34,7 +34,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "This bag is used to store the decks you are not playing with.  Make sure you put your unused decks in this bag before the game or you may find yourself playing with cards you did not intend."
     }
   },
   "Identified": {

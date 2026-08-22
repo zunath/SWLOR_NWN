@@ -33,14 +33,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Blaster Beacon")
 
                 .AddPerkLevel()
-                .Description("Plants a visible 12m targeting sphere for 30 seconds. Every 3 seconds, one hostile target inside is hit by an automated ranged energy pulse for 3 energy DMG plus PER scaling.")
+                .Description("Plants a visible 12m targeting sphere for 30 seconds. Every 3 seconds, one hostile target inside is hit by an automated ranged energy pulse for 3 physical DMG plus PER scaling.")
                 .Price(3)
                 .RequirementCharacterType(CharacterType.Standard)
                 .DroidAISlots(1)
                 .GrantsFeat(FeatType.BlasterBeacon1)
 
                 .AddPerkLevel()
-                .Description("Plants a visible 12m targeting sphere for 30 seconds. Every 3 seconds, one hostile target inside is hit by an automated ranged energy pulse for 6 energy DMG plus PER scaling.")
+                .Description("Plants a visible 12m targeting sphere for 30 seconds. Every 3 seconds, one hostile target inside is hit by an automated ranged energy pulse for 6 physical DMG plus PER scaling.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 15)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.BlasterBeacon2)
 
                 .AddPerkLevel()
-                .Description("Plants a visible 14m targeting sphere for 30 seconds. Every 3 seconds, one hostile target inside is hit by an automated ranged energy pulse for 10 energy DMG plus PER scaling.")
+                .Description("Plants a visible 14m targeting sphere for 30 seconds. Every 3 seconds, one hostile target inside is hit by an automated ranged energy pulse for 10 physical DMG plus PER scaling.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 30)
                 .RequirementCharacterType(CharacterType.Standard)

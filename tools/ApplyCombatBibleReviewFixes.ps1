@@ -1,7 +1,8 @@
 [CmdletBinding()]
 param(
     [string]$WorkbookPath = "design\bible\SWLOR Design Bible - Combat Upgrade.xlsx",
-    [switch]$EspionageStealthOnly
+    [switch]$EspionageStealthOnly,
+    [string[]]$OnlyPerkName = @()
 )
 
 Set-StrictMode -Version Latest
@@ -19,6 +20,27 @@ else {
 # writer below changes only the named cells inside the workbook ZIP; it does not recalculate or
 # rewrite formula-backed sheets through a spreadsheet library.
 $perkChanges = @(
+    @{
+        Sheet = "Lightsaber"
+        PerkName = "Force Sheath II"
+        Values = @{
+            Description = "On your next hit, deal + 17 Force DMG."
+        }
+    },
+    @{
+        Sheet = "Lightsaber"
+        PerkName = "Force Sheath III"
+        Values = @{
+            Description = "On your next hit, deal + 23 Force DMG."
+        }
+    },
+    @{
+        Sheet = "Lightsaber"
+        PerkName = "Force Sheath IV"
+        Values = @{
+            Description = "On your next hit, deal + 30 Force DMG."
+        }
+    },
     @{
         Sheet = "Katar"
         PerkName = "Guard Counter I"
@@ -173,14 +195,14 @@ $perkChanges = @(
         Sheet = "Saberstaff"
         PerkName = "Maelstrom Arc I"
         Values = @{
-            Description = "Deals weapon DMG + 16 in a 5m x 5m cone. If you deflected an attack in the last 30 seconds, restore 4 FP."
+            Description = "Deals weapon DMG + 16 in a 5m x 5m cone. If your Ranged Deflection negated a ranged weapon auto-attack in the last 30 seconds, restore 4 FP."
         }
     },
     @{
         Sheet = "Saberstaff"
         PerkName = "Maelstrom Arc II"
         Values = @{
-            Description = "Deals weapon DMG + 30 in a 5m x 5m cone. If you deflected an attack in the last 30 seconds, restore 8 FP."
+            Description = "Deals weapon DMG + 30 in a 5m x 5m cone. If your Ranged Deflection negated a ranged weapon auto-attack in the last 30 seconds, restore 8 FP."
         }
     },
     @{
@@ -404,7 +426,7 @@ $perkChanges = @(
         Sheet = "Devices"
         PerkName = "Emergency Bunker"
         Values = @{
-            Description = "Deploys a 4m-radius shield bunker at the target location for 45 seconds. Allies inside gain 60 temporary HP plus 8% of each target's maximum HP and take 15% less ranged physical damage."
+            Description = "Deploys an 8m-radius shield bunker at the target location for 45 seconds. Allies inside gain 60 temporary HP plus 8% of each target's maximum HP and take 15% less physical and Force damage."
         }
     },
     @{
@@ -1213,6 +1235,22 @@ if ($EspionageStealthOnly) {
     $perkChanges = @($perkChanges | Where-Object {
         $_.Sheet -eq "Espionage" -and $_.PerkName -in $stealthPerkNames
     })
+    $characterStatChanges = @()
+    $auditSheetChanges = @()
+}
+
+if ($OnlyPerkName.Count -gt 0) {
+    if ($EspionageStealthOnly) {
+        throw "Use either -EspionageStealthOnly or -OnlyPerkName, not both."
+    }
+
+    $perkChanges = @($perkChanges | Where-Object { $_.PerkName -in $OnlyPerkName })
+    $selectedPerkNames = @($perkChanges | ForEach-Object { $_.PerkName })
+    $missingPerks = @($OnlyPerkName | Where-Object { $_ -notin $selectedPerkNames })
+    if ($missingPerks.Count -gt 0) {
+        throw "No declarative Bible correction exists for: $($missingPerks -join ', ')."
+    }
+
     $characterStatChanges = @()
     $auditSheetChanges = @()
 }

@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public SonicBurst3StatusEffect()
         {
-            StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment] = -10;
+            StatGroup.Stats[StatType.AccuracyPercentAdjustment] = -10;
         }
     }
 }

@@ -1,0 +1,1081 @@
+<meta charset="utf-8">
+<title>Item editor — Design A</title>
+<style>
+  :root{
+    --shell:#0C0F14; --panel:#14181E; --raised:#191E26; --phead:#1B212A; --field:#0C1017; --chrome:#10141A;
+    --rule:#262D38; --rule2:#333C4A;
+    --ink:#DDE3EB; --ink2:#98A2B0; --ink3:#6C7683;
+    --accent:#5B9BF5; --accentdim:#1E3350; --accentbrd:#2D4E7C; --accentink:#D3E3FB;
+    --amber:#D9A155; --green:#5FBE8C; --gold:#E4CE9A;
+    --ui:"Segoe UI Variable Text","Segoe UI",Inter,sans-serif;
+    --mono:"Cascadia Mono","Cascadia Code",Consolas,monospace;
+  }
+  html{background:var(--shell)}
+  body{background:var(--shell); color:var(--ink); font-family:var(--ui); font-size:14px; line-height:1.55; margin:0; padding:40px 20px 90px}
+  .page{max-width:1040px; margin:0 auto}
+  h1{font-size:23px; font-weight:600; margin:0 0 4px}
+  h2{font-size:17px; font-weight:600; margin:44px 0 6px; padding-top:22px; border-top:1px solid var(--rule)}
+  h3{font-size:13.5px; font-weight:600; margin:26px 0 4px; color:var(--ink)}
+  p{margin:8px 0; color:var(--ink2); max-width:76ch}
+  p b{color:var(--ink); font-weight:600}
+  .mono{font-family:var(--mono)}
+  .k{font-family:var(--mono); font-size:12px; color:var(--ink2); background:var(--raised); border:1px solid var(--rule); border-radius:3px; padding:0 5px}
+  a{color:var(--accent)}
+  table.doc{border-collapse:collapse; font-size:12.5px; margin:12px 0; width:100%}
+  table.doc th{font-family:var(--mono); font-size:10.5px; letter-spacing:1.1px; text-transform:uppercase; color:var(--ink3); text-align:left; padding:6px 10px; border-bottom:1px solid var(--rule2); font-weight:500}
+  table.doc td{padding:7px 10px; border-bottom:1px solid var(--rule); color:var(--ink2); vertical-align:top}
+  table.doc td:first-child{color:var(--ink)}
+  .num{font-family:var(--mono); color:var(--ink); white-space:nowrap}
+  .stats{display:flex; flex-wrap:wrap; gap:10px; margin:16px 0 4px}
+  .stat{background:var(--panel); border:1px solid var(--rule); border-radius:4px; padding:9px 13px; min-width:104px}
+  .stat .v{font-family:var(--mono); font-size:17px; color:var(--ink)}
+  .stat .l{font-family:var(--mono); font-size:10px; letter-spacing:1px; text-transform:uppercase; color:var(--ink3); margin-top:2px}
+
+  /* ============ the mock window ============ */
+  .win{width:100%; max-width:980px; background:var(--panel); border:1px solid var(--rule2); border-radius:6px; overflow:hidden;
+       margin:20px 0 6px; box-shadow:0 14px 44px rgba(0,0,0,.5); font-size:12.5px; line-height:1.4}
+  .hdr{display:flex; align-items:center; gap:8px; padding:12px 16px; border-bottom:1px solid var(--rule)}
+  .hdr .name{font-size:15.5px; font-weight:600}
+  .hdr .kind{color:var(--ink3); font-size:13px}
+  .hdr .sep{color:var(--ink3)}
+  .hdr .rr{font-family:var(--mono); font-size:12.5px; color:var(--ink3)}
+  .hdr .dirty{margin-left:auto; display:flex; gap:7px; align-items:center; color:var(--ink3); font-size:12.5px}
+  .dot{width:6px; height:6px; border-radius:50%; background:var(--accent)}
+  .split{display:flex; align-items:stretch}
+  .leftcol{width:186px; flex:none; border-right:1px solid var(--rule); padding:10px}
+  .preview{height:240px; background:var(--raised); border:1px solid var(--rule); border-radius:3px; display:flex; align-items:center; justify-content:center; overflow:hidden}
+  .pv-cap{margin-top:9px; display:flex; flex-direction:column; gap:3px}
+  .pv-cap .a{font-family:var(--mono); font-size:10.5px; color:var(--ink2)}
+  .pv-cap .b{font-family:var(--mono); font-size:10.5px; color:var(--ink3)}
+  .pv-cap .c{font-size:10px; color:var(--ink3)}
+  .seg{display:flex; margin-top:8px; border:1px solid var(--rule2); border-radius:3px; overflow:hidden; font-size:11px}
+  .seg div{flex:1; text-align:center; padding:3px 0; color:var(--ink3)}
+  .seg .on{background:var(--accentdim); color:var(--accentink)}
+  .main{flex:1; min-width:0; display:flex; flex-direction:column}
+  .tabs{display:flex; border-bottom:1px solid var(--rule)}
+  .tab{padding:7px 14px; color:var(--ink3)}
+  .tab.on{color:var(--ink); box-shadow:inset 0 -2px 0 var(--accent)}
+  .pane{padding:12px 16px; flex:1}
+  .foot{display:flex; align-items:center; gap:12px; padding:11px 16px; border-top:1px solid var(--rule)}
+  .amber{color:var(--amber); font-size:12px; flex:1}
+  .grow{flex:1}
+  .btn{min-width:86px; text-align:center; background:var(--raised); border:1px solid var(--rule2); border-radius:3px; padding:4px 10px; font-size:11.5px; color:var(--ink)}
+  .btn.primary{background:var(--accentdim); border-color:var(--accentbrd); color:var(--accentink)}
+  .btn.sm{min-width:0; padding:2px 8px; font-size:11px}
+
+  .frow{display:grid; grid-template-columns:148px 1fr; gap:10px; align-items:center; padding:4px 4px}
+  .frow.tight{padding:2px 4px}
+  .flabel{color:var(--ink2)}
+  .flabel .req{color:var(--amber)}
+  .input{background:var(--field); border:1px solid var(--rule2); border-radius:3px; padding:4px 8px; color:var(--ink);
+         display:flex; align-items:center; gap:8px; min-height:17px}
+  .input .grow{flex:1}
+  .input .caret{color:var(--ink3); font-size:10px}
+  .input.ro{color:var(--ink3); border-style:dashed; border-color:var(--rule)}
+  .input.mini{padding:3px 7px}
+  .wm{color:var(--ink3)}
+  .help{font-family:var(--mono); font-size:10.5px; color:var(--ink3); padding:1px 4px 3px}
+  .sec{font-family:var(--mono); font-size:10.5px; letter-spacing:1.3px; text-transform:uppercase; color:var(--ink3)}
+  .card{background:var(--raised); border:1px solid var(--rule); border-radius:4px}
+  .check{display:inline-flex; align-items:center; gap:7px; color:var(--ink2)}
+  .box{width:12px; height:12px; border:1px solid var(--rule2); border-radius:2px; background:var(--field); flex:none; position:relative}
+  .box.on{background:var(--accentdim); border-color:var(--accentbrd)}
+  .box.on::after{content:"✓"; position:absolute; inset:-3px 0 0 1px; color:var(--accentink); font-size:10px}
+  .x{color:var(--ink3); padding:0 4px}
+  .stmt{display:grid; grid-template-columns:148px 1fr; gap:10px; padding:3px 4px; color:var(--ink2)}
+  .stmt .v{font-family:var(--mono); color:var(--ink2)}
+  .stmt .note{font-family:var(--mono); font-size:10.5px; color:var(--ink3)}
+  .good{color:var(--green)} .warn{color:var(--amber)}
+
+  .rail{width:206px; flex:none; border-right:1px solid var(--rule); padding:10px 10px}
+  .rsec{font-family:var(--mono); font-size:10.5px; letter-spacing:1.3px; text-transform:uppercase; color:var(--ink3); margin:12px 0 4px 12px}
+  .rsec:first-child{margin-top:2px}
+  .rbtn{padding:6px 12px; border-radius:4px; border:1px solid transparent; color:var(--ink)}
+  .rbtn.on{background:var(--accentdim); border-color:var(--accentbrd); color:var(--accentink)}
+  .rrule{height:1px; background:var(--rule); margin:12px 12px}
+
+  .sw{width:20px; height:20px; border-radius:3px; border:1px solid var(--rule2); flex:none}
+  .tile{width:72px; border:1px solid var(--rule2); border-radius:3px; background:var(--field); padding:0 0 3px; text-align:center}
+  .tile .art{height:64px; display:flex; align-items:center; justify-content:center}
+  .tile .cap{font-family:var(--mono); font-size:9.5px; color:var(--ink3)}
+  .tile.on{border-color:var(--accent); box-shadow:0 0 0 1px var(--accent)}
+  .tile.on .cap{color:var(--accentink)}
+
+  .grp{border:1px solid var(--rule); border-radius:4px; background:var(--raised); margin:0 0 10px}
+  .grp .ghead{display:flex; align-items:center; gap:9px; padding:8px 12px}
+  .grp .ghead .tw{color:var(--ink3); font-size:10px; width:10px}
+  .gsum{font-family:var(--mono); font-size:10.5px; color:var(--ink3); margin-left:auto}
+  .label{font-family:var(--mono); font-size:10px; color:var(--ink3)}
+
+  figcaption{font-family:var(--mono); font-size:11px; color:var(--ink3); margin:6px 0 0}
+  figure{margin:26px 0 18px}
+</style>
+
+<div class="page">
+<h1>Item editor — Design A</h1>
+<p>The item editor (<span class="k">.uti</span>), in the shape the door, placeable, trigger and waypoint
+editors ship: header is <b>name · kind · resref</b>, tabs are <b>Basic / Appearance / Behavior / Stats /
+Requirements / Source</b>, the left column holds the live preview on every tab, and Variables appears only
+under Custom. <b>The base type chosen on Basic organizes everything after it</b>: it decides the Appearance
+surface, which roles the Behavior rail offers, and which stat groups the Stats tab shows. Field data is
+verified against <span class="k">Module\uti</span> (7,651 blueprints) and the pr/2124 hak data.</p>
+
+<div class="stats">
+  <div class="stat"><div class="v">2,513</div><div class="l">miscellaneous</div></div>
+  <div class="stat"><div class="v">1,355</div><div class="l">essences</div></div>
+  <div class="stat"><div class="v">1,018</div><div class="l">accessories</div></div>
+  <div class="stat"><div class="v">1,010</div><div class="l">weapons</div></div>
+  <div class="stat"><div class="v">946</div><div class="l">worn armor</div></div>
+  <div class="stat"><div class="v">709</div><div class="l">creature items</div></div>
+  <div class="stat"><div class="v">2,066</div><div class="l">carry locals</div></div>
+</div>
+
+<h2>The item type matrix</h2>
+<p>Every base type in use, its appearance surface, the roles its Behavior rail offers, and the stats those
+unlock. Equipment has no roles — being a weapon or armor <i>is</i> the base type — so its stats come straight
+from the type. For the carriable families the role is the thing that unlocks stats.</p>
+
+<table class="doc">
+  <tr><th>Family</th><th>Blueprints</th><th>Appearance</th><th>Roles</th><th>Stats</th></tr>
+  <tr><td>Melee weapons — vibroblades, vibroknives, heavy blades, twin blades, spears, katars, staves, electroblades</td>
+      <td class="num">567</td><td>three-part model pickers</td><td>—</td>
+      <td>Combat (Attack · Force Attack · DMG · Delay · Damage Stat · Weapon Damage Type · Enhancement Level · Evasion · Combat Readiness) · Vitals · Weapon slot · Utility</td></tr>
+  <tr><td>Ranged weapons — pistols, rifles, cannons, throwing</td>
+      <td class="num">286</td><td>three-part model pickers</td><td>—</td>
+      <td>the melee set + Unlimited Ammo</td></tr>
+  <tr><td>Lightsabers — sabers, saberstaffs</td>
+      <td class="num">157</td><td>three-part; the top part carries blade colour</td><td>—</td>
+      <td>the melee set</td></tr>
+  <tr><td>Armor</td>
+      <td class="num">471</td><td>19 body parts + 6 dye channels, mirrored</td><td>—</td>
+      <td>Defense · Resistance · Vitals · Combat (Attack · Force Attack · Evasion · Combat Readiness · Enhancement Level) · Armor slot · Utility</td></tr>
+  <tr><td>Helmets</td><td class="num">284</td><td>model gallery</td><td>—</td><td>the armor set</td></tr>
+  <tr><td>Capes &amp; cloaks</td><td class="num">174</td><td>model gallery</td><td>—</td><td>the armor set</td></tr>
+  <tr><td>Shields</td><td class="num">17</td><td>model gallery</td><td>—</td><td>the armor set + Shield Deflection</td></tr>
+  <tr><td>Accessories — rings, amulets, belts, bracers, gloves, boots</td>
+      <td class="num">1,018</td><td>icon gallery; boots are three-part</td><td>—</td>
+      <td>the armor set + the Crafting matrix (Control · Craftsmanship · CP Bonus per craft, Progress Penalty) on crafting gear</td></tr>
+  <tr><td>Tools — fishing rods, holdables, fashion accessories</td>
+      <td class="num">~80</td><td>icon gallery</td><td>—</td><td>Utility · Crafting matrix</td></tr>
+  <tr><td>Creature items — claws, hides, stat skins</td>
+      <td class="num">709</td><td>icon gallery</td><td>Creature Item (fixed)</td>
+      <td>NPC HP · NPC Level · NPC Skill · Monster Damage — economy-restricted automatically</td></tr>
+  <tr><td>Essences &amp; components</td>
+      <td class="num">1,355</td><td>icon gallery</td><td>Component · Enhancement · Custom</td>
+      <td>Component → granted stats (any equipment stat, transferred to the craft output) · Enhancement → a slot type (Armor / Weapon / Structure / Food / Starship / Module / Droid) + granted stats</td></tr>
+  <tr><td>Miscellaneous — devices, quest items, stims, food, samples, schematics</td>
+      <td class="num">2,513</td><td>icon gallery</td><td>Consumable · Meal · Grenade · Deployed Device · Droid Part · Incubation Sample · Schematic · Key Item · Custom</td>
+      <td>Consumable → Cast Spell + uses · Meal → Food Bonus + Food slots · Grenade → Cast Spell + DMG · Deployed Device → Structure Bonus · Droid Part → Part Type / Instruction / Personality + the 15-row Droid Stat block · Incubation Sample → Incubation / DNA Type / Enzyme Color · Schematic → Blueprint Level · Key Item → none · Custom → Variables tab</td></tr>
+</table>
+
+<!-- ================================================================ ARMOR -->
+<h2>Armor</h2>
+
+<figure>
+<div class="win">
+  <div class="hdr"><span class="name">Adrenal Harness</span><span class="kind">blueprint</span><span class="sep">·</span><span class="rr">adren_harness</span>
+    <span class="dirty"><span class="dot"></span>unsaved</span></div>
+  <div class="split">
+    <div class="leftcol">
+      <div class="preview">
+        <svg width="120" height="216" viewBox="0 0 120 216">
+          <ellipse cx="60" cy="20" rx="13" ry="15" fill="#8a765f"/>
+          <path d="M35 40 L85 40 L92 58 L88 108 L32 108 L28 58 Z" fill="#5d5170"/>
+          <path d="M42 46 L78 46 L74 72 L60 80 L46 72 Z" fill="#6f5fa0"/>
+          <path d="M50 52 L70 52 L60 64 Z" fill="#c9992f"/>
+          <path d="M26 40 L40 38 L38 52 L26 54 Z" fill="#2a2a31"/><path d="M94 40 L80 38 L82 52 L94 54 Z" fill="#2a2a31"/>
+          <rect x="24" y="56" width="12" height="34" rx="5" fill="#c9992f"/><rect x="84" y="56" width="12" height="34" rx="5" fill="#c9992f"/>
+          <rect x="22" y="92" width="14" height="22" rx="5" fill="#33333b"/><rect x="84" y="92" width="14" height="22" rx="5" fill="#33333b"/>
+          <rect x="34" y="108" width="52" height="12" rx="3" fill="#22222a"/>
+          <path d="M36 120 L58 120 L56 168 L40 168 Z" fill="#6f5fa0"/><path d="M84 120 L62 120 L64 168 L80 168 Z" fill="#6f5fa0"/>
+          <path d="M40 168 L56 168 L55 200 L42 200 Z" fill="#c9992f"/><path d="M80 168 L64 168 L65 200 L78 200 Z" fill="#c9992f"/>
+          <rect x="38" y="200" width="20" height="10" rx="3" fill="#2a2a31"/><rect x="62" y="200" width="20" height="10" rx="3" fill="#2a2a31"/>
+        </svg>
+      </div>
+      <div class="seg"><div class="on">Male</div><div>Female</div></div>
+      <div class="pv-cap">
+        <span class="a">Armor</span>
+        <span class="b">adren_harness</span>
+        <span class="b">tag adren_harness</span>
+      </div>
+    </div>
+    <div class="main">
+      <div class="tabs"><div class="tab on">Basic</div><div class="tab">Appearance</div><div class="tab">Behavior</div><div class="tab">Stats</div><div class="tab">Requirements</div><div class="tab">Source</div></div>
+      <div class="pane">
+        <div style="display:flex; gap:20px">
+          <div style="flex:1.15">
+            <div class="frow"><span class="flabel">Name</span><span style="display:flex; gap:6px"><span class="input" style="flex:1"><span class="grow">Adrenal Harness</span></span><span class="btn sm">…</span></span></div>
+            <div class="frow"><span class="flabel">Tag</span><span class="input"><span class="grow mono">adren_harness</span></span></div>
+            <div class="frow"><span class="flabel">ResRef</span><span class="input"><span class="grow mono">adren_harness</span></span></div>
+            <div class="frow"><span class="flabel">Base Type</span><span class="input"><span class="grow">Armor</span><span class="caret">▾</span></span></div>
+            <div class="frow"><span class="flabel">Category</span><span style="display:flex; gap:6px"><span class="input" style="flex:1"><span class="grow">Armor ▸ Heavy</span></span><span class="btn sm">…</span></span></div>
+            <div class="frow"><span class="flabel">Stack Size</span><span class="input" style="max-width:110px"><span class="grow mono">1</span></span></div>
+            <div class="frow"><span class="flabel">Additional Cost</span><span class="input" style="max-width:110px"><span class="grow mono">2999</span></span></div>
+            <div class="frow"><span class="flabel">Total Cost</span><span class="input ro" style="max-width:110px"><span class="grow mono">3000</span></span></div>
+          </div>
+          <div style="width:250px; flex:none">
+            <div class="card" style="padding:10px 12px">
+              <div class="sec" style="margin-bottom:8px">Flags</div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:7px">
+                <span class="check"><span class="box"></span>Plot</span>
+                <span class="check"><span class="box"></span>Stolen</span>
+                <span class="check"><span class="box"></span>Cursed</span>
+                <span class="check"><span class="box on"></span>Identified</span>
+                <span class="check"><span class="box"></span>No Economy</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="foot"><span class="grow"></span><span class="btn">Revert</span><span class="btn primary">Save</span></div>
+    </div>
+  </div>
+</div>
+<figcaption>Basic — identity, type and commerce; ResRef is editable</figcaption>
+</figure>
+
+<figure>
+<div class="win">
+  <div class="hdr"><span class="name">Adrenal Harness</span><span class="kind">blueprint</span><span class="sep">·</span><span class="rr">adren_harness</span>
+    <span class="dirty"><span class="dot"></span>unsaved</span></div>
+  <div class="split">
+    <div class="leftcol">
+      <div class="preview">
+        <svg width="120" height="216" viewBox="0 0 120 216">
+          <ellipse cx="60" cy="20" rx="13" ry="15" fill="#8a765f"/>
+          <path d="M35 40 L85 40 L92 58 L88 108 L32 108 L28 58 Z" fill="#5d5170"/>
+          <path d="M42 46 L78 46 L74 72 L60 80 L46 72 Z" fill="#6f5fa0"/>
+          <path d="M50 52 L70 52 L60 64 Z" fill="#c9992f"/>
+          <path d="M26 40 L40 38 L38 52 L26 54 Z" fill="#2a2a31"/><path d="M94 40 L80 38 L82 52 L94 54 Z" fill="#2a2a31"/>
+          <rect x="24" y="56" width="12" height="34" rx="5" fill="#c9992f"/><rect x="84" y="56" width="12" height="34" rx="5" fill="#c9992f"/>
+          <rect x="22" y="92" width="14" height="22" rx="5" fill="#33333b"/><rect x="84" y="92" width="14" height="22" rx="5" fill="#33333b"/>
+          <rect x="34" y="108" width="52" height="12" rx="3" fill="#22222a"/>
+          <path d="M36 120 L58 120 L56 168 L40 168 Z" fill="#6f5fa0"/><path d="M84 120 L62 120 L64 168 L80 168 Z" fill="#6f5fa0"/>
+          <path d="M40 168 L56 168 L55 200 L42 200 Z" fill="#c9992f"/><path d="M80 168 L64 168 L65 200 L78 200 Z" fill="#c9992f"/>
+          <rect x="38" y="200" width="20" height="10" rx="3" fill="#2a2a31"/><rect x="62" y="200" width="20" height="10" rx="3" fill="#2a2a31"/>
+        </svg>
+      </div>
+      <div class="seg"><div class="on">Male</div><div>Female</div></div>
+      <div class="pv-cap">
+        <span class="a">Armor</span>
+        <span class="b">adren_harness</span>
+        <span class="b">tag adren_harness</span>
+        <span class="c">Left-drag to move · right-drag to turn · wheel to zoom</span>
+      </div>
+    </div>
+    <div class="main">
+      <div class="tabs"><div class="tab">Basic</div><div class="tab on">Appearance</div><div class="tab">Behavior</div><div class="tab">Stats</div><div class="tab">Requirements</div><div class="tab">Source</div></div>
+      <div class="pane">
+        <div style="display:flex; gap:18px">
+          <div style="flex:1.2">
+            <div class="sec" style="margin-bottom:6px">Body parts</div>
+            <div class="frow tight"><span class="flabel">Neck</span><span class="input mini"><span class="grow mono">001</span><span class="caret">▾</span></span></div>
+            <div class="frow tight"><span class="flabel">Torso</span><span class="input mini"><span class="grow mono">156</span><span class="caret">▾</span></span></div>
+            <div class="frow tight"><span class="flabel">Belt</span><span class="input mini"><span class="grow mono">101</span><span class="caret">▾</span></span></div>
+            <div class="frow tight"><span class="flabel">Pelvis</span><span class="input mini"><span class="grow mono">186</span><span class="caret">▾</span></span></div>
+            <div class="frow tight"><span class="flabel">Robe</span><span class="input mini"><span class="grow mono wm">— none</span><span class="caret">▾</span></span></div>
+            <div style="display:grid; grid-template-columns:148px 1fr 1fr; gap:10px; padding:8px 4px 2px">
+              <span></span><span class="sec">Left</span><span class="sec">Right</span>
+            </div>
+            <div style="display:grid; grid-template-columns:148px 1fr 1fr; gap:6px 10px; padding:0 4px; align-items:center">
+              <span class="flabel">Shoulder</span><span class="input mini"><span class="grow mono">000</span><span class="caret">▾</span></span><span class="input mini ro"><span class="grow mono">000</span></span>
+              <span class="flabel">Bicep</span><span class="input mini"><span class="grow mono">007</span><span class="caret">▾</span></span><span class="input mini ro"><span class="grow mono">007</span></span>
+              <span class="flabel">Forearm</span><span class="input mini"><span class="grow mono">105</span><span class="caret">▾</span></span><span class="input mini ro"><span class="grow mono">105</span></span>
+              <span class="flabel">Hand</span><span class="input mini"><span class="grow mono">246</span><span class="caret">▾</span></span><span class="input mini ro"><span class="grow mono">246</span></span>
+              <span class="flabel">Thigh</span><span class="input mini"><span class="grow mono">158</span><span class="caret">▾</span></span><span class="input mini ro"><span class="grow mono">158</span></span>
+              <span class="flabel">Shin</span><span class="input mini"><span class="grow mono">030</span><span class="caret">▾</span></span><span class="input mini ro"><span class="grow mono">030</span></span>
+              <span class="flabel">Foot</span><span class="input mini"><span class="grow mono">186</span><span class="caret">▾</span></span><span class="input mini ro"><span class="grow mono">186</span></span>
+            </div>
+            <div style="padding:8px 4px 0"><span class="check"><span class="box on"></span>Mirror right from left</span></div>
+          </div>
+          <div style="width:230px; flex:none">
+            <div class="sec" style="margin-bottom:6px">Colors</div>
+            <div style="display:flex; flex-direction:column; gap:6px">
+              <div style="display:flex; gap:9px; align-items:center"><span class="sw" style="background:#2b2b31"></span><span class="flabel" style="flex:1">Cloth 1</span><span class="mono" style="color:var(--ink3); font-size:10.5px">23</span></div>
+              <div style="display:flex; gap:9px; align-items:center"><span class="sw" style="background:#6c5fa5"></span><span class="flabel" style="flex:1">Cloth 2</span><span class="mono" style="color:var(--ink3); font-size:10.5px">124</span></div>
+              <div style="display:flex; gap:9px; align-items:center"><span class="sw" style="background:#6c5fa5"></span><span class="flabel" style="flex:1">Leather 1</span><span class="mono" style="color:var(--ink3); font-size:10.5px">124</span></div>
+              <div style="display:flex; gap:9px; align-items:center"><span class="sw" style="background:#26262c"></span><span class="flabel" style="flex:1">Leather 2</span><span class="mono" style="color:var(--ink3); font-size:10.5px">23</span></div>
+              <div style="display:flex; gap:9px; align-items:center"><span class="sw" style="background:#c9992f"></span><span class="flabel" style="flex:1">Metal 1</span><span class="mono" style="color:var(--ink3); font-size:10.5px">29</span></div>
+              <div style="display:flex; gap:9px; align-items:center"><span class="sw" style="background:#8a8fa3"></span><span class="flabel" style="flex:1">Metal 2</span><span class="mono" style="color:var(--ink3); font-size:10.5px">92</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="foot"><span class="grow"></span><span class="btn">Revert</span><span class="btn primary">Save</span></div>
+    </div>
+  </div>
+</div>
+<figcaption>Appearance · armor — body parts and dyes; the mirror check writes the right side from the left</figcaption>
+</figure>
+
+<figure>
+<div class="win">
+  <div class="hdr"><span class="name">Adrenal Harness</span><span class="kind">blueprint</span><span class="sep">·</span><span class="rr">adren_harness</span>
+    <span class="dirty"><span class="dot"></span>unsaved</span></div>
+  <div class="split">
+    <div class="leftcol">
+      <div class="preview" style="height:200px">
+        <svg width="110" height="190" viewBox="0 0 120 216">
+          <ellipse cx="60" cy="20" rx="13" ry="15" fill="#8a765f"/>
+          <path d="M35 40 L85 40 L92 58 L88 108 L32 108 L28 58 Z" fill="#5d5170"/>
+          <path d="M42 46 L78 46 L74 72 L60 80 L46 72 Z" fill="#6f5fa0"/>
+          <path d="M50 52 L70 52 L60 64 Z" fill="#c9992f"/>
+          <rect x="24" y="56" width="12" height="34" rx="5" fill="#c9992f"/><rect x="84" y="56" width="12" height="34" rx="5" fill="#c9992f"/>
+          <rect x="34" y="108" width="52" height="12" rx="3" fill="#22222a"/>
+          <path d="M36 120 L58 120 L56 168 L40 168 Z" fill="#6f5fa0"/><path d="M84 120 L62 120 L64 168 L80 168 Z" fill="#6f5fa0"/>
+          <path d="M40 168 L56 168 L55 200 L42 200 Z" fill="#c9992f"/><path d="M80 168 L64 168 L65 200 L78 200 Z" fill="#c9992f"/>
+        </svg>
+      </div>
+      <div class="pv-cap"><span class="a">Armor</span><span class="b">adren_harness</span></div>
+    </div>
+    <div class="main">
+      <div class="tabs"><div class="tab">Basic</div><div class="tab">Appearance</div><div class="tab">Behavior</div><div class="tab on">Stats</div><div class="tab">Requirements</div><div class="tab">Source</div></div>
+      <div class="pane">
+        <div style="columns:2; column-gap:10px">
+          <div class="card" style="padding:9px 12px 11px; break-inside:avoid; margin-bottom:10px">
+            <div class="sec" style="margin-bottom:7px">Defense</div>
+            <div style="display:grid; grid-template-columns:1fr 56px; gap:4px 8px; align-items:center">
+              <span class="flabel">Physical</span><span class="input mini"><span class="grow mono">26</span></span>
+              <span class="flabel">Force</span><span class="input mini"><span class="grow mono">21</span></span>
+            </div>
+          </div>
+          <div class="card" style="padding:9px 12px 11px; break-inside:avoid; margin-bottom:10px">
+            <div class="sec" style="margin-bottom:7px">Resistance</div>
+            <div style="display:grid; grid-template-columns:1fr 56px; gap:4px 8px; align-items:center">
+              <span class="flabel">Fire</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Poison</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Electrical</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Ice</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+            </div>
+          </div>
+          <div class="card" style="padding:9px 12px 11px; break-inside:avoid; margin-bottom:10px">
+            <div class="sec" style="margin-bottom:7px">Vitals</div>
+            <div style="display:grid; grid-template-columns:1fr 56px; gap:4px 8px; align-items:center">
+              <span class="flabel">HP</span><span class="input mini"><span class="grow mono">92</span></span>
+              <span class="flabel">FP</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">STM</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">FP Regen</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">STM Regen</span><span class="input mini"><span class="grow mono">1</span></span>
+            </div>
+          </div>
+          <div class="card" style="padding:9px 12px 11px; break-inside:avoid; margin-bottom:10px">
+            <div class="sec" style="margin-bottom:7px">Combat</div>
+            <div style="display:grid; grid-template-columns:1fr 56px; gap:4px 8px; align-items:center">
+              <span class="flabel">Attack</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Force Attack</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Evasion</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Combat Readiness</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Enhancement Level</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+            </div>
+          </div>
+          <div class="card" style="padding:9px 12px 11px; break-inside:avoid; margin-bottom:10px">
+            <div class="sec" style="margin-bottom:7px">Enhancement slots</div>
+            <div style="display:grid; grid-template-columns:1fr 56px; gap:4px 8px; align-items:center">
+              <span class="flabel">Armor</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+            </div>
+          </div>
+          <div class="card" style="padding:9px 12px 11px; break-inside:avoid; margin-bottom:10px">
+            <div class="sec" style="margin-bottom:7px">Utility</div>
+            <div style="display:grid; grid-template-columns:1fr 56px; gap:4px 8px; align-items:center">
+              <span class="flabel">Stealth</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Detection</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Trap Bonus</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Disarm</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Poison Bonus</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Lockpicking</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Shield Deflection</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+            </div>
+          </div>
+        </div>
+        <div class="grp" style="margin:2px 0 0">
+          <div class="ghead"><span class="tw">▸</span><span class="sec">Not used by Armor</span><span class="gsum">Crafting · Bonuses · Droid · Incubation · NPC · Engine (base game)</span></div>
+        </div>
+      </div>
+      <div class="foot"><span class="grow"></span><span class="btn">Revert</span><span class="btn primary">Save</span></div>
+    </div>
+  </div>
+</div>
+<figcaption>Stats · armor — the groups armor can carry, one value box per stat; the rest behind the collapsed row</figcaption>
+</figure>
+
+<!-- ================================================================ WEAPONS -->
+<h2>Weapons</h2>
+
+<figure>
+<div class="win">
+  <div class="hdr"><span class="name">[NPC] Lord Morel's Lightsaber</span><span class="kind">blueprint</span><span class="sep">·</span><span class="rr">bobsaber</span>
+    <span class="dirty"><span class="dot"></span>unsaved</span></div>
+  <div class="split">
+    <div class="leftcol">
+      <div class="preview">
+        <svg width="70" height="220" viewBox="0 0 70 220">
+          <defs><filter id="glow"><feGaussianBlur stdDeviation="3.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+          <rect x="31" y="14" width="8" height="130" rx="4" fill="#e05252" filter="url(#glow)"/>
+          <rect x="33" y="14" width="4" height="130" rx="2" fill="#ffd9d9"/>
+          <rect x="27" y="144" width="16" height="8" rx="2" fill="#3a4353"/>
+          <rect x="29" y="152" width="12" height="44" rx="3" fill="#8a8fa3"/>
+          <rect x="29" y="162" width="12" height="5" fill="#3a4353"/><rect x="29" y="176" width="12" height="5" fill="#3a4353"/>
+          <rect x="27" y="196" width="16" height="8" rx="2" fill="#5a6172"/>
+        </svg>
+      </div>
+      <div class="pv-cap">
+        <span class="a">Lightsaber</span>
+        <span class="b">bobsaber</span>
+        <span class="b">tag DarkHunter</span>
+        <span class="c">Left-drag to move · right-drag to turn · wheel to zoom</span>
+      </div>
+    </div>
+    <div class="main">
+      <div class="tabs"><div class="tab">Basic</div><div class="tab on">Appearance</div><div class="tab">Behavior</div><div class="tab">Stats</div><div class="tab">Requirements</div><div class="tab">Source</div></div>
+      <div class="pane">
+        <div style="display:flex; flex-direction:column; gap:13px; padding:0 4px">
+          <div>
+            <div style="display:flex; align-items:baseline; gap:8px"><span class="flabel">Top</span><span class="mono" style="font-size:10.5px; color:var(--ink3)">44 models</span></div>
+            <div style="display:flex; gap:6px; margin-top:6px; align-items:center">
+              <div class="tile" style="width:46px"><div class="art" style="height:44px"><svg width="16" height="38"><rect x="6" y="2" width="4" height="30" rx="2" fill="#a9aeb9"/><rect x="5" y="32" width="6" height="5" fill="#5a6172"/></svg></div><div class="cap">1-1</div></div>
+              <div class="tile" style="width:46px"><div class="art" style="height:44px"><svg width="16" height="38"><rect x="6" y="2" width="4" height="30" rx="2" fill="#5b9bf5"/><rect x="5" y="32" width="6" height="5" fill="#5a6172"/></svg></div><div class="cap">1-2</div></div>
+              <div class="tile" style="width:46px"><div class="art" style="height:44px"><svg width="16" height="38"><rect x="6" y="2" width="4" height="30" rx="2" fill="#5fbe8c"/><rect x="5" y="32" width="6" height="5" fill="#5a6172"/></svg></div><div class="cap">1-3</div></div>
+              <div class="tile on" style="width:46px"><div class="art" style="height:44px"><svg width="16" height="38"><rect x="6" y="2" width="4" height="30" rx="2" fill="#e05252"/><rect x="5" y="32" width="6" height="5" fill="#5a6172"/></svg></div><div class="cap">1-4</div></div>
+              <div class="tile" style="width:46px"><div class="art" style="height:44px"><svg width="16" height="38"><polygon points="8,2 11,32 5,32" fill="#a9aeb9"/><rect x="5" y="32" width="6" height="5" fill="#5a6172"/></svg></div><div class="cap">2-1</div></div>
+              <div class="tile" style="width:46px"><div class="art" style="height:44px"><svg width="16" height="38"><polygon points="8,2 11,32 5,32" fill="#5b9bf5"/><rect x="5" y="32" width="6" height="5" fill="#5a6172"/></svg></div><div class="cap">2-2</div></div>
+              <span class="mono" style="color:var(--ink3); font-size:11px; padding:0 3px">… 38 more</span>
+            </div>
+          </div>
+          <div>
+            <div style="display:flex; align-items:baseline; gap:8px"><span class="flabel">Middle</span><span class="mono" style="font-size:10.5px; color:var(--ink3)">18 models</span></div>
+            <div style="display:flex; gap:6px; margin-top:6px; align-items:center">
+              <div class="tile on" style="width:46px"><div class="art" style="height:44px"><svg width="18" height="34"><rect x="5" y="4" width="8" height="26" rx="2" fill="#8a8fa3"/><rect x="3" y="12" width="12" height="4" fill="#5a6172"/></svg></div><div class="cap">1-1</div></div>
+              <div class="tile" style="width:46px"><div class="art" style="height:44px"><svg width="18" height="34"><rect x="5" y="4" width="8" height="26" rx="4" fill="#8a8fa3"/><circle cx="9" cy="17" r="3" fill="#5a6172"/></svg></div><div class="cap">2-1</div></div>
+              <div class="tile" style="width:46px"><div class="art" style="height:44px"><svg width="18" height="34"><polygon points="5,4 13,4 15,17 13,30 5,30 3,17" fill="#8a8fa3"/></svg></div><div class="cap">3-1</div></div>
+              <div class="tile" style="width:46px"><div class="art" style="height:44px"><svg width="18" height="34"><rect x="5" y="4" width="8" height="26" fill="#8a8fa3"/><path d="M3 8 h12 M3 26 h12" stroke="#5a6172" stroke-width="3"/></svg></div><div class="cap">4-1</div></div>
+              <div class="tile" style="width:46px"><div class="art" style="height:44px"><svg width="18" height="34"><rect x="6" y="4" width="6" height="26" rx="3" fill="#8a8fa3"/><rect x="2" y="14" width="14" height="6" rx="3" fill="#5a6172"/></svg></div><div class="cap">5-1</div></div>
+              <span class="mono" style="color:var(--ink3); font-size:11px; padding:0 3px">… 13 more</span>
+            </div>
+          </div>
+          <div>
+            <div style="display:flex; align-items:baseline; gap:8px"><span class="flabel">Bottom</span><span class="mono" style="font-size:10.5px; color:var(--ink3)">27 models</span></div>
+            <div style="display:flex; gap:6px; margin-top:6px; align-items:center">
+              <div class="tile" style="width:46px"><div class="art" style="height:44px"><svg width="18" height="38"><rect x="6" y="2" width="6" height="30" rx="3" fill="#8a8fa3"/><rect x="4" y="32" width="10" height="4" rx="2" fill="#5a6172"/></svg></div><div class="cap">1-1</div></div>
+              <div class="tile" style="width:46px"><div class="art" style="height:44px"><svg width="18" height="38"><rect x="6" y="2" width="6" height="30" rx="3" fill="#8a8fa3"/><rect x="6" y="8" width="6" height="4" fill="#5a6172"/><rect x="6" y="18" width="6" height="4" fill="#5a6172"/></svg></div><div class="cap">2-1</div></div>
+              <div class="tile" style="width:46px"><div class="art" style="height:44px"><svg width="18" height="38"><rect x="5" y="2" width="8" height="8" rx="2" fill="#5a6172"/><rect x="6" y="10" width="6" height="22" rx="3" fill="#8a8fa3"/><rect x="4" y="32" width="10" height="4" rx="2" fill="#5a6172"/></svg></div><div class="cap">3-1</div></div>
+              <div class="tile on" style="width:46px"><div class="art" style="height:44px"><svg width="18" height="38"><rect x="5" y="2" width="8" height="8" rx="2" fill="#8a765f"/><rect x="6" y="10" width="6" height="22" rx="3" fill="#8a8fa3"/><rect x="4" y="32" width="10" height="4" rx="2" fill="#8a765f"/></svg></div><div class="cap">3-2</div></div>
+              <div class="tile" style="width:46px"><div class="art" style="height:44px"><svg width="18" height="38"><path d="M6 2 h6 v14 l3 6 -3 10 h-6 l-3 -10 3 -6 Z" fill="#8a8fa3"/></svg></div><div class="cap">4-1</div></div>
+              <span class="mono" style="color:var(--ink3); font-size:11px; padding:0 3px">… 22 more</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="foot"><span class="grow"></span><span class="btn">Revert</span><span class="btn primary">Save</span></div>
+    </div>
+  </div>
+</div>
+<figcaption>Appearance · weapons — three part galleries; tile captions are the stored model-color pair (parts 32·11·14). Boots share this surface.</figcaption>
+</figure>
+
+<figure>
+<div class="win">
+  <div class="hdr"><span class="name">[NPC] Lord Morel's Lightsaber</span><span class="kind">blueprint</span><span class="sep">·</span><span class="rr">bobsaber</span>
+    <span class="dirty"><span class="dot"></span>unsaved</span></div>
+  <div class="split">
+    <div class="leftcol">
+      <div class="preview" style="height:200px">
+        <svg width="60" height="190" viewBox="0 0 70 220">
+          <rect x="31" y="14" width="8" height="130" rx="4" fill="#e05252"/>
+          <rect x="33" y="14" width="4" height="130" rx="2" fill="#ffd9d9"/>
+          <rect x="27" y="144" width="16" height="8" rx="2" fill="#3a4353"/>
+          <rect x="29" y="152" width="12" height="44" rx="3" fill="#8a8fa3"/>
+          <rect x="27" y="196" width="16" height="8" rx="2" fill="#5a6172"/>
+        </svg>
+      </div>
+      <div class="pv-cap"><span class="a">Lightsaber</span><span class="b">bobsaber</span></div>
+    </div>
+    <div class="main">
+      <div class="tabs"><div class="tab">Basic</div><div class="tab">Appearance</div><div class="tab">Behavior</div><div class="tab on">Stats</div><div class="tab">Requirements</div><div class="tab">Source</div></div>
+      <div class="pane">
+        <div style="columns:2; column-gap:10px">
+          <div class="card" style="padding:9px 12px 11px; break-inside:avoid; margin-bottom:10px">
+            <div class="sec" style="margin-bottom:7px">Combat</div>
+            <div style="display:grid; grid-template-columns:1fr 56px; gap:4px 8px; align-items:center">
+              <span class="flabel">DMG</span><span class="input mini"><span class="grow mono">22</span></span>
+              <span class="flabel">Delay</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Attack</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Force Attack</span><span class="input mini"><span class="grow mono">15</span></span>
+              <span class="flabel">Damage Stat</span><span class="input mini"><span class="grow wm">—</span><span class="caret">▾</span></span>
+              <span class="flabel">Weapon Damage Type</span><span class="input mini"><span class="grow">Energy</span><span class="caret">▾</span></span>
+              <span class="flabel">Enhancement Level</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Evasion</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Combat Readiness</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+            </div>
+          </div>
+          <div class="card" style="padding:9px 12px 11px; break-inside:avoid; margin-bottom:10px">
+            <div class="sec" style="margin-bottom:7px">Vitals</div>
+            <div style="display:grid; grid-template-columns:1fr 56px; gap:4px 8px; align-items:center">
+              <span class="flabel">HP</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">FP</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">STM</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">FP Regen</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">STM Regen</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+            </div>
+          </div>
+          <div class="card" style="padding:9px 12px 11px; break-inside:avoid; margin-bottom:10px">
+            <div class="sec" style="margin-bottom:7px">Enhancement slots</div>
+            <div style="display:grid; grid-template-columns:1fr 56px; gap:4px 8px; align-items:center">
+              <span class="flabel">Weapon</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+            </div>
+          </div>
+          <div class="card" style="padding:9px 12px 11px; break-inside:avoid; margin-bottom:10px">
+            <div class="sec" style="margin-bottom:7px">Utility</div>
+            <div style="display:grid; grid-template-columns:1fr 56px; gap:4px 8px; align-items:center">
+              <span class="flabel">Stealth</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Detection</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Trap Bonus</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Disarm</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Poison Bonus</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Lockpicking</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+            </div>
+          </div>
+        </div>
+        <div class="grp" style="margin:2px 0 0">
+          <div class="ghead"><span class="tw">▸</span><span class="sec">Not used by Lightsaber</span><span class="gsum">Defense · Resistance · Crafting · Bonuses · Droid · Incubation · NPC · Engine (base game)</span></div>
+        </div>
+      </div>
+      <div class="foot"><span class="grow"></span><span class="btn">Revert</span><span class="btn primary">Save</span></div>
+    </div>
+  </div>
+</div>
+<figcaption>Stats · weapons — the weapon Combat card carries DMG, Delay, Damage Stat and Weapon Damage Type; ranged base types add Unlimited Ammo</figcaption>
+</figure>
+
+<!-- ================================================================ HELMETS / CAPES / SHIELDS -->
+<h2>Helmets, capes, shields</h2>
+
+<figure>
+<div class="win">
+  <div class="hdr"><span class="name">Duraplast Combat Helmet</span><span class="kind">blueprint</span><span class="sep">·</span><span class="rr">helm_duraplast</span>
+    <span class="dirty"><span class="dot"></span>unsaved</span></div>
+  <div class="split">
+    <div class="leftcol">
+      <div class="preview" style="height:180px">
+        <svg width="90" height="90" viewBox="0 0 90 90">
+          <path d="M45 8 C68 8 78 26 78 44 L78 66 L66 66 L66 48 L24 48 L24 66 L12 66 L12 44 C12 26 22 8 45 8 Z" fill="#5d6475"/>
+          <rect x="24" y="40" width="42" height="12" rx="4" fill="#2a2f3a"/>
+          <path d="M45 8 C58 8 68 16 72 28 L18 28 C22 16 32 8 45 8 Z" fill="#6f7688"/>
+        </svg>
+      </div>
+      <div class="pv-cap"><span class="a">Helmet</span><span class="b">helm_duraplast</span></div>
+    </div>
+    <div class="main">
+      <div class="tabs"><div class="tab">Basic</div><div class="tab on">Appearance</div><div class="tab">Behavior</div><div class="tab">Stats</div><div class="tab">Requirements</div><div class="tab">Source</div></div>
+      <div class="pane">
+        <div style="display:flex; align-items:baseline; gap:8px; margin-bottom:8px"><span class="sec">Model</span><span class="mono" style="font-size:10.5px; color:var(--ink3)">130 models</span></div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap">
+          <div class="tile"><div class="art"><svg width="40" height="40" viewBox="0 0 90 90"><path d="M45 12 C64 12 72 28 72 44 L72 62 L18 62 L18 44 C18 28 26 12 45 12 Z" fill="#5d6475"/><rect x="26" y="42" width="38" height="10" rx="4" fill="#2a2f3a"/></svg></div><div class="cap">120</div></div>
+          <div class="tile"><div class="art"><svg width="40" height="40" viewBox="0 0 90 90"><path d="M45 10 C66 10 74 30 74 48 L74 64 L16 64 L16 48 C16 30 24 10 45 10 Z" fill="#7a4d3d"/><circle cx="45" cy="42" r="10" fill="#2a2f3a"/></svg></div><div class="cap">121</div></div>
+          <div class="tile on"><div class="art"><svg width="40" height="40" viewBox="0 0 90 90"><path d="M45 8 C68 8 78 26 78 44 L78 66 L66 66 L66 48 L24 48 L24 66 L12 66 L12 44 C12 26 22 8 45 8 Z" fill="#5d6475"/><rect x="24" y="40" width="42" height="12" rx="4" fill="#2a2f3a"/></svg></div><div class="cap">122</div></div>
+          <div class="tile"><div class="art"><svg width="40" height="40" viewBox="0 0 90 90"><path d="M45 10 C64 10 74 26 74 46 L74 62 L16 62 L16 46 C16 26 26 10 45 10 Z" fill="#8a8fa3"/><path d="M16 46 h58" stroke="#2a2f3a" stroke-width="4"/><rect x="40" y="10" width="10" height="18" fill="#c9992f"/></svg></div><div class="cap">123</div></div>
+          <div class="tile"><div class="art"><svg width="40" height="40" viewBox="0 0 90 90"><path d="M45 12 C62 12 72 26 72 44 L72 60 L18 60 L18 44 C18 26 28 12 45 12 Z" fill="#3a4353"/><path d="M28 38 L45 48 L62 38" stroke="#e05252" stroke-width="3" fill="none"/></svg></div><div class="cap">124</div></div>
+          <div class="tile"><div class="art"><svg width="40" height="40" viewBox="0 0 90 90"><path d="M45 10 C66 10 76 28 76 46 L76 64 L14 64 L14 46 C14 28 24 10 45 10 Z" fill="#4a5a44"/><rect x="22" y="40" width="46" height="8" rx="3" fill="#1e2418"/><rect x="22" y="52" width="20" height="6" rx="2" fill="#1e2418"/></svg></div><div class="cap">125</div></div>
+          <div class="tile"><div class="art"><svg width="40" height="40" viewBox="0 0 90 90"><ellipse cx="45" cy="40" rx="32" ry="28" fill="#8a765f"/><rect x="30" y="34" width="30" height="10" rx="5" fill="#2a2f3a"/></svg></div><div class="cap">126</div></div>
+          <div class="tile"><div class="art"><svg width="40" height="40" viewBox="0 0 90 90"><path d="M45 8 C64 8 76 24 76 44 L76 68 L58 56 L32 56 L14 68 L14 44 C14 24 26 8 45 8 Z" fill="#5a3d7a"/><rect x="26" y="38" width="38" height="10" rx="4" fill="#2a2f3a"/></svg></div><div class="cap">127</div></div>
+        </div>
+      </div>
+      <div class="foot"><span class="grow"></span><span class="btn">Revert</span><span class="btn primary">Save</span></div>
+    </div>
+  </div>
+</div>
+<figcaption>Appearance · helmets — one model gallery, the door editor's appearance control</figcaption>
+</figure>
+
+<figure>
+<div class="win">
+  <div class="hdr"><span class="name">Officer's Greatcape</span><span class="kind">blueprint</span><span class="sep">·</span><span class="rr">cape_officer</span>
+    <span class="dirty"><span class="dot"></span>unsaved</span></div>
+  <div class="split">
+    <div class="leftcol">
+      <div class="preview" style="height:180px">
+        <svg width="80" height="120" viewBox="0 0 80 120">
+          <path d="M20 10 L60 10 L70 100 L54 92 L40 102 L26 92 L10 100 Z" fill="#5a3d44"/>
+          <path d="M20 10 L60 10 L58 26 L22 26 Z" fill="#7a5560"/>
+          <rect x="36" y="8" width="8" height="6" rx="2" fill="#c9992f"/>
+        </svg>
+      </div>
+      <div class="pv-cap"><span class="a">Cloak</span><span class="b">cape_officer</span></div>
+    </div>
+    <div class="main">
+      <div class="tabs"><div class="tab">Basic</div><div class="tab on">Appearance</div><div class="tab">Behavior</div><div class="tab">Stats</div><div class="tab">Requirements</div><div class="tab">Source</div></div>
+      <div class="pane">
+        <div style="display:flex; align-items:baseline; gap:8px; margin-bottom:8px"><span class="sec">Model</span><span class="mono" style="font-size:10.5px; color:var(--ink3)">24 models</span></div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap">
+          <div class="tile"><div class="art"><svg width="34" height="48" viewBox="0 0 80 120"><path d="M22 12 L58 12 L64 104 L40 96 L16 104 Z" fill="#3a4353"/></svg></div><div class="cap">001</div></div>
+          <div class="tile"><div class="art"><svg width="34" height="48" viewBox="0 0 80 120"><path d="M22 12 L58 12 L66 104 L40 92 L14 104 Z" fill="#4a5a44"/><path d="M22 12 L58 12 L56 28 L24 28 Z" fill="#5f7358"/></svg></div><div class="cap">002</div></div>
+          <div class="tile on"><div class="art"><svg width="34" height="48" viewBox="0 0 80 120"><path d="M20 10 L60 10 L70 100 L54 92 L40 102 L26 92 L10 100 Z" fill="#5a3d44"/><path d="M20 10 L60 10 L58 26 L22 26 Z" fill="#7a5560"/></svg></div><div class="cap">003</div></div>
+          <div class="tile"><div class="art"><svg width="34" height="48" viewBox="0 0 80 120"><path d="M24 14 L56 14 L60 102 L40 98 L20 102 Z" fill="#28405c"/><path d="M40 14 L40 98" stroke="#1a2c40" stroke-width="3"/></svg></div><div class="cap">004</div></div>
+          <div class="tile"><div class="art"><svg width="34" height="48" viewBox="0 0 80 120"><path d="M22 12 L58 12 L62 100 L40 108 L18 100 Z" fill="#5a4a33"/><path d="M22 40 h36 M20 66 h40" stroke="#3a2f20" stroke-width="3"/></svg></div><div class="cap">005</div></div>
+          <div class="tile"><div class="art"><svg width="34" height="48" viewBox="0 0 80 120"><path d="M20 12 L60 12 L68 102 L12 102 Z" fill="#5a3d7a"/><path d="M26 12 L40 60 L54 12" stroke="#c9992f" stroke-width="3" fill="none"/></svg></div><div class="cap">006</div></div>
+          <div class="tile"><div class="art"><svg width="34" height="48" viewBox="0 0 80 120"><path d="M24 12 L56 12 L58 62 L40 70 L22 62 Z" fill="#7a4d3d"/></svg></div><div class="cap">007</div></div>
+          <div class="tile"><div class="art"><svg width="34" height="48" viewBox="0 0 80 120"><path d="M20 10 L60 10 L64 104 L40 88 L16 104 Z" fill="#2f2f36"/><path d="M20 10 L60 10 L64 104" stroke="#e05252" stroke-width="2.5" fill="none"/></svg></div><div class="cap">008</div></div>
+        </div>
+      </div>
+      <div class="foot"><span class="grow"></span><span class="btn">Revert</span><span class="btn primary">Save</span></div>
+    </div>
+  </div>
+</div>
+<figcaption>Appearance · capes — the same gallery over cloak models; shields use it too, and add Shield Deflection on Stats</figcaption>
+</figure>
+
+<!-- ================================================================ SIMPLE ITEMS -->
+<h2>Simple-model items — accessories, miscellaneous, essences</h2>
+
+<figure>
+<div class="win">
+  <div class="hdr"><span class="name">Abdamaryllia</span><span class="kind">blueprint</span><span class="sep">·</span><span class="rr">abdamaryllia</span>
+    <span class="dirty"><span class="dot"></span>unsaved</span></div>
+  <div class="split">
+    <div class="leftcol">
+      <div class="preview" style="height:160px">
+        <svg width="72" height="72" viewBox="0 0 72 72">
+          <path d="M36 62 C36 44 30 36 20 28 C32 30 36 36 36 44 C36 36 40 30 52 28 C42 36 36 44 36 62 Z" fill="#5fbe8c"/>
+          <path d="M36 62 L36 30" stroke="#3d7a5c" stroke-width="2.5"/>
+          <circle cx="36" cy="24" r="8" fill="#b08cf0"/><circle cx="36" cy="24" r="3.5" fill="#e4ce9a"/>
+        </svg>
+      </div>
+      <div class="pv-cap"><span class="a">Essence</span><span class="b">abdamaryllia</span></div>
+    </div>
+    <div class="main">
+      <div class="tabs"><div class="tab">Basic</div><div class="tab on">Appearance</div><div class="tab">Behavior</div><div class="tab">Stats</div><div class="tab">Requirements</div><div class="tab">Source</div></div>
+      <div class="pane">
+        <div style="display:flex; align-items:baseline; gap:8px; margin-bottom:8px"><span class="sec">Icon</span><span class="mono" style="font-size:10.5px; color:var(--ink3)">112 for this base type</span></div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap">
+          <div class="tile"><div class="art"><svg width="34" height="40"><rect x="12" y="4" width="10" height="6" fill="#5a6172"/><rect x="8" y="10" width="18" height="26" rx="5" fill="#2a4f6e"/><rect x="11" y="14" width="12" height="18" rx="3" fill="#5b9bf5" opacity=".6"/></svg></div><div class="cap">003</div></div>
+          <div class="tile"><div class="art"><svg width="34" height="40"><polygon points="17,2 30,14 24,36 10,36 4,14" fill="#3d7a5c"/><polygon points="17,8 25,15 21,30 13,30 9,15" fill="#5fbe8c"/></svg></div><div class="cap">004</div></div>
+          <div class="tile on"><div class="art"><svg width="34" height="40"><path d="M17 38 C17 26 13 20 6 15 C14 16 17 21 17 26 C17 21 20 16 28 15 C21 20 17 26 17 38 Z" fill="#5fbe8c"/><circle cx="17" cy="10" r="5" fill="#b08cf0"/></svg></div><div class="cap">005</div></div>
+          <div class="tile"><div class="art"><svg width="34" height="40"><circle cx="17" cy="20" r="12" fill="#31394a"/><circle cx="17" cy="20" r="7" fill="#c9992f"/><circle cx="17" cy="20" r="2.5" fill="#0C1017"/></svg></div><div class="cap">006</div></div>
+          <div class="tile"><div class="art"><svg width="34" height="40"><rect x="6" y="8" width="22" height="24" rx="3" fill="#31394a"/><path d="M10 12 h14 M10 17 h14 M10 22 h9" stroke="#5b9bf5" stroke-width="2"/></svg></div><div class="cap">007</div></div>
+          <div class="tile"><div class="art"><svg width="34" height="40"><polygon points="17,4 27,12 27,28 17,36 7,28 7,12" fill="#5a3d7a"/><polygon points="17,10 23,15 23,25 17,30 11,25 11,15" fill="#b08cf0"/></svg></div><div class="cap">008</div></div>
+          <div class="tile"><div class="art"><svg width="34" height="40"><rect x="10" y="6" width="14" height="8" rx="2" fill="#5a6172"/><path d="M8 14 h18 l3 18 a4 4 0 0 1 -4 4 h-16 a4 4 0 0 1 -4 -4 Z" fill="#7a4d3d"/></svg></div><div class="cap">009</div></div>
+          <div class="tile"><div class="art"><svg width="34" height="40"><path d="M12 4 h10 v8 l5 20 a4 4 0 0 1 -4 4 h-12 a4 4 0 0 1 -4 -4 l5 -20 Z" fill="#28405c"/><rect x="12" y="22" width="10" height="10" fill="#d9a155" opacity=".7"/></svg></div><div class="cap">010</div></div>
+          <div class="tile"><div class="art"><svg width="34" height="40"><circle cx="17" cy="20" r="13" fill="#233042"/><path d="M17 9 a11 11 0 0 1 9 17" stroke="#5fbe8c" stroke-width="2.5" fill="none"/><circle cx="17" cy="20" r="4" fill="#5fbe8c"/></svg></div><div class="cap">011</div></div>
+          <div class="tile"><div class="art"><svg width="34" height="40"><rect x="7" y="10" width="20" height="20" rx="10" fill="#4a3d2a"/><circle cx="13" cy="20" r="3" fill="#e4ce9a"/><circle cx="21" cy="20" r="3" fill="#e4ce9a"/></svg></div><div class="cap">012</div></div>
+        </div>
+      </div>
+      <div class="foot"><span class="grow"></span><span class="btn">Revert</span><span class="btn primary">Save</span></div>
+    </div>
+  </div>
+</div>
+<figcaption>Appearance · simple items — the icon gallery serves accessories, miscellaneous items, essences and creature items (5,513 blueprints)</figcaption>
+</figure>
+
+<!-- ================================================================ ROLES -->
+<h2>Roles — the Behavior tab</h2>
+<p>Equipment never reaches this tab's rail; the carriable families do, and the rail lists only the roles the
+base type supports. Choosing a role is what unlocks that role's stats on the Stats tab, and each role manages
+the values that follow from it.</p>
+
+<figure>
+<div class="win">
+  <div class="hdr"><span class="name">Kolto Recovery Stim IV</span><span class="kind">blueprint</span><span class="sep">·</span><span class="rr">stim_treatment4</span>
+    <span class="dirty"><span class="dot"></span>unsaved</span></div>
+  <div class="split">
+    <div class="leftcol">
+      <div class="preview">
+        <svg width="90" height="140" viewBox="0 0 90 140">
+          <rect x="34" y="10" width="22" height="16" rx="3" fill="#5a6172"/>
+          <rect x="30" y="26" width="30" height="76" rx="7" fill="#233042"/>
+          <rect x="34" y="34" width="22" height="56" rx="4" fill="#2f6b57"/>
+          <rect x="34" y="34" width="22" height="20" rx="4" fill="#5fbe8c" opacity=".55"/>
+          <rect x="42" y="102" width="6" height="24" fill="#8a8fa3"/>
+          <path d="M45 126 L45 136" stroke="#c8cdd6" stroke-width="2"/>
+        </svg>
+      </div>
+      <div class="pv-cap">
+        <span class="a">Misc Medium · icon 108</span>
+        <span class="b">stim_treatment4</span>
+        <span class="b">tag stim_treatment4</span>
+      </div>
+    </div>
+    <div class="main">
+      <div class="tabs"><div class="tab">Basic</div><div class="tab">Appearance</div><div class="tab on">Behavior</div><div class="tab">Stats</div><div class="tab">Requirements</div><div class="tab">Source</div></div>
+      <div style="display:flex; flex:1">
+        <div class="rail">
+          <div class="rsec">Misc Medium roles</div>
+          <div class="rbtn on">Consumable</div>
+          <div class="rbtn">Meal</div>
+          <div class="rbtn">Grenade</div>
+          <div class="rbtn">Deployed Device</div>
+          <div class="rbtn">Droid Part</div>
+          <div class="rbtn">Incubation Sample</div>
+          <div class="rbtn">Schematic</div>
+          <div class="rbtn">Key Item</div>
+          <div class="rrule"></div>
+          <div class="rbtn">Custom</div>
+        </div>
+        <div style="flex:1; padding:12px 10px">
+          <div class="card" style="padding:12px 8px 10px">
+            <div class="sec" style="margin:0 8px 2px">Consumable</div>
+            <div style="color:var(--ink3); margin:0 8px 10px; font-size:12px">Casts its spell on the user when activated, then spends a charge or a stack unit.</div>
+            <div class="frow"><span class="flabel">Spell <span class="req">*</span></span><span class="input"><span class="grow">Kolto Recovery IV</span><span class="caret">▾</span></span></div>
+            <div class="frow"><span class="flabel">Consumed as</span><span class="input"><span class="grow">Single use — item is destroyed</span><span class="caret">▾</span></span></div>
+            <div style="height:1px; background:var(--rule); margin:9px 8px"></div>
+            <div class="stmt"><span>Cast Spell</span><span class="v">Kolto Recovery IV — single use <span class="note">· written from the spell above</span></span></div>
+            <div class="stmt"><span>Charges</span><span class="v">0 <span class="note">· single-use items carry none</span></span></div>
+          </div>
+        </div>
+      </div>
+      <div class="foot"><span class="amber">Consumable still needs Spell if the picker is cleared.</span><span class="btn">Revert</span><span class="btn primary">Save</span></div>
+    </div>
+  </div>
+</div>
+<figcaption>Behavior · Consumable — unlocks Cast Spell and uses. Meal unlocks Food Bonus and Food slots; Grenade unlocks Cast Spell and DMG.</figcaption>
+</figure>
+
+<figure>
+<div class="win">
+  <div class="hdr"><span class="name">Abdamaryllia</span><span class="kind">blueprint</span><span class="sep">·</span><span class="rr">abdamaryllia</span>
+    <span class="dirty"><span class="dot"></span>unsaved</span></div>
+  <div class="split">
+    <div class="leftcol">
+      <div class="preview" style="height:160px">
+        <svg width="72" height="72" viewBox="0 0 72 72">
+          <path d="M36 62 C36 44 30 36 20 28 C32 30 36 36 36 44 C36 36 40 30 52 28 C42 36 36 44 36 62 Z" fill="#5fbe8c"/>
+          <path d="M36 62 L36 30" stroke="#3d7a5c" stroke-width="2.5"/>
+          <circle cx="36" cy="24" r="8" fill="#b08cf0"/><circle cx="36" cy="24" r="3.5" fill="#e4ce9a"/>
+        </svg>
+      </div>
+      <div class="pv-cap"><span class="a">Essence</span><span class="b">abdamaryllia</span></div>
+    </div>
+    <div class="main">
+      <div class="tabs"><div class="tab">Basic</div><div class="tab">Appearance</div><div class="tab on">Behavior</div><div class="tab">Stats</div><div class="tab">Requirements</div><div class="tab">Source</div></div>
+      <div style="display:flex; flex:1">
+        <div class="rail">
+          <div class="rsec">Essence roles</div>
+          <div class="rbtn on">Component</div>
+          <div class="rbtn">Enhancement</div>
+          <div class="rrule"></div>
+          <div class="rbtn">Custom</div>
+        </div>
+        <div style="flex:1; padding:12px 10px">
+          <div class="card" style="padding:12px 8px 10px">
+            <div class="sec" style="margin:0 8px 2px">Component</div>
+            <div style="color:var(--ink3); margin:0 8px 10px; font-size:12px">A crafting input. The stats on the Stats tab transfer to the item it is crafted into.</div>
+            <div class="frow"><span class="flabel">Craft</span><span class="input" style="max-width:220px"><span class="grow">Agriculture</span><span class="caret">▾</span></span></div>
+            <div style="height:1px; background:var(--rule); margin:9px 8px"></div>
+            <div class="stmt"><span>Granted stats</span><span class="v">HP 4 · STM Regen 1 <span class="note">· from the Stats tab</span></span></div>
+          </div>
+        </div>
+      </div>
+      <div class="foot"><span class="grow"></span><span class="btn">Revert</span><span class="btn primary">Save</span></div>
+    </div>
+  </div>
+</div>
+<figcaption>Behavior · Component — the Stats tab holds the stats the component grants; Enhancement adds a slot type (Armor / Weapon / Structure / Food / Starship / Module / Droid)</figcaption>
+</figure>
+
+<figure>
+<div class="win">
+  <div class="hdr"><span class="name">[NPC] Aradile Hide</span><span class="kind">blueprint</span><span class="sep">·</span><span class="rr">aradile_skin2</span>
+    <span class="dirty"><span class="dot"></span>unsaved</span></div>
+  <div class="split">
+    <div class="leftcol">
+      <div class="preview" style="height:160px">
+        <svg width="84" height="70" viewBox="0 0 84 70">
+          <path d="M10 20 C20 6 64 6 74 20 C80 32 76 52 64 60 C50 68 34 68 20 60 C8 52 4 32 10 20 Z" fill="#6e5a3e"/>
+          <path d="M22 24 C34 16 50 16 62 24" stroke="#4a3d2a" stroke-width="3" fill="none"/>
+          <path d="M20 38 C34 30 50 30 64 38" stroke="#4a3d2a" stroke-width="3" fill="none"/>
+          <path d="M24 50 C36 44 48 44 60 50" stroke="#4a3d2a" stroke-width="3" fill="none"/>
+        </svg>
+      </div>
+      <div class="pv-cap"><span class="a">Creature Item</span><span class="b">aradile_skin2</span></div>
+    </div>
+    <div class="main">
+      <div class="tabs"><div class="tab">Basic</div><div class="tab">Appearance</div><div class="tab on">Behavior</div><div class="tab">Stats</div><div class="tab">Requirements</div><div class="tab">Source</div></div>
+      <div style="display:flex; flex:1">
+        <div class="rail">
+          <div class="rsec">Creature Item roles</div>
+          <div class="rbtn on">Creature Item</div>
+          <div class="rrule"></div>
+          <div class="rbtn">Custom</div>
+        </div>
+        <div style="flex:1; padding:12px 10px">
+          <div class="card" style="padding:12px 8px 10px">
+            <div class="sec" style="margin:0 8px 2px">Creature Item</div>
+            <div style="color:var(--ink3); margin:0 8px 10px; font-size:12px">Worn by an NPC to carry its stats. Never reaches players.</div>
+            <div style="height:1px; background:var(--rule); margin:9px 8px"></div>
+            <div class="stmt"><span>Stats</span><span class="v">NPC HP · NPC Level · NPC Skill · Monster Damage <span class="note">· unlocked on the Stats tab</span></span></div>
+            <div class="stmt"><span>Economy</span><span class="v">restricted <span class="note">· creature base types never surface to players</span></span></div>
+          </div>
+        </div>
+      </div>
+      <div class="foot"><span class="grow"></span><span class="btn">Revert</span><span class="btn primary">Save</span></div>
+    </div>
+  </div>
+</div>
+<figcaption>Behavior · Creature Item — the fixed role for creature base types; unlocks the NPC stat group</figcaption>
+</figure>
+
+<figure>
+<div class="win">
+  <div class="hdr"><span class="name">Ark Dragon Trophy</span><span class="kind">blueprint</span><span class="sep">·</span><span class="rr">ark_dragon_troph</span>
+    <span class="dirty"><span class="dot"></span>unsaved</span></div>
+  <div class="split">
+    <div class="leftcol">
+      <div class="preview">
+        <svg width="90" height="120" viewBox="0 0 90 120">
+          <rect x="15" y="86" width="60" height="14" rx="3" fill="#5a4a33"/>
+          <rect x="25" y="76" width="40" height="10" rx="2" fill="#6e5a3e"/>
+          <path d="M45 20 C60 24 68 40 64 58 C60 70 52 76 45 76 C38 76 30 70 26 58 C22 40 30 24 45 20 Z" fill="#7a4d3d"/>
+          <path d="M32 34 L22 22 L34 28 Z" fill="#8a765f"/><path d="M58 34 L68 22 L56 28 Z" fill="#8a765f"/>
+          <circle cx="37" cy="46" r="4" fill="#e4ce9a"/><circle cx="53" cy="46" r="4" fill="#e4ce9a"/>
+          <path d="M39 62 L45 66 L51 62" stroke="#3a2c22" stroke-width="2.5" fill="none"/>
+        </svg>
+      </div>
+      <div class="pv-cap"><span class="a">Misc Medium · icon 019</span><span class="b">ark_dragon_troph</span></div>
+    </div>
+    <div class="main">
+      <div class="tabs"><div class="tab">Basic</div><div class="tab">Appearance</div><div class="tab on">Behavior</div><div class="tab">Stats</div><div class="tab">Requirements</div><div class="tab">Source</div><div class="tab">Variables</div></div>
+      <div style="display:flex; flex:1">
+        <div class="rail">
+          <div class="rsec">Misc Medium roles</div>
+          <div class="rbtn">Consumable</div>
+          <div class="rbtn">Meal</div>
+          <div class="rbtn">Grenade</div>
+          <div class="rbtn">Deployed Device</div>
+          <div class="rbtn">Droid Part</div>
+          <div class="rbtn">Incubation Sample</div>
+          <div class="rbtn">Schematic</div>
+          <div class="rbtn">Key Item</div>
+          <div class="rrule"></div>
+          <div class="rbtn on">Custom</div>
+        </div>
+        <div style="flex:1; padding:12px 10px">
+          <div class="card" style="padding:12px 8px 10px">
+            <div class="sec" style="margin:0 8px 2px">Custom</div>
+            <div style="color:var(--ink3); margin:0 8px 10px; font-size:12px">For items none of the declared roles fits. Nothing is written on the builder's behalf.</div>
+            <div class="stmt"><span>Managed values</span><span class="v">none — every field stays exactly as authored</span></div>
+            <div class="stmt"><span>Variables</span><span class="v">tab shown · 2 locals</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="foot"><span class="grow"></span><span class="btn">Revert</span><span class="btn primary">Save</span></div>
+    </div>
+  </div>
+</div>
+<figcaption>Behavior · Custom — the unclassified remainder. Choosing it is what makes the Variables tab exist.</figcaption>
+</figure>
+
+<figure>
+<div class="win">
+  <div class="hdr"><span class="name">Ark Dragon Trophy</span><span class="kind">blueprint</span><span class="sep">·</span><span class="rr">ark_dragon_troph</span>
+    <span class="dirty"><span class="dot"></span>unsaved</span></div>
+  <div class="split">
+    <div class="leftcol">
+      <div class="preview" style="height:160px">
+        <svg width="70" height="94" viewBox="0 0 90 120">
+          <rect x="15" y="86" width="60" height="14" rx="3" fill="#5a4a33"/>
+          <rect x="25" y="76" width="40" height="10" rx="2" fill="#6e5a3e"/>
+          <path d="M45 20 C60 24 68 40 64 58 C60 70 52 76 45 76 C38 76 30 70 26 58 C22 40 30 24 45 20 Z" fill="#7a4d3d"/>
+          <path d="M32 34 L22 22 L34 28 Z" fill="#8a765f"/><path d="M58 34 L68 22 L56 28 Z" fill="#8a765f"/>
+          <circle cx="37" cy="46" r="4" fill="#e4ce9a"/><circle cx="53" cy="46" r="4" fill="#e4ce9a"/>
+        </svg>
+      </div>
+      <div class="pv-cap"><span class="a">Misc Medium · icon 019</span><span class="b">ark_dragon_troph</span></div>
+    </div>
+    <div class="main">
+      <div class="tabs"><div class="tab">Basic</div><div class="tab">Appearance</div><div class="tab">Behavior</div><div class="tab">Stats</div><div class="tab">Requirements</div><div class="tab">Source</div><div class="tab on">Variables</div></div>
+      <div class="pane">
+        <div style="max-width:600px">
+          <div style="display:grid; grid-template-columns:1fr 90px 1fr 30px; gap:6px 10px; align-items:center">
+            <span class="label">Name</span><span class="label">Type</span><span class="label">Value</span><span></span>
+            <span class="input mini"><span class="grow mono">TROPHY_KILL_TAG</span></span>
+            <span class="input mini"><span class="grow">string</span><span class="caret">▾</span></span>
+            <span class="input mini"><span class="grow mono">ark_dragon</span></span>
+            <span class="x">×</span>
+            <span class="input mini"><span class="grow mono">MOUNT_STYLE</span></span>
+            <span class="input mini"><span class="grow">int</span><span class="caret">▾</span></span>
+            <span class="input mini"><span class="grow mono">2</span></span>
+            <span class="x">×</span>
+            <span class="input mini"><span class="grow wm">name</span></span>
+            <span class="input mini"><span class="grow wm">type</span><span class="caret">▾</span></span>
+            <span class="input mini"><span class="grow wm">value</span></span>
+            <span class="btn sm">Set</span>
+          </div>
+        </div>
+      </div>
+      <div class="foot"><span class="grow"></span><span class="btn">Revert</span><span class="btn primary">Save</span></div>
+    </div>
+  </div>
+</div>
+<figcaption>Variables — present only while the behavior is Custom; every declared role owns its locals as named fields instead</figcaption>
+</figure>
+
+<!-- ================================================================ SHARED TABS -->
+<h2>Requirements and Source — the shared tabs</h2>
+<p>These two are the same shape for every family. Requirements is skills by category plus stat, perk and
+race gates; Source lists every place a player can obtain the item, from a resref-keyed index built once per
+workspace and refreshed per saved file.</p>
+
+<figure>
+<div class="win">
+  <div class="hdr"><span class="name">Adrenal Harness</span><span class="kind">blueprint</span><span class="sep">·</span><span class="rr">adren_harness</span>
+    <span class="dirty"><span class="dot"></span>unsaved</span></div>
+  <div class="split">
+    <div class="leftcol">
+      <div class="preview" style="height:200px">
+        <svg width="110" height="190" viewBox="0 0 120 216">
+          <ellipse cx="60" cy="20" rx="13" ry="15" fill="#8a765f"/>
+          <path d="M35 40 L85 40 L92 58 L88 108 L32 108 L28 58 Z" fill="#5d5170"/>
+          <path d="M42 46 L78 46 L74 72 L60 80 L46 72 Z" fill="#6f5fa0"/>
+          <path d="M50 52 L70 52 L60 64 Z" fill="#c9992f"/>
+          <rect x="24" y="56" width="12" height="34" rx="5" fill="#c9992f"/><rect x="84" y="56" width="12" height="34" rx="5" fill="#c9992f"/>
+          <rect x="34" y="108" width="52" height="12" rx="3" fill="#22222a"/>
+          <path d="M36 120 L58 120 L56 168 L40 168 Z" fill="#6f5fa0"/><path d="M84 120 L62 120 L64 168 L80 168 Z" fill="#6f5fa0"/>
+          <path d="M40 168 L56 168 L55 200 L42 200 Z" fill="#c9992f"/><path d="M80 168 L64 168 L65 200 L78 200 Z" fill="#c9992f"/>
+        </svg>
+      </div>
+      <div class="pv-cap"><span class="a">Armor</span><span class="b">adren_harness</span></div>
+    </div>
+    <div class="main">
+      <div class="tabs"><div class="tab">Basic</div><div class="tab">Appearance</div><div class="tab">Behavior</div><div class="tab">Stats</div><div class="tab on">Requirements</div><div class="tab">Source</div></div>
+      <div class="pane">
+        <div style="max-width:560px">
+          <div class="card" style="padding:9px 12px 11px">
+            <div class="sec" style="margin-bottom:7px">Combat skills</div>
+            <div style="display:grid; grid-template-columns:1fr 52px 1fr 52px; gap:4px 12px; align-items:center">
+              <span class="flabel">Armor</span><span class="input mini"><span class="grow mono">45</span></span>
+              <span class="flabel">Force</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Vibroblade</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Vibroknife</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Heavy Vibroblade</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Twin Blade</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Spear</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Katar</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Staff</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Lightsaber</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Saberstaff</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Pistol</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Rifle</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Throwing</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Beast Mastery</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Devices</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Mimicry</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+            </div>
+          </div>
+          <div class="card" style="padding:9px 12px 11px; margin-top:10px">
+            <div class="sec" style="margin-bottom:7px">Crafting skills</div>
+            <div style="display:grid; grid-template-columns:1fr 52px 1fr 52px; gap:4px 12px; align-items:center">
+              <span class="flabel">Smithery</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Engineering</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Fabrication</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Agriculture</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Gathering</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+            </div>
+          </div>
+          <div class="card" style="padding:9px 12px 11px; margin-top:10px">
+            <div class="sec" style="margin-bottom:7px">Utility skills</div>
+            <div style="display:grid; grid-template-columns:1fr 52px 1fr 52px; gap:4px 12px; align-items:center">
+              <span class="flabel">Piloting</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">First Aid</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Leadership</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Espionage</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+            </div>
+          </div>
+          <div class="card" style="padding:9px 12px 11px; margin-top:10px">
+            <div class="sec" style="margin-bottom:7px">Required stat</div>
+            <div style="display:grid; grid-template-columns:1fr 52px 1fr 52px; gap:4px 12px; align-items:center">
+              <span class="flabel">Might</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Perception</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Vitality</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Agility</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Willpower</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Social</span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+            </div>
+          </div>
+          <div class="card" style="padding:9px 12px 11px; margin-top:10px">
+            <div class="sec" style="margin-bottom:7px">Other requirements</div>
+            <div style="display:grid; grid-template-columns:148px 1fr 52px; gap:4px 10px; align-items:center; padding:0 4px">
+              <span></span><span></span><span class="label">Level</span>
+              <span class="flabel">Perk</span><span class="input mini" style="max-width:240px"><span class="grow wm">— none</span><span class="caret">▾</span></span><span class="input mini"><span class="grow mono">&nbsp;</span></span>
+              <span class="flabel">Race</span><span class="input mini" style="max-width:240px"><span class="grow wm">— any</span><span class="caret">▾</span></span><span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="foot"><span class="grow"></span><span class="btn">Revert</span><span class="btn primary">Save</span></div>
+    </div>
+  </div>
+</div>
+<figcaption>Requirements — skills by category, stat gates, perk (with level) and race</figcaption>
+</figure>
+
+<figure>
+<div class="win">
+  <div class="hdr"><span class="name">Adrenal Harness</span><span class="kind">blueprint</span><span class="sep">·</span><span class="rr">adren_harness</span>
+    <span class="dirty"><span class="dot"></span>unsaved</span></div>
+  <div class="split">
+    <div class="leftcol">
+      <div class="preview" style="height:200px">
+        <svg width="110" height="190" viewBox="0 0 120 216">
+          <ellipse cx="60" cy="20" rx="13" ry="15" fill="#8a765f"/>
+          <path d="M35 40 L85 40 L92 58 L88 108 L32 108 L28 58 Z" fill="#5d5170"/>
+          <path d="M42 46 L78 46 L74 72 L60 80 L46 72 Z" fill="#6f5fa0"/>
+          <path d="M50 52 L70 52 L60 64 Z" fill="#c9992f"/>
+          <rect x="24" y="56" width="12" height="34" rx="5" fill="#c9992f"/><rect x="84" y="56" width="12" height="34" rx="5" fill="#c9992f"/>
+          <rect x="34" y="108" width="52" height="12" rx="3" fill="#22222a"/>
+          <path d="M36 120 L58 120 L56 168 L40 168 Z" fill="#6f5fa0"/><path d="M84 120 L62 120 L64 168 L80 168 Z" fill="#6f5fa0"/>
+          <path d="M40 168 L56 168 L55 200 L42 200 Z" fill="#c9992f"/><path d="M80 168 L64 168 L65 200 L78 200 Z" fill="#c9992f"/>
+        </svg>
+      </div>
+      <div class="pv-cap"><span class="a">Armor</span><span class="b">adren_harness</span></div>
+    </div>
+    <div class="main">
+      <div class="tabs"><div class="tab">Basic</div><div class="tab">Appearance</div><div class="tab">Behavior</div><div class="tab">Stats</div><div class="tab">Requirements</div><div class="tab on">Source</div></div>
+      <div class="pane">
+        <div class="good" style="font-size:12.5px">✓ Obtainable — 2 sources in the module</div>
+        <div style="display:flex; flex-direction:column; gap:8px; margin-top:10px; max-width:560px">
+          <div class="card" style="padding:9px 12px">
+            <div style="display:flex; gap:8px; align-items:baseline">
+              <span class="sec" style="width:52px">Store</span>
+              <span style="flex:1">Veles Colony Outfitter</span>
+              <span class="mono" style="font-size:10.5px; color:var(--accent)">open</span>
+            </div>
+            <div class="mono" style="font-size:10.5px; color:var(--ink3); padding-left:60px">store_veles_outfit · Veles Colony — Commercial District · 3,000 gp</div>
+          </div>
+          <div class="card" style="padding:9px 12px">
+            <div style="display:flex; gap:8px; align-items:baseline">
+              <span class="sec" style="width:52px">Recipe</span>
+              <span style="flex:1">Adrenal Harness</span>
+              <span class="mono" style="font-size:10.5px; color:var(--accent)">open</span>
+            </div>
+            <div class="mono" style="font-size:10.5px; color:var(--ink3); padding-left:60px">Armorcraft 45 · crafted at an armor bench</div>
+          </div>
+          <div style="display:flex; gap:8px; padding:2px 12px; color:var(--ink3); font-size:12px">
+            <span class="sec" style="width:52px">Loot</span><span>not in any loot table</span>
+          </div>
+          <div style="display:flex; gap:8px; padding:2px 12px; color:var(--ink3); font-size:12px">
+            <span class="sec" style="width:52px">Quest</span><span>not a quest reward</span>
+          </div>
+        </div>
+      </div>
+      <div class="foot"><span class="grow"></span><span class="btn">Revert</span><span class="btn primary">Save</span></div>
+    </div>
+  </div>
+</div>
+<figcaption>Source — every place a player can obtain the item; each row opens the store or recipe it names</figcaption>
+</figure>
+
+<!-- ================================================================ NOTES -->
+<h2>Implementation notes</h2>
+<p>Two requirements ship with the first build: the <b>stat grid must read
+<span class="k">itempropdef.2da</span> and its cost tables</b> so no property is ever shown as numbers
+(<span class="k">DMG</span>'s CostTable 34 points at <span class="k">iprp_dmg.2da</span>, not
+<span class="k">iprp_damagecost.2da</span> — the known trap); and the <b>Source tab must reuse
+<span class="k">EconomyObtainabilityCoverageTests</span>' source extraction</b> as a workspace index — one
+background pass over stores, recipes, loot tables and placed containers at load, keyed by resref and
+re-scanned only for files that change — so the tab answers in constant time and can never disagree with the
+test. An item with no sources shows the empty Source rows, which is also exactly when it needs the
+<span class="k">No Economy</span> flag on Basic.</p>
+<p>The Variables tab follows the waypoint editor's rule: it exists only while the behavior is Custom, so the
+2,066 items carrying locals stop being ambient state — a declared role surfaces its locals as named fields,
+and only the unclassified remainder edits them raw.</p>
+<p>Two earlier design studies — an Aurora-faithful five-tab editor and a one-page grouped editor — were
+weighed and set aside in favor of this one; they live in this file's git history.</p>
+</div>

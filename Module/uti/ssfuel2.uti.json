@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Additional fuel capacity increases the amount that your ship can carry, allowing it to travel further between refuelling (or transport more fuel between planets). "
     }
   },
   "Identified": {

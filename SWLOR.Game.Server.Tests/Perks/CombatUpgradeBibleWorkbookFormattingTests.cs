@@ -56,6 +56,62 @@ public class CombatUpgradeBibleWorkbookFormattingTests
     }
 
     [Test]
+    public void ForceAndDevices_StoreSkillPointPricesAsNumericCells()
+    {
+        var root = FindRepositoryRoot();
+        var workbookPath = Path.Combine(
+            root.FullName,
+            "design",
+            "bible",
+            "SWLOR Design Bible - Combat Upgrade.xlsx");
+
+        using var archive = ZipFile.OpenRead(workbookPath);
+        var worksheetsByName = ReadWorksheetsByName(archive);
+        var sharedStrings = ReadSharedStrings(archive);
+        var failures = new List<string>();
+
+        foreach (var sheetName in new[] { "Force", "Devices" })
+        {
+            var worksheet = ReadWorkbookXml(archive, worksheetsByName[sheetName]);
+            var rows = worksheet.Descendants(SpreadsheetNs + "row").ToArray();
+            var headerRow = rows.Single(row => row
+                .Elements(SpreadsheetNs + "c")
+                .Any(cell => GetCellText(cell, sharedStrings) == "Perk Name"));
+            var headers = headerRow
+                .Elements(SpreadsheetNs + "c")
+                .Where(cell => !string.IsNullOrWhiteSpace(GetCellText(cell, sharedStrings)))
+                .ToDictionary(
+                    cell => GetCellText(cell, sharedStrings),
+                    cell => new string(((string)cell.Attribute("r")!).TakeWhile(char.IsLetter).ToArray()));
+
+            foreach (var row in rows.Where(row => row != headerRow))
+            {
+                var rowNumber = (string)row.Attribute("r")!;
+                var nameCell = row.Elements(SpreadsheetNs + "c")
+                    .SingleOrDefault(cell => (string)cell.Attribute("r")! == $"{headers["Perk Name"]}{rowNumber}");
+                var perkName = nameCell == null ? string.Empty : GetCellText(nameCell, sharedStrings);
+                if (string.IsNullOrWhiteSpace(perkName))
+                    continue;
+
+                var priceCell = row.Elements(SpreadsheetNs + "c")
+                    .SingleOrDefault(cell => (string)cell.Attribute("r")! == $"{headers["SP Price"]}{rowNumber}");
+                var priceCellType = priceCell?.Attribute("t")?.Value;
+                if (priceCell == null || (priceCellType != null && priceCellType != "n") ||
+                    !decimal.TryParse(
+                        GetCellText(priceCell, sharedStrings),
+                        System.Globalization.NumberStyles.Number,
+                        System.Globalization.CultureInfo.InvariantCulture,
+                        out _))
+                {
+                    failures.Add($"{sheetName} row {rowNumber} ({perkName}): SP Price must be a numeric cell.");
+                }
+            }
+        }
+
+        failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));
+    }
+
+    [Test]
     public void CharacterStats_DocumentsRuntimeCombatLimits()
     {
         var root = FindRepositoryRoot();
@@ -81,7 +137,7 @@ public class CombatUpgradeBibleWorkbookFormattingTests
 
         AssertStatRange(stats, "Combat Readiness", 0, Stat.MaximumCombatReadinessPercent);
         AssertStatRange(stats, "Shield Deflection", 0, Stat.MaximumShieldDeflectionChance);
-        AssertStatRange(stats, "Attack Deflection", 0, Stat.MaximumDeflectionChanceCap);
+        AssertStatRange(stats, "Melee / Ranged Deflection", 0, Stat.MaximumDeflectionChanceCap);
         AssertStatRange(stats, "Guard", 0, Stat.MaximumGuardChance);
         AssertStatRange(stats, "Critical Rate", Combat.MinimumCriticalRate, Combat.MaximumCriticalRate);
         AssertStatRange(stats, "Critical Damage", 0, Combat.MaximumCriticalDamagePercentAdjustment);
@@ -115,7 +171,9 @@ public class CombatUpgradeBibleWorkbookFormattingTests
             0,
             Combat.MaximumCombinedDamageReductionPercent);
 
-        stats["Attack Deflection"]["K"].Should().Contain($"Default chance cap is {Stat.DefaultAttackDeflectionChanceCap}%");
+        stats["Melee / Ranged Deflection"]["K"].Should().Contain($"independent default chance cap of {Stat.DefaultMeleeDeflectionChanceCap}%");
+        stats["Melee / Ranged Deflection"]["K"].Should().Contain("activated combat abilities or Force powers");
+        stats["Shield Deflection"]["K"].Should().Contain("completely replaces Melee and Ranged Deflection");
         stats["Guard"]["K"].Should().Contain($"reduces damage by {Combat.BaseGuardDamageReductionPercent}% by default");
         stats["Guard"]["K"].Should().Contain($"{Combat.MaximumGuardDamageReductionPercent}% hard limit");
         stats["Damage-Derived Healing per Hit"]["K"].Should().Contain("after Combat Readiness and healing-received modifiers");

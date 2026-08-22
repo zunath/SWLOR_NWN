@@ -10,7 +10,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override EffectIconType Icon => EffectIconType.UnmovingCenterStatusEffect;
         public UnmovingCenterStatusEffect()
         {
-            StatGroup.Stats[StatType.AttackDeflection] = 20;
+            StatGroup.Stats[StatType.MeleeDeflection] = 20;
             StatGroup.Stats[StatType.EnmityPercentAdjustment] = 30;
         }
 

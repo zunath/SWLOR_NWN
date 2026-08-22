@@ -1,24 +1,25 @@
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DialogService;
+using SWLOR.Game.Server.Service.ConversationService;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
-    public class MedicalRegistrationDialog: DialogBase
+    public class MedicalRegistrationDialog: ConversationMenuDefinition
     {
         private const string MainPageId = "MAIN_PAGE";
 
-        public override PlayerDialog SetUp(uint player)
+        public override ConversationMenuSpec Build()
         {
-            var builder = new DialogBuilder()
+            var builder = new ConversationMenuBuilder()
+                .WithPortrait("p_256x128_medic1")
                 .AddPage(MainPageId, MainPageInit);
 
             return builder.Build();
         }
 
-        private void MainPageInit(DialogPage page)
+        private void MainPageInit(ConversationMenuPage page)
         {
-            var player = GetPC();
+            var player = Player;
             page.Header = "In the event you suffer a critical injury you will return to your registered medical facility. Would you like to register to this medical facility?";
 
             page.AddResponse("Register", () =>

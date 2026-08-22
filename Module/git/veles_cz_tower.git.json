@@ -837,7 +837,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -1847,7 +1847,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -2853,7 +2853,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -4127,7 +4127,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -6412,7 +6412,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -7156,23 +7156,23 @@
               },
               "ArmorPart_LBicep": {
                 "type": "byte",
-                "value": 248
+                "value": 1
               },
               "ArmorPart_LFArm": {
                 "type": "byte",
-                "value": 245
+                "value": 1
               },
               "ArmorPart_LFoot": {
                 "type": "byte",
-                "value": 241
+                "value": 160
               },
               "ArmorPart_LHand": {
                 "type": "byte",
-                "value": 245
+                "value": 1
               },
               "ArmorPart_LShin": {
                 "type": "byte",
-                "value": 228
+                "value": 243
               },
               "ArmorPart_LShoul": {
                 "type": "byte",
@@ -7180,7 +7180,7 @@
               },
               "ArmorPart_LThigh": {
                 "type": "byte",
-                "value": 232
+                "value": 241
               },
               "ArmorPart_Neck": {
                 "type": "byte",
@@ -7188,31 +7188,31 @@
               },
               "ArmorPart_Pelvis": {
                 "type": "byte",
-                "value": 233
+                "value": 50
               },
               "ArmorPart_RBicep": {
                 "type": "byte",
-                "value": 248
+                "value": 1
               },
               "ArmorPart_RFArm": {
                 "type": "byte",
-                "value": 245
+                "value": 1
               },
               "ArmorPart_RFoot": {
                 "type": "byte",
-                "value": 241
+                "value": 160
               },
               "ArmorPart_RHand": {
                 "type": "byte",
-                "value": 245
+                "value": 1
               },
               "ArmorPart_Robe": {
                 "type": "byte",
-                "value": 0
+                "value": 10
               },
               "ArmorPart_RShin": {
                 "type": "byte",
-                "value": 228
+                "value": 243
               },
               "ArmorPart_RShoul": {
                 "type": "byte",
@@ -7220,11 +7220,11 @@
               },
               "ArmorPart_RThigh": {
                 "type": "byte",
-                "value": 232
+                "value": 241
               },
               "ArmorPart_Torso": {
                 "type": "byte",
-                "value": 248
+                "value": 1
               },
               "BaseItem": {
                 "type": "int",
@@ -7276,16 +7276,16 @@
                 "id": 12835,
                 "type": "cexolocstring",
                 "value": {
-                  "0": "Sith Trooper Armor"
+                  "0": "[NPC] Smuggler Outfit 2 Male"
                 }
               },
               "Metal1Color": {
                 "type": "byte",
-                "value": 56
+                "value": 6
               },
               "Metal2Color": {
                 "type": "byte",
-                "value": 95
+                "value": 6
               },
               "Plot": {
                 "type": "byte",
@@ -7305,11 +7305,11 @@
               },
               "Tag": {
                 "type": "cexostring",
-                "value": "sith_tarmor"
+                "value": "npc_smuggler2_m"
               },
               "TemplateResRef": {
                 "type": "resref",
-                "value": "vnpcatroop1"
+                "value": "npc_smuggler2_m"
               },
               "xArmorPart_Belt": {
                 "type": "word",
@@ -7317,23 +7317,23 @@
               },
               "xArmorPart_LBice": {
                 "type": "word",
-                "value": 248
+                "value": 1
               },
               "xArmorPart_LFArm": {
                 "type": "word",
-                "value": 245
+                "value": 1
               },
               "xArmorPart_LFoot": {
                 "type": "word",
-                "value": 241
+                "value": 160
               },
               "xArmorPart_LHand": {
                 "type": "word",
-                "value": 245
+                "value": 1
               },
               "xArmorPart_LShin": {
                 "type": "word",
-                "value": 228
+                "value": 243
               },
               "xArmorPart_LShou": {
                 "type": "word",
@@ -7341,7 +7341,7 @@
               },
               "xArmorPart_LThig": {
                 "type": "word",
-                "value": 232
+                "value": 241
               },
               "xArmorPart_Neck": {
                 "type": "word",
@@ -7349,31 +7349,31 @@
               },
               "xArmorPart_Pelvi": {
                 "type": "word",
-                "value": 233
+                "value": 50
               },
               "xArmorPart_RBice": {
                 "type": "word",
-                "value": 248
+                "value": 1
               },
               "xArmorPart_RFArm": {
                 "type": "word",
-                "value": 245
+                "value": 1
               },
               "xArmorPart_RFoot": {
                 "type": "word",
-                "value": 241
+                "value": 160
               },
               "xArmorPart_RHand": {
                 "type": "word",
-                "value": 245
+                "value": 1
               },
               "xArmorPart_Robe": {
                 "type": "word",
-                "value": 0
+                "value": 10
               },
               "xArmorPart_RShin": {
                 "type": "word",
-                "value": 228
+                "value": 243
               },
               "xArmorPart_RShou": {
                 "type": "word",
@@ -7381,11 +7381,11 @@
               },
               "xArmorPart_RThig": {
                 "type": "word",
-                "value": 232
+                "value": 241
               },
               "xArmorPart_Torso": {
                 "type": "word",
-                "value": 248
+                "value": 1
               },
               "XOrientation": {
                 "type": "float",
@@ -7605,7 +7605,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",

@@ -12,7 +12,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override StatusEffectCategory Categories =>
             StatusEffectCategory.Debuff |
             StatusEffectCategory.Control |
-            StatusEffectCategory.Incapacitating;
+            StatusEffectCategory.Incapacitating |
+            StatusEffectCategory.HardCrowdControl;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         public override ResistanceType ResistanceType => ResistanceType.Mobility;
 
@@ -38,7 +39,13 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void Remove(uint creature)
         {
-            Ability.ApplyTemporaryImmunity(creature, 0f, ImmunityType.Knockdown);
+            if (IsBeingReplaced)
+                return;
+
+            Ability.ApplyPostControlImmunity(
+                creature,
+                SecondsSinceNaturalExpiration,
+                ImmunityType.Knockdown);
         }
 
         private void ApplyKnockdown(uint creature, float duration)

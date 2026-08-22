@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
     {
         private const float RangeMeters = 15f;
         private const float PathWidthMeters = 2.5f;
+        private const float PathBoundaryToleranceMeters = 0.001f;
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -77,7 +78,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .RequiresTarget()
                 .HasCustomValidation(ValidateWeapon)
                 .HasImpactAction((activator, target, _, targetLocation) =>
-                    ApplyThrowLightsaber(activator, target, targetLocation, baseDamage, maxTargets))
+                    ApplyThrowLightsaber(activator, target, targetLocation, name, baseDamage, maxTargets))
                 .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
@@ -89,13 +90,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             uint activator,
             uint target,
             Location targetLocation,
+            string abilityName,
             int baseDamage,
             int maxTargets)
         {
             PlayThrowLightsaberAnimation(activator, target, targetLocation);
 
+            var foundTarget = false;
             foreach (var hitTarget in GetPathTargets(activator, target, targetLocation, maxTargets))
             {
+                foundTarget = true;
                 Ability.ApplyCombatImpact(
                     activator,
                     hitTarget,
@@ -110,6 +114,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                     targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative,
                     baseDamageAdjustment: GetEquippedWeaponDamageAdjustment(activator),
                     playImpactAnimation: false);
+            }
+
+            if (!foundTarget)
+            {
+                Messaging.SendMessageNearbyToPlayers(
+                    activator,
+                    receiver => Combat.BuildAbilityNoTargetCombatLogMessage(
+                        receiver,
+                        activator,
+                        abilityName),
+                    60f);
             }
         }
 
@@ -139,7 +154,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 RangeMeters,
                 maxTargets,
                 target,
-                candidate => IsTargetAlongPath(activator, target, targetLocation, candidate));
+                candidate => candidate == target || IsTargetAlongPath(activator, target, targetLocation, candidate));
         }
 
         private static bool IsTargetAlongPath(uint activator, uint target, Location targetLocation, uint candidate)
@@ -148,6 +163,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             var destination = GetIsObjectValid(target)
                 ? GetPosition(target)
                 : GetPositionFromLocation(targetLocation);
+            return IsPositionAlongPath(origin, destination, GetPosition(candidate));
+        }
+
+        private static bool IsPositionAlongPath(
+            NumericsVector3 origin,
+            NumericsVector3 destination,
+            NumericsVector3 candidate)
+        {
             var path = destination - origin;
             var pathLength = path.Length();
             if (pathLength <= 0.01f)
@@ -155,14 +178,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
             pathLength = Math.Min(pathLength, RangeMeters);
             var direction = NumericsVector3.Normalize(path);
-            var toCandidate = GetPosition(candidate) - origin;
+            var toCandidate = candidate - origin;
             var distanceAlongPath = NumericsVector3.Dot(toCandidate, direction);
-            if (distanceAlongPath < 0f || distanceAlongPath > pathLength)
+            if (distanceAlongPath < -PathBoundaryToleranceMeters ||
+                distanceAlongPath > pathLength + PathBoundaryToleranceMeters)
                 return false;
 
             var closestPoint = origin + direction * distanceAlongPath;
-            var lateralDistance = (GetPosition(candidate) - closestPoint).Length();
-            return lateralDistance <= PathWidthMeters * 0.5f;
+            var lateralDistance = (candidate - closestPoint).Length();
+            return lateralDistance <= PathWidthMeters * 0.5f + PathBoundaryToleranceMeters;
         }
 
         private static Func<uint, int> GetEquippedWeaponDamageAdjustment(uint activator)

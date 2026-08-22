@@ -184,7 +184,7 @@
         "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "npc_smuggler_m"
+          "value": "npc_smuggler_f"
         }
       }
     ]
@@ -388,7 +388,7 @@
   },
   "ScriptDialogue": {
     "type": "resref",
-    "value": ""
+    "value": "dialog_start"
   },
   "ScriptDisturbed": {
     "type": "resref",

@@ -23,7 +23,7 @@ public class DevicesFieldEngineerTests
         var perks = BuildDevicesFieldEngineerPerksWithout2daLookup();
 
         AssertPerkLevel(perks[PerkType.BlasterBeacon], "Blaster Beacon", 1, 3, null, FeatType.BlasterBeacon1,
-            "Plants a visible 12m targeting sphere for 30 seconds. Every 3 seconds, one hostile target inside is hit by an automated ranged energy pulse for 3 energy DMG plus PER scaling.");
+            "Plants a visible 12m targeting sphere for 30 seconds. Every 3 seconds, one hostile target inside is hit by an automated ranged energy pulse for 3 physical DMG plus PER scaling.");
         AssertPerkLevel(perks[PerkType.BeaconTargeting], "Beacon Targeting", 1, 3, 5, FeatType.BeaconTargetingTrait,
             "Beacon pulses gain +4% damage and +1m pulse range.",
             (StatType.BeaconPulseDamagePercentAdjustment, 4),
@@ -33,7 +33,7 @@ public class DevicesFieldEngineerTests
         AssertPerkLevel(perks[PerkType.RemoteCharge], "Remote Charge", 1, 3, 12, FeatType.RemoteCharge1,
             "Arms a visible charge at your target location that detonates after 3 seconds in a 5m-radius blast for 30 fire DMG plus PER scaling.");
         AssertPerkLevel(perks[PerkType.BlasterBeacon], "Blaster Beacon", 2, 3, 15, FeatType.BlasterBeacon2,
-            "Plants a visible 12m targeting sphere for 30 seconds. Every 3 seconds, one hostile target inside is hit by an automated ranged energy pulse for 6 energy DMG plus PER scaling.");
+            "Plants a visible 12m targeting sphere for 30 seconds. Every 3 seconds, one hostile target inside is hit by an automated ranged energy pulse for 6 physical DMG plus PER scaling.");
         AssertPerkLevel(perks[PerkType.SignalJammer], "Signal Jammer", 1, 4, 18, FeatType.SignalJammer1,
             "Deploys a signal jammer for 45 seconds. Hostile targets within 5m suffer -6% physical and Force ability Accuracy and cannot benefit from Haste while inside.");
         AssertPerkLevel(perks[PerkType.ShockBeacon], "Shock Beacon", 1, 4, 22, FeatType.ShockBeacon1,
@@ -43,7 +43,7 @@ public class DevicesFieldEngineerTests
         AssertPerkLevel(perks[PerkType.RemoteCharge], "Remote Charge", 2, 4, 28, FeatType.RemoteCharge2,
             "Arms a visible charge at your target location that detonates after 3 seconds in a 5m-radius blast for 42 fire DMG plus PER scaling and inflicts Knockdown for 6 seconds.");
         AssertPerkLevel(perks[PerkType.BlasterBeacon], "Blaster Beacon", 3, 4, 30, FeatType.BlasterBeacon3,
-            "Plants a visible 14m targeting sphere for 30 seconds. Every 3 seconds, one hostile target inside is hit by an automated ranged energy pulse for 10 energy DMG plus PER scaling.");
+            "Plants a visible 14m targeting sphere for 30 seconds. Every 3 seconds, one hostile target inside is hit by an automated ranged energy pulse for 10 physical DMG plus PER scaling.");
         AssertPerkLevel(perks[PerkType.DiagnosticSweep], "Diagnostic Sweep", 1, 5, 35, FeatType.DiagnosticSweepTrait,
             "Field Engineer beacons, fields, charges, and jammers reveal hidden enemies in their affected area and reduce Evasion by 4% for 30 seconds.",
             (StatType.FieldEngineerAreaRevealHidden, 1),
@@ -117,6 +117,14 @@ public class DevicesFieldEngineerTests
         effects.Should().Contain("DestroyObject(emitter.MarkerObject)");
         effects.Should().Contain("CreateTemporaryFieldEngineerMarker");
         effects.Should().Contain("appliesBeaconPulseBonuses");
+        effects.Should().Contain("CreatePersistentSphereIndicator");
+        effects.Should().Contain("Telegraph.CancelTelegraph(emitter.AreaIndicatorId)");
+        effects.Replace("\r\n", "\n").Should().Contain(
+            "emitter.RemainingSeconds += seconds;\n                RefreshFieldEngineerPulseEmitterIndicator(emitter);");
+
+        var killzoneBeaconSource = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "KillzoneBeaconAbilityDefinition.cs").FullName);
+        killzoneBeaconSource.Should().Contain("showAreaIndicator: false",
+            "the second damage channel must reuse the killzone's single persistent boundary");
 
         var signalJammer = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "SignalJammerAbilityDefinition.cs").FullName);
         signalJammer.Should().Contain("typeof(SignalJammerStatusEffect)");
@@ -127,6 +135,8 @@ public class DevicesFieldEngineerTests
         remoteCharge.Should().Contain("DetonateRemoteCharge(activator, target, targetLocation, 30, null)");
         remoteCharge.Should().Contain("DetonateRemoteCharge(activator, target, targetLocation, 42, typeof(KnockdownStatusEffect))");
         remoteCharge.Should().Contain("CreateTemporaryFieldEngineerMarker");
+        remoteCharge.Should().Contain("RemoteChargeMarkerResref = \"_mdrn_pl_detonat\"",
+            "an armed remote charge must use a placeable distinct from the beacon emitter");
         remoteCharge.Should().Contain("VisualEffect.Vfx_Dur_Aura_Pulse_Red_Orange");
         remoteCharge.Should().Contain("ApplyDiagnosticSweep");
         remoteCharge.Should().Contain("CombatImpactAreaShape.Sphere");
@@ -138,11 +148,12 @@ public class DevicesFieldEngineerTests
         var incendiaryField = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "IncendiaryFieldAbilityDefinition.cs").FullName)
             .Replace("\r\n", "\n");
         incendiaryField.Should().Contain("IncendiaryFieldTargetVisualEffect = VisualEffect.Vfx_Imp_Flame_S");
-        incendiaryField.Should().Contain("IncendiaryFieldMarkerVisualEffect = VisualEffect.Vfx_Dur_Aura_Fire");
-        incendiaryField.Should().Contain("markerVisualEffect: IncendiaryFieldMarkerVisualEffect");
-        incendiaryField.Should().Contain("8,\n                0,\n                null,\n                5f,\n                30f,\n                CombatDamageType.Fire");
-        incendiaryField.Should().Contain("12,\n                0,\n                null,\n                5f,\n                30f,\n                CombatDamageType.Fire");
-        incendiaryField.Should().Contain("16,\n                0,\n                null,\n                5f,\n                30f,\n                CombatDamageType.Fire");
+        incendiaryField.Should().Contain("EffectAreaOfEffect(AreaOfEffect.IncendiaryFieldCloud)");
+        incendiaryField.Should().NotContain("Vfx_Dur_Aura_Fire",
+            "the field visual is the live-server incendiary grenade fire fog cloud, not a body aura");
+        incendiaryField.Should().Contain("DeployIncendiaryField(activator, target, targetLocation, 8)");
+        incendiaryField.Should().Contain("DeployIncendiaryField(activator, target, targetLocation, 12)");
+        incendiaryField.Should().Contain("DeployIncendiaryField(activator, target, targetLocation, 16)");
         incendiaryField.Should().NotContain("VisualEffect.Fnf_Fireball");
 
         var killzoneBeacon = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "KillzoneBeaconAbilityDefinition.cs").FullName);
@@ -174,6 +185,26 @@ public class DevicesFieldEngineerTests
         shockBeacon.Should().Contain("10,\n                6,\n                typeof(ShockStatusEffect),\n                5f,\n                30f,\n                CombatDamageType.Electrical");
         shockBeacon.Should().Contain("14,\n                6,\n                typeof(ShockStatusEffect),\n                5f,\n                30f,\n                CombatDamageType.Electrical");
         shockBeacon.Should().Contain("markerVisualEffectScale: 2f");
+    }
+
+    [Test]
+    public void IncendiaryFieldPersistentVfx_IsVisualOnlyFireCloud()
+    {
+        var root = FindRepositoryRoot();
+        var persistentVfx = Read2da(root / "SWLOR_Haks" / "sw_2da" / "vfx_persistent.2da");
+        var row = persistentVfx[(int)AreaOfEffect.IncendiaryFieldCloud];
+
+        row["LABEL"].Should().Be("AOE_INCENDIARY_FIELD_CLOUD");
+        row["SHAPE"].Should().Be("C");
+        row["RADIUS"].Should().Be("5");
+        row["ONENTER"].Should().Be("****",
+            "the cloud must not run the base game fire cloud enter script; damage comes from the scheduled pulses");
+        row["ONEXIT"].Should().Be("****");
+        row["HEARTBEAT"].Should().Be("****",
+            "the cloud must not run the base game fire cloud heartbeat script; damage comes from the scheduled pulses");
+        row["MODEL01"].Should().Be("vps_fogfire");
+        row["MODEL02"].Should().Be("vps_fogfire");
+        row["MODEL03"].Should().Be("vps_fogfire");
     }
 
     [Test]
@@ -244,9 +275,9 @@ public class DevicesFieldEngineerTests
         const int CustomTlkOffset = 16777216;
         var descriptions = new[]
         {
-            (FeatType.BlasterBeacon1, "Plants a visible 12m targeting sphere for 30 seconds. Every 3 seconds, one hostile target inside is hit by an automated ranged energy pulse for 3 energy DMG plus PER scaling."),
-            (FeatType.BlasterBeacon2, "Plants a visible 12m targeting sphere for 30 seconds. Every 3 seconds, one hostile target inside is hit by an automated ranged energy pulse for 6 energy DMG plus PER scaling."),
-            (FeatType.BlasterBeacon3, "Plants a visible 14m targeting sphere for 30 seconds. Every 3 seconds, one hostile target inside is hit by an automated ranged energy pulse for 10 energy DMG plus PER scaling."),
+            (FeatType.BlasterBeacon1, "Plants a visible 12m targeting sphere for 30 seconds. Every 3 seconds, one hostile target inside is hit by an automated ranged energy pulse for 3 physical DMG plus PER scaling."),
+            (FeatType.BlasterBeacon2, "Plants a visible 12m targeting sphere for 30 seconds. Every 3 seconds, one hostile target inside is hit by an automated ranged energy pulse for 6 physical DMG plus PER scaling."),
+            (FeatType.BlasterBeacon3, "Plants a visible 14m targeting sphere for 30 seconds. Every 3 seconds, one hostile target inside is hit by an automated ranged energy pulse for 10 physical DMG plus PER scaling."),
             (FeatType.RemoteCharge1, "Arms a visible charge at your target location that detonates after 3 seconds in a 5m-radius blast for 30 fire DMG plus PER scaling."),
             (FeatType.RemoteCharge2, "Arms a visible charge at your target location that detonates after 3 seconds in a 5m-radius blast for 42 fire DMG plus PER scaling and inflicts Knockdown for 6 seconds."),
             (FeatType.ShockBeacon1, "Plants a visible 5m shock sphere for 30 seconds. Every 3 seconds, one hostile target inside is hit for 10 electrical DMG plus PER scaling and suffers Shock."),

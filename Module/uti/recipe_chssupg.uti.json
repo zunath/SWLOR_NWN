@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Use this blueprint to learn the Engineering recipe for the Chiro Saberstaff Upgrade Kit, which upgrades a tier 5 saberstaff to tier 5.5."
     }
   },
   "Identified": {

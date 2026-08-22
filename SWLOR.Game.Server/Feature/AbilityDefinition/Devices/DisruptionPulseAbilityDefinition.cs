@@ -39,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     Spell.DisruptionPulse1,
                     RadiusMeters,
                     AbilityTargetingFlags.HarmsEnemies,
-                    DeviceAbilityEffects.ApplyGrenadeRadiusBonus)
+                    DeviceAbilityEffects.ApplyBlastRadiusBonus)
                 .HasImpactAction(ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
         private static void ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             var impactLocation = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
-            var radius = DeviceAbilityEffects.ApplyGrenadeRadiusBonus(activator, RadiusMeters);
+            var radius = DeviceAbilityEffects.ApplyBlastRadiusBonus(activator, RadiusMeters);
             Ability.ApplyTelegraphedCombatImpact(
                 activator,
                 target,

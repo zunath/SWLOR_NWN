@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Tests.Perks;
 public class CombatReleaseBalanceAuditTests
 {
     private const int SkillPointCap = 400;
-    private const int PermanentAttackDeflectionCap = 50;
+    private const int DefaultWeaponDeflectionCap = 50;
 
     private static readonly PerkCategoryType[] WeaponPackages =
     {
@@ -94,6 +94,7 @@ public class CombatReleaseBalanceAuditTests
         StatType.DamageToDisorientedDazedTargetPercentAdjustment,
         StatType.RangedDamageToNearbyTargetPercentAdjustment,
         StatType.HighFPAndStaminaAttackPercentAdjustment,
+        StatType.HighFPAndStaminaAbilityDamagePercentAdjustment,
         StatType.AttackToBleedingTargetPercentAdjustment,
         StatType.TwinBladeSingleTargetAbilityDamagePercentAdjustment,
         StatType.TwinBladeAreaAbilityDamagePercentAdjustment,
@@ -158,16 +159,21 @@ public class CombatReleaseBalanceAuditTests
         StatType.HighFPAndStaminaAbilityDamageBonus,
         StatType.AbilityDamageToBleedingTargetBonus,
         StatType.StatusAppliedNextSkillAbilityDamageBonus,
+        StatType.StatusAppliedNextAttackDamageBonus,
         StatType.AvoidedAttackNextSkillAbilityDamageBonus,
         StatType.DamageTakenNextSkillAbilityDamageBonus,
         StatType.CostlyAbilityDamageBonus,
         StatType.SameTargetPressureWeaponAbilityDamageBonus,
-        StatType.AreaAbilityFragmentationDamage
+        StatType.AreaAbilityFragmentationDamage,
+        StatType.RepeatedTargetDamageBonusPerHit,
+        StatType.MeleeRepeatedTargetDamageBonusPerHit,
+        StatType.RangedRepeatedTargetDamageBonusPerHit
     };
 
     private static readonly StatType[] CriticalRateStats =
     {
         StatType.CriticalRatePercentAdjustment,
+        StatType.RangedCriticalRatePercentAdjustment,
         StatType.StaffCriticalRatePercentAdjustment,
         StatType.DeflectionNextSkillAbilityCriticalRatePercentAdjustment,
         StatType.NextSkillAbilityCriticalRatePercentAdjustment,
@@ -185,7 +191,7 @@ public class CombatReleaseBalanceAuditTests
         StatType.LowHPCriticalRatePercentAdjustment,
         StatType.StatusAppliedNextSkillAbilityCriticalRatePercentAdjustment,
         StatType.TargetStatusCriticalRatePercentAdjustment,
-        StatType.AutoAttackCycleCriticalRatePercentAdjustment,
+        StatType.RangedAutoAttackCycleCriticalRatePercentAdjustment,
         StatType.NonCriticalAbilityNextSkillAbilityCriticalRatePercentAdjustment,
         StatType.BackAttackCriticalRatePercentAdjustment
     };
@@ -237,7 +243,7 @@ public class CombatReleaseBalanceAuditTests
         StatType.LightGuardianPowerAttackDeflection,
         StatType.LightGuardianTemporaryHPReflectiveBarrier,
         StatType.DeviceShieldTemporaryHPPercentAdjustment,
-        StatType.FieldSupportRangedPhysicalDamageReductionPercent,
+        StatType.FieldSupportPhysicalDefensePercent,
         StatType.FieldSupportPhysicalAndForceDamageReductionPercent,
         StatType.IncomingCriticalHitDowngradeToMinimumDamage,
         StatType.PhysicalDamageImmunity,
@@ -253,7 +259,7 @@ public class CombatReleaseBalanceAuditTests
         StatType.StatusAppliedSelfDefensePercentAdjustment,
         StatType.StatusAppliedSelfEvasionPercentAdjustment,
         StatType.AreaAbilityUsedEvasionPercentAdjustment,
-        StatType.AbilityUsedRangedEvasionPercentAdjustment,
+        StatType.AbilityUsedRangedDeflection,
         StatType.CriticalHitSelfEvasionPercentAdjustment,
         StatType.AbilityUsedNearbyAllyDefensePercentAdjustment,
         StatType.AbilityUsedNearbyAllyForceDefensePercentAdjustment,
@@ -362,9 +368,14 @@ public class CombatReleaseBalanceAuditTests
                 continue;
             }
 
-            if (archetype.Profile.AttackDeflection >= PermanentAttackDeflectionCap)
+            if (archetype.Profile.MeleeDeflection >= DefaultWeaponDeflectionCap)
             {
-                failures.Add($"{archetype.Name}: permanent Attack Deflection is {archetype.Profile.AttackDeflection}; cap access must stay temporary.");
+                failures.Add($"{archetype.Name}: permanent Melee Deflection is {archetype.Profile.MeleeDeflection}; cap access must stay temporary.");
+            }
+
+            if (archetype.Profile.RangedDeflection >= DefaultWeaponDeflectionCap)
+            {
+                failures.Add($"{archetype.Name}: permanent Ranged Deflection is {archetype.Profile.RangedDeflection}; cap access must stay temporary.");
             }
 
             if (IsCompoundReleaseBlocker(archetype.Profile))
@@ -399,8 +410,9 @@ public class CombatReleaseBalanceAuditTests
         legalProfiles.Should().NotBeEmpty("the release audit needs legal package combinations to inspect");
 
         var capViolations = legalProfiles
-            .Where(x => x.AttackDeflection >= PermanentAttackDeflectionCap)
-            .OrderByDescending(x => x.AttackDeflection)
+            .Where(x => x.MeleeDeflection >= DefaultWeaponDeflectionCap ||
+                        x.RangedDeflection >= DefaultWeaponDeflectionCap)
+            .OrderByDescending(x => Math.Max(x.MeleeDeflection, x.RangedDeflection))
             .ThenByDescending(x => x.OffenseScore)
             .Take(20)
             .ToArray();
@@ -549,7 +561,8 @@ public class CombatReleaseBalanceAuditTests
             GetCategoryName(category),
             cost,
             stats,
-            Sum(stats, StatType.AttackDeflection),
+            Sum(stats, StatType.MeleeDeflection),
+            Sum(stats, StatType.RangedDeflection),
             Sum(stats, StatType.ShieldDeflection),
             Sum(stats, StatType.Guard),
             ScoreOffense(stats),
@@ -569,8 +582,8 @@ public class CombatReleaseBalanceAuditTests
             (PerkType.RapidShot, StatType.AutoAttackStaminaRestore) => 2,
             (PerkType.GuardiansRiposte, StatType.DeflectionNextSkillAbilityDamageBonus) => 10,
             (PerkType.GuardiansRiposte, StatType.DeflectionNextSkillAbilityDamageBonusWindowSeconds) => 18,
-            (PerkType.Alacrity, StatType.DeflectionStaminaRestore) => 4,
-            (PerkType.Alacrity, StatType.DeflectionStaminaRestoreCooldownSeconds) => 6,
+            (PerkType.Alacrity, StatType.ShieldDeflectionStaminaRestore) => 4,
+            (PerkType.Alacrity, StatType.ShieldDeflectionStaminaRestoreCooldownSeconds) => 6,
             (PerkType.Bulwark, StatType.ShieldDeflection) => 35,
             (PerkType.ShieldTraining, StatType.DeflectionEvasionPercentAdjustment) => 3,
             (PerkType.ShieldTraining, StatType.DeflectionEvasionEnmityPercentAdjustment) => 3,
@@ -579,7 +592,7 @@ public class CombatReleaseBalanceAuditTests
             (PerkType.ConduitTraining, StatType.AutoAttackFPRestore) => 3,
             (PerkType.ConduitTraining, StatType.AutoAttackFPRestoreCooldownSeconds) => 4,
             (PerkType.CriticalWard, StatType.IncomingCriticalHitDowngradeCooldownMilliseconds) => 12000,
-            (PerkType.UnbreakableWill, StatType.AttackDeflection) => 8,
+            (PerkType.UnbreakableWill, StatType.MeleeDeflection) => 8,
             (PerkType.VampiricFury, StatType.CriticalHPPercentOfDamageRestore) => 25,
             (PerkType.BodyguardsResolve, StatType.DamageTakenPercentAdjustment) => -10,
             _ => 0
@@ -614,7 +627,8 @@ public class CombatReleaseBalanceAuditTests
             Archetype(packages, "Cross-skill control stack", PerkCategoryType.SpearDisabler, PerkCategoryType.RiflePacification, PerkCategoryType.DevicesGrenadier, PerkCategoryType.EspionageSaboteur, PerkCategoryType.Mimicry),
             Archetype(packages, "High-MGT damage stack", PerkCategoryType.HeavyVibrobladeOffense, PerkCategoryType.SpearDamage, PerkCategoryType.StaffCrusher, PerkCategoryType.LeadershipVanguardCommand),
             Archetype(packages, "High-PER crit stack", PerkCategoryType.PistolGunslinger, PerkCategoryType.RifleMarksman, PerkCategoryType.ThrowingDeadeye, PerkCategoryType.LeadershipVanguardCommand),
-            Archetype(packages, "Attack Deflection stack", PerkCategoryType.StaffSentinel, PerkCategoryType.LightsaberOffense, PerkCategoryType.SaberstaffTempest, PerkCategoryType.TwinBladeDuelist, PerkCategoryType.HeavyVibrobladeDefense),
+            Archetype(packages, "Melee Deflection stack", PerkCategoryType.StaffSentinel, PerkCategoryType.TwinBladeDuelist, PerkCategoryType.HeavyVibrobladeDefense),
+            Archetype(packages, "Ranged Deflection stack", PerkCategoryType.LightsaberOffense, PerkCategoryType.SaberstaffTempest),
             Archetype(packages, "Shield Deflection stack", PerkCategoryType.VibrobladeDefense, PerkCategoryType.DevicesFieldSupport, PerkCategoryType.LeadershipFieldSteward),
             Archetype(packages, "Guard tank stack", PerkCategoryType.KatarIronGuard, PerkCategoryType.HeavyVibrobladeDefense, PerkCategoryType.LeadershipFieldSteward),
             Archetype(packages, "Sustain tank", PerkCategoryType.HeavyVibrobladeOffense, PerkCategoryType.HeavyVibrobladeDefense, PerkCategoryType.FirstAidTraumaMedic, PerkCategoryType.LeadershipFieldSteward),
@@ -639,6 +653,7 @@ public class CombatReleaseBalanceAuditTests
             Array.Empty<string>(),
             0,
             new Dictionary<StatType, int>(),
+            0,
             0,
             0,
             0,
@@ -690,7 +705,8 @@ public class CombatReleaseBalanceAuditTests
             packageNames,
             profile.Cost + package.Cost,
             new Dictionary<StatType, int>(),
-            profile.AttackDeflection + package.AttackDeflection,
+            profile.MeleeDeflection + package.MeleeDeflection,
+            profile.RangedDeflection + package.RangedDeflection,
             profile.ShieldDeflection + package.ShieldDeflection,
             profile.Guard + package.Guard,
             profile.OffenseScore + package.OffenseScore,
@@ -703,7 +719,8 @@ public class CombatReleaseBalanceAuditTests
     private static EnumerationKey GetEnumerationKey(ReleaseProfile profile)
     {
         return new EnumerationKey(
-            Math.Min(profile.AttackDeflection, PermanentAttackDeflectionCap),
+            Math.Min(profile.MeleeDeflection, DefaultWeaponDeflectionCap),
+            Math.Min(profile.RangedDeflection, DefaultWeaponDeflectionCap),
             Math.Min(profile.OffenseScore, 175),
             Math.Min(profile.DefenseScore, 160),
             Math.Min(profile.SustainScore, 80),
@@ -741,7 +758,8 @@ public class CombatReleaseBalanceAuditTests
             packageNames,
             cost,
             stats,
-            Sum(stats, StatType.AttackDeflection),
+            Sum(stats, StatType.MeleeDeflection),
+            Sum(stats, StatType.RangedDeflection),
             Sum(stats, StatType.ShieldDeflection),
             Sum(stats, StatType.Guard),
             ScoreOffense(stats),
@@ -766,7 +784,8 @@ public class CombatReleaseBalanceAuditTests
     private static int ScoreDefense(IReadOnlyDictionary<StatType, int> stats)
     {
         return SumBeneficial(stats, DefenseStats) +
-               SumBeneficial(stats, StatType.AttackDeflection) * 2 +
+               SumBeneficial(stats, StatType.MeleeDeflection) * 2 +
+               SumBeneficial(stats, StatType.RangedDeflection) * 2 +
                SumBeneficial(stats, StatType.ShieldDeflection) * 2 +
                SumBeneficial(stats, StatType.Guard) +
                SumBeneficial(stats, StatType.GuardDamageReductionPercentAdjustment) * 2;
@@ -805,7 +824,7 @@ public class CombatReleaseBalanceAuditTests
 
     private static string Describe(ReleaseProfile profile)
     {
-        return $"{profile.Name}: SP={profile.Cost}, Off={profile.OffenseScore}, Def={profile.DefenseScore}, Sustain={profile.SustainScore}, Control={profile.ControlScore}, AtkDef={profile.AttackDeflection}, ShieldDef={profile.ShieldDeflection}, Guard={profile.Guard}, SupportPkgs={profile.SupportPackageCount}, Packages=[{string.Join(", ", profile.PackageNames)}]";
+        return $"{profile.Name}: SP={profile.Cost}, Off={profile.OffenseScore}, Def={profile.DefenseScore}, Sustain={profile.SustainScore}, Control={profile.ControlScore}, MeleeDef={profile.MeleeDeflection}, RangedDef={profile.RangedDeflection}, ShieldDef={profile.ShieldDeflection}, Guard={profile.Guard}, SupportPkgs={profile.SupportPackageCount}, Packages=[{string.Join(", ", profile.PackageNames)}]";
     }
 
     private static IReadOnlyCollection<PerkRecord> BuildPerksWithout2daLookup()
@@ -858,7 +877,8 @@ public class CombatReleaseBalanceAuditTests
         string Name,
         int Cost,
         IReadOnlyDictionary<StatType, int> Stats,
-        int AttackDeflection,
+        int MeleeDeflection,
+        int RangedDeflection,
         int ShieldDeflection,
         int Guard,
         int OffenseScore,
@@ -870,7 +890,8 @@ public class CombatReleaseBalanceAuditTests
     private sealed record ReleaseArchetype(string Name, ReleaseProfile Profile);
 
     private readonly record struct EnumerationKey(
-        int AttackDeflection,
+        int MeleeDeflection,
+        int RangedDeflection,
         int OffenseScore,
         int DefenseScore,
         int SustainScore,
@@ -882,7 +903,8 @@ public class CombatReleaseBalanceAuditTests
         IReadOnlyCollection<string> PackageNames,
         int Cost,
         IReadOnlyDictionary<StatType, int> Stats,
-        int AttackDeflection,
+        int MeleeDeflection,
+        int RangedDeflection,
         int ShieldDeflection,
         int Guard,
         int OffenseScore,

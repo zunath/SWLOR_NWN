@@ -20,9 +20,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         private const float StatusRefreshDurationSeconds = TickIntervalSeconds + 0.2f;
         private const float Rank1HealPercentPerTick = 1f;
         private const float Rank2HealPercentPerTick = 2f;
-        private const float CloudVisualEffectScale = 1f;
         private const VisualEffect CloudBurstVisualEffect = VisualEffect.Vfx_Fnf_Gas_Explosion_Mind;
-        private const VisualEffect CloudVisualEffect = VisualEffect.Vfx_Dur_Aura_Blue_Light;
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -107,10 +105,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             var location = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
 
+            AbilityAreaEffects.CreatePersistentSphereIndicator(
+                activator,
+                location,
+                HealRadiusMeters,
+                DurationSeconds,
+                false);
             ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(CloudBurstVisualEffect), location);
+            // Script-free custom AoE row: renders the FogMind gas cloud visual only, without the
+            // base game Mind Fog enter/heartbeat spell effects.
             ApplyEffectAtLocation(
                 DurationType.Temporary,
-                EffectVisualEffect(CloudVisualEffect, false, CloudVisualEffectScale),
+                EffectAreaOfEffect(AreaOfEffect.KoltoMistCloud),
                 location,
                 DurationSeconds);
 

@@ -79,8 +79,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
             foreach (var friendly in SWLOR.Game.Server.Feature.AbilityDefinition.AbilityTargeting.GetFriendlyTargets(activator, target, true, radius))
             {
                 StatusEffect.RemoveFirstCleanseableStatusEffect(friendly, StatusEffectCleanseType.TreatmentKit2, false);
-                ApplyTemporaryHP(
+                ApplyCommandAndTemporaryHP(
+                    activator,
                     friendly,
+                    new CleanseOrder1StatusEffect(),
                     AbilityEffectScaling.ScaleValueBySourceSocial(activator, 6, 8),
                     duration);
                 LeadershipAbilityEffects.ApplyTriageProtocol(activator, friendly, duration);
@@ -102,7 +104,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
             foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, target, true, radius))
             {
                 StatusEffect.RemoveFirstCleanseableStatusEffect(friendly, StatusEffectCleanseType.Purify, false);
-                StatusEffect.ApplyStatusEffect(activator, friendly, typeof(CleanseOrder2StatusEffect), duration);
+                ApplyCommandAndTemporaryHP(
+                    activator,
+                    friendly,
+                    new CleanseOrder2StatusEffect(),
+                    AbilityEffectScaling.ScaleValueBySourceSocial(activator, 12, 15),
+                    duration);
                 LeadershipAbilityEffects.ApplyTriageProtocol(activator, friendly, duration);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), friendly);
                 affectedCount++;
@@ -113,13 +120,22 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
             if (affectedCount > 0) CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Leadership, 2);
         }
 
-        private static void ApplyTemporaryHP(uint target, int percent, float durationSeconds)
+        private static void ApplyCommandAndTemporaryHP(
+            uint source,
+            uint target,
+            IStatusEffect commandMarker,
+            int percent,
+            float durationSeconds)
         {
-            ApplyEffectToObject(
-                DurationType.Temporary,
-                EffectTemporaryHitpoints(GameMath.PercentOf(GetMaxHitPoints(target), percent)),
+            if (!StatusEffect.ApplyStatusEffect(source, target, commandMarker, durationSeconds))
+                return;
+
+            TemporaryHitPointEffects.ApplyFlatOwned(
                 target,
-                durationSeconds);
+                CleanseOrder1StatusEffect.TemporaryHitPointEffectKey,
+                GameMath.PercentOf(GetMaxHitPoints(target), percent),
+                durationSeconds,
+                commandMarker.Id);
         }
     }
 }

@@ -176,7 +176,8 @@ namespace SWLOR.Game.Server.Service.CombatService
             var matching = modifiers
                 .Where(x => x.StatType == statType && MatchesGroup(x, group))
                 .ToList();
-            var total = matching.Sum(x => x.Amount);
+            var total = matching.Aggregate(
+                0, (aggregated, x) => Stat.AggregateStatAdjustment(statType, aggregated, x.Amount));
 
             foreach (var modifier in matching)
             {
@@ -211,7 +212,7 @@ namespace SWLOR.Game.Server.Service.CombatService
             return _modifiers.TryGetValue(creature, out var modifiers)
                 ? modifiers
                     .Where(x => x.StatType == statType && MatchesGroup(x, group))
-                    .Sum(x => x.Amount)
+                    .Aggregate(0, (total, x) => Stat.AggregateStatAdjustment(statType, total, x.Amount))
                 : 0;
         }
 

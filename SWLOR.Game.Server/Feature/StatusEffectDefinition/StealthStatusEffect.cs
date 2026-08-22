@@ -25,6 +25,12 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void Apply(uint creature, int durationTicks)
         {
+            var stealthBonus = Stat.GetStatAdjustment(creature, StatType.ActiveStealthBonus);
+            if (stealthBonus != 0)
+            {
+                StatGroup.Stats[StatType.Stealth] = stealthBonus;
+            }
+
             // Drain-slowing stats stretch the tick interval rather than shrinking the
             // per-tick amount so small reductions are not lost to integer rounding.
             var drainReduction = Stat.GetStatAdjustment(creature, StatType.StealthStaminaDrainReductionPercent);

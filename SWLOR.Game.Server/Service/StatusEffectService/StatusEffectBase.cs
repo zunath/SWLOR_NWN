@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         public virtual StatusEffectStackType StackingType => StatusEffectStackType.Disabled;
         public bool IsFlaggedForRemoval { get; protected set; }
         public bool WasNaturallyExpired { get; private set; }
+        public float SecondsSinceNaturalExpiration { get; private set; }
         public virtual bool SendsApplicationMessage => true;
         public virtual bool SendsWornOffMessage => true;
         public virtual StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.None;
@@ -31,6 +32,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         public int DurationTicks => _durationTicks;
         public virtual bool PersistsOnLogout => true;
         public virtual bool IsRemovedOnJobChange => true;
+        protected bool IsBeingReplaced { get; private set; }
         public StatGroup StatGroup { get; }
         public virtual List<Type> MorePowerfulEffectTypes { get; }
         public virtual List<Type> LessPowerfulEffectTypes { get; }
@@ -101,10 +103,18 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
         }
 
         protected virtual void Remove(uint creature) { }
-        public void RemoveEffect(uint creature)
+        public void RemoveEffect(uint creature, bool isReplacement = false)
         {
-            Remove(creature);
-            RemoveNativeEffects(creature);
+            IsBeingReplaced = isReplacement;
+            try
+            {
+                Remove(creature);
+                RemoveNativeEffects(creature);
+            }
+            finally
+            {
+                IsBeingReplaced = false;
+            }
         }
 
         public void RemoveNativeEffects(uint creature)
@@ -124,13 +134,17 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
                 return;
             }
 
-            _lastRun = currentTime;
+            // Preserve the logical cadence instead of anchoring the next tick to a slightly late
+            // engine callback. Resetting to currentTime accumulates scheduler jitter and can turn a
+            // 3-second effect into a 4-second cadence, dropping the final tick of a fixed-duration HoT.
+            _lastRun = _lastRun.AddSeconds(Math.Max(1f, Frequency));
 
             // Reduce duration ticks and flag for removal if expired
             if (!_isPermanent && --_durationTicks <= 0)
             {
                 IsFlaggedForRemoval = true;
                 WasNaturallyExpired = true;
+                SecondsSinceNaturalExpiration = 0f;
             }
 
             Tick(creature);
@@ -147,6 +161,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             var frequency = Math.Max(1f, Frequency);
             var elapsedSeconds = (currentTime - _lastRun).TotalSeconds;
             var elapsedTicks = (int)Math.Floor(elapsedSeconds / frequency);
+            var secondsUntilExpiration = _durationTicks * frequency;
 
             if (elapsedTicks <= 0)
                 return;
@@ -157,6 +172,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             if (_durationTicks > 0)
                 return;
 
+            SecondsSinceNaturalExpiration = (float)Math.Max(0d, elapsedSeconds - secondsUntilExpiration);
             _durationTicks = 0;
             _lastRun = currentTime;
             IsFlaggedForRemoval = true;

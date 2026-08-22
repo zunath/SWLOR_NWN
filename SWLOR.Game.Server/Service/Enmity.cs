@@ -25,7 +25,6 @@ namespace SWLOR.Game.Server.Service
         private const float MinimumStaleAttackRecoverySeconds = 4.5f;
         private const float AttackMoveRangeTolerance = 0.25f;
         private const float MeleeAttackMoveThreshold = 2.25f;
-        private const float MeleeAttackMoveRange = 1.5f;
 
         /// <summary>
         /// When an enemy is damaged, increase enmity toward that creature by the amount of damage dealt.
@@ -660,14 +659,14 @@ namespace SWLOR.Game.Server.Service
             }
 
             var skillType = Combat.GetEquippedWeaponSkillType(creature);
-            var moveRange = GetAttackMoveRange(skillType, CreaturePlugin.GetPreferredAttackDistance(creature));
+            var moveRange = Combat.GetWeaponEngagementRange(skillType);
 
             return ShouldMoveIntoAttackRange(GetDistanceBetween(creature, target), skillType, moveRange);
         }
 
         private static bool ShouldMoveIntoAttackRange(float distance, SkillType skillType, float moveRange)
         {
-            var threshold = Combat.IsRangedDamageSkill(skillType)
+            var threshold = Combat.IsRangedWeaponSkill(skillType)
                 ? moveRange + AttackMoveRangeTolerance
                 : MeleeAttackMoveThreshold;
 
@@ -677,15 +676,7 @@ namespace SWLOR.Game.Server.Service
         private static float GetAttackMoveRange(uint creature)
         {
             var skillType = Combat.GetEquippedWeaponSkillType(creature);
-            return GetAttackMoveRange(skillType, CreaturePlugin.GetPreferredAttackDistance(creature));
-        }
-
-        private static float GetAttackMoveRange(SkillType skillType, float preferredAttackDistance)
-        {
-            if (!Combat.IsRangedDamageSkill(skillType))
-                return MeleeAttackMoveRange;
-
-            return Math.Max(MeleeAttackMoveRange, preferredAttackDistance);
+            return Combat.GetWeaponEngagementRange(skillType);
         }
 
         private static bool ShouldRemoveStaleProximityTarget(uint enemy, uint target)

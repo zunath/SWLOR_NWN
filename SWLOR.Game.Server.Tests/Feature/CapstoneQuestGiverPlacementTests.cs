@@ -79,6 +79,7 @@ public class CapstoneQuestGiverPlacementTests
     {
         var names = new List<string>();
         var heads = new List<int>();
+        var portraits = new List<int>();
         foreach (var (giver, _) in Placements)
         {
             using var utc = LoadUtc(giver);
@@ -86,6 +87,7 @@ public class CapstoneQuestGiverPlacementTests
             var first = GetLocString(root, "FirstName");
             var last = GetLocString(root, "LastName");
             names.Add($"{first} {last}".Trim());
+            portraits.Add(GetWord(root, "PortraitId"));
 
             var appearance = GetWord(root, "Appearance_Type");
             if (appearance < 1000)
@@ -97,6 +99,9 @@ public class CapstoneQuestGiverPlacementTests
 
         names.Should().OnlyHaveUniqueItems();
         heads.Should().OnlyHaveUniqueItems();
+        portraits.Should().OnlyContain(portrait => portrait > 0,
+            "every placed capstone conversation needs a non-blank creature portrait fallback");
+        portraits.Should().OnlyHaveUniqueItems();
     }
 
     [Test]

@@ -1,25 +1,25 @@
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DialogService;
+using SWLOR.Game.Server.Service.ConversationService;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
-    public class HoloComDialog: DialogBase
+    public class HoloComDialog: ConversationMenuDefinition
     {
         private const string MainPageId = "MAIN_PAGE";
 
-        public override PlayerDialog SetUp(uint player)
+        public override ConversationMenuSpec Build()
         {
-            var builder = new DialogBuilder()
+            var builder = new ConversationMenuBuilder()
                 .AddPage(MainPageId, MainPageInit);
 
             return builder.Build();
         }
 
-        private void MainPageInit(DialogPage page)
+        private void MainPageInit(ConversationMenuPage page)
         {
             page.Header = ColorToken.Green("HoloCom Menu\n\n");
 
-            var player  = GetPC();
+            var player  = Player;
 
             if (Space.IsPlayerInSpaceMode(player))
             {
@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 page.AddResponse($"End current call with {activeCallTargetName}", () =>
                 {
                     HoloCom.SetIsInCall(player, activeCallTarget, false);
-                    EndConversation();
+                    Close();
                 });
             }
 
@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 page.AddResponse($"Answer incoming call from {callerName}", () =>
                 {
                     HoloCom.SetIsInCall(player, callSender, true);
-                    EndConversation();
+                    Close();
                 });
                 page.AddResponse($"Decline incoming call from {callerName}", () =>
                 {
@@ -54,7 +54,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     // Clean up call attempt state
                     HoloCom.CleanupCallAttempt(callSender, player);
 
-                    EndConversation();
+                    Close();
                 });
             }
 
@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                         HoloCom.CleanupCallAttempt(player, callReceiver);
 
                         SendMessageToPC(player, "You cancel your HoloCom call.");
-                        EndConversation();
+                        Close();
                     });
                 }
                 else
@@ -86,7 +86,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                         HoloCom.CleanupCallAttempt(player, callReceiver);
 
                         SendMessageToPC(player, "You cancel your HoloCom call.");
-                        EndConversation();
+                        Close();
                     });
                 }
             }

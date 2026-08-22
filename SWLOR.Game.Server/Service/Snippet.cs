@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SnippetService;
 using SWLOR.NWN.API.NWNX;
 
@@ -10,6 +11,8 @@ namespace SWLOR.Game.Server.Service
     {
         private static readonly Dictionary<string, SnippetDetail> _appearsWhenCommands = new Dictionary<string, SnippetDetail>();
         private static readonly Dictionary<string, SnippetDetail> _actionsTakenCommands = new Dictionary<string, SnippetDetail>();
+        [ThreadStatic]
+        private static uint _executionOwner;
 
         /// <summary>
         /// When the module loads, all available conversation snippets are loaded into the cache.
@@ -31,11 +34,26 @@ namespace SWLOR.Game.Server.Service
                     if (snippet.ConditionAction != null)
                     {
                         _appearsWhenCommands.Add(key, snippet);
+                        Conversation.Runtime.RegisterCondition(
+                            key,
+                            (context, arguments) => EvaluateCondition(
+                                context.Player,
+                                key,
+                                arguments,
+                                context.Owner));
                     }
 
                     if (snippet.ActionsTakenAction != null)
                     {
                         _actionsTakenCommands.Add(key, snippet);
+                        Conversation.Runtime.RegisterAction(
+                            key,
+                            (context, arguments) =>
+                                ExecuteAction(
+                                    context.Player,
+                                    key,
+                                    arguments,
+                                    context.Owner));
                     }
 
                 }
@@ -97,7 +115,7 @@ namespace SWLOR.Game.Server.Service
                 var snippetName = condition.Key;
 
                 // The first command that fails will result in failure.
-                var commandResult = _appearsWhenCommands[snippetName].ConditionAction(player, args.ToArray());
+                var commandResult = EvaluateCondition(player, snippetName, args);
 
                 // "Not" conditions check for the opposite condition.
                 if (notConditionEnabled && commandResult)
@@ -122,10 +140,100 @@ namespace SWLOR.Game.Server.Service
 
                 var param = GetScriptParam(action.Key);
                 var args = param.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList();
-                var commandText = action.Key;
-
-                _actionsTakenCommands[commandText].ActionsTakenAction(player, args.ToArray());
+                ExecuteAction(player, action.Key, args);
             }
+        }
+
+        /// <summary>
+        /// Evaluates one registered snippet condition without relying on NWScript parameter state.
+        /// This is the entry point used by NUI conversations.
+        /// </summary>
+        public static bool EvaluateCondition(
+            uint player,
+            string key,
+            IReadOnlyList<string> arguments,
+            uint owner = OBJECT_INVALID)
+        {
+            if (!_appearsWhenCommands.TryGetValue(key, out var snippet))
+                throw new InvalidOperationException($"Conversation condition snippet '{key}' is not registered.");
+
+            arguments ??= Array.Empty<string>();
+            if (!HasUsableArguments(key, snippet, arguments.Count, player))
+                return false;
+
+            var previousOwner = _executionOwner;
+            _executionOwner = GetIsObjectValid(owner) ? owner : OBJECT_INVALID;
+            try
+            {
+                return snippet.ConditionAction(player, arguments.ToArray());
+            }
+            finally
+            {
+                _executionOwner = previousOwner;
+            }
+        }
+
+        /// <summary>
+        /// Executes one registered snippet action without relying on NWScript parameter state.
+        /// </summary>
+        public static bool ExecuteAction(
+            uint player,
+            string key,
+            IReadOnlyList<string> arguments,
+            uint owner = OBJECT_INVALID)
+        {
+            if (!_actionsTakenCommands.TryGetValue(key, out var snippet))
+                throw new InvalidOperationException($"Conversation action snippet '{key}' is not registered.");
+
+            arguments ??= Array.Empty<string>();
+            if (!HasUsableArguments(key, snippet, arguments.Count, player))
+                return false;
+
+            var previousOwner = _executionOwner;
+            _executionOwner = GetIsObjectValid(owner) ? owner : OBJECT_INVALID;
+            bool succeeded;
+            try
+            {
+                succeeded = snippet.ActionsTakenAction(player, arguments.ToArray());
+            }
+            finally
+            {
+                _executionOwner = previousOwner;
+            }
+
+            return succeeded;
+        }
+
+        /// <summary>
+        /// The object that owns the active conversation. Snippet implementations use this instead
+        /// of OBJECT_SELF so they behave identically from native DLG scripts and NUI events.
+        /// </summary>
+        public static uint GetExecutionOwner()
+        {
+            return GetIsObjectValid(_executionOwner) ? _executionOwner : OBJECT_SELF;
+        }
+
+        /// <summary>
+        /// Checks that a snippet was given enough arguments to run, reporting the shortfall to the
+        /// player and the log once, in one place, instead of each snippet phrasing it differently.
+        /// </summary>
+        /// <remarks>
+        /// Only a shortfall is refused, never a surplus - see
+        /// <see cref="SnippetDetail.HasEnoughArguments"/> for why. A snippet that declares no
+        /// arguments is not checked at all: an empty declaration is indistinguishable from one that
+        /// has simply not been written yet, and refusing to run it would break working content.
+        /// </remarks>
+        private static bool HasUsableArguments(string key, SnippetDetail snippet, int argumentCount, uint player)
+        {
+            if (snippet.Arguments.Count == 0 || snippet.HasEnoughArguments(argumentCount))
+                return true;
+
+            var error = $"'{key}' was given {argumentCount} argument(s) but needs at least "
+                        + $"{snippet.MinimumArgumentCount}.";
+
+            SendMessageToPC(player, error);
+            Log.Write(LogGroup.Error, error);
+            return false;
         }
     }
 }

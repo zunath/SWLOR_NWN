@@ -44,6 +44,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const string RequestFormPartial = "masteries_request_form";
         public const string MyRequestsPartial = "masteries_requests";
 
+        private const int MyMasteriesTabId = 0;
+        private const int CatalogTabId = 1;
+        private const int MyRequestsTabId = 2;
+        private const int RequestFormTabId = 3;
+
         public const int MaxJustificationLength = 1000;
         public const int MaxCustomNameLength = 64;
         public const int MaxCustomDescriptionLength = 500;
@@ -71,28 +76,34 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private List<MasteryRequest> _myRequests = new();
         private int _selectedRequestIndex = -1;
 
-        private string _currentPartial = MyMasteriesPartial;
+        private static readonly GuiTabGroup<MasteriesViewModel, GuiPayloadBase> Tabs =
+            new GuiTabGroup<MasteriesViewModel, GuiPayloadBase>()
+                .AddTab(MyMasteriesTabId, MyMasteriesPartial, model => model.LoadMyMasteries())
+                .AddTab(CatalogTabId, CatalogPartial, model => model.LoadCatalogTab())
+                .AddTab(MyRequestsTabId, MyRequestsPartial, model => model.LoadMyRequests())
+                .AddTab(RequestFormTabId, RequestFormPartial);
+
+        private static readonly GuiToggleGroupSync TabToggles =
+            new(MyMasteriesTabId, CatalogTabId, MyRequestsTabId);
 
         // ---------------------------------------------------------------
         // Tabs
         // ---------------------------------------------------------------
 
-        public bool IsMyMasteriesTabToggled
+        public int SelectedTabId
         {
-            get => Get<bool>();
+            get => Get<int>();
             set => Set(value);
         }
 
-        public bool IsCatalogTabToggled
+        public int TabToggleValue
         {
-            get => Get<bool>();
-            set => Set(value);
-        }
-
-        public bool IsMyRequestsTabToggled
-        {
-            get => Get<bool>();
-            set => Set(value);
+            get => Get<int>();
+            set
+            {
+                Set(value);
+                TabToggles.HandleClientChange(value, SelectTab);
+            }
         }
 
         // ---------------------------------------------------------------
@@ -329,20 +340,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CustomName = string.Empty;
             CustomDescription = string.Empty;
             FormStatusText = string.Empty;
+            TabToggleValue = MyMasteriesTabId;
 
-            ShowMyMasteries();
-
+            WatchOnClient(model => model.TabToggleValue);
             WatchOnClient(model => model.SearchText);
             WatchOnClient(model => model.SelectedCategoryId);
             WatchOnClient(model => model.Justification);
             WatchOnClient(model => model.ReplyText);
             WatchOnClient(model => model.CustomName);
             WatchOnClient(model => model.CustomDescription);
+
+            SelectTab(MyMasteriesTabId);
         }
 
         protected override void OnClientPropertyUpdated(string propertyName)
         {
-            if (_currentPartial != CatalogPartial)
+            if (SelectedTabId != CatalogTabId)
                 return;
 
             if (propertyName == nameof(SearchText) || propertyName == nameof(SelectedCategoryId))
@@ -352,63 +365,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         }
 
-        /// <summary>
-        /// A ShowModal confirmation (e.g. Cancel Request) restores the window's static
-        /// "%%WINDOW_MAIN%%" template, which resets the tab-content placeholder back to
-        /// whatever it was at window-build time. Reapply whichever tab was actually
-        /// active so the player doesn't get bounced back to My Masteries.
-        /// </summary>
-        protected override void OnMainViewRestored()
-        {
-            ChangePartialView(ContentPartialElement, _currentPartial);
-        }
+        protected override void OnModalClosedRestore() =>
+            Tabs.Select(this, ContentPartialElement, SelectedTabId);
 
         // ---------------------------------------------------------------
         // Tab switching
         // ---------------------------------------------------------------
 
-        private void ShowMyMasteries()
+        private void SelectTab(int tabId)
         {
-            IsMyMasteriesTabToggled = true;
-            IsCatalogTabToggled = false;
-            IsMyRequestsTabToggled = false;
-
-            _currentPartial = MyMasteriesPartial;
-            ChangePartialView(ContentPartialElement, _currentPartial);
-
-            LoadMyMasteries();
+            SelectedTabId = tabId;
+            TabToggles.SyncTo(tabId, value => TabToggleValue = value);
+            Tabs.Select(this, ContentPartialElement, tabId);
         }
 
-        private void ShowCatalog()
+        private void LoadCatalogTab()
         {
-            IsMyMasteriesTabToggled = false;
-            IsCatalogTabToggled = true;
-            IsMyRequestsTabToggled = false;
-
-            _currentPartial = CatalogPartial;
-            ChangePartialView(ContentPartialElement, _currentPartial);
-
             _catalogPage = 0;
             LoadCatalog();
         }
-
-        private void ShowMyRequests()
-        {
-            IsMyMasteriesTabToggled = false;
-            IsCatalogTabToggled = false;
-            IsMyRequestsTabToggled = true;
-
-            _currentPartial = MyRequestsPartial;
-            ChangePartialView(ContentPartialElement, _currentPartial);
-
-            LoadMyRequests();
-        }
-
-        public Action OnClickMyMasteriesTab() => ShowMyMasteries;
-
-        public Action OnClickCatalogTab() => ShowCatalog;
-
-        public Action OnClickMyRequestsTab() => ShowMyRequests;
 
         // ---------------------------------------------------------------
         // My Masteries
@@ -576,7 +551,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickRequestUnlisted() => () => ShowRequestForm(null, true);
 
-        public Action OnClickBackToCatalog() => ShowCatalog;
+        public Action OnClickBackToCatalog() => () => SelectTab(CatalogTabId);
 
         // ---------------------------------------------------------------
         // Request form
@@ -586,9 +561,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             _selectedRequestMasteryId = masteryId;
             _isCustomRequest = isCustom;
-
-            _currentPartial = RequestFormPartial;
-            ChangePartialView(ContentPartialElement, _currentPartial);
 
             IsCustomFieldsVisible = isCustom;
             FormStatusText = string.Empty;
@@ -615,6 +587,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             RefreshEligibility();
+            SelectTab(RequestFormTabId);
         }
 
         /// <summary>
@@ -706,7 +679,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (mastery == null)
                 {
                     FormStatusText = "This mastery is no longer available.";
-                    ShowCatalog();
+                    SelectTab(CatalogTabId);
                     return;
                 }
             }
@@ -758,7 +731,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     SendMessageToPC(Player, ColorToken.Green("Mastery request submitted! Staff will review it soon."));
                 }
 
-                ShowMyRequests();
+                SelectTab(MyRequestsTabId);
             }
             finally
             {

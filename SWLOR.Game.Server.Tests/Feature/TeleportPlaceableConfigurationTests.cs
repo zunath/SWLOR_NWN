@@ -28,6 +28,7 @@ public class TeleportPlaceableConfigurationTests
         enabledTeleporters.Should().BeEquivalentTo(new[]
         {
             "Module/git/veles_sewers.git.json|Enter Sewers Depths|VISC_SEWER_DEPTHS_INSIDE|tele_obj|tele_obj",
+            "Module/git/dan_warehouse.git.json|Dantooine Medical Sublevel|to_medsublevel|tele_obj|tele_obj",
             "Module/git/dathgrottocavern.git.json|Enter the Grotto Apex Den|DATH_APEX_DEN_INSIDE|tele_obj|tele_obj",
             "Module/git/pw_ar_nsficlub.git.json|[Back Rooms]|SMUG_BACKROOMS|tele_obj|tele_obj",
             "Module/git/czs220_maintlvl.git.json|Enter the Breaker Bay|CZ220_MAINT_ENTRANCE_BREAKER|tele_obj|tele_obj",
@@ -38,6 +39,80 @@ public class TeleportPlaceableConfigurationTests
             .Where(teleport => teleport.PartyTeleportFlag != 1)
             .Should()
             .OnlyContain(teleport => teleport.PartyTeleportFlag == 0);
+    }
+
+    // Teleporters whose destinations have never been built (missing districts, interiors, or an
+    // inbound route that no longer exists). They fail with the in-game "inform an admin" message
+    // today; resolving them needs a content decision (build the destination or remove the
+    // placeable), not a retarget. Keyed by "relative path|LocName".
+    private static readonly string[] KnownUnbuiltTeleporters =
+    {
+        "Module/git/druz_shalim.git.json|Invisible Object (Large)|Druzer_Starport_Inside",
+        "Module/git/veles_sewers.git.json|Surface Access|SEWERS_VELES_INDUSTRIAL_INSIDE",
+        "Module/git/veles_sewers.git.json|Surface Access|SEWERS_VELES_SLUMS",
+        "Module/git/veles_sewers.git.json|Surface Access|SEWERS_VELES_SMUGGLER",
+        "Module/git/zomb_abanstation.git.json|Take Shuttle Back to Viscara|",
+    };
+
+    [Test]
+    public void TeleportPlaceables_DestinationsResolveToExistingTags()
+    {
+        var root = FindRepositoryRoot();
+        var knownTags = Directory
+            .EnumerateFiles(Path.Combine(root.FullName, "Module", "git"), "*.json", SearchOption.AllDirectories)
+            .SelectMany(path =>
+            {
+                using var document = JsonDocument.Parse(File.ReadAllText(path));
+                return EnumerateTags(document.RootElement).ToArray();
+            })
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        var placedTeleports = LoadTeleportObjects()
+            .Where(teleport => NormalizePath(teleport.RelativePath).StartsWith("Module/git/"))
+            .ToArray();
+
+        placedTeleports.Should().NotBeEmpty();
+        var broken = placedTeleports
+            .Where(teleport => !KnownUnbuiltTeleporters.Contains(
+                $"{NormalizePath(teleport.RelativePath)}|{teleport.Name}|{teleport.Destination}",
+                StringComparer.OrdinalIgnoreCase))
+            .Where(teleport => string.IsNullOrWhiteSpace(teleport.Destination) || !knownTags.Contains(teleport.Destination))
+            .Select(teleport => $"{NormalizePath(teleport.RelativePath)}|{teleport.Name}|DESTINATION='{teleport.Destination}'")
+            .ToArray();
+
+        broken.Should().BeEquivalentTo(
+            Array.Empty<string>(),
+            "every placed teleport's DESTINATION local string must match the tag of an object placed somewhere in Module/git");
+    }
+
+    private static IEnumerable<string> EnumerateTags(JsonElement element)
+    {
+        if (element.ValueKind == JsonValueKind.Object)
+        {
+            var tag = GetString(element, "Tag");
+            if (!string.IsNullOrEmpty(tag))
+            {
+                yield return tag;
+            }
+
+            foreach (var property in element.EnumerateObject())
+            {
+                foreach (var nested in EnumerateTags(property.Value))
+                {
+                    yield return nested;
+                }
+            }
+        }
+        else if (element.ValueKind == JsonValueKind.Array)
+        {
+            foreach (var item in element.EnumerateArray())
+            {
+                foreach (var nested in EnumerateTags(item))
+                {
+                    yield return nested;
+                }
+            }
+        }
     }
 
     [Test]

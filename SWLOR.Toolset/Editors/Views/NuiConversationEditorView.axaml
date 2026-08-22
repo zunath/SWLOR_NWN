@@ -1,0 +1,435 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:editors="using:SWLOR.Toolset.Editors"
+             x:Class="SWLOR.Toolset.Editors.NuiConversationEditorView"
+             x:DataType="editors:NuiConversationEditorViewModel">
+  <UserControl.Resources>
+    <DataTemplate x:Key="SnippetEditorTemplate" x:DataType="editors:GraphSnippetEditorViewModel">
+      <Border Padding="10" Margin="0,4" Background="#141E29" BorderBrush="#293B4E"
+              BorderThickness="1" CornerRadius="4">
+        <StackPanel Spacing="6">
+          <TextBlock Text="{Binding Sentence}" FontWeight="SemiBold" TextWrapping="Wrap" />
+          <CheckBox Content="Not" IsChecked="{Binding IsNegated}" IsVisible="{Binding CanNegate}" />
+          <ItemsControl ItemsSource="{Binding Arguments}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="editors:ArgumentEditorViewModel">
+                <Grid ColumnDefinitions="120,*" ColumnSpacing="8" Margin="0,2">
+                  <TextBlock Grid.Column="0" Text="{Binding Name}" Classes="dim" VerticalAlignment="Center" />
+                  <TextBox Grid.Column="1" Text="{Binding FreeText, Mode=TwoWay}" IsVisible="{Binding IsFreeText}" />
+                  <ComboBox Grid.Column="1" ItemsSource="{Binding Options}" SelectedItem="{Binding Selected}"
+                            IsVisible="{Binding HasOptions}" />
+                </Grid>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+          <StackPanel Orientation="Horizontal" Spacing="6">
+            <Button Content="+ More inputs" Command="{Binding AddArgumentsCommand}" />
+            <Button Content="− Input" Command="{Binding RemoveArgumentsCommand}" />
+          </StackPanel>
+          <Button Content="Remove" Command="{Binding RemoveCommand}" HorizontalAlignment="Left" />
+        </StackPanel>
+      </Border>
+    </DataTemplate>
+  </UserControl.Resources>
+
+  <Grid RowDefinitions="Auto,*" Background="#0C1118">
+    <Border Grid.Row="0" Padding="12,8" Background="#111923" BorderBrush="#2C3A4B" BorderThickness="0,0,0,1">
+      <Grid ColumnDefinitions="Auto,220,*,Auto,Auto,Auto" ColumnSpacing="10">
+        <TextBlock Grid.Column="0" Text="NPC BEHAVIOR" Classes="dim" VerticalAlignment="Center" />
+        <ComboBox Grid.Column="1" ItemsSource="{Binding BehaviorOptions}" SelectedItem="{Binding SelectedBehavior}" />
+        <TextBlock Grid.Column="2" Text="{Binding ValidationSummary}" VerticalAlignment="Center" HorizontalAlignment="Center" />
+        <Button Grid.Column="3" Content="Undo" Command="{Binding UndoCommand}" />
+        <Button Grid.Column="4" Content="Redo" Command="{Binding RedoCommand}" />
+        <Button Grid.Column="5" Content="Save" Command="{Binding SaveCommand}" Classes="accent" />
+      </Grid>
+    </Border>
+
+    <TabControl x:Name="ConversationEditorTabs" Grid.Row="1" Margin="12">
+      <TabItem Header="Edit">
+        <Grid>
+        <ScrollViewer IsVisible="{Binding IsMerchant}" VerticalScrollBarVisibility="Auto">
+          <StackPanel Margin="26" Spacing="16" MaxWidth="840" HorizontalAlignment="Center">
+            <StackPanel Spacing="4">
+              <TextBlock Text="Merchant dialogue" FontSize="24" FontWeight="SemiBold" />
+              <TextBlock Text="A merchant needs a greeting and a shop choice. Goodbye is included automatically."
+                         Classes="dim" TextWrapping="Wrap" />
+            </StackPanel>
+            <Border Padding="16" CornerRadius="6" BorderBrush="#34465A" BorderThickness="1" Background="#111821">
+              <StackPanel Spacing="10">
+                <TextBlock Text="Greeting" Classes="dim" />
+                <TextBox Text="{Binding MerchantGreeting, Mode=TwoWay}" AcceptsReturn="True"
+                         TextWrapping="Wrap" MinHeight="100" />
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                  <ComboBox Grid.Column="0" ItemsSource="{Binding DynamicTextTokens}"
+                            SelectedItem="{Binding DynamicTextToInsert}" />
+                  <Button Grid.Column="1" Content="Insert" Command="{Binding InsertDynamicTextCommand}" />
+                </Grid>
+              </StackPanel>
+            </Border>
+            <Border Padding="16" CornerRadius="6" BorderBrush="#34465A" BorderThickness="1" Background="#111821">
+              <Grid RowDefinitions="Auto,Auto,Auto,Auto" ColumnDefinitions="150,*" RowSpacing="10" ColumnSpacing="12">
+                <TextBlock Grid.Row="0" Grid.ColumnSpan="2" Text="Shop" Classes="dim" />
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Store tag" VerticalAlignment="Center" />
+                <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding MerchantStoreTag, Mode=TwoWay}"
+                         Watermark="Nearest store when blank" />
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Player choice" VerticalAlignment="Center" />
+                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding MerchantChoiceText, Mode=TwoWay}" />
+                <TextBlock Grid.Row="3" Grid.Column="0" Text="Included" VerticalAlignment="Center" />
+                <TextBlock Grid.Row="3" Grid.Column="1" Text="Opens the shop  •  Goodbye."
+                           Classes="dim" VerticalAlignment="Center" />
+              </Grid>
+            </Border>
+            <ItemsControl ItemsSource="{Binding Problems}" IsVisible="{Binding HasProblems}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="editors:NuiConversationProblem">
+                  <Border Padding="8" Margin="0,2" Background="#23171A" CornerRadius="4">
+                    <TextBlock Text="{Binding Message}" TextWrapping="Wrap" />
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+        </ScrollViewer>
+
+        <Grid x:Name="AuthoringWorkspace" IsVisible="{Binding IsGeneral}" RowDefinitions="270,6,*">
+          <Border x:Name="ConversationTreePanel" Grid.Row="0" BorderBrush="#2D3C4D" BorderThickness="1" CornerRadius="5"
+                  Background="#101720" MinHeight="180">
+            <Grid RowDefinitions="Auto,*,Auto">
+              <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="10,8,10,5">
+                <StackPanel Grid.Column="0" Spacing="2">
+                  <TextBlock Text="Conversation tree" FontWeight="SemiBold" FontSize="16" />
+                  <TextBlock Text="NPC lines and player responses are shown in the order the game evaluates them."
+                             Classes="dim" TextWrapping="Wrap" />
+                </StackPanel>
+                <TextBlock Grid.Column="1" Text="Top route runs first  •  drag to reorder  •  ▾ ▸ fold branches"
+                           Foreground="#9CB6CF"
+                           VerticalAlignment="Center" />
+              </Grid>
+
+              <Grid x:Name="TreeDragSurface" Grid.Row="1" Margin="6,0" ClipToBounds="True">
+                <ListBox x:Name="ConversationTree"
+                         ItemsSource="{Binding TreeRows}" SelectedItem="{Binding SelectedTreeRow}"
+                         ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                         ScrollViewer.VerticalScrollBarVisibility="Auto">
+                  <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="editors:NuiConversationTreeRow">
+                      <Grid ColumnDefinitions="Auto,Auto" Margin="1" Height="24">
+                        <Border Grid.Column="0" Width="{Binding IndentWidth}" />
+                        <Border Grid.Column="1" MinWidth="640" Padding="6,2"
+                                Background="#121B25" BorderBrush="{Binding AccentBrush}"
+                                BorderThickness="4,0,0,0" CornerRadius="4">
+                          <Grid ColumnDefinitions="22,22,68,*,Auto,Auto,Auto,Auto,Auto" RowDefinitions="Auto"
+                                ColumnSpacing="5">
+                            <Button Grid.Column="0" Content="{Binding BranchToggleIcon}" Width="20" Height="20"
+                                    Padding="0" IsVisible="{Binding HasChildren}"
+                                    ToolTip.Tip="{Binding BranchToggleToolTip}"
+                                    Command="{Binding $parent[ListBox].((editors:NuiConversationEditorViewModel)DataContext).ToggleTreeBranchCommand}"
+                                    CommandParameter="{Binding}" />
+                            <Border Grid.Column="1" Width="20" Height="20" Background="Transparent"
+                                    Cursor="SizeAll" ToolTip.Tip="Drag to move this branch earlier or later."
+                                    PointerPressed="OnTreeDragHandlePressed"
+                                    PointerMoved="OnTreeDragHandleMoved"
+                                    PointerReleased="OnTreeDragHandleReleased"
+                                    PointerCaptureLost="OnTreeDragHandleCaptureLost">
+                              <TextBlock Text="⠿" Foreground="#8FA7BF" FontSize="15"
+                                         HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <TextBlock Grid.Column="2" Text="{Binding KindLabel}"
+                                       Foreground="{Binding AccentBrush}" FontWeight="Bold" FontSize="11"
+                                       VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="3" Text="{Binding Text}"
+                                       TextTrimming="CharacterEllipsis" FontWeight="SemiBold"
+                                       VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="4" Text="{Binding VisibilityIcon}"
+                                       Foreground="{Binding VisibilityBrush}" VerticalAlignment="Center"
+                                       ToolTip.Tip="{Binding VisibilityToolTip}" />
+                            <TextBlock Grid.Column="5" Text="⚡" IsVisible="{Binding HasActions}"
+                                       Foreground="#E8B25B" VerticalAlignment="Center"
+                                       ToolTip.Tip="{Binding ActionToolTip}" />
+                            <TextBlock Grid.Column="6" Text="■" IsVisible="{Binding EndsConversation}"
+                                       Foreground="#9CB6CF" VerticalAlignment="Center"
+                                       ToolTip.Tip="{Binding EndToolTip}" />
+                            <TextBlock Grid.Column="7" Text="↗" IsVisible="{Binding IsReference}"
+                                       Foreground="#9CB6CF" VerticalAlignment="Center"
+                                       ToolTip.Tip="{Binding ReferenceToolTip}" />
+                            <Button Grid.Column="8" Content="Remove" Padding="6,1"
+                                    Command="{Binding $parent[ListBox].((editors:NuiConversationEditorViewModel)DataContext).RemoveTreeRowCommand}"
+                                    CommandParameter="{Binding}" />
+                          </Grid>
+                        </Border>
+                      </Grid>
+                    </DataTemplate>
+                  </ListBox.ItemTemplate>
+                </ListBox>
+
+                <Canvas IsHitTestVisible="False">
+                  <Border x:Name="TreeDragPreview" Height="24" MinWidth="360" Padding="10,2"
+                          IsVisible="False" Opacity="0.68" Background="#263747"
+                          BorderThickness="4,1,1,1" CornerRadius="4">
+                    <Grid ColumnDefinitions="68,*" ColumnSpacing="8">
+                      <TextBlock x:Name="TreeDragPreviewKind" Grid.Column="0" FontWeight="Bold"
+                                 FontSize="11" VerticalAlignment="Center" />
+                      <TextBlock x:Name="TreeDragPreviewText" Grid.Column="1" FontWeight="SemiBold"
+                                 TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                    </Grid>
+                  </Border>
+                </Canvas>
+              </Grid>
+
+              <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="8" Margin="10,6,10,8">
+                <Button Content="+ Add opening" Command="{Binding AddOpeningCommand}" />
+                <Button Content="+ Add player response" Command="{Binding AddChoiceCommand}"
+                        IsVisible="{Binding IsNpcTreeRowSelected}" />
+                <Button Content="Expand all" Command="{Binding ExpandAllTreeBranchesCommand}" />
+                <Button Content="Collapse all" Command="{Binding CollapseAllTreeBranchesCommand}" />
+              </StackPanel>
+            </Grid>
+          </Border>
+
+          <GridSplitter Grid.Row="1" Background="#253344" ResizeDirection="Rows" />
+
+          <Border x:Name="SelectedNodePanel" Grid.Row="2" BorderBrush="#2D3C4D" BorderThickness="1" CornerRadius="5"
+                  Background="#0F151E">
+            <Grid RowDefinitions="Auto,*">
+              <StackPanel Grid.Row="0" Margin="14,11,14,8" Spacing="2">
+                <TextBlock Text="{Binding SelectedTreeRowTitle}" FontSize="17" FontWeight="SemiBold" />
+                <TextBlock Text="{Binding SelectedTreeRowHelp}" Classes="dim" TextWrapping="Wrap" />
+              </StackPanel>
+
+              <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto"
+                            HorizontalScrollBarVisibility="Disabled">
+                <Grid Margin="14,4,14,18" ColumnDefinitions="1.12*,*" ColumnSpacing="18"
+                      IsVisible="{Binding HasSelectedTreeRow}">
+                  <StackPanel Grid.Column="0" Spacing="12">
+                    <StackPanel IsVisible="{Binding IsNpcTreeRowSelected}" Spacing="7">
+                      <TextBlock Text="NPC dialogue" FontWeight="SemiBold" />
+                      <Grid ColumnDefinitions="120,*" ColumnSpacing="8">
+                        <ComboBox Grid.Column="0" ItemsSource="{Binding PrimaryTextBlock.Styles}"
+                                  SelectedItem="{Binding PrimaryTextBlock.Style}" />
+                        <TextBox x:Name="PrimaryNpcDialogueTextBox" Grid.Column="1"
+                                 Text="{Binding PrimaryTextBlock.Text, Mode=TwoWay}" AcceptsReturn="True"
+                                 TextWrapping="Wrap" MinHeight="76" />
+                      </Grid>
+                      <Grid ColumnDefinitions="*,Auto" ColumnSpacing="7">
+                        <ComboBox Grid.Column="0" ItemsSource="{Binding DynamicTextTokens}"
+                                  SelectedItem="{Binding DynamicTextToInsert}" />
+                        <Button Grid.Column="1" Content="Insert" Command="{Binding InsertDynamicTextCommand}" />
+                      </Grid>
+                    </StackPanel>
+
+                    <StackPanel IsVisible="{Binding IsPlayerTreeRowSelected}" Spacing="7">
+                      <TextBlock Text="Player response" FontWeight="SemiBold" />
+                      <TextBox Text="{Binding SelectedChoice.Text, Mode=TwoWay}" AcceptsReturn="True"
+                               TextWrapping="Wrap" MinHeight="76" />
+                      <StackPanel Orientation="Horizontal" Spacing="8">
+                        <CheckBox Content="Ends conversation" IsChecked="{Binding SelectedChoice.EndsConversation}" />
+                        <Button Content="Add next NPC line" IsVisible="{Binding SelectedChoice.EndsConversation}"
+                                Command="{Binding AddFollowUpCommand}" CommandParameter="{Binding SelectedChoice}" />
+                        <Button Content="Open next NPC line" IsVisible="{Binding SelectedChoice.HasNextLine}"
+                                Command="{Binding OpenNextLineCommand}" CommandParameter="{Binding SelectedChoice}" />
+                      </StackPanel>
+                    </StackPanel>
+
+                    <Expander x:Name="NpcMoreOptionsExpander" Header="{Binding MoreOptionsHeader}"
+                              IsVisible="{Binding IsNpcTreeRowSelected}">
+                      <StackPanel Margin="8" Spacing="12">
+                        <Grid ColumnDefinitions="120,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+                              ColumnSpacing="8" RowSpacing="7">
+                          <TextBlock Grid.Row="0" Grid.Column="0" Text="Speaker name" />
+                          <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding SpeakerName, Mode=TwoWay}" />
+                          <TextBlock Grid.Row="1" Grid.Column="0" Text="Speaker tag" />
+                          <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding SpeakerTag, Mode=TwoWay}" />
+                          <TextBlock Grid.Row="2" Grid.Column="0" Text="Portrait" />
+                          <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding PortraitResref, Mode=TwoWay}" />
+                          <TextBlock Grid.Row="3" Grid.Column="0" Text="Sound" />
+                          <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding SoundResref, Mode=TwoWay}" />
+                          <TextBlock Grid.Row="4" Grid.Column="0" Text="Animation" />
+                          <NumericUpDown Grid.Row="4" Grid.Column="1" Value="{Binding Animation, Mode=TwoWay}" Minimum="0" />
+                        </Grid>
+
+                        <Border Padding="10" BorderBrush="#2D3C4D" BorderThickness="1" CornerRadius="4">
+                          <StackPanel Spacing="7">
+                            <TextBlock Text="Formatted passages" FontWeight="SemiBold" />
+                            <TextBlock Classes="dim" TextWrapping="Wrap"
+                                       Text="Optional colored passages displayed as part of this same NPC line." />
+                            <ItemsControl x:Name="FormattedPassagesItems" ItemsSource="{Binding AdditionalTextBlocks}">
+                              <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="editors:NuiConversationTextBlockRow">
+                                  <Grid ColumnDefinitions="120,*,Auto" ColumnSpacing="7" Margin="0,3">
+                                    <ComboBox Grid.Column="0" ItemsSource="{Binding Styles}" SelectedItem="{Binding Style}" />
+                                    <TextBox Grid.Column="1" Text="{Binding Text, Mode=TwoWay}" AcceptsReturn="True"
+                                             TextWrapping="Wrap" MinHeight="54" />
+                                    <Button Grid.Column="2" Content="Remove"
+                                            Command="{Binding $parent[UserControl].DataContext.RemoveTextBlockCommand}"
+                                            CommandParameter="{Binding}" />
+                                  </Grid>
+                                </DataTemplate>
+                              </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <Button Content="+ Add formatted passage" HorizontalAlignment="Left"
+                                    Command="{Binding AddTextBlockCommand}"
+                                    ToolTip.Tip="Adds another colored passage to this same NPC line." />
+                          </StackPanel>
+                        </Border>
+                      </StackPanel>
+                    </Expander>
+
+                    <ItemsControl ItemsSource="{Binding Problems}" IsVisible="{Binding HasProblems}">
+                      <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="editors:NuiConversationProblem">
+                          <Border Padding="8" Margin="0,2" Background="#23171A" CornerRadius="4">
+                            <Grid ColumnDefinitions="64,*" ColumnSpacing="8">
+                              <TextBlock Grid.Column="0" Text="{Binding Severity}" FontWeight="Bold" />
+                              <TextBlock Grid.Column="1" Text="{Binding Message}" TextWrapping="Wrap" />
+                            </Grid>
+                          </Border>
+                        </DataTemplate>
+                      </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                  </StackPanel>
+
+                  <StackPanel Grid.Column="1" Spacing="14">
+                    <Border Padding="12" BorderBrush="#2D3C4D" BorderThickness="1" CornerRadius="5">
+                      <StackPanel Spacing="7">
+                        <TextBlock Text="{Binding ConditionSectionTitle}" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding ConditionSectionHelp}" Classes="dim" TextWrapping="Wrap" />
+                        <ItemsControl ItemsSource="{Binding Conditions}"
+                                      ItemTemplate="{StaticResource SnippetEditorTemplate}" />
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+                          <ComboBox Grid.Column="0" ItemsSource="{Binding AvailableConditions}"
+                                    SelectedItem="{Binding ConditionToAdd}"
+                                    DisplayMemberBinding="{Binding Phrase}" />
+                          <Button Grid.Column="1" Content="+ And" Command="{Binding AddConditionCommand}" />
+                        </Grid>
+                      </StackPanel>
+                    </Border>
+
+                    <Border Padding="12" BorderBrush="#2D3C4D" BorderThickness="1" CornerRadius="5">
+                      <StackPanel Spacing="7">
+                        <TextBlock Text="{Binding ActionSectionTitle}" FontWeight="SemiBold" />
+                        <TextBlock Text="{Binding ActionSectionHelp}" Classes="dim" TextWrapping="Wrap" />
+                        <ItemsControl ItemsSource="{Binding Actions}"
+                                      ItemTemplate="{StaticResource SnippetEditorTemplate}" />
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6">
+                          <ComboBox Grid.Column="0" ItemsSource="{Binding AvailableActions}"
+                                    SelectedItem="{Binding ActionToAdd}"
+                                    DisplayMemberBinding="{Binding Phrase}" />
+                          <Button Grid.Column="1" Content="+ Then" Command="{Binding AddActionCommand}" />
+                        </Grid>
+                      </StackPanel>
+                    </Border>
+                  </StackPanel>
+                </Grid>
+              </ScrollViewer>
+            </Grid>
+          </Border>
+        </Grid>
+        </Grid>
+      </TabItem>
+
+      <TabItem Header="Preview">
+        <Grid Margin="24,16" RowDefinitions="Auto,Auto,*" MaxWidth="1000"
+              HorizontalAlignment="Stretch">
+        <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,6">
+          <StackPanel Grid.Column="0" Spacing="2">
+            <TextBlock Text="IN-GAME PREVIEW" Classes="dim" FontWeight="SemiBold" />
+            <TextBlock Text="Updates with the line you are editing. Buttons walk the conversation."
+                       Classes="dim" TextWrapping="Wrap" />
+          </StackPanel>
+          <Button Grid.Column="1" Content="Start from opening" Command="{Binding StartPreviewCommand}"
+                  VerticalAlignment="Top" />
+        </Grid>
+
+        <TextBlock Grid.Row="1" Text="{Binding PreviewStatus}" Classes="dim" TextWrapping="Wrap"
+                   MinHeight="22" Margin="0,0,0,6" />
+
+        <Viewbox Grid.Row="2" Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+          <Border x:Name="PreviewWindowFrame" Width="650" Height="520" Background="#030303"
+                  BorderBrush="#8A5427" BorderThickness="2" CornerRadius="2">
+            <Grid RowDefinitions="32,*">
+              <Border Grid.Row="0" Background="#050505" BorderBrush="#8A5427" BorderThickness="0,0,0,2">
+                <Grid ColumnDefinitions="*,30" Margin="6,0,4,0">
+                  <TextBlock Grid.Column="0" Text="Conversation" Foreground="#F3F3F3"
+                             FontSize="16" VerticalAlignment="Center" />
+                  <Border Grid.Column="1" Width="22" Height="22" BorderBrush="#8A5427" BorderThickness="2"
+                          HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock Text="×" Foreground="#D8C29C" FontSize="18"
+                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                  </Border>
+                </Grid>
+              </Border>
+
+              <Grid Grid.Row="1" RowDefinitions="228,24,*" Margin="14,10,14,12">
+                <Grid Grid.Row="0" ColumnDefinitions="140,*" ColumnSpacing="8">
+                  <Grid Grid.Column="0" RowDefinitions="28,200">
+                    <TextBlock Grid.Row="0" Text="{Binding PreviewSpeaker}" Foreground="#F3F3F3"
+                               FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"
+                               TextTrimming="CharacterEllipsis" />
+                    <Border Grid.Row="1" Width="128" Height="200" Background="#101010"
+                            BorderBrush="#3B3128" BorderThickness="1" HorizontalAlignment="Center">
+                      <Image Source="{Binding PreviewPortrait}" Stretch="Fill" />
+                    </Border>
+                  </Grid>
+
+                  <ScrollViewer x:Name="PreviewDialogueScroll" Grid.Column="1"
+                                VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Disabled"
+                                Background="#030303">
+                    <ItemsControl x:Name="PreviewDialogueItems" ItemsSource="{Binding PreviewTextBlocks}">
+                      <ItemsControl.Styles>
+                        <Style Selector="ItemsControl > ContentPresenter">
+                          <Setter Property="HorizontalAlignment" Value="Stretch" />
+                          <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        </Style>
+                      </ItemsControl.Styles>
+                      <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="editors:NuiConversationPreviewTextRow">
+                          <Grid Height="208">
+                            <Border Height="196" Padding="8" VerticalAlignment="Top">
+                              <TextBlock Text="{Binding Text}" Foreground="{Binding Foreground}"
+                                         TextWrapping="Wrap" FontSize="16" LineHeight="23" />
+                            </Border>
+                          </Grid>
+                        </DataTemplate>
+                      </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                  </ScrollViewer>
+                </Grid>
+
+                <TextBlock Grid.Row="1" Text="Your response" Foreground="#A9A9A9"
+                           FontSize="15" VerticalAlignment="Center" />
+
+                <ScrollViewer x:Name="PreviewResponsesScroll" Grid.Row="2"
+                              VerticalScrollBarVisibility="Visible" HorizontalScrollBarVisibility="Disabled"
+                              Background="#030303">
+                  <ItemsControl x:Name="PreviewChoiceItems" ItemsSource="{Binding PreviewChoices}">
+                    <ItemsControl.Styles>
+                      <Style Selector="ItemsControl > ContentPresenter">
+                        <Setter Property="HorizontalAlignment" Value="Stretch" />
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                      </Style>
+                    </ItemsControl.Styles>
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate x:DataType="editors:NuiConversationChoiceRow">
+                        <Grid Height="42">
+                          <Button Height="38" Padding="12,6" VerticalAlignment="Center"
+                                  Background="#030303" BorderBrush="#8A5427" BorderThickness="2"
+                                  HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                                  Command="{Binding $parent[ItemsControl].((editors:NuiConversationEditorViewModel)DataContext).PickPreviewChoiceCommand}"
+                                  CommandParameter="{Binding}">
+                            <TextBlock Text="{Binding DisplayText}" Foreground="#66B2FF"
+                                       TextWrapping="Wrap" TextAlignment="Center" FontSize="15" />
+                          </Button>
+                        </Grid>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                </ScrollViewer>
+              </Grid>
+            </Grid>
+          </Border>
+        </Viewbox>
+        </Grid>
+      </TabItem>
+    </TabControl>
+  </Grid>
+</UserControl>

@@ -1,0 +1,45 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:panels="using:SWLOR.Toolset.Shell.Panels"
+             xmlns:views="using:SWLOR.Toolset.Shell.Views"
+             mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="200"
+             x:Class="SWLOR.Toolset.Shell.Views.ProblemsView"
+             x:DataType="panels:ProblemsViewModel">
+
+  <UserControl.Resources>
+    <views:SeverityBrushConverter x:Key="SeverityBrushConverter" />
+  </UserControl.Resources>
+
+  <Grid RowDefinitions="*,Auto">
+    <ListBox Grid.Row="0" Background="Transparent" BorderThickness="0"
+             ItemsSource="{Binding Rows}" SelectedItem="{Binding SelectedRow}"
+             DoubleTapped="OnRowDoubleTapped">
+      <ListBox.Styles>
+        <Style Selector="ListBoxItem">
+          <Setter Property="Padding" Value="0,1" />
+        </Style>
+      </ListBox.Styles>
+      <ListBox.ItemTemplate>
+        <DataTemplate DataType="panels:ProblemRow">
+          <Grid ColumnDefinitions="Auto,Auto,*,Auto" Margin="10,2" ColumnSpacing="10">
+            <!-- Severity reads as shape and colour, so a scan finds errors without reading text. -->
+            <TextBlock Grid.Column="0" Text="{Binding SeverityGlyph}" FontSize="10" VerticalAlignment="Center"
+                       Foreground="{Binding IsError, Converter={StaticResource SeverityBrushConverter}}" />
+            <TextBlock Grid.Column="1" Classes="resref" Text="{Binding Location}" VerticalAlignment="Center" />
+            <TextBlock Grid.Column="2" Classes="name" Text="{Binding Message}" VerticalAlignment="Center"
+                       TextTrimming="CharacterEllipsis" />
+            <!-- The tag is the visible half of the two-tier rule: advisory vs authoritative. -->
+            <Border Grid.Column="3" BorderBrush="{DynamicResource RuleStrongBrush}" BorderThickness="1"
+                    CornerRadius="2" Padding="6,0" VerticalAlignment="Center">
+              <TextBlock Classes="count" Text="{Binding SourceTag}" />
+            </Border>
+          </Grid>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
+
+    <TextBlock Grid.Row="1" Classes="dim" Margin="10,4,10,6" Text="{Binding Summary}" />
+  </Grid>
+</UserControl>

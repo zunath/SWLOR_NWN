@@ -194,11 +194,15 @@ namespace SWLOR.CLI
             
             Console.WriteLine($"Building hak: {hakName}.hak");
 
+            var contentPath = Path.IsPathRooted(folderPath)
+                ? folderPath
+                : $"./{folderPath}";
+
             RunProcess(
                 "nwn_erf.exe",
                 "-f", $"{_config.OutputPath}hak/{hakName}.hak",
                 "-e", "HAK",
-                "-c", $"./{folderPath}");
+                "-c", contentPath);
 
             // Only perform checksum operations if enabled
             if (_config.EnableChecksumChecking)

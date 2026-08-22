@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "This widget has three functions:\n1) When directly targeting an object (such as a creature, placeable, or item), it destroys that object.\n2) When targeting the ground, it destroys all objects within 2 meters of the targeted spot. Use this to remove a large group of placeables.\n3) When targeting yourself, it destroys the nearest placeable.\n\n~~\nby hahnsoo"
     }
   },
   "Identified": {

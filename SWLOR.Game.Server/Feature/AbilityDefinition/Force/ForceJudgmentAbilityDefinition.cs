@@ -17,6 +17,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
     public sealed class ForceJudgmentAbilityDefinition : IAbilityListDefinition
     {
         private const float RadiusMeters = 5f;
+        private const int Rank1BaseDamage = 18;
+        private const int Rank2BaseDamage = 32;
+        private const int Rank3BaseDamage = 48;
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -37,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 Spell.ForceJudgment1,
                 "Force Judgment I",
                 1,
-                14,
+                Rank1BaseDamage,
                 2,
                 12f,
                 typeof(ForceJudgment1StatusEffect),
@@ -52,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 Spell.ForceJudgment2,
                 "Force Judgment II",
                 2,
-                24,
+                Rank2BaseDamage,
                 3,
                 12f,
                 typeof(ForceJudgment2StatusEffect),
@@ -67,7 +70,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 Spell.ForceJudgment3,
                 "Force Judgment III",
                 3,
-                36,
+                Rank3BaseDamage,
                 4,
                 15f,
                 typeof(ForceJudgment3StatusEffect),

@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public SentinelStanceStatusEffect()
         {
             StatGroup.Stats[StatType.EvasionPercentAdjustment] = 15;
-            StatGroup.Stats[StatType.AttackDeflection] = 8;
+            StatGroup.Stats[StatType.MeleeDeflection] = 8;
             StatGroup.Stats[StatType.AttackPercentAdjustment] = -15;
         }
     }

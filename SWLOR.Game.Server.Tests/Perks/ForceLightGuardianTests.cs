@@ -65,7 +65,9 @@ public class ForceLightGuardianTests
         knockdown.Should().Contain("Ability.HasHardCrowdControlImmunity(creature, ImmunityType.Knockdown)");
         knockdown.Should().Contain("ApplyEffectToObject(DurationType.Temporary, effect, creature, duration);");
         knockdown.Should().Contain("protected override void Remove(uint creature)");
-        knockdown.Should().Contain("Ability.ApplyTemporaryImmunity(creature, 0f, ImmunityType.Knockdown);");
+        knockdown.Should().Contain("Ability.ApplyPostControlImmunity(");
+        knockdown.Should().Contain("SecondsSinceNaturalExpiration");
+        knockdown.Should().Contain("ImmunityType.Knockdown);");
     }
 
     [Test]

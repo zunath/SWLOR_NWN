@@ -21,9 +21,9 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
     ///
     /// Palette source (what gets placed): the TILESET PROFILE's own bulk palette
     /// (<see cref="DungeonTilesetProfile.Decorations"/>/<see cref="DungeonTilesetProfile.Vignettes"/>),
-    /// mined from that tileset family's own hand-built reference areas (decoration_evidence/ scratchpad
-    /// data) — decoration is a function of the tileset's VISUAL family, not the content theme composed
-    /// onto it. The theme's own <see cref="DungeonDetail.Decorations"/> contributes only a small accent
+    /// curated from that tileset family's own hand-built reference areas — decoration is a function
+    /// of the tileset's VISUAL family, not the content theme composed onto it. The theme's own
+    /// <see cref="DungeonDetail.Decorations"/> contributes only a small accent
     /// list layered on top (a Sith banner, a mining cart) — see MergePalette. This is the fix for
     /// generated areas whose theme and composed tileset don't match (e.g. Alien Ruin content generated
     /// on the Futuristic City tileset previously dressed with Alien Ruin's own palette regardless).
@@ -45,11 +45,10 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
     ///
     /// Evidence: curated per-tileset-family palettes/vignettes and per-theme base densities were mined
     /// from hand-built SWLOR reference areas (placeable resref frequency, density-per-tile, edge-vs-
-    /// center tile-local position proxy, and nearest-neighbor co-occurrence pairs) — see the
-    /// decoration_evidence/ scratchpad data and the DungeonTilesetProfile/DungeonDetail doc comments for
-    /// the specific reference areas each palette draws from.
+    /// center tile-local position proxy, and nearest-neighbor co-occurrence pairs). The
+    /// DungeonTilesetProfile/DungeonDetail doc comments name the reference areas each palette uses.
     ///
-    /// Exclusions (never decorated) — unchanged from the original single-pass design:
+    /// Exclusions (never decorated):
     ///  - Set-piece rooms (LayoutRoom.IsSetPiece) — walkable only via their own baked walkmesh, not
     ///    the abstract tile grid this planner reasons about (same rule DungeonContentPlacer.Populate
     ///    already applies to ambient/boss content).
@@ -68,7 +67,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
     /// long/narrow ROOMS (a room whose tile bounding box has a short axis &lt;= 2 tiles — the
     /// corridor-like chambers Warren/Labyrinth/RoomsAndCorridors actually produce as real LayoutRoom
     /// objects) rather than carved corridor cells. A true carved-corridor decoration pass would need a
-    /// new layout-level open-tile classification and is out of scope for this pass.
+    /// new layout-level open-tile classification and is not supported by this planner.
     /// </summary>
     public static class DungeonDecorationPlanner
     {

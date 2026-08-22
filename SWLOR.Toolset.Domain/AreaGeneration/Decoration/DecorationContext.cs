@@ -6,11 +6,10 @@ using System.Linq;
 namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
 {
     /// <summary>
-    /// Placement context a curated decoration entry is eligible for, chosen from the evidence mined
-    /// against hand-built reference areas (see scratchpad decoration_evidence/ mining notes referenced
-    /// in the DungeonDecorationPlanner doc comment): most hand-built decorative placeables hug a room's
-    /// perimeter (streetlights, planters, crates, wall clutter), a minority sit as room centerpieces,
-    /// long/narrow "corridor-like" rooms get a lighter lining, and small clutter clusters near doorways.
+    /// Placement context a curated decoration entry is eligible for, chosen from hand-built reference
+    /// areas: most decorative placeables hug a room's perimeter (streetlights, planters, crates, wall
+    /// clutter), a minority sit as room centerpieces, long/narrow "corridor-like" rooms get a lighter
+    /// lining, and small clutter clusters near doorways.
     /// </summary>
     public enum DecorationContext
     {

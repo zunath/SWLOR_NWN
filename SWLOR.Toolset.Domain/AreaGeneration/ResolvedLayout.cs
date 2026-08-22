@@ -6,8 +6,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
 {
     /// <summary>
     /// Fully resolved tile grid ready for realization.
-    /// Tiles has Width * Height entries, index = y * Width + x with (0,0) the bottom-left tile —
-    /// the same row-major, bottom-up ordering SetTileJson and NWNX tile overrides use.
+    /// Tiles has Width * Height entries, index = y * Width + x with (0,0) the bottom-left tile,
+    /// matching the row-major, bottom-up ordering used by NWN area tile data.
     /// </summary>
     public class ResolvedLayout
     {

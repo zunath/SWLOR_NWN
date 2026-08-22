@@ -5,7 +5,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Tileset
 {
     /// <summary>
     /// In-memory model of a tileset's .set data, sufficient for corner-matching tile resolution.
-    /// Built offline by TilesetSetParser (unit tests, boot-time cache) or live via the NWNX Tileset plugin.
+    /// Built by <see cref="TilesetSetParser"/> for area generation and its tests.
     /// </summary>
     public class TilesetModel
     {

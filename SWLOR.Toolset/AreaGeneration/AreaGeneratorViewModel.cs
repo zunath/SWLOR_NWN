@@ -252,6 +252,14 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
             AccentDensityPercent = AreaSettingsBounds.AccentDensityPercentMin;
     }
 
+    partial void OnPreviewModeChanged(AreaPreviewMode value) => InvalidatePreviewDisplay();
+
+    partial void OnShowRoomsChanged(bool value) => InvalidatePreviewDisplay();
+
+    partial void OnShowTransitionsChanged(bool value) => InvalidatePreviewDisplay();
+
+    partial void OnShowDecorationsChanged(bool value) => InvalidatePreviewDisplay();
+
     partial void OnPreviewChanging(Bitmap? oldValue, Bitmap? newValue)
     {
         if (!ReferenceEquals(oldValue, newValue))
@@ -445,6 +453,14 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
         Preview = null;
         SetPreviewedDraft(null);
         StatusMessage = status;
+    }
+
+    private void InvalidatePreviewDisplay()
+    {
+        if (_loadingDefaults || Preview == null)
+            return;
+
+        InvalidatePreview("Preview display options changed. Generate a new preview to refresh it.");
     }
 
     private (int Min, int Max) EffectiveRoomSizeBounds()

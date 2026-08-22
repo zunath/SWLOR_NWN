@@ -1,4 +1,8 @@
+using Avalonia;
 using Avalonia.Headless.NUnit;
+using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.AreaGeneration;
@@ -73,6 +77,32 @@ public sealed class AreaGeneratorWindowRenderTests
 
         viewModel.MaximumElevationRegions.Should().Be(2);
         viewModel.ElevationRegions.Should().Be(2);
+    }
+
+    [AvaloniaTest]
+    public void ChangingPreviewDisplayOptions_InvalidatesTheRenderedPreview()
+    {
+        using var viewModel = CreateViewModel();
+
+        AssertInvalidatesPreview(viewModel, () => viewModel.PreviewMode = AreaPreviewMode.Schematic);
+        AssertInvalidatesPreview(viewModel, () => viewModel.ShowRooms = false);
+        AssertInvalidatesPreview(viewModel, () => viewModel.ShowTransitions = false);
+        AssertInvalidatesPreview(viewModel, () => viewModel.ShowDecorations = false);
+    }
+
+    private static void AssertInvalidatesPreview(AreaGeneratorViewModel viewModel, Action changeDisplayOption)
+    {
+        viewModel.Preview = new WriteableBitmap(
+            new PixelSize(1, 1),
+            new Vector(96, 96),
+            PixelFormat.Bgra8888,
+            AlphaFormat.Unpremul);
+
+        changeDisplayOption();
+
+        viewModel.Preview.Should().BeNull();
+        viewModel.StatusMessage.Should().Be(
+            "Preview display options changed. Generate a new preview to refresh it.");
     }
 
     private static AreaGeneratorViewModel CreateViewModel()

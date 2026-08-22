@@ -167,6 +167,9 @@ public class PlayerGuideContentTests
         disguiseText.Should().Contain("Each observer may label the same disguise differently");
         disguiseText.Should().Contain("does not hide your underlying character from staff");
         disguiseText.Should().Contain("audit logs retain the real character and account identity");
+        disguiseText.Should().Contain("Each disguise has its own biography");
+        disguiseText.Should().Contain("deactivation restores your normal biography");
+        disguiseText.Should().Contain("do not change your equipped clothing or armor");
     }
 
     private static List<object> GetTopics()

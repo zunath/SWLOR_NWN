@@ -746,13 +746,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     new[]
                     {
                         new ArticleBlock("Opening Disguises",
-                            "Open Disguises from the Character Sheet, or use /disguise or /disguises. A disguise stores a private slot label only you can see, plus a public description, appearance, portrait, sound set, and optional scrambled account identifier."),
+                            "Open Disguises from the Character Sheet, or use /disguise or /disguises. A disguise stores a private slot label only you can see, plus a public description, biography, portrait, sound set, and optional scrambled account identifier."),
                         new ArticleBlock("Separate Presented Identities",
                             "Your normal identity and every disguise are remembered separately. A private label someone saved for your normal identity does not carry over to a disguise, and a label saved for one disguise does not carry over to another. Each observer may label the same disguise differently. Activating or deactivating a disguise automatically restores the labels that observer previously saved for the identity you are presenting."),
                         new ArticleBlock("Identity Slots",
                             "You begin with 1 identity slot. Each False Identities rank adds 1, up to 4 total slots. Every saved identity, including a retired one, occupies a slot. Retiring does not free it; only permanently wiping it does."),
                         new ArticleBlock("Activating",
-                            "An active disguise changes your presented identity and appearance. The base wait between disguise activations is 30 minutes. Cover Story reduces that wait by 40 or 70 percent, with a minimum wait of 5 minutes. Deactivating a disguise is immediate."),
+                            "An active disguise changes your presented identity, portrait, sound set, and examine biography. The base wait between disguise activations is 30 minutes. Cover Story reduces that wait by 40 or 70 percent, with a minimum wait of 5 minutes. Deactivating a disguise is immediate and restores your normal biography, portrait, and sound set."),
+                        new ArticleBlock("Biography and Outfit",
+                            "Each disguise has its own biography, shown when another player examines you while that disguise is active. Write only what someone could observe about that disguised identity. Edit it in the Disguises window; deactivate the disguise before editing your normal biography. Disguises do not change your equipped clothing or armor, so you remain responsible for changing your outfit."),
                         new ArticleBlock("Retiring and Restoring",
                             "Retiring an identity deactivates it and prevents activation, but keeps its saved setup. You can restore a retired identity from the Disguises window if you want to use it again."),
                         new ArticleBlock("Permanently Wiping",
@@ -767,6 +769,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new QuestionAnswer("Does retiring free the slot?", "No. Restore it for reuse, or permanently wipe it at an Identity Broker to free the slot."),
                         new QuestionAnswer("What does a permanent wipe remove?", "The saved identity and other characters' private-label references to it. The wipe cannot be undone."),
                         new QuestionAnswer("Does a saved name carry between disguises?", "No. Your normal identity and every disguise are remembered separately."),
+                        new QuestionAnswer("Does a disguise have its own biography?", "Yes. Activation shows that disguise's biography when examined, and deactivation restores your normal biography."),
                         new QuestionAnswer("Can a disguise hide my identity from staff?", "No. Staff tools and audit logs retain your real character and account identity.")
                     },
                     new[] { "Communication", "Useful Windows", "Skills", "Perks" }),

@@ -43,7 +43,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             if (!Definitions.LayoutProfiles.TryGetValue(layoutKey, out var layoutProfile))
                 throw new ArgumentException($"Unknown layout profile '{layoutKey}'.", nameof(settings));
 
-            ValidateDimensions(settings.Width, settings.Height, theme);
+            var style = settings.Overrides?.Style ?? layoutProfile.Template.Style;
+            ValidateDimensions(settings.Width, settings.Height, theme, style);
             if (settings.Seed is < 0 or > AreaSettingsBounds.MaxSeed)
                 throw new ArgumentOutOfRangeException(nameof(settings), "Seed is outside the supported range.");
 
@@ -71,7 +72,11 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             return new AreaGenerationDraft(settings, composition, tileset, result);
         }
 
-        private static void ValidateDimensions(int width, int height, DungeonDetail theme)
+        private static void ValidateDimensions(
+            int width,
+            int height,
+            DungeonDetail theme,
+            DungeonLayoutStyle style)
         {
             if (width is < AreaSettingsBounds.WidthMin or > AreaSettingsBounds.WidthMax ||
                 height is < AreaSettingsBounds.HeightMin or > AreaSettingsBounds.HeightMax)
@@ -87,6 +92,14 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                 throw new ArgumentOutOfRangeException(
                     nameof(width),
                     $"Theme '{theme.DisplayName}' supports sizes {theme.MinSize}-{theme.MaxSize}.");
+            }
+
+            var styleFloor = LayoutStyleSizeFloor.For(style);
+            if (width < styleFloor || height < styleFloor)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(width),
+                    $"Layout style '{style}' requires width and height of at least {styleFloor}.");
             }
         }
     }

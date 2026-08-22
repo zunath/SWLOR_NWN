@@ -8,7 +8,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
     /// Every field is applied unconditionally because the UI loads its controls from those same
     /// parameters. Percent-based knobs remain integer percentages so round trips are exact.
     /// </summary>
-    public sealed class LayoutKnobOverrides
+    public sealed record LayoutKnobOverrides
     {
         public DungeonLayoutStyle Style { get; init; }
         public int MinRooms { get; init; }

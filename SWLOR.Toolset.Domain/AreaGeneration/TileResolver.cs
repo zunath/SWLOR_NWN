@@ -142,7 +142,25 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
                         key = MakeKey(tl, tr, br, bl, top, right, bottom, left);
                     }
 
-                    if (!candidateLookup.TryGetValue(key, out var candidates) || candidates.All.Count == 0)
+                    List<(int TileId, int Orientation, int TileMin)> pool = null;
+                    if (candidateLookup.TryGetValue(key, out var candidates))
+                    {
+                        // A normalized height profile can contain both a ground-level tile and a
+                        // plateau tile whose authored corner heights differ only by a positive
+                        // constant. NWN Tile_Height is unsigned in practice, so the latter is not a
+                        // viable choice when its own minimum exceeds this cell's grid minimum.
+                        var viableAll = heightAware
+                            ? candidates.All.Where(candidate => candidate.TileMin <= gridMin).ToList()
+                            : candidates.All;
+                        var viableFullyPathable = heightAware
+                            ? candidates.FullyPathable
+                                .Where(candidate => candidate.TileMin <= gridMin)
+                                .ToList()
+                            : candidates.FullyPathable;
+                        pool = viableFullyPathable.Count > 0 ? viableFullyPathable : viableAll;
+                    }
+
+                    if (pool == null || pool.Count == 0)
                     {
                         var edgeNote = string.Empty;
                         if (!string.IsNullOrEmpty(top) || !string.IsNullOrEmpty(right) ||
@@ -161,12 +179,6 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
                         resolved = null;
                         return false;
                     }
-
-                    // Prefer fully-pathable tiles: 'A' path nodes connect all walkable edges, while
-                    // restricted nodes (observed on zsf01's junction tiles) can wall off corners the
-                    // terrain labels say are open, failing path validation later. Restricted tiles
-                    // remain in play only when no 'A' alternative exists for the combination.
-                    var pool = candidates.FullyPathable.Count > 0 ? candidates.FullyPathable : candidates.All;
 
                     // Feature sprinkling: only ever rolled when this configuration has feature tiles
                     // AND this specific cell's key has a matching feature candidate. This ordering is

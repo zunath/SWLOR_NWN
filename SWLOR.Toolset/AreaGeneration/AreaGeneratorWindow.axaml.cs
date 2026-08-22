@@ -17,6 +17,7 @@ public partial class AreaGeneratorWindow : Window
     public AreaGeneratorWindow(AreaGeneratorViewModel viewModel) : this()
     {
         DataContext = viewModel;
+        Closing += OnClosing;
         viewModel.AreaCreated += resref => Close(resref);
     }
 
@@ -36,4 +37,10 @@ public partial class AreaGeneratorWindow : Window
     }
 
     private void OnCloseClicked(object? sender, RoutedEventArgs e) => Close(null);
+
+    private void OnClosing(object? sender, WindowClosingEventArgs e)
+    {
+        if (DataContext is AreaGeneratorViewModel { IsBusy: true })
+            e.Cancel = true;
+    }
 }

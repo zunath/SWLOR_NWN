@@ -105,8 +105,11 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
 
                 var anchorX = transition.Tile.X * 10f + 5f;
                 var anchorY = transition.Tile.Y * 10f + 5f;
+                var anchorZ = draft.Result.Resolved.GetTile(transition.Tile.X, transition.Tile.Y).Height *
+                              draft.Result.Resolved.HeightTransition;
                 var waypointX = anchorX;
                 var waypointY = anchorY;
+                var waypointZ = anchorZ;
                 if (transition.Style != TransitionStyle.Placeable)
                 {
                     var dx = anchorX - transition.DoorX;
@@ -117,9 +120,11 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                         waypointX = transition.DoorX + dx / length * 2f;
                         waypointY = transition.DoorY + dy / length * 2f;
                     }
+
+                    waypointZ = transition.DoorZ;
                 }
 
-                AddWaypoint(git, gic, $"PG {label} {index}", tag, waypointX, waypointY);
+                AddWaypoint(git, gic, $"PG {label} {index}", tag, waypointX, waypointY, waypointZ);
 
                 if (transition.Style is TransitionStyle.Door or TransitionStyle.GroupExit)
                 {
@@ -134,6 +139,20 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                         transition.DoorZ,
                         transition.DoorOrientation);
                 }
+                else
+                {
+                    AddPlaceable(
+                        workspace,
+                        git,
+                        gic,
+                        draft.Composition.Content.ExitPlaceableResref,
+                        $"PG_TRANS_{(isEntrance ? "ENT" : "EXIT")}_{index}",
+                        anchorX,
+                        anchorY,
+                        anchorZ,
+                        facingDegrees: 0f,
+                        visualScale: 1f);
+                }
             }
         }
 
@@ -143,7 +162,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             string name,
             string tag,
             float x,
-            float y)
+            float y,
+            float z)
         {
             var instance = JsonGffField.CreateStruct(5).Struct!;
             instance.SetInt("Appearance", GffFieldType.Byte, 1);
@@ -159,7 +179,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             instance.SetSingle("XPosition", x);
             instance.SetSingle("YOrientation", 1f);
             instance.SetSingle("YPosition", y);
-            instance.SetSingle("ZPosition", 0f);
+            instance.SetSingle("ZPosition", z);
 
             var list = git.Fields.GetOrAddList(WaypointList);
             list.Add(instance);
@@ -201,26 +221,55 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             GitDocument git,
             GicDocument gic)
         {
-            var list = git.Fields.GetOrAddList(PlaceableList);
             var sequence = 0;
             foreach (var planned in draft.Result.PlannedDecorations)
             {
-                var blueprint = workspace.LoadBlueprint(ResourceType.Utp, planned.Resref);
-                var radians = planned.Facing * Math.PI / 180.0;
-                var instance = InstanceFieldMap.CreateInstance(
-                    ResourceType.Utp,
-                    blueprint.Document,
+                AddPlaceable(
+                    workspace,
+                    git,
+                    gic,
                     planned.Resref,
+                    $"PG_DEC_{++sequence}",
                     planned.Position.X,
                     planned.Position.Y,
                     planned.GroundZ + planned.Position.Z,
-                    Math.Cos(radians),
-                    Math.Sin(radians));
-                InstanceFieldMap.SetTag(instance, $"PG_DEC_{++sequence}");
-                ApplyVisualScale(instance, planned.VisualScale);
-                list.Add(instance);
-                gic.InsertBlankComment(PlaceableList, ResourceType.Utp, list.Count - 1, list.Count);
+                    planned.Facing,
+                    planned.VisualScale);
             }
+        }
+
+        private static void AddPlaceable(
+            ModuleWorkspace workspace,
+            GitDocument git,
+            GicDocument gic,
+            string resref,
+            string tag,
+            float x,
+            float y,
+            float z,
+            float facingDegrees,
+            float visualScale)
+        {
+            if (string.IsNullOrWhiteSpace(resref))
+                throw new InvalidOperationException($"Placeable '{tag}' has no configured blueprint resref.");
+
+            var blueprint = workspace.LoadBlueprint(ResourceType.Utp, resref);
+            var radians = facingDegrees * Math.PI / 180.0;
+            var instance = InstanceFieldMap.CreateInstance(
+                ResourceType.Utp,
+                blueprint.Document,
+                resref,
+                x,
+                y,
+                z,
+                Math.Cos(radians),
+                Math.Sin(radians));
+            InstanceFieldMap.SetTag(instance, tag);
+            ApplyVisualScale(instance, visualScale);
+
+            var list = git.Fields.GetOrAddList(PlaceableList);
+            list.Add(instance);
+            gic.InsertBlankComment(PlaceableList, ResourceType.Utp, list.Count - 1, list.Count);
         }
 
         private static void ApplyVisualScale(JsonGffStruct instance, float scale)

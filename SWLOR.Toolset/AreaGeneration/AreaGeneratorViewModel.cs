@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using Avalonia;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
@@ -38,6 +39,35 @@ public partial class AreaGeneratorViewModel : ObservableObject
     private readonly TilesetCatalog _tilesets;
     private readonly ModuleWorkspace _workspace;
     private bool _loadingDefaults;
+    private AreaGenerationDraft? _previewedDraft;
+
+    private static readonly HashSet<string> GenerationInputProperties = new(StringComparer.Ordinal)
+    {
+        nameof(SelectedTheme),
+        nameof(SelectedTilesetProfile),
+        nameof(SelectedLayoutProfile),
+        nameof(SelectedDecorationProfile),
+        nameof(Width),
+        nameof(Height),
+        nameof(Seed),
+        nameof(LayoutStyle),
+        nameof(MinRooms),
+        nameof(MaxRooms),
+        nameof(MinRoomSize),
+        nameof(MaxRoomSize),
+        nameof(CorridorWidth),
+        nameof(LoopFactorPercent),
+        nameof(OpenFillPercent),
+        nameof(EntranceCount),
+        nameof(ExitCount),
+        nameof(DoorTransitions),
+        nameof(AccentEnabled),
+        nameof(AccentDensityPercent),
+        nameof(FeatureDensityPercent),
+        nameof(ElevationRegions),
+        nameof(EnableDecorations),
+        nameof(DecorationDensityPercent)
+    };
 
     public ObservableCollection<ThemeChoice> Themes { get; } = new();
     public ObservableCollection<TilesetChoice> TilesetProfiles { get; } = new();
@@ -45,6 +75,7 @@ public partial class AreaGeneratorViewModel : ObservableObject
     public ObservableCollection<DecorationChoice> DecorationProfiles { get; } = new();
     public IReadOnlyList<DungeonLayoutStyle> LayoutStyles { get; } = Enum.GetValues<DungeonLayoutStyle>();
     public IReadOnlyList<AreaPreviewMode> PreviewModes { get; } = Enum.GetValues<AreaPreviewMode>();
+    public int MinimumDimension => LayoutStyleSizeFloor.For(LayoutStyle);
 
     [ObservableProperty] private ThemeChoice? _selectedTheme;
     [ObservableProperty] private TilesetChoice? _selectedTilesetProfile;
@@ -96,8 +127,9 @@ public partial class AreaGeneratorViewModel : ObservableObject
         foreach (var theme in authoring.Definitions.Themes)
             Themes.Add(new ThemeChoice(theme));
 
+        var availableTilesets = tilesets.GetTilesetNames().ToHashSet(StringComparer.OrdinalIgnoreCase);
         foreach (var profile in authoring.Definitions.TilesetProfiles.Values
-                     .Where(profile => tilesets.TryGetTileset(profile.TilesetResref, out _))
+                     .Where(profile => availableTilesets.Contains(profile.TilesetResref))
                      .OrderBy(profile => profile.DisplayName))
         {
             TilesetProfiles.Add(new TilesetChoice(profile));
@@ -110,6 +142,8 @@ public partial class AreaGeneratorViewModel : ObservableObject
 
         if (TilesetProfiles.Count == 0)
             StatusMessage = "No generator tilesets are available from the current game-data index.";
+
+        PropertyChanged += OnGenerationInputChanged;
     }
 
     partial void OnSelectedThemeChanged(ThemeChoice? value)
@@ -145,6 +179,14 @@ public partial class AreaGeneratorViewModel : ObservableObject
     {
         GeneratePreviewCommand.NotifyCanExecuteChanged();
         CreateAreaCommand.NotifyCanExecuteChanged();
+    }
+
+    partial void OnLayoutStyleChanged(DungeonLayoutStyle value)
+    {
+        OnPropertyChanged(nameof(MinimumDimension));
+        var minimum = LayoutStyleSizeFloor.For(value);
+        Width = Math.Max(Width, minimum);
+        Height = Math.Max(Height, minimum);
     }
 
     private void RefreshLayoutProfiles(string? preferredKey = null)
@@ -215,8 +257,7 @@ public partial class AreaGeneratorViewModel : ObservableObject
             choice.Key.Equals(SelectedTheme.Value.DecorationProfile, StringComparison.OrdinalIgnoreCase))
             ?? DecorationProfiles[0];
         _loadingDefaults = false;
-        Preview = null;
-        StatusMessage = "Composition changed. Generate a preview to solve the area.";
+        InvalidatePreview("Composition changed. Generate a preview to solve the area.");
     }
 
     private bool CanGenerate() => !IsBusy &&
@@ -224,9 +265,12 @@ public partial class AreaGeneratorViewModel : ObservableObject
                                   SelectedTilesetProfile != null &&
                                   SelectedLayoutProfile != null;
 
+    private bool CanCreate() => CanGenerate() && _previewedDraft != null;
+
     [RelayCommand(CanExecute = nameof(CanGenerate))]
     private async Task GeneratePreview()
     {
+        SetPreviewedDraft(null);
         IsBusy = true;
         StatusMessage = "Generating area...";
         try
@@ -247,11 +291,13 @@ public partial class AreaGeneratorViewModel : ObservableObject
                 ShowTransitions,
                 ShowDecorations));
             Preview = ToBitmap(image);
+            SetPreviewedDraft(draft);
             StatusMessage = Describe(draft, image);
         }
         catch (Exception ex)
         {
             Preview = null;
+            SetPreviewedDraft(null);
             StatusMessage = ex.GetBaseException().Message;
         }
         finally
@@ -260,21 +306,21 @@ public partial class AreaGeneratorViewModel : ObservableObject
         }
     }
 
-    [RelayCommand(CanExecute = nameof(CanGenerate))]
-    private async Task CreateArea()
+    [RelayCommand(CanExecute = nameof(CanCreate))]
+    private void CreateArea()
     {
+        var draft = _previewedDraft;
+        if (draft == null)
+        {
+            StatusMessage = "Generate a preview for the current settings before creating the area.";
+            return;
+        }
+
         IsBusy = true;
-        StatusMessage = "Solving and creating area...";
+        StatusMessage = "Creating the previewed area...";
+        string? createdResref = null;
         try
         {
-            var settings = BuildSettings();
-            var draft = await Task.Run(() => _authoring.Generate(settings));
-            if (!draft.Result.Success)
-            {
-                StatusMessage = draft.Result.FailureReason;
-                return;
-            }
-
             if (!GeneratedAreaWriter.TryCreate(
                     _workspace,
                     _tilesets,
@@ -289,7 +335,7 @@ public partial class AreaGeneratorViewModel : ObservableObject
 
             var normalized = ResRef.Trim().ToLowerInvariant();
             StatusMessage = $"Created '{normalized}' in the open module.";
-            AreaCreated?.Invoke(normalized);
+            createdResref = normalized;
         }
         catch (Exception ex)
         {
@@ -299,6 +345,33 @@ public partial class AreaGeneratorViewModel : ObservableObject
         {
             IsBusy = false;
         }
+
+        if (createdResref != null)
+            AreaCreated?.Invoke(createdResref);
+    }
+
+    private void OnGenerationInputChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (_loadingDefaults || e.PropertyName == null ||
+            !GenerationInputProperties.Contains(e.PropertyName))
+        {
+            return;
+        }
+
+        InvalidatePreview("Settings changed. Generate a new preview before creating the area.");
+    }
+
+    private void InvalidatePreview(string status)
+    {
+        Preview = null;
+        SetPreviewedDraft(null);
+        StatusMessage = status;
+    }
+
+    private void SetPreviewedDraft(AreaGenerationDraft? draft)
+    {
+        _previewedDraft = draft;
+        CreateAreaCommand.NotifyCanExecuteChanged();
     }
 
     private AreaGenerationSettings BuildSettings()

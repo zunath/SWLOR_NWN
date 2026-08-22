@@ -81,6 +81,77 @@ public class AreaGenerationToolsetIntegrationTests
     }
 
     [Test]
+    public void AuthoringService_RejectsDimensionsBelowTheSelectedStyleFloor()
+    {
+        var (service, _) = CreateAuthoringService();
+        var settings = CreateSettings(service, seed: 77231);
+        var undersized = settings with
+        {
+            LayoutProfileKey = StandardLayoutProfiles.Halls,
+            Width = 8,
+            Height = 8,
+            Overrides = settings.Overrides! with
+            {
+                Style = DungeonLayoutStyle.RoomsAndCorridors
+            }
+        };
+
+        var action = () => service.Generate(undersized);
+
+        action.Should().Throw<ArgumentOutOfRangeException>()
+            .WithMessage("*requires width and height of at least 11*");
+    }
+
+    [Test]
+    public void TileResolver_RejectsPlateauCandidatesThatWouldProduceNegativeTileHeight()
+    {
+        var corners = new CornerTerrainGrid(2, 1, "Floor");
+        corners.Heights[2, 0] = 1;
+        corners.Heights[2, 1] = 1;
+        var layout = new MacroLayout(corners)
+        {
+            DoorTransitions = false,
+            OpenTerrain = "Floor"
+        };
+        var tileset = new TilesetModel
+        {
+            Resref = "height_test",
+            Tiles =
+            [
+                new TileRecord
+                {
+                    TileId = 0,
+                    Corners = ["Floor", "Floor", "Floor", "Floor"],
+                    CornerHeights = [0, 0, 0, 0],
+                    PathNode = "B"
+                },
+                new TileRecord
+                {
+                    TileId = 1,
+                    Corners = ["Floor", "Floor", "Floor", "Floor"],
+                    CornerHeights = [1, 1, 1, 1],
+                    PathNode = "A"
+                },
+                new TileRecord
+                {
+                    TileId = 2,
+                    Corners = ["Floor", "Floor", "Floor", "Floor"],
+                    CornerHeights = [0, 1, 1, 0],
+                    PathNode = "A"
+                }
+            ]
+        };
+
+        TileResolver.TryResolve(tileset, layout, new Random(42), out var resolved, out var failure)
+            .Should().BeTrue(failure);
+
+        resolved.Tiles.Should().OnlyContain(tile => tile.Height >= 0);
+        resolved.GetTile(0, 0).TileId.Should().Be(0,
+            "the fully-pathable plateau candidate would require an invalid negative height");
+        resolved.GetTile(1, 0).TileId.Should().Be(2);
+    }
+
+    [Test]
     public void GeneratedAreaWriter_CreatesNormalAreaTripletInOpenModule()
     {
         var moduleRoot = CreateFixtureModule();
@@ -177,7 +248,11 @@ public class AreaGenerationToolsetIntegrationTests
         };
         var composition = new DungeonComposition
         {
-            Content = new DungeonDetail { ExitDoorResref = "_mdrn_dt_rough" },
+            Content = new DungeonDetail
+            {
+                ExitDoorResref = "_mdrn_dt_rough",
+                ExitPlaceableResref = "structure_rubble"
+            },
             Tileset = tilesetProfile,
             Layout = new DungeonLayoutProfile()
         };
@@ -219,11 +294,13 @@ public class AreaGenerationToolsetIntegrationTests
         git.Fields.GetListOrEmpty("WaypointList").Should().HaveCount(2);
         git.Fields.GetListOrEmpty("Door List").Should().ContainSingle()
             .Which.GetStringOrNull("Tag").Should().Be("PG_DOOR_EXIT_1");
-        git.Fields.GetListOrEmpty("Placeable List").Should().ContainSingle()
-            .Which.GetStringOrNull("Tag").Should().Be("PG_DEC_1");
+        git.Fields.GetListOrEmpty("Placeable List").Should().HaveCount(2);
+        git.Fields.GetListOrEmpty("Placeable List")
+            .Select(instance => instance.GetStringOrNull("Tag"))
+            .Should().Equal("PG_TRANS_ENT_1", "PG_DEC_1");
         gic.Fields.GetListOrEmpty("WaypointList").Should().HaveCount(2);
         gic.Fields.GetListOrEmpty("Door List").Should().ContainSingle();
-        gic.Fields.GetListOrEmpty("Placeable List").Should().ContainSingle();
+        gic.Fields.GetListOrEmpty("Placeable List").Should().HaveCount(2);
     }
 
     private static (AreaGenerationAuthoringService Service, TilesetCatalog Tilesets) CreateAuthoringService()
@@ -289,7 +366,7 @@ public class AreaGenerationToolsetIntegrationTests
     {
         var moduleRoot = Path.Combine(Path.GetTempPath(), "swlor_procgen_" + Guid.NewGuid().ToString("N"));
         var source = CorpusLocator.ModuleDirectory;
-        foreach (var folder in new[] { "are", "git", "gic", "ifo", "utc" })
+        foreach (var folder in new[] { "are", "git", "gic", "ifo", "utc", "utp" })
             Directory.CreateDirectory(Path.Combine(moduleRoot, folder));
 
         File.Copy(Path.Combine(source, "are", "area_template.are.json"),
@@ -300,6 +377,8 @@ public class AreaGenerationToolsetIntegrationTests
             Path.Combine(moduleRoot, "gic", "area_template.gic.json"));
         File.Copy(Path.Combine(source, "ifo", "module.ifo.json"),
             Path.Combine(moduleRoot, "ifo", "module.ifo.json"));
+        File.Copy(Path.Combine(source, "utp", "_mdrn_placedoord.utp.json"),
+            Path.Combine(moduleRoot, "utp", "_mdrn_placedoord.utp.json"));
         return moduleRoot;
     }
 }

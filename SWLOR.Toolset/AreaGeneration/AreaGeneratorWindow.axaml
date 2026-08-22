@@ -95,10 +95,10 @@
                       ColumnSpacing="8" RowSpacing="8">
                   <TextBlock Grid.Row="0" Grid.Column="0" Classes="label" Text="Width" />
                   <NumericUpDown Grid.Row="0" Grid.Column="1" Value="{Binding Width, Mode=TwoWay}"
-                                 Minimum="8" Maximum="32" Increment="1" FormatString="0" />
+                                 Minimum="{Binding MinimumDimension}" Maximum="32" Increment="1" FormatString="0" />
                   <TextBlock Grid.Row="0" Grid.Column="2" Classes="label" Text="Height" />
                   <NumericUpDown Grid.Row="0" Grid.Column="3" Value="{Binding Height, Mode=TwoWay}"
-                                 Minimum="8" Maximum="32" Increment="1" FormatString="0" />
+                                 Minimum="{Binding MinimumDimension}" Maximum="32" Increment="1" FormatString="0" />
                   <TextBlock Grid.Row="1" Grid.Column="0" Classes="label" Text="Seed" />
                   <NumericUpDown Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"
                                  Value="{Binding Seed, Mode=TwoWay}"
@@ -198,7 +198,7 @@
       <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
         <TextBlock VerticalAlignment="Center" Classes="dim"
                    Text="The created area can be exported later through the existing ERF Manager." />
-        <Button Grid.Column="1" Content="Close" Click="OnCloseClicked" />
+        <Button Grid.Column="1" Content="Close" Click="OnCloseClicked" IsEnabled="{Binding !IsBusy}" />
         <Button Grid.Column="2" Classes="primary" Content="Create Area in Module" Command="{Binding CreateAreaCommand}" />
       </Grid>
     </Border>

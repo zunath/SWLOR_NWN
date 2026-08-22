@@ -16,6 +16,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         {
             //MoveDoor();
             EnmityDebugger();
+            NuiGallery();
             GetObjectId();
             ResetBeast();
 
@@ -84,6 +85,18 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 .Action((user, target, location, args) =>
                 {
                     Gui.TogglePlayerWindow(user, GuiWindowType.DebugEnmity);
+                });
+        }
+
+        private void NuiGallery()
+        {
+            _builder.Create("nuigallery")
+                .Description("Opens the NUI control gallery debug window")
+                .Permissions(AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
+                .Action((user, target, location, args) =>
+                {
+                    Gui.TogglePlayerWindow(user, GuiWindowType.DebugNuiGallery);
                 });
         }
 

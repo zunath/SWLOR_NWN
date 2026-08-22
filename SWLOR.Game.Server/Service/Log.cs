@@ -74,7 +74,11 @@ namespace SWLOR.Game.Server.Service
         public static void Write(LogGroup group, string details, bool printToConsole = false)
         {
             var settings = ApplicationSettings.Get();
-            var logDetail = _logGroups[group];
+            if (!_logGroups.TryGetValue(group, out var logDetail) ||
+                !_loggers.TryGetValue(group, out var logger))
+            {
+                return;
+            }
 
             // If the log group isn't configured for this environment, skip it.
             if (logDetail.Environment != ServerEnvironmentType.All &&
@@ -90,13 +94,17 @@ namespace SWLOR.Game.Server.Service
                 Console.WriteLine(details);
             }
 
-            _loggers[group].Information(details);
+            logger.Information(details);
         }
 
         public static void WriteStructured(LogGroup group, string messageTemplate, params object[] propertyValues)
         {
             var settings = ApplicationSettings.Get();
-            var logDetail = _logGroups[group];
+            if (!_logGroups.TryGetValue(group, out var logDetail) ||
+                !_loggers.TryGetValue(group, out var logger))
+            {
+                return;
+            }
 
             if (logDetail.Environment != ServerEnvironmentType.All &&
                 !logDetail.Environment.HasFlag(settings.ServerEnvironment))
@@ -104,7 +112,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            _loggers[group].Information(messageTemplate, propertyValues);
+            logger.Information(messageTemplate, propertyValues);
         }
     }
 }

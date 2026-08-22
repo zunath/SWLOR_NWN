@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Service
 
         public const int MaxPrivateNameLength = 32;
         public const int MaxBiographyLength = 5000;
+        private const string BlankBiographyPlaceholder = "No description is available.";
         private const int DisguiseQueryPageSize = 50;
 
         [NWNEventHandler(ScriptName.OnModuleEnter)]
@@ -705,7 +706,10 @@ namespace SWLOR.Game.Server.Service
                 SetSoundset(player, soundSetId);
 
             EnsureUndisguisedDescriptionSnapshot(player);
-            SetDescription(player, disguise.Biography ?? string.Empty);
+            var biography = string.IsNullOrWhiteSpace(disguise.Biography)
+                ? BlankBiographyPlaceholder
+                : disguise.Biography;
+            SetDescription(player, biography);
         }
 
         private static void EnsureUndisguisedDescriptionSnapshot(uint player)

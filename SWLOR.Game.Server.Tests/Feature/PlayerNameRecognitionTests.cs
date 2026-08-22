@@ -729,7 +729,11 @@ public class PlayerNameRecognitionTests
         disguiseSource.Should().Contain("dbPlayer.UndisguisedPortraitResref = string.Empty;");
         disguiseSource.Should().Contain("dbPlayer.UndisguisedDescription = GetDescription(player) ?? string.Empty;");
         disguiseSource.Should().Contain("dbPlayer.HasUndisguisedDescriptionSnapshot = true;");
-        disguiseSource.Should().Contain("SetDescription(player, disguise.Biography ?? string.Empty);");
+        disguiseSource.Should().Contain("private const string BlankBiographyPlaceholder = \"No description is available.\";");
+        disguiseSource.Should().Contain("string.IsNullOrWhiteSpace(disguise.Biography)");
+        disguiseSource.Should().Contain("? BlankBiographyPlaceholder");
+        disguiseSource.Should().Contain("SetDescription(player, biography);");
+        disguiseSource.Should().NotContain("SetDescription(player, disguise.Biography ?? string.Empty);");
         disguiseSource.Should().Contain("SetDescription(player, dbPlayer.UndisguisedDescription ?? string.Empty);");
         disguiseSource.Should().Contain("dbPlayer.HasUndisguisedDescriptionSnapshot = false;");
         var ensureDescriptionSnapshotMethod = ExtractMethod(disguiseSource, "private static void EnsureUndisguisedDescriptionSnapshot(uint player)");

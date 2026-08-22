@@ -32,6 +32,16 @@ public sealed class AreaGeneratorWindowRenderTests
     public void EnablingAccentTerrain_SeedsAValidNonzeroDensity()
     {
         using var viewModel = CreateViewModel();
+        var blobAccentProfile = new AreaGeneratorViewModel.TilesetChoice(new DungeonTilesetProfile
+        {
+            Key = "blob_accent",
+            DisplayName = "Blob Accent",
+            TilesetResref = "unavailable_test_tileset",
+            AccentTerrain = "Water"
+        });
+        viewModel.TilesetProfiles.Add(blobAccentProfile);
+        viewModel.SelectedTilesetProfile = blobAccentProfile;
+        viewModel.AccentEnabled = false;
         viewModel.AccentDensityPercent = 0;
 
         viewModel.AccentEnabled = true;
@@ -77,6 +87,26 @@ public sealed class AreaGeneratorWindowRenderTests
 
         viewModel.MaximumElevationRegions.Should().Be(2);
         viewModel.ElevationRegions.Should().Be(2);
+    }
+
+    [Test]
+    public void ChannelOnlyComposition_EnablesAccentsWithoutInventingBlobDensity()
+    {
+        using var viewModel = CreateViewModel();
+        var channelProfile = new AreaGeneratorViewModel.TilesetChoice(new DungeonTilesetProfile
+        {
+            Key = "channel_only",
+            DisplayName = "Channel Only",
+            TilesetResref = "unavailable_test_tileset",
+            ChannelTerrain = "Chasm"
+        });
+        viewModel.TilesetProfiles.Add(channelProfile);
+        viewModel.SelectedTilesetProfile = channelProfile;
+        viewModel.SelectedLayoutProfile = viewModel.LayoutProfiles.Single(choice =>
+            choice.Value.Key == StandardLayoutProfiles.Halls);
+
+        viewModel.AccentEnabled.Should().BeTrue();
+        viewModel.AccentDensityPercent.Should().Be(0);
     }
 
     [AvaloniaTest]

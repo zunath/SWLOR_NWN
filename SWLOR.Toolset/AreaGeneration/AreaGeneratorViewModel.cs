@@ -242,13 +242,13 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
 
     partial void OnAccentEnabledChanged(bool value)
     {
-        if (value && AccentDensityPercent < AreaSettingsBounds.AccentDensityPercentMin)
+        if (value && SupportsBlobAccents() && AccentDensityPercent < AreaSettingsBounds.AccentDensityPercentMin)
             AccentDensityPercent = AreaSettingsBounds.AccentDensityPercentMin;
     }
 
     partial void OnAccentDensityPercentChanged(double value)
     {
-        if (AccentEnabled && value < AreaSettingsBounds.AccentDensityPercentMin)
+        if (AccentEnabled && SupportsBlobAccents() && value < AreaSettingsBounds.AccentDensityPercentMin)
             AccentDensityPercent = AreaSettingsBounds.AccentDensityPercentMin;
     }
 
@@ -318,8 +318,9 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
         EntranceCount = parameters.EntranceCount;
         ExitCount = parameters.ExitCount;
         DoorTransitions = parameters.DoorTransitions;
-        AccentEnabled = parameters.AccentDensity > 0 &&
-                        !string.IsNullOrWhiteSpace(SelectedTilesetProfile.Value.AccentTerrain);
+        AccentEnabled = (parameters.AccentDensity > 0 && !string.IsNullOrWhiteSpace(parameters.AccentTerrain)) ||
+                        (parameters.AccentChannels > 0 && !string.IsNullOrWhiteSpace(parameters.ChannelTerrain)) ||
+                        (parameters.PoolRegions > 0 && !string.IsNullOrWhiteSpace(parameters.PoolTerrain));
         AccentDensityPercent = Math.Round(parameters.AccentDensity * 100);
         FeatureDensityPercent = Math.Round(parameters.FeatureDensity * 100);
         ElevationRegions = Math.Max(parameters.ElevationRegions, parameters.ReliefRegions);
@@ -337,6 +338,10 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
         RefreshEffectiveRanges();
         InvalidatePreview("Composition changed. Generate a preview to solve the area.");
     }
+
+    private bool SupportsBlobAccents() =>
+        SelectedTilesetProfile != null &&
+        !string.IsNullOrWhiteSpace(SelectedTilesetProfile.Value.AccentTerrain);
 
     private bool CanGenerate() => !IsBusy &&
                                   SelectedTheme != null &&

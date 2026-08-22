@@ -165,7 +165,9 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
             }
 
             var orderedCandidates = candidates
-                .Where(c => !claimed.Contains(c.RoomEdgeCell) && !claimed.Contains(c.SolidCell))
+                .Where(c => !claimed.Contains(c.InnerTile) &&
+                            !claimed.Contains(c.RoomEdgeCell) &&
+                            !claimed.Contains(c.SolidCell))
                 // Defensive: no layout style paints CornerTerrainGrid.Heights yet, so this is always
                 // true today, but a raised cell can never structurally match this planner's flat-only
                 // door/terminator candidate pools (see BuildEdgeCandidates/BuildTerminatorCandidates).
@@ -179,7 +181,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
 
             foreach (var (innerTile, candidateCell, neighbor, edgeFromCell, edgeBack) in orderedCandidates)
             {
-                if (claimed.Contains(candidateCell) || claimed.Contains(neighbor))
+                if (claimed.Contains(innerTile) || claimed.Contains(candidateCell) || claimed.Contains(neighbor))
                     continue; // an earlier candidate in this same search may have just claimed it
 
                 var (tl, tr, br, bl) = TileDoorGeometry.CellCorners(layout.Corners, candidateCell.X, candidateCell.Y);

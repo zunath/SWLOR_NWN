@@ -29,6 +29,28 @@ public sealed class TransitionPlannerTests
     }
 
     [Test]
+    public void TileDoorPlanner_DoesNotReuseAnotherTransitionsReservedInnerAnchor()
+    {
+        var tileset = CreateDoorTileset();
+        var layout = CreateLayout(3, 3, (0, 0), (1, 0), "Wall");
+        layout.Corners.Labels[0, 0] = "Floor";
+        layout.Corners.Labels[1, 0] = "Floor";
+        layout.Corners.Labels[0, 1] = "Floor";
+        layout.Corners.Labels[1, 1] = "Floor";
+        layout.Transitions.Add(new TransitionPoint
+        {
+            Kind = TransitionKind.Entrance,
+            RoomId = 1,
+            Tile = (0, 0)
+        });
+        var tiles = ResolvedTiles(9);
+
+        TileDoorPlanner.ApplyDoorTransitions(tileset, layout, tiles, 3, 3);
+
+        layout.Transitions.Select(transition => transition.Tile).Should().OnlyHaveUniqueItems();
+    }
+
+    [Test]
     public void GroupExitPlanner_DoesNotMoveTheArrivalAnchorOntoASlopedRoomTile()
     {
         var tileset = CreateGroupExitTileset();

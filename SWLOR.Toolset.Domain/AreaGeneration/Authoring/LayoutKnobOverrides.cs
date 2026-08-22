@@ -59,16 +59,24 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             parameters.ExitCount = ExitCount;
             parameters.DoorTransitions = DoorTransitions;
 
-            var accentActive = AccentEnabled && tileset != null && !string.IsNullOrEmpty(tileset.AccentTerrain);
-            parameters.AccentTerrain = accentActive ? tileset.AccentTerrain : string.Empty;
-            parameters.AccentDensity = accentActive ? AccentDensityPercent / 100.0 : 0.0;
-            if (!accentActive)
-            {
-                parameters.ChannelTerrain = string.Empty;
+            var blobAccentActive = AccentEnabled && tileset != null && !string.IsNullOrEmpty(tileset.AccentTerrain);
+            parameters.AccentTerrain = blobAccentActive ? tileset.AccentTerrain : string.Empty;
+            parameters.AccentDensity = blobAccentActive ? AccentDensityPercent / 100.0 : 0.0;
+
+            var channelTerrain = tileset == null
+                ? string.Empty
+                : !string.IsNullOrEmpty(tileset.ChannelTerrain)
+                    ? tileset.ChannelTerrain
+                    : tileset.AccentTerrain;
+            var channelActive = AccentEnabled && parameters.AccentChannels > 0 && !string.IsNullOrEmpty(channelTerrain);
+            parameters.ChannelTerrain = channelActive ? channelTerrain : string.Empty;
+            if (!channelActive)
                 parameters.AccentChannels = 0;
-                parameters.PoolTerrain = string.Empty;
+
+            var poolActive = blobAccentActive && parameters.PoolRegions > 0;
+            parameters.PoolTerrain = poolActive ? parameters.AccentTerrain : string.Empty;
+            if (!poolActive)
                 parameters.PoolRegions = 0;
-            }
 
             parameters.FeatureDensity = FeatureDensityPercent / 100.0;
 

@@ -50,4 +50,30 @@ public sealed class LayoutKnobOverridesTests
         parameters.PoolTerrain.Should().BeEmpty();
         parameters.PoolRegions.Should().Be(0);
     }
+
+    [Test]
+    public void ApplyTo_ChannelOnlyAccentRemainsActiveWhenEnabled()
+    {
+        var parameters = new MacroLayoutParameters
+        {
+            AccentDensity = 0.2,
+            AccentChannels = 1,
+            PoolRegions = 1
+        };
+        var tileset = new DungeonTilesetProfile { ChannelTerrain = "Chasm" };
+        var overrides = new LayoutKnobOverrides
+        {
+            AccentEnabled = true,
+            AccentDensityPercent = 20
+        };
+
+        overrides.ApplyTo(parameters, tileset);
+
+        parameters.AccentTerrain.Should().BeEmpty();
+        parameters.AccentDensity.Should().Be(0);
+        parameters.ChannelTerrain.Should().Be("Chasm");
+        parameters.AccentChannels.Should().Be(1);
+        parameters.PoolTerrain.Should().BeEmpty();
+        parameters.PoolRegions.Should().Be(0);
+    }
 }

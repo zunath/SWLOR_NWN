@@ -1,12 +1,19 @@
 #nullable enable
+using Serilog;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.Workspace;
 
 namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
 {
     /// <summary>Creates a solved procedural draft as a normal area in the open module.</summary>
-    public static class GeneratedAreaWriter
+    public sealed class GeneratedAreaWriter
     {
+        private static readonly ILogger Logger = Log.ForContext<GeneratedAreaWriter>();
+
+        private GeneratedAreaWriter()
+        {
+        }
+
         public static bool TryCreate(
             ModuleWorkspace workspace,
             TilesetCatalog tilesets,
@@ -28,7 +35,12 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             }
 
             NewAreaWriter.TilesetResolver resolver = tilesets.TryGetTileset;
-            return NewAreaWriter.TryCreate(
+            Logger.Information(
+                "Creating generated area {AreaResref} from a {Width}x{Height} solved layout.",
+                resref,
+                draft.Result.Resolved.Width,
+                draft.Result.Resolved.Height);
+            var created = NewAreaWriter.TryCreate(
                 workspace,
                 resolver,
                 resref,
@@ -39,6 +51,13 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                 (are, git, gic) =>
                     GeneratedAreaDocumentPopulator.Populate(draft, workspace, are, git, gic),
                 out error);
+
+            if (created)
+                Logger.Information("Created generated area {AreaResref}.", resref);
+            else
+                Logger.Warning("Could not create generated area {AreaResref}: {Error}", resref, error);
+
+            return created;
         }
     }
 }

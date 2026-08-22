@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Serilog;
 using SWLOR.Toolset.Domain.AreaGeneration.Tileset;
 
 namespace SWLOR.Toolset.Domain.AreaGeneration
@@ -22,9 +23,14 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
     /// first door-tile/orientation match for a given corner+facing combination wins, so results are
     /// fully deterministic for a given resolved grid.
     /// </summary>
-    internal static class TileDoorPlanner
+    internal sealed class TileDoorPlanner
     {
         private const string DoorwayCrosser = "Doorway";
+        private static readonly ILogger Logger = Log.ForContext<TileDoorPlanner>();
+
+        private TileDoorPlanner()
+        {
+        }
 
         // Facing direction to step from a room-edge cell into its solid neighbor, paired with the
         // edge slot on the room-edge tile (facing d) and the opposite edge slot on the neighbor
@@ -44,7 +50,16 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
             var terminatorCandidates = BuildTerminatorCandidates(tileset);
 
             if (edgeCandidates.Count == 0 || terminatorCandidates.Count == 0)
+            {
+                Logger.Information(
+                    "Tileset {TilesetResref} has no usable generated-door candidate pool " +
+                    "({EdgeCandidateCount} edge signatures, {TerminatorCandidateCount} terminator edges); " +
+                    "transitions will remain placeables.",
+                    tileset.Resref,
+                    edgeCandidates.Count,
+                    terminatorCandidates.Count);
                 return; // e.g. zsf01: no usable door tiles at all — every transition stays Placeable.
+            }
 
             // Every transition's originally-assigned tile is reserved up front so no transition can
             // steal another's anchor as its own door spot; a transition's own tile is un-reserved
@@ -64,6 +79,12 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
 
                 if (!roomsById.TryGetValue(transition.RoomId, out var room) || room.Tiles.Count == 0)
                 {
+                    Logger.Information(
+                        "Transition {TransitionKind} for missing or empty room {RoomId} in tileset " +
+                        "{TilesetResref} cannot use a generated door and will remain a placeable.",
+                        transition.Kind,
+                        transition.RoomId,
+                        tileset.Resref);
                     claimed.Add(originalTile);
                     continue;
                 }
@@ -96,6 +117,12 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
                 }
                 else
                 {
+                    Logger.Information(
+                        "Transition {TransitionKind} for room {RoomId} in tileset {TilesetResref} " +
+                        "has no compatible generated-door footprint and will remain a placeable.",
+                        transition.Kind,
+                        transition.RoomId,
+                        tileset.Resref);
                     claimed.Add(originalTile);
                 }
             }
@@ -208,13 +235,24 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
                 if (!terminatorCandidates.TryGetValue(edgeBack, out var termPicks) || termPicks.Count == 0)
                     continue;
 
-                var edgePick = edgePicks[0];
-                var termPick = termPicks[0];
+                (int TileId, int Orientation) edgePick = default;
+                TileDoorRecord slot = null;
+                foreach (var candidate in edgePicks)
+                {
+                    var candidateTile = tileset.Tiles[candidate.TileId];
+                    var candidateSlot = FindDoorSlotOnEdge(candidateTile, candidate.Orientation, edgeFromCell);
+                    if (candidateSlot == null)
+                        continue;
 
-                var edgeTile = tileset.Tiles[edgePick.TileId];
-                var slot = FindDoorSlotOnEdge(edgeTile, edgePick.Orientation, edgeFromCell);
+                    edgePick = candidate;
+                    slot = candidateSlot;
+                    break;
+                }
+
                 if (slot == null)
                     continue;
+
+                var termPick = termPicks[0];
 
                 tiles[candidateCell.Y * width + candidateCell.X] = new ResolvedTile
                 {

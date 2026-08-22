@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Serilog;
 using SWLOR.Toolset.Domain.AreaGeneration.Tileset;
 
 namespace SWLOR.Toolset.Domain.AreaGeneration
@@ -30,8 +31,14 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
     /// tile, then grid index), and the first group/cell/orientation/door-slot match that faces the
     /// room wins, so results are fully deterministic for a given resolved grid.
     /// </summary>
-    internal static class GroupExitPlanner
+    internal sealed class GroupExitPlanner
     {
+        private static readonly ILogger Logger = Log.ForContext<GroupExitPlanner>();
+
+        private GroupExitPlanner()
+        {
+        }
+
         // Slot -> (Dx, Dy) step from a room-interior tile to its wall-cell neighbor across that edge.
         // Matches EdgeSlot's Top=0/Right=1/Bottom=2/Left=3 ordering.
         private static readonly (int Dx, int Dy)[] Directions = { (0, 1), (1, 0), (0, -1), (-1, 0) };
@@ -48,7 +55,13 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
 
             var candidateGroups = BuildCandidateGroups(tileset, layout.ExitGroups);
             if (candidateGroups.Count == 0)
+            {
+                Logger.Information(
+                    "Tileset {TilesetResref} has no usable configured exit-group candidates; " +
+                    "exit transitions will continue to generated-door or placeable fallbacks.",
+                    tileset.Resref);
                 return;
+            }
 
             var roomsById = layout.Rooms.ToDictionary(r => r.Id);
 
@@ -66,6 +79,11 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
 
                 if (!roomsById.TryGetValue(transition.RoomId, out var room) || room.Tiles.Count == 0)
                 {
+                    Logger.Information(
+                        "Exit transition for missing or empty room {RoomId} in tileset {TilesetResref} " +
+                        "cannot use a configured exit group and will continue to fallback handling.",
+                        transition.RoomId,
+                        tileset.Resref);
                     claimed.Add(originalTile);
                     continue;
                 }
@@ -101,6 +119,11 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
                 }
                 else
                 {
+                    Logger.Information(
+                        "Exit transition for room {RoomId} in tileset {TilesetResref} has no compatible " +
+                        "exit-group placement and will continue to generated-door or placeable fallback handling.",
+                        transition.RoomId,
+                        tileset.Resref);
                     claimed.Add(originalTile);
                 }
             }
@@ -128,22 +151,55 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
                     }
                 }
 
-                if (group == null) continue;
-                if (group.Rows != 1 || group.Columns != 1 || group.TileIds.Count != 1) continue;
+                if (group == null)
+                {
+                    LogUnavailableExitGroup(tileset, name, "the group name was not found");
+                    continue;
+                }
+                if (group.Rows != 1 || group.Columns != 1 || group.TileIds.Count != 1)
+                {
+                    LogUnavailableExitGroup(tileset, name, "the group is not exactly one tile");
+                    continue;
+                }
 
                 var tileId = group.TileIds[0];
-                if (tileId < 0 || tileId >= tileset.Tiles.Count) continue;
+                if (tileId < 0 || tileId >= tileset.Tiles.Count)
+                {
+                    LogUnavailableExitGroup(tileset, name, "its tile ID is outside the tileset");
+                    continue;
+                }
 
                 var tile = tileset.Tiles[tileId];
                 if (tile.CornerHeights[0] != 0 || tile.CornerHeights[1] != 0 ||
-                    tile.CornerHeights[2] != 0 || tile.CornerHeights[3] != 0) continue; // raised
-                if (tile.Doors.Count == 0) continue; // an exit group must carry a door slot
-                if (tile.HasAnyCrosser) continue; // exit groups are crosser-free by structural definition
+                    tile.CornerHeights[2] != 0 || tile.CornerHeights[3] != 0)
+                {
+                    LogUnavailableExitGroup(tileset, name, "its tile is raised");
+                    continue;
+                }
+                if (tile.Doors.Count == 0)
+                {
+                    LogUnavailableExitGroup(tileset, name, "its tile has no door slot");
+                    continue;
+                }
+                if (tile.HasAnyCrosser)
+                {
+                    LogUnavailableExitGroup(tileset, name, "its tile has edge crossers");
+                    continue;
+                }
 
                 result.Add(new ExitGroupCandidate { Tile = tile });
             }
 
             return result;
+        }
+
+        private static void LogUnavailableExitGroup(TilesetModel tileset, string groupName, string reason)
+        {
+            Logger.Information(
+                "Configured exit group {ExitGroupName} is unavailable in tileset {TilesetResref}: {Reason}.",
+                groupName,
+                tileset.Resref,
+                reason);
         }
 
         private static bool TryPlaceGroupExit(

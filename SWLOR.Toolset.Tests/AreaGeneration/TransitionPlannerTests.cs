@@ -68,6 +68,24 @@ public sealed class TransitionPlannerTests
         transition.DoorType.Should().Be(88);
     }
 
+    [Test]
+    public void TileDoorPlanner_TriesLaterCompatibleTilesWhenTheFirstTileHasNoSlotOnTheDoorwayEdge()
+    {
+        var tileset = CreateDoorTileset();
+        var layout = CreateLayout(3, 3, (0, 0), (1, 0), "Wall");
+        layout.Corners.Labels[0, 0] = "Floor";
+        layout.Corners.Labels[1, 0] = "Floor";
+        layout.Corners.Labels[0, 1] = "Floor";
+        layout.Corners.Labels[1, 1] = "Floor";
+        var tiles = ResolvedTiles(9);
+
+        TileDoorPlanner.ApplyDoorTransitions(tileset, layout, tiles, 3, 3);
+
+        layout.Transitions.Single().Style.Should().Be(TransitionStyle.Door);
+        tiles[1].TileId.Should().Be(2,
+            "tile 1 matches the edge signature but none of its door slots lie on that edge");
+    }
+
     [TestCase(1, 0)]
     [TestCase(2, 0)]
     public void TileDoorPlanner_DoesNotOverwriteAResolvedFeatureGroup(int featureX, int featureY)
@@ -80,11 +98,11 @@ public sealed class TransitionPlannerTests
         layout.Corners.Labels[1, 1] = "Floor";
         var tiles = ResolvedTiles(9);
         var featureCell = (X: featureX, Y: featureY);
-        tiles[featureY * 3 + featureX] = new ResolvedTile { TileId = 3 };
+        tiles[featureY * 3 + featureX] = new ResolvedTile { TileId = 4 };
 
         TileDoorPlanner.ApplyDoorTransitions(tileset, layout, tiles, 3, 3);
 
-        tiles[featureY * 3 + featureX].TileId.Should().Be(3);
+        tiles[featureY * 3 + featureX].TileId.Should().Be(4);
         var transition = layout.Transitions.Single();
         transition.DoorwayCell.Should().NotBe(featureCell);
         transition.DoorCell.Should().NotBe(featureCell);
@@ -169,6 +187,16 @@ public sealed class TransitionPlannerTests
 
     private static TilesetModel CreateDoorTileset()
     {
+        var slotlessOnRightEdge = Tile(
+            1,
+            ["Floor", "Wall", "Wall", "Floor"],
+            ["", "Doorway", "", ""]);
+        slotlessOnRightEdge.Doors =
+        [
+            new TileDoorRecord { Type = 77, X = -5f },
+            new TileDoorRecord { Type = 77, Y = 5f }
+        ];
+
         return new TilesetModel
         {
             DefaultTerrain = "Wall",
@@ -176,20 +204,21 @@ public sealed class TransitionPlannerTests
             Tiles =
             [
                 Tile(0, ["Floor", "Floor", "Floor", "Floor"]),
+                slotlessOnRightEdge,
                 Tile(
-                    1,
+                    2,
                     ["Floor", "Wall", "Wall", "Floor"],
                     ["", "Doorway", "", ""],
                     new TileDoorRecord { Type = 88, X = 5f }),
                 Tile(
-                    2,
+                    3,
                     ["Wall", "Wall", "Wall", "Wall"],
                     ["", "", "", "Doorway"]),
-                Tile(3, ["Floor", "Floor", "Floor", "Floor"], groupIndex: 0)
+                Tile(4, ["Floor", "Floor", "Floor", "Floor"], groupIndex: 0)
             ],
             Groups =
             [
-                new TileGroupRecord { Name = "Feature", Rows = 1, Columns = 1, TileIds = [3] }
+                new TileGroupRecord { Name = "Feature", Rows = 1, Columns = 1, TileIds = [4] }
             ]
         };
     }

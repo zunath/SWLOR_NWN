@@ -1,4 +1,5 @@
 #nullable enable
+using Serilog;
 using SWLOR.Toolset.Domain.AreaGeneration.Atmosphere;
 using SWLOR.Toolset.Domain.AreaGeneration.Tileset;
 using SWLOR.Toolset.Domain.Documents;
@@ -9,11 +10,16 @@ using SWLOR.Toolset.Domain.Workspace;
 namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
 {
     /// <summary>Projects one solved draft into a fresh toolset area triplet.</summary>
-    public static class GeneratedAreaDocumentPopulator
+    public sealed class GeneratedAreaDocumentPopulator
     {
         private const string WaypointList = "WaypointList";
         private const string DoorList = "Door List";
         private const string PlaceableList = "Placeable List";
+        private static readonly ILogger Logger = Log.ForContext<GeneratedAreaDocumentPopulator>();
+
+        private GeneratedAreaDocumentPopulator()
+        {
+        }
 
         public static void Populate(
             AreaGenerationDraft draft,
@@ -30,12 +36,33 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             if (!draft.Result.Success || draft.Result.Resolved == null)
                 throw new InvalidOperationException("Only a successful generated draft can be written.");
 
-            WriteTiles(are, draft.Result.Resolved, draft.Composition.Tileset.Lighting);
+            var layout = draft.Result.Resolved;
+            var originalWaypointCount = git.Fields.GetListOrEmpty(WaypointList).Count;
+            var originalDoorCount = git.Fields.GetListOrEmpty(DoorList).Count;
+            var originalPlaceableCount = git.Fields.GetListOrEmpty(PlaceableList).Count;
+            Logger.Information(
+                "Populating generated area documents for a {Width}x{Height} layout with " +
+                "{TransitionCount} transitions and {DecorationCount} planned decorations.",
+                layout.Width,
+                layout.Height,
+                layout.Transitions.Count,
+                draft.Result.PlannedDecorations.Count);
+
+            WriteTiles(are, layout, draft.Composition.Tileset.Lighting);
             WriteAtmosphere(
                 are,
                 draft.Composition.Tileset.ResolveAtmosphere(draft.Composition.Content.AtmosphereProfile));
             WriteTransitions(draft, workspace, git, gic);
             WriteDecorations(draft, workspace, git, gic);
+
+            Logger.Information(
+                "Populated generated area documents for a {Width}x{Height} layout: " +
+                "{WaypointCount} waypoints, {DoorCount} doors, and {PlaceableCount} placeables added.",
+                layout.Width,
+                layout.Height,
+                git.Fields.GetListOrEmpty(WaypointList).Count - originalWaypointCount,
+                git.Fields.GetListOrEmpty(DoorList).Count - originalDoorCount,
+                git.Fields.GetListOrEmpty(PlaceableList).Count - originalPlaceableCount);
         }
 
         private static void WriteTiles(

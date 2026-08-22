@@ -7,6 +7,7 @@ namespace SWLOR.Game.Server.Entity
             PlayerId = string.Empty;
             PrivateName = string.Empty;
             Descriptor = string.Empty;
+            Biography = string.Empty;
             PortraitInternalId = 1;
             SoundSetId = -1;
             IsRetired = false;
@@ -21,6 +22,7 @@ namespace SWLOR.Game.Server.Entity
         public bool IsRetired { get; set; }
         public string PrivateName { get; set; }
         public string Descriptor { get; set; }
+        public string Biography { get; set; }
         public int PortraitInternalId { get; set; }
         public int SoundSetId { get; set; }
         public bool ScrambleAccountId { get; set; }

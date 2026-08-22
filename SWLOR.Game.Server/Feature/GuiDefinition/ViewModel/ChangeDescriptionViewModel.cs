@@ -31,6 +31,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickSave() => () =>
         {
+            if (Disguise.GetActiveDisguise(Player) != null)
+            {
+                FloatingTextStringOnCreature("Edit your active disguise's biography from the Disguises window.", Player, false);
+                return;
+            }
+
             if (string.IsNullOrWhiteSpace(Description))
             {
                 FloatingTextStringOnCreature("Please enter a description.", Player, false);

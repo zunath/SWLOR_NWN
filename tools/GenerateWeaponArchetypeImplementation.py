@@ -2483,7 +2483,7 @@ def profile_property_lines(row, level, primary_status):
             "SelfStatusEffectOnCriticalHitFactory",
             "triggeringImpact => new DeadMansHandStatusEffect(triggeringImpact)",
         )
-        add_profile_property("SelfStatusEffectOnCriticalHitDurationSeconds", "30")
+        add_profile_property("SelfStatusEffectOnCriticalHitIsPermanent", "true")
 
     return properties
 

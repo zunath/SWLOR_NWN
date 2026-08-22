@@ -181,6 +181,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public Func<IStatusEffect> SelfStatusEffectFactory { get; init; }
             public Func<AbilityImpactSummary, IStatusEffect> SelfStatusEffectOnCriticalHitFactory { get; init; }
             public int SelfStatusEffectOnCriticalHitDurationSeconds { get; init; }
+            public bool SelfStatusEffectOnCriticalHitIsPermanent { get; init; }
             public Type[] SelfStatusEffectsToReplace { get; init; }
             public int SelfEnmityPercentIfTargetRecentlyDamagedActivator { get; init; }
             public int SelfEnmityDurationSecondsIfTargetRecentlyDamagedActivator { get; init; }
@@ -492,14 +493,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public void AfterImpact(uint activator, int totalDamage, int successfulHitCount = 0, AbilityImpactSummary summary = null)
             {
                 if (SelfStatusEffectOnCriticalHitFactory != null &&
-                    SelfStatusEffectOnCriticalHitDurationSeconds > 0 &&
+                    (SelfStatusEffectOnCriticalHitDurationSeconds > 0 ||
+                     SelfStatusEffectOnCriticalHitIsPermanent) &&
                     (summary?.CriticalHitCount ?? 0) > 0)
                 {
+                    var durationSeconds = SelfStatusEffectOnCriticalHitIsPermanent
+                        ? 0f
+                        : SelfStatusEffectOnCriticalHitDurationSeconds;
                     StatusEffect.ApplyStatusEffect(
                         activator,
                         activator,
                         SelfStatusEffectOnCriticalHitFactory(summary),
-                        SelfStatusEffectOnCriticalHitDurationSeconds);
+                        durationSeconds);
                 }
 
                 if (totalDamage <= 0)

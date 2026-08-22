@@ -269,6 +269,18 @@ public class GeneratedWeaponPerkBehaviorTests
     [Test]
     public void DeadMansHand_PreservesThreeChargesAfterTheGrantingCritical()
     {
+        var root = FindRepositoryRoot();
+        var abilitySource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "Pistol",
+            "DeadMansHandAbilityDefinition.cs"));
+        abilitySource.Should().Contain("SelfStatusEffectOnCriticalHitIsPermanent = true",
+            "the Bible promises the next three ranged attacks without an expiration window");
+        abilitySource.Should().NotContain("SelfStatusEffectOnCriticalHitDurationSeconds = 30");
+
         var grantingImpact = new AbilityImpactSummary();
         var effect = new DeadMansHandStatusEffect(grantingImpact);
         var attemptEffect = (IAttackAttemptStatusEffect)effect;

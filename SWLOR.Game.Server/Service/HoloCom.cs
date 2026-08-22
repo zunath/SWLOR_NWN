@@ -53,6 +53,16 @@ namespace SWLOR.Game.Server.Service
             CleanupAllHoloComState(player);
         }
 
+        [NWNEventHandler(ScriptName.OnAreaExit)]
+        public static void OnAreaExit()
+        {
+            var player = GetExitingObject();
+            if (!GetIsPC(player))
+                return;
+
+            CleanupMessagePlayback(player);
+        }
+
         [NWNEventHandler(ScriptName.OnModuleChat)]
         public static void OnModuleChat()
         {
@@ -426,53 +436,9 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player to clean up</param>
         public static void CleanupAllHoloComState(uint player)
         {
-            // Clean up call sender state
-            if (IsCallSender(player))
-            {
-                var receiver = GetCallReceiver(player);
-                if (GetIsObjectValid(receiver))
-                {
-                    // Notify the receiver that the call attempt has ended
-                    SendMessageToPC(receiver, "Your HoloCom stops buzzing.");
-
-                    // Clean up receiver's state
-                    SetIsCallReceiver(receiver, false);
-                    DeleteLocalObject(receiver, HolocomCallReceiverObject);
-                    DeleteLocalObject(receiver, HolocomCallSenderObject);
-                    DeleteLocalInt(receiver, HolocomCallAttempt);
-                }
-
-                // Clean up sender's state
-                SetIsCallSender(player, false);
-                DeleteLocalObject(player, HolocomCallSenderObject);
-                DeleteLocalObject(player, HolocomCallReceiverObject);
-                DeleteLocalInt(player, HolocomCallAttempt);
-            }
-
-            // Clean up call receiver state
-            if (IsCallReceiver(player))
-            {
-                var sender = GetCallSender(player);
-                if (GetIsObjectValid(sender))
-                {
-                    // Notify the sender that the call attempt has ended
-                    SendMessageToPC(sender, "Your HoloCom call went unanswered.");
-
-                    // Clean up sender's state
-                    SetIsCallSender(sender, false);
-                    DeleteLocalObject(sender, HolocomCallSenderObject);
-                    DeleteLocalObject(sender, HolocomCallReceiverObject);
-                    DeleteLocalInt(sender, HolocomCallAttempt);
-                }
-
-                // Clean up receiver's state
-                SetIsCallReceiver(player, false);
-                DeleteLocalObject(player, HolocomCallReceiverObject);
-                DeleteLocalObject(player, HolocomCallSenderObject);
-                DeleteLocalInt(player, HolocomCallAttempt);
-            }
-
-            // Clean up active call state
+            // Active calls retain their original sender/receiver attempt flags, so
+            // handle the connected state first and let its shared cleanup clear all
+            // flags on both participants.
             if (IsInCall(player))
             {
                 var callTarget = GetTargetForActiveCall(player);
@@ -485,61 +451,102 @@ namespace SWLOR.Game.Server.Service
                     CleanupOrphanedActiveCall(player);
                 }
             }
+            else if (IsCallSender(player))
+            {
+                var receiver = GetCallReceiver(player);
+                if (GetIsObjectValid(receiver))
+                    SendMessageToPC(receiver, "Your HoloCom stops buzzing.");
 
-            // Clean up any in-flight message playback so a logout doesn't strand
-            // its hologram until the playback timer happens to fire.
+                CleanupCallAttempt(player, receiver);
+            }
+            else if (IsCallReceiver(player))
+            {
+                var sender = GetCallSender(player);
+                if (GetIsObjectValid(sender))
+                    SendMessageToPC(sender, "Your HoloCom call went unanswered.");
+
+                CleanupCallAttempt(sender, player);
+            }
+
+            CleanupMessagePlayback(player);
+        }
+
+        /// <summary>
+        /// Stops an in-flight recorded message without touching live call state.
+        /// Used for logout and area transitions so a hologram cannot remain behind
+        /// in a persistent area or block playback after its owner has moved on.
+        /// </summary>
+        public static void CleanupMessagePlayback(uint player)
+        {
             var playbackHologram = GetActivePlaybackHologram(player);
             if (GetIsObjectValid(playbackHologram))
-            {
                 DestroyObject(playbackHologram);
-            }
+
             ClearActivePlaybackHologram(player);
         }
 
         public const int MaxFavorites = 50;
 
-        public static List<string> GetFavoritePlayerIds(uint observer)
+        public static List<HoloComFavoriteEntry> GetFavorites(uint observer)
         {
             var dbFavorites = FindFavorites(GetObjectUUID(observer));
-            return dbFavorites?.FavoritePlayerIds ?? new List<string>();
+            return dbFavorites?.Favorites ?? new List<HoloComFavoriteEntry>();
         }
 
-        public static bool IsFavorite(uint observer, string targetPlayerId)
+        public static bool IsFavorite(uint observer, uint target)
         {
-            return GetFavoritePlayerIds(observer).Contains(targetPlayerId);
+            if (!GetIsObjectValid(target))
+                return false;
+
+            var identityKey = Disguise.GetIdentityKey(target);
+            return GetFavorites(observer).Any(entry => entry.IdentityKey == identityKey);
         }
 
-        public static string AddFavorite(uint observer, string targetPlayerId)
+        public static string AddFavorite(uint observer, uint target)
         {
-            if (string.IsNullOrWhiteSpace(targetPlayerId))
+            if (!GetIsObjectValid(target) || !GetIsPC(target))
                 return "Unable to identify that player.";
 
             var observerId = GetObjectUUID(observer);
-            if (targetPlayerId == observerId)
+            if (target == observer)
                 return "You cannot favorite yourself.";
 
             var dbFavorites = FindFavorites(observerId) ?? new HoloComFavorite(observerId);
+            dbFavorites.Favorites ??= new List<HoloComFavoriteEntry>();
+            var identityKey = Disguise.GetIdentityKey(target);
 
-            if (dbFavorites.FavoritePlayerIds.Contains(targetPlayerId))
+            if (dbFavorites.Favorites.Any(entry => entry.IdentityKey == identityKey))
                 return string.Empty;
 
-            if (dbFavorites.FavoritePlayerIds.Count >= MaxFavorites)
+            if (dbFavorites.Favorites.Count >= MaxFavorites)
                 return $"You may only have up to {MaxFavorites} favorites.";
 
-            dbFavorites.FavoritePlayerIds.Add(targetPlayerId);
+            var descriptor = Disguise.GetDisplayDescriptor(target);
+            dbFavorites.Favorites.Add(new HoloComFavoriteEntry
+            {
+                IdentityKey = identityKey,
+                Descriptor = descriptor,
+                // A disguise favorite must never retain the canonical character name.
+                // Undisguised identity keys are the canonical player Id and may use it.
+                FallbackName = Disguise.IsDisguiseIdentityKey(identityKey)
+                    ? descriptor
+                    : PlayerName.GetDisplayName(observer, target)
+            });
             DB.Set(dbFavorites);
             return string.Empty;
         }
 
-        public static void RemoveFavorite(uint observer, string targetPlayerId)
+        public static void RemoveFavorite(uint observer, string identityKey)
         {
             var dbFavorites = FindFavorites(GetObjectUUID(observer));
-            if (dbFavorites?.FavoritePlayerIds == null)
+            if (dbFavorites?.Favorites == null)
                 return;
 
-            if (!dbFavorites.FavoritePlayerIds.Remove(targetPlayerId))
+            var entry = dbFavorites.Favorites.FirstOrDefault(favorite => favorite.IdentityKey == identityKey);
+            if (entry == null)
                 return;
 
+            dbFavorites.Favorites.Remove(entry);
             DB.Set(dbFavorites);
         }
 
@@ -577,6 +584,20 @@ namespace SWLOR.Game.Server.Service
             for (var pc = GetFirstPC(); GetIsObjectValid(pc); pc = GetNextPC())
             {
                 if (GetObjectUUID(pc) == playerId)
+                    return pc;
+            }
+
+            return OBJECT_INVALID;
+        }
+
+        public static uint FindOnlinePlayerByIdentityKey(string identityKey)
+        {
+            if (string.IsNullOrWhiteSpace(identityKey))
+                return OBJECT_INVALID;
+
+            for (var pc = GetFirstPC(); GetIsObjectValid(pc); pc = GetNextPC())
+            {
+                if (Disguise.GetIdentityKey(pc) == identityKey)
                     return pc;
             }
 

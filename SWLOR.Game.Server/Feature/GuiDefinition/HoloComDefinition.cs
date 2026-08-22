@@ -66,6 +66,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .SetHeight(32f)
                         .BindOnClicked(model => model.OnClickDeleteRead());
 
+                    row.AddLabel()
+                        .BindText(model => model.InboxRefreshNotice)
+                        .SetHeight(20f)
+                        .SetHorizontalAlign(NuiHorizontalAlign.Left);
+
                     row.AddSpacer();
                 });
 
@@ -235,7 +240,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                         .SetText("Message")
                                         .SetWidth(70f)
                                         .SetHeight(26f)
-                                        .BindOnClicked(model => model.OnClickMessageFavorite());
+                                        .BindOnClicked(model => model.OnClickMessageFavorite())
+                                        .BindIsEnabled(model => model.FavoriteCanMessage);
                                 })
                                 .AddComponentColumn("", 70f, cell =>
                                 {

@@ -18,11 +18,25 @@ namespace SWLOR.Game.Server.Entity
         private void Init()
         {
             ObserverPlayerId = string.Empty;
-            FavoritePlayerIds = new List<string>();
+            Favorites = new List<HoloComFavoriteEntry>();
         }
 
         [Indexed]
         public string ObserverPlayerId { get; set; }
-        public List<string> FavoritePlayerIds { get; set; }
+        public List<HoloComFavoriteEntry> Favorites { get; set; }
+    }
+
+    public class HoloComFavoriteEntry
+    {
+        public string IdentityKey { get; set; }
+        public string Descriptor { get; set; }
+        public string FallbackName { get; set; }
+
+        public HoloComFavoriteEntry()
+        {
+            IdentityKey = string.Empty;
+            Descriptor = string.Empty;
+            FallbackName = string.Empty;
+        }
     }
 }

@@ -17,9 +17,14 @@ namespace SWLOR.Game.Server.Service
     public static class HoloComMessaging
     {
         public const int MaxMessageLength = 4000;
+        public const int MaxInboxMessages = 100;
+        public const int MaxMessagesPerSenderPerInbox = 25;
+        public const int MaxPlaybackSegments = 20;
 
         private const string MessageLastSubmission = "HOLOCOM_MESSAGE_LAST_SUBMISSION";
         private const int MessageCooldownSeconds = 10;
+        private const int MaxPlaybackSegmentLength = 240;
+        private const float MaxPlaybackDurationSeconds = 300f;
 
         // Messages expire this many days after being sent unless the recipient has
         // saved them. Read messages are removed before unread ones so a player who
@@ -46,6 +51,17 @@ namespace SWLOR.Game.Server.Service
             if (IsOnMessageCooldown(sender))
                 return "You are sending messages too quickly. Try again in a few seconds.";
 
+            if (!TryMakeRoomForMessage(recipientPlayerId, senderId))
+                return "That recipient's HoloCom inbox cannot accept more messages.";
+
+            var senderLanguage = Language.GetActiveLanguage(sender);
+            var messageText = SanitizeMessageText(rawText);
+            if (senderLanguage != SkillType.Basic)
+            {
+                var speakerRank = Language.GetSpeakerProficiencyRank(senderId, senderLanguage);
+                messageText = Language.ApplySpeakerProficiency(senderLanguage, messageText, speakerRank);
+            }
+
             // Everything an offline sender can no longer provide is captured now:
             // appearance snapshot, the identity as observers currently perceive it
             // (disguise-aware), its descriptor, and the active language.
@@ -55,9 +71,9 @@ namespace SWLOR.Game.Server.Service
                 SenderFallbackName = GetName(sender),
                 SenderIdentityKey = Disguise.GetIdentityKey(sender),
                 SenderDescriptor = Disguise.GetDisplayDescriptor(sender),
-                SenderLanguage = (int)Language.GetActiveLanguage(sender),
+                SenderLanguage = (int)senderLanguage,
                 RecipientPlayerId = recipientPlayerId,
-                Text = SanitizeMessageText(rawText),
+                Text = messageText,
                 IsRead = false,
                 ExpirationDateTicks = DateTime.UtcNow.AddDays(MessageRetentionDays).Ticks
             };
@@ -139,6 +155,46 @@ namespace SWLOR.Game.Server.Service
             query.AddPaging(pageSize, pageSize * pageIndex);
 
             return DB.Search(query).ToList();
+        }
+
+        /// <summary>
+        /// Keeps both one sender and the recipient's complete inbox within hard bounds.
+        /// Oldest unsaved messages are evicted first; saved messages are never removed.
+        /// </summary>
+        private static bool TryMakeRoomForMessage(string recipientPlayerId, string senderPlayerId)
+        {
+            return EvictToQuota(recipientPlayerId, senderPlayerId, MaxMessagesPerSenderPerInbox) &&
+                   EvictToQuota(recipientPlayerId, string.Empty, MaxInboxMessages);
+        }
+
+        private static bool EvictToQuota(string recipientPlayerId, string senderPlayerId, int quota)
+        {
+            while (DB.SearchCount(BuildQuotaQuery(recipientPlayerId, senderPlayerId)) >= quota)
+            {
+                var evictionQuery = BuildQuotaQuery(recipientPlayerId, senderPlayerId)
+                    .AddFieldSearch(nameof(HoloComMessage.IsSaved), false)
+                    .OrderBy(nameof(HoloComMessage.SentDateTicks), true)
+                    .AddPaging(1, 0);
+                var oldestUnsaved = DB.Search(evictionQuery).FirstOrDefault();
+
+                if (oldestUnsaved == null)
+                    return false;
+
+                DB.Delete<HoloComMessage>(oldestUnsaved.Id);
+            }
+
+            return true;
+        }
+
+        private static DBQuery<HoloComMessage> BuildQuotaQuery(string recipientPlayerId, string senderPlayerId)
+        {
+            var query = new DBQuery<HoloComMessage>()
+                .AddFieldSearch(nameof(HoloComMessage.RecipientPlayerId), recipientPlayerId, false);
+
+            if (!string.IsNullOrWhiteSpace(senderPlayerId))
+                query.AddFieldSearch(nameof(HoloComMessage.SenderPlayerId), senderPlayerId, false);
+
+            return query;
         }
 
         /// <summary>
@@ -330,17 +386,26 @@ namespace SWLOR.Game.Server.Service
             // call relay forces commandable before every line for the same reason.
             // The initial delay lets the fresh copy finish initializing before actions
             // are queued; same-frame assignments get flushed by creature spawn-in.
+            var playbackSegments = BuildPlaybackSegments(message.Text);
+            var segmentDurations = playbackSegments
+                .Select(EstimatePlaybackSeconds)
+                .ToList();
+            var totalDuration = segmentDurations.Sum();
+            var durationScale = totalDuration > MaxPlaybackDurationSeconds
+                ? MaxPlaybackDurationSeconds / totalDuration
+                : 1f;
+
             var offset = 0.5f;
-            foreach (var sentence in SplitIntoSentences(message.Text))
+            for (var index = 0; index < playbackSegments.Count; index++)
             {
-                var spokenSentence = sentence;
+                var spokenSentence = playbackSegments[index];
                 var animation = Animation.LoopingTalkNormal;
                 if (spokenSentence.Contains("!"))
                     animation = Animation.LoopingTalkForceful;
                 if (spokenSentence.Contains("?"))
                     animation = Animation.LoopingTalkPleading;
 
-                var sentenceSeconds = EstimatePlaybackSeconds(spokenSentence);
+                var sentenceSeconds = Math.Max(0.5f, segmentDurations[index] * durationScale);
 
                 DelayCommand(offset, () =>
                 {
@@ -358,6 +423,9 @@ namespace SWLOR.Game.Server.Service
 
             DelayCommand(offset + 0.5f, () =>
             {
+                if (HoloCom.GetActivePlaybackHologram(recipient) != hologram)
+                    return;
+
                 if (GetIsObjectValid(hologram))
                     DestroyObject(hologram);
 
@@ -372,6 +440,68 @@ namespace SWLOR.Game.Server.Service
             }
 
             return string.Empty;
+        }
+
+        /// <summary>
+        /// Coalesces punctuation-heavy text into a bounded number of playback commands.
+        /// Message content is preserved, but no valid message can install thousands of
+        /// engine timers simply by placing a terminator after every character.
+        /// </summary>
+        public static List<string> BuildPlaybackSegments(string text)
+        {
+            var pieces = new List<string>();
+            foreach (var sentence in SplitIntoSentences(text))
+            {
+                pieces.AddRange(SplitLongPlaybackPiece(sentence));
+            }
+
+            var segments = new List<string>();
+            var current = new StringBuilder();
+
+            foreach (var piece in pieces)
+            {
+                var requiredLength = current.Length == 0
+                    ? piece.Length
+                    : current.Length + 1 + piece.Length;
+
+                if (current.Length > 0 && requiredLength > MaxPlaybackSegmentLength)
+                {
+                    segments.Add(current.ToString());
+                    current.Clear();
+                }
+
+                if (current.Length > 0)
+                    current.Append(' ');
+
+                current.Append(piece);
+            }
+
+            if (current.Length > 0)
+                segments.Add(current.ToString());
+
+            if (segments.Count <= MaxPlaybackSegments)
+                return segments;
+
+            var bounded = segments.Take(MaxPlaybackSegments - 1).ToList();
+            bounded.Add(string.Join(" ", segments.Skip(MaxPlaybackSegments - 1)));
+            return bounded;
+        }
+
+        private static IEnumerable<string> SplitLongPlaybackPiece(string text)
+        {
+            var remaining = text?.Trim() ?? string.Empty;
+            while (remaining.Length > MaxPlaybackSegmentLength)
+            {
+                var splitAt = remaining.LastIndexOf(' ', MaxPlaybackSegmentLength);
+                if (splitAt <= 0)
+                    splitAt = MaxPlaybackSegmentLength;
+
+                yield return remaining[..splitAt].Trim();
+                remaining = remaining[splitAt..].TrimStart();
+            }
+
+            if (remaining.Length > 0)
+                yield return remaining;
         }
 
         /// <summary>

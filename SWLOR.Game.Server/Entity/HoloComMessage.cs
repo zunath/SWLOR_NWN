@@ -2,6 +2,7 @@ namespace SWLOR.Game.Server.Entity
 {
     public class HoloComMessage: EntityBase
     {
+        [Indexed]
         public string SenderPlayerId { get; set; }
         public string SenderFallbackName { get; set; }
 

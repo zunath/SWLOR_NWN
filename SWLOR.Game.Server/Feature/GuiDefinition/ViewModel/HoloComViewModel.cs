@@ -64,17 +64,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private sealed class FavoriteRow
         {
-            public string PlayerId { get; }
+            public string IdentityKey { get; }
             public string DisplayName { get; }
             public GuiColor StatusColor { get; }
             public bool IsOnline { get; }
+            public bool CanMessage { get; }
 
-            public FavoriteRow(string playerId, string displayName, GuiColor statusColor, bool isOnline)
+            public FavoriteRow(string identityKey, string displayName, GuiColor statusColor, bool isOnline, bool canMessage)
             {
-                PlayerId = playerId;
+                IdentityKey = identityKey;
                 DisplayName = displayName;
                 StatusColor = statusColor;
                 IsOnline = isOnline;
+                CanMessage = canMessage;
             }
         }
 
@@ -95,7 +97,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             new GuiTableSource<HoloComViewModel, FavoriteRow>()
                 .Column((m, v) => m.FavoriteNames = v, r => r.DisplayName)
                 .Column((m, v) => m.FavoriteStatusColors = v, r => r.StatusColor)
-                .Column((m, v) => m.FavoriteIsOnline = v, r => r.IsOnline);
+                .Column((m, v) => m.FavoriteIsOnline = v, r => r.IsOnline)
+                .Column((m, v) => m.FavoriteCanMessage = v, r => r.CanMessage);
 
         private int _inboxPageIndex;
         private IList<MessageRow> _messageRows = new List<MessageRow>();
@@ -143,6 +146,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         public string InboxPageLabel { get => Get<string>(); set => Set(value); }
+        public string InboxRefreshNotice { get => Get<string>(); set => Set(value); }
         public bool IsPrevPageEnabled { get => Get<bool>(); set => Set(value); }
         public bool IsNextPageEnabled { get => Get<bool>(); set => Set(value); }
 
@@ -155,12 +159,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public GuiBindingList<string> FavoriteNames { get => Get<GuiBindingList<string>>(); set => Set(value); }
         public GuiBindingList<GuiColor> FavoriteStatusColors { get => Get<GuiBindingList<GuiColor>>(); set => Set(value); }
         public GuiBindingList<bool> FavoriteIsOnline { get => Get<GuiBindingList<bool>>(); set => Set(value); }
+        public GuiBindingList<bool> FavoriteCanMessage { get => Get<GuiBindingList<bool>>(); set => Set(value); }
 
         protected override void Initialize(GuiPayloadBase initialPayload)
         {
             ShowUnreadOnly = false;
             WatchOnClient(model => model.ShowUnreadOnly);
             _inboxPageIndex = 0;
+            InboxRefreshNotice = string.Empty;
 
             SelectedTabId = MessagesTabId;
             WatchOnClient(model => model.TabToggleValue);
@@ -173,6 +179,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void RefreshMessages()
         {
+            InboxRefreshNotice = string.Empty;
             var recipientId = GetObjectUUID(Player);
 
             var totalCount = HoloComMessaging.GetInboxCount(recipientId, ShowUnreadOnly);
@@ -264,7 +271,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public void Refresh(HoloComMessageReceivedRefreshEvent payload)
         {
-            RefreshMessages();
+            // Keep the server-side row snapshot aligned with the IDs currently
+            // rendered by the client. Replacing a newest-first page here could shift
+            // an already-queued array-index click onto a different message.
+            InboxRefreshNotice = "New message available. Select Refresh to update.";
         }
 
         public void Refresh(HoloComCallStateChangedRefreshEvent payload)
@@ -332,20 +342,28 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void RefreshFavorites()
         {
-            var favoriteIds = HoloCom.GetFavoritePlayerIds(Player);
+            var favorites = HoloCom.GetFavorites(Player);
             var rows = new List<FavoriteRow>();
 
-            foreach (var favoriteId in favoriteIds)
+            foreach (var favorite in favorites)
             {
-                var onlineObject = HoloCom.FindOnlinePlayerByPlayerId(favoriteId);
+                var onlineObject = HoloCom.FindOnlinePlayerByIdentityKey(favorite.IdentityKey);
                 var isOnline = GetIsObjectValid(onlineObject);
-                var fallbackName = DB.Get<Player>(favoriteId)?.Name ?? string.Empty;
-
                 var displayName = isOnline
                     ? GetPlainLiveDisplayName(onlineObject)
-                    : PlayerName.GetPlainDisplayNameByPlayerId(Player, favoriteId, fallbackName);
+                    : PlayerName.GetPlainDisplayNameByIdentity(
+                        Player,
+                        favorite.IdentityKey,
+                        favorite.Descriptor,
+                        favorite.FallbackName);
+                var canMessage = isOnline || !Disguise.IsDisguiseIdentityKey(favorite.IdentityKey);
 
-                rows.Add(new FavoriteRow(favoriteId, displayName, isOnline ? GuiColor.Green : GuiColor.Grey, isOnline));
+                rows.Add(new FavoriteRow(
+                    favorite.IdentityKey,
+                    displayName,
+                    isOnline ? GuiColor.Green : GuiColor.Grey,
+                    isOnline,
+                    canMessage));
             }
 
             _favoriteRows = FavoritesTable.Refresh(this, rows);
@@ -423,7 +441,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!TryGetOnlinePlayer(out var target))
                 return;
 
-            var error = HoloCom.AddFavorite(Player, GetObjectUUID(target));
+            var error = HoloCom.AddFavorite(Player, target);
             if (!string.IsNullOrWhiteSpace(error))
                 SendMessageToPC(Player, ColorToken.Red(error));
 
@@ -438,7 +456,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!TryGetFavoriteRow(out var row))
                 return;
 
-            var target = HoloCom.FindOnlinePlayerByPlayerId(row.PlayerId);
+            var target = HoloCom.FindOnlinePlayerByIdentityKey(row.IdentityKey);
             if (!GetIsObjectValid(target))
             {
                 SendMessageToPC(Player, "That player is not currently online.");
@@ -457,7 +475,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!TryGetFavoriteRow(out var row))
                 return;
 
-            OpenComposeModal(row.PlayerId, row.DisplayName, string.Empty);
+            var target = HoloCom.FindOnlinePlayerByIdentityKey(row.IdentityKey);
+            var recipientPlayerId = GetIsObjectValid(target)
+                ? GetObjectUUID(target)
+                : Disguise.IsDisguiseIdentityKey(row.IdentityKey)
+                    ? string.Empty
+                    : row.IdentityKey;
+
+            if (string.IsNullOrWhiteSpace(recipientPlayerId))
+            {
+                SendMessageToPC(Player, "That disguised contact is no longer available under this identity.");
+                RefreshFavorites();
+                return;
+            }
+
+            OpenComposeModal(recipientPlayerId, row.DisplayName, string.Empty);
         };
 
         public Action OnClickRemoveFavorite() => () =>
@@ -468,7 +500,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ShowModal($"Remove {row.DisplayName} from your favorites?",
                 () =>
                 {
-                    HoloCom.RemoveFavorite(Player, row.PlayerId);
+                    HoloCom.RemoveFavorite(Player, row.IdentityKey);
                 });
         };
 

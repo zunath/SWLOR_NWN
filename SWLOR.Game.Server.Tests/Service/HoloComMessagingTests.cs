@@ -51,4 +51,28 @@ public class HoloComMessagingTests
         HoloComMessaging.SplitIntoSentences("   ").Should().BeEmpty();
         HoloComMessaging.SplitIntoSentences(null).Should().BeEmpty();
     }
+
+    [Test]
+    public void BuildPlaybackSegments_PunctuationHeavyMessage_BoundsScheduledCommandsWithoutDroppingText()
+    {
+        var message = string.Concat(Enumerable.Repeat("a.", HoloComMessaging.MaxMessageLength / 2));
+
+        var segments = HoloComMessaging.BuildPlaybackSegments(message);
+
+        segments.Should().NotBeEmpty();
+        segments.Should().HaveCountLessThanOrEqualTo(HoloComMessaging.MaxPlaybackSegments);
+        string.Concat(segments).Count(character => character == 'a').Should().Be(message.Count(character => character == 'a'));
+        string.Concat(segments).Count(character => character == '.').Should().Be(message.Count(character => character == '.'));
+    }
+
+    [Test]
+    public void BuildPlaybackSegments_LongUnterminatedMessage_IsSplitIntoBoundedCommands()
+    {
+        var message = new string('x', HoloComMessaging.MaxMessageLength);
+
+        var segments = HoloComMessaging.BuildPlaybackSegments(message);
+
+        segments.Should().HaveCountLessThanOrEqualTo(HoloComMessaging.MaxPlaybackSegments);
+        string.Concat(segments).Should().Be(message);
+    }
 }

@@ -86,6 +86,48 @@ public sealed class AreaGeneratorWindowRenderTests
         }
     }
 
+    [AvaloniaTest]
+    public void PreviewToolbarFitsInsideThePaneAtTheMinimumWindowWidth()
+    {
+        using var viewModel = CreateViewModel();
+        var window = new AreaGeneratorWindow(viewModel)
+        {
+            Width = 920,
+            Height = 650
+        };
+
+        try
+        {
+            window.Show();
+            Dispatcher.UIThread.RunJobs();
+            window.UpdateLayout();
+
+            var pane = window.FindControl<Grid>("PreviewPane")!;
+            var controls = new Control[]
+            {
+                window.FindControl<ComboBox>("PreviewModeSelector")!,
+                window.FindControl<CheckBox>("ShowRoomsToggle")!,
+                window.FindControl<CheckBox>("ShowTransitionsToggle")!,
+                window.FindControl<CheckBox>("ShowDecorationsToggle")!,
+                window.FindControl<Button>("GeneratePreviewButton")!
+            };
+
+            foreach (var control in controls)
+            {
+                var origin = control.TranslatePoint(new Point(0, 0), pane)!.Value;
+                origin.X.Should().BeGreaterThanOrEqualTo(0);
+                (origin.X + control.Bounds.Width).Should().BeLessThanOrEqualTo(
+                    pane.Bounds.Width + 0.5,
+                    $"{control.Name} must remain inside the preview pane at the minimum window width");
+            }
+        }
+        finally
+        {
+            window.Close();
+            Dispatcher.UIThread.RunJobs();
+        }
+    }
+
     [Test]
     public void EnablingAccentTerrain_SeedsAValidNonzeroDensity()
     {

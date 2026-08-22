@@ -188,9 +188,11 @@
         </ScrollViewer>
       </Border>
 
-      <Grid Grid.Column="1" RowDefinitions="Auto,*,Auto" Margin="16">
-        <Grid Grid.Row="0" ColumnDefinitions="Auto,Auto,Auto,Auto,*,Auto" ColumnSpacing="10" Margin="0,0,0,10">
-          <ComboBox x:Name="PreviewModeSelector" Grid.Column="0" Width="150"
+      <Grid x:Name="PreviewPane" Grid.Column="1" RowDefinitions="Auto,*,Auto" Margin="16">
+        <Grid x:Name="PreviewToolbar" Grid.Row="0" ColumnDefinitions="*,Auto"
+              RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="8" Margin="0,0,0,10">
+          <ComboBox x:Name="PreviewModeSelector" Grid.Row="0" Grid.Column="0"
+                    Width="150" HorizontalAlignment="Left"
                     ItemsSource="{Binding PreviewModes}"
                     SelectedItem="{Binding PreviewMode, Mode=TwoWay}">
             <ComboBox.ItemTemplate>
@@ -199,10 +201,16 @@
               </DataTemplate>
             </ComboBox.ItemTemplate>
           </ComboBox>
-          <CheckBox Grid.Column="1" VerticalAlignment="Center" Content="Rooms" IsChecked="{Binding ShowRooms, Mode=TwoWay}" />
-          <CheckBox Grid.Column="2" VerticalAlignment="Center" Content="Transitions" IsChecked="{Binding ShowTransitions, Mode=TwoWay}" />
-          <CheckBox Grid.Column="3" VerticalAlignment="Center" Content="Decorations" IsChecked="{Binding ShowDecorations, Mode=TwoWay}" />
-          <Button Grid.Column="5" Classes="primary" Content="Generate Preview" Command="{Binding GeneratePreviewCommand}" />
+          <Button x:Name="GeneratePreviewButton" Grid.Row="0" Grid.Column="1" Classes="primary"
+                  Content="Generate Preview" Command="{Binding GeneratePreviewCommand}" />
+          <StackPanel Grid.Row="1" Grid.ColumnSpan="2" Orientation="Horizontal" Spacing="10">
+            <CheckBox x:Name="ShowRoomsToggle" VerticalAlignment="Center"
+                      Content="Rooms" IsChecked="{Binding ShowRooms, Mode=TwoWay}" />
+            <CheckBox x:Name="ShowTransitionsToggle" VerticalAlignment="Center"
+                      Content="Transitions" IsChecked="{Binding ShowTransitions, Mode=TwoWay}" />
+            <CheckBox x:Name="ShowDecorationsToggle" VerticalAlignment="Center"
+                      Content="Decorations" IsChecked="{Binding ShowDecorations, Mode=TwoWay}" />
+          </StackPanel>
         </Grid>
         <Border Grid.Row="1" Background="#15181B" BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="4">
           <Grid>

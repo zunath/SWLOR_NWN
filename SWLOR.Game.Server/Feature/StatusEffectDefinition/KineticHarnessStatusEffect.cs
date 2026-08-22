@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     public sealed class KineticHarnessStatusEffect : StatusEffectBase
     {
         public override string Name => "Kinetic Harness";
-        public override EffectIconType Icon => EffectIconType.UntouchableInstinct1StatusEffect;
+        public override EffectIconType Icon => EffectIconType.KineticHarnessStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
         public override bool PersistsOnLogout => false;
 

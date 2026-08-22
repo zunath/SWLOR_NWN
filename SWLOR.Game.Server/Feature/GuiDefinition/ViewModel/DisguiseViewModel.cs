@@ -1,14 +1,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWNX;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
-    public class DisguiseViewModel: GuiViewModelBase<DisguiseViewModel, GuiPayloadBase>
+    public class DisguiseViewModel: GuiViewModelBase<DisguiseViewModel, GuiPayloadBase>,
+        IGuiRefreshable<PerkAcquiredRefreshEvent>,
+        IGuiRefreshable<PerkRefundedRefreshEvent>
     {
         public const string ContentPartialElement = "DISGUISE_CONTENT_PARTIAL";
         public const string ContentAvailablePartial = "DISGUISE_CONTENT_AVAILABLE";
@@ -17,6 +21,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const string ContentEmptyPartial = "DISGUISE_CONTENT_EMPTY";
 
         private const int SoundSetPageSize = 25;
+
+        private static readonly GuiColor _rowActiveColor = new(120, 210, 140);
+        private static readonly GuiColor _rowNormalColor = new(224, 220, 192);
+        private static readonly GuiColor _statusActiveColor = new(120, 210, 140);
+        private static readonly GuiColor _statusInactiveColor = new(170, 162, 138);
+        private static readonly GuiColor _statusEditColor = new(120, 185, 225);
+        private static readonly GuiColor _slotFreeColor = new(90, 150, 95);
+        private static readonly GuiColor _slotFullColor = new(200, 100, 70);
 
         private readonly List<string> _disguiseIds = new();
         private readonly List<int> _soundSetIds = new();
@@ -38,6 +50,48 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public GuiBindingList<bool> DisguiseToggles
         {
             get => Get<GuiBindingList<bool>>();
+            set => Set(value);
+        }
+
+        public GuiBindingList<GuiColor> DisguiseColors
+        {
+            get => Get<GuiBindingList<GuiColor>>();
+            set => Set(value);
+        }
+
+        public string SlotBarLabel
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public string ActivationDelayNote
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public float SlotUsageProgress
+        {
+            get => Get<float>();
+            set => Set(value);
+        }
+
+        public GuiColor SlotUsageColor
+        {
+            get => Get<GuiColor>();
+            set => Set(value);
+        }
+
+        public string StatusText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
+        public GuiColor StatusColor
+        {
+            get => Get<GuiColor>();
             set => Set(value);
         }
 
@@ -247,6 +301,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ScrambleAccountId = true;
             EmptyStateTitle = string.Empty;
             EmptyStateText = string.Empty;
+            SlotBarLabel = string.Empty;
+            ActivationDelayNote = string.Empty;
+            SlotUsageProgress = 0f;
+            SlotUsageColor = _slotFreeColor;
+            StatusText = string.Empty;
+            StatusColor = _statusInactiveColor;
+            DisguiseColors = new GuiBindingList<GuiColor>();
             SoundSetPageNumbers = new GuiBindingList<GuiComboEntry>();
 
             LoadSoundSetOptions();
@@ -358,16 +419,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SendMessageToPC(Player, ColorToken.Green("Disguise saved."));
         };
 
+        private int GetActivationDelayMinutes()
+        {
+            return (int)Math.Round(Disguise.GetActivationDelay(Player).TotalMinutes);
+        }
+
         public Action OnClickActivateOrDeactivate() => () =>
         {
             if (!HasSelection || IsRetiredSelected)
                 return;
 
             var selectedDisguiseId = _selectedDisguiseId;
+            var delayMinutes = GetActivationDelayMinutes();
 
             if (IsSelectedDisguiseActive())
             {
-                ShowModal("Deactivating this disguise immediately restores your normal identity. Deactivation does not trigger the 30-minute delay between disguise activations. Are you sure?",
+                ShowModal($"Deactivating this disguise immediately restores your normal identity. Deactivation does not trigger the {delayMinutes}-minute delay between disguise activations. Are you sure?",
                     WithLayoutRestore(() =>
                     {
                         if (Disguise.Deactivate(Player))
@@ -379,7 +446,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             else
             {
-                ShowModal("Activating this disguise starts a 30-minute delay before you can activate another disguise. Deactivation has no delay. Are you sure?",
+                ShowModal($"Activating this disguise starts a {delayMinutes}-minute delay before you can activate another disguise. Deactivation has no delay. Are you sure?",
                     WithLayoutRestore(() =>
                     {
                         var result = Disguise.Activate(Player, selectedDisguiseId);
@@ -497,28 +564,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
-            var usedSlots = Disguise.CountUsedSlots(playerId);
-            var slotLimit = Disguise.GetDisguiseSlotLimit(dbPlayer);
-            SlotCountText = $"Slots Used: {usedSlots} / {slotLimit}";
+            RefreshSlotCapacity(playerId, dbPlayer);
+            RefreshActivationDelayNote();
 
             var disguises = Disguise.GetDisguises(playerId, IsRetiredSelected);
             var disguiseNames = new GuiBindingList<string>();
             var disguiseToggles = new GuiBindingList<bool>();
+            var disguiseColors = new GuiBindingList<GuiColor>();
             _disguiseIds.Clear();
 
             foreach (var disguise in disguises)
             {
+                var isActive = !disguise.IsRetired && dbPlayer?.ActiveDisguiseId == disguise.Id;
                 var name = disguise.PrivateName;
-                if (!disguise.IsRetired && dbPlayer?.ActiveDisguiseId == disguise.Id)
+                if (isActive)
                     name += " (Active)";
 
                 _disguiseIds.Add(disguise.Id);
                 disguiseNames.Add(name);
                 disguiseToggles.Add(disguise.Id == selectedDisguiseId);
+                disguiseColors.Add(isActive ? _rowActiveColor : _rowNormalColor);
             }
 
             DisguiseNames = disguiseNames;
             DisguiseToggles = disguiseToggles;
+            DisguiseColors = disguiseColors;
 
             if (!string.IsNullOrWhiteSpace(selectedDisguiseId) && _disguiseIds.Contains(selectedDisguiseId))
             {
@@ -535,6 +605,52 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ClearSelection();
             ConfigureEmptyState(_disguiseIds.Count > 0);
             RefreshLayoutPartials();
+        }
+
+        private void RefreshSlotCapacity()
+        {
+            var playerId = GetObjectUUID(Player);
+            RefreshSlotCapacity(playerId, DB.Get<Player>(playerId));
+        }
+
+        private void RefreshSlotCapacity(string playerId, Player dbPlayer)
+        {
+            var usedSlots = Disguise.CountUsedSlots(playerId);
+            var slotLimit = Disguise.GetDisguiseSlotLimit(Player, dbPlayer);
+            SlotCountText = $"Slots Used: {usedSlots} / {slotLimit}";
+            SlotBarLabel = $"Disguise Slots   {usedSlots} / {slotLimit}";
+            SlotUsageProgress = slotLimit <= 0
+                ? 0f
+                : Math.Clamp((float)usedSlots / slotLimit, 0f, 1f);
+            SlotUsageColor = usedSlots >= slotLimit ? _slotFullColor : _slotFreeColor;
+        }
+
+        private void RefreshActivationDelayNote()
+        {
+            ActivationDelayNote = $"Activating starts a {GetActivationDelayMinutes()}-minute cooldown before you can activate another disguise.";
+        }
+
+        public void Refresh(PerkAcquiredRefreshEvent payload)
+        {
+            RefreshPerkDependentBindings(payload.Type);
+        }
+
+        public void Refresh(PerkRefundedRefreshEvent payload)
+        {
+            RefreshPerkDependentBindings(payload.Type);
+        }
+
+        private void RefreshPerkDependentBindings(PerkType perkType)
+        {
+            switch (perkType)
+            {
+                case PerkType.FalseIdentities:
+                    RefreshSlotCapacity();
+                    break;
+                case PerkType.CoverStory:
+                    RefreshActivationDelayNote();
+                    break;
+            }
         }
 
         private void LoadSelectedDisguise()
@@ -617,6 +733,36 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ShowRetireButton = HasSelection && IsAvailableSelected && !IsEditMode;
             ShowUnretireButton = HasSelection && IsRetiredSelected && !IsEditMode;
             ActivateButtonText = IsSelectedDisguiseActive() ? "Deactivate" : "Activate";
+            UpdateStatusTag();
+        }
+
+        private void UpdateStatusTag()
+        {
+            if (!HasSelection)
+            {
+                StatusText = string.Empty;
+                StatusColor = _statusInactiveColor;
+            }
+            else if (IsEditMode)
+            {
+                StatusText = "Editing";
+                StatusColor = _statusEditColor;
+            }
+            else if (IsRetiredSelected)
+            {
+                StatusText = "Retired";
+                StatusColor = _statusInactiveColor;
+            }
+            else if (IsSelectedDisguiseActive())
+            {
+                StatusText = "● Active";
+                StatusColor = _statusActiveColor;
+            }
+            else
+            {
+                StatusText = "Inactive";
+                StatusColor = _statusInactiveColor;
+            }
         }
 
         private void SelectDisguiseAtIndex(int index)

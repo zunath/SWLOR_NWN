@@ -39,7 +39,8 @@ namespace SWLOR.Game.Server.Service
             float duration,
             bool isHostile,
             TelegraphType type,
-            ApplyTelegraphEffect action)
+            ApplyTelegraphEffect action,
+            bool isPersistentAreaIndicator = false)
         {
             var data = new TelegraphData
             {
@@ -50,6 +51,7 @@ namespace SWLOR.Game.Server.Service
                 Size = size,
                 Duration = duration,
                 IsHostile = isHostile,
+                IsPersistentAreaIndicator = isPersistentAreaIndicator,
                 Action = action
             };
 
@@ -73,7 +75,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             _allTelegraphs.Remove(telegraphId);
-            UpdateShadersForAllPlayers();
+            UpdateShadersForArea(telegraph.Area);
             // RemoveEffectByLinkId is not available in SWLOR, effects are removed automatically
         }
 
@@ -118,7 +120,7 @@ namespace SWLOR.Game.Server.Service
 
             OnApply(telegrapher, data, effect);
             ApplyEffectToObject(DurationType.Temporary, effect, telegrapher, data.Duration);
-            UpdateShadersForAllPlayers();
+            UpdateShadersForArea(area);
 
             return GetEffectLinkId(effect);
         }
@@ -141,7 +143,13 @@ namespace SWLOR.Game.Server.Service
 
         public static void OnRemoved(uint telegrapher, string telegraphId)
         {
-            var area = GetArea(telegrapher);
+            // Resolve the area from the telegraph's own record rather than the telegrapher's current
+            // area. A creature that moved (or zoned) between creation and expiry would otherwise miss
+            // the lookup, leaking the entry and leaving a stale shape rendered for everyone in it.
+            if (!_allTelegraphs.TryGetValue(telegraphId, out var telegraph))
+                return;
+
+            var area = telegraph.Area;
 
             if (!_telegraphsByArea.ContainsKey(area))
                 return;
@@ -149,11 +157,11 @@ namespace SWLOR.Game.Server.Service
             if (!_telegraphsByArea[area].ContainsKey(telegraphId))
                 return;
 
-            RunTelegraphAction(area, _telegraphsByArea[area][telegraphId].Data);
+            RunTelegraphAction(area, telegraph.Data);
 
             _telegraphsByArea[area].Remove(telegraphId);
             _allTelegraphs.Remove(telegraphId);
-            UpdateShadersForAllPlayers();
+            UpdateShadersForArea(area);
         }
 
         [NWNEventHandler(ScriptName.TelegraphEffect)]
@@ -360,6 +368,39 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Updates shader uniforms only for players standing in the given area. Telegraph shader slots
+        /// are per-area, so a telegraph created or removed in one area cannot affect players elsewhere.
+        /// Instant abilities now flash their shape on every use, so this runs far more often than the
+        /// original create/destroy-only path and must not touch every player on the server.
+        /// </summary>
+        private static void UpdateShadersForArea(uint area)
+        {
+            if (!GetIsObjectValid(area))
+                return;
+
+            for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
+            {
+                if (GetArea(player) == area)
+                    UpdateShaderForPlayer(player);
+            }
+        }
+
+        /// <summary>
+        /// Pushes the current telegraph state to a player entering an area. Without this, a player who
+        /// zones in (or logs in) while a telegraph is already running sees nothing until some unrelated
+        /// telegraph happens to be created or removed in that same area.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnAreaEnter)]
+        public static void OnAreaEnter()
+        {
+            var player = GetEnteringObject();
+            if (!GetIsPC(player) && !GetIsDM(player))
+                return;
+
+            UpdateShaderForPlayer(player);
+        }
+
+        /// <summary>
         /// Updates shader uniforms for a specific player to display telegraphs.
         /// </summary>
         /// <param name="player">Player to update shaders for</param>
@@ -372,17 +413,11 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            var telegraphs = _telegraphsByArea[area];
-            var telegraphCountToRender = telegraphs.Count > MaxRenderCount
-                ? MaxRenderCount
-                : telegraphs.Count;
+            var telegraphs = SelectTelegraphsForRendering(_telegraphsByArea[area].Values);
 
             var i = 0;
-            foreach (var (_, telegraph) in telegraphs)
+            foreach (var telegraph in telegraphs)
             {
-                if (i >= MaxRenderCount)
-                    break;
-
                 var data = telegraph.Data;
                 var position = data.Position;
                 var size = data.Size;
@@ -406,7 +441,15 @@ namespace SWLOR.Game.Server.Service
                 i++;
             }
 
-            ResetTelegraphShaderSlots(player, telegraphCountToRender);
+            ResetTelegraphShaderSlots(player, telegraphs.Length);
+        }
+
+        private static ActiveTelegraph[] SelectTelegraphsForRendering(IEnumerable<ActiveTelegraph> telegraphs)
+        {
+            return telegraphs
+                .OrderBy(telegraph => telegraph.Data.IsPersistentAreaIndicator)
+                .Take(MaxRenderCount)
+                .ToArray();
         }
 
         private static void ResetTelegraphShaderSlots(uint player, int startIndex)
@@ -434,7 +477,8 @@ namespace SWLOR.Game.Server.Service
             float radius,
             float duration,
             bool isHostile,
-            ApplyTelegraphEffect action)
+            ApplyTelegraphEffect action,
+            bool isPersistentAreaIndicator = false)
         {
             return CreateTelegraph(
                 creator,
@@ -444,7 +488,8 @@ namespace SWLOR.Game.Server.Service
                 duration,
                 isHostile,
                 TelegraphType.Sphere,
-                action);
+                action,
+                isPersistentAreaIndicator);
         }
 
         /// <summary>

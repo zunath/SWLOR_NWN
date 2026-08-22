@@ -19,7 +19,7 @@ public class CombatUpgradeMigrationCoverageTests
     private const string PerkTypeEnumMemberPattern = @"^\s*([A-Za-z_]\w*)\s*(?:=\s*-?\d+)?\s*,?\s*(?://.*)?$";
 
     [Test]
-    public void CombatUpgradeServerMigration_ForcesFullRebuildWithoutTokenFlow()
+    public void CombatUpgradeServerMigration_ForcesFullRebuildAndGrantsRebuildToken()
     {
         var root = FindRepositoryRoot();
         var serverMigrations = Path.Combine(
@@ -52,8 +52,8 @@ public class CombatUpgradeMigrationCoverageTests
         combatMigration.Should().Contain("NormalizeResistanceDictionary(jObject, nameof(Player.Resistances));");
         combatMigration.Should().Contain("PlayerRemovedPerks");
         combatMigration.Should().Contain("BeastRemovedPerks");
-        combatMigration.Should().NotContain("RebuildToken");
-        combatMigration.Should().NotContain("GrantRebuild");
+        combatMigration.Should().Contain("GrantCombatUpgradeRebuildToken(dbPlayer);");
+        combatMigration.Should().Contain("CurrencyType.RebuildToken");
     }
 
     [Test]
@@ -114,6 +114,7 @@ public class CombatUpgradeMigrationCoverageTests
         resistanceMigration.Should().Contain("SerializedItemResistanceMigration.MigrateObject(player);");
         resistanceMigration.Should().Contain("SerializedItemWeaponDamageTypeMigration.MigrateObject(player);");
         resistanceMigration.Should().Contain("CombatReadinessMigration.MigratePlayer(player);");
+        resistanceMigration.Should().Contain("PistolBaseItemMigration.MigratePlayer(player);");
         obsoleteItemMigration.Should().Contain("public override int Version => 15;");
         obsoleteItemMigration.Should().Contain("ObsoleteItemMigration.RemoveObsoleteItemsFromObject(player);");
         obsoleteItemMigration.Should().Contain("PlayerInitialization.ResetFeatsToBaseline(player);");
@@ -154,6 +155,51 @@ public class CombatUpgradeMigrationCoverageTests
             "MigratePlayerShips(ships, progress);");
         AssertStoredEntitySurfaces(migration);
         AssertShipSurfaces(migration);
+    }
+
+    [Test]
+    public void PistolBaseItemMigration_CoversPlayersAndStoredItemSurfaces()
+    {
+        var root = FindRepositoryRoot();
+        var migrationRoot = Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "MigrationDefinition");
+        var pistolMigration = File.ReadAllText(Path.Combine(
+            migrationRoot,
+            "PistolBaseItemMigration.cs"));
+        var storedMigration = File.ReadAllText(Path.Combine(
+            migrationRoot,
+            "ServerMigration",
+            "StoredItemDataMigration.cs"));
+
+        storedMigration.Should().Contain("PistolBaseItemMigration.MigrateStoredObject(obj)");
+        pistolMigration.Should().Contain("PistolBaseItemCompatibility.Normalize(obj)");
+        pistolMigration.Should().Contain("GetItemInSlot(InventorySlot.Arrows, creature)");
+        pistolMigration.Should().Contain("CreaturePlugin.RunUnequip(creature, legacyAmmo)");
+        pistolMigration.Should().Contain("CreaturePlugin.RunEquip(creature, legacyAmmo, InventorySlot.Bullets)");
+        pistolMigration.Should().Contain("ConstructedDroidVariable");
+        pistolMigration.Should().Contain("droid.SerializedCPU");
+        pistolMigration.Should().Contain("droid.SerializedHead");
+        pistolMigration.Should().Contain("droid.SerializedBody");
+        pistolMigration.Should().Contain("droid.SerializedArms");
+        pistolMigration.Should().Contain("droid.SerializedLegs");
+        pistolMigration.Should().Contain("droid.EquippedItems");
+        pistolMigration.Should().Contain("droid.Inventory");
+        pistolMigration.Should().Contain("MoveEquippedItemToDroidInventory(droid, existingBulletAmmo)");
+
+        AssertMigrationCalls(storedMigration,
+            "MigrateInventoryItems(progress);",
+            "MigrateMarketItems(progress);",
+            "MigrateWorldPropertyCategories(categories, progress);",
+            "MigrateEntityItems(SearchAll<WorldProperty>()",
+            "MigrateEntityItems(researchJobs",
+            "MigrateEntityItems(SearchAll<PlayerOutfit>()",
+            "MigrateEntityItems(SearchAll<DMCreature>()",
+            "MigratePlayerShips(ships, progress);");
+        AssertStoredEntitySurfaces(storedMigration);
+        AssertShipSurfaces(storedMigration);
     }
 
     [Test]

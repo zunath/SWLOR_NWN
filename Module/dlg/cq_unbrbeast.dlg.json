@@ -64,7 +64,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Unbreakable Beast is no longer a lesson on my ledger. You proved it in Dathomir Tarn Jungle Preserve; keep proving it when nobody is keeping score."
+            "0": "Unbreakable Beast. You took everything that preserve had and you're still standing. Nothing left in there worth testing you against. Go hold something worth holding."
           }
         }
       },
@@ -113,7 +113,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not yet. Unbreakable Beast is not a conversation I start on instinct or reputation. Come back when your work can survive the proof I keep for Dathomir Tarn Jungle Preserve."
+            "0": "This one. Rancor, north pens, three years back. Near took my arm. I kept the arm. You haven't taken anything yet worth naming. Come back when you have."
           }
         }
       },
@@ -258,7 +258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The Tarn Jungle breaks animals that only look strong. Bring me proof yours is stronger after the breaking starts. Go to Dathomir Tarn Jungle Preserve on Dathomir, defeat the Unbreakable Beast adepts, and bring back the Unbreakable Beast field report."
+            "0": "Something took over my Tarn Jungle Preserve. Adepts, six of them. Toughen young beasts with beatings instead of trust, call it training. Go in, on Dathomir. Take the six down. Bring back the Unbreakable Beast Tarn Hunt Tally they're keeping score with."
           }
         }
       },
@@ -307,7 +307,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Dathomir Tarn Jungle Preserve. I want proof, not a story about almost having it."
+            "0": "Key's yours. North fence, same gap I've been meaning to weld shut for a year. Go in. Take what's coming. Come back standing."
           }
         }
       },
@@ -376,7 +376,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Unbreakable Beast is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "Beat a beast enough, it stops flinching. Looks like toughness. It's just damage with nowhere left to feel. Real endurance holds because it chose to hold, not because it's too broken to notice pain anymore. Different thing entirely."
           }
         }
       },
@@ -445,7 +445,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Tarn Jungle Preserve is on Dathomir. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Only honest test there is. Not how hard you hit. How much you take and still stand up after. Anyone can swing once. Standing through the swing that should've dropped you, that's the whole discipline."
           }
         }
       },
@@ -514,7 +514,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Every hit those adepts land gets scratched onto that tally. Proof, plain as anything, of exactly how they've been running my preserve. Bring it back whole and it stops being their scoreboard."
           }
         }
       },
@@ -563,7 +563,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Tarn Jungle Preserve still holds your first proof for Unbreakable Beast. Finish the target there before you bring me anything else."
+            "0": "Six adepts still swinging. Tally's still with them."
           }
         }
       },
@@ -632,7 +632,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Unbreakable Beast lesson clean."
+            "0": "You're upright. That's the whole test, passed. Let's see it."
           }
         }
       },
@@ -681,7 +681,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Unbreakable Beast is one step closer to belonging to you."
+            "0": "Marked, every hit. That's evidence I can use. There's more standing between you and the rest of this preserve, if you've got the stomach."
           }
         }
       },
@@ -826,7 +826,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Unbreakable Beast proof is waiting in Dathomir Tarn Jungle Preserve. This one is about second proof, not repetition. Go to Dathomir Tarn Jungle Preserve on Dathomir, defeat the Unbreakable Beast specialists, and bring back the Unbreakable Beast calibration core."
+            "0": "Five specialists past the adepts. They've moved on from beatings to something with a needle in it, scent vial, dosed wrong on purpose to keep the beasts in constant pain. That's not toughening. That's just cruelty with a schedule. Take the five down. Bring me the Unbreakable Beast Beast-Pen Scent Vial."
           }
         }
       },
@@ -875,7 +875,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Dathomir Tarn Jungle Preserve. I want proof, not a story about almost having it."
+            "0": "Same gap in the fence. Deeper pens this time. Watch your footing near the troughs; they've let the ground rot."
           }
         }
       },
@@ -944,7 +944,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Unbreakable Beast is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "Dosed to keep pain constant, low enough the beast can't rest, high enough it never toughens right. Bring that vial back whole and I've got proof of exactly what they've been dosing my animals with. Proof holds up better than my word alone."
           }
         }
       },
@@ -1013,7 +1013,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Tarn Jungle Preserve is on Dathomir. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Beatings leave marks people ask questions about. A needle's quieter. Same cruelty, harder to prove, which is exactly why they switched. Doesn't make it toughening. Makes it worse, honestly, because at least a beating ends."
           }
         }
       },
@@ -1082,7 +1082,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "No. Pain that never lets up isn't a test, it's just damage on a drip. My beasts endure because they trust the hand holding the line, not because the line never stops hurting. That trust is the whole difference between unbreakable and just broken slowly."
           }
         }
       },
@@ -1131,7 +1131,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Tarn Jungle Preserve still holds your second proof for Unbreakable Beast. Finish the target there before you bring me anything else."
+            "0": "Five specialists, still dosing my pens. Bring that vial back."
           }
         }
       },
@@ -1200,7 +1200,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Unbreakable Beast lesson clean."
+            "0": "You look like you took a few doses yourself. Hand it over."
           }
         }
       },
@@ -1249,7 +1249,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Unbreakable Beast is one step closer to belonging to you."
+            "0": "That vial's proof enough on its own. Whoever's running this operation just made my case for me. Good work. Rest up."
           }
         }
       },
@@ -1394,7 +1394,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Unbreakable Beast proof is waiting in Dathomir Tarn Jungle Preserve. This one is about breach proof, not repetition. Go to Dathomir Tarn Jungle Preserve on Dathomir, defeat the Unbreakable Beast warden, and bring back the Unbreakable Beast broken seal."
+            "0": "Warden holds the deep pens. His hide's the reason blades bounce off him instead of biting, years of taking hits on purpose until nothing gets through clean anymore. One blade against that just wears its edge down for nothing. Bring friends who can take a hit themselves, not just deal one. Take him down. Bring me the Unbreakable Beast Clawed Alpha Totem."
           }
         }
       },
@@ -1443,7 +1443,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Dathomir Tarn Jungle Preserve. I want proof, not a story about almost having it."
+            "0": "Same gap. Deep pens past the rotted troughs. Bring people who can stand there and keep standing, not just people who hit hard once."
           }
         }
       },
@@ -1512,7 +1512,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Unbreakable Beast is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "Took hits on purpose, for years, past any sense of it. Somewhere in there he stopped choosing to endure and started just being unable to feel it anymore. That's the difference between him and me, and it's the whole reason he's dangerous now."
           }
         }
       },
@@ -1581,7 +1581,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Tarn Jungle Preserve is on Dathomir. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Alpha totem marks the toughest bloodline in the pens, the one every other animal learns to hold from. He's got it clawed to pieces because he clawed the real bloodline apart himself, replaced it with whatever survives beating instead of whatever endures honestly. Bring it back whole and the real line's proven again."
           }
         }
       },
@@ -1650,7 +1650,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Because one blade tires before his hide does. Simple as that. Bring friends who can take a hit and keep standing, and he's got three fights instead of one easy one, and none of you tire out at the same time he does. That's the whole trick to a hide like his. Outlast it in numbers, since you can't outlast it alone."
           }
         }
       },
@@ -1699,7 +1699,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Tarn Jungle Preserve still holds your breach proof for Unbreakable Beast. Finish the target there before you bring me anything else."
+            "0": "Warden's hide is still holding. Bring friends who can take a hit."
           }
         }
       },
@@ -1768,7 +1768,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Unbreakable Beast lesson clean."
+            "0": "Everybody still standing? Good sign. Let's see the totem."
           }
         }
       },
@@ -1817,7 +1817,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Unbreakable Beast is one step closer to belonging to you."
+            "0": "Whole. That's the real bloodline proven again, finally. Not bad, for people who could take a hit. Rest up. The ones who taught him that trick are next."
           }
         }
       },
@@ -1962,7 +1962,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Unbreakable Beast proof is waiting in Dathomir Tarn Jungle Preserve. This one is about circle proof, not repetition. Go to Dathomir Tarn Jungle Preserve on Dathomir, defeat the Unbreakable Beast inner circle, and bring back the Unbreakable Beast command mark."
+            "0": "Four of them run the deep floor now, inner circle, the ones who taught the warden that his hide should stop feeling anything at all. Bring your people back. Four of them hitting at once is its own kind of endurance test. Take them down. Bring me the Unbreakable Beast Preserve Keeper's Token."
           }
         }
       },
@@ -2011,7 +2011,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Dathomir Tarn Jungle Preserve. I want proof, not a story about almost having it."
+            "0": "Same gap. Deepest part of the preserve. Stand together. Four of them hitting from four sides tests whether your people can hold a line as much as it tests you."
           }
         }
       },
@@ -2080,7 +2080,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Unbreakable Beast is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "Taught him to stop feeling it. That's their whole doctrine down there: pain isn't something you endure, it's something you stop noticing. Difference between that and real endurance is everything. One's a choice you keep making. The other's just numbness with good posture."
           }
         }
       },
@@ -2149,7 +2149,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Tarn Jungle Preserve is on Dathomir. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "That token's proof of who's allowed to run the deep floor, sign off on the pens, all of it. They minted fakes to cover for each other. One real token, and every fake signature they've made gets thrown out with it."
           }
         }
       },
@@ -2218,7 +2218,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Beast holds for the master. Master holds for the beast. Neither one's numb to the other, and neither one stops choosing it, hit after hit. That's the whole bond, shared both directions. Not one thing enduring alone. Two things enduring together."
           }
         }
       },
@@ -2267,7 +2267,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Tarn Jungle Preserve still holds your circle proof for Unbreakable Beast. Finish the target there before you bring me anything else."
+            "0": "Four of them still running the deep floor. Bring the token back."
           }
         }
       },
@@ -2336,7 +2336,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Unbreakable Beast lesson clean."
+            "0": "Your people still standing beside you. Good. Let's see the token."
           }
         }
       },
@@ -2385,7 +2385,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Unbreakable Beast is one step closer to belonging to you."
+            "0": "Whole. Deep floor's mine to sign again. One name left down there, and he's the one who taught all four of them to stop feeling anything. You're ready for that."
           }
         }
       },
@@ -2530,7 +2530,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Unbreakable Beast proof is waiting in Dathomir Tarn Jungle Preserve. This one is about mastery proof, not repetition. Go to Dathomir Tarn Jungle Preserve on Dathomir, defeat the Unbreakable Beast master, and return with the final proof."
+            "0": "Last one. The master's hide doesn't just stop feeling it. It doesn't break, period, not the way the warden's doesn't break, not the way anything in this preserve doesn't break. He built that out of the same endurance I've spent my life teaching, and pointed it at anyone who questioned him. Bring your people. All of them. His hide answers to a lot of hits landing together or it doesn't answer to anything. No token this time. Him going down, and staying down, is the whole proof."
           }
         }
       },
@@ -2579,7 +2579,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Dathomir Tarn Jungle Preserve. I want proof, not a story about almost having it."
+            "0": "Then go. All your people, together, same gap in the fence. His hide's felt one hit at a time for years and shrugged it off. Give it a lot of hits, all at once, for once."
           }
         }
       },
@@ -2648,7 +2648,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Unbreakable Beast is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "Warden stopped feeling it. He stopped needing to feel it in the first place. That's further along the same road, and it's exactly what I've spent my whole life teaching, done right, for the wrong reasons. You've been building the true version this whole trial. He's the corrupted end of the same road."
           }
         }
       },
@@ -2717,7 +2717,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Tarn Jungle Preserve is on Dathomir. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Because one hit, however hard, is still one hit, and his hide's outlasted worse alone. A dozen hits, all at once, from every side, and there's no single point for that endurance to brace against anymore. That's the whole math of taking down something built not to break."
           }
         }
       },
@@ -2786,7 +2786,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "It means what it always meant. Beast holds for master, master holds for beast, both of you choosing it every single hit, never numb to each other even when you're numb to everything else. That's what he lost somewhere in all this. Don't lose it yourself."
           }
         }
       },
@@ -2835,7 +2835,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dathomir Tarn Jungle Preserve still holds your mastery proof for Unbreakable Beast. Finish the target there before you bring me anything else."
+            "0": "His hide's still standing. Bring everyone you've got."
           }
         }
       },
@@ -2904,7 +2904,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Unbreakable Beast lesson clean."
+            "0": "Preserve's gone quiet. Even the pens have stopped fighting the fences. Tell me he's down."
           }
         }
       },
@@ -2953,7 +2953,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Unbreakable Beast is one step closer to belonging to you."
+            "0": "Then he's down, and staying down, which is the whole proof right there. You took everything that preserve had to give and you're still standing, same as I've always measured it. That's the unbreakable bond, both ways, held all the way through. Go hold something worth holding."
           }
         }
       }
@@ -3023,7 +3023,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to standing."
           }
         }
       },
@@ -3100,7 +3100,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the first proof."
+            "0": "I'll take the six down and bring your tally."
           }
         }
       },
@@ -3165,7 +3165,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Unbreakable Beast demand?"
+            "0": "What do you mean, toughen with beatings?"
           }
         }
       },
@@ -3230,7 +3230,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "What does endurance actually test?"
           }
         }
       },
@@ -3295,7 +3295,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "What's this tally worth?"
           }
         }
       },
@@ -3340,7 +3340,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Not yet."
           }
         }
       },
@@ -3417,7 +3417,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "Here's the Unbreakable Beast Tarn Hunt Tally."
           }
         }
       },
@@ -3482,7 +3482,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to standing."
           }
         }
       },
@@ -3559,7 +3559,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the second proof."
+            "0": "I'll take the five down and bring the vial."
           }
         }
       },
@@ -3624,7 +3624,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Unbreakable Beast demand?"
+            "0": "What's in that vial exactly?"
           }
         }
       },
@@ -3689,7 +3689,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Why move from beatings to needles?"
           }
         }
       },
@@ -3754,7 +3754,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "Can a beast under that pain still endure honestly?"
           }
         }
       },
@@ -3799,7 +3799,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Give me a day."
           }
         }
       },
@@ -3876,7 +3876,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "Here's the Unbreakable Beast Beast-Pen Scent Vial."
           }
         }
       },
@@ -3941,7 +3941,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to standing."
           }
         }
       },
@@ -4018,7 +4018,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the breach proof."
+            "0": "I'll bring friends who can take a hit too."
           }
         }
       },
@@ -4083,7 +4083,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Unbreakable Beast demand?"
+            "0": "How'd his hide get like that?"
           }
         }
       },
@@ -4148,7 +4148,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "What does the alpha totem prove?"
           }
         }
       },
@@ -4213,7 +4213,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "Why do blades bounce off him specifically?"
           }
         }
       },
@@ -4258,7 +4258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Haven't got the right friends yet."
           }
         }
       },
@@ -4335,7 +4335,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "Here's the Unbreakable Beast Clawed Alpha Totem, whole."
           }
         }
       },
@@ -4400,7 +4400,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to standing."
           }
         }
       },
@@ -4477,7 +4477,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the circle proof."
+            "0": "We'll take the four together and hold."
           }
         }
       },
@@ -4542,7 +4542,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Unbreakable Beast demand?"
+            "0": "What did they teach the warden, exactly?"
           }
         }
       },
@@ -4607,7 +4607,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "What's this keeper's token prove?"
           }
         }
       },
@@ -4672,7 +4672,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "What does an unbreakable bond actually share?"
           }
         }
       },
@@ -4717,7 +4717,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "My people need to rest first."
           }
         }
       },
@@ -4794,7 +4794,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "Here's the Unbreakable Beast Preserve Keeper's Token, whole."
           }
         }
       },
@@ -4859,7 +4859,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to standing."
           }
         }
       },
@@ -4936,7 +4936,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the mastery proof."
+            "0": "All of us, together, against him."
           }
         }
       },
@@ -5001,7 +5001,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Unbreakable Beast demand?"
+            "0": "How's his endurance different from the warden's?"
           }
         }
       },
@@ -5066,7 +5066,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Why does it take all of us to break one hide?"
           }
         }
       },
@@ -5131,7 +5131,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "What does an unbreakable bond mean, once he's gone?"
           }
         }
       },
@@ -5176,7 +5176,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Not till everyone's ready."
           }
         }
       },
@@ -5253,7 +5253,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "He's down. Staying down."
           }
         }
       }

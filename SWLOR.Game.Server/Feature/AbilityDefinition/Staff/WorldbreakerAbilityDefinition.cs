@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 false,
                 Spell.Worldbreaker1,
                 AbilityTargetingShapeType.Sphere,
-                10.0f,
+                5.0f,
                 0.0f,
                 AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf,
                 Animation.DoubleStrike,
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 AbilityType.Invalid,
                 new GeneratedWeaponAbilityProfile
                 {
-                    ExtraDamageIfTargetControlled = 50,
+                    ExtraDamageIfTargetControlled = 40,
                     RequiredTargetStatusCategoryForConditionalStatus = StatusEffectCategory.Control,
                     ConditionalTargetStatusEffect = typeof(DazedStatusEffect),
                     ConditionalTargetStatusDurationSeconds = 30

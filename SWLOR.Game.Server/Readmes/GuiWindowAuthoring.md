@@ -211,6 +211,8 @@ public class ExampleViewModel : GuiViewModelBase<ExampleViewModel, GuiPayloadBas
         SelectTab(FirstTabId);
     }
 
+    public override Action OnWindowClosed() => () => { };
+
     private void SelectTab(int tabId)
     {
         SelectedTabId = tabId;
@@ -319,9 +321,11 @@ the VM side to refresh all column lists from one row-DTO list.
 
 ## 7. Validation gate (all four, in order)
 
-1. `dotnet build SWLOR.Game.Server/SWLOR.Game.Server.csproj` — zero errors/warnings
-   (R1 throws here at boot-time template build).
-2. Boot the dev server: **zero `[NUI layout warning]` lines mentioning your window.**
+1. `dotnet build SWLOR.Game.Server.Tests/SWLOR.Game.Server.Tests.csproj -p:RunPostBuildEvent=Never`
+   followed by `dotnet test SWLOR.Game.Server.Tests/SWLOR.Game.Server.Tests.csproj
+   --no-build --filter "FullyQualifiedName~GuiLayoutValidationTests"` — the corpus test
+   builds every GUI definition without the live engine and rejects unexpected findings.
+2. Boot the dev server: **zero `[NUI layout warning]` Server-log entries mentioning your window.**
    The only expected warnings anywhere are DebugNuiGallery's six R2c canaries.
 3. Optional: pull your window's `[NUI JSON]` lines from
    `debugserver/app_logs/Server/` and sanity-check the structure (root row → content

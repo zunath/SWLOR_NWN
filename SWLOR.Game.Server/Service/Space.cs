@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Service
 
         private static readonly HashSet<string> _shipItemResrefs = new();
         private static readonly HashSet<string> _shipModuleItemTags = new();
+        private static readonly HashSet<AppearanceType> _shipAppearances = new();
 
         private static readonly Dictionary<string, uint> _shipClones = new();
 
@@ -221,6 +222,7 @@ namespace SWLOR.Game.Server.Service
                 foreach (var (shipType, shipDetail) in ships)
                 {
                     _shipTypes.Add(shipType, shipDetail);
+                    _shipAppearances.Add(shipDetail.Appearance);
 
                     if (!_shipItemResrefs.Contains(shipDetail.ItemResref))
                         _shipItemResrefs.Add(shipDetail.ItemResref);
@@ -673,6 +675,15 @@ namespace SWLOR.Game.Server.Service
             var dbPlayerShip = DB.Get<PlayerShip>(shipId);
             var shipDetail = _shipTypes[dbPlayerShip.Status.ItemTag];
 
+            // Snapshot the character's appearance at the moment it gets overwritten so exiting
+            // space restores exactly what they looked like, even if the value captured at
+            // character initialization is stale or corrupted.
+            var currentAppearance = GetAppearanceType(player);
+            if (currentAppearance != AppearanceType.Invalid && !IsShipAppearance(currentAppearance))
+            {
+                dbPlayer.OriginalAppearanceType = currentAppearance;
+            }
+
             // Update player appearance to match that of the ship.
             SetCreatureAppearanceType(player, shipDetail.Appearance);
             Stat.ApplyCreatureMovementRate(player);
@@ -852,6 +863,37 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Determines whether an appearance type belongs to a registered ship.
+        /// </summary>
+        /// <param name="appearance">The appearance type to check.</param>
+        /// <returns>true if the appearance is used by a ship, false otherwise</returns>
+        private static bool IsShipAppearance(AppearanceType appearance)
+        {
+            return _shipAppearances.Contains(appearance);
+        }
+
+        /// <summary>
+        /// Restores a player's character appearance after leaving space mode.
+        /// If the stored appearance is missing or was corrupted to a ship appearance,
+        /// it is repaired from the racial default and saved onto the provided entity.
+        /// </summary>
+        /// <param name="player">The player whose appearance will be restored.</param>
+        /// <param name="dbPlayer">The player entity. Mutated if the stored appearance needs repair; the caller is responsible for persisting it.</param>
+        private static void RestoreCharacterAppearance(uint player, Player dbPlayer)
+        {
+            var appearance = dbPlayer.OriginalAppearanceType;
+
+            if (appearance == AppearanceType.Invalid || IsShipAppearance(appearance))
+            {
+                appearance = Race.GetDefaultAppearance(GetRacialType(player), GetGender(player)).AppearanceType;
+                Log.Write(LogGroup.Space, $"Stored appearance of player {GetName(player)} ({dbPlayer.Id}) was unusable ({dbPlayer.OriginalAppearanceType}). Repaired to racial default {appearance}.");
+                dbPlayer.OriginalAppearanceType = appearance;
+            }
+
+            SetCreatureAppearanceType(player, appearance);
+        }
+
+        /// <summary>
         /// Makes the player exit space mode which reverts the player's appearance, loads the character's hot bar, etc.
         /// </summary>
         /// <param name="player">The player exiting space mode.</param>
@@ -868,7 +910,7 @@ namespace SWLOR.Game.Server.Service
             var dbShip = DB.Get<PlayerShip>(shipId);
 
             ClearCurrentTarget(player);
-            SetCreatureAppearanceType(player, dbPlayer.OriginalAppearanceType);
+            RestoreCharacterAppearance(player, dbPlayer);
             Stat.ApplyCreatureMovementRate(player);
             Enmity.RemoveCreatureEnmity(player);
 
@@ -1837,7 +1879,7 @@ namespace SWLOR.Game.Server.Service
 
                 // Exit space mode
                 ClearCurrentTarget(creature);
-                SetCreatureAppearanceType(creature, dbPlayer.OriginalAppearanceType);
+                RestoreCharacterAppearance(creature, dbPlayer);
                 Stat.ApplyCreatureMovementRate(creature);
                 Enmity.RemoveCreatureEnmity(creature);
 

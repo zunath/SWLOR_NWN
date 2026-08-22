@@ -1,5 +1,4 @@
 using SWLOR.Game.Server.Core.Beamdog;
-using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
@@ -20,47 +19,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetTitle("HoloCom")
                 .DefinePartialView(HoloComViewModel.MessagesTabPartial, AddMessagesTab)
                 .DefinePartialView(HoloComViewModel.ContactsTabPartial, AddContactsTab)
-                .AddColumn(root =>
+                .AddStandardLayout(layout =>
                 {
-                    root.AddRow(row =>
+                    layout.SetTabPanelHeight(40f);
+                    layout.AddTabRow(tabRow =>
                     {
-                        row.AddGroup(group =>
-                        {
-                            group.SetShowBorder(false);
-                            group.SetScrollbars(NuiScrollbars.Auto);
-                            group.AddColumn(tabColumn =>
-                            {
-                                tabColumn.AddRow(tabRow =>
-                                {
-                                    tabRow.SetHeight(28f);
-                                    tabRow.AddToggles()
-                                        .AddOption("Messages")
-                                        .AddOption("Contacts")
-                                        .BindSelectedValue(model => model.TabToggleValue)
-                                        .SetWidth(240f)
-                                        .SetHeight(28f);
-                                    tabRow.AddSpacer();
-                                });
-                            });
-                        })
-                            .SetHeight(40f);
+                        tabRow.SetHeight(28f);
+                        tabRow.AddToggles()
+                            .AddOption("Messages")
+                            .AddOption("Contacts")
+                            .BindSelectedValue(model => model.TabToggleValue)
+                            .SetWidth(240f)
+                            .SetHeight(28f);
+                        tabRow.AddSpacer();
                     });
-
-                    root.AddRow(row =>
-                    {
-                        row.AddGroup(group =>
-                        {
-                            group.SetShowBorder(false);
-                            group.SetScrollbars(NuiScrollbars.Auto);
-                            group.AddColumn(contentCol =>
-                            {
-                                contentCol.AddRow(contentRow =>
-                                {
-                                    contentRow.AddPartialView(HoloComViewModel.TabContentPartialElement);
-                                });
-                            });
-                        });
-                    });
+                    layout.SetContentPartialElement(HoloComViewModel.TabContentPartialElement);
                 });
 
             return _builder.Build();
@@ -70,6 +43,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         {
             group.SetShowBorder(false);
             group.SetScrollbars(NuiScrollbars.None);
+            group.SetWidth(400f);
             group.AddColumn(col =>
             {
                 col.AddRow(row =>
@@ -179,6 +153,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         {
             group.SetShowBorder(false);
             group.SetScrollbars(NuiScrollbars.None);
+            group.SetWidth(400f);
             group.AddColumn(col =>
             {
                 // Always-visible call banner. Rows that are invisible when the partial's

@@ -1,7 +1,6 @@
 // TEMPLATE: copy to SWLOR.Game.Server/Feature/GuiDefinition/<YourWindow>Definition.cs
 // and rename every "TemplateWindow" token. Delete markers as you fill them.
 using SWLOR.Game.Server.Core.Beamdog;
-using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;

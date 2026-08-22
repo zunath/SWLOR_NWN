@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 55.0
+    "value": 122.0
   },
   "ClassList": {
     "type": "list",
@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 35
+    "value": 25
   },
   "Disarmable": {
     "type": "byte",
@@ -185,11 +185,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 4611
+    "value": 4503
   },
   "Int": {
     "type": "byte",
-    "value": 25
+    "value": 35
   },
   "Interruptable": {
     "type": "byte",
@@ -247,7 +247,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 184
+    "value": 231
   },
   "Race": {
     "type": "byte",
@@ -577,6 +577,21 @@
         "Value": {
           "type": "cexostring",
           "value": "CAPSTONE_DATHOMIR_GROTTO_APEX_DEN_BOSS_LOOT,100,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_2"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "CAPSTONE_PRIMOVER_WD_RARES,5,1"
         }
       }
     ]

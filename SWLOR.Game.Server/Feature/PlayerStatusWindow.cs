@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
@@ -116,12 +117,74 @@ namespace SWLOR.Game.Server.Feature
         public static void LoadPlayerStatusWindow()
         {
             var player = GetEnteringObject();
+            ApplyStatusDisplay(player);
+        }
 
+        [NWNEventHandler(ScriptName.OnSpaceEnter)]
+        [NWNEventHandler(ScriptName.OnSpaceExit)]
+        public static void RefreshStatusDisplayOnSpaceTransition()
+        {
+            ApplyStatusDisplay(OBJECT_SELF);
+        }
+
+        private static readonly GuiWindowType[] _statusWindows =
+        {
+            GuiWindowType.PlayerStatus,
+            GuiWindowType.PlayerStatusPortrait,
+            GuiWindowType.PlayerStatusPortraitSpace,
+        };
+
+        /// <summary>
+        /// Opens the appropriate vitals display for the player and closes the others. With the
+        /// Mini-Vitals setting enabled, the compact portrait overlay is used - the 2-bar STM/FP
+        /// version on foot, or the 3-bar shield/hull/capacitor version in space. Otherwise the
+        /// docked window is used, which already adapts to both on foot and in space.
+        /// </summary>
+        public static void ApplyStatusDisplay(uint player)
+        {
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
                 return;
 
-            if(!Gui.IsWindowOpen(player, GuiWindowType.PlayerStatus))
-                Gui.TogglePlayerWindow(player, GuiWindowType.PlayerStatus);
+            GuiWindowType target;
+            if (ShouldUsePortraitVitals(player))
+            {
+                target = Space.IsPlayerInSpaceMode(player)
+                    ? GuiWindowType.PlayerStatusPortraitSpace
+                    : GuiWindowType.PlayerStatusPortrait;
+            }
+            else
+            {
+                target = GuiWindowType.PlayerStatus;
+            }
+
+            foreach (var window in _statusWindows)
+            {
+                if (window == target)
+                    EnsureWindowOpen(player, window);
+                else
+                    EnsureWindowClosed(player, window);
+            }
+        }
+
+        private static bool ShouldUsePortraitVitals(uint player)
+        {
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+
+            // Default to the portrait overlay when the setting has never been set.
+            return dbPlayer?.Settings.PortraitVitals ?? true;
+        }
+
+        private static void EnsureWindowOpen(uint player, GuiWindowType type)
+        {
+            if (!Gui.IsWindowOpen(player, type))
+                Gui.TogglePlayerWindow(player, type);
+        }
+
+        private static void EnsureWindowClosed(uint player, GuiWindowType type)
+        {
+            if (Gui.IsWindowOpen(player, type))
+                Gui.TogglePlayerWindow(player, type);
         }
     }
 }

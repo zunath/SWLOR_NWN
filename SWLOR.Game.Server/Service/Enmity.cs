@@ -11,6 +11,8 @@ namespace SWLOR.Game.Server.Service
 {
     public static class Enmity
     {
+        public const int MinimumEnmityPercentAdjustment = -50;
+        public const int MaximumEnmityPercentAdjustment = 50;
         // Enemy -> Creature -> EnmityAmount mapping
         private static readonly Dictionary<uint, Dictionary<uint, int>> _enemyEnmityTables = new();
 
@@ -23,7 +25,6 @@ namespace SWLOR.Game.Server.Service
         private const float MinimumStaleAttackRecoverySeconds = 4.5f;
         private const float AttackMoveRangeTolerance = 0.25f;
         private const float MeleeAttackMoveThreshold = 2.25f;
-        private const float MeleeAttackMoveRange = 1.5f;
 
         /// <summary>
         /// When an enemy is damaged, increase enmity toward that creature by the amount of damage dealt.
@@ -228,8 +229,17 @@ namespace SWLOR.Game.Server.Service
         /// <returns>The enmity adjustment percentage.</returns>
         private static int CalculateEnmityAdjustment(uint creature, uint enemy)
         {
-            return Stat.GetStatAdjustment(creature, StatType.EnmityPercentAdjustment) +
-                   GetStatusSourceEnmityAdjustment(enemy, creature);
+            var adjustment = Stat.GetStatAdjustment(creature, StatType.EnmityPercentAdjustment) +
+                             GetStatusSourceEnmityAdjustment(enemy, creature);
+            return ClampEnmityPercentAdjustment(adjustment);
+        }
+
+        public static int ClampEnmityPercentAdjustment(int adjustment)
+        {
+            return Math.Clamp(
+                adjustment,
+                MinimumEnmityPercentAdjustment,
+                MaximumEnmityPercentAdjustment);
         }
 
         /// <summary>
@@ -401,6 +411,69 @@ namespace SWLOR.Game.Server.Service
         {
             return _proximityEnmityAmounts.TryGetValue(enemy, out var table) &&
                    table.ContainsKey(creature);
+        }
+
+        /// <summary>
+        /// Returns true when a specific creature/enemy pair has enmity beyond the amount created
+        /// solely by the enemy's aggro aura.
+        /// </summary>
+        public static bool HasNonProximityEnmity(uint creature, uint enemy)
+        {
+            return GetRawEnmityAmount(creature, enemy) > 0 &&
+                   !HasOnlyProximityEnmity(creature, enemy);
+        }
+
+        /// <summary>
+        /// Returns true when an enemy has any enmity that did not come solely from its aggro aura.
+        /// Attack, damage, and ability enmity make the enemy an active combatant and therefore an
+        /// invalid source for a new Espionage infiltration attempt.
+        /// </summary>
+        public static bool HasNonProximityEnmity(uint enemy)
+        {
+            if (!_enemyEnmityTables.TryGetValue(enemy, out var table))
+                return false;
+
+            return table.Keys.Any(creature => HasNonProximityEnmity(creature, enemy));
+        }
+
+        /// <summary>
+        /// Returns true when a creature appears on any enemy table for more than aggro proximity.
+        /// This distinguishes real combat from the proximity-only entries created as multiple
+        /// stealthed players cross overlapping aggro auras.
+        /// </summary>
+        public static bool HasNonProximityEnmityForCreature(uint creature)
+        {
+            if (!_creatureToEnemies.TryGetValue(creature, out var enemies))
+                return false;
+
+            return enemies.Any(enemy => HasNonProximityEnmity(creature, enemy));
+        }
+
+        /// <summary>
+        /// Returns true when either member of a creature/enemy pair has combat enmity involving
+        /// someone outside that pair. Pair-specific checks use this to distinguish an expected
+        /// aggro transition from unrelated combat.
+        /// </summary>
+        public static bool HasNonProximityEnmityOutsidePair(uint first, uint second)
+        {
+            return HasNonProximityEnmityAsCreatureOutsidePair(first, second) ||
+                   HasNonProximityEnmityAsEnemyOutsidePair(first, second) ||
+                   HasNonProximityEnmityAsCreatureOutsidePair(second, first) ||
+                   HasNonProximityEnmityAsEnemyOutsidePair(second, first);
+        }
+
+        private static bool HasNonProximityEnmityAsCreatureOutsidePair(uint creature, uint pairedEnemy)
+        {
+            return _creatureToEnemies.TryGetValue(creature, out var enemies) &&
+                   enemies.Any(enemy =>
+                       enemy != pairedEnemy && HasNonProximityEnmity(creature, enemy));
+        }
+
+        private static bool HasNonProximityEnmityAsEnemyOutsidePair(uint enemy, uint pairedCreature)
+        {
+            return _enemyEnmityTables.TryGetValue(enemy, out var table) &&
+                   table.Keys.Any(creature =>
+                       creature != pairedCreature && HasNonProximityEnmity(creature, enemy));
         }
 
         /// <summary>
@@ -586,14 +659,14 @@ namespace SWLOR.Game.Server.Service
             }
 
             var skillType = Combat.GetEquippedWeaponSkillType(creature);
-            var moveRange = GetAttackMoveRange(skillType, CreaturePlugin.GetPreferredAttackDistance(creature));
+            var moveRange = Combat.GetWeaponEngagementRange(skillType);
 
             return ShouldMoveIntoAttackRange(GetDistanceBetween(creature, target), skillType, moveRange);
         }
 
         private static bool ShouldMoveIntoAttackRange(float distance, SkillType skillType, float moveRange)
         {
-            var threshold = Combat.IsRangedDamageSkill(skillType)
+            var threshold = Combat.IsRangedWeaponSkill(skillType)
                 ? moveRange + AttackMoveRangeTolerance
                 : MeleeAttackMoveThreshold;
 
@@ -603,15 +676,7 @@ namespace SWLOR.Game.Server.Service
         private static float GetAttackMoveRange(uint creature)
         {
             var skillType = Combat.GetEquippedWeaponSkillType(creature);
-            return GetAttackMoveRange(skillType, CreaturePlugin.GetPreferredAttackDistance(creature));
-        }
-
-        private static float GetAttackMoveRange(SkillType skillType, float preferredAttackDistance)
-        {
-            if (!Combat.IsRangedDamageSkill(skillType))
-                return MeleeAttackMoveRange;
-
-            return Math.Max(MeleeAttackMoveRange, preferredAttackDistance);
+            return Combat.GetWeaponEngagementRange(skillType);
         }
 
         private static bool ShouldRemoveStaleProximityTarget(uint enemy, uint target)

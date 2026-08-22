@@ -6,6 +6,7 @@ namespace SWLOR.Game.Server.Service.AIService
 {
     public static class AITarget
     {
+        private const int DefaultAreaAbilityMinimumTargets = 2;
         private static readonly Dictionary<FeatType, AITargetSelector> _defaultOverrides = new();
 
         public static void RegisterDefault(FeatType feat, AITargetSelector selector)
@@ -53,6 +54,24 @@ namespace SWLOR.Game.Server.Service.AIService
             };
         }
 
+        private static AITargetSelector SelfCenteredHostileArea(AbilityDetail ability)
+        {
+            return context =>
+            {
+                var target = context.CurrentEnmityTarget;
+                if (!GetIsObjectValid(target))
+                    return OBJECT_INVALID;
+
+                var radius = ability.Targeting.ResolveSizeX(context.Self, true);
+
+                context.SetEvaluatedTarget(context.Self);
+                return radius > 0f &&
+                       context.CountHostilesNearTarget(radius) >= DefaultAreaAbilityMinimumTargets
+                    ? context.Self
+                    : OBJECT_INVALID;
+            };
+        }
+
         public static AITargetSelector AllyAttacker(float maxRange = 10f)
         {
             return context =>
@@ -93,9 +112,13 @@ namespace SWLOR.Game.Server.Service.AIService
         {
             if (ability.IsHostileAbility)
             {
-                return ability.IsAreaAbility
-                    ? HostileCluster(ability.MaxRange, 2)
-                    : HighestEnmity();
+                if (!ability.IsAreaAbility)
+                    return HighestEnmity();
+
+                return ability.Targeting?.Shape == AbilityTargetingShapeType.Sphere &&
+                       ability.Targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf)
+                    ? SelfCenteredHostileArea(ability)
+                    : HostileCluster(ability.MaxRange, DefaultAreaAbilityMinimumTargets);
             }
 
             if (ability.RequiresTarget)

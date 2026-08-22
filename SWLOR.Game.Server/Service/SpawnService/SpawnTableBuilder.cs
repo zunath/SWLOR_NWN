@@ -41,6 +41,21 @@ namespace SWLOR.Game.Server.Service.SpawnService
         {
             if (minutes < 1) minutes = 1;
             ActiveTable.RespawnDelayMinutes = minutes;
+            ActiveTable.RespawnDelayMaximumMinutes = minutes;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Sets an inclusive randomized respawn window. The delay is chosen only when a
+        /// spawn is queued, so this adds no new heartbeat or per-object timer work.
+        /// </summary>
+        public SpawnTableBuilder RespawnDelay(int minimumMinutes, int maximumMinutes)
+        {
+            if (minimumMinutes < 1) minimumMinutes = 1;
+            if (maximumMinutes < minimumMinutes) maximumMinutes = minimumMinutes;
+            ActiveTable.RespawnDelayMinutes = minimumMinutes;
+            ActiveTable.RespawnDelayMaximumMinutes = maximumMinutes;
 
             return this;
         }

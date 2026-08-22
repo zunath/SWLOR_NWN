@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DialogService;
+using SWLOR.Game.Server.Service.ConversationService;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
-    public class CoxxionTerminalDialog: DialogBase
+    public class CoxxionTerminalDialog: ConversationMenuDefinition
     {
         private static readonly List<uint> _areaDoors = new List<uint>();
 
@@ -31,19 +31,19 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             }
         }
 
-        public override PlayerDialog SetUp(uint player)
+        public override ConversationMenuSpec Build()
         {
-            var builder = new DialogBuilder()
+            var builder = new ConversationMenuBuilder()
                 .AddPage(MainPageId, MainPageInit);
 
 
             return builder.Build();
         }
 
-        private void MainPageInit(DialogPage page)
+        private void MainPageInit(ConversationMenuPage page)
         {
-            var player = GetPC();
-            var device = OBJECT_SELF;
+            var player = Player;
+            var device = Owner;
             var area = GetArea(device);
             var terminalColorId = GetLocalInt(device, "TERMINAL_COLOR");
             var doorStatus = GetLocalInt(area, "DOOR_STATUS");
@@ -87,7 +87,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     FloatingTextStringOnCreature($"{terminalColor} doors are now unlocked.", areaPlayer, false);
                 }
 
-                EndConversation();
+                Close();
             });
         }
 
@@ -98,13 +98,13 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             switch (colorId)
             {
                 case 1: // Blue
-                    colorText = ColorToken.Blue("BLUE");
+                    colorText = "BLUE";
                     break;
                 case 2: // Green
-                    colorText = ColorToken.Green("GREEN");
+                    colorText = "GREEN";
                     break;
                 case 3: // Red
-                    colorText = ColorToken.Red("RED");
+                    colorText = "RED";
                     break;
                 default: return string.Empty;
             }

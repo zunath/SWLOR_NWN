@@ -1,6 +1,6 @@
 # Combat Upgrade Release Balance Plan
 
-Last reviewed: 2026-07-01
+Last reviewed: 2026-08-17
 
 ## Purpose
 
@@ -10,7 +10,9 @@ The goal is not to reduce build variety. SWLOR should continue to support mix-an
 
 ## Current Implementation Status
 
-The current blocker pass is implemented in code, Bible, TLK, and regression tests. The completed fixes cover permanent Attack Deflection budget, Staff Crusher cross-tree payload, damage-plus-sustain loops, positional baseline viability, Spear Disabler non-Force value, former Lightsaber Offense rider cadence, and short weapon setup payoff windows.
+The current blocker pass is implemented in code, Bible, TLK, and regression tests. The completed fixes cover permanent Attack Deflection budget, Staff Crusher cross-tree payload, damage-plus-sustain loops, positional baseline viability, Spear Disabler non-Force value, current Lightsaber Ward/Severance behavior, short weapon setup payoff windows, and mandatory Mimicry/Espionage review coverage.
+
+The cross-skill static gate now distinguishes bounded synergy from broken feedback. One active weapon context is combined with every legal support frontier under 400 SP; curated danger profiles cover poison/trap/Mimicry, stealth burst, cross-resource sustain, damage-derived healing, reflection/deflection, and layered control. A separate interaction test guards recursive damage, reflection, status, transfer, healing, resource, and cooldown edges.
 
 The dependency-only weapon pass is also implemented in code, Bible, TLK, and regression tests. Perks should no longer exist solely to improve one named sibling perk unless every broader design option has failed and the exception is documented.
 
@@ -22,6 +24,7 @@ The Bible-first weapon identity pass is now applied in the local workbook, regen
 - Avoid dependency-only perks. A trait can prefer a weapon line, trigger type, status condition, or playstyle loop, but it should not exist only to make one named sibling perk usable.
 - Balance by design first. Tune Bible values, trigger conditions, uptime, cooldowns, and magnitude before adding new code enforcement.
 - Avoid combo-specific hardcoding. Do not add special-case logic such as "if Crusher plus Soul Devourer plus Spear, reduce damage."
+- Treat any self-feeding trigger cycle as a release blocker. Secondary damage, reflection, DoT, healing, resource restoration, status application, and cooldown reduction must terminate through shared delivery types, caps, consumption, or cooldowns.
 - Use shared combat and stat concepts. When code support is needed, prefer metadata-driven or shared-stat behavior over perk-specific branches.
 - Treat curated archetypes as the release gate. Full build enumeration is required for comparison and outlier discovery, but curated builds are the main release decision surface.
 - Judge compound profiles, not isolated screenshots. High damage alone is less dangerous than high damage plus sustain, defense, control, or support.
@@ -40,8 +43,10 @@ The balance audit covers all combat systems:
 - Leadership
 - First Aid
 - Beast Mastery
+- Mimicry
+- Espionage
 
-Force, Devices, Leadership, First Aid, and Beast Mastery are included because they affect legal build profiles and cross-tree totals. They are not targeted for broad thematic redesign unless the audit exposes a release-critical issue. Prefer numeric, uptime, cooldown, trigger, or interaction tuning for these systems.
+Force, Devices, Leadership, First Aid, Beast Mastery, Mimicry, and Espionage are included because they affect legal build profiles and cross-tree totals. They are not targeted for broad thematic redesign unless the audit exposes a release-critical issue. Prefer numeric, uptime, cooldown, trigger, or interaction tuning for these systems.
 
 The audit should report:
 
@@ -60,6 +65,8 @@ Repo coverage:
 
 - `CombatReleaseBalanceAuditTests` validates curated archetype legality and hard gates.
 - `CombatReleaseBalanceAuditTests` scans legal 400 SP package-frontier outliers and hard-fails permanent Attack Deflection cap access.
+- `CombatReleaseBalanceAuditTests` hard-gates every active weapon package against the legal cross-skill support frontier and includes explicit high-risk Mimicry/Espionage/resource/sustain/control profiles.
+- `CrossSkillPerkInteractionSafetyTests` validates that the shared proc graph has no recursive damage, reflection, transfer, healing, resource, or cooldown cycle.
 - `CombatUpgradeReleaseValidationMatrix.md` records the manual real-enemy and attack-delay checks that cannot be proven by static tests.
 
 ### Weapon Identity Matrix
@@ -93,7 +100,7 @@ Weapon skill perk lines should follow the default 18-slot, 60 SP progression pat
 
 The intended template uses three ranked combat abilities, two general traits, three cross-skill traits, one stance, and one capstone. The corrected type for `Ability 3 Rank I` is `Combat`.
 
-The local Bible and manifest now match the full template for every weapon style: 18 rows, 60 SP, a skill-rank 2 `Combat` opener, a skill-rank 50 `Capstone`, and the corrected `Ability 3 Rank I` `Combat` slot. The current mismatch is implementation-side: live C# definitions still need to be aligned to the new Bible names, descriptions, skill requirements, SP prices, resources, cooldowns, and effects.
+The local Bible, regenerated manifest, generated perk/ability code, and supporting TLK/2DA data now match the full template for every weapon style: 18 rows, 60 SP, a skill-rank 2 `Combat` opener, a skill-rank 50 `Capstone`, and the corrected `Ability 3 Rank I` `Combat` slot. The static alignment pass is complete; the remaining gate is live balance and engine-behavior validation.
 
 ### Audit Rules And Config
 
@@ -114,7 +121,7 @@ The Bible should carry lightweight row-level labels where useful: budget bucket,
 
 The local Combat Upgrade Bible includes these planning tabs for the release balance pass:
 
-- `Combat Balance Budgets`: shared budget categories, source tiers, uptime categories, warning conditions, and release blockers across weapon, Force, Devices, Leadership, First Aid, Beast Mastery, Armor, and companion contribution.
+- `Combat Balance Budgets`: shared budget categories, source tiers, uptime categories, warning conditions, and release blockers across weapon, Force, Devices, Leadership, First Aid, Beast Mastery, Mimicry, Espionage, Armor, and companion contribution.
 - `Combat Archetypes`: curated legal build profiles used as the release decision surface.
 - `Weapon Identity Matrix`: weapon-tree-only identity, combat loop, cross-tree value, positional dependency, and guardrail notes.
 - `Combat Balance Findings`: player-feedback findings with severity, status, affected systems, and proposed audit action.
@@ -151,6 +158,18 @@ The audit should separate at least the following defensive buckets:
 - Healing received and recovery.
 
 The same numeric stat may need different budget targets depending on its source tier and uptime.
+
+## Global Stacking Caps And Control Rules
+
+These engine-enforced rules bound how buckets combine across trees. Perk authors must price new content against these ceilings, not against each bucket in isolation.
+
+- Outgoing percent-damage bonuses (outgoing damage percent, weapon/Force damage percent, target-low-HP percent, target-status percent, and related percent stages) apply sequentially but the combined bonus is capped at +100% of the pre-stage damage (`Combat.MaximumDamageBonusPercent`). Flat weapon damage bonuses are outside this cap.
+- Incoming damage reduction from the target-status damage-taken stage and the generic damage-taken stage is capped at 85% combined (`Combat.MaximumCombinedDamageReductionPercent`); each stage additionally keeps its own 95% clamp. Guard is a separate damage-stage mechanic with its own 55% cap (`Combat.MaximumGuardDamageReductionPercent`) and is not part of this bucket.
+- Ability critical rate is clamped to the same 5-50 range as auto-attack critical rate. Treat 50 as the hard crit ceiling when budgeting conditional crit bonuses.
+- Hard crowd control (Dazed, Knockdown, Stunned, Immobilized, Blind, Sleep/Tranquilized, Confusion) follows two rules. First, an ability's cooldown must be at least 1.5x its hard-control duration; dedicated control tools use 30-second effects on 45-second cooldowns, while damage-primary abilities carry shorter riders (15 seconds or less) so their cooldowns stay legal. Second, when any hard-control effect expires, the target gains 20 seconds of immunity to all hard-control types (shared `HardCrowdControl` immunity category, plus the existing per-type immunity), so alternating control types cannot chain-lock a target. Design for roughly 45-60% single-source control uptime, never 100%.
+- Uncapped AoE control is not allowed: area control tools must declare a target cap (grenades cap at 5; Force Push caps by rank).
+- Only one Leadership command effect (Press the Attack, Cleanse Order, Decisive Command) can be active per leader at a time; a new command replaces the previous one. Leadership damage-reduction sources (Watchful Presence, Cleanse Order, Bolster Resolve, Hold the Line) do not sum - the strongest active source applies.
+- Only one companion (beast or droid) may be active per player; both spawn paths enforce the same shared guard.
 
 ## Source Tiers
 
@@ -246,7 +265,7 @@ Examples:
 Use positive-baseline trees as feel anchors, not as templates to clone:
 
 - Vibroblade Frenzy: satisfying throughput and clear combat loop.
-- Heavy Vibroblade: strong risk/sustain identity, but still needs stacking guardrails.
+- Heavy Vibroblade: strong risk/sustain identity, with implemented stacking guardrails retained as a release-validation focus.
 - Staff Sentinel: clear control and temporary-deflection identity.
 - Katar Scrapper: strong control identity, with cooldown windows to review.
 
@@ -306,7 +325,7 @@ Examples:
 
 - Permanent Attack Deflection can approach or reach cap.
 - A weapon tree requires positional uptime to function at baseline.
-- Spear Disabler remains too Force-only.
+- Spear Disabler regresses to Force-only value.
 - A weapon tree's mechanics contradict its intended playstyle.
 - A cross-tree passive becomes mandatory for most builds.
 - Attack Deflection, Shield Deflection, and Guard are blurred into the same role.
@@ -360,6 +379,7 @@ Do not release while any of these remain true:
 - A legal curated archetype has high damage plus high sustain, defense, control, or support without meaningful tradeoff.
 - A weapon tree needs positional uptime to function at baseline.
 - A cross-tree passive is broadly mandatory for most weapon builds.
+- A triggered, reflected, periodic, transferred, healing, resource, status, or cooldown edge can feed itself without a hard terminating condition.
 - Spear Disabler is only meaningfully useful against Force-sensitive targets.
 - The audit cannot explain known scary player-test builds.
 - Full enumeration outliers have not been reviewed against the validation matrix.
@@ -371,4 +391,4 @@ Do not release while any of these remain true:
 - Prefer adding audit coverage before changing numbers.
 - Prefer extending short durations before converting timed buffs into "next N attacks" mechanics.
 - If code support becomes necessary, prefer shared `StatType`-driven systems and enum metadata over hardcoded perk checks.
-- Keep Force, Devices, Leadership, First Aid, and Beast Mastery in the balance audit but avoid sweeping thematic redesign unless the audit identifies a release-critical issue.
+- Keep Force, Devices, Leadership, First Aid, Beast Mastery, Mimicry, and Espionage in the balance audit but avoid sweeping thematic redesign unless the audit identifies a release-critical issue.

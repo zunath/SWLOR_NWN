@@ -13,10 +13,11 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override EffectIconType Icon => EffectIconType.DecisiveCommand1StatusEffect;
         public override bool PersistsOnLogout => false;
         public override float Frequency => 3f;
+        public override StatusEffectSourceType SourceType => StatusEffectSourceType.Command;
 
         protected override void Apply(uint creature, int durationTicks)
         {
-            StatGroup.Stats[StatType.DamageDealtPercentAdjustment] = ScaleBySourceSocial(15, 18);
+            StatGroup.Stats[StatType.DamageDealtPercentAdjustment] = ScaleBySourceSocial(12, 15);
             StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment] = ScaleBySourceSocial(6, 8);
             StatGroup.Stats[StatType.CriticalRatePercentAdjustment] = ScaleBySourceSocial(6, 8);
         }

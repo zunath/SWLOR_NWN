@@ -6,6 +6,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -165,20 +166,35 @@ public class FirstAidCombatUpgradeTests
             "                CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid);");
         treatmentKit.Split("CombatPoint.AddCombatPointToAllTagged(activator, SkillType.FirstAid);").Length.Should().Be(2);
 
+        var resuscitation = File.ReadAllText(
+                (root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "ResuscitationAbilityDefinition.cs").FullName)
+            .Replace("\r\n", "\n");
+        resuscitation.Should().Contain(
+            "DelayCommand(0.1f, () =>\n" +
+            "            {\n" +
+            "                AbilityEffectScaling.ApplyActivatedScaledHeal(activator, target, 20);",
+            "the rank-II heal must run after EffectResurrection settles or the engine silently discards it");
+
         var pain = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "PainSuppressantAbilityDefinition.cs").FullName);
-        pain.Should().Contain("AbilityEffectScaling.ApplyTemporaryHPPercent(activator, target, percent, durationSeconds)");
+        pain.Should().Contain("AbilityEffectScaling.ApplyTemporaryHPPercent(activator, target, \"PAIN_SUPPRESSANT\", percent, durationSeconds)");
         pain.Should().NotContain("HealPercent(activator, friendly");
 
         var koltoMist = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "KoltoMistAbilityDefinition.cs").FullName);
+        koltoMist.Should().Contain("private const float HealRadiusMeters = 8f;");
         koltoMist.Should().Contain("private const float Rank1HealPercentPerTick = 1f;");
         koltoMist.Should().Contain("private const float Rank2HealPercentPerTick = 2f;");
-        koltoMist.Should().Contain("VisualEffect.Vfx_Dur_Aura_Poison");
+        koltoMist.Should().Contain("VisualEffect.Vfx_Fnf_Gas_Explosion_Mind");
+        koltoMist.Should().Contain("EffectAreaOfEffect(AreaOfEffect.KoltoMistCloud)");
+        koltoMist.Should().NotContain("AreaOfEffect.FogMind",
+            "the base game FogMind AoE runs the Mind Fog enter/heartbeat spell scripts; Kolto Mist must use the script-free cloud row");
+        koltoMist.Should().NotContain("VisualEffect.Vfx_Dur_Aura_Blue_Light",
+            "Kolto Mist needs the persistent blue gas cloud used by the live-server Kolto Bomb, not a body aura");
         koltoMist.Should().Contain("GetIsObjectValid(activator)");
         koltoMist.Should().Contain("GetCurrentHitPoints(activator) <= 0");
         koltoMist.Should().Contain("GetIsObjectValid(GetAreaFromLocation(location))");
         koltoMist.Should().Contain("var applied = ApplyKoltoMistPulse(activator, location, percentPerTick);");
         koltoMist.Should().Contain("if (applied && !combatPointAwarded)");
-        koltoMist.Should().Contain("FirstAidTreatmentAdjustments.ApplyMedicalScaledHeal(activator, friendly, percentPerTick);");
+        koltoMist.Should().Contain("visualEffect: VisualEffect.Vfx_Imp_Head_Heal");
         koltoMist.Should().Contain("StatusEffect.ApplyStatusEffect(");
         koltoMist.Should().Contain("typeof(KoltoMistHealingStatusEffect)");
         koltoMist.Should().Contain("StatusRefreshDurationSeconds");
@@ -225,9 +241,74 @@ public class FirstAidCombatUpgradeTests
         emergencySealantStatus.Should().Contain("AbilityEffectScaling.ApplyScaledHeal(Source, creature, 4);");
 
         var cocktail = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "EmergencyCocktailAbilityDefinition.cs").FullName);
-        cocktail.Should().Contain("AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, 12, duration)");
+        cocktail.Should().Contain("AbilityEffectScaling.ApplyTemporaryHPPercent(activator, friendly, \"EMERGENCY_COCKTAIL\", 12, duration)");
         cocktail.Should().Contain("CapstoneAbility.ActiveDurationSeconds");
         cocktail.Should().Contain("new[] { typeof(PoisonStatusEffect), typeof(ToxinStatusEffect) }");
+    }
+
+    [Test]
+    public void MedicalInjectorRig_AppliesToAbilityHealingAcrossSkillsButNotDamageDerivedHealing()
+    {
+        const string rank1Description =
+            "All direct, area, and periodic healing caused by your abilities is increased by 5%.";
+        const string rank2Description =
+            "All direct, area, and periodic healing caused by your abilities is increased by 10%.";
+
+        var root = FindRepositoryRoot();
+        var perkSource = File.ReadAllText(
+            (root / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "FirstAidTraumaMedicPerkDefinition.cs").FullName);
+        perkSource.Should().Contain($".Description(\"{rank1Description}\")");
+        perkSource.Should().Contain($".Description(\"{rank2Description}\")");
+        perkSource.Should().Contain(
+            ".IncreasesStat(StatType.OutgoingAbilityHealingPercentAdjustment, 5)");
+        perkSource.Should().Contain(
+            ".IncreasesStat(StatType.OutgoingAbilityHealingPercentAdjustment, 10)");
+
+        Stat.CalculateOutgoingAbilityHealingAmount(100, 5).Should().Be(105);
+        Stat.CalculateOutgoingAbilityHealingAmount(101, 10).Should().Be(112);
+        Stat.CalculateOutgoingAbilityHealingAmount(100, 0).Should().Be(100);
+
+        var includedSources = new[]
+        {
+            root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "AbilityEffectScaling.cs",
+            root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "FirstAidTreatmentAdjustments.cs",
+            root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "FirstAid" / "MedKitAbilityDefinition.cs",
+            root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Beastmaster" / "RewardAbilityDefinition.cs",
+            root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Beastmaster" / "InnervateAbilityDefinition.cs",
+            root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Mimicry" / "WardenOrderTechniqueAbilityDefinition.cs"
+        };
+
+        foreach (var sourcePath in includedSources)
+        {
+            File.ReadAllText(sourcePath.FullName)
+                .Should()
+                .Contain(
+                    "Stat.ApplyOutgoingAbilityHealingAdjustment",
+                    $"{Path.GetFileName(sourcePath.FullName)} should apply Medical Injector Rig to eligible ability healing");
+        }
+
+        var statSource = File.ReadAllText(
+            (root / "SWLOR.Game.Server" / "Service" / "Stat.cs").FullName);
+        statSource.Should().Contain("BeastMastery.IsPlayerBeast(source)");
+        statSource.Should().Contain("GetMaster(source)");
+
+        var excludedSources = new[]
+        {
+            root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ForceDrainAbilityDefinition.cs",
+            root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "WeaponActiveAbilityDefinitionBase.cs",
+            root / "SWLOR.Game.Server" / "Service" / "Combat.cs",
+            root / "SWLOR.Game.Server" / "Feature" / "NaturalRegeneration.cs",
+            root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "RestStatusEffect.cs"
+        };
+
+        foreach (var sourcePath in excludedSources)
+        {
+            File.ReadAllText(sourcePath.FullName)
+                .Should()
+                .NotContain(
+                    "Stat.ApplyOutgoingAbilityHealingAdjustment",
+                    $"{Path.GetFileName(sourcePath.FullName)} should not apply Medical Injector Rig to damage-derived or system healing");
+        }
     }
 
     [Test]
@@ -256,6 +337,26 @@ public class FirstAidCombatUpgradeTests
     }
 
     [Test]
+    public void KoltoMistPersistentVfx_IsVisualOnlyGasCloud()
+    {
+        var root = FindRepositoryRoot();
+        var persistentVfx = Read2da(root / "SWLOR_Haks" / "sw_2da" / "vfx_persistent.2da");
+        var row = persistentVfx[(int)AreaOfEffect.KoltoMistCloud];
+
+        row["LABEL"].Should().Be("AOE_KOLTO_MIST_CLOUD");
+        row["SHAPE"].Should().Be("C");
+        row["RADIUS"].Should().Be("8");
+        row["ONENTER"].Should().Be("****",
+            "the cloud must not run the base game Mind Fog enter script");
+        row["ONEXIT"].Should().Be("****");
+        row["HEARTBEAT"].Should().Be("****",
+            "the cloud must not run the base game Mind Fog heartbeat script");
+        row["MODEL01"].Should().Be("vps_fogmind");
+        row["MODEL02"].Should().Be("vps_fogmind");
+        row["MODEL03"].Should().Be("vps_fogmind");
+    }
+
+    [Test]
     public void FirstAidFeatAndAbilityIcons_AreUniqueAndPresent()
     {
         var root = FindRepositoryRoot();
@@ -265,12 +366,12 @@ public class FirstAidCombatUpgradeTests
         {
             (FeatType.MedKit1, "ife_mdkt1", "M", "0x03", "0", "****", "****", "****", "****", "****"),
             (FeatType.TreatmentKit1, "ife_trtmntkt1", "M", "0x03", "0", "****", "****", "****", "****", "****"),
-            (FeatType.KoltoMist1, "ife_kltmst1", "M", "0x3E", "0", "sphere", "3", "****", "1", "****"),
+            (FeatType.KoltoMist1, "ife_kltmst1", "M", "0x3E", "0", "sphere", "8", "****", "1", "****"),
             (FeatType.Resuscitation1, "ife_rsscttn1", "M", "0x03", "0", "****", "****", "****", "****", "****"),
             (FeatType.TreatmentKit2, "ife_trtmntkt2", "M", "0x03", "0", "****", "****", "****", "****", "****"),
             (FeatType.MedKit2, "ife_mdkt2", "M", "0x03", "0", "****", "****", "****", "****", "****"),
             (FeatType.Infusion1, "ife_nfsn1", "M", "0x03", "0", "****", "****", "****", "****", "****"),
-            (FeatType.KoltoMist2, "ife_kltmst2", "M", "0x3E", "0", "sphere", "3", "****", "1", "****"),
+            (FeatType.KoltoMist2, "ife_kltmst2", "M", "0x3E", "0", "sphere", "8", "****", "1", "****"),
             (FeatType.Resuscitation2, "ife_rsscttn2", "M", "0x03", "0", "****", "****", "****", "****", "****"),
             (FeatType.MedKit3, "ife_mdkt3", "M", "0x03", "0", "****", "****", "****", "****", "****"),
             (FeatType.TreatmentKit3, "ife_trtmntkt3", "M", "0x03", "0", "****", "****", "****", "****", "****"),
@@ -328,12 +429,12 @@ public class FirstAidCombatUpgradeTests
         {
             (FeatType.MedKit1, "Restores 10% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
             (FeatType.TreatmentKit1, "Removes Bleed and Poison from a single target. Consumes medical supplies."),
-            (FeatType.KoltoMist1, "Deploys a 30-second healing mist cloud at a target location up to 15m away. Allies within 3m heal for 1% of maximum HP plus WIL scaling every 3 seconds. Consumes medical supplies."),
+            (FeatType.KoltoMist1, "Deploys a 30-second healing mist cloud at a target location up to 15m away. Allies within 8m heal for 1% of maximum HP plus WIL scaling every 3 seconds. Consumes medical supplies."),
             (FeatType.Resuscitation1, "Revives an unconscious target with 1 HP. Consumes medical supplies."),
             (FeatType.TreatmentKit2, "Removes Bleed, Poison, Toxin, Burn, Shock, and Disease from a single target. Consumes medical supplies."),
             (FeatType.MedKit2, "Restores 20% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
             (FeatType.Infusion1, "Grants a single target regeneration, healing 3% of maximum HP plus WIL scaling every 3 seconds for 30 seconds. Consumes medical supplies."),
-            (FeatType.KoltoMist2, "Deploys a 30-second healing mist cloud at a target location up to 15m away. Allies within 3m heal for 2% of maximum HP plus WIL scaling every 3 seconds. Consumes medical supplies."),
+            (FeatType.KoltoMist2, "Deploys a 30-second healing mist cloud at a target location up to 15m away. Allies within 8m heal for 2% of maximum HP plus WIL scaling every 3 seconds. Consumes medical supplies."),
             (FeatType.Resuscitation2, "Revives an unconscious target with 20% HP plus WIL scaling. Consumes medical supplies."),
             (FeatType.MedKit3, "Restores 28% of the target's maximum HP plus WIL scaling to a single target. Consumes medical supplies."),
             (FeatType.TreatmentKit3, "Removes Bleed, Poison, Toxin, Burn, Shock, and Disease from a single target and grants 50% Fire Resistance, 50% Poison Resistance, 50% Electrical Resistance, 50% Ice Resistance, and 50% Trauma Resistance for 30 seconds."),
@@ -344,14 +445,14 @@ public class FirstAidCombatUpgradeTests
             (FeatType.Shielding1, "Reduces physical and force damage taken by 5% for 3 minutes. Consumes a stim pack."),
             (FeatType.AdrenalStim2, "Restores 18% of maximum STM and restores 1 STM every 3 seconds for 30 seconds. Consumes a stim pack."),
             (FeatType.PainSuppressant1, "Grants temporary HP equal to 10% of the target's maximum HP plus WIL scaling and 10% damage reduction for 30 seconds. Consumes a stim pack."),
-            (FeatType.Antitoxin1, "Grants 50% Poison Resistance and 50% Disease Resistance for 2 minutes and removes one Poison or Toxin effect. Consumes a stim pack."),
+            (FeatType.Antitoxin1, "Grants 50% Poison Resistance for 2 minutes and removes one Poison or Toxin effect. Poison Resistance also weakens Disease and Toxin effects. Consumes a stim pack."),
             (FeatType.Shielding2, "Reduces physical and force damage taken by 8% for 3 minutes. Consumes a stim pack."),
             (FeatType.FocusStim1, "Increases physical and Force ability Accuracy by 5% for 2 minutes. Consumes a stim pack."),
             (FeatType.AdrenalStim3, "Restores 25% of maximum STM and restores 1 STM every 3 seconds for 30 seconds. Consumes a stim pack."),
             (FeatType.PainSuppressant2, "Grants temporary HP equal to 15% of the target's maximum HP plus WIL scaling and 15% damage reduction for 30 seconds. Consumes a stim pack."),
             (FeatType.Shielding3, "Reduces physical and force damage taken by 11% for 3 minutes. Consumes a stim pack."),
             (FeatType.FocusStim2, "Increases physical and Force ability Accuracy by 8% for 2 minutes. Consumes a stim pack."),
-            (FeatType.EmergencyCocktail1, "Restores 25% of maximum STM, removes one Poison or Toxin effect, then for 45 seconds restores 1 STM every 3 seconds, grants temporary HP equal to 12% of maximum HP plus WIL scaling, reduces damage taken by 12%, and grants 50% Poison Resistance and 50% Disease Resistance.")
+            (FeatType.EmergencyCocktail1, "Restores 25% of maximum STM, removes one Poison or Toxin effect, then for 45 seconds restores 1 STM every 3 seconds, grants temporary HP equal to 12% of maximum HP plus WIL scaling, reduces damage taken by 12%, and grants 50% Poison Resistance.")
         };
 
         foreach (var (featType, expectedDescription) in descriptions)

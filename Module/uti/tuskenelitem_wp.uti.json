@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "The Gaderffii, or Gaffi Stick, is a short, staff-like weapon traditional to the native Sand People of Tatooine. Featuring a heavy, blunt-spiked club head at one end and a set of metal blades with another spike at the other, they are brutally effective multi-purpose tools."
     }
   },
   "Identified": {
@@ -82,7 +82,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 58
+          "value": 70
         },
         "Param1": {
           "type": "byte",

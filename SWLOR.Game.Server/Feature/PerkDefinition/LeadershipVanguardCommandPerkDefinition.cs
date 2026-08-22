@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -52,19 +53,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Press the Attack")
 
                 .AddPerkLevel()
-                .Description("Party members within Leadership range (5m base) deal +8% damage for 30 seconds. SOC scaling can raise this to +10%.")
+                .Description("Party members within Leadership range (5m base) deal +6% damage for 30 seconds. SOC scaling can raise this to +8%.")
                 .Price(2)
                 .RequirementSkill(SkillType.Leadership, 5)
                 .GrantsFeat(FeatType.PressTheAttack1)
 
                 .AddPerkLevel()
-                .Description("Party members within Leadership range (5m base) deal +11% damage for 30 seconds. SOC scaling can raise this to +14%.")
+                .Description("Party members within Leadership range (5m base) deal +8% damage for 30 seconds. SOC scaling can raise this to +10%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 18)
                 .GrantsFeat(FeatType.PressTheAttack2)
 
                 .AddPerkLevel()
-                .Description("Party members within Leadership range (5m base) gain +14% damage and +5% physical and Force ability hit chance for 30 seconds. SOC scaling can raise these to +18% damage and +7% hit chance.")
+                .Description("Party members within Leadership range (5m base) gain +10% damage and +5% physical and Force ability hit chance for 30 seconds. SOC scaling can raise these to +12% damage and +7% hit chance.")
                 .Price(4)
                 .RequirementSkill(SkillType.Leadership, 40)
                 .GrantsFeat(FeatType.PressTheAttack3);
@@ -104,13 +105,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.MarkTargetTrait)
-                .Description("Vanguard Command offensive commands mark affected enemies for 30 seconds. Party members deal +8% damage to marked targets. SOC scaling can raise this to +10%.")
+                .Description("When a Vanguard Command offensive command affects an enemy, party members within Leadership range (5m base) gain +8% damage for 30 seconds. SOC scaling can raise this to +10%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 12)
                 .IncreasesStat(StatType.LeadershipVanguardMarkTargetRank, 1)
 
                 .AddPerkLevel()
-                .Description("Vanguard Command offensive commands mark affected enemies for 30 seconds. Party members deal +12% damage to marked targets, and marked targets suffer -10% evasion chance. SOC scaling can raise these to +15% damage and -12% evasion.")
+                .Description("When a Vanguard Command offensive command affects an enemy, party members within Leadership range (5m base) gain +12% damage and +10% Accuracy for 30 seconds. SOC scaling can raise these to +15% damage and +12% Accuracy.")
                 .Price(4)
                 .RequirementSkill(SkillType.Leadership, 35)
                 .IncreasesStat(StatType.LeadershipVanguardMarkTargetRank, 2);
@@ -167,6 +168,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.LeadershipCommandRadiusBonusMeters, 2)
                 .IncreasesStat(StatType.LeadershipCommandDurationBonusBaseSeconds, 2)
                 .IncreasesStat(StatType.LeadershipCommandDurationBonusMaximumSeconds, 3)
+                .TriggerPurchase(AbilityTargeting.RefreshClientTargeting)
+                .TriggerRefund(AbilityTargeting.RefreshClientTargeting)
 
                 .AddPerkLevel()
                 .Description("All Leadership auras and area commands have +4m range. Non-capstone Leadership command buffs last 4 seconds longer. SOC scaling can raise the duration bonus to +5 seconds.")
@@ -174,7 +177,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Leadership, 48)
                 .IncreasesStat(StatType.LeadershipCommandRadiusBonusMeters, 4)
                 .IncreasesStat(StatType.LeadershipCommandDurationBonusBaseSeconds, 4)
-                .IncreasesStat(StatType.LeadershipCommandDurationBonusMaximumSeconds, 5);
+                .IncreasesStat(StatType.LeadershipCommandDurationBonusMaximumSeconds, 5)
+                .TriggerPurchase(AbilityTargeting.RefreshClientTargeting)
+                .TriggerRefund(AbilityTargeting.RefreshClientTargeting);
         }
 
         private void DecisiveCommand()
@@ -183,7 +188,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Decisive Command")
 
                 .AddPerkLevel()
-                .Description("For 45 seconds, party members within Leadership range (5m base), including you, gain +15% damage, +6% physical and Force ability hit chance, +6% critical hit chance, and restore 1 STM every 3 seconds. SOC scaling can raise the bonuses to +18%, +8%, and +8%.")
+                .Description("For 45 seconds, party members within Leadership range (5m base), including you, gain +12% damage, +6% physical and Force ability hit chance, +6% critical hit chance, and restore 1 STM every 3 seconds. SOC scaling can raise the bonuses to +15%, +8%, and +8%.")
                 .Price(5)
                 .RequirementSkill(SkillType.Leadership, 50)
                 .GrantsFeat(FeatType.DecisiveCommand1)

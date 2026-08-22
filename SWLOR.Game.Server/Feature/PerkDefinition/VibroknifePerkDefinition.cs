@@ -48,25 +48,25 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PathogenStrike1)
-                .Description("Deals weapon DMG + 6. Extends your Shadow Toxin and Infection effects on the target by 4 seconds.")
+                .Description("Deals weapon DMG + 6. Extends your Venom and Infection effects on the target by 4 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroknife, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PathogenStrike2)
-                .Description("Deals weapon DMG + 12. Extends your Shadow Toxin and Infection effects on the target by 4 seconds.")
+                .Description("Deals weapon DMG + 12. Extends your Venom and Infection effects on the target by 4 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroknife, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PathogenStrike3)
-                .Description("Deals weapon DMG + 16. Extends your Shadow Toxin and Infection effects on the target by 6 seconds.")
+                .Description("Deals weapon DMG + 16. Extends your Venom and Infection effects on the target by 6 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Vibroknife, 28)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PathogenStrike4)
-                .Description("Deals weapon DMG + 19. Extends your Shadow Toxin and Infection effects on the target by 6 seconds.")
+                .Description("Deals weapon DMG + 19. Extends your Venom and Infection effects on the target by 6 seconds.")
                 .Price(5)
                 .RequirementSkill(SkillType.Vibroknife, 40);
         }
@@ -78,8 +78,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.HypermetabolizeTrait)
-                .Description("Reduces incoming healing on targets affected by your Shadow Toxin by 15%.")
-                .IncreasesStat(StatType.SourceStatusHealingReceivedRequiredCategory, (int)StatusEffectCategory.ShadowToxin)
+                .Description("Reduces incoming healing on targets affected by your Venom by 15%.")
+                .IncreasesStat(StatType.SourceStatusHealingReceivedRequiredCategory, (int)StatusEffectCategory.Venom)
                 .IncreasesStat(StatType.SourceStatusHealingReceivedPercentAdjustment, -15)
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroknife, 5);
@@ -92,22 +92,22 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DebilitateTrait)
-                .Description("Your hostile combat abilities deal +4 DMG to targets affected by your Shadow Toxin.")
-                .IncreasesStat(StatType.AbilityDamageToSourceAppliedStatusTargetBonusCategory, (int)StatusEffectCategory.ShadowToxin)
+                .Description("Your hostile combat abilities deal +4 DMG to targets affected by your Venom.")
+                .IncreasesStat(StatType.AbilityDamageToSourceAppliedStatusTargetBonusCategory, (int)StatusEffectCategory.Venom)
                 .IncreasesStat(StatType.AbilityDamageToSourceAppliedStatusTargetBonus, 4)
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroknife, 8)
 
                 .AddPerkLevel()
-                .Description("Your hostile combat abilities deal +8 DMG to targets affected by your Shadow Toxin.")
-                .IncreasesStat(StatType.AbilityDamageToSourceAppliedStatusTargetBonusCategory, (int)StatusEffectCategory.ShadowToxin)
+                .Description("Your hostile combat abilities deal +8 DMG to targets affected by your Venom.")
+                .IncreasesStat(StatType.AbilityDamageToSourceAppliedStatusTargetBonusCategory, (int)StatusEffectCategory.Venom)
                 .IncreasesStat(StatType.AbilityDamageToSourceAppliedStatusTargetBonus, 8)
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroknife, 22)
 
                 .AddPerkLevel()
-                .Description("Your hostile combat abilities deal +12 DMG to targets affected by your Shadow Toxin.")
-                .IncreasesStat(StatType.AbilityDamageToSourceAppliedStatusTargetBonusCategory, (int)StatusEffectCategory.ShadowToxin)
+                .Description("Your hostile combat abilities deal +12 DMG to targets affected by your Venom.")
+                .IncreasesStat(StatType.AbilityDamageToSourceAppliedStatusTargetBonusCategory, (int)StatusEffectCategory.Venom)
                 .IncreasesStat(StatType.AbilityDamageToSourceAppliedStatusTargetBonus, 12)
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroknife, 45);
@@ -120,19 +120,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VirulentBlade1)
-                .Description("Deals weapon DMG + 9. Inflicts Shadow Toxin for 30 seconds.")
+                .Description("Deals weapon DMG + 9. Inflicts Venom for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroknife, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VirulentBlade2)
-                .Description("Deals weapon DMG + 12. Inflicts Shadow Toxin for 30 seconds.")
+                .Description("Deals weapon DMG + 12. Inflicts Venom for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroknife, 30)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VirulentBlade3)
-                .Description("Deals weapon DMG + 16. Inflicts Shadow Toxin for 30 seconds.")
+                .Description("Deals weapon DMG + 16. Inflicts Venom for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroknife, 38);
         }
@@ -144,8 +144,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.InfectionTrait)
-                .Description("Successfully landing an attack or hostile combat ability on a target affected by your Shadow Toxin applies a stack of Infection. Infection deals 2 Poison DMG per stack every 6 seconds, max 5 stacks. Stacks last 18 seconds.")
-                .IncreasesStat(StatType.SourceStatusStackRequiredCategory, (int)StatusEffectCategory.ShadowToxin)
+                .Description("Successfully landing an attack or hostile combat ability on a target affected by your Venom applies a stack of Infection. Infection deals 2 Poison DMG per stack every 6 seconds, max 5 stacks. Stacks last 18 seconds.")
+                .IncreasesStat(StatType.SourceStatusStackRequiredCategory, (int)StatusEffectCategory.Venom)
                 .IncreasesStat(StatType.SourceStatusStackAppliedCategory, (int)StatusEffectCategory.Infection)
                 .IncreasesStat(StatType.SourceStatusStackMaximum, 5)
                 .IncreasesStat(StatType.SourceStatusStackDurationSeconds, 18)
@@ -191,7 +191,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VenomTempoTrait)
                 .Description("After successfully landing a hostile combat ability, your next auto-attack comes out instantly.")
-                .IncreasesStat(StatType.HostileAbilityHitNextAutoAttackNoDelaySkillType, (int)SkillType.Vibroknife)
+                .IncreasesStat(StatType.HostileAbilityHitNextAutoAttackNoDelayAllSkills, 1)
                 .IncreasesStat(StatType.HostileAbilityHitNextAutoAttackNoDelayDurationSeconds, 30)
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroknife, 25);
@@ -204,8 +204,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PropagationTrait)
-                .Description("Every third auto-attack on a target affected by your Shadow Toxin deals an additional +15 Poison DMG.")
-                .IncreasesStat(StatType.SourceStatusAutoAttackCycleRequiredCategory, (int)StatusEffectCategory.ShadowToxin)
+                .Description("Every third auto-attack on a target affected by your Venom deals an additional +15 Poison DMG.")
+                .IncreasesStat(StatType.SourceStatusAutoAttackCycleRequiredCategory, (int)StatusEffectCategory.Venom)
                 .IncreasesStat(StatType.SourceStatusAutoAttackCycleSkillType, (int)SkillType.Vibroknife)
                 .IncreasesStat(StatType.SourceStatusAutoAttackCycleRequiredCount, 3)
                 .IncreasesStat(StatType.SourceStatusAutoAttackCycleDamage, 15)
@@ -221,7 +221,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ViralCascade1)
-                .Description("Deals weapon DMG + 30, deals an additional +20 DMG if the target is inflicted with your Shadow Toxin and +8 DMG per stack of your Infection on the target. Consumes your Shadow Toxin and Infection stacks from the target.")
+                .Description("Deals weapon DMG + 30, deals an additional +20 DMG if the target is inflicted with your Venom and +8 DMG per stack of your Infection on the target. Consumes your Venom and Infection stacks from the target.")
                 .Price(6)
                 .RequirementSkill(SkillType.Vibroknife, 50)
                 .RequirementQuest(VibroknifeCapstoneQuestDefinition.VitalRuptureMasteryQuestId);
@@ -279,23 +279,26 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FirstStrikeTrait)
-                .Description("Your first 3 successfully landed hostile combat abilities in combat deal +8 DMG.")
+                .Description("Entering combat grants 3 stacks of First Strike. Each stack is consumed by a successfully landed hostile combat ability to deal +8 DMG. Once all stacks are consumed, First Strike recharges once every 90 seconds.")
                 .IncreasesStat(StatType.FirstHostileAbilityHitDamageBonus, 8)
                 .IncreasesStat(StatType.FirstHostileAbilityHitMaximumCount, 3)
+                .IncreasesStat(StatType.FirstHostileAbilityHitCooldownSeconds, 90)
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroknife, 8)
 
                 .AddPerkLevel()
-                .Description("Your first 3 successfully landed hostile combat abilities in combat deal +12 DMG.")
+                .Description("Entering combat grants 3 stacks of First Strike. Each stack is consumed by a successfully landed hostile combat ability to deal +12 DMG. Once all stacks are consumed, First Strike recharges once every 90 seconds.")
                 .IncreasesStat(StatType.FirstHostileAbilityHitDamageBonus, 12)
                 .IncreasesStat(StatType.FirstHostileAbilityHitMaximumCount, 3)
+                .IncreasesStat(StatType.FirstHostileAbilityHitCooldownSeconds, 90)
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroknife, 22)
 
                 .AddPerkLevel()
-                .Description("Your first 3 successfully landed hostile combat abilities in combat deal +16 DMG.")
+                .Description("Entering combat grants 3 stacks of First Strike. Each stack is consumed by a successfully landed hostile combat ability to deal +16 DMG. Once all stacks are consumed, First Strike recharges once every 90 seconds.")
                 .IncreasesStat(StatType.FirstHostileAbilityHitDamageBonus, 16)
                 .IncreasesStat(StatType.FirstHostileAbilityHitMaximumCount, 3)
+                .IncreasesStat(StatType.FirstHostileAbilityHitCooldownSeconds, 90)
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroknife, 45);
         }
@@ -307,19 +310,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CripplingSlice1)
-                .Description("Deals weapon DMG + 8 and inflicts Exposed for 30 seconds.")
+                .Description("Deals weapon DMG + 10 and inflicts Exposed for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroknife, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CripplingSlice2)
-                .Description("Deals weapon DMG + 12 and inflicts Exposed for 30 seconds.")
+                .Description("Deals weapon DMG + 20 and inflicts Exposed for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroknife, 30)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CripplingSlice3)
-                .Description("Deals weapon DMG + 16 and inflicts Exposed for 30 seconds.")
+                .Description("Deals weapon DMG + 28 and inflicts Exposed for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroknife, 38);
         }
@@ -331,7 +334,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.VenaticRecoveryTrait)
-                .Description("Your first attack in combat restores 15 STM. Once every 1 minute.")
+                .Description("Your first attack in combat restores 15 STM. This can trigger once every 60 seconds.")
                 .IncreasesStat(StatType.FirstCombatAttackStaminaRestore, 15)
                 .IncreasesStat(StatType.FirstCombatAttackStaminaRestoreCooldownSeconds, 60)
                 .Price(4)
@@ -389,10 +392,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.HobbledTrait)
-                .Description("Exposed and Disoriented debuffs you apply also drain 6 STM from the target. This can trigger once every 6 seconds.")
+                .Description("Exposed and Disoriented debuffs you apply also drain 6 STM from the target. This can trigger once every 12 seconds.")
                 .IncreasesStat(StatType.StatusAppliedTargetStaminaDrainRequiredCategory, (int)StatusEffectCategory.StaminaDrainTrigger)
                 .IncreasesStat(StatType.StatusAppliedTargetStaminaDrain, 6)
-                .IncreasesStat(StatType.StatusAppliedTargetStaminaDrainCooldownSeconds, 6)
+                .IncreasesStat(StatType.StatusAppliedTargetStaminaDrainCooldownSeconds, 12)
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroknife, 35);
         }

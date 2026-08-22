@@ -44,6 +44,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 new GeneratedWeaponAbilityProfile
                 {
                     ExtraDamageIfBehind = 10,
+                    ExtraDamageIfBehindFeedbackLabel = "Backstab",
                     ConditionalTargetStatusEffect = typeof(KnockdownStatusEffect),
                     ConditionalTargetStatusDurationSeconds = 6,
                     RequireBehindForConditionalStatus = true
@@ -76,6 +77,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 new GeneratedWeaponAbilityProfile
                 {
                     ExtraDamageIfBehind = 20,
+                    ExtraDamageIfBehindFeedbackLabel = "Backstab",
                     ConditionalTargetStatusEffect = typeof(KnockdownStatusEffect),
                     ConditionalTargetStatusDurationSeconds = 6,
                     RequireBehindForConditionalStatus = true

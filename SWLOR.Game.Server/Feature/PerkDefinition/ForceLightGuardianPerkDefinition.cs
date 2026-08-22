@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void GuardianWard()
         {
-            _builder.Create(PerkCategoryType.ForceLight, PerkType.GuardianWard)
+            _builder.Create(PerkCategoryType.ForceControl, PerkType.GuardianWard)
                 .Name("Guardian Ward")
                 .ForceAffinity(ForceAffinityType.Light)
 
@@ -63,13 +63,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void DeflectivePresence()
         {
-            _builder.Create(PerkCategoryType.ForceLight, PerkType.LightGuardianDeflectivePresence)
+            _builder.Create(PerkCategoryType.ForceControl, PerkType.LightGuardianDeflectivePresence)
                 .Name("Protective Presence")
                 .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LightGuardianDeflectivePresenceTrait)
-                .Description("Control powers that grant temporary HP, absorb damage, or prevent defeat grant affected allies +4 Attack Deflection for 30 seconds.")
+                .Description("Control powers that grant temporary HP, absorb damage, or prevent defeat grant affected allies +4 Ranged Deflection for 30 seconds.")
                 .IncreasesStat(StatType.LightGuardianPowerAttackDeflection, 4)
                 .IncreasesStat(StatType.LightGuardianPowerAttackDeflectionDurationSeconds, 30)
                 .Price(4)
@@ -79,13 +79,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void CourageousResolve()
         {
-            _builder.Create(PerkCategoryType.ForceLight, PerkType.CourageousResolve)
+            _builder.Create(PerkCategoryType.ForceSense, PerkType.CourageousResolve)
                 .Name("Courageous Resolve")
                 .ForceAffinity(ForceAffinityType.Light)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CourageousResolveTrait)
-                .Description("When you use a Sense power, you and allies within 5m gain +10 Fear Resistance rating, +10 Daze Resistance rating, and +10 Confusion Resistance rating for 30 seconds. Allies with temporary HP from one of your Force powers gain +15 instead.")
+                .Description("When you use a Sense power, you and allies within 5m gain +10 Mind Resistance rating for 30 seconds. Allies with temporary HP from one of your Force powers gain +15 instead.")
                 .Price(4)
                 .RequirementSkill(SkillType.Force, 15)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
@@ -94,7 +94,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ForceIntercept()
         {
-            _builder.Create(PerkCategoryType.ForceLight, PerkType.ForceIntercept)
+            _builder.Create(PerkCategoryType.ForceSense, PerkType.ForceIntercept)
                 .Name("Force Intercept")
                 .ForceAffinity(ForceAffinityType.Light)
 
@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void ReflectiveBarrier()
         {
-            _builder.Create(PerkCategoryType.ForceLight, PerkType.ReflectiveBarrier)
+            _builder.Create(PerkCategoryType.ForceControl, PerkType.ReflectiveBarrier)
                 .Name("Reflective Barrier")
                 .ForceAffinity(ForceAffinityType.Light)
 
@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void PurifyingWave()
         {
-            _builder.Create(PerkCategoryType.ForceLight, PerkType.PurifyingWave)
+            _builder.Create(PerkCategoryType.ForceAlter, PerkType.PurifyingWave)
                 .Name("Purifying Wave")
                 .ForceAffinity(ForceAffinityType.Light)
 
@@ -137,7 +137,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
         private void LastStandOfTheLight()
         {
-            _builder.Create(PerkCategoryType.ForceLight, PerkType.LastStandOfTheLight)
+            _builder.Create(PerkCategoryType.ForceAlter, PerkType.LastStandOfTheLight)
                 .Name("Last Stand of the Light")
                 .ForceAffinity(ForceAffinityType.Light)
 

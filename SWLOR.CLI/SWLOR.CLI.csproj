@@ -2,21 +2,22 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.CommandLineUtils" Version="1.1.1" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="System.CommandLine" Version="2.0.10" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="NRediSearch" Version="2.2.79" />
     <PackageReference Include="NReJSON" Version="4.0.0" />
-    <PackageReference Include="StackExchange.Redis" Version="2.9.17" />
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="9.0.9" />
+    <PackageReference Include="StackExchange.Redis" Version="3.0.17" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="10.0.10" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\SWLOR.Game.Server\SWLOR.Game.Server.csproj" />
+    <ProjectReference Include="..\SWLOR.NWN.Formats\SWLOR.NWN.Formats.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -195,7 +195,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LastGuardianTrait)
                 .Description("Once every 3 minutes, when the beast would take fatal damage, prevent that damage and grant temporary HP equal to 20% of its maximum HP for 30 seconds.")
-                .Price(3)
+                .Price(4)
                 .RequirementBeastLevel(50)
                 .RequirementBeastRole(BeastRoleType.Tank)
                 .IncreasesStat(StatType.FatalDamageTemporaryHPPercent, 20)

@@ -13,7 +13,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public PowerCell1StatusEffect()
         {
-            StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment] = 4;
+            StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment] = 4;
         }
     }
 }

@@ -82,6 +82,7 @@ namespace SWLOR.Game.Server.Service
             BaseItem.Rifle,
             BaseItem.Longbow,
             BaseItem.Pistol,
+            BaseItem.LegacyPistol,
             BaseItem.Arrow,
             BaseItem.Bolt,
             BaseItem.Bullet,
@@ -595,6 +596,7 @@ namespace SWLOR.Game.Server.Service
             BaseItem.QuarterStaff,
             BaseItem.LightMace,
             BaseItem.Pistol,
+            BaseItem.LegacyPistol,
             BaseItem.Sling,
             BaseItem.ThrowingAxe,
             BaseItem.Shuriken,
@@ -754,6 +756,7 @@ namespace SWLOR.Game.Server.Service
         public static List<BaseItem> PistolBaseItemTypes { get; } = new List<BaseItem>
         {
             BaseItem.Pistol,
+            BaseItem.LegacyPistol,
             BaseItem.Sling
         };
 
@@ -849,16 +852,144 @@ namespace SWLOR.Game.Server.Service
         };
 
         /// <summary>
-        /// Retrieves the icon used on the UIs.
+        /// The icon used when no valid icon resource can be resolved for an item. Prevents the
+        /// red "missing texture" X from appearing in NUI item lists.
+        /// </summary>
+        private const string GenericItemIconResref = "iit_smlmisc_001";
+
+        /// <summary>
+        /// Determines whether an icon resource actually exists (as either a TGA or DDS texture).
+        /// NUI renders a red X for missing textures, so icon resrefs must be verified before use.
+        /// </summary>
+        /// <param name="resref">The icon resref to check.</param>
+        /// <returns>true if the resource exists, false otherwise.</returns>
+        private static bool IconResourceExists(string resref)
+        {
+            if (string.IsNullOrWhiteSpace(resref))
+                return false;
+
+            return ResManGetAliasFor(resref, ResType.TGA) != string.Empty ||
+                   ResManGetAliasFor(resref, ResType.DDS) != string.Empty;
+        }
+
+        /// <summary>
+        /// Retrieves the icon used on the UIs. Every returned resref is verified to exist as a
+        /// texture; unresolvable icons fall back to the base item's default icon and finally to
+        /// a generic icon so NUI never renders a red missing-texture X.
         /// </summary>
         /// <param name="item">The item to retrieve the icon for.</param>
         /// <returns>A resref of the icon to use.</returns>
         public static string GetIconResref(uint item)
         {
+            return ResolveIconResref(item, out _);
+        }
+
+        /// <summary>
+        /// Determines whether an item has a real inventory icon, as opposed to falling back to the
+        /// generic placeholder icon. Items with no real icon are almost always internal, prop, or
+        /// creature items that should not appear on player-facing economy surfaces.
+        /// </summary>
+        /// <param name="item">The item to check.</param>
+        /// <returns>true if a real icon resource resolved, false if the generic fallback was used.</returns>
+        public static bool HasInventoryIcon(uint item)
+        {
+            ResolveIconResref(item, out var hasRealIcon);
+            return hasRealIcon;
+        }
+
+        /// <summary>
+        /// Creature-equipment base item types. Players never trade these; the "stat skins" that carry
+        /// a creature's combat stats are <see cref="BaseItem.CreatureItem"/>.
+        /// </summary>
+        private static readonly HashSet<BaseItem> EconomyRestrictedBaseItems = new()
+        {
+            BaseItem.Invalid,
+            BaseItem.CreatureSlashWeapon,
+            BaseItem.CreaturePierceWeapon,
+            BaseItem.CreatureBludgeonWeapon,
+            BaseItem.CreatureSlashPierceWeapon,
+            BaseItem.CreatureItem
+        };
+
+        /// <summary>
+        /// Name prefixes the builders reserve for NPC-only gear, anchored to the start of the item name.
+        /// </summary>
+        private static readonly string[] EconomyRestrictedNamePrefixes = { "[NPC]", "(NPC" };
+
+        /// <summary>
+        /// Blueprint local variable that explicitly excludes an item from player-facing economy surfaces.
+        /// Set this on NPC-only blueprints that a normal player item is otherwise indistinguishable from
+        /// (a real base type, a real icon, and no [NPC] name), such as the "Specialist" NPC weapons.
+        /// </summary>
+        public const string NoEconomyVariable = "NO_ECONOMY";
+
+        /// <summary>
+        /// Determines whether an item should be hidden from player-facing economy surfaces (contract
+        /// objective search, and any future market-style blueprint pickers). Combines creature base
+        /// types, the reserved NPC name prefixes, an explicit blueprint opt-out flag, and the absence
+        /// of a real inventory icon. This is the single source of truth; callers must not re-derive it.
+        /// </summary>
+        /// <param name="item">The item to classify.</param>
+        /// <returns>true if the item is NPC/creature/internal and should not be shown to players.</returns>
+        public static bool IsEconomyRestricted(uint item)
+        {
+            var baseItem = GetBaseItemType(item);
+            var name = GetName(item);
+            var noEconomy = GetLocalInt(item, NoEconomyVariable) == 1;
+            if (IsEconomyRestricted(baseItem, name, noEconomy, hasInventoryIcon: true))
+                return true;
+
+            return !HasInventoryIcon(item);
+        }
+
+        /// <summary>
+        /// Data-only form of the shared economy classifier. Builder tools use this overload while
+        /// inspecting UTI data that has not been instantiated by the game engine.
+        /// </summary>
+        public static bool IsEconomyRestricted(
+            BaseItem baseItem,
+            string name,
+            bool noEconomy,
+            bool hasInventoryIcon)
+        {
+            return EconomyRestrictedBaseItems.Contains(baseItem) ||
+                   noEconomy ||
+                   IsEconomyRestrictedName(name) ||
+                   !hasInventoryIcon;
+        }
+
+        /// <summary>
+        /// The name-based portion of <see cref="IsEconomyRestricted"/>, split out so it can be unit
+        /// tested without spawning an item. A blank name denotes an internal/unfinished blueprint.
+        /// </summary>
+        /// <param name="name">The item's display name.</param>
+        /// <returns>true if the name marks the item as NPC-only or internal.</returns>
+        public static bool IsEconomyRestrictedName(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                return true;
+
+            var trimmed = name.TrimStart();
+
+            foreach (var prefix in EconomyRestrictedNamePrefixes)
+            {
+                if (trimmed.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                    return true;
+            }
+
+            return false;
+        }
+
+        private static string ResolveIconResref(uint item, out bool hasRealIcon)
+        {
+            hasRealIcon = true;
             var baseItem = GetBaseItemType(item);
 
             if (baseItem == BaseItem.Cloak) // Cloaks use PLTs so their default icon doesn't really work
-                return "iit_cloak";
+            {
+                if (IconResourceExists("iit_cloak"))
+                    return "iit_cloak";
+            }
             else if (baseItem == BaseItem.SpellScroll || baseItem == BaseItem.EnchantedScroll)
             {// Scrolls get their icon from the cast spell property
                 if (GetItemHasItemProperty(item, ItemPropertyType.CastSpell))
@@ -866,7 +997,11 @@ namespace SWLOR.Game.Server.Service
                     for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
                     {
                         if (GetItemPropertyType(ip) == ItemPropertyType.CastSpell)
-                            return Get2DAString("iprp_spells", "Icon", GetItemPropertySubType(ip));
+                        {
+                            var spellIcon = Get2DAString("iprp_spells", "Icon", GetItemPropertySubType(ip));
+                            if (IconResourceExists(spellIcon))
+                                return spellIcon;
+                        }
                     }
                 }
             }
@@ -877,6 +1012,13 @@ namespace SWLOR.Game.Server.Service
                 {
                     sSimpleModelId = "0" + sSimpleModelId;
                 }
+
+                // The engine convention for simple-model icons is i<ItemClass>_<model>. This covers
+                // custom base items (e.g. DNA, essences) whose DefaultIcon is just iinvalid_2x2.
+                var itemClass = Get2DAString("baseitems", "ItemClass", (int)baseItem);
+                var classIcon = ("i" + itemClass + "_" + sSimpleModelId).ToLower();
+                if (IconResourceExists(classIcon))
+                    return classIcon;
 
                 var sDefaultIcon = Get2DAString("baseitems", "DefaultIcon", (int)baseItem);
                 switch (baseItem)
@@ -905,12 +1047,26 @@ namespace SWLOR.Game.Server.Service
                 if (GetSubString(sDefaultIcon, nLength - 4, 1) == "_")// Some items have a default icon of xx_yyy_001, we strip the last 4 symbols if that is the case
                     sDefaultIcon = GetStringLeft(sDefaultIcon, nLength - 4);
                 var sIcon = sDefaultIcon + "_" + sSimpleModelId;
-                if (ResManGetAliasFor(sIcon, ResType.TGA) != "")// Check if the icon actually exists, if not, we'll fall through and return the default icon
+                if (IconResourceExists(sIcon))
                     return sIcon;
             }
 
-            // For everything else use the item's default icon
-            return Get2DAString("baseitems", "DefaultIcon", (int)baseItem);
+            // For everything else use the item's default icon, verified to exist. The iinvalid
+            // placeholder icons render as a red X, so they are never acceptable even though the
+            // texture technically exists.
+            var defaultIcon = Get2DAString("baseitems", "DefaultIcon", (int)baseItem);
+            if (!defaultIcon.StartsWith("iinvalid"))
+            {
+                if (IconResourceExists(defaultIcon))
+                    return defaultIcon;
+
+                // Some default icons are stored with a _XXX variant suffix even though the 2DA omits it.
+                if (IconResourceExists(defaultIcon + "_001"))
+                    return defaultIcon + "_001";
+            }
+
+            hasRealIcon = false;
+            return GenericItemIconResref;
         }
 
         /// <summary>

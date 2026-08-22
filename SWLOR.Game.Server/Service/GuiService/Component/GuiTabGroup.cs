@@ -27,7 +27,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Service.GuiService;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition.Component
+namespace SWLOR.Game.Server.Service.GuiService.Component
 {
     // ------------------------------------------------------------------
     // GuiViewModelBase<TDerived, TPayload> ALREADY HAS SwapNestedPartialView
@@ -109,7 +109,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.Component
         /// </summary>
         public void HandleClientChange(int localIndex, Action<int> onUserSelectedTab)
         {
-            if (_isSyncing || localIndex < 0)
+            if (_isSyncing || localIndex < 0 || localIndex >= _tabIdsInOrder.Count)
                 return;
 
             onUserSelectedTab(TabIdFor(localIndex));
@@ -119,45 +119,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.Component
         public void SyncTo(int tabId, Action<int> setLocalIndex)
         {
             _isSyncing = true;
-            setLocalIndex(LocalIndexFor(tabId));
-            _isSyncing = false;
+            try
+            {
+                setLocalIndex(LocalIndexFor(tabId));
+            }
+            finally
+            {
+                _isSyncing = false;
+            }
         }
     }
 }
-
-// ============================================================================
-// USAGE EXAMPLE - how CharacterSheetViewModel's tab handling would change
-// ============================================================================
-//
-//   private static readonly GuiTabGroup<CharacterSheetViewModel, CharacterSheetPayload> Tabs =
-//       new GuiTabGroup<CharacterSheetViewModel, CharacterSheetPayload>()
-//           .AddTab(AttributesTabId, AttributesTabPartial)
-//           .AddTab(StatsTabId, StatsTabPartial, m => m.RefreshCharacterStatsList())
-//           .AddTab(ResistancesTabId, ResistancesTabPartial, m => m.RefreshResistances())
-//           .AddTab(CraftingTabId, CraftingTabPartial, m => m.RefreshCraftingStats());
-//
-//   private static readonly GuiToggleGroupSync TopToggles = new(AttributesTabId, StatsTabId);
-//   private static readonly GuiToggleGroupSync BottomToggles = new(ResistancesTabId, CraftingTabId);
-//
-//   public int TopTabId
-//   {
-//       get => Get<int>();
-//       set
-//       {
-//           Set(value);
-//           TopToggles.HandleClientChange(value, SelectTab);
-//       }
-//   }
-//
-//   private void SelectTab(int tabId)
-//   {
-//       SelectedTabId = tabId;
-//       Tabs.Select(this, TabContentPartialElement, tabId);
-//       TopToggles.SyncTo(tabId, v => TopTabId = v);
-//       BottomToggles.SyncTo(tabId, v => BottomTabId = v);
-//   }
-//
-// This removes RestoreSelectedTabPartial, ApplySelectedTabPartial,
-// RefreshSelectedTabData's switch statement, GetTabPartialName, and the
-// _isSynchronizingTabRows field entirely - replaced by declarative
-// registration plus two small reusable sync helpers.

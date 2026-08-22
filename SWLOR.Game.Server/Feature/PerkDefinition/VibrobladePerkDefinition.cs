@@ -56,9 +56,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BloodFrenzyTrait)
-                .Description("Defeating an enemy restores 15 STM and grants +10% Haste for 30 seconds.")
-                .IncreasesStat(StatType.DefeatedEnemyStaminaRestore, 15)
-                .IncreasesStat(StatType.DefeatedEnemyAttackDelayReductionPercent, 10)
+                .Description("Defeating an enemy restores 10 STM and grants +8% Haste for 30 seconds.")
+                .IncreasesStat(StatType.DefeatedEnemyStaminaRestore, 10)
+                .IncreasesStat(StatType.DefeatedEnemyAttackDelayReductionPercent, 8)
                 .IncreasesStat(StatType.DefeatedEnemyAttackDelayReductionDurationSeconds, 30)
                 .Price(6)
                 .RequirementSkill(SkillType.Vibroblade, 50)
@@ -72,19 +72,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CoveringStrike1)
-                .Description("Strike all enemies within 3m for weapon DMG + 15. Enemies hit generate +25% Enmity toward you for 30 seconds.")
+                .Description("Strike all enemies within 5m for weapon DMG + 15. Enemies hit generate +25% Enmity toward you for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroblade, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CoveringStrike2)
-                .Description("Strike all enemies within 3m for weapon DMG + 25. Enemies hit generate +25% Enmity toward you for 30 seconds.")
+                .Description("Strike all enemies within 5m for weapon DMG + 25. Enemies hit generate +25% Enmity toward you for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 30)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.CoveringStrike3)
-                .Description("Strike all enemies within 3m for weapon DMG + 30. Enemies hit generate +25% Enmity toward you for 30 seconds.")
+                .Description("Strike all enemies within 5m for weapon DMG + 30. Enemies hit generate +25% Enmity toward you for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 38);
         }
@@ -108,16 +108,16 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ExecutionerTrait)
-                .Description("Deal +15% damage to targets below 30% HP.")
-                .IncreasesStat(StatType.TargetLowHPDamageThresholdPercent, 30)
-                .IncreasesStat(StatType.TargetLowHPDamagePercentAdjustment, 15)
+                .Description("Deal +8% damage to targets below 25% HP.")
+                .IncreasesStat(StatType.TargetLowHPDamageThresholdPercent, 25)
+                .IncreasesStat(StatType.TargetLowHPDamagePercentAdjustment, 8)
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroblade, 5)
 
                 .AddPerkLevel()
-                .Description("Deal +15% damage to targets below 50% HP.")
-                .IncreasesStat(StatType.TargetLowHPDamageThresholdPercent, 50)
-                .IncreasesStat(StatType.TargetLowHPDamagePercentAdjustment, 15)
+                .Description("Deal +10% damage to targets below 25% HP.")
+                .IncreasesStat(StatType.TargetLowHPDamageThresholdPercent, 25)
+                .IncreasesStat(StatType.TargetLowHPDamagePercentAdjustment, 10)
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroblade, 35);
         }
@@ -158,8 +158,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AlacrityTrait)
                 .Description("Restore 4 STM when your shield deflects an attack. This can only trigger once every 6 seconds.")
-                .IncreasesStat(StatType.DeflectionStaminaRestore, creature => EquipmentPredicates.HasOffHandShield(creature) ? 4 : 0)
-                .IncreasesStat(StatType.DeflectionStaminaRestoreCooldownSeconds, creature => EquipmentPredicates.HasOffHandShield(creature) ? 6 : 0)
+                .IncreasesStat(StatType.ShieldDeflectionStaminaRestore, creature => EquipmentPredicates.HasOffHandShield(creature) ? 4 : 0)
+                .IncreasesStat(StatType.ShieldDeflectionStaminaRestoreCooldownSeconds, creature => EquipmentPredicates.HasOffHandShield(creature) ? 6 : 0)
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 25);
         }
@@ -248,28 +248,25 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RundownTrait)
                 .Description("Each consecutive melee attack against the same target grants Rundown, giving +1 DMG to auto-attack against that target, up to five stacks.")
-                .IncreasesStat(StatType.RepeatedTargetDamageSkillType, (int)SkillType.Vibroblade)
-                .IncreasesStat(StatType.RepeatedTargetDamageBonusPerHit, 1)
-                .IncreasesStat(StatType.RepeatedTargetDamageBonusMax, 5)
-                .IncreasesStat(StatType.RepeatedTargetDamageAutoAttackOnly, 1)
+                .IncreasesStat(StatType.MeleeRepeatedTargetDamageBonusPerHit, 1)
+                .IncreasesStat(StatType.MeleeRepeatedTargetDamageBonusMax, 5)
+                .IncreasesStat(StatType.MeleeRepeatedTargetDamageStatusEffectIcon, (int)EffectIconType.RundownStatusEffect)
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroblade, 8)
 
                 .AddPerkLevel()
                 .Description("Each consecutive melee attack against the same target grants Rundown, giving +2 DMG to auto-attack against that target, up to five stacks.")
-                .IncreasesStat(StatType.RepeatedTargetDamageSkillType, (int)SkillType.Vibroblade)
-                .IncreasesStat(StatType.RepeatedTargetDamageBonusPerHit, 2)
-                .IncreasesStat(StatType.RepeatedTargetDamageBonusMax, 10)
-                .IncreasesStat(StatType.RepeatedTargetDamageAutoAttackOnly, 1)
+                .IncreasesStat(StatType.MeleeRepeatedTargetDamageBonusPerHit, 2)
+                .IncreasesStat(StatType.MeleeRepeatedTargetDamageBonusMax, 10)
+                .IncreasesStat(StatType.MeleeRepeatedTargetDamageStatusEffectIcon, (int)EffectIconType.RundownStatusEffect)
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 22)
 
                 .AddPerkLevel()
                 .Description("Each consecutive melee attack against the same target grants Rundown, giving +3 DMG to auto-attack against that target, up to five stacks.")
-                .IncreasesStat(StatType.RepeatedTargetDamageSkillType, (int)SkillType.Vibroblade)
-                .IncreasesStat(StatType.RepeatedTargetDamageBonusPerHit, 3)
-                .IncreasesStat(StatType.RepeatedTargetDamageBonusMax, 15)
-                .IncreasesStat(StatType.RepeatedTargetDamageAutoAttackOnly, 1)
+                .IncreasesStat(StatType.MeleeRepeatedTargetDamageBonusPerHit, 3)
+                .IncreasesStat(StatType.MeleeRepeatedTargetDamageBonusMax, 15)
+                .IncreasesStat(StatType.MeleeRepeatedTargetDamageStatusEffectIcon, (int)EffectIconType.RundownStatusEffect)
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 45);
         }
@@ -282,9 +279,8 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FollowThroughTrait)
                 .Description("Every third melee auto-attack deals an additional +10 Damage.")
-                .IncreasesStat(StatType.AutoAttackCycleDamageSkillType, (int)SkillType.Vibroblade)
-                .IncreasesStat(StatType.AutoAttackCycleRequiredCount, 3)
-                .IncreasesStat(StatType.AutoAttackCycleDamage, 10)
+                .IncreasesStat(StatType.MeleeAutoAttackCycleRequiredCount, 3)
+                .IncreasesStat(StatType.MeleeAutoAttackCycleDamage, 10)
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 25);
         }
@@ -302,13 +298,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SavageCleave2)
-                .Description("Deal weapon DMG + 20 in a 5m radius around you and restores 2 STM per secondary target hit.")
+                .Description("Deal weapon DMG + 15 in a 5m radius around you and restore 2 STM per secondary target hit.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 30)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SavageCleave3)
-                .Description("Deal weapon DMG + 15 to all enemies around you.")
+                .Description("Deal weapon DMG + 20 in a 5m radius around you and restore 2 STM per secondary target hit.")
                 .Price(4)
                 .RequirementSkill(SkillType.Vibroblade, 38);
         }
@@ -396,11 +392,11 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.UnbreakableTrait)
-                .Description("When reduced below 25% HP, gain 40% Physical Defense for 30 seconds. Once per 5 minutes.")
+                .Description("When reduced below 25% HP, gain 40% Physical Defense for 30 seconds. Once per 3 minutes.")
                 .IncreasesStat(StatType.LowHPPhysicalDefenseThresholdPercent, 25)
                 .IncreasesStat(StatType.LowHPPhysicalDefensePercentAdjustment, 40)
                 .IncreasesStat(StatType.LowHPPhysicalDefenseDurationSeconds, 30)
-                .IncreasesStat(StatType.LowHPPhysicalDefenseCooldownSeconds, 300)
+                .IncreasesStat(StatType.LowHPPhysicalDefenseCooldownSeconds, 180)
                 .Price(2)
                 .RequirementSkill(SkillType.Vibroblade, 35);
         }

@@ -1,0 +1,62 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:items="using:SWLOR.Toolset.Editors.Items"
+             x:Class="SWLOR.Toolset.Editors.Items.PaletteColorPickerView"
+             x:DataType="items:ItemDyeCellViewModel">
+
+  <!-- Shared by the item and creature appearance editors. Aurora stores a palette row index, but
+       builders edit the rendered color: the index is kept behind each swatch and never becomes a
+       creature-facing number field. -->
+  <UserControl.Styles>
+    <Style Selector="Border.selected">
+      <Setter Property="BorderBrush" Value="{DynamicResource InkBrush}" />
+    </Style>
+  </UserControl.Styles>
+
+  <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8" Margin="0,2">
+    <TextBlock Text="{Binding Label}" VerticalAlignment="Center"
+               Foreground="{DynamicResource InkSecondaryBrush}"
+               TextTrimming="CharacterEllipsis" />
+
+    <Button Grid.Column="1" Padding="3" Command="{Binding TogglePickerCommand}"
+            IsVisible="{Binding HasPalette}" ToolTip.Tip="Pick a colour">
+      <Border Width="46" Height="18" CornerRadius="2"
+              Background="{Binding SelectedBrush}"
+              BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" />
+      <Button.Flyout>
+        <Flyout Placement="Bottom" ShowMode="Standard">
+          <ScrollViewer MaxHeight="260" HorizontalScrollBarVisibility="Disabled">
+            <ItemsControl ItemsSource="{Binding Swatches}" Width="272">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <WrapPanel />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="items:ItemDyeSwatchViewModel">
+                  <Button Padding="0" Margin="1" Background="Transparent"
+                          Command="{Binding $parent[ItemsControl].((items:ItemDyeCellViewModel)DataContext).PickCommand}"
+                          CommandParameter="{Binding}"
+                          ToolTip.Tip="{Binding Tooltip}">
+                    <Border Classes.selected="{Binding IsSelected}"
+                            Width="20" Height="20" CornerRadius="2"
+                            Background="{Binding Brush}" BorderThickness="2" />
+                  </Button>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </ScrollViewer>
+        </Flyout>
+      </Button.Flyout>
+    </Button>
+
+    <!-- Existing item documents remain editable without base-game palette artwork. Creature rows
+         disable this path at construction, so they can never regress to a numeric color control. -->
+    <NumericUpDown Grid.Column="1" Value="{Binding Number, Mode=TwoWay}"
+                   Minimum="{Binding Minimum}" Maximum="{Binding Maximum}"
+                   Increment="1" FormatString="0" Width="116"
+                   IsVisible="{Binding HasNumericFallback}" />
+    <TextBlock Grid.Column="1" Text="Palette unavailable" Classes="dim"
+               VerticalAlignment="Center" IsVisible="{Binding IsPaletteUnavailable}" />
+  </Grid>
+</UserControl>

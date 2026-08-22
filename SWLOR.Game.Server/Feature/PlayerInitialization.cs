@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
@@ -50,6 +51,7 @@ namespace SWLOR.Game.Server.Feature
             InitializeLanguages(player, dbPlayer);
             AssignRacialAppearance(player, dbPlayer);
             GiveStartingItems(player);
+            GiveStartingRebuildToken(dbPlayer);
             AssignCharacterType(player, dbPlayer);
             RegisterDefaultRespawnPoint(dbPlayer);
             Stat.ApplyCreatureMovementRate(player);
@@ -342,6 +344,18 @@ namespace SWLOR.Game.Server.Feature
             });
 
             GiveGoldToCreature(player, 200);
+        }
+
+        /// <summary>
+        /// Grants a new character one free rebuild token to spend on a later respec.
+        /// </summary>
+        /// <param name="dbPlayer">The player entity</param>
+        private static void GiveStartingRebuildToken(Player dbPlayer)
+        {
+            if (!dbPlayer.Currencies.ContainsKey(CurrencyType.RebuildToken))
+                dbPlayer.Currencies[CurrencyType.RebuildToken] = 0;
+
+            dbPlayer.Currencies[CurrencyType.RebuildToken]++;
         }
 
         /// <summary>

@@ -64,7 +64,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Emergency Bunker is no longer a lesson on my ledger. You proved it in Viscara Republic Engineering Bunker; keep proving it when nobody is keeping score."
+            "0": "Emergency Bunker's recertified, final stamp, your name on the inspection log. Keep every wall you build held to that standard, and I won't have to come find you."
           }
         }
       },
@@ -113,7 +113,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not yet. Emergency Bunker is not a conversation I start on instinct or reputation. Come back when your work can survive the proof I keep for Viscara Republic Engineering Bunker."
+            "0": "Not yet, dear. I don't certify hands that haven't proven steady with Devices work first. Come back when that's settled and we'll talk about walls."
           }
         }
       },
@@ -258,7 +258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Emergency cover is built before panic starts. The bunker has a failing pattern I want corrected under fire. Go to Viscara Republic Engineering Bunker on Viscara, defeat the Emergency Bunker adepts, and bring back the Emergency Bunker field report."
+            "0": "Nobody respects a shelter drill until the day the roof's actually coming down, and then everybody wants to know why I run them. Well, here's why: a crew sealed off part of my own sublevel in the Viscara Republic Engineering Bunker and re-rigged it without my sign-off. Six of their adepts are holding it. Clear them out, bring me back the Republic Bunker Docket, and let's see exactly what they changed."
           }
         }
       },
@@ -307,7 +307,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Viscara Republic Engineering Bunker. I want proof, not a story about almost having it."
+            "0": "Other work can wait a beat, but fine, go when you're ready. Just don't go in without knowing your exit, that's the first rule of any bunker I've ever built."
           }
         }
       },
@@ -376,7 +376,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Emergency Bunker is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "Anyone caught under a collapsing structure with nowhere left to retreat to. That's the whole doctrine, really: hold a space that holds people, no matter what's falling on top of it."
           }
         }
       },
@@ -445,7 +445,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker is on Viscara. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Because it's the sturdiest thing I ever built, and sturdy things get stolen for whatever someone's building next, sign-off or not. I take that personally. You would too, if you'd poured the concrete yourself."
           }
         }
       },
@@ -514,7 +514,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Every load rating and structural change they've logged since they took it over. I need to know if they've weakened something I'm going to have to trust with lives again."
           }
         }
       },
@@ -563,7 +563,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker still holds your first proof for Emergency Bunker. Finish the target there before you bring me anything else."
+            "0": "That docket's still sitting in my own sublevel with six adepts standing on it. Go get it back."
           }
         }
       },
@@ -632,7 +632,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Emergency Bunker lesson clean."
+            "0": "Let's see it, then. Hand over the docket."
           }
         }
       },
@@ -681,7 +681,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Emergency Bunker is one step closer to belonging to you."
+            "0": "Well. Nothing structurally fatal, just arrogant. Good first day's work. Hazard pay's yours; the real prize is that sublevel remembering whose name is on the beams."
           }
         }
       },
@@ -826,7 +826,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Emergency Bunker proof is waiting in Viscara Republic Engineering Bunker. This one is about second proof, not repetition. Go to Viscara Republic Engineering Bunker on Viscara, defeat the Emergency Bunker specialists, and bring back the Emergency Bunker calibration core."
+            "0": "Their specialists rewired a Republic shield grid relay into my load-bearing supports, which means if that relay fails, it's not just power that drops, it's the ceiling. Five specialists, same bunker. Bring the relay back before it decides gravity's opinion for everyone under it."
           }
         }
       },
@@ -875,7 +875,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Viscara Republic Engineering Bunker. I want proof, not a story about almost having it."
+            "0": "Take your day. Just don't take two; every hour that relay stays crossed with my supports is an hour I'm not sure that sublevel holds."
           }
         }
       },
@@ -944,7 +944,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Emergency Bunker is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "They tied the shield failsafe to the same circuit as the structural load sensors. Cut power to one and you cut warning to the other. That's not a design choice, that's a shortcut, and shortcuts in a bunker get people buried."
           }
         }
       },
@@ -1013,7 +1013,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker is on Viscara. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Because whoever's running this operation needed something clever enough to fool an inspection and lazy enough to save them a week's work. Specialists are exactly the people who can manage both at once."
           }
         }
       },
@@ -1082,7 +1082,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "I separate the circuits back out where they belong, the way I built it the first time. Then that sublevel goes back to being the safest room in the bunker instead of the most dangerous one."
           }
         }
       },
@@ -1131,7 +1131,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker still holds your second proof for Emergency Bunker. Finish the target there before you bring me anything else."
+            "0": "Relay's still crossed with my supports down in the Viscara Republic Engineering Bunker. Five specialists guarding it. Go on."
           }
         }
       },
@@ -1200,7 +1200,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Emergency Bunker lesson clean."
+            "0": "Let's have a look. Hand over the relay."
           }
         }
       },
@@ -1249,7 +1249,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Emergency Bunker is one step closer to belonging to you."
+            "0": "Good, still cold, still functional. I can work with that. You're measuring up steadier than most of the crews I've certified, and that's not a compliment I give for free."
           }
         }
       },
@@ -1394,7 +1394,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Emergency Bunker proof is waiting in Viscara Republic Engineering Bunker. This one is about breach proof, not repetition. Go to Viscara Republic Engineering Bunker on Viscara, defeat the Emergency Bunker warden, and bring back the Emergency Bunker broken seal."
+            "0": "Their warden's holding the deepest chamber, and I wrote my rescue protocol with a three-person minimum for exactly this kind of room: one to hold the door, one to hold the line, one to actually do the work. I'm not making an exception because you think you're sturdier than the protocol. Bring two, and get me the Cracked Command Crest off him."
           }
         }
       },
@@ -1443,7 +1443,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Viscara Republic Engineering Bunker. I want proof, not a story about almost having it."
+            "0": "Go find them. I've buried the results of people who thought the protocol was a suggestion, and I'm not doing that again on my own sublevel."
           }
         }
       },
@@ -1512,7 +1512,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Emergency Bunker is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "One to hold the door means the room stays reachable. One to hold the line means nobody's flanked. One to do the actual work means someone's hands are free when it matters. Take away any one job and the other two fail with it."
           }
         }
       },
@@ -1581,7 +1581,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker is on Viscara. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Cracked under load like that means he's been running that chamber past its rated tolerance for a while now. I need to know exactly how far past, before I trust it to hold anyone again, including you."
           }
         }
       },
@@ -1650,7 +1650,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Turned my deepest shelter into his personal fortress and dared anyone to come collect the rent. I built that chamber to keep people alive under anything. I did not build it for him."
           }
         }
       },
@@ -1699,7 +1699,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker still holds your breach proof for Emergency Bunker. Finish the target there before you bring me anything else."
+            "0": "Warden's still holding that chamber in the Viscara Republic Engineering Bunker. Bring your two before you go back down."
           }
         }
       },
@@ -1768,7 +1768,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Emergency Bunker lesson clean."
+            "0": "You're all still standing. Let's see the crest."
           }
         }
       },
@@ -1817,7 +1817,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Emergency Bunker is one step closer to belonging to you."
+            "0": "Warden's down and the chamber's mine again. Three of you did exactly what the protocol says three should do. I wrote that protocol so I wouldn't have to write anyone's eulogy instead."
           }
         }
       },
@@ -1962,7 +1962,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Emergency Bunker proof is waiting in Viscara Republic Engineering Bunker. This one is about circle proof, not repetition. Go to Viscara Republic Engineering Bunker on Viscara, defeat the Emergency Bunker inner circle, and bring back the Emergency Bunker command mark."
+            "0": "The inner circle authorized the whole re-rig, and their Quartermaster Override Chip will tell me who requisitioned the materials to do it. Four of them holding the supply chamber. Bring the chip back and let's find out whose signature I'm looking for."
           }
         }
       },
@@ -2011,7 +2011,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Viscara Republic Engineering Bunker. I want proof, not a story about almost having it."
+            "0": "Take your time. That chip isn't going anywhere, but I'd rather it stay lost to them a little longer than have you rush this and end up needing my protocol yourself."
           }
         }
       },
@@ -2080,7 +2080,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Emergency Bunker is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "Every requisition, every signature, every load of concrete and cable that went into re-rigging my own sublevel against me. It's a paper trail with a name at the end of it."
           }
         }
       },
@@ -2149,7 +2149,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker is on Viscara. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Someone with enough standing to move Republic materials without a second signature. That's a very short list, and I'm dreading which name is on it."
           }
         }
       },
@@ -2218,7 +2218,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Keep them close if you can. Four together is a heavier lift than one warden, in its own way, and I'd rather you go in with hands you already trust."
           }
         }
       },
@@ -2267,7 +2267,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker still holds your circle proof for Emergency Bunker. Finish the target there before you bring me anything else."
+            "0": "Chip's still in the supply chamber with four of them standing guard. Viscara Republic Engineering Bunker. Go get it."
           }
         }
       },
@@ -2336,7 +2336,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Emergency Bunker lesson clean."
+            "0": "Four down and a chip in hand. Let's see what it says."
           }
         }
       },
@@ -2385,7 +2385,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Emergency Bunker is one step closer to belonging to you."
+            "0": "There's the name I was dreading. One left to deal with, and he's the one who thinks my walls make him patient instead of caught."
           }
         }
       },
@@ -2530,7 +2530,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Emergency Bunker proof is waiting in Viscara Republic Engineering Bunker. This one is about mastery proof, not repetition. Go to Viscara Republic Engineering Bunker on Viscara, defeat the Emergency Bunker master, and return with the final proof."
+            "0": "He's taken the deepest room I ever built and decided the walls make him patient, like waiting out a rescue crew is a virtue instead of a trap closing on him. My protocol says three, minimum, and I am not bending that rule for the man who broke every other one I wrote. Bring your two. Finish what the bunker was always meant to do: hold, and hold him inside it."
           }
         }
       },
@@ -2579,7 +2579,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Viscara Republic Engineering Bunker. I want proof, not a story about almost having it."
+            "0": "Take the time. This chamber's waited this long for the right hands; it can wait a little longer for the right three."
           }
         }
       },
@@ -2648,7 +2648,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Emergency Bunker is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "A shelter holds you alive until help arrives. A trap holds you until it doesn't matter anymore whether help does. He's mistaken one for the other, and I intend to correct him personally, through you."
           }
         }
       },
@@ -2717,7 +2717,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker is on Viscara. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Long enough to convince himself patience is the same as strength. It isn't. Strength is knowing when a room's already decided against you and leaving before it does."
           }
         }
       },
@@ -2786,7 +2786,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Then Emergency Bunker goes back to what I built it for: holding people who need holding, not men who think walls make them untouchable. That's yours now, properly, and I trust you'll keep it that way."
           }
         }
       },
@@ -2835,7 +2835,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Viscara Republic Engineering Bunker still holds your mastery proof for Emergency Bunker. Finish the target there before you bring me anything else."
+            "0": "He's still down there, patient as ever. Bring your two before you go back."
           }
         }
       },
@@ -2904,7 +2904,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Emergency Bunker lesson clean."
+            "0": "Is it done? Tell me straight."
           }
         }
       },
@@ -2953,7 +2953,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Emergency Bunker is one step closer to belonging to you."
+            "0": "Then that chamber's finally mine again, and Emergency Bunker is yours. Build your walls the way I taught you: to hold people up, not to hold anyone in. Well done."
           }
         }
       }
@@ -3023,7 +3023,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to the drill."
           }
         }
       },
@@ -3100,7 +3100,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the first proof."
+            "0": "I'll clear it and bring back the docket."
           }
         }
       },
@@ -3165,7 +3165,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Emergency Bunker demand?"
+            "0": "What does emergency bunker doctrine actually protect?"
           }
         }
       },
@@ -3230,7 +3230,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Why would a crew seal off your own sublevel?"
           }
         }
       },
@@ -3295,7 +3295,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "What will the docket tell you?"
           }
         }
       },
@@ -3340,7 +3340,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Not today, I've got other work."
           }
         }
       },
@@ -3417,7 +3417,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "Here's the docket."
           }
         }
       },
@@ -3482,7 +3482,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to the drill."
           }
         }
       },
@@ -3559,7 +3559,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the second proof."
+            "0": "I'll pull the relay before it fails."
           }
         }
       },
@@ -3624,7 +3624,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Emergency Bunker demand?"
+            "0": "How does a shield relay affect load-bearing supports?"
           }
         }
       },
@@ -3689,7 +3689,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Why do specialists get assigned to rig something this dangerous?"
           }
         }
       },
@@ -3754,7 +3754,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "What happens once you have the relay back?"
           }
         }
       },
@@ -3799,7 +3799,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "I need a day first."
           }
         }
       },
@@ -3876,7 +3876,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "Here's the relay."
           }
         }
       },
@@ -3941,7 +3941,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to the drill."
           }
         }
       },
@@ -4018,7 +4018,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the breach proof."
+            "0": "I'll bring two and follow the protocol."
           }
         }
       },
@@ -4083,7 +4083,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Emergency Bunker demand?"
+            "0": "Why does the protocol require exactly three?"
           }
         }
       },
@@ -4148,7 +4148,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "What does the crest tell you?"
           }
         }
       },
@@ -4213,7 +4213,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "What's the warden actually done to that chamber?"
           }
         }
       },
@@ -4258,7 +4258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "I need to find people first."
           }
         }
       },
@@ -4335,7 +4335,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "Here's the crest."
           }
         }
       },
@@ -4400,7 +4400,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to the drill."
           }
         }
       },
@@ -4477,7 +4477,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the circle proof."
+            "0": "I'll bring back the chip."
           }
         }
       },
@@ -4542,7 +4542,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Emergency Bunker demand?"
+            "0": "What's recorded on that chip?"
           }
         }
       },
@@ -4607,7 +4607,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Who has authority to requisition bunker materials?"
           }
         }
       },
@@ -4672,7 +4672,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "Should I bring the same two as before?"
           }
         }
       },
@@ -4717,7 +4717,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Give me a little time."
           }
         }
       },
@@ -4794,7 +4794,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "Here's the chip."
           }
         }
       },
@@ -4859,7 +4859,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to the drill."
           }
         }
       },
@@ -4936,7 +4936,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the mastery proof."
+            "0": "Three of us, and we're finishing this."
           }
         }
       },
@@ -5001,7 +5001,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Emergency Bunker demand?"
+            "0": "What makes those walls a trap instead of a shelter for him?"
           }
         }
       },
@@ -5066,7 +5066,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "How long has he been down there?"
           }
         }
       },
@@ -5131,7 +5131,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "What happens to Emergency Bunker doctrine once he's gone?"
           }
         }
       },
@@ -5176,7 +5176,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "I need a little more time before this one."
           }
         }
       },
@@ -5253,7 +5253,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "It's done. He's out of the room for good."
           }
         }
       }

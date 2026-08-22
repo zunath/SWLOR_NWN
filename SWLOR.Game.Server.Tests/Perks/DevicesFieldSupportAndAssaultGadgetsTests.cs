@@ -4,8 +4,10 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Devices;
+using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -17,6 +19,18 @@ namespace SWLOR.Game.Server.Tests.Perks;
 
 public class DevicesFieldSupportAndAssaultGadgetsTests
 {
+    [Test]
+    public void AssaultGadgetTwins_MatchForceBaseDamage()
+    {
+        foreach (var fieldName in new[] { "Rank1BaseDamage", "Rank2BaseDamage", "Rank3BaseDamage" })
+        {
+            GetAbilityConstant<int>(typeof(ArcProjectorAbilityDefinition), fieldName)
+                .Should().Be(GetAbilityConstant<int>(typeof(ThrowRockAbilityDefinition), fieldName));
+            GetAbilityConstant<int>(typeof(IonLanceAbilityDefinition), fieldName)
+                .Should().Be(GetAbilityConstant<int>(typeof(RadiantLanceAbilityDefinition), fieldName));
+        }
+    }
+
     [Test]
     public void DevicesFieldSupportAndAssaultGadgetsBibleManifest_ContainsBatch()
     {
@@ -46,28 +60,35 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
     {
         new WeaponJam1StatusEffect().StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment].Should().Be(-6);
         new WeaponJam1StatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(0);
-        new PowerCell1StatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(4);
-        new PowerCell2StatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(6);
-        new PowerCell3StatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(6);
+        new PowerCell1StatusEffect().StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment].Should().Be(4);
+        new PowerCell1StatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(0);
+        new PowerCell2StatusEffect().StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment].Should().Be(6);
+        new PowerCell2StatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(0);
+        new PowerCell3StatusEffect().StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment].Should().Be(6);
+        new PowerCell3StatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(0);
         new PowerSurgeStatusEffect().StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment].Should().Be(6);
         new PowerSurgeStatusEffect().StatGroup.Stats[StatType.CriticalRatePercentAdjustment].Should().Be(6);
-        new RayshieldScreen1StatusEffect().StatGroup.Stats[StatType.RangedPhysicalDamageTakenPercentAdjustment].Should().Be(-8);
-        new RayshieldScreen2StatusEffect().StatGroup.Stats[StatType.RangedPhysicalDamageTakenPercentAdjustment].Should().Be(-12);
+        new RayshieldScreen1StatusEffect().StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment].Should().Be(8);
+        new RayshieldScreen1StatusEffect().StatGroup.Stats[StatType.RangedPhysicalDamageTakenPercentAdjustment].Should().Be(0);
+        new RayshieldScreen2StatusEffect().StatGroup.Stats[StatType.PhysicalDefensePercentAdjustment].Should().Be(12);
+        new RayshieldScreen2StatusEffect().StatGroup.Stats[StatType.RangedPhysicalDamageTakenPercentAdjustment].Should().Be(0);
         new DampeningField1StatusEffect().StatGroup.Stats[StatType.PhysicalDamageTakenPercentAdjustment].Should().Be(-6);
         new DampeningField1StatusEffect().StatGroup.Stats[StatType.ForceDamageTakenPercentAdjustment].Should().Be(-6);
         new DampeningField2StatusEffect().StatGroup.Stats[StatType.PhysicalDamageTakenPercentAdjustment].Should().Be(-10);
         new DampeningField2StatusEffect().StatGroup.Stats[StatType.ForceDamageTakenPercentAdjustment].Should().Be(-10);
-        new OverclockRoutineStatusEffect().StatGroup.Stats[StatType.DeviceAbilityOutputPercentAdjustment].Should().Be(4);
-        new EmergencyBunker1StatusEffect().StatGroup.Stats[StatType.RangedPhysicalDamageTakenPercentAdjustment].Should().Be(-15);
+        new OverclockRoutineStatusEffect().StatGroup.Stats[StatType.CombatReadinessPercent].Should().Be(4);
+        new EmergencyBunker1StatusEffect().StatGroup.Stats[StatType.PhysicalDamageTakenPercentAdjustment].Should().Be(-15);
+        new EmergencyBunker1StatusEffect().StatGroup.Stats[StatType.ForceDamageTakenPercentAdjustment].Should().Be(-15);
+        new EmergencyBunker1StatusEffect().StatGroup.Stats[StatType.RangedPhysicalDamageTakenPercentAdjustment].Should().Be(0);
         new TacticalUplinkStatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustmentSkillType].Should().Be((int)SkillType.Devices);
         new TacticalUplinkStatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(5);
         new TacticalUplinkStatusEffect().StatGroup.Stats[StatType.AbilityCriticalRatePercentAdjustmentSkillType].Should().Be((int)SkillType.Devices);
         new TacticalUplinkStatusEffect().StatGroup.Stats[StatType.AbilityCriticalRatePercentAdjustment].Should().Be(5);
 
-        new SonicBurst2StatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(-6);
-        new SonicBurst2StatusEffect().StatGroup.Stats[StatType.AccuracyPercentAdjustment].Should().Be(0);
-        new SonicBurst3StatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(-10);
-        new SonicBurst3StatusEffect().StatGroup.Stats[StatType.AccuracyPercentAdjustment].Should().Be(0);
+        new SonicBurst2StatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(0);
+        new SonicBurst2StatusEffect().StatGroup.Stats[StatType.AccuracyPercentAdjustment].Should().Be(-6);
+        new SonicBurst3StatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(0);
+        new SonicBurst3StatusEffect().StatGroup.Stats[StatType.AccuracyPercentAdjustment].Should().Be(-10);
 
         CombatDamageType.Sonic.GetDetails().NWScriptDamageType.Should().Be(DamageType.Sonic);
     }
@@ -100,6 +121,84 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         source.Should().Contain("EffectVisualEffect(FlamethrowerVisualEffect)");
         source.Should().NotContain("ActionPlayAnimation(Animation.CastOutAnimation, 1f, 2.1f)");
         source.Should().NotContain("playImpactAnimation: false");
+    }
+
+    [Test]
+    public void ReportedAssaultGadgetEffects_AreStaticallyWiredForRetest()
+    {
+        var root = FindRepositoryRoot();
+        var perks = BuildDevicesAssaultGadgetsPerksWithout2daLookup();
+        var gadgetHarness = perks[PerkType.GadgetHarness].PerkLevels[1];
+
+        AssertStatBonus(gadgetHarness, StatType.AssaultGadgetAccuracyPercentAdjustment, 8);
+        AssertStatBonus(gadgetHarness, StatType.AssaultGadgetCriticalRatePercentAdjustment, 8);
+
+        var assaultAbilityFiles = new[]
+        {
+            "ArcProjectorAbilityDefinition.cs",
+            "CryoSprayerAbilityDefinition.cs",
+            "FlamethrowerAbilityDefinition.cs",
+            "IonLanceAbilityDefinition.cs",
+            "OverloadBarrageAbilityDefinition.cs",
+            "RailDartAbilityDefinition.cs",
+            "SonicBurstAbilityDefinition.cs",
+            "WristRocketAbilityDefinition.cs"
+        };
+        foreach (var fileName in assaultAbilityFiles)
+        {
+            var source = File.ReadAllText(
+                (root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / fileName).FullName);
+            source.Should().Contain(
+                "DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator)",
+                $"{fileName} must consume Gadget Harness and Tactical Uplink critical chance");
+        }
+
+        var sonicBurst = File.ReadAllText(
+            (root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "SonicBurstAbilityDefinition.cs").FullName);
+        sonicBurst.Should().Contain("InterruptActivation(hitTarget);");
+        sonicBurst.Should().Contain("AssignCommand(target, () => ClearAllActions());");
+
+        var flamethrower = File.ReadAllText(
+            (root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "FlamethrowerAbilityDefinition.cs").FullName);
+        flamethrower.Should().Contain("typeof(BurnStatusEffect)");
+        flamethrower.Split("typeof(BurnStatusEffect)").Should().HaveCount(3,
+            "Flamethrower II and III each apply the documented 12-second Burn");
+
+        var railDart = File.ReadAllText(
+            (root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "RailDartAbilityDefinition.cs").FullName);
+        railDart.Split("typeof(BleedStatusEffect)").Should().HaveCount(4,
+            "all three Rail Dart ranks apply the documented 12-second Bleed");
+
+        perks[PerkType.Flamethrower].PerkLevels[2].Description.Should().Contain("Burn for 12 seconds");
+        perks[PerkType.Flamethrower].PerkLevels[3].Description.Should().Contain("Burn for 12 seconds");
+        perks[PerkType.RailDart].PerkLevels.Values.Should().OnlyContain(
+            level => level.Description.Contains("Bleed for 12 seconds", StringComparison.Ordinal));
+    }
+
+    [Test]
+    public void AssaultGadgetCriticalChance_IsAdditiveAndObservable()
+    {
+        Combat.CalculateAbilityCriticalChance(0).Should().Be(5);
+        Combat.CalculateAbilityCriticalChance(8).Should().Be(13,
+            "Gadget Harness adds eight points to the five-percent ability baseline");
+        Combat.CalculateAbilityCriticalChance(13).Should().Be(18,
+            "Gadget Harness and Tactical Uplink stack additively");
+        Combat.CalculateAbilityCriticalChance(100).Should().Be(50);
+        Combat.CalculateAbilityCriticalChance(-100).Should().Be(5);
+
+        var root = FindRepositoryRoot();
+        var characterSheet = File.ReadAllText(
+            (root / "SWLOR.Game.Server" / "Feature" / "GuiDefinition" / "ViewModel" / "CharacterSheetViewModel.cs").FullName);
+        var ability = File.ReadAllText(
+            (root / "SWLOR.Game.Server" / "Service" / "Ability.cs").FullName);
+        var combat = File.ReadAllText(
+            (root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
+
+        characterSheet.Should().Contain("Assault Gadget Crit");
+        ability.Split("Combat.SendAbilityCriticalHitFeedback(").Should().HaveCount(3,
+            "player and NPC-scaled ability criticals both need visible combat feedback");
+        combat.Should().Contain("PlayerName.GetColoredDisplayName(observer, attacker)");
+        combat.Should().Contain("critically hits");
     }
 
     [Test]
@@ -145,8 +244,29 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
             .Replace("\r\n", "\n");
 
         source.Should().Contain("EmergencyBunkerAreaMarkerVisualEffect = VisualEffect.Vfx_Dur_Aura_Pulse_Blue_White");
-        source.Should().Contain("EmergencyBunkerAreaMarkerVisualEffectScale = 2f");
+        source.Should().Contain("EmergencyBunkerRadiusMeters = 8f");
+        source.Should().Contain("EmergencyBunkerAreaMarkerVisualEffectScale = 4f");
         source.Should().Contain("EmergencyBunkerAreaMarkerVisualEffect,\n                EmergencyBunkerAreaMarkerVisualEffectScale");
+    }
+
+    [Test]
+    public void PowerCellIII_TargetsAnAllyAndCentersTheAreaOnThatAlly()
+    {
+        var ability = new PowerCellAbilityDefinition().BuildAbilities()[FeatType.PowerCell3];
+
+        ability.RequiresTarget.Should().BeTrue();
+        ability.HasExplicitMaxRange.Should().BeTrue();
+        ability.MaxRange.Should().Be(15f);
+        ability.CustomValidation.Should().NotBeNull();
+        ability.Targeting.Flags.Should().HaveFlag(AbilityTargetingFlags.HelpsAllies);
+        ability.Targeting.Flags.Should().NotHaveFlag(AbilityTargetingFlags.OriginOnSelf);
+
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "PowerCellAbilityDefinition.cs").FullName)
+            .Replace("\r\n", "\n");
+        source.Should().Contain("GetPowerCell3Targets(activator, target, targetLocation)");
+        source.Should().Contain("GetFriendlyTargetsNearLocation(\n                         activator,\n                         targetLocation,");
+        source.Should().NotContain("GetFriendlyTargets(activator, activator, true)");
     }
 
     [Test]
@@ -164,20 +284,20 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
             (FeatType.PowerCell2, "ife_pwrcll2", "M", "0x03", "0", "****", "****", "****", "****", "****"),
             (FeatType.DeflectorShield3, "ife_dflctrshld3", "M", "0x03", "0", "****", "****", "****", "****", "****"),
             (FeatType.GroupDeflector1, "ife_grpdflctr1", "P", "0x01", "0", "sphere", "5", "****", "17", "1"),
-            (FeatType.PowerCell3, "ife_pwrcll3", "P", "0x01", "0", "sphere", "5", "****", "17", "1"),
-            (FeatType.EmergencyBunker1, "ife_mrgncybnkr1", "M", "0x3E", "0", "sphere", "4", "****", "1", "****"),
+            (FeatType.PowerCell3, "ife_pwrcll3", "M", "0x03", "0", "sphere", "5", "****", "4", "****"),
+            (FeatType.EmergencyBunker1, "ife_mrgncybnkr1", "M", "0x3E", "0", "sphere", "8", "****", "1", "****"),
             (FeatType.Flamethrower1, "ife_flmthrwr1", "M", "0x3E", "1", "cone", "6", "5", "17", "****"),
             (FeatType.WristRocket1, "ife_wrstrckt1", "M", "0x02", "1", "****", "****", "****", "****", "****"),
-            (FeatType.SonicBurst1, "ife_sncburst1", "M", "0x3E", "1", "sphere", "5", "****", "1", "****"),
+            (FeatType.SonicBurst1, "ife_sncburst1", "M", "0x3E", "1", "sphere", "5", "****", "17", "1"),
             (FeatType.Flamethrower2, "ife_flmthrwr2", "M", "0x3E", "1", "cone", "6", "5", "17", "****"),
             (FeatType.RailDart1, "ife_rldrt1", "M", "0x02", "1", "****", "****", "****", "****", "****"),
             (FeatType.WristRocket2, "ife_wrstrckt2", "M", "0x02", "1", "****", "****", "****", "****", "****"),
-            (FeatType.SonicBurst2, "ife_sncburst2", "M", "0x3E", "1", "sphere", "5", "****", "1", "****"),
+            (FeatType.SonicBurst2, "ife_sncburst2", "M", "0x3E", "1", "sphere", "5", "****", "17", "1"),
             (FeatType.CryoSprayer1, "ife_cryspryr1", "M", "0x3E", "1", "cone", "6", "5", "17", "****"),
             (FeatType.Flamethrower3, "ife_flmthrwr3", "M", "0x3E", "1", "cone", "6", "5", "17", "****"),
             (FeatType.RailDart2, "ife_rldrt2", "M", "0x02", "1", "****", "****", "****", "****", "****"),
             (FeatType.WristRocket3, "ife_wrstrckt3", "M", "0x02", "1", "****", "****", "****", "****", "****"),
-            (FeatType.SonicBurst3, "ife_sncburst3", "M", "0x3E", "1", "sphere", "5", "****", "1", "****"),
+            (FeatType.SonicBurst3, "ife_sncburst3", "M", "0x3E", "1", "sphere", "5", "****", "17", "1"),
             (FeatType.OverloadBarrage1, "ife_ovldbarr1", "M", "0x02", "1", "****", "****", "****", "****", "****")
         };
         var seenIcons = new HashSet<string>();
@@ -364,6 +484,17 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         };
 
         return BuildPerksWithout2daLookup(definition, methodNames);
+    }
+
+    private static T GetAbilityConstant<T>(Type abilityDefinitionType, string fieldName)
+    {
+        var field = abilityDefinitionType.GetField(
+            fieldName,
+            BindingFlags.NonPublic | BindingFlags.Static);
+
+        field.Should().NotBeNull($"{abilityDefinitionType.Name} should declare {fieldName}");
+        field!.IsLiteral.Should().BeTrue();
+        return (T)field.GetRawConstantValue()!;
     }
 
     private static Dictionary<PerkType, PerkDetail> BuildDevicesAssaultGadgetsPerksWithout2daLookup()

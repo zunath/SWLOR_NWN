@@ -64,7 +64,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Unmoving Center is no longer a lesson on my ledger. You proved it in Anchorhead Canyon Range; keep proving it when nobody is keeping score."
+            "0": "Unmoving Center isn't a lesson anymore. It's just how you stand now. Keep it that way when the wind picks up."
           }
         }
       },
@@ -113,7 +113,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not yet. Unmoving Center is not a conversation I start on instinct or reputation. Come back when your work can survive the proof I keep for Anchorhead Canyon Range."
+            "0": "You still need the wind to tell you where to stand. Come back when you don't."
           }
         }
       },
@@ -258,7 +258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The canyon wind lies. Sand says you should drift. Plant yourself anyway and let the range argue. Go to Anchorhead Canyon Range on Tatooine, defeat the Unmoving Center adepts, and bring back the Unmoving Center field report."
+            "0": "You're still moving. Even standing still, you're moving. Six adepts drill wrong at Anchorhead Canyon Range on Tatooine, mistaking fidgeting for stillness. Put six of them down and bring me their canyon range tally, so I know it was you and not the wind."
           }
         }
       },
@@ -307,7 +307,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Anchorhead Canyon Range. I want proof, not a story about almost having it."
+            "0": "Take the range key. Six adepts, one tally. Go."
           }
         }
       },
@@ -376,7 +376,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Unmoving Center is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "The staff doesn't move. Everything moves around it. That's the whole trick: find the point that doesn't have to go anywhere, and let the fight orbit it. Most people spend years hunting motion. I'm done hunting."
           }
         }
       },
@@ -445,7 +445,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range is on Tatooine. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Anchorhead Canyon Range, out past the town, on Tatooine. I've cleared you through the range gate. That key opens it, nothing else will."
           }
         }
       },
@@ -514,7 +514,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Adepts, mostly. They still lean on their weight when they swing. You'll feel the wrongness in it before you see it."
           }
         }
       },
@@ -563,7 +563,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range still holds your first proof for Unmoving Center. Finish the target there before you bring me anything else."
+            "0": "Six adepts. One tally. Anchorhead Canyon Range hasn't moved, and neither should you until it's done."
           }
         }
       },
@@ -632,7 +632,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Unmoving Center lesson clean."
+            "0": "Six down, and the tally to prove it. Let's see it."
           }
         }
       },
@@ -681,7 +681,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Unmoving Center is one step closer to belonging to you."
+            "0": "Recorded. The first stillness holds. Rest today; tomorrow the range gets harder to fool."
           }
         }
       },
@@ -826,7 +826,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Unmoving Center proof is waiting in Anchorhead Canyon Range. This one is about second proof, not repetition. Go to Anchorhead Canyon Range on Tatooine, defeat the Unmoving Center specialists, and bring back the Unmoving Center calibration core."
+            "0": "The adepts were noise. Now go measure the ones who think they've already arrived. Five specialists down at the range mistake rigidity for stillness; they lock up and call it calm. Put five of them down and bring me their sightline calibrator. I want to see how far off their aim really was."
           }
         }
       },
@@ -875,7 +875,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Anchorhead Canyon Range. I want proof, not a story about almost having it."
+            "0": "Five specialists, one calibrator. You know the gate."
           }
         }
       },
@@ -944,7 +944,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Unmoving Center is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "Rigidity isn't stillness. Rigid things shatter first. These specialists hold a pose and call it mastery. I've watched three of them crack under a first real hit. That's what you're going to test."
           }
         }
       },
@@ -1013,7 +1013,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range is on Tatooine. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Same gate, same key, same Anchorhead Canyon Range. Go further in this time; the specialists don't drill at the entrance."
           }
         }
       },
@@ -1082,7 +1082,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Better footwork than the adepts, worse instincts. They've drilled the shapes long enough to look convincing at a glance."
           }
         }
       },
@@ -1131,7 +1131,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range still holds your second proof for Unmoving Center. Finish the target there before you bring me anything else."
+            "0": "Five specialists. One sightline calibrator. Anchorhead Canyon Range is exactly where you left it."
           }
         }
       },
@@ -1200,7 +1200,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Unmoving Center lesson clean."
+            "0": "Five down, and their calibrator in your hand. Show me."
           }
         }
       },
@@ -1249,7 +1249,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Unmoving Center is one step closer to belonging to you."
+            "0": "Recorded. You're not fidgeting either, not yet. Keep that."
           }
         }
       },
@@ -1394,7 +1394,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Unmoving Center proof is waiting in Anchorhead Canyon Range. This one is about breach proof, not repetition. Go to Anchorhead Canyon Range on Tatooine, defeat the Unmoving Center warden, and bring back the Unmoving Center broken seal."
+            "0": "Now the one who runs the floor. Go to Anchorhead Canyon Range, on Tatooine, and put the warden down. Bring me her shattered range crest after. Don't go alone. She has outlasted stronger arms than yours, each one standing by itself."
           }
         }
       },
@@ -1443,7 +1443,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Anchorhead Canyon Range. I want proof, not a story about almost having it."
+            "0": "Bring two who can be still when you cannot. The warden won't care that you came alone."
           }
         }
       },
@@ -1512,7 +1512,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Unmoving Center is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "It demands you stop flinching before the hit lands, not after. The warden never flinches. That's not a boast. I've watched her take a hit that should have ended her and just kept standing. That's the discipline working, or it's something else wearing the discipline's face."
           }
         }
       },
@@ -1581,7 +1581,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range is on Tatooine. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "The warden doesn't patrol. She waits at the center of the floor for someone stupid enough to walk to her."
           }
         }
       },
@@ -1650,7 +1650,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Bring company. Stillness holds when someone else is drawing the storm toward them instead of you. That's the only reason I send you with two others instead of alone. The warden won't wait for you to be ready."
           }
         }
       },
@@ -1699,7 +1699,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range still holds your breach proof for Unmoving Center. Finish the target there before you bring me anything else."
+            "0": "The warden's still standing at Anchorhead Canyon Range. Go back with company, and don't come back without her crest."
           }
         }
       },
@@ -1768,7 +1768,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Unmoving Center lesson clean."
+            "0": "The warden's down and you're still standing. Let's see the crest."
           }
         }
       },
@@ -1817,7 +1817,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Unmoving Center is one step closer to belonging to you."
+            "0": "Recorded. That's the first proof I didn't expect to see. Don't let it go to your head; the ones after her are worse."
           }
         }
       },
@@ -1962,7 +1962,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Unmoving Center proof is waiting in Anchorhead Canyon Range. This one is about circle proof, not repetition. Go to Anchorhead Canyon Range on Tatooine, defeat the Unmoving Center inner circle, and bring back the Unmoving Center command mark."
+            "0": "Four of them run the inner ring now. Her students, once. They drill the same stillness and call it a circle so no one has to stand alone in it. Go back to Anchorhead Canyon Range, put down all four, and bring me the marshal's challenge chit they've been trading between themselves like a trophy."
           }
         }
       },
@@ -2011,7 +2011,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Anchorhead Canyon Range. I want proof, not a story about almost having it."
+            "0": "Four of them, one chit. Bring people who can watch your back while you watch theirs."
           }
         }
       },
@@ -2080,7 +2080,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Unmoving Center is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "It demands you let go of the circle they've built around each other. Four of them stand back to back and call that unity. It's just four people afraid to be still alone. I never needed the other three."
           }
         }
       },
@@ -2149,7 +2149,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range is on Tatooine. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Same range. They've claimed the inner floor for themselves, like it belongs to them because they showed up together."
           }
         }
       },
@@ -2218,7 +2218,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Four means four angles at once. Bring your own circle, or you'll spend the whole fight turning."
           }
         }
       },
@@ -2267,7 +2267,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range still holds your circle proof for Unmoving Center. Finish the target there before you bring me anything else."
+            "0": "The inner circle's still holding the floor at Anchorhead Canyon Range. Four down, one chit, then you're done there."
           }
         }
       },
@@ -2336,7 +2336,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Unmoving Center lesson clean."
+            "0": "All four, and their chit besides. You've earned a look at it."
           }
         }
       },
@@ -2385,7 +2385,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Unmoving Center is one step closer to belonging to you."
+            "0": "Recorded. There's one lesson left, and it isn't mine to give lightly. Rest first."
           }
         }
       },
@@ -2530,7 +2530,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Unmoving Center proof is waiting in Anchorhead Canyon Range. This one is about mastery proof, not repetition. Go to Anchorhead Canyon Range on Tatooine, defeat the Unmoving Center master, and return with the final proof."
+            "0": "The master's the reason I stopped teaching this to anyone who asked. She found the same stillness I did and never came back out of it. She hasn't taken a step in years, they say, and she doesn't need to anymore. Go to Anchorhead Canyon Range and end that. Don't go alone. Nobody has walked away from her circle by themselves, not once."
           }
         }
       },
@@ -2579,7 +2579,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Anchorhead Canyon Range. I want proof, not a story about almost having it."
+            "0": "Bring your two. I'll be waiting for word either way."
           }
         }
       },
@@ -2648,7 +2648,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Unmoving Center is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "It demands you understand what I'm asking you to end. She found the center and never left it. That's not victory, whatever it looks like from outside. I want you to stop her before stillness finishes swallowing her the rest of the way, or before she does the same to you."
           }
         }
       },
@@ -2717,7 +2717,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range is on Tatooine. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Same range, same gate, all the way to the back of it: the one place on that floor that's never moved, and neither has she."
           }
         }
       },
@@ -2786,7 +2786,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Everything you're learning to do, she already does without trying. That's what I'm sending you to stand against, and why I'm telling you plainly: don't stand against it alone. Bring two you'd trust with your back. She's earned every one of the people who didn't."
           }
         }
       },
@@ -2835,7 +2835,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Anchorhead Canyon Range still holds your mastery proof for Unmoving Center. Finish the target there before you bring me anything else."
+            "0": "She's still standing at Anchorhead Canyon Range, however she's standing. Go back when you have company."
           }
         }
       },
@@ -2904,7 +2904,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Unmoving Center lesson clean."
+            "0": "She's not standing anymore. That's all the proof I need. Tell me it's done."
           }
         }
       },
@@ -2953,7 +2953,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Unmoving Center is one step closer to belonging to you."
+            "0": "Recorded. The Unmoving Center is yours now, not mine, not hers. Try not to let it swallow you the way it did her."
           }
         }
       }
@@ -3023,7 +3023,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Anyway, the job."
           }
         }
       },
@@ -3100,7 +3100,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the first proof."
+            "0": "Six adepts. I can do that."
           }
         }
       },
@@ -3165,7 +3165,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Unmoving Center demand?"
+            "0": "What's this stillness supposed to be, exactly?"
           }
         }
       },
@@ -3230,7 +3230,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Where do I find them?"
           }
         }
       },
@@ -3295,7 +3295,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "What am I walking into?"
           }
         }
       },
@@ -3340,7 +3340,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Not yet."
           }
         }
       },
@@ -3417,7 +3417,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "Here's your tally."
           }
         }
       },
@@ -3482,7 +3482,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Anyway, the job."
           }
         }
       },
@@ -3559,7 +3559,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the second proof."
+            "0": "Five specialists, then."
           }
         }
       },
@@ -3624,7 +3624,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Unmoving Center demand?"
+            "0": "What makes them different from the adepts?"
           }
         }
       },
@@ -3689,7 +3689,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Same range?"
           }
         }
       },
@@ -3754,7 +3754,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "What should I watch for this time?"
           }
         }
       },
@@ -3799,7 +3799,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "I need a moment."
           }
         }
       },
@@ -3876,7 +3876,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "Here's the calibrator."
           }
         }
       },
@@ -3941,7 +3941,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to it."
           }
         }
       },
@@ -4018,7 +4018,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the breach proof."
+            "0": "I'll bring people. Where's the warden?"
           }
         }
       },
@@ -4083,7 +4083,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Unmoving Center demand?"
+            "0": "What's different about the warden?"
           }
         }
       },
@@ -4148,7 +4148,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Where do I find her?"
           }
         }
       },
@@ -4213,7 +4213,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "How many should I bring?"
           }
         }
       },
@@ -4258,7 +4258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Give me time to find the right two."
           }
         }
       },
@@ -4335,7 +4335,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "Her crest. We got her."
           }
         }
       },
@@ -4400,7 +4400,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to it."
           }
         }
       },
@@ -4477,7 +4477,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the circle proof."
+            "0": "I'll gather my circle."
           }
         }
       },
@@ -4542,7 +4542,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Unmoving Center demand?"
+            "0": "Who are they to you?"
           }
         }
       },
@@ -4607,7 +4607,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Where's their floor?"
           }
         }
       },
@@ -4672,7 +4672,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "How many should I bring this time?"
           }
         }
       },
@@ -4717,7 +4717,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Let me find four I trust first."
           }
         }
       },
@@ -4794,7 +4794,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "Their chit. All four are down."
           }
         }
       },
@@ -4859,7 +4859,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to it."
           }
         }
       },
@@ -4936,7 +4936,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the mastery proof."
+            "0": "I'll bring two. Tell me where she is."
           }
         }
       },
@@ -5001,7 +5001,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Unmoving Center demand?"
+            "0": "What am I actually ending?"
           }
         }
       },
@@ -5066,7 +5066,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Where does she wait?"
           }
         }
       },
@@ -5131,7 +5131,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "What is she going to do?"
           }
         }
       },
@@ -5176,7 +5176,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "I need to find two people who'd walk in there with me."
           }
         }
       },
@@ -5253,7 +5253,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "It's done. She's not standing."
           }
         }
       }

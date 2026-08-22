@@ -64,7 +64,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Saber Storm is no longer a lesson on my ledger. You proved it in Dantooine Jedi Enclave Trial Halls; keep proving it when nobody is keeping score."
+            "0": "There you are. The storm with an eye. I watched you cross the yard just now and found nothing to correct, which is a strange feeling for a sparring master. The trial halls keep their rhythm again, and every student who drills there owes you more than they'll ever know. Spar with me sometime. I want to lose properly."
           }
         }
       },
@@ -113,7 +113,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not yet. Saber Storm is not a conversation I start on instinct or reputation. Come back when your work can survive the proof I keep for Dantooine Jedi Enclave Trial Halls."
+            "0": "Drop the rear shoulder. Better. Now hear me plainly: the storm form eats half-trained wrists for breakfast. Finish everything the lightsaber still has to teach you, every last cut of it, and then we can talk about what waits in the trial halls."
           }
         }
       },
@@ -258,7 +258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The trial halls remember motion. Enter them cleanly, and let the old wards judge whether your blade has become weather or noise. Go to Dantooine Jedi Enclave Trial Halls on Dantooine, defeat the Saber Storm adepts, and bring back the Saber Storm field report."
+            "0": "Stop. Lead foot. You plant it like a fence post, and Saber Storm never plants, it pours. Better. I'm Talan Rees. I ran the storm drills in the Jedi Enclave Trial Halls east of here on Dantooine, until my own students barred the doors on me. Six adepts hold the outer ring now, drilling the form with no restraint and no instructor. Put them down and bring me the Saber Storm Enclave Trial Slate they drill from. That slate is lesson one, and they have been reading it wrong."
           }
         }
       },
@@ -307,7 +307,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Dantooine Jedi Enclave Trial Halls. I want proof, not a story about almost having it."
+            "0": "Ha. Good answer. Watch the outer ring's floor, it's scored from years of drills and it will catch a dragging heel. Six adepts, then the slate, then me. And tuck that elbow. You were doing it again."
           }
         }
       },
@@ -376,7 +376,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Saber Storm is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "Continuous offense. The blade never stops and the feet never root. Most duelists strike, reset, strike, and a good opponent lives in that reset. The storm attacks out of the reset itself, so there is no seam to counter. Done right, your opponent is fighting weather. Done wrong, you cut off your own line of retreat. My students are doing it wrong."
           }
         }
       },
@@ -445,7 +445,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dantooine Jedi Enclave Trial Halls is on Dantooine. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "The trial halls stand east of the enclave courts, here on Dantooine. The key I'll put in your hand unseals their doors; I cut it myself the day they locked me out. Once you're through, follow the sound. Saber work at all hours. Nobody drills that long without hurting somebody."
           }
         }
       },
@@ -514,7 +514,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Mine, once. Students who loved the fury and skipped the footwork. Six of them hold the outer ring, and they fight like the form itself: fast, relentless, no respect for a yield. Don't offer one. They stopped honoring the tap-out months ago."
           }
         }
       },
@@ -563,7 +563,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dantooine Jedi Enclave Trial Halls still holds your first proof for Saber Storm. Finish the target there before you bring me anything else."
+            "0": "Outer ring. Six adepts. The Enclave Trial Slate they drill from. The halls won't get quieter while you stretch."
           }
         }
       },
@@ -632,7 +632,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Saber Storm lesson clean."
+            "0": "That's the slate under your arm, or I've forgotten the weight of it. Let me see."
           }
         }
       },
@@ -681,7 +681,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Saber Storm is one step closer to belonging to you."
+            "0": "Scored, scuffed, whole. I wrote my first storm drills on this slate, you know. The outer ring is clear, and you've earned the second lesson once you've caught your breath. Your footwork is already better. I noticed before you did."
           }
         }
       },
@@ -826,7 +826,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Saber Storm proof is waiting in Dantooine Jedi Enclave Trial Halls. This one is about second proof, not repetition. Go to Dantooine Jedi Enclave Trial Halls on Dantooine, defeat the Saber Storm specialists, and bring back the Saber Storm calibration core."
+            "0": "Back straight. There. The outer ring is yours, so we move inward. Five specialists hold the middle ring of the trial halls, my old seconds, the ones who taught the adepts everything reckless they know. They've locked a kyber shard into the drill array to push the form past what a body should give. Break their line, pull the Saber Storm Kyber Focus Shard, and bring it to me before it ruins another set of wrists."
           }
         }
       },
@@ -875,7 +875,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Dantooine Jedi Enclave Trial Halls. I want proof, not a story about almost having it."
+            "0": "Now that's tempo. Go. The middle ring's pillars throw long shadows and the specialists like to cut from them, so keep your eyes soft and your feet softer. Bring me that shard still warm."
           }
         }
       },
@@ -944,7 +944,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Saber Storm is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "Control. Adepts flail; specialists place every cut. Five of them rotating as one line is a wall of edges, and they will trade you strike for strike without tiring, because the shard drives the drill array and the array never calls rest."
           }
         }
       },
@@ -1013,7 +1013,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dantooine Jedi Enclave Trial Halls is on Dantooine. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "A cut of kyber tuned to a saber's hum. In the trial array it sets tempo, like a metronome that argues back. We used it to teach rhythm. They use it to erase the pause where judgment lives. Pull it, and the middle ring goes quiet."
           }
         }
       },
@@ -1082,7 +1082,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Don't chase. Five blades want you overextended, and the storm punishes a planted foot worst of all. Move through them, not at them. Also, drink water before you go in. Nobody thinks of it and everybody regrets it."
           }
         }
       },
@@ -1131,7 +1131,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dantooine Jedi Enclave Trial Halls still holds your second proof for Saber Storm. Finish the target there before you bring me anything else."
+            "0": "Five specialists in the middle ring, and the Kyber Focus Shard still setting their tempo. Every hour it hums, they drill deeper into the mistake."
           }
         }
       },
@@ -1200,7 +1200,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Saber Storm lesson clean."
+            "0": "You're carrying a hum I haven't heard in a year. That's the shard. Hand it over before it syncs to your heartbeat. That is not a joke."
           }
         }
       },
@@ -1249,7 +1249,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Saber Storm is one step closer to belonging to you."
+            "0": "There it is. Warm, like I said. I'll cage it in the resonance box where it belongs. The middle ring is silent for the first time in months, and the silence is yours. Rest the wrists. The next lesson does not share."
           }
         }
       },
@@ -1394,7 +1394,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Saber Storm proof is waiting in Dantooine Jedi Enclave Trial Halls. This one is about breach proof, not repetition. Go to Dantooine Jedi Enclave Trial Halls on Dantooine, defeat the Saber Storm warden, and bring back the Saber Storm broken seal."
+            "0": "Shoulders down. Both. Listen close, because this is where I stop grading and start worrying. Past the middle ring stands the third door, and behind it waits the warden, my finest student and my loudest mistake. She carries the Saber Storm Fractured Trial Sigil, the seal that once opened every ring in these halls. I want her stopped and I want the sigil back. And you do not go through that door with fewer than three blades. Trials above the third ring were always taken in threes. Enclave rule, my rule, and the only one she never broke until she did."
           }
         }
       },
@@ -1443,7 +1443,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Dantooine Jedi Enclave Trial Halls. I want proof, not a story about almost having it."
+            "0": "That's the first answer you've given me that needed no correction. When she opens, she opens with everything, so the three of you weather that first minute and the drill turns yours. Bring back the sigil. Bring back all three of you."
           }
         }
       },
@@ -1512,7 +1512,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Saber Storm is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "Because the storm devours a lone opponent. That is its whole design. Two guard the seams while one presses; that is how the high trials have always been survived. The warden has retired finer form than yours one bout at a time, and she does it politely. Bring two blades you trust with your life, because that's the stake on the table."
           }
         }
       },
@@ -1581,7 +1581,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dantooine Jedi Enclave Trial Halls is on Dantooine. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "It cracked the day she sealed the halls. A trial sigil answers to the enclave council, and it split rather than answer to her. She wears it anyway. Broken authority still has the shape of authority, if nobody looks too closely."
           }
         }
       },
@@ -1650,7 +1650,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "My finest student. She passed every drill I set before I finished setting it. When the storm took the others, she didn't rage like the adepts or calculate like the specialists. She simply closed the third door and said the form deserved better students than the Order sends. She isn't wrong about everything. Stop her anyway."
           }
         }
       },
@@ -1699,7 +1699,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dantooine Jedi Enclave Trial Halls still holds your breach proof for Saber Storm. Finish the target there before you bring me anything else."
+            "0": "The third door stays shut and the warden still wears the Fractured Trial Sigil. Three blades, one bad first minute, then the drill turns. Do not go in alone. I will know."
           }
         }
       },
@@ -1768,7 +1768,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Saber Storm lesson clean."
+            "0": "The third door stands open. I felt it from here; don't ask how. Show me the sigil."
           }
         }
       },
@@ -1817,7 +1817,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Saber Storm is one step closer to belonging to you."
+            "0": "She always fought like that. Give me a moment with this one. ... All right. The council can mend the sigil or mourn it; that's their drill, not ours. You held the seam work through her opening minute, and that isn't a thing I can teach, only witness. Two rings left. The inner circle knows you're coming."
           }
         }
       },
@@ -1962,7 +1962,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Saber Storm proof is waiting in Dantooine Jedi Enclave Trial Halls. This one is about circle proof, not repetition. Go to Dantooine Jedi Enclave Trial Halls on Dantooine, defeat the Saber Storm inner circle, and bring back the Saber Storm command mark."
+            "0": "You're standing squarer. Good. You'll need it. Four remain past the third door, my inner circle, the students I trained to examine everyone else. They hold the high ring and the Saber Storm Council Trial Chit, the token the council stamps when a form is judged safe to teach. Nothing about their storm is safe to teach. Put all four down and carry the chit back to daylight. Take company in with you if you can get it. The circle examines whoever walks in, and they grade harshly."
           }
         }
       },
@@ -2011,7 +2011,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Dantooine Jedi Enclave Trial Halls. I want proof, not a story about almost having it."
+            "0": "Ha! Save the confidence, spend the footwork. The high ring is round and rimless, and stepping out means a long drop into the meditation garden, which has never helped anyone meditate. Four blades. One chit. Class dismissed."
           }
         }
       },
@@ -2080,7 +2080,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Saber Storm is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "A slug of bronzium stamped by the enclave council, and it means this form may be passed on. It is the difference between a discipline and a hazard. While the inner circle holds it, they may teach whoever survives long enough to learn. That is how the storm spread through these halls in the first place."
           }
         }
       },
@@ -2149,7 +2149,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dantooine Jedi Enclave Trial Halls is on Dantooine. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Like examiners. They test you one at a time until they find the flaw, then all four press it at once. Everyone has the flaw, mind you. You. Me. The trick is knowing yours and folding it behind your guard before they finish the survey."
           }
         }
       },
@@ -2218,7 +2218,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "I did. Proudest work I ever ruined. An examiner must out-fence anyone she grades, so I built four of the best and never asked what happens when examiners stop answering to anyone. Now you're the answer. Sorry about that."
           }
         }
       },
@@ -2267,7 +2267,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dantooine Jedi Enclave Trial Halls still holds your circle proof for Saber Storm. Finish the target there before you bring me anything else."
+            "0": "Four examiners in the high ring, and the Council Trial Chit still in their keeping. They have had time to study how the warden fell. Assume they learned from it."
           }
         }
       },
@@ -2336,7 +2336,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Saber Storm lesson clean."
+            "0": "The high ring is empty. All four. I would make you narrate every exchange if that chit weren't more urgent. Well?"
           }
         }
       },
@@ -2385,7 +2385,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Saber Storm is one step closer to belonging to you."
+            "0": "Filed and witnessed. The council will want to reissue this under a better custodian, and I intend to nominate you, which should horrify us both. One door remains, and the storm itself behind it. Rest first. That is not advice. It is a drill instruction."
           }
         }
       },
@@ -2530,7 +2530,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Saber Storm proof is waiting in Dantooine Jedi Enclave Trial Halls. This one is about mastery proof, not repetition. Go to Dantooine Jedi Enclave Trial Halls on Dantooine, defeat the Saber Storm master, and return with the final proof."
+            "0": "No corrections today. That isn't praise; it's that I can't find anything left to fix from the outside. What's left is behind the last door of the trial halls. The master waits there, and I won't dress it up: the storm you've learned piece by piece, he wields whole. Continuous offense with no eye, no pause, no floor. Beat him, and the form is yours by every law the enclave keeps. His defeat is the only proof I need. But the storm has never spared a lone opponent, and it will not start with you. Bring two blades you'd trust in a storm, because that is exactly where you're taking them."
           }
         }
       },
@@ -2579,7 +2579,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Dantooine Jedi Enclave Trial Halls. I want proof, not a story about almost having it."
+            "0": "Then it's a true trial, witnessed and chalked. Weather his first storm, guard each other's seams, and when the rhythm falters, that isn't him tiring. It's him testing. Press anyway. I'll be listening for the quiet."
           }
         }
       },
@@ -2648,7 +2648,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Saber Storm is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "My first student, and my sparring partner every dawn for eleven years. He mastered the storm before anyone had named it, and it never let him go. He didn't seal these halls out of malice. He sealed them because he believes the form should end with him. Prove it ends with you instead."
           }
         }
       },
@@ -2717,7 +2717,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dantooine Jedi Enclave Trial Halls is on Dantooine. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Every storm the rest of us make has a center, a still point where the duelist actually lives. Find it and you've found the man. His has none. He is offense with nothing at the middle, and that is the tragedy and the technique both. Three of you means three centers. He cannot erase what he does not have."
           }
         }
       },
@@ -2786,7 +2786,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Then I chalk the ring, take down the blade hanging on that wall, and finish my own failed lesson at last. But I've watched your footwork since the day I first corrected it, and I'm not oiling that hilt yet. When it gets loud in there, fall back on the drills. They live in your feet now."
           }
         }
       },
@@ -2835,7 +2835,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dantooine Jedi Enclave Trial Halls still holds your mastery proof for Saber Storm. Finish the target there before you bring me anything else."
+            "0": "The last door waits, and the master behind it. Three blades, no fewer. The storm without an eye does not tire, so plan for the long minute, and then the longer one."
           }
         }
       },
@@ -2904,7 +2904,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Saber Storm lesson clean."
+            "0": "The halls are quiet. Truly quiet. I haven't heard them like this since before he sealed the doors. Tell me it's done."
           }
         }
       },
@@ -2953,7 +2953,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Saber Storm is one step closer to belonging to you."
+            "0": "Then the form lives, and it lives in someone who plants nothing and stays rooted anyway. He would have hated that sentence and been proud of you all the same. The rings will be rechalked and your name written over the storm drills where mine used to sit. Saber Storm is yours now. Teach it better than I did."
           }
         }
       }
@@ -3023,7 +3023,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Walk me through the drill again."
           }
         }
       },
@@ -3100,7 +3100,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the first proof."
+            "0": "Adjust my stance all you like. I'm in."
           }
         }
       },
@@ -3165,7 +3165,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Saber Storm demand?"
+            "0": "What is Saber Storm, exactly?"
           }
         }
       },
@@ -3230,7 +3230,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "How do I get into the trial halls?"
           }
         }
       },
@@ -3295,7 +3295,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "Who are these adepts?"
           }
         }
       },
@@ -3340,7 +3340,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Not yet. My form isn't ready."
           }
         }
       },
@@ -3417,7 +3417,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "Here. One trial slate, hard won."
           }
         }
       },
@@ -3482,7 +3482,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Go back. I had another question."
           }
         }
       },
@@ -3559,7 +3559,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the second proof."
+            "0": "Middle ring, five blades, one shard. I'm gone."
           }
         }
       },
@@ -3624,7 +3624,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Saber Storm demand?"
+            "0": "What makes the specialists different?"
           }
         }
       },
@@ -3689,7 +3689,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "What is this focus shard?"
           }
         }
       },
@@ -3754,7 +3754,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "Any advice for the middle ring?"
           }
         }
       },
@@ -3799,7 +3799,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Not yet. I need more time on the drills."
           }
         }
       },
@@ -3876,7 +3876,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "Here's your shard. It hummed at me the entire walk back."
           }
         }
       },
@@ -3941,7 +3941,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back up. I'm not done asking."
           }
         }
       },
@@ -4018,7 +4018,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the breach proof."
+            "0": "I'll find two blades worth trusting and take the third door."
           }
         }
       },
@@ -4083,7 +4083,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Saber Storm demand?"
+            "0": "Why three blades for one warden?"
           }
         }
       },
@@ -4148,7 +4148,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "What happened to the sigil?"
           }
         }
       },
@@ -4213,7 +4213,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "Tell me about the warden."
           }
         }
       },
@@ -4258,7 +4258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Not until the right blades stand beside me."
           }
         }
       },
@@ -4335,7 +4335,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "The Fractured Trial Sigil. She fought like you taught her."
           }
         }
       },
@@ -4400,7 +4400,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Let's go over the high ring again."
           }
         }
       },
@@ -4477,7 +4477,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the circle proof."
+            "0": "Then examine me. I'll be in the high ring."
           }
         }
       },
@@ -4542,7 +4542,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Saber Storm demand?"
+            "0": "What is this council chit?"
           }
         }
       },
@@ -4607,7 +4607,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "How does the inner circle fight?"
           }
         }
       },
@@ -4672,7 +4672,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "You trained them to test students?"
           }
         }
       },
@@ -4717,7 +4717,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Not today. I know my flaw, and it needs work."
           }
         }
       },
@@ -4794,7 +4794,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "The Council Trial Chit. They graded me. I disagreed."
           }
         }
       },
@@ -4859,7 +4859,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Say the whole of it once more."
           }
         }
       },
@@ -4936,7 +4936,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the mastery proof."
+            "0": "We'll take the last door together. All three of us."
           }
         }
       },
@@ -5001,7 +5001,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Saber Storm demand?"
+            "0": "Who is the master?"
           }
         }
       },
@@ -5066,7 +5066,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "No eye to the storm. What does that mean for me?"
           }
         }
       },
@@ -5131,7 +5131,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "And if the three of us fall?"
           }
         }
       },
@@ -5176,7 +5176,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Not yet. The blades I trust aren't on Dantooine today."
           }
         }
       },
@@ -5253,7 +5253,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "It's done. The storm has an eye now. Me."
           }
         }
       }

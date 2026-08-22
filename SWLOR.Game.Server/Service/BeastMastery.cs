@@ -115,6 +115,11 @@ namespace SWLOR.Game.Server.Service
             return _beasts[type];
         }
 
+        public static IEnumerable<BeastType> GetAllBeastTypes()
+        {
+            return _beasts.Keys.ToList();
+        }
+
         public static BeastRoleAttribute GetBeastRoleDetail(BeastRoleType type)
         {
             return _beastRoles[type];
@@ -222,11 +227,29 @@ namespace SWLOR.Game.Server.Service
             return _beastXPRequirements[level] + (int)(_beastXPRequirements[level] * (xpPenalty * 0.01f));
         }
 
-        public static void SpawnBeast(uint player, string beastId, int percentHeal)
+        /// <summary>
+        /// Determines whether a player is free to spawn a new companion (beast or droid).
+        /// The game engine only permits one henchman-type associate at a time, so beast and
+        /// droid activation must share this check to prevent an orphaned, master-less companion.
+        /// </summary>
+        /// <param name="player">The player attempting to spawn a companion.</param>
+        /// <returns>An error message if a companion is already active, otherwise an empty string.</returns>
+        public static string GetCompanionSlotValidationError(uint player)
         {
             if (GetIsObjectValid(GetAssociate(AssociateType.Henchman, player)))
             {
-                SendMessageToPC(player, "Only one companion may be active at a time.");
+                return "Only one companion may be active at a time.";
+            }
+
+            return string.Empty;
+        }
+
+        public static void SpawnBeast(uint player, string beastId, int percentHeal)
+        {
+            var companionSlotError = GetCompanionSlotValidationError(player);
+            if (!string.IsNullOrEmpty(companionSlotError))
+            {
+                SendMessageToPC(player, companionSlotError);
                 return;
             }
 
@@ -316,13 +339,13 @@ namespace SWLOR.Game.Server.Service
             BiowareXP2.IPSafeAddItemProperty(claw, ItemPropertyCustom(ItemPropertyType.DamageStat, (int)beastDetail.DamageStat), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPSafeAddItemProperty(claw, ItemPropertyCustom(ItemPropertyType.AccuracyStat, (int)beastDetail.AccuracyStat), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
 
-            ObjectPlugin.SetMaxHitPoints(beast, beastDetail.Levels[dbBeast.Level].HP);
             CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Might, level.Stats[AbilityType.Might]);
             CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Perception, level.Stats[AbilityType.Perception]);
             CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Vitality, level.Stats[AbilityType.Vitality]);
             CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Willpower, level.Stats[AbilityType.Willpower]);
             CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Agility, level.Stats[AbilityType.Agility]);
             CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Social, level.Stats[AbilityType.Social]);
+            Stat.SetNPCMaxHitPoints(beast, level.HP);
 
             var attackBonus = (int)(level.MaxAttackBonus * (dbBeast.AttackPurity * 0.01f));
             var accuracyBonus = (int)(level.MaxAccuracyBonus * (dbBeast.AccuracyPurity * 0.01f));
@@ -770,15 +793,19 @@ namespace SWLOR.Game.Server.Service
 
         public static void CreateBeastEgg(IncubationJob job, uint player)
         {
-            var egg = CreateItemOnObject(BeastEggResref, player);
-
             var mutation = DetermineMutation(job.BeastDNAType, job);
             var beastType = mutation == BeastType.Invalid ? job.BeastDNAType : mutation;
 
+            // A successful mutation reveals the field note for the beast the player just produced,
+            // documenting every way to incubate it. No-op if already owned.
+            if (mutation != BeastType.Invalid)
+            {
+                IncubationFieldNote.GrantDiscoveredNote(player, mutation);
+            }
+
+            var egg = CreateBeastEgg(beastType, player);
             var itemProperties = new List<ItemProperty>
             {
-                ItemPropertyCustom(ItemPropertyType.DNAType, (int)beastType),
-
                 ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.AttackPurity, job.AttackPurity),
                 ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.AccuracyPurity, job.AccuracyPurity),
                 ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.EvasionPurity, job.EvasionPurity),
@@ -808,13 +835,22 @@ namespace SWLOR.Game.Server.Service
                 BiowareXP2.IPSafeAddItemProperty(egg, ip, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             }
 
-            var beastDetail = GetBeastDetail(beastType);
-            SetName(egg, $"Beast Egg: {beastDetail.Name}");
-
             var addGoldPiece = CalculateEggVendorBonus(job);
             ItemPlugin.SetAddGoldPieceValue(egg, addGoldPiece);
 
             DB.Delete<IncubationJob>(job.Id);
+        }
+
+        public static uint CreateBeastEgg(BeastType beastType, uint player)
+        {
+            var egg = CreateItemOnObject(BeastEggResref, player);
+            var dnaType = ItemPropertyCustom(ItemPropertyType.DNAType, (int)beastType);
+            BiowareXP2.IPSafeAddItemProperty(egg, dnaType, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+
+            var beastDetail = GetBeastDetail(beastType);
+            SetName(egg, $"Beast Egg: {beastDetail.Name}");
+
+            return egg;
         }
 
         private static int CalculateEggVendorBonus(IncubationJob job)

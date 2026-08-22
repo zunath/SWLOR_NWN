@@ -6,7 +6,8 @@
       "Bash(find:*)",
       "PowerShell(git -C C:\\\\Projects\\\\SWLOR_NWN status --short --untracked-files=all)",
       "PowerShell(powershell -ExecutionPolicy Bypass -File C:\\\\Projects\\\\SWLOR_NWN\\\\tools\\\\SyncAgentSkills.ps1 -CheckOnly)",
-      "PowerShell(Remove-Item C:\\\\Projects\\\\SWLOR_NWN\\\\.claude\\\\skills\\\\swlor-rare-spawn-generation\\\\SKILL.md -Force; New-Item -ItemType File C:\\\\Projects\\\\SWLOR_NWN\\\\.claude\\\\skills\\\\swlor-quest-generation\\\\stray.txt | Out-Null; powershell -ExecutionPolicy Bypass -File C:\\\\Projects\\\\SWLOR_NWN\\\\tools\\\\SyncAgentSkills.ps1 -CheckOnly; Write-Host \"--- exit: $LASTEXITCODE ---\"; powershell -ExecutionPolicy Bypass -File C:\\\\Projects\\\\SWLOR_NWN\\\\tools\\\\SyncAgentSkills.ps1; powershell -ExecutionPolicy Bypass -File C:\\\\Projects\\\\SWLOR_NWN\\\\tools\\\\SyncAgentSkills.ps1 -CheckOnly)"
+      "PowerShell(Remove-Item C:\\\\Projects\\\\SWLOR_NWN\\\\.claude\\\\skills\\\\swlor-rare-spawn-generation\\\\SKILL.md -Force; New-Item -ItemType File C:\\\\Projects\\\\SWLOR_NWN\\\\.claude\\\\skills\\\\swlor-quest-generation\\\\stray.txt | Out-Null; powershell -ExecutionPolicy Bypass -File C:\\\\Projects\\\\SWLOR_NWN\\\\tools\\\\SyncAgentSkills.ps1 -CheckOnly; Write-Host \"--- exit: $LASTEXITCODE ---\"; powershell -ExecutionPolicy Bypass -File C:\\\\Projects\\\\SWLOR_NWN\\\\tools\\\\SyncAgentSkills.ps1; powershell -ExecutionPolicy Bypass -File C:\\\\Projects\\\\SWLOR_NWN\\\\tools\\\\SyncAgentSkills.ps1 -CheckOnly)",
+      "Bash(python -c ' *)"
     ],
     "deny": [],
     "ask": []

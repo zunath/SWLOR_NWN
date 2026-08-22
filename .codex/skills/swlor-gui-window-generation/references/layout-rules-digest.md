@@ -13,8 +13,8 @@ lines for your window is a hard gate — every warning is a confirmed defect.**
   same-height widget with default margins — that is buttons, image buttons, toggle
   buttons, checkboxes, text edits, combos, sliders, and progress bars (all confirmed
   in-game). Let such rows derive their height from children. ONLY `AddToggles` /
-  `AddOptions` are margin-free and may share a fixed height with their row (that is
-  how tab rows work).
+  `AddOptions`, or controls explicitly using `SetMargin(0f)` for a compact grid, may
+  share a fixed height with their row.
 - **R3 (throws):** assign every bound property in `Initialize` BEFORE calling
   `WatchOnClient` on it. The framework throws a descriptive exception if you forget.
 - **R4 (doc):** the property bound to a toggles widget and the property that drives

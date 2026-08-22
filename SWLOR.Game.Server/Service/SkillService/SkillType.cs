@@ -463,6 +463,29 @@ namespace SWLOR.Game.Server.Service.SkillService
             false,
             CombatPointCategoryType.Weapon)]
         Throwing = 47,
+
+        [Skill(SkillCategoryType.Combat,
+            "Mimicry",
+            50,
+            true,
+            "Ability to analyze enemy creatures and replicate their combat techniques.",
+            true,
+            false,
+            false,
+            CombatPointCategoryType.Utility)]
+        Mimicry = 48,
+
+        [Skill(SkillCategoryType.Utility,
+            "Espionage",
+            50,
+            true,
+            "Ability to craft poisons, traps, employ stealth, and slice security systems.",
+            true,
+            true,
+            false,
+            CombatPointCategoryType.Utility,
+            CharacterType.Standard)]
+        Espionage = 49,
     }
 
     public class SkillAttribute : Attribute

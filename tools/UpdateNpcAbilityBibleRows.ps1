@@ -471,8 +471,8 @@ function New-AbilityRow {
             $row.CenterOnActivator = $centerOnActivator -match "true"
 
             switch ($shape) {
-                "Cone" { $row.Targeting = "$(Format-Number $lengthOrRadius)m cone" }
-                "Line" { $row.Targeting = "$(Format-Number $lengthOrRadius)m line" }
+                "Cone" { $row.Targeting = "$(Format-Number $lengthOrRadius)m x $(Format-Number $width)m cone" }
+                "Line" { $row.Targeting = "$(Format-Number $lengthOrRadius)m x $(Format-Number $width)m line" }
                 default {
                     $row.Targeting = if ($row.CenterOnActivator) {
                         "$(Format-Number $lengthOrRadius)m sphere centered on caster"
@@ -485,12 +485,12 @@ function New-AbilityRow {
 
             $row.Hostile = "Yes"
             $row.Area = "Yes"
-            $row.RequiresTarget = "Yes"
-            $row.MaxRange = if ($maxRange -and (Convert-TokenToNumber $maxRange) -gt 0) {
-                "$(Format-Number (Convert-TokenToNumber $maxRange))m"
-            }
-            elseif ($row.CenterOnActivator) {
+            $row.RequiresTarget = if ($row.CenterOnActivator) { "No" } else { "Yes" }
+            $row.MaxRange = if ($row.CenterOnActivator) {
                 "Self"
+            }
+            elseif ($maxRange -and (Convert-TokenToNumber $maxRange) -gt 0) {
+                "$(Format-Number (Convert-TokenToNumber $maxRange))m"
             }
             else {
                 "5m default"
@@ -523,7 +523,15 @@ function New-AbilityRow {
         $row.STM = "$(Format-Number $stamina) STM"
         $row.Hostile = if ($Content.Contains(".IsHostileAbility()")) { "Yes" } else { "No" }
         $row.Area = if ($Content.Contains(".IsAreaAbility()")) { "Yes" } else { "No" }
-        $row.RequiresTarget = if ($Content.Contains(".RequiresTarget()")) { "Yes" } else { "No" }
+        $row.RequiresTarget = if ($row.CenterOnActivator) {
+            "No"
+        }
+        elseif ($Content.Contains(".RequiresTarget()")) {
+            "Yes"
+        }
+        else {
+            "No"
+        }
 
         $maxRangeMatch = [regex]::Match($Content, "\.HasMaxRange\(([^\)]+)\)")
         $maxRange = if ($maxRangeMatch.Success) { Convert-TokenToNumber $maxRangeMatch.Groups[1].Value } else { $null }
@@ -537,7 +545,7 @@ function New-AbilityRow {
             $lengthOrRadius = Convert-TokenToNumber $targetingArguments[0]
             $row.Width = Convert-TokenToNumber $targetingArguments[1]
             $row.Shape = "Cone"
-            $row.Targeting = "$(Format-Number $lengthOrRadius)m cone"
+            $row.Targeting = "$(Format-Number $lengthOrRadius)m x $(Format-Number $row.Width)m cone"
             $row.MaxRange = if ($null -ne $maxRange) { "$(Format-Number $maxRange)m" } else { "$(Format-Number $lengthOrRadius)m" }
         }
         elseif ($Content.Contains(".HasActivationTargetingLine")) {
@@ -545,7 +553,7 @@ function New-AbilityRow {
             $lengthOrRadius = Convert-TokenToNumber $targetingArguments[0]
             $row.Width = Convert-TokenToNumber $targetingArguments[1]
             $row.Shape = "Line"
-            $row.Targeting = "$(Format-Number $lengthOrRadius)m line"
+            $row.Targeting = "$(Format-Number $lengthOrRadius)m x $(Format-Number $row.Width)m line"
             $row.MaxRange = if ($null -ne $maxRange) { "$(Format-Number $maxRange)m" } else { "$(Format-Number $lengthOrRadius)m" }
         }
         elseif ($Content.Contains(".HasActivationTargetingSphere")) {
@@ -559,11 +567,11 @@ function New-AbilityRow {
             else {
                 "$(Format-Number $lengthOrRadius)m sphere"
             }
-            $row.MaxRange = if ($null -ne $maxRange -and $maxRange -gt 0) {
-                "$(Format-Number $maxRange)m"
-            }
-            elseif ($row.CenterOnActivator) {
+            $row.MaxRange = if ($row.CenterOnActivator) {
                 "Self"
+            }
+            elseif ($null -ne $maxRange -and $maxRange -gt 0) {
+                "$(Format-Number $maxRange)m"
             }
             else {
                 "$(Format-Number $lengthOrRadius)m"
@@ -572,6 +580,10 @@ function New-AbilityRow {
         else {
             $row.Targeting = "Self"
             $row.MaxRange = "Self"
+        }
+
+        if ($row.CenterOnActivator) {
+            $row.RequiresTarget = "No"
         }
 
         $statusMatch = [regex]::Match($Content, "typeof\(([A-Za-z0-9_]+StatusEffect)\)|new\s+([A-Za-z0-9_]+StatusEffect)\s*\(", "Singleline")

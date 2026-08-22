@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
         private void LastStandOfTheLightFoundation()
         {
-            _builder.Create(LastStandOfTheLightFoundationQuestId, "First Principle: Last Stand of the Light")
+            _builder.Create(LastStandOfTheLightFoundationQuestId, "Lower Your Voice")
                 .PrerequisiteSkill(SkillType.Force, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
@@ -75,20 +75,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Last Stand of the Light capstone line continues in Korriban Sith Crypt Depths. Defeat Last Stand of the Light adepts and secure the Last Stand of the Light Crypt Trial Tablet.")
+                    "Sith adepts rehearse a corrupted last-stand rite in the Korriban Sith Crypt Depths. Defeat 6 Last Stand of the Light adepts and recover the Last Stand of the Light Crypt Trial Tablet.")
                 .AddKillObjective(NPCGroupType.Korriban_LastStandOfTheLight_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneLastStandOfTheLightCryptTrialTablet)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Last Stand of the Light Crypt Trial Tablet from Korriban Sith Crypt Depths. Return to Seris Nahl for the next Last Stand of the Light lesson.")
+                    "The Last Stand of the Light Crypt Trial Tablet has been recovered. Return to Seris Nahl at the Korriban Starport.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
 
         private void LastStandOfTheLightMeasure()
         {
-            _builder.Create(LastStandOfTheLightMeasureQuestId, "The Measure of Last Stand of the Light")
+            _builder.Create(LastStandOfTheLightMeasureQuestId, "What the Shard Remembers")
                 .PrerequisiteQuest(LastStandOfTheLightFoundationQuestId)
                 .PrerequisiteSkill(SkillType.Force, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneLastStandOfTheLightRitualFocusShard)
@@ -96,20 +96,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Last Stand of the Light capstone line continues in Korriban Sith Crypt Depths. Defeat Last Stand of the Light specialists and secure the Last Stand of the Light Ritual Focus Shard.")
+                    "Five Last Stand of the Light specialists guard the rite's focus deeper in the Korriban Sith Crypt Depths. Defeat them and recover the Last Stand of the Light Ritual Focus Shard.")
                 .AddKillObjective(NPCGroupType.Korriban_LastStandOfTheLight_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneLastStandOfTheLightRitualFocusShard)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Last Stand of the Light Ritual Focus Shard from Korriban Sith Crypt Depths. Return to Seris Nahl for the next Last Stand of the Light lesson.")
+                    "The Last Stand of the Light Ritual Focus Shard has been recovered. Return to Seris Nahl at the Korriban Starport.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
 
         private void LastStandOfTheLightBreach()
         {
-            _builder.Create(LastStandOfTheLightBreachQuestId, "Fault Line: Last Stand of the Light")
+            _builder.Create(LastStandOfTheLightBreachQuestId, "Three Blades at the Breach")
                 .PrerequisiteQuest(LastStandOfTheLightMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Force, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneLastStandOfTheLightSplinteredTombSigil)
@@ -117,20 +117,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Last Stand of the Light capstone line continues in Korriban Sith Crypt Depths. Defeat the Last Stand of the Light warden and secure the Last Stand of the Light Splintered Tomb Sigil.")
+                    "The Last Stand of the Light warden holds the breach into the deep tombs of the Korriban Sith Crypt Depths. Defeat the warden and recover the Last Stand of the Light Splintered Tomb Sigil.")
                 .AddKillObjective(NPCGroupType.Korriban_LastStandOfTheLight_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneLastStandOfTheLightSplinteredTombSigil)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Last Stand of the Light Splintered Tomb Sigil from Korriban Sith Crypt Depths. Return to Seris Nahl for the next Last Stand of the Light lesson.")
+                    "The Last Stand of the Light Splintered Tomb Sigil has been recovered. Return to Seris Nahl at the Korriban Starport.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
 
         private void LastStandOfTheLightCircle()
         {
-            _builder.Create(LastStandOfTheLightCircleQuestId, "Circle of Proof: Last Stand of the Light")
+            _builder.Create(LastStandOfTheLightCircleQuestId, "The Rite Unravels")
                 .PrerequisiteQuest(LastStandOfTheLightBreachQuestId)
                 .PrerequisiteSkill(SkillType.Force, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneLastStandOfTheLightKeepersRiteToken)
@@ -138,31 +138,31 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Last Stand of the Light capstone line continues in Korriban Sith Crypt Depths. Defeat the Last Stand of the Light inner circle and secure the Last Stand of the Light Keeper's Rite Token.")
+                    "Four members of the Last Stand of the Light inner circle hold the deep chambers of the Korriban Sith Crypt Depths. Defeat them and recover the Last Stand of the Light Keeper's Rite Token.")
                 .AddKillObjective(NPCGroupType.Korriban_LastStandOfTheLight_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneLastStandOfTheLightKeepersRiteToken)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Last Stand of the Light Keeper's Rite Token from Korriban Sith Crypt Depths. Return to Seris Nahl for the next Last Stand of the Light lesson.")
+                    "The Last Stand of the Light Keeper's Rite Token has been recovered. Return to Seris Nahl at the Korriban Starport.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
 
         private void LastStandOfTheLightMastery()
         {
-            _builder.Create(LastStandOfTheLightMasteryQuestId, "Last Stand of the Light Mastery")
+            _builder.Create(LastStandOfTheLightMasteryQuestId, "The Light's Last Stand")
                 .PrerequisiteQuest(LastStandOfTheLightCircleQuestId)
                 .PrerequisiteSkill(SkillType.Force, 50)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Last Stand of the Light master is waiting in Korriban Sith Crypt Depths. Defeat the master and end the capstone trial.")
+                    "The Last Stand of the Light master waits at the bottom of the Korriban Sith Crypt Depths. Defeat the master.")
                 .AddKillObjective(NPCGroupType.Korriban_LastStandOfTheLight_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Last Stand of the Light master is defeated. Return to Seris Nahl and claim the completed lesson.")
+                    "The Last Stand of the Light master has been defeated. Return to Seris Nahl at the Korriban Starport.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -173,7 +173,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
         private void HungerOfTheDarkFoundation()
         {
-            _builder.Create(HungerOfTheDarkFoundationQuestId, "First Principle: Hunger of the Dark")
+            _builder.Create(HungerOfTheDarkFoundationQuestId, "An Appetite Worth Teaching")
                 .PrerequisiteSkill(SkillType.Force, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
@@ -188,20 +188,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Hunger of the Dark capstone line continues in Korriban Sith Crypt Depths. Defeat Hunger of the Dark adepts and secure the Hunger of the Dark Crypt Trial Tablet.")
+                    "A coven of Hunger of the Dark adepts feeds on stolen power in the Korriban Sith Crypt Depths. Defeat 6 of them and recover the Hunger of the Dark Crypt Trial Tablet.")
                 .AddKillObjective(NPCGroupType.Korriban_HungerOfTheDark_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneHungerOfTheDarkCryptTrialTablet)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Hunger of the Dark Crypt Trial Tablet from Korriban Sith Crypt Depths. Return to Neth Kyr for the next Hunger of the Dark lesson.")
+                    "The Hunger of the Dark Crypt Trial Tablet has been recovered. Return to Neth Kyr at the Korriban Starport cantina.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
 
         private void HungerOfTheDarkMeasure()
         {
-            _builder.Create(HungerOfTheDarkMeasureQuestId, "The Measure of Hunger of the Dark")
+            _builder.Create(HungerOfTheDarkMeasureQuestId, "Second Course")
                 .PrerequisiteQuest(HungerOfTheDarkFoundationQuestId)
                 .PrerequisiteSkill(SkillType.Force, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneHungerOfTheDarkRitualFocusShard)
@@ -209,20 +209,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Hunger of the Dark capstone line continues in Korriban Sith Crypt Depths. Defeat Hunger of the Dark specialists and secure the Hunger of the Dark Ritual Focus Shard.")
+                    "Five Hunger of the Dark specialists guard the coven's ritual focus deeper in the Korriban Sith Crypt Depths. Defeat them and recover the Hunger of the Dark Ritual Focus Shard.")
                 .AddKillObjective(NPCGroupType.Korriban_HungerOfTheDark_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneHungerOfTheDarkRitualFocusShard)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Hunger of the Dark Ritual Focus Shard from Korriban Sith Crypt Depths. Return to Neth Kyr for the next Hunger of the Dark lesson.")
+                    "The Hunger of the Dark Ritual Focus Shard has been recovered. Return to Neth Kyr at the Korriban Starport cantina.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
 
         private void HungerOfTheDarkBreach()
         {
-            _builder.Create(HungerOfTheDarkBreachQuestId, "Fault Line: Hunger of the Dark")
+            _builder.Create(HungerOfTheDarkBreachQuestId, "A Full Table")
                 .PrerequisiteQuest(HungerOfTheDarkMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Force, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneHungerOfTheDarkSplinteredTombSigil)
@@ -230,20 +230,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Hunger of the Dark capstone line continues in Korriban Sith Crypt Depths. Defeat the Hunger of the Dark warden and secure the Hunger of the Dark Splintered Tomb Sigil.")
+                    "The Hunger of the Dark warden holds the breach into the deep tombs of the Korriban Sith Crypt Depths. Defeat the warden and recover the Hunger of the Dark Splintered Tomb Sigil.")
                 .AddKillObjective(NPCGroupType.Korriban_HungerOfTheDark_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneHungerOfTheDarkSplinteredTombSigil)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Hunger of the Dark Splintered Tomb Sigil from Korriban Sith Crypt Depths. Return to Neth Kyr for the next Hunger of the Dark lesson.")
+                    "The Hunger of the Dark Splintered Tomb Sigil has been recovered. Return to Neth Kyr at the Korriban Starport cantina.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
 
         private void HungerOfTheDarkCircle()
         {
-            _builder.Create(HungerOfTheDarkCircleQuestId, "Circle of Proof: Hunger of the Dark")
+            _builder.Create(HungerOfTheDarkCircleQuestId, "Small Enough to Swallow")
                 .PrerequisiteQuest(HungerOfTheDarkBreachQuestId)
                 .PrerequisiteSkill(SkillType.Force, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneHungerOfTheDarkKeepersRiteToken)
@@ -251,31 +251,31 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Hunger of the Dark capstone line continues in Korriban Sith Crypt Depths. Defeat the Hunger of the Dark inner circle and secure the Hunger of the Dark Keeper's Rite Token.")
+                    "Four members of the Hunger of the Dark inner circle hold the deep chambers of the Korriban Sith Crypt Depths. Defeat them and recover the Hunger of the Dark Keeper's Rite Token.")
                 .AddKillObjective(NPCGroupType.Korriban_HungerOfTheDark_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneHungerOfTheDarkKeepersRiteToken)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Hunger of the Dark Keeper's Rite Token from Korriban Sith Crypt Depths. Return to Neth Kyr for the next Hunger of the Dark lesson.")
+                    "The Hunger of the Dark Keeper's Rite Token has been recovered. Return to Neth Kyr at the Korriban Starport cantina.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
 
         private void HungerOfTheDarkMastery()
         {
-            _builder.Create(HungerOfTheDarkMasteryQuestId, "Hunger of the Dark Mastery")
+            _builder.Create(HungerOfTheDarkMasteryQuestId, "Too Much")
                 .PrerequisiteQuest(HungerOfTheDarkCircleQuestId)
                 .PrerequisiteSkill(SkillType.Force, 50)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Hunger of the Dark master is waiting in Korriban Sith Crypt Depths. Defeat the master and end the capstone trial.")
+                    "The Hunger of the Dark master waits at the bottom of the Korriban Sith Crypt Depths. Defeat the master.")
                 .AddKillObjective(NPCGroupType.Korriban_HungerOfTheDark_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Hunger of the Dark master is defeated. Return to Neth Kyr and claim the completed lesson.")
+                    "The Hunger of the Dark master has been defeated. Return to Neth Kyr at the Korriban Starport cantina.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -286,7 +286,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
         private void EclipseOfResolveFoundation()
         {
-            _builder.Create(EclipseOfResolveFoundationQuestId, "First Principle: Eclipse of Resolve")
+            _builder.Create(EclipseOfResolveFoundationQuestId, "Provisional Pass")
                 .PrerequisiteSkill(SkillType.Force, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
@@ -301,20 +301,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Eclipse of Resolve capstone line continues in Korriban Sith Crypt Depths. Defeat Eclipse of Resolve adepts and secure the Eclipse of Resolve Crypt Trial Tablet.")
+                    "A failed cell of Eclipse of Resolve adepts drills a corrupted doctrine in the Korriban Sith Crypt Depths. Defeat 6 of them and recover the Eclipse of Resolve Crypt Trial Tablet.")
                 .AddKillObjective(NPCGroupType.Korriban_EclipseOfResolve_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEclipseOfResolveCryptTrialTablet)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Eclipse of Resolve Crypt Trial Tablet from Korriban Sith Crypt Depths. Return to Acolyte Varn for the next Eclipse of Resolve lesson.")
+                    "The Eclipse of Resolve Crypt Trial Tablet has been recovered. Return to Acolyte Varn at the Korriban wasteland tunnels.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
 
         private void EclipseOfResolveMeasure()
         {
-            _builder.Create(EclipseOfResolveMeasureQuestId, "The Measure of Eclipse of Resolve")
+            _builder.Create(EclipseOfResolveMeasureQuestId, "Doctrinal Review")
                 .PrerequisiteQuest(EclipseOfResolveFoundationQuestId)
                 .PrerequisiteSkill(SkillType.Force, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneEclipseOfResolveRitualFocusShard)
@@ -322,20 +322,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Eclipse of Resolve capstone line continues in Korriban Sith Crypt Depths. Defeat Eclipse of Resolve specialists and secure the Eclipse of Resolve Ritual Focus Shard.")
+                    "Five Eclipse of Resolve specialists guard the cell's ritual focus deeper in the Korriban Sith Crypt Depths. Defeat them and recover the Eclipse of Resolve Ritual Focus Shard.")
                 .AddKillObjective(NPCGroupType.Korriban_EclipseOfResolve_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEclipseOfResolveRitualFocusShard)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Eclipse of Resolve Ritual Focus Shard from Korriban Sith Crypt Depths. Return to Acolyte Varn for the next Eclipse of Resolve lesson.")
+                    "The Eclipse of Resolve Ritual Focus Shard has been recovered. Return to Acolyte Varn at the Korriban wasteland tunnels.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
 
         private void EclipseOfResolveBreach()
         {
-            _builder.Create(EclipseOfResolveBreachQuestId, "Fault Line: Eclipse of Resolve")
+            _builder.Create(EclipseOfResolveBreachQuestId, "Adequate Work")
                 .PrerequisiteQuest(EclipseOfResolveMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Force, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneEclipseOfResolveSplinteredTombSigil)
@@ -343,20 +343,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Eclipse of Resolve capstone line continues in Korriban Sith Crypt Depths. Defeat the Eclipse of Resolve warden and secure the Eclipse of Resolve Splintered Tomb Sigil.")
+                    "The Eclipse of Resolve warden holds the breach into the deep tombs of the Korriban Sith Crypt Depths. Defeat the warden and recover the Eclipse of Resolve Splintered Tomb Sigil.")
                 .AddKillObjective(NPCGroupType.Korriban_EclipseOfResolve_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEclipseOfResolveSplinteredTombSigil)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Eclipse of Resolve Splintered Tomb Sigil from Korriban Sith Crypt Depths. Return to Acolyte Varn for the next Eclipse of Resolve lesson.")
+                    "The Eclipse of Resolve Splintered Tomb Sigil has been recovered. Return to Acolyte Varn at the Korriban wasteland tunnels.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
 
         private void EclipseOfResolveCircle()
         {
-            _builder.Create(EclipseOfResolveCircleQuestId, "Circle of Proof: Eclipse of Resolve")
+            _builder.Create(EclipseOfResolveCircleQuestId, "The Retraction")
                 .PrerequisiteQuest(EclipseOfResolveBreachQuestId)
                 .PrerequisiteSkill(SkillType.Force, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneEclipseOfResolveKeepersRiteToken)
@@ -364,31 +364,31 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Eclipse of Resolve capstone line continues in Korriban Sith Crypt Depths. Defeat the Eclipse of Resolve inner circle and secure the Eclipse of Resolve Keeper's Rite Token.")
+                    "Four members of the Eclipse of Resolve inner circle hold the deep chambers of the Korriban Sith Crypt Depths. Defeat them and recover the Eclipse of Resolve Keeper's Rite Token.")
                 .AddKillObjective(NPCGroupType.Korriban_EclipseOfResolve_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneEclipseOfResolveKeepersRiteToken)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Eclipse of Resolve Keeper's Rite Token from Korriban Sith Crypt Depths. Return to Acolyte Varn for the next Eclipse of Resolve lesson.")
+                    "The Eclipse of Resolve Keeper's Rite Token has been recovered. Return to Acolyte Varn at the Korriban wasteland tunnels.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
 
         private void EclipseOfResolveMastery()
         {
-            _builder.Create(EclipseOfResolveMasteryQuestId, "Eclipse of Resolve Mastery")
+            _builder.Create(EclipseOfResolveMasteryQuestId, "What Eclipsed His Resolve")
                 .PrerequisiteQuest(EclipseOfResolveCircleQuestId)
                 .PrerequisiteSkill(SkillType.Force, 50)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Eclipse of Resolve master is waiting in Korriban Sith Crypt Depths. Defeat the master and end the capstone trial.")
+                    "The Eclipse of Resolve master waits at the bottom of the Korriban Sith Crypt Depths. Defeat the master.")
                 .AddKillObjective(NPCGroupType.Korriban_EclipseOfResolve_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Eclipse of Resolve master is defeated. Return to Acolyte Varn and claim the completed lesson.")
+                    "The Eclipse of Resolve master has been defeated. Return to Acolyte Varn at the Korriban wasteland tunnels.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

@@ -175,7 +175,7 @@
         }
       },
       {
-        "__struct_id": 2048,
+        "__struct_id": 4096,
         "EquippedRes": {
           "type": "resref",
           "value": "blaster_bullets"

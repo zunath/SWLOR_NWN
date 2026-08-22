@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 2154
+    "value": 10005
   },
   "BodyBag": {
     "type": "byte",
@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 50.0
+    "value": 47.0
   },
   "ClassList": {
     "type": "list",
@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 24
+    "value": 34
   },
   "Disarmable": {
     "type": "byte",
@@ -220,11 +220,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 2319
+    "value": 1839
   },
   "Int": {
     "type": "byte",
-    "value": 34
+    "value": 24
   },
   "Interruptable": {
     "type": "byte",
@@ -282,7 +282,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 4300
+    "value": 742
   },
   "Race": {
     "type": "byte",
@@ -612,6 +612,21 @@
         "Value": {
           "type": "cexostring",
           "value": "CAPSTONE_DANTOOINE_MEDICAL_SUBLEVEL_LESSON_LOOT,100,1"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "LOOT_TABLE_2"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 3
+        },
+        "Value": {
+          "type": "cexostring",
+          "value": "CAPSTONE_EMCOCKTAIL_RARES,5,1"
         }
       }
     ]

@@ -37,6 +37,12 @@ namespace SWLOR.Game.Server.Feature
             _statChangeActions[ItemPropertyType.Control] = ApplyControl;
             _statChangeActions[ItemPropertyType.Craftsmanship] = ApplyCraftsmanship;
             _statChangeActions[ItemPropertyType.CPBonus] = ApplyCPBonus;
+            _statChangeActions[ItemPropertyType.Stealth] = ApplyStealth;
+            _statChangeActions[ItemPropertyType.Detection] = ApplyDetection;
+            _statChangeActions[ItemPropertyType.TrapBonus] = ApplyTrapBonus;
+            _statChangeActions[ItemPropertyType.Disarm] = ApplyTrapDisarm;
+            _statChangeActions[ItemPropertyType.PoisonBonus] = ApplyPoisonBonus;
+            _statChangeActions[ItemPropertyType.Lockpicking] = ApplyLockpicking;
         }
 
         private static void ReapplyNPCStat(uint npc, ItemPropertyType ipType, int amount, bool isAdding)
@@ -183,7 +189,7 @@ namespace SWLOR.Game.Server.Feature
 
                 if (maxHP > 0)
                 {
-                    ObjectPlugin.SetMaxHitPoints(creature, maxHP);
+                    Stat.SetNPCMaxHitPoints(creature, maxHP);
                 }
 
                 if (GetCurrentHitPoints(creature) > GetMaxHitPoints(creature))
@@ -623,6 +629,222 @@ namespace SWLOR.Game.Server.Feature
             else
             {
                 ReapplyNPCStat(creature, ItemPropertyType.Evasion, amount, isAdding);
+            }
+        }
+
+        /// <summary>
+        /// Applies or removes stealth on a creature.
+        /// </summary>
+        /// <param name="creature">The creature to adjust</param>
+        /// <param name="item">The item being equipped or unequipped</param>
+        /// <param name="ip">The item property associated with this change</param>
+        /// <param name="isAdding">If true, we're adding the stealth, if false we're removing it.</param>
+        private static void ApplyStealth(uint creature, uint item, ItemProperty ip, bool isAdding)
+        {
+            if (GetIsDM(creature) || GetIsDMPossessed(creature))
+                return;
+
+            var amount = GetItemPropertyCostTableValue(ip);
+
+            if (GetIsPC(creature))
+            {
+                var playerId = GetObjectUUID(creature);
+                var dbPlayer = DB.Get<Player>(playerId);
+
+                if (isAdding)
+                {
+                    Stat.AdjustStealth(dbPlayer, amount);
+                }
+                else
+                {
+                    Stat.AdjustStealth(dbPlayer, -amount);
+                }
+
+                DB.Set(dbPlayer);
+            }
+            else
+            {
+                ReapplyNPCStat(creature, ItemPropertyType.Stealth, amount, isAdding);
+            }
+        }
+
+        /// <summary>
+        /// Applies or removes detection on a creature.
+        /// </summary>
+        /// <param name="creature">The creature to adjust</param>
+        /// <param name="item">The item being equipped or unequipped</param>
+        /// <param name="ip">The item property associated with this change</param>
+        /// <param name="isAdding">If true, we're adding the detection, if false we're removing it.</param>
+        private static void ApplyDetection(uint creature, uint item, ItemProperty ip, bool isAdding)
+        {
+            if (GetIsDM(creature) || GetIsDMPossessed(creature))
+                return;
+
+            var amount = GetItemPropertyCostTableValue(ip);
+
+            if (GetIsPC(creature))
+            {
+                var playerId = GetObjectUUID(creature);
+                var dbPlayer = DB.Get<Player>(playerId);
+
+                if (isAdding)
+                {
+                    Stat.AdjustDetection(dbPlayer, amount);
+                }
+                else
+                {
+                    Stat.AdjustDetection(dbPlayer, -amount);
+                }
+
+                DB.Set(dbPlayer);
+            }
+            else
+            {
+                ReapplyNPCStat(creature, ItemPropertyType.Detection, amount, isAdding);
+            }
+        }
+
+        /// <summary>
+        /// Applies or removes trap bonus on a creature.
+        /// </summary>
+        /// <param name="creature">The creature to adjust</param>
+        /// <param name="item">The item being equipped or unequipped</param>
+        /// <param name="ip">The item property associated with this change</param>
+        /// <param name="isAdding">If true, we're adding the trap bonus, if false we're removing it.</param>
+        private static void ApplyTrapBonus(uint creature, uint item, ItemProperty ip, bool isAdding)
+        {
+            if (GetIsDM(creature) || GetIsDMPossessed(creature))
+                return;
+
+            var amount = GetItemPropertyCostTableValue(ip);
+
+            if (GetIsPC(creature))
+            {
+                var playerId = GetObjectUUID(creature);
+                var dbPlayer = DB.Get<Player>(playerId);
+
+                if (isAdding)
+                {
+                    Stat.AdjustTrapBonus(dbPlayer, amount);
+                }
+                else
+                {
+                    Stat.AdjustTrapBonus(dbPlayer, -amount);
+                }
+
+                DB.Set(dbPlayer);
+            }
+            else
+            {
+                ReapplyNPCStat(creature, ItemPropertyType.TrapBonus, amount, isAdding);
+            }
+        }
+
+        /// <summary>
+        /// Applies or removes trap disarm on a creature.
+        /// </summary>
+        /// <param name="creature">The creature to adjust</param>
+        /// <param name="item">The item being equipped or unequipped</param>
+        /// <param name="ip">The item property associated with this change</param>
+        /// <param name="isAdding">If true, we're adding the trap disarm, if false we're removing it.</param>
+        private static void ApplyTrapDisarm(uint creature, uint item, ItemProperty ip, bool isAdding)
+        {
+            if (GetIsDM(creature) || GetIsDMPossessed(creature))
+                return;
+
+            var amount = GetItemPropertyCostTableValue(ip);
+
+            if (GetIsPC(creature))
+            {
+                var playerId = GetObjectUUID(creature);
+                var dbPlayer = DB.Get<Player>(playerId);
+
+                if (isAdding)
+                {
+                    Stat.AdjustTrapDisarm(dbPlayer, amount);
+                }
+                else
+                {
+                    Stat.AdjustTrapDisarm(dbPlayer, -amount);
+                }
+
+                DB.Set(dbPlayer);
+            }
+            else
+            {
+                ReapplyNPCStat(creature, ItemPropertyType.Disarm, amount, isAdding);
+            }
+        }
+
+        /// <summary>
+        /// Applies or removes poison bonus on a creature.
+        /// </summary>
+        /// <param name="creature">The creature to adjust</param>
+        /// <param name="item">The item being equipped or unequipped</param>
+        /// <param name="ip">The item property associated with this change</param>
+        /// <param name="isAdding">If true, we're adding the poison bonus, if false we're removing it.</param>
+        private static void ApplyPoisonBonus(uint creature, uint item, ItemProperty ip, bool isAdding)
+        {
+            if (GetIsDM(creature) || GetIsDMPossessed(creature))
+                return;
+
+            var amount = GetItemPropertyCostTableValue(ip);
+
+            if (GetIsPC(creature))
+            {
+                var playerId = GetObjectUUID(creature);
+                var dbPlayer = DB.Get<Player>(playerId);
+
+                if (isAdding)
+                {
+                    Stat.AdjustPoisonBonus(dbPlayer, amount);
+                }
+                else
+                {
+                    Stat.AdjustPoisonBonus(dbPlayer, -amount);
+                }
+
+                DB.Set(dbPlayer);
+            }
+            else
+            {
+                ReapplyNPCStat(creature, ItemPropertyType.PoisonBonus, amount, isAdding);
+            }
+        }
+
+        /// <summary>
+        /// Applies or removes lockpicking on a creature.
+        /// </summary>
+        /// <param name="creature">The creature to adjust</param>
+        /// <param name="item">The item being equipped or unequipped</param>
+        /// <param name="ip">The item property associated with this change</param>
+        /// <param name="isAdding">If true, we're adding the lockpicking, if false we're removing it.</param>
+        private static void ApplyLockpicking(uint creature, uint item, ItemProperty ip, bool isAdding)
+        {
+            if (GetIsDM(creature) || GetIsDMPossessed(creature))
+                return;
+
+            var amount = GetItemPropertyCostTableValue(ip);
+
+            if (GetIsPC(creature))
+            {
+                var playerId = GetObjectUUID(creature);
+                var dbPlayer = DB.Get<Player>(playerId);
+
+                if (isAdding)
+                {
+                    Stat.AdjustLockpicking(dbPlayer, amount);
+                }
+                else
+                {
+                    Stat.AdjustLockpicking(dbPlayer, -amount);
+                }
+
+                DB.Set(dbPlayer);
+            }
+            else
+            {
+                ReapplyNPCStat(creature, ItemPropertyType.Lockpicking, amount, isAdding);
             }
         }
 

@@ -1,0 +1,25 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:behaviors="using:SWLOR.Toolset.Editors.Behaviors"
+             x:Class="SWLOR.Toolset.Editors.Behaviors.BehaviorEditorHeader">
+
+  <!-- What the object is, whether it is a blueprint or a placement, which file it lives in, and
+       whether it has unsaved work. Shared so the four behavior editors cannot drift apart on the
+       order or the wording. -->
+  <Border Padding="16,12" BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,0,1">
+    <Grid ColumnDefinitions="Auto,Auto,Auto,Auto,*,Auto" ColumnSpacing="8">
+      <TextBlock Grid.Column="0" FontSize="15.5" FontWeight="SemiBold" VerticalAlignment="Center"
+                 Text="{Binding $parent[behaviors:BehaviorEditorHeader].BehaviorName}" />
+      <TextBlock Grid.Column="1" Classes="dim" FontSize="13" VerticalAlignment="Center"
+                 Text="{Binding $parent[behaviors:BehaviorEditorHeader].Kind}" />
+      <TextBlock Grid.Column="2" Text="&#x00B7;" Classes="dim" VerticalAlignment="Center" />
+      <TextBlock Grid.Column="3" Classes="resref" FontSize="13.5" VerticalAlignment="Center"
+                 Text="{Binding $parent[behaviors:BehaviorEditorHeader].Owner}" />
+      <StackPanel Grid.Column="5" Orientation="Horizontal" Spacing="7" VerticalAlignment="Center"
+                  IsVisible="{Binding $parent[behaviors:BehaviorEditorHeader].IsDirty}">
+        <Ellipse Width="6" Height="6" Fill="{DynamicResource AccentBrush}" />
+        <TextBlock Text="unsaved" Classes="dim" FontSize="12.5" />
+      </StackPanel>
+    </Grid>
+  </Border>
+</UserControl>

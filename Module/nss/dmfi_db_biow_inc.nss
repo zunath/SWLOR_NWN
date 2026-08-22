@@ -11,8 +11,6 @@
 //:: Created By: The DMFI Team
 //:: Created On:
 //:://////////////////////////////////////////////
-//:: 2008.07.10 tsunami282 - implemented alternate database support, initially
-//::                         for Knat's NBDE
 
 
 

@@ -156,6 +156,13 @@
           "type": "cexostring",
           "value": ""
         }
+      },
+      {
+        "__struct_id": 4,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
       }
     ]
   },
@@ -210,13 +217,6 @@
   "Placeable List": {
     "type": "list",
     "value": [
-      {
-        "__struct_id": 9,
-        "Comment": {
-          "type": "cexostring",
-          "value": ""
-        }
-      },
       {
         "__struct_id": 9,
         "Comment": {
@@ -4989,6 +4989,27 @@
         "Comment": {
           "type": "cexostring",
           "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": ""
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Consumes a Kyber Token to construct a Tier 5 lightsaber or saberstaff with player-chosen enhancements and appearance."
+        }
+      },
+      {
+        "__struct_id": 9,
+        "Comment": {
+          "type": "cexostring",
+          "value": "Consumes a Kyber Token to construct a Tier 5 lightsaber or saberstaff with player-chosen enhancements and appearance."
         }
       }
     ]

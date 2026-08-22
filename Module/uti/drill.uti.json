@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Purchase land by using your Base Management Tool found in your feats. After purchasing the land, you can place this structure anywhere within the owned territory."
     }
   },
   "Identified": {
@@ -126,6 +126,21 @@
         "Value": {
           "type": "cexostring",
           "value": "StructureItem"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NO_ECONOMY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
         }
       }
     ]

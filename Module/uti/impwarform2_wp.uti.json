@@ -77,7 +77,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 85
+          "value": 88
         },
         "Param1": {
           "type": "byte",
@@ -144,6 +144,26 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "impwarform2_wp"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NO_ECONOMY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
   },
   "xModelPart1": {
     "type": "word",

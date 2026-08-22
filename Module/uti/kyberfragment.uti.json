@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Shattered pieces of a greater crystal.\n\nWhile lacking the capabilities of a full Kyber Crystal, these assorted shavings, flakes, fragments and splinters nonetheless see use in a variety of fields.\n\nThey are capable of creating wonders, though the trials often required to acquire such treasures are harrowing indeed."
     }
   },
   "Identified": {
@@ -77,6 +77,26 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "kyberfragment"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NO_ECONOMY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
   },
   "xModelPart1": {
     "type": "word",

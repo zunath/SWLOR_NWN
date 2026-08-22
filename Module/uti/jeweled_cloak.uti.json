@@ -41,7 +41,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A simple hooded cloak."
     }
   },
   "Identified": {
@@ -72,7 +72,7 @@
   },
   "ModelPart1": {
     "type": "byte",
-    "value": 10
+    "value": 20
   },
   "PaletteID": {
     "type": "byte",
@@ -102,8 +102,28 @@
     "type": "resref",
     "value": "jeweled_cloak"
   },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NO_ECONOMY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
+  },
   "xModelPart1": {
     "type": "word",
-    "value": 10
+    "value": 20
   }
 }

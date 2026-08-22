@@ -9,20 +9,14 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         public override string Name => "Force Disruption";
         public override EffectIconType Icon => EffectIconType.ForceDisruptionStatusEffect;
-        public override StatusEffectCategory Categories => StatusEffectCategory.Debuff | StatusEffectCategory.Control;
+        public override StatusEffectCategory Categories =>
+            StatusEffectCategory.Debuff | StatusEffectCategory.Control | StatusEffectCategory.ForceDisruption;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         public override ResistanceType ResistanceType => ResistanceType.Disruption;
 
         public ForceDisruptionStatusEffect()
         {
-        }
-
-        public ForceDisruptionStatusEffect(bool disablesForceAbilities)
-        {
-            if (disablesForceAbilities)
-            {
-                StatGroup.Stats[StatType.ForceAbilityActivationDisabled] = 1;
-            }
+            StatGroup.Stats[StatType.ForceAbilityActivationDisabled] = 1;
         }
     }
 }

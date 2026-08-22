@@ -5,8 +5,8 @@ namespace SWLOR.Game.Server.Service.PerkService
         [PerkCategory("Invalid", false)]
         Invalid = 0,
 
-        [PerkCategory("Force - Universal", true)]
-        ForceUniversal = 1,
+        [PerkCategory("Force - Alter", true)]
+        ForceAlter = 1,
 
         [PerkCategory("General", true)]
         General = 2,
@@ -29,11 +29,11 @@ namespace SWLOR.Game.Server.Service.PerkService
         [PerkCategory("Leadership", true)]
         Leadership = 10,
 
-        [PerkCategory("Force - Light", true)]
-        ForceLight = 11,
+        [PerkCategory("Force - Control", true)]
+        ForceControl = 11,
 
-        [PerkCategory("Force - Dark", true)]
-        ForceDark = 12,
+        [PerkCategory("Force - Sense", true)]
+        ForceSense = 12,
 
         [PerkCategory("Agriculture", true)]
         Agriculture = 13,
@@ -119,7 +119,7 @@ namespace SWLOR.Game.Server.Service.PerkService
         [PerkCategory("Staff - Crusher", true)]
         StaffCrusher = 41,
 
-        [PerkCategory("Staff - Breaker", true)]
+        [PerkCategory("Staff - Sentinel", true)]
         StaffSentinel = 42,
 
         [PerkCategory("Pistol - Gambler", true)]
@@ -163,6 +163,18 @@ namespace SWLOR.Game.Server.Service.PerkService
 
         [PerkCategory("First Aid - Combat Pharmacology", true)]
         FirstAidCombatPharmacology = 56,
+
+        [PerkCategory("Mimicry", true)]
+        Mimicry = 57,
+
+        [PerkCategory("Espionage - Infiltrator", true)]
+        EspionageInfiltrator = 58,
+
+        [PerkCategory("Espionage - Saboteur", true)]
+        EspionageSaboteur = 59,
+
+        [PerkCategory("Espionage - Tradecraft", true)]
+        EspionageTradecraft = 60,
     }
 
     public class PerkCategoryAttribute : Attribute

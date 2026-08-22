@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 30.0
+    "value": 56.0
   },
   "ClassList": {
     "type": "list",
@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 17
+    "value": 30
   },
   "Conversation": {
     "type": "resref",
@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 893
+    "value": 1680
   },
   "DecayTime": {
     "type": "dword",
@@ -155,12 +155,12 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "Leader of a slaver convoy cell operating out of Nar Shaddaa’s shadow ports. Experienced, well-equipped, and protected by hired muscle."
+      "0": "Leader of a slaver convoy cell operating out of Nar Shaddaaâ€™s shadow ports. Experienced, well-equipped, and protected by hired muscle."
     }
   },
   "Dex": {
     "type": "byte",
-    "value": 30
+    "value": 36
   },
   "Disarmable": {
     "type": "byte",
@@ -180,14 +180,14 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "sc_pistol"
+          "value": "nar_slaver_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "nar_boss"
+          "value": "nar_slaver_sk"
         }
       }
     ]
@@ -275,6 +275,34 @@
           "type": "word",
           "value": 46
         }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1855
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1850
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1762
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1852
+        }
       }
     ]
   },
@@ -298,11 +326,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 893
+    "value": 1640
   },
   "Int": {
     "type": "byte",
-    "value": 20
+    "value": 30
   },
   "Interruptable": {
     "type": "byte",
@@ -332,7 +360,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 905
+    "value": 1680
   },
   "NaturalAC": {
     "type": "byte",
@@ -637,7 +665,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 30
+    "value": 21
   },
   "Subrace": {
     "type": "cexostring",
@@ -738,7 +766,7 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 18
+    "value": 21
   },
   "xAppearance_Head": {
     "type": "word",

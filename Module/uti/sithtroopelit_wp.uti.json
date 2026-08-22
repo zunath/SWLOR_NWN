@@ -108,7 +108,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 52
+          "value": 55
         },
         "Param1": {
           "type": "byte",
@@ -175,6 +175,26 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "sithtroopelit_wp"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NO_ECONOMY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
   },
   "xModelPart1": {
     "type": "word",

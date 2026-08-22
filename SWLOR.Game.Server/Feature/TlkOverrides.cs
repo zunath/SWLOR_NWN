@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.AttributeService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature
@@ -12,8 +13,18 @@ namespace SWLOR.Game.Server.Feature
         {
             OverrideAttributeNames();
             OverrideMenuNames();
+            OverrideDamageTypeNames();
             OverrideFeatDescriptions();
             OverrideAttackBonus();
+        }
+
+        private static void OverrideDamageTypeNames()
+        {
+            // SWLOR routes Force damage through the engine's "Magical" damage type (damagetypes.2da row 3,
+            // damagetypegroups.2da group 1). The combat-log feedback for that group renders base dialog.tlk
+            // strref 5593 ("<CUSTOM0> Magical"); retype it to "Force" so the log reads e.g. "72 Force".
+            // The <CUSTOM0> token is the damage amount and must be preserved.
+            SetTlkOverride(5593, "<CUSTOM0> Force"); // Magical damage combat-log feedback
         }
 
         private static void OverrideAttributeNames()
@@ -27,7 +38,7 @@ namespace SWLOR.Game.Server.Feature
 
             SetTlkOverride(328, "Increased Might By"); // Strength
             SetTlkOverride(329, "Increased Perception By"); // Dexterity
-            SetTlkOverride(330, "Agility"); // Intelligence
+            SetTlkOverride(330, "Increased Agility By"); // Intelligence
             SetTlkOverride(331, "Increased Vitality By"); // Constitution
             SetTlkOverride(332, "Increased Willpower By"); // Wisdom
             SetTlkOverride(333, "Increased Social By"); // Charisma
@@ -36,64 +47,17 @@ namespace SWLOR.Game.Server.Feature
             SetTlkOverride(474, "Perception Information"); // Dexterity
             SetTlkOverride(475, "Vitality Information"); // Constitution
             SetTlkOverride(476, "Willpower Information"); // Wisdom
-            SetTlkOverride(477, "Agility"); // Intelligence
+            SetTlkOverride(477, "Agility Information"); // Intelligence
             SetTlkOverride(479, "Social Information"); // Charisma
 
-            SetTlkOverride(457, BuildRecommendedButtonText());
+            SetTlkOverride(457, AttributeDescription.BuildOverview());
 
-            SetTlkOverride(459,
-                "Might improves damage dealt by melee weapons and increases carrying capacity.\n\n" +
-                "Primary Skills: Vibroblade, Heavy Vibroblade, Spear, Twin Blade, Katar, Staff, Smithery, Gathering\n\n" +
-                "Other Notes:\n\n" +
-                "Improves damage dealt by regular melee weapons.\n" +
-                "Improves damage dealt by heavy melee weapons.\n" +
-                "Improves damage dealt by throwing weapons.\n" +
-                "Improves harvesting item acquisition.");
-            SetTlkOverride(460,
-                "Perception improves damage dealt by ranged and finesse weapons and increases physical accuracy.\n\n" +
-                "Primary Skills: Vibroknife, Lightsaber, Saberstaff, Katar, Pistol, Rifle, Fabrication, Devices\n\n" +
-                "Other Notes:\n\n" +
-                "Improves accuracy of regular melee weapons.\n" +
-                "Improves accuracy of heavy melee weapons.\n" +
-                "Improves damage of finesse melee weapons.\n" +
-                "Improves damage of ranged weapons.");
-            SetTlkOverride(461,
-                "Vitality improves your max hit points and reduces damage received.\n\n" +
-                "Primary Skills: Armor, Smithery, Engineering\n\n" +
-                "Other Notes:\n\n" +
-                "Increases maximum HP.\n" +
-                "Improves physical defense (reducing damage taken).\n" +
-                "Improves natural HP/FP/STM regen.\n" +
-                "Improves rest recovery.");
-            SetTlkOverride(462,
-                "Willpower improves your force attack, force defense, max force points, and first aid capabilities.\n\n" +
-                "Primary Skills: Force, Fabrication, Agriculture, First Aid\n\n" +
-                "Other Notes:\n\n" +
-                "Increases maximum FP.\n" +
-                "Improves force defense (reducing damage taken).\n" +
-                "Improves effectiveness of First Aid abilities.\n" +
-                "Improves effectiveness of Force abilities.\n" +
-                "Improves effectiveness of ship combat modules.");
-            SetTlkOverride(463,
-                "Agility improves accuracy of ranged and finesse weapons, evasion, and max stamina.\n\n" +
-                "Primary Skills: Vibroknife, Lightsaber, Saberstaff, Katar, Pistol, Rifle, Throwing, Engineering\n\n" +
-                "Other Notes:\n\n" +
-                "Increases maximum stamina.\n" +
-                "Improves evasion.\n" +
-                "Improves accuracy of finesse weapons.\n" +
-                "Improves accuracy of ranged weapons.\n" +
-                "Improves accuracy of throwing weapons.\n" +
-                "Improves effectiveness of ship combat modules.\n" +
-                "Reduces critical hit chance against you.");
-            SetTlkOverride(478,
-                "Social improves your XP gain and leadership capabilities.\n\n" +
-                "Primary Skills: Leadership, Agriculture\n\n" +
-                "Other Notes:\n\n" +
-                "Improves guild point acquisition.\n" +
-                "Improves quest credit rewards.\n" +
-                "Improves XP gain.\n" +
-                "Reduces XP debt on death.\n" +
-                "Reduces ship repair bills.");
+            SetTlkOverride(459, AttributeDescription.MightDetails);
+            SetTlkOverride(460, AttributeDescription.PerceptionDetails);
+            SetTlkOverride(461, AttributeDescription.VitalityDetails);
+            SetTlkOverride(462, AttributeDescription.WillpowerDetails);
+            SetTlkOverride(463, AttributeDescription.AgilityDetails);
+            SetTlkOverride(478, AttributeDescription.SocialDetails);
 
             SetTlkOverride(535, "Credit"); // Gold Piece
 
@@ -134,21 +98,11 @@ namespace SWLOR.Game.Server.Feature
             SetTlkOverride(62489, "Acquired <CUSTOM0> credits");
             SetTlkOverride(62490, "Lost <CUSTOM0> credits");
 
+            SetTlkOverride(10303, "[Comms] ");
             SetTlkOverride(66751, "Disabled");
             SetTlkOverride(66755, "Comms");
 
             SetTlkOverride(83393, "Poison"); // Acid
-        }
-
-        private static string BuildRecommendedButtonText()
-        {
-            return "Your character is guided by six core attributes: Might, Vitality, Perception, Willpower, Agility, and Social.\n\n" +
-                   "Might: Improves damage dealt by melee weapons and increases carrying capacity.\n" +
-                   "Vitality: Improves your max hit points and reduces damage received.\n" +
-                   "Perception: Improves damage dealt by ranged and finesse weapons and increases physical accuracy.\n" +
-                   "Willpower: Improves your force attack, force defense, and max force points.\n" +
-                   "Agility: Improves ranged accuracy, evasion, and max stamina.\n" +
-                   "Social: Improves your XP gain and leadership capabilities.\n\n";
         }
 
         private static void OverrideMenuNames()
@@ -260,11 +214,11 @@ namespace SWLOR.Game.Server.Feature
             SetTlkOverride(738, "Accuracy vs. Specific Alignment");
             SetTlkOverride(757, "Select a race for this creature. This is used for preferred enemy and/or accuracy bonus vs race calculations.");
             SetTlkOverride(1085, "Accuracy: This property grants an enhancement bonus to attack rolls made with the weapon, but does not improve the damage dealt by the weapon on a successful hit.");
-            SetTlkOverride(1086, "Accuracy vs. Monster Type: This property grants an enhancement bonus to attack rolls made with the weapon, but does not improve the damage dealt by the weapon on a successful hit. It grants this bonus only against a specific monster type, such as giants, undead, or shapeshifters.");
+            SetTlkOverride(1086, "Accuracy vs. Racial Group: This property grants an enhancement bonus to attack rolls made with the weapon, but does not improve the damage dealt by the weapon on a successful hit. It grants this bonus only against a specific racial group, such as giants, undead, or shapeshifters.");
             SetTlkOverride(1087, "Accuracy vs. Specific Alignment: This property grants an enhancement bonus to attack rolls made with the weapon, but does not improve the damage dealt by the weapon on a successful hit. It grants this bonus only when used against creatures of a specific alignment, such as chaotic neutral, lawful evil, or neutral good.");
             SetTlkOverride(1088, "Accuracy vs. Alignment Group: This property grants an enhancement bonus to attack rolls made with the weapon, but does not improve the damage dealt by the weapon on a successful hit. It grants this bonus only when used against creatures from a specific alignment group, such as evil or lawful creatures.");
             SetTlkOverride(1458, "Accuracy Penalty: This property inflicts a penalty on the wielder's attack rolls made with the weapon.");
-            SetTlkOverride(1460, "Accuracy Penalty: This property inflicts a penalty on the wielder's attack and damage rolls made with the weapon.");
+            SetTlkOverride(1460, "Accuracy and Damage Penalty: This property inflicts a penalty on the wielder's attack and damage rolls made with the weapon.");
             SetTlkOverride(2227, "Accuracy Bonus");
             SetTlkOverride(5519, "Accuracy Bonus:");
             SetTlkOverride(5520, "Accuracy Bonus vs.:");

@@ -101,28 +101,25 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SustainedFireTrait)
                 .Description("Each consecutive ranged hit against the same target grants +1 DMG, up to five stacks. Stacks expire after 30 seconds.")
-                .IncreasesStat(StatType.RepeatedTargetDamageSkillType, (int)SkillType.Rifle)
-                .IncreasesStat(StatType.RepeatedTargetDamageBonusPerHit, 1)
-                .IncreasesStat(StatType.RepeatedTargetDamageBonusMax, 5)
-                .IncreasesStat(StatType.RepeatedTargetDamageDurationSeconds, 30)
+                .IncreasesStat(StatType.RangedRepeatedTargetDamageBonusPerHit, 1)
+                .IncreasesStat(StatType.RangedRepeatedTargetDamageBonusMax, 5)
+                .IncreasesStat(StatType.RangedRepeatedTargetDamageDurationSeconds, 30)
                 .Price(2)
                 .RequirementSkill(SkillType.Rifle, 8)
 
                 .AddPerkLevel()
                 .Description("Each consecutive ranged hit against the same target grants +2 DMG, up to five stacks. Stacks expire after 30 seconds.")
-                .IncreasesStat(StatType.RepeatedTargetDamageSkillType, (int)SkillType.Rifle)
-                .IncreasesStat(StatType.RepeatedTargetDamageBonusPerHit, 2)
-                .IncreasesStat(StatType.RepeatedTargetDamageBonusMax, 10)
-                .IncreasesStat(StatType.RepeatedTargetDamageDurationSeconds, 30)
+                .IncreasesStat(StatType.RangedRepeatedTargetDamageBonusPerHit, 2)
+                .IncreasesStat(StatType.RangedRepeatedTargetDamageBonusMax, 10)
+                .IncreasesStat(StatType.RangedRepeatedTargetDamageDurationSeconds, 30)
                 .Price(4)
                 .RequirementSkill(SkillType.Rifle, 22)
 
                 .AddPerkLevel()
                 .Description("Each consecutive ranged hit against the same target grants +3 DMG, up to five stacks. Stacks expire after 30 seconds.")
-                .IncreasesStat(StatType.RepeatedTargetDamageSkillType, (int)SkillType.Rifle)
-                .IncreasesStat(StatType.RepeatedTargetDamageBonusPerHit, 3)
-                .IncreasesStat(StatType.RepeatedTargetDamageBonusMax, 15)
-                .IncreasesStat(StatType.RepeatedTargetDamageDurationSeconds, 30)
+                .IncreasesStat(StatType.RangedRepeatedTargetDamageBonusPerHit, 3)
+                .IncreasesStat(StatType.RangedRepeatedTargetDamageBonusMax, 15)
+                .IncreasesStat(StatType.RangedRepeatedTargetDamageDurationSeconds, 30)
                 .Price(4)
                 .RequirementSkill(SkillType.Rifle, 45);
         }
@@ -175,13 +172,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SuppressiveLine1)
-                .Description("Deals weapon DMG + 16 in a line. Targets hit by multiple Suppression stacks are Disoriented for 30 seconds.")
+                .Description("Deals weapon DMG + 16 in a 20m x 3m line. Targets hit by multiple Suppression stacks are Disoriented for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SuppressiveLine2)
-                .Description("Deals weapon DMG + 30 in a line. Targets hit by multiple Suppression stacks are Disoriented for 30 seconds.")
+                .Description("Deals weapon DMG + 30 in a 20m x 3m line. Targets hit by multiple Suppression stacks are Disoriented for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 32);
         }
@@ -232,7 +229,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.KillBox1)
-                .Description("For 45 seconds, ranged hits add Suppression stacks lasting 30 seconds using your Suppressing Shot stack strength, and each Suppression stack reduces Evasion by an additional 3%.")
+                .Description("Deals weapon DMG + 20 to enemies within 5m. For 45 seconds, ranged hits add Suppression stacks lasting 30 seconds using your Suppressing Shot stack strength, and each Suppression stack reduces Evasion by an additional 3%.")
                 .Price(6)
                 .RequirementSkill(SkillType.Rifle, 50)
                 .RequirementQuest(RifleCapstoneQuestDefinition.KillBoxMasteryQuestId);
@@ -245,25 +242,25 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AimedShot1)
-                .Description("Deals weapon DMG + 10. If you have not attacked for 3 seconds, this deals +8 DMG.")
+                .Description("Deals weapon DMG + 8. If you have not attacked for 3 seconds, this deals +8 DMG.")
                 .Price(2)
                 .RequirementSkill(SkillType.Rifle, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AimedShot2)
-                .Description("Deals weapon DMG + 22. If you have not attacked for 3 seconds, this deals +14 DMG.")
+                .Description("Deals weapon DMG + 18. If you have not attacked for 3 seconds, this deals +14 DMG.")
                 .Price(2)
                 .RequirementSkill(SkillType.Rifle, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AimedShot3)
-                .Description("Deals weapon DMG + 34. If you have not attacked for 3 seconds, this deals +20 DMG.")
+                .Description("Deals weapon DMG + 28. If you have not attacked for 3 seconds, this deals +20 DMG.")
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 28)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.AimedShot4)
-                .Description("Deals weapon DMG + 46. If you have not attacked for 3 seconds, this deals +26 DMG.")
+                .Description("Deals weapon DMG + 38. If you have not attacked for 3 seconds, this deals +26 DMG.")
                 .Price(5)
                 .RequirementSkill(SkillType.Rifle, 40);
         }
@@ -324,19 +321,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PiercingRound1)
-                .Description("Deals weapon DMG + 12 in a line and ignores 10% Defense.")
+                .Description("Deals weapon DMG + 12 in a 20m x 3m line and ignores 10% Defense.")
                 .Price(2)
                 .RequirementSkill(SkillType.Rifle, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PiercingRound2)
-                .Description("Deals weapon DMG + 24 in a line and ignores 15% Defense.")
+                .Description("Deals weapon DMG + 24 in a 20m x 3m line and ignores 15% Defense.")
                 .Price(4)
                 .RequirementSkill(SkillType.Rifle, 30)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PiercingRound3)
-                .Description("Deals weapon DMG + 36 in a line and ignores 20% Defense.")
+                .Description("Deals weapon DMG + 36 in a 20m x 3m line and ignores 20% Defense.")
                 .Price(4)
                 .RequirementSkill(SkillType.Rifle, 38);
         }
@@ -364,13 +361,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Headshot1)
-                .Description("Deals weapon DMG + 20. If used after 3 seconds without attacking, gains +15% Critical Rate.")
+                .Description("Deals weapon DMG + 16. If used after 3 seconds without attacking, gains +15% Critical Rate.")
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Headshot2)
-                .Description("Deals weapon DMG + 38. If used after 3 seconds without attacking, gains +25% Critical Rate.")
+                .Description("Deals weapon DMG + 30. If used after 3 seconds without attacking, gains +25% Critical Rate.")
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 32);
         }

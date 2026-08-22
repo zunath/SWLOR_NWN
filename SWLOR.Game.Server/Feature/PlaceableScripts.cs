@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CurrencyService;
+using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -152,9 +153,12 @@ namespace SWLOR.Game.Server.Feature
 
             if (!string.IsNullOrWhiteSpace(conversation))
             {
-                Dialog.StartConversation(user, target, conversation);
+                if (Conversation.TryGetGraph(conversation, out _))
+                    Conversation.Start(user, target, conversation);
+                else if (!ConversationMenu.TryStart(user, target, conversation))
+                    AssignCommand(user, () => ActionStartConversation(target, conversation, true, false));
             }
-            else
+            else if (!Conversation.TryStartAssigned(user, target))
             {
                 AssignCommand(user, () => ActionStartConversation(target, string.Empty, true, false));
             }
@@ -184,18 +188,22 @@ namespace SWLOR.Game.Server.Feature
         [NWNEventHandler(ScriptName.OnPlaceableBuyRebuild)]
         public static void PurchaseRebuild()
         {
-            var player = GetPCSpeaker();
+            PurchaseRebuild(GetPCSpeaker());
+        }
+
+        public static bool PurchaseRebuild(uint player)
+        {
 
             if (!GetIsPC(player) || GetIsDM(player) || GetIsDMPossessed(player))
             {
                 SendMessageToPC(player, $"Only players may use this terminal.");
-                return;
+                return false;
             }
 
             if (Currency.GetCurrency(player, CurrencyType.RebuildToken) <= 0)
             {
                 SendMessageToPC(player, ColorToken.Red($"You do not have any rebuild tokens."));
-                return;
+                return false;
             }
 
             Currency.TakeCurrency(player, CurrencyType.RebuildToken, 1);
@@ -206,6 +214,20 @@ namespace SWLOR.Game.Server.Feature
             AssignCommand(player, () => JumpToLocation(location));
 
             SendMessageToPC(player, $"Remaining rebuild tokens: {Currency.GetCurrency(player, CurrencyType.RebuildToken)}");
+            return true;
+        }
+
+        /// <summary>
+        /// Opens the quest contract board for the player who used the placeable.
+        /// </summary>
+        [NWNEventHandler(ScriptName.OnQuestContractBoard)]
+        public static void UseQuestContractBoard()
+        {
+            var player = GetLastUsedBy();
+
+            if (!GetIsPC(player)) return;
+
+            Gui.TogglePlayerWindow(player, GuiWindowType.QuestContractBoard, null, OBJECT_SELF);
         }
     }
 }

@@ -75,17 +75,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 
         private static void FortressStrike1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyFortressStrike(activator, target, targetLocation, 10, 10);
+            ApplyFortressStrike(activator, target, targetLocation, 10, 10, 350);
         }
 
         private static void FortressStrike2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyFortressStrike(activator, target, targetLocation, 20, 20);
+            ApplyFortressStrike(activator, target, targetLocation, 20, 20, 450);
         }
 
         private static void FortressStrike3ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            ApplyFortressStrike(activator, target, targetLocation, 30, 30);
+            ApplyFortressStrike(activator, target, targetLocation, 30, 30, 550);
         }
 
         private static void ApplyFortressStrike(
@@ -93,7 +93,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
             uint target,
             Location targetLocation,
             int damageBonus,
-            int defensePercent)
+            int defensePercent,
+            int enmityBonus)
         {
             var damage = Ability.ApplyCombatImpact(
                 activator,
@@ -105,7 +106,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 null,
                 false);
 
-            Enmity.ModifyEnmity(activator, target, 350 + damage);
+            Enmity.ModifyEnmity(activator, target, enmityBonus + damage);
             StatusEffect.ApplyStatusEffect(activator, activator, new FortressStrikeStatusEffect(defensePercent), 30f);
         }
     }

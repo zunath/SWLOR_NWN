@@ -127,6 +127,64 @@ public class AbilityBuilderTests
     }
 
     [Test]
+    public void AimedAreaTargeting_RequiresLocationWithoutRequiringObject()
+    {
+        var ability = new AbilityBuilder()
+            .Create(FeatType.Invalid, PerkType.Invalid)
+            .IsCastedAbility()
+            .IsAreaAbility()
+            .HasTargetingLine(
+                Spell.Earthshatter1,
+                8f,
+                2.5f,
+                AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
+            .Build()[FeatType.Invalid];
+
+        ability.RequiresLocationTarget.Should().BeTrue();
+        ability.RequiresTarget.Should().BeFalse();
+        ability.HasExplicitMaxRange.Should().BeFalse(
+            "area shape size is not the same thing as cursor placement range");
+    }
+
+    [Test]
+    public void ExplicitAreaRange_IsTrackedSeparatelyFromDefaultObjectRange()
+    {
+        var ability = new AbilityBuilder()
+            .Create(FeatType.Invalid, PerkType.Invalid)
+            .IsCastedAbility()
+            .IsAreaAbility()
+            .HasMaxRange(15f)
+            .HasTargetingSphere(
+                Spell.Provoke2,
+                8f,
+                AbilityTargetingFlags.HarmsEnemies)
+            .Build()[FeatType.Invalid];
+
+        ability.RequiresLocationTarget.Should().BeTrue();
+        ability.RequiresTarget.Should().BeFalse();
+        ability.HasExplicitMaxRange.Should().BeTrue();
+        ability.MaxRange.Should().Be(15f);
+    }
+
+    [Test]
+    public void QueuedAreaTargeting_DoesNotRequireActivationLocation()
+    {
+        var ability = new AbilityBuilder()
+            .Create(FeatType.Invalid, PerkType.Invalid)
+            .IsWeaponAbility()
+            .IsAreaAbility()
+            .HasTargetingCone(
+                Spell.Earthshatter1,
+                8f,
+                5f,
+                AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
+            .Build()[FeatType.Invalid];
+
+        ability.RequiresLocationTarget.Should().BeFalse();
+        ability.RequiresTarget.Should().BeFalse();
+    }
+
+    [Test]
     public void RemoveStatusEffectOnPerkRefund_TracksDistinctTypes()
     {
         var abilities = new AbilityBuilder()

@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                     .Level(1)
                     .HasRecastDelay(RecastGroup.Headshot, 30.0f),
                 SkillType.Rifle,
-                20,
+                16,
                 0,
                 null,
                 null,
@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                     .Level(2)
                     .HasRecastDelay(RecastGroup.Headshot, 30.0f),
                 SkillType.Rifle,
-                38,
+                30,
                 0,
                 null,
                 null,

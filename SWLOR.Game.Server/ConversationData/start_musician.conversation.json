@@ -1,0 +1,54 @@
+{
+  "Id": "start_musician",
+  "Title": "start_musician",
+  "EntryPoints": [
+    {
+      "TargetNodeId": "entry-00000",
+      "Conditions": []
+    }
+  ],
+  "Nodes": {
+    "entry-00000": {
+      "Id": "entry-00000",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "She's very excitedly playing the music that ominously waxes and wans in the background.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": []
+    }
+  },
+  "Choices": {},
+  "DefaultNpcDelay": 0,
+  "DefaultPlayerDelay": 0,
+  "PreventZoomIn": false,
+  "OnStartActions": [],
+  "OnEndActions": [
+    {
+      "Key": "system.execute-owner-script",
+      "Arguments": [
+        "nw_walk_wp"
+      ]
+    }
+  ],
+  "OnAbortActions": [
+    {
+      "Key": "system.execute-owner-script",
+      "Arguments": [
+        "nw_walk_wp"
+      ]
+    }
+  ]
+}

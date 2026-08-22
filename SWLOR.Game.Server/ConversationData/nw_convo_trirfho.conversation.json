@@ -1,0 +1,54 @@
+{
+  "Id": "nw_convo_trirfho",
+  "Title": "nw_convo_trirfho",
+  "EntryPoints": [
+    {
+      "TargetNodeId": "entry-00000",
+      "Conditions": []
+    }
+  ],
+  "Nodes": {
+    "entry-00000": {
+      "Id": "entry-00000",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "[An unintelligible roar is heard as you approach. Even if you understand Shyriiwook it makes no sense. It's as if this wookiee is a few braincells ahead of being a carpet.]",
+          "Style": 1,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": []
+    }
+  },
+  "Choices": {},
+  "DefaultNpcDelay": 0,
+  "DefaultPlayerDelay": 0,
+  "PreventZoomIn": false,
+  "OnStartActions": [],
+  "OnEndActions": [
+    {
+      "Key": "system.execute-owner-script",
+      "Arguments": [
+        "nw_walk_wp"
+      ]
+    }
+  ],
+  "OnAbortActions": [
+    {
+      "Key": "system.execute-owner-script",
+      "Arguments": [
+        "nw_walk_wp"
+      ]
+    }
+  ]
+}

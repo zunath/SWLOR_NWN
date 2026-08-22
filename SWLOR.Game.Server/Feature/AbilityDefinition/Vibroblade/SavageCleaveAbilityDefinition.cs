@@ -18,8 +18,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
             var builder = new AbilityBuilder();
 
             ConfigureSavageCleave(builder, FeatType.SavageCleave1, Spell.SavageCleave1, "Savage Cleave I", 1, 10, 4, false);
-            ConfigureSavageCleave(builder, FeatType.SavageCleave2, Spell.SavageCleave2, "Savage Cleave II", 2, 20, 6, true);
-            ConfigureSavageCleave(builder, FeatType.SavageCleave3, Spell.SavageCleave3, "Savage Cleave III", 3, 15, 8, false);
+            ConfigureSavageCleave(builder, FeatType.SavageCleave2, Spell.SavageCleave2, "Savage Cleave II", 2, 15, 6, true);
+            ConfigureSavageCleave(builder, FeatType.SavageCleave3, Spell.SavageCleave3, "Savage Cleave III", 3, 20, 8, true);
 
             return builder.Build();
         }

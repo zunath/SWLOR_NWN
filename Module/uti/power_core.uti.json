@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "This can be placed inside refineries to power them for a short time."
     }
   },
   "Identified": {

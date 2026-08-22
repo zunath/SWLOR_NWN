@@ -7,6 +7,7 @@ namespace SWLOR.Game.Server.Entity
         [Indexed]
         public string Name { get; set; }
         public string Text { get; set; }
+        public string CategoryId { get; set; }
 
         [Indexed]
         public bool IsDMNote { get; set; }
@@ -20,6 +21,7 @@ namespace SWLOR.Game.Server.Entity
             IsDMNote = false;
             DMCreatorName = string.Empty;
             DMCreatorCDKey = string.Empty;
+            CategoryId = string.Empty;
         }
     }
 }

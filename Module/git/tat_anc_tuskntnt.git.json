@@ -273,7 +273,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -538,7 +538,7 @@
         },
         "Tail_New": {
           "type": "dword",
-          "value": 205
+          "value": 0
         },
         "TemplateList": {
           "type": "list",
@@ -558,7 +558,7 @@
         },
         "Wings_New": {
           "type": "dword",
-          "value": 205
+          "value": 0
         },
         "Wis": {
           "type": "byte",
@@ -4541,7 +4541,7 @@
         },
         "LoadScreenID": {
           "type": "word",
-          "value": 69
+          "value": 18
         },
         "LocalizedName": {
           "id": 14760,
@@ -4661,6 +4661,21 @@
         "Value": {
           "type": "int",
           "value": 38
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "PLANET_TYPE_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 2
         }
       }
     ]

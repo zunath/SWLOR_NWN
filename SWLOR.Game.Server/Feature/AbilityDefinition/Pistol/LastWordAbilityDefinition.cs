@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 AbilityType.Perception,
                 new GeneratedWeaponAbilityProfile
                 {
-                    TemporaryAvoidedAttackAbilityUsedEvasionRefreshDurationSeconds = 30,
+                    TemporaryAvoidedAttackAbilityUsedRangedDeflectionRefreshDurationSeconds = 30,
                     TemporaryAvoidedAttackNextAutoAttackNoDelaySkillType = (int)SkillType.Pistol,
                     TemporaryAvoidedAttackNextAutoAttackNoDelayDurationSeconds = 30,
                     TemporaryDefeatedEnemyEffectDurationSeconds = 45

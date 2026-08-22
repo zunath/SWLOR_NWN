@@ -62,7 +62,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name(name)
                 .Level(level)
                 .HasActivationDelay(1.5f)
-                .HasRecastDelay(RecastGroup.ForceChoke, 20f)
+                .HasRecastDelay(RecastGroup.ForceChoke, 45f)
                 .SkillType(SkillType.Force)
                 .CombatImpactDamageAbility(AbilityType.Willpower)
                 .UsesImpactAnimation(Animation.CastOutAnimation)

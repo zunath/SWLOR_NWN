@@ -54,7 +54,7 @@
   },
   "LoadScreenID": {
     "type": "word",
-    "value": 69
+    "value": 18
   },
   "ModListenCheck": {
     "type": "int",
@@ -672,13 +672,17 @@
       }
     ]
   },
+  "TileBrdrDisabled": {
+    "type": "byte",
+    "value": 0
+  },
   "Tileset": {
     "type": "resref",
     "value": "tqq01"
   },
   "Version": {
     "type": "dword",
-    "value": 66
+    "value": 67
   },
   "Width": {
     "type": "int",

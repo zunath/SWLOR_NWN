@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
             ForceLightning1(builder);
             ForceLightning2(builder);
+            ForceLightning3(builder);
 
             return builder.Build();
         }
@@ -80,6 +81,33 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .RequirementFP(6);
         }
 
+        private static void ForceLightning3(AbilityBuilder builder)
+        {
+            builder
+                .Create(FeatType.ForceLightning3, PerkType.ForceLightning)
+                .Name("Force Lightning III")
+                .Level(3)
+                .HasActivationDelay(1.5f)
+                .HasRecastDelay(RecastGroup.ForceLightning, 15f)
+                .SkillType(SkillType.Force)
+                .CombatImpactDamageAbility(AbilityType.Willpower)
+                .UsesImpactAnimation(Animation.CastOutAnimation)
+                .PlaysSoundOnImpact("ksfx_frc_lightn")
+                .IsAreaAbility()
+                .HasMaxRange(15f)
+                .RequiresTarget()
+                .HasImpactAction(ForceLightning3ImpactAction)
+                .HasTargetingSphere(
+                    Spell.ForceLightning3,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies)
+                .IsCastedAbility()
+                .IsHostileAbility()
+                .TriggersDarkForceConversion()
+                .BreaksStealth()
+                .RequirementFP(8);
+        }
+
         private static void ForceLightning1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             ApplyForceLightning(activator, target, targetLocation, 10, 30, 1, 2);
@@ -88,6 +116,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private static void ForceLightning2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             ApplyForceLightning(activator, target, targetLocation, 18, 30, 2, 3);
+        }
+
+        private static void ForceLightning3ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            ApplyForceLightning(activator, target, targetLocation, 40, 30, 3, 3);
         }
 
         private static void ApplyForceLightning(

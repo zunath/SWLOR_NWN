@@ -19,7 +19,79 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             TuskenCrate();
             AncientWorm();
 
+            CapstoneTatooineDungeonRares();
+            AnchrangeRareElites();
             return _builder.Build();
+        }
+
+        private void AnchrangeRareElites()
+        {
+            _builder.Create("ANCHRANGE_CANYON_RARES").IsRare()
+                .AddItem("canyonbulwrkda", 1, 1, true).AddItem("canyonbulwrkdb", 1, 1, true).AddItem("bp_canyonbulwrk", 1, 1, true);
+            _builder.Create("ANCHRANGE_DEADEYE_RARES").IsRare()
+                .AddItem("dunedeadeyeda", 1, 1, true).AddItem("dunedeadeyedb", 1, 1, true).AddItem("bp_dunedeadeye", 1, 1, true);
+            _builder.Create("ANCHRANGE_DEADHAND_RARES").IsRare()
+                .AddItem("deadhandzephda", 1, 1, true).AddItem("deadhandzephdb", 1, 1, true).AddItem("bp_deadhandzeph", 1, 1, true);
+            _builder.Create("ANCHRANGE_CANYON_COMP").AddItem("canyonbulwrkcm", 1, 1);
+            _builder.Create("ANCHRANGE_DEADEYE_COMP").AddItem("dunedeadeyecm", 1, 1);
+            _builder.Create("ANCHRANGE_DEADHAND_COMP").AddItem("deadhandzephcm", 1, 1);
+        }
+
+        private void CapstoneTatooineDungeonRares()
+        {
+            _builder.Create("CAPSTONE_UNMOVCTR_RARES")
+                .IsRare()
+                .AddItem("unmovctr_l1", 1, 1, true)
+                .AddItem("unmovctr_l2", 1, 1, true)
+                .AddItem("unmovctr_l3", 1, 1, true)
+                .AddItem("unmovctr_l4", 1, 1, true)
+                .AddItem("unmovctr_l5", 1, 1, true)
+                .AddItem("unmovctr_l6", 1, 1, true)
+                .AddItem("unmovctr_l7", 1, 1, true)
+                .AddItem("unmovctr_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_UNMOVCTR_WD_RARES")
+                .IsRare()
+                .AddItem("unmovctr_w1", 1, 1, true)
+                .AddItem("unmovctr_w2", 1, 1, true)
+                .AddItem("unmovctr_w3", 1, 1, true)
+                .AddItem("unmovctr_w4", 1, 1, true)
+                .AddItem("unmovctr_w5", 1, 1, true);
+
+            _builder.Create("CAPSTONE_LASTWORD_RARES")
+                .IsRare()
+                .AddItem("lastword_l1", 1, 1, true)
+                .AddItem("lastword_l2", 1, 1, true)
+                .AddItem("lastword_l3", 1, 1, true)
+                .AddItem("lastword_l4", 1, 1, true)
+                .AddItem("lastword_l5", 1, 1, true)
+                .AddItem("lastword_l6", 1, 1, true)
+                .AddItem("lastword_l7", 1, 1, true)
+                .AddItem("lastword_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_LASTWORD_WD_RARES")
+                .IsRare()
+                .AddItem("lastword_w1", 1, 1, true)
+                .AddItem("lastword_w2", 1, 1, true)
+                .AddItem("lastword_w3", 1, 1, true)
+                .AddItem("lastword_w4", 1, 1, true)
+                .AddItem("lastword_w5", 1, 1, true);
+
+            _builder.Create("CAPSTONE_DEADHAND_RARES")
+                .IsRare()
+                .AddItem("deadhand_l1", 1, 1, true)
+                .AddItem("deadhand_l2", 1, 1, true)
+                .AddItem("deadhand_l3", 1, 1, true)
+                .AddItem("deadhand_l4", 1, 1, true)
+                .AddItem("deadhand_l5", 1, 1, true)
+                .AddItem("deadhand_l6", 1, 1, true)
+                .AddItem("deadhand_l7", 1, 1, true)
+                .AddItem("deadhand_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_DEADHAND_WD_RARES")
+                .IsRare()
+                .AddItem("deadhand_w1", 1, 1, true)
+                .AddItem("deadhand_w2", 1, 1, true)
+                .AddItem("deadhand_w3", 1, 1, true)
+                .AddItem("deadhand_w4", 1, 1, true)
+                .AddItem("deadhand_w5", 1, 1, true);
         }
 
         private void Womprat()
@@ -138,7 +210,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("ruby", 8, 1, true)
                 .AddItem("hyphae_wood", 4, 1, true)
                 .AddItem("map_038", 1, 1, true)
-                .AddItem("map_036", 1, 1, true);
+                .AddItem("map_036", 1, 1, true)
+                .AddItem("lockbox_t4", 2, 1, true);
         }
 
         private void TuskenCrate()
@@ -177,6 +250,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .IsRare()
                 .AddItem("emerald", 1, 1, true)
                 .AddItem("chiro_shard", 1, 1, true)
+                .AddItem("lockbox_t5", 2, 1, true)
                 .AddGold(1000, 5);
         }
     }

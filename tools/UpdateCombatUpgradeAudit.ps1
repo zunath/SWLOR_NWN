@@ -152,6 +152,32 @@ function Import-CodeNameIndex {
     return $index
 }
 
+function Import-NativeActionModePerkNameIndex {
+    param([string]$Path)
+
+    $index = @{}
+    $files = Get-ChildItem -Path $Path -Filter "*PerkDefinition.cs" -Recurse
+
+    foreach ($file in $files) {
+        $content = Get-Content $file.FullName -Raw
+        $builderSegments = [regex]::Split($content, '(?=\.Create\s*\()')
+        foreach ($segment in $builderSegments) {
+            if ($segment -notmatch '\.AutoAddActionModeToHotBar\s*\(') {
+                continue
+            }
+
+            $nameMatch = [regex]::Match($segment, '\.Name\("([^"]+)"\)')
+            if (!$nameMatch.Success) {
+                continue
+            }
+
+            $index[(Get-SanitizedName $nameMatch.Groups[1].Value)] = $true
+        }
+    }
+
+    return $index
+}
+
 function Import-AbilityFileIndex {
     param([string]$Path)
 
@@ -202,6 +228,12 @@ function Test-AbilitySatisfiesStatusCheck {
 
     if ($StatusEffectClass -eq "ExposedStatusEffect" -and
         $AbilityContent -match "\bTemporaryCostlyAbilityExposedDurationSeconds\b") {
+        return $true
+    }
+
+    if ($StatusEffectClass -eq "ExposedStatusEffect" -and
+        $AbilityContent -match "\bStatType\.BackAttackExposedPercent\b" -and
+        $AbilityContent -match "\bStatType\.BackAttackExposedDurationSeconds\b") {
         return $true
     }
 
@@ -544,6 +576,8 @@ function Get-CanonicalManifestHeader {
         "devstatus" { return "DevStatus" }
         "additionalrequirements" { return "AdditionalRequirements" }
         "notes" { return "Notes" }
+        "slots" { return "Slots" }
+        "slot" { return "Slots" }
         default { return "" }
     }
 }
@@ -686,6 +720,7 @@ function Import-BibleWorkbookManifestRows {
                     DevStatus = $devStatus
                     AdditionalRequirements = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "AdditionalRequirements"
                     Notes = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "Notes"
+                    Slots = Get-MappedCellValue -Cells $cells -ColumnByHeader $columnByHeader -Header "Slots"
                 }) | Out-Null
             }
         }
@@ -709,7 +744,8 @@ $sheetTabs = @(
     "Armor", "Vibroblade", "Vibroknife", "Lightsaber", "Heavy Vibroblade", "Spear",
     "Twin Blade", "Saberstaff", "Katar", "Staff", "Pistol", "Rifle", "Throwing",
     "Force", "Devices", "Beast Mastery", "Piloting", "Leadership", "First Aid",
-    "Espionage", "Smithery", "Engineering", "Fabrication", "Research", "Agriculture", "Gathering"
+    "Espionage", "Smithery", "Engineering", "Fabrication", "Research", "Agriculture", "Gathering",
+    "Mimicry"
 )
 $localWorkbookSheetTabAliases = @{
     Armor = "General"
@@ -753,6 +789,7 @@ if ($RefreshBible) {
                 DevStatus = Get-FirstPropertyValue $row @("DevStatus", "Dev Status")
                 AdditionalRequirements = Get-FirstPropertyValue $row @("AdditionalRequirements", "Additional Requirements")
                 Notes = Get-PropertyValue $row "Notes"
+                Slots = Get-FirstPropertyValue $row @("Slots", "Slot")
             }) | Out-Null
         }
     }
@@ -779,7 +816,6 @@ if ($RefreshLocalBible) {
 }
 
 $outOfScopeTabs = @(
-    "Espionage",
     "Farming",
     "Agriculture",
     "Smithery",
@@ -800,9 +836,10 @@ if (@($manifest).Count -eq 0) {
 }
 
 $perkIndex = Import-CodeNameIndex -Path (Resolve-RepoPath "SWLOR.Game.Server\Feature\PerkDefinition") -Filter "*PerkDefinition.cs"
+$nativeActionModePerkBaseNameIndex = Import-NativeActionModePerkNameIndex -Path (Resolve-RepoPath "SWLOR.Game.Server\Feature\PerkDefinition")
 $abilityNameIndex = Import-CodeNameIndex -Path (Resolve-RepoPath "SWLOR.Game.Server\Feature\AbilityDefinition") -Filter "*AbilityDefinition.cs"
 $abilityFileIndex = Import-AbilityFileIndex -Path (Resolve-RepoPath "SWLOR.Game.Server\Feature\AbilityDefinition")
-$playerAbilityFeatLabels = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
+$playerAbilityFeatLabelsRequiringSpellLink = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
 Get-ChildItem (Resolve-RepoPath "SWLOR.Game.Server\Feature\AbilityDefinition") -Filter "*AbilityDefinition.cs" -Recurse |
     Where-Object { $_.FullName -notmatch "\\NPC\\" } |
     ForEach-Object {
@@ -811,8 +848,13 @@ Get-ChildItem (Resolve-RepoPath "SWLOR.Game.Server\Feature\AbilityDefinition") -
             return
         }
 
-        foreach ($match in [regex]::Matches($content, "\bFeatType\.(\w+)")) {
-            $playerAbilityFeatLabels.Add($match.Groups[1].Value) | Out-Null
+        if ($content -notmatch "\bSpell\.(?!Invalid\b)\w+") {
+            return
+        }
+
+        $createdFeatPattern = "(?s)(?:\.Create\s*\(\s*|BuildArea\s*\(\s*[^,]+,\s*)FeatType\.(\w+)"
+        foreach ($match in [regex]::Matches($content, $createdFeatPattern)) {
+            $playerAbilityFeatLabelsRequiringSpellLink.Add($match.Groups[1].Value) | Out-Null
         }
     }
 $statusDefinitionContentByName = @{}
@@ -872,6 +914,11 @@ $statusChecks = @(
 $auditRows = New-Object System.Collections.Generic.List[object]
 
 foreach ($row in $manifest) {
+    # Mimicry learned techniques are not purchasable perks and have no perk name, recast group, or
+    # dedicated perk-menu ability; they are audited as feat-granting abilities elsewhere. Skip the
+    # perk/ability/recast checks for them regardless of their (standard) Type label.
+    if ($row.Style -eq "Technique") { continue }
+
     $rowBaseName = Get-SanitizedName $row.PerkName
     $expectsPerkDefinition = $row.DevStatus -eq "Implemented"
     if ($expectsPerkDefinition -and !$perkBaseNameIndex.ContainsKey($rowBaseName)) {
@@ -885,7 +932,8 @@ foreach ($row in $manifest) {
             (Test-ManifestValuePresent $row.CastingTime) -or
             (Test-ManifestValuePresent $row.CooldownTime) -or
             $abilityBaseNameIndex.ContainsKey($rowBaseName)))
-    if ($isActiveType -and !$abilityBaseNameIndex.ContainsKey($rowBaseName)) {
+    $usesNativeActionMode = $nativeActionModePerkBaseNameIndex.ContainsKey($rowBaseName)
+    if ($isActiveType -and !$usesNativeActionMode -and !$abilityBaseNameIndex.ContainsKey($rowBaseName)) {
         Add-AuditRow -Rows $auditRows -AuditType "MissingAbilityDefinition" -BibleRow $row
     }
 
@@ -973,7 +1021,7 @@ foreach ($row in $featRows) {
     if ($row.Number -ge 2000 -and
         $row.Fields[1] -ne "****" -and
         $row.Fields[$spellIndex] -eq "****" -and
-        $playerAbilityFeatLabels.Contains($row.Fields[1])) {
+        $playerAbilityFeatLabelsRequiringSpellLink.Contains($row.Fields[1])) {
         $auditRows.Add([pscustomobject]@{
             AuditType = "GeneratedFeatMissingSpellLink"
             Tab = "2DA"

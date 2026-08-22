@@ -1267,8 +1267,8 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true,
             1)]
         WardrobeCurvedWhite = 213,
-        [Structure("Washbasin, Lever Faucet",
-            "_mdrn_pl_sinka",
+        [Structure("Washbasin",
+            "_mdrn_pl_washbdl",
             "",
             true,
             1)]
@@ -2682,6 +2682,41 @@ namespace SWLOR.Game.Server.Service.PropertyService
             true,
             1)]
         CommandlineWorkStool = 430,
+
+        [Structure("Rustline Data Terminal",
+            "slc_rustterm",
+            "A weathered analysis terminal recovered from a sealed slicing schematic.",
+            true,
+            1)]
+        RustlineDataTerminal = 431,
+
+        [Structure("Cipherfile Cabinet",
+            "slc_ciphcab",
+            "A secure cabinet with integrated cipher controls.",
+            true,
+            1)]
+        CipherfileCabinet = 432,
+
+        [Structure("Listening Post Monitor",
+            "slc_listmon",
+            "A compact signals monitor built from a recovered clandestine design.",
+            true,
+            1)]
+        ListeningPostMonitor = 433,
+
+        [Structure("Ghost-Channel Console",
+            "slc_ghostcon",
+            "A cold-channel communications console with shielded storage.",
+            true,
+            1)]
+        GhostChannelConsole = 434,
+
+        [Structure("Blacksite Analysis Station",
+            "slc_blackstat",
+            "A rare analysis station intended for compartmentalized field work.",
+            true,
+            1)]
+        BlacksiteAnalysisStation = 435,
 
         // Buildings start here (5000+)
         [Structure("City Hall - Style 1",

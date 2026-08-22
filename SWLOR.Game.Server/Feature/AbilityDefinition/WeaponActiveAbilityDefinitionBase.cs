@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -23,7 +24,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             public int HitCount { get; init; } = 1;
             public bool IsQueuedWeaponAbility { get; init; }
+            public CombatDamageType DamageType { get; init; } = CombatDamageType.Physical;
             public int MaximumAreaTargets { get; init; }
+
+            /// <summary>
+            /// How long the pre-cast telegraph is shown before an area impact lands, in seconds.
+            /// Leave at 0 for abilities the Bible marks "Instant" — they gate no damage and instead
+            /// get the visual-only impact flash from <see cref="Ability.ApplyTelegraphedCombatImpact"/>.
+            /// Only set this to match a Bible-granted casting time.
+            /// </summary>
+            public float TelegraphDuration { get; init; }
             public int ExtraDamageIfRecentTarget { get; init; }
             public float RecentTargetWindowSeconds { get; init; }
             public int ExtraDamageIfHighResources { get; init; }
@@ -32,6 +42,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public int ExtraDamageIfIdle { get; init; }
             public int CriticalRateIfIdle { get; init; }
             public int CriticalRateIfNotRecentTarget { get; init; }
+            public string CriticalRateIfNotRecentTargetFeedbackLabel { get; init; }
             public int DefenseIgnoreIfIdle { get; init; }
             public float IdleWindowSeconds { get; init; }
             public float NotRecentTargetWindowSeconds { get; init; }
@@ -42,6 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public Type ExtraDamageTargetStatusEffect { get; init; }
             public int ExtraDamageIfTargetStatusEffect { get; init; }
             public int ExtraDamageIfBehind { get; init; }
+            public string ExtraDamageIfBehindFeedbackLabel { get; init; }
             public Type ExtraDamageSourceStatusEffect { get; init; }
             public int ExtraDamageIfSourceStatusEffect { get; init; }
             public Type ExtraDamageSourceStackStatusEffect { get; init; }
@@ -67,6 +79,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public int RestoreStaminaIfAllHitsLand { get; init; }
             public int RestoreFPIfAllHitsLand { get; init; }
             public int RestoreStaminaIfAnyCriticalHit { get; init; }
+            public string RestoreStaminaIfAnyCriticalHitFeedbackLabel { get; init; }
             public int SelfHastePercentIfAllHitsLand { get; init; }
             public int SelfHasteMaximumPercentIfAllHitsLand { get; init; }
             public int SelfHasteDurationSecondsIfAllHitsLand { get; init; }
@@ -86,7 +99,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public int SelfEvasionPercent { get; init; }
             public int SelfDefensePercent { get; init; }
             public int SelfForceDefensePercent { get; init; }
-            public int SelfAttackDeflection { get; init; }
+            public int SelfMeleeDeflection { get; init; }
+            public int SelfRangedDeflection { get; init; }
             public int SelfCriticalRatePercent { get; init; }
             public int SelfStatDurationSeconds { get; init; }
             public int SelfStatResourceAboveThresholdPercent { get; init; }
@@ -105,7 +119,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public int TemporaryHighFPAndStaminaAbilityDamageBonus { get; init; }
             public int TemporaryHighFPAndStaminaAbilityDamageBonusThresholdPercent { get; init; }
             public int TemporaryFrenzySlashHasteRefreshDurationSeconds { get; init; }
-            public int TemporaryAvoidedAttackAbilityUsedEvasionRefreshDurationSeconds { get; init; }
+            public int TemporaryAvoidedAttackAbilityUsedRangedDeflectionRefreshDurationSeconds { get; init; }
             public int TemporaryAvoidedAttackNextAutoAttackNoDelaySkillType { get; init; }
             public int TemporaryAvoidedAttackNextAutoAttackNoDelayDurationSeconds { get; init; }
             public int TemporaryRangedHitSuppressionStackDurationSeconds { get; init; }
@@ -128,7 +142,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public bool NearbyPartyStatusIncludesSelf { get; init; }
             public int SelfKnockdownDazedImmunityDurationSeconds { get; init; }
             public int TemporaryCostlyAbilityStatusSkillType { get; init; }
-            public int TemporaryCostlyAbilityHitMinimumStaminaCost { get; init; }
+            public int TemporaryCostlyAbilityStatusMinimumStaminaCost { get; init; }
             public int TemporaryCostlyAbilityExposedDurationSeconds { get; init; }
             public bool ApplySuppressionStackOnHit { get; init; }
             public int SuppressionStackEvasionPenaltyPercent { get; init; }
@@ -141,6 +155,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public int SpreadBleedDurationSeconds { get; init; }
             public bool SpreadHemorrhageFromTarget { get; init; }
             public int SpreadHemorrhageDurationSeconds { get; init; }
+            public bool SpreadSunderFromTarget { get; init; }
+            public int SpreadSunderDurationSeconds { get; init; }
             public bool ClearTargetActionsOnHit { get; init; }
             public Type ConditionalStatusEffect { get; init; }
             public int ConditionalStatusDurationSeconds { get; init; }
@@ -162,11 +178,20 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public int TargetAbilityHitChancePercent { get; init; }
             public int TargetAbilityHitChanceDurationSeconds { get; init; }
             public Func<IStatusEffect> StatusEffectFactory { get; init; }
+            public Func<IStatusEffect> SelfStatusEffectFactory { get; init; }
+            public Func<AbilityImpactSummary, IStatusEffect> SelfStatusEffectOnCriticalHitFactory { get; init; }
+            public int SelfStatusEffectOnCriticalHitDurationSeconds { get; init; }
+            public bool SelfStatusEffectOnCriticalHitIsPermanent { get; init; }
+            public Type[] SelfStatusEffectsToReplace { get; init; }
+            public int SelfEnmityPercentIfTargetRecentlyDamagedActivator { get; init; }
+            public int SelfEnmityDurationSecondsIfTargetRecentlyDamagedActivator { get; init; }
+            public bool RequireTargetRecentlyDamagedActivatorForConditionalStatus { get; init; }
             public Func<IStatusEffect> FriendlyTargetStatusEffectFactory { get; init; }
             public bool FriendlyTargetStatusPersistsUntilBroken { get; init; }
             public bool RequiresGuardedTarget { get; init; }
             public int FriendlyTargetTemporaryHPPercent { get; init; }
             public int FriendlyTargetTemporaryHPDurationSeconds { get; init; }
+            public bool FriendlyTargetTemporaryHPUsesActivatorMaximum { get; init; }
             public int SelfGuardPercent { get; init; }
             public int SelfGuardDurationSeconds { get; init; }
             public bool SelfStatusAlsoAppliesToGuardedTarget { get; init; }
@@ -198,6 +223,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                      Combat.IsTargetNotFacingAttacker(activator, target)))
                 {
                     bonus += ExtraDamageIfBesideOrBehind;
+                    if (GetIsPC(activator))
+                    {
+                        FloatingTextStringOnCreature(
+                            ColorToken.Combat($"Flanking +{ExtraDamageIfBesideOrBehind} DMG"),
+                            activator,
+                            false);
+                    }
                 }
 
                 if (ExtraDamageIfIdle != 0 && IsIdle(activator))
@@ -223,7 +255,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 }
 
                 if (ExtraDamageIfBehind != 0 && Combat.IsTargetNotFacingAttacker(activator, target))
+                {
                     bonus += ExtraDamageIfBehind;
+                    if (GetIsPC(activator) && !string.IsNullOrWhiteSpace(ExtraDamageIfBehindFeedbackLabel))
+                    {
+                        FloatingTextStringOnCreature(
+                            ColorToken.Combat($"{ExtraDamageIfBehindFeedbackLabel} +{ExtraDamageIfBehind} DMG"),
+                            activator,
+                            false);
+                    }
+                }
 
                 if (ExtraDamageIfSourceStatusEffect != 0 &&
                     ExtraDamageSourceStatusEffect != null &&
@@ -274,6 +315,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     !Combat.HasRecentDamageTarget(activator, target, NotRecentTargetWindowSeconds))
                 {
                     adjustment += CriticalRateIfNotRecentTarget;
+                    if (GetIsPC(activator) && !string.IsNullOrWhiteSpace(CriticalRateIfNotRecentTargetFeedbackLabel))
+                    {
+                        FloatingTextStringOnCreature(
+                            ColorToken.Combat($"{CriticalRateIfNotRecentTargetFeedbackLabel} +{CriticalRateIfNotRecentTarget}% Critical Rate"),
+                            activator,
+                            false);
+                    }
                 }
                 if (CriticalRateIfTargetDebuffedOrControlled != 0 &&
                     (StatusEffect.HasStatusEffectCategory(target, StatusEffectCategory.Debuff) ||
@@ -321,14 +369,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public void AfterSuccessfulHit(uint activator, uint target, CombatDamageType damageType)
             {
                 if (ClearTargetActionsOnHit)
+                {
                     AssignCommand(target, () => ClearAllActions());
+                    UsePerkFeat.InterruptAbilityActivation(target);
+                }
 
                 if (RestoreStaminaOnHit > 0)
                     Stat.RestoreStamina(activator, RestoreStaminaOnHit);
                 if (RestoreFPOnHit > 0)
                 {
-                    Stat.RestoreFP(activator, RestoreFPOnHit);
-                    Combat.ApplyAbilityRestoredFPEffects(activator);
+                    if (Stat.RestoreFP(activator, RestoreFPOnHit) > 0)
+                        Combat.ApplyAbilityRestoredFPEffects(activator);
                 }
                 if (DrainStaminaOnHit > 0)
                     Stat.ReduceStamina(target, DrainStaminaOnHit);
@@ -365,16 +416,29 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 if (SourceStatusExtensionSeconds <= 0 || SourceStatusEffectsToExtend == null)
                     return;
 
+                var extendedCount = 0;
                 foreach (var statusEffectType in SourceStatusEffectsToExtend)
                 {
                     if (statusEffectType == null)
                         continue;
 
-                    StatusEffect.ExtendStatusEffectDuration(
+                    if (StatusEffect.ExtendStatusEffectDuration(
                         target,
                         statusEffectType,
                         activator,
-                        SourceStatusExtensionSeconds);
+                        SourceStatusExtensionSeconds))
+                    {
+                        extendedCount++;
+                    }
+                }
+
+                if (extendedCount > 0 && GetIsPC(activator))
+                {
+                    var statusLabel = extendedCount == 1 ? "status" : "statuses";
+                    FloatingTextStringOnCreature(
+                        ColorToken.Combat($"Extended {extendedCount} {statusLabel} by {SourceStatusExtensionSeconds}s"),
+                        activator,
+                        false);
                 }
             }
 
@@ -400,7 +464,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
                 if (consumed)
                 {
-                    SendMessageToPC(activator, "You consume your Shadow Toxin and Infection setup.");
+                    SendMessageToPC(activator, "You consume your Venom and Infection setup.");
                 }
             }
 
@@ -428,6 +492,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             public void AfterImpact(uint activator, int totalDamage, int successfulHitCount = 0, AbilityImpactSummary summary = null)
             {
+                if (SelfStatusEffectOnCriticalHitFactory != null &&
+                    (SelfStatusEffectOnCriticalHitDurationSeconds > 0 ||
+                     SelfStatusEffectOnCriticalHitIsPermanent) &&
+                    (summary?.CriticalHitCount ?? 0) > 0)
+                {
+                    var durationSeconds = SelfStatusEffectOnCriticalHitIsPermanent
+                        ? 0f
+                        : SelfStatusEffectOnCriticalHitDurationSeconds;
+                    StatusEffect.ApplyStatusEffect(
+                        activator,
+                        activator,
+                        SelfStatusEffectOnCriticalHitFactory(summary),
+                        durationSeconds);
+                }
+
                 if (totalDamage <= 0)
                     return;
 
@@ -442,11 +521,22 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 if (RestoreStaminaAfterImpact > 0)
                     Stat.RestoreStamina(activator, RestoreStaminaAfterImpact);
                 if (RestoreStaminaIfAnyCriticalHit > 0 && (summary?.CriticalHitCount ?? 0) > 0)
-                    Stat.RestoreStamina(activator, RestoreStaminaIfAnyCriticalHit);
+                {
+                    var restored = Stat.RestoreStamina(activator, RestoreStaminaIfAnyCriticalHit);
+                    if (restored > 0 &&
+                        GetIsPC(activator) &&
+                        !string.IsNullOrWhiteSpace(RestoreStaminaIfAnyCriticalHitFeedbackLabel))
+                    {
+                        FloatingTextStringOnCreature(
+                            ColorToken.Combat($"{RestoreStaminaIfAnyCriticalHitFeedbackLabel} restored {restored} STM"),
+                            activator,
+                            false);
+                    }
+                }
                 if (RestoreFPAfterImpact > 0)
                 {
-                    Stat.RestoreFP(activator, RestoreFPAfterImpact);
-                    Combat.ApplyAbilityRestoredFPEffects(activator);
+                    if (Stat.RestoreFP(activator, RestoreFPAfterImpact) > 0)
+                        Combat.ApplyAbilityRestoredFPEffects(activator);
                 }
                 if (HitCount > 1 && successfulHitCount >= HitCount)
                 {
@@ -454,8 +544,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         Stat.RestoreStamina(activator, RestoreStaminaIfAllHitsLand);
                     if (RestoreFPIfAllHitsLand > 0)
                     {
-                        Stat.RestoreFP(activator, RestoreFPIfAllHitsLand);
-                        Combat.ApplyAbilityRestoredFPEffects(activator);
+                        if (Stat.RestoreFP(activator, RestoreFPIfAllHitsLand) > 0)
+                            Combat.ApplyAbilityRestoredFPEffects(activator);
                     }
                     if (SelfHastePercentIfAllHitsLand > 0 && SelfHasteDurationSecondsIfAllHitsLand > 0)
                     {
@@ -545,14 +635,27 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     return;
                 }
 
+                if (SelfStatusEffectFactory != null)
+                {
+                    StatusEffect.ApplyStatusEffect(
+                        activator,
+                        activator,
+                        SelfStatusEffectFactory(),
+                        duration);
+                    return;
+                }
+
                 ReplaceTemporary(activator, StatType.AttackPercentAdjustment, SelfAttackPercent, duration);
                 ReplaceTemporary(activator, StatType.AccuracyPercentAdjustment, SelfAccuracyPercent, duration);
                 ReplaceTemporary(activator, StatType.EvasionPercentAdjustment, SelfEvasionPercent, duration);
                 ReplaceTemporary(activator, StatType.PhysicalDefensePercentAdjustment, SelfDefensePercent, duration);
                 ReplaceTemporary(activator, StatType.ForceDefensePercentAdjustment, SelfForceDefensePercent, duration);
-                ReplaceTemporary(activator, StatType.AttackDeflection, SelfAttackDeflection, duration);
-                if (SelfAttackDeflection != 0)
-                    Combat.ApplyAbilityGrantedAttackDeflectionEffects(activator);
+                ReplaceTemporary(activator, StatType.MeleeDeflection, SelfMeleeDeflection, duration);
+                if (SelfMeleeDeflection != 0)
+                    Combat.ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.Melee);
+                ReplaceTemporary(activator, StatType.RangedDeflection, SelfRangedDeflection, duration);
+                if (SelfRangedDeflection != 0)
+                    Combat.ApplyAbilityGrantedAttackDeflectionEffects(activator, DeflectionSource.Ranged);
                 ReplaceTemporary(activator, StatType.CriticalRatePercentAdjustment, SelfCriticalRatePercent, duration);
             }
 
@@ -600,8 +703,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     duration);
                 ReplaceTemporary(
                     activator,
-                    StatType.AvoidedAttackAbilityUsedEvasionRefreshDurationSeconds,
-                    TemporaryAvoidedAttackAbilityUsedEvasionRefreshDurationSeconds,
+                    StatType.AvoidedAttackAbilityUsedRangedDeflectionRefreshDurationSeconds,
+                    TemporaryAvoidedAttackAbilityUsedRangedDeflectionRefreshDurationSeconds,
                     duration);
                 ReplaceTemporary(
                     activator,
@@ -683,8 +786,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     duration);
                 ReplaceTemporary(
                     activator,
-                    StatType.CostlyAbilityHitMinimumStaminaCost,
-                    TemporaryCostlyAbilityHitMinimumStaminaCost,
+                    StatType.CostlyAbilityStatusMinimumStaminaCost,
+                    TemporaryCostlyAbilityStatusMinimumStaminaCost,
                     duration);
                 ReplaceTemporary(
                     activator,
@@ -718,15 +821,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     return;
                 }
 
-                if (RestoreFPIfResourcesBelow > 0)
-                {
-                    Stat.RestoreFP(activator, RestoreFPIfResourcesBelow);
-                    Combat.ApplyAbilityRestoredFPEffects(activator);
-                }
-                if (RestoreStaminaIfResourcesBelow > 0)
-                    Stat.RestoreStamina(activator, RestoreStaminaIfResourcesBelow);
+                var restoredFP = RestoreFPIfResourcesBelow > 0
+                    ? Stat.RestoreFP(activator, RestoreFPIfResourcesBelow)
+                    : 0;
+                var restoredStamina = RestoreStaminaIfResourcesBelow > 0
+                    ? Stat.RestoreStamina(activator, RestoreStaminaIfResourcesBelow)
+                    : 0;
 
-                if (RestoreFPIfResourcesBelow > 0 && RestoreStaminaIfResourcesBelow > 0)
+                if (restoredFP > 0)
+                    Combat.ApplyAbilityRestoredFPEffects(activator);
+
+                if (restoredFP > 0 && restoredStamina > 0)
                     Combat.ApplyAbilityRestoredBothResourcesEffects(activator);
             }
 
@@ -758,7 +863,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 if (ConditionalStatusEffect == null ||
                     ConditionalStatusDurationSeconds <= 0 ||
                     ConditionalStatusAfterDeflectionWindowSeconds <= 0 ||
-                    !Combat.HasRecentDeflection(activator, ConditionalStatusAfterDeflectionWindowSeconds))
+                    !Combat.HasRecentDeflection(activator, DeflectionSource.Ranged, ConditionalStatusAfterDeflectionWindowSeconds))
                 {
                     return;
                 }
@@ -810,6 +915,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     return;
                 }
 
+                if (RequireTargetRecentlyDamagedActivatorForConditionalStatus &&
+                    !Combat.HasRecentDamageTarget(target, activator, window))
+                {
+                    return;
+                }
+
                 StatusEffect.ApplyStatusEffect(
                     activator,
                     target,
@@ -837,6 +948,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     WardBondStatusEffect.HasRecentWardHit(activator, target, window))
                 {
                     ReplaceTemporary(activator, StatType.EnmityPercentAdjustment, SelfEnmityPercentIfRecentWardHit, SelfEnmityDurationSecondsIfRecentWardHit);
+                }
+
+                if (SelfEnmityPercentIfTargetRecentlyDamagedActivator != 0 &&
+                    Combat.HasRecentDamageTarget(target, activator, window))
+                {
+                    ReplaceTemporary(
+                        activator,
+                        StatType.EnmityPercentAdjustment,
+                        SelfEnmityPercentIfTargetRecentlyDamagedActivator,
+                        SelfEnmityDurationSecondsIfTargetRecentlyDamagedActivator);
                 }
             }
 
@@ -880,6 +1001,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         target,
                         typeof(HemorrhageStatusEffect),
                         SpreadHemorrhageDurationSeconds > 0 ? SpreadHemorrhageDurationSeconds : 30f,
+                        damageType);
+                }
+
+                if (SpreadSunderFromTarget &&
+                    StatusEffect.HasStatusEffect(target, typeof(SunderStatusEffect)))
+                {
+                    SpreadStatusToNearbyHostile(
+                        activator,
+                        target,
+                        typeof(SunderStatusEffect),
+                        SpreadSunderDurationSeconds > 0 ? SpreadSunderDurationSeconds : 30f,
                         damageType);
                 }
             }
@@ -1015,18 +1147,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     CombatDamageType.Physical);
             }
 
-            public void ApplyFriendlyTargetEffects(uint activator, uint target)
+            public void ApplyFriendlyTargetEffects(uint activator, uint target, string temporaryHPEffectKey)
             {
                 if (FriendlyTargetTemporaryHPPercent > 0 &&
                     FriendlyTargetTemporaryHPDurationSeconds > 0)
                 {
+                    var maximumHPSource = FriendlyTargetTemporaryHPUsesActivatorMaximum
+                        ? activator
+                        : target;
                     var temporaryHP = Math.Max(
                         1,
-                        GetMaxHitPoints(target) * FriendlyTargetTemporaryHPPercent / 100);
-                    ApplyEffectToObject(
-                        DurationType.Temporary,
-                        EffectTemporaryHitpoints(temporaryHP),
+                        GetMaxHitPoints(maximumHPSource) * FriendlyTargetTemporaryHPPercent / 100);
+                    TemporaryHitPointEffects.ApplyFlat(
                         target,
+                        temporaryHPEffectKey,
+                        temporaryHP,
                         FriendlyTargetTemporaryHPDurationSeconds);
                 }
 
@@ -1041,6 +1176,30 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         "GeneratedWeaponAbility:GuardingPlayerGuard");
                     GuardedStatusEffect.RefreshGuardBenefitsFromSource(activator);
                 }
+            }
+
+            public bool HasImmediateSelfStatusEffect()
+            {
+                return SelfStatusEffectFactory != null && SelfStatDurationSeconds <= 0;
+            }
+
+            public void ApplySelfStatusEffect(uint activator, int duration)
+            {
+                if (SelfStatusEffectFactory == null)
+                    return;
+
+                if (SelfStatusEffectsToReplace != null)
+                {
+                    foreach (var statusEffectType in SelfStatusEffectsToReplace)
+                    {
+                        if (statusEffectType != null)
+                            StatusEffect.RemoveStatusEffect(activator, statusEffectType, false);
+                    }
+                }
+
+                var selfStatus = SelfStatusEffectFactory();
+                StatusEffect.RemoveOtherStanceStatuses(activator, selfStatus.GetType());
+                StatusEffect.ApplyStatusEffect(activator, activator, selfStatus, duration > 0f ? duration : 0f);
             }
 
             public void ApplySelfStatusToGuardedTarget(uint activator, Type statusEffect, int duration)
@@ -1082,6 +1241,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             GeneratedWeaponAbilityProfile profile = null)
         {
             profile ??= GeneratedWeaponAbilityProfile.Empty;
+            var temporaryHPEffectKey = $"WEAPON_{ability.ActiveEffectiveLevelPerkType}";
 
             ApplyCombatImpactDamageAbility(ability, combatImpactDamageAbility);
 
@@ -1101,7 +1261,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         {
                             if (profile.ApplyFriendlyTargetStatus(activator, target, duration))
                             {
-                                profile.ApplyFriendlyTargetEffects(activator, target);
+                                profile.ApplyFriendlyTargetEffects(activator, target, temporaryHPEffectKey);
                                 profile.AfterActivation(activator);
                             }
                             return;
@@ -1109,12 +1269,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
                         if (isFriendlyTarget && profile.HasFriendlyTargetEffects())
                         {
-                            profile.ApplyFriendlyTargetEffects(activator, target);
+                            profile.ApplyFriendlyTargetEffects(activator, target, temporaryHPEffectKey);
                             profile.AfterActivation(activator);
                             return;
                         }
 
-                        if (statusEffect != null)
+                        if (profile.HasImmediateSelfStatusEffect())
+                        {
+                            profile.ApplySelfStatusEffect(activator, duration);
+                        }
+                        else if (statusEffect != null)
                         {
                             StatusEffect.RemoveOtherStanceStatuses(activator, statusEffect);
                             StatusEffect.ApplyStatusEffect(activator, activator, statusEffect, duration > 0f ? duration : 0f);
@@ -1139,12 +1303,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                             duration,
                             statusEffect,
                             ToCombatImpactAreaShape(targetingShape),
-                            0f,
+                            profile.TelegraphDuration,
                             targetingSizeX > 0f ? targetingSizeX : 5.0f,
                             targetingSizeY,
                             additionalStatusEffects,
                             CenterAreaOnActivator(targetingFlags),
                             profile.StatusEffectFactory,
+                            damageType: profile.DamageType,
                             combatImpactDamageAbility: combatImpactDamageAbility,
                             baseDamageAdjustment: impactedTarget => profile.GetBaseDamageAdjustment(activator, impactedTarget),
                             damagePercentAdjustment: impactedTarget => profile.GetDamagePercentAdjustment(activator, impactedTarget),
@@ -1156,7 +1321,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                             maxTargets: profile.MaximumAreaTargets,
                             enmityBonus: profile.EnmityBonus,
                             beforeImpact: _ => profile.BeforeHit(activator, skill),
-                            afterSuccessfulHit: impactedTarget => profile.AfterSuccessfulHit(activator, impactedTarget, CombatDamageType.Physical),
+                            afterSuccessfulHit: impactedTarget => profile.AfterSuccessfulHit(activator, impactedTarget, profile.DamageType),
                             beforeSuccessfulImpactRiders: impactedTarget => profile.BeforeSuccessfulImpactRiders(activator, impactedTarget),
                             hitChancePercentAdjustment: profile.HitChancePercentAdjustment,
                             criticalRatePercentAdjustment: profile.GetCriticalRateAdjustment(activator, target),
@@ -1182,11 +1347,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                             isArea,
                             additionalStatusEffects,
                             profile.StatusEffectFactory,
+                            damageType: profile.DamageType,
                             combatImpactDamageAbility: combatImpactDamageAbility,
                             baseDamageAdjustment: impactedTarget => profile.GetBaseDamageAdjustment(activator, impactedTarget),
                             damagePercentAdjustment: impactedTarget => profile.GetDamagePercentAdjustment(activator, impactedTarget),
                             enmityBonus: profile.EnmityBonus,
-                            afterSuccessfulHit: impactedTarget => profile.AfterSuccessfulHit(activator, impactedTarget, CombatDamageType.Physical),
+                            afterSuccessfulHit: impactedTarget => profile.AfterSuccessfulHit(activator, impactedTarget, profile.DamageType),
                             beforeSuccessfulImpactRiders: impactedTarget => profile.BeforeSuccessfulImpactRiders(activator, impactedTarget),
                             hitChancePercentAdjustment: profile.HitChancePercentAdjustment,
                             criticalRatePercentAdjustment: profile.GetCriticalRateAdjustment(activator, target));
@@ -1217,7 +1383,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 }
                 else
                 {
-                    ability.IsSingleTargetAbility().RequiresTarget();
+                    ability.IsSingleTargetAbility();
+
+                    // Queued weapon abilities fire on the wearer's next landed auto-attack, so they must
+                    // not force up-front target selection (the on-hit event supplies the target). Only
+                    // cast-style single-target abilities require picking a target object.
+                    if (!profile.IsQueuedWeaponAbility)
+                        ability.RequiresTarget();
+
                     if (maxRange > 0f)
                         ability.HasMaxRange(maxRange);
                 }
@@ -1482,51 +1655,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         combatImpactDamageAbility: combatImpactDamageAbility);
                 })
                 .IsWeaponAbility()
-                .IsHostileAbility()
-                .BreaksStealth();
-
-            if (stamina > 0)
-                ability.RequirementStamina(stamina);
-        }
-
-        protected static void ConfigureTelegraphedArea(
-            AbilityBuilder ability,
-            SkillType skill,
-            CombatImpactAreaShape shape,
-            int baseDamage,
-            int duration,
-            Type statusEffect,
-            float lengthOrRadius,
-            float width,
-            int stamina,
-            bool centerOnActivator = false,
-            int maxTargets = 0,
-            AbilityType combatImpactDamageAbility = AbilityType.Invalid)
-        {
-            ApplyCombatImpactDamageAbility(ability, combatImpactDamageAbility);
-
-            ability.HasActivationDelay(0f)
-                .SkillType(skill)
-                .IsAreaAbility()
-                .HasImpactAction((activator, target, level, targetLocation) =>
-                {
-                    Ability.ApplyTelegraphedCombatImpact(
-                        activator,
-                        target,
-                        targetLocation,
-                        skill,
-                        baseDamage,
-                        duration,
-                        statusEffect,
-                        shape,
-                        0.4f,
-                        lengthOrRadius,
-                        width,
-                        centerOnActivator: centerOnActivator,
-                        maxTargets: maxTargets,
-                        combatImpactDamageAbility: combatImpactDamageAbility);
-                })
-                .IsCastedAbility()
                 .IsHostileAbility()
                 .BreaksStealth();
 

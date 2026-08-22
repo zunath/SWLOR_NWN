@@ -78,7 +78,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 37
+          "value": 54
         },
         "Param1": {
           "type": "byte",
@@ -207,6 +207,26 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "crm_pistol"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NO_ECONOMY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
   },
   "xModelPart1": {
     "type": "word",

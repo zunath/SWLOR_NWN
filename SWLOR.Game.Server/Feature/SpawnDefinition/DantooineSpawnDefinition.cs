@@ -24,7 +24,25 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             DantooineJediEnclaveTrialHalls();
             DantooineMedicalSublevel();
 
+            DanenclaveRareElites();
+            DanmedRareElites();
             return _builder.Build();
+        }
+
+        private void DanmedRareElites()
+        {
+            _builder.Create("DANTOOINE_MEDICAL_SUBLEVEL_RARES", "Dantooine Medical Sublevel - Rare Elites")
+                .AddSpawn(ObjectType.Creature, "triagewarden").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome()
+                .AddSpawn(ObjectType.Creature, "chemslinger").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome()
+                .AddSpawn(ObjectType.Creature, "conduitmatrn").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome();
+        }
+
+        private void DanenclaveRareElites()
+        {
+            _builder.Create("DANTOOINE_JEDI_ENCLAVE_TRIAL_HALLS_RARES", "Dantooine Jedi Enclave Trial Halls - Rare Elites")
+                .AddSpawn(ObjectType.Creature, "sabraetrial").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome()
+                .AddSpawn(ObjectType.Creature, "enclavesentl").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome()
+                .AddSpawn(ObjectType.Creature, "cycloneadpt").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome();
         }
 
         private void DantooineKinrathCaves()

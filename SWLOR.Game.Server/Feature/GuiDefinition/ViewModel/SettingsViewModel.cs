@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
@@ -42,6 +43,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool PortraitVitals
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public bool ShowDescriptorsForNamedPlayers
         {
             get => Get<bool>();
@@ -55,6 +62,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         public bool ScrambleAccountName
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool DisplayCommsOutOfRangeWarnings
         {
             get => Get<bool>();
             set => Set(value);
@@ -140,15 +153,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             LoadGeneralView();
             LoadIdentityView();
+            LoadChatView();
 
             ChangePartialView(SettingsView, GeneralPartial);
 
             WatchOnClient(model => model.DisplayAchievementNotification);
             WatchOnClient(model => model.SubdualMode);
             WatchOnClient(model => model.DisplayServerResetReminders);
+            WatchOnClient(model => model.PortraitVitals);
             WatchOnClient(model => model.ShowDescriptorsForNamedPlayers);
             WatchOnClient(model => model.ShowOwnDescriptor);
             WatchOnClient(model => model.ScrambleAccountName);
+            WatchOnClient(model => model.DisplayCommsOutOfRangeWarnings);
             WatchOnClient(model => model.SelectedColor);
         }
 
@@ -162,6 +178,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             DisplayAchievementNotification = dbPlayer.Settings.DisplayAchievementNotification;
             SubdualMode = dbPlayer.Settings.IsSubdualModeEnabled;
             DisplayServerResetReminders = dbPlayer.Settings.DisplayServerResetReminders;
+            PortraitVitals = dbPlayer.Settings.PortraitVitals ?? true;
+            DisplayCommsOutOfRangeWarnings = dbPlayer.Settings.DisplayCommsOutOfRangeWarnings ?? true;
         }
 
         private void LoadIdentityView()
@@ -250,6 +268,40 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ChatColorToggles = chatToggles;
         }
 
+        private void ChangeSettingsView(string partialName)
+        {
+            // Capture the client's current position before the partial-view redraw workaround
+            // temporarily changes the window geometry.
+            UpdatePropertyFromClient(nameof(Geometry));
+            ChangePartialView(SettingsView, partialName);
+            RefreshPartialViewBindings();
+        }
+
+        private void RefreshPartialViewBindings()
+        {
+            // Republish list bindings after replacing the partial so any newly inserted list can
+            // populate its rows without reloading persisted values over unsaved changes.
+            ChatColorNames?.ResetBindings();
+            ChatColors?.ResetBindings();
+            ChatColorToggles?.ResetBindings();
+        }
+
+        private string GetSelectedPartial()
+        {
+            if (IsIdentitySelected)
+                return IdentityPartial;
+
+            if (IsChatSelected)
+                return ChatPartial;
+
+            return GeneralPartial;
+        }
+
+        protected override void OnMainViewRestored()
+        {
+            ChangeSettingsView(GetSelectedPartial());
+        }
+
         private void LoadColor()
         {
             if (SelectedIndex < 0)
@@ -277,6 +329,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             dbPlayer.Settings.DisplayAchievementNotification = DisplayAchievementNotification;
             dbPlayer.Settings.IsSubdualModeEnabled = SubdualMode;
             dbPlayer.Settings.DisplayServerResetReminders = DisplayServerResetReminders;
+            dbPlayer.Settings.PortraitVitals = PortraitVitals;
+            dbPlayer.Settings.DisplayCommsOutOfRangeWarnings = DisplayCommsOutOfRangeWarnings;
             if (!GetIsDM(Player) && !GetIsDMPossessed(Player))
             {
                 dbPlayer.Settings.ShowDescriptorsForNamedPlayers = ShowDescriptorsForNamedPlayers;
@@ -306,8 +360,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             DB.Set(dbPlayer);
+            Log.Write(LogGroup.Server, $"Settings saved for player {playerId}.");
 
-            Gui.TogglePlayerWindow(Player, GuiWindowType.Settings);
+            // Apply the vitals display preference immediately (portrait overlay vs. docked window).
+            PlayerStatusWindow.ApplyStatusDisplay(Player);
 
             PlayerName.RefreshNameOverridesForObserver(Player);
             PlayerName.RefreshNameOverridesForPlayer(Player);
@@ -330,8 +386,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsGeneralSelected = true;
             IsIdentitySelected = false;
             IsChatSelected = false;
-            ChangePartialView(SettingsView, GeneralPartial);
-            LoadGeneralView();
+            ChangeSettingsView(GeneralPartial);
         };
 
         public Action OnClickIdentity() => () =>
@@ -339,8 +394,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsGeneralSelected = false;
             IsIdentitySelected = true;
             IsChatSelected = false;
-            ChangePartialView(SettingsView, IdentityPartial);
-            LoadIdentityView();
+            ChangeSettingsView(IdentityPartial);
         };
 
         public Action OnClickChat() => () =>
@@ -348,8 +402,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsGeneralSelected = false;
             IsIdentitySelected = false;
             IsChatSelected = true;
-            ChangePartialView(SettingsView, ChatPartial);
-            LoadChatView();
+            ChangeSettingsView(ChatPartial);
         };
 
         public Action OnClickSelectChat() => () =>
@@ -367,6 +420,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickResetColor() => () =>
         {
             var index = NuiGetEventArrayIndex();
+            UpdatePropertyFromClient(nameof(Geometry));
 
             ShowModal("Are you sure you want to reset this color to the default?", () =>
             {
@@ -390,8 +444,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var (red, green, blue) = Language.GetColor(type);
                     ChatColors[index] = new GuiColor(red, green, blue);
                 }
-
-                ChangePartialView(SettingsView, ChatPartial);
             });
         };
     }

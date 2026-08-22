@@ -340,23 +340,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_jasioclase", 2)
                 .Component("elec_high", 3);
 
-            // Lightsaber Upgrade I
-            _builder.Create(RecipeType.LightsaberUpgradeKit1, SkillType.Smithery)
-                .Category(RecipeCategoryType.Lightsaber)
-                .Resref("saber_upg1")
-                .Level(52)
-                .Quantity(1)
-                .RequirementUnlocked()
-                .EnhancementSlots(RecipeEnhancementType.None, 0)
-                .ResearchCostModifier(0.2f)
-                .Component("ref_arkoxit", 2)
-                .Component("ref_jasioclase", 10)
-                .Component("elec_high", 20)
-                .Component("chiro_shard", 2)
-                .Component("ref_veldite", 5)
-                .Component("ref_scordspar", 5)
-                .Component("ref_plagionite", 5)
-                .Component("ref_keromber", 5);
         }
 
         private void GreatSwords()
@@ -533,7 +516,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("frogguts", 10)
                 .Component("hyphae_wood", 20)
                 .Component("chiro_shard", 2)
-                .Component("stolen_s_artifact", 5)
+                .Component("stolen_s_artifac", 5)
                 .Component("emerald", 5)
                 .Component("tukata_hide", 5)
                 .Component("froglegs", 2);
@@ -750,23 +733,6 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
                 .Component("ref_jasioclase", 3)
                 .Component("elec_high", 4);
 
-            // Saberstaff Upgrade I
-            _builder.Create(RecipeType.SaberstaffUpgradeKit1, SkillType.Smithery)
-                .Category(RecipeCategoryType.Saberstaff)
-                .Resref("saberstaff_upg1")
-                .Level(52)
-                .Quantity(1)
-                .RequirementUnlocked()
-                .EnhancementSlots(RecipeEnhancementType.None, 0)
-                .ResearchCostModifier(0.2f)
-                .Component("ref_arkoxit", 2)
-                .Component("ref_jasioclase", 10)
-                .Component("elec_high", 20)
-                .Component("chiro_shard", 2)
-                .Component("ref_veldite", 5)
-                .Component("ref_scordspar", 5)
-                .Component("ref_plagionite", 5)
-                .Component("ref_keromber", 5);
         }
 
         private void Katars()

@@ -8,7 +8,7 @@ The Core layer contains fundamental systems, abstractions, and utilities that pr
 
 ## Directory Structure
 
-```
+```text
 Core/
 ├── Async/
 │   ├── Awaiters/

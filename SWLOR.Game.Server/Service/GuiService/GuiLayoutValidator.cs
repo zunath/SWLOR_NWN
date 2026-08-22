@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading;
 using SWLOR.Game.Server.Service.GuiService.Component;
 
 namespace SWLOR.Game.Server.Service.GuiService
@@ -12,6 +13,34 @@ namespace SWLOR.Game.Server.Service.GuiService
     /// </summary>
     public static class GuiLayoutValidator
     {
+        private static readonly AsyncLocal<int> ValidationOnlyBuildDepth = new();
+
+        internal static bool IsValidationOnlyBuild => ValidationOnlyBuildDepth.Value > 0;
+
+        /// <summary>
+        /// Builds window widget trees without serializing them through the live NWN engine.
+        /// This allows corpus validation in ordinary unit tests.
+        /// </summary>
+        public static IDisposable BeginValidationOnlyBuild()
+        {
+            ValidationOnlyBuildDepth.Value++;
+            return new ValidationOnlyBuildScope();
+        }
+
+        private sealed class ValidationOnlyBuildScope : IDisposable
+        {
+            private bool _disposed;
+
+            public void Dispose()
+            {
+                if (_disposed)
+                    return;
+
+                ValidationOnlyBuildDepth.Value--;
+                _disposed = true;
+            }
+        }
+
         /// <summary>
         /// Validates every partial view of a constructed window.
         /// </summary>
@@ -43,7 +72,7 @@ namespace SWLOR.Game.Server.Service.GuiService
             // + margins, and most widget families carry a nonzero default margin. A
             // fixed row whose margined children are the same height (or taller) is
             // therefore unsolvable. Buttons were the confirmed root cause of the
-            // HoloCom window's layout failures; the DebugNuiGallery margin-map probes
+            // the original failing window's layout; the DebugNuiGallery margin-map probes
             // (2026-07, P1-P4/P6) confirmed checkbox, textedit, combo, slider, and
             // progress fail identically. Only options and toggles (tabbar) are
             // margin-free - which is why CharacterSheet's equal-height toggle rows
@@ -64,7 +93,9 @@ namespace SWLOR.Game.Server.Service.GuiService
                         IsWidgetOfType(child, typeof(GuiSliderFloat<>)) ||
                         IsWidgetOfType(child, typeof(GuiProgressBar<>));
 
-                    if (hasDefaultMargin && child.DeclaredHeight >= widget.DeclaredHeight)
+                    if (hasDefaultMargin &&
+                        child.DeclaredMargin != 0f &&
+                        child.DeclaredHeight >= widget.DeclaredHeight)
                     {
                         findings.Add(
                             $"{path}: row has explicit height {widget.DeclaredHeight} but contains a " +

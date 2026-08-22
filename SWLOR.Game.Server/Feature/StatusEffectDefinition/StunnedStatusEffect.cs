@@ -11,9 +11,20 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override EffectIconType Icon => EffectIconType.StunnedStatusEffect;
         public override StatusEffectCategory Categories =>
             StatusEffectCategory.Control |
-            StatusEffectCategory.Incapacitating;
+            StatusEffectCategory.Incapacitating |
+            StatusEffectCategory.HardCrowdControl;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         public override ResistanceType ResistanceType => ResistanceType.Mobility;
+
+        public override string CanApply(uint creature)
+        {
+            if (StatusEffect.HasStatusEffect(creature, GetType()))
+                return "Target is already stunned.";
+
+            return Ability.HasHardCrowdControlImmunity(creature, ImmunityType.Stun)
+                ? "Target is temporarily immune to stun."
+                : string.Empty;
+        }
 
         protected override void Apply(uint creature, int durationTicks)
         {
@@ -25,11 +36,21 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             ApplyStun(creature, GetDurationSeconds(DurationTicks));
         }
 
+        protected override void Remove(uint creature)
+        {
+            if (IsBeingReplaced)
+                return;
+
+            Ability.ApplyPostControlImmunity(
+                creature,
+                SecondsSinceNaturalExpiration,
+                ImmunityType.Stun);
+        }
+
         private void ApplyStun(uint creature, float duration)
         {
             var effect = TagNativeEffect(EffectStunned());
             ApplyEffectToObject(DurationType.Temporary, effect, creature, duration);
-            Ability.ApplyTemporaryImmunity(creature, duration, ImmunityType.Stun);
         }
     }
 }

@@ -15,6 +15,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 {
     public sealed class ArcProjectorAbilityDefinition : IAbilityListDefinition
     {
+        private const int Rank1BaseDamage = 22;
+        private const int Rank2BaseDamage = 40;
+        private const int Rank3BaseDamage = 60;
+
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
             var builder = new AbilityBuilder();
@@ -28,17 +32,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
         private static void ArcProjector1(AbilityBuilder builder)
         {
-            ConfigureArcProjector(builder, FeatType.ArcProjector1, "Arc Projector I", 1, 18, 3);
+            ConfigureArcProjector(builder, FeatType.ArcProjector1, "Arc Projector I", 1, Rank1BaseDamage, 3);
         }
 
         private static void ArcProjector2(AbilityBuilder builder)
         {
-            ConfigureArcProjector(builder, FeatType.ArcProjector2, "Arc Projector II", 2, 32, 4);
+            ConfigureArcProjector(builder, FeatType.ArcProjector2, "Arc Projector II", 2, Rank2BaseDamage, 4);
         }
 
         private static void ArcProjector3(AbilityBuilder builder)
         {
-            ConfigureArcProjector(builder, FeatType.ArcProjector3, "Arc Projector III", 3, 46, 5);
+            ConfigureArcProjector(builder, FeatType.ArcProjector3, "Arc Projector III", 3, Rank3BaseDamage, 5);
         }
 
         private static void ConfigureArcProjector(

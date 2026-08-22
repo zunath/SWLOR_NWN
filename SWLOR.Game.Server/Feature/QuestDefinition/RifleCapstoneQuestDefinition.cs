@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
         private void KillBoxFoundation()
         {
-            _builder.Create(KillBoxFoundationQuestId, "First Principle: Kill Box")
+            _builder.Create(KillBoxFoundationQuestId, "Scope of Work")
                 .PrerequisiteSkill(SkillType.Rifle, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
@@ -62,20 +62,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Kill Box capstone line continues in Czerka Arms Test Range. Defeat Kill Box adepts and secure the Kill Box Czerka Test Docket.")
+                    "Kill six Kill Box adepts in the Czerka Arms Test Range on Nar Shaddaa and secure the Kill Box Czerka Test Docket.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_KillBox_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneKillBoxCzerkaTestDocket)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Kill Box Czerka Test Docket from Czerka Arms Test Range. Return to Ressa Vale for the next Kill Box lesson.")
+                    "The Kill Box Czerka Test Docket is secured. Deliver it to Ressa Vale at the Czerka Arms store on Nar Shaddaa.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
 
         private void KillBoxMeasure()
         {
-            _builder.Create(KillBoxMeasureQuestId, "The Measure of Kill Box")
+            _builder.Create(KillBoxMeasureQuestId, "Terms of Engagement")
                 .PrerequisiteQuest(KillBoxFoundationQuestId)
                 .PrerequisiteSkill(SkillType.Rifle, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneKillBoxBlastCellRegulator)
@@ -83,20 +83,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Kill Box capstone line continues in Czerka Arms Test Range. Defeat Kill Box specialists and secure the Kill Box Blast-Cell Regulator.")
+                    "Kill five Kill Box specialists in the Czerka Arms Test Range on Nar Shaddaa and recover the Kill Box Blast-Cell Regulator.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_KillBox_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneKillBoxBlastCellRegulator)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Kill Box Blast-Cell Regulator from Czerka Arms Test Range. Return to Ressa Vale for the next Kill Box lesson.")
+                    "The Kill Box Blast-Cell Regulator is recovered. Deliver it to Ressa Vale at the Czerka Arms store on Nar Shaddaa.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
 
         private void KillBoxBreach()
         {
-            _builder.Create(KillBoxBreachQuestId, "Fault Line: Kill Box")
+            _builder.Create(KillBoxBreachQuestId, "Liability Clause")
                 .PrerequisiteQuest(KillBoxMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Rifle, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneKillBoxScoredRangeCrest)
@@ -104,20 +104,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Kill Box capstone line continues in Czerka Arms Test Range. Defeat the Kill Box warden and secure the Kill Box Scored Range Crest.")
+                    "Defeat the Kill Box warden in the deep lanes of the Czerka Arms Test Range on Nar Shaddaa and take the Kill Box Scored Range Crest. The warden is too strong to face alone; bring allies.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_KillBox_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneKillBoxScoredRangeCrest)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Kill Box Scored Range Crest from Czerka Arms Test Range. Return to Ressa Vale for the next Kill Box lesson.")
+                    "The Kill Box Scored Range Crest is taken from the warden. Return it to Ressa Vale at the Czerka Arms store on Nar Shaddaa.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
 
         private void KillBoxCircle()
         {
-            _builder.Create(KillBoxCircleQuestId, "Circle of Proof: Kill Box")
+            _builder.Create(KillBoxCircleQuestId, "Succession Dispute")
                 .PrerequisiteQuest(KillBoxBreachQuestId)
                 .PrerequisiteSkill(SkillType.Rifle, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneKillBoxCzerkaClearanceChit)
@@ -125,31 +125,31 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Kill Box capstone line continues in Czerka Arms Test Range. Defeat the Kill Box inner circle and secure the Kill Box Czerka Clearance Chit.")
+                    "Kill the four members of the Kill Box inner circle in the Czerka Arms Test Range on Nar Shaddaa and secure the Kill Box Czerka Clearance Chit.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_KillBox_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneKillBoxCzerkaClearanceChit)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Kill Box Czerka Clearance Chit from Czerka Arms Test Range. Return to Ressa Vale for the next Kill Box lesson.")
+                    "The Kill Box Czerka Clearance Chit is secured. Deliver it to Ressa Vale at the Czerka Arms store on Nar Shaddaa.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
 
         private void KillBoxMastery()
         {
-            _builder.Create(KillBoxMasteryQuestId, "Kill Box Mastery")
+            _builder.Create(KillBoxMasteryQuestId, "Termination Clause")
                 .PrerequisiteQuest(KillBoxCircleQuestId)
                 .PrerequisiteSkill(SkillType.Rifle, 50)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Kill Box master is waiting in Czerka Arms Test Range. Defeat the master and end the capstone trial.")
+                    "Defeat the Kill Box master in the last lane of the Czerka Arms Test Range on Nar Shaddaa. He is too strong to face alone; bring allies.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_KillBox_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Kill Box master is defeated. Return to Ressa Vale and claim the completed lesson.")
+                    "The Kill Box master is defeated. Return to Ressa Vale at the Czerka Arms store on Nar Shaddaa.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
         private void OneShotFoundation()
         {
-            _builder.Create(OneShotFoundationQuestId, "First Principle: One Shot")
+            _builder.Create(OneShotFoundationQuestId, "Dry Fire")
                 .PrerequisiteSkill(SkillType.Rifle, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
@@ -175,20 +175,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The One Shot capstone line continues in Czerka Arms Test Range. Defeat One Shot adepts and secure the One Shot Czerka Test Docket.")
+                    "Kill six One Shot adepts in the Czerka Arms Test Range on Nar Shaddaa and secure the One Shot Czerka Test Docket.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_OneShot_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneOneShotCzerkaTestDocket)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the One Shot Czerka Test Docket from Czerka Arms Test Range. Return to Orin Tal for the next One Shot lesson.")
+                    "The One Shot Czerka Test Docket is secured. Return it to Orin Tal at the Czerka shipyard office on Nar Shaddaa.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
 
         private void OneShotMeasure()
         {
-            _builder.Create(OneShotMeasureQuestId, "The Measure of One Shot")
+            _builder.Create(OneShotMeasureQuestId, "Wind Call")
                 .PrerequisiteQuest(OneShotFoundationQuestId)
                 .PrerequisiteSkill(SkillType.Rifle, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneOneShotBlastCellRegulator)
@@ -196,20 +196,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The One Shot capstone line continues in Czerka Arms Test Range. Defeat One Shot specialists and secure the One Shot Blast-Cell Regulator.")
+                    "Kill five One Shot specialists in the Czerka Arms Test Range on Nar Shaddaa and recover the One Shot Blast-Cell Regulator.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_OneShot_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneOneShotBlastCellRegulator)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the One Shot Blast-Cell Regulator from Czerka Arms Test Range. Return to Orin Tal for the next One Shot lesson.")
+                    "The One Shot Blast-Cell Regulator is recovered. Return it to Orin Tal at the Czerka shipyard office on Nar Shaddaa.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
 
         private void OneShotBreach()
         {
-            _builder.Create(OneShotBreachQuestId, "Fault Line: One Shot")
+            _builder.Create(OneShotBreachQuestId, "Send It")
                 .PrerequisiteQuest(OneShotMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Rifle, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneOneShotScoredRangeCrest)
@@ -217,20 +217,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The One Shot capstone line continues in Czerka Arms Test Range. Defeat the One Shot warden and secure the One Shot Scored Range Crest.")
+                    "Defeat the One Shot warden on the long lane of the Czerka Arms Test Range on Nar Shaddaa and take the One Shot Scored Range Crest. The warden is too strong to face alone; bring allies.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_OneShot_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneOneShotScoredRangeCrest)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the One Shot Scored Range Crest from Czerka Arms Test Range. Return to Orin Tal for the next One Shot lesson.")
+                    "The One Shot Scored Range Crest is taken from the warden. Return it to Orin Tal at the Czerka shipyard office on Nar Shaddaa.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
 
         private void OneShotCircle()
         {
-            _builder.Create(OneShotCircleQuestId, "Circle of Proof: One Shot")
+            _builder.Create(OneShotCircleQuestId, "Reacquire")
                 .PrerequisiteQuest(OneShotBreachQuestId)
                 .PrerequisiteSkill(SkillType.Rifle, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneOneShotCzerkaClearanceChit)
@@ -238,31 +238,31 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The One Shot capstone line continues in Czerka Arms Test Range. Defeat the One Shot inner circle and secure the One Shot Czerka Clearance Chit.")
+                    "Kill the four members of the One Shot inner circle in the Czerka Arms Test Range on Nar Shaddaa and secure the One Shot Czerka Clearance Chit.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_OneShot_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneOneShotCzerkaClearanceChit)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the One Shot Czerka Clearance Chit from Czerka Arms Test Range. Return to Orin Tal for the next One Shot lesson.")
+                    "The One Shot Czerka Clearance Chit is secured. Return it to Orin Tal at the Czerka shipyard office on Nar Shaddaa.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
 
         private void OneShotMastery()
         {
-            _builder.Create(OneShotMasteryQuestId, "One Shot Mastery")
+            _builder.Create(OneShotMasteryQuestId, "One Answer")
                 .PrerequisiteQuest(OneShotCircleQuestId)
                 .PrerequisiteSkill(SkillType.Rifle, 50)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final One Shot master is waiting in Czerka Arms Test Range. Defeat the master and end the capstone trial.")
+                    "Defeat the One Shot master on the far lane of the Czerka Arms Test Range on Nar Shaddaa. He is too strong to face alone; bring allies.")
                 .AddKillObjective(NPCGroupType.SmugglersMoon_OneShot_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final One Shot master is defeated. Return to Orin Tal and claim the completed lesson.")
+                    "The One Shot master is defeated. Return to Orin Tal at the Czerka shipyard office on Nar Shaddaa.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

@@ -22,7 +22,25 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             KorribanForgeCaverns();
             KorribanSithCryptDepths();
 
+            KorforgeRareElites();
+            KorcryptRareElites();
             return _builder.Build();
+        }
+
+        private void KorcryptRareElites()
+        {
+            _builder.Create("KORRIBAN_SITH_CRYPT_DEPTHS_RARES", "Korriban Sith Crypt Depths - Rare Elites")
+                .AddSpawn(ObjectType.Creature, "cryptwarden").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome()
+                .AddSpawn(ObjectType.Creature, "markahunger").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome()
+                .AddSpawn(ObjectType.Creature, "eclipseshade").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome();
+        }
+
+        private void KorforgeRareElites()
+        {
+            _builder.Create("KORRIBAN_FORGE_CAVERNS_RARES", "Korriban Forge Caverns - Rare Elites")
+                .AddSpawn(ObjectType.Creature, "forgewright").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome()
+                .AddSpawn(ObjectType.Creature, "flameweaver").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome()
+                .AddSpawn(ObjectType.Creature, "banecaller").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome();
         }
 
         private void Wastelands()

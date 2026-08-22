@@ -1,0 +1,409 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 360
+  },
+  "ArmorPart_Belt": {
+    "type": "byte",
+    "value": 107
+  },
+  "ArmorPart_LBicep": {
+    "type": "byte",
+    "value": 52
+  },
+  "ArmorPart_LFArm": {
+    "type": "byte",
+    "value": 169
+  },
+  "ArmorPart_LFoot": {
+    "type": "byte",
+    "value": 160
+  },
+  "ArmorPart_LHand": {
+    "type": "byte",
+    "value": 1
+  },
+  "ArmorPart_LShin": {
+    "type": "byte",
+    "value": 232
+  },
+  "ArmorPart_LShoul": {
+    "type": "byte",
+    "value": 0
+  },
+  "ArmorPart_LThigh": {
+    "type": "byte",
+    "value": 255
+  },
+  "ArmorPart_Neck": {
+    "type": "byte",
+    "value": 1
+  },
+  "ArmorPart_Pelvis": {
+    "type": "byte",
+    "value": 237
+  },
+  "ArmorPart_RBicep": {
+    "type": "byte",
+    "value": 53
+  },
+  "ArmorPart_RFArm": {
+    "type": "byte",
+    "value": 168
+  },
+  "ArmorPart_RFoot": {
+    "type": "byte",
+    "value": 160
+  },
+  "ArmorPart_RHand": {
+    "type": "byte",
+    "value": 63
+  },
+  "ArmorPart_Robe": {
+    "type": "byte",
+    "value": 0
+  },
+  "ArmorPart_RShin": {
+    "type": "byte",
+    "value": 232
+  },
+  "ArmorPart_RShoul": {
+    "type": "byte",
+    "value": 0
+  },
+  "ArmorPart_RThigh": {
+    "type": "byte",
+    "value": 255
+  },
+  "ArmorPart_Torso": {
+    "type": "byte",
+    "value": 196
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 16
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Cloth1Color": {
+    "type": "byte",
+    "value": 40
+  },
+  "Cloth2Color": {
+    "type": "byte",
+    "value": 41
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": "1"
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 360
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 0
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Purpose-built clandestine equipment recovered from a field terminal cache. Null-Footprint Tunic follows a fixed tradecraft profile and requires Armor training rather than Espionage rank."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Purpose-built clandestine equipment recovered from a field terminal cache. Null-Footprint Tunic follows a fixed tradecraft profile and requires Armor training rather than Espionage rank."
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "Leather1Color": {
+    "type": "byte",
+    "value": 56
+  },
+  "Leather2Color": {
+    "type": "byte",
+    "value": 55
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Null-Footprint Tunic"
+    }
+  },
+  "Metal1Color": {
+    "type": "byte",
+    "value": 54
+  },
+  "Metal2Color": {
+    "type": "byte",
+    "value": 56
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 8
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 35
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 4
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 94
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 1
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 35
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 3
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 94
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 2
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 42
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 4
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 118
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 41
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 3
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 136
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 0
+        }
+      },
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 48
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 30
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 131
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 6
+        }
+      }
+    ]
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "stg_nullfoot"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "stg_nullfoot"
+  },
+  "xArmorPart_Belt": {
+    "type": "word",
+    "value": 107
+  },
+  "xArmorPart_LBice": {
+    "type": "word",
+    "value": 52
+  },
+  "xArmorPart_LFArm": {
+    "type": "word",
+    "value": 169
+  },
+  "xArmorPart_LFoot": {
+    "type": "word",
+    "value": 160
+  },
+  "xArmorPart_LHand": {
+    "type": "word",
+    "value": 1
+  },
+  "xArmorPart_LShin": {
+    "type": "word",
+    "value": 232
+  },
+  "xArmorPart_LShou": {
+    "type": "word",
+    "value": 0
+  },
+  "xArmorPart_LThig": {
+    "type": "word",
+    "value": 255
+  },
+  "xArmorPart_Neck": {
+    "type": "word",
+    "value": 1
+  },
+  "xArmorPart_Pelvi": {
+    "type": "word",
+    "value": 237
+  },
+  "xArmorPart_RBice": {
+    "type": "word",
+    "value": 53
+  },
+  "xArmorPart_RFArm": {
+    "type": "word",
+    "value": 168
+  },
+  "xArmorPart_RFoot": {
+    "type": "word",
+    "value": 160
+  },
+  "xArmorPart_RHand": {
+    "type": "word",
+    "value": 63
+  },
+  "xArmorPart_Robe": {
+    "type": "word",
+    "value": 0
+  },
+  "xArmorPart_RShin": {
+    "type": "word",
+    "value": 232
+  },
+  "xArmorPart_RShou": {
+    "type": "word",
+    "value": 0
+  },
+  "xArmorPart_RThig": {
+    "type": "word",
+    "value": 255
+  },
+  "xArmorPart_Torso": {
+    "type": "word",
+    "value": 196
+  }
+}

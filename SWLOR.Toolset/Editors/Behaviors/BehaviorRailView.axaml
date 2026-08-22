@@ -1,0 +1,35 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:behaviors="using:SWLOR.Toolset.Editors.Behaviors"
+             x:Class="SWLOR.Toolset.Editors.Behaviors.BehaviorRailView">
+
+  <!-- The left rail of every behavior editor: group headings, dividers, and the behaviors
+       themselves in one flat list, so the whole set is on screen at once. Choosing what an object
+       is for is the decision these tabs exist for, and a builder cannot choose from options they
+       have to go looking for. -->
+  <ScrollViewer>
+    <ItemsControl ItemsSource="{Binding $parent[behaviors:BehaviorRailView].Items}" Margin="10">
+      <ItemsControl.ItemTemplate>
+        <DataTemplate DataType="behaviors:BehaviorListItemViewModel">
+          <Panel>
+            <TextBlock Text="{Binding Text}" IsVisible="{Binding IsHeader}"
+                       Classes="section" Margin="12,14,0,5" />
+            <Border IsVisible="{Binding IsRule}" Height="1" Margin="12,12"
+                    Background="{DynamicResource RuleBrush}" />
+            <Button IsVisible="{Binding IsSelectable}" Classes="behavior"
+                    Classes.on="{Binding IsSelected}"
+                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                    Command="{Binding $parent[behaviors:BehaviorRailView].ChooseCommand}"
+                    CommandParameter="{Binding Behavior}">
+              <StackPanel Orientation="Horizontal" Spacing="7">
+                <TextBlock Text="{Binding Text}" />
+                <TextBlock Text="&#x2014;" Classes="dim" IsVisible="{Binding HasTagline}" />
+                <TextBlock Text="{Binding Tagline}" Classes="dim" IsVisible="{Binding HasTagline}" />
+              </StackPanel>
+            </Button>
+          </Panel>
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+    </ItemsControl>
+  </ScrollViewer>
+</UserControl>

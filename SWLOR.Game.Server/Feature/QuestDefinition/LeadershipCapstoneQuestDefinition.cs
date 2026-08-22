@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
         private void HoldTheLineFoundation()
         {
-            _builder.Create(HoldTheLineFoundationQuestId, "First Principle: Hold the Line")
+            _builder.Create(HoldTheLineFoundationQuestId, "Intake Stays Open")
                 .PrerequisiteSkill(SkillType.Leadership, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
@@ -62,20 +62,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Hold the Line capstone line continues in Dantooine Medical Sublevel. Defeat Hold the Line adepts and secure the Hold the Line Triage Ward Ledger.")
+                    "Use the Dantooine Medical Sublevel Key to enter the Dantooine Medical Sublevel on Dantooine. Defeat six Hold the Line adepts in the triage hall and recover the Hold the Line Triage Ward Ledger.")
                 .AddKillObjective(NPCGroupType.Dantooine_HoldTheLine_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneHoldTheLineTriageWardLedger)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Hold the Line Triage Ward Ledger from Dantooine Medical Sublevel. Return to Edda Maln for the next Hold the Line lesson.")
+                    "The Hold the Line Triage Ward Ledger has been recovered. Return it to Edda Maln at the Dantooine Republic Garrison.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
 
         private void HoldTheLineMeasure()
         {
-            _builder.Create(HoldTheLineMeasureQuestId, "The Measure of Hold the Line")
+            _builder.Create(HoldTheLineMeasureQuestId, "Kolto at Full Pressure")
                 .PrerequisiteQuest(HoldTheLineFoundationQuestId)
                 .PrerequisiteSkill(SkillType.Leadership, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneHoldTheLineKoltoConduitCoupler)
@@ -83,20 +83,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Hold the Line capstone line continues in Dantooine Medical Sublevel. Defeat Hold the Line specialists and secure the Hold the Line Kolto Conduit Coupler.")
+                    "Return to the Dantooine Medical Sublevel on Dantooine. Defeat five Hold the Line specialists at the conduit junctions and recover the Hold the Line Kolto Conduit Coupler.")
                 .AddKillObjective(NPCGroupType.Dantooine_HoldTheLine_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneHoldTheLineKoltoConduitCoupler)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Hold the Line Kolto Conduit Coupler from Dantooine Medical Sublevel. Return to Edda Maln for the next Hold the Line lesson.")
+                    "The Hold the Line Kolto Conduit Coupler has been recovered. Bring it to Edda Maln at the Dantooine Republic Garrison.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
 
         private void HoldTheLineBreach()
         {
-            _builder.Create(HoldTheLineBreachQuestId, "Fault Line: Hold the Line")
+            _builder.Create(HoldTheLineBreachQuestId, "Breach in Recovery")
                 .PrerequisiteQuest(HoldTheLineMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Leadership, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneHoldTheLineFracturedWardSigil)
@@ -104,20 +104,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Hold the Line capstone line continues in Dantooine Medical Sublevel. Defeat the Hold the Line warden and secure the Hold the Line Fractured Ward Sigil.")
+                    "Defeat the Hold the Line warden at the recovery ward doors in the Dantooine Medical Sublevel on Dantooine and recover the Hold the Line Fractured Ward Sigil. The warden is too strong to face alone; bring companions.")
                 .AddKillObjective(NPCGroupType.Dantooine_HoldTheLine_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneHoldTheLineFracturedWardSigil)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Hold the Line Fractured Ward Sigil from Dantooine Medical Sublevel. Return to Edda Maln for the next Hold the Line lesson.")
+                    "The Hold the Line Fractured Ward Sigil has been recovered from the warden. Return it to Edda Maln at the Dantooine Republic Garrison.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
 
         private void HoldTheLineCircle()
         {
-            _builder.Create(HoldTheLineCircleQuestId, "Circle of Proof: Hold the Line")
+            _builder.Create(HoldTheLineCircleQuestId, "Every Name Answers")
                 .PrerequisiteQuest(HoldTheLineBreachQuestId)
                 .PrerequisiteSkill(SkillType.Leadership, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneHoldTheLineMatronsWardToken)
@@ -125,31 +125,31 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Hold the Line capstone line continues in Dantooine Medical Sublevel. Defeat the Hold the Line inner circle and secure the Hold the Line Matron's Ward Token.")
+                    "Defeat the four members of the Hold the Line inner circle in the deep wards of the Dantooine Medical Sublevel on Dantooine and recover the Hold the Line Matron's Ward Token.")
                 .AddKillObjective(NPCGroupType.Dantooine_HoldTheLine_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneHoldTheLineMatronsWardToken)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Hold the Line Matron's Ward Token from Dantooine Medical Sublevel. Return to Edda Maln for the next Hold the Line lesson.")
+                    "The Hold the Line Matron's Ward Token has been recovered. Return it to Edda Maln at the Dantooine Republic Garrison.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
 
         private void HoldTheLineMastery()
         {
-            _builder.Create(HoldTheLineMasteryQuestId, "Hold the Line Mastery")
+            _builder.Create(HoldTheLineMasteryQuestId, "The Last Bed Held")
                 .PrerequisiteQuest(HoldTheLineCircleQuestId)
                 .PrerequisiteSkill(SkillType.Leadership, 50)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Hold the Line master is waiting in Dantooine Medical Sublevel. Defeat the master and end the capstone trial.")
+                    "Defeat the Hold the Line master in the last ward of the Dantooine Medical Sublevel on Dantooine. The master is too strong to face alone; bring companions.")
                 .AddKillObjective(NPCGroupType.Dantooine_HoldTheLine_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Hold the Line master is defeated. Return to Edda Maln and claim the completed lesson.")
+                    "The Hold the Line master is defeated. Return to Edda Maln at the Dantooine Republic Garrison.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
         private void DecisiveCommandFoundation()
         {
-            _builder.Create(DecisiveCommandFoundationQuestId, "First Principle: Decisive Command")
+            _builder.Create(DecisiveCommandFoundationQuestId, "Orders Are Not Requests")
                 .PrerequisiteSkill(SkillType.Leadership, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
@@ -175,20 +175,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Decisive Command capstone line continues in Viscara Republic Engineering Bunker. Defeat Decisive Command adepts and secure the Decisive Command Republic Bunker Docket.")
+                    "Use the Viscara Republic Engineering Bunker Key to enter the Viscara Republic Engineering Bunker on Viscara. Defeat six Decisive Command adepts in the outer galleries and recover the Decisive Command Republic Bunker Docket.")
                 .AddKillObjective(NPCGroupType.Viscara_DecisiveCommand_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneDecisiveCommandRepublicBunkerDocket)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Decisive Command Republic Bunker Docket from Viscara Republic Engineering Bunker. Return to Varen Kell for the next Decisive Command lesson.")
+                    "The Decisive Command Republic Bunker Docket has been recovered. Return it to Varen Kell at the Republic Base combat deck on Viscara.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
 
         private void DecisiveCommandMeasure()
         {
-            _builder.Create(DecisiveCommandMeasureQuestId, "The Measure of Decisive Command")
+            _builder.Create(DecisiveCommandMeasureQuestId, "Faster Than Fear")
                 .PrerequisiteQuest(DecisiveCommandFoundationQuestId)
                 .PrerequisiteSkill(SkillType.Leadership, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneDecisiveCommandShieldGridRelay)
@@ -196,20 +196,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Decisive Command capstone line continues in Viscara Republic Engineering Bunker. Defeat Decisive Command specialists and secure the Decisive Command Shield Grid Relay.")
+                    "Return to the Viscara Republic Engineering Bunker on Viscara. Defeat five Decisive Command specialists in the shield grid chambers and recover the Decisive Command Shield Grid Relay.")
                 .AddKillObjective(NPCGroupType.Viscara_DecisiveCommand_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneDecisiveCommandShieldGridRelay)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Decisive Command Shield Grid Relay from Viscara Republic Engineering Bunker. Return to Varen Kell for the next Decisive Command lesson.")
+                    "The Decisive Command Shield Grid Relay has been recovered. Bring it to Varen Kell at the Republic Base combat deck on Viscara.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
 
         private void DecisiveCommandBreach()
         {
-            _builder.Create(DecisiveCommandBreachQuestId, "Fault Line: Decisive Command")
+            _builder.Create(DecisiveCommandBreachQuestId, "One Voice in the Breach")
                 .PrerequisiteQuest(DecisiveCommandMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Leadership, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneDecisiveCommandCrackedCommandCrest)
@@ -217,20 +217,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Decisive Command capstone line continues in Viscara Republic Engineering Bunker. Defeat the Decisive Command warden and secure the Decisive Command Cracked Command Crest.")
+                    "Defeat the Decisive Command warden at the inner blast doors of the Viscara Republic Engineering Bunker on Viscara and recover the Decisive Command Cracked Command Crest. The warden is too strong to face alone; bring companions.")
                 .AddKillObjective(NPCGroupType.Viscara_DecisiveCommand_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneDecisiveCommandCrackedCommandCrest)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Decisive Command Cracked Command Crest from Viscara Republic Engineering Bunker. Return to Varen Kell for the next Decisive Command lesson.")
+                    "The Decisive Command Cracked Command Crest has been recovered from the warden. Return it to Varen Kell at the Republic Base combat deck on Viscara.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
 
         private void DecisiveCommandCircle()
         {
-            _builder.Create(DecisiveCommandCircleQuestId, "Circle of Proof: Decisive Command")
+            _builder.Create(DecisiveCommandCircleQuestId, "A Chain Has No Spare Links")
                 .PrerequisiteQuest(DecisiveCommandBreachQuestId)
                 .PrerequisiteSkill(SkillType.Leadership, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneDecisiveCommandQuartermasterOverrideChip)
@@ -238,31 +238,31 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Decisive Command capstone line continues in Viscara Republic Engineering Bunker. Defeat the Decisive Command inner circle and secure the Decisive Command Quartermaster Override Chip.")
+                    "Defeat the four members of the Decisive Command inner circle in the deep stores of the Viscara Republic Engineering Bunker on Viscara and recover the Decisive Command Quartermaster Override Chip.")
                 .AddKillObjective(NPCGroupType.Viscara_DecisiveCommand_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneDecisiveCommandQuartermasterOverrideChip)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Decisive Command Quartermaster Override Chip from Viscara Republic Engineering Bunker. Return to Varen Kell for the next Decisive Command lesson.")
+                    "The Decisive Command Quartermaster Override Chip has been recovered. Return it to Varen Kell at the Republic Base combat deck on Viscara.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
 
         private void DecisiveCommandMastery()
         {
-            _builder.Create(DecisiveCommandMasteryQuestId, "Decisive Command Mastery")
+            _builder.Create(DecisiveCommandMasteryQuestId, "The Last Order Stands")
                 .PrerequisiteQuest(DecisiveCommandCircleQuestId)
                 .PrerequisiteSkill(SkillType.Leadership, 50)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Decisive Command master is waiting in Viscara Republic Engineering Bunker. Defeat the master and end the capstone trial.")
+                    "Defeat the Decisive Command master in the command room of the Viscara Republic Engineering Bunker on Viscara. The master is too strong to face alone; bring companions.")
                 .AddKillObjective(NPCGroupType.Viscara_DecisiveCommand_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Decisive Command master is defeated. Return to Varen Kell and claim the completed lesson.")
+                    "The Decisive Command master is defeated. Return to Varen Kell at the Republic Base combat deck on Viscara.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

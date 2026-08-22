@@ -64,7 +64,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Rain of Steel is no longer a lesson on my ledger. You proved it in Czerka Arms Test Range; keep proving it when nobody is keeping score."
+            "0": "Ledger's clean and it stays clean because you keep checking in. Rain of Steel is yours now. My only standing order: don't leave blades in the sand. You won't. You were taught right."
           }
         }
       },
@@ -113,7 +113,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not yet. Rain of Steel is not a conversation I start on instinct or reputation. Come back when your work can survive the proof I keep for Czerka Arms Test Range."
+            "0": "Unless you're here about my crate shortfall, keep walking. Rain of Steel gets issued to one kind of hand - the kind that's thrown every blade this galaxy stamps until there's nothing left the weapon can teach it. Yours isn't there yet. Come back when it is."
           }
         }
       },
@@ -258,7 +258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The range is full of things Czerka wants counted, broken, and never discussed. Bring me the count that matters. Go to Czerka Arms Test Range on Smuggler's Moon, defeat the Rain of Steel adepts, and bring back the Rain of Steel field report."
+            "0": "Count something for me. Three crates of recovery-grade throwing arms, signed out of my cage, never signed back in. Short crates mean somebody inside the Czerka Arms Test Range is arming up on my stock. The paper trail that covers those blades is still on the range floor with their so-called adepts. Put six of them down, pull the Rain of Steel Czerka Test Docket off their trial, and bring it here so my ledger stops lying to me."
           }
         }
       },
@@ -307,7 +307,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Czerka Arms Test Range. I want proof, not a story about almost having it."
+            "0": "Then here's your issue: one key to the range gate. Czerka stamped it, I keep the copies. The adepts drill past the first firing line, and half of what they're throwing was mine before it was theirs. Recover what you can. The docket comes back whole."
           }
         }
       },
@@ -376,7 +376,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Rain of Steel is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "Everyone thinks throwing is spending. It isn't. Rain of Steel is an economy - every blade in the air is inventory in motion, and the hand that masters it never books a loss. You fill the sky and the sky pays you back. That's the doctrine those idiots inside are burning my crates to imitate."
           }
         }
       },
@@ -445,7 +445,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range is on Smuggler's Moon. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "A test crew Czerka stopped paying and forgot to disarm. They run live trials on the range floor with my stock - my stock - and call themselves adepts of the discipline. Adepts don't leave blades in the sand. These do. That's how I know they're counterfeit."
           }
         }
       },
@@ -514,7 +514,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "The Czerka Test Docket is the paper trail on every blade they've burned. Without it I can't write off the loss or bill the corpse responsible. With it, the ledger balances and your first lesson gets entered under your name. Paper first. Always."
           }
         }
       },
@@ -563,7 +563,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range still holds your first proof for Rain of Steel. Finish the target there before you bring me anything else."
+            "0": "Docket's still inside the range, and six adepts were still standing between you and it at last count. My ledger doesn't close on promises."
           }
         }
       },
@@ -632,7 +632,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Rain of Steel lesson clean."
+            "0": "Czerka watermark, blast residue and all. The Rain of Steel Czerka Test Docket - hand it across the counter."
           }
         }
       },
@@ -681,7 +681,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Rain of Steel is one step closer to belonging to you."
+            "0": "Counted, filed, reconciled. The credits are your recovery fee. Your first entry in my book reads 'acceptable.' Don't let it depreciate."
           }
         }
       },
@@ -826,7 +826,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Rain of Steel proof is waiting in Czerka Arms Test Range. This one is about second proof, not repetition. Go to Czerka Arms Test Range on Smuggler's Moon, defeat the Rain of Steel specialists, and bring back the Rain of Steel calibration core."
+            "0": "You came back with paper, so I'll trust you with hardware. The specialists on that floor pulled a regulator out of my old calibration bench - the one piece of kit that keeps a throwing lane honest. Five of them between you and it. Bring me the Rain of Steel Blast-Cell Regulator before they burn it out running hot trials."
           }
         }
       },
@@ -875,7 +875,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Czerka Arms Test Range. I want proof, not a story about almost having it."
+            "0": "Good. Same key, same gate. The specialists hold the calibration lanes past the first firing line. Don't chase strays - the regulator is the line item that matters."
           }
         }
       },
@@ -944,7 +944,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Rain of Steel is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "It meters the charge on every blast-cell in the range. Without it their trials run hot and every blade I recover comes back warped - scrap value, nothing more. Back on my bench, it re-certifies every lane and every blade you send my way after."
           }
         }
       },
@@ -1013,7 +1013,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range is on Smuggler's Moon. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Because a merc company lives and dies on resupply. I watched an outfit on Ord Mantell throw itself dry in one afternoon and get overrun picking up its own knives. Rain of Steel says: what you throw, you recover; what you recover, you throw again. Master that and you never stand empty-handed. That's not poetry. That's stock rotation."
           }
         }
       },
@@ -1082,7 +1082,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Adepts copy the throw. Specialists copy the system - recovery patterns, cell timing, lane discipline. Mine, all of it, learned through the fence. A thief who studies you is worth five who don't. Treat them that way."
           }
         }
       },
@@ -1131,7 +1131,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range still holds your second proof for Rain of Steel. Finish the target there before you bring me anything else."
+            "0": "The regulator's still sitting in the calibration lanes with the specialists. Five units of trouble. My bench stays cold until it's back."
           }
         }
       },
@@ -1200,7 +1200,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Rain of Steel lesson clean."
+            "0": "There it is - housing's scorched, but the meter still reads true. The Rain of Steel Blast-Cell Regulator. Set it down gently. On paper it's worth more than both of us."
           }
         }
       },
@@ -1249,7 +1249,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Rain of Steel is one step closer to belonging to you."
+            "0": "Reads within tolerance. You're the first hand in a year I'd let near my bench. Rest and restock, then come see me - the range's warden and I have an account to settle."
           }
         }
       },
@@ -1394,7 +1394,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Rain of Steel proof is waiting in Czerka Arms Test Range. This one is about breach proof, not repetition. Go to Czerka Arms Test Range on Smuggler's Moon, defeat the Rain of Steel warden, and bring back the Rain of Steel broken seal."
+            "0": "Now the account gets expensive. The one they call the warden runs the deep range, and he wears the Rain of Steel Scored Range Crest - Czerka's old proof-of-line rating - like he earned it. He looted it. Take the crest off him and the whole counterfeit operation loses its licence to exist. But hear the quartermaster's warning before you sign: I don't issue for that fight under a three-body fireteam. Bring two you'd trust with your own kit."
           }
         }
       },
@@ -1443,7 +1443,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Czerka Arms Test Range. I want proof, not a story about almost having it."
+            "0": "Signed. Triple issue drawn against your name - that's trust, in my currency. The deep range opens past the calibration lanes, and he'll hear you coming. Watch the high racks. He likes altitude."
           }
         }
       },
@@ -1512,7 +1512,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Rain of Steel is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "Unit economics. One fighter against the warden is a total loss - I've written that entry twice, and I hate writing off people more than gear. Three is where the sky stays full: one blade landing while two are in the air, from angles he can't watch at once. I kit fireteams. I don't kit funerals."
           }
         }
       },
@@ -1581,7 +1581,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range is on Smuggler's Moon. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Czerka scores a crest for every weapons line that passes final proof. That one belonged to the recovery-blade line - my line, the trials I quartermastered myself. Every scratch on it is a test I signed for. On his chest it's stolen valor. In my cage it's the range's honest history."
           }
         }
       },
@@ -1650,7 +1650,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Ex-Czerka range security. When the funding dried up he kept the keys, and when my crew got locked out he kept the ones who stayed, too. He's had a sealed floor and unlimited stock to drill on for years. He throws like a man who's never had to buy his own blades. Make him pay retail."
           }
         }
       },
@@ -1699,7 +1699,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range still holds your breach proof for Rain of Steel. Finish the target there before you bring me anything else."
+            "0": "The warden still holds the deep range and the crest is still on his chest. If your two blades backed out, find better ones. I'm not amending the issue."
           }
         }
       },
@@ -1768,7 +1768,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Rain of Steel lesson clean."
+            "0": "Ha. Scored steel, seventeen marks - I remember every one of them. Hand me the Rain of Steel Scored Range Crest and let me put the range's history back where it audits clean."
           }
         }
       },
@@ -1817,7 +1817,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Rain of Steel is one step closer to belonging to you."
+            "0": "You know what this is? The first line in my book that isn't a loss. Take your pay. The warden was only the muscle - the inner circle keeps the books, and theirs are dirtier than mine ever ran."
           }
         }
       },
@@ -1962,7 +1962,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Rain of Steel proof is waiting in Czerka Arms Test Range. This one is about circle proof, not repetition. Go to Czerka Arms Test Range on Smuggler's Moon, defeat the Rain of Steel inner circle, and bring back the Rain of Steel command mark."
+            "0": "Four names run what's left of the operation - the inner circle, the ones who countersign every stolen crate and every hot trial. One of them carries the Rain of Steel Czerka Clearance Chit: master authorization for the entire range. While they hold it, everything they do reads legitimate on Czerka's network. Put all four down and bring me that chit. I want their whole enterprise struck from the record."
           }
         }
       },
@@ -2011,7 +2011,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Czerka Arms Test Range. I want proof, not a story about almost having it."
+            "0": "Then the requisition stands, and your fireteam's issue carries over - I already logged the wear. The circle keeps to the stockrooms behind the deep range. Clear them a room at a time and count your recoveries. You'll want a full sky for the last of them."
           }
         }
       },
@@ -2080,7 +2080,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Rain of Steel is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "Everything. Gate codes, stock draws, trial permits, my old signature authority. Whoever holds that chit IS the range, as far as Czerka's ledgers care. That's why it comes to me and nowhere else. I'm the last man whose name was on it honestly."
           }
         }
       },
@@ -2149,7 +2149,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range is on Smuggler's Moon. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "The warden's paymasters. Two came up through procurement - they know stock movement better than fighting, but don't relax. The other two were trial leads with a thousand hours of range time apiece on the discipline you're still learning. Together, the four of them will be a worse fight than the warden. Keep your two beside you. I extended their issue for a reason."
           }
         }
       },
@@ -2218,7 +2218,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "After the chit? The master. And no - I don't talk about the master while the circle's still countersigning. One line at a time. A ledger that skips ahead is a ledger hiding a loss. Ask me again with the chit in your hand."
           }
         }
       },
@@ -2267,7 +2267,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range still holds your circle proof for Rain of Steel. Finish the target there before you bring me anything else."
+            "0": "Four countersigners, one chit, and my count says all four are still breathing. Stockrooms behind the deep range. Keep your fireteam drawn."
           }
         }
       },
@@ -2336,7 +2336,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Rain of Steel lesson clean."
+            "0": "The Rain of Steel Czerka Clearance Chit. Four names cancelled, one authorization recovered. Pass it here - slowly. That little wafer is worth the whole range."
           }
         }
       },
@@ -2385,7 +2385,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Rain of Steel is one step closer to belonging to you."
+            "0": "Void, all four, and the range reads honest for the first time in years. That leaves one entry open, and I'll be straight with you: it's the one I've been dreading pricing. Rest first. Then we talk about the master."
           }
         }
       },
@@ -2530,7 +2530,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Rain of Steel proof is waiting in Czerka Arms Test Range. This one is about mastery proof, not repetition. Go to Czerka Arms Test Range on Smuggler's Moon, defeat the Rain of Steel master, and return with the final proof."
+            "0": "Last entry. The master - the one who taught that crew everything they bent, and the only soul on that range who holds Rain of Steel whole. I watched him drill once, years back. Forty blades in the air and his hand was never empty. He never runs dry. You can't outlast him, so you'll out-throw him, and nobody walks off his floor alone - bring your two, and count every blade like it's your last. Bring me nothing back but the news. His fall is the only proof this fight leaves behind."
           }
         }
       },
@@ -2579,7 +2579,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Czerka Arms Test Range. I want proof, not a story about almost having it."
+            "0": "Issue drawn: everything in my cage that flies, three names on the manifest, yours first. He keeps the proving floor at the very back of the range - the one room Czerka never fenced, because at his grade there was no point. Go balance my book."
           }
         }
       },
@@ -2648,7 +2648,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Rain of Steel is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "He quartermastered this range before me. Taught me that a blade left behind is a debt. When Czerka pulled out, he stayed with the stock, and I signed out with the people. I've wondered every day since which of us balanced that ledger right. Go make the question academic."
           }
         }
       },
@@ -2717,7 +2717,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range is on Smuggler's Moon. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Then the doctrine transfers to the last hand standing - that's how it has always passed. You'll throw the way he throws: sky full, hand never empty, every loss recovered before it lands. And my cage stays open to you for life. Gear's loyalty for loyalty. That's the only sentiment I stock."
           }
         }
       },
@@ -2786,7 +2786,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "You don't. You out-supply him. Three of you means every recovery gets contested - each blade he lands near, one of yours is already claiming the ground. Starve the return line. The moment his off hand reaches for a rack instead of his belt, he's feeling the only shortage he's ever known. Spend it."
           }
         }
       },
@@ -2835,7 +2835,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range still holds your mastery proof for Rain of Steel. Finish the target there before you bring me anything else."
+            "0": "The proving floor is still occupied and my final entry is still open. Don't come back to this counter without the news. Good or bad, I book losses honestly."
           }
         }
       },
@@ -2904,7 +2904,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Rain of Steel lesson clean."
+            "0": "You're standing square, and your crates came back heavier than they went out. That's the news, isn't it. Say it plain, for the record."
           }
         }
       },
@@ -2953,7 +2953,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Rain of Steel is one step closer to belonging to you."
+            "0": "Entry closed. Paid in full. You know what you are now? Recoverable - the galaxy can throw you anywhere and you come back worth more. Rain of Steel is yours, whole. Draw from my cage whenever you run short. Hands like yours are the only stock I can't replace."
           }
         }
       }
@@ -3023,7 +3023,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to the shortfall."
           }
         }
       },
@@ -3100,7 +3100,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the first proof."
+            "0": "Six adepts, one docket. I'll sign for it."
           }
         }
       },
@@ -3165,7 +3165,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Rain of Steel demand?"
+            "0": "What is Rain of Steel to you?"
           }
         }
       },
@@ -3230,7 +3230,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Who's arming up on your stock?"
           }
         }
       },
@@ -3295,7 +3295,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "Why does one docket matter so much?"
           }
         }
       },
@@ -3340,7 +3340,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Your count can wait."
           }
         }
       },
@@ -3417,7 +3417,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "One docket, recovered. Count it."
           }
         }
       },
@@ -3482,7 +3482,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "About the regulator job."
           }
         }
       },
@@ -3559,7 +3559,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the second proof."
+            "0": "Five specialists. The regulator comes home."
           }
         }
       },
@@ -3624,7 +3624,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Rain of Steel demand?"
+            "0": "What does the regulator actually do?"
           }
         }
       },
@@ -3689,7 +3689,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Why do you keep calling this an economy?"
           }
         }
       },
@@ -3754,7 +3754,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "What makes a specialist worse than an adept?"
           }
         }
       },
@@ -3799,7 +3799,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Put me down as pending."
           }
         }
       },
@@ -3876,7 +3876,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "One regulator, slightly scorched, fully functional."
           }
         }
       },
@@ -3941,7 +3941,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to the warden."
           }
         }
       },
@@ -4018,7 +4018,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the breach proof."
+            "0": "I'll bring the hands. The crest comes back."
           }
         }
       },
@@ -4083,7 +4083,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Rain of Steel demand?"
+            "0": "Why won't you sign for fewer than three?"
           }
         }
       },
@@ -4148,7 +4148,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "What's the story on the crest?"
           }
         }
       },
@@ -4213,7 +4213,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "Who is this warden?"
           }
         }
       },
@@ -4258,7 +4258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "I need to muster a crew first."
           }
         }
       },
@@ -4335,7 +4335,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "The crest. He won't be missing it."
           }
         }
       },
@@ -4400,7 +4400,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "The circle. Go on."
           }
         }
       },
@@ -4477,7 +4477,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the circle proof."
+            "0": "Four signatures. Cancelled."
           }
         }
       },
@@ -4542,7 +4542,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Rain of Steel demand?"
+            "0": "What does the clearance chit authorize?"
           }
         }
       },
@@ -4607,7 +4607,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Who are the four?"
           }
         }
       },
@@ -4672,7 +4672,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "And after the chit? What's left?"
           }
         }
       },
@@ -4717,7 +4717,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Their account stays open a day longer."
           }
         }
       },
@@ -4794,7 +4794,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "The chit. All four signatures are void."
           }
         }
       },
@@ -4859,7 +4859,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to the master."
           }
         }
       },
@@ -4936,7 +4936,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the mastery proof."
+            "0": "Then I'll spend everything and recover it after."
           }
         }
       },
@@ -5001,7 +5001,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Rain of Steel demand?"
+            "0": "You knew him?"
           }
         }
       },
@@ -5066,7 +5066,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "And if I beat him - what then?"
           }
         }
       },
@@ -5131,7 +5131,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "How do I fight a hand that's never empty?"
           }
         }
       },
@@ -5176,7 +5176,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Not until my count is right."
           }
         }
       },
@@ -5253,7 +5253,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "The master's down. The floor is yours to count."
           }
         }
       }

@@ -97,7 +97,9 @@ namespace SWLOR.Game.Server.Service
                     Targeting.EnterTargetingMode(sender, chatCommand.ValidTargetTypes, "Please click on a target for this chat command.",
                     target =>
                     {
-                        var location = GetIsObjectValid(target)
+                        // Clicking a bare ground tile still returns a "valid" target of the area itself
+                        // (rather than OBJECT_INVALID), so that case must be treated as a location target.
+                        var location = GetIsObjectValid(target) && target != GetArea(sender)
                             ? GetLocation(target)
                             : Location(GetArea(sender), GetTargetingModeSelectedPosition(), 0.0f);
                         ProcessChatCommand(command, sender, target, location, args);

@@ -5,9 +5,9 @@ The DroidItemBuilder generates JSON files for droid items (CPUs and parts) used 
 
 ## Command
 ```bash
-SWLOR.CLI.exe -d
+RunCLI.cmd -d
 # or
-SWLOR.CLI.exe --droid
+RunCLI.cmd --droid
 ```
 
 ## Functionality
@@ -87,4 +87,4 @@ This tool is used during development to:
 - Uses random icon selection from a predefined array for visual variety
 - Automatically calculates skill bonuses based on input data
 - Handles both CPU and part items with different templates
-- Generates JSON files compatible with the NWN module system 
+- Generates JSON files compatible with the NWN module system

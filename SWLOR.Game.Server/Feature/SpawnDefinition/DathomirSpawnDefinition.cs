@@ -27,7 +27,25 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             DathomirTarnJunglePreserve();
             DathomirGrottoApexDen();
 
+            DathomirGrottoRareElites();
+            DathtarnRareElites();
             return _builder.Build();
+        }
+
+        private void DathtarnRareElites()
+        {
+            _builder.Create("DATHOMIR_TARN_JUNGLE_PRESERVE_RARES", "Dathomir Tarn Jungle Preserve - Rare Elites")
+                .AddSpawn(ObjectType.Creature, "tarnapexmaw").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome()
+                .AddSpawn(ObjectType.Creature, "quillstalker").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome()
+                .AddSpawn(ObjectType.Creature, "rhydelalpha").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome();
+        }
+
+        private void DathomirGrottoRareElites()
+        {
+            _builder.Create("DATHOMIR_GROTTO_APEX_DEN_RARES", "Dathomir Grotto Apex Den - Rare Elites")
+                .AddSpawn(ObjectType.Creature, "grottoalpha").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome()
+                .AddSpawn(ObjectType.Creature, "spinequill").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome()
+                .AddSpawn(ObjectType.Creature, "ritestalker").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome();
         }
 
         private void CaveRuins()

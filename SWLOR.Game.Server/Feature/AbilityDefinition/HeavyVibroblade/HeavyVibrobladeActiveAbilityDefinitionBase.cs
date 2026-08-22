@@ -31,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 
         protected static int SoulStrikeImpact(uint activator, uint target, Location targetLocation, int damageBonus, int healingPercent)
         {
+            using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(activator);
             var damage = Ability.ApplyCombatImpact(activator, target, targetLocation, SkillType.HeavyVibroblade, damageBonus, 0, null, false);
             if (damage > 0)
             {
@@ -54,14 +55,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
 
         protected static void HealFromDamage(uint target, int damage, int healingPercent)
         {
-            if (damage <= 0 || healingPercent <= 0)
-                return;
-
-            var amount = GameMath.PercentOf(damage, healingPercent);
-            amount = Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(target, amount);
-            amount = Stat.ApplyHealingReceivedAdjustment(target, amount);
-            ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), target);
-            ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Negative_Energy), target);
+            var amount = Combat.ApplyDamageDerivedHealing(
+                target,
+                damage,
+                healingPercent,
+                applyCombatReadiness: true);
+            if (amount > 0)
+                ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Negative_Energy), target);
         }
 
         protected static void SacrificeHitPoints(uint activator, int percent)

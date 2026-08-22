@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Enumeration;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.QuestService;
 using Player = SWLOR.Game.Server.Entity.Player;
 using SWLOR.Game.Server.Service.ActivityService;
@@ -79,7 +80,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             Console.WriteLine($"Loaded {_quests.Count} quests.");
-            ExecuteScript("qsts_registered", GetModule());
+            ExecuteScript(ScriptName.OnQuestsRegistered, GetModule());
         }
 
         /// <summary>
@@ -113,9 +114,19 @@ namespace SWLOR.Game.Server.Service
             // An NWN quirk requires this to be on a short delay because journal entries are wiped on login.
             DelayCommand(0.5f, () =>
             {
+                var staleQuestIds = new List<string>();
+
                 foreach (var (questId, playerQuest) in dbPlayer.Quests)
                 {
-                    var quest = _quests[questId];
+                    var quest = GetQuestByIdOrDefault(questId);
+
+                    if (quest == null)
+                    {
+                        staleQuestIds.Add(questId);
+                        Log.Write(LogGroup.Error, $"Player '{playerId}' has quest '{questId}' which is no longer registered. Removing it from their quest log.");
+                        continue;
+                    }
+
                     var state = quest.States[playerQuest.CurrentState];
 
                     PlayerPlugin.AddCustomJournalEntry(player, new JournalEntry
@@ -132,6 +143,17 @@ namespace SWLOR.Game.Server.Service
                         TimeOfDay = GetTimeHour()
                     }, true);
                 }
+
+                if (staleQuestIds.Count > 0)
+                {
+                    foreach (var staleQuestId in staleQuestIds)
+                    {
+                        dbPlayer.Quests.Remove(staleQuestId);
+                    }
+
+                    DB.Set(dbPlayer);
+                    SendMessageToPC(player, ColorToken.Red("One or more quests in your journal are no longer available (e.g. a cancelled or expired contract) and have been removed."));
+                }
             });
         }
 
@@ -146,6 +168,37 @@ namespace SWLOR.Game.Server.Service
                 throw new KeyNotFoundException($"Quest '{questId}' was not registered. Did you set the right Id?");
 
             return _quests[questId];
+        }
+
+        /// <summary>
+        /// Retrieves a quest by its Id, or null if it has not been registered.
+        /// Use this instead of <see cref="GetQuestById"/> when a missing quest is an expected, recoverable condition.
+        /// </summary>
+        /// <param name="questId">The quest Id to search for.</param>
+        /// <returns>The quest detail matching this Id, or null if it isn't registered.</returns>
+        public static QuestDetail GetQuestByIdOrDefault(string questId)
+        {
+            return _quests.TryGetValue(questId, out var quest) ? quest : null;
+        }
+
+        /// <summary>
+        /// Registers (or replaces) a quest at runtime, outside of the reflection-based <see cref="RegisterQuests"/> pass.
+        /// Used by systems which build quests dynamically, such as player-authored quest contracts.
+        /// </summary>
+        /// <param name="quest">The quest to register.</param>
+        public static void RegisterRuntimeQuest(QuestDetail quest)
+        {
+            _quests[quest.QuestId] = quest;
+        }
+
+        /// <summary>
+        /// Removes a runtime-registered quest so it can no longer be accepted, advanced, or completed.
+        /// Players who have already accepted the quest are unaffected until <see cref="LoadPlayerQuests"/> hardens their journal.
+        /// </summary>
+        /// <param name="questId">The Id of the quest to remove.</param>
+        public static void UnregisterRuntimeQuest(string questId)
+        {
+            _quests.Remove(questId);
         }
 
         /// <summary>
@@ -168,14 +221,35 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Marks a quest as completed for a player without granting rewards or running completion
+        /// actions. Used by DM tooling to open quest-gated content such as capstone perk unlocks.
+        /// If the quest Id is invalid, an exception will be thrown.
+        /// </summary>
+        /// <param name="player">The player whose quest record is marked complete.</param>
+        /// <param name="questId">The Id of the quest to mark complete.</param>
+        public static void ForceCompleteQuest(uint player, string questId)
+        {
+            _quests[questId].ForceComplete(player);
+        }
+
+        /// <summary>
         /// Makes a player accept a quest by the specified Id.
         /// If the quest Id is invalid, an exception will be thrown.
         /// </summary>
         /// <param name="player">The player who is accepting the quest</param>
         /// <param name="questId">The Id of the quest to accept.</param>
-        public static void AcceptQuest(uint player, string questId)
+        public static bool AcceptQuest(uint player, string questId)
         {
-            _quests[questId].Accept(player, OBJECT_SELF);
+            return AcceptQuest(player, OBJECT_SELF, questId);
+        }
+
+        /// <summary>
+        /// Makes a player accept a quest while preserving the creature or placeable that offered it.
+        /// Conversation callbacks attached to the quest run against this source.
+        /// </summary>
+        public static bool AcceptQuest(uint player, uint questSource, string questId)
+        {
+            return _quests[questId].Accept(player, questSource);
         }
 
         public static bool CanAcceptQuest(uint player, string questId)
@@ -190,9 +264,9 @@ namespace SWLOR.Game.Server.Service
         /// <param name="player">The player who is advancing to the next state of the quest.</param>
         /// <param name="questSource">The source of the quest. Typically an NPC or object.</param>
         /// <param name="questId">The Id of the quest to advance.</param>
-        public static void AdvanceQuest(uint player, uint questSource, string questId)
+        public static bool AdvanceQuest(uint player, uint questSource, string questId)
         {
-            _quests[questId].Advance(player, questSource);
+            return _quests[questId].Advance(player, questSource);
         }
 
         /// <summary>
@@ -200,7 +274,15 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="player">The player who will open the collection placeable.</param>
         /// <param name="questId">The quest to collect items for.</param>
-        public static void RequestItemsFromPlayer(uint player, string questId)
+        public static bool RequestItemsFromPlayer(uint player, string questId)
+        {
+            return RequestItemsFromPlayer(player, OBJECT_SELF, questId);
+        }
+
+        /// <summary>
+        /// Opens the quest item collector and records the conversation object that owns the hand-in.
+        /// </summary>
+        public static bool RequestItemsFromPlayer(uint player, uint questSource, string questId)
         {
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
@@ -208,7 +290,7 @@ namespace SWLOR.Game.Server.Service
             if (!dbPlayer.Quests.ContainsKey(questId))
             {
                 SendMessageToPC(player, "You have not accepted this quest yet.");
-                return;
+                return false;
             }
 
             var quest = dbPlayer.Quests[questId];
@@ -222,15 +304,26 @@ namespace SWLOR.Game.Server.Service
             if (!hasCollectItemObjective)
             {
                 SendMessageToPC(player, "There are no items to turn in for this quest. This is likely a bug. Please let the staff know.");
-                return;
+                return false;
             }
 
             var collector = CreateObject(ObjectType.Placeable, "qst_item_collect", GetLocation(player));
-            SetLocalObject(collector, "QUEST_OWNER", OBJECT_SELF);
+            SetLocalObject(collector, "QUEST_OWNER", questSource);
             SetLocalString(collector, "QUEST_ID", questId);
 
             AssignCommand(collector, () => SetFacingPoint(GetPosition(player)));
             AssignCommand(player, () => ActionInteractObject(collector));
+
+            // Collectors are destroyed when the final item is turned in, but a player can open one
+            // and walk away - sweep it up after a few minutes so abandoned collectors don't litter
+            // the area until reboot. Turned-in items are consumed immediately, so nothing is lost.
+            DelayCommand(300f, () =>
+            {
+                if (GetIsObjectValid(collector))
+                    DestroyObject(collector);
+            });
+
+            return true;
         }
 
         /// <summary>
@@ -397,7 +490,17 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            var questDetail = GetQuestById(questId);
+            var questDetail = GetQuestByIdOrDefault(questId);
+
+            // The quest was unregistered while the collector was open (e.g. a quest contract which was
+            // fulfilled by another player or taken down). Return the item rather than consuming it.
+            if (questDetail == null)
+            {
+                Item.ReturnItem(player, item);
+                SendMessageToPC(player, "This quest is no longer available.");
+                return;
+            }
+
             var questState = questDetail.States[quest.CurrentState];
             var collectItemObjective = questState.GetObjectives()
                 .OfType<CollectItemObjective>()
@@ -416,6 +519,25 @@ namespace SWLOR.Game.Server.Service
 
             var requiredAmount = dbPlayer.Quests[questId].ItemProgresses[resref];
             var stackSize = GetItemStackSize(item);
+
+            // If a handler is configured, give it a chance to reroute the items that are actually being
+            // consumed this turn-in before they're reduced/destroyed below. Only the consumed portion of the
+            // stack is handed off; if part of the stack is being returned to the player, a scoped copy sized
+            // to the consumed amount is used instead so the returned portion isn't duplicated into the handler.
+            if (questDetail.CollectedItemHandler != null)
+            {
+                var consumedAmount = Math.Min(stackSize, requiredAmount);
+                var isFullStackConsumed = stackSize <= requiredAmount;
+                var consumedItem = isFullStackConsumed ? item : CopyItem(item, container, true);
+
+                if (!isFullStackConsumed)
+                    SetItemStackSize(consumedItem, consumedAmount);
+
+                questDetail.CollectedItemHandler.Invoke(player, consumedItem);
+
+                if (!isFullStackConsumed)
+                    DestroyObject(consumedItem);
+            }
 
             // Decrement the required items and update the DB.
             if (stackSize > requiredAmount)
@@ -441,11 +563,22 @@ namespace SWLOR.Game.Server.Service
             AdvanceQuest(player, owner, questId);
 
             // If no more items are necessary for this quest, force the player to speak with the NPC again.
+            // Quests turned in without an NPC (e.g. quest contracts started from a board's NUI, where the
+            // collector's owner is the module object) complete inline during AdvanceQuest above - starting
+            // a conversation with a non-creature owner hard-crashes the server.
             var itemsRequired = dbPlayer.Quests[questId].ItemProgresses.Sum(x => x.Value);
 
             if (itemsRequired <= 0)
             {
-                AssignCommand(player, () => ActionStartConversation(owner, string.Empty, true, false));
+                if (GetIsObjectValid(owner) && GetObjectType(owner) == ObjectType.Creature)
+                {
+                    if (!Conversation.TryStartAssigned(player, owner))
+                        AssignCommand(player, () => ActionStartConversation(owner, string.Empty, true, false));
+                }
+
+                // The collector has served its purpose - destroy it so it doesn't linger on the
+                // ground (closing the player's open container view in the process).
+                DestroyObject(container);
             }
         }
 

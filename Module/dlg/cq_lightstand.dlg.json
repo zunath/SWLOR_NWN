@@ -64,7 +64,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Last Stand of the Light is no longer a lesson on my ledger. You proved it in Korriban Sith Crypt Depths; keep proving it when nobody is keeping score."
+            "0": "You stood at the end, and you came back up. Both matter; only one of them is rare. My vigil here is finished because of you. Carry the light gently. It is heavier than it looks."
           }
         }
       },
@@ -113,7 +113,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not yet. Last Stand of the Light is not a conversation I start on instinct or reputation. Come back when your work can survive the proof I keep for Korriban Sith Crypt Depths."
+            "0": "Keep your voice down. The crypts carry sound farther than you would believe. You are not ready to hear why I am here, and I will not put another half-trained student in the ground. Finish mastering your bond with the Force. Then find me again, quietly."
           }
         }
       },
@@ -258,7 +258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The crypt depths press on every weak promise. Stand there long enough to make one promise matter. Go to Korriban Sith Crypt Depths on Korriban, defeat the Last Stand of the Light adepts, and bring back the Last Stand of the Light field report."
+            "0": "Softly. The crypts listen, and they remember every voice that begs. I keep vigil at this stair because students of the light went down to learn how to stand at the end, and something below taught them to kneel instead. Their adepts rehearse the corrupted rite in the Korriban Sith Crypt Depths right now. Put six of the adepts to rest and bring me the Last Stand of the Light Crypt Trial Tablet they chant from. I have to know how far the rot has spread."
           }
         }
       },
@@ -307,7 +307,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Korriban Sith Crypt Depths. I want proof, not a story about almost having it."
+            "0": "Then take the key. It opens the sealed stair down into the Korriban Sith Crypt Depths. Step soft past the first tombs and do not answer anything that whispers your name. Six adepts, the tablet, and back up into the light. I will be listening for your footsteps."
           }
         }
       },
@@ -376,7 +376,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Last Stand of the Light is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "Because I led them here. Twelve students, seeking the oldest record of the last-stand rite, and I believed the crypts were only stone. The dark below was patient. I carry the ones I lost, and I keep this stair so it takes no one else unwatched. That is my penance and my post."
           }
         }
       },
@@ -445,7 +445,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Sith Crypt Depths is on Korriban. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "The stair behind me is sealed against the things below, not against you; the key I will give you opens it. Follow the descending gallery past the first tombs. The adepts keep to the rite-chambers where the old tablets lie. Korriban is unkind above ground. Below, it stops pretending otherwise."
           }
         }
       },
@@ -514,7 +514,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "They will not run. They believe they are standing their last stand, and that belief makes them fearless. Six adepts, any one of them stronger than what you have faced in daylight. Do not let pity slow your blade, and do not let the crypt goad you into anger. Come back up. That is the only order I will give you."
           }
         }
       },
@@ -563,7 +563,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Sith Crypt Depths still holds your first proof for Last Stand of the Light. Finish the target there before you bring me anything else."
+            "0": "The adepts are still rehearsing below. Six of them, and the Crypt Trial Tablet they chant from. Do not linger down there longer than the work demands."
           }
         }
       },
@@ -632,7 +632,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Last Stand of the Light lesson clean."
+            "0": "You came back up. Good. That tablet in your hands taught them to call kneeling a stand. Give it to me and let it stop teaching."
           }
         }
       },
@@ -681,7 +681,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Last Stand of the Light is one step closer to belonging to you."
+            "0": "It is done teaching lies. You moved well down there; I heard less screaming than I feared. Take the credits, they are all my purse can offer at this stair. The lesson beneath them matters more: you have seen how the rite fails. Next you will learn why."
           }
         }
       },
@@ -826,7 +826,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Last Stand of the Light proof is waiting in Korriban Sith Crypt Depths. This one is about second proof, not repetition. Go to Korriban Sith Crypt Depths on Korriban, defeat the Last Stand of the Light specialists, and bring back the Last Stand of the Light calibration core."
+            "0": "You again. I am glad, and I do not say that often at this stair. The adepts were the outer edge. Deeper in, five specialists tend the rite's focus, a shard that gathers up what the dying let go of. While it pulses, every lost student below stays bound to a stand they never chose. Put down the five who feed it and bring me the Last Stand of the Light Ritual Focus Shard."
           }
         }
       },
@@ -875,7 +875,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Korriban Sith Crypt Depths. I want proof, not a story about almost having it."
+            "0": "Go gently and come back whole. The stair knows your step now, and so do the things below, so give them no voice to follow. Five specialists. The shard comes up with you or not at all."
           }
         }
       },
@@ -944,7 +944,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Last Stand of the Light is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "A focus. In our practice it holds a guardian's calm, so the last one standing does not stand alone in their own mind. The fallen refilled it with fear. Every student who died afraid down there is still in it, feeding the rite. I want it in my hands so I can finally let them go."
           }
         }
       },
@@ -1013,7 +1013,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Sith Crypt Depths is on Korriban. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Past the rite-chambers you cleared, where the galleries narrow and the torch-brackets go cold. They keep the shard at the center of their circle and take turns feeding it. You will hear it before you see it. A pulse, like a heart that is not yours. Walk toward the sound you least want to follow."
           }
         }
       },
@@ -1082,7 +1082,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Stronger, and quieter. The adepts performed; the specialists believe. Five of them, and they will not break formation to chase you. They will make you come to the shard, where they are strongest. Breathe, keep your guard honest, and remember that you are allowed to leave. The dead were not."
           }
         }
       },
@@ -1131,7 +1131,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Sith Crypt Depths still holds your second proof for Last Stand of the Light. Finish the target there before you bring me anything else."
+            "0": "The shard still pulses below. Some nights I hear it through the stone. Five specialists guard it. Finish that work, then come to me."
           }
         }
       },
@@ -1200,7 +1200,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Last Stand of the Light lesson clean."
+            "0": "I can hear it in your pack. Softer than it was. You hurt the rite when you took it. Hand it to me. Some of my students are inside, and they have waited long enough."
           }
         }
       },
@@ -1249,7 +1249,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Last Stand of the Light is one step closer to belonging to you."
+            "0": "Because it was coming home. There. They are quiet now, truly quiet, and that is the first mercy this place has allowed me. Take your pay, though I know you did not come for it. What waits deeper is worse. Rest first. Even light needs to close its eyes."
           }
         }
       },
@@ -1394,7 +1394,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Last Stand of the Light proof is waiting in Korriban Sith Crypt Depths. This one is about breach proof, not repetition. Go to Korriban Sith Crypt Depths on Korriban, defeat the Last Stand of the Light warden, and bring back the Last Stand of the Light broken seal."
+            "0": "Listen to me, and do not argue. Past the specialists' circle, a warden holds the breach into the deep tombs. One of my own, once, and the strongest of them. He carries the Last Stand of the Light Splintered Tomb Sigil, the seal of the door he was sworn to die defending. I buried the last two who went down to face him alone, one at a time, because that is how they insisted on going. You will not go alone. Bring two whose light you know by heart, because the warden will weigh it."
           }
         }
       },
@@ -1443,7 +1443,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Korriban Sith Crypt Depths. I want proof, not a story about almost having it."
+            "0": "Then gather them, and go down together. Do not spread out in the breach; he punishes whoever stands apart first. When it is over, close his eyes. He was mine before he was the crypt's, and I would have him rest looking at nothing worse than darkness."
           }
         }
       },
@@ -1512,7 +1512,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Last Stand of the Light is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "Toma. He asked more questions than the rest of my students together, and every one was worth answering. When the crypt turned them, he did not kneel like the others. He planted himself at the tomb door and let the rite hollow him out standing up. The dark did not break his stand. It kept it. That is what you are walking into."
           }
         }
       },
@@ -1581,7 +1581,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Sith Crypt Depths is on Korriban. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Because a last stand is not a duel. He has held that breach against everything the crypts sent past him for years; a single blade is a rhythm he has already ended a hundred times. Three of you can break his footing, share the weight when he calls the stones down, carry each other out. I am not asking for your pride. I am asking for your return."
           }
         }
       },
@@ -1650,7 +1650,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "The tomb seal he was sworn to keep whole. It splintered the night the deep doors were forced, and he wears the pieces like a vow he cannot put down. Bringing it to me will not mend the seal. It will let me finish his watch for him, the way someone should have finished mine."
           }
         }
       },
@@ -1699,7 +1699,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Sith Crypt Depths still holds your breach proof for Last Stand of the Light. Finish the target there before you bring me anything else."
+            "0": "The warden still holds the breach. Do not test him with fewer blades than you promised me. The Splintered Tomb Sigil comes up when he goes down."
           }
         }
       },
@@ -1768,7 +1768,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Last Stand of the Light lesson clean."
+            "0": "You closed his eyes. I can see it in how quietly you are standing. Give me the sigil, and give yourself a moment. Both are earned."
           }
         }
       },
@@ -1817,7 +1817,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Last Stand of the Light is one step closer to belonging to you."
+            "0": "Then he finally kept his oath, and you helped him keep it. I will carry these splinters up into the sun, where a seal like this belongs. You have done what I could not, twice now. What remains below is the circle that turned them, and the one who taught the turning. Sleep before you let yourself hate them. It helps."
           }
         }
       },
@@ -1962,7 +1962,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Last Stand of the Light proof is waiting in Korriban Sith Crypt Depths. This one is about circle proof, not repetition. Go to Korriban Sith Crypt Depths on Korriban, defeat the Last Stand of the Light inner circle, and bring back the Last Stand of the Light command mark."
+            "0": "I stopped calling you a student in my head some nights ago. You should know that before I ask this. Four remain of the inner circle, the keepers who rewrote the rite and fed my students to it. They hold the Last Stand of the Light Keeper's Rite Token, the mark they pass between them when a vigil changes hands. Take it from them. All four. I will not pretend that is justice, but it is the closest this stone allows."
           }
         }
       },
@@ -2011,7 +2011,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Korriban Sith Crypt Depths. I want proof, not a story about almost having it."
+            "0": "Go, then. They will have felt the sigil leave and the shard fall silent; they know their rite is unraveling, and cornered keepers are the worst kind. Take nothing they offer. Hear nothing they promise. Four voices, then silence, then home."
           }
         }
       },
@@ -2080,7 +2080,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Last Stand of the Light is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "Not my students. Older. They were down there before I brought anyone, waiting the way a snare waits. They studied our last-stand rite through the walls and rewrote it so that surrender looks like courage. My students only failed to see the difference. The keepers made certain the difference was hard to see."
           }
         }
       },
@@ -2149,7 +2149,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Sith Crypt Depths is on Korriban. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Permission. Whoever bears it may lead the rite and choose who stands and who is spent. They pass it hand to hand when a vigil changes. Take it, and no keeper can pass the rite forward. It dies with them. That is why it must be all four, and why they will defend it past sense."
           }
         }
       },
@@ -2218,7 +2218,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "I would. Four keepers do not stand politely in a row. They scatter and reform like smoke, and one of them will always be behind you. You know your strength better than I do now. Just keep the rule that has brought you back twice: come home. Everything else is preference."
           }
         }
       },
@@ -2267,7 +2267,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Sith Crypt Depths still holds your circle proof for Last Stand of the Light. Finish the target there before you bring me anything else."
+            "0": "The circle still keeps its rite below. Four voices where there should be none. The Keeper's Rite Token comes to me when the last of them stops singing."
           }
         }
       },
@@ -2336,7 +2336,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Last Stand of the Light lesson clean."
+            "0": "The stone feels lighter. That sounds like madness above ground; down here it is simply true. The token, please. Let me hold the thing that decided what my students became."
           }
         }
       },
@@ -2385,7 +2385,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Last Stand of the Light is one step closer to belonging to you."
+            "0": "Four vigils, ended. I thought I would feel triumph. Mostly I hear how quiet it is. Take your pay, and take this truth with it: everything below is finished except the one who began it. The master still stands at the bottom of the dark, and the stand he keeps is the very thing you came here to learn. When you are ready, come whisper with me one last time."
           }
         }
       },
@@ -2530,7 +2530,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Last Stand of the Light proof is waiting in Korriban Sith Crypt Depths. This one is about mastery proof, not repetition. Go to Korriban Sith Crypt Depths on Korriban, defeat the Last Stand of the Light master, and return with the final proof."
+            "0": "This is the last thing I will ask of you, and the only one I have dreaded. At the bottom of the crypts stands the master. He taught the keepers. He has kept a single unbroken stand in the deep dark for longer than I have been alive, and what you came to learn, the true last stand of the light, he wields whole, turned inward, feeding on its own endurance. There is no proof to carry this time. His fall is the proof. And hear me as you have never heard me: the crypt has never given back anyone who stood at the end by themselves. Take the two who bled beside you at the breach. All three of you stand, or none of you leave."
           }
         }
       },
@@ -2579,7 +2579,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Korriban Sith Crypt Depths. I want proof, not a story about almost having it."
+            "0": "Then go down one last time. Watch each other more than you watch him. His stand does not break from the front; it breaks when the people beside you refuse to fall. When his ends, keep yours. And come home. I will be listening the whole way."
           }
         }
       },
@@ -2648,7 +2648,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Last Stand of the Light is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "It means being the reason someone else keeps breathing when everything says stop. Not glory. Not defiance for its own sake. A door that holds because you decided it holds. He knows the form of it perfectly and the reason not at all. That is your one advantage, and it is real. You have people to hold the door for. He only has the door."
           }
         }
       },
@@ -2717,7 +2717,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Sith Crypt Depths is on Korriban. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "I do not know his name, and I have stood at this stair for years. The keepers called him only the master. He took our rite whole, the stance, the breath, the refusal to fall, and cut away everyone it was for. What remains is a stand with no one behind it, kept for its own sake in the dark. It cannot end on its own. Endings are the one thing he no longer knows how to do."
           }
         }
       },
@@ -2786,7 +2786,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "No. And it costs me to say so. My vigil is this stair. If I leave it, what climbs out while we are all below? I will hold the way open and the way home lit. That is my stand. Yours is at the bottom. When it is done, come up slowly, all three of you, and let me count your footsteps. It is the only prayer I have left."
           }
         }
       },
@@ -2835,7 +2835,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Korriban Sith Crypt Depths still holds your mastery proof for Last Stand of the Light. Finish the target there before you bring me anything else."
+            "0": "The master still keeps his stand at the bottom of the dark. Do not face him with fewer than the three of you. There is nothing to bring me but yourselves."
           }
         }
       },
@@ -2904,7 +2904,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Last Stand of the Light lesson clean."
+            "0": "Three sets of footsteps. All climbing. I have waited years at this stair to hear that, and I did not know it until now. Tell me it is done."
           }
         }
       },
@@ -2953,7 +2953,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Last Stand of the Light is one step closer to belonging to you."
+            "0": "Then the light kept its last stand after all, and it kept it in you. What he held in the dark for himself, you now hold for others. That is the whole difference, and the whole lesson. My vigil here is over. Somewhere above, the sun owes me years of mornings, and I mean to collect. Go warm. Go loud, even. You have earned noise."
           }
         }
       }
@@ -3023,7 +3023,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Tell me the task again, quietly."
           }
         }
       },
@@ -3100,7 +3100,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the first proof."
+            "0": "Quietly, then. Six adepts, and the tablet."
           }
         }
       },
@@ -3165,7 +3165,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Last Stand of the Light demand?"
+            "0": "Why does a Jedi keep vigil here, of all places?"
           }
         }
       },
@@ -3230,7 +3230,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "How do I reach them?"
           }
         }
       },
@@ -3295,7 +3295,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "What will they do when they see me?"
           }
         }
       },
@@ -3340,7 +3340,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Not yet. Let me prepare."
           }
         }
       },
@@ -3417,7 +3417,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "Take it. It's heavier than stone should be."
           }
         }
       },
@@ -3482,7 +3482,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to the shard."
           }
         }
       },
@@ -3559,7 +3559,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the second proof."
+            "0": "Five specialists, one shard. I'll bring it up."
           }
         }
       },
@@ -3624,7 +3624,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Last Stand of the Light demand?"
+            "0": "What is the shard, exactly?"
           }
         }
       },
@@ -3689,7 +3689,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Where do the specialists keep it?"
           }
         }
       },
@@ -3754,7 +3754,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "Are they stronger than the adepts?"
           }
         }
       },
@@ -3799,7 +3799,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Not tonight."
           }
         }
       },
@@ -3876,7 +3876,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "Here. It stopped pulsing on the stairs."
           }
         }
       },
@@ -3941,7 +3941,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to the warden."
           }
         }
       },
@@ -4018,7 +4018,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the breach proof."
+            "0": "I won't go down alone. You have my word."
           }
         }
       },
@@ -4083,7 +4083,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Last Stand of the Light demand?"
+            "0": "Who was he, before?"
           }
         }
       },
@@ -4148,7 +4148,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Why three of us? I've fought alone before."
           }
         }
       },
@@ -4213,7 +4213,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "And the sigil?"
           }
         }
       },
@@ -4258,7 +4258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "I need to gather my people first."
           }
         }
       },
@@ -4335,7 +4335,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "He stood until the end. Here's the sigil."
           }
         }
       },
@@ -4400,7 +4400,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to the keepers."
           }
         }
       },
@@ -4477,7 +4477,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the circle proof."
+            "0": "All four keepers. It ends there."
           }
         }
       },
@@ -4542,7 +4542,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Last Stand of the Light demand?"
+            "0": "Who are the keepers?"
           }
         }
       },
@@ -4607,7 +4607,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "What does the token mean to them?"
           }
         }
       },
@@ -4672,7 +4672,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "Should I bring my companions again?"
           }
         }
       },
@@ -4717,7 +4717,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Give me a little time."
           }
         }
       },
@@ -4794,7 +4794,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "The circle is finished. Take their token."
           }
         }
       },
@@ -4859,7 +4859,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to the master."
           }
         }
       },
@@ -4936,7 +4936,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the mastery proof."
+            "0": "We'll stand together. All the way down."
           }
         }
       },
@@ -5001,7 +5001,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Last Stand of the Light demand?"
+            "0": "Tell me what standing at the end really means."
           }
         }
       },
@@ -5066,7 +5066,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "What is he now?"
           }
         }
       },
@@ -5131,7 +5131,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "Will you come down with us?"
           }
         }
       },
@@ -5176,7 +5176,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Not until my companions are ready."
           }
         }
       },
@@ -5253,7 +5253,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "It's done. His stand is ended, and we're all still standing."
           }
         }
       }

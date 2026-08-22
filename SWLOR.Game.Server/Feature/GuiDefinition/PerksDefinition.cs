@@ -13,8 +13,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.Perks)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 545f, 600f)
-                .SetTitle("Perks")
+                .SetInitialGeometry(0, 0, 760f, 620f)
+                .BindTitle(model => model.WindowTitle)
                 .AddColumn(col =>
                 {
                     col.AddRow(row =>
@@ -55,6 +55,35 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                     col.AddRow(row =>
                     {
+                        row.AddSpacer();
+                        row.AddToggleButton()
+                            .SetText("All")
+                            .SetHeight(28f)
+                            .BindOnClicked(model => model.OnClickFilterAll())
+                            .BindIsToggled(model => model.IsFilterAll);
+
+                        row.AddToggleButton()
+                            .SetText("Owned")
+                            .SetHeight(28f)
+                            .BindOnClicked(model => model.OnClickFilterOwned())
+                            .BindIsToggled(model => model.IsFilterOwned);
+
+                        row.AddToggleButton()
+                            .SetText("Can Buy")
+                            .SetHeight(28f)
+                            .BindOnClicked(model => model.OnClickFilterCanBuy())
+                            .BindIsToggled(model => model.IsFilterCanBuy);
+
+                        row.AddToggleButton()
+                            .SetText("Maxed")
+                            .SetHeight(28f)
+                            .BindOnClicked(model => model.OnClickFilterMaxed())
+                            .BindIsToggled(model => model.IsFilterMaxed);
+                        row.AddSpacer();
+                    });
+
+                    col.AddRow(row =>
+                    {
                         row.AddTextEdit()
                             .SetPlaceholder("Search")
                             .BindValue(model => model.SearchText);
@@ -77,6 +106,37 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetHorizontalAlign(NuiHorizontalAlign.Left)
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetHeight(26f);
+                    });
+
+                    col.AddRow(affinityRow =>
+                    {
+                        affinityRow.SetHeight(88f);
+                        affinityRow.BindIsVisible(model => model.IsForceAffinityVisible);
+                        affinityRow.AddGroup(group =>
+                        {
+                            group.SetScrollbars(NuiScrollbars.None);
+                            group.AddColumn(affinityColumn =>
+                            {
+                                affinityColumn.AddRow(row =>
+                                {
+                                    row.AddLabel()
+                                        .BindText(model => model.ForceAffinityHeading)
+                                        .BindColor(model => model.ForceAffinityColor)
+                                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                                        .SetVerticalAlign(NuiVerticalAlign.Middle)
+                                        .SetHeight(24f);
+                                });
+
+                                affinityColumn.AddRow(row =>
+                                {
+                                    row.AddText()
+                                        .BindText(model => model.ForceAffinityExplanation)
+                                        .SetShowBorder(false)
+                                        .SetScrollbars(NuiScrollbars.None)
+                                        .SetHeight(58f);
+                                });
+                            });
+                        });
                     });
 
                     col.AddRow(row =>
@@ -115,9 +175,35 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .BindColor(model => model.PerkButtonColors)
                                     .BindOnClicked(model => model.OnSelectPerk());
                             });
+                            template.AddCell(cell =>
+                            {
+                                cell.AddLabel()
+                                    .BindText(model => model.PerkRowCosts)
+                                    .BindColor(model => model.PerkButtonColors)
+                                    .SetHorizontalAlign(NuiHorizontalAlign.Right)
+                                    .SetVerticalAlign(NuiVerticalAlign.Middle);
+
+                                cell.SetWidth(58f);
+                                cell.SetIsVariable(false);
+                            });
+                            template.AddCell(cell =>
+                            {
+                                cell.AddGroup(group =>
+                                {
+                                    group.AddImage()
+                                        .BindResref(model => model.PerkRowReqIcons)
+                                        .BindTooltip(model => model.PerkRowReqTooltips)
+                                        .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                                        .SetVerticalAlign(NuiVerticalAlign.Middle)
+                                        .SetAspect(NuiAspect.Stretch);
+                                });
+
+                                cell.SetWidth(40f);
+                                cell.SetIsVariable(false);
+                            });
                         })
                             .SetRowHeight(40f)
-                            .SetScrollbars(NuiScrollbars.Both)
+                            .SetScrollbars(NuiScrollbars.Y)
                             .BindRowCount(model => model.PerkButtonTexts);
 
                         row.AddColumn(col2 =>
@@ -126,7 +212,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             {
                                 row2.AddText()
                                     .BindText(model => model.SelectedDetails)
-                                    .SetHeight(150f)
                                     .BindIsVisible(model => model.IsPerkSelected);
                             });
                             col2.AddRow(row2 =>
@@ -144,41 +229,43 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 {
                                     template2.AddCell(cell =>
                                     {
+                                        cell.AddGroup(group =>
+                                        {
+                                            group.AddImage()
+                                                .BindResref(model => model.SelectedRequirementIcons)
+                                                .BindTooltip(model => model.SelectedRequirementTooltips)
+                                                .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                                                .SetVerticalAlign(NuiVerticalAlign.Middle)
+                                                .SetAspect(NuiAspect.Stretch);
+                                        });
+
+                                        cell.SetWidth(26f);
+                                        cell.SetIsVariable(false);
+                                    });
+                                    template2.AddCell(cell =>
+                                    {
                                         cell.AddLabel()
                                             .BindText(model => model.SelectedRequirements)
                                             .BindColor(model => model.SelectedRequirementColors)
+                                            .BindTooltip(model => model.SelectedRequirementTooltips)
                                             .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                            .SetVerticalAlign(NuiVerticalAlign.Top);
+                                            .SetVerticalAlign(NuiVerticalAlign.Middle);
                                     });
                                 })
-                                    .SetScrollbars(NuiScrollbars.Both)
+                                    .SetRowHeight(28f)
+                                    .SetHeight(120f)
+                                    .SetScrollbars(NuiScrollbars.Y)
                                     .BindRowCount(model => model.SelectedRequirements)
                                     .BindIsVisible(model => model.IsPerkSelected);
                             });
                         });
                     });
 
-                    col.AddRow(row =>
-                    {
-                        row.AddSpacer();
-                        row.AddButton()
-                            .SetText("<")
-                            .SetWidth(32f)
-                            .SetHeight(35f)
-                            .BindOnClicked(model => model.OnClickPreviousPage());
-
-                        row.AddComboBox()
-                            .BindOptions(model => model.PageNumbers)
-                            .BindSelectedIndex(model => model.SelectedPage);
-
-                        row.AddButton()
-                            .SetText(">")
-                            .SetWidth(32f)
-                            .SetHeight(35f)
-                            .BindOnClicked(model => model.OnClickNextPage());
-
-                        row.AddSpacer();
-                    });
+                    col.AddPagination(
+                        model => model.PageNumbers,
+                        model => model.SelectedPage,
+                        model => model.OnClickPreviousPage(),
+                        model => model.OnClickNextPage());
 
                     col.AddRow(row =>
                     {

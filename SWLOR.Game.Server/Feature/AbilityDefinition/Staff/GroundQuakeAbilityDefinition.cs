@@ -24,7 +24,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                     .HasRecastDelay(RecastGroup.GroundQuake, 30.0f),
                 SkillType.Staff,
                 18,
-                30,
+                6,
                 null,
                 null,
                 6,
@@ -45,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 {
                     RequiredTargetStatusEffectForConditionalStatus = typeof(DazedStatusEffect),
                     ConditionalTargetStatusEffect = typeof(KnockdownStatusEffect),
-                    ConditionalTargetStatusDurationSeconds = 30
+                    ConditionalTargetStatusDurationSeconds = 6
                 });
 
             ConfigureGeneratedWeaponAbility(
@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                     .HasRecastDelay(RecastGroup.GroundQuake, 30.0f),
                 SkillType.Staff,
                 30,
-                30,
+                6,
                 null,
                 null,
                 9,
@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 {
                     RequiredTargetStatusEffectForConditionalStatus = typeof(DazedStatusEffect),
                     ConditionalTargetStatusEffect = typeof(KnockdownStatusEffect),
-                    ConditionalTargetStatusDurationSeconds = 30
+                    ConditionalTargetStatusDurationSeconds = 6
                 });
 
             return builder.Build();

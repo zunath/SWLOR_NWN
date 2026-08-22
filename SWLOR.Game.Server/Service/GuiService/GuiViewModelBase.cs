@@ -4,6 +4,7 @@ using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using SWLOR.Game.Server.Properties;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Service.GuiService
 {
@@ -165,6 +166,9 @@ namespace SWLOR.Game.Server.Service.GuiService
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
+            if (Player == 0 || WindowToken <= 0)
+                return;
+
             var value = _propertyValues[propertyName].Value;
             var json = _converter.ToJson(value);
 
@@ -310,6 +314,16 @@ namespace SWLOR.Game.Server.Service.GuiService
                 GetType().GetProperty(propertyName)?.SetValue(this, value);
 
             _propertyValues[propertyName].SkipNotify = false;
+
+            OnClientPropertyUpdated(propertyName);
+        }
+
+        /// <summary>
+        /// Called after a client-watched property has been applied to this view model.
+        /// Client updates suppress normal property notification to avoid echo loops.
+        /// </summary>
+        protected virtual void OnClientPropertyUpdated(string propertyName)
+        {
         }
 
         /// <summary>
@@ -401,6 +415,16 @@ namespace SWLOR.Game.Server.Service.GuiService
             var partial = window.PartialViews[partialName];
             NuiSetGroupLayout(Player, WindowToken, elementId, partial);
 
+            ApplyRefreshBugFix();
+        }
+
+        /// <summary>
+        /// Swaps a group element's layout for one generated at runtime. Event handlers
+        /// remain valid when regenerated elements reuse their registered element IDs.
+        /// </summary>
+        protected void SetGroupLayout(string elementId, Json layout)
+        {
+            NuiSetGroupLayout(Player, WindowToken, elementId, layout);
             ApplyRefreshBugFix();
         }
 
@@ -501,44 +525,48 @@ namespace SWLOR.Game.Server.Service.GuiService
         {
         }
 
-        public Action OnModalConfirmClick() => () =>
+        /// <summary>
+        /// Called immediately after the static main view is restored. Windows that
+        /// install runtime-generated nested layouts should reapply them here.
+        /// </summary>
+        protected virtual void OnMainViewRestored()
+        {
+        }
+
+        private void CloseModalAndRestore(Action callerAction)
         {
             ChangePartialView("_window_", "%%WINDOW_MAIN%%");
+            OnMainViewRestored();
+            try
+            {
+                callerAction?.Invoke();
+            }
+            finally
+            {
+                // A failed confirm action must not leave a tabbed window with
+                // its nested content erased by the root-modal swap.
+                OnModalClosedRestore();
+            }
+        }
 
-            if (_callerConfirmAction != null)
-                _callerConfirmAction();
-
-            OnModalClosedRestore();
+        public Action OnModalConfirmClick() => () =>
+        {
+            CloseModalAndRestore(_callerConfirmAction);
         };
 
         public Action OnModalCancelClick() => () =>
         {
-            ChangePartialView("_window_", "%%WINDOW_MAIN%%");
-
-            if (_callerCancelAction != null)
-                _callerCancelAction();
-
-            OnModalClosedRestore();
+            CloseModalAndRestore(_callerCancelAction);
         };
 
         public Action OnInputModalConfirmClick() => () =>
         {
-            ChangePartialView("_window_", "%%WINDOW_MAIN%%");
-
-            if (_callerConfirmAction != null)
-                _callerConfirmAction();
-
-            OnModalClosedRestore();
+            CloseModalAndRestore(_callerConfirmAction);
         };
 
         public Action OnInputModalCancelClick() => () =>
         {
-            ChangePartialView("_window_", "%%WINDOW_MAIN%%");
-
-            if (_callerCancelAction != null)
-                _callerCancelAction();
-
-            OnModalClosedRestore();
+            CloseModalAndRestore(_callerCancelAction);
         };
 
         /// <summary>

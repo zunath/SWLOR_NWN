@@ -1,9 +1,9 @@
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DialogService;
+using SWLOR.Game.Server.Service.ConversationService;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
-    public class DestroyItemDialog: DialogBase
+    public class DestroyItemDialog: ConversationMenuDefinition
     {
         private class Model
         {
@@ -14,9 +14,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         private const string MainPageId = "MAIN_PAGE";
         private const string ConfirmPageId = "CONFIRM_PAGE";
 
-        public override PlayerDialog SetUp(uint player)
+        public override ConversationMenuSpec Build()
         {
-            var builder = new DialogBuilder()
+            var builder = new ConversationMenuBuilder()
                 .WithDataModel(new Model())
                 .AddInitializationAction(Initialization)
                 .AddPage(MainPageId, MainPageInit)
@@ -27,14 +27,14 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
         private void Initialization()
         {
-            var player = GetPC();
-            var model = GetDataModel<Model>();
+            var player = Player;
+            var model = Data<Model>();
             model.Item = GetLocalObject(player, "DESTROY_ITEM");
 
             if (!GetIsObjectValid(model.Item))
             {
                 FloatingTextStringOnCreature("Could not locate item to destroy. Notify an admin.", player, false);
-                EndConversation();
+                Close();
                 return;
             }
 
@@ -42,28 +42,28 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             DeleteLocalObject(player, "DESTROY_ITEM");
         }
 
-        private void MainPageInit(DialogPage page)
+        private void MainPageInit(ConversationMenuPage page)
         {
-            var model = GetDataModel<Model>();
-            page.Header = $"{ColorToken.Green("Item:")} {model.ItemName}\n\n" +
+            var model = Data<Model>();
+            page.Header = $"Item: {model.ItemName}\n\n" +
                           "Are you sure you want to destroy this item? This action is irreversible!";
 
             page.AddResponse("Destroy Item", () =>
             {
-                ChangePage(ConfirmPageId);
+                GoToPage(ConfirmPageId);
             });
         }
 
-        private void ConfirmPageInit(DialogPage page)
+        private void ConfirmPageInit(ConversationMenuPage page)
         {
-            var model = GetDataModel<Model>();
-            page.Header = $"{ColorToken.Green("Item:")} {model.ItemName}\n\n" +
+            var model = Data<Model>();
+            page.Header = $"Item: {model.ItemName}\n\n" +
                           "Are you sure you want to destroy this item? This action is irreversible!";
 
             page.AddResponse(ColorToken.Red("CONFIRM DESTROY ITEM"), () =>
             {
                 DestroyObject(model.Item);
-                EndConversation();
+                Close();
             });
         }
     }

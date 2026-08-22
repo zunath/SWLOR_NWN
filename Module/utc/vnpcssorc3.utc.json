@@ -312,14 +312,14 @@
         }
       },
       {
-        "__struct_id": 2,
+        "__struct_id": 1,
         "Feat": {
           "type": "word",
           "value": 1861
         }
       },
       {
-        "__struct_id": 3,
+        "__struct_id": 1,
         "Feat": {
           "type": "word",
           "value": 1862
@@ -347,7 +347,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 823
+    "value": 748
   },
   "Int": {
     "type": "byte",

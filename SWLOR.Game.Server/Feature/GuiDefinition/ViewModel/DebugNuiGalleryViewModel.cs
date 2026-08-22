@@ -1,9 +1,9 @@
 using System;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.LogService;
 
 namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
@@ -431,6 +431,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 log.RemoveAt(log.Count - 1);
             }
+
+            var separator = message.IndexOf(':');
+            var eventName = separator >= 0 ? message[..separator] : message;
+            Log.WriteStructured(
+                LogGroup.Server,
+                "[NUI gallery] Event {EventNumber}: {EventName}",
+                _eventCount,
+                eventName);
         }
 
         private static GuiBindingList<GuiComboEntry> BuildComboOptions(int setIndex = 0)
@@ -513,7 +521,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         // Sliders tab
         public Action OnClickProgressAdd() => () =>
         {
-            ProgressValue = ProgressValue >= 1f ? 1f : ProgressValue + 0.1f;
+            ProgressValue = Math.Min(1f, ProgressValue + 0.1f);
             LogEvent($"Progress bar increased to {ProgressValue:F1}");
         };
 
@@ -554,13 +562,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickListRemoveRow() => () =>
         {
-            if (ListNames.Count == 0)
+            var rowCount = ListNames.Count;
+            if (rowCount == 0)
             {
                 LogEvent("List remove skipped; no rows left");
                 return;
             }
 
-            var last = ListNames.Count - 1;
+            if (ListDescriptions.Count != rowCount ||
+                ListProgress.Count != rowCount ||
+                ListResrefs.Count != rowCount)
+            {
+                LogEvent("List remove skipped; bound column lengths differ");
+                return;
+            }
+
+            var last = rowCount - 1;
             ListNames.RemoveAt(last);
             ListDescriptions.RemoveAt(last);
             ListProgress.RemoveAt(last);
@@ -692,7 +709,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         };
 
         // Hazards tab
-        private bool HazardsAreAvailable => ApplicationSettings.Get().ServerEnvironment != ServerEnvironmentType.Production;
+        private bool HazardsAreAvailable
+        {
+            get
+            {
+                var environment = ApplicationSettings.Get().ServerEnvironment;
+                return environment == ServerEnvironmentType.Development ||
+                       environment == ServerEnvironmentType.Test;
+            }
+        }
 
         private void LoadHazard(string partialName, string expectedFailure)
         {

@@ -1,0 +1,20 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:panels="using:SWLOR.Toolset.Shell.Panels"
+             mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="180"
+             x:Class="SWLOR.Toolset.Shell.Views.OutputView"
+             x:DataType="panels:OutputViewModel">
+  <!-- Everything logged here is machine output, so it is monospace throughout. -->
+  <ListBox x:Name="LinesList" ItemsSource="{Binding Lines}"
+           Background="Transparent" BorderThickness="0"
+           FontFamily="{DynamicResource MonoFont}" FontSize="11"
+           Foreground="{DynamicResource InkSecondaryBrush}">
+    <ListBox.Styles>
+      <Style Selector="ListBoxItem">
+        <Setter Property="Padding" Value="10,1" />
+      </Style>
+    </ListBox.Styles>
+  </ListBox>
+</UserControl>

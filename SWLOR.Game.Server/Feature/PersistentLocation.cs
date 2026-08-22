@@ -105,6 +105,18 @@ namespace SWLOR.Game.Server.Feature
                 return;
             }
 
+            // Shuttle passengers - resume or resolve an in-transit shuttle flight instead of
+            // loading the last saved location.
+            if (Shuttle.TryGetLoginRedirect(player, out var shuttleLocation))
+            {
+                AssignCommand(player, () =>
+                {
+                    ClearAllActions();
+                    ActionJumpToLocation(shuttleLocation);
+                });
+                return;
+            }
+
             if (string.IsNullOrWhiteSpace(dbPlayer.LocationAreaResref)) return;
 
             var locationArea = Area.GetAreaByResref(dbPlayer.LocationAreaResref);

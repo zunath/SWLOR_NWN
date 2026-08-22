@@ -292,6 +292,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             var migratedCount = 0;
             var removedItems = 0;
             var droidPerksMigrated = 0;
+            var saberTokens = 0;
             progress.BeginSection("inventory items", items.Count);
 
             foreach (var item in items)
@@ -360,11 +361,12 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 DB.Set(item);
                 removedItems += result.RemovedItems;
                 droidPerksMigrated += result.MigratedDroidPerks;
+                saberTokens += result.NormalizedSabers;
                 migratedCount++;
                 progress.RecordProcessed(true);
             }
 
-            progress.FinishSection($"{migratedCount}/{items.Count} inventory item records changed. Removed {removedItems} items and migrated {droidPerksMigrated} stored droid perk sets.");
+            progress.FinishSection($"{migratedCount}/{items.Count} inventory item records changed. Removed {removedItems} items, migrated {droidPerksMigrated} stored droid perk sets, and normalized {saberTokens} legacy sabers.");
         }
 
         private static void MigrateMarketItems(MigrationProgress progress)
@@ -373,6 +375,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             var migratedCount = 0;
             var removedItems = 0;
             var droidPerksMigrated = 0;
+            var saberTokens = 0;
             progress.BeginSection("market items", items.Count);
 
             foreach (var item in items)
@@ -448,11 +451,12 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 DB.Set(item);
                 removedItems += result.RemovedItems;
                 droidPerksMigrated += result.MigratedDroidPerks;
+                saberTokens += result.NormalizedSabers;
                 migratedCount++;
                 progress.RecordProcessed(true);
             }
 
-            progress.FinishSection($"{migratedCount}/{items.Count} market item records changed. Removed {removedItems} items and migrated {droidPerksMigrated} stored droid perk sets.");
+            progress.FinishSection($"{migratedCount}/{items.Count} market item records changed. Removed {removedItems} items, migrated {droidPerksMigrated} stored droid perk sets, and normalized {saberTokens} legacy sabers.");
         }
 
         private static void MigrateWorldPropertyCategories(
@@ -464,6 +468,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             var migratedItemCount = 0;
             var removedItems = 0;
             var droidPerksMigrated = 0;
+            var saberTokens = 0;
             progress.BeginSection("world property category storage", categoryItemCount);
 
             foreach (var category in categories)
@@ -540,6 +545,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 
                     removedItems += result.RemovedItems;
                     droidPerksMigrated += result.MigratedDroidPerks;
+                    saberTokens += result.NormalizedSabers;
                     categoryMigrated = true;
                     migratedItemCount++;
                     progress.RecordProcessed(true);
@@ -557,7 +563,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 DB.Set(category);
             }
 
-            progress.FinishSection($"{migratedItemCount}/{categoryItemCount} category items changed across {migratedCategoryCount}/{categories.Count} categories. Removed {removedItems} items and migrated {droidPerksMigrated} stored droid perk sets.");
+            progress.FinishSection($"{migratedItemCount}/{categoryItemCount} category items changed across {migratedCategoryCount}/{categories.Count} categories. Removed {removedItems} items, migrated {droidPerksMigrated} stored droid perk sets, and normalized {saberTokens} legacy sabers.");
         }
 
         private static void MigrateEntityItems<T>(
@@ -695,13 +701,29 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             if (!GetIsObjectValid(obj))
                 return result;
 
-            if (GetObjectType(obj) == ObjectType.Item && ObsoleteItemMigration.IsObsoleteResRef(GetResRef(obj)))
+            if (GetObjectType(obj) == ObjectType.Item)
             {
-                DestroyObject(obj);
-                result.Changed = true;
-                result.RemovedRoot = true;
-                result.RemovedItems = 1;
-                return result;
+                var resref = GetResRef(obj);
+                if (ObsoleteItemMigration.TryGetConversionResRef(resref, out var replacementResRef))
+                {
+                    DestroyObject(obj);
+                    var tempStorage = GetObjectByTag("TEMP_ITEM_STORAGE");
+                    var replacement = CreateItemOnObject(replacementResRef, tempStorage);
+                    result.Changed = true;
+                    result.Data = ObjectPlugin.Serialize(replacement);
+                    result.RemovedItems = 1;
+                    DestroyObject(replacement);
+                    return result;
+                }
+
+                if (ObsoleteItemMigration.IsObsoleteResRef(resref))
+                {
+                    DestroyObject(obj);
+                    result.Changed = true;
+                    result.RemovedRoot = true;
+                    result.RemovedItems = 1;
+                    return result;
+                }
             }
 
             result.Changed = MigrateStoredObject(obj, result);
@@ -740,13 +762,16 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             migrated |= SerializedItemResistanceMigration.MigrateObject(obj);
             migrated |= SerializedItemWeaponDamageTypeMigration.MigrateObject(obj);
             migrated |= CombatReadinessMigration.MigrateObject(obj);
+            migrated |= PistolBaseItemMigration.MigrateStoredObject(obj);
             migrated |= ObsoleteItemMigration.RemoveObsoleteItemsFromObject(
                 obj,
                 out var removedItems,
                 out var migratedDroidPerks);
+            migrated |= LegacySaberMigration.MigrateStoredObject(obj, out var normalizedSabers);
 
             result.RemovedItems += removedItems;
             result.MigratedDroidPerks += migratedDroidPerks;
+            result.NormalizedSabers += normalizedSabers;
 
             return migrated;
         }
@@ -845,6 +870,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
             public bool RemovedRoot { get; set; }
             public int RemovedItems { get; set; }
             public int MigratedDroidPerks { get; set; }
+            public int NormalizedSabers { get; set; }
         }
 
         private sealed class MigrationProgress

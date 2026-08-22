@@ -152,7 +152,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Greetings visitor. The shuttle has arrived. Please show me your shuttle pass and I'll allow you to board."
+            "0": "Greetings, visitor. Your shuttle pass is in order - you can book a departure at the flights terminal just over there. It'll take you wherever you need to go."
           }
         }
       }
@@ -258,7 +258,7 @@
         },
         "Script": {
           "type": "resref",
-          "value": "action"
+          "value": ""
         },
         "Sound": {
           "type": "resref",
@@ -267,7 +267,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "[Display your shuttle pass] I'd like to head down to planet Viscara."
+            "0": "Thank you, I'll use the terminal."
           }
         }
       }

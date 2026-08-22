@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 true,
                 true,
                 false,
-                Spell.Invalid,
+                Spell.Forcebane1,
                 AbilityTargetingShapeType.Sphere,
                 5.0f,
                 0.0f,

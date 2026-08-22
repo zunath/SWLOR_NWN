@@ -47,7 +47,147 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             MandalorianCrate();
             CoxxionCrate();
 
+            CapstoneViscaraDungeonRares();
+            VelesRareElites();
+            VisbunkerRareElites();
             return _builder.Build();
+        }
+
+        private void VisbunkerRareElites()
+        {
+            _builder.Create("VISBUNKER_BUNKER_RARES").IsRare()
+                .AddItem("bunkerbreakda", 1, 1, true).AddItem("bunkerbreakdb", 1, 1, true).AddItem("bp_bunkerbreak", 1, 1, true);
+            _builder.Create("VISBUNKER_BEACON_RARES").IsRare()
+                .AddItem("beaconmarksda", 1, 1, true).AddItem("beaconmarksdb", 1, 1, true).AddItem("bp_beaconmarks", 1, 1, true);
+            _builder.Create("VISBUNKER_DECURION_RARES").IsRare()
+                .AddItem("decurioncmdda", 1, 1, true).AddItem("decurioncmddb", 1, 1, true).AddItem("bp_decurioncmd", 1, 1, true);
+            _builder.Create("VISBUNKER_BUNKER_COMP").AddItem("bunkerbreakcm", 1, 1);
+            _builder.Create("VISBUNKER_BEACON_COMP").AddItem("beaconmarkscm", 1, 1);
+            _builder.Create("VISBUNKER_DECURION_COMP").AddItem("decurioncmdcm", 1, 1);
+        }
+
+        private void VelesRareElites()
+        {
+            _builder.Create("VELES_INVICTUS_RARES").IsRare()
+                .AddItem("invictusda", 1, 1, true).AddItem("invictusdb", 1, 1, true).AddItem("bp_invictus", 1, 1, true);
+            _builder.Create("VELES_RUPTOR_RARES").IsRare()
+                .AddItem("ruptorvaneda", 1, 1, true).AddItem("ruptorvanedb", 1, 1, true).AddItem("bp_ruptorvane", 1, 1, true);
+            _builder.Create("VELES_BLACKOUT_RARES").IsRare()
+                .AddItem("blackoutwrdda", 1, 1, true).AddItem("blackoutwrddb", 1, 1, true).AddItem("bp_blackoutwrd", 1, 1, true);
+            _builder.Create("VELES_INVICTUS_COMP").AddItem("invictuscm", 1, 1);
+            _builder.Create("VELES_RUPTOR_COMP").AddItem("ruptorvanecm", 1, 1);
+            _builder.Create("VELES_BLACKOUT_COMP").AddItem("blackoutwrdcm", 1, 1);
+        }
+
+        private void CapstoneViscaraDungeonRares()
+        {
+            _builder.Create("CAPSTONE_INVINC_RARES")
+                .IsRare()
+                .AddItem("invinc_l1", 1, 1, true)
+                .AddItem("invinc_l2", 1, 1, true)
+                .AddItem("invinc_l3", 1, 1, true)
+                .AddItem("invinc_l4", 1, 1, true)
+                .AddItem("invinc_l5", 1, 1, true)
+                .AddItem("invinc_l6", 1, 1, true)
+                .AddItem("invinc_l7", 1, 1, true)
+                .AddItem("invinc_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_INVINC_WD_RARES")
+                .IsRare()
+                .AddItem("invinc_w1", 1, 1, true)
+                .AddItem("invinc_w2", 1, 1, true)
+                .AddItem("invinc_w3", 1, 1, true)
+                .AddItem("invinc_w4", 1, 1, true)
+                .AddItem("invinc_w5", 1, 1, true);
+
+            _builder.Create("CAPSTONE_VITRUPT_RARES")
+                .IsRare()
+                .AddItem("vitrupt_l1", 1, 1, true)
+                .AddItem("vitrupt_l2", 1, 1, true)
+                .AddItem("vitrupt_l3", 1, 1, true)
+                .AddItem("vitrupt_l4", 1, 1, true)
+                .AddItem("vitrupt_l5", 1, 1, true)
+                .AddItem("vitrupt_l6", 1, 1, true)
+                .AddItem("vitrupt_l7", 1, 1, true)
+                .AddItem("vitrupt_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_VITRUPT_WD_RARES")
+                .IsRare()
+                .AddItem("vitrupt_w1", 1, 1, true)
+                .AddItem("vitrupt_w2", 1, 1, true)
+                .AddItem("vitrupt_w3", 1, 1, true)
+                .AddItem("vitrupt_w4", 1, 1, true)
+                .AddItem("vitrupt_w5", 1, 1, true);
+
+            _builder.Create("CAPSTONE_SYSSHUT_RARES")
+                .IsRare()
+                .AddItem("sysshut_l1", 1, 1, true)
+                .AddItem("sysshut_l2", 1, 1, true)
+                .AddItem("sysshut_l3", 1, 1, true)
+                .AddItem("sysshut_l4", 1, 1, true)
+                .AddItem("sysshut_l5", 1, 1, true)
+                .AddItem("sysshut_l6", 1, 1, true)
+                .AddItem("sysshut_l7", 1, 1, true)
+                .AddItem("sysshut_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_SYSSHUT_WD_RARES")
+                .IsRare()
+                .AddItem("sysshut_w1", 1, 1, true)
+                .AddItem("sysshut_w2", 1, 1, true)
+                .AddItem("sysshut_w3", 1, 1, true)
+                .AddItem("sysshut_w4", 1, 1, true)
+                .AddItem("sysshut_w5", 1, 1, true);
+
+            _builder.Create("CAPSTONE_KILLBEACON_RARES")
+                .IsRare()
+                .AddItem("killbeacon_l1", 1, 1, true)
+                .AddItem("killbeacon_l2", 1, 1, true)
+                .AddItem("killbeacon_l3", 1, 1, true)
+                .AddItem("killbeacon_l4", 1, 1, true)
+                .AddItem("killbeacon_l5", 1, 1, true)
+                .AddItem("killbeacon_l6", 1, 1, true)
+                .AddItem("killbeacon_l7", 1, 1, true)
+                .AddItem("killbeacon_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_KILLBEACON_WD_RARES")
+                .IsRare()
+                .AddItem("killbeacon_w1", 1, 1, true)
+                .AddItem("killbeacon_w2", 1, 1, true)
+                .AddItem("killbeacon_w3", 1, 1, true)
+                .AddItem("killbeacon_w4", 1, 1, true)
+                .AddItem("killbeacon_w5", 1, 1, true);
+
+            _builder.Create("CAPSTONE_EMBUNKER_RARES")
+                .IsRare()
+                .AddItem("embunker_l1", 1, 1, true)
+                .AddItem("embunker_l2", 1, 1, true)
+                .AddItem("embunker_l3", 1, 1, true)
+                .AddItem("embunker_l4", 1, 1, true)
+                .AddItem("embunker_l5", 1, 1, true)
+                .AddItem("embunker_l6", 1, 1, true)
+                .AddItem("embunker_l7", 1, 1, true)
+                .AddItem("embunker_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_EMBUNKER_WD_RARES")
+                .IsRare()
+                .AddItem("embunker_w1", 1, 1, true)
+                .AddItem("embunker_w2", 1, 1, true)
+                .AddItem("embunker_w3", 1, 1, true)
+                .AddItem("embunker_w4", 1, 1, true)
+                .AddItem("embunker_w5", 1, 1, true);
+
+            _builder.Create("CAPSTONE_DECCOMMAND_RARES")
+                .IsRare()
+                .AddItem("deccommand_l1", 1, 1, true)
+                .AddItem("deccommand_l2", 1, 1, true)
+                .AddItem("deccommand_l3", 1, 1, true)
+                .AddItem("deccommand_l4", 1, 1, true)
+                .AddItem("deccommand_l5", 1, 1, true)
+                .AddItem("deccommand_l6", 1, 1, true)
+                .AddItem("deccommand_l7", 1, 1, true)
+                .AddItem("deccommand_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_DECCOMMAND_WD_RARES")
+                .IsRare()
+                .AddItem("deccommand_w1", 1, 1, true)
+                .AddItem("deccommand_w2", 1, 1, true)
+                .AddItem("deccommand_w3", 1, 1, true)
+                .AddItem("deccommand_w4", 1, 1, true)
+                .AddItem("deccommand_w5", 1, 1, true);
         }
 
         private void KathHound()
@@ -61,7 +201,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("VISCARA_KATH_HOUND_RARES")
                 .IsRare()
                 .AddItem("kath_blood", 2, 1, true)
-                .AddItem("k_hound_claw", 1, 1, true);
+                .AddItem("k_hound_claw", 1, 1, true)
+                .AddItem("lockbox_t1", 2, 1, true);
 
             _builder.Create("VISCARA_OLD_SCAR_RARES")
                 .IsRare()
@@ -271,7 +412,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("VISCARA_OUTLAW_RARES")
                 .IsRare()
-                .AddItem("map_053", 20, 1, true);
+                .AddItem("map_053", 20, 1, true)
+                .AddItem("lockbox_t2", 3, 1, true);
         }
 
         private void Gimpassa()

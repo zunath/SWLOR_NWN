@@ -63,6 +63,46 @@ public class AbilityDamageQueueTests
     }
 
     [Test]
+    public void FailedAbilityImpacts_AbortTrackedStateForCastAndQueuedPaths()
+    {
+        var root = FindRepositoryRoot();
+        var abilitySource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Ability.cs")).Replace("\r\n", "\n");
+        var usePerkFeatSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "UsePerkFeat.cs")).Replace("\r\n", "\n");
+        var castImpactBody = usePerkFeatSource.Substring(
+            usePerkFeatSource.IndexOf("private static void ExecuteAbilityImpact(", StringComparison.Ordinal),
+            usePerkFeatSource.IndexOf("/// Handles casting abilities.", StringComparison.Ordinal) -
+            usePerkFeatSource.IndexOf("private static void ExecuteAbilityImpact(", StringComparison.Ordinal));
+        var queuedImpactBody = usePerkFeatSource.Substring(
+            usePerkFeatSource.IndexOf("public static void ProcessQueuedWeaponAbility()", StringComparison.Ordinal),
+            usePerkFeatSource.IndexOf("/// Whenever a player enters the server", StringComparison.Ordinal) -
+            usePerkFeatSource.IndexOf("public static void ProcessQueuedWeaponAbility()", StringComparison.Ordinal));
+        var abortImpactBody = abilitySource.Substring(
+            abilitySource.IndexOf("public static void AbortAbilityImpact(uint activator)", StringComparison.Ordinal),
+            abilitySource.IndexOf("public static bool TryQueueTrackedDamageEffect", StringComparison.Ordinal) -
+            abilitySource.IndexOf("public static void AbortAbilityImpact(uint activator)", StringComparison.Ordinal));
+
+        abortImpactBody.Should().Contain("_trackedAbilityImpacts.Remove(activator);");
+        abortImpactBody.Should().Contain("Log.WriteStructured(");
+        abortImpactBody.Should().Contain("LogGroup.Error");
+        castImpactBody.Should().Contain("var impactEnded = false;");
+        castImpactBody.Should().Contain("impactEnded = true;");
+        castImpactBody.Should().Contain("if (!impactEnded)");
+        castImpactBody.Should().Contain("Ability.AbortAbilityImpact(activator);");
+        queuedImpactBody.Should().Contain("var impactEnded = false;");
+        queuedImpactBody.Should().Contain("impactEnded = true;");
+        queuedImpactBody.Should().Contain("if (!impactEnded)");
+        queuedImpactBody.Should().Contain("Ability.AbortAbilityImpact(activator);");
+    }
+
+    [Test]
     public void TwinFangFlurryTriggeredDamageDuringTrackedAbilityImpact_QueuesWithAbilityDamageEffects()
     {
         var root = FindRepositoryRoot();
@@ -125,6 +165,59 @@ public class AbilityDamageQueueTests
         delayedImpactBody.Should().Contain("BeginAbilityImpact(");
         delayedImpactBody.Should().Contain("nextAbilityDamageBonus");
         delayedImpactBody.Should().Contain("nextAbilityCriticalRatePercentAdjustment");
+    }
+
+    [Test]
+    public void DelayedTelegraphedImpacts_DoNotCountTheOriginatingCastTwice()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Ability.cs")).Replace("\r\n", "\n");
+        var delayedImpactBody = source.Substring(
+            source.IndexOf("return (creator, creatures) =>", StringComparison.Ordinal),
+            source.IndexOf("private static int ApplyCombatImpactToCreatures", StringComparison.Ordinal) -
+            source.IndexOf("return (creator, creatures) =>", StringComparison.Ordinal));
+
+        delayedImpactBody.Should().Contain("countsAsAttackAttempt: false",
+            "the originating cast already spends its one limited-speed charge before the telegraph resolves");
+    }
+
+    [Test]
+    public void DelayedTelegraphedImpacts_RetainCostContextAndCleanUpEveryExitPath()
+    {
+        var root = FindRepositoryRoot();
+        var abilitySource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Ability.cs")).Replace("\r\n", "\n");
+        var combatSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Combat.cs")).Replace("\r\n", "\n");
+        var telegraphMethod = abilitySource.Substring(
+            abilitySource.IndexOf("public static int ApplyTelegraphedCombatImpact(", StringComparison.Ordinal),
+            abilitySource.IndexOf("private static void ShowAreaImpactFlash(", StringComparison.Ordinal) -
+            abilitySource.IndexOf("public static int ApplyTelegraphedCombatImpact(", StringComparison.Ordinal));
+        var delayedImpactBody = abilitySource.Substring(
+            abilitySource.IndexOf("return (creator, creatures) =>", StringComparison.Ordinal),
+            abilitySource.IndexOf("private static int ApplyCombatImpactToCreatures", StringComparison.Ordinal) -
+            abilitySource.IndexOf("return (creator, creatures) =>", StringComparison.Ordinal));
+
+        telegraphMethod.Should().Contain("Combat.DeferAbilityStaminaCostContext(activator, trackedImpact?.Ability);");
+        delayedImpactBody.Should().Contain("var impactStarted = false;");
+        delayedImpactBody.Should().Contain("var impactEnded = false;");
+        delayedImpactBody.Should().Contain("finally");
+        delayedImpactBody.Should().Contain("if (impactStarted && !impactEnded)");
+        delayedImpactBody.Should().Contain("AbortAbilityImpact(creator);");
+        delayedImpactBody.Should().Contain("Combat.CompleteDeferredAbilityStaminaCostContext(creator, ability);");
+
+        combatSource.Should().Contain("state.DeferredImpactCount++;");
+        combatSource.Should().Contain("state.DeferredImpactCount = Math.Max(0, state.DeferredImpactCount - 1);");
     }
 
     private static DirectoryInfo FindRepositoryRoot()

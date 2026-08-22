@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 true,
                 true,
                 false,
-                Spell.Invalid,
+                Spell.HamperingBarrage2,
                 AbilityTargetingShapeType.Cone,
                 5.0f,
                 5.0f,

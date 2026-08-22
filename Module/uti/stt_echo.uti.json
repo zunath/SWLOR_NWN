@@ -1,0 +1,120 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 10
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 39
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 10
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 0
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "A consumable slicing tool. Reveals the next two route signatures after a selected route tile. Works on security tier 3 or lower; one tool may be used per attempt."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "A consumable slicing tool. Reveals the next two route signatures after a selected route tile. Works on security tier 3 or lower; one tool may be used per attempt."
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Forward-Echo Decoder"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 2
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 20
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": []
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "SLICING_TOOL"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "stt_echo"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 2
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "SLICING_TOOL_TYPE"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 8
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "SLICING_TOOL_TIER"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 3
+        }
+      }
+    ]
+  }
+}

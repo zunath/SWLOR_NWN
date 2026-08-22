@@ -34,16 +34,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 true,
                 false,
                 Spell.PointBlankBurst1,
-                AbilityTargetingShapeType.Cone,
+                AbilityTargetingShapeType.Sphere,
                 5.0f,
-                5.0f,
+                0.0f,
                 AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf,
                 Animation.PointPistol,
                 25.0f,
                 AbilityType.Perception,
                 new GeneratedWeaponAbilityProfile
                 {
-                    SelfEvasionPercent = 10,
+                    SelfStatusEffectFactory = () => new PointBlankBurstStatusEffect(10),
                     SelfStatDurationSeconds = 30
                 });
 
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 true,
                 true,
                 false,
-                Spell.Invalid,
+                Spell.PointBlankBurst2,
                 AbilityTargetingShapeType.Sphere,
                 5.0f,
                 0.0f,
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 AbilityType.Perception,
                 new GeneratedWeaponAbilityProfile
                 {
-                    SelfEvasionPercent = 15,
+                    SelfStatusEffectFactory = () => new PointBlankBurstStatusEffect(15),
                     SelfStatDurationSeconds = 30
                 });
 

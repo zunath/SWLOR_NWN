@@ -27,7 +27,7 @@ The main deployment configuration is defined in `Docker/docker-compose.yml`. Thi
 
 - **Redis**: Caching and data storage using `redislabs/redismod:latest`
 - **Redis Commander**: Web interface for Redis management
-- **SWLOR Server**: Main game server using `zunath/nwn-dotnet:8193.37.3-1` image
+- **SWLOR Server**: Main game server using `zunath/nwn-dotnet:8193.37.15-2` with the .NET 10 runtime
 - **InfluxDB**: Time-series database for metrics storage
 - **Grafana**: Monitoring and visualization dashboard
 
@@ -124,6 +124,18 @@ Logging is handled by Serilog with multiple sinks. The configuration is defined 
 - `LogGroup.Error` - Error and exception logs
 
 ## Build and Deployment Process
+
+The production host uses the guarded, manual-first deployment workflow in
+[`scripts/deployment/README.md`](../../scripts/deployment/README.md). It builds
+and validates a temporary HAK/TLK/module set in the existing NWSync repository
+while the live server continues using separate permanent artifact directories.
+After that host's `build.sh` generates the manifest, the workflow takes the
+complete Compose project down, updates `NWN_NWSYNCHASH`, atomically moves the
+new artifacts into the server tree, brings the project up, and health-checks
+startup. The previous live set is retained until the health check passes and
+is restored automatically on a failed cutover. The generic commands below
+remain useful for local development but are not the production release
+procedure.
 
 ### 1. Local Development
 

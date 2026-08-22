@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroblade
     public class CoveringStrikeAbilityDefinition : IAbilityListDefinition
     {
         private const string ReplacementAnimationName = "Covering_Strike";
-        private const float Radius = 3f;
+        private const float Radius = 5f;
         private const int DurationSeconds = 30;
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()

@@ -18,7 +18,16 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             QionHive();
             HutlarQionTestSite();
 
+            HutqionRareElites();
             return _builder.Build();
+        }
+
+        private void HutqionRareElites()
+        {
+            _builder.Create("HUTLAR_QION_TEST_SITE_RARES", "Hutlar Qion Test Site - Rare Elites")
+                .AddSpawn(ObjectType.Creature, "flurrychamp").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome()
+                .AddSpawn(ObjectType.Creature, "thermlancer").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome()
+                .AddSpawn(ObjectType.Creature, "barrieroverse").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome();
         }
 
         private void Byysk()
@@ -130,44 +139,52 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             _builder.Create("HUTLAR_DUNGEON_BROODMOTHER")
                 .AddSpawn(ObjectType.Creature, "huthivebroodmoth")
                 .WithFrequency(1)
+                .ReturnsHome()
                 .RespawnDelay(120);
 
             _builder.Create("HUTLAR_DUNGEON_CHIEFTAIN")
                 .AddSpawn(ObjectType.Creature, "byysk_chieftain")
                 .WithFrequency(1)
+                .ReturnsHome()
                 .RespawnDelay(20);
 
             _builder.Create("HUTLAR_DUNGEON_SHAMAN")
                 .AddSpawn(ObjectType.Creature, "byysk_shaman")
                 .WithFrequency(1)
+                .ReturnsHome()
                 .RespawnDelay(20);
 
             _builder.Create("HUTLAR_DUNGEON_CHAMPION")
                 .AddSpawn(ObjectType.Creature, "byysk_champion")
                 .WithFrequency(1)
+                .ReturnsHome()
                 .RespawnDelay(20);
 
             _builder.Create("HUTLAR_DUNGEON_BYYSKGUARDIAN")
                 .AddSpawn(ObjectType.Creature, "byysk_guard001")
                 .RandomlyWalks()
                 .WithFrequency(1)
+                .ReturnsHome()
                 .RespawnDelay(2)
 
                 .AddSpawn(ObjectType.Creature, "byysk_guard002")
                 .RandomlyWalks()
                 .WithFrequency(1)
+                .ReturnsHome()
                 .RespawnDelay(2);
 
             _builder.Create("HUTLAR_DUNGEON_SLUG")
                 .AddSpawn(ObjectType.Creature, "qion_slug001")
                 .RandomlyWalks()
                 .WithFrequency(1)
+                .ReturnsHome()
                 .RespawnDelay(4);
 
             _builder.Create("HUTLAR_DUNGEON_TUNNELER")
                 .AddSpawn(ObjectType.Creature, "qion_hive_tunnel")
                 .RandomlyWalks()
                 .WithFrequency(1)
+                .ReturnsHome()
                 .RespawnDelay(4);
         }
 

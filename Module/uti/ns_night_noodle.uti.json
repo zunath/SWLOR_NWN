@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Dense, fermented noodle strands designed for fast, filling meals. Commonly used in Nar Shaddaa street dishes."
     }
   },
   "Identified": {
@@ -77,6 +77,26 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "ns_night_noodle"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NO_ECONOMY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
   },
   "xModelPart1": {
     "type": "word",

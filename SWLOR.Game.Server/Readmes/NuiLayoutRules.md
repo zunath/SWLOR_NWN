@@ -8,12 +8,12 @@ that authoring mistakes are caught (or at least flagged with a widget path) at s
 boot instead.
 
 Every rule below states its enforcement level: **throws** (build/boot fails or the
-call raises a descriptive exception), **warns** (a `[NUI layout warning]` console line
+call raises a descriptive exception), **warns** (a structured `[NUI layout warning]` Server-log entry
 at boot), or **doc-only** (not statically detectable — follow the prescription).
 
 Enforcement lives in:
 - `Service/GuiService/GuiLayoutValidator.cs` — invoked from `GuiWindowBuilder.Build()`
-  for every window at boot; findings print as `[NUI layout warning]` lines. The
+  for every window at boot; findings are written as structured `[NUI layout warning]` entries. The
   validator flags **only shapes confirmed to fail in-game** via the DebugNuiGallery
   hazard harness (`/nuigallery`), so **zero warning lines for your window is a hard
   authoring gate — every warning is a real defect.** The bar for adding a new rule is
@@ -70,7 +70,7 @@ Margin map, verified in-game 2026-07 via the gallery's margin-map probes:
 
 | Widget family | Default margin? | Fixed-height row + same-height child |
 |---|---|---|
-| Button / ButtonImage / ToggleButton | YES | **FAILS** (H1, HoloCom root cause) |
+| Button / ButtonImage / ToggleButton | YES | **FAILS** (H1, original root cause) |
 | CheckBox | YES | **FAILS** (P1) |
 | TextEdit | YES | **FAILS** (P2) |
 | ComboBox | YES | **FAILS** (P3) |
@@ -82,8 +82,9 @@ Margin map, verified in-game 2026-07 via the gallery's margin-map probes:
 
 Fix: **don't set a height on rows that contain fixed-height margined widgets** — let
 the row derive its height from children + margins. The only sanctioned equal-height
-pairing is `Toggles`/`Options` (the margin-free families), which is how the standard
-tab rows work.
+pairings are `Toggles`/`Options` (the margin-free families), or controls that
+deliberately call `SetMargin(0f)` for a tightly packed grid such as Slicing tiles.
+The validator reads the explicit margin and keeps those layouts warning-free.
 
 ### R3 — Assign a property before watching it (throws)
 `WatchOnClient(model => model.X)` serializes the property's **current** value.
@@ -91,8 +92,8 @@ tab rows work.
 if the property was never assigned. Always assign first:
 
 ```csharp
-SelectedTabId = MessagesTabId;                    // Set first
-WatchOnClient(model => model.TabToggleValue);     // then watch
+TabToggleValue = 0;                               // Set first
+WatchOnClient(model => model.TabToggleValue);     // then watch that property
 ```
 
 History: before this guard existed, watching an unset property NRE'd mid-`Initialize`
@@ -111,7 +112,7 @@ echo push is suppressed, not the setter body).
 Only ONE root layout shape has been proven to track window geometry correctly as the
 client resizes a window (CharacterSheet's shape):
 
-```
+```text
 root column
   └── single row ("main row")
         ├── variable-width CONTENT column
@@ -121,12 +122,14 @@ root column
         └── side column(s) — e.g. an event log or actions rail
 ```
 
-**Prescription: call `GuiStandardLayout.AddStandardLayout(...)`**
-(`Service/GuiService/Component/GuiStandardLayout.cs`) instead of hand-rolling the
-root. Deviating — most notably putting the tab-bar rows as SIBLING ROWS of the body
-row directly in the root column — froze the content region at a constant width
-regardless of window resizing, and cost two failed iterations of the gallery window
-before the shape was confirmed by direct comparison against CharacterSheet.
+`GuiWindowBuilder` normalizes every authored window into the shared outer root shape.
+For a window with tabs, swappable content, or rails, call
+`GuiStandardLayout.AddStandardLayout(...)`
+(`Service/GuiService/Component/GuiStandardLayout.cs`) instead of hand-rolling that
+inner structure. Deviating — most notably putting tab rows as siblings of the body
+row — froze the content region at a constant width regardless of window resizing.
+The all-window corpus test builds every definition through this normalizer and rejects
+unexpected validator findings.
 
 Side rails may be fixed-width (`fixedWidth: 280f`) or variable (`fixedWidth: null`);
 both verified working in-game 2026-07 (the gallery ships a variable-width event log).
@@ -134,8 +137,9 @@ both verified working in-game 2026-07 (the gallery ships a variable-width event 
 Tab partials themselves should be **fixed-width borderless `Scrollbars(None)` panels**
 (CharacterSheet uses 250–460f; the gallery uses 560f). Scrolling comes from the
 content column's Auto-scroll host group, which keeps every partial compressible when
-a player's persisted window geometry is small. (`Gui.CreatePlayerWindows` discards
-persisted sizes under 100px.)
+a player's persisted window geometry is small. `Gui.CreatePlayerWindows` discards
+only non-positive persisted dimensions; legitimate compact HUD windows are as small
+as 72x52 and must retain their saved positions.
 
 ### R6 — Re-apply the current tab partial after any modal closes (framework hook)
 Closing `ShowModal`/`ShowInputModal` swaps `%%WINDOW_MAIN%%` back into the root, which
@@ -147,8 +151,6 @@ protected override void OnModalClosedRestore() => Tabs.Select(this, TabContentEl
 ```
 
 The hook fires after every modal close (confirm and cancel, both modal kinds).
-CharacterSheet still hand-rolls its restore inside its modal callbacks
-(redundant-but-harmless); migrating it to the hook is an open follow-up.
 
 ### R7 — Partial-view element rules (doc-only; verified 2026-07)
 - **Element ids are not validated server-side.** `ChangePartialView` onto a
@@ -183,7 +185,7 @@ any of these:
 
 ## Diagnosing a client-side layout error
 
-1. Check boot output for `[NUI layout warning]` lines for that window. On dev/test the
+1. Check the Server log for `[NUI layout warning]` entries for that window. On dev/test the
    ONLY expected warnings are the gallery's six R2c canaries (enumerated in
    `DebugNuiGalleryDefinition.cs`'s header); anything else is a real defect.
 2. Read the built-in wire-JSON dump: every window's root and partial JSON is logged as

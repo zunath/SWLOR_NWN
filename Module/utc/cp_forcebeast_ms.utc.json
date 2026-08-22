@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 2146
+    "value": 10046
   },
   "BodyBag": {
     "type": "byte",
@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 60.0
+    "value": 122.0
   },
   "ClassList": {
     "type": "list",
@@ -115,7 +115,7 @@
         }
       },
       {
-        "__struct_id": 0,
+        "__struct_id": 1,
         "Feat": {
           "type": "word",
           "value": 2351
@@ -192,7 +192,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 4611
+    "value": 4548
   },
   "Int": {
     "type": "byte",
@@ -254,7 +254,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 184
+    "value": 195
   },
   "Race": {
     "type": "byte",

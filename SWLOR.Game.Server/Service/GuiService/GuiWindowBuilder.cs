@@ -72,17 +72,10 @@ namespace SWLOR.Game.Server.Service.GuiService
         /// <returns>A constructed window.</returns>
         public GuiConstructedWindow Build()
         {
+            var authoredElements = _activeWindow.Elements.ToList();
+
             _activeWindow
-                .DefinePartialView("%%WINDOW_MAIN%%", group =>
-                {
-                    group.AddColumn(col =>
-                    {
-                        col.AddRow(row =>
-                        {
-                            row.Elements.AddRange(_activeWindow.Elements.ToList());
-                        });
-                    });
-                })
+                .DefineStandardMainPartial(authoredElements)
                 .DefinePartialView("%%WINDOW_MODAL%%", group =>
                 {
                     group.AddColumn(mainCol =>
@@ -196,9 +189,27 @@ namespace SWLOR.Game.Server.Service.GuiService
             // Surface layout shapes confirmed to fail NUI's client-side constraint
             // solver, with a widget path - the client error itself carries no context.
             // Every warning is a real defect; see GuiLayoutValidator and Readmes/NuiLayoutRules.md.
-            foreach (var finding in GuiLayoutValidator.Validate(windowId, _activeWindow.PartialViews))
+            var layoutFindings = GuiLayoutValidator.Validate(windowId, _activeWindow.PartialViews);
+
+            if (GuiLayoutValidator.IsValidationOnlyBuild)
             {
-                Console.WriteLine($"[NUI layout warning] {finding}");
+                return new GuiConstructedWindow(
+                    _type,
+                    windowId,
+                    default,
+                    _activeWindow.Geometry,
+                    new Dictionary<string, Json>(),
+                    layoutFindings,
+                    () =>
+                    {
+                        var dataModelInstance = Activator.CreateInstance<T>();
+                        return new GuiPlayerWindow(dataModelInstance);
+                    });
+            }
+
+            foreach (var finding in layoutFindings)
+            {
+                Log.WriteStructured(LogGroup.Server, "[NUI layout warning] {Finding}", finding);
             }
 
             var partialViews = new Dictionary<string, Json>();
@@ -211,13 +222,24 @@ namespace SWLOR.Game.Server.Service.GuiService
 
             // Dump the exact wire JSON for layout debugging (see Readmes/NuiLayoutRules.md,
             // "Diagnosing a client-side layout error"). Lands in the Server log group.
-            if (ApplicationSettings.Get().ServerEnvironment != ServerEnvironmentType.Production ||
+            var environment = ApplicationSettings.Get().ServerEnvironment;
+            if (environment == ServerEnvironmentType.Development ||
+                environment == ServerEnvironmentType.Test ||
                 Environment.GetEnvironmentVariable("SWLOR_NUI_DUMP_JSON") == "1")
             {
-                Log.Write(LogGroup.Server, $"[NUI JSON] window={windowId} root={JsonDump(json)}");
+                Log.WriteStructured(
+                    LogGroup.Server,
+                    "[NUI JSON] window={WindowId} root={RootJson}",
+                    windowId,
+                    JsonDump(json));
                 foreach (var (partialName, partialJson) in partialViews)
                 {
-                    Log.Write(LogGroup.Server, $"[NUI JSON] window={windowId} partial={partialName} json={JsonDump(partialJson)}");
+                    Log.WriteStructured(
+                        LogGroup.Server,
+                        "[NUI JSON] window={WindowId} partial={PartialName} json={PartialJson}",
+                        windowId,
+                        partialName,
+                        JsonDump(partialJson));
                 }
             }
 
@@ -229,6 +251,7 @@ namespace SWLOR.Game.Server.Service.GuiService
                 json,
                 _activeWindow.Geometry,
                 partialViews,
+                layoutFindings,
                 () =>
             {
                 var dataModelInstance = Activator.CreateInstance<T>();

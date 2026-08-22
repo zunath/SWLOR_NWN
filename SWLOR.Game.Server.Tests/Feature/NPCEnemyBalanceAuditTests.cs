@@ -1,5 +1,7 @@
+using System.Diagnostics;
 using System.Globalization;
 using System.IO.Compression;
+using System.Text;
 using System.Text.Json;
 using System.Xml.Linq;
 using FluentAssertions;
@@ -36,6 +38,10 @@ public class NPCEnemyBalanceAuditTests
     private const int ResistanceCostTable = 54;
     private const int PhysicalDefenseSubtype = 1;
     private const int ForceDefenseSubtype = 2;
+    private const int ToughnessFeatId = 40;
+    private const int FirstEpicToughnessFeatId = 754;
+    private const int LastEpicToughnessFeatId = 763;
+    private const int EpicToughnessHitPoints = 20;
 
     private static readonly int[] ResistanceSubtypes = { 1, 2, 3, 4, 100, 101, 102, 103 };
 
@@ -108,13 +114,13 @@ public class NPCEnemyBalanceAuditTests
 
     private static readonly ExpectedEnemy[] ExpectedAlternateEnemies =
     {
-        new("man_ranger_2", "mando_rgr_skin", "npc_mando_rifle", 13, 199, 11, 19, 11, 16, 16, 29, 7, 9, 0, 5, 4, 4, 22, 30),
-        new("man_warrior_2", "mando_war_skin", "npc_mando_blade", 14, 203, 11, 16, 20, 11, 16, 21, 27, 5, 7, 4, 3, 7, 18, 23),
+        new("man_ranger_2", "mando_rgr_skin", "npc_mando_rifle", 13, 199, 11, 19, 11, 16, 16, 29, 7, 9, 0, 5, 4, 4, 24, 30),
+        new("man_warrior_2", "mando_war_skin", "npc_mando_blade", 14, 203, 11, 16, 20, 11, 16, 21, 27, 5, 7, 4, 3, 7, 20, 23),
         new("v_raivor2", "raivor_skin", "raivor_c_claw", 14, 238, 20, 11, 11, 16, 16, 35, 6, 9, 0, 2, 6, 4, 27, 24),
         new("v_flesheater2", "flesheater_skin", "vellen_claw", 17, 291, 21, 12, 12, 17, 17, 40, 7, 10, 0, 3, 7, 5, 31, 24),
-        new("s_app_m", "s_app_hide", "s_app_electro", 24, 363, 14, 20, 25, 14, 20, 32, 42, 9, 11, 6, 7, 11, 27, 24),
-        new("ecoterr_2", "ecoter_hide", "npc_eco_rifle", 27, 490, 27, 15, 15, 22, 22, 59, 10, 14, 0, 5, 11, 9, 43, 30),
-        new("byysk_guard002", "hu_byyskgua_hide", "vbyyskguardsword", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 77, 23),
+        new("s_app_m", "s_app_hide", "s_app_electro", 24, 363, 14, 20, 25, 14, 20, 32, 42, 9, 11, 6, 7, 11, 16, 24),
+        new("ecoterr_2", "ecoter_hide", "npc_eco_rifle", 27, 490, 27, 15, 15, 22, 22, 59, 10, 14, 0, 5, 11, 9, 46, 30),
+        new("byysk_guard002", "hu_byyskgua_hide", "vbyyskguardsword", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
     };
 
     private static readonly ExpectedEnemy[] ExpectedBloodFrenzyEnemies =
@@ -149,11 +155,50 @@ public class NPCEnemyBalanceAuditTests
         new("mirevein", "mirevein_sk", "mirevein_wp", 12, 461, 21, 13, 13, 18, 18, 47, 8, 11, 2, 3, 8, 6, 27, 24),
         new("vrix7", "pulsemarks_skin", "pulsemarks_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 30),
         new("ashwing", "ashwing_sk", "ashwing_wp", 2, 114, 10, 13, 16, 10, 13, 12, 15, 3, 5, 3, 1, 5, 7, 24),
-        new("reefmaw", "reefmaw_sk", "reefmaw_wp", 27, 620, 17, 24, 28, 17, 24, 45, 52, 11, 13, 8, 8, 12, 38, 24),
-        new("sable_quarr", "sableq_sk", "sableq_wp", 29, 720, 29, 17, 17, 24, 24, 68, 12, 16, 0, 6, 12, 10, 48, 30),
-        new("kael_drox", "kaeldrox_sk", "kaeldrox_wp", 33, 1420, 20, 33, 20, 27, 27, 95, 26, 19, 3, 11, 14, 14, 60, 22),
-        new("inkveil", "inkveil_sk", "inkveil_wp", 31, 760, 30, 18, 18, 25, 25, 72, 13, 17, 0, 6, 13, 11, 55, 24),
-        new("glassjaw", "glassjaw_sk", "glassjaw_wp", 30, 660, 18, 25, 31, 18, 25, 44, 56, 13, 15, 9, 10, 15, 25, 24),
+        new("reefmaw", "reefmaw_sk", "reefmaw_wp", 27, 1103, 29, 17, 17, 24, 24, 88, 15, 16, 2, 6, 13, 11, 53, 24),
+        new("sable_quarr", "sableq_sk", "sableq_wp", 29, 1082, 18, 30, 18, 25, 25, 82, 20, 17, 2, 9, 12, 12, 54, 30),
+        new("kael_drox", "kaeldrox_sk", "kaeldrox_wp", 33, 1270, 19, 32, 19, 27, 27, 91, 23, 18, 2, 10, 13, 13, 61, 22),
+        new("inkveil", "inkveil_sk", "inkveil_wp2", 31, 1109, 18, 25, 31, 18, 25, 60, 78, 13, 15, 9, 11, 15, 23, 24),
+        new("glassjaw", "glassjaw_sk", "glassjaw_wp2", 30, 1128, 18, 31, 18, 25, 25, 84, 21, 17, 2, 10, 12, 12, 28, 24),
+        new("bulwark", "bulwark_sk", "bulwark_wp", 50, 3296, 34, 24, 34, 42, 24, 139, 46, 21, 2, 9, 25, 22, 76, 23),
+        new("slagborn", "slagborn_sk", "slagborn_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
+        new("demolisherzr9", "demolisherzr9_sk", "demolisherzr9_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
+        new("overwatch", "overwatch_sk", "overwatch_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
+        new("blastbreaker", "blastbreaker_sk", "blastbreaker_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
+        new("suppressor", "suppressor_sk", "suppressor_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 23),
+        new("ironjaw", "ironjaw_sk", "ironjaw_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
+        new("quickdraw", "quickdraw_sk", "quickdraw_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
+        new("hexcaller", "hexcaller_sk", "hexcaller_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 23),
+        new("grottoalpha", "grottoalpha_sk", "grottoalpha_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 24),
+        new("spinequill", "spinequill_sk", "spinequill_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 24),
+        new("ritestalker", "ritestalker_sk", "ritestalker_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 24),
+        new("invictus", "invictus_sk", "invictus_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
+        new("ruptorvane", "ruptorvane_sk", "ruptorvane_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
+        new("blackoutwrd", "blackoutwrd_sk", "blackoutwrd_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 23),
+        new("sabraetrial", "sabraetrial_sk", "sabraetrial_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
+        new("enclavesentl", "enclavesentl_sk", "enclavesentl_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
+        new("cycloneadpt", "cycloneadpt_sk", "cycloneadpt_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 23),
+        new("forgewright", "forgewright_sk", "forgewright_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
+        new("flameweaver", "flameweaver_sk", "flameweaver_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
+        new("banecaller", "banecaller_sk", "banecaller_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 23),
+        new("canyonbulwrk", "canyonbulwrk_sk", "canyonbulwrk_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
+        new("dunedeadeye", "dunedeadeye_sk", "dunedeadeye_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
+        new("deadhandzeph", "deadhandzeph_sk", "deadhandzeph_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 23),
+        new("flurrychamp", "flurrychamp_sk", "flurrychamp_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
+        new("thermlancer", "thermlancer_sk", "thermlancer_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
+        new("barrieroverse", "barrieroverse_sk", "barrieroverse_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 23),
+        new("cryptwarden", "cryptwarden_sk", "cryptwarden_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
+        new("markahunger", "markahunger_sk", "markahunger_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
+        new("eclipseshade", "eclipseshade_sk", "eclipseshade_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 23),
+        new("bunkerbreak", "bunkerbreak_sk", "bunkerbreak_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
+        new("beaconmarks", "beaconmarks_sk", "beaconmarks_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
+        new("decurioncmd", "decurioncmd_sk", "decurioncmd_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 23),
+        new("triagewarden", "triagewarden_sk", "triagewarden_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 23),
+        new("chemslinger", "chemslinger_sk", "chemslinger_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 23),
+        new("conduitmatrn", "conduitmatrn_sk", "conduitmatrn_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 23),
+        new("tarnapexmaw", "tarnapexmaw_sk", "tarnapexmaw_wp", 50, 2441, 42, 24, 24, 34, 34, 152, 26, 24, 2, 11, 21, 19, 94, 24),
+        new("quillstalker", "quillstalker_sk", "quillstalker_wp", 50, 2197, 24, 42, 24, 34, 34, 132, 33, 24, 2, 14, 19, 19, 89, 24),
+        new("rhydelalpha", "rhydelalpha_sk", "rhydelalpha_wp", 50, 2075, 24, 34, 42, 24, 34, 92, 119, 20, 22, 13, 18, 22, 71, 24),
     };
 
     private static readonly IReadOnlyDictionary<ResistanceType, int> OldScarExpectedResistances = new Dictionary<ResistanceType, int>
@@ -196,13 +241,52 @@ public class NPCEnemyBalanceAuditTests
             ["shardeye"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 5, [ResistanceType.Electrical] = 3, [ResistanceType.Ice] = 3, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 6, [ResistanceType.Trauma] = 7, [ResistanceType.Disruption] = -10 },
             ["rootcoil"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 8, [ResistanceType.Electrical] = 4, [ResistanceType.Ice] = -10, [ResistanceType.Mind] = 10, [ResistanceType.Mobility] = 6, [ResistanceType.Trauma] = 8, [ResistanceType.Disruption] = 6 },
             ["mirevein"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 8, [ResistanceType.Electrical] = 4, [ResistanceType.Ice] = -10, [ResistanceType.Mind] = 10, [ResistanceType.Mobility] = 6, [ResistanceType.Trauma] = 8, [ResistanceType.Disruption] = 6 },
-            ["vrix7"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 19, [ResistanceType.Electrical] = -20, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 19, [ResistanceType.Mobility] = 12, [ResistanceType.Trauma] = 13, [ResistanceType.Disruption] = -15 },
+            ["vrix7"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 19, [ResistanceType.Electrical] = -20, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 19, [ResistanceType.Mobility] = 12, [ResistanceType.Trauma] = 100, [ResistanceType.Disruption] = -15 },
             ["ashwing"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 6, [ResistanceType.Electrical] = 2, [ResistanceType.Ice] = -10, [ResistanceType.Mind] = 8, [ResistanceType.Mobility] = 4, [ResistanceType.Trauma] = 6, [ResistanceType.Disruption] = 4 },
-            ["reefmaw"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 7, [ResistanceType.Electrical] = 5, [ResistanceType.Ice] = 5, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 8, [ResistanceType.Trauma] = 9, [ResistanceType.Disruption] = -10 },
-            ["sable_quarr"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 5, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 5, [ResistanceType.Ice] = 5, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 5, [ResistanceType.Trauma] = 6, [ResistanceType.Disruption] = 5 },
-            ["kael_drox"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 8, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 8, [ResistanceType.Ice] = 8, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 8, [ResistanceType.Trauma] = 9, [ResistanceType.Disruption] = 8 },
-            ["inkveil"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 8, [ResistanceType.Electrical] = 5, [ResistanceType.Ice] = 5, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 9, [ResistanceType.Trauma] = 10, [ResistanceType.Disruption] = -10 },
-            ["glassjaw"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 7, [ResistanceType.Electrical] = 5, [ResistanceType.Ice] = 5, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 8, [ResistanceType.Trauma] = 9, [ResistanceType.Disruption] = -10 },
+            ["reefmaw"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 15, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 17, [ResistanceType.Trauma] = 19, [ResistanceType.Disruption] = -10 },
+            ["sable_quarr"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 12, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 12, [ResistanceType.Trauma] = 14, [ResistanceType.Disruption] = 12 },
+            ["kael_drox"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 15, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 15, [ResistanceType.Ice] = 15, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 15, [ResistanceType.Trauma] = 17, [ResistanceType.Disruption] = 15 },
+            ["inkveil"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 17, [ResistanceType.Electrical] = 12, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 19, [ResistanceType.Trauma] = 21, [ResistanceType.Disruption] = -10 },
+            ["glassjaw"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 16, [ResistanceType.Electrical] = 12, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 18, [ResistanceType.Trauma] = 20, [ResistanceType.Disruption] = -10 },
+            ["bulwark"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 19, [ResistanceType.Electrical] = -20, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 19, [ResistanceType.Mobility] = 12, [ResistanceType.Trauma] = 13, [ResistanceType.Disruption] = -15 },
+            ["slagborn"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 19, [ResistanceType.Electrical] = -20, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 19, [ResistanceType.Mobility] = 12, [ResistanceType.Trauma] = 13, [ResistanceType.Disruption] = -15 },
+            ["demolisherzr9"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 19, [ResistanceType.Electrical] = -20, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 19, [ResistanceType.Mobility] = 12, [ResistanceType.Trauma] = 13, [ResistanceType.Disruption] = -15 },
+            ["overwatch"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["blastbreaker"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["suppressor"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["ironjaw"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["quickdraw"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["hexcaller"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["grottoalpha"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 13, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 14, [ResistanceType.Trauma] = 15, [ResistanceType.Disruption] = -10 },
+            ["spinequill"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 13, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 14, [ResistanceType.Trauma] = 15, [ResistanceType.Disruption] = -10 },
+            ["ritestalker"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 13, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 14, [ResistanceType.Trauma] = 15, [ResistanceType.Disruption] = -10 },
+            ["invictus"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["ruptorvane"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["blackoutwrd"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["sabraetrial"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 11, [ResistanceType.Electrical] = 12, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 16, [ResistanceType.Mobility] = -10, [ResistanceType.Trauma] = -15, [ResistanceType.Disruption] = 17 },
+            ["enclavesentl"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 11, [ResistanceType.Electrical] = 12, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 16, [ResistanceType.Mobility] = -10, [ResistanceType.Trauma] = -15, [ResistanceType.Disruption] = 17 },
+            ["cycloneadpt"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 11, [ResistanceType.Electrical] = 12, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 16, [ResistanceType.Mobility] = -10, [ResistanceType.Trauma] = -15, [ResistanceType.Disruption] = 17 },
+            ["forgewright"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 11, [ResistanceType.Electrical] = 12, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 16, [ResistanceType.Mobility] = -10, [ResistanceType.Trauma] = -15, [ResistanceType.Disruption] = 17 },
+            ["flameweaver"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 11, [ResistanceType.Electrical] = 12, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 16, [ResistanceType.Mobility] = -10, [ResistanceType.Trauma] = -15, [ResistanceType.Disruption] = 17 },
+            ["banecaller"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 11, [ResistanceType.Electrical] = 12, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 16, [ResistanceType.Mobility] = -10, [ResistanceType.Trauma] = -15, [ResistanceType.Disruption] = 17 },
+            ["canyonbulwrk"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["dunedeadeye"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["deadhandzeph"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["flurrychamp"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["thermlancer"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["barrieroverse"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["cryptwarden"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 11, [ResistanceType.Electrical] = 12, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 16, [ResistanceType.Mobility] = -10, [ResistanceType.Trauma] = -15, [ResistanceType.Disruption] = 17 },
+            ["markahunger"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 11, [ResistanceType.Electrical] = 12, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 16, [ResistanceType.Mobility] = -10, [ResistanceType.Trauma] = -15, [ResistanceType.Disruption] = 17 },
+            ["eclipseshade"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 12, [ResistanceType.Poison] = 11, [ResistanceType.Electrical] = 12, [ResistanceType.Ice] = 12, [ResistanceType.Mind] = 16, [ResistanceType.Mobility] = -10, [ResistanceType.Trauma] = -15, [ResistanceType.Disruption] = 17 },
+            ["bunkerbreak"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["beaconmarks"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["decurioncmd"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["triagewarden"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["chemslinger"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["conduitmatrn"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = 11, [ResistanceType.Poison] = -5, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -5, [ResistanceType.Mobility] = 11, [ResistanceType.Trauma] = 12, [ResistanceType.Disruption] = 11 },
+            ["tarnapexmaw"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 13, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 14, [ResistanceType.Trauma] = 15, [ResistanceType.Disruption] = -10 },
+            ["quillstalker"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 13, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 14, [ResistanceType.Trauma] = 15, [ResistanceType.Disruption] = -10 },
+            ["rhydelalpha"] = new Dictionary<ResistanceType, int> { [ResistanceType.Fire] = -10, [ResistanceType.Poison] = 13, [ResistanceType.Electrical] = 11, [ResistanceType.Ice] = 11, [ResistanceType.Mind] = -15, [ResistanceType.Mobility] = 14, [ResistanceType.Trauma] = 15, [ResistanceType.Disruption] = -10 },
         };
 
     private static readonly IReadOnlyDictionary<string, FeatType[]> ExpectedBloodFrenzyAbilityPackages = new Dictionary<string, FeatType[]>
@@ -236,6 +320,45 @@ public class NPCEnemyBalanceAuditTests
         ["kael_drox"] = new[] { FeatType.TacticalMark, FeatType.TargetLock, FeatType.ShrapnelBurst, FeatType.ArcPulse, FeatType.IonBurst },
         ["inkveil"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TailSweep, FeatType.ToxicCloud },
         ["glassjaw"] = new[] { FeatType.PiercingQuills, FeatType.VenomSpray, FeatType.PouncingStrike, FeatType.RakingClaws },
+        ["bulwark"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TacticalMark, FeatType.CripplingTalons },
+        ["slagborn"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
+        ["demolisherzr9"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
+        ["overwatch"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
+        ["blastbreaker"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
+        ["suppressor"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TacticalMark, FeatType.CripplingTalons },
+        ["ironjaw"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
+        ["quickdraw"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
+        ["hexcaller"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TacticalMark, FeatType.CripplingTalons },
+        ["grottoalpha"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
+        ["spinequill"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
+        ["ritestalker"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TacticalMark, FeatType.CripplingTalons },
+        ["invictus"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
+        ["ruptorvane"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
+        ["blackoutwrd"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TacticalMark, FeatType.CripplingTalons },
+        ["sabraetrial"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
+        ["enclavesentl"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
+        ["cycloneadpt"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TacticalMark, FeatType.CripplingTalons },
+        ["forgewright"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
+        ["flameweaver"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
+        ["banecaller"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TacticalMark, FeatType.CripplingTalons },
+        ["canyonbulwrk"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
+        ["dunedeadeye"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
+        ["deadhandzeph"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TacticalMark, FeatType.CripplingTalons },
+        ["flurrychamp"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
+        ["thermlancer"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
+        ["barrieroverse"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TacticalMark, FeatType.CripplingTalons },
+        ["cryptwarden"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
+        ["markahunger"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
+        ["eclipseshade"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TacticalMark, FeatType.CripplingTalons },
+        ["bunkerbreak"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
+        ["beaconmarks"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
+        ["decurioncmd"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TacticalMark, FeatType.CripplingTalons },
+        ["triagewarden"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
+        ["chemslinger"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
+        ["conduitmatrn"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TacticalMark, FeatType.CripplingTalons },
+        ["tarnapexmaw"] = new[] { FeatType.PouncingStrike, FeatType.MaulingBite, FeatType.TailSweep, FeatType.TerrifyingBellow },
+        ["quillstalker"] = new[] { FeatType.TacticalMark, FeatType.PrecisionShot, FeatType.PiercingQuills, FeatType.GrenadeBurst },
+        ["rhydelalpha"] = new[] { FeatType.SonicShriek, FeatType.DisorientingScreech, FeatType.TacticalMark, FeatType.CripplingTalons },
     };
 
     private static readonly IReadOnlyDictionary<string, string> ExpectedDroidEnemySkins = new Dictionary<string, string>
@@ -245,11 +368,16 @@ public class NPCEnemyBalanceAuditTests
         ["malfunctioningsp"] = "malfspiddroi_sk",
         ["malsecdroid"] = "patroldroid_sk",
         ["malspiderdroid"] = "probedroid_sk",
-        ["nar_cmd_droid"] = "nar_droid_sk",
-        ["nar_rogue_droid"] = "nar_droid_sk",
-        ["nar_scavenger"] = "cz220_droid_hide",
+        ["nar_cmd_droid"] = "nar_cmddr_sk",
+        ["nar_rogue_droid"] = "nar_rogued_sk",
+        ["nar_scavenger"] = "nar_scav_sk",
+        ["sewerdatacollect"] = "sewerdata_sk",
+        ["sewermaintenance"] = "sewermaint_sk",
+        ["sewerpatroldroid"] = "sewerpatrol_sk",
         ["vkorrdundroidhvy"] = "imphvydrone_sk",
         ["vkorrdunwarform"] = "impwarform_sk",
+        ["vnpcssabot"] = "sithsabot_sk",
+        ["vrix7"] = "pulsemarks_skin",
         ["vsithbot1"] = "impobsunit_sk",
         ["vsithbot2"] = "imppatrol_sk",
         ["vsithbot3"] = "impturret_sk",
@@ -267,9 +395,9 @@ public class NPCEnemyBalanceAuditTests
     {
         new("s_app", 38),
         new("byysk_warrior", 43),
-        new("vdathguard", 66),
-        new("vkorrdunmarauder", 67),
-        new("byysk_champion", 75),
+        new("vdathguard", 81),
+        new("vkorrdunmarauder", 73),
+        new("byysk_champion", 89),
         new("vnpcswar3", 59),
     };
 
@@ -312,6 +440,309 @@ public class NPCEnemyBalanceAuditTests
         source.Should().Contain("_builder.Create(\"FrogBoss\", \"Alchemized Frog Boss\")");
         source.Should().Contain(".AddSpawn(ObjectType.Creature, \"frogboss\")");
         source.Should().Contain(".RespawnDelay(120)");
+    }
+
+    [Test]
+    public void AllNpcHpBudgets_AccountForNativeVitalityAndToughnessRules()
+    {
+        var root = FindRepositoryRoot();
+        var utcDirectory = Path.Combine(root.FullName, "Module", "utc");
+        var failures = new List<string>();
+        var audited = 0;
+
+        foreach (var utcPath in Directory.EnumerateFiles(utcDirectory, "*.utc.json").OrderBy(path => path))
+        {
+            using var utc = JsonDocument.Parse(File.ReadAllText(utcPath));
+            var skinResref = GetEquippedResref(utc.RootElement, CreatureArmorSlot);
+            if (string.IsNullOrWhiteSpace(skinResref))
+                continue;
+
+            var skinPath = Path.Combine(root.FullName, "Module", "uti", $"{skinResref}.uti.json");
+            if (!File.Exists(skinPath))
+                continue;
+
+            using var skin = JsonDocument.Parse(File.ReadAllText(skinPath));
+            var finalHp = GetNpcHpBudget(skin.RootElement);
+            if (!finalHp.HasValue)
+                continue;
+
+            var resref = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(utcPath));
+            var expectedBaseHp = GetExpectedNpcBaseHitPoints(utc.RootElement, finalHp.Value);
+            var currentHp = GetInt(utc.RootElement, "CurrentHitPoints");
+            var baseHp = GetInt(utc.RootElement, "HitPoints");
+            var maxHp = GetInt(utc.RootElement, "MaxHitPoints");
+
+            if (currentHp != finalHp.Value || baseHp != expectedBaseHp || maxHp != finalHp.Value)
+            {
+                failures.Add(
+                    $"{resref}: CurrentHitPoints={currentHp}, HitPoints={baseHp}, MaxHitPoints={maxHp}; " +
+                    $"expected final NPCHP={finalHp.Value} and native-adjusted base={expectedBaseHp}.");
+            }
+
+            audited++;
+        }
+
+        audited.Should().BeGreaterThan(450, "every terrestrial combat creature with an NPCHP stat skin should be audited");
+        failures.Should().BeEmpty(
+            "UTC HitPoints must exclude NWN's native Vitality/Constitution and Toughness bonuses while CurrentHitPoints and MaxHitPoints remain the final NPCHP budget");
+    }
+
+    [Test]
+    public async Task NpcHpNormalizer_PreservesWindows1252AssetText()
+    {
+        var root = FindRepositoryRoot();
+        var temporaryRoot = Path.Combine(Path.GetTempPath(), $"swlor-npc-hp-{Guid.NewGuid():N}");
+        var toolsDirectory = Path.Combine(temporaryRoot, "tools");
+        var utcDirectory = Path.Combine(temporaryRoot, "Module", "utc");
+        var utiDirectory = Path.Combine(temporaryRoot, "Module", "uti");
+
+        Directory.CreateDirectory(toolsDirectory);
+        Directory.CreateDirectory(utcDirectory);
+        Directory.CreateDirectory(utiDirectory);
+
+        try
+        {
+            var script = Path.Combine(toolsDirectory, "NormalizeNpcHitPoints.ps1");
+            File.Copy(Path.Combine(root.FullName, "tools", "NormalizeNpcHitPoints.ps1"), script);
+
+            const string utcText = """
+                                   {
+                                     "Equip_ItemList": {
+                                       "value": [
+                                         {
+                                           "__struct_id": 131072,
+                                           "EquippedRes": { "value": "legacy_skin" }
+                                         }
+                                       ]
+                                     },
+                                     "ClassList": { "value": [{ "ClassLevel": { "value": 2 } }] },
+                                     "Con": { "value": 14 },
+                                     "FeatList": { "value": [] },
+                                     "Description": { "value": { "0": "Nar Shaddaa’s shadow ports" } },
+                                     "CurrentHitPoints": { "type": "short", "value": 1 },
+                                     "HitPoints": { "type": "short", "value": 1 },
+                                     "MaxHitPoints": { "type": "short", "value": 1 }
+                                   }
+                                   """;
+            const string skinText = """
+                                    {
+                                      "PropertiesList": {
+                                        "value": [
+                                          {
+                                            "PropertyName": { "value": 96 },
+                                            "CostValue": { "value": 100 }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                    """;
+
+            var utcPath = Path.Combine(utcDirectory, "legacy.utc.json");
+            File.WriteAllBytes(utcPath, EncodeWindows1252Fixture(utcText));
+            File.WriteAllText(Path.Combine(utiDirectory, "legacy_skin.uti.json"), skinText);
+
+            var startInfo = new ProcessStartInfo("powershell.exe")
+            {
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+            startInfo.ArgumentList.Add("-NoProfile");
+            startInfo.ArgumentList.Add("-ExecutionPolicy");
+            startInfo.ArgumentList.Add("Bypass");
+            startInfo.ArgumentList.Add("-File");
+            startInfo.ArgumentList.Add(script);
+
+            string output;
+            string error;
+            int exitCode;
+            using (var process = Process.Start(startInfo)!)
+            {
+                var outputTask = process.StandardOutput.ReadToEndAsync();
+                var errorTask = process.StandardError.ReadToEndAsync();
+                await process.WaitForExitAsync().WaitAsync(TimeSpan.FromSeconds(30));
+                output = await outputTask;
+                error = await errorTask;
+                exitCode = process.ExitCode;
+            }
+
+            exitCode.Should().Be(0, $"the normalizer should succeed. Output: {output} Error: {error}");
+
+            var normalizedBytes = File.ReadAllBytes(utcPath);
+            normalizedBytes.Should().Contain((byte)0x92,
+                "the original Windows-1252 apostrophe must remain encoded as 0x92");
+            normalizedBytes.AsSpan().IndexOf(new byte[] { 0xEF, 0xBF, 0xBD }).Should().Be(-1,
+                "the normalizer must not write an encoded Unicode replacement character");
+
+            var normalizedAscii = Encoding.ASCII.GetString(normalizedBytes);
+            normalizedAscii.Should().Contain("\"CurrentHitPoints\": { \"type\": \"short\", \"value\": 100 }");
+            normalizedAscii.Should().Contain("\"HitPoints\": { \"type\": \"short\", \"value\": 96 }");
+            normalizedAscii.Should().Contain("\"MaxHitPoints\": { \"type\": \"short\", \"value\": 100 }");
+        }
+        finally
+        {
+            Directory.Delete(temporaryRoot, true);
+        }
+    }
+
+    private static byte[] EncodeWindows1252Fixture(string text)
+    {
+        var bytes = new List<byte>();
+        var segments = text.Split('’');
+
+        for (var index = 0; index < segments.Length; index++)
+        {
+            bytes.AddRange(Encoding.ASCII.GetBytes(segments[index]));
+            if (index < segments.Length - 1)
+                bytes.Add(0x92);
+        }
+
+        return bytes.ToArray();
+    }
+
+    [Test]
+    public void WorldNpcAssets_MatchBibleRuntimeHpAndEvasionBudgets()
+    {
+        var root = FindRepositoryRoot();
+        using var archive = ZipFile.OpenRead(Path.Combine(
+            root.FullName,
+            "design",
+            "bible",
+            "SWLOR Design Bible - Combat Upgrade.xlsx"));
+        var worldNpcs = ReadWorksheetByName(archive, "World NPCs");
+        var sharedStrings = ReadSharedStrings(archive);
+        XNamespace ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+        var lastRow = worldNpcs
+            .Descendants(ns + "row")
+            .Select(row => int.Parse(row.Attribute("r")!.Value, CultureInfo.InvariantCulture))
+            .Max();
+
+        var failures = new List<string>();
+        var auditedAssets = 0;
+        var bibleHpBudgets = 0;
+        var bibleEvasionBudgets = 0;
+
+        for (var row = 2; row <= lastRow; row++)
+        {
+            var resref = GetWorkbookCellText(worldNpcs, sharedStrings, $"C{row}");
+            if (string.IsNullOrWhiteSpace(resref))
+                continue;
+
+            var utcPath = Path.Combine(root.FullName, "Module", "utc", $"{resref}.utc.json");
+            if (!File.Exists(utcPath))
+            {
+                failures.Add($"World NPCs row {row} ({resref}) has no UTC blueprint.");
+                continue;
+            }
+
+            using var utc = JsonDocument.Parse(File.ReadAllText(utcPath));
+            var skinResref = GetEquippedResref(utc.RootElement, CreatureArmorSlot);
+            if (string.IsNullOrWhiteSpace(skinResref))
+            {
+                failures.Add($"World NPCs row {row} ({resref}) has no equipped stat skin.");
+                continue;
+            }
+
+            var skinPath = Path.Combine(root.FullName, "Module", "uti", $"{skinResref}.uti.json");
+            if (!File.Exists(skinPath))
+            {
+                failures.Add($"World NPCs row {row} ({resref}) references missing stat skin {skinResref}.");
+                continue;
+            }
+
+            using var skin = JsonDocument.Parse(File.ReadAllText(skinPath));
+            var skinHp = GetNpcHpBudget(skin.RootElement);
+            var currentHp = GetInt(utc.RootElement, "CurrentHitPoints");
+            var baseHp = GetInt(utc.RootElement, "HitPoints");
+            var maxHp = GetInt(utc.RootElement, "MaxHitPoints");
+            if (!skinHp.HasValue)
+            {
+                failures.Add($"World NPCs row {row} ({resref}) stat skin {skinResref} has no NPCHP budget.");
+            }
+            else
+            {
+                var expectedBaseHp = GetExpectedNpcBaseHitPoints(utc.RootElement, skinHp.Value);
+                if (currentHp != skinHp.Value || baseHp != expectedBaseHp || maxHp != skinHp.Value)
+                {
+                    failures.Add(
+                        $"World NPCs row {row} ({resref}) HP sources disagree: " +
+                        $"CurrentHitPoints={currentHp}, HitPoints={baseHp}, MaxHitPoints={maxHp}, " +
+                        $"{skinResref}.NPCHP={skinHp.Value}, expected native-adjusted base={expectedBaseHp}.");
+                }
+            }
+
+            var bibleHpText = GetWorkbookCellText(worldNpcs, sharedStrings, $"N{row}");
+            if (decimal.TryParse(bibleHpText, NumberStyles.Number, CultureInfo.InvariantCulture, out var bibleHpValue) &&
+                bibleHpValue > 0)
+            {
+                var bibleHp = decimal.ToInt32(bibleHpValue);
+                bibleHpBudgets++;
+                if (currentHp != bibleHp || maxHp != bibleHp || skinHp != bibleHp)
+                {
+                    failures.Add(
+                        $"World NPCs row {row} ({resref}) does not match Bible HP {bibleHp}: " +
+                        $"CurrentHitPoints={currentHp}, MaxHitPoints={maxHp}, {skinResref}.NPCHP={skinHp?.ToString() ?? "missing"}.");
+                }
+            }
+
+            var bibleEvasionText = GetWorkbookCellText(worldNpcs, sharedStrings, $"T{row}");
+            if (decimal.TryParse(bibleEvasionText, NumberStyles.Number, CultureInfo.InvariantCulture, out var bibleEvasionValue) &&
+                bibleEvasionValue > 0)
+            {
+                var bibleEvasion = decimal.ToInt32(bibleEvasionValue);
+                var skinEvasion = GetItemPropertyCost(skin.RootElement, ItemPropertyEvasion);
+                bibleEvasionBudgets++;
+                if (skinEvasion != bibleEvasion)
+                {
+                    failures.Add(
+                        $"World NPCs row {row} ({resref}) does not match Bible Evasion {bibleEvasion}: " +
+                        $"{skinResref}.Evasion={skinEvasion?.ToString() ?? "missing"}.");
+                }
+            }
+
+            auditedAssets++;
+        }
+
+        auditedAssets.Should().BeGreaterThan(400, "the complete World NPC corpus should remain under asset audit");
+        bibleHpBudgets.Should().BeGreaterThan(350, "formula-backed World NPC HP rows should remain under Bible audit");
+        bibleEvasionBudgets.Should().BeGreaterThan(350, "formula-backed World NPC Evasion rows should remain under Bible audit");
+        failures.Should().BeEmpty("World NPC runtime HP and Evasion sources must agree with the Design Bible");
+    }
+
+    [Test]
+    public void ReportedDathomirForceCasterTargets_MatchReviewedHpAndEffectiveEvasionBudgets()
+    {
+        var root = FindRepositoryRoot();
+        var targets = new[]
+        {
+            new { Resref = "vdathswampland", Skin = "junglebug_sk", Level = 40, HP = 683, Agility = 28, Evasion = 10, EffectiveEvasion = 126 },
+            new { Resref = "vdathpurbole", Skin = "purbole_sk", Level = 41, HP = 705, Agility = 28, Evasion = 10, EffectiveEvasion = 128 },
+            new { Resref = "vdathtribal", Skin = "kwitribal_sk", Level = 43, HP = 795, Agility = 29, Evasion = 11, EffectiveEvasion = 134 },
+            new { Resref = "vdathguard", Skin = "kwiguardian_sk", Level = 45, HP = 1902, Agility = 32, Evasion = 13, EffectiveEvasion = 143 },
+        };
+
+        foreach (var target in targets)
+        {
+            using var utc = ReadJson(root, "Module", "utc", $"{target.Resref}.utc.json");
+            using var skin = ReadJson(root, "Module", "uti", $"{target.Skin}.uti.json");
+
+            GetEquippedResref(utc.RootElement, CreatureArmorSlot).Should().Be(target.Skin, target.Resref);
+            GetInt(utc.RootElement, "CurrentHitPoints").Should().Be(target.HP, target.Resref);
+            GetInt(utc.RootElement, "HitPoints").Should().Be(
+                GetExpectedNpcBaseHitPoints(utc.RootElement, target.HP),
+                $"{target.Resref} must exclude native Vitality HP from its UTC base");
+            GetInt(utc.RootElement, "MaxHitPoints").Should().Be(target.HP, target.Resref);
+            GetItemPropertyCost(skin.RootElement, ItemPropertyNPCHP).Should().Be(target.HP, target.Skin);
+            GetItemPropertyCost(skin.RootElement, ItemPropertyNPCLevel).Should().Be(target.Level, target.Skin);
+            GetItemPropertyCost(skin.RootElement, ItemPropertyEvasion).Should().Be(target.Evasion, target.Skin);
+
+            var naturalAc = GetInt(utc.RootElement, "NaturalAC");
+            naturalAc.Should().Be(0, $"{target.Resref} must not hide extra Evasion outside its Bible stat skin");
+            Stat.GetEvasion(target.Level, target.Agility, target.Evasion + naturalAc * 5)
+                .Should()
+                .Be(target.EffectiveEvasion, $"{target.Resref} effective Evasion must include any serialized NaturalAC contribution");
+        }
     }
 
     [Test]
@@ -557,6 +988,151 @@ public class NPCEnemyBalanceAuditTests
     }
 
     [Test]
+    public void MimicryTechniqueRequirements_CoverEveryRankAndFollowWorldNpcEncounterProgression()
+    {
+        var root = FindRepositoryRoot();
+        using var archive = ZipFile.OpenRead(Path.Combine(
+            root.FullName,
+            "design",
+            "bible",
+            "SWLOR Design Bible - Combat Upgrade.xlsx"));
+        var worldNpcs = ReadWorksheetByName(archive, "World NPCs");
+        var mimicry = ReadWorksheetByName(archive, "Mimicry");
+        var sharedStrings = ReadSharedStrings(archive);
+        XNamespace ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+
+        var sourcesByTechnique = new Dictionary<string, List<(int Level, string Difficulty, string Area, string Enemy)>>(
+            StringComparer.OrdinalIgnoreCase);
+        var worldLastRow = worldNpcs
+            .Descendants(ns + "row")
+            .Select(row => int.Parse(row.Attribute("r")!.Value, CultureInfo.InvariantCulture))
+            .Max();
+
+        for (var row = 2; row <= worldLastRow; row++)
+        {
+            var area = GetWorkbookCellText(worldNpcs, sharedStrings, $"A{row}");
+            if (string.IsNullOrWhiteSpace(area) ||
+                area.Equals("Additional", StringComparison.OrdinalIgnoreCase) ||
+                area.Equals("Training", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            var levelText = GetWorkbookCellText(worldNpcs, sharedStrings, $"D{row}");
+            if (!decimal.TryParse(levelText, NumberStyles.Number, CultureInfo.InvariantCulture, out var levelValue))
+                continue;
+
+            var level = decimal.ToInt32(levelValue);
+            var difficulty = GetWorkbookCellText(worldNpcs, sharedStrings, $"E{row}");
+            var enemy = GetWorkbookCellText(worldNpcs, sharedStrings, $"B{row}");
+            var actualAbilities = GetWorkbookCellText(worldNpcs, sharedStrings, $"AQ{row}");
+            foreach (var technique in actualAbilities.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+            {
+                if (!sourcesByTechnique.TryGetValue(technique, out var sources))
+                {
+                    sources = new List<(int Level, string Difficulty, string Area, string Enemy)>();
+                    sourcesByTechnique[technique] = sources;
+                }
+
+                sources.Add((level, difficulty, area, enemy));
+            }
+        }
+
+        var failures = new List<string>();
+        var requirementsByTechnique = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+        var mimicryLastRow = mimicry
+            .Descendants(ns + "row")
+            .Select(row => int.Parse(row.Attribute("r")!.Value, CultureInfo.InvariantCulture))
+            .Max();
+
+        for (var row = 8; row <= mimicryLastRow; row++)
+        {
+            if (!GetWorkbookCellText(mimicry, sharedStrings, $"A{row}")
+                    .Equals("Technique", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            var technique = GetWorkbookCellText(mimicry, sharedStrings, $"C{row}");
+            if (!sourcesByTechnique.TryGetValue(technique, out var sources) || sources.Count == 0)
+            {
+                failures.Add($"{technique}: no player-accessible source is listed in World NPCs Existing Abilities (AQ).");
+                continue;
+            }
+
+            var requirementText = GetWorkbookCellText(mimicry, sharedStrings, $"D{row}");
+            var actualRequirement = requirementText == "-"
+                ? 0
+                : int.TryParse(
+                    requirementText.StartsWith("Mimicry ", StringComparison.OrdinalIgnoreCase)
+                        ? requirementText["Mimicry ".Length..]
+                        : string.Empty,
+                    NumberStyles.Integer,
+                    CultureInfo.InvariantCulture,
+                    out var parsedRequirement)
+                    ? parsedRequirement
+                    : -1;
+
+            if (actualRequirement is < 0 or > 50)
+            {
+                failures.Add($"{technique}: expected a Mimicry requirement from 0 through 50, found '{requirementText}'.");
+                continue;
+            }
+
+            requirementsByTechnique[technique] = actualRequirement;
+        }
+
+        requirementsByTechnique.Should().HaveCount(88, "the complete Mimicry technique pool must be audited against World NPCs");
+        failures.Should().BeEmpty(
+            "Mimicry requirements use player-accessible World NPC progression, excluding Additional and Training rows");
+
+        requirementsByTechnique.Values
+            .Distinct()
+            .OrderBy(requirement => requirement)
+            .Should()
+            .Equal(Enumerable.Range(0, 51), "every Mimicry rank from 0 through 50 must unlock at least one technique");
+
+        requirementsByTechnique["Sonic Shriek"].Should().Be(0, "CZ220 Mynocks are the first Mimicry source");
+        requirementsByTechnique["Disorienting Screech"].Should().Be(0, "CZ220 Mynocks are the first Mimicry source");
+        requirementsByTechnique["Precision Shot"].Should().Be(1, "CZ220 Probe Droids are harder than Mynocks");
+        requirementsByTechnique["Static Web"].Should().Be(1, "CZ220 Probe Droids are harder than Mynocks");
+        requirementsByTechnique["Suppressing Shot"].Should().Be(1, "CZ220 Probe Droids are harder than Mynocks");
+
+        var priorBandMaximum = -1;
+        var preEndgameBands = requirementsByTechnique
+            .Select(entry => new
+            {
+                Technique = entry.Key,
+                Requirement = entry.Value,
+                EarliestSourceLevel = sourcesByTechnique[entry.Key].Min(source => source.Level),
+            })
+            .Where(entry => entry.EarliestSourceLevel < 50)
+            .GroupBy(entry => entry.EarliestSourceLevel)
+            .OrderBy(group => group.Key);
+
+        foreach (var band in preEndgameBands)
+        {
+            var bandMinimum = band.Min(entry => entry.Requirement);
+            bandMinimum.Should().BeGreaterThan(
+                priorBandMaximum,
+                $"techniques first encountered at level {band.Key} should follow all earlier source bands");
+            priorBandMaximum = band.Max(entry => entry.Requirement);
+        }
+
+        foreach (var entry in requirementsByTechnique)
+        {
+            var earliestLevel = sourcesByTechnique[entry.Key].Min(source => source.Level);
+            if (earliestLevel < 50)
+                continue;
+
+            entry.Value.Should().BeInRange(
+                41,
+                50,
+                $"{entry.Key} is first learned from level-50 endgame encounters");
+        }
+    }
+
+    [Test]
     public void WorldNpcsBible_CalculatesResistanceAdjustmentsWithHandEntryColumns()
     {
         var root = FindRepositoryRoot();
@@ -684,7 +1260,7 @@ public class NPCEnemyBalanceAuditTests
         }
 
         var handEntryStyle = GetWorkbookCellStyle(worksheet, "A202");
-        foreach (var row in Enumerable.Range(2, 422))
+        foreach (var row in Enumerable.Range(2, 443))
         {
             foreach (var column in new[] { "AE", "AF", "AG", "AH", "AI", "AJ", "AK", "AL" })
             {
@@ -706,11 +1282,11 @@ public class NPCEnemyBalanceAuditTests
             .Attribute("ref")?
             .Value
             .Should()
-            .Be("$A$1:$AR$423", "the reusable resistance override columns should be included in World NPCs filtering");
+            .Be("$A$1:$AR$444", "the reusable resistance override columns should be included in World NPCs filtering");
 
         worksheet
             .Descendants(ns + "dataValidation")
-            .Single(validation => validation.Attribute("sqref")?.Value == "AE2:AL423")
+            .Single(validation => validation.Attribute("sqref")?.Value == "AE2:AL444")
             .Attribute("type")?
             .Value
             .Should()
@@ -722,12 +1298,12 @@ public class NPCEnemyBalanceAuditTests
             .Attribute("ref")?
             .Value
             .Should()
-            .Be("$A$1:$E$201", "the Blood Frenzy weapon-delay lookup rows should be filterable");
+            .Be("$A$1:$E$442", "the weapon-delay lookup rows should be filterable");
 
-        GetWorkbookCellText(weaponDelays, sharedStrings, "A197").Should().Be("bf_scavenger");
-        GetWorkbookCellNumber(weaponDelays, sharedStrings, "D197").Should().Be(230m);
-        GetWorkbookCellText(weaponDelays, sharedStrings, "A201").Should().Be("bf_kess");
-        GetWorkbookCellNumber(weaponDelays, sharedStrings, "D201").Should().Be(230m);
+        GetWorkbookCellText(weaponDelays, sharedStrings, "A8").Should().Be("bf_scavenger");
+        GetWorkbookCellNumber(weaponDelays, sharedStrings, "D8").Should().Be(230m);
+        GetWorkbookCellText(weaponDelays, sharedStrings, "A6").Should().Be("bf_kess");
+        GetWorkbookCellNumber(weaponDelays, sharedStrings, "D6").Should().Be(230m);
     }
 
     [Test]
@@ -1114,7 +1690,9 @@ public class NPCEnemyBalanceAuditTests
     private static void AssertCreatureHitPoints(JsonElement utc, ExpectedEnemy expected)
     {
         GetInt(utc, "CurrentHitPoints").Should().Be(expected.HP, expected.Resref);
-        GetInt(utc, "HitPoints").Should().Be(expected.HP, expected.Resref);
+        GetInt(utc, "HitPoints").Should().Be(
+            GetExpectedNpcBaseHitPoints(utc, expected.HP),
+            $"{expected.Resref} must exclude native Vitality HP from its UTC base");
         GetInt(utc, "MaxHitPoints").Should().Be(expected.HP, expected.Resref);
     }
 
@@ -1205,6 +1783,26 @@ public class NPCEnemyBalanceAuditTests
             .ToArray();
     }
 
+    private static int GetExpectedNpcBaseHitPoints(JsonElement utc, int finalHp)
+    {
+        var level = utc
+            .GetProperty("ClassList")
+            .GetProperty("value")
+            .EnumerateArray()
+            .Sum(entry => GetInt(entry, "ClassLevel"));
+        var constitutionModifier = (int)Math.Floor((GetInt(utc, "Con") - 10) / 2m);
+        var feats = GetCreatureFeats(utc);
+        var nativeAdjustment = constitutionModifier * level;
+
+        if (feats.Contains(ToughnessFeatId))
+            nativeAdjustment += level;
+
+        nativeAdjustment += feats.Count(feat =>
+            feat >= FirstEpicToughnessFeatId && feat <= LastEpicToughnessFeatId) * EpicToughnessHitPoints;
+
+        return finalHp - nativeAdjustment;
+    }
+
     private static int GetJsonLocalInt(JsonElement utc, string variableName)
     {
         return utc
@@ -1240,6 +1838,16 @@ public class NPCEnemyBalanceAuditTests
                 (!subtype.HasValue || GetInt(property, "Subtype") == subtype.Value))
             .Select(property => (int?)GetInt(property, "CostValue"))
             .SingleOrDefault();
+    }
+
+    private static int? GetNpcHpBudget(JsonElement skin)
+    {
+        var values = GetItemProperties(skin)
+            .Where(property => GetInt(property, "PropertyName") == ItemPropertyNPCHP)
+            .Select(property => GetInt(property, "CostValue"))
+            .ToArray();
+
+        return values.Length == 0 ? null : values.Sum();
     }
 
     private static int[] GetItemPropertySubtypes(JsonElement item, int propertyName)

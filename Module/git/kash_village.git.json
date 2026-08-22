@@ -897,7 +897,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -25692,7 +25692,7 @@
               },
               "ArmorPart_Pelvis": {
                 "type": "byte",
-                "value": 42
+                "value": 41
               },
               "ArmorPart_RBicep": {
                 "type": "byte",
@@ -26192,7 +26192,7 @@
               },
               "xArmorPart_Pelvi": {
                 "type": "word",
-                "value": 42
+                "value": 41
               },
               "xArmorPart_RBice": {
                 "type": "word",
@@ -30078,7 +30078,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -31317,7 +31317,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",

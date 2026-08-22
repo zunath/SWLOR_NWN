@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
@@ -22,6 +24,12 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<FeatType, AbilityDetail> _abilities = new();
         private static readonly Dictionary<uint, PlayerAura> _playerAuras = new();
         private static readonly Dictionary<uint, TrackedAbilityImpact> _trackedAbilityImpacts = new();
+
+        /// <summary>
+        /// How long the visual-only impact flash lingers on an instant area ability, in seconds.
+        /// Long enough to read the shape, short enough not to be mistaken for a pre-cast telegraph.
+        /// </summary>
+        public const float DefaultImpactFlashDuration = 0.3f;
 
         private const int MaxNumberOfAuras = 4;
         private const int HostileAbilityBaseEnmity = 100;
@@ -90,7 +98,10 @@ namespace SWLOR.Game.Server.Service
             return _abilities[featType];
         }
 
-        public static void BeginAbilityImpact(uint activator, AbilityDetail ability)
+        public static void BeginAbilityImpact(
+            uint activator,
+            AbilityDetail ability,
+            bool countsAsAttackAttempt = true)
         {
             if (!GetIsObjectValid(activator) || ability == null)
                 return;
@@ -98,12 +109,24 @@ namespace SWLOR.Game.Server.Service
             var abilitySkillType = Combat.GetAbilitySkillType(activator, ability);
             var nextAbilityDamageBonus = Combat.ConsumeNextAbilityDamageBonus(activator, ability.EffectiveLevelPerkType);
             var nextSkillAbilityBonuses = Combat.ConsumeNextSkillAbilityBonuses(activator, abilitySkillType);
+            var guardedHitBonuses = ability.IsHostileAbility
+                ? Combat.ConsumeNextAttackGuardedHitBonuses(activator)
+                : (DMGBonus: 0, CriticalRatePercentAdjustment: 0, EnmityBonus: 0);
+            var statusAppliedNextAttackDamageBonus = ability.IsHostileAbility
+                ? Combat.GetStatusAppliedNextAttackDamageBonus(activator)
+                : 0;
             BeginAbilityImpact(
                 activator,
                 ability,
-                nextAbilityDamageBonus + nextSkillAbilityBonuses.DamageBonus,
-                nextSkillAbilityBonuses.CriticalRatePercentAdjustment,
-                nextSkillAbilityBonuses.DefenseIgnorePercentAdjustment);
+                nextAbilityDamageBonus +
+                nextSkillAbilityBonuses.DamageBonus +
+                guardedHitBonuses.DMGBonus +
+                statusAppliedNextAttackDamageBonus,
+                nextSkillAbilityBonuses.CriticalRatePercentAdjustment + guardedHitBonuses.CriticalRatePercentAdjustment,
+                nextSkillAbilityBonuses.DefenseIgnorePercentAdjustment,
+                guardedHitBonuses.EnmityBonus,
+                statusAppliedNextAttackDamageBonus,
+                countsAsAttackAttempt);
         }
 
         private static void BeginAbilityImpact(
@@ -111,7 +134,10 @@ namespace SWLOR.Game.Server.Service
             AbilityDetail ability,
             int nextAbilityDamageBonus,
             int nextAbilityCriticalRatePercentAdjustment,
-            int nextAbilityDefenseIgnorePercentAdjustment = 0)
+            int nextAbilityDefenseIgnorePercentAdjustment = 0,
+            int nextAttackEnmityBonus = 0,
+            int statusAppliedNextAttackDamageBonus = 0,
+            bool countsAsAttackAttempt = true)
         {
             if (!GetIsObjectValid(activator) || ability == null)
                 return;
@@ -120,7 +146,10 @@ namespace SWLOR.Game.Server.Service
                 ability,
                 nextAbilityDamageBonus,
                 nextAbilityCriticalRatePercentAdjustment,
-                nextAbilityDefenseIgnorePercentAdjustment);
+                nextAbilityDefenseIgnorePercentAdjustment,
+                nextAttackEnmityBonus,
+                statusAppliedNextAttackDamageBonus,
+                countsAsAttackAttempt);
         }
 
         public static AbilityImpactSummary EndAbilityImpact(uint activator)
@@ -130,7 +159,57 @@ namespace SWLOR.Game.Server.Service
 
             _trackedAbilityImpacts.Remove(activator);
             impact.FlushDamageEffects(activator);
+            if (impact.Ability.IsHostileAbility && impact.CountsAsAttackAttempt)
+            {
+                StatusEffect.NotifyAttackAttemptStatusEffects(
+                    activator,
+                    impact.Summary.SkillType,
+                    impact.Summary);
+            }
+            _lastCompletedImpactSummaries[activator] = impact.Summary;
             return impact.Summary;
+        }
+
+        private static readonly Dictionary<uint, AbilityImpactSummary> _lastCompletedImpactSummaries = new();
+
+        /// <summary>
+        /// The summary of the activator's most recently COMPLETED ability impact, or null if
+        /// none completed since the last clear. Observability seam for the engine test
+        /// harness: a queued weapon ability's damage rides the same landed hit as the weapon
+        /// swing, so an HP drop alone cannot attribute damage to the ability - a completed
+        /// summary with impacted targets can.
+        /// </summary>
+        public static AbilityImpactSummary GetLastCompletedAbilityImpactSummary(uint activator)
+        {
+            return _lastCompletedImpactSummaries.TryGetValue(activator, out var summary)
+                ? summary
+                : null;
+        }
+
+        /// <summary>
+        /// Clears the activator's last completed impact summary so a subsequent
+        /// <see cref="GetLastCompletedAbilityImpactSummary"/> observation cannot match an
+        /// earlier ability's impact.
+        /// </summary>
+        public static void ClearLastCompletedAbilityImpactSummary(uint activator)
+        {
+            _lastCompletedImpactSummaries.Remove(activator);
+        }
+
+        /// <summary>
+        /// Discards an incomplete tracked impact without applying its queued damage effects.
+        /// </summary>
+        public static void AbortAbilityImpact(uint activator)
+        {
+            if (!_trackedAbilityImpacts.TryGetValue(activator, out var impact))
+                return;
+
+            _trackedAbilityImpacts.Remove(activator);
+            Log.WriteStructured(
+                LogGroup.Error,
+                "Ability impact aborted for activator {Activator}. Ability: {Ability}.",
+                activator,
+                impact.Ability?.Name ?? "Unknown");
         }
 
         public static bool TryQueueTrackedDamageEffect(uint activator, uint target, int damage, DamageType damageType)
@@ -193,34 +272,24 @@ namespace SWLOR.Game.Server.Service
         public static int ApplyCombatReadinessToActivatedAbilityMagnitude(uint activator, int amount)
         {
             var trackedImpact = GetTrackedAbilityImpact(activator);
-            if (amount <= 0 || trackedImpact == null)
+            if (trackedImpact == null)
                 return amount;
 
-            var combatReadiness = Stat.GetCombatReadinessPercent(activator);
+            return ApplyCombatReadinessMagnitude(activator, amount);
+        }
+
+        public static int ApplyCombatReadinessMagnitude(uint creature, int amount)
+        {
+            if (amount <= 0)
+                return amount;
+
+            var combatReadiness = Stat.GetCombatReadinessPercent(creature);
             if (combatReadiness > 0)
             {
                 amount += (int)Math.Ceiling(amount * (combatReadiness / 100f));
             }
 
-            if (trackedImpact.Ability?.SkillType == SkillType.Devices)
-            {
-                var deviceOutput = Stat.GetStatAdjustment(activator, StatType.DeviceAbilityOutputPercentAdjustment);
-                if (deviceOutput > 0)
-                {
-                    amount += (int)Math.Ceiling(amount * (deviceOutput / 100f));
-                }
-            }
-
             return amount;
-        }
-
-        public static int ApplyActiveForceAffinityDurationAdjustment(uint activator, int durationTicks, bool isPermanent)
-        {
-            if (isPermanent || durationTicks <= 0)
-                return durationTicks;
-
-            var adjustedDuration = ApplyActiveForceAffinityMagnitude(activator, durationTicks);
-            return Math.Max(1, adjustedDuration);
         }
 
         public static void ApplyHostileAbilityEnmity(uint activator, uint target, int damage = 0)
@@ -276,6 +345,19 @@ namespace SWLOR.Game.Server.Service
         /// <param name="effectivePerkLevel">The activator's effective perk level.</param>
         /// <param name="targetLocation">The target location of the perk feat.</param>
         /// <returns>true if successful, false otherwise</returns>
+        private static string _lastActivationDenial = string.Empty;
+
+        /// <summary>
+        /// The reason the most recent CanUseAbility call returned false. Player-facing feedback
+        /// goes through SendMessageToPC, which is invisible for NPC activators - the in-engine
+        /// test harness reads this to report WHY an activation was rejected. Cleared at the
+        /// start of every check.
+        /// </summary>
+        public static string GetLastActivationDenialReason()
+        {
+            return _lastActivationDenial;
+        }
+
         public static bool CanUseAbility(
             uint activator,
             uint target,
@@ -285,78 +367,104 @@ namespace SWLOR.Game.Server.Service
         {
             var ability = GetAbilityDetail(abilityType);
 
+            _lastActivationDenial = string.Empty;
+
+            bool Deny(string reason)
+            {
+                _lastActivationDenial = reason;
+                SendMessageToPC(activator, reason);
+                return false;
+            }
+
             // Cannot use this ability in space.
             if (Space.IsPlayerInSpaceMode(activator) &&
                 !ability.CanBeUsedInSpace)
             {
-                SendMessageToPC(activator, "This ability cannot be used in space.");
-                return false;
+                return Deny("This ability cannot be used in space.");
             }
 
             // Must have appropriate levels in the perk to use the ability.
             if (effectivePerkLevel <= 0 || ability.AbilityLevel > effectivePerkLevel)
             {
-                SendMessageToPC(activator, "You do not meet the prerequisites to use this ability.");
-                return false;
+                return Deny("You do not meet the prerequisites to use this ability.");
             }
 
             if (Perk.ShouldEnforceActiveAbilityFeatReplacement(activator, ability.EffectiveLevelPerkType) &&
                 !Perk.IsCurrentActiveAbilityFeat(abilityType, ability.EffectiveLevelPerkType, effectivePerkLevel))
             {
-                SendMessageToPC(activator, "A newer rank has replaced this ability.");
-                return false;
+                return Deny("A newer rank has replaced this ability.");
             }
 
             // Activator is dead.
             if (GetCurrentHitPoints(activator) <= 0)
             {
-                SendMessageToPC(activator, "You are dead.");
-                return false;
+                return Deny("You are dead.");
             }
 
             // Not commandable
             if (!GetCommandable(activator))
             {
-                SendMessageToPC(activator, "You cannot take actions at this time.");
-                return false;
+                return Deny("You cannot take actions at this time.");
             }
 
             // Must be within line of sight.
-            if (GetIsObjectValid(target) && !HasAbilityLineOfSight(activator, target))
+            if (ability.RequiresTarget &&
+                GetIsObjectValid(target) &&
+                !HasAbilityLineOfSight(activator, target))
             {
-                SendMessageToPC(activator, "You cannot see your target.");
-                return false;
+                return Deny("You cannot see your target.");
             }
 
             // Must not be busy
             if (Activity.IsBusy(activator))
             {
-                SendMessageToPC(activator, "You are busy.");
-                return false;
+                return Deny("You are busy.");
+            }
+
+            if (ability.ActivationType == AbilityActivationType.Weapon &&
+                Combat.IsWeaponSkillType(ability.SkillType) &&
+                !Combat.HasEquippedWeaponForAbilitySkill(activator, ability.SkillType))
+            {
+                var skillName = Skill.GetSkillDetails(ability.SkillType).Name;
+                return Deny($"You must equip a {skillName} weapon to use this ability.");
             }
 
             if (Combat.GetAbilitySkillType(activator, ability) == SkillType.Force &&
                 Stat.GetStatAdjustment(activator, StatType.ForceAbilityActivationDisabled) > 0)
             {
-                SendMessageToPC(activator, "You cannot use Force abilities right now.");
-                return false;
+                return Deny("You cannot use Force abilities right now.");
             }
 
             // Target check.
             if (ability.RequiresTarget && !GetIsObjectValid(target))
             {
-                SendMessageToPC(activator, "A target is required.");
-                return false;
+                return Deny("A target is required.");
             }
 
-            // Range check. Targetless activations, such as self buffs, queued attacks,
-            // and ground-targeted areas, should not validate against a synthetic target.
+            // Aimed areas use the feat's location cursor. They must not use RequiresTarget,
+            // because empty-ground casts have no target object and object range/hostility checks
+            // do not describe a selected location or direction.
+            if (ability.RequiresLocationTarget)
+            {
+                var targetArea = GetAreaFromLocation(targetLocation);
+                if (!GetIsObjectValid(targetArea) || targetArea != GetArea(activator))
+                {
+                    return Deny("A target location in your current area is required.");
+                }
+
+                if (ability.HasExplicitMaxRange &&
+                    GetDistanceBetweenLocations(GetLocation(activator), targetLocation) > ability.MaxRange)
+                {
+                    return Deny("You are out of range.  This ability has a range of " + ability.MaxRange + " meters.");
+                }
+            }
+
+            // Object range check. Location-targeted areas are validated separately above.
             if (ability.RequiresTarget &&
                 GetIsObjectValid(target) &&
                 GetDistanceBetween(activator, target) > ability.MaxRange)
             {
-                SendMessageToPC(activator, "You are out of range.  This ability has a range of " + ability.MaxRange + " meters.");
-                return false;
+                return Deny("You are out of range.  This ability has a range of " + ability.MaxRange + " meters.");
             }
 
             // Hostility check
@@ -365,8 +473,7 @@ namespace SWLOR.Game.Server.Service
                 !GetIsReactionTypeHostile(target, activator) &&
                 ability.IsHostileAbility)
             {
-                SendMessageToPC(activator, "You may only use this ability on enemies.");
-                return false;
+                return Deny("You may only use this ability on enemies.");
             }
 
             // Perk-specific requirement checks
@@ -375,8 +482,7 @@ namespace SWLOR.Game.Server.Service
                 var requirementError = req.CheckRequirements(activator, ability);
                 if (!string.IsNullOrWhiteSpace(requirementError))
                 {
-                    SendMessageToPC(activator, requirementError);
-                    return false;
+                    return Deny(requirementError);
                 }
             }
 
@@ -384,23 +490,20 @@ namespace SWLOR.Game.Server.Service
             var customValidationResult = ability.CustomValidation == null ? string.Empty : ability.CustomValidation(activator, target, effectivePerkLevel, targetLocation);
             if (!string.IsNullOrWhiteSpace(customValidationResult))
             {
-                SendMessageToPC(activator, customValidationResult);
-                return false;
+                return Deny(customValidationResult);
             }
 
             var areaLineOfSightError = ValidateHostileAreaLineOfSight(activator, target, targetLocation, ability);
             if (!string.IsNullOrWhiteSpace(areaLineOfSightError))
             {
-                SendMessageToPC(activator, areaLineOfSightError);
-                return false;
+                return Deny(areaLineOfSightError);
             }
 
             // Check if ability is on a recast timer still.
             var (isOnRecast, timeToWait) = Recast.IsOnRecastDelay(activator, ability.RecastGroup);
             if (isOnRecast)
             {
-                SendMessageToPC(activator, $"This ability can be used in {timeToWait}.");
-                return false;
+                return Deny($"This ability can be used in {timeToWait}.");
             }
 
             return true;
@@ -716,6 +819,17 @@ namespace SWLOR.Game.Server.Service
             }
 
             _playerAuras.Remove(activator);
+        }
+
+        /// <summary>
+        /// Deactivates every aura the player is currently projecting and strips any aura effects they are
+        /// receiving as a recipient. Used by flows that must return a player to a clean state, such as the
+        /// character rebuilder before a reset.
+        /// </summary>
+        public static void ClearAllPlayerAuras(uint player)
+        {
+            RemoveAllAuras(player);
+            RemoveCreatureFromAllAuraRanges(player);
         }
 
         /// <summary>
@@ -1142,12 +1256,26 @@ namespace SWLOR.Game.Server.Service
             AbilityType combatImpactDamageAbility = AbilityType.Invalid,
             bool sendsNoTargetMessage = true,
             bool resolvesHit = true,
-            bool canCritical = true)
+            bool canCritical = true,
+            float impactFlashDuration = DefaultImpactFlashDuration)
         {
             RecordAbilityImpactShape(activator, skillType, true);
 
             if (telegraphDuration <= 0f)
             {
+                // Instant-cast area abilities cannot use a pre-cast telegraph without violating the
+                // Bible's "Instant" activation time, so they flash their shape at impact instead.
+                // The flash is purely visual: damage below is still applied immediately.
+                ShowAreaImpactFlash(
+                    activator,
+                    target,
+                    targetLocation,
+                    shape,
+                    lengthOrRadius,
+                    width,
+                    centerOnActivator,
+                    impactFlashDuration);
+
                 var totalDamage = ApplyCombatImpactInShape(
                     activator,
                     target,
@@ -1197,6 +1325,9 @@ namespace SWLOR.Game.Server.Service
                 0f);
             var impactRotation = GetImpactRotationRadians(activator, target, targetLocation);
             var trackedImpact = GetTrackedAbilityImpact(activator);
+            var deferredNextAbilityDamageBonus =
+                (trackedImpact?.NextAbilityDamageBonus ?? 0) -
+                (trackedImpact?.StatusAppliedNextAttackDamageBonus ?? 0);
             var action = BuildTelegraphedCombatImpactAction(
                 skillType,
                 baseDamage,
@@ -1207,9 +1338,10 @@ namespace SWLOR.Game.Server.Service
                 shape,
                 areaVisualLocation,
                 trackedImpact?.Ability,
-                trackedImpact?.NextAbilityDamageBonus ?? 0,
+                deferredNextAbilityDamageBonus,
                 trackedImpact?.NextAbilityCriticalRatePercentAdjustment ?? 0,
                 trackedImpact?.NextAbilityDefenseIgnorePercentAdjustment ?? 0,
+                trackedImpact?.NextAttackEnmityBonus ?? 0,
                 damageType,
                 statusResistanceType,
                 targetVisualEffect,
@@ -1270,10 +1402,68 @@ namespace SWLOR.Game.Server.Service
                     throw new ArgumentOutOfRangeException(nameof(shape), shape, null);
             }
 
+            Combat.DeferAbilityStaminaCostContext(activator, trackedImpact?.Ability);
+
             if (playImpactAnimation)
                 PlayCombatImpactAnimation(activator, impactAnimation);
 
             return 0;
+        }
+
+        /// <summary>
+        /// Renders a short, purely visual telegraph showing the area an instant ability just struck.
+        /// Unlike a pre-cast telegraph this carries no action and does not gate damage, so it gives
+        /// positional feedback without changing an ability's Bible-mandated "Instant" activation time.
+        /// </summary>
+        private static void ShowAreaImpactFlash(
+            uint activator,
+            uint target,
+            Location targetLocation,
+            CombatImpactAreaShape shape,
+            float lengthOrRadius,
+            float width,
+            bool centerOnActivator,
+            float flashDuration)
+        {
+            if (flashDuration <= 0f || lengthOrRadius <= 0f)
+                return;
+
+            var rotation = GetImpactRotationRadians(activator, target, targetLocation);
+
+            switch (shape)
+            {
+                case CombatImpactAreaShape.Sphere:
+                    Telegraph.CreateSphereTelegraph(
+                        activator,
+                        GetAreaImpactPosition(activator, target, targetLocation, centerOnActivator),
+                        lengthOrRadius,
+                        flashDuration,
+                        true,
+                        null);
+                    break;
+                case CombatImpactAreaShape.Cone:
+                    Telegraph.CreateConeTelegraph(
+                        activator,
+                        GetPosition(activator),
+                        rotation,
+                        lengthOrRadius,
+                        width > 0f ? width : lengthOrRadius,
+                        flashDuration,
+                        true,
+                        null);
+                    break;
+                case CombatImpactAreaShape.Line:
+                    Telegraph.CreateLineTelegraph(
+                        activator,
+                        GetPosition(activator),
+                        rotation,
+                        lengthOrRadius,
+                        width > 0f ? width : 2.0f,
+                        flashDuration,
+                        true,
+                        null);
+                    break;
+            }
         }
 
         private static int ApplyCombatImpactInShape(
@@ -1377,6 +1567,7 @@ namespace SWLOR.Game.Server.Service
             int nextAbilityDamageBonus,
             int nextAbilityCriticalRatePercentAdjustment,
             int nextAbilityDefenseIgnorePercentAdjustment,
+            int nextAttackEnmityBonus,
             CombatDamageType damageType,
             ResistanceType statusResistanceType,
             VisualEffect targetVisualEffect,
@@ -1402,87 +1593,110 @@ namespace SWLOR.Game.Server.Service
         {
             return (creator, creatures) =>
             {
-                if (!GetIsObjectValid(creator) || GetCurrentHitPoints(creator) <= 0)
-                    return;
-
-                var hostileCreatures = creatures
-                    .Where(creature =>
-                        GetIsObjectValid(creature) &&
-                        GetIsReactionTypeHostile(creature, creator) &&
-                        HasAbilityLineOfSight(creator, creature))
-                    .ToList();
-
-                if (maxTargets > 0)
+                var impactStarted = false;
+                var impactEnded = false;
+                try
                 {
-                    var impactPosition = GetPositionFromLocation(areaVisualLocation);
-                    hostileCreatures = hostileCreatures
-                        .OrderBy(creature => GetHorizontalDistance(GetPosition(creature), impactPosition))
-                        .Take(maxTargets)
+                    if (!GetIsObjectValid(creator) || GetCurrentHitPoints(creator) <= 0)
+                        return;
+
+                    var hostileCreatures = creatures
+                        .Where(creature =>
+                            GetIsObjectValid(creature) &&
+                            GetIsReactionTypeHostile(creature, creator) &&
+                            HasAbilityLineOfSight(creator, creature))
                         .ToList();
-                }
 
-                if (hostileCreatures.Count <= 0)
-                {
-                    if (alwaysApplyAreaVisualEffect && areaVisualEffect != VisualEffect.None)
+                    if (maxTargets > 0)
+                    {
+                        var impactPosition = GetPositionFromLocation(areaVisualLocation);
+                        hostileCreatures = hostileCreatures
+                            .OrderBy(creature => GetHorizontalDistance(GetPosition(creature), impactPosition))
+                            .Take(maxTargets)
+                            .ToList();
+                    }
+
+                    if (hostileCreatures.Count <= 0)
+                    {
+                        if (alwaysApplyAreaVisualEffect && areaVisualEffect != VisualEffect.None)
+                        {
+                            ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(areaVisualEffect), areaVisualLocation);
+                        }
+
+                        if (sendsNoTargetMessage)
+                            SendCombatImpactNoTargetsMessage(creator, ability);
+                        return;
+                    }
+
+                    if (ability != null)
+                    {
+                        var statusAppliedNextAttackDamageBonus = ability.IsHostileAbility
+                            ? Combat.GetStatusAppliedNextAttackDamageBonus(creator)
+                            : 0;
+                        BeginAbilityImpact(
+                            creator,
+                            ability,
+                            nextAbilityDamageBonus + statusAppliedNextAttackDamageBonus,
+                            nextAbilityCriticalRatePercentAdjustment,
+                            nextAbilityDefenseIgnorePercentAdjustment,
+                            nextAttackEnmityBonus,
+                            statusAppliedNextAttackDamageBonus,
+                            countsAsAttackAttempt: false);
+                        impactStarted = true;
+                        RecordAbilityImpactShape(creator, skillType, true);
+                    }
+
+                    if (areaVisualEffect != VisualEffect.None)
                     {
                         ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(areaVisualEffect), areaVisualLocation);
                     }
 
-                    if (sendsNoTargetMessage)
-                        SendCombatImpactNoTargetsMessage(creator, ability);
-                    return;
-                }
-
-                if (ability != null)
-                {
-                    BeginAbilityImpact(
+                    ApplyCombatImpactToCreatures(
                         creator,
-                        ability,
-                        nextAbilityDamageBonus,
-                        nextAbilityCriticalRatePercentAdjustment,
-                        nextAbilityDefenseIgnorePercentAdjustment);
-                    RecordAbilityImpactShape(creator, skillType, true);
+                        hostileCreatures,
+                        skillType,
+                        baseDamage,
+                        statusEffect,
+                        duration,
+                        additionalStatusEffects,
+                        statusEffectFactory,
+                        damageType,
+                        statusResistanceType,
+                        targetVisualEffect,
+                        damagePercentAdjustment,
+                        baseDamageAdjustment,
+                        maxTargets,
+                        enmityBonus,
+                        beforeImpact,
+                        afterSuccessfulHit,
+                        beforeSuccessfulImpactRiders,
+                        hitChancePercentAdjustment: hitChancePercentAdjustment,
+                        criticalRatePercentAdjustment: criticalRatePercentAdjustment,
+                        useNPCStatScaling: useNPCStatScaling,
+                        awardsCombatPoints: awardsCombatPoints,
+                        effectDamageType: effectDamageType,
+                        combatImpactDamageAbility: combatImpactDamageAbility,
+                        sendsNoTargetMessage: sendsNoTargetMessage,
+                        resolvesHit: resolvesHit,
+                        canCritical: canCritical);
+
+                    if (ability != null)
+                    {
+                        var summary = EndAbilityImpact(creator);
+                        impactEnded = true;
+                        Combat.ApplyAbilityImpactEffects(creator, summary);
+                        afterImpactAction?.Invoke(summary);
+                    }
+
                 }
-
-                if (areaVisualEffect != VisualEffect.None)
+                finally
                 {
-                    ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(areaVisualEffect), areaVisualLocation);
-                }
+                    if (impactStarted && !impactEnded)
+                    {
+                        AbortAbilityImpact(creator);
+                    }
 
-                ApplyCombatImpactToCreatures(
-                    creator,
-                    hostileCreatures,
-                    skillType,
-                    baseDamage,
-                    statusEffect,
-                    duration,
-                    additionalStatusEffects,
-                    statusEffectFactory,
-                    damageType,
-                    statusResistanceType,
-                    targetVisualEffect,
-                    damagePercentAdjustment,
-                    baseDamageAdjustment,
-                    maxTargets,
-                    enmityBonus,
-                    beforeImpact,
-                    afterSuccessfulHit,
-                    beforeSuccessfulImpactRiders,
-                    hitChancePercentAdjustment: hitChancePercentAdjustment,
-                    criticalRatePercentAdjustment: criticalRatePercentAdjustment,
-                    useNPCStatScaling: useNPCStatScaling,
-                    awardsCombatPoints: awardsCombatPoints,
-                    effectDamageType: effectDamageType,
-                    combatImpactDamageAbility: combatImpactDamageAbility,
-                    sendsNoTargetMessage: sendsNoTargetMessage,
-                    resolvesHit: resolvesHit,
-                    canCritical: canCritical);
-
-                if (ability != null)
-                {
-                    var summary = EndAbilityImpact(creator);
-                    Combat.ApplyAbilityImpactEffects(creator, summary);
-                    afterImpactAction?.Invoke(summary);
+                    Combat.CompleteDeferredAbilityStaminaCostContext(creator, ability);
                 }
             };
         }
@@ -1730,9 +1944,19 @@ namespace SWLOR.Game.Server.Service
                    Math.Abs(rotatedY) <= width * 0.5f;
         }
 
+        /// <summary>
+        /// Plays a non-weapon combat impact animation while preserving explicit throw carriers.
+        /// </summary>
         private static void PlayCombatImpactAnimation(uint activator, Animation impactAnimation)
         {
             var trackedAbility = GetTrackedAbilityImpact(activator)?.Ability;
+
+            // Queued weapon abilities resolve inside the engine's landed auto-attack. Playing a
+            // scripted impact animation here would enqueue a second swing after the real hit,
+            // which becomes especially visible after a lethal attack has already killed its target.
+            if (trackedAbility?.ActivationType == AbilityActivationType.Weapon)
+                return;
+
             var animation = impactAnimation == Animation.Invalid
                 ? trackedAbility?.ImpactAnimationType ?? Animation.Invalid
                 : impactAnimation;
@@ -1756,20 +1980,23 @@ namespace SWLOR.Game.Server.Service
             {
                 AssignCommand(activator, () =>
                 {
-                    ReplaceObjectAnimation(
+                    PistolAnimationRemap.PlayAnimationWithTemporaryReplacementPreservingExplicitThrow(
                         activator,
+                        animation,
+                        1.0f,
+                        restoreDelaySeconds,
                         sourceAnimationName,
-                        replacementAnimationName);
-                    ActionPlayAnimation(animation, 1.0f, restoreDelaySeconds);
-                    DelayCommand(restoreDelaySeconds, () =>
-                    {
-                        ReplaceObjectAnimation(activator, sourceAnimationName);
-                    });
+                        replacementAnimationName,
+                        restoreDelaySeconds);
                 });
                 return;
             }
 
-            AssignCommand(activator, () => ActionPlayAnimation(animation));
+            AssignCommand(
+                activator,
+                () => PistolAnimationRemap.PlayAnimationPreservingExplicitThrow(
+                    activator,
+                    animation));
         }
 
         public static int ApplyHostileCombatImpact(
@@ -1788,12 +2015,21 @@ namespace SWLOR.Game.Server.Service
             Action<uint> afterSuccessfulHit = null,
             Action<uint> beforeSuccessfulImpactRiders = null,
             bool awardsCombatPoints = true,
-            DamageType? effectDamageType = null)
+            DamageType? effectDamageType = null,
+            bool firstHostileAbilityHitDamageBonusApplied = false)
         {
+            using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(activator);
             var trackedImpact = GetTrackedAbilityImpact(activator);
+
+            // Register the combat point before applying damage. A lethal hit resolves the target's
+            // death (and its skill XP distribution) synchronously during EffectDamage below, so
+            // registering afterward would miss the payout entirely when an ability one-shots a target.
+            if (awardsCombatPoints)
+                CombatPoint.AddCombatPoint(activator, target, skillType, 3);
 
             if (damage > 0)
             {
+                trackedImpact?.ConsumeStatusAppliedNextAttackDamageBonus(activator);
                 Combat.SendTemporaryHitPointDamageFeedback(activator, target, damage);
                 if (trackedImpact == null)
                 {
@@ -1814,12 +2050,21 @@ namespace SWLOR.Game.Server.Service
 
                 ApplyDarkForceConversion(activator, target, damage);
                 Combat.ConsumeSameTargetPressureWeaponAbilityDamageBonus(activator, target, skillType, damage);
-                Combat.ApplyDamageDealtEffects(activator, target, damage, skillType, damageType);
+                Combat.ApplyDamageDealtEffects(
+                    activator,
+                    target,
+                    damage,
+                    skillType,
+                    damageType,
+                    isAbilityDamage: true);
                 StatusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType);
                 Combat.ApplyDamageReflectionEffects(activator, target, damage, damageType);
             }
 
-            ApplyHostileAbilityEnmity(activator, target, damage + Math.Max(0, enmityBonus));
+            ApplyHostileAbilityEnmity(
+                activator,
+                target,
+                damage + Math.Max(0, enmityBonus) + Math.Max(0, trackedImpact?.NextAttackEnmityBonus ?? 0));
 
             var statusApplied = ApplyCombatImpactStatusEffect(
                 activator,
@@ -1847,7 +2092,9 @@ namespace SWLOR.Game.Server.Service
                 damage,
                 statusApplied,
                 statusEffect,
-                additionalStatusEffects);
+                additionalStatusEffects,
+                firstHostileAbilityHitDamageBonusApplied,
+                trackedImpact == null || trackedImpact.Summary.ImpactedTargetCount == 0);
 
             if ((damage > 0 || statusApplied) && targetVisualEffect != VisualEffect.None)
             {
@@ -1855,8 +2102,6 @@ namespace SWLOR.Game.Server.Service
             }
 
             afterSuccessfulHit?.Invoke(target);
-            if (awardsCombatPoints)
-                CombatPoint.AddCombatPoint(activator, target, skillType, 3);
             RecordAbilityImpactTarget(activator, target, skillType, false);
             return damage;
         }
@@ -1887,7 +2132,10 @@ namespace SWLOR.Game.Server.Service
             bool resolvesHit = true,
             bool canCritical = true)
         {
+            using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(activator);
             var trackedImpact = GetTrackedAbilityImpact(activator);
+            Combat.TrackHostileAbilityActivity(activator);
+            Combat.TrackHostileDefensiveCombatEntryActivity(target, activator);
             var perkType = trackedImpact?.Ability?.EffectiveLevelPerkType ?? PerkType.Invalid;
             var usesNPCStatScaling = ShouldUseNPCStatScaling(activator, useNPCStatScaling);
             var damageAbility = combatImpactDamageAbility != AbilityType.Invalid
@@ -1955,7 +2203,8 @@ namespace SWLOR.Game.Server.Service
                 afterSuccessfulHit,
                 beforeSuccessfulImpactRiders,
                 awardsCombatPoints,
-                effectDamageType);
+                effectDamageType,
+                firstHostileAbilityHitDamageBonusApplied: true);
         }
 
         private static bool ShouldResolveCombatImpactHit(TrackedAbilityImpact trackedImpact)
@@ -2103,7 +2352,7 @@ namespace SWLOR.Game.Server.Service
             var hpRestorePercent = Stat.GetStatAdjustment(activator, StatType.DarkForceDamageHPPercentRestore);
             if (hpRestorePercent > 0)
             {
-                RestoreHPFromDamage(activator, damage, hpRestorePercent);
+                Combat.ApplyDamageDerivedHealing(activator, damage, hpRestorePercent);
             }
         }
 
@@ -2149,16 +2398,6 @@ namespace SWLOR.Game.Server.Service
                 AssignCommand(activator, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(hpCost), activator));
         }
 
-        private static void RestoreHPFromDamage(uint creature, int damage, int percent)
-        {
-            if (damage <= 0 || percent <= 0)
-                return;
-
-            var amount = Math.Max(1, damage * percent / 100);
-            amount = Stat.ApplyHealingReceivedAdjustment(creature, amount);
-            ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), creature);
-        }
-
         private static int CalculateCombatImpactDamage(
             uint activator,
             uint target,
@@ -2169,7 +2408,7 @@ namespace SWLOR.Game.Server.Service
             AbilityType combatImpactDamageAbility = AbilityType.Invalid,
             bool canCritical = true)
         {
-            if (baseDamage <= 0)
+            if (baseDamage <= 0 && !Combat.IsWeaponSkillType(skillType))
                 return 0;
 
             var trackedImpact = GetTrackedAbilityImpact(activator);
@@ -2180,7 +2419,7 @@ namespace SWLOR.Game.Server.Service
                 Combat.GetCombatImpactWeaponDamage(activator, skillType) +
                 Combat.GetAbilityDamageBonus(activator, skillType) +
                 Combat.GetAbilityDamageFlatAdjustment(activator, perkType, skillType) +
-                Combat.GetCostlyAbilityDamageBonus(activator, skillType) +
+                Combat.GetCostlyAbilityDamageBonus(activator, trackedImpact?.Ability, skillType) +
                 Combat.GetSameTargetPressureWeaponAbilityDamageBonus(activator, target, skillType) +
                 idleBonuses.DamageBonus;
             if (trackedImpact != null)
@@ -2194,6 +2433,14 @@ namespace SWLOR.Game.Server.Service
             var defenseAbility = damageType.GetDefenseAbilityType();
             var defense = Stat.GetDefense(target, damageType, defenseAbility);
             defense = Combat.ApplyStatusSourceDefenseModifiers(activator, target, defense);
+            defense = Combat.ApplyIncomingPhysicalToForceDefenseConversion(
+                target,
+                damageType,
+                defense,
+                () => Combat.ApplyStatusSourceDefenseModifiers(
+                    activator,
+                    target,
+                    Stat.GetDefense(target, CombatDamageType.Force, CombatDamageType.Force.GetDefenseAbilityType())));
             var defenderStat = GetAbilityScore(target, defenseAbility);
             var defenseIgnorePercent =
                 Combat.GetAbilityDefenseIgnorePercentAdjustment(activator, perkType, skillType, target) +
@@ -2262,12 +2509,26 @@ namespace SWLOR.Game.Server.Service
             }
             calculatedDamage = Combat.ApplyDamageDealtModifiers(activator, target, calculatedDamage, skillType, damageType, true);
             calculatedDamage = ApplyCombatReadinessToActivatedAbilityMagnitude(activator, calculatedDamage);
+            // Saber Ward / Aegis Eternal: re-type a share of an incoming physical hit into a real Force
+            // instance (mitigated by Force resistance, shown as Force) before physical resistance.
+            Combat.ApplyIncomingPhysicalToForceConversion(activator, target, damageType, ref calculatedDamage);
+            // Conversion must split first so each portion receives only its own typed Leadership channel.
+            calculatedDamage = Combat.ApplyTypedLeadershipDamageTakenModifier(target, calculatedDamage, damageType);
             calculatedDamage = Resistance.ApplyResistanceToDamage(target, damageType, calculatedDamage);
-            calculatedDamage = Combat.ApplyDamageTakenModifiers(target, calculatedDamage, activator, damageType);
+            calculatedDamage = Combat.ApplyDamageTakenModifiers(
+                target,
+                calculatedDamage,
+                activator,
+                damageType,
+                typedLeadershipReductionAlreadyApplied: true);
 
             if (criticalRating > 0)
             {
                 trackedImpact?.RecordCriticalHit();
+                Combat.SendAbilityCriticalHitFeedback(
+                    activator,
+                    target,
+                    trackedImpact?.Ability?.Name);
                 Combat.ApplyCriticalHitEffects(
                     activator,
                     target,
@@ -2369,7 +2630,7 @@ namespace SWLOR.Game.Server.Service
             AbilityType combatImpactDamageAbility = AbilityType.Invalid,
             bool canCritical = true)
         {
-            if (baseDamage <= 0)
+            if (baseDamage <= 0 && !Combat.IsWeaponSkillType(skillType))
                 return 0;
 
             var trackedImpact = GetTrackedAbilityImpact(activator);
@@ -2381,7 +2642,7 @@ namespace SWLOR.Game.Server.Service
                 Combat.GetCombatImpactWeaponDamage(activator, skillType) +
                 (int)Math.Ceiling(scalingRank * 0.15f) +
                 Combat.GetAbilityDamageFlatAdjustment(activator, perkType, skillType) +
-                Combat.GetCostlyAbilityDamageBonus(activator, skillType) +
+                Combat.GetCostlyAbilityDamageBonus(activator, trackedImpact?.Ability, skillType) +
                 Combat.GetSameTargetPressureWeaponAbilityDamageBonus(activator, target, skillType) +
                 idleBonuses.DamageBonus;
             if (trackedImpact != null)
@@ -2402,6 +2663,14 @@ namespace SWLOR.Game.Server.Service
             var defenseAbility = damageType.GetDefenseAbilityType();
             var defense = Stat.GetDefense(target, damageType, defenseAbility);
             defense = Combat.ApplyStatusSourceDefenseModifiers(activator, target, defense);
+            defense = Combat.ApplyIncomingPhysicalToForceDefenseConversion(
+                target,
+                damageType,
+                defense,
+                () => Combat.ApplyStatusSourceDefenseModifiers(
+                    activator,
+                    target,
+                    Stat.GetDefense(target, CombatDamageType.Force, CombatDamageType.Force.GetDefenseAbilityType())));
             var defenderStat = GetAbilityScore(target, defenseAbility);
             var defenseIgnorePercent =
                 Combat.GetAbilityDefenseIgnorePercentAdjustment(activator, perkType, skillType, target) +
@@ -2470,12 +2739,26 @@ namespace SWLOR.Game.Server.Service
             }
             calculatedDamage = Combat.ApplyDamageDealtModifiers(activator, target, calculatedDamage, skillType, damageType, true);
             calculatedDamage = ApplyCombatReadinessToActivatedAbilityMagnitude(activator, calculatedDamage);
+            // Saber Ward / Aegis Eternal: re-type a share of an incoming physical hit into a real Force
+            // instance (mitigated by Force resistance, shown as Force) before physical resistance.
+            Combat.ApplyIncomingPhysicalToForceConversion(activator, target, damageType, ref calculatedDamage);
+            // Conversion must split first so each portion receives only its own typed Leadership channel.
+            calculatedDamage = Combat.ApplyTypedLeadershipDamageTakenModifier(target, calculatedDamage, damageType);
             calculatedDamage = Resistance.ApplyResistanceToDamage(target, damageType, calculatedDamage);
-            calculatedDamage = Combat.ApplyDamageTakenModifiers(target, calculatedDamage, activator, damageType);
+            calculatedDamage = Combat.ApplyDamageTakenModifiers(
+                target,
+                calculatedDamage,
+                activator,
+                damageType,
+                typedLeadershipReductionAlreadyApplied: true);
 
             if (criticalRating > 0)
             {
                 trackedImpact?.RecordCriticalHit();
+                Combat.SendAbilityCriticalHitFeedback(
+                    activator,
+                    target,
+                    trackedImpact?.Ability?.Name);
                 Combat.ApplyCriticalHitEffects(
                     activator,
                     target,
@@ -2650,31 +2933,130 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// The hard-CC immunity types which, in addition to their own same-type immunity,
+        /// also grant and check immunity against every other type in this set. This lets a
+        /// target who was just knocked down (for example) resist being chained into a daze,
+        /// stun, immobilize, blind, sleep, or confusion for the same window.
+        /// </summary>
+        private static readonly HashSet<ImmunityType> HardCrowdControlImmunityTypes = new()
+        {
+            ImmunityType.Knockdown,
+            ImmunityType.Dazed,
+            ImmunityType.Stun,
+            ImmunityType.Immobilized,
+            ImmunityType.Blindness,
+            ImmunityType.Sleep,
+            ImmunityType.Confused
+        };
+
+        /// <summary>
         /// Applies a temporary immunity effect to a particular target.
         /// This will add 20 seconds on top of whatever the ability duration length is.
-        /// It will NOT remove any existing effects.
+        /// An existing immunity of the same type is replaced so its timer restarts from this
+        /// application without shortening a longer remaining immunity.
+        /// If the immunity is one of the hard-CC types, this also grants temporary immunity
+        /// to every other hard-CC type for the same duration.
         /// </summary>
         /// <param name="target">The target receiving the immunity</param>
         /// <param name="abilityDuration">The length of the ability's duration. This will be added on top of the 20 seconds.</param>
         /// <param name="immunity">The type of immunity to apply.</param>
         public static void ApplyTemporaryImmunity(uint target, float abilityDuration, ImmunityType immunity)
         {
-            const float BaseDuration = 20f;
-            var duration = BaseDuration + abilityDuration;
-            var effectTag = GetTemporaryImmunityEffectTag(immunity);
+            ApplyTemporaryImmunityForDuration(
+                target,
+                TemporaryImmunityBaseDurationSeconds + abilityDuration,
+                immunity);
+        }
 
-            // Effect is already in place.
-            if (HasTemporaryImmunity(target, immunity))
+        /// <summary>
+        /// Applies the remaining post-control immunity after accounting for time that elapsed
+        /// while the affected creature was logged out.
+        /// </summary>
+        public static void ApplyPostControlImmunity(
+            uint target,
+            float secondsSinceControlEnded,
+            ImmunityType immunity)
+        {
+            var duration = Math.Max(
+                0f,
+                TemporaryImmunityBaseDurationSeconds - Math.Max(0f, secondsSinceControlEnded));
+            if (duration <= 0f)
                 return;
 
+            ApplyTemporaryImmunityForDuration(target, duration, immunity);
+        }
+
+        private const float TemporaryImmunityBaseDurationSeconds = 20f;
+
+        private static void ApplyTemporaryImmunityForDuration(
+            uint target,
+            float duration,
+            ImmunityType immunity)
+        {
+            ApplyTemporaryImmunitySingle(target, duration, immunity);
+
+            if (HardCrowdControlImmunityTypes.Contains(immunity))
+            {
+                ApplyTemporaryImmunitySingle(target, duration, ImmunityType.HardCrowdControl);
+            }
+        }
+
+        private static void ApplyTemporaryImmunitySingle(uint target, float requestedDuration, ImmunityType immunity)
+        {
+            var effectTag = GetTemporaryImmunityEffectTag(immunity);
+            var duration = Math.Max(
+                requestedDuration,
+                GetTemporaryImmunityDurationRemaining(target, effectTag));
+            if (duration <= 0f)
+                return;
+
+            RemoveEffectByTag(target, effectTag);
             var effect = EffectImmunity(immunity);
             effect = TagEffect(effect, effectTag);
             ApplyEffectToObject(DurationType.Temporary, effect, target, duration);
         }
 
+        private static int GetTemporaryImmunityDurationRemaining(uint target, string effectTag)
+        {
+            var remaining = 0;
+            for (var effect = GetFirstEffect(target);
+                 GetIsEffectValid(effect);
+                 effect = GetNextEffect(target))
+            {
+                if (GetEffectTag(effect) == effectTag)
+                {
+                    remaining = Math.Max(remaining, GetEffectDurationRemaining(effect));
+                }
+            }
+
+            return remaining;
+        }
+
         public static bool HasTemporaryImmunity(uint target, ImmunityType immunity)
         {
             return HasEffectByTag(target, GetTemporaryImmunityEffectTag(immunity));
+        }
+
+        /// <summary>
+        /// Checks whether the target is immune to a hard-CC type: it still has immunity to that
+        /// specific type, it recently suffered a different hard-CC type and is still within the
+        /// shared post-control immunity window, or a hard-CC status is active on it right now -
+        /// controls do not stack, they queue behind the post-control window.
+        /// </summary>
+        public static bool HasHardCrowdControlImmunity(uint target, ImmunityType immunity)
+        {
+            return HasTemporaryImmunity(target, immunity) ||
+                   HasTemporaryImmunity(target, ImmunityType.HardCrowdControl) ||
+                   HasActiveHardCrowdControlStatus(target);
+        }
+
+        private static bool HasActiveHardCrowdControlStatus(uint target)
+        {
+            return StatusEffect.GetCreatureStatusEffects(target)
+                .GetAllEffects()
+                .Any(effect =>
+                    (effect.Categories & StatusEffectCategory.HardCrowdControl) ==
+                    StatusEffectCategory.HardCrowdControl);
         }
 
         private static string GetTemporaryImmunityEffectTag(ImmunityType immunity)
@@ -2689,27 +3071,50 @@ namespace SWLOR.Game.Server.Service
 
             public AbilityDetail Ability { get; }
             public AbilityImpactSummary Summary { get; }
-            public int NextAbilityDamageBonus { get; }
+            public bool CountsAsAttackAttempt { get; }
+            public int NextAbilityDamageBonus { get; private set; }
             public int NextAbilityCriticalRatePercentAdjustment { get; }
             public int NextAbilityDefenseIgnorePercentAdjustment { get; }
+            public int NextAttackEnmityBonus { get; }
+            public int StatusAppliedNextAttackDamageBonus { get; }
             public bool DarkForceConversionApplied { get; set; }
+            private bool _statusAppliedNextAttackDamageBonusConsumed;
 
             public TrackedAbilityImpact(
                 AbilityDetail ability,
                 int nextAbilityDamageBonus,
                 int nextAbilityCriticalRatePercentAdjustment,
-                int nextAbilityDefenseIgnorePercentAdjustment)
+                int nextAbilityDefenseIgnorePercentAdjustment,
+                int nextAttackEnmityBonus,
+                int statusAppliedNextAttackDamageBonus,
+                bool countsAsAttackAttempt)
             {
                 Ability = ability;
                 NextAbilityDamageBonus = nextAbilityDamageBonus;
                 NextAbilityCriticalRatePercentAdjustment = nextAbilityCriticalRatePercentAdjustment;
                 NextAbilityDefenseIgnorePercentAdjustment = nextAbilityDefenseIgnorePercentAdjustment;
+                NextAttackEnmityBonus = nextAttackEnmityBonus;
+                StatusAppliedNextAttackDamageBonus = statusAppliedNextAttackDamageBonus;
+                CountsAsAttackAttempt = countsAsAttackAttempt;
                 Summary = new AbilityImpactSummary
                 {
                     SkillType = ability.SkillType,
                     IsAreaAbility = ability.IsAreaAbility,
                     IsSingleTargetAbility = ability.IsSingleTargetAbility
                 };
+            }
+
+            public void ConsumeStatusAppliedNextAttackDamageBonus(uint activator)
+            {
+                if (_statusAppliedNextAttackDamageBonusConsumed ||
+                    StatusAppliedNextAttackDamageBonus <= 0)
+                {
+                    return;
+                }
+
+                Combat.ConsumeStatusAppliedNextAttackDamageBonus(activator);
+                NextAbilityDamageBonus -= StatusAppliedNextAttackDamageBonus;
+                _statusAppliedNextAttackDamageBonusConsumed = true;
             }
 
             public void RecordShape(SkillType skillType, bool isArea)
@@ -2752,6 +3157,7 @@ namespace SWLOR.Game.Server.Service
                 if (!GetIsObjectValid(target) || damage <= 0)
                     return;
 
+                Summary.AttributedDamage += damage;
                 _pendingDamageEffects.Add(new PendingDamageEffect(target, damage, damageType));
             }
 

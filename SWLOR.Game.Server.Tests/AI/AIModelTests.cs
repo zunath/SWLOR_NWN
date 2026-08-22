@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AIService;
@@ -269,6 +270,29 @@ public class AIModelTests
     }
 
     [Test]
+    public void AITarget_SelfCenteredHostileAreasUseCasterAndNamedTargetPolicy()
+    {
+        var source = ReadSource("SWLOR.Game.Server", "Service", "AIService", "AITarget.cs")
+            .Replace("\r\n", "\n");
+        var selectorBody = source.Substring(
+            source.IndexOf("private static AITargetSelector SelfCenteredHostileArea", StringComparison.Ordinal),
+            source.IndexOf("public static AITargetSelector AllyAttacker", StringComparison.Ordinal) -
+            source.IndexOf("private static AITargetSelector SelfCenteredHostileArea", StringComparison.Ordinal));
+        var inferDefaultBody = source.Substring(
+            source.IndexOf("public static AITargetSelector InferDefault", StringComparison.Ordinal));
+
+        source.Should().Contain("private const int DefaultAreaAbilityMinimumTargets = 2;");
+        source.Should().NotContain("HostileCluster(ability.MaxRange, 2)");
+        selectorBody.Should().Contain("ability.Targeting.ResolveSizeX(context.Self, true)");
+        selectorBody.Should().Contain("context.SetEvaluatedTarget(context.Self);");
+        selectorBody.Should().Contain("context.CountHostilesNearTarget(radius) >= DefaultAreaAbilityMinimumTargets");
+        inferDefaultBody.Should().Contain("ability.Targeting?.Shape == AbilityTargetingShapeType.Sphere");
+        inferDefaultBody.Should().Contain("AbilityTargetingFlags.OriginOnSelf");
+        inferDefaultBody.Should().Contain("SelfCenteredHostileArea(ability)");
+        inferDefaultBody.Should().Contain("HostileCluster(ability.MaxRange, DefaultAreaAbilityMinimumTargets)");
+    }
+
+    [Test]
     public void CreatureAggroEnter_EnforcesAggroRangeBeforeAddingProximityEnmity()
     {
         var aiSource = File.ReadAllText(Path.Combine(
@@ -299,7 +323,7 @@ public class AIModelTests
         var rangeStartIndex = aiSource.IndexOf("static bool IsInAggroRange", StringComparison.Ordinal);
         var rangeBody = aiSource.Substring(
             rangeStartIndex,
-            aiSource.IndexOf("private static void TryAcquireAggro", StringComparison.Ordinal) -
+            aiSource.IndexOf("public static void TryAcquireAggroAfterDetection", StringComparison.Ordinal) -
             rangeStartIndex);
 
         rangeBody.Should().Contain("LineOfSightObject(target, creature)");
@@ -425,8 +449,15 @@ public class AIModelTests
             source.IndexOf("void CompleteActivation", StringComparison.Ordinal),
             source.IndexOf("// Begin the main process", StringComparison.Ordinal) -
             source.IndexOf("void CompleteActivation", StringComparison.Ordinal));
+        var delayedResumeBody = source.Substring(
+            source.IndexOf("private static void ResumeAttackAfterDelay", StringComparison.Ordinal),
+            source.IndexOf("/// <summary>\n        /// Breaks stealth", StringComparison.Ordinal) -
+            source.IndexOf("private static void ResumeAttackAfterDelay", StringComparison.Ordinal));
 
         resumeBody.Should().Contain("Enmity.IssueAttackCommand(activator, target, clearActions);");
+        resumeBody.Should().Contain("target = Enmity.GetHighestEnmityTarget(activator);");
+        delayedResumeBody.Should().Contain("GetIsPC(activator) || GetIsPC(GetMaster(activator))");
+        delayedResumeBody.Should().Contain("DelayCommand(delay, () =>");
         animationBody.Should().Contain("if (GetIsPC(activator))");
         animationBody.Should().Contain("ClearAllActions(true);");
         completeBody.Should().Contain("ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f);");
@@ -481,8 +512,8 @@ public class AIModelTests
             .BeGreaterThan(issueBody.LastIndexOf("AI.TryStartCombatLeashEvade(creature, target)", StringComparison.Ordinal));
         issueBody.Should().Contain("ClearAllActions(true);");
         issueBody.Should().Contain("ActionMoveToObject(target, true, GetAttackMoveRange(creature));");
-        enmitySource.Should().Contain("CreaturePlugin.GetPreferredAttackDistance(creature)");
-        enmitySource.Should().Contain("private static float GetAttackMoveRange(SkillType skillType, float preferredAttackDistance)");
+        enmitySource.Should().Contain("Combat.GetWeaponEngagementRange(skillType)");
+        enmitySource.Should().NotContain("GetPreferredAttackDistance");
         attackActionBody.Should().Contain("Enmity.AttackHighestEnmityTarget(context.Self);");
         attackActionBody.Should().NotContain("ClearAllActions");
         attackActionBody.Should().NotContain("ActionAttack");
@@ -494,15 +525,29 @@ public class AIModelTests
     public void NativeAttackAction_CancelsLeashedCreaturesBeforePathingOrResolvingAttack()
     {
         var source = ReadSource("SWLOR.Game.Server", "Native", "OnAIActionAttackObject.cs").Replace("\r\n", "\n");
+        var activeTargetIndex = source.IndexOf("if (bTargetActive)", StringComparison.Ordinal);
         var activeTargetBody = source.Substring(
-            source.IndexOf("if (bTargetActive)", StringComparison.Ordinal),
-            source.IndexOf("if (pCreature.m_pcCombatRound == null)", StringComparison.Ordinal) -
-            source.IndexOf("if (bTargetActive)", StringComparison.Ordinal));
+            activeTargetIndex,
+            source.IndexOf("pCreature.m_vLastAttackPosition = new Vector();", activeTargetIndex, StringComparison.Ordinal) -
+            activeTargetIndex);
         var pendingAttackIndex = source.IndexOf("case CNWSCOMBATROUND_TYPE_ATTACK:", StringComparison.Ordinal);
         var pendingAttackBody = source.Substring(
             pendingAttackIndex,
             source.IndexOf("case CNWSCOMBATROUND_TYPE_PARRY:", pendingAttackIndex, StringComparison.Ordinal) -
             pendingAttackIndex);
+        var combatRoundGuardIndex = source.IndexOf(
+            "var pCombatRound = pCreature.m_pcCombatRound;",
+            StringComparison.Ordinal);
+        var activeTargetPathingIndex = source.IndexOf(
+            "pCreature.AddActionToFront",
+            activeTargetIndex,
+            StringComparison.Ordinal);
+        var equippedWeaponFallbackIndex = source.IndexOf(
+            "var attackSkillType = Combat.GetEquippedWeaponSkillType(pCreature.m_idSelf);",
+            StringComparison.Ordinal);
+        var currentSwingWeaponIndex = source.IndexOf(
+            "var currentWeaponAttackType = pCombatRound.GetWeaponAttackType();",
+            StringComparison.Ordinal);
 
         source.Should().Contain("private static bool TryCancelAttackForCombatLeash");
         source.Should().Contain("AI.TryStartCombatLeashEvade(pCreature.m_idSelf, target)");
@@ -512,10 +557,179 @@ public class AIModelTests
         activeTargetBody.IndexOf("TryCancelAttackForCombatLeash(pCreature, pNode, oidAttackTarget)", StringComparison.Ordinal)
             .Should()
             .BeLessThan(activeTargetBody.IndexOf("pCreature.AddActionToFront", StringComparison.Ordinal));
+        combatRoundGuardIndex.Should().BeGreaterThanOrEqualTo(0);
+        activeTargetPathingIndex.Should().BeGreaterThanOrEqualTo(0);
+        equippedWeaponFallbackIndex.Should().BeGreaterThanOrEqualTo(0);
+        currentSwingWeaponIndex.Should().BeGreaterThanOrEqualTo(0);
+        combatRoundGuardIndex.Should().BeGreaterThan(activeTargetPathingIndex,
+            "a missing combat round must not bypass target validation, combat-leash cancellation, or pathing");
+        equippedWeaponFallbackIndex.Should().BeLessThan(combatRoundGuardIndex,
+            "pre-round range and pathing need the safe equipped-weapon fallback");
+        currentSwingWeaponIndex.Should().BeGreaterThan(combatRoundGuardIndex,
+            "the actual main-hand or off-hand weapon is only valid once a combat round exists");
         pendingAttackBody.Should().Contain("TryCancelAttackForCombatLeash(pCreature, pNode, oidTarget)");
         pendingAttackBody.IndexOf("TryCancelAttackForCombatLeash(pCreature, pNode, oidTarget)", StringComparison.Ordinal)
             .Should()
             .BeLessThan(pendingAttackBody.IndexOf("pCreature.ResolveAttack(oidTarget, nAttacks, nTimeAnimation);", StringComparison.Ordinal));
+    }
+
+    [TestCase(false, false, 1.5f, 1.5f, true, true)]
+    [TestCase(false, true, 0.25f, 10f, false, false)]
+    [TestCase(true, false, 10f, 10f, true, true)]
+    [TestCase(true, true, 10f, 10f, true, true)]
+    public void NativeAttackAction_BlockedLineMovementPlan_SelectsExecutablePath(
+        bool isOutsideAttackRange,
+        bool hasRangedWeapon,
+        float expectedPathCompletionRange,
+        float expectedAttackCheckRange,
+        bool expectedTrackAttackTarget,
+        bool expectedTargetDestination)
+    {
+        var plan = CreateBlockedLineMovementPlan(
+            10f,
+            0f,
+            0f,
+            0f,
+            0f,
+            0f,
+            2,
+            10f,
+            1.5f,
+            isOutsideAttackRange,
+            hasRangedWeapon);
+
+        ReadPlanProperty<float>(plan, "PathCompletionRange").Should().Be(expectedPathCompletionRange);
+        ReadPlanProperty<float>(plan, "AttackCheckRange").Should().Be(expectedAttackCheckRange);
+        ReadPlanProperty<bool>(plan, "TrackAttackTarget").Should().Be(expectedTrackAttackTarget);
+
+        var destinationIsTarget =
+            ReadPlanProperty<float>(plan, "DestinationX") == 0f &&
+            ReadPlanProperty<float>(plan, "DestinationY") == 0f &&
+            ReadPlanProperty<float>(plan, "DestinationZ") == 0f;
+        destinationIsTarget.Should().Be(expectedTargetDestination);
+    }
+
+    [Test]
+    public void NativeAttackAction_BlockedRangedLine_ForcesLateralMovementAtFiringDistance()
+    {
+        var plan = CreateBlockedLineMovementPlan(
+            10f,
+            0f,
+            2f,
+            0f,
+            0f,
+            0f,
+            2,
+            10f,
+            1.5f,
+            false,
+            true);
+        var destinationX = ReadPlanProperty<float>(plan, "DestinationX");
+        var destinationY = ReadPlanProperty<float>(plan, "DestinationY");
+        var destinationZ = ReadPlanProperty<float>(plan, "DestinationZ");
+
+        destinationX.Should().NotBe(10f);
+        destinationY.Should().NotBe(0f);
+        ReadPlanProperty<float>(plan, "PathCompletionRange").Should().BeLessThan(2f);
+        ReadPlanProperty<float>(plan, "AttackCheckRange").Should().Be(10f);
+        ReadPlanProperty<bool>(plan, "TrackAttackTarget").Should().BeFalse();
+
+        var repositionedRadiusSquared = MathF.Pow(destinationX, 2) + MathF.Pow(destinationY, 2);
+        repositionedRadiusSquared.Should().BeApproximately(100f, 0.001f);
+        destinationZ.Should().Be(2f);
+    }
+
+    [Test]
+    public void NativeAttackAction_BlockedRangedLine_OverlapFallbackUsesFiringDistance()
+    {
+        var plan = CreateBlockedLineMovementPlan(
+            0f,
+            0f,
+            2f,
+            0f,
+            0f,
+            0f,
+            3,
+            10f,
+            1.5f,
+            false,
+            true);
+        var destinationX = ReadPlanProperty<float>(plan, "DestinationX");
+        var destinationY = ReadPlanProperty<float>(plan, "DestinationY");
+
+        var destinationRadius = MathF.Sqrt(MathF.Pow(destinationX, 2) + MathF.Pow(destinationY, 2));
+        destinationRadius.Should().BeApproximately(10f, 0.001f);
+        ReadPlanProperty<float>(plan, "AttackCheckRange").Should().Be(10f);
+        ReadPlanProperty<bool>(plan, "TrackAttackTarget").Should().BeFalse();
+    }
+
+    [Test]
+    public void NativeAttackAction_BlockedRangedLine_NearOverlapStillForcesMovement()
+    {
+        var plan = CreateBlockedLineMovementPlan(
+            0.2f,
+            0f,
+            2f,
+            0f,
+            0f,
+            0f,
+            5,
+            10f,
+            1.5f,
+            false,
+            true);
+        var destinationX = ReadPlanProperty<float>(plan, "DestinationX");
+        var destinationY = ReadPlanProperty<float>(plan, "DestinationY");
+        var distanceFromAttacker = MathF.Sqrt(
+            MathF.Pow(destinationX - 0.2f, 2) +
+            MathF.Pow(destinationY, 2));
+
+        distanceFromAttacker.Should().BeGreaterThan(
+            ReadPlanProperty<float>(plan, "PathCompletionRange"));
+        MathF.Sqrt(MathF.Pow(destinationX, 2) + MathF.Pow(destinationY, 2))
+            .Should()
+            .BeApproximately(10f, 0.001f);
+    }
+
+    [Test]
+    public void NativeAttackAction_BlockedRangedLine_PathFailureAlternatesSidestep()
+    {
+        const uint attackerId = 9001;
+        var firstPlan = CreateBlockedLineMovementPlan(
+            10f,
+            0f,
+            0f,
+            0f,
+            0f,
+            0f,
+            attackerId,
+            10f,
+            1.5f,
+            false,
+            true);
+
+        AlternateRangedRepositionDirection(attackerId);
+
+        var secondPlan = CreateBlockedLineMovementPlan(
+            10f,
+            0f,
+            0f,
+            0f,
+            0f,
+            0f,
+            attackerId,
+            10f,
+            1.5f,
+            false,
+            true);
+
+        ReadPlanProperty<float>(firstPlan, "DestinationX")
+            .Should()
+            .BeApproximately(ReadPlanProperty<float>(secondPlan, "DestinationX"), 0.001f);
+        (ReadPlanProperty<float>(firstPlan, "DestinationY") *
+         ReadPlanProperty<float>(secondPlan, "DestinationY"))
+            .Should()
+            .BeNegative();
     }
 
     [Test]
@@ -938,6 +1152,57 @@ public class AIModelTests
         return (T)typeof(Enmity)
             .GetField(name, BindingFlags.Static | BindingFlags.NonPublic)!
             .GetValue(null)!;
+    }
+
+    private static object CreateBlockedLineMovementPlan(
+        float attackerX,
+        float attackerY,
+        float attackerZ,
+        float targetX,
+        float targetY,
+        float targetZ,
+        uint attackerId,
+        float desiredAttackRange,
+        float personalSpaceRange,
+        bool isOutsideAttackRange,
+        bool hasRangedWeapon)
+    {
+        var method = typeof(OnAIActionAttackObject).GetMethod(
+            "CreateBlockedLineMovementPlan",
+            BindingFlags.Static | BindingFlags.NonPublic);
+
+        method.Should().NotBeNull();
+        return method!.Invoke(null, new object[]
+        {
+            attackerX,
+            attackerY,
+            attackerZ,
+            targetX,
+            targetY,
+            targetZ,
+            attackerId,
+            desiredAttackRange,
+            personalSpaceRange,
+            isOutsideAttackRange,
+            hasRangedWeapon
+        })!;
+    }
+
+    private static T ReadPlanProperty<T>(object plan, string name)
+    {
+        var property = plan.GetType().GetProperty(name, BindingFlags.Instance | BindingFlags.Public);
+        property.Should().NotBeNull();
+        return (T)property!.GetValue(plan)!;
+    }
+
+    private static void AlternateRangedRepositionDirection(uint attackerId)
+    {
+        var method = typeof(OnAIActionAttackObject).GetMethod(
+            "AlternateRangedRepositionDirection",
+            BindingFlags.Static | BindingFlags.NonPublic);
+
+        method.Should().NotBeNull();
+        method!.Invoke(null, new object[] { attackerId });
     }
 
     private static string ReadSource(params string[] pathParts)

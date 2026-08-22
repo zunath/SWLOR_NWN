@@ -667,7 +667,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -1940,7 +1940,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -4269,7 +4269,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -5031,7 +5031,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -6454,7 +6454,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 3712
+          "value": 4385
         },
         "Race": {
           "type": "byte",
@@ -6478,7 +6478,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -7721,7 +7721,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -8648,7 +8648,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -9576,7 +9576,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -27226,7 +27226,7 @@
                     },
                     "ArmorPart_Robe": {
                       "type": "byte",
-                      "value": 166
+                      "value": 165
                     },
                     "ArmorPart_RShin": {
                       "type": "byte",
@@ -27396,7 +27396,7 @@
                     },
                     "xArmorPart_Robe": {
                       "type": "word",
-                      "value": 166
+                      "value": 165
                     },
                     "xArmorPart_RShin": {
                       "type": "word",
@@ -27499,7 +27499,7 @@
                     },
                     "ArmorPart_Robe": {
                       "type": "byte",
-                      "value": 166
+                      "value": 165
                     },
                     "ArmorPart_RShin": {
                       "type": "byte",
@@ -27669,7 +27669,7 @@
                     },
                     "xArmorPart_Robe": {
                       "type": "word",
-                      "value": 166
+                      "value": 165
                     },
                     "xArmorPart_RShin": {
                       "type": "word",

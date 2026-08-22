@@ -20,9 +20,9 @@ public class DevicesGrenadierTests
     [Test]
     public void GrenadeRadiusCalculation_UsesTenthsAsMeterFractions()
     {
-        DeviceAbilityEffects.CalculateGrenadeRadius(3f, 10).Should().Be(4f);
-        DeviceAbilityEffects.CalculateGrenadeRadius(3f, 20).Should().Be(5f);
-        DeviceAbilityEffects.CalculateGrenadeRadius(3f, 30).Should().Be(6f);
+        DeviceAbilityEffects.CalculateBlastRadius(3f, 10).Should().Be(4f);
+        DeviceAbilityEffects.CalculateBlastRadius(3f, 20).Should().Be(5f);
+        DeviceAbilityEffects.CalculateBlastRadius(3f, 30).Should().Be(6f);
     }
 
     [Test]
@@ -63,9 +63,9 @@ public class DevicesGrenadierTests
         AssertTargeting(flashGrenade, Spell.FlashGrenade1, 4f);
 
         var adhesiveGrenade = new AdhesiveGrenadeAbilityDefinition().BuildAbilities();
-        AssertAbility(adhesiveGrenade[FeatType.AdhesiveGrenade1], "Adhesive Grenade I", 1, RecastGroup.AdhesiveGrenade, 18f, 1f, 4, "explosives");
+        AssertAbility(adhesiveGrenade[FeatType.AdhesiveGrenade1], "Adhesive Grenade I", 1, RecastGroup.AdhesiveGrenade, 45f, 1f, 4, "explosives");
         AssertTargeting(adhesiveGrenade[FeatType.AdhesiveGrenade1], Spell.AdhesiveGrenade1, 4f);
-        AssertAbility(adhesiveGrenade[FeatType.AdhesiveGrenade2], "Adhesive Grenade II", 2, RecastGroup.AdhesiveGrenade, 18f, 1f, 5, "explosives");
+        AssertAbility(adhesiveGrenade[FeatType.AdhesiveGrenade2], "Adhesive Grenade II", 2, RecastGroup.AdhesiveGrenade, 45f, 1f, 5, "explosives");
         AssertTargeting(adhesiveGrenade[FeatType.AdhesiveGrenade2], Spell.AdhesiveGrenade2, 4f);
 
         var clusterGrenade = new ClusterGrenadeAbilityDefinition().BuildAbilities()[FeatType.ClusterGrenade1];
@@ -90,8 +90,8 @@ public class DevicesGrenadierTests
             3,
             5,
             FeatType.BlastRadiusTrait,
-            "Grenade abilities gain +1m blast radius.",
-            (StatType.GrenadeRadiusBonusTenths, 10));
+            "Grenade abilities, Remote Charge, and Overload Barrage gain +1m blast radius.",
+            (StatType.BlastRadiusBonusTenths, 10));
         AssertPerkLevel(
             perks[PerkType.BlastRadius],
             "Blast Radius",
@@ -99,8 +99,8 @@ public class DevicesGrenadierTests
             4,
             22,
             null,
-            "Grenade abilities gain +2m blast radius.",
-            (StatType.GrenadeRadiusBonusTenths, 20));
+            "Grenade abilities, Remote Charge, and Overload Barrage gain +2m blast radius.",
+            (StatType.BlastRadiusBonusTenths, 20));
         AssertPerkLevel(
             perks[PerkType.BlastRadius],
             "Blast Radius",
@@ -108,8 +108,8 @@ public class DevicesGrenadierTests
             5,
             45,
             null,
-            "Grenade abilities gain +3m blast radius, and Flash Grenade and Adhesive Grenade non-save effect strength increases by 5%.",
-            (StatType.GrenadeRadiusBonusTenths, 30),
+            "Grenade abilities, Remote Charge, and Overload Barrage gain +3m blast radius, and Flash Grenade and Adhesive Grenade non-save effect strength increases by 5%.",
+            (StatType.BlastRadiusBonusTenths, 30),
             (StatType.GrenadeControlPotencyBonus, 5));
 
         AssertPerkLevel(
@@ -119,7 +119,7 @@ public class DevicesGrenadierTests
             3,
             12,
             FeatType.FlashGrenade1,
-            "Attempts to inflict Flash, reducing physical and Force ability hit chance by 8% for 30 seconds in a 4m blast. Consumes explosives.");
+            "Attempts to inflict Flash, reducing physical and Force ability hit chance by 8% for 30 seconds in a 4m blast. Affects up to 5 targets. Consumes explosives.");
         AssertPerkLevel(
             perks[PerkType.AdhesiveGrenade],
             "Adhesive Grenade",
@@ -127,7 +127,7 @@ public class DevicesGrenadierTests
             4,
             25,
             FeatType.AdhesiveGrenade1,
-            "Slows enemies in a 4m blast for 30 seconds and immobilizes them for 30 seconds. Consumes explosives.");
+            "Slows enemies in a 4m blast for 6 seconds. Affects up to 3 targets. Consumes explosives.");
         AssertPerkLevel(
             perks[PerkType.AdhesiveGrenade],
             "Adhesive Grenade",
@@ -135,7 +135,7 @@ public class DevicesGrenadierTests
             4,
             42,
             FeatType.AdhesiveGrenade2,
-            "Slows enemies in a 4m blast for 30 seconds and immobilizes them for 30 seconds. Consumes explosives.");
+            "Slows enemies in a 4m blast for 12 seconds. Affects up to 5 targets. Consumes explosives.");
         AssertPerkLevel(
             perks[PerkType.ClusterGrenade],
             "Cluster Grenade",
@@ -143,7 +143,7 @@ public class DevicesGrenadierTests
             4,
             30,
             FeatType.ClusterGrenade1,
-            "Throws three adjacent small grenades around the target point, each dealing 18 fire DMG plus PER scaling in a small blast. Overlapping blasts can hit the same enemy. Consumes explosives.");
+            "Throws three adjacent grenades within 3m of the target point. Each grenade deals 18 fire DMG plus PER scaling in a 2m blast, and overlapping blasts can hit the same enemy. Consumes explosives.");
         AssertPerkLevel(
             perks[PerkType.DisruptionPulse],
             "Disruption Pulse",
@@ -151,7 +151,7 @@ public class DevicesGrenadierTests
             4,
             35,
             FeatType.DisruptionPulse1,
-            "Emits a 5m disruption pulse at a target point within 12m, dealing 18 electrical DMG plus PER scaling to enemies and reducing physical and Force ability Accuracy by 6% for 30 seconds. Consumes explosives.");
+            "Emits a 5m disruption pulse at a target point within 12m, dealing 18 electrical DMG plus PER scaling to enemies and reducing physical and Force ability Accuracy by 6% for 12 seconds. Consumes explosives.");
     }
 
     [Test]
@@ -237,15 +237,20 @@ public class DevicesGrenadierTests
         flashGrenade.Should().Contain("areaVisualEffect: VisualEffect.None");
 
         adhesiveGrenade.Should().Contain("EffectVisualEffect(VisualEffect.Vfx_Fnf_Gas_Explosion_Grease)");
-        adhesiveGrenade.Should().Contain("DeviceAbilityEffects.ApplyGrenadeRadiusBonus(activator, 4f)");
+        adhesiveGrenade.Should().Contain("DeviceAbilityEffects.ApplyBlastRadiusBonus(activator, 4f)");
         adhesiveGrenade.Should().NotContain("centerOnActivator: !GetIsObjectValid(target)");
 
         ionGrenade.Should().Contain("while (GetIsObjectValid(creature))");
         ionGrenade.Should().Contain("Ability.ApplyCombatImpact(");
         ionGrenade.Should().Contain("damageType: CombatDamageType.Electrical");
+        ionGrenade.Should().Contain("damagePercentAdjustment: impactedTarget => IsDroid(impactedTarget) ? droidBonusPercent : 0");
+        ionGrenade.Should().Contain("racialType == RacialType.Droid");
+        ionGrenade.Should().Contain("racialType == RacialType.Construct");
+        ionGrenade.Should().Contain("racialType == RacialType.Robot");
+        ionGrenade.Should().NotContain("GameMath.PercentOf(baseDamage, droidBonusPercent)");
 
         concussionGrenade.Should().Contain("Ability.ApplyTelegraphedCombatImpact(");
-        concussionGrenade.Should().Contain("DeviceAbilityEffects.ApplyGrenadeRadiusBonus(activator, 3f)");
+        concussionGrenade.Should().Contain("DeviceAbilityEffects.ApplyBlastRadiusBonus(activator, 3f)");
         concussionGrenade.Should().Contain("damageType: CombatDamageType.Electrical");
 
         clusterGrenade.Should().Contain("for (var grenadeIndex = 0; grenadeIndex < GrenadeCount; grenadeIndex++)");
@@ -259,8 +264,8 @@ public class DevicesGrenadierTests
         clusterGrenade.Should().Contain("damageType: CombatDamageType.Fire");
 
         disruptionPulse.Should().Contain("var impactLocation = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);");
-        disruptionPulse.Should().Contain("DeviceAbilityEffects.ApplyGrenadeRadiusBonus");
-        disruptionPulse.Should().Contain("var radius = DeviceAbilityEffects.ApplyGrenadeRadiusBonus(activator, RadiusMeters);");
+        disruptionPulse.Should().Contain("DeviceAbilityEffects.ApplyBlastRadiusBonus");
+        disruptionPulse.Should().Contain("var radius = DeviceAbilityEffects.ApplyBlastRadiusBonus(activator, RadiusMeters);");
         disruptionPulse.Should().Contain("areaVisualEffect: VisualEffect.Vfx_Fnf_Electric_Explosion");
         disruptionPulse.Should().Contain("alwaysApplyAreaVisualEffect: true");
         disruptionPulse.Should().Contain("afterImpactAction: _ => DeviceAbilityEffects.ApplyDiagnosticSweep(activator, impactLocation, radius)");
@@ -331,6 +336,7 @@ public class DevicesGrenadierTests
         ability.ActivationType.Should().Be(AbilityActivationType.Casted);
         ability.IsHostileAbility.Should().BeTrue();
         ability.RequiresTarget.Should().BeFalse();
+        ability.RequiresLocationTarget.Should().BeTrue();
         ability.IsSingleTargetAbility.Should().BeFalse();
         ability.IsAreaAbility.Should().BeTrue();
         ability.BreaksStealth.Should().BeTrue();
@@ -373,7 +379,7 @@ public class DevicesGrenadierTests
         targeting.SizeResolver.Should().NotBeNull();
         Assert.That(
             targeting.SizeResolver.Method,
-            Is.EqualTo(((AbilityTargetingSizeResolver)DeviceAbilityEffects.ApplyGrenadeRadiusBonus).Method));
+            Is.EqualTo(((AbilityTargetingSizeResolver)DeviceAbilityEffects.ApplyBlastRadiusBonus).Method));
     }
 
     private static void AssertSkillRequirement(PerkLevel level, SkillType skill, int rank)

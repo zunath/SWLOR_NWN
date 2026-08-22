@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                         .SetText("Might")
                                         .SetVerticalAlign(NuiVerticalAlign.Top)
                                         .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                        .SetTooltip("Might - Improves damage dealt by melee weapons and carrying capacity.");
+                                        .SetTooltip("Might - Can improve Attack for Might-based beasts and increases maximum STM.");
                                 });
                                 col.AddRow(row =>
                                 {
@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                         .SetText("Perception")
                                         .SetVerticalAlign(NuiVerticalAlign.Top)
                                         .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                        .SetTooltip("Perception - Improves damage dealt by ranged and finesse weapons, and increases physical accuracy.");
+                                        .SetTooltip("Perception - Can improve Attack or Accuracy for Perception-based beasts, critical hit chance, and Detection.");
                                 });
                                 col.AddRow(row =>
                                 {
@@ -107,7 +107,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                         .SetText("Vitality")
                                         .SetVerticalAlign(NuiVerticalAlign.Top)
                                         .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                        .SetTooltip("Vitality - Improves your max hit points and reduces damage received.");
+                                        .SetTooltip("Vitality - Improves Physical Defense, HP regeneration, and resistance to critical hits.");
                                 });
                                 col.AddRow(row =>
                                 {
@@ -115,7 +115,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                         .SetText("Willpower")
                                         .SetVerticalAlign(NuiVerticalAlign.Top)
                                         .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                        .SetTooltip("Willpower - Improves your force attack, force defense, and max force points.");
+                                        .SetTooltip("Willpower - Can improve Attack or Accuracy for Willpower-based beasts, Force Defense, maximum FP, FP regeneration, and Detection.");
                                 });
                                 col.AddRow(row =>
                                 {
@@ -123,7 +123,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                         .SetText("Agility")
                                         .SetVerticalAlign(NuiVerticalAlign.Top)
                                         .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                        .SetTooltip("Agility - Improves ranged accuracy, evasion, and max stamina.");
+                                        .SetTooltip("Agility - Can improve Attack or Accuracy for Agility-based beasts, Evasion, and Stealth.");
                                 });
                                 col.AddRow(row =>
                                 {
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                         .SetText("Social")
                                         .SetVerticalAlign(NuiVerticalAlign.Top)
                                         .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                        .SetTooltip("Social - Improves your XP gain and leadership capabilities.");
+                                        .SetTooltip("Social - Can improve Attack or Accuracy for Social-based beasts.");
                                 });
                             });
                             rowRoot.AddColumn(col =>

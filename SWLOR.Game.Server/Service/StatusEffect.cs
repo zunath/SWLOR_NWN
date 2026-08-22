@@ -1,8 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
@@ -20,6 +23,8 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<string, LoggedOutStatusEffects> _loggedOutPlayerEffects = new();
         private static readonly Dictionary<Type, StatusEffectMetadata> _statusEffects = new();
         private static readonly HashSet<string> _suppressedStatusEffectRemovalIds = new();
+        private static readonly Dictionary<uint, int> _nativeAttackSwingDepth = new();
+        private static readonly Dictionary<uint, List<Action>> _deferredNativeAttackStatusEffects = new();
         private static readonly Dictionary<EffectIconType, AbilityType> _abilityIncreaseIconType = new()
         {
             { EffectIconType.AbilityIncreaseSTR, AbilityType.Might },
@@ -467,11 +472,23 @@ namespace SWLOR.Game.Server.Service
             ResistanceType resistanceOverride = ResistanceType.Invalid,
             CombatDamageType sourceDamageType = CombatDamageType.Invalid)
         {
+            if (TryDeferNativeAttackStatusEffect(
+                    statusEffect,
+                    source,
+                    creature,
+                    durationTicks,
+                    isPermanent,
+                    resistanceOverride,
+                    sourceDamageType))
+            {
+                return true;
+            }
+
             durationTicks = ApplyOutgoingStatusDurationAdjustments(statusEffect, source, durationTicks, isPermanent);
-            durationTicks = Ability.ApplyActiveForceAffinityDurationAdjustment(source, durationTicks, isPermanent);
             ApplyOutgoingStatusStatAdjustments(statusEffect, source);
 
             var resistanceType = ResolveResistanceType(statusEffect, resistanceOverride, sourceDamageType);
+            var durationResistanceMessage = string.Empty;
             if (!isPermanent &&
                 durationTicks > 0 &&
                 GetIsObjectValid(source) &&
@@ -486,7 +503,14 @@ namespace SWLOR.Game.Server.Service
                         return false;
                     }
 
+                    var durationTicksBeforeResistance = durationTicks;
                     durationTicks = Resistance.CalculateResistedTicks(creature, resistanceType, durationTicks);
+                    durationResistanceMessage = BuildDurationResistanceMessage(
+                        resistanceType,
+                        statusEffect.Name,
+                        durationTicksBeforeResistance,
+                        durationTicks,
+                        statusEffect.Frequency);
                 }
             }
 
@@ -516,20 +540,22 @@ namespace SWLOR.Game.Server.Service
 
             var creatureEffects = EnsureCreatureStatusEffectTracker(creature);
 
+            RemoveOtherCommandStatuses(creature, statusEffect.GetType(), source);
+
             switch (statusEffect.StackingType)
             {
                 case StatusEffectStackType.Disabled:
                 case StatusEffectStackType.Invalid:
-                    RemoveStatusEffect(statusEffect.GetType(), creature, OBJECT_INVALID, false);
+                    RemoveStatusEffect(statusEffect.GetType(), creature, OBJECT_INVALID, false, true, true);
                     break;
                 case StatusEffectStackType.StackFromMultipleSources:
-                    RemoveStatusEffect(statusEffect.GetType(), creature, source, false);
+                    RemoveStatusEffect(statusEffect.GetType(), creature, source, false, true, true);
                     break;
             }
 
             foreach (var lessPowerful in statusEffect.LessPowerfulEffectTypes)
             {
-                RemoveStatusEffect(lessPowerful, creature, OBJECT_INVALID, false);
+                RemoveStatusEffect(lessPowerful, creature, OBJECT_INVALID, false, true, true);
             }
 
             statusEffect.AssignResistanceType(resistanceType);
@@ -549,12 +575,25 @@ namespace SWLOR.Game.Server.Service
             creatureEffects = EnsureCreatureStatusEffectTracker(creature);
             creatureEffects.Add(statusEffect);
 
+            if (statusEffect is ILeadershipDamageReductionStatusEffect)
+            {
+                ReconcileLeadershipDamageReduction(creatureEffects);
+            }
+
             if (HasStatAdjustment(statusEffect))
             {
                 Stat.ApplyCreatureMovementRate(creature);
             }
 
             ApplyTrackedNWNEffect(creature, statusEffect, durationTicks, isPermanent);
+            Combat.ApplyStatusAppliedTargetStaminaDrain(source, creature, statusEffect.Categories);
+            PublishStatusEffectReceivedRefresh(creature);
+
+            if (!string.IsNullOrWhiteSpace(durationResistanceMessage) &&
+                (GetIsPC(source) || GetIsDM(source)))
+            {
+                SendMessageToPC(source, durationResistanceMessage);
+            }
 
             if (statusEffect.SendsApplicationMessage)
             {
@@ -579,6 +618,40 @@ namespace SWLOR.Game.Server.Service
             return true;
         }
 
+        public static string BuildDurationResistanceMessage(
+            ResistanceType resistanceType,
+            string effectName,
+            int originalDurationTicks,
+            int adjustedDurationTicks,
+            float frequency)
+        {
+            if (resistanceType == ResistanceType.Invalid ||
+                originalDurationTicks <= 0 ||
+                adjustedDurationTicks <= 0 ||
+                originalDurationTicks == adjustedDurationTicks)
+            {
+                return string.Empty;
+            }
+
+            var direction = adjustedDurationTicks < originalDurationTicks
+                ? "reduced"
+                : "increased";
+            var secondsPerTick = Math.Max(1f, frequency);
+            var originalSeconds = FormatDurationSeconds(originalDurationTicks * secondsPerTick);
+            var adjustedSeconds = FormatDurationSeconds(adjustedDurationTicks * secondsPerTick);
+            var displayedEffectName = string.IsNullOrWhiteSpace(effectName) ? "the effect" : effectName;
+
+            return $"{resistanceType} Resistance {direction} {displayedEffectName} duration from {originalSeconds} to {adjustedSeconds}.";
+        }
+
+        private static string FormatDurationSeconds(float seconds)
+        {
+            var roundedSeconds = Math.Round(seconds);
+            return Math.Abs(seconds - roundedSeconds) < 0.01f
+                ? $"{(int)roundedSeconds}s"
+                : $"{seconds:0.#}s";
+        }
+
         private static int ApplyOutgoingStatusDurationAdjustments(
             IStatusEffect statusEffect,
             uint source,
@@ -599,7 +672,7 @@ namespace SWLOR.Game.Server.Service
                 percentAdjustment += Stat.GetStatAdjustment(source, StatType.OutgoingControlDurationPercentAdjustment);
             }
 
-            if (statusEffect is ForceDisruptionStatusEffect)
+            if ((statusEffect.Categories & StatusEffectCategory.ForceDisruption) == StatusEffectCategory.ForceDisruption)
             {
                 percentAdjustment += Stat.GetStatAdjustment(source, StatType.OutgoingForceDisruptionDurationPercentAdjustment);
             }
@@ -626,7 +699,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(source))
                 return;
 
-            if (statusEffect is ForceDisruptionStatusEffect)
+            if ((statusEffect.Categories & StatusEffectCategory.ForceDisruption) == StatusEffectCategory.ForceDisruption)
             {
                 var forceDefenseAdjustment = Stat.GetStatAdjustment(source, StatType.OutgoingForceDisruptionForceDefensePercentAdjustment);
                 if (forceDefenseAdjustment != 0)
@@ -892,7 +965,16 @@ namespace SWLOR.Game.Server.Service
 
         private static float GetStatusEffectDurationSeconds(IStatusEffect statusEffect, int durationTicks)
         {
-            return durationTicks * Math.Max(1f, statusEffect.Frequency);
+            var logicalDurationSeconds = durationTicks * Math.Max(1f, statusEffect.Frequency);
+
+            // NWN may remove an effect before delivering an interval callback scheduled for the
+            // exact same timestamp. Ticking effects therefore keep one logical tick of native
+            // lifetime grace so a late callback can catch up and the final logical tick can remove
+            // the effect.
+            // Passive effects have no interval callback and retain their exact duration.
+            return statusEffect.ActivationType == StatusEffectActivationType.Tick
+                ? logicalDurationSeconds + Math.Max(Interval, statusEffect.Frequency)
+                : logicalDurationSeconds;
         }
 
         private static Effect LinkEffect(Effect linkedEffect, Effect effect)
@@ -1305,6 +1387,33 @@ namespace SWLOR.Game.Server.Service
                 removeNativeEffect);
         }
 
+        /// <summary>
+        /// Enforces command exclusivity for Leadership-style party-buff commands (Press the
+        /// Attack, Cleanse Order, Decisive Command): applying one removes any other
+        /// <see cref="StatusEffectSourceType.Command"/>-classified effect that the same source
+        /// leader previously applied to this target. Effects applied by other leaders, and
+        /// non-Command effects such as auras, are left untouched. Newest application wins.
+        /// </summary>
+        public static void RemoveOtherCommandStatuses(
+            uint creature,
+            Type statusEffectType,
+            uint source,
+            bool sendsWornOffMessage = false,
+            bool removeNativeEffect = true)
+        {
+            if (GetStatusEffectSourceType(statusEffectType) != StatusEffectSourceType.Command)
+                return;
+
+            RemoveStatusEffectBySourceType(
+                creature,
+                StatusEffectSourceType.Command,
+                sendsWornOffMessage,
+                statusEffectType,
+                removeNativeEffect,
+                source,
+                isReplacement: true);
+        }
+
         public static List<Type> GetStatusEffectsFromIcon(EffectIconType effectIcon)
         {
             return _statusEffects
@@ -1378,12 +1487,14 @@ namespace SWLOR.Game.Server.Service
             uint creature,
             uint source,
             bool sendsWornOffMessage = true,
-            bool removeNativeEffect = true)
+            bool removeNativeEffect = true,
+            bool isReplacement = false)
         {
             if (!_creatureEffects.TryGetValue(creature, out var creatureEffects))
                 return;
 
-            var hasSentMessage = false;
+            // RemoveStatusEffectInstance only emits the worn-off message for the final remaining
+            // instance of a given type, so removing every instance here yields exactly one message.
             var statusEffects = creatureEffects.GetAllEffects();
             foreach (var statusEffect in statusEffects)
             {
@@ -1393,9 +1504,13 @@ namespace SWLOR.Game.Server.Service
                 if (source != OBJECT_INVALID && statusEffect.Source != source)
                     continue;
 
-                var shouldSendMessage = sendsWornOffMessage && !hasSentMessage;
-                RemoveStatusEffectInstance(creature, creatureEffects, statusEffect, shouldSendMessage, removeNativeEffect);
-                hasSentMessage |= shouldSendMessage && statusEffect.SendsWornOffMessage;
+                RemoveStatusEffectInstance(
+                    creature,
+                    creatureEffects,
+                    statusEffect,
+                    sendsWornOffMessage,
+                    removeNativeEffect,
+                    isReplacement);
             }
 
             RemoveCreatureIfEmpty(creature, creatureEffects, removeNativeEffect);
@@ -1433,9 +1548,12 @@ namespace SWLOR.Game.Server.Service
             CreatureStatusEffect creatureEffects,
             IStatusEffect statusEffect,
             bool sendsWornOffMessage,
-            bool removeNativeEffect)
+            bool removeNativeEffect,
+            bool isReplacement = false)
         {
-            if (sendsWornOffMessage && statusEffect.SendsWornOffMessage)
+            if (sendsWornOffMessage &&
+                statusEffect.SendsWornOffMessage &&
+                IsLastInstanceOfType(creatureEffects, statusEffect))
             {
                 var effectName = statusEffect.Name;
                 Messaging.SendMessageNearbyToPlayers(creature,
@@ -1445,18 +1563,118 @@ namespace SWLOR.Game.Server.Service
             if (removeNativeEffect)
                 RemoveNativeStatusEffect(creature, statusEffect.Id);
 
-            statusEffect.RemoveEffect(creature);
+            statusEffect.RemoveEffect(creature, isReplacement);
             creatureEffects.Remove(statusEffect);
+
+            if (statusEffect is ILeadershipDamageReductionStatusEffect)
+            {
+                ReconcileLeadershipDamageReduction(creatureEffects);
+            }
 
             if (HasStatAdjustment(statusEffect))
             {
                 DelayCommand(0.1f, () => Stat.ApplyCreatureMovementRate(creature));
             }
+
+            if (!isReplacement)
+            {
+                PublishStatusEffectRemovedRefresh(creature);
+            }
+        }
+
+        /// <summary>
+        /// Returns true when the supplied status effect is the only remaining instance of its
+        /// runtime type on the creature. Stacking effects (e.g. Suppression) apply many separate
+        /// instances that each expire on their own timer; gating the "worn off" message on the
+        /// final instance collapses what would otherwise be one message per stack into a single
+        /// notification when the effect fully wears off.
+        /// </summary>
+        private static bool IsLastInstanceOfType(CreatureStatusEffect creatureEffects, IStatusEffect statusEffect)
+        {
+            var type = statusEffect.GetType();
+            return creatureEffects.GetAllEffects().Count(effect => effect.GetType() == type) <= 1;
+        }
+
+        /// <summary>
+        /// Enforces take-the-max behavior across the Leadership damage-reduction family
+        /// independently for each damage channel. A physical/Force-only effect can supersede
+        /// Hold the Line in those channels without disabling Hold the Line's protection against
+        /// elemental and other damage. Weaker members remain applied so their unrelated stats
+        /// continue to function, and every channel is recomputed after application or removal.
+        /// </summary>
+        private static void ReconcileLeadershipDamageReduction(CreatureStatusEffect creatureEffects)
+        {
+            var family = creatureEffects.GetAllEffects()
+                .Where(effect => effect is ILeadershipDamageReductionStatusEffect)
+                .ToList();
+
+            if (family.Count == 0)
+                return;
+
+            var winnerByStat = family
+                .SelectMany(effect =>
+                    ((ILeadershipDamageReductionStatusEffect)effect).LeadershipDamageReductionStats.Keys)
+                .Distinct()
+                .ToDictionary(
+                    statType => statType,
+                    statType => family
+                        .Where(effect =>
+                            ((ILeadershipDamageReductionStatusEffect)effect)
+                            .LeadershipDamageReductionStats.ContainsKey(statType))
+                        .OrderBy(effect =>
+                            ((ILeadershipDamageReductionStatusEffect)effect)
+                            .LeadershipDamageReductionStats[statType])
+                        .First());
+
+            foreach (var effect in family)
+            {
+                var leadershipDamageReductionEffect = (ILeadershipDamageReductionStatusEffect)effect;
+                ApplyLeadershipDamageReductionContribution(
+                    creatureEffects,
+                    effect,
+                    leadershipDamageReductionEffect,
+                    winnerByStat);
+            }
+        }
+
+        private static void ApplyLeadershipDamageReductionContribution(
+            CreatureStatusEffect creatureEffects,
+            IStatusEffect effect,
+            ILeadershipDamageReductionStatusEffect leadershipDamageReductionEffect,
+            IReadOnlyDictionary<StatType, IStatusEffect> winnerByStat)
+        {
+            var isAlreadyCorrect = leadershipDamageReductionEffect.LeadershipDamageReductionStats.All(pair =>
+                effect.StatGroup.Stats.TryGetValue(pair.Key, out var current) &&
+                current == (ReferenceEquals(winnerByStat[pair.Key], effect) ? pair.Value : 0));
+
+            if (isAlreadyCorrect)
+                return;
+
+            creatureEffects.Remove(effect);
+
+            foreach (var (statType, nominalValue) in leadershipDamageReductionEffect.LeadershipDamageReductionStats)
+            {
+                effect.StatGroup.Stats[statType] = ReferenceEquals(winnerByStat[statType], effect)
+                    ? nominalValue
+                    : 0;
+            }
+
+            creatureEffects.Add(effect);
         }
 
         private static bool HasStatAdjustment(IStatusEffect statusEffect)
         {
             return statusEffect.StatGroup.Stats.Any(stat => stat.Value != 0);
+        }
+
+        private static void PublishStatusEffectReceivedRefresh(uint creature)
+        {
+            Gui.PublishCharacterSheetRefreshEvent(creature, new StatusEffectReceivedRefreshEvent());
+        }
+
+        private static void PublishStatusEffectRemovedRefresh(uint creature)
+        {
+            Gui.PublishCharacterSheetRefreshEvent(creature, new StatusEffectRemovedRefreshEvent());
         }
 
         private static void RemoveNativeStatusEffect(uint creature, string statusEffectId)
@@ -1483,7 +1701,9 @@ namespace SWLOR.Game.Server.Service
             StatusEffectSourceType sourceType,
             bool sendsWornOffMessage = true,
             Type excludedStatusEffectType = null,
-            bool removeNativeEffect = true)
+            bool removeNativeEffect = true,
+            uint filterBySource = OBJECT_INVALID,
+            bool isReplacement = false)
         {
             var creatureEffects = GetCreatureStatusEffects(creature);
             var effects = creatureEffects.GetAllBySourceType(sourceType);
@@ -1492,7 +1712,16 @@ namespace SWLOR.Game.Server.Service
                 if (excludedStatusEffectType != null && effect.GetType() == excludedStatusEffectType)
                     continue;
 
-                RemoveStatusEffect(effect.GetType(), creature, effect.Source, sendsWornOffMessage, removeNativeEffect);
+                if (filterBySource != OBJECT_INVALID && effect.Source != filterBySource)
+                    continue;
+
+                RemoveStatusEffect(
+                    effect.GetType(),
+                    creature,
+                    effect.Source,
+                    sendsWornOffMessage,
+                    removeNativeEffect,
+                    isReplacement);
             }
         }
 
@@ -1603,6 +1832,164 @@ namespace SWLOR.Game.Server.Service
             {
                 effect.OnDamageTakenEffect(defender, attacker, damage, damageType, deliveryType);
             }
+        }
+
+        /// <summary>
+        /// Notifies limited-attack status effects once per originating hostile attack, including
+        /// misses and deflections. Effects exhausted by the attempt are removed immediately so
+        /// they cannot affect another attack before the next status-effect tick.
+        /// </summary>
+        public static void NotifyAttackAttemptStatusEffects(
+            uint attacker,
+            SkillType skillType,
+            AbilityImpactSummary abilityImpact = null)
+        {
+            if (!GetIsObjectValid(attacker))
+                return;
+
+            var effects = GetCreatureStatusEffects(attacker)
+                .GetAllEffects()
+                .OfType<IAttackAttemptStatusEffect>()
+                .ToList();
+
+            foreach (var effect in effects)
+            {
+                effect.OnAttackAttemptedEffect(attacker, skillType, abilityImpact);
+            }
+
+            foreach (var effect in effects.Where(effect => effect.IsFlaggedForRemoval))
+            {
+                RemoveStatusEffect(
+                    attacker,
+                    effect.GetType(),
+                    effect.Source,
+                    effect.SendsWornOffMessage);
+            }
+        }
+
+        /// <summary>
+        /// Marks the start of a synchronous native swing. Limited attack-timing effects granted
+        /// while its already-scheduled rolls resolve are deferred until the outermost swing ends.
+        /// </summary>
+        public static void BeginNativeAttackSwing(uint attacker)
+        {
+            _nativeAttackSwingDepth.TryGetValue(attacker, out var depth);
+            _nativeAttackSwingDepth[attacker] = depth + 1;
+        }
+
+        /// <summary>
+        /// Ends a synchronous native swing and applies limited attack-timing effects that were
+        /// granted by its precomputed rolls.
+        /// </summary>
+        public static void EndNativeAttackSwing(uint attacker)
+        {
+            if (!_nativeAttackSwingDepth.TryGetValue(attacker, out var depth))
+                return;
+
+            if (depth > 1)
+            {
+                _nativeAttackSwingDepth[attacker] = depth - 1;
+                return;
+            }
+
+            _nativeAttackSwingDepth.Remove(attacker);
+            if (!_deferredNativeAttackStatusEffects.Remove(attacker, out var deferredEffects))
+                return;
+
+            foreach (var applyDeferredEffect in deferredEffects)
+            {
+                applyDeferredEffect();
+            }
+        }
+
+        private static bool TryDeferNativeAttackStatusEffect(
+            IStatusEffect statusEffect,
+            uint source,
+            uint creature,
+            int durationTicks,
+            bool isPermanent,
+            ResistanceType resistanceOverride,
+            CombatDamageType sourceDamageType)
+        {
+            if ((statusEffect is not ILimitedAttackDelayReductionStatusEffect &&
+                 statusEffect is not ILimitedAttackNoDelayStatusEffect) ||
+                !_nativeAttackSwingDepth.ContainsKey(creature))
+            {
+                return false;
+            }
+
+            if (!_deferredNativeAttackStatusEffects.TryGetValue(creature, out var deferredEffects))
+            {
+                deferredEffects = new List<Action>();
+                _deferredNativeAttackStatusEffects[creature] = deferredEffects;
+            }
+
+            deferredEffects.Add(() => ApplyStatusEffectInternal(
+                statusEffect,
+                source,
+                creature,
+                durationTicks,
+                isPermanent,
+                resistanceOverride,
+                sourceDamageType));
+            return true;
+        }
+
+        /// <summary>
+        /// Gets the attack-delay reduction and earliest remaining charge count supplied by active
+        /// limited-attack effects that apply to the requested skill.
+        /// </summary>
+        public static bool TryGetLimitedAttackDelayReduction(
+            uint attacker,
+            SkillType skillType,
+            out int reductionPercent,
+            out int remainingAttacks)
+        {
+            if (Combat.IsAttackDelayReductionSuppressed(attacker))
+            {
+                reductionPercent = 0;
+                remainingAttacks = 0;
+                return false;
+            }
+
+            var effects = GetCreatureStatusEffects(attacker)
+                .GetAllEffects()
+                .OfType<ILimitedAttackDelayReductionStatusEffect>()
+                .Where(effect => effect.AppliesToSkill(skillType) && effect.RemainingAttacks > 0)
+                .ToList();
+
+            reductionPercent = effects.Sum(effect => effect.AttackDelayReductionPercent);
+            remainingAttacks = effects.Count == 0
+                ? 0
+                : effects.Min(effect => effect.RemainingAttacks);
+            return effects.Count > 0 && reductionPercent > 0;
+        }
+
+        /// <summary>
+        /// Gets the earliest remaining charge count supplied by active limited no-delay effects
+        /// that apply to the requested attack skill.
+        /// </summary>
+        public static bool TryGetLimitedAttackNoDelay(
+            uint attacker,
+            SkillType skillType,
+            out int remainingAttacks)
+        {
+            if (Combat.IsAttackDelayReductionSuppressed(attacker))
+            {
+                remainingAttacks = 0;
+                return false;
+            }
+
+            var effects = GetCreatureStatusEffects(attacker)
+                .GetAllEffects()
+                .OfType<ILimitedAttackNoDelayStatusEffect>()
+                .Where(effect => effect.AppliesToSkill(skillType) && effect.RemainingAttacks > 0)
+                .ToList();
+
+            remainingAttacks = effects.Count == 0
+                ? 0
+                : effects.Min(effect => effect.RemainingAttacks);
+            return effects.Count > 0;
         }
 
         public static void OnGuardedHit(uint defender, uint attacker, int preventedDamage)

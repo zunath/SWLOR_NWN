@@ -32,7 +32,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A powerful Vibroblade, powered by a fierce current running through its hilt. It has seen a great deal of use, presumably in the recent Mandalorian Wars."
+    }
   },
   "Identified": {
     "type": "byte",
@@ -209,6 +211,26 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "wook_bigryyk"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NO_ECONOMY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
   },
   "xModelPart1": {
     "type": "word",

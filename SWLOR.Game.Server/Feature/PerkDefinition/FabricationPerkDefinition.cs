@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Grants ability to research tier 5 blueprints.")
-                .Price(3)
+                .Price(4)
                 .RequirementSkill(SkillType.Fabrication, 50);
         }
 
@@ -57,13 +57,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ScientificNetworkingTrait)
-                .Description("Blueprints are created with an additional licensed run.")
+                .Description("Blueprints are created with one additional licensed run per rank.")
                 .Price(3)
                 .RequirementSkill(SkillType.Fabrication, 25)
 
                 .AddPerkLevel()
-                .Description("Blueprints are created with an additional licensed run.")
-                .Price(3)
+                .Description("Blueprints are created with one additional licensed run per rank.")
+                .Price(4)
                 .RequirementSkill(SkillType.Fabrication, 50);
         }
 

@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Advent Helmet
             _builder.Create(RecipeType.AdventHelmet, SkillType.Smithery)
-                .Category(RecipeCategoryType.Cap)
+                .Category(RecipeCategoryType.Helmet)
                 .Resref("advent_helmet")
                 .Level(10)
                 .Quantity(1)
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Amateur Helmet
             _builder.Create(RecipeType.AmateurHelmet, SkillType.Smithery)
-                .Category(RecipeCategoryType.Cap)
+                .Category(RecipeCategoryType.Helmet)
                 .Resref("engi_helmet_1")
                 .Level(10)
                 .Quantity(1)
@@ -80,7 +80,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Cloth Helmet
             _builder.Create(RecipeType.ClothHelmet, SkillType.Smithery)
-                .Category(RecipeCategoryType.Cap)
+                .Category(RecipeCategoryType.Helmet)
                 .Resref("fabr_helmet_1")
                 .Level(10)
                 .Quantity(1)
@@ -91,7 +91,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Chef Helmet
             _builder.Create(RecipeType.ChefHelmet, SkillType.Smithery)
-                .Category(RecipeCategoryType.Cap)
+                .Category(RecipeCategoryType.Helmet)
                 .Resref("chef_helmet_1")
                 .Level(10)
                 .Quantity(1)
@@ -135,7 +135,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Frontier Helmet
             _builder.Create(RecipeType.FrontierHelmet, SkillType.Smithery)
-                .Category(RecipeCategoryType.Cap)
+                .Category(RecipeCategoryType.Helmet)
                 .Resref("frontier_helmet")
                 .Level(20)
                 .Quantity(1)
@@ -146,7 +146,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Worker Helmet
             _builder.Create(RecipeType.WorkerHelmet, SkillType.Smithery)
-                .Category(RecipeCategoryType.Cap)
+                .Category(RecipeCategoryType.Helmet)
                 .Resref("engi_helmet_2")
                 .Level(20)
                 .Quantity(1)
@@ -157,7 +157,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Linen Helmet
             _builder.Create(RecipeType.LinenHelmet, SkillType.Smithery)
-                .Category(RecipeCategoryType.Cap)
+                .Category(RecipeCategoryType.Helmet)
                 .Resref("fabr_helmet_2")
                 .Level(20)
                 .Quantity(1)
@@ -168,7 +168,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Velveteen Helmet
             _builder.Create(RecipeType.VelveteenHelmet, SkillType.Smithery)
-                .Category(RecipeCategoryType.Cap)
+                .Category(RecipeCategoryType.Helmet)
                 .Resref("chef_helmet_2")
                 .Level(20)
                 .Quantity(1)
@@ -212,7 +212,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Majestic Helmet
             _builder.Create(RecipeType.MajesticHelmet, SkillType.Smithery)
-                .Category(RecipeCategoryType.Cap)
+                .Category(RecipeCategoryType.Helmet)
                 .Resref("majestic_helmet")
                 .Level(30)
                 .Quantity(1)
@@ -223,7 +223,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Mechanic Helmet
             _builder.Create(RecipeType.MechanicHelmet, SkillType.Smithery)
-                .Category(RecipeCategoryType.Cap)
+                .Category(RecipeCategoryType.Helmet)
                 .Resref("engi_helmet_3")
                 .Level(30)
                 .Quantity(1)
@@ -234,7 +234,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Designer Helmet
             _builder.Create(RecipeType.DesignerHelmet, SkillType.Smithery)
-                .Category(RecipeCategoryType.Cap)
+                .Category(RecipeCategoryType.Helmet)
                 .Resref("fabr_helmet_3")
                 .Level(30)
                 .Quantity(1)
@@ -245,7 +245,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Silk Helmet
             _builder.Create(RecipeType.SilkHelmet, SkillType.Smithery)
-                .Category(RecipeCategoryType.Cap)
+                .Category(RecipeCategoryType.Helmet)
                 .Resref("chef_helmet_3")
                 .Level(30)
                 .Quantity(1)
@@ -289,7 +289,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Dream Helmet
             _builder.Create(RecipeType.DreamHelmet, SkillType.Smithery)
-                .Category(RecipeCategoryType.Cap)
+                .Category(RecipeCategoryType.Helmet)
                 .Resref("dream_helmet")
                 .Level(40)
                 .Quantity(1)
@@ -300,7 +300,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Devotion Helmet
             _builder.Create(RecipeType.DevotionHelmet, SkillType.Smithery)
-                .Category(RecipeCategoryType.Cap)
+                .Category(RecipeCategoryType.Helmet)
                 .Resref("engi_helmet_4")
                 .Level(40)
                 .Quantity(1)
@@ -311,7 +311,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Oasis Helmet
             _builder.Create(RecipeType.OasisHelmet, SkillType.Smithery)
-                .Category(RecipeCategoryType.Cap)
+                .Category(RecipeCategoryType.Helmet)
                 .Resref("fabr_helmet_4")
                 .Level(40)
                 .Quantity(1)
@@ -322,7 +322,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Vintage Helmet
             _builder.Create(RecipeType.VintageHelmet, SkillType.Smithery)
-                .Category(RecipeCategoryType.Cap)
+                .Category(RecipeCategoryType.Helmet)
                 .Resref("chef_helmet_4")
                 .Level(40)
                 .Quantity(1)
@@ -366,7 +366,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Eternal Helmet
             _builder.Create(RecipeType.EternalHelmet, SkillType.Smithery)
-                .Category(RecipeCategoryType.Cap)
+                .Category(RecipeCategoryType.Helmet)
                 .Resref("eternal_helmet")
                 .Level(50)
                 .Quantity(1)
@@ -377,7 +377,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Skysteel Helmet
             _builder.Create(RecipeType.SkysteelHelmet, SkillType.Smithery)
-                .Category(RecipeCategoryType.Cap)
+                .Category(RecipeCategoryType.Helmet)
                 .Resref("engi_helmet_5")
                 .Level(50)
                 .Quantity(1)
@@ -388,7 +388,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Rose Helmet
             _builder.Create(RecipeType.RoseHelmet, SkillType.Smithery)
-                .Category(RecipeCategoryType.Cap)
+                .Category(RecipeCategoryType.Helmet)
                 .Resref("fabr_helmet_5")
                 .Level(50)
                 .Quantity(1)
@@ -399,7 +399,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
 
             // Moonflame Helmet
             _builder.Create(RecipeType.MoonflameHelmet, SkillType.Smithery)
-                .Category(RecipeCategoryType.Cap)
+                .Category(RecipeCategoryType.Helmet)
                 .Resref("chef_helmet_5")
                 .Level(50)
                 .Quantity(1)

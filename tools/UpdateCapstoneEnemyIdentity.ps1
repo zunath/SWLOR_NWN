@@ -856,6 +856,11 @@ function Get-NPCSignatureAbilities($lines) {
 
             Add-SignatureLegacyReferences $legacyFeatNames $legacyIconResrefs $legacyTlkTexts $line $profile $title $stepData $step
 
+            $statusDuration = [int](6 + ($step * 2))
+            if ($stepData.Status -eq 'KnockdownStatusEffect' -and $statusDuration -gt 6) {
+                $statusDuration = 6
+            }
+
             $ability = [pscustomobject]@{
                 Key = $key
                 Role = $role
@@ -869,7 +874,7 @@ function Get-NPCSignatureAbilities($lines) {
                 LegacyTlkTexts = $legacyTlkTexts
                 ClassName = "$($featName)AbilityDefinition"
                 DisplayName = $displayName
-                Description = "$displayName is a reusable level 50 enemy technique used by $($stepLabels[$step]) enemies. Deals $($stepData.DamageType) damage and applies $($stepData.Status -replace 'StatusEffect$', '') for $([int](6 + ($step * 2))) seconds."
+                Description = "$displayName is a reusable level 50 enemy technique used by $($stepLabels[$step]) enemies. Deals $($stepData.DamageType) damage and applies $($stepData.Status -replace 'StatusEffect$', '') for $statusDuration seconds."
                 IconResref = Get-SignatureIconResref $title
                 LegacyIconResrefs = $legacyIconResrefs
                 SemanticCategory = $stepData.Category
@@ -885,7 +890,7 @@ function Get-NPCSignatureAbilities($lines) {
                 RecastDelay = [decimal](22 + ($step * 4))
                 Stamina = 5 + $step
                 BaseDamage = Get-SignatureBaseDamage $role $step $false
-                Duration = [int](6 + ($step * 2))
+                Duration = $statusDuration
                 StatusEffect = $stepData.Status
                 DamageType = $stepData.DamageType
                 Resistance = $stepData.Resistance
@@ -1866,6 +1871,24 @@ function Get-GeneratedEnemyItemName($row, [string]$itemKind) {
     return "Level 50 $($row.Role) $($row.StepLabel) $itemKind"
 }
 
+function Get-NativeNpcHitPointAdjustment($utc) {
+    $level = 0
+    foreach ($classEntry in @($utc.ClassList.value)) {
+        $level += [int]$classEntry.ClassLevel.value
+    }
+
+    $constitutionModifier = [int][Math]::Floor(([int]$utc.Con.value - 10) / 2)
+    $adjustment = $constitutionModifier * $level
+    $featIds = @($utc.FeatList.value | ForEach-Object { [int]$_.Feat.value })
+
+    if ($featIds -contains 40) {
+        $adjustment += $level
+    }
+
+    $adjustment += 20 * @($featIds | Where-Object { $_ -ge 754 -and $_ -le 763 }).Count
+    return $adjustment
+}
+
 function Get-AbilityPackageText($package, [string]$signatureDisplayName = "", [string]$capstoneDisplayName = "") {
     $names = New-Object System.Collections.Generic.List[string]
     if (-not [string]::IsNullOrWhiteSpace($signatureDisplayName)) {
@@ -1914,9 +1937,6 @@ function Update-ModuleAssets($rows, $featMap) {
         Set-JsonTypedValue $utc "Int" $stats.PER
         Set-JsonTypedValue $utc "Wis" $stats.WIL
         Set-JsonTypedValue $utc "Cha" $stats.WIL
-        Set-JsonTypedValue $utc "CurrentHitPoints" $stats.HP
-        Set-JsonTypedValue $utc "HitPoints" $stats.HP
-        Set-JsonTypedValue $utc "MaxHitPoints" $stats.HP
 
         $keptFeats = New-Object System.Collections.Generic.List[object]
         foreach ($feat in @($utc.FeatList.value)) {
@@ -1949,6 +1969,10 @@ function Update-ModuleAssets($rows, $featMap) {
             }
         })
         $utc.FeatList.value = @($keptFeats.ToArray())
+
+        Set-JsonTypedValue $utc "CurrentHitPoints" $stats.HP
+        Set-JsonTypedValue $utc "HitPoints" ($stats.HP - (Get-NativeNpcHitPointAdjustment $utc))
+        Set-JsonTypedValue $utc "MaxHitPoints" $stats.HP
 
         Set-ItemPropertyCost $skin 99 43 50
         Set-ItemPropertyCost $skin 96 39 $stats.HP

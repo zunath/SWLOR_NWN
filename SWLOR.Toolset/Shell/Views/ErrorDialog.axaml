@@ -1,0 +1,39 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="SWLOR.Toolset.Shell.Views.ErrorDialog"
+        Title="SWLOR Toolset"
+        Width="560" SizeToContent="Height"
+        MinHeight="180" MaxHeight="620"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        ShowInTaskbar="False">
+  <DockPanel Margin="16" LastChildFill="True">
+
+    <TextBlock DockPanel.Dock="Top" x:Name="HeadlineText"
+               FontWeight="Bold" FontSize="14" TextWrapping="Wrap" Margin="0,0,0,8" />
+
+    <TextBlock DockPanel.Dock="Top" x:Name="MessageText"
+               TextWrapping="Wrap" Margin="0,0,0,12" />
+
+    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal"
+                HorizontalAlignment="Right" Margin="0,12,0,0">
+      <Button x:Name="OkButton" Content="OK" MinWidth="90" IsDefault="True" IsCancel="True"
+              Click="OnOkClicked" />
+    </StackPanel>
+
+    <!-- Visibility is set in code-behind: IsVisible needs a bool, and there is no count-to-bool
+         conversion in a plain binding. -->
+    <Border x:Name="DetailsBorder" BorderBrush="Gray" BorderThickness="1" CornerRadius="4">
+      <ScrollViewer MaxHeight="300">
+        <ItemsControl x:Name="DetailsList" Margin="8">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <TextBlock Text="{Binding}" TextWrapping="Wrap" FontFamily="Consolas,monospace"
+                         Margin="0,1" />
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </ScrollViewer>
+    </Border>
+  </DockPanel>
+</Window>

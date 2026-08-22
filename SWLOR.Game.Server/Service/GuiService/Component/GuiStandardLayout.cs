@@ -30,9 +30,8 @@ using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition.Component
+namespace SWLOR.Game.Server.Service.GuiService.Component
 {
     /// <summary>
     /// Fluent configuration surface for <see cref="GuiStandardLayout.AddStandardLayout{T}"/>.
@@ -42,11 +41,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.Component
     public class GuiStandardLayoutConfig<T> where T : IGuiViewModel
     {
         private readonly List<Action<GuiRow<T>>> _tabRows = new();
+        private readonly List<(Action<GuiColumn<T>> BuildColumn, float? FixedWidth)> _leadingColumns = new();
         private readonly List<(Action<GuiColumn<T>> BuildColumn, float? FixedWidth)> _sideColumns = new();
 
         internal float? TabPanelHeightValue { get; private set; }
         internal string ContentElementId { get; private set; }
         internal IReadOnlyList<Action<GuiRow<T>>> TabRows => _tabRows;
+        internal IReadOnlyList<(Action<GuiColumn<T>> BuildColumn, float? FixedWidth)> LeadingColumns => _leadingColumns;
         internal IReadOnlyList<(Action<GuiColumn<T>> BuildColumn, float? FixedWidth)> SideColumns => _sideColumns;
 
         /// <summary>
@@ -83,6 +84,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.Component
         }
 
         /// <summary>
+        /// Adds a rail before the variable-width content column.
+        /// </summary>
+        public GuiStandardLayoutConfig<T> AddLeadingColumn(Action<GuiColumn<T>> buildColumn, float? fixedWidth = null)
+        {
+            _leadingColumns.Add((buildColumn, fixedWidth));
+            return this;
+        }
+
+        /// <summary>
         /// Adds a side column to the main row, after the content column.
         /// Side columns are emitted in the order they are added. Pass
         /// <paramref name="fixedWidth"/> to pin the column's width, matching
@@ -110,6 +120,29 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.Component
     /// </summary>
     public static class GuiStandardLayout
     {
+        /// <summary>
+        /// Normalizes every window's authored root elements into the shared root shape
+        /// before the main partial is serialized. GuiWindowBuilder applies this to the
+        /// complete window corpus; specialized layouts still compose their content with
+        /// <see cref="AddStandardLayout{T}"/> first.
+        /// </summary>
+        internal static GuiWindow<T> DefineStandardMainPartial<T>(
+            this GuiWindow<T> window,
+            IReadOnlyList<IGuiWidget> authoredElements)
+            where T : IGuiViewModel
+        {
+            return window.DefinePartialView("%%WINDOW_MAIN%%", group =>
+            {
+                group.AddColumn(root =>
+                {
+                    root.AddRow(mainRow =>
+                    {
+                        mainRow.Elements.AddRange(authoredElements);
+                    });
+                });
+            });
+        }
+
         public static GuiWindow<T> AddStandardLayout<T>(this GuiWindow<T> window, Action<GuiStandardLayoutConfig<T>> configure)
             where T : IGuiViewModel
         {
@@ -132,6 +165,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.Component
             {
                 root.AddRow(mainRow =>
                 {
+                    AddColumns(mainRow, config.LeadingColumns);
+
                     mainRow.AddColumn(contentCol =>
                     {
                         if (config.TabRows.Count > 0)
@@ -171,18 +206,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.Component
                         });
                     });
 
-                    foreach (var side in config.SideColumns)
-                    {
-                        var col = mainRow.AddColumn(side.BuildColumn);
-                        if (side.FixedWidth.HasValue)
-                        {
-                            col.SetWidth(side.FixedWidth.Value);
-                        }
-                    }
+                    AddColumns(mainRow, config.SideColumns);
                 });
             });
 
             return window;
+        }
+
+        private static void AddColumns<T>(
+            GuiRow<T> row,
+            IReadOnlyList<(Action<GuiColumn<T>> BuildColumn, float? FixedWidth)> columns)
+            where T : IGuiViewModel
+        {
+            foreach (var configuredColumn in columns)
+            {
+                var column = row.AddColumn(configuredColumn.BuildColumn);
+                if (configuredColumn.FixedWidth.HasValue)
+                    column.SetWidth(configuredColumn.FixedWidth.Value);
+            }
         }
     }
 }

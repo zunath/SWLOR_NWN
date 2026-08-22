@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.FragGrenade1)
 
                 .AddPerkLevel()
-                .Description("Deals 32 fire DMG plus PER scaling to enemies in a 3m blast and attempts to inflict Bleed. Consumes explosives.")
+                .Description("Deals 32 fire DMG plus PER scaling to enemies in a 3m blast and attempts to inflict Bleed for 12 seconds. Consumes explosives.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 15)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.FragGrenade2)
 
                 .AddPerkLevel()
-                .Description("Deals 48 fire DMG plus PER scaling to enemies in a 3m blast and attempts to inflict Bleed. Consumes explosives.")
+                .Description("Deals 48 fire DMG plus PER scaling to enemies in a 3m blast and attempts to inflict Bleed for 12 seconds. Consumes explosives.")
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 40)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -72,25 +72,25 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BlastRadiusTrait)
-                .Description("Grenade abilities gain +1m blast radius.")
+                .Description("Grenade abilities, Remote Charge, and Overload Barrage gain +1m blast radius.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 5)
                 .RequirementCharacterType(CharacterType.Standard)
-                .IncreasesStat(StatType.GrenadeRadiusBonusTenths, 10)
+                .IncreasesStat(StatType.BlastRadiusBonusTenths, 10)
 
                 .AddPerkLevel()
-                .Description("Grenade abilities gain +2m blast radius.")
+                .Description("Grenade abilities, Remote Charge, and Overload Barrage gain +2m blast radius.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 22)
                 .RequirementCharacterType(CharacterType.Standard)
-                .IncreasesStat(StatType.GrenadeRadiusBonusTenths, 20)
+                .IncreasesStat(StatType.BlastRadiusBonusTenths, 20)
 
                 .AddPerkLevel()
-                .Description("Grenade abilities gain +3m blast radius, and Flash Grenade and Adhesive Grenade non-save effect strength increases by 5%.")
+                .Description("Grenade abilities, Remote Charge, and Overload Barrage gain +3m blast radius, and Flash Grenade and Adhesive Grenade non-save effect strength increases by 5%.")
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 45)
                 .RequirementCharacterType(CharacterType.Standard)
-                .IncreasesStat(StatType.GrenadeRadiusBonusTenths, 30)
+                .IncreasesStat(StatType.BlastRadiusBonusTenths, 30)
                 .IncreasesStat(StatType.GrenadeControlPotencyBonus, 5);
         }
 
@@ -100,7 +100,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Concussion Grenade")
 
                 .AddPerkLevel()
-                .Description("Deals 14 electrical DMG plus PER scaling in a 3m blast and knock down for 30 seconds. Consumes explosives.")
+                .Description("Deals 14 electrical DMG plus PER scaling in a 3m blast and knocks down for 3 seconds. Affects up to 5 targets. Consumes explosives.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 8)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -108,7 +108,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ConcussionGrenade1)
 
                 .AddPerkLevel()
-                .Description("Deals 28 electrical DMG plus PER scaling in a 3m blast and knock down for 30 seconds. Consumes explosives.")
+                .Description("Deals 28 electrical DMG plus PER scaling in a 3m blast and knocks down for 3 seconds. Affects up to 5 targets. Consumes explosives.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 28)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -122,7 +122,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Flash Grenade")
 
                 .AddPerkLevel()
-                .Description("Attempts to inflict Flash, reducing physical and Force ability hit chance by 8% for 30 seconds in a 4m blast. Consumes explosives.")
+                .Description("Attempts to inflict Flash, reducing physical and Force ability hit chance by 8% for 30 seconds in a 4m blast. Affects up to 5 targets. Consumes explosives.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 12)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -144,7 +144,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.IonGrenade1)
 
                 .AddPerkLevel()
-                .Description("Deals 34 electrical DMG plus PER scaling in a 3m blast. Deals 60% bonus damage to droids and Shock. Consumes explosives.")
+                .Description("Deals 34 electrical DMG plus PER scaling in a 3m blast. Deals 60% bonus damage to droids and inflicts Shock for 12 seconds. Consumes explosives.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 38)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -158,7 +158,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Adhesive Grenade")
 
                 .AddPerkLevel()
-                .Description("Slows enemies in a 4m blast for 30 seconds and immobilizes them for 30 seconds. Consumes explosives.")
+                .Description("Slows enemies in a 4m blast for 6 seconds. Affects up to 3 targets. Consumes explosives.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 25)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -166,7 +166,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.AdhesiveGrenade1)
 
                 .AddPerkLevel()
-                .Description("Slows enemies in a 4m blast for 30 seconds and immobilizes them for 30 seconds. Consumes explosives.")
+                .Description("Slows enemies in a 4m blast for 12 seconds. Affects up to 5 targets. Consumes explosives.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 42)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -180,7 +180,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Cluster Grenade")
 
                 .AddPerkLevel()
-                .Description("Throws three adjacent grenades around the target point, each dealing 18 fire DMG plus PER scaling in a 2m blast. Overlapping blasts can hit the same enemy. Consumes explosives.")
+                .Description("Throws three adjacent grenades within 3m of the target point. Each grenade deals 18 fire DMG plus PER scaling in a 2m blast, and overlapping blasts can hit the same enemy. Consumes explosives.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 30)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -194,7 +194,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Disruption Pulse")
 
                 .AddPerkLevel()
-                .Description("Emits a 5m disruption pulse at a target point within 12m, dealing 18 electrical DMG plus PER scaling to enemies and reducing physical and Force ability Accuracy by 6% for 30 seconds. Consumes explosives.")
+                .Description("Emits a 5m disruption pulse at a target point within 12m, dealing 18 electrical DMG plus PER scaling to enemies and reducing physical and Force ability Accuracy by 6% for 12 seconds. Consumes explosives.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 35)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -208,7 +208,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Thermal Detonator")
 
                 .AddPerkLevel()
-                .Description("Deals 60 fire DMG plus PER scaling in a 5m blast and inflicts Burning for 45 seconds. Consumes explosives.")
+                .Description("Deals 60 fire DMG plus PER scaling in a 5m blast and inflicts Burn for 45 seconds. Consumes explosives.")
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 50)
                 .RequirementCharacterType(CharacterType.Standard)

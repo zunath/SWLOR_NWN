@@ -1,0 +1,117 @@
+{
+  "__data_type": "UTI ",
+  "AddCost": {
+    "type": "dword",
+    "value": 300
+  },
+  "BaseItem": {
+    "type": "int",
+    "value": 24
+  },
+  "Charges": {
+    "type": "byte",
+    "value": 0
+  },
+  "Comment": {
+    "type": "cexostring",
+    "value": ""
+  },
+  "Cost": {
+    "type": "dword",
+    "value": 301
+  },
+  "Cursed": {
+    "type": "byte",
+    "value": 0
+  },
+  "DescIdentified": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Right-click this item in your inventory and choose Activate Item to begin the Slicing minigame. Requires Slicing rank 4. Its circuit seed, failures, and integrity remain attached to the box when traded."
+    }
+  },
+  "Description": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Right-click this item in your inventory and choose Activate Item to begin the Slicing minigame. Requires Slicing rank 4. Its circuit seed, failures, and integrity remain attached to the box when traded."
+    }
+  },
+  "Identified": {
+    "type": "byte",
+    "value": 1
+  },
+  "LocalizedName": {
+    "type": "cexolocstring",
+    "value": {
+      "0": "Sealed Lockbox (Tier 4)"
+    }
+  },
+  "ModelPart1": {
+    "type": "byte",
+    "value": 154
+  },
+  "PaletteID": {
+    "type": "byte",
+    "value": 23
+  },
+  "Plot": {
+    "type": "byte",
+    "value": 0
+  },
+  "PropertiesList": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "ChanceAppear": {
+          "type": "byte",
+          "value": 100
+        },
+        "CostTable": {
+          "type": "byte",
+          "value": 3
+        },
+        "CostValue": {
+          "type": "word",
+          "value": 13
+        },
+        "Param1": {
+          "type": "byte",
+          "value": 255
+        },
+        "Param1Value": {
+          "type": "byte",
+          "value": 0
+        },
+        "PropertyName": {
+          "type": "word",
+          "value": 15
+        },
+        "Subtype": {
+          "type": "word",
+          "value": 335
+        }
+      }
+    ]
+  },
+  "StackSize": {
+    "type": "word",
+    "value": 1
+  },
+  "Stolen": {
+    "type": "byte",
+    "value": 0
+  },
+  "Tag": {
+    "type": "cexostring",
+    "value": "lockbox_t4"
+  },
+  "TemplateResRef": {
+    "type": "resref",
+    "value": "lockbox_t4"
+  },
+  "xModelPart1": {
+    "type": "word",
+    "value": 154
+  }
+}

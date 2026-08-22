@@ -947,14 +947,14 @@
               }
             },
             {
-              "__struct_id": 2048,
+              "__struct_id": 4096,
               "AddCost": {
                 "type": "dword",
                 "value": 0
               },
               "BaseItem": {
                 "type": "int",
-                "value": 20
+                "value": 27
               },
               "Charges": {
                 "type": "byte",
@@ -1350,7 +1350,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -2833,14 +2833,14 @@
               }
             },
             {
-              "__struct_id": 2048,
+              "__struct_id": 4096,
               "AddCost": {
                 "type": "dword",
                 "value": 0
               },
               "BaseItem": {
                 "type": "int",
-                "value": 20
+                "value": 27
               },
               "Charges": {
                 "type": "byte",
@@ -3463,7 +3463,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -4946,14 +4946,14 @@
               }
             },
             {
-              "__struct_id": 2048,
+              "__struct_id": 4096,
               "AddCost": {
                 "type": "dword",
                 "value": 0
               },
               "BaseItem": {
                 "type": "int",
-                "value": 20
+                "value": 27
               },
               "Charges": {
                 "type": "byte",
@@ -5576,7 +5576,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -34484,7 +34484,7 @@
         },
         "LoadScreenID": {
           "type": "word",
-          "value": 69
+          "value": 18
         },
         "LocalizedName": {
           "id": 14760,
@@ -34687,7 +34687,7 @@
         },
         "LoadScreenID": {
           "type": "word",
-          "value": 69
+          "value": 18
         },
         "LocalizedName": {
           "id": 14760,
@@ -34890,7 +34890,7 @@
         },
         "LoadScreenID": {
           "type": "word",
-          "value": 69
+          "value": 18
         },
         "LocalizedName": {
           "id": 14760,
@@ -35025,6 +35025,21 @@
         "Value": {
           "type": "int",
           "value": 66
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "PLANET_TYPE_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 2
         }
       }
     ]

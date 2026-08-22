@@ -322,7 +322,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("herb_v", 2);
 
             // Cooking Enhancement - Combat Readiness I
-            _builder.Create(RecipeType.CookingEnhancementRecastReduction1, SkillType.Agriculture)
+            _builder.Create(RecipeType.CookingEnhancementCombatReadiness1, SkillType.Agriculture)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_recast1")
                 .Level(8)
@@ -428,10 +428,10 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("klorslug_tail", 2)
                 .Component("klorslug_innards", 1);
 
-            // Sardine Ball
-            _builder.Create(RecipeType.SardineBall, SkillType.Agriculture)
+            // Cooked Sardine
+            _builder.Create(RecipeType.CookedSardine, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
-                .Resref("sardine_ball")
+                .Resref("cooked_sardine")
                 .Level(12)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Food, 1)
@@ -688,7 +688,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("herb_m", 2);
 
             // Cooking Enhancement - Combat Readiness II
-            _builder.Create(RecipeType.CookingEnhancementRecastReduction2, SkillType.Agriculture)
+            _builder.Create(RecipeType.CookingEnhancementCombatReadiness2, SkillType.Agriculture)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_recast2")
                 .Level(18)
@@ -1046,7 +1046,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("herb_c", 2);
 
             // Cooking Enhancement - Combat Readiness III
-            _builder.Create(RecipeType.CookingEnhancementRecastReduction3, SkillType.Agriculture)
+            _builder.Create(RecipeType.CookingEnhancementCombatReadiness3, SkillType.Agriculture)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_recast3")
                 .Level(28)
@@ -1202,7 +1202,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
 
             _builder.Create(RecipeType.SurpriseSandwich, SkillType.Agriculture)
                 .Category(RecipeCategoryType.Food)
-                .Resref("surprise_sandwich")
+                .Resref("surprise_sandwic")
                 .Level(34)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Food, 2)
@@ -1415,7 +1415,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("herb_t", 2);
 
             // Cooking Enhancement - Combat Readiness IV
-            _builder.Create(RecipeType.CookingEnhancementRecastReduction4, SkillType.Agriculture)
+            _builder.Create(RecipeType.CookingEnhancementCombatReadiness4, SkillType.Agriculture)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_recast4")
                 .Level(38)
@@ -1997,7 +1997,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.CookingRecipeDefinition
                 .Component("herb_x", 2);
 
             // Cooking Enhancement - Combat Readiness V
-            _builder.Create(RecipeType.CookingEnhancementRecastReduction5, SkillType.Agriculture)
+            _builder.Create(RecipeType.CookingEnhancementCombatReadiness5, SkillType.Agriculture)
                 .Category(RecipeCategoryType.CookingEnhancement)
                 .Resref("cen_recast5")
                 .Level(48)

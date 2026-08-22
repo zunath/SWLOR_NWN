@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.ActivityService;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
@@ -28,12 +29,21 @@ namespace SWLOR.Game.Server.Feature
             Completed = 3
         }
 
+        private sealed class ActiveAbilityActivation
+        {
+            public string ActivationId { get; init; }
+            public AbilityDetail Ability { get; init; }
+            public List<string> TelegraphIds { get; init; }
+            public uint ResumeAttackTarget { get; init; }
+        }
+
         // Variable names for queued abilities.
         private const string ActiveAbilityIdName = "ACTIVE_ABILITY_ID";
         private const string ActiveAbilityFeatIdName = "ACTIVE_ABILITY_FEAT_ID";
         private const string ActiveAbilityEffectivePerkLevelName = "ACTIVE_ABILITY_EFFECTIVE_PERK_LEVEL";
         private const string ActiveAbilityWeaponIneffectiveFeedbackSuppressedName = "ACTIVE_ABILITY_WEAPON_INEFFECTIVE_FEEDBACK_SUPPRESSED";
         private const string ActiveAbilityWeaponIneffectiveFeedbackWasHiddenName = "ACTIVE_ABILITY_WEAPON_INEFFECTIVE_FEEDBACK_WAS_HIDDEN";
+        private static readonly Dictionary<uint, ActiveAbilityActivation> _activeAbilityActivations = new();
 
         private static uint GetResumeAttackTarget(uint activator, uint target, AbilityDetail ability)
         {
@@ -106,10 +116,69 @@ namespace SWLOR.Game.Server.Feature
             });
         }
 
+        /// <summary>
+        /// Interrupts the creature's current cast or channel, if one is active.
+        /// </summary>
+        public static bool InterruptAbilityActivation(uint activator)
+        {
+            return InterruptAbilityActivation(activator, null);
+        }
+
+        private static bool InterruptAbilityActivation(uint activator, string expectedActivationId)
+        {
+            if (!_activeAbilityActivations.TryGetValue(activator, out var activation) ||
+                !string.IsNullOrWhiteSpace(expectedActivationId) &&
+                activation.ActivationId != expectedActivationId ||
+                GetLocalInt(activator, activation.ActivationId) != (int)ActivationStatus.Started)
+            {
+                return false;
+            }
+
+            Log.WriteStructured(
+                LogGroup.Server,
+                "Ability activation interrupted: Activator={Activator} ActivationId={ActivationId} Ability={Ability} IsChanneled={IsChanneled}",
+                activator,
+                activation.ActivationId,
+                activation.Ability.Name,
+                activation.Ability.IsChanneled);
+
+            RemoveEffectByTag(activator, "ACTIVATION_VFX");
+            CancelActivationTargetingTelegraphs(activation.TelegraphIds);
+            if (GetIsPC(activator))
+                PlayerPlugin.StopGuiTimingBar(activator, string.Empty);
+
+            Messaging.SendMessageNearbyToPlayers(
+                activator,
+                receiver => $"{PlayerName.GetDisplayName(receiver, activator)}'s ability has been interrupted.");
+            SetLocalInt(activator, activation.ActivationId, (int)ActivationStatus.Interrupted);
+            Activity.ClearBusy(activator);
+
+            if (activation.Ability.IsChanneled)
+                activation.Ability.ChannelInterruptAction?.Invoke(activator);
+
+            _activeAbilityActivations.Remove(activator);
+            ResumeAttack(activator, activation.ResumeAttackTarget);
+            return true;
+        }
+
+        private static void ClearActiveAbilityActivation(uint activator, string activationId)
+        {
+            if (_activeAbilityActivations.TryGetValue(activator, out var activation) &&
+                activation.ActivationId == activationId)
+            {
+                _activeAbilityActivations.Remove(activator);
+            }
+        }
+
         private static void ResumeAttackAfterDelay(uint activator, uint target, float delay, bool clearActions = true)
         {
-            if (!GetIsObjectValid(target))
+            // Autonomous NPCs reacquire their highest-enmity target inside ResumeAttack. Schedule
+            // the callback even when the target saved before the cast has since become invalid.
+            if (!GetIsObjectValid(target) &&
+                (GetIsPC(activator) || GetIsPC(GetMaster(activator))))
+            {
                 return;
+            }
 
             DelayCommand(delay, () =>
             {
@@ -163,6 +232,15 @@ namespace SWLOR.Game.Server.Feature
 
             var feat = (FeatType)Convert.ToInt32(EventsPlugin.GetEventData("FEAT_ID"));
             TryUseAbility(activator, target, feat, targetLocation, true);
+        }
+
+        /// <summary>
+        /// Returns true if the given weapon-activated ability is currently queued on the
+        /// creature, waiting for its next landed hit.
+        /// </summary>
+        public static bool IsWeaponAbilityQueued(uint creature, FeatType feat)
+        {
+            return GetLocalInt(creature, ActiveAbilityFeatIdName) == (int)feat;
         }
 
         public static bool TryUseAbility(
@@ -264,13 +342,32 @@ namespace SWLOR.Game.Server.Feature
             AbilityDetail ability,
             Location targetLocation)
         {
-            PlayAbilitySound(activator, ability.ImpactSound);
-            Ability.BeginAbilityImpact(activator, ability);
-            ability.ImpactAction?.Invoke(activator, target, ability.AbilityLevel, targetLocation);
-            var summary = Ability.EndAbilityImpact(activator);
+            var impactEnded = false;
+            try
+            {
+                PlayAbilitySound(activator, ability.ImpactSound);
+                Ability.BeginAbilityImpact(activator, ability);
+                ability.ImpactAction?.Invoke(activator, target, ability.AbilityLevel, targetLocation);
+                var summary = Ability.EndAbilityImpact(activator);
+                impactEnded = true;
 
-            Combat.ApplyAbilityActivatedEffects(activator, target, feat, ability, summary);
-            Combat.ApplyAbilityImpactEffects(activator, summary);
+                Combat.ApplyAbilityActivatedEffects(activator, target, feat, ability, summary);
+                Combat.ApplyAbilityImpactEffects(activator, summary);
+
+                if (!GetIsPC(activator))
+                {
+                    Mimicry.OnCreatureAbilityUsed(activator, feat);
+                }
+            }
+            finally
+            {
+                if (!impactEnded)
+                {
+                    Ability.AbortAbilityImpact(activator);
+                }
+
+                Combat.CompleteAbilityStaminaCostContext(activator, ability);
+            }
         }
 
 
@@ -293,18 +390,26 @@ namespace SWLOR.Game.Server.Feature
         {
             float CalculateActivationDelay()
             {
-                if (Combat.ConsumeNextAbilityNoDelay(activator, ability))
+                var delayReductionPercent = Combat.ConsumeNextAbilityDelayReductionPercent(activator, ability);
+                if (delayReductionPercent >= 100)
                     return 0f;
 
                 var abilityDelay = ability.ActivationDelay?.Invoke(activator, target, ability.AbilityLevel) ?? 0.0f;
                 var delayAdjustment = Stat.GetStatAdjustment(activator, StatType.ActivationDelayFlatAdjustment);
+                var delay = Math.Max(0f, abilityDelay + delayAdjustment);
 
-                return Math.Max(0f, abilityDelay + delayAdjustment);
+                if (delayReductionPercent > 0)
+                    delay *= (100 - delayReductionPercent) / 100f;
+
+                return delay;
             }
 
             // Handles displaying animation and visual effects.
             List<string> ProcessAnimationAndVisualEffects(float delay)
             {
+                /// <summary>
+                /// Plays the configured activation animation without corrupting explicit throws.
+                /// </summary>
                 void PlayActivationAnimation(float animationLength)
                 {
                     var sourceAnimationName = ability.AnimationSourceAnimationName;
@@ -315,21 +420,31 @@ namespace SWLOR.Game.Server.Feature
                     {
                         AssignCommand(activator, () =>
                         {
-                            ReplaceObjectAnimation(activator, sourceAnimationName, replacementAnimationName);
-                            ActionPlayAnimation(ability.AnimationType, 1.0f, animationLength);
-                            DelayCommand(ability.AnimationRestoreDelaySeconds, () =>
-                            {
-                                ReplaceObjectAnimation(activator, sourceAnimationName);
-                            });
+                            PistolAnimationRemap.PlayAnimationWithTemporaryReplacementPreservingExplicitThrow(
+                                activator,
+                                ability.AnimationType,
+                                1.0f,
+                                animationLength,
+                                sourceAnimationName,
+                                replacementAnimationName,
+                                ability.AnimationRestoreDelaySeconds);
                         });
                         return;
                     }
 
-                    AssignCommand(activator, () => ActionPlayAnimation(ability.AnimationType, 1.0f, animationLength));
+                    AssignCommand(
+                        activator,
+                        () => PistolAnimationRemap.PlayAnimationPreservingExplicitThrow(
+                            activator,
+                            ability.AnimationType,
+                            1.0f,
+                            animationLength));
                 }
 
-                // Force out of stealth
-                if (GetActionMode(activator, ActionMode.Stealth))
+                // Force out of stealth unless the activation must inspect or toggle the current
+                // stealth mode when its impact runs.
+                if (!ability.PreservesStealthDuringActivation &&
+                    GetActionMode(activator, ActionMode.Stealth))
                     SetActionMode(activator, ActionMode.Stealth, false);
 
                 AssignCommand(activator, () =>
@@ -373,13 +488,13 @@ namespace SWLOR.Game.Server.Feature
             }
 
             // Recursive function which checks if player has moved since starting the casting.
-            void CheckForActivationInterruption(string activationId, Vector3 originalPosition, List<string> activationTelegraphIds)
+            void CheckForActivationInterruption(string activationId, Vector3 originalPosition, List<string> activationTelegraphIds, uint resumeAttackTarget)
             {
                 if (!GetIsPC(activator)) return;
 
-                // Completed abilities should no longer run.
+                // Completed and externally interrupted abilities should no longer run.
                 var status = GetLocalInt(activator, activationId);
-                if (status == (int)ActivationStatus.Completed || status == (int)ActivationStatus.Invalid) return;
+                if (status != (int)ActivationStatus.Started) return;
 
                 var currentPosition = GetPosition(activator);
 
@@ -387,17 +502,11 @@ namespace SWLOR.Game.Server.Feature
                     currentPosition.Y != originalPosition.Y ||
                     currentPosition.Z != originalPosition.Z)
                 {
-                    RemoveEffectByTag(activator, "ACTIVATION_VFX");
-                    CancelActivationTargetingTelegraphs(activationTelegraphIds);
-                    PlayerPlugin.StopGuiTimingBar(activator, string.Empty);
-                    Messaging.SendMessageNearbyToPlayers(
-                        activator,
-                        receiver => $"{PlayerName.GetDisplayName(receiver, activator)}'s ability has been interrupted.");
-                    SetLocalInt(activator, activationId, (int)ActivationStatus.Interrupted);
+                    InterruptAbilityActivation(activator, activationId);
                     return;
                 }
 
-                DelayCommand(0.5f, () => CheckForActivationInterruption(activationId, originalPosition, activationTelegraphIds));
+                DelayCommand(0.5f, () => CheckForActivationInterruption(activationId, originalPosition, activationTelegraphIds, resumeAttackTarget));
             }
 
             // This method is called after the delay of the ability has finished.
@@ -405,6 +514,7 @@ namespace SWLOR.Game.Server.Feature
             {
                 void CancelActivation(bool resumeAttack)
                 {
+                    ClearActiveAbilityActivation(activator, activationId);
                     DeleteLocalInt(activator, activationId);
                     CancelActivationTargetingTelegraphs(activationTelegraphIds);
 
@@ -412,13 +522,31 @@ namespace SWLOR.Game.Server.Feature
                         ResumeAttack(activator, resumeAttackTarget);
                 }
 
+                // Interrupted activations were already fully released (busy cleared, channel effects
+                // ended, attack resumed) the moment the interruption was detected, and the activator
+                // may have started a new activation since - don't clear that one's busy state.
+                if (GetLocalInt(activator, activationId) == (int)ActivationStatus.Interrupted)
+                {
+                    ClearActiveAbilityActivation(activator, activationId);
+                    DeleteLocalInt(activator, activationId);
+                    return;
+                }
+
                 Activity.ClearBusy(activator);
 
-                // Moved during casting or activator died. Cancel the activation.
+                // Activator died during casting. Cancel the activation.
                 var activatorIsAlive = GetCurrentHitPoints(activator) > 0;
-                if (GetLocalInt(activator, activationId) == (int)ActivationStatus.Interrupted || !activatorIsAlive)
+                if (!activatorIsAlive)
                 {
-                    CancelActivation(activatorIsAlive);
+                    CancelActivation(false);
+                    return;
+                }
+
+                // Channeled abilities applied their impact, costs, and recast when the channel
+                // started; completing the channel only releases the activator.
+                if (ability.IsChanneled)
+                {
+                    CancelActivation(true);
                     return;
                 }
 
@@ -460,7 +588,14 @@ namespace SWLOR.Game.Server.Feature
             var resumeAttackTarget = GetResumeAttackTarget(activator, target, ability);
             var activationTelegraphIds = ProcessAnimationAndVisualEffects(activationDelay);
             SetLocalInt(activator, activationId, (int)ActivationStatus.Started);
-            CheckForActivationInterruption(activationId, position, activationTelegraphIds);
+            _activeAbilityActivations[activator] = new ActiveAbilityActivation
+            {
+                ActivationId = activationId,
+                Ability = ability,
+                TelegraphIds = activationTelegraphIds,
+                ResumeAttackTarget = resumeAttackTarget
+            };
+            CheckForActivationInterruption(activationId, position, activationTelegraphIds, resumeAttackTarget);
 
             var executeImpact = ability.ActivationAction == null
                 ? true
@@ -468,6 +603,7 @@ namespace SWLOR.Game.Server.Feature
 
             if (executeImpact != true)
             {
+                ClearActiveAbilityActivation(activator, activationId);
                 DeleteLocalInt(activator, activationId);
                 CancelActivationTargetingTelegraphs(activationTelegraphIds);
                 ResumeAttack(activator, resumeAttackTarget);
@@ -480,6 +616,17 @@ namespace SWLOR.Game.Server.Feature
                 {
                     PlayerPlugin.StartGuiTimingBar(activator, activationDelay, string.Empty);
                 }
+            }
+
+            // Channeled abilities grant their effects for the length of the channel, so the impact,
+            // costs, and recast delay apply up front. Interruption ends the effects early via the
+            // channel interrupt action but does not refund the recast delay.
+            if (ability.IsChanneled)
+            {
+                ApplyRequirementEffects(activator, ability);
+                HandleStealthBreaking(activator, ability);
+                ExecuteAbilityImpact(activator, target, feat, ability, targetLocation);
+                Recast.ApplyRecastDelay(activator, ability.RecastGroup, recastDelay);
             }
 
             Activity.SetBusy(activator, ActivityStatusType.AbilityActivation);
@@ -550,13 +697,7 @@ namespace SWLOR.Game.Server.Feature
             }
 
             var abilityDetail = Ability.GetAbilityDetail(featType);
-
-            RestoreQueuedAbilityFeedback(target);
-
-            // Remove the local variables.
-            DeleteLocalString(target, ActiveAbilityIdName);
-            DeleteLocalInt(target, ActiveAbilityFeatIdName);
-            DeleteLocalInt(target, ActiveAbilityEffectivePerkLevelName);
+            ClearQueuedAbility(target);
 
             // Notify the activator and nearby players
             SendMessageToPC(target, $"Your weapon ability {abilityDetail.Name} is no longer queued.");
@@ -570,6 +711,27 @@ namespace SWLOR.Game.Server.Feature
         public static bool HasQueuedWeaponAbility(uint activator)
         {
             return TryGetQueuedWeaponAbility(activator, out _);
+        }
+
+        public static bool HasQueuedWeaponAbility(uint activator, SkillType weaponSkillType)
+        {
+            return TryGetQueuedWeaponAbility(activator, out var ability) &&
+                   Combat.CanWeaponSkillTriggerAbility(weaponSkillType, ability.SkillType);
+        }
+
+        public static bool TryGetQueuedWeaponAbility(
+            uint activator,
+            SkillType weaponSkillType,
+            out AbilityDetail ability)
+        {
+            if (!TryGetQueuedWeaponAbility(activator, out ability) ||
+                !Combat.CanWeaponSkillTriggerAbility(weaponSkillType, ability.SkillType))
+            {
+                ability = null;
+                return false;
+            }
+
+            return true;
         }
 
         public static bool TryGetQueuedWeaponAbility(uint activator, out AbilityDetail ability)
@@ -787,17 +949,38 @@ namespace SWLOR.Game.Server.Feature
             }
 
             var abilityDetail = Ability.GetAbilityDetail(activeWeaponAbility);
-            HandleStealthBreaking(activator, abilityDetail);
-            Ability.BeginAbilityImpact(activator, abilityDetail);
-            abilityDetail.ImpactAction?.Invoke(activator, target, activeAbilityEffectivePerkLevel, targetLocation);
-            var summary = Ability.EndAbilityImpact(activator);
-            Combat.ApplyAbilityActivatedEffects(activator, target, activeWeaponAbility, abilityDetail, summary);
-            Combat.ApplyAbilityImpactEffects(activator, summary);
+            if (!Combat.CanItemTriggerWeaponAbility(item, abilityDetail.SkillType))
+                return;
 
-            DeleteLocalString(activator, ActiveAbilityIdName);
-            DeleteLocalInt(activator, ActiveAbilityFeatIdName);
-            DeleteLocalInt(activator, ActiveAbilityEffectivePerkLevelName);
-            DelayCommand(0.2f, () => RestoreQueuedAbilityFeedbackIfNoQueuedAbility(activator));
+            HandleStealthBreaking(activator, abilityDetail);
+            var impactEnded = false;
+            try
+            {
+                Ability.BeginAbilityImpact(activator, abilityDetail);
+                abilityDetail.ImpactAction?.Invoke(activator, target, activeAbilityEffectivePerkLevel, targetLocation);
+                var summary = Ability.EndAbilityImpact(activator);
+                impactEnded = true;
+                Combat.ApplyAbilityActivatedEffects(activator, target, activeWeaponAbility, abilityDetail, summary);
+                Combat.ApplyAbilityImpactEffects(activator, summary);
+
+                if (!GetIsPC(activator))
+                {
+                    Mimicry.OnCreatureAbilityUsed(activator, activeWeaponAbility);
+                }
+            }
+            finally
+            {
+                if (!impactEnded)
+                {
+                    Ability.AbortAbilityImpact(activator);
+                }
+
+                Combat.CompleteAbilityStaminaCostContext(activator, abilityDetail);
+                DeleteLocalString(activator, ActiveAbilityIdName);
+                DeleteLocalInt(activator, ActiveAbilityFeatIdName);
+                DeleteLocalInt(activator, ActiveAbilityEffectivePerkLevelName);
+                DelayCommand(0.2f, () => RestoreQueuedAbilityFeedbackIfNoQueuedAbility(activator));
+            }
         }
 
         /// <summary>
@@ -836,6 +1019,12 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="player">The player to clear</param>
         private static void ClearQueuedAbility(uint player)
         {
+            var featType = (FeatType)GetLocalInt(player, ActiveAbilityFeatIdName);
+            if (Ability.IsFeatRegistered(featType))
+            {
+                Combat.CompleteAbilityStaminaCostContext(player, Ability.GetAbilityDetail(featType));
+            }
+
             RestoreQueuedAbilityFeedback(player);
             DeleteLocalString(player, ActiveAbilityIdName);
             DeleteLocalInt(player, ActiveAbilityFeatIdName);

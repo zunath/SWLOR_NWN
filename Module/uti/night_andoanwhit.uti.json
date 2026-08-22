@@ -32,7 +32,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "A bitter white wine that is popular along side a bantha steak."
+    }
   },
   "Identified": {
     "type": "byte",

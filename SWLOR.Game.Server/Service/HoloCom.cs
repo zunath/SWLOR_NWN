@@ -141,29 +141,8 @@ namespace SWLOR.Game.Server.Service
             }
             else // END CALL
             {
-                for(var effect = GetFirstEffect(sender); GetIsEffectValid(effect); effect = GetNextEffect(sender))
-                {
-                    if (GetIsEffectValid(effect))
-                    {
-                        var effectType = GetEffectType(effect);
-                        if (effectType == EffectTypeScript.CutsceneImmobilize)
-                        {
-                            RemoveEffect(sender, effect);
-                        }
-                    }
-                }
-
-                for (var effect = GetFirstEffect(receiver); GetIsEffectValid(effect); effect = GetNextEffect(receiver))
-                {
-                    if (GetIsEffectValid(effect))
-                    {
-                        var effectType = GetEffectType(effect);
-                        if (effectType == EffectTypeScript.CutsceneImmobilize)
-                        {
-                            RemoveEffect(receiver, effect);
-                        }
-                    }
-                }
+                RemoveEffectByTag(sender, HolocomCallImmobilize);
+                RemoveEffectByTag(receiver, HolocomCallImmobilize);
 
                 AssignCommand(sender, () =>
                 {
@@ -530,13 +509,13 @@ namespace SWLOR.Game.Server.Service
             return GetFavoritePlayerIds(observer).Contains(targetPlayerId);
         }
 
-        public static string AddFavorite(uint observer, string targetPlayerId, bool allowSelfFavorite = false)
+        public static string AddFavorite(uint observer, string targetPlayerId)
         {
             if (string.IsNullOrWhiteSpace(targetPlayerId))
                 return "Unable to identify that player.";
 
             var observerId = GetObjectUUID(observer);
-            if (targetPlayerId == observerId && !allowSelfFavorite)
+            if (targetPlayerId == observerId)
                 return "You cannot favorite yourself.";
 
             var dbFavorites = FindFavorites(observerId) ?? new HoloComFavorite(observerId);
@@ -574,16 +553,16 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Enumerates online players who can be called/messaged/favorited: excludes DMs,
         /// DM-possessed characters, and players in space mode. Excludes the observer
-        /// themselves unless includeSelf is true.
+        /// themselves.
         /// </summary>
-        public static IEnumerable<uint> GetCallableOnlinePlayers(uint observer, bool includeSelf = false)
+        public static IEnumerable<uint> GetCallableOnlinePlayers(uint observer)
         {
             for (var pc = GetFirstPC(); GetIsObjectValid(pc); pc = GetNextPC())
             {
                 if (GetIsDM(pc) || GetIsDMPossessed(pc) || Space.IsPlayerInSpaceMode(pc))
                     continue;
 
-                if (!includeSelf && pc == observer)
+                if (pc == observer)
                     continue;
 
                 yield return pc;
@@ -628,9 +607,9 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            if (IsInCall(receiver))
+            if (IsInCall(receiver) || IsCallSender(receiver) || IsCallReceiver(receiver))
             {
-                SendMessageToPC(sender, "That contact is already in a call.");
+                SendMessageToPC(sender, "That contact is already handling another call.");
                 return;
             }
 
@@ -663,7 +642,8 @@ namespace SWLOR.Game.Server.Service
 
         /// <summary>
         /// Rings the receiver, retrying every 5 seconds for up to 15 attempts before giving
-        /// up. Ported verbatim from the old HoloComDialog.CallPlayer.
+        /// up. Revalidates both sides on every retry so overlapping call attempts cannot
+        /// overwrite another caller's state.
         /// </summary>
         private static void CallPlayer(uint sender, uint receiver)
         {
@@ -677,9 +657,23 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            if (IsInCall(sender) || IsInCall(receiver)) return;
+            if (IsInCall(sender))
+                return;
 
-            if (!IsCallSender(sender)) return;
+            var receiverHasAnotherAttempt = IsCallSender(receiver) ||
+                                            (IsCallReceiver(receiver) && GetCallSender(receiver) != sender);
+            if (IsInCall(receiver) || receiverHasAnotherAttempt)
+            {
+                // This sender never owned the receiver's current attempt, so only
+                // clear the sender side. Cleaning the receiver here would cancel the
+                // other caller's legitimate ring state.
+                CleanupCallAttempt(sender, OBJECT_INVALID);
+                SendMessageToPC(sender, "That contact is already handling another call.");
+                return;
+            }
+
+            if (!IsCallSender(sender))
+                return;
 
             var receiverName = PlayerName.GetDisplayName(sender, receiver);
             SendMessageToPC(sender, "You wait for " + receiverName + " to answer their HoloCom.");

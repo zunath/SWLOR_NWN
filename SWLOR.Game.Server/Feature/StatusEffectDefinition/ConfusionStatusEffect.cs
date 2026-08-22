@@ -9,13 +9,16 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         public override string Name => "Confusion";
         public override EffectIconType Icon => EffectIconType.ConfusionStatusEffect;
-        public override StatusEffectCategory Categories => StatusEffectCategory.Debuff | StatusEffectCategory.Control;
+        public override StatusEffectCategory Categories => StatusEffectCategory.Debuff | StatusEffectCategory.Control | StatusEffectCategory.HardCrowdControl;
         public override StatusEffectCleanseType CleanseTypes => StatusEffectCleanseType.Purify | StatusEffectCleanseType.SoothePet;
         public override ResistanceType ResistanceType => ResistanceType.Mind;
 
         public override string CanApply(uint creature)
         {
-            return Ability.HasTemporaryImmunity(creature, ImmunityType.Confused)
+            if (StatusEffect.HasStatusEffect(creature, GetType()))
+                return "Target is already confused.";
+
+            return Ability.HasHardCrowdControlImmunity(creature, ImmunityType.Confused)
                 ? "Target is temporarily immune to confusion."
                 : string.Empty;
         }
@@ -30,11 +33,21 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             ApplyConfusion(creature, GetDurationSeconds(DurationTicks));
         }
 
+        protected override void Remove(uint creature)
+        {
+            if (IsBeingReplaced)
+                return;
+
+            Ability.ApplyPostControlImmunity(
+                creature,
+                SecondsSinceNaturalExpiration,
+                ImmunityType.Confused);
+        }
+
         private void ApplyConfusion(uint creature, float duration)
         {
             var effect = TagNativeEffect(EffectConfused());
             ApplyEffectToObject(DurationType.Temporary, effect, creature, duration);
-            Ability.ApplyTemporaryImmunity(creature, duration, ImmunityType.Confused);
         }
     }
 }

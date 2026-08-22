@@ -226,6 +226,7 @@ namespace SWLOR.Game.Server.Service
             var resistance =
                 storedResistance +
                 GetStatusEffectResistance(creature, type) +
+                Mimicry.GetResistanceBonus(creature, type) +
                 GetResistanceAdjustment(creature, type);
 
             if (GetIsPC(creature) &&

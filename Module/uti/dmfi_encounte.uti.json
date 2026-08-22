@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "New Feature:  \n\nMake custom encounters that you can change dynamically in game and call with this wand.  See the in game directions in the new DMFI custom encounter area and the tips readme for further information.\n\nThe Encounter Wand allows you to quickly create and replicate (with the Encounter Ditto Widget) various encounters.\n\nTarget a location with the wand. The conversation will pop up showing 9 encounter groups. After selecting a group, select one of 9 \"types\" of encounters. The encounters are ranked from easiest as the top number 1 option to the hardest number 9 option.\n\n~~\nBy Hahnsoo (hahns_shin@hotmail.com"
     }
   },
   "Identified": {
@@ -109,6 +109,26 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "dmfi_encounte"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NO_ECONOMY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
   },
   "xModelPart1": {
     "type": "word",

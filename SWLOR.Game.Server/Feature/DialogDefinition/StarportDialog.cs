@@ -2,28 +2,28 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DialogService;
+using SWLOR.Game.Server.Service.ConversationService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.KeyItemService;
 using SWLOR.Game.Server.Service.LogService;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
-    public class StarportDialog: DialogBase
+    public class StarportDialog: ConversationMenuDefinition
     {
         private const string MainPageId = "MAIN_PAGE";
 
-        public override PlayerDialog SetUp(uint player)
+        public override ConversationMenuSpec Build()
         {
-            var builder = new DialogBuilder()
+            var builder = new ConversationMenuBuilder()
                 .AddPage(MainPageId, MainPageInit);
 
             return builder.Build();
         }
 
-        private void MainPageInit(DialogPage page)
+        private void MainPageInit(ConversationMenuPage page)
         {
-            var player = GetPC();
+            var player = Player;
 
             // Must have the CZ-220 shuttle pass in order to use the ship management.
             if (!KeyItem.HasKeyItem(player, KeyItemType.CZ220ShuttlePass) && !GetIsDM(player))
@@ -32,21 +32,18 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 return;
             }
 
-            var selectedShipInfo = string.Empty;
-            var spaceWaypointTag = GetLocalString(OBJECT_SELF, "STARPORT_TELEPORT_WAYPOINT");
-            var landingWaypointTag = GetLocalString(OBJECT_SELF, "STARPORT_LANDING_WAYPOINT");
+            var spaceWaypointTag = GetLocalString(Owner, "STARPORT_TELEPORT_WAYPOINT");
+            var landingWaypointTag = GetLocalString(Owner, "STARPORT_LANDING_WAYPOINT");
 
-            page.Header = ColorToken.Green("Starport Menu") + "\n" +
-                          selectedShipInfo + "\n" +
-                          "What would you like to do?";
+            page.Header = "Starport Menu\n\nWhat would you like to do?";
 
             if (!GetIsDM(player) && !GetIsDMPossessed(player))
             {
                 page.AddResponse("Manage Ships", () =>
                 {
-                    EndConversation();
+                    Close();
 
-                    var area = GetArea(OBJECT_SELF);
+                    var area = GetArea(Owner);
                     var propertyId = Property.GetPropertyId(area);
                     var planetType = PlanetType.Invalid;
 
@@ -69,26 +66,26 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     if (planetType == PlanetType.Invalid)
                     {
                         SendMessageToPC(player, "Unable to continue. The planet could not be determined. Notify an admin.");
-                        Log.Write(LogGroup.Error, $"Unable to determine planet for NPC '{GetName(OBJECT_SELF)}' located in {GetName(area)} ({GetTag(area)} / {GetResRef(area)})");
+                        Log.Write(LogGroup.Error, $"Unable to determine planet for NPC '{GetName(Owner)}' located in {GetName(area)} ({GetTag(area)} / {GetResRef(area)})");
                         return;
                     }
 
                     var spaceLocation = GetLocation(GetWaypointByTag(spaceWaypointTag));
                     var landingLocation = string.IsNullOrWhiteSpace(landingWaypointTag)
-                        ? GetLocalLocation(OBJECT_SELF, "STARPORT_LANDING_WAYPOINT")
+                        ? GetLocalLocation(Owner, "STARPORT_LANDING_WAYPOINT")
                         : GetLocation(GetWaypointByTag(landingWaypointTag));
 
                     var payload = new ShipManagementPayload(planetType, spaceLocation, landingLocation);
-                    Gui.TogglePlayerWindow(player, GuiWindowType.ShipManagement, payload, OBJECT_SELF);
+                    Gui.TogglePlayerWindow(player, GuiWindowType.ShipManagement, payload, Owner);
                 });
 
             }
 
             page.AddResponse("View Shop", () =>
             {
-                var store = GetNearestObjectByTag("dockhand_store", OBJECT_SELF);
+                var store = GetNearestObjectByTag("dockhand_store", Owner);
                 OpenStore(store, player);
-                EndConversation();
+                Close();
             });
         }
     }

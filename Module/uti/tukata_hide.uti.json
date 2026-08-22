@@ -32,7 +32,9 @@
   },
   "Description": {
     "type": "cexolocstring",
-    "value": {}
+    "value": {
+      "0": "Thick and sinewy, this hide was torn from the back of a feral Tuk'ata -- the horned beasts that roam the tombs of ancient Sith Lords. The hide carries a faint, unsettling warmth, as though it still pulses with the dark energy that birthed the creature.\n\nSmugglers, Sith alchemists, and outlaw craftsmen prize Tuk'ata hides for crafting robes, armor linings, or forbidden relic bindings. Rumors whisper that some artisans who work too closely with these hides begin to hear whispers in their sleep..."
+    }
   },
   "Identified": {
     "type": "byte",

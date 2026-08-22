@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Tests.Service;
 public class ShieldDeflectionTests
 {
     [Test]
-    public void ShieldDeflectionChance_IncludesInherentAndShieldItemPropertyBonuses()
+    public void ShieldDeflectionChance_UsesShieldItemPropertyAndPerkBonusesOnly()
     {
         var root = FindRepositoryRoot();
         var statSource = File.ReadAllText(Path.Combine(
@@ -16,10 +16,15 @@ public class ShieldDeflectionTests
             "Service",
             "Stat.cs"));
 
-        statSource.Should().Contain("private const int InherentShieldDeflectionChance = 10;");
-        statSource.Should().Contain("var chance = InherentShieldDeflectionChance +");
-        statSource.Should().Contain("GetShieldDeflectionItemPropertyBonusNative(shield)");
-        statSource.Should().Contain("GetShieldDeflectionItemPropertyBonus(shield)");
+        // Shield Deflection is perk/item-driven only. There is no inherent baseline: the Bulwark package
+        // caps at +35 total per the combat-upgrade deflection budget, so adding a flat +10 for every shield
+        // pushed Bulwark rank 3 to 45%. Deflection now comes solely from the shield item property and the
+        // ShieldDeflection stat (Bulwark), mirroring how weapon deflection has no inherent base.
+        statSource.Should().NotContain("InherentShieldDeflectionChance");
+        statSource.Should().Contain("var chance = GetShieldDeflectionItemPropertyBonusNative(shield) +");
+        statSource.Should().Contain("var chance = GetShieldDeflectionItemPropertyBonus(shield) +");
+        statSource.Should().Contain("GetStatAdjustment(creature.m_idSelf, StatType.ShieldDeflection)");
+        statSource.Should().Contain("GetStatAdjustment(creature, StatType.ShieldDeflection)");
         statSource.Should().Contain("ItemPropertyType.ShieldDeflection");
         statSource.Should().Contain("return Math.Clamp(chance, 0, MaximumShieldDeflectionChance);");
     }

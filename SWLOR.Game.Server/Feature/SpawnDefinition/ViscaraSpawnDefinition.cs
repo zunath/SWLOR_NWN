@@ -37,7 +37,25 @@ namespace SWLOR.Game.Server.Feature.SpawnDefinition
             VelesMilitiaAnnex();
             ViscaraRepublicEngineeringBunker();
 
+            VelesRareElites();
+            VisbunkerRareElites();
             return _builder.Build();
+        }
+
+        private void VisbunkerRareElites()
+        {
+            _builder.Create("VISCARA_REPUBLIC_ENGINEERING_BUNKER_RARES", "Viscara Republic Engineering Bunker - Rare Elites")
+                .AddSpawn(ObjectType.Creature, "bunkerbreak").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome()
+                .AddSpawn(ObjectType.Creature, "beaconmarks").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome()
+                .AddSpawn(ObjectType.Creature, "decurioncmd").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome();
+        }
+
+        private void VelesRareElites()
+        {
+            _builder.Create("VELES_MILITIA_ANNEX_RARES", "Veles Militia Annex - Rare Elites")
+                .AddSpawn(ObjectType.Creature, "invictus").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome()
+                .AddSpawn(ObjectType.Creature, "ruptorvane").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome()
+                .AddSpawn(ObjectType.Creature, "blackoutwrd").WithFrequency(1).AsRare().RandomlyWalks().ReturnsHome();
         }
 
         private void Wildlands()

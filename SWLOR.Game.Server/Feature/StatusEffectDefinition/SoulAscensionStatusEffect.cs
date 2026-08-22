@@ -8,11 +8,13 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     {
         public override string Name => "Soul Ascension";
         public override EffectIconType Icon => EffectIconType.SoulAscensionStatusEffect;
+        public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
+        public override bool PersistsOnLogout => false;
 
         public SoulAscensionStatusEffect()
         {
-            StatGroup.Stats[StatType.AttackPercentAdjustment] = 10;
-            StatGroup.Stats[StatType.PhysicalDamageDealtHPPercentRestore] = 10;
+            StatGroup.Stats[StatType.AttackPercentAdjustment] = 8;
+            StatGroup.Stats[StatType.PhysicalDamageDealtHPPercentRestore] = 8;
         }
 
     }

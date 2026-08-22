@@ -1,0 +1,13 @@
+[Unit]
+Description=Accept an authorized GitHub request and deploy SWLOR
+Wants=network-online.target docker.service
+After=network-online.target docker.service
+ConditionPathExists=/etc/swlor-deploy.conf
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/swlor-deploy-dispatch
+TimeoutStartSec=infinity
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7

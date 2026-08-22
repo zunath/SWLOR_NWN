@@ -239,7 +239,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             foreach (var citizen in dbCitizens)
             {
-                citizenNames.Add(PlayerName.GetDisplayNameByPlayerId(Player, citizen.Id, citizen.Name));
+                citizenNames.Add(PlayerName.GetPlainDisplayNameByPlayerId(Player, citizen.Id, citizen.Name));
                 citizenCreditsOwed.Add($"Owes {citizen.PropertyOwedTaxes} cr");
             }
 

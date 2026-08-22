@@ -33,14 +33,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Blaster Beacon")
 
                 .AddPerkLevel()
-                .Description("Plants a visible 12m targeting sphere for 30 seconds. Every 3 seconds, one hostile target inside is hit by an automated ranged energy pulse for 3 energy DMG plus PER scaling.")
+                .Description("Plants a visible 12m targeting sphere for 30 seconds. Every 3 seconds, one hostile target inside is hit by an automated ranged energy pulse for 3 physical DMG plus PER scaling.")
                 .Price(3)
                 .RequirementCharacterType(CharacterType.Standard)
                 .DroidAISlots(1)
                 .GrantsFeat(FeatType.BlasterBeacon1)
 
                 .AddPerkLevel()
-                .Description("Plants a visible 12m targeting sphere for 30 seconds. Every 3 seconds, one hostile target inside is hit by an automated ranged energy pulse for 6 energy DMG plus PER scaling.")
+                .Description("Plants a visible 12m targeting sphere for 30 seconds. Every 3 seconds, one hostile target inside is hit by an automated ranged energy pulse for 6 physical DMG plus PER scaling.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 15)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -48,7 +48,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.BlasterBeacon2)
 
                 .AddPerkLevel()
-                .Description("Plants a visible 14m targeting sphere for 30 seconds. Every 3 seconds, one hostile target inside is hit by an automated ranged energy pulse for 10 energy DMG plus PER scaling.")
+                .Description("Plants a visible 14m targeting sphere for 30 seconds. Every 3 seconds, one hostile target inside is hit by an automated ranged energy pulse for 10 physical DMG plus PER scaling.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 30)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -85,7 +85,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Incendiary Field")
 
                 .AddPerkLevel()
-                .Description("Deploys a visible fire field for 30 seconds. Enemies inside take 8 fire DMG plus PER scaling every 3 seconds.")
+                .Description("Deploys a visible 5m-radius fire field at the target location for 30 seconds. Enemies inside take 8 fire DMG plus PER scaling every 3 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 8)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -93,7 +93,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.IncendiaryField1)
 
                 .AddPerkLevel()
-                .Description("Deploys a visible fire field for 30 seconds. Enemies inside take 12 fire DMG plus PER scaling every 3 seconds.")
+                .Description("Deploys a visible 5m-radius fire field at the target location for 30 seconds. Enemies inside take 12 fire DMG plus PER scaling every 3 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 25)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.IncendiaryField2)
 
                 .AddPerkLevel()
-                .Description("Deploys a visible fire field for 30 seconds. Enemies inside take 16 fire DMG plus PER scaling every 3 seconds.")
+                .Description("Deploys a visible 5m-radius fire field at the target location for 30 seconds. Enemies inside take 16 fire DMG plus PER scaling every 3 seconds.")
                 .Price(5)
                 .RequirementSkill(SkillType.Devices, 45)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -115,7 +115,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Signal Jammer")
 
                 .AddPerkLevel()
-                .Description("Deploys a signal jammer for 30 seconds. Hostile targets within 5m suffer -6% physical and Force ability Accuracy and cannot benefit from Haste while inside.")
+                .Description("Deploys a signal jammer for 45 seconds. Hostile targets within 5m suffer -6% physical and Force ability Accuracy and cannot benefit from Haste while inside.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 18)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -129,7 +129,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Remote Charge")
 
                 .AddPerkLevel()
-                .Description("Arms a visible charge at your target location that detonates after 3 seconds in a 5m sphere for 30 fire DMG plus PER scaling.")
+                .Description("Arms a visible charge at your target location that detonates after 3 seconds in a 5m-radius blast for 30 fire DMG plus PER scaling.")
                 .Price(3)
                 .RequirementSkill(SkillType.Devices, 12)
                 .RequirementCharacterType(CharacterType.Standard)
@@ -137,7 +137,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.RemoteCharge1)
 
                 .AddPerkLevel()
-                .Description("Arms a visible charge that detonates after 3 seconds in a 5m sphere for 42 fire DMG plus PER scaling and knocks down for 30 seconds.")
+                .Description("Arms a visible charge at your target location that detonates after 3 seconds in a 5m-radius blast for 42 fire DMG plus PER scaling and inflicts Knockdown for 6 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Devices, 28)
                 .RequirementCharacterType(CharacterType.Standard)

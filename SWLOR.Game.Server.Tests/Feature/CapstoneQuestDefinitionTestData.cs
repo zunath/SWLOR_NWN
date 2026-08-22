@@ -1615,7 +1615,7 @@ internal static class CapstoneQuestDefinitionTestData
         new Line(
             "saber_storm",
             "Saber Storm",
-            PerkType.SaberStorm,
+            PerkType.Epicenter,
             AchievementType.SaberStorm,
             new QuestGiver("Talan Rees", "cq_sabstorm", "cq_sabstorm"),
             AreaGroups[1],
@@ -1684,11 +1684,11 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 "CAPSTONE_SABSTORM_MS_SPAWN",
             },
-            FeatType.SaberStorm1),
+            FeatType.Epicenter1),
         new Line(
             "guardian_master",
             "Guardian Master",
-            PerkType.GuardianMaster,
+            PerkType.AegisEternal,
             AchievementType.GuardianMaster,
             new QuestGiver("Miris Aven", "cq_guardmst", "cq_guardmst"),
             AreaGroups[1],
@@ -1715,7 +1715,7 @@ internal static class CapstoneQuestDefinitionTestData
                 NPCGroupType.Dantooine_GuardianMaster_Specialist,
                 NPCGroupType.Dantooine_GuardianMaster_Warden,
                 NPCGroupType.Dantooine_GuardianMaster_InnerCircle,
-                NPCGroupType.Dantooine_GuardianMaster_Master,
+                NPCGroupType.Dantooine_GuardianMaster_Paragon,
             },
             new[]
             {
@@ -1757,7 +1757,7 @@ internal static class CapstoneQuestDefinitionTestData
                 null,
                 "CAPSTONE_GUARDMST_MS_SPAWN",
             },
-            FeatType.GuardianMaster1),
+            FeatType.AegisEternal1),
         new Line(
             "last_word",
             "Last Word",

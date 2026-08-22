@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .Name("Cannok")
                 .Appearance(AppearanceType.SWLORCannok)
                 .AppearanceScale(1f)
-                .SoundSetId(1297)
+                .SoundSetId(10)
                 .PortraitId(1297)
                 .CombatStats(AbilityType.Agility, AbilityType.Might)
                 .Role(BeastRoleType.Balanced)

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.StatService;
 
 namespace SWLOR.Game.Server.Service.CombatService
@@ -24,7 +25,10 @@ namespace SWLOR.Game.Server.Service.CombatService
             {
                 if (GetIsObjectValid(creature))
                 {
-                    PurgeExpired(creature);
+                    if (PurgeExpired(creature))
+                    {
+                        PublishRefresh(creature);
+                    }
                 }
                 else
                 {
@@ -34,6 +38,17 @@ namespace SWLOR.Game.Server.Service.CombatService
         }
 
         public static void Add(uint creature, StatType statType, int amount, float durationSeconds, string group = null)
+        {
+            AddInternal(creature, statType, amount, durationSeconds, group, true);
+        }
+
+        private static void AddInternal(
+            uint creature,
+            StatType statType,
+            int amount,
+            float durationSeconds,
+            string group,
+            bool publishRefresh)
         {
             if (creature == OBJECT_INVALID || amount == 0 || durationSeconds <= 0f)
                 return;
@@ -50,6 +65,11 @@ namespace SWLOR.Game.Server.Service.CombatService
                 amount,
                 DateTime.UtcNow.AddSeconds(durationSeconds),
                 group ?? DefaultGroup));
+
+            if (publishRefresh)
+            {
+                PublishRefresh(creature);
+            }
         }
 
         public static void Add(uint creature, StatType statType, int amount, float durationSeconds, StatType groupStatType)
@@ -59,8 +79,9 @@ namespace SWLOR.Game.Server.Service.CombatService
 
         public static void Replace(uint creature, StatType statType, int amount, float durationSeconds, string group = null)
         {
-            Consume(creature, statType, group);
-            Add(creature, statType, amount, durationSeconds, group);
+            ConsumeInternal(creature, statType, group, false);
+            AddInternal(creature, statType, amount, durationSeconds, group, false);
+            PublishRefresh(creature);
         }
 
         public static void Replace(uint creature, StatType statType, int amount, float durationSeconds, StatType groupStatType)
@@ -75,20 +96,35 @@ namespace SWLOR.Game.Server.Service.CombatService
             float durationSeconds,
             int maxTotal,
             string group,
-            int requestedStacks)
+            int requestedStacks,
+            bool refreshExistingStacks = false)
         {
             if (amount <= 0 || durationSeconds <= 0f || maxTotal <= 0 || requestedStacks <= 0)
                 return 0;
 
             var current = GetStatAdjustment(creature, statType, group);
             var remaining = maxTotal - current;
+
+            // Stacking buffs that refresh keep every stack on a single shared clock, so the
+            // visible duration and the real bonus expire together. Without this, older stacks
+            // drop off one at a time while the status effect still shows a full timer.
+            if (refreshExistingStacks)
+            {
+                Refresh(creature, statType, durationSeconds, group);
+            }
+
             if (remaining <= 0)
                 return 0;
 
             var stacks = Math.Min(requestedStacks, remaining / amount);
             for (var index = 0; index < stacks; index++)
             {
-                Add(creature, statType, amount, durationSeconds, group);
+                AddInternal(creature, statType, amount, durationSeconds, group, false);
+            }
+
+            if (stacks > 0)
+            {
+                PublishRefresh(creature);
             }
 
             return stacks;
@@ -101,7 +137,8 @@ namespace SWLOR.Game.Server.Service.CombatService
             float durationSeconds,
             int maxTotal,
             StatType groupStatType,
-            int requestedStacks)
+            int requestedStacks,
+            bool refreshExistingStacks = false)
         {
             return AddCapped(
                 creature,
@@ -110,20 +147,37 @@ namespace SWLOR.Game.Server.Service.CombatService
                 durationSeconds,
                 maxTotal,
                 GetGroup(groupStatType),
-                requestedStacks);
+                requestedStacks,
+                refreshExistingStacks);
         }
 
         public static int Consume(uint creature, StatType statType, string group = null)
         {
-            PurgeExpired(creature);
+            return ConsumeInternal(creature, statType, group, true);
+        }
+
+        private static int ConsumeInternal(
+            uint creature,
+            StatType statType,
+            string group,
+            bool publishRefresh)
+        {
+            var expiredRemoved = PurgeExpired(creature);
 
             if (!_modifiers.TryGetValue(creature, out var modifiers))
+            {
+                if (expiredRemoved && publishRefresh)
+                {
+                    PublishRefresh(creature);
+                }
                 return 0;
+            }
 
             var matching = modifiers
                 .Where(x => x.StatType == statType && MatchesGroup(x, group))
                 .ToList();
-            var total = matching.Sum(x => x.Amount);
+            var total = matching.Aggregate(
+                0, (aggregated, x) => Stat.AggregateStatAdjustment(statType, aggregated, x.Amount));
 
             foreach (var modifier in matching)
             {
@@ -133,6 +187,11 @@ namespace SWLOR.Game.Server.Service.CombatService
             if (modifiers.Count <= 0)
             {
                 _modifiers.Remove(creature);
+            }
+
+            if ((expiredRemoved || matching.Count > 0) && publishRefresh)
+            {
+                PublishRefresh(creature);
             }
 
             return total;
@@ -145,12 +204,15 @@ namespace SWLOR.Game.Server.Service.CombatService
 
         public static int GetStatAdjustment(uint creature, StatType statType, string group = null)
         {
-            PurgeExpired(creature);
+            if (PurgeExpired(creature))
+            {
+                PublishRefresh(creature);
+            }
 
             return _modifiers.TryGetValue(creature, out var modifiers)
                 ? modifiers
                     .Where(x => x.StatType == statType && MatchesGroup(x, group))
-                    .Sum(x => x.Amount)
+                    .Aggregate(0, (total, x) => Stat.AggregateStatAdjustment(statType, total, x.Amount))
                 : 0;
         }
 
@@ -164,7 +226,10 @@ namespace SWLOR.Game.Server.Service.CombatService
             if (durationSeconds <= 0f)
                 return;
 
-            PurgeExpired(creature);
+            if (PurgeExpired(creature))
+            {
+                PublishRefresh(creature);
+            }
 
             if (!_modifiers.TryGetValue(creature, out var modifiers))
                 return;
@@ -183,7 +248,10 @@ namespace SWLOR.Game.Server.Service.CombatService
 
         public static void Clear(uint creature)
         {
-            _modifiers.Remove(creature);
+            if (_modifiers.Remove(creature))
+            {
+                PublishRefresh(creature);
+            }
         }
 
         private static string GetGroup(StatType groupStatType)
@@ -196,17 +264,27 @@ namespace SWLOR.Game.Server.Service.CombatService
             return group == null || modifier.Group == group;
         }
 
-        private static void PurgeExpired(uint creature)
+        private static bool PurgeExpired(uint creature)
         {
             if (!_modifiers.TryGetValue(creature, out var modifiers))
-                return;
+                return false;
 
             var now = DateTime.UtcNow;
-            modifiers.RemoveAll(x => x.Expiration <= now);
+            var removed = modifiers.RemoveAll(x => x.Expiration <= now) > 0;
 
             if (modifiers.Count <= 0)
             {
                 _modifiers.Remove(creature);
+            }
+
+            return removed;
+        }
+
+        private static void PublishRefresh(uint creature)
+        {
+            if (GetIsPC(creature))
+            {
+                DelayCommand(0.0f, () => Gui.PublishRefreshEvent(creature, new StatAdjustmentRefreshEvent()));
             }
         }
 

@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .Name("Concussion Grenade I")
                 .Level(1)
                 .HasActivationDelay(1f)
-                .HasRecastDelay(RecastGroup.ConcussionGrenade, 15f)
+                .HasRecastDelay(RecastGroup.ConcussionGrenade, 45f)
                 .SkillType(SkillType.Devices)
                 .CombatImpactDamageAbility(AbilityType.Perception)
                 .UsesImpactAnimation(Animation.ThrowGrenade)
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     Spell.ConcussionGrenade1,
                     3f,
                     AbilityTargetingFlags.HarmsEnemies,
-                    DeviceAbilityEffects.ApplyGrenadeRadiusBonus)
+                    DeviceAbilityEffects.ApplyBlastRadiusBonus)
                 .HasImpactAction(ConcussionGrenade1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -59,7 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .Name("Concussion Grenade II")
                 .Level(2)
                 .HasActivationDelay(1f)
-                .HasRecastDelay(RecastGroup.ConcussionGrenade, 15f)
+                .HasRecastDelay(RecastGroup.ConcussionGrenade, 45f)
                 .SkillType(SkillType.Devices)
                 .CombatImpactDamageAbility(AbilityType.Perception)
                 .UsesImpactAnimation(Animation.ThrowGrenade)
@@ -68,7 +68,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     Spell.ConcussionGrenade2,
                     3f,
                     AbilityTargetingFlags.HarmsEnemies,
-                    DeviceAbilityEffects.ApplyGrenadeRadiusBonus)
+                    DeviceAbilityEffects.ApplyBlastRadiusBonus)
                 .HasImpactAction(ConcussionGrenade2ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -84,7 +84,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 target,
                 targetLocation,
                 14,
-                30,
+                3,
                 typeof(KnockdownStatusEffect));
         }
 
@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 target,
                 targetLocation,
                 28,
-                30,
+                3,
                 typeof(KnockdownStatusEffect));
         }
 
@@ -123,12 +123,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 statusEffect,
                 CombatImpactAreaShape.Sphere,
                 0f,
-                DeviceAbilityEffects.ApplyGrenadeRadiusBonus(activator, 3f),
+                DeviceAbilityEffects.ApplyBlastRadiusBonus(activator, 3f),
                 0f,
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Electrical,
                 targetVisualEffect: VisualEffect.Vfx_Com_Hit_Electrical,
-                areaVisualEffect: VisualEffect.None);
+                areaVisualEffect: VisualEffect.None,
+                maxTargets: 5);
         }
 
     }

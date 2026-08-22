@@ -34,21 +34,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GroupType(PerkGroupType.Beast)
 
                 .AddPerkLevel()
-                .Description("The beast's next attack deals +10 physical DMG and attempts to inflict Bleed.")
+                .Description("The beast's next attack deals +10 physical DMG and attempts to inflict Bleed for 12 seconds.")
                 .Price(2)
                 .RequirementBeastLevel(5)
                 .RequirementBeastRole(BeastRoleType.Balanced)
                 .GrantsFeat(FeatType.Claw1)
 
                 .AddPerkLevel()
-                .Description("The beast's next attack deals +18 physical DMG and attempts to inflict Bleed.")
+                .Description("The beast's next attack deals +18 physical DMG and attempts to inflict Bleed for 12 seconds.")
                 .Price(3)
                 .RequirementBeastLevel(18)
                 .RequirementBeastRole(BeastRoleType.Balanced)
                 .GrantsFeat(FeatType.Claw2)
 
                 .AddPerkLevel()
-                .Description("The beast's next attack deals +28 physical DMG and attempts to inflict Bleed.")
+                .Description("The beast's next attack deals +28 physical DMG and attempts to inflict Bleed for 12 seconds.")
                 .Price(3)
                 .RequirementBeastLevel(38)
                 .RequirementBeastRole(BeastRoleType.Balanced)
@@ -201,7 +201,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition.Beast
                 .GroupType(PerkGroupType.Beast)
 
                 .AddPerkLevel()
-                .Description("for 30 seconds, the beast deals 10% more damage and takes 10% less damage, and its master gains +8% physical and force ability hit chance.")
+                .Description("For 30 seconds, the beast deals 10% more damage and takes 10% less damage, and its master gains +8% physical and force ability hit chance.")
                 .Price(5)
                 .RequirementBeastLevel(50)
                 .RequirementBeastRole(BeastRoleType.Balanced)

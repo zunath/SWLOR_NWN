@@ -1,0 +1,116 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!--
+    One font-independent close mark for every Toolset surface. Its 16px drawing has the same
+    roughly 1.5px optical weight as the toolbar's stroked icons, with softened ends so it does not
+    read as a harsh delete symbol in the compact docking chrome.
+
+    Dock's templates consume two differently named geometry resources. Both aliases deliberately
+    point at this asset so document tabs, tool/MDI chrome and drawn window decorations cannot drift
+    back to Dock's mismatched defaults.
+  -->
+  <StreamGeometry x:Key="ToolsetCloseIconGeometry">
+    M4.22,3.16
+    C3.93,2.87 3.46,2.87 3.16,3.16
+    C2.87,3.46 2.87,3.93 3.16,4.22
+    L6.94,8
+    L3.16,11.78
+    C2.87,12.07 2.87,12.54 3.16,12.84
+    C3.46,13.13 3.93,13.13 4.22,12.84
+    L8,9.06
+    L11.78,12.84
+    C12.07,13.13 12.54,13.13 12.84,12.84
+    C13.13,12.54 13.13,12.07 12.84,11.78
+    L9.06,8
+    L12.84,4.22
+    C13.13,3.93 13.13,3.46 12.84,3.16
+    C12.54,2.87 12.07,2.87 11.78,3.16
+    L8,6.94
+    Z
+  </StreamGeometry>
+
+  <!-- Compact utility icons used by editor chrome. Kept as vectors so their weight and color follow
+       the Toolset theme instead of depending on a platform font's symbol coverage. -->
+  <StreamGeometry x:Key="ToolsetSearchIconGeometry">
+    M6.75,2
+    C4.13,2 2,4.13 2,6.75
+    C2,9.37 4.13,11.5 6.75,11.5
+    C7.87,11.5 8.9,11.11 9.71,10.46
+    L13.13,13.88
+    C13.37,14.12 13.76,14.12 14,13.88
+    C14.24,13.64 14.24,13.25 14,13.01
+    L10.58,9.59
+    C11.16,8.8 11.5,7.82 11.5,6.75
+    C11.5,4.13 9.37,2 6.75,2
+    Z
+    M6.75,3.25
+    C8.68,3.25 10.25,4.82 10.25,6.75
+    C10.25,8.68 8.68,10.25 6.75,10.25
+    C4.82,10.25 3.25,8.68 3.25,6.75
+    C3.25,4.82 4.82,3.25 6.75,3.25
+    Z
+  </StreamGeometry>
+
+  <!-- Opens the referenced blueprint in its document tab. The detached northeast arrow makes the
+       action distinct from selection, while the square anchors it to the document being opened. -->
+  <StreamGeometry x:Key="ToolsetOpenDocumentIconGeometry">
+    M9,2 H14 V7 H12 V5.41 L7.71,9.71 L6.29,8.29 L10.59,4 H9 Z
+    M3,3 H7 V5 H4 V12 H11 V9 H13 V13
+    C13,13.55 12.55,14 12,14 H3
+    C2.45,14 2,13.55 2,13 V4
+    C2,3.45 2.45,3 3,3 Z
+  </StreamGeometry>
+
+  <StreamGeometry x:Key="ToolsetChevronDownIconGeometry">
+    M3.18,5.3
+    C2.94,5.06 2.55,5.06 2.31,5.3
+    C2.07,5.54 2.07,5.93 2.31,6.17
+    L7.56,11.42
+    C7.8,11.66 8.2,11.66 8.44,11.42
+    L13.69,6.17
+    C13.93,5.93 13.93,5.54 13.69,5.3
+    C13.45,5.06 13.06,5.06 12.82,5.3
+    L8,10.12
+    Z
+  </StreamGeometry>
+
+  <StreamGeometry x:Key="ToolsetChevronUpIconGeometry">
+    M3.18,10.7
+    C2.94,10.94 2.55,10.94 2.31,10.7
+    C2.07,10.46 2.07,10.07 2.31,9.83
+    L7.56,4.58
+    C7.8,4.34 8.2,4.34 8.44,4.58
+    L13.69,9.83
+    C13.93,10.07 13.93,10.46 13.69,10.7
+    C13.45,10.94 13.06,10.94 12.82,10.7
+    L8,5.88
+    Z
+  </StreamGeometry>
+
+  <!--
+    The mark for a choice that stands for "any of them" rather than for one picture: two crossing
+    arrows, drawn on the same 16px grid as the close mark. The load screen picker needs it because
+    its Random row has no artwork to show and the alternative - the letter R on an empty tile -
+    reads as a screen that failed to load rather than as a deliberate choice.
+  -->
+  <StreamGeometry x:Key="ToolsetRandomIconGeometry">
+    M2,4 L5.5,4
+    C6.2,4 6.7,4.4 7.1,5
+    L9.2,10
+    C9.5,10.6 10,11 10.7,11
+    L14,11
+    M2,11 L5.5,11
+    C6.2,11 6.7,10.6 7.1,10
+    L9.2,5
+    C9.5,4.4 10,4 10.7,4
+    L14,4
+    M12.2,2.2 L14,4 L12.2,5.8
+    M12.2,9.2 L14,11 L12.2,12.8
+  </StreamGeometry>
+
+  <StaticResource x:Key="DockIconCloseGeometry"
+                  ResourceKey="ToolsetCloseIconGeometry" />
+  <StaticResource x:Key="DockToolIconCloseGeometry"
+                  ResourceKey="ToolsetCloseIconGeometry" />
+</ResourceDictionary>

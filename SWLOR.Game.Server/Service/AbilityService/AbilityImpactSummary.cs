@@ -10,6 +10,14 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public int ImpactedTargetCount { get; set; }
         public int CriticalHitCount { get; set; }
 
+        /// <summary>
+        /// Total damage this impact queued against its targets. Distinguishes "the impact
+        /// visited a target" (ImpactedTargetCount, which records even zero-damage visits)
+        /// from "the impact actually dealt damage" - the distinction needed to attribute a
+        /// queued weapon ability's damage separately from the consuming weapon swing.
+        /// </summary>
+        public int AttributedDamage { get; set; }
+
         public AbilityImpactSummary()
         {
             SkillType = SkillType.Invalid;

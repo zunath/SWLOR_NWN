@@ -13,16 +13,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
 {
     public sealed class KoltoMistAbilityDefinition : IAbilityListDefinition
     {
-        private const float HealRadiusMeters = 3f;
+        private const float HealRadiusMeters = 8f;
         private const float RangeMeters = 15f;
         private const float DurationSeconds = 30f;
         private const float TickIntervalSeconds = 3f;
         private const float StatusRefreshDurationSeconds = TickIntervalSeconds + 0.2f;
         private const float Rank1HealPercentPerTick = 1f;
         private const float Rank2HealPercentPerTick = 2f;
-        private const float CloudVisualEffectScale = 1f;
-        private const VisualEffect CloudBurstVisualEffect = VisualEffect.Vfx_Fnf_Gas_Explosion_Nature;
-        private const VisualEffect CloudVisualEffect = VisualEffect.Vfx_Dur_Aura_Poison;
+        private const VisualEffect CloudBurstVisualEffect = VisualEffect.Vfx_Fnf_Gas_Explosion_Mind;
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -107,10 +105,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             var location = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
 
+            AbilityAreaEffects.CreatePersistentSphereIndicator(
+                activator,
+                location,
+                HealRadiusMeters,
+                DurationSeconds,
+                false);
             ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(CloudBurstVisualEffect), location);
+            // Script-free custom AoE row: renders the FogMind gas cloud visual only, without the
+            // base game Mind Fog enter/heartbeat spell effects.
             ApplyEffectAtLocation(
                 DurationType.Temporary,
-                EffectVisualEffect(CloudVisualEffect, false, CloudVisualEffectScale),
+                EffectAreaOfEffect(AreaOfEffect.KoltoMistCloud),
                 location,
                 DurationSeconds);
 
@@ -141,7 +147,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
             var applied = false;
             foreach (var friendly in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, location, HealRadiusMeters))
             {
-                FirstAidTreatmentAdjustments.ApplyMedicalScaledHeal(activator, friendly, percentPerTick);
+                FirstAidTreatmentAdjustments.ApplyMedicalScaledHeal(
+                    activator,
+                    friendly,
+                    percentPerTick,
+                    visualEffect: VisualEffect.Vfx_Imp_Head_Heal);
                 FirstAidTreatmentAdjustments.ApplyTraumaMedicRiders(activator, friendly);
                 StatusEffect.ApplyStatusEffect(
                     activator,

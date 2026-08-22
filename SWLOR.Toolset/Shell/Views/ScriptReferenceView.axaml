@@ -1,0 +1,97 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:panels="using:SWLOR.Toolset.Shell.Panels"
+             mc:Ignorable="d" d:DesignWidth="300" d:DesignHeight="700"
+             x:Class="SWLOR.Toolset.Shell.Views.ScriptReferenceView"
+             x:DataType="panels:ScriptReferenceViewModel">
+
+  <!-- Same shape as the Module Contents panel: own title, tabs with counts, search, tree. Functions
+       and constants are separate tabs because they are looked up for different reasons and their
+       counts are lopsided - 1,187 against 6,201 - so one list buried the functions. -->
+  <Grid RowDefinitions="Auto,Auto,Auto,*,Auto,Auto">
+
+    <Border Grid.Row="0" Background="{DynamicResource PanelHeaderBrush}"
+            BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,0,1" Padding="14,9">
+      <TextBlock Classes="title" Text="SCRIPT REFERENCE" />
+    </Border>
+
+    <!-- Each tab carries its own total, so the half you are not in still says how much is in it. -->
+    <ItemsControl Grid.Row="1" ItemsSource="{Binding Tabs}" Margin="8,8,8,0">
+      <ItemsControl.ItemsPanel>
+        <ItemsPanelTemplate>
+          <UniformGrid Rows="1" />
+        </ItemsPanelTemplate>
+      </ItemsControl.ItemsPanel>
+      <ItemsControl.ItemTemplate>
+        <DataTemplate DataType="panels:ScriptReferenceTabViewModel">
+          <Button Padding="8,5" CornerRadius="4" Margin="0,0,4,0"
+                  HorizontalAlignment="Stretch" HorizontalContentAlignment="Center"
+                  Classes.primary="{Binding IsSelected}"
+                  Command="{Binding $parent[ItemsControl].((panels:ScriptReferenceViewModel)DataContext).SelectTabCommand}"
+                  CommandParameter="{Binding}">
+            <StackPanel Orientation="Horizontal" Spacing="6">
+              <TextBlock Text="{Binding Label}" FontSize="11.5" VerticalAlignment="Center" />
+              <TextBlock Classes="count" Text="{Binding Count}" VerticalAlignment="Center" />
+            </StackPanel>
+          </Button>
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+    </ItemsControl>
+
+    <TextBox Grid.Row="2" Margin="8,8,8,6" Text="{Binding Filter}" Watermark="{Binding FilterWatermark}" />
+
+    <ListBox Grid.Row="3" Background="Transparent" BorderThickness="0"
+             ItemsSource="{Binding Rows}" SelectedItem="{Binding SelectedRow}"
+             DoubleTapped="OnRowDoubleTapped">
+      <ListBox.Styles>
+        <Style Selector="ListBoxItem">
+          <Setter Property="Padding" Value="0,1" />
+        </Style>
+      </ListBox.Styles>
+      <ListBox.ItemTemplate>
+        <DataTemplate DataType="panels:ReferenceNodeViewModel">
+          <Grid ColumnDefinitions="22,*,Auto" Margin="6,0">
+            <Button Grid.Column="0" Content="{Binding Twisty}" Width="22" MinHeight="20" Padding="0"
+                    Background="Transparent" BorderThickness="0" FontSize="11"
+                    Foreground="{DynamicResource InkTertiaryBrush}"
+                    IsVisible="{Binding IsCategory}"
+                    Command="{Binding $parent[ListBox].((panels:ScriptReferenceViewModel)DataContext).ToggleCommand}"
+                    CommandParameter="{Binding}" />
+
+            <!-- Symbols sit one notch in from their group header, matching the explorer tree. -->
+            <TextBlock Grid.Column="1" Classes="name" Text="{Binding Label}" VerticalAlignment="Center"
+                       IsVisible="{Binding IsCategory}" FontWeight="SemiBold" />
+            <TextBlock Grid.Column="1" Classes="name" Text="{Binding Label}" VerticalAlignment="Center"
+                       IsVisible="{Binding IsSymbol}" Margin="14,0,0,0"
+                       TextTrimming="CharacterEllipsis" />
+
+            <TextBlock Grid.Column="2" Classes="count" VerticalAlignment="Center" Margin="8,0,10,0"
+                       Text="{Binding Detail}" IsVisible="{Binding IsSymbol}" />
+            <TextBlock Grid.Column="2" Classes="count" VerticalAlignment="Center" Margin="8,0,10,0"
+                       Text="{Binding Count}" IsVisible="{Binding IsCategory}" />
+          </Grid>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
+
+    <!-- Description pane. Aurora had one and it is the reason the browser is worth opening at all. -->
+    <Border Grid.Row="4" BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1,0,0"
+            Background="{DynamicResource PanelBrush}" Padding="10,8" MinHeight="70">
+      <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="150">
+        <TextBlock Classes="dim" TextWrapping="Wrap" Text="{Binding Documentation}" />
+      </ScrollViewer>
+    </Border>
+
+    <Grid Grid.Row="5" ColumnDefinitions="*,Auto,Auto" Margin="8" ColumnSpacing="6">
+      <TextBlock Grid.Column="0" Classes="count" VerticalAlignment="Center" Text="{Binding SymbolCountLabel}" />
+      <!-- Linked, not bundled: the Lexicon is GFDL, so a local copy would carry its licence text and
+           go stale. The wiki titles its pages with the exact function name, so this needs no map. -->
+      <Button Grid.Column="1" Content="Lexicon" Command="{Binding OpenLexiconCommand}"
+              ToolTip.Tip="Open this symbol's page in the NWN Lexicon (opens a browser)" />
+      <Button Grid.Column="2" Classes="primary" Content="Insert" Command="{Binding InsertCommand}"
+              ToolTip.Tip="Insert at the cursor in the active script" />
+    </Grid>
+  </Grid>
+</UserControl>

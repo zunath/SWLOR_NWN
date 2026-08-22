@@ -29,6 +29,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                     Stat.RestoreStamina(user, GameMath.PercentOf(Stat.GetMaxStamina(user), 20));
                     TemporaryHitPointEffects.ApplyFlatWithBarrierVisual(
                         user,
+                        "STORMCORE_MATRIX",
                         15 + GameMath.PercentOf(GetMaxHitPoints(user), 8),
                         60f);
                     StatusEffect.ApplyStatusEffect(user, user, new StormcoreMatrixStatusEffect(), 60f);

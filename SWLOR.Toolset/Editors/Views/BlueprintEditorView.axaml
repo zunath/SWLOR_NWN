@@ -1,0 +1,237 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:editors="using:SWLOR.Toolset.Editors"
+             xmlns:placeables="using:SWLOR.Toolset.Editors.Placeables"
+             xmlns:appearance="using:SWLOR.Toolset.Editors.Appearance"
+             xmlns:sources="using:SWLOR.Toolset.Editors.Sources"
+             x:Class="SWLOR.Toolset.Editors.BlueprintEditorView"
+             x:DataType="editors:BlueprintEditorViewModel">
+
+  <!-- Field editor DataTemplates (LocString/Check/Integer/Float/Dropdown/Script/Text/Behavior) are
+       shared app-wide from App.axaml's Application.DataTemplates. The four templates below are tab
+       CONTENTS, which only this editor hosts. -->
+  <UserControl.DataTemplates>
+
+    <DataTemplate DataType="sources:ObjectSourceSectionViewModel">
+      <sources:ObjectSourceView />
+    </DataTemplate>
+
+    <!-- A schema-driven tab: its groups, one after another. Headings rather than expanders - a group
+         holds two or three fields, so collapsing one buys a couple of rows in exchange for a page
+         whose contents depend on state a builder has to remember setting, and the chevron column
+         charged for that on every group whether or not anyone ever used it. -->
+    <DataTemplate DataType="editors:FieldGroupsViewModel">
+      <ScrollViewer>
+        <ItemsControl ItemsSource="{Binding Groups}" Margin="8">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate DataType="editors:EditorGroup">
+              <Border Classes="card" Margin="0,0,0,8" Padding="12,10">
+                <StackPanel>
+                  <TextBlock Text="{Binding Title}" Classes="section" Margin="0,0,0,8" />
+                  <ItemsControl ItemsSource="{Binding Fields}" />
+                </StackPanel>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </ScrollViewer>
+    </DataTemplate>
+
+    <!-- The Appearance tab: search, filters, model grid, and what is picked right now. The grid is
+         paged rather than virtualized, matching the palette: a WrapPanel in a ListBox holds
+         everything it is given, so it is only ever given a page. -->
+    <!-- The creature Appearance tab: the same searchable picture grid the door editor uses. -->
+    <DataTemplate DataType="appearance:AppearanceGallerySectionViewModel">
+      <appearance:AppearanceGalleryView />
+    </DataTemplate>
+
+    <!-- The placeable Appearance tab: the shared grid, plus the two filters and the retained 3D
+         view that are genuinely a placeable's. -->
+    <DataTemplate DataType="placeables:AppearanceSectionViewModel">
+      <Grid RowDefinitions="Auto,*" Margin="8">
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="12" Margin="2,0,2,7">
+          <CheckBox Content="Used in module" IsChecked="{Binding UsedInModuleOnly, Mode=TwoWay}" />
+          <CheckBox Content="Named only" IsChecked="{Binding NamedOnly, Mode=TwoWay}" />
+        </StackPanel>
+
+        <!-- Shown until the background catalog read lands, so a builder who opens this tab early
+             sees it filling in rather than an empty grid that looks like no models exist. -->
+        <StackPanel Grid.Row="1" IsVisible="{Binding IsLoading}" Spacing="8"
+                    HorizontalAlignment="Center" VerticalAlignment="Center">
+          <TextBlock Text="Loading models..." HorizontalAlignment="Center" />
+          <ProgressBar IsIndeterminate="True" Width="180" />
+        </StackPanel>
+
+        <!-- The visibility test and the DataContext swap have to sit on different elements. Both on
+             the gallery view meant IsLoading was looked up on the Gallery it had just switched to,
+             which does not have one - a compiled-binding error that failed the whole build. -->
+        <Border Grid.Row="1" IsVisible="{Binding !IsLoading}">
+          <appearance:AppearanceGalleryView DataContext="{Binding Gallery}" />
+        </Border>
+      </Grid>
+    </DataTemplate>
+
+    <!-- The Behavior tab: every option on screen, the selected one's fields beside it. -->
+    <DataTemplate DataType="placeables:PlaceableBehaviorSectionViewModel">
+      <Grid ColumnDefinitions="210,*" Margin="8">
+        <ListBox Grid.Column="0" ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+                 Background="Transparent" BorderThickness="1" Margin="0,0,8,0"
+                 BorderBrush="{DynamicResource RuleBrush}">
+          <ListBox.Styles>
+            <Style Selector="ListBoxItem">
+              <Setter Property="Padding" Value="8,3" />
+              <!-- Category headings share the flat item source so the list stays compact, but
+                   they are labels rather than behavior choices. Bind the container—not merely
+                   its text—so mouse and keyboard selection both skip every heading. -->
+              <Setter Property="IsEnabled" Value="{ReflectionBinding IsSelectable}" />
+              <Setter Property="Focusable" Value="{ReflectionBinding IsSelectable}" />
+            </Style>
+          </ListBox.Styles>
+          <ListBox.ItemTemplate>
+            <DataTemplate DataType="placeables:BehaviorListItemViewModel">
+              <Grid>
+                <TextBlock Text="{Binding Text}" Classes="label" FontSize="10.5"
+                           Margin="0,5,0,1" IsVisible="{Binding IsHeader}" />
+                <TextBlock Text="{Binding Text}" FontSize="12.5"
+                           TextTrimming="CharacterEllipsis" IsVisible="{Binding IsSelectable}" />
+              </Grid>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+
+        <ScrollViewer Grid.Column="1">
+          <StackPanel Spacing="10">
+            <TextBlock Text="{Binding CurrentName}" FontSize="15" FontWeight="SemiBold" />
+
+            <ItemsControl ItemsSource="{Binding Fields}" IsVisible="{Binding HasFields}" />
+            <ItemsControl ItemsSource="{Binding EditableFlagFields}"
+                          IsVisible="{Binding HasEditableFlags}" />
+            <StackPanel Spacing="6" IsVisible="{Binding ShowsCustomFlags}">
+              <TextBlock Text="FLAGS" Classes="label" />
+              <ItemsControl ItemsSource="{Binding CustomFlagFields}" />
+            </StackPanel>
+            <StackPanel Spacing="6" IsVisible="{Binding ShowsCustomScripts}">
+              <TextBlock Text="SCRIPTS" Classes="label" />
+              <ItemsControl ItemsSource="{Binding CustomScriptFields}" />
+            </StackPanel>
+            <StackPanel Spacing="6" IsVisible="{Binding ShowsCustomConversation}">
+              <TextBlock Text="CONVERSATION" Classes="label" />
+              <ItemsControl ItemsSource="{Binding CustomConversationFields}" />
+            </StackPanel>
+            <TextBlock Text="This behavior has no settings of its own." Classes="dim" FontSize="11.5"
+                       IsVisible="{Binding !HasSettings}" />
+          </StackPanel>
+        </ScrollViewer>
+      </Grid>
+    </DataTemplate>
+
+    <!-- The Variables tab: the raw grid, present only when the behavior leaves something to edit. -->
+    <DataTemplate DataType="editors:VarTableSectionViewModel">
+      <StackPanel Margin="10" Spacing="6">
+        <DataGrid ItemsSource="{Binding Rows}" SelectedItem="{Binding SelectedRow, Mode=TwoWay}"
+                  AutoGenerateColumns="False" IsReadOnly="True" MaxHeight="320"
+                  GridLinesVisibility="Horizontal">
+          <DataGrid.Columns>
+            <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="2*" />
+            <DataGridTextColumn Header="Type" Binding="{Binding TypeLabel}" Width="*" />
+            <DataGridTextColumn Header="Value" Binding="{Binding Value}" Width="2*" />
+          </DataGrid.Columns>
+        </DataGrid>
+        <!-- Type sizes to its content: as a star column it shrank with the pane until the
+             drop-down was narrower than the word inside it. -->
+        <Grid ColumnDefinitions="2*,Auto,Auto,2*,Auto,Auto" ColumnSpacing="6">
+          <AutoCompleteBox Grid.Column="0" Text="{Binding NewName, Mode=TwoWay}"
+                           ItemsSource="{Binding KnownKeys}" Watermark="Variable name" />
+          <TextBlock Grid.Column="1" Text="=" VerticalAlignment="Center" />
+          <ComboBox Grid.Column="2" MinWidth="96" ItemsSource="{Binding TypeChoices}"
+                    SelectedItem="{Binding NewType, Mode=TwoWay}" />
+          <TextBox Grid.Column="3" Text="{Binding NewValue, Mode=TwoWay}" Watermark="Value" />
+          <Button Grid.Column="4" Content="Set" Command="{Binding SetVariableCommand}" />
+          <Button Grid.Column="5" Content="Remove" Command="{Binding RemoveSelectedCommand}" />
+        </Grid>
+        <TextBlock Text="{Binding ValidationHint}" Foreground="Orange"
+                   IsVisible="{Binding ValidationHint, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+      </StackPanel>
+    </DataTemplate>
+  </UserControl.DataTemplates>
+
+  <DockPanel>
+    <!-- Placeables use the same explicit document actions as the Waypoint editor. Other schema
+         blueprints keep the compact single-page editor and the application-level Save command. -->
+    <Border DockPanel.Dock="Bottom" Padding="16,11"
+            BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1,0,0"
+            IsVisible="{Binding IsPlaceableEditor}">
+      <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+        <Button Content="Revert" MinWidth="86" Command="{Binding RevertCommand}" />
+        <Button Content="Save" MinWidth="86" Classes="primary" Command="{Binding SaveCommand}" />
+      </StackPanel>
+    </Border>
+
+    <Grid ColumnDefinitions="Auto,*">
+      <!-- Keep one retained 3D control visible while moving between a placeable's tabs, matching the
+           Door editor. The Appearance tab now concentrates on searching and comparing thumbnails. -->
+      <Border Grid.Column="0" Width="190"
+              BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,1,0"
+              Padding="12" IsVisible="{Binding IsPlaceableEditor}">
+        <Grid RowDefinitions="*,Auto"
+              DataContext="{Binding PlaceableSections.Appearance}"
+              x:DataType="placeables:AppearanceSectionViewModel">
+          <Border Grid.Row="0" MinHeight="250" Background="{DynamicResource PanelRaisedBrush}"
+                  BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="3">
+            <ContentControl Content="{Binding PreviewView}" />
+          </Border>
+          <StackPanel Grid.Row="1" Margin="0,9,0,0" Spacing="5">
+            <TextBlock Text="{Binding CurrentDescription}" TextWrapping="Wrap" FontSize="10.5" />
+            <TextBlock Text="This row has no model in placeables.2da. The stored value is kept as it is."
+                       TextWrapping="Wrap" FontSize="10.5" Foreground="Orange"
+                       IsVisible="{Binding CurrentIsUnknown}" />
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6"
+                  IsVisible="{Binding HasAnimationControls}">
+              <ComboBox Grid.Column="0"
+                        ItemsSource="{Binding AnimationStates}"
+                        SelectedItem="{Binding SelectedAnimation, Mode=TwoWay}"
+                        IsVisible="{Binding HasAnimationStatePicker}">
+                <ComboBox.ItemTemplate>
+                  <DataTemplate DataType="placeables:PlaceableAnimationOption">
+                    <TextBlock Text="{Binding Label}" />
+                  </DataTemplate>
+                </ComboBox.ItemTemplate>
+              </ComboBox>
+              <Button Grid.Column="1" Content="{Binding AnimationToggleText}"
+                      Command="{Binding ToggleAnimationCommand}"
+                      IsEnabled="{Binding CanAnimateSelected}" MinWidth="62" />
+            </Grid>
+            <TextBlock Text="Left-drag to move &#x00B7; right-drag to turn &#x00B7; wheel to zoom"
+                       Classes="dim" FontSize="10" TextWrapping="Wrap" />
+            <!-- The section flattens the highlight onto itself (HighlightedCaption and friends); the
+                 tile it comes from lives on Gallery, so binding through "Highlighted." from here
+                 resolved against nothing. -->
+            <StackPanel Spacing="3" IsVisible="{Binding HasHighlight}">
+              <TextBlock Text="{Binding HighlightedCaption}" TextWrapping="Wrap" FontSize="10.5" />
+              <TextBlock Text="{Binding HighlightedModelName}" Classes="mono" FontSize="10" />
+            </StackPanel>
+          </StackPanel>
+        </Grid>
+      </Border>
+
+      <Panel Grid.Column="1">
+        <!-- One page for the types whose fields fit one; a strip only when there is somewhere to go. -->
+        <ContentControl Content="{Binding SingleTabContent}" IsVisible="{Binding !HasMultipleTabs}" />
+
+        <TabControl ItemsSource="{Binding Tabs}" SelectedItem="{Binding SelectedTab, Mode=TwoWay}"
+                    IsVisible="{Binding HasMultipleTabs}">
+          <TabControl.ItemTemplate>
+            <DataTemplate DataType="editors:EditorTabViewModel">
+              <TextBlock Text="{Binding Title}" />
+            </DataTemplate>
+          </TabControl.ItemTemplate>
+          <TabControl.ContentTemplate>
+            <DataTemplate DataType="editors:EditorTabViewModel">
+              <ContentControl Content="{Binding Content}" />
+            </DataTemplate>
+          </TabControl.ContentTemplate>
+        </TabControl>
+      </Panel>
+    </Grid>
+  </DockPanel>
+</UserControl>

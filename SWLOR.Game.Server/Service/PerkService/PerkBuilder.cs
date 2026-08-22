@@ -47,6 +47,17 @@ namespace SWLOR.Game.Server.Service.PerkService
         }
 
         /// <summary>
+        /// Sets an explicit icon resource for a perk instead of deriving it from a granted feat.
+        /// </summary>
+        /// <param name="iconResref">The icon resource reference.</param>
+        /// <returns>A perk builder with the configured options</returns>
+        public PerkBuilder Icon(string iconResref)
+        {
+            _activePerk.IconResref = iconResref;
+            return this;
+        }
+
+        /// <summary>
         /// Sets the description of the perk or the perk level.
         /// </summary>
         /// <param name="description">The description to set.</param>
@@ -121,6 +132,20 @@ namespace SWLOR.Game.Server.Service.PerkService
         public PerkBuilder GroupType(PerkGroupType groupType)
         {
             _activePerk.GroupType = groupType;
+            return this;
+        }
+
+        /// <summary>
+        /// Declares a native action mode which should be added to the player's hotbar when this perk is purchased.
+        /// The matching mode is removed from the hotbar when the perk is fully refunded.
+        /// </summary>
+        /// <param name="mode">The native action mode to add to the hotbar.</param>
+        /// <returns>A perk builder with the configured options</returns>
+        public PerkBuilder AutoAddActionModeToHotBar(ActionMode mode)
+        {
+            if (!_activePerk.HotBarActionModes.Contains(mode))
+                _activePerk.HotBarActionModes.Add(mode);
+
             return this;
         }
 
@@ -214,7 +239,7 @@ namespace SWLOR.Game.Server.Service.PerkService
         /// <param name="mustHavePerkType">The type of perk the player must have.</param>
         /// <param name="mustHavePerkLevel">Optionally, the level of the perk required.</param>
         /// <returns>A perk builder with the configured options.</returns>
-        public PerkBuilder RequirementMustHavePerk(PerkType mustHavePerkType, int mustHavePerkLevel = 0)
+        public PerkBuilder RequirementMustHavePerk(PerkType mustHavePerkType, int mustHavePerkLevel = 1)
         {
             var requirement = new PerkRequirementMustHavePerk(mustHavePerkType, mustHavePerkLevel);
             _activeLevel.Requirements.Add(requirement);
@@ -340,6 +365,9 @@ namespace SWLOR.Game.Server.Service.PerkService
             // If not found, it will fall back to the 'default_perk' icon instead.
             foreach (var (_, detail) in _perks)
             {
+                if (!string.IsNullOrWhiteSpace(detail.IconResref))
+                    continue;
+
                 detail.IconResref = "default_perk";
                 foreach (var (_, perkLevel) in detail.PerkLevels)
                 {

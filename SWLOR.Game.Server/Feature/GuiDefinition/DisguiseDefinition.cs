@@ -9,36 +9,41 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     public class DisguiseDefinition: IGuiWindowDefinition
     {
         private readonly GuiWindowBuilder<DisguiseViewModel> _builder = new();
-        private const float WindowWidth = 760f;
-        private const float WindowHeight = 460f;
-        private const float ListRailWidth = 220f;
-        private const float PortraitRailWidth = 154f;
-        private const float DetailRailWidth = WindowWidth - ListRailWidth - PortraitRailWidth;
-        private const float TabWidth = 170f;
-        private const float TabHeight = 32f;
+
+        // The content pane fills the space left of the rail, so the header and action bar
+        // stretch to the window edges. The form inputs keep explicit widths because a NUI
+        // group does not stretch to fill a row - without them the fields collapse and the
+        // longer labels clip.
+        private const float WindowWidth = 792f;
+        private const float WindowHeight = 468f;
+
+        private const float RailWidth = 236f;
+
+        private const float TabWidth = 112f;
+        private const float TabHeight = 30f;
+        private const float SlotBarHeight = 20f;
+        private const float NewButtonHeight = 32f;
+
+        private const float HeaderHeight = 26f;
         private const float LabelHeight = 20f;
-        private const float FieldHeight = 32f;
-        private const float DisguiseListHeight = 214f;
-        private const float ButtonHeight = 34f;
+        private const float FieldHeight = 30f;
+        private const float ButtonHeight = 32f;
+
+        private const float PortraitColWidth = 138f;
         private const float PortraitWidth = 120f;
         private const float PortraitHeight = 170f;
-        private const float PortraitButtonWidth = 28f;
-        private const float FormFieldWidth = 320f;
-        private const float PortraitIdFieldWidth = 72f;
-        private const float SoundSetFieldWidth = 238f;
-        private const float SoundSetPageButtonWidth = 32f;
-        private const float SoundSetPageComboWidth = 170f;
-        private const float SoundPreviewButtonWidth = 80f;
-        private const float SoundSetPageBottomPaddingHeight = 8f;
-        private const float ActionButtonWidth = 100f;
-        private const float SingleActionLeftPadding = 100f;
-        private const float DoubleActionLeftPadding = 60f;
-        private const float TripleActionLeftPadding = 10f;
-        private const float EmptyStatePanelWidth = 340f;
-        private const float EmptyStatePanelHeight = 128f;
-        private const float EmptyStateTopSpacerHeight = 48f;
-        private const float EmptyStateTitleHeight = 36f;
-        private const float EmptyStateTextHeight = 48f;
+        private const float PortraitStepButtonWidth = 30f;
+        private const float PortraitIdFieldWidth = 60f;
+
+        private const float FormFieldWidth = 380f;
+        private const float SoundSetFieldWidth = FormFieldWidth - 78f;
+        private const float SoundPreviewButtonWidth = 70f;
+        private const float SoundPageButtonWidth = 30f;
+        private const float SoundPageComboWidth = FormFieldWidth - 72f;
+
+        private const float StatusTagWidth = 96f;
+        private const float ActionButtonWidth = 104f;
+        private const float NoteHeight = 18f;
 
         public GuiConstructedWindow BuildWindow()
         {
@@ -54,17 +59,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                 .AddColumn(root =>
                 {
-                    AddTabs(root);
-                    AddSlotCount(root);
-                    AddMainContent(root);
+                    root.AddRow(row =>
+                    {
+                        row.AddColumn(AddRail)
+                            .SetWidth(RailWidth);
+
+                        row.AddPartialView(DisguiseViewModel.ContentPartialElement);
+                    });
                 });
 
             return _builder.Build();
         }
 
-        private static void AddTabs(GuiColumn<DisguiseViewModel> root)
+        // ---------------------------------------------------------------
+        // Left rail: tabs, slot meter, disguise list, New button
+        // ---------------------------------------------------------------
+        private static void AddRail(GuiColumn<DisguiseViewModel> col)
         {
-            root.AddRow(row =>
+            col.AddRow(row =>
             {
                 row.AddToggleButton()
                     .SetText("Available")
@@ -79,34 +91,58 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .SetHeight(TabHeight)
                     .BindIsToggled(model => model.IsRetiredSelected)
                     .BindOnClicked(model => model.OnClickRetired());
-
-                row.AddSpacer();
             });
-        }
 
-        private static void AddSlotCount(GuiColumn<DisguiseViewModel> root)
-        {
-            root.AddRow(row =>
+            col.AddRow(row =>
             {
-                row.AddLabel()
-                    .BindText(model => model.SlotCountText)
-                    .SetHeight(LabelHeight)
-                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                row.AddProgressBar()
+                    .BindValue(model => model.SlotUsageProgress)
+                    .BindColor(model => model.SlotUsageColor)
+                    .SetHeight(SlotBarHeight)
+                    .AddDrawList(drawList =>
+                    {
+                        drawList.AddText(text =>
+                        {
+                            text.BindText(model => model.SlotBarLabel);
+                            text.SetBounds(6, 2, RailWidth, SlotBarHeight);
+                            text.SetColor(255, 255, 255);
+                        });
+                    });
             });
-        }
 
-        private static void AddMainContent(GuiColumn<DisguiseViewModel> root)
-        {
-            root.AddRow(row =>
+            col.AddRow(listRow =>
             {
-                row.AddColumn(AddListRail)
-                    .SetWidth(ListRailWidth);
+                listRow.AddList(template =>
+                {
+                    template.AddCell(cell =>
+                    {
+                        cell.AddToggleButton()
+                            .BindText(model => model.DisguiseNames)
+                            .BindIsToggled(model => model.DisguiseToggles)
+                            .BindColor(model => model.DisguiseColors)
+                            .BindOnClicked(model => model.OnClickDisguise());
+                    });
+                })
+                    .BindRowCount(model => model.DisguiseNames)
+                    .SetScrollbars(NuiScrollbars.Y)
+                    .SetShowBorders(true);
+            });
 
-                row.AddPartialView(DisguiseViewModel.ContentPartialElement)
-                    .SetWidth(DetailRailWidth + PortraitRailWidth);
+            col.AddRow(buttonRow =>
+            {
+                buttonRow.AddButton()
+                    .SetText("New Disguise")
+                    .SetWidth(RailWidth)
+                    .SetHeight(NewButtonHeight)
+                    .SetIsEncouraged(true)
+                    .BindIsVisible(model => model.IsAvailableSelected)
+                    .BindOnClicked(model => model.OnClickNew());
             });
         }
 
+        // ---------------------------------------------------------------
+        // Detail pane variants
+        // ---------------------------------------------------------------
         private static void AddAvailableContentArea(GuiGroup<DisguiseViewModel> group)
         {
             AddSelectedContentArea(group, AddAvailableActionBand);
@@ -124,91 +160,51 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
         private static void AddSelectedContentArea(
             GuiGroup<DisguiseViewModel> group,
-            System.Action<GuiGroup<DisguiseViewModel>> addActionBand)
+            System.Action<GuiColumn<DisguiseViewModel>> addActionBand)
         {
             group.AddColumn(col =>
             {
-                AddSelectedContentDetails(col);
-                AddContentActionRow(col, addActionBand);
-            });
-        }
+                AddDetailHeader(col);
 
-        private static void AddEmptyContentArea(GuiGroup<DisguiseViewModel> group)
-        {
-            group.AddColumn(col =>
-            {
                 col.AddRow(row =>
                 {
-                    row.AddGroup(AddEmptyDetailArea)
-                        .SetWidth(DetailRailWidth);
+                    row.AddGroup(AddPortraitRail)
+                        .SetWidth(PortraitColWidth);
 
-                    row.AddGroup(AddEmptyPortraitRail)
-                        .SetWidth(PortraitRailWidth);
+                    row.AddGroup(AddFieldsArea);
                 });
 
-                AddContentActionRow(col, AddEmptyActionBand);
+                addActionBand(col);
             });
         }
 
-        private static void AddSelectedContentDetails(GuiColumn<DisguiseViewModel> col)
+        private static void AddDetailHeader(GuiColumn<DisguiseViewModel> col)
         {
             col.AddRow(row =>
             {
-                row.AddGroup(AddSelectedDetailArea)
-                    .SetWidth(DetailRailWidth);
+                row.AddLabel()
+                    .BindText(model => model.PrivateName)
+                    .SetHeight(HeaderHeight)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                    .SetVerticalAlign(NuiVerticalAlign.Middle);
 
-                row.AddGroup(AddSelectedPortraitRail)
-                    .SetWidth(PortraitRailWidth);
+                row.AddLabel()
+                    .BindText(model => model.StatusText)
+                    .BindColor(model => model.StatusColor)
+                    .SetWidth(StatusTagWidth)
+                    .SetHeight(HeaderHeight)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Right)
+                    .SetVerticalAlign(NuiVerticalAlign.Middle);
             });
         }
 
-        private static void AddContentActionRow(
-            GuiColumn<DisguiseViewModel> col,
-            System.Action<GuiGroup<DisguiseViewModel>> addActionBand)
+        // ---------------------------------------------------------------
+        // Portrait rail (left of detail)
+        // ---------------------------------------------------------------
+        private static void AddPortraitRail(GuiGroup<DisguiseViewModel> group)
         {
-            col.AddRow(row =>
-            {
-                row.AddGroup(addActionBand)
-                    .SetWidth(DetailRailWidth);
-
-                row.AddSpacer()
-                    .SetWidth(PortraitRailWidth);
-            });
-        }
-
-        private static void AddListRail(GuiColumn<DisguiseViewModel> col)
-        {
-            col.AddRow(listRow =>
-            {
-                listRow.AddList(template =>
-                {
-                    template.AddCell(cell =>
-                    {
-                        cell.AddToggleButton()
-                            .BindText(model => model.DisguiseNames)
-                            .BindIsToggled(model => model.DisguiseToggles)
-                            .BindOnClicked(model => model.OnClickDisguise());
-                    });
-                })
-                    .BindRowCount(model => model.DisguiseNames)
-                    .SetScrollbars(NuiScrollbars.Y)
-                    .SetShowBorders(true)
-                    .SetHeight(DisguiseListHeight);
-            });
-
-            col.AddRow(buttonRow =>
-            {
-                buttonRow.AddButton()
-                    .SetText("New")
-                    .SetWidth(ListRailWidth)
-                    .SetHeight(ButtonHeight)
-                    .BindIsVisible(model => model.IsAvailableSelected)
-                    .BindOnClicked(model => model.OnClickNew());
-            });
-        }
-
-        private static void AddSelectedPortraitRail(GuiGroup<DisguiseViewModel> group)
-        {
+            group.SetShowBorder(false);
+            group.SetScrollbars(NuiScrollbars.None);
             group.AddColumn(col =>
             {
                 col.AddRow(portraitRow =>
@@ -226,76 +222,57 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     portraitRow.AddSpacer();
                 });
 
-                AddPortraitField(col);
-            });
-        }
-
-        private static void AddEmptyPortraitRail(GuiGroup<DisguiseViewModel> group)
-        {
-            group.AddColumn(col =>
-            {
                 col.AddRow(row =>
                 {
-                    row.AddSpacer();
+                    row.AddButton()
+                        .SetText("<")
+                        .SetWidth(PortraitStepButtonWidth)
+                        .SetHeight(FieldHeight)
+                        .SetMargin(0f)
+                        .BindIsVisible(model => model.IsEditMode)
+                        .BindOnClicked(model => model.OnClickPreviousPortrait());
+
+                    row.AddTextEdit()
+                        .BindValue(model => model.PortraitInternalId)
+                        .SetMaxLength(6)
+                        .SetWidth(PortraitIdFieldWidth)
+                        .SetHeight(FieldHeight)
+                        .SetMargin(0f)
+                        .BindIsVisible(model => model.IsEditMode)
+                        .BindIsEnabled(model => model.IsEditMode);
+
+                    row.AddButton()
+                        .SetText(">")
+                        .SetWidth(PortraitStepButtonWidth)
+                        .SetHeight(FieldHeight)
+                        .SetMargin(0f)
+                        .BindIsVisible(model => model.IsEditMode)
+                        .BindOnClicked(model => model.OnClickNextPortrait());
                 });
             });
         }
 
-        private static void AddSelectedDetailArea(GuiGroup<DisguiseViewModel> group)
+        // ---------------------------------------------------------------
+        // Fields area (right of detail)
+        // ---------------------------------------------------------------
+        private static void AddFieldsArea(GuiGroup<DisguiseViewModel> group)
         {
+            group.SetShowBorder(false);
+            group.SetScrollbars(NuiScrollbars.None);
             group.AddColumn(col =>
             {
-                AddTextField(col, "Private Disguise Name", model => model.PrivateName, Disguise.MaxPrivateNameLength);
-                AddTextField(col, "Public Descriptor", model => model.Descriptor, PlayerName.MaxKnownNameLength);
+                AddTextField(col, "Private Slot Label  (only you see this)", model => model.PrivateName, Disguise.MaxPrivateNameLength);
+                AddTextField(col, "Public Description  (shown to others)", model => model.Descriptor, PlayerName.MaxKnownNameLength);
                 AddSoundSetField(col);
-                AddScrambleCheckbox(col);
-            });
-        }
 
-        private static void AddEmptyDetailArea(GuiGroup<DisguiseViewModel> group)
-        {
-            group.AddColumn(AddEmptyState);
-        }
-
-        private static void AddEmptyState(GuiColumn<DisguiseViewModel> col)
-        {
-            col.AddRow(row =>
-            {
-                row.AddSpacer()
-                    .SetHeight(EmptyStateTopSpacerHeight);
-            });
-
-            col.AddRow(row =>
-            {
-                row.AddSpacer();
-
-                row.AddGroup(group =>
+                col.AddRow(row =>
                 {
-                    group.SetShowBorder(true);
-                    group.SetScrollbars(NuiScrollbars.None);
-                    group.AddColumn(empty =>
-                    {
-                        empty.AddRow(titleRow =>
-                        {
-                            titleRow.AddLabel()
-                                .BindText(model => model.EmptyStateTitle)
-                                .SetHeight(EmptyStateTitleHeight)
-                                .SetHorizontalAlign(NuiHorizontalAlign.Center);
-                        });
-
-                        empty.AddRow(textRow =>
-                        {
-                            textRow.AddLabel()
-                                .BindText(model => model.EmptyStateText)
-                                .SetHeight(EmptyStateTextHeight)
-                                .SetHorizontalAlign(NuiHorizontalAlign.Center);
-                        });
-                    });
-                })
-                    .SetWidth(EmptyStatePanelWidth)
-                    .SetHeight(EmptyStatePanelHeight);
-
-                row.AddSpacer();
+                    row.AddCheckBox()
+                        .SetText("Hide Account Name")
+                        .SetHeight(FieldHeight)
+                        .BindIsChecked(model => model.ScrambleAccountId)
+                        .BindIsEnabled(model => model.IsEditMode);
+                });
             });
         }
 
@@ -324,50 +301,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             });
         }
 
-        private static void AddPortraitField(GuiColumn<DisguiseViewModel> col)
-        {
-            col.AddRow(row =>
-            {
-                row.AddSpacer()
-                    .BindIsVisible(model => model.IsEditMode);
-
-                row.AddButton()
-                    .SetText("<")
-                    .SetWidth(PortraitButtonWidth)
-                    .SetHeight(FieldHeight)
-                    .SetMargin(0f)
-                    .BindIsVisible(model => model.IsEditMode)
-                    .BindOnClicked(model => model.OnClickPreviousPortrait());
-
-                row.AddTextEdit()
-                    .BindValue(model => model.PortraitInternalId)
-                    .SetMaxLength(6)
-                    .SetWidth(PortraitIdFieldWidth)
-                    .SetHeight(FieldHeight)
-                    .SetMargin(0f)
-                    .BindIsVisible(model => model.IsEditMode)
-                    .BindIsEnabled(model => model.IsEditMode);
-
-                row.AddButton()
-                    .SetText(">")
-                    .SetWidth(PortraitButtonWidth)
-                    .SetHeight(FieldHeight)
-                    .SetMargin(0f)
-                    .BindIsVisible(model => model.IsEditMode)
-                    .BindOnClicked(model => model.OnClickNextPortrait());
-
-                row.AddSpacer()
-                    .BindIsVisible(model => model.IsEditMode);
-            });
-
-            col.AddRow(row =>
-            {
-                row.AddSpacer()
-                    .SetHeight(SoundSetPageBottomPaddingHeight)
-                    .BindIsVisible(model => model.IsEditMode);
-            });
-        }
-
         private static void AddSoundSetField(GuiColumn<DisguiseViewModel> col)
         {
             col.AddRow(row =>
@@ -390,19 +323,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 row.AddButton()
                     .SetText("Play")
                     .SetWidth(SoundPreviewButtonWidth)
-                    .SetHeight(ButtonHeight)
+                    .SetHeight(FieldHeight)
                     .BindIsVisible(model => model.IsEditMode)
                     .BindOnClicked(model => model.OnClickPreviewSoundSet());
             });
 
             col.AddRow(row =>
             {
-                row.AddSpacer()
-                    .BindIsVisible(model => model.IsEditMode);
-
                 row.AddButton()
                     .SetText("<")
-                    .SetWidth(SoundSetPageButtonWidth)
+                    .SetWidth(SoundPageButtonWidth)
                     .SetHeight(FieldHeight)
                     .SetMargin(0f)
                     .BindIsVisible(model => model.IsEditMode)
@@ -411,74 +341,35 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 row.AddComboBox()
                     .BindOptions(model => model.SoundSetPageNumbers)
                     .BindSelectedIndex(model => model.SelectedSoundSetPageIndex)
-                    .SetWidth(SoundSetPageComboWidth)
+                    .SetWidth(SoundPageComboWidth)
                     .SetHeight(FieldHeight)
                     .BindIsVisible(model => model.IsEditMode);
 
                 row.AddButton()
                     .SetText(">")
-                    .SetWidth(SoundSetPageButtonWidth)
+                    .SetWidth(SoundPageButtonWidth)
                     .SetHeight(FieldHeight)
                     .SetMargin(0f)
                     .BindIsVisible(model => model.IsEditMode)
                     .BindOnClicked(model => model.OnClickNextSoundSetPage());
-
-                row.AddSpacer()
-                    .BindIsVisible(model => model.IsEditMode);
             });
         }
 
-        private static void AddScrambleCheckbox(GuiColumn<DisguiseViewModel> col)
+        // ---------------------------------------------------------------
+        // Action bands
+        // ---------------------------------------------------------------
+        private static void AddAvailableActionBand(GuiColumn<DisguiseViewModel> col)
         {
             col.AddRow(row =>
             {
-                row.AddCheckBox()
-                    .SetText("Hide Account Name")
-                    .SetHeight(FieldHeight)
-                    .BindIsChecked(model => model.ScrambleAccountId)
-                    .BindIsEnabled(model => model.IsEditMode);
-            });
-        }
-
-        private static void AddAvailableActionBand(GuiGroup<DisguiseViewModel> group)
-        {
-            group.AddColumn(AddAvailableDetailActions);
-        }
-
-        private static void AddRetiredActionBand(GuiGroup<DisguiseViewModel> group)
-        {
-            group.AddColumn(AddRetiredDetailActions);
-        }
-
-        private static void AddEditActionBand(GuiGroup<DisguiseViewModel> group)
-        {
-            group.AddColumn(AddEditDetailActions);
-        }
-
-        private static void AddEmptyActionBand(GuiGroup<DisguiseViewModel> group)
-        {
-            group.AddColumn(col =>
-            {
-                col.AddRow(row =>
-                {
-                    row.AddSpacer()
-                        .SetHeight(ButtonHeight);
-                });
-            });
-        }
-
-        private static void AddAvailableDetailActions(GuiColumn<DisguiseViewModel> col)
-        {
-            col.AddRow(row =>
-            {
-                row.AddSpacer()
-                    .SetWidth(TripleActionLeftPadding);
-
                 row.AddButton()
-                    .BindText(model => model.ActivateButtonText)
+                    .SetText("Retire")
                     .SetWidth(ActionButtonWidth)
                     .SetHeight(ButtonHeight)
-                    .BindOnClicked(model => model.OnClickActivateOrDeactivate());
+                    .SetColor(210, 120, 90)
+                    .BindOnClicked(model => model.OnClickRetire());
+
+                row.AddSpacer();
 
                 row.AddButton()
                     .SetText("Edit")
@@ -487,46 +378,52 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .BindOnClicked(model => model.OnClickEdit());
 
                 row.AddButton()
-                    .SetText("Retire")
+                    .BindText(model => model.ActivateButtonText)
                     .SetWidth(ActionButtonWidth)
                     .SetHeight(ButtonHeight)
-                    .BindOnClicked(model => model.OnClickRetire());
+                    .SetIsEncouraged(true)
+                    .BindOnClicked(model => model.OnClickActivateOrDeactivate());
+            });
 
-                row.AddSpacer()
-                    .SetWidth(TripleActionLeftPadding);
+            col.AddRow(row =>
+            {
+                row.AddLabel()
+                    .BindText(model => model.ActivationDelayNote)
+                    .SetHeight(NoteHeight)
+                    .SetColor(160, 152, 128)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
             });
         }
 
-        private static void AddRetiredDetailActions(GuiColumn<DisguiseViewModel> col)
+        private static void AddRetiredActionBand(GuiColumn<DisguiseViewModel> col)
         {
             col.AddRow(row =>
             {
-                row.AddSpacer()
-                    .SetWidth(SingleActionLeftPadding);
+                row.AddSpacer();
 
                 row.AddButton()
                     .SetText("Unretire")
                     .SetWidth(ActionButtonWidth)
                     .SetHeight(ButtonHeight)
+                    .SetIsEncouraged(true)
                     .BindOnClicked(model => model.OnClickUnretire());
+            });
 
-                row.AddSpacer()
-                    .SetWidth(SingleActionLeftPadding);
+            col.AddRow(row =>
+            {
+                row.AddLabel()
+                    .SetText("Retired disguises still use a slot until an Identity Broker wipes them.")
+                    .SetHeight(NoteHeight)
+                    .SetColor(160, 152, 128)
+                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
             });
         }
 
-        private static void AddEditDetailActions(GuiColumn<DisguiseViewModel> col)
+        private static void AddEditActionBand(GuiColumn<DisguiseViewModel> col)
         {
             col.AddRow(row =>
             {
-                row.AddSpacer()
-                    .SetWidth(DoubleActionLeftPadding);
-
-                row.AddButton()
-                    .SetText("Save")
-                    .SetWidth(ActionButtonWidth)
-                    .SetHeight(ButtonHeight)
-                    .BindOnClicked(model => model.OnClickSave());
+                row.AddSpacer();
 
                 row.AddButton()
                     .SetText("Cancel")
@@ -534,10 +431,62 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .SetHeight(ButtonHeight)
                     .BindOnClicked(model => model.OnClickCancelEdit());
 
+                row.AddButton()
+                    .SetText("Save")
+                    .SetWidth(ActionButtonWidth)
+                    .SetHeight(ButtonHeight)
+                    .SetIsEncouraged(true)
+                    .BindOnClicked(model => model.OnClickSave());
+            });
+
+            col.AddRow(row =>
+            {
                 row.AddSpacer()
-                    .SetWidth(DoubleActionLeftPadding);
+                    .SetHeight(NoteHeight);
             });
         }
 
+        // ---------------------------------------------------------------
+        // Empty state
+        // ---------------------------------------------------------------
+        private static void AddEmptyContentArea(GuiGroup<DisguiseViewModel> group)
+        {
+            group.SetShowBorder(false);
+            group.SetScrollbars(NuiScrollbars.None);
+            group.AddColumn(col =>
+            {
+                col.AddRow(row => row.AddSpacer());
+
+                col.AddRow(row =>
+                {
+                    row.AddSpacer();
+
+                    row.AddColumn(inner =>
+                    {
+                        inner.AddRow(titleRow =>
+                        {
+                            titleRow.AddLabel()
+                                .BindText(model => model.EmptyStateTitle)
+                                .SetHeight(HeaderHeight)
+                                .SetHorizontalAlign(NuiHorizontalAlign.Center);
+                        });
+
+                        inner.AddRow(textRow =>
+                        {
+                            textRow.AddLabel()
+                                .BindText(model => model.EmptyStateText)
+                                .SetHeight(LabelHeight)
+                                .SetColor(170, 162, 138)
+                                .SetHorizontalAlign(NuiHorizontalAlign.Center);
+                        });
+                    })
+                        .SetWidth(360f);
+
+                    row.AddSpacer();
+                });
+
+                col.AddRow(row => row.AddSpacer());
+            });
+        }
     }
 }

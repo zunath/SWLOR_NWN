@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BastionStance1)
-                .Description("While active, grants +20% to Enmity generation, +15% Defense, +15% Force Defense, -20% Attack, and -20% Force Attack")
+                .Description("While active, grants +20% to Enmity generation, +15% Defense, +15% Force Defense, -20% Attack, and -20% Force Attack.")
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 20);
         }
@@ -254,7 +254,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Flash1)
-                .Description("Enemies within a 5m sphere around you receive the Flash effect, reducing physical and Force ability hit chance by 20% for 30 seconds. You generate +650 bonus Enmity toward these enemies.")
+                .Description("Enemies within a 5m sphere around you receive Flash, reducing Ability Accuracy by 20% for 30 seconds (physical and Force abilities). Deals no damage. You generate +650 bonus Enmity toward these enemies.")
                 .Price(2)
                 .RequirementSkill(SkillType.HeavyVibroblade, 10);
         }
@@ -273,13 +273,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FortressStrike2)
-                .Description("Your next attack deals weapon DMG + 20 and generates +350 Enmity plus damage dealt as Enmity. You gain +20% Physical Defense for 30 seconds.")
+                .Description("Your next attack deals weapon DMG + 20 and generates +450 Enmity plus damage dealt as Enmity. You gain +20% Physical Defense for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.HeavyVibroblade, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FortressStrike3)
-                .Description("Your next attack deals weapon DMG + 30 and generates +350 Enmity plus damage dealt as Enmity. You gain +30% Physical Defense for 30 seconds.")
+                .Description("Your next attack deals weapon DMG + 30 and generates +550 Enmity plus damage dealt as Enmity. You gain +30% Physical Defense for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 30);
         }
@@ -401,7 +401,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SoulAscensionTrait)
-                .Description("Defeating an enemy after spending HP on a Heavy Vibroblade Offense ability grants +10% Attack and heals you for 10% of physical damage dealt for 30 seconds.")
+                .Description("Defeating an enemy after spending HP on a Heavy Vibroblade Offense ability grants +8% Attack and heals you for 8% of physical damage dealt for 30 seconds.")
                 .IncreasesStat(StatType.HeavyVibrobladeOffenseSoulAscension, 1)
                 .IncreasesStat(StatType.HeavyVibrobladeOffenseHitPointSpendWindowSeconds, 30)
                 .Price(6)
@@ -529,12 +529,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.UnbreakableWillTrait)
-                .Description("Gain +4 Attack Deflection, increased by +1 per 4 MGT to a maximum of +8. Deflecting an attack restores 4 STM. This can trigger once every 6 seconds.")
+                .Description("Gain +4 Melee Deflection, increased by +1 per 4 MGT to a maximum of +8. When your Melee Deflection negates a melee weapon auto-attack, restore 4 STM. This can trigger once every 6 seconds.")
                 .IncreasesStat(
-                    StatType.AttackDeflection,
+                    StatType.MeleeDeflection,
                     creature => Math.Min(8, 4 + Math.Max(0, GetAbilityScore(creature, AbilityType.Might)) / 4))
-                .IncreasesStat(StatType.DeflectionStaminaRestore, 4)
-                .IncreasesStat(StatType.DeflectionStaminaRestoreCooldownSeconds, 6)
+                .IncreasesStat(StatType.MeleeDeflectionStaminaRestore, 4)
+                .IncreasesStat(StatType.MeleeDeflectionStaminaRestoreCooldownSeconds, 6)
                 .Price(4)
                 .RequirementSkill(SkillType.HeavyVibroblade, 38);
         }

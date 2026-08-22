@@ -53,6 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             var hitChanceAdjustment = DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator);
             var criticalRateAdjustment = DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator);
             var duration = (int)CapstoneAbility.ActiveDurationSeconds;
+            var blastRadius = DeviceAbilityEffects.ApplyBlastRadiusBonus(activator, 5f);
 
             Ability.ApplyTelegraphedCombatImpact(
                 activator,
@@ -64,7 +65,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 typeof(BurnStatusEffect),
                 CombatImpactAreaShape.Sphere,
                 0f,
-                5f,
+                blastRadius,
                 0f,
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Fire,
@@ -104,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 typeof(SonicBurst3StatusEffect),
                 CombatImpactAreaShape.Sphere,
                 0f,
-                5f,
+                blastRadius,
                 0f,
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Sonic,

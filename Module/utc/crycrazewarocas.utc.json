@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 0.1666666716337204
+    "value": 0.125
   },
   "ClassList": {
     "type": "list",
@@ -106,14 +106,14 @@
         }
       },
       {
-        "__struct_id": 2,
+        "__struct_id": 1,
         "Feat": {
           "type": "word",
           "value": 1843
         }
       },
       {
-        "__struct_id": 3,
+        "__struct_id": 1,
         "Feat": {
           "type": "word",
           "value": 1769
@@ -141,7 +141,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 380
+    "value": 370
   },
   "Int": {
     "type": "byte",

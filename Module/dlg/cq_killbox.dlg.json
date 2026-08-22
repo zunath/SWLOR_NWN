@@ -64,7 +64,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Kill Box is no longer a lesson on my ledger. You proved it in Czerka Arms Test Range; keep proving it when nobody is keeping score."
+            "0": "Our business is concluded, and I don't say that often without an invoice attached. The range shoots straighter with your name in its file. If Czerka ever fields a kill box it can't close, I know exactly which contractor I'm calling."
           }
         }
       },
@@ -113,7 +113,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not yet. Kill Box is not a conversation I start on instinct or reputation. Come back when your work can survive the proof I keep for Czerka Arms Test Range."
+            "0": "You're not on my vendor list. Czerka retains rifle contractors whose work needs no revision - every round billable, every lane closed clean. Finish becoming that, and this office will draw up a contract with your name on it."
           }
         }
       },
@@ -258,7 +258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka signed off on a range problem it cannot put in a report. I need it solved inside the test lanes. Go to Czerka Arms Test Range on Smuggler's Moon, defeat the Kill Box adepts, and bring back the Kill Box field report."
+            "0": "Scope of work: six shooters, one enclosed fire lane, recovery of proprietary documents. Compensation follows deliverables. Now that the terms are on the table - Ressa Vale, range director, Czerka Arms. A test cell inside the Czerka Arms Test Range on the Smuggler's Moon has gone off-contract, and its adepts are running my kill box lanes live. Put six of them down and bring me the Kill Box Czerka Test Docket they score their trials under."
           }
         }
       },
@@ -307,7 +307,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Czerka Arms Test Range. I want proof, not a story about almost having it."
+            "0": "Signature noted. The key I've issued opens the test range gate - Czerka property; losing it comes out of your fee. Inside, the near lanes belong to the adepts. Six confirmed, docket in hand, then back to this office for settlement."
           }
         }
       },
@@ -376,7 +376,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Kill Box is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "A kill box is a fire lane with no exits that the target believes has several. Overlapping angles, sealed geometry, one outcome. Czerka sells the doctrine to militaries that can afford it. The cell in the range is giving out free demonstrations, and free is not a word this company recognizes."
           }
         }
       },
@@ -445,7 +445,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range is on Smuggler's Moon. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Former employees - technically still on the books, since nobody who carries termination paperwork into the Czerka Arms Test Range has walked back out with it. They're running live trials on anything that moves in the lanes. Unsanctioned, unbilled, uninsured. Three words I will not have on my range."
           }
         }
       },
@@ -514,7 +514,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "The Kill Box Czerka Test Docket is their trial record - lane configurations, fire schedules, results. Redacted, but the redactions are ours. While the cell holds it, they can argue their trials are sanctioned. Once you hand it to me, they are trespassers with rifles. Contracts are wonderful things."
           }
         }
       },
@@ -563,7 +563,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range still holds your first proof for Kill Box. Finish the target there before you bring me anything else."
+            "0": "Six adepts and the test docket. That was the scope, and this office does not amend scope mid-contract. The gate key still works. Use it."
           }
         }
       },
@@ -632,7 +632,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Kill Box lesson clean."
+            "0": "Six confirmed clears, and you're holding paper with my company's seal on it. My assessors bill triple for slower work. Let's see it."
           }
         }
       },
@@ -681,7 +681,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Kill Box is one step closer to belonging to you."
+            "0": "Received and filed. Credits are in your account at hazard rate, per the schedule. Czerka now lists you as a known vendor - which is worth more than the credits, though you didn't hear that from the director."
           }
         }
       },
@@ -826,7 +826,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Kill Box proof is waiting in Czerka Arms Test Range. This one is about second proof, not repetition. Go to Czerka Arms Test Range on Smuggler's Moon, defeat the Kill Box specialists, and bring back the Kill Box calibration core."
+            "0": "Your docket named five specialists - the cell's senior lane instructors. They've pulled a blast-cell regulator off my line and are overcharging the test rifles past rated tolerance. Scope of work, phase two: retire all five and return the Kill Box Blast-Cell Regulator to my bench."
           }
         }
       },
@@ -875,7 +875,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Czerka Arms Test Range. I want proof, not a story about almost having it."
+            "0": "Efficient. The specialists hold the mid-lanes past the first checkpoint, and they shoot in schedules - learn the schedule and you own the lane. Recover the regulator quickly if you can. My rifles drift hotter every hour it's gone."
           }
         }
       },
@@ -944,7 +944,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Kill Box is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "The adepts were students running drills. The specialists wrote the drills. Each one holds a lane and shapes it - crossfire timing, kill-zone spacing, herding angles. They will build a box around you while you admire your first shot. Don't admire. Move."
           }
         }
       },
@@ -1013,7 +1013,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range is on Smuggler's Moon. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "The Kill Box Blast-Cell Regulator meters charge to every test rifle on the line. In spec, it keeps the lanes survivable for staff. Out of spec, it turns a fire lane into an incineration lane. The cell prefers the second setting. My insurers, emphatically, do not."
           }
         }
       },
@@ -1082,7 +1082,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Czerka security is bonded for theft, vandalism, and workplace disputes. A rogue cell running live-fire trials in a proprietary facility is none of those, and every guard I send in is a liability filing with a family attached. You, on the other hand, signed a waiver. Page four of the terms."
           }
         }
       },
@@ -1131,7 +1131,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range still holds your second proof for Kill Box. Finish the target there before you bring me anything else."
+            "0": "Five specialists, one regulator, mid-lanes past the first checkpoint. My rifles drift hotter by the day, so bill me results, not progress."
           }
         }
       },
@@ -1200,7 +1200,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Kill Box lesson clean."
+            "0": "My bench diagnostics steadied this morning for the first time in a month, which means the regulator has left their hands. Five lanes have gone quiet as well. Show me."
           }
         }
       },
@@ -1249,7 +1249,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Kill Box is one step closer to belonging to you."
+            "0": "Back in spec by tonight. Payment has cleared, and your vendor rating just went up a tier - you now qualify for the contracts I don't post. Convenient. The next one was never postable."
           }
         }
       },
@@ -1394,7 +1394,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Kill Box proof is waiting in Czerka Arms Test Range. This one is about breach proof, not repetition. Go to Czerka Arms Test Range on Smuggler's Moon, defeat the Kill Box warden, and bring back the Kill Box broken seal."
+            "0": "This clause I would normally read to a room of lawyers. Listen closely. The cell's warden holds the deep range - the proving lanes where Czerka scores its production rifles - and he wears the Kill Box Scored Range Crest, which under company law makes him range master. I need that crest, which means I need him retired. Permanently. Now the fine print: my insurers will not cover boss-lane work under three contractors, and that clause is written in other people's blood. Two shooters better than you have gone into his box alone. I countersigned both of their final invoices."
           }
         }
       },
@@ -1443,7 +1443,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Czerka Arms Test Range. I want proof, not a story about almost having it."
+            "0": "The phrase I wanted - names, plural. File them with my clerk before you go down; one waiver covers three signatures. The deep range opens past the specialists' checkpoint. He'll know you're coming. Wardens always do. It's the coming back he has never had to account for."
           }
         }
       },
@@ -1512,7 +1512,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Kill Box is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "He runs the proving lanes like an audit. Every angle you take, he has already scored; every piece of cover carries a failure rating he memorized years ago. Alone, you're a data point. Three of you, moving on separate clocks, and his whole scoring model comes apart. That isn't encouragement. That's the actuarial table."
           }
         }
       },
@@ -1581,7 +1581,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range is on Smuggler's Moon. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "The Kill Box Scored Range Crest is authority stamped in metal. Whoever wears it sets range law - schedules, access, live-fire authorization. It's the legal fig leaf over everything the cell does. Bring it to me and their last signature dies with him."
           }
         }
       },
@@ -1650,7 +1650,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "A two-partner assessment team out of the Corellian sector. Excellent scores, better references. They went in sequentially - that was the error. He closed the box on one while the other was still clearing the approach. I don't tell you this to frighten you. The fine print exists for a reason, and the reason has two names."
           }
         }
       },
@@ -1699,7 +1699,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range still holds your breach proof for Kill Box. Finish the target there before you bring me anything else."
+            "0": "The warden still wears my crest in the deep range, and his lanes do not get friendlier with age. Three contractors, one target. The clause has not changed."
           }
         }
       },
@@ -1768,7 +1768,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Kill Box lesson clean."
+            "0": "The deep range went silent in the middle of its own schedule yesterday. Wardens do not miss schedules while breathing. I believe you are holding my crest."
           }
         }
       },
@@ -1817,7 +1817,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Kill Box is one step closer to belonging to you."
+            "0": "Then by Czerka bylaw the range has no master, and mastership reverts to the director. Me. You've handed my own facility's law back to me, and the hazard pay reflects it. Rest your crew. The inner circle will not read this as a settlement offer."
           }
         }
       },
@@ -1962,7 +1962,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Kill Box proof is waiting in Czerka Arms Test Range. This one is about circle proof, not repetition. Go to Czerka Arms Test Range on Smuggler's Moon, defeat the Kill Box inner circle, and bring back the Kill Box command mark."
+            "0": "The warden's retirement has triggered what legal calls a succession dispute. Four of the cell's founders - their inner circle - have sealed the executive lanes and pooled their access into a single clearance chit. While they hold it, they can countersign their own trials in Czerka's name. Scope of work: all four, and the Kill Box Czerka Clearance Chit on this desk. This is the clause that dissolves their little company."
           }
         }
       },
@@ -2011,7 +2011,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Czerka Arms Test Range. I want proof, not a story about almost having it."
+            "0": "Take the same crew that broke the warden. The executive lanes interlock, and four shooters who built the doctrine together will run you through overlapping boxes without a word passing between them. Break one lane and the geometry starts lying to them. After that it's arithmetic."
           }
         }
       },
@@ -2080,7 +2080,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Kill Box is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "Founders. Czerka's original kill-box design team, from before they decided the doctrine was theirs and the paychecks were incidental. Each one drew a quarter of the lanes down there. Clearing them isn't just clearing the range. It's retiring the authorship."
           }
         }
       },
@@ -2149,7 +2149,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range is on Smuggler's Moon. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Pooled clearance means no single founder can sell out the rest - the chit only countersigns while all four live to contest it. Sentimental, for people in the killing business. It also means that when the fourth one falls, the Kill Box Czerka Clearance Chit becomes an unclaimed asset. Czerka is very good at unclaimed assets."
           }
         }
       },
@@ -2218,7 +2218,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "The warden proved rifles. These four prove doctrine. He scored your angles; they will redraw the lanes around you mid-fight - the wall you counted on opening, the exit becoming a firing slot. Keep your crew tight and your geometry tighter. And remember they haven't fought inside each other's lanes in years. Rust is billable."
           }
         }
       },
@@ -2267,7 +2267,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range still holds your circle proof for Kill Box. Finish the target there before you bring me anything else."
+            "0": "Four founders, one chit, and my executive lanes still under somebody else's law. The dispute stays open until that chit is on this desk."
           }
         }
       },
@@ -2336,7 +2336,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Kill Box lesson clean."
+            "0": "Four termination notices cleared this morning - backdated, but legal never minds that. The chit. Let me see it."
           }
         }
       },
@@ -2385,7 +2385,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Kill Box is one step closer to belonging to you."
+            "0": "Uncontested. My favorite word in any language. The cell now has no authors, no authority, and no paperwork - as far as Czerka's records show, they never happened. Full rate plus a discretion bonus. One name remains on my range, and I'll be honest with you: he was never in their chain of command."
           }
         }
       },
@@ -2530,7 +2530,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Kill Box proof is waiting in Czerka Arms Test Range. This one is about mastery proof, not repetition. Go to Czerka Arms Test Range on Smuggler's Moon, defeat the Kill Box master, and return with the final proof."
+            "0": "Final clause. The man on the last lane of the deep range does not belong to the cell - they built their whole operation trying to reproduce him. He is the doctrine completed: a kill box is not a place he builds, it is a thing he does. Anywhere. To anyone. He is a walking breach of every contract Czerka holds, and there is no document I can file against that. Only a contractor. No deliverable this time - nothing he carries is worth more than him ceasing to. And understand that the three-signature clause is not insurance anymore. It is arithmetic. No one has walked out of his box alone, and I have stopped pricing the attempt."
           }
         }
       },
@@ -2579,7 +2579,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Czerka Arms Test Range. I want proof, not a story about almost having it."
+            "0": "Countersigned. Take your crew through the deep range - past where the warden fell, past the executive lanes, to the last box. He will let you set up. He always lets them set up. The moment his box closes, everything inside it belongs to him, so none of you had better be standing where you were standing."
           }
         }
       },
@@ -2648,7 +2648,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Kill Box is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "You have cleared lanes built from walls and angles. He doesn't need them. Wherever he stands, the exits are already covered and the crossfire is already scheduled - the same box you are about to earn the right to build, except he finished earning it years ago and kept going. When it's over, you will understand him better than I ever will. That is the one part of this contract I can't price."
           }
         }
       },
@@ -2717,7 +2717,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range is on Smuggler's Moon. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Czerka didn't let him. Czerka lost him, then spent a decade pretending the deep range was decommissioned rather than admit a proprietary doctrine walked off the line inside one man. The cell worshipped him. He never once acknowledged them. I find that almost admirable. Almost."
           }
         }
       },
@@ -2786,7 +2786,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Recertified, reopened, and renamed after some board member's daughter, probably. Czerka moves on; it is the company's one genuine talent. What happens to you is the more interesting line item. The doctrine has to live somewhere, and my recommendation will read that it should live in someone who signs their work."
           }
         }
       },
@@ -2835,7 +2835,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Czerka Arms Test Range still holds your mastery proof for Kill Box. Finish the target there before you bring me anything else."
+            "0": "The last box is still standing, and so - presumably - are all of you. Take that as good news about your crew and bad news about the schedule. He is waiting. He is very patient. It is the only thing about him that is."
           }
         }
       },
@@ -2904,7 +2904,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Kill Box lesson clean."
+            "0": "The deep range is silent. Genuinely silent, not holding-its-breath silent. My instruments logged the last lane clearing, and yet here you stand, unbilled. Say the words. I want them on record."
           }
         }
       },
@@ -2953,7 +2953,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Kill Box is one step closer to belonging to you."
+            "0": "Then the contract closes with it, and Kill Box changes hands - not the name, Czerka keeps the name. The thing itself. You built a box around the man who invented them and walked out with every signature intact. Final payment has cleared. From today, when clients ask who wrote the doctrine, my answer is: no one. But I know who finished it."
           }
         }
       }
@@ -3023,7 +3023,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to the terms."
           }
         }
       },
@@ -3100,7 +3100,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the first proof."
+            "0": "Terms accepted. I'll clear the lane."
           }
         }
       },
@@ -3165,7 +3165,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Kill Box demand?"
+            "0": "Define the deliverable. What is a kill box?"
           }
         }
       },
@@ -3230,7 +3230,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Who exactly am I clearing out?"
           }
         }
       },
@@ -3295,7 +3295,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "And the docket? What's it to Czerka?"
           }
         }
       },
@@ -3340,7 +3340,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "I'll review the terms first."
           }
         }
       },
@@ -3417,7 +3417,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "The Kill Box Czerka Test Docket. Signed for."
           }
         }
       },
@@ -3482,7 +3482,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to phase two."
           }
         }
       },
@@ -3559,7 +3559,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the second proof."
+            "0": "Phase two. Consider it signed."
           }
         }
       },
@@ -3624,7 +3624,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Kill Box demand?"
+            "0": "What separates a specialist from the six I cleared?"
           }
         }
       },
@@ -3689,7 +3689,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "What does the regulator do for them?"
           }
         }
       },
@@ -3754,7 +3754,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "Why not send Czerka security down there?"
           }
         }
       },
@@ -3799,7 +3799,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Hold the contract. I'll be back."
           }
         }
       },
@@ -3876,7 +3876,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "The Kill Box Blast-Cell Regulator. Recovered per contract."
           }
         }
       },
@@ -3941,7 +3941,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to the clause."
           }
         }
       },
@@ -4018,7 +4018,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the breach proof."
+            "0": "Then I'll bring two names I trust and we'll close it."
           }
         }
       },
@@ -4083,7 +4083,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Kill Box demand?"
+            "0": "How does the warden fight?"
           }
         }
       },
@@ -4148,7 +4148,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "What is the crest worth, contractually?"
           }
         }
       },
@@ -4213,7 +4213,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "Tell me about the two who didn't come back."
           }
         }
       },
@@ -4258,7 +4258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Not until my roster is filled."
           }
         }
       },
@@ -4335,7 +4335,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "The Kill Box Scored Range Crest. The warden won't contest it."
           }
         }
       },
@@ -4400,7 +4400,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to the dispute."
           }
         }
       },
@@ -4477,7 +4477,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the circle proof."
+            "0": "Four names. I'll close the dispute."
           }
         }
       },
@@ -4542,7 +4542,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Kill Box demand?"
+            "0": "Who are the four?"
           }
         }
       },
@@ -4607,7 +4607,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Why pool their clearance into one chit?"
           }
         }
       },
@@ -4672,7 +4672,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "Will they fight like the warden did?"
           }
         }
       },
@@ -4717,7 +4717,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Give me time to brief my crew."
           }
         }
       },
@@ -4794,7 +4794,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "The Kill Box Czerka Clearance Chit. Uncontested."
           }
         }
       },
@@ -4859,7 +4859,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to the final clause."
           }
         }
       },
@@ -4936,7 +4936,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the mastery proof."
+            "0": "I'll sign it. And I won't be signing alone."
           }
         }
       },
@@ -5001,7 +5001,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Kill Box demand?"
+            "0": "What makes him the master?"
           }
         }
       },
@@ -5066,7 +5066,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "How did Czerka let him get this far?"
           }
         }
       },
@@ -5131,7 +5131,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "What happens to the range once he's gone?"
           }
         }
       },
@@ -5176,7 +5176,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "When my crew is ready. Not before."
           }
         }
       },
@@ -5253,7 +5253,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "It's done. The box closed on its maker."
           }
         }
       }

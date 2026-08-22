@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Allows you to give good feedback to your players by telling them why the XP is given.  A great tool to shape the play towards the style of play that you like.\n\n~~\nBy Demetrious (mstorey20@comcast.net)"
     }
   },
   "Identified": {
@@ -109,6 +109,26 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "dmfi_xp"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NO_ECONOMY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
   },
   "xModelPart1": {
     "type": "word",

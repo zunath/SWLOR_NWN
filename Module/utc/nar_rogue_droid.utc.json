@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 7.0
+    "value": 13.0
   },
   "ClassList": {
     "type": "list",
@@ -38,7 +38,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 27
+    "value": 26
   },
   "Conversation": {
     "type": "resref",
@@ -50,7 +50,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 450
+    "value": 818
   },
   "DecayTime": {
     "type": "dword",
@@ -63,7 +63,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": "A malfunctioning combat unit left to roam the moon’s industrial districts. Its targeting protocols are unstable and it attacks anything nearby."
+      "0": "A malfunctioning combat unit left to roam the moonâ€™s industrial districts. Its targeting protocols are unstable and it attacks anything nearby."
     }
   },
   "Dex": {
@@ -81,14 +81,14 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "sith_pistol"
+          "value": "nar_rogued_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "nar_droid_sk"
+          "value": "nar_rogued_sk"
         }
       }
     ]
@@ -113,6 +113,27 @@
           "type": "word",
           "value": 392
         }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1851
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1850
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1855
+        }
       }
     ]
   },
@@ -136,11 +157,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 450
+    "value": 786
   },
   "Int": {
     "type": "byte",
-    "value": 27
+    "value": 26
   },
   "Interruptable": {
     "type": "byte",
@@ -170,7 +191,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 482
+    "value": 818
   },
   "NaturalAC": {
     "type": "byte",
@@ -475,7 +496,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 10
+    "value": 18
   },
   "Subrace": {
     "type": "cexostring",
@@ -546,6 +567,6 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 16
+    "value": 18
   }
 }

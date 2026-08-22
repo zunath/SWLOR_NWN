@@ -23,7 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                     .Level(1)
                     .HasRecastDelay(RecastGroup.AimedShot, 18.0f),
                 SkillType.Rifle,
-                10,
+                8,
                 3,
                 null,
                 null,
@@ -53,7 +53,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                     .Level(2)
                     .HasRecastDelay(RecastGroup.AimedShot, 18.0f),
                 SkillType.Rifle,
-                22,
+                18,
                 3,
                 null,
                 null,
@@ -83,7 +83,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                     .Level(3)
                     .HasRecastDelay(RecastGroup.AimedShot, 18.0f),
                 SkillType.Rifle,
-                34,
+                28,
                 3,
                 null,
                 null,
@@ -113,7 +113,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                     .Level(4)
                     .HasRecastDelay(RecastGroup.AimedShot, 18.0f),
                 SkillType.Rifle,
-                46,
+                38,
                 3,
                 null,
                 null,

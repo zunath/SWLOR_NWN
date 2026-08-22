@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .Description("Weekly maintenance fees are reduced by 10%.")
-                .Price(3)
+                .Price(4)
                 .RequirementSkill(SkillType.Leadership, 20);
         }
 

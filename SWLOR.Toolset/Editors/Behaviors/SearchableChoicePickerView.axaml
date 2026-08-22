@@ -1,0 +1,84 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:behaviors="using:SWLOR.Toolset.Editors.Behaviors"
+             x:Class="SWLOR.Toolset.Editors.Behaviors.SearchableChoicePickerView"
+             x:Name="Root"
+             x:DataType="behaviors:BehaviorRowViewModel">
+  <!-- Long catalogs use this one deferred, virtualized picker everywhere. Compact mode lets a
+       dense editor row reuse the exact interaction without repeating the behavior field label. -->
+  <StackPanel Spacing="6">
+    <StackPanel Spacing="6" IsVisible="{Binding !Compact, ElementName=Root}">
+      <TextBlock Text="{Binding SelectedChoiceDisplay}" TextTrimming="CharacterEllipsis"
+                 VerticalAlignment="Center" />
+      <TextBlock Text="{Binding SearchSummary}" Classes="count" />
+      <StackPanel IsVisible="{Binding !IsInlineSearchChoice}">
+        <StackPanel Orientation="Horizontal" Spacing="6" IsVisible="{Binding !IsSearchExpanded}">
+          <Button Content="Choose..." Command="{Binding OpenSearchCommand}" />
+          <Button Content="Clear" Command="{Binding ClearChoiceCommand}"
+                  IsVisible="{Binding CanClearChoice}" />
+        </StackPanel>
+      </StackPanel>
+    </StackPanel>
+
+    <Button IsVisible="{Binding Compact, ElementName=Root}"
+            Command="{Binding OpenSearchCommand}"
+            HorizontalAlignment="Stretch"
+            HorizontalContentAlignment="Left"
+            ToolTip.Tip="Choose a value">
+      <StackPanel Spacing="2">
+        <TextBlock Text="{Binding SelectedChoiceDisplay}" TextTrimming="CharacterEllipsis" />
+        <TextBlock Text="{Binding SelectedChoiceIdentifier}" Classes="resref"
+                   IsVisible="{Binding HasSelectedChoiceIdentifier}" />
+      </StackPanel>
+    </Button>
+
+    <StackPanel IsVisible="{Binding IsSearchExpanded}" Spacing="6">
+      <!-- Leave a full scrollbar-width gutter plus breathing room inside the header. The Details
+           form owns another vertical scroller, so a token inset still left the final letters of
+           Close underneath its edge. -->
+      <Grid ColumnDefinitions="*,Auto" ColumnSpacing="6" Margin="0,0,24,0">
+        <TextBox Text="{Binding ChoiceSearchText, Mode=TwoWay}"
+                 Watermark="{Binding SearchWatermark}" />
+        <Button Grid.Column="1" Content="Close" Command="{Binding CloseSearchCommand}"
+                IsVisible="{Binding !IsInlineSearchChoice}" />
+      </Grid>
+      <TextBlock Text="{Binding SearchSummary}" Classes="count"
+                 IsVisible="{Binding Compact, ElementName=Root}" />
+      <Border BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="2"
+              ClipToBounds="True">
+        <ListBox ItemsSource="{Binding FilteredChoices}" MaxHeight="220"
+                 ScrollViewer.ScrollChanged="OnSearchResultsScrollChanged"
+                 ScrollViewer.VerticalScrollBarVisibility="Auto">
+          <ListBox.ItemsPanel>
+            <ItemsPanelTemplate>
+              <VirtualizingStackPanel />
+            </ItemsPanelTemplate>
+          </ListBox.ItemsPanel>
+          <ListBox.ItemTemplate>
+            <DataTemplate DataType="behaviors:BehaviorChoiceViewModel">
+              <Grid ColumnDefinitions="*,Auto">
+                <Button Classes="behavior" Classes.on="{Binding IsSelected}"
+                        Margin="2" Padding="8,5"
+                        HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                        Command="{Binding $parent[ListBox].((behaviors:BehaviorRowViewModel)DataContext).PickChoiceCommand}"
+                        CommandParameter="{Binding}">
+                  <StackPanel Spacing="2">
+                    <TextBlock Text="{Binding Display}" TextWrapping="Wrap" />
+                    <TextBlock Text="{Binding Identifier}" Classes="resref"
+                               IsVisible="{Binding HasIdentifier}" />
+                    <TextBlock Text="{Binding Summary}" Classes="dim" FontSize="10.5"
+                               TextWrapping="Wrap" IsVisible="{Binding HasSummary}" />
+                  </StackPanel>
+                </Button>
+                <Button Grid.Column="1" Content="▶" Margin="2" Padding="8,5"
+                        IsVisible="{Binding CanPreviewAudio}" ToolTip.Tip="Preview sound set"
+                        Command="{Binding $parent[ListBox].((behaviors:BehaviorRowViewModel)DataContext).PreviewAudioCommand}"
+                        CommandParameter="{Binding}" />
+              </Grid>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+        </ListBox>
+      </Border>
+    </StackPanel>
+  </StackPanel>
+</UserControl>

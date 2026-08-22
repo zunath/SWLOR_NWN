@@ -100,27 +100,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .BindRowCount(model => model.RecipeNames);
                             });
 
-                            col2.AddRow(row2 =>
-                            {
-                                row2.AddSpacer();
-                                row2.AddButton()
-                                    .SetText("<")
-                                    .SetWidth(32f)
-                                    .SetHeight(35f)
-                                    .BindOnClicked(model => model.OnClickPreviousPage());
-
-                                row2.AddComboBox()
-                                    .BindOptions(model => model.PageNumbers)
-                                    .BindSelectedIndex(model => model.SelectedPageIndex);
-
-                                row2.AddButton()
-                                    .SetText(">")
-                                    .SetWidth(32f)
-                                    .SetHeight(35f)
-                                    .BindOnClicked(model => model.OnClickNextPage());
-
-                                row2.AddSpacer();
-                            });
+                            col2.AddPagination(
+                                model => model.PageNumbers,
+                                model => model.SelectedPageIndex,
+                                model => model.OnClickPreviousPage(),
+                                model => model.OnClickNextPage());
                         });
 
                         row.AddColumn(col2 =>

@@ -15,8 +15,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         [NWNEventHandler(ScriptName.OnOpenTrainingStore)]
         public static void OpenTrainingStore()
         {
-            var player = GetPCSpeaker();
-            Gui.TogglePlayerWindow(player, GuiWindowType.TrainingStore, null, OBJECT_SELF);
+            OpenTrainingStore(GetPCSpeaker(), OBJECT_SELF);
+        }
+
+        public static bool OpenTrainingStore(uint player, uint terminal)
+        {
+            if (!GetIsPC(player))
+                return false;
+
+            Gui.TogglePlayerWindow(player, GuiWindowType.TrainingStore, null, terminal);
+            return true;
         }
 
         private class TerminalItem

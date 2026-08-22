@@ -2,13 +2,13 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DialogService;
+using SWLOR.Game.Server.Service.ConversationService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.NWN.API.NWScript;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
-    public class GuildMasterDialog: DialogBase
+    public class GuildMasterDialog: ConversationMenuDefinition
     {
         private class Model
         {
@@ -20,9 +20,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
         private const string RankTooLowPageId = "RANK_TOO_LOW_PAGE";
         private const string GuildStorePageId = "GUILD_STORE_PAGE";
 
-        public override PlayerDialog SetUp(uint player)
+        public override ConversationMenuSpec Build()
         {
-            var builder = new DialogBuilder()
+            var builder = new ConversationMenuBuilder()
                 .WithDataModel(new Model())
                 .AddInitializationAction(Initialization)
                 .AddPage(MainPageId, MainPageInit)
@@ -35,24 +35,24 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
 
         private void Initialization()
         {
-            var player = GetPC();
-            var model = GetDataModel<Model>();
+            var player = Player;
+            var model = Data<Model>();
 
             // Don't let non-players use this convo.
             if (GetIsDM(player) || !GetIsPC(player))
             {
-                EndConversation();
+                Close();
                 return;
             }
 
-            var speaker = GetDialogTarget();
+            var speaker = Owner;
             model.Guild = (GuildType)GetLocalInt(speaker, "GUILD_ID");
         }
 
-        private void MainPageInit(DialogPage page)
+        private void MainPageInit(ConversationMenuPage page)
         {
-            var model = GetDataModel<Model>();
-            var player = GetPC();
+            var model = Data<Model>();
+            var player = Player;
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
             var guild = Guild.GetGuild(model.Guild);
@@ -61,37 +61,37 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 : new PlayerGuild();
             var requiredPoints = Guild.GetGPRequiredForRank(pcGuild.Rank);
 
-            page.Header = ColorToken.Green("Guild: ") + guild.Name + "\n" +
-                          ColorToken.Green("Rank: ") + pcGuild.Rank + " (" + pcGuild.Points + " / " + requiredPoints + " GP)\n" +
-                          ColorToken.Green("Description: ") + guild.Name + "\n\n" +
+            page.Header = "Guild: " + guild.Name + "\n" +
+                          "Rank: " + pcGuild.Rank + " (" + pcGuild.Points + " / " + requiredPoints + " GP)\n" +
+                          "Description: " + guild.Name + "\n\n" +
                           "Welcome to my guild. What can I help you with?";
 
             page.AddResponse("Tell me about guilds.", () =>
             {
-                ChangePage(TellMePageId);
+                GoToPage(TellMePageId);
             });
 
             page.AddResponse("Show me the task list.", () =>
             {
-                var payload = new GuildTasksPayload(model.Guild, GetDialogTarget());
-                Gui.TogglePlayerWindow(player, GuiWindowType.GuildTasks, payload, GetDialogTarget());
-                EndConversation();
+                var payload = new GuildTasksPayload(model.Guild, Owner);
+                Gui.TogglePlayerWindow(player, GuiWindowType.GuildTasks, payload, Owner);
+                Close();
             });
 
             page.AddResponse("Show me the guild shop.", () =>
             {
                 if (pcGuild.Rank <= 0)
                 {
-                    ChangePage(RankTooLowPageId);
+                    GoToPage(RankTooLowPageId);
                 }
                 else
                 {
-                    ChangePage(GuildStorePageId);
+                    GoToPage(GuildStorePageId);
                 }
             });
         }
 
-        private void TellMePageInit(DialogPage page)
+        private void TellMePageInit(ConversationMenuPage page)
         {
             page.Header = "Guilds are organizations focused on the advancement of a particular task. Every guild is freely open for you to contribute as you see fit. Those who contribute the most will receive the biggest benefits.\n\n" +
                 "One of the ways we reward contributors is by way of Guild Points or GP. When you complete a task - such as hunting a beast or creating needed supplies - you'll receive not only payment but also GP.\n\n" +
@@ -99,18 +99,18 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 "There's no fee to join and you may come and go as you please.";
         }
 
-        private void RankTooLowPageInit(DialogPage page)
+        private void RankTooLowPageInit(ConversationMenuPage page)
         {
             page.Header = "I'm sorry but your rank is too low to grant you access to that. Perform tasks for us and come back when you've increased your rank with our guild.";
         }
 
-        private void GuildStorePageInit(DialogPage page)
+        private void GuildStorePageInit(ConversationMenuPage page)
         {
-            var player = GetPC();
+            var player = Player;
 
             void OpenStore(int rank)
             {
-                var speaker = GetDialogTarget();
+                var speaker = Owner;
                 var storeTag = GetLocalString(speaker, $"STORE_TAG_RANK_{rank}");
 
                 // Invalid local variable set.
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 NWScript.OpenStore(store, player);
             }
 
-            var model = GetDataModel<Model>();
+            var model = Data<Model>();
             var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
             var pcGuild = dbPlayer.Guilds.ContainsKey(model.Guild)

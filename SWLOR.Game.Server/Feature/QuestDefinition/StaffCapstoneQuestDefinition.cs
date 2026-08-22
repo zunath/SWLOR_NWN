@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
         private void UnmovingCenterFoundation()
         {
-            _builder.Create(UnmovingCenterFoundationQuestId, "First Principle: Unmoving Center")
+            _builder.Create(UnmovingCenterFoundationQuestId, "Root Before Wind")
                 .PrerequisiteSkill(SkillType.Staff, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
@@ -62,20 +62,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Unmoving Center capstone line continues in Anchorhead Canyon Range. Defeat Unmoving Center adepts and secure the Unmoving Center Canyon Range Tally.")
+                    "Six Unmoving Center adepts train at Anchorhead Canyon Range on Tatooine. Defeat six of them and recover the Unmoving Center Canyon Range Tally.")
                 .AddKillObjective(NPCGroupType.Tatooine_UnmovingCenter_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneUnmovingCenterCanyonRangeTally)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Unmoving Center Canyon Range Tally from Anchorhead Canyon Range. Return to Marda Voss for the next Unmoving Center lesson.")
+                    "The Unmoving Center Canyon Range Tally has been recovered from Anchorhead Canyon Range. Return it to Marda Voss at the Anchorhead cantina on Tatooine.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
 
         private void UnmovingCenterMeasure()
         {
-            _builder.Create(UnmovingCenterMeasureQuestId, "The Measure of Unmoving Center")
+            _builder.Create(UnmovingCenterMeasureQuestId, "The Windless Ground")
                 .PrerequisiteQuest(UnmovingCenterFoundationQuestId)
                 .PrerequisiteSkill(SkillType.Staff, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneUnmovingCenterSightlineCalibrator)
@@ -83,20 +83,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Unmoving Center capstone line continues in Anchorhead Canyon Range. Defeat Unmoving Center specialists and secure the Unmoving Center Sightline Calibrator.")
+                    "Five Unmoving Center specialists train at Anchorhead Canyon Range on Tatooine. Defeat five of them and recover the Unmoving Center Sightline Calibrator.")
                 .AddKillObjective(NPCGroupType.Tatooine_UnmovingCenter_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneUnmovingCenterSightlineCalibrator)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Unmoving Center Sightline Calibrator from Anchorhead Canyon Range. Return to Marda Voss for the next Unmoving Center lesson.")
+                    "The Unmoving Center Sightline Calibrator has been recovered from Anchorhead Canyon Range. Return it to Marda Voss at the Anchorhead cantina on Tatooine.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
 
         private void UnmovingCenterBreach()
         {
-            _builder.Create(UnmovingCenterBreachQuestId, "Fault Line: Unmoving Center")
+            _builder.Create(UnmovingCenterBreachQuestId, "Where the Warden Stopped")
                 .PrerequisiteQuest(UnmovingCenterMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Staff, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneUnmovingCenterShatteredRangeCrest)
@@ -104,20 +104,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Unmoving Center capstone line continues in Anchorhead Canyon Range. Defeat the Unmoving Center warden and secure the Unmoving Center Shattered Range Crest.")
+                    "The Unmoving Center warden holds Anchorhead Canyon Range on Tatooine. Defeat the warden and recover the Unmoving Center Shattered Range Crest.")
                 .AddKillObjective(NPCGroupType.Tatooine_UnmovingCenter_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneUnmovingCenterShatteredRangeCrest)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Unmoving Center Shattered Range Crest from Anchorhead Canyon Range. Return to Marda Voss for the next Unmoving Center lesson.")
+                    "The Unmoving Center Shattered Range Crest has been recovered from Anchorhead Canyon Range. Return it to Marda Voss at the Anchorhead cantina on Tatooine.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
 
         private void UnmovingCenterCircle()
         {
-            _builder.Create(UnmovingCenterCircleQuestId, "Circle of Proof: Unmoving Center")
+            _builder.Create(UnmovingCenterCircleQuestId, "Four Who Never Moved")
                 .PrerequisiteQuest(UnmovingCenterBreachQuestId)
                 .PrerequisiteSkill(SkillType.Staff, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneUnmovingCenterMarshalsChallengeChit)
@@ -125,31 +125,31 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Unmoving Center capstone line continues in Anchorhead Canyon Range. Defeat the Unmoving Center inner circle and secure the Unmoving Center Marshal's Challenge Chit.")
+                    "Four members of the Unmoving Center inner circle hold Anchorhead Canyon Range on Tatooine. Defeat all four and recover the Unmoving Center Marshal's Challenge Chit.")
                 .AddKillObjective(NPCGroupType.Tatooine_UnmovingCenter_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneUnmovingCenterMarshalsChallengeChit)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Unmoving Center Marshal's Challenge Chit from Anchorhead Canyon Range. Return to Marda Voss for the next Unmoving Center lesson.")
+                    "The Unmoving Center Marshal's Challenge Chit has been recovered from Anchorhead Canyon Range. Return it to Marda Voss at the Anchorhead cantina on Tatooine.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
 
         private void UnmovingCenterMastery()
         {
-            _builder.Create(UnmovingCenterMasteryQuestId, "Unmoving Center Mastery")
+            _builder.Create(UnmovingCenterMasteryQuestId, "The One Who Stopped Moving")
                 .PrerequisiteQuest(UnmovingCenterCircleQuestId)
                 .PrerequisiteSkill(SkillType.Staff, 50)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Unmoving Center master is waiting in Anchorhead Canyon Range. Defeat the master and end the capstone trial.")
+                    "The Unmoving Center master holds Anchorhead Canyon Range on Tatooine. Defeat the master.")
                 .AddKillObjective(NPCGroupType.Tatooine_UnmovingCenter_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Unmoving Center master is defeated. Return to Marda Voss and claim the completed lesson.")
+                    "The Unmoving Center master has been defeated. Return to Marda Voss at the Anchorhead cantina on Tatooine.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>
@@ -160,7 +160,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
         private void WorldbreakerFoundation()
         {
-            _builder.Create(WorldbreakerFoundationQuestId, "First Principle: Worldbreaker")
+            _builder.Create(WorldbreakerFoundationQuestId, "Full Load Rating")
                 .PrerequisiteSkill(SkillType.Staff, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
@@ -175,20 +175,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Worldbreaker capstone line continues in CZ-220 Breaker Yard. Defeat Worldbreaker adepts and secure the Worldbreaker Breaker Yard Work Order.")
+                    "Six Worldbreaker adepts operate at CZ-220 Breaker Yard on CZ-220. Defeat six of them and recover the Worldbreaker Breaker Yard Work Order.")
                 .AddKillObjective(NPCGroupType.CZ220_Worldbreaker_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneWorldbreakerBreakerYardWorkOrder)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Worldbreaker Breaker Yard Work Order from CZ-220 Breaker Yard. Return to Unit KX-17 for the next Worldbreaker lesson.")
+                    "The Worldbreaker Breaker Yard Work Order has been recovered from CZ-220 Breaker Yard. Return it to Unit KX-17 at the CZ-220 maintenance level.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
 
         private void WorldbreakerMeasure()
         {
-            _builder.Create(WorldbreakerMeasureQuestId, "The Measure of Worldbreaker")
+            _builder.Create(WorldbreakerMeasureQuestId, "Stress Reading")
                 .PrerequisiteQuest(WorldbreakerFoundationQuestId)
                 .PrerequisiteSkill(SkillType.Staff, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneWorldbreakerJunklineControlRelay)
@@ -196,20 +196,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Worldbreaker capstone line continues in CZ-220 Breaker Yard. Defeat Worldbreaker specialists and secure the Worldbreaker Junkline Control Relay.")
+                    "Five Worldbreaker specialists operate at CZ-220 Breaker Yard on CZ-220. Defeat five of them and recover the Worldbreaker Junkline Control Relay.")
                 .AddKillObjective(NPCGroupType.CZ220_Worldbreaker_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneWorldbreakerJunklineControlRelay)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Worldbreaker Junkline Control Relay from CZ-220 Breaker Yard. Return to Unit KX-17 for the next Worldbreaker lesson.")
+                    "The Worldbreaker Junkline Control Relay has been recovered from CZ-220 Breaker Yard. Return it to Unit KX-17 at the CZ-220 maintenance level.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
 
         private void WorldbreakerBreach()
         {
-            _builder.Create(WorldbreakerBreachQuestId, "Fault Line: Worldbreaker")
+            _builder.Create(WorldbreakerBreachQuestId, "Single Point of Failure")
                 .PrerequisiteQuest(WorldbreakerMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Staff, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneWorldbreakerShearedBaySigil)
@@ -217,20 +217,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Worldbreaker capstone line continues in CZ-220 Breaker Yard. Defeat the Worldbreaker warden and secure the Worldbreaker Sheared Bay Sigil.")
+                    "The Worldbreaker warden holds CZ-220 Breaker Yard on CZ-220. Defeat the warden and recover the Worldbreaker Sheared Bay Sigil.")
                 .AddKillObjective(NPCGroupType.CZ220_Worldbreaker_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneWorldbreakerShearedBaySigil)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Worldbreaker Sheared Bay Sigil from CZ-220 Breaker Yard. Return to Unit KX-17 for the next Worldbreaker lesson.")
+                    "The Worldbreaker Sheared Bay Sigil has been recovered from CZ-220 Breaker Yard. Return it to Unit KX-17 at the CZ-220 maintenance level.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
 
         private void WorldbreakerCircle()
         {
-            _builder.Create(WorldbreakerCircleQuestId, "Circle of Proof: Worldbreaker")
+            _builder.Create(WorldbreakerCircleQuestId, "Redundant Units")
                 .PrerequisiteQuest(WorldbreakerBreachQuestId)
                 .PrerequisiteSkill(SkillType.Staff, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneWorldbreakerForemansOverrideChip)
@@ -238,31 +238,31 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Worldbreaker capstone line continues in CZ-220 Breaker Yard. Defeat the Worldbreaker inner circle and secure the Worldbreaker Foreman's Override Chip.")
+                    "Four members of the Worldbreaker inner circle hold CZ-220 Breaker Yard on CZ-220. Defeat all four and recover the Worldbreaker Foreman's Override Chip.")
                 .AddKillObjective(NPCGroupType.CZ220_Worldbreaker_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneWorldbreakerForemansOverrideChip)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Worldbreaker Foreman's Override Chip from CZ-220 Breaker Yard. Return to Unit KX-17 for the next Worldbreaker lesson.")
+                    "The Worldbreaker Foreman's Override Chip has been recovered from CZ-220 Breaker Yard. Return it to Unit KX-17 at the CZ-220 maintenance level.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
 
         private void WorldbreakerMastery()
         {
-            _builder.Create(WorldbreakerMasteryQuestId, "Worldbreaker Mastery")
+            _builder.Create(WorldbreakerMasteryQuestId, "Exceeded Rating")
                 .PrerequisiteQuest(WorldbreakerCircleQuestId)
                 .PrerequisiteSkill(SkillType.Staff, 50)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Worldbreaker master is waiting in CZ-220 Breaker Yard. Defeat the master and end the capstone trial.")
+                    "The Worldbreaker master holds CZ-220 Breaker Yard on CZ-220. Defeat the master.")
                 .AddKillObjective(NPCGroupType.CZ220_Worldbreaker_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Worldbreaker master is defeated. Return to Unit KX-17 and claim the completed lesson.")
+                    "The Worldbreaker master has been defeated. Return to Unit KX-17 at the CZ-220 maintenance level.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

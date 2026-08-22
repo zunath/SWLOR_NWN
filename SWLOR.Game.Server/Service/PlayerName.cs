@@ -133,39 +133,77 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Resolves a display name for an identity captured at a moment in time (e.g. the
-        /// sender of a stored HoloCom message), keyed strictly by identity key - the
-        /// disguise identity when the subject was disguised, otherwise their player id
-        /// (see Disguise.GetIdentityKey). This never resolves through the real player id,
-        /// so a disguised identity stays disguised. Staff observers see the canonical
-        /// name plus the descriptor.
+        /// Retrieves the display name of an offline/persisted player record for plain-text UI surfaces
+        /// such as NUI windows, which render chat color tokens literally. Unlike
+        /// <see cref="GetDisplayNameByPlayerId"/>, targets the observer has named show only the assigned
+        /// name (no bracketed descriptor), and no output contains color tokens. Staff observers still see
+        /// the canonical name with the descriptor in brackets.
         /// </summary>
         /// <param name="observer">The player viewing the name.</param>
-        /// <param name="identityKey">The identity key captured when the identity was recorded.</param>
-        /// <param name="descriptor">The unknown-display descriptor captured when the identity was recorded.</param>
-        /// <param name="canonicalFallbackName">The canonical character name, shown only to staff or the subject themselves.</param>
-        public static string GetDisplayNameByIdentity(uint observer, string identityKey, string descriptor, string canonicalFallbackName)
+        /// <param name="targetPlayerId">The player Id of the record being displayed.</param>
+        /// <param name="fallbackName">The persisted canonical name to fall back on.</param>
+        /// <returns>The observer-appropriate display name, free of color tokens.</returns>
+        public static string GetPlainDisplayNameByPlayerId(uint observer, string targetPlayerId, string fallbackName)
+        {
+            if (string.IsNullOrWhiteSpace(targetPlayerId))
+                return UnknownName;
+
+            // Strip color tokens: persisted names can contain them and this surface renders tokens literally.
+            var fallbackDisplayName = string.IsNullOrWhiteSpace(fallbackName)
+                ? UnknownName
+                : UtilPlugin.StripColors(fallbackName);
+
+            if (!GetIsObjectValid(observer) || !GetIsPC(observer))
+                return fallbackDisplayName;
+
+            if (GetObjectUUID(observer) == targetPlayerId)
+                return fallbackDisplayName;
+
+            if (GetIsDM(observer) || GetIsDMPossessed(observer))
+                return $"{fallbackDisplayName} [{PlayerDescriptor.GetUnknownDisplayNameByPlayerId(targetPlayerId)}]";
+
+            if (TryGetKnownName(observer, targetPlayerId, out var knownName))
+                return knownName;
+
+            return PlayerDescriptor.GetUnknownDisplayNameByPlayerId(targetPlayerId);
+        }
+
+        /// <summary>
+        /// Resolves a color-token-free display name for an identity captured at a moment
+        /// in time, such as the sender of a stored HoloCom message shown in NUI. The identity key is the disguise
+        /// identity when the subject was disguised and their player Id otherwise. The
+        /// lookup never falls through to the real player Id, so a recorded disguised
+        /// identity remains disguised after the sender changes appearance or logs out.
+        /// </summary>
+        public static string GetPlainDisplayNameByIdentity(
+            uint observer,
+            string identityKey,
+            string descriptor,
+            string canonicalFallbackName)
         {
             var canonicalDisplayName = string.IsNullOrWhiteSpace(canonicalFallbackName)
                 ? UnknownName
-                : canonicalFallbackName;
+                : UtilPlugin.StripColors(canonicalFallbackName);
             var descriptorDisplayName = string.IsNullOrWhiteSpace(descriptor)
                 ? UnknownName
-                : descriptor;
+                : UtilPlugin.StripColors(descriptor);
 
             if (!GetIsObjectValid(observer) || !GetIsPC(observer))
                 return descriptorDisplayName;
 
             if (GetIsDM(observer) || GetIsDMPossessed(observer))
-                return BuildDisplayNameWithDescriptor(canonicalDisplayName, descriptorDisplayName);
+                return $"{canonicalDisplayName} [{descriptorDisplayName}]";
 
             if (!string.IsNullOrWhiteSpace(identityKey) && GetObjectUUID(observer) == identityKey)
                 return canonicalDisplayName;
 
             if (!string.IsNullOrWhiteSpace(identityKey) && TryGetKnownName(observer, identityKey, out var knownName))
+            {
+                knownName = UtilPlugin.StripColors(knownName);
                 return ShouldShowDescriptorForNamedPlayers(observer)
-                    ? BuildDisplayNameWithDescriptor(knownName, descriptorDisplayName)
+                    ? $"{knownName} [{descriptorDisplayName}]"
                     : knownName;
+            }
 
             return descriptorDisplayName;
         }
@@ -640,12 +678,13 @@ namespace SWLOR.Game.Server.Service
 
             if (!GetIsObjectValid(observer) ||
                 observer == target ||
-                GetIsDM(observer) ||
-                GetIsDMPossessed(observer) ||
                 !GetIsPC(observer))
             {
                 return GetName(target);
             }
+
+            if (GetIsDM(observer) || GetIsDMPossessed(observer))
+                return BuildStaffDisplayName(target);
 
             if (TryGetKnownName(observer, target, out var knownName))
                 return knownName;

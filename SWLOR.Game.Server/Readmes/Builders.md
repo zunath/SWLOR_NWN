@@ -446,8 +446,9 @@ return builder.Build();
 - **CreateWindow(GuiWindowType)** - Initialize the window (returns `GuiWindow<T>`)
 - **SetInitialGeometry / SetTitle / SetIsResizable / SetIsCollapsible** - Window chrome
 - **DefinePartialView(string, Action<GuiGroup<T>>)** - Declare a swappable layout
-- **AddStandardLayout(Action<GuiStandardLayoutConfig<T>>)** - Emit the proven root shape (`GuiStandardLayout` extension)
-- **Build()** - Validate (prints `[NUI layout warning]` lines for confirmed-bad shapes) and return the constructed window
+- **AddStandardLayout(Action<GuiStandardLayoutConfig<T>>)** - Emit the proven tab/content/rail shape (`GuiStandardLayout` extension)
+- **AddLeadingColumn / AddSideColumn** - Place fixed or flexible rails before or after the standard content column
+- **Build()** - Normalize and validate the root, log confirmed findings, and return the constructed window
 
 Full guide: `GuiWindowAuthoring.md`. Layout rules: `NuiLayoutRules.md`. Living widget
 reference: the DebugNuiGallery window (`/nuigallery`).

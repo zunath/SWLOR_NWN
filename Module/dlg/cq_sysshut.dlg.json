@@ -64,7 +64,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Systemic Shutdown is no longer a lesson on my ledger. You proved it in Veles Militia Annex; keep proving it when nobody is keeping score."
+            "0": "Systemic Shutdown was never on any record, including this conversation. You proved it in the Veles Militia Annex. Keep it that way."
           }
         }
       },
@@ -113,7 +113,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not yet. Systemic Shutdown is not a conversation I start on instinct or reputation. Come back when your work can survive the proof I keep for Veles Militia Annex."
+            "0": "He doesn't answer at first. When he does: you're not ready for this conversation, and pushing won't change that. Come back once the vibroknife has nothing left to teach you."
           }
         }
       },
@@ -258,7 +258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "A system fails in order if you know which part to silence first. The annex will show whether you do. Go to Veles Militia Annex on Viscara, defeat the Systemic Shutdown adepts, and bring back the Systemic Shutdown field report."
+            "0": "What have you heard about me? Nothing worth repeating, I'd guess - that's the correct answer, and the only one I want spreading. There's shutdown work happening in the Veles Militia Annex on Viscara that nobody authorized. Six adepts, running it into the ground. Put them down quietly, and bring me their drill ledger."
           }
         }
       },
@@ -307,7 +307,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Veles Militia Annex. I want proof, not a story about almost having it."
+            "0": "Then you're in. The annex key already reads to you; it opens the gate, nothing else. What happens past it stays past it."
           }
         }
       },
@@ -376,7 +376,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Systemic Shutdown is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "A shutdown strike doesn't win a fight. It ends one before anyone agrees to have it - a nerve cluster, timed right, and the argument stops mattering. Loud work looks like violence. Quiet work looks like nothing happened at all."
           }
         }
       },
@@ -445,7 +445,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex is on Viscara. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "The Veles Militia Annex, off the garrison road on Viscara. The gate's sealed; your key opens it without announcing you to anyone watching the road. Go in, do the work, come back the same way."
           }
         }
       },
@@ -514,7 +514,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Six adepts, none of them subtle. They'll telegraph everything - the loud ones always do. That won't make them harmless. Watch the ones who go quiet when you walk in; those learned something real by accident."
           }
         }
       },
@@ -563,7 +563,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex still holds your first proof for Systemic Shutdown. Finish the target there before you bring me anything else."
+            "0": "The adepts are still making noise in the Veles Militia Annex. Quiet them, then come find me."
           }
         }
       },
@@ -632,7 +632,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Systemic Shutdown lesson clean."
+            "0": "You're back, and nobody followed you. Hand over the ledger."
           }
         }
       },
@@ -681,7 +681,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Systemic Shutdown is one step closer to belonging to you."
+            "0": "Names, dates, whose technique came from where. Useful. Six down and nobody official noticed - that's the standard I expect, not the exception."
           }
         }
       },
@@ -826,7 +826,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Systemic Shutdown proof is waiting in Veles Militia Annex. This one is about second proof, not repetition. Go to Veles Militia Annex on Viscara, defeat the Systemic Shutdown specialists, and bring back the Systemic Shutdown calibration core."
+            "0": "Second lesson. The specialists in the annex have gotten better at Systemic Shutdown than the adepts, and better at hiding it. Five of them. Handle it the same way, quietly, and bring me the range relay they've been logging their kills through."
           }
         }
       },
@@ -875,7 +875,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Veles Militia Annex. I want proof, not a story about almost having it."
+            "0": "Go. Same key, same silence. This round, I'd rather hear about it from the relay than from you."
           }
         }
       },
@@ -944,7 +944,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Systemic Shutdown is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "The militia doesn't want a scandal, and a scandal is exactly what an unauthorized disabling technique becomes the moment it's loud. Contained quietly, it's a training irregularity. Reported loudly, it's a hearing, a suspension, careers ending over paperwork. I prefer the quiet version. So does everyone above me, whether they admit it or not."
           }
         }
       },
@@ -1013,7 +1013,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex is on Viscara. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Same annex, same gate, further in, past where the adepts were working. Your key still clears it. Nobody's added a second lock yet, which tells you how confident they are that nobody's watching."
           }
         }
       },
@@ -1082,7 +1082,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Five specialists who've stopped telegraphing. They'll try to end the fight before you know it started, which is the whole discipline working as intended, just aimed at you. Don't let them finish a sentence with your name in it."
           }
         }
       },
@@ -1131,7 +1131,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex still holds your second proof for Systemic Shutdown. Finish the target there before you bring me anything else."
+            "0": "Five specialists, still logging kills nobody authorized. Go correct the record."
           }
         }
       },
@@ -1200,7 +1200,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Systemic Shutdown lesson clean."
+            "0": "The relay, and you're still unremarked. Hand it over."
           }
         }
       },
@@ -1249,7 +1249,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Systemic Shutdown is one step closer to belonging to you."
+            "0": "Kill logs, timestamps, more than I expected them to keep. Whoever's running this has a warden covering for all of it. That's who's next."
           }
         }
       },
@@ -1394,7 +1394,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Systemic Shutdown proof is waiting in Veles Militia Annex. This one is about breach proof, not repetition. Go to Veles Militia Annex on Viscara, defeat the Systemic Shutdown warden, and bring back the Systemic Shutdown broken seal."
+            "0": "The warden is the point of failure. He's the one who taught this to people who never should have had it, and he's kept it quiet the same way I would have. That almost earns respect. Almost. Bring two people who know how to stay quiet themselves, take his scored challenge badge, and end the lesson he's been giving."
           }
         }
       },
@@ -1443,7 +1443,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Veles Militia Annex. I want proof, not a story about almost having it."
+            "0": "Arrange your company, then go. I won't ask who. I will ask that they can keep a secret."
           }
         }
       },
@@ -1512,7 +1512,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Systemic Shutdown is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "He didn't invent Systemic Shutdown, but he's the one who handed it to students who had no clearance for it and no discipline to match. I don't know why yet. I intend to find out from what's left of him."
           }
         }
       },
@@ -1581,7 +1581,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex is on Viscara. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Behind a locked partition past the specialists' floor, the annex calls it the arena, which tells you they stopped pretending this was training. Your key opens the outer gate. The rest, you make happen yourself."
           }
         }
       },
@@ -1650,7 +1650,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "He's put down better than you, alone, against people who came alone. I won't send you into that same mistake. Three sets of eyes are harder to silence than one, and harder to explain away if something goes wrong."
           }
         }
       },
@@ -1699,7 +1699,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex still holds your breach proof for Systemic Shutdown. Finish the target there before you bring me anything else."
+            "0": "The warden is still holding the arena. Bring your two and go finish it."
           }
         }
       },
@@ -1768,7 +1768,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Systemic Shutdown lesson clean."
+            "0": "You're back, and quiet about it. That's the badge, I take it. Hand it over."
           }
         }
       },
@@ -1817,7 +1817,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Systemic Shutdown is one step closer to belonging to you."
+            "0": "Scored and cracked - his record, not yours. He taught more than adepts and specialists. There's an inner circle above him I need accounted for next, and I'd rather account for them before they notice their warden stopped answering."
           }
         }
       },
@@ -1962,7 +1962,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Systemic Shutdown proof is waiting in Veles Militia Annex. This one is about circle proof, not repetition. Go to Veles Militia Annex on Viscara, defeat the Systemic Shutdown inner circle, and bring back the Systemic Shutdown command mark."
+            "0": "Housecleaning. Four instructors left running what the warden built, and every one of them knew exactly what they were teaching. Bring me whichever of them is holding the captain's challenge chit when the other three are settled."
           }
         }
       },
@@ -2011,7 +2011,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Veles Militia Annex. I want proof, not a story about almost having it."
+            "0": "Go handle it. You've been quiet enough, long enough, that I'm not worried about the details."
           }
         }
       },
@@ -2080,7 +2080,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Systemic Shutdown is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "The drill ledger told me who was being taught. The range relay told me how long it had been going on. The scored badge told me the warden knew it was unauthorized and ran it anyway. Bring me the chit, and I'll know exactly how deep this goes and who signed off on it."
           }
         }
       },
@@ -2149,7 +2149,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex is on Viscara. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "They've sealed the floor above the arena, command space by the look of it. Same key opens that lock too. Whoever set this up never planned on someone getting this far in."
           }
         }
       },
@@ -2218,7 +2218,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Four of them, and none of them used to working outnumbered. Bring the company you brought last time. I'd rather you finish this with witnesses than alone with a story I have to take on faith."
           }
         }
       },
@@ -2267,7 +2267,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex still holds your circle proof for Systemic Shutdown. Finish the target there before you bring me anything else."
+            "0": "Four of the inner circle are still unaccounted for. Go account for them."
           }
         }
       },
@@ -2336,7 +2336,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Systemic Shutdown lesson clean."
+            "0": "That's the chit. Let's see exactly how far this went."
           }
         }
       },
@@ -2385,7 +2385,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Systemic Shutdown is one step closer to belonging to you."
+            "0": "Signatures, authorizations, all of it improvised after the fact to look official. This runs all the way to whoever taught the warden in the first place. One name left on the list."
           }
         }
       },
@@ -2530,7 +2530,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Systemic Shutdown proof is waiting in Veles Militia Annex. This one is about mastery proof, not repetition. Go to Veles Militia Annex on Viscara, defeat the Systemic Shutdown master, and return with the final proof."
+            "0": "The master is the source. Everything the warden taught, everything the inner circle covered for, traces back to him. I work alone because I trust exactly one person with my own exposure - myself. I'm not extending you the same rule. Bring people you'd trust with a secret that could end you, because that's what this is. When he's down, that's the last transmission this operation ever sends."
           }
         }
       },
@@ -2579,7 +2579,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Veles Militia Annex. I want proof, not a story about almost having it."
+            "0": "Then go end it. Quietly, if you can manage it. Permanently, either way."
           }
         }
       },
@@ -2648,7 +2648,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Systemic Shutdown is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "I work alone because one person is easy to account for, easy to disappear if something goes wrong. You're not disposable the same way, and this isn't a job that forgives one mistake. Bring company. Let someone else carry half the risk of what happens down there."
           }
         }
       },
@@ -2717,7 +2717,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex is on Viscara. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "The deepest floor of the annex, the one even the inner circle kept sealed from their own people. Your key still works. It was never really about the lock. It was about who had the nerve to use it."
           }
         }
       },
@@ -2786,7 +2786,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "He taught shutdown work before the warden ever learned to spell it. Nobody who went in alone came back to file a report. Bring people who know how to stay quiet about what they see, because they will see something."
           }
         }
       },
@@ -2835,7 +2835,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Veles Militia Annex still holds your mastery proof for Systemic Shutdown. Finish the target there before you bring me anything else."
+            "0": "The master is still down there, still unaccounted for. Go close the file."
           }
         }
       },
@@ -2904,7 +2904,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Systemic Shutdown lesson clean."
+            "0": "You're back, and there's no report to write about him anymore. That's the confirmation I needed."
           }
         }
       },
@@ -2953,7 +2953,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Systemic Shutdown is one step closer to belonging to you."
+            "0": "End of transmission. Nothing on record, nothing to investigate, no loose thread back to the annex. That's the job done the way it should always be done. Systemic Shutdown is yours; use it exactly as quietly as I taught you to."
           }
         }
       }
@@ -3023,7 +3023,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to the ledger."
           }
         }
       },
@@ -3100,7 +3100,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the first proof."
+            "0": "I'll take the first job."
           }
         }
       },
@@ -3165,7 +3165,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Systemic Shutdown demand?"
+            "0": "What exactly is a shutdown strike?"
           }
         }
       },
@@ -3230,7 +3230,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Where do I find the annex?"
           }
         }
       },
@@ -3295,7 +3295,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "What should I expect from the adepts?"
           }
         }
       },
@@ -3340,7 +3340,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Not yet."
           }
         }
       },
@@ -3417,7 +3417,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "Here's the drill ledger."
           }
         }
       },
@@ -3482,7 +3482,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to the relay."
           }
         }
       },
@@ -3559,7 +3559,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the second proof."
+            "0": "I'll take the second job."
           }
         }
       },
@@ -3624,7 +3624,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Systemic Shutdown demand?"
+            "0": "Why keep this quiet at all?"
           }
         }
       },
@@ -3689,7 +3689,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Where are the specialists working?"
           }
         }
       },
@@ -3754,7 +3754,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "What should I expect this time?"
           }
         }
       },
@@ -3799,7 +3799,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Give me time to think it through."
           }
         }
       },
@@ -3876,7 +3876,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "Here's the range relay."
           }
         }
       },
@@ -3941,7 +3941,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to the badge."
           }
         }
       },
@@ -4018,7 +4018,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the breach proof."
+            "0": "I'll bring the company and go."
           }
         }
       },
@@ -4083,7 +4083,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Systemic Shutdown demand?"
+            "0": "Who taught the students this in the first place?"
           }
         }
       },
@@ -4148,7 +4148,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Where's the warden's floor?"
           }
         }
       },
@@ -4213,7 +4213,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "What should I know about him?"
           }
         }
       },
@@ -4258,7 +4258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "I need to find the right two first."
           }
         }
       },
@@ -4335,7 +4335,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "Here's the badge."
           }
         }
       },
@@ -4400,7 +4400,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to the chit."
           }
         }
       },
@@ -4477,7 +4477,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the circle proof."
+            "0": "I'll clean house."
           }
         }
       },
@@ -4542,7 +4542,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Systemic Shutdown demand?"
+            "0": "What do the recovered items tell you?"
           }
         }
       },
@@ -4607,7 +4607,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Where's the inner circle hiding?"
           }
         }
       },
@@ -4672,7 +4672,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "What am I walking into?"
           }
         }
       },
@@ -4717,7 +4717,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Let me finish arranging things."
           }
         }
       },
@@ -4794,7 +4794,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "Here's the chit."
           }
         }
       },
@@ -4859,7 +4859,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Back to it."
           }
         }
       },
@@ -4936,7 +4936,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the mastery proof."
+            "0": "I'll bring people I trust. Let's close this out."
           }
         }
       },
@@ -5001,7 +5001,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Systemic Shutdown demand?"
+            "0": "Why send me with company when you work alone?"
           }
         }
       },
@@ -5066,7 +5066,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Where do I find him?"
           }
         }
       },
@@ -5131,7 +5131,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "What should I expect from the master?"
           }
         }
       },
@@ -5176,7 +5176,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "I need to be sure of who's coming with me."
           }
         }
       },
@@ -5253,7 +5253,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "It's done. He's off the books for good."
           }
         }
       }

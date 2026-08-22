@@ -9719,15 +9719,15 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 4
+          "value": 3
         },
         "Tile_MainLight1": {
           "type": "byte",
-          "value": 4
+          "value": 0
         },
         "Tile_MainLight2": {
           "type": "byte",
-          "value": 14
+          "value": 13
         },
         "Tile_Orientation": {
           "type": "int",
@@ -9735,11 +9735,11 @@
         },
         "Tile_SrcLight1": {
           "type": "byte",
-          "value": 2
+          "value": 3
         },
         "Tile_SrcLight2": {
           "type": "byte",
-          "value": 2
+          "value": 3
         }
       },
       {
@@ -10407,11 +10407,11 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 1
+          "value": 4
         },
         "Tile_MainLight1": {
           "type": "byte",
-          "value": 30
+          "value": 0
         },
         "Tile_MainLight2": {
           "type": "byte",
@@ -10423,11 +10423,11 @@
         },
         "Tile_SrcLight1": {
           "type": "byte",
-          "value": 0
+          "value": 3
         },
         "Tile_SrcLight2": {
           "type": "byte",
-          "value": 0
+          "value": 3
         }
       },
       {
@@ -10450,7 +10450,7 @@
         },
         "Tile_ID": {
           "type": "int",
-          "value": 1
+          "value": 6
         },
         "Tile_MainLight1": {
           "type": "byte",
@@ -10458,19 +10458,19 @@
         },
         "Tile_MainLight2": {
           "type": "byte",
-          "value": 13
+          "value": 14
         },
         "Tile_Orientation": {
           "type": "int",
-          "value": 3
+          "value": 1
         },
         "Tile_SrcLight1": {
           "type": "byte",
-          "value": 0
+          "value": 3
         },
         "Tile_SrcLight2": {
           "type": "byte",
-          "value": 0
+          "value": 3
         }
       },
       {
@@ -11163,13 +11163,17 @@
       }
     ]
   },
+  "TileBrdrDisabled": {
+    "type": "byte",
+    "value": 0
+  },
   "Tileset": {
     "type": "resref",
     "value": "zsf01"
   },
   "Version": {
     "type": "dword",
-    "value": 50
+    "value": 52
   },
   "Width": {
     "type": "int",

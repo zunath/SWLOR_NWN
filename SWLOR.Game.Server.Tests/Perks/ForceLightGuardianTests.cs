@@ -62,10 +62,12 @@ public class ForceLightGuardianTests
         var root = FindRepositoryRoot();
         var knockdown = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "KnockdownStatusEffect.cs").FullName);
         knockdown.Should().Contain("StatusEffect.HasStatusEffect(creature, GetType())");
-        knockdown.Should().Contain("Ability.HasTemporaryImmunity(creature, ImmunityType.Knockdown)");
+        knockdown.Should().Contain("Ability.HasHardCrowdControlImmunity(creature, ImmunityType.Knockdown)");
         knockdown.Should().Contain("ApplyEffectToObject(DurationType.Temporary, effect, creature, duration);");
         knockdown.Should().Contain("protected override void Remove(uint creature)");
-        knockdown.Should().Contain("Ability.ApplyTemporaryImmunity(creature, 0f, ImmunityType.Knockdown);");
+        knockdown.Should().Contain("Ability.ApplyPostControlImmunity(");
+        knockdown.Should().Contain("SecondsSinceNaturalExpiration");
+        knockdown.Should().Contain("ImmunityType.Knockdown);");
     }
 
     [Test]
@@ -152,7 +154,6 @@ public class ForceLightGuardianTests
         params StatType[] statTypes)
     {
         perk.Name.Should().Be(name);
-        perk.Category.Should().Be(PerkCategoryType.ForceLight);
 
         var perkLevel = perk.PerkLevels[level];
         perkLevel.Price.Should().Be(price);

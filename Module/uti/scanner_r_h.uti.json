@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "Use this on a resource to identify its contents. Use it on a location to identify where the nearest resource is."
     }
   },
   "Identified": {
@@ -126,6 +126,21 @@
         "Value": {
           "type": "cexostring",
           "value": "ResourceScanner"
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NO_ECONOMY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
         }
       }
     ]

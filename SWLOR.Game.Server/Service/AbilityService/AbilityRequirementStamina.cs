@@ -33,10 +33,11 @@ namespace SWLOR.Game.Server.Service.AbilityService
             if (GetIsDM(player)) return;
 
             var requiredSTM = GetRequiredStaminaForActivation(player, ability);
-            if (requiredSTM <= 0)
-                return;
+            if (requiredSTM > 0)
+            {
+                Stat.ReduceStamina(player, requiredSTM);
+            }
 
-            Stat.ReduceStamina(player, requiredSTM);
             Combat.ApplyAbilityStaminaCostFPRestore(player, ability, requiredSTM);
         }
 

@@ -1,28 +1,28 @@
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DialogService;
+using SWLOR.Game.Server.Service.ConversationService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PlayerMarketService;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
-    public class MarketDialog: DialogBase
+    public class MarketDialog: ConversationMenuDefinition
     {
         private const string MainPageId = "MAIN_PAGE";
 
-        public override PlayerDialog SetUp(uint player)
+        public override ConversationMenuSpec Build()
         {
-            var builder = new DialogBuilder()
+            var builder = new ConversationMenuBuilder()
                 .AddPage(MainPageId, MainPageInit);
 
             return builder.Build();
         }
 
-        private void MainPageInit(DialogPage page)
+        private void MainPageInit(ConversationMenuPage page)
         {
-            var player = GetPC();
-            var terminal = OBJECT_SELF;
+            var player = Player;
+            var terminal = Owner;
             var regionType = (MarketRegionType)GetLocalInt(terminal, "MARKET_ID");
             var marketRegion = PlayerMarket.GetMarketRegion(regionType);
 
@@ -33,19 +33,19 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 return;
             }
 
-            page.Header = $"{ColorToken.Green("Market: ")} {marketRegion.Name}\n\n" +
+            page.Header = $"Market: {marketRegion.Name}\n\n" +
                           $"Goods may be bought and sold on the market here. What would you like to do?";
 
             page.AddResponse("Buy", () =>
             {
                 Gui.TogglePlayerWindow(player, GuiWindowType.MarketBuying, new MarketPayload(regionType), terminal);
-                EndConversation();
+                Close();
             });
 
             page.AddResponse("Sell", () =>
             {
                 Gui.TogglePlayerWindow(player, GuiWindowType.MarketListing, new MarketPayload(regionType), terminal);
-                EndConversation();
+                Close();
             });
         }
     }

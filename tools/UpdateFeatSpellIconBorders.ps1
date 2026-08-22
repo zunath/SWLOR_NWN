@@ -15,6 +15,7 @@ Add-Type -AssemblyName System.Drawing
 
 $sourceCode = @"
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -120,12 +121,14 @@ public static class FeatSpellIconBorderTool
         return bitmap;
     }
 
-    public static void StampSemanticFrame(string sourcePath, string category, string outputPath, int iconSize)
+    public static void StampSemanticFrame(string sourcePath, string category, string alignment, string outputPath, int iconSize)
     {
         using (var source = ReadTga(sourcePath))
         using (var bitmap = Normalize(source, iconSize))
         {
             DrawSemanticFrame(bitmap, category, iconSize);
+            if (HasAlignment(alignment))
+                DrawAlignmentMarker(bitmap, GetAlignmentColor(alignment), iconSize);
             WriteTga(bitmap, outputPath);
         }
     }
@@ -145,9 +148,21 @@ public static class FeatSpellIconBorderTool
         using (var graphics = Graphics.FromImage(bitmap))
         {
             graphics.Clear(Color.Black);
-            graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-            graphics.SmoothingMode = SmoothingMode.AntiAlias;
-            graphics.DrawImage(source, new Rectangle(0, 0, iconSize, iconSize));
+            if (source.Width == iconSize && source.Height == iconSize)
+            {
+                // Same size: copy pixel-for-pixel. DrawImage into a same-size destination
+                // rectangle resamples and nudges the art by a fraction of a pixel (a GDI+
+                // quirk); re-stamping an already-stamped icon would compound that into a
+                // visible shift/black margin. DrawImageUnscaled is a 1:1 pixel copy.
+                graphics.DrawImageUnscaled(source, 0, 0);
+            }
+            else
+            {
+                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
+                graphics.SmoothingMode = SmoothingMode.AntiAlias;
+                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
+                graphics.DrawImage(source, new Rectangle(0, 0, iconSize, iconSize));
+            }
         }
 
         return bitmap;
@@ -167,6 +182,143 @@ public static class FeatSpellIconBorderTool
         }
 
         throw new InvalidOperationException("Unknown semantic category '" + category + "'.");
+    }
+
+    // Alignment is the SECOND icon axis (see IconStandards.md). The effect-role frame
+    // color stays on the outer rings; alignment is shown by a small "gem" marker in the
+    // TOP-LEFT corner so the central art is left completely intact:
+    //   Dark = black, Light = light grey, Neutral/Universal = yellow.
+    // Top-left avoids the bottom-right status-effect rank-badge slot. The gem uses a
+    // two-tone bezel (dark outer ring + light inner ring) so both the black and the white
+    // gem stay legible on any underlying art.
+    public static bool HasAlignment(string alignment)
+    {
+        return !string.IsNullOrWhiteSpace(alignment) &&
+               !alignment.Equals("None", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static Color GetAlignmentColor(string alignment)
+    {
+        switch (alignment.Trim().ToLowerInvariant())
+        {
+            case "dark": return Color.FromArgb(255, 23, 23, 27);       // black      #17171B
+            case "light": return Color.FromArgb(255, 196, 202, 211);   // light grey #C4CAD3
+            case "neutral": return Color.FromArgb(255, 255, 204, 26);  // yellow     #FFCC1A
+        }
+
+        throw new InvalidOperationException("Unknown Force alignment '" + alignment + "'.");
+    }
+
+    // Marker geometry, in pixels, scaled from the 32x32 reference size.
+    private static float AlignmentMarkerCenter(int iconSize) { return 8.5f * (iconSize / 32.0f); }
+    private static float AlignmentMarkerBezelRadius(int iconSize) { return 4.9f * (iconSize / 32.0f); }
+    private static float AlignmentMarkerLightRadius(int iconSize) { return 4.1f * (iconSize / 32.0f); }
+    private static float AlignmentMarkerFillRadius(int iconSize) { return 3.2f * (iconSize / 32.0f); }
+
+    private static void DrawAlignmentMarker(Bitmap bitmap, Color color, int iconSize)
+    {
+        var c = AlignmentMarkerCenter(iconSize);
+        var bezelR = AlignmentMarkerBezelRadius(iconSize);
+        var lightR = AlignmentMarkerLightRadius(iconSize);
+        var fillR = AlignmentMarkerFillRadius(iconSize);
+        var hlD = fillR * 0.85f;
+        var hlOffset = fillR * 0.42f;
+
+        using (var graphics = Graphics.FromImage(bitmap))
+        {
+            graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            // Dark outer ring, then a MID-GREY bevel ring, then the alignment fill. The
+            // mid-grey bevel contrasts with all three fills (black, white, yellow), so every
+            // gem shows the same crisp rim and the white gem does not blend into the ring.
+            using (var outer = new SolidBrush(Color.FromArgb(255, 12, 12, 14)))
+                graphics.FillEllipse(outer, c - bezelR, c - bezelR, bezelR * 2, bezelR * 2);
+            using (var ring = new SolidBrush(Color.FromArgb(255, 138, 144, 153)))
+                graphics.FillEllipse(ring, c - lightR, c - lightR, lightR * 2, lightR * 2);
+            using (var fill = new SolidBrush(color))
+                graphics.FillEllipse(fill, c - fillR, c - fillR, fillR * 2, fillR * 2);
+            using (var hl = new SolidBrush(Color.FromArgb(150, 255, 255, 255)))
+                graphics.FillEllipse(hl, c - hlOffset - hlD / 2, c - hlOffset - hlD / 2, hlD, hlD);
+        }
+    }
+
+    private static double SampleRingBrightness(Bitmap bitmap, double center, float radius, int iconSize)
+    {
+        double sum = 0;
+        var n = 0;
+        for (var deg = 0; deg < 360; deg += 30)
+        {
+            var rad = deg * Math.PI / 180.0;
+            var x = (int)Math.Round(center + radius * Math.Cos(rad));
+            var y = (int)Math.Round(center + radius * Math.Sin(rad));
+            if (x < 0 || y < 0 || x >= iconSize || y >= iconSize)
+                continue;
+            var p = bitmap.GetPixel(x, y);
+            sum += (p.R + p.G + p.B) / 3.0;
+            n++;
+        }
+
+        return n == 0 ? 255.0 : sum / n;
+    }
+
+    // Read the marker fill color at the known corner location and classify it. This is
+    // exact and art-independent: we control the marker geometry and colors. First confirm
+    // the two-tone bezel is present (dark outer ring surrounding a light inner ring) so
+    // unrelated art at the corner is never mistaken for a marker; then classify the fill:
+    //   Dark = near-black, Light = light grey, Neutral = yellow.
+    private static string ClassifyAlignmentMarker(Bitmap bitmap, int iconSize)
+    {
+        var centerF = AlignmentMarkerCenter(iconSize);
+        var c = (int)Math.Round(centerF);
+        var bezelR = AlignmentMarkerBezelRadius(iconSize);
+        var lightR = AlignmentMarkerLightRadius(iconSize);
+        var fillR = AlignmentMarkerFillRadius(iconSize);
+
+        // Marker present iff a dark outer ring surrounds a distinctly lighter mid-grey bevel
+        // ring. This concentric dark->lighter structure is what unrelated art will not have.
+        var outerBrightness = SampleRingBrightness(bitmap, centerF, (lightR + bezelR) / 2.0f, iconSize);
+        var innerBrightness = SampleRingBrightness(bitmap, centerF, (fillR + lightR) / 2.0f, iconSize);
+        if (outerBrightness >= 80.0 || innerBrightness <= 95.0 || innerBrightness - outerBrightness < 45.0)
+            return "None";
+
+        // Sample the fill in the DOWN-RIGHT quadrant of the gem, away from the up-left
+        // highlight, so the read is the true fill color (the highlight would otherwise
+        // brighten a black gem's center into a grey).
+        double sumR = 0, sumG = 0, sumB = 0;
+        var count = 0;
+        for (var dy = 1; dy <= 2; dy++)
+            for (var dx = 1; dx <= 2; dx++)
+            {
+                var p = bitmap.GetPixel(
+                    Math.Min(iconSize - 1, Math.Max(0, c + dx)),
+                    Math.Min(iconSize - 1, Math.Max(0, c + dy)));
+                sumR += p.R; sumG += p.G; sumB += p.B; count++;
+            }
+
+        var avgR = sumR / count;
+        var avgG = sumG / count;
+        var avgB = sumB / count;
+        var max = Math.Max(avgR, Math.Max(avgG, avgB));
+        var min = Math.Min(avgR, Math.Min(avgG, avgB));
+        var brightness = (avgR + avgG + avgB) / 3.0;
+
+        if (avgR > 150 && avgG > 110 && (avgR + avgG) / 2.0 - avgB > 55)
+            return "Neutral";      // yellow (chromatic)
+        if (brightness > 120 && max - min < 45)
+            return "Light";        // light grey (achromatic, bright)
+        if (brightness < 70 && max - min < 45)
+            return "Dark";         // black (achromatic, dark)
+
+        return "None";
+    }
+
+    public static bool HasAlignmentMarker(string path, string alignment, int iconSize)
+    {
+        using (var source = ReadTga(path))
+        using (var bitmap = Normalize(source, iconSize))
+        {
+            return ClassifyAlignmentMarker(bitmap, iconSize)
+                .Equals(alignment.Trim(), StringComparison.OrdinalIgnoreCase);
+        }
     }
 
     private static Color Lighten(Color color, int amount)
@@ -322,6 +474,7 @@ $changedIcons = [System.Collections.Generic.List[string]]::new()
 foreach ($row in $rows) {
     $icon = (Get-OptionalProperty $row "IconResRef").Trim()
     $category = (Get-OptionalProperty $row "SemanticCategory").Trim()
+    $alignment = (Get-OptionalProperty $row "Alignment").Trim()
     $path = Join-Path $iconDirectory "$icon.tga"
 
     if (!(Test-Path -LiteralPath $path)) {
@@ -334,6 +487,8 @@ foreach ($row in $rows) {
         continue
     }
 
+    $hasAlignment = (![string]::IsNullOrWhiteSpace($alignment)) -and ($alignment -ne "None")
+
     $hadFrame = $false
     try {
         $hadFrame = [FeatSpellIconBorderTool]::HasSemanticFrame($path, $category, $IconSize)
@@ -345,25 +500,44 @@ foreach ($row in $rows) {
         }
     }
 
+    $hadMarker = $true
+    if ($hasAlignment) {
+        try {
+            $hadMarker = [FeatSpellIconBorderTool]::HasAlignmentMarker($path, $alignment, $IconSize)
+        }
+        catch {
+            if (!$Apply) {
+                $errors.Add("$($row.Type) '$($row.Key)' alignment marker could not be audited: $($_.Exception.Message)") | Out-Null
+                continue
+            }
+            $hadMarker = $false
+        }
+    }
+
+    $compliant = $hadFrame -and $hadMarker
+
     if ($Apply) {
-        if ($hadFrame -and !$Force) {
+        if ($compliant -and !$Force) {
             $alreadyCompliant++
             continue
         }
 
         $before = (Get-FileHash -Algorithm SHA256 -LiteralPath $path).Hash
-        [FeatSpellIconBorderTool]::StampSemanticFrame($path, $category, $path, $IconSize)
+        [FeatSpellIconBorderTool]::StampSemanticFrame($path, $category, $alignment, $path, $IconSize)
         $after = (Get-FileHash -Algorithm SHA256 -LiteralPath $path).Hash
         if ($before -ne $after) {
             $stamped++
             $changedIcons.Add($icon) | Out-Null
         }
-        elseif ($hadFrame) {
+        elseif ($compliant) {
             $alreadyCompliant++
         }
     }
     elseif (!$hadFrame) {
         $errors.Add("$($row.Type) '$($row.Key)' icon '$icon' is missing the $category semantic frame.") | Out-Null
+    }
+    elseif ($hasAlignment -and !$hadMarker) {
+        $errors.Add("$($row.Type) '$($row.Key)' icon '$icon' is missing the $alignment alignment corner marker.") | Out-Null
     }
     else {
         $alreadyCompliant++

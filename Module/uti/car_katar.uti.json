@@ -79,7 +79,7 @@
         },
         "CostValue": {
           "type": "word",
-          "value": 21
+          "value": 26
         },
         "Param1": {
           "type": "byte",
@@ -177,6 +177,26 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "car_katar"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NO_ECONOMY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
   },
   "xModelPart1": {
     "type": "word",

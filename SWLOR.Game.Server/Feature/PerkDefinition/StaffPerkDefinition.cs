@@ -95,27 +95,24 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ChargedBlowsTrait)
                 .Description("After you apply a control effect, your next attack within 30 seconds deals +10 DMG.")
                 .IncreasesStat(StatType.StatusAppliedRequiredCategory, (int)StatusEffectCategory.Control)
-                .IncreasesStat(StatType.StatusAppliedNextSkillAbilitySkillType, (int)SkillType.Staff)
-                .IncreasesStat(StatType.StatusAppliedNextSkillAbilityDamageBonus, 10)
-                .IncreasesStat(StatType.StatusAppliedNextSkillAbilityWindowSeconds, 30)
+                .IncreasesStat(StatType.StatusAppliedNextAttackDamageBonus, 10)
+                .IncreasesStat(StatType.StatusAppliedNextAttackWindowSeconds, 30)
                 .Price(2)
                 .RequirementSkill(SkillType.Staff, 8)
 
                 .AddPerkLevel()
                 .Description("After you apply a control effect, your next attack within 30 seconds deals +18 DMG.")
                 .IncreasesStat(StatType.StatusAppliedRequiredCategory, (int)StatusEffectCategory.Control)
-                .IncreasesStat(StatType.StatusAppliedNextSkillAbilitySkillType, (int)SkillType.Staff)
-                .IncreasesStat(StatType.StatusAppliedNextSkillAbilityDamageBonus, 18)
-                .IncreasesStat(StatType.StatusAppliedNextSkillAbilityWindowSeconds, 30)
+                .IncreasesStat(StatType.StatusAppliedNextAttackDamageBonus, 18)
+                .IncreasesStat(StatType.StatusAppliedNextAttackWindowSeconds, 30)
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 22)
 
                 .AddPerkLevel()
                 .Description("After you apply a control effect, your next attack within 30 seconds deals +26 DMG.")
                 .IncreasesStat(StatType.StatusAppliedRequiredCategory, (int)StatusEffectCategory.Control)
-                .IncreasesStat(StatType.StatusAppliedNextSkillAbilitySkillType, (int)SkillType.Staff)
-                .IncreasesStat(StatType.StatusAppliedNextSkillAbilityDamageBonus, 26)
-                .IncreasesStat(StatType.StatusAppliedNextSkillAbilityWindowSeconds, 30)
+                .IncreasesStat(StatType.StatusAppliedNextAttackDamageBonus, 26)
+                .IncreasesStat(StatType.StatusAppliedNextAttackWindowSeconds, 30)
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 45);
         }
@@ -127,19 +124,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RibBreaker1)
-                .Description("Deals weapon DMG + 12 and inflicts Dazed for 30 seconds.")
+                .Description("Deals weapon DMG + 12 and inflicts Dazed for 15 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Staff, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RibBreaker2)
-                .Description("Deals weapon DMG + 24 and inflicts Dazed for 30 seconds.")
+                .Description("Deals weapon DMG + 24 and inflicts Dazed for 15 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 30)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RibBreaker3)
-                .Description("Deals weapon DMG + 36 and inflicts Dazed for 30 seconds.")
+                .Description("Deals weapon DMG + 36 and inflicts Dazed for 15 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 38);
         }
@@ -164,13 +161,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GroundQuake1)
-                .Description("Deals weapon DMG + 18 to enemies within 5m and knocks down already Dazed targets for 30 seconds.")
+                .Description("Deals weapon DMG + 18 to enemies within 5m and knocks down already Dazed targets for 6 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GroundQuake2)
-                .Description("Deals weapon DMG + 30 to enemies within 5m and knocks down already Dazed targets for 30 seconds.")
+                .Description("Deals weapon DMG + 30 to enemies within 5m and knocks down already Dazed targets for 6 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 32);
         }
@@ -224,7 +221,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Worldbreaker1)
-                .Description("Deals weapon DMG + 35 to enemies within 5m. Enemies affected by control effects take +50 DMG and are Dazed for 30 seconds.")
+                .Description("Deals weapon DMG + 35 to enemies within 5m of you. Enemies affected by control effects take +40 DMG and are Dazed for 30 seconds.")
                 .Price(6)
                 .RequirementSkill(SkillType.Staff, 50)
                 .RequirementQuest(StaffCapstoneQuestDefinition.WorldbreakerMasteryQuestId);
@@ -237,25 +234,25 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LineBreaker1)
-                .Description("Deals weapon DMG + 8 in a line and inflicts Disoriented for 30 seconds.")
+                .Description("Deals weapon DMG + 8 in an 8m x 2.5m line and inflicts Disoriented for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Staff, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LineBreaker2)
-                .Description("Deals weapon DMG + 18 in a line and inflicts Disoriented for 30 seconds.")
+                .Description("Deals weapon DMG + 18 in an 8m x 3m line and inflicts Disoriented for 30 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Staff, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LineBreaker3)
-                .Description("Deals weapon DMG + 28 in a line and inflicts Disoriented for 30 seconds.")
+                .Description("Deals weapon DMG + 28 in an 8m x 3m line and inflicts Disoriented for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 28)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LineBreaker4)
-                .Description("Deals weapon DMG + 38 in a line and inflicts Disoriented for 30 seconds.")
+                .Description("Deals weapon DMG + 38 in an 8m x 3m line and inflicts Disoriented for 30 seconds.")
                 .Price(5)
                 .RequirementSkill(SkillType.Staff, 40);
         }
@@ -267,7 +264,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SentinelGuardTrait)
-                .Description("Staff Sentinel protection abilities grant allies within 5m +8 Attack Deflection for 30 seconds and grant you +20% Enmity for 30 seconds.")
+                .Description("Staff Sentinel protection abilities grant allies within 5m +8 Melee Deflection for 30 seconds and grant you +20% Enmity for 30 seconds.")
                 .IncreasesStat(StatType.AbilityUsedPerkCategoryNearbyAllyAttackDeflectionCategoryId, (int)PerkCategoryType.StaffSentinel)
                 .IncreasesStat(StatType.AbilityUsedPerkCategoryNearbyAllyAttackDeflection, 8)
                 .IncreasesStat(StatType.AbilityUsedPerkCategoryNearbyAllyAttackDeflectionDurationSeconds, 30)
@@ -283,7 +280,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.StaffParryTrait)
-                .Description("After using a hostile Staff ability, gain +4 Attack Deflection for 30 seconds.")
+                .Description("After using a hostile Staff ability, gain +4 Melee Deflection for 30 seconds.")
                 .IncreasesStat(StatType.AbilityUsedAttackDeflectionSkillType, (int)SkillType.Staff)
                 .IncreasesStat(StatType.AbilityUsedAttackDeflection, 4)
                 .IncreasesStat(StatType.AbilityUsedAttackDeflectionDurationSeconds, 30)
@@ -291,7 +288,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Staff, 8)
 
                 .AddPerkLevel()
-                .Description("After using a hostile Staff ability, gain +6 Attack Deflection for 30 seconds.")
+                .Description("After using a hostile Staff ability, gain +6 Melee Deflection for 30 seconds.")
                 .IncreasesStat(StatType.AbilityUsedAttackDeflectionSkillType, (int)SkillType.Staff)
                 .IncreasesStat(StatType.AbilityUsedAttackDeflection, 6)
                 .IncreasesStat(StatType.AbilityUsedAttackDeflectionDurationSeconds, 30)
@@ -299,7 +296,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .RequirementSkill(SkillType.Staff, 22)
 
                 .AddPerkLevel()
-                .Description("After using a hostile Staff ability, gain +8 Attack Deflection for 30 seconds.")
+                .Description("After using a hostile Staff ability, gain +8 Melee Deflection for 30 seconds.")
                 .IncreasesStat(StatType.AbilityUsedAttackDeflectionSkillType, (int)SkillType.Staff)
                 .IncreasesStat(StatType.AbilityUsedAttackDeflection, 8)
                 .IncreasesStat(StatType.AbilityUsedAttackDeflectionDurationSeconds, 30)
@@ -314,19 +311,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LegSweep1)
-                .Description("Deals weapon DMG + 12 and inflicts Knockdown for 30 seconds.")
+                .Description("Deals weapon DMG + 12 and inflicts Knockdown for 6 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Staff, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LegSweep2)
-                .Description("Deals weapon DMG + 24 and inflicts Knockdown for 30 seconds.")
+                .Description("Deals weapon DMG + 24 and inflicts Knockdown for 6 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 30)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.LegSweep3)
-                .Description("Deals weapon DMG + 36 and inflicts Knockdown for 30 seconds.")
+                .Description("Deals weapon DMG + 36 and inflicts Knockdown for 6 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 38);
         }
@@ -338,13 +335,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GuardingStepTrait)
-                .Description("Using a Staff Sentinel ability grants +25% Evasion and +20% Defense for 30 seconds. This can trigger once every 20 seconds.")
+                .Description("Using a Staff Sentinel ability grants +25% Evasion and +20% Defense for 30 seconds. This can trigger once every 60 seconds.")
                 .IncreasesStat(StatType.AbilityUsedPerkCategorySelfDefenseCategoryId, (int)PerkCategoryType.StaffSentinel)
                 .IncreasesStat(StatType.AbilityUsedPerkCategorySelfEvasionPercentAdjustment, 25)
                 .IncreasesStat(StatType.AbilityUsedPerkCategorySelfDefensePercentAdjustment, 20)
                 .IncreasesStat(StatType.AbilityUsedPerkCategorySelfForceDefensePercentAdjustment, 20)
                 .IncreasesStat(StatType.AbilityUsedPerkCategorySelfDefenseDurationSeconds, 30)
-                .IncreasesStat(StatType.AbilityUsedPerkCategorySelfDefenseCooldownSeconds, 20)
+                .IncreasesStat(StatType.AbilityUsedPerkCategorySelfDefenseCooldownSeconds, 60)
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 15);
         }
@@ -368,7 +365,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SentinelStance1)
-                .Description("While active, grants +15% Evasion and +8 Attack Deflection, but Attack is reduced by 15%.")
+                .Description("While active, grants +15% Evasion and +8 Melee Deflection, but Attack is reduced by 15%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Staff, 20);
         }
@@ -395,7 +392,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ShelterCircle1)
-                .Description("for 30 seconds, you and allies within 5m gain +20% Physical Defense, +20% Force Defense, and +20% Evasion.")
+                .Description("For 30 seconds, you and allies within 5m gain +20% Physical Defense, +20% Force Defense, and +20% Evasion.")
                 .Price(3)
                 .RequirementSkill(SkillType.Staff, 32);
         }
@@ -423,7 +420,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.UnmovingCenter1)
-                .Description("For 45 seconds, you cannot be Knocked down or Dazed, gain +20 Attack Deflection, and generate +30% Enmity.")
+                .Description("For 45 seconds, you cannot be Knocked down or Dazed, gain +20 Melee Deflection, and generate +30% Enmity.")
                 .Price(6)
                 .RequirementSkill(SkillType.Staff, 50)
                 .RequirementQuest(StaffCapstoneQuestDefinition.UnmovingCenterMasteryQuestId);

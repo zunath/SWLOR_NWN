@@ -120,7 +120,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             foreach (var (questId, pcQuest) in dbPlayer.Quests)
             {
-                var task = Quest.GetQuestById(questId);
+                var task = Quest.GetQuestByIdOrDefault(questId);
+
+                // Quest definition no longer exists (e.g. an expired quest contract). Skip it.
+                if (task == null)
+                    continue;
+
                 if (task.GuildType != _guildType || pcQuest.DateLastCompleted != null || currentTasks.ContainsKey(questId))
                     continue;
                 if (task.GuildRank + 1 != _selectedRankFilter)
@@ -198,7 +203,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var playerId = GetObjectUUID(Player);
             var dbPlayer = DB.Get<Player>(playerId);
             var pcQuest = dbPlayer.Quests.ContainsKey(questId) ? dbPlayer.Quests[questId] : null;
-            var task = Quest.GetQuestById(questId);
+            var task = Quest.GetQuestByIdOrDefault(questId);
+
+            // Quest definition no longer exists (e.g. an expired quest contract). Treat as nothing selected.
+            if (task == null)
+            {
+                if (_selectedQuestIndex >= 0 && _selectedQuestIndex < TaskToggles.Count)
+                    TaskToggles[_selectedQuestIndex] = false;
+
+                _selectedQuestIndex = -1;
+                TaskDetails = "Select a task to view details.";
+                return;
+            }
+
             var currentTasks = Guild.GetAllActiveGuildTasks(_guildType);
             var isExpired = pcQuest != null &&
                             pcQuest.DateLastCompleted == null &&

@@ -20,7 +20,147 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             RogueSith();
             Tukata();
             FrogBoss();
+            CapstoneKorribanDungeonRares();
+            KorforgeRareElites();
+            KorcryptRareElites();
             return _builder.Build();
+        }
+
+        private void KorcryptRareElites()
+        {
+            _builder.Create("KORCRYPT_CRYPT_RARES").IsRare()
+                .AddItem("cryptwardenda", 1, 1, true).AddItem("cryptwardendb", 1, 1, true).AddItem("bp_cryptwarden", 1, 1, true);
+            _builder.Create("KORCRYPT_HUNGER_RARES").IsRare()
+                .AddItem("markahungerda", 1, 1, true).AddItem("markahungerdb", 1, 1, true).AddItem("bp_markahunger", 1, 1, true);
+            _builder.Create("KORCRYPT_ECLIPSE_RARES").IsRare()
+                .AddItem("eclipseshadeda", 1, 1, true).AddItem("eclipseshadedb", 1, 1, true).AddItem("bp_eclipseshade", 1, 1, true);
+            _builder.Create("KORCRYPT_CRYPT_COMP").AddItem("cryptwardencm", 1, 1);
+            _builder.Create("KORCRYPT_HUNGER_COMP").AddItem("markahungercm", 1, 1);
+            _builder.Create("KORCRYPT_ECLIPSE_COMP").AddItem("eclipseshadecm", 1, 1);
+        }
+
+        private void KorforgeRareElites()
+        {
+            _builder.Create("KORFORGE_FORGE_RARES").IsRare()
+                .AddItem("forgewrightda", 1, 1, true).AddItem("forgewrightdb", 1, 1, true).AddItem("bp_forgewright", 1, 1, true);
+            _builder.Create("KORFORGE_FLAME_RARES").IsRare()
+                .AddItem("flameweaverda", 1, 1, true).AddItem("flameweaverdb", 1, 1, true).AddItem("bp_flameweaver", 1, 1, true);
+            _builder.Create("KORFORGE_BANE_RARES").IsRare()
+                .AddItem("banecallerda", 1, 1, true).AddItem("banecallerdb", 1, 1, true).AddItem("bp_banecaller", 1, 1, true);
+            _builder.Create("KORFORGE_FORGE_COMP").AddItem("forgewrightcm", 1, 1);
+            _builder.Create("KORFORGE_FLAME_COMP").AddItem("flameweavercm", 1, 1);
+            _builder.Create("KORFORGE_BANE_COMP").AddItem("banecallercm", 1, 1);
+        }
+
+        private void CapstoneKorribanDungeonRares()
+        {
+            _builder.Create("CAPSTONE_ABSDEF_RARES")
+                .IsRare()
+                .AddItem("absdef_l1", 1, 1, true)
+                .AddItem("absdef_l2", 1, 1, true)
+                .AddItem("absdef_l3", 1, 1, true)
+                .AddItem("absdef_l4", 1, 1, true)
+                .AddItem("absdef_l5", 1, 1, true)
+                .AddItem("absdef_l6", 1, 1, true)
+                .AddItem("absdef_l7", 1, 1, true)
+                .AddItem("absdef_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_ABSDEF_WD_RARES")
+                .IsRare()
+                .AddItem("absdef_w1", 1, 1, true)
+                .AddItem("absdef_w2", 1, 1, true)
+                .AddItem("absdef_w3", 1, 1, true)
+                .AddItem("absdef_w4", 1, 1, true)
+                .AddItem("absdef_w5", 1, 1, true);
+
+            _builder.Create("CAPSTONE_SOULASC_RARES")
+                .IsRare()
+                .AddItem("soulasc_l1", 1, 1, true)
+                .AddItem("soulasc_l2", 1, 1, true)
+                .AddItem("soulasc_l3", 1, 1, true)
+                .AddItem("soulasc_l4", 1, 1, true)
+                .AddItem("soulasc_l5", 1, 1, true)
+                .AddItem("soulasc_l6", 1, 1, true)
+                .AddItem("soulasc_l7", 1, 1, true)
+                .AddItem("soulasc_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_SOULASC_WD_RARES")
+                .IsRare()
+                .AddItem("soulasc_w1", 1, 1, true)
+                .AddItem("soulasc_w2", 1, 1, true)
+                .AddItem("soulasc_w3", 1, 1, true)
+                .AddItem("soulasc_w4", 1, 1, true)
+                .AddItem("soulasc_w5", 1, 1, true);
+
+            _builder.Create("CAPSTONE_FORCEBANE_RARES")
+                .IsRare()
+                .AddItem("forcebane_l1", 1, 1, true)
+                .AddItem("forcebane_l2", 1, 1, true)
+                .AddItem("forcebane_l3", 1, 1, true)
+                .AddItem("forcebane_l4", 1, 1, true)
+                .AddItem("forcebane_l5", 1, 1, true)
+                .AddItem("forcebane_l6", 1, 1, true)
+                .AddItem("forcebane_l7", 1, 1, true)
+                .AddItem("forcebane_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_FORCEBANE_WD_RARES")
+                .IsRare()
+                .AddItem("forcebane_w1", 1, 1, true)
+                .AddItem("forcebane_w2", 1, 1, true)
+                .AddItem("forcebane_w3", 1, 1, true)
+                .AddItem("forcebane_w4", 1, 1, true)
+                .AddItem("forcebane_w5", 1, 1, true);
+
+            _builder.Create("CAPSTONE_LIGHTSTAND_RARES")
+                .IsRare()
+                .AddItem("lightstand_l1", 1, 1, true)
+                .AddItem("lightstand_l2", 1, 1, true)
+                .AddItem("lightstand_l3", 1, 1, true)
+                .AddItem("lightstand_l4", 1, 1, true)
+                .AddItem("lightstand_l5", 1, 1, true)
+                .AddItem("lightstand_l6", 1, 1, true)
+                .AddItem("lightstand_l7", 1, 1, true)
+                .AddItem("lightstand_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_LIGHTSTAND_WD_RARES")
+                .IsRare()
+                .AddItem("lightstand_w1", 1, 1, true)
+                .AddItem("lightstand_w2", 1, 1, true)
+                .AddItem("lightstand_w3", 1, 1, true)
+                .AddItem("lightstand_w4", 1, 1, true)
+                .AddItem("lightstand_w5", 1, 1, true);
+
+            _builder.Create("CAPSTONE_DARKHUNG_RARES")
+                .IsRare()
+                .AddItem("darkhung_l1", 1, 1, true)
+                .AddItem("darkhung_l2", 1, 1, true)
+                .AddItem("darkhung_l3", 1, 1, true)
+                .AddItem("darkhung_l4", 1, 1, true)
+                .AddItem("darkhung_l5", 1, 1, true)
+                .AddItem("darkhung_l6", 1, 1, true)
+                .AddItem("darkhung_l7", 1, 1, true)
+                .AddItem("darkhung_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_DARKHUNG_WD_RARES")
+                .IsRare()
+                .AddItem("darkhung_w1", 1, 1, true)
+                .AddItem("darkhung_w2", 1, 1, true)
+                .AddItem("darkhung_w3", 1, 1, true)
+                .AddItem("darkhung_w4", 1, 1, true)
+                .AddItem("darkhung_w5", 1, 1, true);
+
+            _builder.Create("CAPSTONE_ECLIPSE_RARES")
+                .IsRare()
+                .AddItem("eclipse_l1", 1, 1, true)
+                .AddItem("eclipse_l2", 1, 1, true)
+                .AddItem("eclipse_l3", 1, 1, true)
+                .AddItem("eclipse_l4", 1, 1, true)
+                .AddItem("eclipse_l5", 1, 1, true)
+                .AddItem("eclipse_l6", 1, 1, true)
+                .AddItem("eclipse_l7", 1, 1, true)
+                .AddItem("eclipse_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_ECLIPSE_WD_RARES")
+                .IsRare()
+                .AddItem("eclipse_w1", 1, 1, true)
+                .AddItem("eclipse_w2", 1, 1, true)
+                .AddItem("eclipse_w3", 1, 1, true)
+                .AddItem("eclipse_w4", 1, 1, true)
+                .AddItem("eclipse_w5", 1, 1, true);
         }
 
         private void Klorslug()
@@ -271,8 +411,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("recipe_chirifle", 10)
                 .AddItem("recipe_chitwinbl", 10)
                 .AddItem("recipe_chielec", 10)
-                .AddItem("recipe_saberupg1", 10)
-                .AddItem("recipe_staffupg1", 10)
+                .AddItem("recipe_chlsupg", 10)
+                .AddItem("recipe_chssupg", 10)
                 .AddItem("recipe_chitelec", 10)
                 .AddItem("recipe_chshield", 10)
                 .AddItem("recipe_chcloak", 10)
@@ -317,6 +457,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             _builder.Create("KORRIBAN_SITH_ROGUE_RARES")
                 .IsRare()
                 .AddItem("map_56", 11, 1, true)
+                .AddItem("lockbox_t3", 4, 1, true)
                 .AddGold(32, 5);
         }
         private void Tukata()
@@ -341,6 +482,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("FROG_BOSS_RARES")
                 .IsRare()
+                .AddItem("fnote_2052", 2, 1, true)
                 .AddItem("chiro_shard", 1, 1, true)
                 .AddGold(1000, 5);
 
@@ -357,8 +499,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("recipe_chirifle", 10)
                 .AddItem("recipe_chitwinbl", 10)
                 .AddItem("recipe_chielec", 10)
-                .AddItem("recipe_saberupg1", 10)
-                .AddItem("recipe_staffupg1", 10)
+                .AddItem("recipe_chlsupg", 10)
+                .AddItem("recipe_chssupg", 10)
                 .AddItem("recipe_chitelec", 10)
                 .AddItem("recipe_chshield", 10)
                 .AddItem("recipe_chcloak", 10)

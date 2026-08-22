@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <LangVersion>10</LangVersion>
     <OutputType>Library</OutputType>
@@ -17,20 +17,23 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
     <PackageReference Include="NRediSearch" Version="2.2.79" />
     <PackageReference Include="NReJSON" Version="4.0.0" />
-    <PackageReference Include="NWN.Core" Version="8193.37.3" />
-    <PackageReference Include="NWN.Native" Version="8193.37.3" />
-    <PackageReference Include="Serilog" Version="4.3.0" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+    <PackageReference Include="NWN.Core" Version="8193.37.4" />
+    <PackageReference Include="NWN.Native" Version="8193.37.4" />
+    <PackageReference Include="Serilog" Version="4.4.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
-    <PackageReference Include="StackExchange.Redis" Version="2.9.17" />
-    <PackageReference Include="System.Reflection.Emit" Version="4.7.0" />
+    <PackageReference Include="StackExchange.Redis" Version="3.0.17" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\SWLOR.NWN.API\SWLOR.NWN.API.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="ConversationData\**\*.conversation.json" />
   </ItemGroup>
 
   <Target Name="NWN" AfterTargets="Build">
@@ -42,7 +45,7 @@
     </ItemGroup>
   </Target>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(OS)' == 'Windows_NT'">
-    <Exec Command="..\tools\SWLOR.CLI\SWLOR.CLI.exe -o" WorkingDirectory="$(MSBuildProjectDirectory)\..\Build" />
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(OS)' == 'Windows_NT' AND '$(RunPostBuildEvent)' != 'Never'">
+    <Exec Command="call &quot;..\tools\SWLOR.CLI\RunCLI.cmd&quot; -o" WorkingDirectory="$(MSBuildProjectDirectory)\..\Build" />
   </Target>
 </Project>

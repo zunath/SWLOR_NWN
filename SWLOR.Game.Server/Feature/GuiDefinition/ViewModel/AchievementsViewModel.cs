@@ -135,26 +135,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void UpdatePagination()
         {
             var totalRecordCount = Achievement.GetActiveAchievements().Count;
-            var pageNumbers = new GuiBindingList<GuiComboEntry>();
-            var pages = (int)(totalRecordCount / EntriesPerPage + (totalRecordCount % EntriesPerPage == 0 ? 0 : 1));
+            var pagination = GuiPaginationState.Create(
+                totalRecordCount,
+                EntriesPerPage,
+                SelectedPageIndex);
+            PageNumbers = pagination.PageNumbers;
 
-            // Always add page 1.
-            pageNumbers.Add(new GuiComboEntry($"Page 1", 0));
-            for (var x = 2; x <= pages; x++)
-            {
-                pageNumbers.Add(new GuiComboEntry($"Page {x}", x - 1));
-            }
-
-            PageNumbers = pageNumbers;
-
-            // In the event no results are found, default the index to zero
-            if (pages <= 0)
-                SelectedPageIndex = 0;
-
-            // Otherwise, if current page is outside the new page bounds,
-            // set it to the last page in the list.
-            else if (SelectedPageIndex > pages - 1)
-                SelectedPageIndex = pages - 1;
+            if (SelectedPageIndex != pagination.SelectedPageIndex)
+                SelectedPageIndex = pagination.SelectedPageIndex;
         }
 
         public Action OnClickAchievement() => () =>

@@ -115,6 +115,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
         private static void HealPercent(uint activator, uint target, int percent)
         {
             var amount = GameMath.PercentOf(GetMaxHitPoints(target), percent);
+            amount = Stat.ApplyOutgoingAbilityHealingAdjustment(activator, amount);
             amount = Ability.ApplyCombatReadinessToActivatedAbilityMagnitude(activator, amount);
             amount = Stat.ApplyHealingReceivedAdjustment(target, amount);
 

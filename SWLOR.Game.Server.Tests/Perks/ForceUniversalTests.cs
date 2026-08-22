@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Enumeration;
@@ -20,11 +21,11 @@ public class ForceUniversalTests
         var perks = BuildForceUniversalPerksWithout2daLookup();
 
         AssertPerkLevel(perks[PerkType.ForcePush], "Force Push", 1, 2, 5, FeatType.ForcePush1,
-            "Deals 8 force DMG to one target in a 5m cone, knocks down for 30 seconds, and slows movement for 30 seconds.");
+            "Deals 8 force DMG to one target in a 5m x 5m cone, knocks it down for 6 seconds, and slows its movement for 12 seconds.");
         AssertPerkLevel(perks[PerkType.ForcePush], "Force Push", 2, 3, 28, FeatType.ForcePush2,
-            "Deals 12 force DMG to up to 2 targets in an 8m cone, knocks down for 30 seconds, and slows movement for 30 seconds.");
+            "Deals 12 force DMG to up to 2 targets in an 8m x 5m cone, knocks them down for 6 seconds, and slows their movement for 12 seconds.");
         AssertPerkLevel(perks[PerkType.ForcePush], "Force Push", 3, 4, 48, FeatType.ForcePush3,
-            "Deals 18 force DMG to up to 3 targets in a 10m cone, knocks down for 30 seconds, and slows movement for 30 seconds.");
+            "Deals 18 force DMG to up to 3 targets in a 10m x 5m cone, knocks them down for 6 seconds, and slows their movement for 12 seconds.");
 
         AssertPerkLevel(perks[PerkType.ForceLeap], "Force Leap", 1, 3, 10, FeatType.ForceLeap1,
             "Leap to a hostile target up to 15m away, dealing 10 force DMG plus WIL scaling and interrupting activation.");
@@ -40,9 +41,9 @@ public class ForceUniversalTests
     public void ForceUniversalAbilities_MatchCombatBible()
     {
         var forcePush = new ForcePushAbilityDefinition().BuildAbilities();
-        AssertAbility(forcePush[FeatType.ForcePush1], "Force Push I", 1, RecastGroup.ForcePush, 15f, 0f, 2, true, false, false, true, AbilityActivationType.Casted, 5f);
-        AssertAbility(forcePush[FeatType.ForcePush2], "Force Push II", 2, RecastGroup.ForcePush, 15f, 0f, 3, true, false, false, true, AbilityActivationType.Casted, 5f);
-        AssertAbility(forcePush[FeatType.ForcePush3], "Force Push III", 3, RecastGroup.ForcePush, 15f, 0f, 4, true, false, false, true, AbilityActivationType.Casted, 5f);
+        AssertAbility(forcePush[FeatType.ForcePush1], "Force Push I", 1, RecastGroup.ForcePush, 45f, 0f, 2, true, false, false, true, AbilityActivationType.Casted, 5f);
+        AssertAbility(forcePush[FeatType.ForcePush2], "Force Push II", 2, RecastGroup.ForcePush, 45f, 0f, 3, true, false, false, true, AbilityActivationType.Casted, 5f);
+        AssertAbility(forcePush[FeatType.ForcePush3], "Force Push III", 3, RecastGroup.ForcePush, 45f, 0f, 4, true, false, false, true, AbilityActivationType.Casted, 5f);
 
         var forceLeap = new ForceLeapAbilityDefinition().BuildAbilities();
         AssertAbility(forceLeap[FeatType.ForceLeap1], "Force Leap I", 1, RecastGroup.ForceLeap, 18f, 0f, 3, true, true, true, false, AbilityActivationType.Casted, 15f);
@@ -90,7 +91,38 @@ public class ForceUniversalTests
     }
 
     [Test]
-    public void ForceLeap_UsesLegacyLeapAnimationBeforeJump()
+    public void ThrowLightsaber_PathProjectionIncludesStationaryTargetAtFloatingPointEndpoint()
+    {
+        var origin = new Vector3(394.638855f, -247.003616f, 5.14350939f);
+        var destination = new Vector3(389.8544f, -245.746658f, 4.644441f);
+
+        InvokeThrowLightsaberPathCheck(origin, destination, destination).Should().BeTrue();
+    }
+
+    [Test]
+    public void ThrowLightsaber_PathProjectionRejectsTargetsOutsideLineBounds()
+    {
+        var origin = Vector3.Zero;
+        var destination = new Vector3(10f, 0f, 0f);
+
+        InvokeThrowLightsaberPathCheck(origin, destination, new Vector3(5f, 1.25f, 0f)).Should().BeTrue();
+        InvokeThrowLightsaberPathCheck(origin, destination, new Vector3(-0.01f, 0f, 0f)).Should().BeFalse();
+        InvokeThrowLightsaberPathCheck(origin, destination, new Vector3(10.01f, 0f, 0f)).Should().BeFalse();
+        InvokeThrowLightsaberPathCheck(origin, destination, new Vector3(5f, 1.26f, 0f)).Should().BeFalse();
+    }
+
+    [Test]
+    public void ThrowLightsaber_PreservesSelectedTargetAndReportsNoValidTargets()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ThrowLightsaberAbilityDefinition.cs").FullName);
+
+        source.Should().Contain("candidate => candidate == target || IsTargetAlongPath");
+        source.Should().Contain("Combat.BuildAbilityNoTargetCombatLogMessage");
+    }
+
+    [Test]
+    public void ForceLeap_UsesLegacyLeapAnimationAndLandsOutsideTheTarget()
     {
         var abilities = new ForceLeapAbilityDefinition().BuildAbilities();
 
@@ -101,7 +133,15 @@ public class ForceUniversalTests
         var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ForceLeapAbilityDefinition.cs").FullName);
 
         source.Should().Contain("ActionPlayAnimation(Animation.ForceLeap, LeapAnimationSpeed, LeapAnimationDurationSeconds)");
-        source.Should().Contain("ActionJumpToObject(target)");
+        source.Should().Contain("private const float ArrivalDistanceMeters = 1.5f;");
+        source.IndexOf("var destination = GetLeapDestination(activator, target)", StringComparison.Ordinal)
+            .Should().BeGreaterThan(
+                source.IndexOf("ActionPlayAnimation(Animation.ForceLeap", StringComparison.Ordinal),
+                "the target position must be sampled after the leap animation completes");
+        source.Should().Contain("JumpToLocation(destination)");
+        source.Should().Contain("SetFacingPoint(GetPosition(target))");
+        source.Should().NotContain("ActionJumpToLocation(destination)");
+        source.Should().NotContain("ActionJumpToObject(target)");
         source.Should().NotContain("UsesImpactAnimation(Animation.ForceLeap)");
         source.Should().NotContain("VisualEffect.Vfx_Fnf_Summon_Monster_1");
     }
@@ -153,7 +193,6 @@ public class ForceUniversalTests
         string description)
     {
         perk.Name.Should().Be(name);
-        perk.Category.Should().Be(PerkCategoryType.ForceUniversal);
 
         var perkLevel = perk.PerkLevels[level];
         perkLevel.Price.Should().Be(price);
@@ -222,6 +261,14 @@ public class ForceUniversalTests
         ability.Targeting.SizeY.Should().Be(5f);
         ability.Targeting.Flags.Should().Be(
             AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf);
+    }
+
+    private static bool InvokeThrowLightsaberPathCheck(Vector3 origin, Vector3 destination, Vector3 candidate)
+    {
+        var method = typeof(ThrowLightsaberAbilityDefinition)
+            .GetMethod("IsPositionAlongPath", BindingFlags.Static | BindingFlags.NonPublic)!;
+
+        return (bool)method.Invoke(null, new object[] { origin, destination, candidate })!;
     }
 
     private static void AssertSkillRequirement(PerkLevel level, SkillType skill, int rank)

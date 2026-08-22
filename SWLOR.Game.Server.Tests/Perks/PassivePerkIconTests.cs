@@ -11,7 +11,7 @@ public class PassivePerkIconTests
     private const int CustomTlkOffset = 16777216;
 
     [Test]
-    public void ActivePerks_ResolveAnIconFromGrantedFeats()
+    public void ActivePerks_ResolveAnIconFromGrantedFeatsOrExplicitMetadata()
     {
         var root = FindRepositoryRoot();
         var featRows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
@@ -26,6 +26,21 @@ public class PassivePerkIconTests
         {
             if (!perk.Detail.IsActive)
                 continue;
+
+            if (!string.IsNullOrWhiteSpace(perk.Detail.IconResref))
+            {
+                if (perk.Detail.IconResref.Equals("default_perk", StringComparison.OrdinalIgnoreCase))
+                {
+                    failures.Add($"{perk.Type} ({perk.Detail.Name}) explicitly resolves to default_perk.");
+                    continue;
+                }
+
+                var explicitIconPath = Path.Combine(iconRoot, $"{perk.Detail.IconResref}.tga");
+                if (!File.Exists(explicitIconPath))
+                    failures.Add($"{perk.Type} explicit icon should have a TGA at {explicitIconPath}.");
+
+                continue;
+            }
 
             var iconFeat = perk.Detail.PerkLevels
                 .OrderBy(x => x.Key)
@@ -52,6 +67,21 @@ public class PassivePerkIconTests
         }
 
         failures.Should().BeEmpty(string.Join(Environment.NewLine, failures.Take(200)));
+    }
+
+    [Test]
+    public void ExplicitPerkIcon_IsPreservedDuringBuild()
+    {
+        var perks = new PerkBuilder()
+            .Create(PerkCategoryType.EspionageInfiltrator, PerkType.Stealth)
+            .Name("Test Perk")
+            .Icon("ife_stealth1")
+
+            .AddPerkLevel()
+            .Price(1)
+            .Build();
+
+        perks[PerkType.Stealth].IconResref.Should().Be("ife_stealth1");
     }
 
     [Test]

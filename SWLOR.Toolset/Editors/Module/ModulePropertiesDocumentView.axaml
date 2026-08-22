@@ -1,0 +1,323 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:module="using:SWLOR.Toolset.Editors.Module"
+             xmlns:behaviors="using:SWLOR.Toolset.Editors.Behaviors"
+             x:Class="SWLOR.Toolset.Editors.Module.ModulePropertiesDocumentView"
+             x:DataType="module:ModulePropertiesDocumentViewModel">
+  <UserControl.Resources>
+    <ControlTheme x:Key="StretchDataGridCellTheme"
+                  TargetType="DataGridCell"
+                  BasedOn="{StaticResource {x:Type DataGridCell}}">
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    </ControlTheme>
+  </UserControl.Resources>
+
+  <DockPanel>
+    <Border DockPanel.Dock="Top" Padding="18,13"
+            Background="{DynamicResource PanelHeaderBrush}"
+            BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,0,1">
+      <Grid ColumnDefinitions="*,Auto">
+        <StackPanel Spacing="2">
+          <TextBlock Text="{Binding Name}" FontSize="16" FontWeight="SemiBold"
+                     TextTrimming="CharacterEllipsis" />
+          <TextBlock Text="MODULE  ·  module.ifo" Classes="mono" />
+        </StackPanel>
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="7"
+                    VerticalAlignment="Center" IsVisible="{Binding IsDirty}">
+          <TextBlock Text="●" Foreground="{DynamicResource AmberBrush}" />
+          <TextBlock Text="Unsaved" Foreground="{DynamicResource InkSecondaryBrush}" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <Border DockPanel.Dock="Bottom" Padding="16,11"
+            BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1,0,0">
+      <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Spacing="8">
+        <Button Content="Revert" MinWidth="86" Command="{Binding RevertCommand}" />
+        <Button Content="Save" MinWidth="86" Classes="primary" Command="{Binding SaveCommand}" />
+      </StackPanel>
+    </Border>
+
+    <TabControl x:Name="ModulePropertyTabs">
+      <TabItem Header="Basic">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+          <StackPanel x:Name="BasicFormStack" Margin="18,16" Spacing="14"
+                      HorizontalAlignment="Stretch">
+            <Border Classes="card" Padding="14">
+              <Grid ColumnDefinitions="150,*" RowDefinitions="Auto,Auto" RowSpacing="9" ColumnSpacing="12">
+                <TextBlock Grid.Row="0" Text="Name" VerticalAlignment="Center" />
+                <TextBox x:Name="ModuleNameField" Grid.Row="0" Grid.Column="1"
+                         Text="{Binding Name, Mode=TwoWay}" />
+                <TextBlock Grid.Row="1" Text="Tag" VerticalAlignment="Center" />
+                <TextBox x:Name="ModuleTagField" Grid.Row="1" Grid.Column="1"
+                         Text="{Binding Tag, Mode=TwoWay}" MaxLength="32" />
+              </Grid>
+            </Border>
+
+            <Border Classes="card" Padding="14">
+              <StackPanel Spacing="10">
+                <TextBlock Text="ENTRY POINT" Classes="section" />
+                <Grid ColumnDefinitions="150,*" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="8" ColumnSpacing="12">
+                  <TextBlock Grid.Row="0" Text="Start area" VerticalAlignment="Center" />
+                  <TextBox x:Name="EntryAreaField" Grid.Row="0" Grid.Column="1"
+                           Text="{Binding EntryArea}" IsReadOnly="True" />
+                  <TextBlock Grid.Row="1" Text="Starting X" VerticalAlignment="Center" />
+                  <TextBox x:Name="EntryXField" Grid.Row="1" Grid.Column="1"
+                           Text="{Binding EntryX}" IsReadOnly="True" Classes="mono" />
+                  <TextBlock Grid.Row="2" Text="Starting Y" VerticalAlignment="Center" />
+                  <TextBox x:Name="EntryYField" Grid.Row="2" Grid.Column="1"
+                           Text="{Binding EntryY}" IsReadOnly="True" Classes="mono" />
+                  <TextBlock Grid.Row="3" Text="Starting Z" VerticalAlignment="Center" />
+                  <TextBox x:Name="EntryZField" Grid.Row="3" Grid.Column="1"
+                           Text="{Binding EntryZ}" IsReadOnly="True" Classes="mono" />
+                </Grid>
+              </StackPanel>
+            </Border>
+
+            <Border Classes="card" Padding="14">
+              <StackPanel Spacing="10">
+                <TextBlock Text="MODULE SETTINGS" Classes="section" />
+                <Grid ColumnDefinitions="150,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
+                      RowSpacing="8" ColumnSpacing="12">
+                  <TextBlock Grid.Row="0" Text="Minutes per hour" VerticalAlignment="Center" />
+                  <NumericUpDown Grid.Row="0" Grid.Column="1" Value="{Binding MinutesPerHour, Mode=TwoWay}"
+                                 Width="130" HorizontalAlignment="Left"
+                                 Minimum="1" Maximum="255" Increment="1" FormatString="0" />
+                  <TextBlock Grid.Row="1" Text="Dawn start hour" VerticalAlignment="Center" />
+                  <NumericUpDown Grid.Row="1" Grid.Column="1" Value="{Binding DawnHour, Mode=TwoWay}"
+                                 Width="130" HorizontalAlignment="Left"
+                                 Minimum="0" Maximum="23" Increment="1" FormatString="0" />
+                  <TextBlock Grid.Row="2" Text="Dusk start hour" VerticalAlignment="Center" />
+                  <NumericUpDown Grid.Row="2" Grid.Column="1" Value="{Binding DuskHour, Mode=TwoWay}"
+                                 Width="130" HorizontalAlignment="Left"
+                                 Minimum="0" Maximum="23" Increment="1" FormatString="0" />
+                  <TextBlock Grid.Row="3" Text="Starting month" VerticalAlignment="Center" />
+                  <NumericUpDown Grid.Row="3" Grid.Column="1" Value="{Binding StartingMonth, Mode=TwoWay}"
+                                 Width="130" HorizontalAlignment="Left"
+                                 Minimum="1" Maximum="12" Increment="1" FormatString="0" />
+                  <TextBlock Grid.Row="4" Text="Starting day" VerticalAlignment="Center" />
+                  <NumericUpDown Grid.Row="4" Grid.Column="1" Value="{Binding StartingDay, Mode=TwoWay}"
+                                 Width="130" HorizontalAlignment="Left"
+                                 Minimum="1" Maximum="28" Increment="1" FormatString="0" />
+                  <TextBlock Grid.Row="5" Text="Starting hour" VerticalAlignment="Center" />
+                  <NumericUpDown Grid.Row="5" Grid.Column="1" Value="{Binding StartingHour, Mode=TwoWay}"
+                                 Width="130" HorizontalAlignment="Left"
+                                 Minimum="0" Maximum="23" Increment="1" FormatString="0" />
+                  <TextBlock Grid.Row="6" Text="Starting year" VerticalAlignment="Center" />
+                  <NumericUpDown x:Name="StartingYearNumeric" Grid.Row="6" Grid.Column="1"
+                                 Value="{Binding StartingYear, Mode=TwoWay}"
+                                 Width="130" HorizontalAlignment="Left"
+                                 Minimum="0" Maximum="2147483647" Increment="1" FormatString="0" />
+                  <TextBlock Grid.Row="7" Text="XP scale" VerticalAlignment="Center" />
+                  <Grid Grid.Row="7" Grid.Column="1" ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                    <Slider x:Name="XpScaleSlider" Grid.Column="0"
+                            Minimum="0" Maximum="200" TickFrequency="1" IsSnapToTickEnabled="True"
+                            SmallChange="1" LargeChange="10" VerticalAlignment="Center"
+                            Value="{Binding XpScale, Mode=TwoWay}" />
+                    <NumericUpDown x:Name="XpScaleNumeric" Grid.Column="1"
+                                   Width="130" VerticalAlignment="Center"
+                                   Minimum="0" Maximum="200" Increment="1" FormatString="0"
+                                   Value="{Binding XpScale, Mode=TwoWay}" />
+                  </Grid>
+                  <TextBlock Grid.Row="8" Text="Starting movie" VerticalAlignment="Center" />
+                  <ComboBox x:Name="StartingMoviePicker" Grid.Row="8" Grid.Column="1"
+                            HorizontalAlignment="Stretch"
+                            ItemsSource="{Binding StartingMovieChoices}"
+                            SelectedItem="{Binding StartingMovie, Mode=TwoWay}"
+                            MaxDropDownHeight="400" />
+                </Grid>
+              </StackPanel>
+            </Border>
+          </StackPanel>
+        </ScrollViewer>
+      </TabItem>
+
+      <TabItem Header="Events">
+        <Grid Margin="18,16" RowDefinitions="*,Auto" RowSpacing="8">
+          <DataGrid Grid.Row="0" ItemsSource="{Binding Events}" AutoGenerateColumns="False"
+                    CanUserResizeColumns="True" GridLinesVisibility="Horizontal">
+            <DataGrid.Columns>
+              <DataGridTextColumn Header="Event" Binding="{Binding Label}" Width="210" IsReadOnly="True" />
+              <DataGridTemplateColumn Header="Script" Width="*"
+                                      CellTheme="{StaticResource StretchDataGridCellTheme}">
+                <DataGridTemplateColumn.CellTemplate>
+                  <DataTemplate x:DataType="module:ModuleEventRowViewModel">
+                    <ComboBox Margin="4,2" HorizontalAlignment="Stretch"
+                              ItemsSource="{Binding ScriptChoices}"
+                              SelectedItem="{Binding Script, Mode=TwoWay}" />
+                  </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+              </DataGridTemplateColumn>
+              <DataGridTemplateColumn Header="" Width="70">
+                <DataGridTemplateColumn.CellTemplate>
+                  <DataTemplate x:DataType="module:ModuleEventRowViewModel">
+                    <Button Margin="4,2" Content="Edit" Command="{Binding EditCommand}" />
+                  </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+              </DataGridTemplateColumn>
+            </DataGrid.Columns>
+          </DataGrid>
+        </Grid>
+      </TabItem>
+
+      <TabItem Header="Variables">
+        <behaviors:VariablesSectionView DataContext="{Binding Variables}" />
+      </TabItem>
+
+      <TabItem Header="Description">
+        <Grid Margin="18,16">
+          <TextBox Text="{Binding Description, Mode=TwoWay}" AcceptsReturn="True"
+                   TextWrapping="Wrap" VerticalContentAlignment="Top"
+                   HorizontalAlignment="Stretch" VerticalAlignment="Stretch" />
+        </Grid>
+      </TabItem>
+
+      <TabItem Header="Custom Content">
+        <Grid Margin="18,16" RowDefinitions="*,Auto,Auto" RowSpacing="14">
+          <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="12">
+            <Border Classes="card" Padding="12">
+              <Grid RowDefinitions="Auto,*" RowSpacing="8">
+                <Grid ColumnDefinitions="*,Auto">
+                  <TextBlock Text="ASSIGNED HAKS — HIGHEST PRIORITY FIRST" Classes="section" />
+                  <TextBlock Grid.Column="1" Classes="count"
+                             Text="{Binding AssignedHakCount, StringFormat={}{0} assigned}" />
+                </Grid>
+                <ListBox Grid.Row="1" ItemsSource="{Binding Haks}" SelectedItem="{Binding SelectedHak, Mode=TwoWay}">
+                  <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="module:ModuleHakRow">
+                      <Grid ColumnDefinitions="*,Auto" Margin="2,1">
+                        <TextBlock Text="{Binding Name}" Classes="mono" />
+                        <TextBlock Grid.Column="1" Text="{Binding Status}" Classes="count" />
+                      </Grid>
+                    </DataTemplate>
+                  </ListBox.ItemTemplate>
+                </ListBox>
+              </Grid>
+            </Border>
+            <StackPanel Grid.Column="1" Width="112" Spacing="8">
+              <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="8">
+                <Button x:Name="MoveHakUpButton" Classes="utility-icon"
+                        Command="{Binding MoveHakUpCommand}" ToolTip.Tip="Move selected HAK up">
+                  <Path Data="{DynamicResource ToolsetChevronUpIconGeometry}" />
+                </Button>
+                <Button x:Name="MoveHakDownButton" Classes="utility-icon"
+                        Command="{Binding MoveHakDownCommand}" ToolTip.Tip="Move selected HAK down">
+                  <Path Data="{DynamicResource ToolsetChevronDownIconGeometry}" />
+                </Button>
+              </StackPanel>
+              <Button Content="Remove" Command="{Binding RemoveHakCommand}" />
+            </StackPanel>
+          </Grid>
+
+          <Grid Grid.Row="1" ColumnDefinitions="*,112" ColumnSpacing="12">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+              <ComboBox ItemsSource="{Binding AvailableHaks}"
+                        SelectedItem="{Binding SelectedAvailableHak, Mode=TwoWay}" />
+              <Button Grid.Column="1" Content="Check for conflicts"
+                      Command="{Binding CheckHakConflictsCommand}" />
+            </Grid>
+            <Button Grid.Column="1" Content="Add" Command="{Binding AddHakCommand}" />
+          </Grid>
+
+          <Border Grid.Row="2" Classes="card" Padding="12">
+            <Grid ColumnDefinitions="140,*" RowDefinitions="Auto,Auto,Auto,Auto" RowSpacing="8" ColumnSpacing="12">
+              <TextBlock Grid.Row="0" Text="Custom TLK" VerticalAlignment="Center" />
+              <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding CustomTlkChoices}"
+                        SelectedItem="{Binding SelectedCustomTlk, Mode=TwoWay}" />
+              <TextBlock Grid.Row="1" Text="nwn.ini" VerticalAlignment="Center" />
+              <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding NwnIniPath}" Classes="mono"
+                         TextTrimming="CharacterEllipsis" />
+              <TextBlock Grid.Row="2" Text="HAK directory" VerticalAlignment="Center" />
+              <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding HakDirectory}" Classes="mono"
+                         TextTrimming="CharacterEllipsis" />
+              <TextBlock Grid.Row="3" Text="TLK directory" VerticalAlignment="Center" />
+              <StackPanel Grid.Row="3" Grid.Column="1" Spacing="5">
+                <TextBlock Text="{Binding TlkDirectory}" Classes="mono" TextTrimming="CharacterEllipsis" />
+                <StackPanel Orientation="Horizontal" Spacing="7">
+                  <ProgressBar Width="90" Height="3" IsIndeterminate="True"
+                               IsVisible="{Binding IsReloadingCustomContent}" />
+                  <TextBlock Text="{Binding CustomContentStatus}" Classes="count" TextWrapping="Wrap" />
+                </StackPanel>
+              </StackPanel>
+            </Grid>
+          </Border>
+        </Grid>
+      </TabItem>
+
+      <TabItem Header="SWLOR">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+          <StackPanel Margin="18,16" Spacing="12">
+            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
+              <Border Grid.Column="0" Classes="card" Padding="13">
+                <StackPanel Spacing="6">
+                  <TextBlock Text="MODULE DATA" Classes="section" />
+                  <TextBlock Text="Ready" FontSize="15" />
+                  <TextBlock Classes="count" Text="{Binding AreaCount, StringFormat={}{0} areas}" />
+                </StackPanel>
+              </Border>
+              <Border Grid.Column="1" Classes="card" Padding="13">
+                <StackPanel Spacing="6">
+                  <TextBlock Text="CUSTOM CONTENT" Classes="section" />
+                  <TextBlock Text="{Binding CustomContentStatus}" TextWrapping="Wrap" />
+                  <TextBlock Classes="count" Text="{Binding AssignedHakCount, StringFormat={}{0} HAK layers}" />
+                </StackPanel>
+              </Border>
+              <Border Grid.Column="2" Classes="card" Padding="13">
+                <StackPanel Spacing="6">
+                  <TextBlock Text="VALIDATION" Classes="section" />
+                  <TextBlock Text="Open Validation to run" />
+                  <Button Content="Run validation" HorizontalAlignment="Left"
+                          Command="{Binding RunValidationCommand}" />
+                </StackPanel>
+              </Border>
+            </Grid>
+
+            <Border Classes="card" Padding="13">
+              <StackPanel Spacing="9">
+                <TextBlock Text="PROJECT SOURCES" Classes="section" />
+                <Grid ColumnDefinitions="150,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto" RowSpacing="7" ColumnSpacing="10">
+                  <TextBlock Grid.Row="0" Text="Module root" />
+                  <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding ModuleRootDisplay}" Classes="mono" />
+                  <TextBlock Grid.Row="1" Text="HAK configuration" />
+                  <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding HakConfigurationPath}" Classes="mono" />
+                  <TextBlock Grid.Row="2" Text="nwn.ini" />
+                  <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding NwnIniPath}" Classes="mono" />
+                  <TextBlock Grid.Row="3" Text="TLK directory" />
+                  <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding TlkDirectory}" Classes="mono" />
+                  <TextBlock Grid.Row="4" Text="Pack output" />
+                  <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding PackOutput}" Classes="mono" />
+                </Grid>
+              </StackPanel>
+            </Border>
+
+            <Border Classes="card" Padding="13">
+              <StackPanel Spacing="9">
+                <TextBlock Text="BUILD SETTINGS" Classes="section" />
+                <Grid ColumnDefinitions="190,*" RowDefinitions="Auto,Auto,Auto" RowSpacing="7">
+                  <TextBlock Grid.Row="0" Text="Checksum checking" />
+                  <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding ChecksumChecking}" Classes="mono" />
+                  <TextBlock Grid.Row="1" Text="Minimum game version" />
+                  <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding MinimumGameVersion}" Classes="mono" />
+                  <TextBlock Grid.Row="2" Text="Module version" />
+                  <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding ModuleVersion}" Classes="mono" />
+                </Grid>
+              </StackPanel>
+            </Border>
+
+            <Border Classes="card" Padding="13">
+              <StackPanel Spacing="9">
+                <TextBlock Text="MODULE ACTIONS" Classes="section" />
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                  <Button Content="Run validation" Command="{Binding RunValidationCommand}" />
+                  <Button Content="Build all scripts" Command="{Binding BuildAllScriptsCommand}" />
+                  <Button Content="Pack module" Command="{Binding PackModuleCommand}" />
+                  <Button Content="Open build configuration" Command="{Binding OpenBuildConfigurationCommand}" />
+                </StackPanel>
+              </StackPanel>
+            </Border>
+          </StackPanel>
+        </ScrollViewer>
+      </TabItem>
+    </TabControl>
+  </DockPanel>
+</UserControl>

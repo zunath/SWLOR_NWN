@@ -15,8 +15,9 @@ namespace SWLOR.Game.Server.Service
     /// </summary>
     public static class Cache
     {
-        private static bool _cachedThisRun;
         private static Dictionary<string, string> ItemNamesByResref { get; set; } = new();
+        private static Dictionary<string, string> ItemIconsByResref { get; set; } = new();
+        private static Dictionary<string, bool> ItemSearchableByResref { get; set; } = new();
         private static Dictionary<int, int> PortraitIdsByInternalId { get; } = new();
         private static Dictionary<int, int> PortraitInternalIdsByPortraitId { get; } = new();
         private static Dictionary<int, string> PortraitResrefByInternalId { get; } = new();
@@ -85,31 +86,13 @@ namespace SWLOR.Game.Server.Service
                 ["vs_ntuskenx"] = "vs_ntuskenx_bat1"
             });
 
-        [NWNEventHandler(ScriptName.OnModuleContentChange)]
-        public static void CacheItemNamesByResref()
-        {
-            var resref = UtilPlugin.GetFirstResRef(ResRefType.Item);
-
-            while (!string.IsNullOrWhiteSpace(resref))
-            {
-                CacheItemNameByResref(resref);
-                resref = UtilPlugin.GetNextResRef();
-            }
-
-            var dbModuleCache = DB.Get<ModuleCache>("SWLOR_CACHE");
-            dbModuleCache.ItemNamesByResref = ItemNamesByResref;
-            DB.Set(dbModuleCache);
-
-            _cachedThisRun = true;
-        }
-
         /// <summary>
         /// Handles caching data into server memory for quicker lookup later.
         /// </summary>
         [NWNEventHandler(ScriptName.OnModuleCacheBefore)]
         public static void CacheData()
         {
-            LoadItemCache();
+            CacheAllItemData();
             CachePortraitsById();
             CacheSoundSets();
 
@@ -118,18 +101,27 @@ namespace SWLOR.Game.Server.Service
             Console.WriteLine($"Loaded {SoundSets.Count} soundsets.");
         }
 
-        private static void LoadItemCache()
+        /// <summary>
+        /// Builds the item name/icon/tradeability caches by spawning every item blueprint in the
+        /// module once. Runs at every boot so the cache always matches the current module content;
+        /// it is deliberately not persisted anywhere.
+        /// </summary>
+        private static void CacheAllItemData()
         {
-            // No need to load from the DB, it's already in memory.
-            if (_cachedThisRun)
-                return;
+            var resref = UtilPlugin.GetFirstResRef(ResRefType.Item);
 
-            var dbModuleCache = DB.Get<ModuleCache>("SWLOR_CACHE");
-            ItemNamesByResref = dbModuleCache.ItemNamesByResref;
+            while (!string.IsNullOrWhiteSpace(resref))
+            {
+                CacheItemNameByResref(resref);
+                resref = UtilPlugin.GetNextResRef();
+            }
         }
 
         /// <summary>
-        /// Stores the name of an individual item into the cache.
+        /// Stores the name, icon, and searchability of an individual item into the cache. An item is
+        /// searchable when it follows the player market's listing rules (no containers, cursed, plot,
+        /// or legacy items) and is not an NPC/creature/internal item per
+        /// <see cref="Item.IsEconomyRestricted"/>.
         /// </summary>
         /// <param name="resref">The resref of the item we want to cache.</param>
         private static void CacheItemNameByResref(string resref)
@@ -137,7 +129,55 @@ namespace SWLOR.Game.Server.Service
             var storageContainer = GetObjectByTag("TEMP_ITEM_STORAGE");
             var item = CreateItemOnObject(resref, storageContainer);
             ItemNamesByResref[resref] = GetName(item);
+            ItemIconsByResref[resref] = Item.GetIconResref(item);
+            ItemSearchableByResref[resref] = !GetHasInventory(item) &&
+                                             !GetItemCursedFlag(item) &&
+                                             !GetPlotFlag(item) &&
+                                             !Item.IsLegacyItem(item) &&
+                                             !Item.IsEconomyRestricted(item);
             DestroyObject(item);
+        }
+
+        /// <summary>
+        /// Searches the cached item catalog for items whose name contains the given text. Matching is
+        /// case-insensitive and runs against the in-memory name cache, so it is safe to call on demand.
+        /// Results are limited to items eligible for player-facing economy surfaces: player-market
+        /// tradeable, and not an NPC/creature/internal item (see <see cref="Item.IsEconomyRestricted"/>).
+        /// </summary>
+        /// <param name="search">The partial name to search for. Whitespace/empty returns no results.</param>
+        /// <param name="maxResults">The maximum number of results to return.</param>
+        /// <returns>Matching (resref, name) pairs ordered by name, capped at <paramref name="maxResults"/>.</returns>
+        public static List<(string Resref, string Name)> SearchItemsByName(string search, int maxResults)
+        {
+            if (string.IsNullOrWhiteSpace(search))
+                return new List<(string, string)>();
+
+            var lowered = search.ToLower();
+
+            return ItemNamesByResref
+                .Where(x => !string.IsNullOrWhiteSpace(x.Value) && x.Value.ToLower().Contains(lowered))
+                .OrderBy(x => x.Value)
+                .Where(x => IsItemSearchableByResref(x.Key))
+                .Take(maxResults)
+                .Select(x => (x.Key, x.Value))
+                .ToList();
+        }
+
+        /// <summary>
+        /// Determines whether an item blueprint may appear in player-facing economy search surfaces:
+        /// player-market tradeable, and not an NPC/creature/internal item. If the resref isn't cached
+        /// (i.e. it wasn't part of the module's item palette at boot), the item is spawned once to evaluate it.
+        /// </summary>
+        /// <param name="resref">The item blueprint resref to check.</param>
+        /// <returns>true if the item may be shown to players, false otherwise.</returns>
+        public static bool IsItemSearchableByResref(string resref)
+        {
+            if (!ItemSearchableByResref.ContainsKey(resref))
+            {
+                CacheItemNameByResref(resref);
+            }
+
+            return ItemSearchableByResref[resref];
         }
 
         /// <summary>
@@ -154,6 +194,23 @@ namespace SWLOR.Game.Server.Service
             }
 
             return ItemNamesByResref[resref];
+        }
+
+        /// <summary>
+        /// Retrieves the inventory icon resref of an item by its blueprint resref, using the same icon
+        /// rules as the player market (<see cref="Item.GetIconResref"/>). If the resref isn't cached
+        /// (i.e. it wasn't part of the module's item palette at boot), the item is spawned once to capture it.
+        /// </summary>
+        /// <param name="resref">The item blueprint resref to look up.</param>
+        /// <returns>The icon resref for the item.</returns>
+        public static string GetItemIconByResref(string resref)
+        {
+            if (!ItemIconsByResref.ContainsKey(resref))
+            {
+                CacheItemNameByResref(resref);
+            }
+
+            return ItemIconsByResref[resref];
         }
 
         /// <summary>

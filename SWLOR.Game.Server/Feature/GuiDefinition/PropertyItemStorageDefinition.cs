@@ -108,6 +108,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 {
                                     template.AddCell(cell =>
                                     {
+                                        cell.SetWidth(32f);
+                                        cell.SetIsVariable(false);
+
+                                        cell.AddGroup(group =>
+                                        {
+                                            group.AddImage()
+                                                .BindResref(model => model.ItemResrefs)
+                                                .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                                                .SetVerticalAlign(NuiVerticalAlign.Top)
+                                                .BindTooltip(model => model.ItemNames);
+                                        });
+                                    });
+
+                                    template.AddCell(cell =>
+                                    {
                                         cell.AddToggleButton()
                                             .BindIsToggled(model => model.ItemToggles)
                                             .BindTooltip(model => model.ItemNames)

@@ -6,15 +6,23 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
-    public sealed class BolsterResolve2StatusEffect : SocialScalingStatusEffectBase
+    public sealed class BolsterResolve2StatusEffect : SocialScalingStatusEffectBase, ILeadershipDamageReductionStatusEffect
     {
         public override string Name => "Bolster Resolve II";
         public override EffectIconType Icon => EffectIconType.BolsterResolve2StatusEffect;
         public override bool PersistsOnLogout => false;
+        public IReadOnlyDictionary<StatType, int> LeadershipDamageReductionStats { get; private set; } = new Dictionary<StatType, int>();
 
         protected override void Apply(uint creature, int durationTicks)
         {
-            StatGroup.Stats[StatType.DamageTakenPercentAdjustment] = -ScaleBySourceSocial(12, 15);
+            var reduction = -ScaleBySourceSocial(12, 15);
+            StatGroup.Stats[StatType.LeadershipPhysicalDamageTakenPercentAdjustment] = reduction;
+            StatGroup.Stats[StatType.LeadershipForceDamageTakenPercentAdjustment] = reduction;
+            LeadershipDamageReductionStats = new Dictionary<StatType, int>
+            {
+                [StatType.LeadershipPhysicalDamageTakenPercentAdjustment] = reduction,
+                [StatType.LeadershipForceDamageTakenPercentAdjustment] = reduction,
+            };
         }
     }
 }

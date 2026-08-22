@@ -184,7 +184,7 @@
         "__struct_id": 2,
         "EquippedRes": {
           "type": "resref",
-          "value": "cologarb4"
+          "value": "sol_mandomarkarm"
         }
       }
     ]
@@ -388,7 +388,7 @@
   },
   "ScriptDialogue": {
     "type": "resref",
-    "value": ""
+    "value": "dialog_start"
   },
   "ScriptDisturbed": {
     "type": "resref",
@@ -662,10 +662,6 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "cq_perflurry"
-  },
-  "VarTable": {
-    "type": "list",
-    "value": []
   },
   "WalkRate": {
     "type": "int",

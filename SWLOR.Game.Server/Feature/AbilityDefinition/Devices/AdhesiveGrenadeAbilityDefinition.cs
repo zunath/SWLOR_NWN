@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .Name("Adhesive Grenade I")
                 .Level(1)
                 .HasActivationDelay(1f)
-                .HasRecastDelay(RecastGroup.AdhesiveGrenade, 18f)
+                .HasRecastDelay(RecastGroup.AdhesiveGrenade, 45f)
                 .SkillType(SkillType.Devices)
                 .CombatImpactDamageAbility(AbilityType.Perception)
                 .UsesImpactAnimation(Animation.ThrowGrenade)
@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     Spell.AdhesiveGrenade1,
                     4f,
                     AbilityTargetingFlags.HarmsEnemies,
-                    DeviceAbilityEffects.ApplyGrenadeRadiusBonus)
+                    DeviceAbilityEffects.ApplyBlastRadiusBonus)
                 .HasImpactAction(AdhesiveGrenade1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .Name("Adhesive Grenade II")
                 .Level(2)
                 .HasActivationDelay(1f)
-                .HasRecastDelay(RecastGroup.AdhesiveGrenade, 18f)
+                .HasRecastDelay(RecastGroup.AdhesiveGrenade, 45f)
                 .SkillType(SkillType.Devices)
                 .CombatImpactDamageAbility(AbilityType.Perception)
                 .UsesImpactAnimation(Animation.ThrowGrenade)
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                     Spell.AdhesiveGrenade2,
                     4f,
                     AbilityTargetingFlags.HarmsEnemies,
-                    DeviceAbilityEffects.ApplyGrenadeRadiusBonus)
+                    DeviceAbilityEffects.ApplyBlastRadiusBonus)
                 .HasImpactAction(AdhesiveGrenade2ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -84,8 +84,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 activator,
                 target,
                 targetLocation,
-                30,
-                30);
+                6,
+                3);
         }
 
         private static void AdhesiveGrenade2ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -94,8 +94,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 activator,
                 target,
                 targetLocation,
-                30,
-                30);
+                12,
+                5);
         }
 
         private static void ApplyAdhesiveGrenade(
@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
             uint target,
             Location targetLocation,
             int slowDuration,
-            int immobilizeDuration)
+            int maxTargets)
         {
             var impactLocation = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
             ApplyEffectAtLocation(
@@ -121,7 +121,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 null,
                 CombatImpactAreaShape.Sphere,
                 0f,
-                DeviceAbilityEffects.ApplyGrenadeRadiusBonus(activator, 4f),
+                DeviceAbilityEffects.ApplyBlastRadiusBonus(activator, 4f),
                 0f,
                 Array.Empty<Type>(),
                 statusEffectFactory: () => new AdhesiveGrenadeStatusEffect(
@@ -129,12 +129,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 damageType: CombatDamageType.Physical,
                 targetVisualEffect: VisualEffect.Vfx_Imp_Slow,
                 areaVisualEffect: VisualEffect.None,
-                afterSuccessfulHit: hitTarget => StatusEffect.ApplyStatusEffect(
-                    activator,
-                    hitTarget,
-                    typeof(ImmobilizedStatusEffect),
-                    immobilizeDuration,
-                    CombatDamageType.Physical));
+                maxTargets: maxTargets);
         }
 
     }

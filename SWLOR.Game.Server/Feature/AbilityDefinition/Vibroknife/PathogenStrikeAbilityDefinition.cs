@@ -43,7 +43,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 AbilityType.Invalid,
                 new GeneratedWeaponAbilityProfile
                 {
-                    SourceStatusEffectsToExtend = new[] { typeof(ShadowToxinStatusEffect), typeof(InfectionStatusEffect) },
+                    IsQueuedWeaponAbility = true,
+                    SourceStatusEffectsToExtend = new[] { typeof(VenomStatusEffect), typeof(InfectionStatusEffect) },
                     SourceStatusExtensionSeconds = 4
                 });
 
@@ -73,7 +74,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 AbilityType.Invalid,
                 new GeneratedWeaponAbilityProfile
                 {
-                    SourceStatusEffectsToExtend = new[] { typeof(ShadowToxinStatusEffect), typeof(InfectionStatusEffect) },
+                    IsQueuedWeaponAbility = true,
+                    SourceStatusEffectsToExtend = new[] { typeof(VenomStatusEffect), typeof(InfectionStatusEffect) },
                     SourceStatusExtensionSeconds = 4
                 });
 
@@ -103,7 +105,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 AbilityType.Invalid,
                 new GeneratedWeaponAbilityProfile
                 {
-                    SourceStatusEffectsToExtend = new[] { typeof(ShadowToxinStatusEffect), typeof(InfectionStatusEffect) },
+                    IsQueuedWeaponAbility = true,
+                    SourceStatusEffectsToExtend = new[] { typeof(VenomStatusEffect), typeof(InfectionStatusEffect) },
                     SourceStatusExtensionSeconds = 6
                 });
 
@@ -133,7 +136,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 AbilityType.Invalid,
                 new GeneratedWeaponAbilityProfile
                 {
-                    SourceStatusEffectsToExtend = new[] { typeof(ShadowToxinStatusEffect), typeof(InfectionStatusEffect) },
+                    IsQueuedWeaponAbility = true,
+                    SourceStatusEffectsToExtend = new[] { typeof(VenomStatusEffect), typeof(InfectionStatusEffect) },
                     SourceStatusExtensionSeconds = 6
                 });
 

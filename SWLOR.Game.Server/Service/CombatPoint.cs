@@ -242,6 +242,18 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Returns true if the player has already earned any combat points against the given creature,
+        /// i.e. they are actively participating in the fight with it.
+        /// </summary>
+        /// <param name="player">The player to check.</param>
+        /// <param name="creature">The creature to check against.</param>
+        public static bool HasCombatPoints(uint player, uint creature)
+        {
+            return _creatureCombatPointTracker.TryGetValue(creature, out var byPlayer) &&
+                   byPlayer.ContainsKey(player);
+        }
+
+        /// <summary>
         /// Updates the level of the last creature associated with an added combat point.
         /// Also refreshes the expiration time by 2 minutes.
         /// </summary>

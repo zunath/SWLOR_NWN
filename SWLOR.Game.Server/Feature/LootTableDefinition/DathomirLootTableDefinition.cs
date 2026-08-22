@@ -22,7 +22,147 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
             JungleBug();
             GapingSpider();
 
+            CapstoneDathomirDungeonRares();
+            DathomirGrottoRareElites();
+            DathtarnRareElites();
             return _builder.Build();
+        }
+
+        private void DathtarnRareElites()
+        {
+            _builder.Create("DATHTARN_APEX_RARES").IsRare()
+                .AddItem("tarnapexmawda", 1, 1, true).AddItem("tarnapexmawdb", 1, 1, true).AddItem("bp_tarnapexmaw", 1, 1, true);
+            _builder.Create("DATHTARN_QUILL_RARES").IsRare()
+                .AddItem("quillstalkerda", 1, 1, true).AddItem("quillstalkerdb", 1, 1, true).AddItem("bp_quillstalker", 1, 1, true);
+            _builder.Create("DATHTARN_RHYDEL_RARES").IsRare()
+                .AddItem("rhydelalphada", 1, 1, true).AddItem("rhydelalphadb", 1, 1, true).AddItem("bp_rhydelalpha", 1, 1, true);
+            _builder.Create("DATHTARN_APEX_COMP").AddItem("tarnapexmawcm", 1, 1);
+            _builder.Create("DATHTARN_QUILL_COMP").AddItem("quillstalkercm", 1, 1);
+            _builder.Create("DATHTARN_RHYDEL_COMP").AddItem("rhydelalphacm", 1, 1);
+        }
+
+        private void DathomirGrottoRareElites()
+        {
+            _builder.Create("DATHGROTTO_ALPHA_RARES").IsRare()
+                .AddItem("bone_guard", 1, 1, true).AddItem("thornhide", 1, 1, true).AddItem("bp_fanggaunt", 1, 1, true);
+            _builder.Create("DATHGROTTO_SPINE_RARES").IsRare()
+                .AddItem("quill_bracer", 1, 1, true).AddItem("beasthide", 1, 1, true).AddItem("bp_ridgeplate", 1, 1, true);
+            _builder.Create("DATHGROTTO_STALKER_RARES").IsRare()
+                .AddItem("totem_charm", 1, 1, true).AddItem("spirit_hide", 1, 1, true).AddItem("bp_ritecrown", 1, 1, true);
+            _builder.Create("DATHGROTTO_ALPHA_COMP").AddItem("alpha_fang", 1, 1);
+            _builder.Create("DATHGROTTO_SPINE_COMP").AddItem("spine_quill", 1, 1);
+            _builder.Create("DATHGROTTO_STALKER_COMP").AddItem("spirit_totem", 1, 1);
+        }
+
+        private void CapstoneDathomirDungeonRares()
+        {
+            _builder.Create("CAPSTONE_PRIMOVER_RARES")
+                .IsRare()
+                .AddItem("primover_l1", 1, 1, true)
+                .AddItem("primover_l2", 1, 1, true)
+                .AddItem("primover_l3", 1, 1, true)
+                .AddItem("primover_l4", 1, 1, true)
+                .AddItem("primover_l5", 1, 1, true)
+                .AddItem("primover_l6", 1, 1, true)
+                .AddItem("primover_l7", 1, 1, true)
+                .AddItem("primover_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_PRIMOVER_WD_RARES")
+                .IsRare()
+                .AddItem("primover_w1", 1, 1, true)
+                .AddItem("primover_w2", 1, 1, true)
+                .AddItem("primover_w3", 1, 1, true)
+                .AddItem("primover_w4", 1, 1, true)
+                .AddItem("primover_w5", 1, 1, true);
+
+            _builder.Create("CAPSTONE_UNTINST_RARES")
+                .IsRare()
+                .AddItem("untinst_l1", 1, 1, true)
+                .AddItem("untinst_l2", 1, 1, true)
+                .AddItem("untinst_l3", 1, 1, true)
+                .AddItem("untinst_l4", 1, 1, true)
+                .AddItem("untinst_l5", 1, 1, true)
+                .AddItem("untinst_l6", 1, 1, true)
+                .AddItem("untinst_l7", 1, 1, true)
+                .AddItem("untinst_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_UNTINST_WD_RARES")
+                .IsRare()
+                .AddItem("untinst_w1", 1, 1, true)
+                .AddItem("untinst_w2", 1, 1, true)
+                .AddItem("untinst_w3", 1, 1, true)
+                .AddItem("untinst_w4", 1, 1, true)
+                .AddItem("untinst_w5", 1, 1, true);
+
+            _builder.Create("CAPSTONE_FORCEBEAST_RARES")
+                .IsRare()
+                .AddItem("forcebeast_l1", 1, 1, true)
+                .AddItem("forcebeast_l2", 1, 1, true)
+                .AddItem("forcebeast_l3", 1, 1, true)
+                .AddItem("forcebeast_l4", 1, 1, true)
+                .AddItem("forcebeast_l5", 1, 1, true)
+                .AddItem("forcebeast_l6", 1, 1, true)
+                .AddItem("forcebeast_l7", 1, 1, true)
+                .AddItem("forcebeast_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_FORCEBEAST_WD_RARES")
+                .IsRare()
+                .AddItem("forcebeast_w1", 1, 1, true)
+                .AddItem("forcebeast_w2", 1, 1, true)
+                .AddItem("forcebeast_w3", 1, 1, true)
+                .AddItem("forcebeast_w4", 1, 1, true)
+                .AddItem("forcebeast_w5", 1, 1, true);
+
+            _builder.Create("CAPSTONE_APEXBITE_RARES")
+                .IsRare()
+                .AddItem("apexbite_l1", 1, 1, true)
+                .AddItem("apexbite_l2", 1, 1, true)
+                .AddItem("apexbite_l3", 1, 1, true)
+                .AddItem("apexbite_l4", 1, 1, true)
+                .AddItem("apexbite_l5", 1, 1, true)
+                .AddItem("apexbite_l6", 1, 1, true)
+                .AddItem("apexbite_l7", 1, 1, true)
+                .AddItem("apexbite_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_APEXBITE_WD_RARES")
+                .IsRare()
+                .AddItem("apexbite_w1", 1, 1, true)
+                .AddItem("apexbite_w2", 1, 1, true)
+                .AddItem("apexbite_w3", 1, 1, true)
+                .AddItem("apexbite_w4", 1, 1, true)
+                .AddItem("apexbite_w5", 1, 1, true);
+
+            _builder.Create("CAPSTONE_UNBRBEAST_RARES")
+                .IsRare()
+                .AddItem("unbrbeast_l1", 1, 1, true)
+                .AddItem("unbrbeast_l2", 1, 1, true)
+                .AddItem("unbrbeast_l3", 1, 1, true)
+                .AddItem("unbrbeast_l4", 1, 1, true)
+                .AddItem("unbrbeast_l5", 1, 1, true)
+                .AddItem("unbrbeast_l6", 1, 1, true)
+                .AddItem("unbrbeast_l7", 1, 1, true)
+                .AddItem("unbrbeast_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_UNBRBEAST_WD_RARES")
+                .IsRare()
+                .AddItem("unbrbeast_w1", 1, 1, true)
+                .AddItem("unbrbeast_w2", 1, 1, true)
+                .AddItem("unbrbeast_w3", 1, 1, true)
+                .AddItem("unbrbeast_w4", 1, 1, true)
+                .AddItem("unbrbeast_w5", 1, 1, true);
+
+            _builder.Create("CAPSTONE_ALPHARHY_RARES")
+                .IsRare()
+                .AddItem("alpharhy_l1", 1, 1, true)
+                .AddItem("alpharhy_l2", 1, 1, true)
+                .AddItem("alpharhy_l3", 1, 1, true)
+                .AddItem("alpharhy_l4", 1, 1, true)
+                .AddItem("alpharhy_l5", 1, 1, true)
+                .AddItem("alpharhy_l6", 1, 1, true)
+                .AddItem("alpharhy_l7", 1, 1, true)
+                .AddItem("alpharhy_l8", 1, 1, true);
+            _builder.Create("CAPSTONE_ALPHARHY_WD_RARES")
+                .IsRare()
+                .AddItem("alpharhy_w1", 1, 1, true)
+                .AddItem("alpharhy_w2", 1, 1, true)
+                .AddItem("alpharhy_w3", 1, 1, true)
+                .AddItem("alpharhy_w4", 1, 1, true)
+                .AddItem("alpharhy_w5", 1, 1, true);
         }
 
         private void Chirodactyl()
@@ -36,6 +176,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("DATHOMIR_CHIRODACTYL_RARES")
                 .IsRare()
+                .AddItem("fnote_2001", 2, 1, true)
                 .AddItem("emerald", 1, 1, true)
                 .AddItem("chiro_shard", 1, 1, true);
 
@@ -55,8 +196,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("recipe_chirifle", 10)
                 .AddItem("recipe_chitwinbl", 10)
                 .AddItem("recipe_chielec", 10)
-                .AddItem("recipe_saberupg1", 10)
-                .AddItem("recipe_staffupg1", 10)
+                .AddItem("recipe_chlsupg", 10)
+                .AddItem("recipe_chssupg", 10)
                 .AddItem("recipe_chitelec", 10)
                 .AddItem("recipe_chshield", 10)
                 .AddItem("recipe_chcloak", 10)
@@ -101,6 +242,7 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
 
             _builder.Create("DATHOMIR_DRAGON_TURTLE_RARES")
                 .IsRare()
+                .AddItem("fnote_2031", 2, 1, true)
                 .AddItem("ruby", 20, 1, true)
                 .AddItem("emerald", 80, 1, true)
                 .AddItem("red_shell_shard", 1, 1, true)
@@ -185,7 +327,8 @@ namespace SWLOR.Game.Server.Feature.LootTableDefinition
                 .AddItem("map_67", 2, 1, true)
                 .AddItem("map_68", 2, 1, true)
                 .AddItem("map_69", 2, 1, true)
-                .AddItem("emerald", 1, 1, true);
+                .AddItem("emerald", 1, 1, true)
+                .AddItem("lockbox_t5", 2, 1, true);
         }
 
         private void KwiShaman()

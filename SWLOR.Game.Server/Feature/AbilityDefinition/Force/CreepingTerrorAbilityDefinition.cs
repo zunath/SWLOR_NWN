@@ -44,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Creeping Terror I")
                 .Level(1)
                 .HasActivationDelay(1f)
-                .HasRecastDelay(RecastGroup.CreepingTerror, 18f)
+                .HasRecastDelay(RecastGroup.CreepingTerror, 32f)
                 .SkillType(SkillType.Force)
                 .CombatImpactDamageAbility(AbilityType.Willpower)
                 .UsesImpactAnimation(Animation.CastOutAnimation)
@@ -71,7 +71,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Creeping Terror II")
                 .Level(2)
                 .HasActivationDelay(1f)
-                .HasRecastDelay(RecastGroup.CreepingTerror, 18f)
+                .HasRecastDelay(RecastGroup.CreepingTerror, 32f)
                 .SkillType(SkillType.Force)
                 .CombatImpactDamageAbility(AbilityType.Willpower)
                 .UsesImpactAnimation(Animation.CastOutAnimation)
@@ -98,7 +98,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Creeping Terror III")
                 .Level(3)
                 .HasActivationDelay(1.5f)
-                .HasRecastDelay(RecastGroup.CreepingTerror, 18f)
+                .HasRecastDelay(RecastGroup.CreepingTerror, 32f)
                 .SkillType(SkillType.Force)
                 .CombatImpactDamageAbility(AbilityType.Willpower)
                 .UsesImpactAnimation(Animation.CastOutAnimation)
@@ -181,6 +181,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 baseDamage,
                 GetAbilityScore(activator, AbilityType.Willpower),
                 source: activator);
+            AbilityAreaEffects.CreatePersistentSphereIndicator(
+                activator,
+                location,
+                radius,
+                durationSeconds,
+                true);
             ApplyEffectAtLocation(DurationType.Temporary, EffectAreaOfEffect(areaOfEffect), location, durationSeconds);
 
             CombatAreaPulses.SchedulePulses(
@@ -192,7 +198,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 pulseLocation =>
                 {
                     var ability = Ability.GetAbilityDetail(featType);
-                    Ability.BeginAbilityImpact(activator, ability);
+                    Ability.BeginAbilityImpact(activator, ability, countsAsAttackAttempt: false);
                     ApplyCreepingTerrorPulse(activator, pulseLocation, scaledPulseDamage, radius);
                     var summary = Ability.EndAbilityImpact(activator);
                     Combat.ApplyAbilityImpactEffects(activator, summary);

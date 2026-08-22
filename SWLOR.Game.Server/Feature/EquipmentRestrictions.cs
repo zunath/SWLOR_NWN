@@ -2,6 +2,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Feature
 {
@@ -18,9 +19,42 @@ namespace SWLOR.Game.Server.Feature
             var item = StringToObject(EventsPlugin.GetEventData("ITEM"));
             var slot = (InventorySlot)Convert.ToInt32(EventsPlugin.GetEventData("SLOT"));
 
+            var originalBaseItem = GetBaseItemType(item);
+            PistolBaseItemCompatibility.Normalize(item);
+            var canonicalSlot = PistolBaseItemCompatibility.GetCanonicalInventorySlot(
+                originalBaseItem,
+                slot);
+            if (canonicalSlot != slot)
+            {
+                EventsPlugin.SkipEvent();
+                AssignCommand(creature, () => ActionEquipItem(item, canonicalSlot));
+                return;
+            }
+
             var isSwapping = IsItemSwapping(creature, item, slot);
             var canUseItem = Item.CanEquip(creature, item);
             var isRingSwappingPositions = IsRingSwappingPositions(creature, item, slot);
+
+            if (string.IsNullOrWhiteSpace(canUseItem) &&
+                (GetIsPC(creature) || Droid.IsDroid(creature)) &&
+                !GetIsDM(creature) &&
+                !GetIsDMPossessed(creature))
+            {
+                var rightHand = GetItemInSlot(InventorySlot.RightHand, creature);
+                var leftHand = GetItemInSlot(InventorySlot.LeftHand, creature);
+                var rightHandType = GetIsObjectValid(rightHand)
+                    ? GetBaseItemType(rightHand)
+                    : (BaseItem?)null;
+                var leftHandType = GetIsObjectValid(leftHand)
+                    ? GetBaseItemType(leftHand)
+                    : (BaseItem?)null;
+
+                canUseItem = GetPistolEquipmentError(
+                    GetBaseItemType(item),
+                    slot,
+                    rightHandType,
+                    leftHandType);
+            }
 
             if (string.IsNullOrWhiteSpace(canUseItem) &&
                 !isSwapping &&
@@ -45,6 +79,43 @@ namespace SWLOR.Game.Server.Feature
             EventsPlugin.SkipEvent();
         }
 
+        /// <summary>
+        /// Validates pistol hand placement independently of the engine's ranged weapon rules.
+        /// Pistols are one-handed so that a shield can occupy the left hand, but players may
+        /// not place a pistol in that hand or pair one with any non-shield item.
+        /// </summary>
+        public static string GetPistolEquipmentError(
+            BaseItem itemType,
+            InventorySlot slot,
+            BaseItem? rightHandType,
+            BaseItem? leftHandType)
+        {
+            if (itemType == BaseItem.OffHandPistol)
+                return "Off-hand pistols cannot be equipped.";
+
+            var isPistol = Item.PistolBaseItemTypes.Contains(itemType);
+
+            if (isPistol && slot != InventorySlot.RightHand)
+                return "Pistols may only be equipped in the right hand.";
+
+            if (isPistol &&
+                leftHandType.HasValue &&
+                !Item.ShieldBaseItemTypes.Contains(leftHandType.Value))
+            {
+                return "Pistols may only be paired with a shield in the left hand.";
+            }
+
+            if (slot == InventorySlot.LeftHand &&
+                rightHandType.HasValue &&
+                Item.PistolBaseItemTypes.Contains(rightHandType.Value) &&
+                !Item.ShieldBaseItemTypes.Contains(itemType))
+            {
+                return "Pistols may only be paired with a shield in the left hand.";
+            }
+
+            return string.Empty;
+        }
+
         private static bool IsItemSwapping(uint creature, uint item, InventorySlot slot)
         {
             var itemInSlot = GetItemInSlot(slot, creature);
@@ -58,8 +129,7 @@ namespace SWLOR.Game.Server.Feature
             if (Item.TwoHandedMeleeItemTypes.Contains(itemType) ||
                 Item.TwinBladeBaseItemTypes.Contains(itemType) ||
                 Item.SaberstaffBaseItemTypes.Contains(itemType) ||
-                Item.RifleBaseItemTypes.Contains(itemType) ||
-                Item.PistolBaseItemTypes.Contains(itemType))
+                Item.RifleBaseItemTypes.Contains(itemType))
             {
                 if (GetIsObjectValid(rightHand) ||
                     GetIsObjectValid(leftHand))
@@ -68,13 +138,13 @@ namespace SWLOR.Game.Server.Feature
             // Shields & One-Handed Weapons
             else if (Item.ShieldBaseItemTypes.Contains(itemType) ||
                      Item.OneHandedMeleeItemTypes.Contains(itemType) ||
-                     Item.ThrowingWeaponBaseItemTypes.Contains(itemType))
+                     Item.ThrowingWeaponBaseItemTypes.Contains(itemType) ||
+                     Item.PistolBaseItemTypes.Contains(itemType))
             {
                 if (Item.TwoHandedMeleeItemTypes.Contains(rightHandType) ||
                     Item.TwinBladeBaseItemTypes.Contains(rightHandType) ||
                     Item.SaberstaffBaseItemTypes.Contains(rightHandType) ||
-                    Item.RifleBaseItemTypes.Contains(rightHandType) ||
-                    Item.PistolBaseItemTypes.Contains(rightHandType))
+                    Item.RifleBaseItemTypes.Contains(rightHandType))
                 {
                     return true;
                 }

@@ -90,7 +90,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 11.0
+    "value": 55.0
   },
   "ClassList": {
     "type": "list",
@@ -130,7 +130,7 @@
   },
   "Con": {
     "type": "byte",
-    "value": 34
+    "value": 30
   },
   "Conversation": {
     "type": "resref",
@@ -142,7 +142,7 @@
   },
   "CurrentHitPoints": {
     "type": "short",
-    "value": 300
+    "value": 1680
   },
   "DecayTime": {
     "type": "dword",
@@ -160,7 +160,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 27
+    "value": 36
   },
   "Disarmable": {
     "type": "byte",
@@ -180,14 +180,14 @@
         "__struct_id": 16,
         "EquippedRes": {
           "type": "resref",
-          "value": "h_rifle_4"
+          "value": "nar_serpld_wp"
         }
       },
       {
         "__struct_id": 131072,
         "EquippedRes": {
           "type": "resref",
-          "value": "nar_t4"
+          "value": "nar_serpld_sk"
         }
       }
     ]
@@ -275,6 +275,34 @@
           "type": "word",
           "value": 46
         }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1855
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1850
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1762
+        }
+      },
+      {
+        "__struct_id": 1,
+        "Feat": {
+          "type": "word",
+          "value": 1852
+        }
       }
     ]
   },
@@ -298,11 +326,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 300
+    "value": 1640
   },
   "Int": {
     "type": "byte",
-    "value": 10
+    "value": 30
   },
   "Interruptable": {
     "type": "byte",
@@ -332,7 +360,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 348
+    "value": 1680
   },
   "NaturalAC": {
     "type": "byte",
@@ -637,7 +665,7 @@
   },
   "Str": {
     "type": "byte",
-    "value": 11
+    "value": 21
   },
   "Subrace": {
     "type": "cexostring",
@@ -723,7 +751,7 @@
   },
   "Wis": {
     "type": "byte",
-    "value": 10
+    "value": 21
   },
   "xAppearance_Head": {
     "type": "word",

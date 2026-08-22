@@ -5,9 +5,9 @@ The RecipeCodeBuilder generates C# code for crafting recipes used in the SWLOR g
 
 ## Command
 ```bash
-SWLOR.CLI.exe -r
+RunCLI.cmd -r
 # or
-SWLOR.CLI.exe --recipe
+RunCLI.cmd --recipe
 ```
 
 ## Functionality

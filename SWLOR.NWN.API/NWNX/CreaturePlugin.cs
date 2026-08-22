@@ -1910,5 +1910,21 @@ namespace SWLOR.NWN.API.NWNX
         {
             return global::NWN.Core.NWNX.CreaturePlugin.GetCasterLevelOverride(creature, (int)classId);
         }
+
+        /// <summary>
+        /// Instantly equips an item already possessed by a creature.
+        /// </summary>
+        public static bool RunEquip(uint creature, uint item, InventorySlot slot)
+        {
+            return global::NWN.Core.NWNX.CreaturePlugin.RunEquip(creature, item, (int)slot) == 1;
+        }
+
+        /// <summary>
+        /// Instantly unequips an item possessed by a creature.
+        /// </summary>
+        public static bool RunUnequip(uint creature, uint item)
+        {
+            return global::NWN.Core.NWNX.CreaturePlugin.RunUnequip(creature, item) == 1;
+        }
     }
 }

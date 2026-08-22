@@ -52,19 +52,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GuardCounter1)
-                .Description("Your next attack deals weapon DMG + 8. If you guarded an attack within the last 30 seconds, this deals weapon DMG + 16 instead.")
+                .Description("Queue your next auto attack to deal weapon DMG + 8. If you guarded an attack within the last 30 seconds, it deals weapon DMG + 16 instead.")
                 .Price(2)
                 .RequirementSkill(SkillType.Katar, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GuardCounter2)
-                .Description("Your next attack deals weapon DMG + 18. If you guarded an attack within the last 30 seconds, this deals weapon DMG + 30 instead.")
+                .Description("Queue your next auto attack to deal weapon DMG + 18. If you guarded an attack within the last 30 seconds, it deals weapon DMG + 30 instead.")
                 .Price(2)
                 .RequirementSkill(SkillType.Katar, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.GuardCounter3)
-                .Description("Your next attack deals weapon DMG + 28. If you guarded an attack within the last 30 seconds, this deals weapon DMG + 45 instead and inflicts Dazed for 30 seconds.")
+                .Description("Queue your next auto attack to deal weapon DMG + 28. If you guarded an attack within the last 30 seconds, it deals weapon DMG + 45 instead and inflicts Dazed for 15 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 38);
         }
@@ -103,11 +103,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RedirectingCounterTrait)
-                .Description("When you guard an attack, your next Katar attack within 30 seconds gains +10% critical chance and deals +10 DMG.")
-                .IncreasesStat(StatType.GuardedHitNextSkillAbilitySkillType, (int)SkillType.Katar)
-                .IncreasesStat(StatType.GuardedHitNextSkillAbilityCriticalRatePercentAdjustment, 10)
-                .IncreasesStat(StatType.GuardedHitNextSkillAbilityDamageBonus, 10)
-                .IncreasesStat(StatType.GuardedHitNextSkillAbilityWindowSeconds, 30)
+                .Description("When you guard an attack, your next attack within 30 seconds gains +10% critical chance and deals +10 DMG.")
+                .IncreasesStat(StatType.GuardedHitNextAttackCriticalRatePercentAdjustment, 10)
+                .IncreasesStat(StatType.GuardedHitNextAttackDMGBonus, 10)
+                .IncreasesStat(StatType.GuardedHitNextAttackWindowSeconds, 30)
                 .Price(2)
                 .RequirementSkill(SkillType.Katar, 8);
         }
@@ -131,9 +130,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.IronElbowsTrait)
-                .Description("Iron Guard counterattacks and guard pulses deal +15 DMG to enemies within 5m and generate Enmity equal to the guarded hit's incoming damage.")
-                .IncreasesStat(StatType.GuardRetaliationDamageBonusSkillType, (int)SkillType.Katar)
-                .IncreasesStat(StatType.GuardRetaliationDamageBonus, 15)
+                .Description("Whenever you Guard a hostile hit, release a pulse that deals 15 physical DMG to the attacker and all other enemies within 5 meters. Each affected enemy generates Enmity toward you equal to the guarded hit's incoming damage.")
+                .IncreasesStat(StatType.GuardedHitPulseDMG, 15)
+                .IncreasesStat(StatType.GuardedHitPulseRadiusMeters, 5)
+                .IncreasesStat(StatType.GuardedHitPulseEnmityPercentOfIncomingDamage, 100)
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 18);
         }
@@ -145,7 +145,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.WhirlingGuard1)
-                .Description("For 30 seconds, you gain +20 Guard and deal 8 DMG back to attackers whenever you guard a hit. Your current Guarded target automatically receives the same effect if they are within 5 meters.")
+                .Description("For 30 seconds, you gain +20 Guard. Whenever you guard a hit, deal 8 physical DMG to that attacker. Your current Guarded target automatically receives the same effect if they are within 5 meters when activated.")
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 20);
         }
@@ -187,7 +187,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.TwinIntercept1)
-                .Description("Automatically targets your current Guarded ally if they are within 5 meters. Grants that target temporary HP equal to 15% of maximum HP for 30 seconds and grants you +20 Guard for 30 seconds.")
+                .Description("Automatically targets your current Guarded ally if they are within 5 meters. Grants that target temporary HP equal to 15% of your maximum HP for 30 seconds and grants you +20 Guard for 30 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 30);
         }
@@ -199,10 +199,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.RetaliatoryFlowTrait)
-                .Description("After you guard a hit, your next Katar attack within 30 seconds deals +8 DMG.")
-                .IncreasesStat(StatType.GuardedHitNextSkillAbilitySkillType, (int)SkillType.Katar)
-                .IncreasesStat(StatType.GuardedHitNextSkillAbilityDamageBonus, 8)
-                .IncreasesStat(StatType.GuardedHitNextSkillAbilityWindowSeconds, 30)
+                .Description("After you guard a hit, your next attack within 30 seconds deals +8 DMG and generates +40 Enmity.")
+                .IncreasesStat(StatType.GuardedHitSecondaryNextAttackDMGBonus, 8)
+                .IncreasesStat(StatType.GuardedHitSecondaryNextAttackEnmityBonus, 40)
+                .IncreasesStat(StatType.GuardedHitSecondaryNextAttackWindowSeconds, 30)
                 .Price(3)
                 .RequirementSkill(SkillType.Katar, 32);
         }
@@ -214,7 +214,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ImpenetrableGripTrait)
-                .Description("Gain +20% Knockdown Resistance and +20% Daze Resistance. Guarded hits restore 4 STM.")
+                .Description("Gain +20 Mobility Resistance and +20 Mind Resistance. Guarded hits restore 4 STM.")
                 .IncreasesStat(StatType.MobilityResistance, 20)
                 .IncreasesStat(StatType.MindResistance, 20)
                 .IncreasesStat(StatType.GuardStaminaRestore, 4)
@@ -349,19 +349,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.JointLock1)
-                .Description("Deals weapon DMG + 12. Inflicts Dazed for 30 seconds. Cooldown is longer than standard control abilities.")
+                .Description("Deals weapon DMG + 12. Inflicts Dazed for 15 seconds.")
                 .Price(2)
                 .RequirementSkill(SkillType.Katar, 10)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.JointLock2)
-                .Description("Deals weapon DMG + 24. Inflicts Dazed for 30 seconds. Cooldown is longer than standard control abilities.")
+                .Description("Deals weapon DMG + 24. Inflicts Dazed for 15 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 30)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.JointLock3)
-                .Description("Deals weapon DMG + 36. Inflicts Dazed for 30 seconds. Cooldown is longer than standard control abilities.")
+                .Description("Deals weapon DMG + 36. Inflicts Dazed for 15 seconds.")
                 .Price(4)
                 .RequirementSkill(SkillType.Katar, 38);
         }
@@ -446,7 +446,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ScrapheapLockdown1)
-                .Description("Deals weapon DMG + 25 in a 5m sphere. Enemies hit suffer Dazed and Hamstring for 30 seconds.")
+                .Description("Deals weapon DMG + 25 to enemies within 5m of you. Enemies hit suffer Dazed and Hamstring for 30 seconds.")
                 .Price(6)
                 .RequirementSkill(SkillType.Katar, 50)
                 .RequirementQuest(KatarCapstoneQuestDefinition.ScrapheapLockdownMasteryQuestId);

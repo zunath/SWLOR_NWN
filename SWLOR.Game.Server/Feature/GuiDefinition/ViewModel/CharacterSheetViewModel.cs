@@ -1,11 +1,12 @@
-﻿using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Feature.GuiDefinition.Component;
+using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -26,9 +27,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         IGuiRefreshable<PlayerStatusRefreshEvent>,
         IGuiRefreshable<StatusEffectReceivedRefreshEvent>,
         IGuiRefreshable<StatusEffectRemovedRefreshEvent>,
+        IGuiRefreshable<StatAdjustmentRefreshEvent>,
         IGuiRefreshable<BeastGainXPRefreshEvent>,
         IGuiRefreshable<PerkAcquiredRefreshEvent>,
-        IGuiRefreshable<PerkRefundedRefreshEvent>
+        IGuiRefreshable<PerkRefundedRefreshEvent>,
+        IGuiRefreshable<TechniqueChangedRefreshEvent>
     {
         private const int MaxPurchasedAttributeScore = 26;
         private const int RacialAttributeBonus = 1;
@@ -129,6 +132,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 .Column((m, v) => m.CraftNames = v, r => r.Name)
                 .Column((m, v) => m.CraftControls = v, r => r.Control)
                 .Column((m, v) => m.CraftCraftsmanship = v, r => r.Craftsmanship);
+
+        public bool IsViewingTarget(uint target)
+        {
+            return _target == target;
+        }
 
         public int SelectedTabId
         {
@@ -305,6 +313,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public int ForceAttack
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
         public int PhysicalDefense
         {
             get => Get<int>();
@@ -317,7 +331,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public int Accuracy
+        public int WeaponAccuracy
+        {
+            get => Get<int>();
+            set => Set(value);
+        }
+
+        public int ForceAccuracy
         {
             get => Get<int>();
             set => Set(value);
@@ -479,6 +499,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public bool IsTechniquesEnabled
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
         public Action OnClickSkills() => () =>
         {
             Gui.TogglePlayerWindow(Player, GuiWindowType.Skills);
@@ -492,6 +518,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickPerks() => () =>
         {
             Gui.TogglePlayerWindow(Player, GuiWindowType.Perks);
+        };
+
+        public Action OnClickTechniques() => () =>
+        {
+            Gui.TogglePlayerWindow(Player, GuiWindowType.Techniques, new TechniquesPayload());
         };
 
         public Action OnClickChangePortrait() => () =>
@@ -589,70 +620,63 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             ShowModal(promptMessage, () =>
             {
-                try
+                if (GetResRef(GetArea(_target)) == "char_migration")
                 {
-                    if (GetResRef(GetArea(_target)) == "char_migration")
+                    FloatingTextStringOnCreature($"Stats cannot be upgraded in this area.", _target, false);
+                    return;
+                }
+
+                playerId = GetObjectUUID(_target);
+                dbPlayer = DB.Get<Player>(playerId);
+                isRacial = dbPlayer.RacialStat == AbilityType.Invalid;
+                var rawScore = CreaturePlugin.GetRawAbilityScore(_target, ability);
+                var purchasedScore = GetPurchasedAttributeScore(dbPlayer, ability);
+
+                if (isRacial)
+                {
+                    if (rawScore >= MaxRacialAttributeScore || purchasedScore > MaxPurchasedAttributeScore)
                     {
-                        FloatingTextStringOnCreature($"Stats cannot be upgraded in this area.", _target, false);
+                        FloatingTextStringOnCreature($"You cannot upgrade this attribute beyond {MaxRacialAttributeScore} with a racial bonus.", _target, false);
                         return;
                     }
 
-                    playerId = GetObjectUUID(_target);
-                    dbPlayer = DB.Get<Player>(playerId);
-                    isRacial = dbPlayer.RacialStat == AbilityType.Invalid;
-                    var rawScore = CreaturePlugin.GetRawAbilityScore(_target, ability);
-                    var purchasedScore = GetPurchasedAttributeScore(dbPlayer, ability);
-
-                    if (isRacial)
-                    {
-                        if (rawScore >= MaxRacialAttributeScore || purchasedScore > MaxPurchasedAttributeScore)
-                        {
-                            FloatingTextStringOnCreature($"You cannot upgrade this attribute beyond {MaxRacialAttributeScore} with a racial bonus.", _target, false);
-                            return;
-                        }
-
-                        dbPlayer.RacialStat = ability;
-                    }
-                    else
-                    {
-                        if (purchasedScore >= MaxPurchasedAttributeScore)
-                        {
-                            FloatingTextStringOnCreature($"You cannot upgrade this attribute beyond {MaxPurchasedAttributeScore} with AP.", _target, false);
-                            return;
-                        }
-
-                        if (rawScore >= MaxRacialAttributeScore)
-                        {
-                            FloatingTextStringOnCreature($"You cannot upgrade this attribute beyond {MaxRacialAttributeScore}.", _target, false);
-                            return;
-                        }
-
-                        if (dbPlayer.UnallocatedAP <= 0)
-                        {
-                            FloatingTextStringOnCreature("You do not have enough AP to purchase this upgrade.", _target, false);
-                            return;
-                        }
-
-                        dbPlayer.UnallocatedAP--;
-                        dbPlayer.UpgradedStats[ability]++;
-                    }
-
-                    CreaturePlugin.ModifyRawAbilityScore(_target, ability, 1);
-
-                    DB.Set(dbPlayer);
-
-                    FloatingTextStringOnCreature($"Your {abilityName} attribute has increased!", _target, false);
-                    LoadData();
+                    dbPlayer.RacialStat = ability;
                 }
-                finally
+                else
                 {
-                    // Modal closed - reapply the currently selected tab's
-                    // nested partial (data + view), same as before, but via
-                    // the shared tab group instead of a bespoke method.
-                    Tabs.Select(this, TabContentPartialElement, SelectedTabId);
+                    if (purchasedScore >= MaxPurchasedAttributeScore)
+                    {
+                        FloatingTextStringOnCreature($"You cannot upgrade this attribute beyond {MaxPurchasedAttributeScore} with AP.", _target, false);
+                        return;
+                    }
+
+                    if (rawScore >= MaxRacialAttributeScore)
+                    {
+                        FloatingTextStringOnCreature($"You cannot upgrade this attribute beyond {MaxRacialAttributeScore}.", _target, false);
+                        return;
+                    }
+
+                    if (dbPlayer.UnallocatedAP <= 0)
+                    {
+                        FloatingTextStringOnCreature("You do not have enough AP to purchase this upgrade.", _target, false);
+                        return;
+                    }
+
+                    dbPlayer.UnallocatedAP--;
+                    dbPlayer.UpgradedStats[ability]++;
                 }
-            }, () => Tabs.Select(this, TabContentPartialElement, SelectedTabId));
+
+                CreaturePlugin.ModifyRawAbilityScore(_target, ability, 1);
+
+                DB.Set(dbPlayer);
+
+                FloatingTextStringOnCreature($"Your {abilityName} attribute has increased!", _target, false);
+                LoadData();
+            });
         }
+
+        protected override void OnModalClosedRestore() =>
+            Tabs.Select(this, TabContentPartialElement, SelectedTabId);
 
         private bool IsAttributeUpgradeAvailable(Player dbPlayer, AbilityType ability, bool isRacialBonusAvailable)
         {
@@ -789,6 +813,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var mainHand = GetItemInSlot(InventorySlot.RightHand, _target);
             var offHand = GetItemInSlot(InventorySlot.LeftHand, _target);
+            var forceAccuracyWeapon = SelectForceAccuracyWeapon(mainHand, offHand, GetIsObjectValid(mainHand));
             var mainHandType = GetBaseItemType(mainHand);
             var attackDelayInfo = GetAttackDelayInfo();
             AttackDelay = attackDelayInfo.Value;
@@ -838,10 +863,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var mainHandSkill = Skill.GetSkillTypeByBaseItem(mainHandType);
             Attack = Stat.GetAttack(_target, damageStat, mainHandSkill);
+            ForceAttack = Stat.GetAttack(_target, AbilityType.Willpower, SkillType.Force);
             PhysicalDefense = Stat.GetDefense(_target, CombatDamageType.Physical, AbilityType.Vitality);
             ForceDefense = Stat.GetDefense(_target, CombatDamageType.Force, AbilityType.Willpower);
 
-            Accuracy = Stat.GetAccuracy(_target, mainHand, accuracyStatOverride, SkillType.Invalid);
+            WeaponAccuracy = Stat.GetAccuracy(_target, mainHand, accuracyStatOverride, SkillType.Invalid);
+            ForceAccuracy = Stat.GetAccuracy(
+                _target,
+                forceAccuracyWeapon,
+                AbilityType.Willpower,
+                SkillType.Force,
+                ignoreWeaponAccuracyStatOverride: true);
             Evasion = Stat.GetEvasion(_target, SkillType.Invalid);
 
             RefreshResistances();
@@ -849,10 +881,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RefreshCharacterStatsList();
         }
 
+        private static uint SelectForceAccuracyWeapon(uint mainHand, uint offHand, bool isMainHandValid)
+        {
+            return isMainHandValid ? mainHand : offHand;
+        }
+
         private (string Value, string Tooltip) GetAttackDelayInfo()
         {
-            var attackerDelayMilliseconds = Combat.CalculateAttackDelay(_target);
             var attackSkillType = Combat.GetEquippedWeaponSkillType(_target);
+            StatusEffect.TryGetLimitedAttackDelayReduction(
+                _target,
+                attackSkillType,
+                out var limitedAttackDelayReductionPercent,
+                out _);
+            var attackerDelayMilliseconds = Combat.CalculateAttackDelay(
+                _target,
+                limitedAttackDelayReductionPercent);
             var useDefaultMinimumDelay = Combat.HasNextAutoAttackNoDelay(_target, attackSkillType);
             var effectiveDelayMilliseconds = Combat.CalculateEffectiveAttackDelay(attackerDelayMilliseconds, useDefaultMinimumDelay);
             var attackerDelaySeconds = attackerDelayMilliseconds / 1000f;
@@ -862,7 +906,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             string tooltip;
             if (useDefaultMinimumDelay)
-                tooltip = $"Est. Delay: {effectiveDelaySeconds:0.##}s (next attack uses {baseDelaySeconds:0.##}s default minimum)";
+                tooltip = $"Est. Delay: {effectiveDelaySeconds:0.##}s (next swing at {swingDelaySeconds:0.##}s resolves extra attacks at your fastest possible speed)";
             else if (attackerDelayMilliseconds <= Combat.BaseAttackDelayMilliseconds)
                 tooltip = $"Est. Delay: {effectiveDelaySeconds:0.##}s ({baseDelaySeconds:0.##}s default minimum)";
             else if (effectiveDelayMilliseconds < Combat.BaseAttackDelayMilliseconds)
@@ -878,33 +922,88 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void RefreshCharacterStatsList()
         {
+            var rows = new List<StatEntry>();
+            void AddStat(string name, string value, string tooltip)
+            {
+                rows.Add(new StatEntry(name, value, tooltip));
+            }
+
             var combatProfile = GetPrimaryCombatProfile();
 
-            var rows = new List<StatEntry>
-            {
-                new("HP Regen", GetHPRegenValue().ToString(), "Amount of HP restored automatically by natural regeneration."),
-                new("FP Regen", GetFPRegenValue().ToString(), "Amount of FP restored automatically by natural regeneration."),
-                new("STM Regen", GetStaminaRegenValue().ToString(), "Amount of STM restored automatically by natural regeneration."),
-                new("Combat Readiness", FormatPercent(Stat.GetCombatReadinessPercent(_target)), "Increases activated ability damage and healing. Does not reduce cooldowns."),
-                new("Shield Deflection", FormatPercent(Stat.GetShieldDeflectionChance(_target)), "Ability to deflect attacks with a shield."),
-                new("Attack Deflection", FormatPercent(Stat.GetAttackDeflectionChance(_target)), "Chance to deflect attacks while wielding a weapon without a shield."),
-                new("Guard", FormatPercent(Stat.GetGuardChance(_target)), "Chance to reduce damage by 20% and increase enmity gain."),
-                new("Phys. Taken", FormatPercent(GetDamageTakenPercent(CombatDamageType.Physical)), "Incoming physical damage modifier after damage-taken effects. Lower is better."),
-                new("Force Taken", FormatPercent(GetDamageTakenPercent(CombatDamageType.Force)), "Incoming Force damage modifier after damage-taken effects. Lower is better."),
-                new("Ability Accuracy", FormatPercent(Stat.GetStatAdjustment(_target, StatType.PhysicalAndForceAbilityHitChancePercentAdjustment)), "Hit chance adjustment for physical weapon and Force abilities."),
-                new("Critical Rate", FormatPercent(GetCriticalRate(combatProfile.Skill)), "Increases the chance to score a critical hit. Actual chance varies by target Vitality."),
-                new("Critical Damage", FormatPercent(Stat.GetStatAdjustment(_target, StatType.CriticalDamagePercentAdjustment)), "Increases the amount of damage a critical hit deals."),
-                new("Enmity", FormatPercent(Stat.GetStatAdjustment(_target, StatType.EnmityPercentAdjustment)), "Increases or decreases the rate at which enmity is acquired."),
-                new("Haste", FormatPercent(Combat.CalculateAttackDelayReduction(_target)), "Increases attack speed. Negative values slow attacks."),
-                new("Ranged Evasion", FormatPercent(Stat.GetStatAdjustment(_target, StatType.RangedEvasionPercentAdjustment)), "Evasion adjustment against ranged attacks."),
-                new("Slow", GetEffectStateLabel(EffectTypeScript.Slow), "Reduces attack speed."),
-                new("Paralysis", GetEffectStateLabel(EffectTypeScript.Paralyze), "Prevents auto attacks and other actions."),
-                new("Movement Speed", FormatMultiplier(Stat.GetMovementSpeedMultiplier(_target)), "Increases or decreases your movement speed."),
-                new("Force Evasion", FormatPercent(GetForceEvasion()), "Percent chance to completely evade a detrimental force ability."),
-                new("Force Affinity", Perk.GetForceAffinity(_target).ToString(), "Affects Force ability effectiveness based on type. Range: -10 to 10. Negative represents Dark-side and positive represents Light-side.")
-            };
+            AddStat("HP Regen", GetHPRegenValue().ToString(), "Amount of HP restored automatically by natural regeneration.");
+            AddStat("FP Regen", GetFPRegenValue().ToString(), "Amount of FP restored automatically by natural regeneration.");
+            AddStat("STM Regen", GetStaminaRegenValue().ToString(), "Amount of STM restored automatically by natural regeneration.");
+            AddStat("Combat Readiness", FormatPercent(Stat.GetCombatReadinessPercent(_target)), "Increases activated ability damage, healing, and temporary HP. Does not reduce cooldowns.");
+            AddStat("Melee Deflection", FormatPercent(Stat.GetMeleeDeflectionChance(_target)), "Chance to negate a hostile melee weapon auto-attack while wielding a weapon without a shield.");
+            AddStat("Ranged Deflection", FormatPercent(Stat.GetRangedDeflectionChance(_target)), "Chance to negate a hostile ranged weapon auto-attack while wielding a weapon without a shield.");
+            AddStat("Shield Deflection", FormatPercent(Stat.GetShieldDeflectionChance(_target)), "Chance to negate either a hostile melee or ranged weapon auto-attack while equipped with a shield. Shield Deflection replaces weapon deflection while the shield is equipped.");
+            AddStat("Guard", FormatPercent(Stat.GetGuardChance(_target)), "Chance to reduce damage and increase enmity gain.");
+            AddStat("Guard Reduction", FormatPercent(Combat.GetGuardDamageReductionPercent(_target)), "Amount of damage removed from a hit when Guard succeeds.");
+            AddStat("Phys. Taken", FormatPercent(GetDamageTakenPercent(CombatDamageType.Physical)), "Incoming physical damage modifier after damage-taken effects. Lower is better.");
+            AddStat("Force Taken", FormatPercent(GetDamageTakenPercent(CombatDamageType.Force)), "Incoming Force damage modifier after damage-taken effects. Lower is better.");
+            AddStat("Physical DEF %", FormatPercent(Stat.GetDefensePercentAdjustment(_target, CombatDamageType.Physical)), "Bonus or penalty applied to Physical DEF. Already included in the Physical DEF shown on the Attributes tab.");
+            AddStat("Force DEF %", FormatPercent(Stat.GetDefensePercentAdjustment(_target, CombatDamageType.Force)), "Bonus or penalty applied to Force DEF. Already included in the Force DEF shown on the Attributes tab.");
+            AddStat("Ability Accuracy", FormatPercent(Stat.GetStatAdjustment(_target, StatType.PhysicalAndForceAbilityHitChancePercentAdjustment)), "Direct percentage-point change to hit chance for weapon-skill and Force-skill ability hit checks only. Does not affect Mimicry abilities or the underlying Accuracy rating.");
+            AddStat("Accuracy %", FormatPercent(Stat.GetStatAdjustment(_target, StatType.AccuracyPercentAdjustment)), "Percentage bonus or penalty applied to the underlying Accuracy rating for attacks and ability hit checks, including Force and Mimicry. It is not a direct percentage-point change to hit chance and is already included in the Weapon Accuracy and Force Accuracy ratings shown on the Attributes tab.");
+            AddStat("Evasion %", FormatPercent(Stat.GetStatAdjustment(_target, StatType.EvasionPercentAdjustment)), "Bonus or penalty applied to Evasion. Already included in the Evasion shown on the Attributes tab.");
+            AddStat("Attack %", FormatPercent(Stat.GetStatAdjustment(_target, StatType.AttackPercentAdjustment)), "Bonus or penalty applied to Attack when using physical attacks and abilities.");
+            AddStat("Force Attack %", FormatPercent(Stat.GetStatAdjustment(_target, StatType.ForceAttackPercentAdjustment)), "Bonus or penalty applied to Attack when using Force-typed attacks and abilities.");
+            AddStat("Critical Rate", FormatPercent(GetCriticalRate(combatProfile.Skill)), "Increases the chance to score a critical hit. Actual chance varies by target Vitality.");
+            AddStat("Assault Gadget Crit", FormatPercent(GetAssaultGadgetCriticalRate()), "Current Assault Gadget ability critical chance before target-specific bonuses. Includes the 5% baseline, Gadget Harness, Tactical Uplink, and other Devices ability bonuses; capped at 50%.");
+            AddStat("Critical Damage", FormatPercent(Stat.GetStatAdjustment(_target, StatType.CriticalDamagePercentAdjustment)), "Increases the amount of damage a critical hit deals.");
+            AddStat("Damage Dealt", FormatPercent(Stat.GetStatAdjustment(_target, StatType.DamageDealtPercentAdjustment)), "Adjusts all outgoing damage.");
+            AddStat("Weapon/Force Damage", FormatPercent(Stat.GetStatAdjustment(_target, StatType.WeaponAndForceDamageDealtPercentAdjustment)), "Adjusts outgoing weapon and Force damage. Stacks with Damage Dealt.");
+            AddHighResourceAbilityDamageStats(AddStat);
+            AddStat("Healing Received", FormatPercent(Stat.GetStatAdjustment(_target, StatType.HealingReceivedPercentAdjustment)), "Adjusts the amount of healing you receive from all sources.");
+            AddStat("Enmity", FormatPercent(Stat.GetStatAdjustment(_target, StatType.EnmityPercentAdjustment)), "Increases or decreases the rate at which enmity is acquired.");
+            AddStat("FP Cost", FormatPercent(Stat.GetStatAdjustment(_target, StatType.FPCostPercentAdjustment)), "Adjusts the FP cost of abilities. Lower is better.");
+            AddStat("STM Cost", FormatPercent(Stat.GetStatAdjustment(_target, StatType.AbilityStaminaCostPercentAdjustment)), "Adjusts the Stamina cost of abilities. Lower is better.");
+            AddStat("Haste", FormatPercent(Combat.CalculateAttackDelayReduction(_target)), "Increases attack speed. Negative values slow attacks.");
+            AddStat("Off-Hand Haste", FormatPercent(Combat.CalculateOffhandAttackDelayReduction(_target)), "Increases off-hand attack speed. Only applies while dual wielding.");
+            AddStat("Ranged Evasion", FormatPercent(Stat.GetStatAdjustment(_target, StatType.RangedEvasionPercentAdjustment)), "Evasion adjustment against ranged attacks.");
+            AddStat("Slow", GetEffectStateLabel(EffectTypeScript.Slow), "Reduces attack speed.");
+            AddStat("Paralysis", GetEffectStateLabel(EffectTypeScript.Paralyze), "Prevents auto attacks and other actions.");
+            AddStat("Movement Speed", FormatMultiplier(Stat.GetMovementSpeedMultiplier(_target)), "Increases or decreases your movement speed.");
+            AddStat("Force Evasion", FormatPercent(GetForceEvasion()), "Percent chance to completely evade a detrimental force ability.");
+            AddStat("Force Affinity", Perk.GetForceAffinity(_target).ToString(), "Range: -10 (Dark) to +10 (Light). Matching-side powers gain 5% magnitude per point, up to +50%, and +5% hit chance at full affinity; opposing powers lose the same. Affinity does not change duration, which remains subject to resistance and duration modifiers.");
+            AddStat("Detection", Stat.GetDetection(_target).ToString(), "PER + WIL plus equipment, perk, and status-effect bonuses; Detect mode adds +5.");
+            AddStat("Stealth", Stat.GetStealth(_target).ToString(), "Twice AGI plus equipment, perk, and status-effect bonuses.");
+            AddStat("Experience", FormatPercent(Stat.GetStatAdjustment(_target, StatType.ExperiencePercentAdjustment)), "Bonus or penalty applied to experience gained from skill use.");
 
             StatsTable.Refresh(this, rows);
+        }
+
+        private void AddHighResourceAbilityDamageStats(Action<string, string, string> addStat)
+        {
+            var flatBonus = Stat.GetStatAdjustment(
+                _target,
+                StatType.HighFPAndStaminaAbilityDamageBonus);
+            var flatThreshold = Stat.GetStatAdjustment(
+                _target,
+                StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent);
+            if (flatBonus > 0 && flatThreshold > 0)
+            {
+                var active = Combat.IsCurrentFPAndStaminaAtOrAbovePercent(_target, flatThreshold);
+                addStat(
+                    "High-Resource Ability DMG",
+                    active ? $"Active (+{flatBonus} DMG)" : $"Inactive ({flatThreshold}% required)",
+                    $"Combined conditional bonus: hostile combat abilities gain +{flatBonus} DMG while FP and STM are both at least {flatThreshold}%.");
+            }
+
+            var percentBonus = Stat.GetStatAdjustment(
+                _target,
+                StatType.HighFPAndStaminaAbilityDamagePercentAdjustment);
+            var percentThreshold = Stat.GetStatAdjustment(
+                _target,
+                StatType.HighFPAndStaminaAbilityDamagePercentAdjustmentThresholdPercent);
+            if (percentBonus > 0 && percentThreshold > 0)
+            {
+                var active = Combat.IsCurrentFPAndStaminaAtOrAbovePercent(_target, percentThreshold);
+                addStat(
+                    "Balanced Attunement",
+                    active ? $"Active (+{percentBonus}% DMG)" : $"Inactive ({percentThreshold}% required)",
+                    $"Hostile combat abilities deal +{percentBonus}% damage while FP and STM are both at least {percentThreshold}%.");
+            }
         }
 
         private (AbilityType DamageAbility, AbilityType AccuracyAbilityOverride, SkillType Skill, uint AccuracyWeapon) GetPrimaryCombatProfile()
@@ -967,11 +1066,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private int GetCriticalRate(SkillType skillType)
         {
+            var criticalRateAdjustment = Stat.GetStatAdjustment(
+                _target,
+                StatType.CriticalRatePercentAdjustment);
+            criticalRateAdjustment += Combat.GetSkillCriticalRatePercentAdjustment(_target, skillType);
+
             return Combat.CalculateCriticalRate(
                 GetAbilityScore(_target, AbilityType.Perception),
                 GetAbilityScore(_target, AbilityType.Vitality),
                 GetSkillRank(skillType),
-                Stat.GetStatAdjustment(_target, StatType.CriticalRatePercentAdjustment));
+                criticalRateAdjustment);
+        }
+
+        private int GetAssaultGadgetCriticalRate()
+        {
+            return Combat.GetAbilityCriticalRate(
+                _target,
+                SkillType.Devices,
+                false,
+                Stat.GetStatAdjustment(_target, StatType.AssaultGadgetCriticalRatePercentAdjustment));
         }
 
         private int GetSkillRank(SkillType skillType)
@@ -1017,12 +1130,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var typeAdjustment = damageType switch
             {
-                CombatDamageType.Physical => Stat.GetStatAdjustment(_target, StatType.PhysicalDamageTakenPercentAdjustment),
-                CombatDamageType.Force => Stat.GetStatAdjustment(_target, StatType.ForceDamageTakenPercentAdjustment),
+                CombatDamageType.Physical =>
+                    Stat.GetStatAdjustment(_target, StatType.PhysicalDamageTakenPercentAdjustment),
+                CombatDamageType.Force =>
+                    Stat.GetStatAdjustment(_target, StatType.ForceDamageTakenPercentAdjustment),
                 _ => 0
+            };
+            var leadershipAdjustment = damageType switch
+            {
+                CombatDamageType.Physical =>
+                    Stat.GetStatAdjustment(_target, StatType.LeadershipPhysicalDamageTakenPercentAdjustment),
+                CombatDamageType.Force =>
+                    Stat.GetStatAdjustment(_target, StatType.LeadershipForceDamageTakenPercentAdjustment),
+                _ => Stat.GetStatAdjustment(_target, StatType.LeadershipOtherDamageTakenPercentAdjustment)
             };
 
             var percent = ApplyDamageTakenPercentAdjustment(100, typeAdjustment);
+            percent = ApplyDamageTakenPercentAdjustment(percent, leadershipAdjustment);
             return ApplyDamageTakenPercentAdjustment(
                 percent,
                 Stat.GetStatAdjustment(_target, StatType.DamageTakenPercentAdjustment));
@@ -1138,6 +1262,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CharacterType = GetClassByPosition(1, _target) == ClassType.Standard ? "Standard" : "Force Sensitive";
             Race = GetStringByStrRef(Convert.ToInt32(Get2DAString("racialtypes", "Name", (int)GetRacialType(_target))), GetGender(_target));
             IsHolocomEnabled = !Space.IsPlayerInSpaceMode(_target);
+            IsTechniquesEnabled = Perk.GetPerkLevel(_target, PerkType.CombatAnalyzer) >= 1;
 
             if (IsPlayerMode)
             {
@@ -1225,6 +1350,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LoadData();
         }
 
+        public void Refresh(TechniqueChangedRefreshEvent payload)
+        {
+            if (!GetIsPC(_target))
+                return;
+
+            RefreshStats();
+            RefreshEquipmentStats();
+        }
+
         public void Refresh(EquipItemRefreshEvent payload)
         {
             RefreshEquipmentStats();
@@ -1259,6 +1393,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         public void Refresh(StatusEffectRemovedRefreshEvent payload)
+        {
+            RefreshStats();
+            RefreshEquipmentStats();
+        }
+
+        public void Refresh(StatAdjustmentRefreshEvent payload)
         {
             RefreshStats();
             RefreshEquipmentStats();

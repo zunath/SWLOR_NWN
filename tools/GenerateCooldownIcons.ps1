@@ -2,8 +2,11 @@ param(
     [string]$Feat2daPath = "SWLOR_Haks\sw_2da\feat.2da",
     [string]$IconPath = "SWLOR_Haks\sw_ability",
     [string]$MagickPath = "magick",
-    [int]$GeneratedFeatStart = 2000,
-    [int]$GeneratedFeatEnd = 2772,
+    # Start at 1992 so the Lightsaber Force Link actives (feat rows 1992-1994), which sit just below the
+    # main generated block, are covered by a plain -Force run. Rows 1982-1991 have no ife_ feats, so this
+    # adds only Force Link; the placeholder-icon abilities below 1992 stay excluded.
+    [int]$GeneratedFeatStart = 1992,
+    [int]$GeneratedFeatEnd = 2899,
     [int]$IconSize = 32,
     [string[]]$IconResRefs = @(),
     [switch]$Force

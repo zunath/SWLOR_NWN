@@ -1,0 +1,39 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:editors="using:SWLOR.Toolset.Editors"
+             x:Class="SWLOR.Toolset.Editors.ConversationOpenIssueView"
+             x:DataType="editors:ConversationOpenIssueViewModel">
+  <ScrollViewer VerticalScrollBarVisibility="Auto">
+    <StackPanel Margin="32" Spacing="16" MaxWidth="900" HorizontalAlignment="Center">
+      <TextBlock Text="CONVERSATION COULD NOT BE OPENED" Classes="dim" />
+      <TextBlock Text="{Binding Headline}" FontSize="24" FontWeight="SemiBold" TextWrapping="Wrap" />
+
+      <Border Padding="18" CornerRadius="6" BorderBrush="#8C6631" BorderThickness="1" Background="#1B1710">
+        <StackPanel Spacing="10">
+          <TextBlock Text="{Binding Message}" TextWrapping="Wrap" />
+          <TextBlock Text="The source file has not been changed." Classes="dim" TextWrapping="Wrap" />
+        </StackPanel>
+      </Border>
+
+      <StackPanel Spacing="6">
+        <TextBlock Text="Conversation" Classes="dim" />
+        <TextBlock Text="{Binding ResRef}" FontFamily="Consolas,monospace" />
+        <TextBlock Text="Source file" Classes="dim" Margin="0,8,0,0" />
+        <TextBlock Text="{Binding FilePath}" FontFamily="Consolas,monospace" TextWrapping="Wrap" />
+      </StackPanel>
+
+      <StackPanel IsVisible="{Binding HasDetails}" Spacing="8">
+        <TextBlock Text="Technical details" FontSize="16" FontWeight="SemiBold" />
+        <ItemsControl ItemsSource="{Binding Details}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="x:String">
+              <Border Margin="0,0,0,6" Padding="10" CornerRadius="4" Background="#111821">
+                <TextBlock Text="{Binding}" FontFamily="Consolas,monospace" TextWrapping="Wrap" />
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </StackPanel>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

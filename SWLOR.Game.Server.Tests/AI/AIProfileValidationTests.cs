@@ -151,11 +151,8 @@ public class AIProfileValidationTests
         Ability.CacheData();
         var feats = new[]
         {
-            FeatType.RupturingQuake,
-            FeatType.SeismicSlam,
             FeatType.ScorchingBreath,
             FeatType.ToxicCloud,
-            FeatType.DisorientingScreech,
             FeatType.VenomSpray
         };
 
@@ -170,7 +167,28 @@ public class AIProfileValidationTests
     }
 
     [Test]
-    public void NPCLocationSelectableHostileAreaAbilities_DoNotRequireTargets()
+    public void NPCSelfCenteredHostileAreaAbilities_DoNotRequireActivationTargets()
+    {
+        Ability.CacheData();
+        var feats = new[]
+        {
+            FeatType.RupturingQuake,
+            FeatType.SeismicSlam,
+            FeatType.DisorientingScreech
+        };
+
+        foreach (var feat in feats)
+        {
+            var ability = Ability.GetAbilityDetail(feat);
+            ability.IsHostileAbility.Should().BeTrue($"{feat} affects enemies around the caster");
+            ability.IsAreaAbility.Should().BeTrue($"{feat} affects an area");
+            ability.RequiresTarget.Should().BeFalse($"{feat} is self-centered and must not request an activation target");
+            ability.MaxRange.Should().BeGreaterThan(0f);
+        }
+    }
+
+    [Test]
+    public void PlayerLocationSelectableHostileAreaAbilities_RequireLocationsNotObjects()
     {
         Ability.CacheData();
         var ability = Ability.GetAbilityDetail(FeatType.Provoke2);
@@ -178,6 +196,7 @@ public class AIProfileValidationTests
         ability.IsHostileAbility.Should().BeTrue();
         ability.IsAreaAbility.Should().BeTrue();
         ability.RequiresTarget.Should().BeFalse();
+        ability.RequiresLocationTarget.Should().BeTrue();
     }
 
     [Test]

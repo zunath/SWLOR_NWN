@@ -198,8 +198,8 @@ namespace SWLOR.Game.Server.Service.NPCService
         Dantooine_GuardianMaster_Warden = 94,
         [NPCGroup("Guardian Master Inner Circle")]
         Dantooine_GuardianMaster_InnerCircle = 95,
-        [NPCGroup("Guardian Master Master")]
-        Dantooine_GuardianMaster_Master = 96,
+        [NPCGroup("Guardian Master Paragon")]
+        Dantooine_GuardianMaster_Paragon = 96,
         [NPCGroup("Saber Cyclone Adepts")]
         Dantooine_SaberCyclone_Adept = 97,
         [NPCGroup("Saber Cyclone Specialists")]

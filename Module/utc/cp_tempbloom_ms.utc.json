@@ -2,7 +2,7 @@
   "__data_type": "UTC ",
   "Appearance_Type": {
     "type": "word",
-    "value": 974
+    "value": 10180
   },
   "BodyBag": {
     "type": "byte",
@@ -14,7 +14,7 @@
   },
   "ChallengeRating": {
     "type": "float",
-    "value": 60.0
+    "value": 218.0
   },
   "ClassList": {
     "type": "list",
@@ -68,7 +68,7 @@
   },
   "Dex": {
     "type": "byte",
-    "value": 35
+    "value": 25
   },
   "Disarmable": {
     "type": "byte",
@@ -227,7 +227,7 @@
         }
       },
       {
-        "__struct_id": 0,
+        "__struct_id": 1,
         "Feat": {
           "type": "word",
           "value": 2219
@@ -304,11 +304,11 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 4611
+    "value": 4503
   },
   "Int": {
     "type": "byte",
-    "value": 25
+    "value": 35
   },
   "Interruptable": {
     "type": "byte",
@@ -366,7 +366,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 4011
+    "value": 4446
   },
   "Race": {
     "type": "byte",

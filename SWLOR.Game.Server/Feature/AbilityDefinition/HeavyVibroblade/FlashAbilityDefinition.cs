@@ -28,6 +28,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                 .HasActivationDelay(0f)
                 .UsesAnimation(Animation.CastOutAnimation)
                 .HasRecastDelay(RecastGroup.Flash, 45f)
+                .HasTargetingSphere(
+                    Spell.Flash1,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
                 .HasImpactAction((activator, target, level, targetLocation) =>
                 {
                     Ability.ApplyTelegraphedCombatImpact(
@@ -45,7 +49,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.HeavyVibroblade
                         statusEffectFactory: () => new FlashStatusEffect(20),
                         targetVisualEffect: VisualEffect.Vfx_Imp_Dazed_S,
                         areaVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst,
-                        enmityBonus: 650);
+                        damagePercentAdjustment: _ => -100,
+                        enmityBonus: 650,
+                        canCritical: false);
                 })
                 .SkillType(SkillType.HeavyVibroblade)
                 .IsCastedAbility()

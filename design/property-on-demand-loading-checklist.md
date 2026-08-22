@@ -15,7 +15,7 @@ Reduce server boot time and resource usage by avoiding boot-time loading of priv
 - Player-requested on-demand loads should have priority over remaining startup-load jobs, while still obeying the same batch throttle.
 - Public building doors should not be exposed until their interior property is fully loaded.
 - Load failures must fail closed. Do not mark a partial load as live.
-- Runtime recovery should be available through an admin-only NUI diagnostic window, not through chat commands.
+- Runtime recovery should be available through an admin-only NUI diagnostic window opened with `/propertydiagnostics`; repair actions should remain in the window rather than becoming chat-command verbs.
 - First-pass runtime recovery should be non-destructive only: status, retry, abort, and notify waiters.
 - Do not include destructive repair/quarantine tools in the first pass.
 - Defer idle property unloading to a later, separately reviewed change.
@@ -134,7 +134,7 @@ Use short, non-technical messages:
 
 ## Admin Diagnostic NUI Checklist
 
-Create an admin-only diagnostic NUI, not chat commands.
+Open the admin-only diagnostic NUI with `/propertydiagnostics`; keep diagnostic and repair operations out of chat-command verbs.
 
 Minimum views:
 

@@ -11,6 +11,8 @@ namespace SWLOR.Game.Server.Service.PerkService
             _cannotHavePerkType = cannotHavePerkType;
         }
 
+        public PerkRequirementCategory Category => PerkRequirementCategory.CannotHavePerk;
+
         public string CheckRequirements(uint player)
         {
             if (_cannotHavePerkType == PerkType.Invalid)

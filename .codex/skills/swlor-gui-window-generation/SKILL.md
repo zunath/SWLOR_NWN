@@ -63,10 +63,12 @@ placeholder value — window structure first, data wiring is a separate task.
 5. Work through `references/authoring-checklist.md` — mechanical yes/no sweeps for
    the rules that cause runtime failures (assign-before-watch, margined widgets in
    fixed rows, modal restore, invented APIs).
-6. Build: `dotnet build SWLOR.Game.Server/SWLOR.Game.Server.csproj` — zero errors and
-   zero new warnings.
-7. Boot the dev server and check the console: there must be ZERO `[NUI layout warning]`
-   lines mentioning your window. (The six warnings from `GUI_WINDOW_DebugNuiGallery`
+6. Build once with deployment disabled, then run the GUI corpus tests:
+   `dotnet build SWLOR.Game.Server.Tests/SWLOR.Game.Server.Tests.csproj -p:RunPostBuildEvent=Never`
+   followed by `dotnet test SWLOR.Game.Server.Tests/SWLOR.Game.Server.Tests.csproj
+   --no-build --filter "FullyQualifiedName~GuiLayoutValidationTests"`.
+7. Boot the dev server and check the Server log: there must be ZERO
+   `[NUI layout warning]` entries mentioning your window. (The six warnings from `GUI_WINDOW_DebugNuiGallery`
    are intentional regression canaries — ignore those, and only those.) Optionally
    pull your window's `[NUI JSON]` lines from `debugserver/app_logs/Server/` to
    sanity-check the emitted structure.

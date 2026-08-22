@@ -43,6 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 AbilityType.Invalid,
                 new GeneratedWeaponAbilityProfile
                 {
+                    IsQueuedWeaponAbility = true,
                     ExtraDamageIfRecentGuardedHit = 8,
                     RecentGuardedHitWindowSeconds = 30
                 });
@@ -73,6 +74,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 AbilityType.Invalid,
                 new GeneratedWeaponAbilityProfile
                 {
+                    IsQueuedWeaponAbility = true,
                     ExtraDamageIfRecentGuardedHit = 12,
                     RecentGuardedHitWindowSeconds = 30
                 });
@@ -84,7 +86,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                     .HasRecastDelay(RecastGroup.GuardCounter, 24.0f),
                 SkillType.Katar,
                 28,
-                30,
+                15,
                 null,
                 null,
                 8,
@@ -103,12 +105,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 AbilityType.Invalid,
                 new GeneratedWeaponAbilityProfile
                 {
+                    IsQueuedWeaponAbility = true,
                     ExtraDamageIfRecentGuardedHit = 17,
                     RecentGuardedHitWindowSeconds = 30,
                     ProtectedTargetHitWindowSeconds = 30,
                     RequireRecentGuardedHitForConditionalStatus = true,
                     ConditionalTargetStatusEffect = typeof(DazedStatusEffect),
-                    ConditionalTargetStatusDurationSeconds = 30
+                    ConditionalTargetStatusDurationSeconds = 15
                 });
 
             return builder.Build();

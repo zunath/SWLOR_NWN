@@ -278,7 +278,7 @@
               },
               "ArmorPart_LThigh": {
                 "type": "byte",
-                "value": 19
+                "value": 24
               },
               "ArmorPart_Neck": {
                 "type": "byte",
@@ -318,7 +318,7 @@
               },
               "ArmorPart_RThigh": {
                 "type": "byte",
-                "value": 19
+                "value": 24
               },
               "ArmorPart_Torso": {
                 "type": "byte",
@@ -436,7 +436,7 @@
               },
               "xArmorPart_LThig": {
                 "type": "word",
-                "value": 19
+                "value": 24
               },
               "xArmorPart_Neck": {
                 "type": "word",
@@ -476,7 +476,7 @@
               },
               "xArmorPart_RThig": {
                 "type": "word",
-                "value": 19
+                "value": 24
               },
               "xArmorPart_Torso": {
                 "type": "word",
@@ -714,7 +714,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -1750,7 +1750,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -2786,7 +2786,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -4233,7 +4233,7 @@
               },
               "ArmorPart_LThigh": {
                 "type": "byte",
-                "value": 19
+                "value": 24
               },
               "ArmorPart_Neck": {
                 "type": "byte",
@@ -4273,7 +4273,7 @@
               },
               "ArmorPart_RThigh": {
                 "type": "byte",
-                "value": 19
+                "value": 24
               },
               "ArmorPart_Torso": {
                 "type": "byte",
@@ -4391,7 +4391,7 @@
               },
               "xArmorPart_LThig": {
                 "type": "word",
-                "value": 19
+                "value": 24
               },
               "xArmorPart_Neck": {
                 "type": "word",
@@ -4431,7 +4431,7 @@
               },
               "xArmorPart_RThig": {
                 "type": "word",
-                "value": 19
+                "value": 24
               },
               "xArmorPart_Torso": {
                 "type": "word",
@@ -4670,7 +4670,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -8199,7 +8199,7 @@
               },
               "ArmorPart_LShin": {
                 "type": "byte",
-                "value": 141
+                "value": 150
               },
               "ArmorPart_LShoul": {
                 "type": "byte",
@@ -8207,7 +8207,7 @@
               },
               "ArmorPart_LThigh": {
                 "type": "byte",
-                "value": 140
+                "value": 150
               },
               "ArmorPart_Neck": {
                 "type": "byte",
@@ -8239,7 +8239,7 @@
               },
               "ArmorPart_RShin": {
                 "type": "byte",
-                "value": 141
+                "value": 150
               },
               "ArmorPart_RShoul": {
                 "type": "byte",
@@ -8247,11 +8247,11 @@
               },
               "ArmorPart_RThigh": {
                 "type": "byte",
-                "value": 140
+                "value": 150
               },
               "ArmorPart_Torso": {
                 "type": "byte",
-                "value": 147
+                "value": 150
               },
               "BaseItem": {
                 "type": "int",
@@ -8357,7 +8357,7 @@
               },
               "xArmorPart_LShin": {
                 "type": "word",
-                "value": 141
+                "value": 150
               },
               "xArmorPart_LShou": {
                 "type": "word",
@@ -8365,7 +8365,7 @@
               },
               "xArmorPart_LThig": {
                 "type": "word",
-                "value": 140
+                "value": 150
               },
               "xArmorPart_Neck": {
                 "type": "word",
@@ -8397,7 +8397,7 @@
               },
               "xArmorPart_RShin": {
                 "type": "word",
-                "value": 141
+                "value": 150
               },
               "xArmorPart_RShou": {
                 "type": "word",
@@ -8405,11 +8405,11 @@
               },
               "xArmorPart_RThig": {
                 "type": "word",
-                "value": 140
+                "value": 150
               },
               "xArmorPart_Torso": {
                 "type": "word",
-                "value": 147
+                "value": 150
               },
               "XOrientation": {
                 "type": "float",
@@ -9995,14 +9995,14 @@
               }
             },
             {
-              "__struct_id": 2048,
+              "__struct_id": 4096,
               "AddCost": {
                 "type": "dword",
                 "value": 0
               },
               "BaseItem": {
                 "type": "int",
-                "value": 20
+                "value": 27
               },
               "Charges": {
                 "type": "byte",
@@ -10398,7 +10398,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -11881,14 +11881,14 @@
               }
             },
             {
-              "__struct_id": 2048,
+              "__struct_id": 4096,
               "AddCost": {
                 "type": "dword",
                 "value": 0
               },
               "BaseItem": {
                 "type": "int",
-                "value": 20
+                "value": 27
               },
               "Charges": {
                 "type": "byte",
@@ -12511,7 +12511,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -14363,14 +14363,14 @@
               }
             },
             {
-              "__struct_id": 2048,
+              "__struct_id": 4096,
               "AddCost": {
                 "type": "dword",
                 "value": 0
               },
               "BaseItem": {
                 "type": "int",
-                "value": 20
+                "value": 27
               },
               "Charges": {
                 "type": "byte",
@@ -14766,7 +14766,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -16249,14 +16249,14 @@
               }
             },
             {
-              "__struct_id": 2048,
+              "__struct_id": 4096,
               "AddCost": {
                 "type": "dword",
                 "value": 0
               },
               "BaseItem": {
                 "type": "int",
-                "value": 20
+                "value": 27
               },
               "Charges": {
                 "type": "byte",
@@ -16879,7 +16879,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -17820,14 +17820,14 @@
               }
             },
             {
-              "__struct_id": 2048,
+              "__struct_id": 4096,
               "AddCost": {
                 "type": "dword",
                 "value": 0
               },
               "BaseItem": {
                 "type": "int",
-                "value": 20
+                "value": 27
               },
               "Charges": {
                 "type": "byte",
@@ -19745,14 +19745,14 @@
               }
             },
             {
-              "__struct_id": 2048,
+              "__struct_id": 4096,
               "AddCost": {
                 "type": "dword",
                 "value": 0
               },
               "BaseItem": {
                 "type": "int",
-                "value": 20
+                "value": 27
               },
               "Charges": {
                 "type": "byte",
@@ -20148,7 +20148,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -21355,14 +21355,14 @@
               }
             },
             {
-              "__struct_id": 2048,
+              "__struct_id": 4096,
               "AddCost": {
                 "type": "dword",
                 "value": 0
               },
               "BaseItem": {
                 "type": "int",
-                "value": 20
+                "value": 27
               },
               "Charges": {
                 "type": "byte",
@@ -24851,14 +24851,14 @@
               }
             },
             {
-              "__struct_id": 2048,
+              "__struct_id": 4096,
               "AddCost": {
                 "type": "dword",
                 "value": 0
               },
               "BaseItem": {
                 "type": "int",
-                "value": 20
+                "value": 27
               },
               "Charges": {
                 "type": "byte",
@@ -25254,7 +25254,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -26737,14 +26737,14 @@
               }
             },
             {
-              "__struct_id": 2048,
+              "__struct_id": 4096,
               "AddCost": {
                 "type": "dword",
                 "value": 0
               },
               "BaseItem": {
                 "type": "int",
-                "value": 20
+                "value": 27
               },
               "Charges": {
                 "type": "byte",
@@ -27367,7 +27367,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -30153,7 +30153,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -31988,7 +31988,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -35057,7 +35057,7 @@
               },
               "ArmorPart_LThigh": {
                 "type": "byte",
-                "value": 31
+                "value": 24
               },
               "ArmorPart_Neck": {
                 "type": "byte",
@@ -35097,7 +35097,7 @@
               },
               "ArmorPart_RThigh": {
                 "type": "byte",
-                "value": 31
+                "value": 24
               },
               "ArmorPart_Torso": {
                 "type": "byte",
@@ -35217,7 +35217,7 @@
               },
               "xArmorPart_LThig": {
                 "type": "word",
-                "value": 31
+                "value": 24
               },
               "xArmorPart_Neck": {
                 "type": "word",
@@ -35257,7 +35257,7 @@
               },
               "xArmorPart_RThig": {
                 "type": "word",
-                "value": 31
+                "value": 24
               },
               "xArmorPart_Torso": {
                 "type": "word",
@@ -36730,14 +36730,14 @@
               }
             },
             {
-              "__struct_id": 2048,
+              "__struct_id": 4096,
               "AddCost": {
                 "type": "dword",
                 "value": 0
               },
               "BaseItem": {
                 "type": "int",
-                "value": 20
+                "value": 27
               },
               "Charges": {
                 "type": "byte",
@@ -37329,7 +37329,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": "x2_def_onconv"
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -38547,7 +38547,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -39819,7 +39819,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -41091,7 +41091,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -42371,7 +42371,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -43735,7 +43735,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",
@@ -45308,7 +45308,7 @@
         },
         "LoadScreenID": {
           "type": "word",
-          "value": 69
+          "value": 18
         },
         "Lockable": {
           "type": "byte",
@@ -69382,231 +69382,6 @@
         },
         "Appearance": {
           "type": "dword",
-          "value": 20090
-        },
-        "AutoRemoveKey": {
-          "type": "byte",
-          "value": 0
-        },
-        "Bearing": {
-          "type": "float",
-          "value": 2.577079772949219
-        },
-        "BodyBag": {
-          "type": "byte",
-          "value": 0
-        },
-        "CloseLockDC": {
-          "type": "byte",
-          "value": 0
-        },
-        "Conversation": {
-          "type": "resref",
-          "value": ""
-        },
-        "CurrentHP": {
-          "type": "short",
-          "value": 10
-        },
-        "Description": {
-          "type": "cexolocstring",
-          "value": {}
-        },
-        "DisarmDC": {
-          "type": "byte",
-          "value": 0
-        },
-        "Faction": {
-          "type": "dword",
-          "value": 3
-        },
-        "Fort": {
-          "type": "byte",
-          "value": 5
-        },
-        "Hardness": {
-          "type": "byte",
-          "value": 5
-        },
-        "HasInventory": {
-          "type": "byte",
-          "value": 0
-        },
-        "HP": {
-          "type": "short",
-          "value": 10
-        },
-        "Interruptable": {
-          "type": "byte",
-          "value": 1
-        },
-        "KeyName": {
-          "type": "cexostring",
-          "value": ""
-        },
-        "KeyRequired": {
-          "type": "byte",
-          "value": 0
-        },
-        "Lockable": {
-          "type": "byte",
-          "value": 1
-        },
-        "Locked": {
-          "type": "byte",
-          "value": 0
-        },
-        "LocName": {
-          "type": "cexolocstring",
-          "value": {
-            "0": "[mdrn]Landspeeder red"
-          }
-        },
-        "OnClick": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnClosed": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnDamaged": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnDeath": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnDisarm": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnHeartbeat": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnInvDisturbed": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnLock": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnMeleeAttacked": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnOpen": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnSpellCastAt": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnTrapTriggered": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnUnlock": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnUsed": {
-          "type": "resref",
-          "value": ""
-        },
-        "OnUserDefined": {
-          "type": "resref",
-          "value": ""
-        },
-        "OpenLockDC": {
-          "type": "byte",
-          "value": 0
-        },
-        "Plot": {
-          "type": "byte",
-          "value": 0
-        },
-        "PortraitId": {
-          "type": "word",
-          "value": 0
-        },
-        "Ref": {
-          "type": "byte",
-          "value": 0
-        },
-        "Static": {
-          "type": "byte",
-          "value": 1
-        },
-        "Tag": {
-          "type": "cexostring",
-          "value": "_mdrn_pl_lands01"
-        },
-        "TemplateResRef": {
-          "type": "resref",
-          "value": "_mdrn_pl_lands01"
-        },
-        "TrapDetectable": {
-          "type": "byte",
-          "value": 1
-        },
-        "TrapDetectDC": {
-          "type": "byte",
-          "value": 0
-        },
-        "TrapDisarmable": {
-          "type": "byte",
-          "value": 1
-        },
-        "TrapFlag": {
-          "type": "byte",
-          "value": 0
-        },
-        "TrapOneShot": {
-          "type": "byte",
-          "value": 1
-        },
-        "TrapType": {
-          "type": "byte",
-          "value": 0
-        },
-        "Type": {
-          "type": "byte",
-          "value": 0
-        },
-        "Useable": {
-          "type": "byte",
-          "value": 0
-        },
-        "Will": {
-          "type": "byte",
-          "value": 0
-        },
-        "X": {
-          "type": "float",
-          "value": 104.527099609375
-        },
-        "Y": {
-          "type": "float",
-          "value": 85.37982177734375
-        },
-        "Z": {
-          "type": "float",
-          "value": -5.222045729169622e-006
-        }
-      },
-      {
-        "__struct_id": 9,
-        "AnimationState": {
-          "type": "byte",
-          "value": 0
-        },
-        "Appearance": {
-          "type": "dword",
           "value": 30583
         },
         "AutoRemoveKey": {
@@ -79964,6 +79739,231 @@
           "type": "float",
           "value": -1.192092895507813e-007
         }
+      },
+      {
+        "__struct_id": 9,
+        "AnimationState": {
+          "type": "byte",
+          "value": 0
+        },
+        "Appearance": {
+          "type": "dword",
+          "value": 20090
+        },
+        "AutoRemoveKey": {
+          "type": "byte",
+          "value": 0
+        },
+        "Bearing": {
+          "type": "float",
+          "value": 2.577079772949219
+        },
+        "BodyBag": {
+          "type": "byte",
+          "value": 0
+        },
+        "CloseLockDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Conversation": {
+          "type": "resref",
+          "value": ""
+        },
+        "CurrentHP": {
+          "type": "short",
+          "value": 10
+        },
+        "Description": {
+          "type": "cexolocstring",
+          "value": {}
+        },
+        "DisarmDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Faction": {
+          "type": "dword",
+          "value": 3
+        },
+        "Fort": {
+          "type": "byte",
+          "value": 5
+        },
+        "Hardness": {
+          "type": "byte",
+          "value": 5
+        },
+        "HasInventory": {
+          "type": "byte",
+          "value": 0
+        },
+        "HP": {
+          "type": "short",
+          "value": 10
+        },
+        "Interruptable": {
+          "type": "byte",
+          "value": 1
+        },
+        "KeyName": {
+          "type": "cexostring",
+          "value": ""
+        },
+        "KeyRequired": {
+          "type": "byte",
+          "value": 0
+        },
+        "Lockable": {
+          "type": "byte",
+          "value": 1
+        },
+        "Locked": {
+          "type": "byte",
+          "value": 0
+        },
+        "LocName": {
+          "type": "cexolocstring",
+          "value": {
+            "0": "[mdrn]Landspeeder red"
+          }
+        },
+        "OnClick": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnClosed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDamaged": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDeath": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnDisarm": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnHeartbeat": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnInvDisturbed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnLock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnMeleeAttacked": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnOpen": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnSpellCastAt": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnTrapTriggered": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUnlock": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUsed": {
+          "type": "resref",
+          "value": ""
+        },
+        "OnUserDefined": {
+          "type": "resref",
+          "value": ""
+        },
+        "OpenLockDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "Plot": {
+          "type": "byte",
+          "value": 0
+        },
+        "PortraitId": {
+          "type": "word",
+          "value": 0
+        },
+        "Ref": {
+          "type": "byte",
+          "value": 0
+        },
+        "Static": {
+          "type": "byte",
+          "value": 1
+        },
+        "Tag": {
+          "type": "cexostring",
+          "value": "_mdrn_pl_lands01"
+        },
+        "TemplateResRef": {
+          "type": "resref",
+          "value": "_mdrn_pl_lands01"
+        },
+        "TrapDetectable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapDetectDC": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapDisarmable": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapFlag": {
+          "type": "byte",
+          "value": 0
+        },
+        "TrapOneShot": {
+          "type": "byte",
+          "value": 1
+        },
+        "TrapType": {
+          "type": "byte",
+          "value": 0
+        },
+        "Type": {
+          "type": "byte",
+          "value": 0
+        },
+        "Useable": {
+          "type": "byte",
+          "value": 0
+        },
+        "Will": {
+          "type": "byte",
+          "value": 0
+        },
+        "X": {
+          "type": "float",
+          "value": 104.527099609375
+        },
+        "Y": {
+          "type": "float",
+          "value": 85.37982177734375
+        },
+        "Z": {
+          "type": "float",
+          "value": -5.222045729169622e-006
+        }
       }
     ]
   },
@@ -85181,7 +85181,7 @@
         },
         "LoadScreenID": {
           "type": "word",
-          "value": 69
+          "value": 18
         },
         "LocalizedName": {
           "id": 14760,
@@ -85752,6 +85752,21 @@
         "Value": {
           "type": "int",
           "value": 66
+        }
+      },
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "PLANET_TYPE_ID"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 2
         }
       }
     ]

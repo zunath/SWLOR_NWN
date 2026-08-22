@@ -50,7 +50,7 @@
   },
   "ArmorPart_RFArm": {
     "type": "byte",
-    "value": 202
+    "value": 168
   },
   "ArmorPart_RFoot": {
     "type": "byte",
@@ -58,7 +58,7 @@
   },
   "ArmorPart_RHand": {
     "type": "byte",
-    "value": 203
+    "value": 113
   },
   "ArmorPart_Robe": {
     "type": "byte",
@@ -389,6 +389,26 @@
     "type": "resref",
     "value": "primagarb"
   },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NO_ECONOMY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
+  },
   "xArmorPart_Belt": {
     "type": "word",
     "value": 218
@@ -435,7 +455,7 @@
   },
   "xArmorPart_RFArm": {
     "type": "word",
-    "value": 202
+    "value": 168
   },
   "xArmorPart_RFoot": {
     "type": "word",
@@ -443,7 +463,7 @@
   },
   "xArmorPart_RHand": {
     "type": "word",
-    "value": 203
+    "value": 113
   },
   "xArmorPart_Robe": {
     "type": "word",

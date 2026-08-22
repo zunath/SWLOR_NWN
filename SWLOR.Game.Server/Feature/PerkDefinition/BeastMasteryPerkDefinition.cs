@@ -227,7 +227,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Guarding Bond")
 
                 .AddPerkLevel()
-                .Description("While active, your beast gains +20% Defense, +20% Force Defense, takes 15% less damage, and generates +75% enmity. Only one combat mode may be active at a time.")
+                .Description("While active, your beast gains +20% Defense, +20% Force Defense, takes 15% less damage, and generates +75% enmity. Only one stance may be active at a time.")
                 .Price(2)
                 .RequirementSkill(SkillType.BeastMastery, 15)
                 .GrantsFeat(FeatType.GuardingBond);
@@ -240,7 +240,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Predatory Bond")
 
                 .AddPerkLevel()
-                .Description("While active, your beast deals +25% damage, gains +15% haste and +10% ability accuracy, and generates 40% less enmity. Only one combat mode may be active at a time.")
+                .Description("While active, your beast deals +25% damage, gains +15% haste and +10% ability accuracy, and generates 40% less enmity. Only one stance may be active at a time.")
                 .Price(2)
                 .RequirementSkill(SkillType.BeastMastery, 15)
                 .GrantsFeat(FeatType.PredatoryBond);
@@ -277,7 +277,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.ReviveBeast2)
 
                 .AddPerkLevel()
-                .Description("Revives your pet with (30 + 2*SOC)% HP.")
+                .Description("Revives your pet with (45 + SOC)% HP.")
                 .Price(3)
                 .RequirementSkill(SkillType.BeastMastery, 40)
                 .GrantsFeat(FeatType.ReviveBeast3);

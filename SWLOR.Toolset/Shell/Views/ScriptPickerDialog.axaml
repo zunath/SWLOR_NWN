@@ -1,0 +1,64 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:views="using:SWLOR.Toolset.Shell.Views"
+        mc:Ignorable="d" d:DesignWidth="470" d:DesignHeight="440"
+        x:Class="SWLOR.Toolset.Shell.Views.ScriptPickerDialog"
+        x:DataType="views:ScriptPickerDialog"
+        Width="470" Height="440"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        Background="{DynamicResource PanelBrush}"
+        Title="Select script">
+
+  <Grid RowDefinitions="Auto,Auto,*,Auto,Auto">
+
+    <Border Grid.Row="0" Background="{DynamicResource PanelHeaderBrush}"
+            BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,0,0,1" Padding="13,9">
+      <TextBlock Text="{Binding SlotDescription}" />
+    </Border>
+
+    <TextBox Grid.Row="1" Margin="12,10,12,6" Text="{Binding Filter}" Watermark="Search scripts..." />
+
+    <ListBox Grid.Row="2" Margin="4,0" Background="Transparent" BorderThickness="0"
+             ItemsSource="{Binding Rows}" SelectedItem="{Binding SelectedRow}"
+             DoubleTapped="OnRowDoubleTapped">
+      <ListBox.ItemTemplate>
+        <DataTemplate DataType="views:ScriptPickerRow">
+          <!-- Same shape as the explorer rows: name left, resref right in mono. -->
+          <Grid ColumnDefinitions="Auto,*,Auto" Margin="8,2" ColumnSpacing="8">
+            <TextBlock Grid.Column="0" Text="&#x25A1;" FontSize="10" VerticalAlignment="Center"
+                       Foreground="{DynamicResource InkTertiaryBrush}" />
+            <TextBlock Grid.Column="1" Classes="name" Text="{Binding Label}" VerticalAlignment="Center"
+                       TextTrimming="CharacterEllipsis" />
+            <TextBlock Grid.Column="2" Classes="count" VerticalAlignment="Center" Text="{Binding Note}"
+                       Foreground="{Binding NoteBrush}" />
+          </Grid>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
+
+    <!-- The warning that justifies the whole dialog. -->
+    <Border Grid.Row="3" Background="{DynamicResource PanelRaisedBrush}"
+            BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1,0,0" Padding="12,7"
+            IsVisible="{Binding HasMissingWarning}">
+      <StackPanel Orientation="Horizontal" Spacing="9">
+        <TextBlock Text="&#x26A0;" FontSize="11" VerticalAlignment="Center"
+                   Foreground="{DynamicResource AmberBrush}" />
+        <TextBlock Classes="dim" VerticalAlignment="Center" TextWrapping="Wrap"
+                   Text="{Binding MissingWarning}" />
+      </StackPanel>
+    </Border>
+
+    <Grid Grid.Row="4" ColumnDefinitions="Auto,*,Auto,Auto,Auto" Margin="12,10" ColumnSpacing="8"
+          Background="Transparent">
+      <!-- Far left, away from Select: it writes a file to disk, so it must not neighbour the
+           button people press by reflex. -->
+      <Button Grid.Column="0" Content="New script..." Command="{Binding NewScriptCommand}" />
+      <Button Grid.Column="2" Content="Clear" Command="{Binding ClearCommand}" />
+      <Button Grid.Column="3" Content="Cancel" Command="{Binding CancelCommand}" />
+      <Button Grid.Column="4" Classes="primary" Content="Select" Command="{Binding AcceptCommand}" />
+    </Grid>
+  </Grid>
+</Window>

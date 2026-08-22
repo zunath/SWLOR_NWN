@@ -1,16 +1,16 @@
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.DialogService;
+using SWLOR.Game.Server.Service.ConversationService;
 
 namespace SWLOR.Game.Server.Feature.DialogDefinition
 {
-    public class JukeboxDialog: DialogBase
+    public class JukeboxDialog: ConversationMenuDefinition
     {
         private const string MainPageId = "MAIN_PAGE";
 
 
-        public override PlayerDialog SetUp(uint player)
+        public override ConversationMenuSpec Build()
         {
-            var builder = new DialogBuilder()
+            var builder = new ConversationMenuBuilder()
                 .AddPage(MainPageId, (page) =>
                 {
                     page.Header = "Please select a song.";
@@ -19,8 +19,8 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                     {
                         page.AddResponse(song.DisplayName, () =>
                         {
-                            var area = GetArea(player);
-                            FloatingTextStringOnCreature($"Song Selected: {song.DisplayName}", player, false);
+                            var area = GetArea(Player);
+                            FloatingTextStringOnCreature($"Song Selected: {song.DisplayName}", Player, false);
 
                             MusicBackgroundChangeDay(area, song.ID);
                             MusicBackgroundChangeNight(area, song.ID);

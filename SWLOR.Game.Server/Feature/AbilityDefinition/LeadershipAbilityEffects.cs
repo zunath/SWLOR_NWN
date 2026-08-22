@@ -3,6 +3,7 @@ using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.AbilityDefinition
 {
@@ -66,6 +67,39 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 : typeof(TriageProtocol1StatusEffect);
 
             StatusEffect.ApplyStatusEffect(activator, target, statusEffect, durationSeconds);
+        }
+
+        /// <summary>
+        /// Bolster Resolve rider: Field Steward recovery commands (Rousing Shout, Cleanse Order)
+        /// also grant party members within Leadership range (5m base) of the leader temporary HP,
+        /// and, at rank 2, damage reduction. The temporary HP is applied unconditionally to every
+        /// recipient; the damage-reduction status effect participates in the Leadership
+        /// take-the-max damage-reduction family via <see cref="ILeadershipDamageReductionStatusEffect"/>.
+        /// </summary>
+        public static void ApplyBolsterResolve(uint activator, float durationSeconds)
+        {
+            var rank = Stat.GetStatAdjustment(activator, StatType.LeadershipFieldStewardBolsterResolveRank);
+            if (rank <= 0)
+                return;
+
+            var radius = GetLeadershipCommandRadius(activator);
+            var temporaryHPPercent = rank >= 2
+                ? AbilityEffectScaling.ScaleValueBySourceSocial(activator, 12, 15)
+                : AbilityEffectScaling.ScaleValueBySourceSocial(activator, 8, 10);
+
+            foreach (var friendly in AbilityTargeting.GetFriendlyTargets(activator, activator, true, radius))
+            {
+                TemporaryHitPointEffects.ApplyFlat(
+                    friendly,
+                    "BOLSTER_RESOLVE",
+                    GameMath.PercentOf(GetMaxHitPoints(friendly), temporaryHPPercent),
+                    durationSeconds);
+
+                if (rank >= 2)
+                {
+                    StatusEffect.ApplyStatusEffect(activator, friendly, typeof(BolsterResolve2StatusEffect), durationSeconds);
+                }
+            }
         }
 
         private static bool ToggleLeadershipAura(uint activator, StatType auraLevelStatType, Type[] statusEffectTypes)

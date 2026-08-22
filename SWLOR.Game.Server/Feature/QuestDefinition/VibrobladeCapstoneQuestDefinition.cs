@@ -34,7 +34,7 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
         private void InvincibleFoundation()
         {
-            _builder.Create(InvincibleFoundationQuestId, "First Principle: Invincible")
+            _builder.Create(InvincibleFoundationQuestId, "Sealed Annex Rotation")
                 .PrerequisiteSkill(SkillType.Vibroblade, 50)
                 .OnAcceptAction((player, sourceObject) =>
                 {
@@ -49,20 +49,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Invincible capstone line continues in Veles Militia Annex. Defeat Invincible adepts and secure the Invincible Veles Drill Ledger.")
+                    "Enter the Veles Militia Annex on Viscara and defeat six Invincible adepts on the drill floor. Secure the Invincible Veles Drill Ledger.")
                 .AddKillObjective(NPCGroupType.Viscara_Invincible_Adept, 6)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneInvincibleVelesDrillLedger)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Invincible Veles Drill Ledger from Veles Militia Annex. Return to Captain Tov Renn for the next Invincible lesson.")
+                    "The Invincible Veles Drill Ledger is secured. Return it to Captain Tov Renn at the Veles sheriff's office on Viscara.")
                 .AddXPReward(15000)
                 .AddGoldReward(7500);
         }
 
         private void InvincibleMeasure()
         {
-            _builder.Create(InvincibleMeasureQuestId, "The Measure of Invincible")
+            _builder.Create(InvincibleMeasureQuestId, "Live Range Drill")
                 .PrerequisiteQuest(InvincibleFoundationQuestId)
                 .PrerequisiteSkill(SkillType.Vibroblade, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneInvincibleMilitiaRangeRelay)
@@ -70,20 +70,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Invincible capstone line continues in Veles Militia Annex. Defeat Invincible specialists and secure the Invincible Militia Range Relay.")
+                    "Clear the range block of the Veles Militia Annex on Viscara. Defeat five Invincible specialists and secure the Invincible Militia Range Relay.")
                 .AddKillObjective(NPCGroupType.Viscara_Invincible_Specialist, 5)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneInvincibleMilitiaRangeRelay)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Invincible Militia Range Relay from Veles Militia Annex. Return to Captain Tov Renn for the next Invincible lesson.")
+                    "The Invincible Militia Range Relay is secured. Return it to Captain Tov Renn at the Veles sheriff's office on Viscara.")
                 .AddXPReward(17500)
                 .AddGoldReward(9000);
         }
 
         private void InvincibleBreach()
         {
-            _builder.Create(InvincibleBreachQuestId, "Fault Line: Invincible")
+            _builder.Create(InvincibleBreachQuestId, "Inner Gate Challenge")
                 .PrerequisiteQuest(InvincibleMeasureQuestId)
                 .PrerequisiteSkill(SkillType.Vibroblade, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneInvincibleScoredChallengeBadge)
@@ -91,20 +91,20 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Invincible capstone line continues in Veles Militia Annex. Defeat the Invincible warden and secure the Invincible Scored Challenge Badge.")
+                    "Defeat the Invincible warden at the inner gate of the Veles Militia Annex on Viscara and secure the Invincible Scored Challenge Badge. Bring allies; the warden is beyond any single fighter.")
                 .AddKillObjective(NPCGroupType.Viscara_Invincible_Warden, 1)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneInvincibleScoredChallengeBadge)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Invincible Scored Challenge Badge from Veles Militia Annex. Return to Captain Tov Renn for the next Invincible lesson.")
+                    "The warden is defeated and the Invincible Scored Challenge Badge is secured. Return it to Captain Tov Renn at the Veles sheriff's office on Viscara.")
                 .AddXPReward(20000)
                 .AddGoldReward(10500);
         }
 
         private void InvincibleCircle()
         {
-            _builder.Create(InvincibleCircleQuestId, "Circle of Proof: Invincible")
+            _builder.Create(InvincibleCircleQuestId, "Chit Recovery Detail")
                 .PrerequisiteQuest(InvincibleBreachQuestId)
                 .PrerequisiteSkill(SkillType.Vibroblade, 50)
                 .RemoveKeyItemOnAbandon(KeyItemType.CapstoneInvincibleCaptainsChallengeChit)
@@ -112,31 +112,31 @@ namespace SWLOR.Game.Server.Feature.QuestDefinition
 
                 .AddState()
                 .SetStateJournalText(
-                    "The Invincible capstone line continues in Veles Militia Annex. Defeat the Invincible inner circle and secure the Invincible Captain's Challenge Chit.")
+                    "Defeat the four Invincible inner circle guards holding the last floor of the Veles Militia Annex on Viscara and secure the Invincible Captain's Challenge Chit.")
                 .AddKillObjective(NPCGroupType.Viscara_Invincible_InnerCircle, 4)
                 .GrantKeyItemOnAdvance(KeyItemType.CapstoneInvincibleCaptainsChallengeChit)
 
                 .AddState()
                 .SetStateJournalText(
-                    $"You secured the Invincible Captain's Challenge Chit from Veles Militia Annex. Return to Captain Tov Renn for the next Invincible lesson.")
+                    "The inner circle is broken and the Invincible Captain's Challenge Chit is secured. Return it to Captain Tov Renn at the Veles sheriff's office on Viscara.")
                 .AddXPReward(22500)
                 .AddGoldReward(12000);
         }
 
         private void InvincibleMastery()
         {
-            _builder.Create(InvincibleMasteryQuestId, "Invincible Mastery")
+            _builder.Create(InvincibleMasteryQuestId, "Final Grading")
                 .PrerequisiteQuest(InvincibleCircleQuestId)
                 .PrerequisiteSkill(SkillType.Vibroblade, 50)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Invincible master is waiting in Veles Militia Annex. Defeat the master and end the capstone trial.")
+                    "Defeat Serra Kel, the Invincible master, on the center floor of the Veles Militia Annex on Viscara. Bring allies; no one beats her guard alone.")
                 .AddKillObjective(NPCGroupType.Viscara_Invincible_Master, 1)
 
                 .AddState()
                 .SetStateJournalText(
-                    "The final Invincible master is defeated. Return to Captain Tov Renn and claim the completed lesson.")
+                    "The Invincible master is defeated and the annex is quiet. Report to Captain Tov Renn at the Veles sheriff's office on Viscara.")
                 .AddXPReward(30000)
                 .AddGoldReward(18000)
                 .OnCompleteAction((player, sourceObject) =>

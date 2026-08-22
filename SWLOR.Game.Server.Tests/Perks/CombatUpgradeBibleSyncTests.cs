@@ -12,9 +12,11 @@ using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.RecipeDefinition.EngineeringRecipeDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.BeastMasteryService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CraftService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Perks;
@@ -39,7 +41,6 @@ public class CombatUpgradeBibleSyncTests
 
     private static readonly HashSet<string> OutOfScopeTabs = new(StringComparer.OrdinalIgnoreCase)
     {
-        "Espionage",
         "Farming",
         "Agriculture",
         "Smithery",
@@ -223,6 +224,7 @@ public class CombatUpgradeBibleSyncTests
         ["Katar"] = SkillType.Katar,
         ["Leadership"] = SkillType.Leadership,
         ["Lightsaber"] = SkillType.Lightsaber,
+        ["Mimicry"] = SkillType.Mimicry,
         ["Piloting"] = SkillType.Piloting,
         ["Pistol"] = SkillType.Pistol,
         ["Rifle"] = SkillType.Rifle,
@@ -234,6 +236,69 @@ public class CombatUpgradeBibleSyncTests
         ["Vibroblade"] = SkillType.Vibroblade,
         ["Vibroknife"] = SkillType.Vibroknife
     };
+
+    [Test]
+    public void ForceAndDevices_HaveEqualSkillPointAndAbilityBudgets()
+    {
+        var root = FindRepositoryRoot();
+        var rows = ReadManifest(root / "SWLOR.Game.Server" / "Readmes" / "CombatUpgradeBiblePerkManifest.csv");
+        var forceRows = rows.Where(row => row.Tab == "Force").ToArray();
+        var deviceRows = rows.Where(row => row.Tab == "Devices").ToArray();
+
+        forceRows.Sum(row => ParseWholeNumber(row.Price)).Should().Be(240);
+        deviceRows.Sum(row => ParseWholeNumber(row.Price)).Should().Be(240);
+        forceRows.Length.Should().Be(deviceRows.Length);
+        forceRows.Count(row => row.Type == "Combat")
+            .Should().Be(deviceRows.Count(row => row.Type == "Combat"));
+
+        forceRows
+            .GroupBy(row => row.Style)
+            .ToDictionary(group => group.Key, group => group.Sum(row => ParseWholeNumber(row.Price)))
+            .Should().BeEquivalentTo(new Dictionary<string, int>
+            {
+                ["Alter"] = 98,
+                ["Control"] = 87,
+                ["Sense"] = 55
+            }, "the documented Force section totals must match the manifest");
+
+        forceRows
+            .GroupBy(row => new
+            {
+                row.Style,
+                Rank = TryParseSkillRequirement(row.SkillRequirements)?.Rank ?? 0
+            })
+            .Where(group => group.Count() > 2)
+            .Select(group => $"{group.Key.Style} Force {group.Key.Rank}: {string.Join(", ", group.Select(row => row.PerkName))}")
+            .Should().BeEmpty("no Force section may place more than two perks at the same skill step");
+
+        deviceRows
+            .GroupBy(row => row.Style)
+            .ToDictionary(group => group.Key, group => group.Sum(row => ParseWholeNumber(row.Price)))
+            .Should().OnlyContain(pair => pair.Value == 60,
+                "each Devices archetype must retain the same 60-SP completion cost");
+
+        AssertTwinPrices(forceRows, deviceRows, "Throw Rock", "Arc Projector");
+        AssertTwinPrices(forceRows, deviceRows, "Radiant Lance", "Ion Lance");
+    }
+
+    private static void AssertTwinPrices(
+        IReadOnlyCollection<BiblePerkRow> forceRows,
+        IReadOnlyCollection<BiblePerkRow> deviceRows,
+        string forcePerkName,
+        string devicePerkName)
+    {
+        var forcePrices = forceRows
+            .Where(row => GetBaseName(row.PerkName).Equals(forcePerkName, StringComparison.OrdinalIgnoreCase))
+            .OrderBy(row => GetExpectedLevel(row.PerkName))
+            .Select(row => ParseWholeNumber(row.Price));
+        var devicePrices = deviceRows
+            .Where(row => GetBaseName(row.PerkName).Equals(devicePerkName, StringComparison.OrdinalIgnoreCase))
+            .OrderBy(row => GetExpectedLevel(row.PerkName))
+            .Select(row => ParseWholeNumber(row.Price));
+
+        devicePrices.Should().Equal(forcePrices,
+            $"{devicePerkName} must retain the same rank prices as its Force twin {forcePerkName}");
+    }
 
     [Test]
     public void CombatUpgradeBibleManifest_MatchesLivePerkAndAbilityRegistries()
@@ -258,7 +323,11 @@ public class CombatUpgradeBibleSyncTests
             scopedPerkTypes.Add(perkType);
             AssertPerkRow(row, perk, level, failures);
 
-            if (ShouldValidateAsActiveAbility(row, level))
+            if (IsNativeStealthRow(row))
+            {
+                AssertNativeStealthRow(row, level, root, failures);
+            }
+            else if (ShouldValidateAsActiveAbility(row, level))
             {
                 if (IsTameRow(row))
                 {
@@ -297,6 +366,157 @@ public class CombatUpgradeBibleSyncTests
         AssertDefinitionClassNamesMatchFiles(root, failures);
         AssertStatusEffectDefinitionNamesMatchStatusEffectNames(root, failures);
         AssertExplicitCombatImpactScalingDeclarations(root, failures);
+
+        failures.Should().BeEmpty(string.Join(Environment.NewLine, failures.Take(200)));
+    }
+
+    [Test]
+    public void CombatUpgradeBibleManifest_EveryGrantedStatHasAProductionConsumer()
+    {
+        var root = FindRepositoryRoot();
+        var rows = ReadManifest(root / "SWLOR.Game.Server" / "Readmes" / "CombatUpgradeBiblePerkManifest.csv")
+            .Where(IsScopedImplementedRow)
+            .ToArray();
+        var scopedCategories = rows
+            .SelectMany(GetExpectedCategories)
+            .ToHashSet();
+        var grantedStats = BuildPerksWithout2daLookup()
+            .Where(perk => scopedCategories.Contains(perk.Detail.Category))
+            .SelectMany(perk => perk.Detail.PerkLevels.Values)
+            .SelectMany(level => level.StatBonuses)
+            .Select(bonus => bonus.Stat)
+            .Where(stat => stat != StatType.Invalid)
+            .Distinct()
+            .OrderBy(stat => stat)
+            .ToArray();
+        var productionRoot = Path.Combine(root.FullName, "SWLOR.Game.Server");
+        var consumerCorpus = string.Join(
+            Environment.NewLine,
+            Directory.EnumerateFiles(productionRoot, "*.cs", System.IO.SearchOption.AllDirectories)
+                .Where(file => !file.Contains(
+                    Path.Combine("Feature", "PerkDefinition"),
+                    StringComparison.OrdinalIgnoreCase))
+                .Where(file => !file.EndsWith(
+                    Path.Combine("Service", "StatService", "StatType.cs"),
+                    StringComparison.OrdinalIgnoreCase))
+                .Select(File.ReadAllText));
+        var missingConsumers = grantedStats
+            .Where(stat => !consumerCorpus.Contains($"StatType.{stat}", StringComparison.Ordinal))
+            .Select(stat => stat.ToString())
+            .ToArray();
+
+        missingConsumers.Should().BeEmpty(
+            "a Bible-scoped perk stat that is never read by production code is an unimplemented gameplay promise:" +
+            Environment.NewLine + string.Join(Environment.NewLine, missingConsumers));
+    }
+
+    [Test]
+    public void CombatUpgradeBibleManifest_MimicryTechniquesMatchLiveAbilities()
+    {
+        var root = FindRepositoryRoot();
+        var rows = ReadManifest(root / "SWLOR.Game.Server" / "Readmes" / "CombatUpgradeBiblePerkManifest.csv")
+            .Where(row => row.Tab.Equals("Mimicry", StringComparison.OrdinalIgnoreCase))
+            .Where(row => row.Style.Equals("Technique", StringComparison.OrdinalIgnoreCase))
+            .Where(row => ImplementedStatuses.Contains(row.DevStatus))
+            .ToArray();
+        var abilities = BuildAbilities()
+            .Where(x => x.Value.Detail.IsMimicryTechnique)
+            .ToArray();
+        var featRows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
+            root.FullName,
+            "SWLOR_Haks",
+            "sw_2da",
+            "feat.2da")));
+        var spellRows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
+            root.FullName,
+            "SWLOR_Haks",
+            "sw_2da",
+            "spells.2da")));
+        var tlkEntries = ReadTlkEntries(root / "SWLOR_Haks" / "sw_tlk" / "sw_tlk.tlk.json");
+        var failures = new List<string>();
+        var matchedFeats = new HashSet<FeatType>();
+
+        foreach (var row in rows)
+        {
+            var matches = abilities
+                .Where(x => x.Value.Detail.Name.Equals(row.PerkName, StringComparison.Ordinal))
+                .ToArray();
+            if (matches.Length != 1)
+            {
+                failures.Add($"{Describe(row)}: expected one live Mimicry technique ability, found {matches.Length}.");
+                continue;
+            }
+
+            var (feat, ability) = matches[0];
+            matchedFeats.Add(feat);
+            var detail = ability.Detail;
+
+            if (!featRows.TryGetValue((int)feat, out var featRow))
+            {
+                failures.Add($"{Describe(row)}: technique feat {feat} is missing from feat.2da.");
+            }
+            else
+            {
+                AssertTlkDescription(row, featRow.GetValueOrDefault("DESCRIPTION"), tlkEntries, failures, $"{feat} feat.2da DESCRIPTION");
+
+                if (featRow.TryGetValue("SPELLID", out var spellIdText) &&
+                    int.TryParse(spellIdText, out var spellId) &&
+                    spellRows.TryGetValue(spellId, out var spellRow))
+                {
+                    AssertTlkDescription(row, spellRow.GetValueOrDefault("SpellDesc"), tlkEntries, failures, $"{feat} spells.2da SpellDesc");
+                }
+            }
+            var expectedRequirement = ParseMimicrySkillRequirement(row, failures);
+            if (expectedRequirement != null && detail.MimicrySkillRequirement != expectedRequirement.Value)
+            {
+                failures.Add($"{Describe(row)}: Mimicry skill requirement mismatch. Bible={expectedRequirement}, Code={detail.MimicrySkillRequirement}.");
+            }
+
+            var expectedSlots = TryParseWholeNumber(row.Slots);
+            if (expectedSlots == null || detail.MimicrySlotCost != expectedSlots.Value)
+            {
+                failures.Add($"{Describe(row)}: slot cost mismatch. Bible={row.Slots}, Code={detail.MimicrySlotCost}.");
+            }
+
+            if (row.Type.Equals("Trait", StringComparison.OrdinalIgnoreCase) != detail.IsMimicryTrait)
+            {
+                failures.Add($"{Describe(row)}: Trait classification mismatch. Code IsMimicryTrait={detail.IsMimicryTrait}.");
+            }
+
+            if (row.Type.Equals("Stance", StringComparison.OrdinalIgnoreCase) != detail.IsMimicryStance)
+            {
+                failures.Add($"{Describe(row)}: Stance classification mismatch. Code IsMimicryStance={detail.IsMimicryStance}.");
+            }
+
+            AssertMimicryTraitPayload(row, detail, failures);
+
+            AssertTargetingDescription(row, detail, failures);
+
+            AssertAbilityCost<AbilityRequirementFP>(row, "FP", row.FP, detail, failures, x => x.RequiredFP);
+            AssertAbilityCost<AbilityRequirementStamina>(row, "STM", row.STM, detail, failures, x => x.RequiredSTM);
+
+            var cooldown = TryParseDurationSeconds(row.CooldownTime);
+            var actualCooldown = detail.RecastDelay?.Invoke(0);
+            if (cooldown != null && (actualCooldown == null || Math.Abs(actualCooldown.Value - cooldown.Value) > 0.001f))
+            {
+                failures.Add($"{Describe(row)}: recast mismatch. Bible={cooldown.Value}, Code={actualCooldown?.ToString(CultureInfo.InvariantCulture) ?? "-"}.");
+            }
+
+            var activationDelay = TryParseActivationSeconds(row.CastingTime);
+            if (activationDelay != null)
+            {
+                var actualDelay = detail.ActivationDelay?.Invoke(0, 0, detail.AbilityLevel) ?? 0f;
+                if (Math.Abs(actualDelay - activationDelay.Value) > 0.001f)
+                {
+                    failures.Add($"{Describe(row)}: activation delay mismatch. Bible={activationDelay.Value}, Code={actualDelay}.");
+                }
+            }
+        }
+
+        foreach (var (feat, ability) in abilities.Where(x => !matchedFeats.Contains(x.Key)))
+        {
+            failures.Add($"{ability.Detail.Name}/{feat}: live Mimicry technique has no implemented Bible technique row.");
+        }
 
         failures.Should().BeEmpty(string.Join(Environment.NewLine, failures.Take(200)));
     }
@@ -562,46 +782,72 @@ public class CombatUpgradeBibleSyncTests
 
             if (scope.ShouldValidate)
             {
-                match = FindMatchingPerk(row, perks, failures);
-                if (match != null)
+                if (IsMimicryTechniqueRow(row))
                 {
-                    var (perkType, perk, level) = match.Value;
-                    codePerk = $"{perkType}/{perk.Category}/{perk.Name} rank {GetExpectedLevel(row.PerkName)}";
-                    codePrice = level.Price.ToString(CultureInfo.InvariantCulture);
-                    codeDescription = level.Description;
-                    codeRequirements = DescribeRequirements(level);
-                    grantedFeats = string.Join("; ", level.GrantedFeats.Where(feat => feat != FeatType.Invalid));
-                    abilityEvidence = DescribeAbilityEvidence(level, abilities);
-                    if (IsTameRow(row) && level.GrantedFeats.Count == 0)
+                    var evidence = ReviewMimicryTechniqueRow(
+                        row,
+                        abilities,
+                        featRows,
+                        spellRows,
+                        tlkEntries,
+                        failures);
+                    codePerk = evidence.CodePerk;
+                    codePrice = evidence.CodePrice;
+                    codeDescription = evidence.CodeDescription;
+                    codeRequirements = evidence.CodeRequirements;
+                    grantedFeats = evidence.GrantedFeats;
+                    abilityEvidence = evidence.AbilityEvidence;
+                    featDescriptionEvidence = evidence.FeatDescriptionEvidence;
+                    spellDescriptionEvidence = evidence.SpellDescriptionEvidence;
+                }
+                else
+                {
+                    match = FindMatchingPerk(row, perks, failures);
+                    if (match != null)
                     {
-                        abilityEvidence = abilities.TryGetValue(FeatType.Tame, out var tameAbility)
-                            ? $"Tame rank scales the existing Tame ability; higher Tame ranks grant no new feat by design. Existing ability evidence: {DescribeAbilityEvidence(FeatType.Tame, tameAbility)}"
-                            : "Tame rank scales the existing Tame ability; higher Tame ranks grant no new feat by design, but the Tame ability was not found.";
-                    }
-                    featDescriptionEvidence = DescribeFeatDescriptionEvidence(row, level, featRows, tlkEntries, failures);
-                    spellDescriptionEvidence = DescribeSpellDescriptionEvidence(row, level, abilities, featRows, spellRows, tlkEntries, failures);
-
-                    AssertPerkRow(row, perk, level, failures);
-
-                    if (ShouldValidateAsActiveAbility(row, level))
-                    {
-                        if (IsTameRow(row))
+                        var (perkType, perk, level) = match.Value;
+                        codePerk = $"{perkType}/{perk.Category}/{perk.Name} rank {GetExpectedLevel(row.PerkName)}";
+                        codePrice = level.Price.ToString(CultureInfo.InvariantCulture);
+                        codeDescription = level.Description;
+                        codeRequirements = DescribeRequirements(level);
+                        grantedFeats = string.Join("; ", level.GrantedFeats.Where(feat => feat != FeatType.Invalid));
+                        abilityEvidence = DescribeAbilityEvidence(level, abilities);
+                        if (IsTameRow(row) && level.GrantedFeats.Count == 0)
                         {
-                            AssertTameRow(row, level, abilities, failures);
+                            abilityEvidence = abilities.TryGetValue(FeatType.Tame, out var tameAbility)
+                                ? $"Tame rank scales the existing Tame ability; higher Tame ranks grant no new feat by design. Existing ability evidence: {DescribeAbilityEvidence(FeatType.Tame, tameAbility)}"
+                                : "Tame rank scales the existing Tame ability; higher Tame ranks grant no new feat by design, but the Tame ability was not found.";
                         }
-                        else
+                        featDescriptionEvidence = DescribeFeatDescriptionEvidence(row, level, featRows, tlkEntries, failures);
+                        spellDescriptionEvidence = DescribeSpellDescriptionEvidence(row, level, abilities, featRows, spellRows, tlkEntries, failures);
+
+                        AssertPerkRow(row, perk, level, failures);
+
+                        if (IsNativeStealthRow(row))
                         {
-                            AssertActiveAbilityRow(row, perkType, level, abilities, failures);
+                            AssertNativeStealthRow(row, level, root, failures);
+                            abilityEvidence = "Uses NWN's built-in Stealth action; no custom feat or ability definition by design.";
                         }
-                    }
-                    else if (IsTraitLikeType(row.Type))
-                    {
-                        var nonPassiveIconFeats = level.GrantedFeats
-                            .Where(feat => !IsPassiveTraitFeat(feat, abilities))
-                            .ToArray();
-                        if (nonPassiveIconFeats.Length != 0)
+                        else if (ShouldValidateAsActiveAbility(row, level))
                         {
-                            failures.Add($"{Describe(row)}: bible type is {row.Type} but code grants active feats: {string.Join(", ", nonPassiveIconFeats)}.");
+                            if (IsTameRow(row))
+                            {
+                                AssertTameRow(row, level, abilities, failures);
+                            }
+                            else
+                            {
+                                AssertActiveAbilityRow(row, perkType, level, abilities, failures);
+                            }
+                        }
+                        else if (IsTraitLikeType(row.Type))
+                        {
+                            var nonPassiveIconFeats = level.GrantedFeats
+                                .Where(feat => !IsPassiveTraitFeat(feat, abilities))
+                                .ToArray();
+                            if (nonPassiveIconFeats.Length != 0)
+                            {
+                                failures.Add($"{Describe(row)}: bible type is {row.Type} but code grants active feats: {string.Join(", ", nonPassiveIconFeats)}.");
+                            }
                         }
                     }
                 }
@@ -660,6 +906,243 @@ public class CombatUpgradeBibleSyncTests
             .Select(row => $"{row.Tab}/{row.Style}/{row.BibleRow} {row.PerkName}: {row.Findings}")
             .Should()
             .BeEmpty("the line-by-line implementation review should not contain scoped implemented row failures");
+    }
+
+    private static MimicryReviewEvidence ReviewMimicryTechniqueRow(
+        BiblePerkRow row,
+        IReadOnlyDictionary<FeatType, AbilityRecord> abilities,
+        IReadOnlyDictionary<int, Dictionary<string, string>> featRows,
+        IReadOnlyDictionary<int, Dictionary<string, string>> spellRows,
+        IReadOnlyDictionary<int, string> tlkEntries,
+        List<string> failures)
+    {
+        var matches = abilities
+            .Where(x => x.Value.Detail.IsMimicryTechnique)
+            .Where(x => x.Value.Detail.Name.Equals(row.PerkName, StringComparison.Ordinal))
+            .ToArray();
+        if (matches.Length != 1)
+        {
+            failures.Add($"{Describe(row)}: expected one live Mimicry technique ability, found {matches.Length}.");
+            return MimicryReviewEvidence.Empty;
+        }
+
+        var (feat, ability) = matches[0];
+        var detail = ability.Detail;
+        AssertAbilityDefinitionName(row, ability, failures);
+
+        var expectedRequirement = ParseMimicrySkillRequirement(row, failures);
+        if (expectedRequirement != null && detail.MimicrySkillRequirement != expectedRequirement.Value)
+        {
+            failures.Add($"{Describe(row)}: Mimicry skill requirement mismatch. Bible={expectedRequirement}, Code={detail.MimicrySkillRequirement}.");
+        }
+
+        var expectedSlots = TryParseWholeNumber(row.Slots);
+        if (expectedSlots == null || detail.MimicrySlotCost != expectedSlots.Value)
+        {
+            failures.Add($"{Describe(row)}: slot cost mismatch. Bible={row.Slots}, Code={detail.MimicrySlotCost}.");
+        }
+
+        if (row.Type.Equals("Trait", StringComparison.OrdinalIgnoreCase) != detail.IsMimicryTrait)
+        {
+            failures.Add($"{Describe(row)}: Trait classification mismatch. Code IsMimicryTrait={detail.IsMimicryTrait}.");
+        }
+
+        if (row.Type.Equals("Stance", StringComparison.OrdinalIgnoreCase) != detail.IsMimicryStance)
+        {
+            failures.Add($"{Describe(row)}: Stance classification mismatch. Code IsMimicryStance={detail.IsMimicryStance}.");
+        }
+
+        AssertMimicryTraitPayload(row, detail, failures);
+
+        var scalingMatch = Regex.Match(
+            row.Description,
+            @"\b(?:Deals|dealing)\s+\d+\s+\w+\s+DMG\s+plus\s+(MGT|PER|VIT|AGI|WIL|SOC)\s+scaling\b",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        if (scalingMatch.Success)
+        {
+            var expectedAbility = scalingMatch.Groups[1].Value.ToUpperInvariant() switch
+            {
+                "MGT" => AbilityType.Might,
+                "PER" => AbilityType.Perception,
+                "VIT" => AbilityType.Vitality,
+                "AGI" => AbilityType.Agility,
+                "WIL" => AbilityType.Willpower,
+                "SOC" => AbilityType.Social,
+                _ => AbilityType.Invalid
+            };
+            if (detail.CombatImpactDamageAbility != expectedAbility)
+            {
+                failures.Add($"{Describe(row)}: damage scaling mismatch. Bible={scalingMatch.Groups[1].Value.ToUpperInvariant()}, Code={detail.CombatImpactDamageAbility}.");
+            }
+            if (!row.PrimaryStat.Equals(scalingMatch.Groups[1].Value, StringComparison.OrdinalIgnoreCase))
+            {
+                failures.Add($"{Describe(row)}: Primary Stat must match the description's {scalingMatch.Groups[1].Value.ToUpperInvariant()} scaling, found '{row.PrimaryStat}'.");
+            }
+            if (!row.ScalingSource.Equals("Combat Formula", StringComparison.OrdinalIgnoreCase))
+            {
+                failures.Add($"{Describe(row)}: damaging technique Scaling Source should be Combat Formula, found '{row.ScalingSource}'.");
+            }
+        }
+        else
+        {
+            if (!row.PrimaryStat.Equals("None", StringComparison.OrdinalIgnoreCase))
+            {
+                failures.Add($"{Describe(row)}: non-damaging technique Primary Stat should be None, found '{row.PrimaryStat}'.");
+            }
+            if (!row.ScalingSource.Equals("None", StringComparison.OrdinalIgnoreCase))
+            {
+                failures.Add($"{Describe(row)}: non-damaging technique Scaling Source should be None, found '{row.ScalingSource}'.");
+            }
+        }
+
+        AssertTargetingDescription(row, detail, failures);
+        AssertAbilityCost<AbilityRequirementFP>(row, "FP", row.FP, detail, failures, x => x.RequiredFP);
+        AssertAbilityCost<AbilityRequirementStamina>(row, "STM", row.STM, detail, failures, x => x.RequiredSTM);
+
+        var cooldown = TryParseDurationSeconds(row.CooldownTime);
+        var actualCooldown = detail.RecastDelay?.Invoke(0);
+        if (cooldown != null && (actualCooldown == null || Math.Abs(actualCooldown.Value - cooldown.Value) > 0.001f))
+        {
+            failures.Add($"{Describe(row)}: recast mismatch. Bible={cooldown.Value}, Code={actualCooldown?.ToString(CultureInfo.InvariantCulture) ?? "-"}.");
+        }
+
+        var activationDelay = TryParseActivationSeconds(row.CastingTime);
+        if (activationDelay != null)
+        {
+            var actualDelay = detail.ActivationDelay?.Invoke(0, 0, detail.AbilityLevel) ?? 0f;
+            if (Math.Abs(actualDelay - activationDelay.Value) > 0.001f)
+            {
+                failures.Add($"{Describe(row)}: activation delay mismatch. Bible={activationDelay.Value}, Code={actualDelay}.");
+            }
+        }
+
+        var featEvidence = "-";
+        var spellEvidence = "-";
+        if (!featRows.TryGetValue((int)feat, out var featRow))
+        {
+            failures.Add($"{Describe(row)}: technique feat {feat} is missing from feat.2da.");
+            featEvidence = $"{feat}: missing feat.2da row";
+        }
+        else
+        {
+            featEvidence = $"{feat}: {DescribeExactTlkReference(row, featRow.GetValueOrDefault("DESCRIPTION"), tlkEntries, failures, $"{feat} feat.2da DESCRIPTION")}";
+            if (featRow.TryGetValue("SPELLID", out var spellIdText) &&
+                int.TryParse(spellIdText, out var spellId))
+            {
+                if (spellRows.TryGetValue(spellId, out var spellRow))
+                {
+                    spellEvidence = $"{feat}: {DescribeExactTlkReference(row, spellRow.GetValueOrDefault("SpellDesc"), tlkEntries, failures, $"{feat} spells.2da SpellDesc")}";
+                }
+                else
+                {
+                    failures.Add($"{Describe(row)}: technique feat {feat} references missing spells.2da row {spellId}.");
+                    spellEvidence = $"{feat}: missing spells.2da row {spellId}";
+                }
+            }
+        }
+
+        return new MimicryReviewEvidence(
+            $"{feat}/{ability.DefinitionType.Name}/Mimicry rank {detail.MimicrySkillRequirement}",
+            "-",
+            row.Description,
+            $"Mimicry rank {detail.MimicrySkillRequirement}; slots {detail.MimicrySlotCost}",
+            feat.ToString(),
+            $"{DescribeAbilityEvidence(feat, ability)} mimicryRank={detail.MimicrySkillRequirement} slots={detail.MimicrySlotCost} trait={detail.IsMimicryTrait} stance={detail.IsMimicryStance}",
+            featEvidence,
+            spellEvidence);
+    }
+
+    private static void AssertMimicryTraitPayload(
+        BiblePerkRow row,
+        AbilityDetail detail,
+        List<string> failures)
+    {
+        if (!detail.IsMimicryTrait)
+            return;
+
+        var expectedStats = new Dictionary<StatType, int>();
+        var expectedResistances = new Dictionary<ResistanceType, int>();
+        var procMatch = Regex.Match(
+            row.Description,
+            @"^Your attacks have an? (?<value>\d+)% chance to inflict (?<status>Bleed|Freezing|Hemorrhage|Poison|Shock|Sunder)\.$",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+
+        if (procMatch.Success)
+        {
+            var stat = procMatch.Groups["status"].Value.ToLowerInvariant() switch
+            {
+                "bleed" => StatType.DamageDealtBleedChance,
+                "freezing" => StatType.DamageDealtFreezingChance,
+                "hemorrhage" => StatType.DamageDealtHemorrhageChance,
+                "poison" => StatType.DamageDealtPoisonChance,
+                "shock" => StatType.DamageDealtShockChance,
+                "sunder" => StatType.DamageDealtSunderChance,
+                _ => StatType.Invalid
+            };
+            expectedStats[stat] = int.Parse(procMatch.Groups["value"].Value, CultureInfo.InvariantCulture);
+        }
+        else
+        {
+            var flatStatNames = new Dictionary<string, StatType>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["Accuracy"] = StatType.AccuracyPercentAdjustment,
+                ["Attack"] = StatType.AttackPercentAdjustment,
+                ["Critical Rate"] = StatType.CriticalRatePercentAdjustment,
+                ["Force Attack"] = StatType.ForceAttackPercentAdjustment,
+                ["Force Defense"] = StatType.ForceDefensePercentAdjustment,
+                ["Physical Defense"] = StatType.PhysicalDefensePercentAdjustment
+            };
+            foreach (Match match in Regex.Matches(
+                         row.Description,
+                         @"(?:Increases your |\+)(?<stat>Accuracy|Attack|Critical Rate|Force Attack|Force Defense|Physical Defense)(?: rating)?(?: by)? (?<value>\d+)%|\+(?<prefixValue>\d+)%(?:\s+)(?<prefixStat>Force Defense|Physical Defense)",
+                         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+            {
+                var statName = match.Groups["stat"].Success
+                    ? match.Groups["stat"].Value
+                    : match.Groups["prefixStat"].Value;
+                var valueText = match.Groups["value"].Success
+                    ? match.Groups["value"].Value
+                    : match.Groups["prefixValue"].Value;
+                expectedStats[flatStatNames[statName]] = int.Parse(valueText, CultureInfo.InvariantCulture);
+            }
+
+            var resistanceNames = new Dictionary<string, ResistanceType>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["Fire"] = ResistanceType.Fire,
+                ["Poison"] = ResistanceType.Poison,
+                ["Trauma"] = ResistanceType.Trauma
+            };
+            foreach (Match match in Regex.Matches(
+                         row.Description,
+                         @"\+(?<value>\d+) (?<resistance>Fire|Poison|Trauma) Resistance",
+                         RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+            {
+                expectedResistances[resistanceNames[match.Groups["resistance"].Value]] =
+                    int.Parse(match.Groups["value"].Value, CultureInfo.InvariantCulture);
+            }
+        }
+
+        if (expectedStats.Count == 0 && expectedResistances.Count == 0)
+        {
+            failures.Add($"{Describe(row)}: unsupported Mimicry trait description; its payload cannot be statically verified: '{row.Description}'.");
+            return;
+        }
+
+        if (!detail.MimicryTraitStats.OrderBy(x => x.Key).SequenceEqual(expectedStats.OrderBy(x => x.Key)))
+        {
+            failures.Add(
+                $"{Describe(row)}: Mimicry trait stat payload mismatch. " +
+                $"Bible=[{string.Join(", ", expectedStats.Select(x => $"{x.Key}={x.Value}"))}] " +
+                $"Code=[{string.Join(", ", detail.MimicryTraitStats.Select(x => $"{x.Key}={x.Value}"))}].");
+        }
+
+        if (!detail.MimicryTraitResistances.OrderBy(x => x.Key).SequenceEqual(expectedResistances.OrderBy(x => x.Key)))
+        {
+            failures.Add(
+                $"{Describe(row)}: Mimicry trait resistance payload mismatch. " +
+                $"Bible=[{string.Join(", ", expectedResistances.Select(x => $"{x.Key}={x.Value}"))}] " +
+                $"Code=[{string.Join(", ", detail.MimicryTraitResistances.Select(x => $"{x.Key}={x.Value}"))}].");
+        }
     }
 
     private static bool IsAuxiliaryGrantedFeat(BiblePerkRow row, FeatType feat)
@@ -949,7 +1432,11 @@ public class CombatUpgradeBibleSyncTests
             if (!definitionName.EndsWith(suffix, StringComparison.Ordinal))
                 continue;
 
-            var expected = NormalizeName(GetBaseName(ability.Detail.Name));
+            // Mimicry technique classes keep a "Technique" suffix (their FeatType would otherwise
+            // collide with the source NPC feat, e.g. ToxicSpitTechnique vs ToxicSpit), while their
+            // player-facing name deliberately drops it. Compare against the suffixed form for those.
+            var baseName = GetBaseName(ability.Detail.Name);
+            var expected = NormalizeName(ability.Detail.IsMimicryTechnique ? baseName + "Technique" : baseName);
             var actual = NormalizeName(definitionName[..^suffix.Length]);
             if (!actual.Equals(expected, StringComparison.Ordinal))
             {
@@ -1169,6 +1656,14 @@ public class CombatUpgradeBibleSyncTests
                 continue;
             }
 
+            // Mimicry techniques use Combat Analyzer as their EffectiveLevelPerkType for scaling, but they
+            // are granted by equipping a learned technique through the Mimicry system, not by any perk level's granted
+            // feats. Skip them here the same way IsTameRow/IsAuxiliaryGrantedFeat carve out other equip/aux-granted feats.
+            if (ability.Detail.IsMimicryTechnique)
+            {
+                continue;
+            }
+
             failures.Add($"{ability.Detail.EffectiveLevelPerkType}/{ability.Detail.Name}/{feat}: live ability is tied to a bible-scoped perk, but no implemented bible active row grants this feat.");
         }
     }
@@ -1372,6 +1867,56 @@ public class CombatUpgradeBibleSyncTests
         {
             failures.Add($"{Describe(row)}: casting time is Queued but ability activation type is {detail.ActivationType}.");
         }
+
+        AssertTargetingDescription(row, detail, failures);
+    }
+
+    private static void AssertTargetingDescription(
+        BiblePerkRow row,
+        AbilityDetail detail,
+        List<string> failures)
+    {
+        var targeting = detail.Targeting;
+        if (targeting == null || targeting.Shape == AbilityTargetingShapeType.None)
+            return;
+
+        static string Number(float value)
+        {
+            return value.ToString("0.###", CultureInfo.InvariantCulture);
+        }
+
+        var description = row.Description.ToLowerInvariant();
+        var sizeX = Number(targeting.SizeX);
+        var sizeY = Number(targeting.SizeY);
+        var escapedX = Regex.Escape(sizeX);
+        var escapedY = Regex.Escape(sizeY);
+
+        var describesTargeting = targeting.Shape switch
+        {
+            AbilityTargetingShapeType.Sphere or AbilityTargetingShapeType.HSphere =>
+                Regex.IsMatch(
+                    description,
+                    $@"\b{escapedX}\s*m(?:eter)?s?\b",
+                    RegexOptions.CultureInvariant),
+            AbilityTargetingShapeType.Cone =>
+                Regex.IsMatch(
+                    description,
+                    $@"{escapedX}\s*m\s*(?:x|by)\s*{escapedY}\s*m\s+cone\b",
+                    RegexOptions.CultureInvariant),
+            AbilityTargetingShapeType.Rect =>
+                Regex.IsMatch(
+                    description,
+                    $@"{escapedX}\s*m\s*(?:x|by)\s*{escapedY}\s*m\s+line\b",
+                    RegexOptions.CultureInvariant),
+            _ => true
+        };
+
+        if (!describesTargeting)
+        {
+            failures.Add(
+                $"{Describe(row)}: description must state the exact {targeting.Shape} targeting size " +
+                $"({sizeX}m x {sizeY}m). Text='{row.Description}'.");
+        }
     }
 
     private static void AssertTameRow(
@@ -1447,7 +1992,12 @@ public class CombatUpgradeBibleSyncTests
         }
 
         var expected = NormalizeName(GetBaseName(ability.Detail.Name));
-        var actual = NormalizeName(definitionName[..^suffix.Length]);
+        var actualBaseName = definitionName[..^suffix.Length];
+        if (ability.Detail.IsMimicryTechnique && actualBaseName.EndsWith("Technique", StringComparison.Ordinal))
+        {
+            actualBaseName = actualBaseName[..^"Technique".Length];
+        }
+        var actual = NormalizeName(actualBaseName);
         if (!actual.Equals(expected, StringComparison.Ordinal))
         {
             failures.Add($"{Describe(row)}: ability definition '{definitionName}.cs' does not match ability name '{ability.Detail.Name}'.");
@@ -1575,7 +2125,8 @@ public class CombatUpgradeBibleSyncTests
                 cells[16],
                 cells[17],
                 cells.Length > 18 ? cells[18] : string.Empty,
-                cells.Length > 19 ? cells[19] : string.Empty));
+                cells.Length > 19 ? cells[19] : string.Empty,
+                cells.Length > 20 ? cells[20] : string.Empty));
         }
 
         return rows;
@@ -1654,10 +2205,19 @@ public class CombatUpgradeBibleSyncTests
         if (OutOfScopeTabs.Contains(row.Tab))
             return new ReviewScope(false, $"Skipped: out-of-scope tab {row.Tab}");
 
+        // Mimicry techniques are learned creature abilities rather than purchasable perks, but they
+        // remain fully in scope. The line-by-line review validates them through their live ability,
+        // feat, spell, TLK, targeting, tier, and slot metadata instead of looking for a perk level.
+        if (IsMimicryTechniqueRow(row))
+            return new ReviewScope(true, "Scoped implemented Mimicry technique");
+
         if (!ScopedTypes.Contains(row.Type))
             return new ReviewScope(false, $"Skipped: non-scoped type {row.Type}");
 
-        if (!ImplementedStatuses.Contains(row.DevStatus))
+        // Espionage was implemented while its workbook rows still said Design. Keep those rows in
+        // the audit so stale Dev Status metadata cannot hide implementation drift.
+        if (!ImplementedStatuses.Contains(row.DevStatus) &&
+            !row.Tab.Equals("Espionage", StringComparison.OrdinalIgnoreCase))
             return new ReviewScope(false, $"Skipped: dev status {row.DevStatus}");
 
         return new ReviewScope(true, "Scoped implemented");
@@ -1976,10 +2536,19 @@ public class CombatUpgradeBibleSyncTests
 
     private static bool IsScopedImplementedRow(BiblePerkRow row)
     {
+        // Mimicry techniques use their own in-scope ability review rather than the perk-level path.
         return !OutOfScopeTabs.Contains(row.Tab) &&
+               !IsMimicryTechniqueRow(row) &&
                ScopedTypes.Contains(row.Type) &&
-               ImplementedStatuses.Contains(row.DevStatus) &&
+               (ImplementedStatuses.Contains(row.DevStatus) ||
+                row.Tab.Equals("Espionage", StringComparison.OrdinalIgnoreCase)) &&
                !string.IsNullOrWhiteSpace(row.PerkName);
+    }
+
+    private static bool IsMimicryTechniqueRow(BiblePerkRow row)
+    {
+        return row.Tab.Equals("Mimicry", StringComparison.OrdinalIgnoreCase) &&
+               row.Style.Equals("Technique", StringComparison.OrdinalIgnoreCase);
     }
 
     private static string[] GetExpectedWeaponProgressionTypePattern(string styleKey, string[] defaultPattern)
@@ -1990,6 +2559,47 @@ public class CombatUpgradeBibleSyncTests
     private static int[] GetExpectedWeaponProgressionPricePattern(string styleKey, int[] defaultPattern)
     {
         return WeaponProgressionPricePatternByStyle.GetValueOrDefault(styleKey, defaultPattern);
+    }
+
+    private static bool IsNativeStealthRow(BiblePerkRow row)
+    {
+        return row.Tab.Equals("Espionage", StringComparison.OrdinalIgnoreCase) &&
+               GetBaseName(row.PerkName).Equals("Stealth", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static void AssertNativeStealthRow(
+        BiblePerkRow row,
+        PerkLevel level,
+        PathInfo root,
+        List<string> failures)
+    {
+        if (!row.Type.Equals("Toggle", StringComparison.OrdinalIgnoreCase))
+        {
+            failures.Add($"{Describe(row)}: native Stealth must be documented as a Toggle.");
+        }
+
+        if (level.GrantedFeats.Any(feat => feat != FeatType.Invalid))
+        {
+            failures.Add($"{Describe(row)}: native Stealth must not grant a duplicate custom feat.");
+        }
+
+        if (TryParseActivationSeconds(row.CastingTime) != null ||
+            TryParseDurationSeconds(row.CooldownTime) != null)
+        {
+            failures.Add($"{Describe(row)}: native Stealth must not declare custom casting or cooldown timing.");
+        }
+
+        var abilityPath = Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "Espionage",
+            "StealthAbilityDefinition.cs");
+        if (File.Exists(abilityPath))
+        {
+            failures.Add($"{Describe(row)}: duplicate Stealth ability definition still exists.");
+        }
     }
 
     private static bool ShouldValidateAsActiveAbility(BiblePerkRow row, PerkLevel level)
@@ -2066,6 +2676,19 @@ public class CombatUpgradeBibleSyncTests
         return null;
     }
 
+    private static int? ParseMimicrySkillRequirement(BiblePerkRow row, List<string> failures)
+    {
+        if (string.IsNullOrWhiteSpace(row.SkillRequirements) || row.SkillRequirements == "-")
+            return 0;
+
+        var requirement = TryParseSkillRequirement(row.SkillRequirements);
+        if (requirement is { } parsed && parsed.Skill == SkillType.Mimicry && parsed.Rank is >= 0 and <= 50)
+            return parsed.Rank;
+
+        failures.Add($"{Describe(row)}: unsupported Mimicry skill requirement '{row.SkillRequirements}'.");
+        return null;
+    }
+
     private static int? TryParseBeastLevelRequirement(BiblePerkRow row)
     {
         return IsBeastPerkRow(row)
@@ -2120,7 +2743,13 @@ public class CombatUpgradeBibleSyncTests
             ("First Aid", "Combat Pharmacology") => PerkCategoryType.FirstAidCombatPharmacology,
             ("First Aid", "Trauma Medic") => PerkCategoryType.FirstAidTraumaMedic,
             ("Engineering", "Droidcraft") => PerkCategoryType.Engineering,
+            ("Espionage", "Infiltrator") => PerkCategoryType.EspionageInfiltrator,
+            ("Espionage", "Saboteur") => PerkCategoryType.EspionageSaboteur,
+            ("Espionage", "Tradecraft") => PerkCategoryType.EspionageTradecraft,
             ("Fabrication", "Invention") => PerkCategoryType.Fabrication,
+            ("Force", "Alter") => PerkCategoryType.ForceAlter,
+            ("Force", "Control") => PerkCategoryType.ForceControl,
+            ("Force", "Sense") => PerkCategoryType.ForceSense,
             ("Gathering", "General") => PerkCategoryType.Gathering,
             ("Gathering", "Harvesting") => PerkCategoryType.Gathering,
             ("Gathering", "Scavenging") => PerkCategoryType.Gathering,
@@ -2134,6 +2763,7 @@ public class CombatUpgradeBibleSyncTests
             ("Leadership", "Vanguard Command") => PerkCategoryType.LeadershipVanguardCommand,
             ("Lightsaber", "Severance") => PerkCategoryType.LightsaberDefense,
             ("Lightsaber", "Ward") => PerkCategoryType.LightsaberOffense,
+            ("Mimicry", "Mimicry") => PerkCategoryType.Mimicry,
             ("Piloting", "Shipwright") => PerkCategoryType.Piloting,
             ("Pistol", "Gambler") => PerkCategoryType.PistolGunslinger,
             ("Pistol", "Skirmisher") => PerkCategoryType.PistolSkirmisher,
@@ -2160,16 +2790,6 @@ public class CombatUpgradeBibleSyncTests
 
     private static PerkCategoryType[] GetExpectedCategories(BiblePerkRow row)
     {
-        if (row.Tab.Equals("Force", StringComparison.OrdinalIgnoreCase))
-        {
-            return new[]
-            {
-                PerkCategoryType.ForceLight,
-                PerkCategoryType.ForceDark,
-                PerkCategoryType.ForceUniversal
-            };
-        }
-
         var category = TryGetExpectedCategory(row);
         return category.HasValue
             ? new[] { category.Value }
@@ -2425,11 +3045,25 @@ public class CombatUpgradeBibleSyncTests
         string CooldownTime,
         string DevStatus,
         string AdditionalRequirements,
-        string Notes);
+        string Notes,
+        string Slots);
 
     private sealed record PerkRecord(PerkType Type, PerkDetail Detail);
 
     private sealed record AbilityRecord(AbilityDetail Detail, Type DefinitionType);
+
+    private sealed record MimicryReviewEvidence(
+        string CodePerk,
+        string CodePrice,
+        string CodeDescription,
+        string CodeRequirements,
+        string GrantedFeats,
+        string AbilityEvidence,
+        string FeatDescriptionEvidence,
+        string SpellDescriptionEvidence)
+    {
+        public static MimicryReviewEvidence Empty { get; } = new("", "", "", "", "", "", "", "");
+    }
 
     private readonly record struct PerkMatch(PerkType Type, PerkDetail Perk, PerkLevel Level);
 }

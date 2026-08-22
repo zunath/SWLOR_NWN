@@ -52,9 +52,9 @@ public class ForceDarkManipulatorTests
     public void ForceDarkManipulatorAbilities_MatchCombatBible()
     {
         var creepingTerror = new CreepingTerrorAbilityDefinition().BuildAbilities();
-        AssertAbility(creepingTerror[FeatType.CreepingTerror1], "Creeping Terror I", 1, RecastGroup.CreepingTerror, 18f, 1f, 4, true, false, false, true, AbilityActivationType.Casted, 15f, true);
-        AssertAbility(creepingTerror[FeatType.CreepingTerror2], "Creeping Terror II", 2, RecastGroup.CreepingTerror, 18f, 1f, 6, true, false, false, true, AbilityActivationType.Casted, 15f, true);
-        AssertAbility(creepingTerror[FeatType.CreepingTerror3], "Creeping Terror III", 3, RecastGroup.CreepingTerror, 18f, 1.5f, 8, true, false, false, true, AbilityActivationType.Casted, 15f, true);
+        AssertAbility(creepingTerror[FeatType.CreepingTerror1], "Creeping Terror I", 1, RecastGroup.CreepingTerror, 32f, 1f, 4, true, false, false, true, AbilityActivationType.Casted, 15f, true);
+        AssertAbility(creepingTerror[FeatType.CreepingTerror2], "Creeping Terror II", 2, RecastGroup.CreepingTerror, 32f, 1f, 6, true, false, false, true, AbilityActivationType.Casted, 15f, true);
+        AssertAbility(creepingTerror[FeatType.CreepingTerror3], "Creeping Terror III", 3, RecastGroup.CreepingTerror, 32f, 1.5f, 8, true, false, false, true, AbilityActivationType.Casted, 15f, true);
 
         var weakenResolve = new WeakenResolveAbilityDefinition().BuildAbilities();
         AssertAbility(weakenResolve[FeatType.WeakenResolve1], "Weaken Resolve I", 1, RecastGroup.WeakenResolve, 12f, 1f, 3, true, true, true, false, AbilityActivationType.Casted, 15f, false);
@@ -64,10 +64,10 @@ public class ForceDarkManipulatorTests
         AssertAbility(nightmareField, "Nightmare Field", 1, RecastGroup.NightmareField, 36f, 1.5f, 7, true, false, false, true, AbilityActivationType.Casted, 5f, false);
 
         var forceChoke = new ForceChokeAbilityDefinition().BuildAbilities();
-        AssertAbility(forceChoke[FeatType.ForceChoke1], "Force Choke I", 1, RecastGroup.ForceChoke, 20f, 1.5f, 2, true, true, true, false, AbilityActivationType.Casted, 15f, true);
-        AssertAbility(forceChoke[FeatType.ForceChoke2], "Force Choke II", 2, RecastGroup.ForceChoke, 20f, 1.5f, 3, true, true, true, false, AbilityActivationType.Casted, 15f, true);
-        AssertAbility(forceChoke[FeatType.ForceChoke3], "Force Choke III", 3, RecastGroup.ForceChoke, 20f, 1.5f, 4, true, true, true, false, AbilityActivationType.Casted, 15f, true);
-        AssertAbility(forceChoke[FeatType.ForceChoke4], "Force Choke IV", 4, RecastGroup.ForceChoke, 20f, 1.5f, 5, true, true, true, false, AbilityActivationType.Casted, 15f, true);
+        AssertAbility(forceChoke[FeatType.ForceChoke1], "Force Choke I", 1, RecastGroup.ForceChoke, 45f, 1.5f, 2, true, true, true, false, AbilityActivationType.Casted, 15f, true);
+        AssertAbility(forceChoke[FeatType.ForceChoke2], "Force Choke II", 2, RecastGroup.ForceChoke, 45f, 1.5f, 3, true, true, true, false, AbilityActivationType.Casted, 15f, true);
+        AssertAbility(forceChoke[FeatType.ForceChoke3], "Force Choke III", 3, RecastGroup.ForceChoke, 45f, 1.5f, 4, true, true, true, false, AbilityActivationType.Casted, 15f, true);
+        AssertAbility(forceChoke[FeatType.ForceChoke4], "Force Choke IV", 4, RecastGroup.ForceChoke, 45f, 1.5f, 5, true, true, true, false, AbilityActivationType.Casted, 15f, true);
         forceChoke[FeatType.ForceChoke1].ImpactAnimationType.Should().Be(Animation.CastOutAnimation);
         forceChoke[FeatType.ForceChoke2].ImpactAnimationType.Should().Be(Animation.CastOutAnimation);
         forceChoke[FeatType.ForceChoke3].ImpactAnimationType.Should().Be(Animation.CastOutAnimation);
@@ -113,12 +113,14 @@ public class ForceDarkManipulatorTests
         var creepingTerror = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "CreepingTerrorAbilityDefinition.cs").FullName);
         creepingTerror.Should().Contain("CreateCreepingTerrorField");
         creepingTerror.Should().Contain("CombatAreaPulses.SchedulePulses");
-        creepingTerror.Should().Contain("Ability.BeginAbilityImpact(activator, ability)");
+        creepingTerror.Should().Contain("Ability.BeginAbilityImpact(activator, ability, countsAsAttackAttempt: false)",
+            "periodic field pulses must not spend limited attack charges");
         creepingTerror.Should().Contain("HasCustomValidation(ValidateTargetingRange)");
         creepingTerror.Should().Contain("AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation)");
         creepingTerror.Should().Contain("GetDistanceBetweenLocations(GetLocation(activator), location) <= FieldRange");
         creepingTerror.Should().Contain("var scaledPulseDamage = AbilityEffectScaling.ScaleDirectEffect");
         creepingTerror.Should().Contain("ApplyCreepingTerrorPulse(activator, pulseLocation, scaledPulseDamage, radius)");
+        creepingTerror.Should().Contain("AbilityAreaEffects.CreatePersistentSphereIndicator(");
         creepingTerror.Should().Contain("ApplyCreepingTerrorDamage");
         creepingTerror.Should().Contain("Ability.ApplyHostileCombatImpact");
         creepingTerror.Should().Contain("statusEffect: typeof(HobbleStatusEffect)");
@@ -274,7 +276,6 @@ public class ForceDarkManipulatorTests
         string description)
     {
         perk.Name.Should().Be(name);
-        perk.Category.Should().Be(PerkCategoryType.ForceDark);
 
         var perkLevel = perk.PerkLevels[level];
         perkLevel.Price.Should().Be(price);

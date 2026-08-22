@@ -1,0 +1,395 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:archives="using:SWLOR.Toolset.Archives"
+        mc:Ignorable="d"
+        d:DesignWidth="1180" d:DesignHeight="760"
+        x:Class="SWLOR.Toolset.Archives.ErfArchiveWindow"
+        x:DataType="archives:ErfArchiveViewModel"
+        Title="ERF Manager · SWLOR Toolset"
+        Icon="/Assets/swlor-logo.png"
+        Width="1180" Height="760"
+        MinWidth="920" MinHeight="620"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource PanelBrush}"
+        DragDrop.AllowDrop="True"
+        DragDrop.DragOver="OnArchiveDragOver"
+        DragDrop.Drop="OnArchiveDrop">
+
+  <Window.Styles>
+    <Style Selector="Border.stepCard">
+      <Setter Property="Padding" Value="11,9" />
+      <Setter Property="Margin" Value="0,0,0,6" />
+      <Setter Property="CornerRadius" Value="3" />
+      <Setter Property="Background" Value="{DynamicResource PanelRaisedBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource RuleBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+    </Style>
+    <Style Selector="Border.stepCard.active">
+      <Setter Property="Background" Value="{DynamicResource DockApplicationAccentBrushLow}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+    </Style>
+    <Style Selector="TextBlock.kicker">
+      <Setter Property="FontSize" Value="11" />
+      <Setter Property="Foreground" Value="{DynamicResource InkTertiaryBrush}" />
+    </Style>
+    <Style Selector="TextBlock.pageTitle">
+      <Setter Property="FontSize" Value="22" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+  </Window.Styles>
+
+  <Grid RowDefinitions="Auto,*,Auto">
+    <Border Grid.Row="0"
+            Background="{DynamicResource PanelHeaderBrush}"
+            BorderBrush="{DynamicResource RuleBrush}"
+            BorderThickness="0,0,0,1"
+            Padding="18,12">
+      <Grid ColumnDefinitions="*,Auto" ColumnSpacing="16">
+        <StackPanel>
+          <TextBlock Classes="pageTitle" Text="ERF Manager" />
+          <TextBlock Classes="dim"
+                     Text="Move selected Aurora resources into or out of the open module." />
+        </StackPanel>
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6"
+                    VerticalAlignment="Center">
+          <ToggleButton Content="Import"
+                        IsChecked="{Binding IsImport, Mode=OneWay}"
+                        Command="{Binding StartImportCommand}" />
+          <ToggleButton Content="Export"
+                        IsChecked="{Binding IsExport, Mode=OneWay}"
+                        Command="{Binding StartExportCommand}" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <Grid Grid.Row="1" ColumnDefinitions="250,*">
+      <Border Grid.Column="0"
+              Background="{DynamicResource PanelRaisedBrush}"
+              BorderBrush="{DynamicResource RuleBrush}"
+              BorderThickness="0,0,1,0"
+              Padding="14">
+        <Grid RowDefinitions="Auto,*,Auto">
+          <StackPanel Grid.Row="0" Margin="2,0,2,14">
+            <TextBlock Classes="kicker" Text="WORKFLOW" />
+            <TextBlock FontSize="17" FontWeight="SemiBold" Text="{Binding ModeTitle}" />
+          </StackPanel>
+          <StackPanel Grid.Row="1">
+            <Border Classes="stepCard" Classes.active="{Binding IsStepOne}">
+              <TextBlock Text="{Binding StepOneLabel}" TextWrapping="Wrap" />
+            </Border>
+            <Border Classes="stepCard" Classes.active="{Binding IsStepTwo}">
+              <TextBlock Text="{Binding StepTwoLabel}" TextWrapping="Wrap" />
+            </Border>
+            <Border Classes="stepCard" Classes.active="{Binding IsStepThree}">
+              <TextBlock Text="{Binding StepThreeLabel}" TextWrapping="Wrap" />
+            </Border>
+            <Border Classes="stepCard" Classes.active="{Binding IsStepFour}">
+              <TextBlock Text="{Binding StepFourLabel}" TextWrapping="Wrap" />
+            </Border>
+          </StackPanel>
+        </Grid>
+      </Border>
+
+      <Grid Grid.Column="1" RowDefinitions="Auto,*" Margin="22,18">
+        <StackPanel Grid.Row="0" Margin="0,0,0,16">
+          <TextBlock Classes="pageTitle" Text="{Binding StepTitle}" />
+          <TextBlock Classes="dim" MaxWidth="850" HorizontalAlignment="Left"
+                     TextWrapping="Wrap" Text="{Binding StepDescription}" />
+        </StackPanel>
+
+        <Grid Grid.Row="1">
+          <!-- Import step 1: the archive is chosen before any asset decision is possible. -->
+          <Grid IsVisible="{Binding ShowImportFile}"
+                RowDefinitions="Auto,Auto,Auto,*"
+                MaxWidth="880"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Top">
+            <Border Grid.Row="0"
+                    BorderBrush="{DynamicResource RuleBrush}"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Padding="18"
+                    Background="{DynamicResource PanelRaisedBrush}">
+              <StackPanel Spacing="12">
+                <TextBlock FontSize="15" FontWeight="SemiBold" Text="ERF source" />
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                  <TextBox Grid.Column="0"
+                           Text="{Binding ImportArchivePath}"
+                           Watermark="Browse for or drop a .erf file"
+                           IsReadOnly="True" />
+                  <Button Grid.Column="1" Classes="primary" Content="Browse..."
+                          Click="OnBrowseArchiveClicked" />
+                </Grid>
+                <Border BorderBrush="{DynamicResource RuleBrush}"
+                        BorderThickness="1"
+                        CornerRadius="3"
+                        Padding="18"
+                        Background="{DynamicResource PanelBrush}">
+                  <StackPanel HorizontalAlignment="Center">
+                    <TextBlock HorizontalAlignment="Center" FontSize="18" Text="Drop ERF file here" />
+                  </StackPanel>
+                </Border>
+                <TextBlock Classes="kicker" Text="RECENT ERF ARCHIVES" />
+                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                  <ComboBox Grid.Column="0"
+                            ItemsSource="{Binding RecentArchives}"
+                            SelectedItem="{Binding SelectedRecentArchive}"
+                            PlaceholderText="No recent archive selected" />
+                  <Button Grid.Column="1" Content="Open recent"
+                          Click="OnOpenRecentClicked" />
+                </Grid>
+              </StackPanel>
+            </Border>
+          </Grid>
+
+          <!-- Export step 1: discover the assets available for export. -->
+          <Border IsVisible="{Binding ShowExportSnapshot}"
+                  BorderBrush="{DynamicResource RuleBrush}"
+                  BorderThickness="1"
+                  CornerRadius="4"
+                  Padding="22"
+                  MaxWidth="880"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Top"
+                  Background="{DynamicResource PanelRaisedBrush}">
+            <StackPanel Spacing="10">
+              <TextBlock FontSize="16" FontWeight="SemiBold" Text="Module assets" />
+              <Border IsVisible="{Binding IsBusy}"
+                      Background="{DynamicResource PanelBrush}"
+                      BorderBrush="{DynamicResource RuleBrush}"
+                      BorderThickness="1"
+                      CornerRadius="3"
+                      Padding="12">
+                <ProgressBar IsIndeterminate="True" />
+              </Border>
+              <Border Background="{DynamicResource PanelBrush}"
+                      BorderBrush="{DynamicResource RuleBrush}"
+                      BorderThickness="1"
+                      CornerRadius="3"
+                      Padding="12">
+                <TextBlock Text="{Binding StatusText}" TextWrapping="Wrap" />
+              </Border>
+            </StackPanel>
+          </Border>
+
+          <!-- The selection table is shared by import and export. -->
+          <Grid IsVisible="{Binding IsStepTwo}" RowDefinitions="Auto,*">
+            <Grid Grid.Row="0" ColumnDefinitions="*,190,170" ColumnSpacing="8"
+                  Margin="0,0,0,10">
+              <TextBox Grid.Column="0" Text="{Binding SearchText}"
+                       Watermark="Search filename, name, or resource type..." />
+              <ComboBox Grid.Column="1" ItemsSource="{Binding TypeFilters}"
+                        SelectedItem="{Binding SelectedTypeFilter}" />
+              <ComboBox Grid.Column="2" ItemsSource="{Binding StatusFilters}"
+                        SelectedItem="{Binding SelectedStatusFilter}" />
+            </Grid>
+            <Grid x:Name="AssetTableHost" Grid.Row="1">
+              <DataGrid x:Name="AssetGrid"
+                        ItemsSource="{Binding FilteredAssets}"
+                        AutoGenerateColumns="False"
+                        CanUserResizeColumns="True"
+                        CanUserSortColumns="True"
+                        ColumnHeaderHeight="42"
+                        GridLinesVisibility="Horizontal"
+                        IsReadOnly="False"
+                        SelectionMode="Single">
+                <DataGrid.Columns>
+                  <DataGridTemplateColumn Header="" Width="42" CanUserSort="False">
+                    <DataGridTemplateColumn.CellTemplate>
+                      <DataTemplate x:DataType="archives:ErfAssetRow">
+                        <CheckBox HorizontalAlignment="Center"
+                                  IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                  IsEnabled="{Binding CanToggle}" />
+                      </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                  </DataGridTemplateColumn>
+                  <DataGridTextColumn Header="Asset" Width="1.5*"
+                                      Binding="{Binding FileName}" IsReadOnly="True" />
+                  <DataGridTemplateColumn Header="Name" Width="1.8*">
+                    <DataGridTemplateColumn.CellTemplate>
+                      <DataTemplate x:DataType="archives:ErfAssetRow">
+                        <TextBlock Text="{Binding ResourceNameDisplay}"
+                                   TextTrimming="CharacterEllipsis"
+                                   ToolTip.Tip="{Binding ResourceName}" />
+                      </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                  </DataGridTemplateColumn>
+                  <DataGridTextColumn Header="Type" Width="1.1*"
+                                      Binding="{Binding TypeName}" IsReadOnly="True" />
+                  <DataGridTextColumn Header="Destination / source" Width="1.8*"
+                                      Binding="{Binding Detail}" IsReadOnly="True" />
+                  <DataGridTextColumn Header="Size" Width="90"
+                                      Binding="{Binding SizeLabel}" IsReadOnly="True" />
+                  <DataGridTextColumn Header="Status" Width="1.3*"
+                                      Binding="{Binding StatusLabel}" IsReadOnly="True" />
+                </DataGrid.Columns>
+              </DataGrid>
+
+              <Grid Width="42"
+                    Height="42"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Top">
+                <CheckBox x:Name="VisibleSelectionCheckBox"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center"
+                          IsThreeState="True"
+                          IsChecked="{Binding VisibleSelectionState, Mode=OneWay}"
+                          IsEnabled="{Binding CanToggleVisibleAssets}"
+                          Command="{Binding ToggleVisibleSelectionCommand}"
+                          ToolTip.Tip="Select or clear shown assets" />
+              </Grid>
+            </Grid>
+          </Grid>
+
+          <!-- Selection validation starts on its own screen so long dependency scans never look
+               like an ignored click. The footer repeats the live status for consistency. -->
+          <Border x:Name="SelectionValidationProgress"
+                  IsVisible="{Binding ShowSelectionValidationProgress}"
+                  BorderBrush="{DynamicResource RuleBrush}"
+                  BorderThickness="1"
+                  CornerRadius="4"
+                  Padding="28"
+                  MaxWidth="880"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Top"
+                  Background="{DynamicResource PanelRaisedBrush}">
+            <StackPanel Spacing="16" HorizontalAlignment="Stretch">
+              <TextBlock FontSize="16" FontWeight="SemiBold"
+                         Text="{Binding StepTitle}" />
+              <ProgressBar Height="8" IsIndeterminate="True" />
+              <TextBlock Classes="dim" TextWrapping="Wrap"
+                         Text="{Binding StatusText}" />
+            </StackPanel>
+          </Border>
+
+          <!-- Import conflicts. -->
+          <Grid IsVisible="{Binding ShowImportConflicts}">
+            <Grid RowDefinitions="Auto,*">
+              <Border Grid.Row="0" Background="{DynamicResource PanelRaisedBrush}"
+                      BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1"
+                      CornerRadius="3" Padding="10" Margin="0,0,0,10">
+                <TextBlock TextWrapping="Wrap"
+                           Text="Keep existing is the safe default for changed resources. Rename imported writes a new resref and updates matching ResRef fields in every imported GFF resource." />
+              </Border>
+              <DataGrid Grid.Row="1"
+                        ItemsSource="{Binding ConflictAssets}"
+                        AutoGenerateColumns="False"
+                        GridLinesVisibility="Horizontal"
+                        IsReadOnly="False">
+                <DataGrid.Columns>
+                  <DataGridTextColumn Header="Asset" Width="2*"
+                                      Binding="{Binding FileName}" IsReadOnly="True" />
+                  <DataGridTextColumn Header="Comparison" Width="1*"
+                                      Binding="{Binding ConflictLabel}" IsReadOnly="True" />
+                  <DataGridTemplateColumn Header="Action" Width="1.4*">
+                    <DataGridTemplateColumn.CellTemplate>
+                      <DataTemplate x:DataType="archives:ErfAssetRow">
+                        <ComboBox ItemsSource="{Binding AvailableActions}"
+                                  SelectedItem="{Binding ConflictActionLabel, Mode=TwoWay}"
+                                  IsEnabled="{Binding IsSelected}" />
+                      </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                  </DataGridTemplateColumn>
+                  <DataGridTemplateColumn Header="New ResRef" Width="1.4*">
+                    <DataGridTemplateColumn.CellTemplate>
+                      <DataTemplate x:DataType="archives:ErfAssetRow">
+                        <TextBox Text="{Binding RenameResRef, Mode=TwoWay}"
+                                 MaxLength="16"
+                                 IsEnabled="{Binding CanRename}" />
+                      </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                  </DataGridTemplateColumn>
+                  <DataGridTextColumn Header="Reason" Width="2*"
+                                      Binding="{Binding StatusLabel}" IsReadOnly="True" />
+                </DataGrid.Columns>
+              </DataGrid>
+            </Grid>
+          </Grid>
+
+          <!-- Export validation. -->
+          <Border IsVisible="{Binding ShowExportValidation}"
+                  BorderBrush="{DynamicResource RuleBrush}"
+                  BorderThickness="1"
+                  CornerRadius="4"
+                  Padding="22"
+                  Background="{DynamicResource PanelRaisedBrush}">
+            <StackPanel Spacing="12">
+              <TextBlock FontSize="16" FontWeight="SemiBold" Text="Validation passed" />
+              <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                <TextBlock Text="✓" FontSize="19" Foreground="{DynamicResource GreenBrush}" />
+                <StackPanel Grid.Column="1" Spacing="4">
+                  <TextBlock Text="All selected GFF JSON parsed successfully." />
+                  <TextBlock Text="All resource names fit Aurora's 16-character resref rules." />
+                  <TextBlock Text="Only the assets you selected will be included." />
+                  <TextBlock Text="Archive format will be ERF V1.0." />
+                </StackPanel>
+              </Grid>
+            </StackPanel>
+          </Border>
+
+          <!-- Final review and explicit save semantics. -->
+          <Border IsVisible="{Binding IsStepFour}"
+                  BorderBrush="{DynamicResource RuleBrush}"
+                  BorderThickness="1"
+                  CornerRadius="4"
+                  Padding="22"
+                  MaxWidth="880"
+                  HorizontalAlignment="Stretch"
+                  VerticalAlignment="Top"
+                  Background="{DynamicResource PanelRaisedBrush}">
+            <StackPanel Spacing="12">
+              <TextBlock FontSize="16" FontWeight="SemiBold"
+                         Text="{Binding StepTitle}" />
+              <TextBlock TextWrapping="Wrap" Text="{Binding StepDescription}" />
+              <Border Background="{DynamicResource PanelBrush}"
+                      BorderBrush="{DynamicResource RuleBrush}"
+                      BorderThickness="1"
+                      CornerRadius="3"
+                      Padding="12">
+                <StackPanel Spacing="5">
+                  <TextBlock Classes="kicker" Text="READY" />
+                  <TextBlock Text="{Binding StatusText}" TextWrapping="Wrap" />
+                </StackPanel>
+              </Border>
+              <TextBlock IsVisible="{Binding IsExport}" Classes="dim" TextWrapping="Wrap"
+                         Text="Save ERF As opens the operating system file picker, confirms overwrite, writes a temporary archive beside the destination, validates it, then replaces the destination." />
+            </StackPanel>
+          </Border>
+        </Grid>
+      </Grid>
+    </Grid>
+
+    <Border Grid.Row="2"
+            Background="{DynamicResource PanelHeaderBrush}"
+            BorderBrush="{DynamicResource RuleBrush}"
+            BorderThickness="0,1,0,0"
+            Padding="14,10">
+      <Grid ColumnDefinitions="*,Auto,Auto,Auto,Auto,Auto" ColumnSpacing="8">
+        <StackPanel Grid.Column="0" VerticalAlignment="Center">
+          <ProgressBar Height="3" IsIndeterminate="True" IsVisible="{Binding IsBusy}"
+                       Margin="0,0,20,5" />
+          <TextBlock Classes="dim" Text="{Binding StatusText}"
+                     TextTrimming="CharacterEllipsis" />
+        </StackPanel>
+        <Button Grid.Column="1" Content="Close" Click="OnCloseClicked"
+                IsEnabled="{Binding CanClose}" />
+        <Button Grid.Column="2" Content="Back"
+                Command="{Binding BackCommand}" IsVisible="{Binding CanGoBack}" />
+        <Button Grid.Column="3" Classes="primary" Content="Next"
+                Command="{Binding NextCommand}" IsVisible="{Binding ShowNext}" />
+        <Button Grid.Column="4" Classes="primary" Content="Import to Module"
+                Click="OnImportClicked" IsVisible="{Binding ShowImportAction}"
+                IsEnabled="{Binding CanCommit}" />
+        <Button Grid.Column="4" Classes="primary" Content="Import another ERF"
+                Command="{Binding RestartImportCommand}"
+                IsVisible="{Binding ShowRestartImportAction}"
+                IsEnabled="{Binding CanRestartImport}" />
+        <Button Grid.Column="5" Classes="primary" Content="Save ERF As..."
+                Click="OnExportClicked" IsVisible="{Binding ShowExportAction}"
+                IsEnabled="{Binding CanCommit}" />
+      </Grid>
+    </Border>
+  </Grid>
+</Window>

@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
 
             RailDart1(builder);
             RailDart2(builder);
+            RailDart3(builder);
 
             return builder.Build();
         }
@@ -68,6 +69,27 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 .RequirementStamina(4);
         }
 
+        private static void RailDart3(AbilityBuilder builder)
+        {
+            builder
+                .Create(FeatType.RailDart3, PerkType.RailDart)
+                .Name("Rail Dart III")
+                .Level(3)
+                .HasActivationDelay(1f)
+                .HasRecastDelay(RecastGroup.RailDart, 12f)
+                .SkillType(SkillType.Devices)
+                .CombatImpactDamageAbility(AbilityType.Perception)
+                .UsesImpactAnimation(Animation.CastOutAnimation)
+                .HasMaxRange(DeviceAbilityRange.Standard)
+                .IsSingleTargetAbility()
+                .RequiresTarget()
+                .HasImpactAction(RailDart3ImpactAction)
+                .IsCastedAbility()
+                .IsHostileAbility()
+                .BreaksStealth()
+                .RequirementStamina(5);
+        }
+
         private static void RailDart1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             Ability.ApplyCombatImpact(
@@ -97,6 +119,27 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Devices
                 targetLocation,
                 SkillType.Devices,
                 16,
+                12,
+                typeof(BleedStatusEffect),
+                false,
+                Array.Empty<Type>(),
+                damageType: CombatDamageType.Physical,
+                targetVisualEffect: VisualEffect.Vfx_Imp_Wallspike,
+                damagePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetDamageAdjustment(activator),
+                baseDamageAdjustment: DeviceAbilityEffects.GetAssaultGadgetBaseDamageAdjustment(activator),
+                afterSuccessfulHit: _ => DeviceAbilityEffects.ApplyTacticalUplink(activator),
+                hitChancePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetAccuracyAdjustment(activator),
+                criticalRatePercentAdjustment: DeviceAbilityEffects.GetAssaultGadgetCriticalRateAdjustment(activator));
+        }
+
+        private static void RailDart3ImpactAction(uint activator, uint target, int level, Location targetLocation)
+        {
+            Ability.ApplyCombatImpact(
+                activator,
+                target,
+                targetLocation,
+                SkillType.Devices,
+                20,
                 12,
                 typeof(BleedStatusEffect),
                 false,

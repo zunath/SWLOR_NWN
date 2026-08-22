@@ -1,0 +1,39 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:waypoints="using:SWLOR.Toolset.Editors.Waypoints"
+             xmlns:behaviors="using:SWLOR.Toolset.Editors.Behaviors"
+             x:Class="SWLOR.Toolset.Editors.Waypoints.WaypointEditorView"
+             x:DataType="waypoints:WaypointEditorViewModel">
+
+  <TabControl>
+    <TabItem Header="Basic">
+      <ScrollViewer>
+        <ItemsControl ItemsSource="{Binding BasicRows}" Margin="14,10" />
+      </ScrollViewer>
+    </TabItem>
+
+    <TabItem Header="Behavior">
+      <Grid ColumnDefinitions="210,*">
+        <behaviors:BehaviorRailView Grid.Column="0" Items="{Binding BehaviorList}"
+                                    ChooseCommand="{Binding ChooseBehaviorCommand}" />
+
+        <ScrollViewer Grid.Column="1" BorderBrush="{DynamicResource RuleBrush}"
+                      BorderThickness="1,0,0,0">
+          <Border Classes="card" Margin="8,12">
+            <StackPanel>
+              <TextBlock Text="{Binding HeaderName}" Classes="section" Margin="16,12,16,2" />
+              <TextBlock Text="{Binding Behavior.Summary}" Classes="dim" Margin="16,0,16,8"
+                         TextWrapping="Wrap"
+                         IsVisible="{Binding Behavior.Summary, Converter={x:Static StringConverters.IsNotNullOrEmpty}}" />
+              <ItemsControl ItemsSource="{Binding BehaviorRows}" Margin="8,2,8,8" />
+            </StackPanel>
+          </Border>
+        </ScrollViewer>
+      </Grid>
+    </TabItem>
+
+    <TabItem Header="Variables" IsVisible="{Binding ShowsVariablesTab}">
+      <behaviors:VariablesSectionView DataContext="{Binding Variables}" />
+    </TabItem>
+  </TabControl>
+</UserControl>

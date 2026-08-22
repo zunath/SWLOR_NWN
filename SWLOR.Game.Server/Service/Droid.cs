@@ -610,14 +610,13 @@ namespace SWLOR.Game.Server.Service
                 : details.CustomName);
 
             // Raw stats
-            ObjectPlugin.SetMaxHitPoints(droid, details.HP);
-            ObjectPlugin.SetCurrentHitPoints(droid, details.HP);
             CreaturePlugin.SetRawAbilityScore(droid, AbilityType.Might, details.MGT);
             CreaturePlugin.SetRawAbilityScore(droid, AbilityType.Perception, details.PER);
             CreaturePlugin.SetRawAbilityScore(droid, AbilityType.Vitality, details.VIT);
             CreaturePlugin.SetRawAbilityScore(droid, AbilityType.Willpower, details.WIL);
             CreaturePlugin.SetRawAbilityScore(droid, AbilityType.Agility, details.AGI);
             CreaturePlugin.SetRawAbilityScore(droid, AbilityType.Social, details.SOC);
+            Stat.SetNPCMaxHitPoints(droid, details.HP, true);
             CreaturePlugin.SetBaseAC(droid, 10);
             CreaturePlugin.SetBaseAttackBonus(droid, 1);
 

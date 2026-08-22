@@ -29,14 +29,14 @@ namespace SWLOR.Game.Server.Service
         // A recipient may keep at most this many saved messages exempt from cleanup.
         public const int MaxSavedMessages = 20;
 
-        public static string SendMessage(uint sender, string recipientPlayerId, string rawText, bool allowSelfMessage = false)
+        public static string SendMessage(uint sender, string recipientPlayerId, string rawText)
         {
             var senderId = GetObjectUUID(sender);
 
             if (string.IsNullOrWhiteSpace(recipientPlayerId))
                 return "Select a recipient first.";
 
-            if (recipientPlayerId == senderId && !allowSelfMessage)
+            if (recipientPlayerId == senderId)
                 return "You cannot send a message to yourself.";
 
             var validationError = ValidateMessageText(rawText);
@@ -304,7 +304,9 @@ namespace SWLOR.Game.Server.Service
                 return "A recording is already playing. Wait for it to finish.";
 
             var message = DB.Get<HoloComMessage>(messageId);
-            if (message == null || string.IsNullOrWhiteSpace(message.SenderSnapshotJson))
+            if (message == null ||
+                message.RecipientPlayerId != GetObjectUUID(recipient) ||
+                string.IsNullOrWhiteSpace(message.SenderSnapshotJson))
                 return "This message's recording is no longer available.";
 
             var location = BiowareVector.MoveLocation(GetLocation(recipient), GetFacing(recipient), 2.0f, 180);

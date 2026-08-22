@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "This widget mutes all the NPCs in the game that use default conversation scripts.\n\n~~\nBy Hahnsoo (hahns_shin@hotmail.com)\n\nOriginal Idea and Design by\nJason Robinson (Vendolin)"
     }
   },
   "Identified": {
@@ -140,6 +140,26 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "dmfi_mute"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NO_ECONOMY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
   },
   "xModelPart1": {
     "type": "word",

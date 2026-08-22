@@ -185,13 +185,16 @@ public class StanceStatusEffectTests
 
         foreach (var row in rows)
         {
+            // A Bible "Stance" row maps to the toggle ability that cleans its stance status on refund.
+            // Mimicry stances deliberately share their display name with the NPC ability they mimic, so
+            // match on the toggle (exactly one refund-cleaned status effect) rather than the name alone.
             var matches = abilities
-                .Where(ability => ability.Name == row.PerkName)
+                .Where(ability => ability.Name == row.PerkName && ability.StatusEffectTypesRemovedOnPerkRefund.Count == 1)
                 .ToArray();
 
             if (matches.Length != 1)
             {
-                failures.Add($"{row.Description}: expected one live ability named '{row.PerkName}' but found {matches.Length}.");
+                failures.Add($"{row.Description}: expected one toggle ability named '{row.PerkName}' but found {matches.Length}.");
                 continue;
             }
 

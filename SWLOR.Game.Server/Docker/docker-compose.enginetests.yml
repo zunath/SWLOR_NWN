@@ -1,0 +1,81 @@
+# Headless compose file for running the in-engine integration test suite (see
+# SWLOR.Game.Server/Service/EngineTest.cs). Unlike docker-compose.yml this file:
+#   - only starts the two services actually needed to run tests (redis, swlor-server)
+#   - gives redis a tmpfs data dir so every run starts against a FRESH, empty database
+#     instead of reusing ${PWD-.}/redis from a normal dev environment
+#   - has no restart policies, so a container exit (pass or fail) is final and observable
+#   - overrides the swlor.env defaults needed to run non-interactively:
+#       SWLOR_ENGINE_TESTS_ENABLED / SWLOR_ENVIRONMENT to turn the suite on,
+#       NWNX_METRICS_INFLUXDB_SKIP because no influxdb service exists in this file
+#
+# The server home is passed explicitly as SWLOR_ENGINE_TEST_HOME (set by the runner
+# scripts) rather than relying on ${PWD}: native Windows PowerShell does not export a
+# PWD environment variable, so Compose's ${PWD} interpolation would silently fall back
+# and mount the wrong directory. The '.' fallback only serves direct `docker compose`
+# invocations run FROM the server home. This file lives here because it's tracked
+# solution configuration; the directory it sits in is not inherently the runtime home.
+# Use the runner scripts, which resolve the home and pass a dedicated compose project
+# name (-p swlor-engine-tests) so these containers never collide with the dev stack:
+#   scripts/run-engine-tests.ps1 / scripts/run-engine-tests.sh
+#
+# Expects <server home>/modules, hak, tlk, dotnet, and swlor.env to be populated.
+
+services:
+    redis:
+        hostname: redis
+        image: redislabs/redismod:latest
+        tmpfs:
+            - /data
+
+    swlor-server:
+        hostname: nwnx-server
+        stop_signal: SIGINT
+        build:
+          context: .
+          dockerfile: Dockerfile
+        image: zunath/nwn-dotnet:8193.37.15-2
+        env_file: ${SWLOR_ENGINE_TEST_HOME:-.}/swlor.env
+        # These override the values loaded from swlor.env above (Compose gives
+        # `environment:` precedence over `env_file:`).
+        environment:
+            - SWLOR_ENGINE_TESTS_ENABLED=true
+            - SWLOR_ENVIRONMENT=test
+            # Pin the database to THIS compose file's disposable tmpfs redis service.
+            # A deployment server home's swlor.env may point NWNX_REDIS_HOST at a
+            # shared or production Redis - without this override, DB.Load would
+            # connect there and run migrations before the suite starts, silently
+            # bypassing the isolation the tmpfs container exists to provide.
+            - NWNX_REDIS_HOST=redis
+            - SWLOR_ENGINE_TEST_FILTER=${SWLOR_ENGINE_TEST_FILTER:-}
+            - SWLOR_ENGINE_TEST_ARENA_RESREF=${SWLOR_ENGINE_TEST_ARENA_RESREF:-}
+            - SWLOR_ENGINE_TEST_STARTUP_DELAY_SECONDS=${SWLOR_ENGINE_TEST_STARTUP_DELAY_SECONDS:-15}
+            - SWLOR_ENGINE_TEST_SHUTDOWN=${SWLOR_ENGINE_TEST_SHUTDOWN:-true}
+            # Pin the report location to where the runner scripts look for it
+            # (<server home>/app_logs/engine_tests/), regardless of where the home's
+            # swlor.env points SWLOR_APP_LOG_DIRECTORY. Without this, a home with a
+            # custom log directory would write the report where no runner finds it and
+            # every run would be judged "server crashed before writing a report".
+            - SWLOR_ENGINE_TEST_RESULTS_DIRECTORY=/nwn/home/app_logs/engine_tests/
+            # No influxdb service in this compose file; skip the NWNX metrics plugin
+            # so it doesn't fail trying to reach a host that doesn't exist.
+            - NWNX_METRICS_INFLUXDB_SKIP=y
+            # Backstop for a test that hard-blocks the server's main thread: the NWNX
+            # thread watchdog kills the process when the main loop stops responding
+            # (PERIOD seconds per check, KILL_THRESHOLD missed checks = ~10 minutes),
+            # so a wedged run ends in an observable non-zero container exit instead of
+            # hanging until the CI job timeout. Forced here so a server home whose
+            # swlor.env disables the watchdog can't silently remove the backstop.
+            - NWNX_THREADWATCHDOG_SKIP=n
+            - NWNX_THREADWATCHDOG_PERIOD=30
+            - NWNX_THREADWATCHDOG_KILL_THRESHOLD=20
+        links:
+            - "redis:redis"
+        volumes:
+            - ${SWLOR_ENGINE_TEST_HOME:-.}/logs:/nwn/run/logs.0
+            - ${SWLOR_ENGINE_TEST_HOME:-.}/:/nwn/home
+            # The hak set can be shared from another server home (e.g. the dev server's)
+            # without duplicating ~13GB on disk: NTFS junctions do NOT survive Docker bind
+            # mounts, so the share happens here as its own mount instead. Defaults to the
+            # server home's own hak directory. The runner scripts set this automatically.
+            - ${SWLOR_ENGINE_TEST_HAK_DIR:-${SWLOR_ENGINE_TEST_HOME:-.}/hak}:/nwn/home/hak
+            - ${SWLOR_ENGINE_TEST_HOME:-.}/logs:/nwn/data/bin/linux-x86/logs.0

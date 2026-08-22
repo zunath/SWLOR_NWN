@@ -1,7 +1,6 @@
 // TEMPLATE: copy to SWLOR.Game.Server/Feature/GuiDefinition/ViewModel/<YourWindow>ViewModel.cs
 // and rename every "TemplateWindow" token. Delete markers as you fill them.
 using System;
-using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 
@@ -59,6 +58,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             SelectTab(FirstTabId);
         }
+
+        public override Action OnWindowClosed() => () => { };
 
         private void SelectTab(int tabId)
         {

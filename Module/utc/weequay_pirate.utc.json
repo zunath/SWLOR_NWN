@@ -182,7 +182,7 @@
         }
       },
       {
-        "__struct_id": 2048,
+        "__struct_id": 4096,
         "EquippedRes": {
           "type": "resref",
           "value": "blaster_bullets"
@@ -282,14 +282,14 @@
         }
       },
       {
-        "__struct_id": 2,
+        "__struct_id": 1,
         "Feat": {
           "type": "word",
           "value": 1843
         }
       },
       {
-        "__struct_id": 3,
+        "__struct_id": 1,
         "Feat": {
           "type": "word",
           "value": 1769
@@ -317,7 +317,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 62
+    "value": 65
   },
   "Int": {
     "type": "byte",

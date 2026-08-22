@@ -8,6 +8,7 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LogService;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -30,6 +31,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             EndCall();
             Recipes();
             Perks();
+            Techniques();
             DeleteCommand();
             LanguageCommand();
             ToggleEmoteStyle();
@@ -126,7 +128,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         {
             _builder.Create("endcall")
                 .Description("Ends your current HoloCom call, declines an incoming call, or cancels an outgoing call attempt.")
-                .Permissions(AuthorizationLevel.Player, AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .Permissions(AuthorizationLevel.All)
                 .Action((user, target, location, args) =>
                 {
                     HoloCom.EndOrDeclineCall(user);
@@ -154,6 +156,26 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     Gui.TogglePlayerWindow(user, GuiWindowType.Perks);
                 });
 
+        }
+
+        private void Techniques()
+        {
+            _builder.Create("techniques", "tech")
+                .Description("Toggles the techniques menu, where mimicked techniques can be equipped and unequipped.")
+                .Permissions(AuthorizationLevel.All)
+                .Validate((user, args) =>
+                {
+                    if (Perk.GetPerkLevel(user, PerkType.CombatAnalyzer) < 1)
+                    {
+                        return ColorToken.Red("You need the Combat Analyzer perk to use this feature.");
+                    }
+
+                    return string.Empty;
+                })
+                .Action((user, target, location, args) =>
+                {
+                    Gui.TogglePlayerWindow(user, GuiWindowType.Techniques, new TechniquesPayload());
+                });
         }
 
         private void Disguises()
@@ -408,7 +430,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         private void SetKnownName()
         {
             _builder.Create("name")
-                .Description("Sets the name you personally recognize a targeted player character by, or the unknown description others see when used on yourself.")
+                .Description("Target another player to save a private label only you can see. Target yourself to set your gray public description.")
                 .Permissions(AuthorizationLevel.All)
                 .Validate((user, args) =>
                 {
@@ -444,7 +466,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                             GetObjectUUID(user),
                             GetObjectUUID(target),
                             name);
-                        SendMessageToPC(user, ColorToken.Green($"Players who have not named you will now see you as '{name}'."));
+                        SendMessageToPC(user, ColorToken.Green($"Public description set to '{name}'. Players who have not labeled your current identity will see this in gray."));
                         return;
                     }
 
@@ -464,14 +486,14 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         GetObjectUUID(user),
                         GetObjectUUID(target),
                         name);
-                    SendMessageToPC(user, ColorToken.Green($"You will now recognize this character as '{name}'."));
+                    SendMessageToPC(user, ColorToken.Green($"Private label saved as '{name}'. Only you can see this label."));
                 });
         }
 
         private void ForgetKnownName()
         {
             _builder.Create("forgetname")
-                .Description("Forgets the custom name you set for a targeted player character.")
+                .Description("Removes the private label only you can see for a targeted player character's current identity.")
                 .Permissions(AuthorizationLevel.All)
                 .RequiresTarget(ObjectType.Creature)
                 .Action((user, target, location, args) =>
@@ -495,7 +517,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         "name-forget",
                         GetObjectUUID(user),
                         GetObjectUUID(target));
-                    SendMessageToPC(user, ColorToken.Green("You no longer have a custom name set for this character."));
+                    SendMessageToPC(user, ColorToken.Green("Private label removed. This changes only what you see."));
                 });
         }
 

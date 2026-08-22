@@ -2,6 +2,10 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Response Style
+
+Keep responses terse and direct. Skip preamble, restatements of the request, and closing summaries. Answer in as few words as the task allows; lead with the result. Use prose only where it adds information the user doesn't already have.
+
 ## Agent Rules (Required Reading)
 
 The mandatory project rules — read-only areas, naming, stat-driven gameplay, player identity, Design Bible workflow, TLK entries, ability definitions/icons/VFX, and more — live in AGENTS.md and are imported here:
@@ -10,7 +14,7 @@ The mandatory project rules — read-only areas, naming, stat-driven gameplay, p
 
 ## Project Overview
 
-SWLOR (Star Wars: Legends of the Old Republic) is a Neverwinter Nights: Enhanced Edition server using C# for server-side logic via NWNX_DotNet. This replaces traditional NWScript with a modern .NET 8.0 architecture.
+SWLOR (Star Wars: Legends of the Old Republic) is a Neverwinter Nights: Enhanced Edition server using C# for server-side logic via NWNX_DotNet. This replaces traditional NWScript with a modern .NET 10.0 architecture.
 
 ## Development Commands
 
@@ -45,7 +49,7 @@ BuildHaks.cmd
 
 # CLI operations
 cd Build
-..\tools\SWLOR.CLI\SWLOR.CLI.exe -o         # Deploy/build from Build working directory
+..\tools\SWLOR.CLI\RunCLI.cmd -o             # Deploy/build from Build working directory
 cd ..\Module
 PackModule.cmd                              # Pack module from Module working directory
 ```
@@ -152,7 +156,7 @@ public static void OnPlayerEnter(uint player)
 
 ## Dependencies and Technologies
 
-- **.NET 8.0**: Main framework (see `TargetFramework` in `*.csproj` files)
+- **.NET 10.0**: Main framework (see `TargetFramework` in `*.csproj` files - every project targets `net10.0` on this branch)
 - **NWN.Native**: Neverwinter Nights engine integration
 - **StackExchange.Redis**: Caching and persistence
 - **Serilog**: Logging framework
@@ -162,11 +166,15 @@ public static void OnPlayerEnter(uint player)
 
 ## Testing
 
-The project uses:
-- Unit tests for individual components
-- Integration tests for service interactions
-- Performance profiling for optimization
-- Docker-based testing environments
+Testing is split into two layers:
+
+- **`SWLOR.Game.Server.Tests`** - an NUnit suite for pure logic and data (calculations, builder
+  wiring, Bible/2DA consistency). It never touches the NWN engine.
+- **In-engine integration tests** - methods tagged `[EngineTest]` that run inside the live NWN
+  server via `scripts/run-engine-tests.ps1` / `.sh`, exercising real feat activation, status
+  effects, and native combat hooks against spawned NPCs. See
+  `SWLOR.Game.Server/Readmes/EngineTesting.md` for the full architecture, env var reference, and
+  how to write/run tests.
 
 ## Common Development Tasks
 
@@ -178,7 +186,7 @@ The project uses:
 
 ## Troubleshooting
 
-- **Build errors**: Ensure .NET 8.0 SDK is installed and dependencies are restored
+- **Build errors**: Ensure the .NET 10.0 SDK is installed and dependencies are restored
 - **Module errors**: Run `Module/PackModule.cmd` to regenerate the .mod file  
 - **Docker issues**: Check Docker Desktop is running and containers are started
 - **Missing HAKs/TLK**: Copy files from `debugserver/` to NWN directories or update nwn.ini paths

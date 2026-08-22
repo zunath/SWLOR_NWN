@@ -1,6 +1,6 @@
 # Combat Upgrade Implementation Status
 
-Last updated: 2026-06-14
+Last updated: 2026-08-17
 
 ## Source Of Truth
 
@@ -26,11 +26,13 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools\UpdateCombatUpgrad
 
 When network access is available, use `-RefreshBible` to pull fresh per-tab CSV exports before auditing. Prefer `-RefreshLocalBible` when working from the checked-in workbook snapshot.
 
-Espionage and Farming are out of scope. The audit also excludes crafting, research, and gathering tabs because they are not part of the combat-upgrade implementation surface.
+Espionage and Mimicry are fully in scope, including all Tradecraft/Infiltrator/Saboteur rows and all Mimicry techniques. The only intentional skips in the current workbook are five unimplemented Agriculture rows, which are explicitly out of scope for the first iteration.
 
 ## Current Snapshot
 
-`dotnet test SWLOR.Game.Server.Tests\SWLOR.Game.Server.Tests.csproj --no-restore` passed on 2026-06-14: 336 passed, 0 failed, 0 skipped.
+The static Bible implementation review currently reports 999 PASS, 5 SKIP (unimplemented, first-iteration-out-of-scope Agriculture), and 0 FAIL rows. Espionage is 41/41 PASS and Mimicry is 98/98 PASS, including all 88 techniques.
+
+Static cross-skill validation is also covered. The release audit hard-gates every active weapon package against the legal Force, Devices, Leadership, First Aid, Beast Mastery, Mimicry, and Espionage support frontier under 400 SP, plus curated high-risk profiles. The interaction audit guards recursive damage/reflection/status chains, transferred-damage loops, aggregate damage-derived healing, cross-resource conversion, and cooldown-reset cycles.
 
 Combat-upgrade stat scaling is balanced around the practical player stat band: a focused character is expected to reach 26 in one ability stat, with rare 27 cases when a racial stat point is used. Food and other temporary item effects can push a stat a little higher for short windows, but baseline perk and ability values should not be tuned around those temporary overcap states. Scaling formulas should stay bounded above the normal band by using a documented cap or explicit soft-overcap rule.
 
@@ -66,7 +68,7 @@ The first implementation pass closed a few narrow, concrete gaps:
 - Added discovered status effect definitions and migrated combat ability/status application, combat stat hooks, damage hooks, and status data lookup to the status service.
 - Added the remaining scoped passive combat perk definitions for Rapid Shot, Bulwark, Alacrity, and Crushing Style.
 - Wired runtime hooks for Rapid Shot attack delay reduction, Bulwark shield deflection, Alacrity shield-deflect stamina recovery, and Crushing Style weapon damage/critical bonuses.
-- Tightened the audit so blank spreadsheet note rows and non-combat crafting/research/gathering tabs are excluded from combat-upgrade blocker counts.
+- Tightened the audit so blank spreadsheet note rows are excluded while implementation-facing crafting, research, and gathering perk rows remain reviewable.
 - Added the missing Flurry Style perk and wired its Haste behavior.
 - Updated the audit refresh to parse the live Bible spreadsheet's pre-table metadata rows and fail loudly if no scoped manifest rows are available.
 - Added local workbook refresh support to `tools\UpdateCombatUpgradeAudit.ps1`, regenerated `CombatUpgradeBiblePerkManifest.csv` from `design\bible\SWLOR Design Bible - Combat Upgrade.xlsx`, and regenerated `CombatUpgradePerkAudit.csv` from that manifest.
@@ -74,8 +76,9 @@ The first implementation pass closed a few narrow, concrete gaps:
 - Refactored Rousing Shout away from revive/stabilize language and behavior. It now only affects living allies, grants short temporary HP, and applies low-HP damage reduction without competing with First Aid's revive and healing identity.
 - Normalized combat-upgrade direct-effect scaling around the practical player stat band. Direct WIL/PER/MGT/SOC effect scaling treats 10 as the baseline and 26 as the cap, with 26 granting the full +25% direct-effect bonus. Explicit Leadership SOC caps now interpolate from the base value to the Bible-listed cap by SOC 26.
 - Brought Leadership stat-scaling implementation in line with the Bible caps for Press the Attack, Mark Target, Break Morale, Decisive Command, Rousing Shout, Bolster Resolve, Cleanse Order, Hold the Line, Triage Protocol, and Command Radius duration/range support.
-- Refreshed Dev Status and Scaling Source metadata in the local Bible workbook. Implemented rows now use `Combat Formula`, `Design Added`, `Explicit Code`, or `None`; `Design Only` remains only on Espionage rows that are still intentionally out of scope.
+- Refreshed Dev Status and Scaling Source metadata in the local Bible workbook. Implemented rows use `Combat Formula`, `Design Added`, `Explicit Code`, or `None`; every Espionage and Mimicry row is included in the implementation review.
 - Updated active ability feat syncing so higher perk ranks replace lower-rank active ability feats instead of stacking redundant granted feats or stale hotbar entries. Ability use now rejects superseded active feat ranks, and droids use the same current-rank granted-feat synchronization.
+- Added per-player hotbar cooldown readiness feedback through `AbilityCooldownVisual`, generated `pr0_` through `pr5_` icon variants, recast/login/reset integration, and focused service and gameplay-icon coverage.
 - Normalized weapon DMG item properties so `DMG` is the untyped amount and `WeaponDamageType` selects the whole weapon damage type. The native damage roll hook, crafting/enhancement application, enhancement generation, live module items, and serialized item migrations now follow that shape.
 - Rebalanced armor, food, and droid resistance enhancement amounts for the direct -100 to 100 resistance scale. Player and server migrations update live player inventories plus stored serialized records in inventories, markets, world properties, research jobs, outfits, DM creatures, and ships.
 - Added migration coverage for obsolete Bible perks and obsolete combat instruction discs. `CombatUpgradeMigrationCoverageTests` now also guards the release-critical migration surfaces: forced rebuild flagging, player migration entry points, stored item requirement migration, weapon Delay/DMG migration, resistance migration, obsolete instruction cleanup, droid instruction normalization, and ship/module serialized items.
@@ -90,38 +93,46 @@ The first implementation pass closed a few narrow, concrete gaps:
 - Added conservative enemy resistance vulnerabilities capped at -20, synchronized the Bible enemy resistance packages and World NPC skin properties, and introduced Coolant-Scarred Mynock, Byysk Cryo Adept, and Sith Frostbinder as spawned Ice-pressure variants.
 - Confirmed logged-out status-effect state is process-local runtime cache and does not survive the fresh boot migration path.
 - Routed Marked for Death bonus damage through the shared triggered-damage path so it applies resistance, damage-dealt hooks, and status-effect damage notifications while preserving recursion protection.
+- Added cross-skill interaction regression coverage for secondary-damage proc termination, reflection termination, transferred-damage termination, one-shot redirects, aggregate per-hit damage-healing caps, sub-100% paid-cost resource conversion, and bounded cooldown reduction.
+- Added an active-context 400 SP frontier and curated danger profiles for poison/trap/Mimicry, stealth burst, cross-resource sustain, damage-healing sustain, deflection/reflection, and layered control.
+- Fixed Deflecting Return's missing Center of the Storm high-Embattled bonus consumer and changed Perfect Aegis to override reflection at documented final values instead of adding to the permanent trait values.
+- **2026-07-11: Completed a full redesign of the two Lightsaber perk trees.** Ward (`PerkCategoryType.LightsaberOffense`) replaced its old perk set (Ward Bond, Guardian's Oath, Reactive Ward, Guardian's Challenge, Deflective Presence, Punishing Guard, Impenetrable Guard, Guardian's Influence, Overwhelming Defense, Guardian Master) with Saber Ward, Mental Fortress, Deflecting Return, a retained/reworked Guardian's Challenge (2 ranks, "damaged you" trigger), Surrounded Not Outmatched, Force Link (reuses the old Ward Bond ally damage-redirect behavior), Immovable Stance, Reprisal, Center of the Storm, and the capstone Aegis Eternal. Severance (`PerkCategoryType.LightsaberDefense`) replaced its old perk set (Severing Strike, Deflection Training, Severance Riposte, Leg Slash, Severance Flow, Surge Strike, Focused Stance, Blade Blitz, Purify, Saber Storm) with Force Sheath, Overpower, Fast Strikes, Shattering Strike, Sundering Sweep, Weak Points, Imbuement Stance, High Ground, Focus Shift, and the capstone Epicenter. Three net-new shared engine systems were added to support the redesign: physical-to-Force damage conversion, Embattled stacking, and bounded Deflecting-Return weapon reflection triggered off Attack Deflect. The existing capstone mastery quests were reused rather than renamed: the "Saber Storm" mastery quest now gates Epicenter, and the "Guardian Master" mastery quest now gates Aegis Eternal (quest IDs/definitions unchanged). 29 new gameplay icons were produced through Claude's illustrated-SVG icon pipeline, and `IconStandards.md` gained an agent-specific icon rule (GPT Image 2 for Codex, illustrated SVG for Claude). This redesign supersedes every prior Lightsaber Offense/Defense entry in this file, in `CombatUpgradeCurrentStateAudit.md`, and in the Lightsaber rows of `CombatUpgradeActivePerkBudgetReview.md`; the checked-in Bible workbook and regenerated `CombatUpgradeBiblePerkManifest.csv` are the implementation/audit snapshots for the new rows.
 
-The latest checked-in local-workbook audit currently reports no scoped findings. After refreshing from the checked-in workbook, `CombatUpgradeBiblePerkManifest.csv` contains 895 manifest rows, 810 scoped implemented rows, and `CombatUpgradePerkAudit.csv` contains only its header row. Current Bible General rows that use Armor requirements are in scope, but Armor rows should not be counted as weapon-tree active-button work.
+The latest checked-in local-workbook audit reports no scoped findings. After refreshing from the checked-in workbook, `CombatUpgradeBiblePerkManifest.csv` contains 1004 manifest rows: 999 scoped implemented rows and 5 intentionally skipped, unimplemented Agriculture rows that are out of scope for the first iteration. `CombatUpgradePerkAudit.csv` contains only its header row. Current Bible General rows that use Armor requirements are in scope, but Armor rows should not be counted as weapon-tree active-button work.
 
-The scoped combat-upgrade audit is clean against the current local workbook snapshot. Espionage remains intentionally excluded by the current combat-upgrade implementation scope. `CombatUpgradeBibleSyncTests` now guards the active-to-trait cleanup by failing if a Bible `Trait` row still grants feats or if a live ability remains tied to a Bible-scoped perk without an implemented active Bible row granting that feat.
+The scoped combat-upgrade audit is clean against the current local workbook snapshot. `CombatUpgradeBibleSyncTests` includes Espionage and both Mimicry core perks and techniques; it also guards the active-to-trait cleanup by failing if a Bible `Trait` row still grants active feats or if a live ability remains tied to a Bible-scoped perk without an implemented active Bible row granting that feat.
 
 The combat-upgrade feat and spell icon resource checks pass for the scoped rows audited by the script. Generated combat feat `SPELLID` links are present, and active ability definitions have detected recast wiring for Bible cooldowns.
 
 The legacy combat Bible review gate has been retired. Use `CombatUpgradeBibleSyncTests` and `tools\UpdateCombatUpgradeAudit.ps1` as the current static release gates.
 
-## Major Remaining Gaps
+## Static Implementation Status And Validation Risks
+
+The scoped perk, ability, stat-consumer, feat, spell, icon, recast, and status-effect implementation audit is complete with no known static production gaps. Remaining mechanic work in this section is release validation, not another row-alignment or foundational-system implementation pass. Capstone world construction is tracked separately in `CapstoneQuestLinePlan.md`; eight content packages comprising sixteen physical areas remain there.
 
 Active-to-trait code cleanup is no longer a known outstanding implementation slice. The current C# sync tests cover trait rows, active feat grants, and extra live ability surfaces for Bible-scoped perks.
 
-Armor-specific specialization implementation is not remaining work. The remaining Armor work is equipment requirement validation, skill-cap/SP validation at the 400 cap, verification that current Bible General perks use Armor requirements as intended, and cleanup verification that stale Heavy/Light/older Armor perk-tree entries are absent from player-facing data.
+Armor-specific specialization implementation is not remaining work. Armor release validation covers equipment requirements, the skill-cap/SP path at the 400 cap, current Bible General perk requirements, and confirmation that stale Heavy/Light/older Armor perk-tree entries are absent from player-facing data.
 
-The telegraph service now has a combat ability integration point, and a broader set of line/cone/sphere abilities use it. Some bespoke channel, persistent field, chained, and conditional cases still need playtest review beyond static audit coverage.
+The telegraph service is implemented and integrated across line, cone, and sphere abilities through shared and ability-specific paths. Some bespoke channel, persistent-field, chained, and conditional cases still need playtest review beyond static audit coverage.
 
 The `StatusEffect` service is now adopted for status effects. Status definitions are discovered by class, so new effects are added by creating a definition rather than maintaining a separate enum list.
 
 Cached logged-out status effects are process-local runtime state and are not persisted. They do not survive the fresh boot migration path, so pre-upgrade active effect instances such as `AdrenalStim*` or `Hasten*` are not carried across the forced rebuild.
 
-Perks and abilities are functional for the earlier active weapon audit surface and for the scoped Design-phase Beast Mastery, Devices, First Aid, Force, and Leadership rows. Active perk levels grant feats, feat/spell/icon links exist, and active Bible rows have ability definitions. Several bespoke mechanics still need live behavior confirmation: channel ticks, persistent fields, target-count caps, positional bonuses, guarded-hit behavior, exact enmity math, and some critical-hit/offhand-delay effects.
+Perks and abilities are statically accounted for across the active weapon surface and the scoped Beast Mastery, Devices, First Aid, Force, Leadership, Mimicry, and Espionage rows. Active perk levels grant feats, feat/spell/icon links exist, active Bible rows have ability definitions, every granted Bible stat has a production consumer, and Mimicry/Espionage have dedicated parity and behavior checks. Several bespoke mechanics still need live behavior confirmation: channel ticks, persistent fields, target-count caps, positional bonuses, guarded-hit behavior, exact enmity math, and some critical-hit/offhand-delay effects.
 
 `feat.2da` and `spells.2da` are now linked for generated combat feats. `AbilityTargetingMetadataTests` covers positive-delay casted area ability targeting metadata against 2DA shape and size data. The remaining 2DA risk is playtest-driven: generated spell rows should be reviewed again after any ability-specific target shape/range behavior is changed or confirmed in play.
 
 The `experimental/combat-upgrade-status-effects` branch was checked as a reference. It contains older alternate combat work such as one-handed/two-handed ability structures and a broader recast enum. Use it as reference material only, not as a clean source to copy wholesale into this branch.
 
-## Next Steps
+## Release Validation
 
 1. Playtest conditional/channel/persistent-field abilities such as Current Overload, Serpent's Eclipse, Tempest Bloom, Pacification Field, Disruption Field, Shield Wall, Force Capacitor, and Infinite Conduit against the live module.
 2. Smoke-test forced rebuild, equipment skill requirements, weapon Delay/DMG, resistance enhancement behavior, and serialized item migrations against representative live data. Static coverage now confirms the migration entry points and storage surfaces, but it does not replace a run over representative player/world records.
 3. Verify Armor uses the 400 skill cap/SP path, current Bible General perks use Armor requirements as intended, and stale Heavy/Light/older Armor perk-tree rows, feats, instruction discs, and UI entries are not exposed.
 4. Refine generated spell target metadata only after any ability-specific target shape/range adjustments are confirmed in play.
-5. Keep Espionage out of scope until a separate scope decision brings it into the combat-upgrade work.
-6. Keep `tools\UpdateCombatUpgradeAudit.ps1`, the C# sync tests, the build/tests, and this status file aligned when the Bible changes.
+5. Live-play the curated cross-skill danger profiles, especially poison/trap/Mimicry, stealth burst, cross-resource sustain, damage-derived healing, deflection/reflection, and layered control.
+6. Keep Espionage and Mimicry in the mandatory row-by-row review and release gates as their mechanics and content evolve.
+7. Keep `tools\UpdateCombatUpgradeAudit.ps1`, the C# sync tests, the build/tests, and this status file aligned when the Bible changes.
+8. Playtest the redesigned Ward and Severance Lightsaber trees added 2026-07-11: physical-to-Force conversion feel, Embattled stacking pacing, Deflecting Return's bounded reflection uptime, and the reused Saber Storm/Guardian Master mastery-quest gates against Epicenter and Aegis Eternal.

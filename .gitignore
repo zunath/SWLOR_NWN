@@ -269,14 +269,21 @@ __pycache__/
 .dotnet_home/
 SWLOR.Game.Server/nwnpath.config
 debugserver
+enginetests-home
 Module/temp0
 Module/Star Wars LOR v2.BackupMod
 Module/Star Wars LOR v2.mod
 /Module/SWLOR_Empty.mod
 /Module/SWLOR_Empty.BackupMod
 
+# Toolset-owned local caches - machine-specific mtimes, never a module resource, never shipped.
+Module/ncs/.script-staleness-cache.json
+
 # Published SWLOR.CLI support files generated beside the checked-in tool binary.
 /tools/SWLOR.CLI/App.config
 /tools/SWLOR.CLI/InputFiles/
 /tools/SWLOR.CLI/Templates/
 /tools/SWLOR.CLI/*.pdb
+
+# Git worktrees created under the repo
+/.claude/worktrees/

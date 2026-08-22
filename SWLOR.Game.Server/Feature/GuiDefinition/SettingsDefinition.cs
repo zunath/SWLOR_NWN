@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             _builder.CreateWindow(GuiWindowType.Settings)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
+                .SetIsClosable(true)
                 .SetInitialGeometry(0, 0, 375f, 340f)
                 .SetTitle("Settings")
 
@@ -64,6 +65,32 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             row.AddSpacer()
                                 .SetWidth(28f);
 
+                            row.AddCheckBox()
+                                .SetText("Mini-Vitals")
+                                .SetTooltip("If enabled, your Stamina and FP show as compact bars on your character portrait. If disabled, they appear in the full HP/STM/FP window docked in the lower-right corner.")
+                                .SetWidth(230f)
+                                .BindIsChecked(model => model.PortraitVitals);
+                        })
+                            .SetHeight(30f);
+
+                        col.AddRow(row =>
+                        {
+                            row.AddSpacer()
+                                .SetWidth(28f);
+
+                            row.AddCheckBox()
+                                .SetText("Comms Range Warnings")
+                                .SetTooltip("Warns you when one or more party members are outside the range of a Comms message and do not receive it.")
+                                .SetWidth(230f)
+                                .BindIsChecked(model => model.DisplayCommsOutOfRangeWarnings);
+                        })
+                            .SetHeight(30f);
+
+                        col.AddRow(row =>
+                        {
+                            row.AddSpacer()
+                                .SetWidth(28f);
+
                             row.AddButton()
                                 .SetText("Change Description")
                                 .SetTooltip("Modify your publicly-viewable description which displays when you are examined.")
@@ -79,14 +106,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 {
                     view.AddColumn(col =>
                     {
+
                         col.AddRow(row =>
                         {
                             row.AddSpacer()
                                 .SetWidth(28f);
 
                             row.AddCheckBox()
-                                .SetText("Show My Descriptor")
-                                .SetTooltip("Shows your unknown descriptor beside your own character name.")
+                                .SetText("Show My Public Description")
+                                .SetTooltip("Shows your gray public description beside your own character name.")
                                 .SetWidth(230f)
                                 .BindIsChecked(model => model.ShowOwnDescriptor);
                         })
@@ -98,8 +126,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .SetWidth(28f);
 
                             row.AddCheckBox()
-                                .SetText("Show Others' Descriptor")
-                                .SetTooltip("Shows another player's unknown descriptor beside the name you assigned to them.")
+                                .SetText("Show Others' Public Descriptions")
+                                .SetTooltip("Shows another character's gray public description beside your private label for them.")
                                 .SetWidth(230f)
                                 .BindIsChecked(model => model.ShowDescriptorsForNamedPlayers);
                         })

@@ -1,0 +1,585 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!--
+    The toolset's visual identity, in one place.
+
+    Two decisions carry it. The palette is a cool, blue-biased dark rather than a neutral grey, so it
+    reads as chosen rather than inherited, with a single hyperspace-blue accent and amber reserved for
+    "changed". The type pairing does the real work: names are set in the interface face and resrefs,
+    counts and coordinates in monospace one step smaller and one step dimmer, so the eye sorts a row's
+    name from its resref before it reads either. That pairing is the whole answer to "names matter more
+    than resrefs" - it is a typographic problem, not a layout one.
+  -->
+  <Styles.Resources>
+    <ResourceDictionary>
+
+      <!-- grounds -->
+      <Color x:Key="ShellBackgroundColor">#0C0F14</Color>
+      <SolidColorBrush x:Key="ShellBackgroundBrush" Color="#0C0F14" />
+      <SolidColorBrush x:Key="PanelBrush" Color="#14181E" />
+      <SolidColorBrush x:Key="PanelRaisedBrush" Color="#191E26" />
+      <SolidColorBrush x:Key="PanelHeaderBrush" Color="#1B212A" />
+      <SolidColorBrush x:Key="FieldBrush" Color="#0C1017" />
+      <SolidColorBrush x:Key="ChromeBrush" Color="#10141A" />
+
+      <!-- rules -->
+      <SolidColorBrush x:Key="RuleBrush" Color="#262D38" />
+      <SolidColorBrush x:Key="RuleStrongBrush" Color="#333C4A" />
+
+      <!-- ink -->
+      <SolidColorBrush x:Key="InkBrush" Color="#DDE3EB" />
+      <SolidColorBrush x:Key="InkSecondaryBrush" Color="#98A2B0" />
+      <SolidColorBrush x:Key="InkTertiaryBrush" Color="#6C7683" />
+
+      <!-- signal: accent is hyperspace blue, amber means changed, green means fine, gold means pinned -->
+      <SolidColorBrush x:Key="AccentBrush" Color="#5B9BF5" />
+      <SolidColorBrush x:Key="AccentDimBrush" Color="#1E3350" />
+      <SolidColorBrush x:Key="AccentBorderBrush" Color="#2D4E7C" />
+      <SolidColorBrush x:Key="AccentInkBrush" Color="#D3E3FB" />
+      <SolidColorBrush x:Key="AmberBrush" Color="#D9A155" />
+      <SolidColorBrush x:Key="GreenBrush" Color="#5FBE8C" />
+      <SolidColorBrush x:Key="GoldBrush" Color="#E4CE9A" />
+
+      <!-- type: Segoe UI Variable is Win11-only, so the stack falls back to Segoe UI on Win10 -->
+      <FontFamily x:Key="UiFont">Segoe UI Variable Text, Segoe UI, Inter, sans-serif</FontFamily>
+      <FontFamily x:Key="MonoFont">Cascadia Mono, Cascadia Code, Consolas, monospace</FontFamily>
+
+      <x:Double x:Key="FontSizeNormal">12.5</x:Double>
+      <x:Double x:Key="FontSizeSmall">11.5</x:Double>
+      <x:Double x:Key="FontSizeMono">11.5</x:Double>
+      <x:Double x:Key="FontSizeLabel">10</x:Double>
+
+      <!-- The lane an always-visible scrollbar occupies, kept out of the content. Matches Fluent's own
+           expanded ScrollBar width; see the scrollbar styles at the end of this file. -->
+      <Thickness x:Key="ScrollGutter">0,0,16,0</Thickness>
+
+      <!-- Dock's IDE preset reads these; overriding them keeps the docking chrome in the same world
+           as everything below rather than leaving two competing greys on screen. -->
+      <SolidColorBrush x:Key="DockThemeBackgroundBrush" Color="#14181E" />
+      <SolidColorBrush x:Key="DockThemeBackgroundLowBrush" Color="#10141A" />
+      <SolidColorBrush x:Key="DockThemeBorderLowBrush" Color="#262D38" />
+      <SolidColorBrush x:Key="DockThemeBorderMidBrush" Color="#333C4A" />
+      <SolidColorBrush x:Key="DockThemeAccentBrush" Color="#5B9BF5" />
+      <SolidColorBrush x:Key="DockApplicationAccentBrushLow" Color="#1E3350" />
+      <SolidColorBrush x:Key="DockApplicationAccentBrushMed" Color="#2D4E7C" />
+    </ResourceDictionary>
+  </Styles.Resources>
+
+  <!-- ===================== window & menu ===================== -->
+  <Style Selector="Window">
+    <Setter Property="Background" Value="{DynamicResource ShellBackgroundBrush}" />
+    <Setter Property="FontFamily" Value="{DynamicResource UiFont}" />
+  </Style>
+
+  <Style Selector="Menu">
+    <Setter Property="Background" Value="{DynamicResource PanelBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource RuleBrush}" />
+    <Setter Property="BorderThickness" Value="0,0,0,1" />
+    <Setter Property="Padding" Value="4,0" />
+  </Style>
+
+  <Style Selector="Menu > MenuItem">
+    <Setter Property="Padding" Value="11,6" />
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeNormal}" />
+    <Setter Property="Foreground" Value="{DynamicResource InkBrush}" />
+  </Style>
+
+  <!-- ===================== panel chrome ===================== -->
+  <!-- Panel titles are the one place small-caps monospace earns its keep: they label the furniture
+       rather than the content, so setting them apart from every name and value on screen helps. -->
+  <Style Selector="ToolChromeControl /template/ TextBlock">
+    <Setter Property="FontFamily" Value="{DynamicResource MonoFont}" />
+    <Setter Property="FontSize" Value="11" />
+    <Setter Property="Foreground" Value="{DynamicResource InkSecondaryBrush}" />
+  </Style>
+
+  <Style Selector="ToolChromeControl">
+    <Setter Property="Background" Value="{DynamicResource PanelHeaderBrush}" />
+  </Style>
+
+  <!-- Dock draws a dotted drag grip beside each panel title, and styling this control beyond its
+       background is not worth it: BorderThickness here collapses the docks that follow. -->
+
+  <!-- ===================== left rail tool tabs ===================== -->
+  <!--
+    The left rail's tabs sit above their panel and are its title bar - see Shell/Controls/
+    RailToolTabs.cs, which moves them and adds the "rail" class. Every other tool dock keeps Dock's
+    own tabs at the bottom, so all of this is scoped to that class.
+
+    Set in the same small-caps monospace panel titles use, because that is what these are now: the
+    two tabs name the furniture, and the panels no longer repeat their own name underneath.
+  -->
+  <Style Selector="ToolTabStrip.rail">
+    <Setter Property="Background" Value="{DynamicResource PanelHeaderBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource RuleBrush}" />
+    <Setter Property="BorderThickness" Value="0,0,0,1" />
+  </Style>
+
+  <Style Selector="ToolTabStrip.rail ToolTabStripItem">
+    <Setter Property="FontFamily" Value="{DynamicResource MonoFont}" />
+    <Setter Property="FontSize" Value="11" />
+    <Setter Property="Foreground" Value="{DynamicResource InkTertiaryBrush}" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Padding" Value="14,9" />
+    <Setter Property="BorderBrush" Value="{DynamicResource RuleBrush}" />
+    <Setter Property="BorderThickness" Value="0,0,1,0" />
+  </Style>
+
+  <!-- Tracking is the half of the panel-title look that has to land on the text itself:
+       LetterSpacing is a TextBlock property, and the tab item has nowhere to put it. -->
+  <Style Selector="ToolTabStrip.rail ToolTabStripItem TextBlock">
+    <Setter Property="LetterSpacing" Value="1.4" />
+  </Style>
+
+  <!--
+    The selected tab joins the panel below it. Dock's own selected state draws "1 0 1 1" - open at
+    the top, closed at the bottom - which is right for tabs that sit under their panel and exactly
+    backwards for tabs that sit over one: it drew a line between the tab and the thing it belongs to.
+    The accent edge goes on the same side for the same reason.
+  -->
+  <Style Selector="ToolTabStrip.rail ToolTabStripItem:selected">
+    <Setter Property="Background" Value="{DynamicResource PanelBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource AccentInkBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+    <Setter Property="BorderThickness" Value="0,0,1,2" />
+    <Setter Property="Padding" Value="14,9,14,7" />
+  </Style>
+
+  <Style Selector="ToolTabStrip.rail ToolTabStripItem:pointerover">
+    <Setter Property="Foreground" Value="{DynamicResource InkBrush}" />
+  </Style>
+
+  <Style Selector="ToolTabStrip.rail ToolTabStripItem:selected:pointerover">
+    <Setter Property="Background" Value="{DynamicResource PanelBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource AccentInkBrush}" />
+  </Style>
+
+<!-- ===================== rows ===================== -->
+  <Style Selector="ListBoxItem">
+    <Setter Property="Padding" Value="8,3" />
+    <Setter Property="MinHeight" Value="0" />
+    <Setter Property="Foreground" Value="{DynamicResource InkBrush}" />
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeNormal}" />
+  </Style>
+
+  <Style Selector="ListBoxItem:selected /template/ ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource AccentDimBrush}" />
+  </Style>
+
+  <Style Selector="ListBoxItem:pointerover /template/ ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource PanelRaisedBrush}" />
+  </Style>
+
+  <!-- Compact mutually-exclusive choices used as one reusable segmented control. The ItemsPanel
+       decides the number of equal-width segments, so editors only provide their choices. -->
+  <Style Selector="ListBox.segmented">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="{DynamicResource RuleBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="3" />
+    <Setter Property="Padding" Value="0" />
+  </Style>
+
+  <Style Selector="ListBox.segmented > ListBoxItem">
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="HorizontalAlignment" Value="Stretch" />
+    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+  </Style>
+
+  <Style Selector="ListBox.segmented > ListBoxItem /template/ ContentPresenter">
+    <Setter Property="Padding" Value="8,4" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+  </Style>
+
+  <Style Selector="TreeViewItem">
+    <Setter Property="Foreground" Value="{DynamicResource InkBrush}" />
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeNormal}" />
+    <Setter Property="MinHeight" Value="0" />
+  </Style>
+
+  <Style Selector="TreeViewItem:selected /template/ Border#PART_LayoutRoot">
+    <Setter Property="Background" Value="{DynamicResource AccentDimBrush}" />
+  </Style>
+
+  <!-- ===================== controls ===================== -->
+  <Style Selector="Button">
+    <Setter Property="Background" Value="{DynamicResource PanelRaisedBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource RuleStrongBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="3" />
+    <Setter Property="Padding" Value="10,4" />
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeSmall}" />
+    <Setter Property="Foreground" Value="{DynamicResource InkBrush}" />
+  </Style>
+
+  <Style Selector="Button:pointerover /template/ ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource AccentDimBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource AccentBorderBrush}" />
+    <Setter Property="TextBlock.Foreground" Value="{DynamicResource AccentInkBrush}" />
+  </Style>
+
+  <!-- Camera/rotate pad over the area map: square, glyph-only, sized to sit in a row of a dozen
+       without crowding the view they are drawn on top of. -->
+  <!-- Held buttons glide the camera rather than stepping it. Measured against Aurora, whose nav pad
+       moves at a constant velocity from the instant of the press with no initial pause - so Delay is
+       one frame, not the usual pre-repeat wait, which is what made the motion stutter before it
+       smoothed out. -->
+  <Style Selector="RepeatButton.pad">
+    <Setter Property="Delay" Value="16" />
+    <Setter Property="Interval" Value="16" />
+  </Style>
+
+  <Style Selector="Button.pad, RepeatButton.pad">
+    <Setter Property="Width" Value="26" />
+    <Setter Property="Height" Value="24" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="FontSize" Value="13" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+  </Style>
+
+  <!-- Quick-access bar under the menu: icon-only, so the glyph carries the meaning and the tooltip
+       spells it out. Square and flat until hovered, so a row of them reads as one strip of chrome
+       rather than seven competing buttons. -->
+  <Style Selector="Button.tool, ToggleButton.tool">
+    <Setter Property="Width" Value="30" />
+    <Setter Property="Height" Value="28" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+  </Style>
+
+  <!-- Icons are stroked, not filled, so one geometry serves every state: the stroke follows the
+       button's own foreground and therefore dims with it when the command cannot run. -->
+  <Style Selector="Button.tool Path, ToggleButton.tool Path">
+    <Setter Property="Stroke" Value="{DynamicResource InkBrush}" />
+    <Setter Property="StrokeThickness" Value="1.6" />
+    <Setter Property="StrokeLineCap" Value="Round" />
+    <Setter Property="StrokeJoin" Value="Round" />
+    <Setter Property="Fill" Value="Transparent" />
+    <Setter Property="Width" Value="18" />
+    <Setter Property="Height" Value="18" />
+    <Setter Property="Stretch" Value="Uniform" />
+  </Style>
+
+  <Style Selector="Button.tool:disabled Path, ToggleButton.tool:disabled Path">
+    <Setter Property="Stroke" Value="{DynamicResource InkTertiaryBrush}" />
+  </Style>
+
+  <!-- The state fills live on the template's presenter, so a plain Background setter loses to the
+       base theme; these have to be template-targeted or a disabled Save keeps its grey slab and a
+       checked toggle never lights up. -->
+  <Style Selector="Button.tool:disabled /template/ ContentPresenter, ToggleButton.tool:disabled /template/ ContentPresenter">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+  </Style>
+
+  <Style Selector="ToggleButton.tool:checked /template/ ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource AccentDimBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource AccentBorderBrush}" />
+  </Style>
+
+  <Style Selector="ToggleButton.tool:checked Path">
+    <Setter Property="Stroke" Value="{DynamicResource AccentInkBrush}" />
+  </Style>
+
+  <Style Selector="Button.primary">
+    <Setter Property="Background" Value="{DynamicResource AccentDimBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource AccentBorderBrush}" />
+    <Setter Property="Foreground" Value="{DynamicResource AccentInkBrush}" />
+  </Style>
+
+  <Style Selector="TextBox">
+    <Setter Property="Background" Value="{DynamicResource FieldBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource RuleStrongBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="3" />
+    <Setter Property="Padding" Value="8,5" />
+    <Setter Property="MinHeight" Value="0" />
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeNormal}" />
+    <Setter Property="Foreground" Value="{DynamicResource InkBrush}" />
+    <Setter Property="SelectionBrush" Value="{DynamicResource AccentBorderBrush}" />
+  </Style>
+
+  <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
+    <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+  </Style>
+
+  <Style Selector="ComboBox">
+    <Setter Property="Background" Value="{DynamicResource FieldBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource RuleStrongBrush}" />
+    <Setter Property="CornerRadius" Value="3" />
+    <Setter Property="Padding" Value="8,4" />
+    <Setter Property="MinHeight" Value="0" />
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeNormal}" />
+  </Style>
+
+  <!-- Popup width is calculated globally when a ComboBox opens. Wrapping is the final guard for
+       sentence-like choices that are wider than the largest comfortable popup. -->
+  <Style Selector="ComboBoxItem TextBlock">
+    <Setter Property="TextWrapping" Value="Wrap" />
+    <Setter Property="TextTrimming" Value="None" />
+  </Style>
+
+  <Style Selector="ComboBoxItem /template/ ContentPresenter">
+    <Setter Property="TextWrapping" Value="Wrap" />
+    <Setter Property="TextTrimming" Value="None" />
+  </Style>
+
+  <Style Selector="CheckBox">
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeNormal}" />
+    <Setter Property="Foreground" Value="{DynamicResource InkSecondaryBrush}" />
+    <Setter Property="MinHeight" Value="0" />
+  </Style>
+
+  <Style Selector="NumericUpDown">
+    <Setter Property="FontFamily" Value="{DynamicResource MonoFont}" />
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeMono}" />
+    <Setter Property="MinHeight" Value="0" />
+  </Style>
+
+  <Style Selector="Expander">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="{DynamicResource RuleBrush}" />
+    <Setter Property="CornerRadius" Value="3" />
+  </Style>
+
+  <Style Selector="TabItem">
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeNormal}" />
+    <Setter Property="Padding" Value="14,7" />
+    <Setter Property="MinHeight" Value="0" />
+    <Setter Property="Foreground" Value="{DynamicResource InkTertiaryBrush}" />
+  </Style>
+
+  <Style Selector="TabItem:selected">
+    <Setter Property="Foreground" Value="{DynamicResource InkBrush}" />
+  </Style>
+
+  <Style Selector="DataGrid">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="{DynamicResource RuleBrush}" />
+    <Setter Property="GridLinesVisibility" Value="Horizontal" />
+    <Setter Property="HorizontalGridLinesBrush" Value="{DynamicResource RuleBrush}" />
+    <Setter Property="RowBackground" Value="Transparent" />
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeNormal}" />
+  </Style>
+
+  <Style Selector="DataGridColumnHeader">
+    <Setter Property="Background" Value="{DynamicResource PanelHeaderBrush}" />
+    <Setter Property="FontFamily" Value="{DynamicResource MonoFont}" />
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeLabel}" />
+    <Setter Property="Foreground" Value="{DynamicResource InkTertiaryBrush}" />
+    <Setter Property="Padding" Value="8,5" />
+  </Style>
+
+  <!-- ===================== shared text roles ===================== -->
+  <!-- The four roles every row in the app is built from. -->
+  <Style Selector="TextBlock.name">
+    <Setter Property="Foreground" Value="{DynamicResource InkBrush}" />
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeNormal}" />
+    <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+  </Style>
+
+  <Style Selector="TextBlock.resref">
+    <Setter Property="FontFamily" Value="{DynamicResource MonoFont}" />
+    <Setter Property="FontSize" Value="10.5" />
+    <Setter Property="Foreground" Value="{DynamicResource InkTertiaryBrush}" />
+    <Setter Property="TextTrimming" Value="CharacterEllipsis" />
+  </Style>
+
+  <Style Selector="TextBlock.count">
+    <Setter Property="FontFamily" Value="{DynamicResource MonoFont}" />
+    <Setter Property="FontSize" Value="10.5" />
+    <Setter Property="Foreground" Value="{DynamicResource InkTertiaryBrush}" />
+  </Style>
+
+  <Style Selector="TextBlock.label">
+    <Setter Property="FontFamily" Value="{DynamicResource MonoFont}" />
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeLabel}" />
+    <Setter Property="Foreground" Value="{DynamicResource InkTertiaryBrush}" />
+  </Style>
+
+  <Style Selector="TextBlock.mono">
+    <Setter Property="FontFamily" Value="{DynamicResource MonoFont}" />
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeMono}" />
+    <Setter Property="Foreground" Value="{DynamicResource InkSecondaryBrush}" />
+  </Style>
+
+  <!-- Panel titles. Letter-spaced small-caps monospace, because a title names the furniture rather
+       than the content and should not compete with the names inside the panel. -->
+  <Style Selector="TextBlock.title">
+    <Setter Property="FontFamily" Value="{DynamicResource MonoFont}" />
+    <Setter Property="FontSize" Value="11" />
+    <Setter Property="Foreground" Value="{DynamicResource InkSecondaryBrush}" />
+    <Setter Property="LetterSpacing" Value="1.4" />
+  </Style>
+
+  <!-- A text action with no button chrome, for the one command a panel header carries. -->
+  <Style Selector="Button.link">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="2,0" />
+    <Setter Property="FontFamily" Value="{DynamicResource MonoFont}" />
+    <Setter Property="FontSize" Value="10.5" />
+    <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+  </Style>
+
+  <Style Selector="Button.link:pointerover /template/ ContentPresenter">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="TextBlock.Foreground" Value="{DynamicResource AccentInkBrush}" />
+  </Style>
+
+  <Style Selector="TextBlock.dim">
+    <Setter Property="Foreground" Value="{DynamicResource InkTertiaryBrush}" />
+  </Style>
+
+  <!-- ===================== behavior editors ===================== -->
+  <!-- A titled panel grouping one subject's rows: the behavior's own fields, or the block listing
+       what it manages. -->
+  <Style Selector="Border.card">
+    <Setter Property="Background" Value="{DynamicResource PanelRaisedBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource RuleBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="4" />
+  </Style>
+
+  <Style Selector="TextBlock.section">
+    <Setter Property="FontSize" Value="10.5" />
+    <Setter Property="Foreground" Value="{DynamicResource InkTertiaryBrush}" />
+    <Setter Property="LetterSpacing" Value="1.3" />
+  </Style>
+
+  <!-- One row of the behavior list. Chrome-free until it is the chosen one, so the rail reads as a
+       list rather than a column of buttons. -->
+  <Style Selector="Button.behavior">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="4" />
+    <Setter Property="Padding" Value="12,7" />
+    <Setter Property="FontSize" Value="{DynamicResource FontSizeNormal}" />
+  </Style>
+
+  <Style Selector="Button.behavior:pointerover /template/ ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource PanelRaisedBrush}" />
+  </Style>
+
+  <Style Selector="Button.behavior.on /template/ ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource AccentDimBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource AccentBorderBrush}" />
+  </Style>
+
+  <!-- Compact icon-only dismiss action, used outside Dock's own close templates. -->
+  <Style Selector="Button.close">
+    <Setter Property="Width" Value="24" />
+    <Setter Property="Height" Value="24" />
+    <Setter Property="Padding" Value="6" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+  </Style>
+
+  <Style Selector="Button.close Path">
+    <Setter Property="Width" Value="10" />
+    <Setter Property="Height" Value="10" />
+    <Setter Property="Stretch" Value="Uniform" />
+    <Setter Property="Fill" Value="{DynamicResource InkSecondaryBrush}" />
+  </Style>
+
+  <Style Selector="Button.close:pointerover Path">
+    <Setter Property="Fill" Value="{DynamicResource AccentInkBrush}" />
+  </Style>
+
+  <!-- Compact icon-only editor utility actions. Tooltips carry the accessible action name while the
+       chrome stays scannable at the narrow widths where text links crowd out document actions. -->
+  <Style Selector="Button.utility-icon">
+    <Setter Property="Width" Value="24" />
+    <Setter Property="Height" Value="24" />
+    <Setter Property="Padding" Value="5" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+  </Style>
+
+  <Style Selector="Button.utility-icon Path">
+    <Setter Property="Width" Value="12" />
+    <Setter Property="Height" Value="12" />
+    <Setter Property="Stretch" Value="Uniform" />
+    <Setter Property="Fill" Value="{DynamicResource InkSecondaryBrush}" />
+  </Style>
+
+  <Style Selector="Button.utility-icon:pointerover Path">
+    <Setter Property="Fill" Value="{DynamicResource AccentInkBrush}" />
+  </Style>
+
+  <Style Selector="Button.utility-icon.active /template/ ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource AccentDimBrush}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource AccentBorderBrush}" />
+  </Style>
+
+  <!-- Dock's close controls are real Buttons, so the broad Button style above otherwise gives their
+       16px chrome 20px of horizontal padding. Dock still creates the Path and resolves its geometry,
+       but layout collapses it to 0x0 - the result is the empty rounded square seen on document tabs.
+       Keep the reset scoped to Dock's tab close host and named chrome buttons. -->
+  <Style Selector="DocumentTabStripItem Button, Button#PART_CloseButton">
+    <Setter Property="Margin" Value="0" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="MinWidth" Value="0" />
+    <Setter Property="MinHeight" Value="0" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+  </Style>
+
+  <!-- Name-based because Dock uses the same template-part contract for document tabs, tool chrome,
+       MDI documents and docked windows. This bypasses the package-local geometry lookup and gives
+       every live close mark a visible Toolset brush. -->
+  <Style Selector="Path#PART_ClosePath">
+    <Setter Property="Width" Value="10" />
+    <Setter Property="Height" Value="10" />
+    <Setter Property="Margin" Value="0" />
+    <Setter Property="Stretch" Value="Uniform" />
+    <Setter Property="UseLayoutRounding" Value="False" />
+    <Setter Property="Data" Value="{StaticResource ToolsetCloseIconGeometry}" />
+    <Setter Property="Fill" Value="{DynamicResource InkSecondaryBrush}" />
+  </Style>
+
+  <Style Selector="Button:pointerover Path#PART_ClosePath">
+    <Setter Property="Fill" Value="{DynamicResource AccentInkBrush}" />
+  </Style>
+
+  <!-- ===================== scrollbars ===================== -->
+  <!--
+    Always on. Fluent's default is a scrollbar that hides itself and comes back only once the pointer
+    has been over its edge for a moment, which is fine on a phone and wrong in an editor: a builder
+    reaching for the bar has to first hover to find out whether there is one, and half these panels
+    (the palette's categories, an area's instance lists, the field editors) are lists whose whole
+    point is that they are longer than the space they sit in. Set on both, because the ScrollViewer
+    inside a list owns its bars while a bar dropped into a template on its own does not.
+  -->
+  <!--
+    A bar that is always there needs a lane of its own. Fluent draws scrollbars over the content rather
+    than beside it, which is survivable while they hide themselves and is not once they do not: the
+    permanent bar sat on top of the right-hand column of every list, clipping the area counts and
+    resrefs in Module Contents and covering the right edge of the field editors. The padding reserves
+    the bar's width inside the viewport, so content stops where the bar begins. It is charged whether or
+    not a bar is showing, which is the price of the lane being in the same place in every panel.
+  -->
+  <Style Selector="ScrollViewer">
+    <Setter Property="AllowAutoHide" Value="False" />
+    <Setter Property="Padding" Value="{DynamicResource ScrollGutter}" />
+  </Style>
+
+  <Style Selector="ScrollBar">
+    <Setter Property="AllowAutoHide" Value="False" />
+  </Style>
+
+</Styles>

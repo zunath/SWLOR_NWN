@@ -16,10 +16,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public sealed class ForcePushAbilityDefinition : IAbilityListDefinition
     {
-        private const int KnockdownDurationSeconds = 30;
-        private const int ForcePush1HobbleDurationSeconds = 30;
-        private const int ForcePush2HobbleDurationSeconds = 30;
-        private const int ForcePush3HobbleDurationSeconds = 30;
+        private const int KnockdownDurationSeconds = 6;
+        private const int ForcePush1HobbleDurationSeconds = 12;
+        private const int ForcePush2HobbleDurationSeconds = 12;
+        private const int ForcePush3HobbleDurationSeconds = 12;
         private const float ForcePush1ConeLengthMeters = 5f;
         private const float ForcePush2ConeLengthMeters = 8f;
         private const float ForcePush3ConeLengthMeters = 10f;
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Force Push I")
                 .Level(1)
                 .HasActivationDelay(0f)
-                .HasRecastDelay(RecastGroup.ForcePush, 15f)
+                .HasRecastDelay(RecastGroup.ForcePush, 45f)
                 .SkillType(SkillType.Force)
                 .CombatImpactDamageAbility(AbilityType.Willpower)
                 .UsesAnimation(Animation.LoopingConjure1)
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Force Push II")
                 .Level(2)
                 .HasActivationDelay(0f)
-                .HasRecastDelay(RecastGroup.ForcePush, 15f)
+                .HasRecastDelay(RecastGroup.ForcePush, 45f)
                 .SkillType(SkillType.Force)
                 .CombatImpactDamageAbility(AbilityType.Willpower)
                 .UsesAnimation(Animation.LoopingConjure1)
@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .Name("Force Push III")
                 .Level(3)
                 .HasActivationDelay(0f)
-                .HasRecastDelay(RecastGroup.ForcePush, 15f)
+                .HasRecastDelay(RecastGroup.ForcePush, 45f)
                 .SkillType(SkillType.Force)
                 .CombatImpactDamageAbility(AbilityType.Willpower)
                 .UsesAnimation(Animation.LoopingConjure1)

@@ -25,7 +25,8 @@ Run every sweep; each must answer YES before building.
       combos, sliders, toggles, color pickers) has a `WatchOnClient` call.
 - [ ] R2c: no `row.SetHeight(...)` on any row containing a fixed-height button,
       image button, toggle button, checkbox, textedit, combo, slider, or progress
-      bar. (Tab rows with `AddToggles` are the sanctioned exception.)
+      bar unless every such child deliberately calls `SetMargin(0f)` for a compact
+      grid. (Tab rows with `AddToggles` are the other sanctioned exception.)
 - [ ] R4: the toggles-bound tab property only calls `HandleClientChange`; the swap
       logic lives in a separate `SelectTab` method.
 - [ ] R6: if the window calls `ShowModal` or `ShowInputModal` anywhere AND has tabs,

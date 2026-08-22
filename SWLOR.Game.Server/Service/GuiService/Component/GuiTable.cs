@@ -52,10 +52,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using SWLOR.Game.Server.Service.GuiService;
-using SWLOR.Game.Server.Service.GuiService.Component;
-using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 
-namespace SWLOR.Game.Server.Feature.GuiDefinition.Component
+namespace SWLOR.Game.Server.Service.GuiService.Component
 {
     // ------------------------------------------------------------------
     // DEFINITION-SIDE: declarative column list -> header row + list template
@@ -123,6 +121,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.Component
         {
             _columns.Add(new GuiTableColumn<TViewModel>(header, width, valueExpression, tooltipExpression, headerTooltip, null, isVariable));
             return this;
+        }
+
+        /// <summary>
+        /// Adds a text column with the player-facing header tooltip placed next
+        /// to the header declaration. This overload keeps table definitions easy
+        /// to scan when cells do not require their own tooltip binding.
+        /// </summary>
+        public GuiTableBuilder<TViewModel> AddColumn(
+            string header,
+            float width,
+            string headerTooltip,
+            Expression<Func<TViewModel, GuiBindingList<string>>> valueExpression,
+            Expression<Func<TViewModel, GuiBindingList<string>>> tooltipExpression = null,
+            bool? isVariable = null)
+        {
+            return AddColumn(header, width, valueExpression, tooltipExpression, headerTooltip, isVariable);
         }
 
         /// <summary>
@@ -324,6 +338,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.Component
 
             /// <summary>Null if this column's Column(...) call didn't supply a getter - see RemoveRowAt.</summary>
             public Action<TViewModel, int> Remove;
+            public Func<TViewModel, int, bool> CanRemove;
         }
 
         private readonly List<ColumnBinding> _columns = new();
@@ -350,7 +365,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.Component
                         list.Add(valueSelector(row));
                     setter(viewModel, list);
                 },
-                Remove = getter == null ? null : (viewModel, index) => getter(viewModel).RemoveAt(index)
+                Remove = getter == null ? null : (viewModel, index) => getter(viewModel).RemoveAt(index),
+                CanRemove = getter == null
+                    ? null
+                    : (viewModel, index) =>
+                    {
+                        var values = getter(viewModel);
+                        return values != null && index >= 0 && index < values.Count;
+                    }
             });
             return this;
         }
@@ -381,12 +403,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.Component
         /// </summary>
         public void RemoveRowAt(TViewModel viewModel, IList<TRow> rows, int index)
         {
-            // Validate all columns have getters before any mutation.
+            if (index < 0 || index >= rows.Count)
+                throw new ArgumentOutOfRangeException(nameof(index));
+
+            // Validate every bound list before any mutation.
             for (var i = 0; i < _columns.Count; i++)
             {
                 if (_columns[i].Remove == null)
                     throw new InvalidOperationException($"Column {i} has no getter registered; cannot RemoveRowAt without leaving it out of sync. Pass a getter to Column(...) for every bound column before calling RemoveRowAt.");
+
+                if (!_columns[i].CanRemove(viewModel, index))
+                    throw new InvalidOperationException($"Column {i} does not contain row {index}; cannot RemoveRowAt without leaving the table out of sync. Refresh all bound columns before removing a row.");
             }
+
             rows.RemoveAt(index);
             for (var i = 0; i < _columns.Count; i++)
             {

@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "This wand allows the DM to make skill check, ability, or saving throw rolls for a single PC/NPC, for all PCs/NPCs in an area, or for all PCs in the module. To do PC rolls, target a PC (defaults to targeting the DM). To do NPC rolls, target an NPC.\n\nBroadcast Modes:\n[Local] As Talk\n[Global] As Shout\n[Private] As Private Message\n[DM Only] Only to DMs\n\nAll SoU and HotU skills are now included.\n\nYou can use .skill commands as well to roll all of these functions and change the broadcast settings.  See the tips readme for examples.\n\n~~\nDemetrious\n\nRedesigned By Hahnsoo (hahns_shin@hotmail.com)\n\nOriginal Design by Rob Bartel (Bioware)"
     }
   },
   "Identified": {
@@ -109,6 +109,26 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "dmfi_dicebag"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NO_ECONOMY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
   },
   "xModelPart1": {
     "type": "word",

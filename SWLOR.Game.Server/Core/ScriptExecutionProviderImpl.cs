@@ -1,4 +1,7 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Extension;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API;
 
 namespace SWLOR.Game.Server.Core
@@ -36,6 +39,18 @@ namespace SWLOR.Game.Server.Core
         public IEnumerable<(Action action, string name)> GetActionScripts(string scriptName)
         {
             return ServerManager.Scripts.GetActionScripts(scriptName);
+        }
+
+        /// <summary>
+        /// Reports an exception from one C# script handler without aborting the other handlers.
+        /// </summary>
+        public void ReportScriptException(string scriptName, string handlerName, Exception exception)
+        {
+            Log.Write(
+                LogGroup.Error,
+                $"C# Script '{scriptName}' handler '{handlerName}' threw an exception. Details: " +
+                $"{Environment.NewLine}{Environment.NewLine}{exception.ToMessageAndCompleteStacktrace()}",
+                true);
         }
 
         /// <summary>

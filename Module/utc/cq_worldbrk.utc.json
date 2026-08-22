@@ -2,11 +2,11 @@
   "__data_type": "UTC ",
   "Appearance_Head": {
     "type": "byte",
-    "value": 48
+    "value": 4
   },
   "Appearance_Type": {
     "type": "word",
-    "value": 6
+    "value": 10098
   },
   "ArmorPart_RFoot": {
     "type": "byte",
@@ -179,15 +179,7 @@
   },
   "Equip_ItemList": {
     "type": "list",
-    "value": [
-      {
-        "__struct_id": 2,
-        "EquippedRes": {
-          "type": "resref",
-          "value": "cologarb4"
-        }
-      }
-    ]
+    "value": []
   },
   "FactionID": {
     "type": "word",
@@ -364,7 +356,7 @@
   },
   "PortraitId": {
     "type": "word",
-    "value": 314
+    "value": 4150
   },
   "Race": {
     "type": "byte",
@@ -388,7 +380,7 @@
   },
   "ScriptDialogue": {
     "type": "resref",
-    "value": ""
+    "value": "dialog_start"
   },
   "ScriptDisturbed": {
     "type": "resref",
@@ -663,10 +655,6 @@
     "type": "resref",
     "value": "cq_worldbrk"
   },
-  "VarTable": {
-    "type": "list",
-    "value": []
-  },
   "WalkRate": {
     "type": "int",
     "value": 7
@@ -685,7 +673,7 @@
   },
   "xAppearance_Head": {
     "type": "word",
-    "value": 48
+    "value": 4
   },
   "xArmorPart_RFoot": {
     "type": "word",

@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -21,6 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
         public static readonly InnateAbilityProfile Staff = new(SkillType.Staff, SkillType.Staff, false);
         public static readonly InnateAbilityProfile Throwing = new(SkillType.Throwing, SkillType.Throwing, false);
         public static readonly InnateAbilityProfile Vibroblade = new(SkillType.Vibroblade, SkillType.Vibroblade, false);
+        public static readonly InnateAbilityProfile Mimicry = new(SkillType.Mimicry, SkillType.Mimicry, false, PerkType.CombatAnalyzer);
 
         public SkillType PlayerSkillType { get; }
         public SkillType NPCSkillType { get; }
@@ -70,7 +72,156 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
             return GetIsObjectValid(activator) && !GetIsPC(activator);
         }
 
-        public static void BuildSingleTarget(
+        // ---- Signature-mechanic factories ----
+        // Build the per-target/per-hit callbacks that BuildArea/BuildSingleTarget forward into the
+        // shared combat-impact pipeline, so an advanced technique can declare its signature in a single
+        // line instead of hand-writing an impact action. None of these special-case a perk: they read
+        // target HP/state and caster resources through the shared Stat/StatusEffect services.
+
+        /// <summary>
+        /// Execute: +<paramref name="percentBonus"/>% damage against targets at or below
+        /// <paramref name="hpThreshold"/> (fraction of max HP).
+        /// </summary>
+        public static Func<uint, int> ExecuteBonus(float hpThreshold, int percentBonus)
+        {
+            return target => GetIsObjectValid(target) &&
+                             GetMaxHitPoints(target) > 0 &&
+                             GetCurrentHitPoints(target) <= GetMaxHitPoints(target) * hpThreshold
+                ? percentBonus
+                : 0;
+        }
+
+        /// <summary>
+        /// Combo payoff: +<paramref name="percentBonus"/>% damage against targets already suffering any
+        /// of <paramref name="statusEffects"/>, rewarding setup from another technique or ally.
+        /// </summary>
+        public static Func<uint, int> ComboBonus(int percentBonus, params Type[] statusEffects)
+        {
+            return target => GetIsObjectValid(target) && StatusEffect.HasStatusEffect(target, statusEffects)
+                ? percentBonus
+                : 0;
+        }
+
+        /// <summary>Restores <paramref name="amount"/> Stamina to the caster on each successful hit.</summary>
+        public static Action<uint, uint> RestoreStaminaOnHit(int amount)
+        {
+            return (activator, _) => Stat.RestoreStamina(activator, amount);
+        }
+
+        /// <summary>Restores <paramref name="amount"/> FP to the caster on each successful hit.</summary>
+        public static Action<uint, uint> RestoreFPOnHit(int amount)
+        {
+            return (activator, _) => Stat.RestoreFP(activator, amount);
+        }
+
+        /// <summary>Heals the caster for <paramref name="amount"/> HP on each successful hit (lifesteal/drain).</summary>
+        public static Action<uint, uint> HealSelfOnHit(int amount)
+        {
+            return (activator, _) => ApplyEffectToObject(DurationType.Instant, EffectHeal(amount), activator);
+        }
+
+        /// <summary>Drains <paramref name="fp"/> FP and <paramref name="stamina"/> Stamina from the struck target.</summary>
+        public static Action<uint, uint> DrainOnHit(int fp, int stamina)
+        {
+            return (activator, target) =>
+            {
+                if (fp > 0) Stat.ReduceFP(target, fp);
+                if (stamina > 0) Stat.ReduceStamina(target, stamina);
+            };
+        }
+
+        /// <summary>Interrupts the struck target's current action.</summary>
+        public static Action<uint, uint> InterruptOnHit()
+        {
+            return (_, target) => AssignCommand(target, () => ClearAllActions());
+        }
+
+        /// <summary>Pulls the struck target adjacent to the caster.</summary>
+        public static Action<uint, uint> PullOnHit()
+        {
+            return (activator, target) => AssignCommand(target, () => ActionJumpToObject(activator));
+        }
+
+        /// <summary>
+        /// Detonates any of <paramref name="detonateStatuses"/> on the struck target, removing them and
+        /// dealing a <paramref name="burstDamage"/> burst of area damage around it.
+        /// </summary>
+        public static Action<uint, uint> DetonateOnHit(InnateAbilityProfile profile, int burstDamage, CombatDamageType damageType, params Type[] detonateStatuses)
+        {
+            return (activator, target) =>
+            {
+                if (!GetIsObjectValid(target) || !StatusEffect.HasStatusEffect(target, detonateStatuses))
+                    return;
+
+                foreach (var status in detonateStatuses)
+                    StatusEffect.RemoveStatusEffect(status, target);
+
+                Ability.ApplyCombatImpact(
+                    activator, target, GetLocation(target),
+                    ResolveSkillType(activator, profile), burstDamage, 0, null, true,
+                    damageType: damageType,
+                    useNPCStatScaling: ShouldUseNPCStatScaling(activator));
+            };
+        }
+
+        /// <summary>
+        /// Arcs a reduced-damage strike from the struck target to up to <paramref name="maxArcs"/> other
+        /// hostiles within <paramref name="radius"/>, applying <paramref name="arcStatus"/>.
+        /// </summary>
+        public static Action<uint, uint> ChainOnHit(InnateAbilityProfile profile, int maxArcs, float radius, int arcDamage, Type arcStatus, int arcDuration, CombatDamageType damageType)
+        {
+            return (activator, target) =>
+            {
+                foreach (var arc in AbilityTargeting.GetHostileTargetsNearLocation(activator, GetLocation(target), radius, maxArcs, predicate: c => c != target))
+                {
+                    Ability.ApplyCombatImpact(
+                        activator, arc, GetLocation(arc),
+                        ResolveSkillType(activator, profile), arcDamage, arcDuration, arcStatus, false,
+                        damageType: damageType, playImpactAnimation: false,
+                        useNPCStatScaling: ShouldUseNPCStatScaling(activator));
+                }
+            };
+        }
+
+        /// <summary>
+        /// Smooth "finishing blow" ramp: scales bonus damage with the target's <em>missing</em> HP,
+        /// from 0% at full HP up to <paramref name="maxPercentBonus"/>% at (near) zero HP. Unlike an
+        /// execute, there is no cliff — it rewards focusing a wounded target without being oppressive.
+        /// </summary>
+        public static Func<uint, int> MissingHpRamp(int maxPercentBonus)
+        {
+            return target =>
+            {
+                if (!GetIsObjectValid(target) || GetMaxHitPoints(target) <= 0)
+                    return 0;
+
+                var missingFraction = 1f - (float)GetCurrentHitPoints(target) / GetMaxHitPoints(target);
+                if (missingFraction <= 0f)
+                    return 0;
+
+                return (int)(maxPercentBonus * missingFraction);
+            };
+        }
+
+        /// <summary>
+        /// Applies combat-analyzer potency to a mimicked technique's base damage. Potency
+        /// (<see cref="StatType.MimicryPotencyPercent"/>) is granted by Combat Analyzer ranks, the
+        /// Overclocked Analyzer capstone's Overload, and damage-type set bonuses. Only the Mimicry
+        /// profile is affected, so shared innate-ability damage for other skills is unchanged.
+        /// </summary>
+        private static int ScaleForMimicryPotency(uint activator, InnateAbilityProfile profile, int baseDamage)
+        {
+            if (!ReferenceEquals(profile, InnateAbilityProfile.Mimicry))
+                return baseDamage;
+
+            var potency = Stat.GetStatAdjustment(activator, StatType.MimicryPotencyPercent);
+            if (potency <= 0)
+                return baseDamage;
+
+            return baseDamage + baseDamage * potency / 100;
+        }
+
+        public static AbilityBuilder BuildSingleTarget(
             AbilityBuilder builder,
             FeatType feat,
             string name,
@@ -88,7 +239,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
             VisualEffect targetVisualEffect = VisualEffect.None,
             float maxRange = 0f,
             int enmityBonus = 0,
-            Action<uint, uint> afterSuccessfulHit = null)
+            Action<uint, uint> afterSuccessfulHit = null,
+            IEnumerable<Type> additionalStatusEffects = null,
+            Func<uint, int> damagePercentAdjustment = null,
+            int criticalRatePercentAdjustment = 0)
         {
             var ability = builder
                 .Create(feat, profile.PlayerPerkType)
@@ -114,20 +268,27 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                     target,
                     location,
                     ResolveSkillType(activator, profile),
-                    baseDamage,
+                    ScaleForMimicryPotency(activator, profile, baseDamage),
                     duration,
                     statusEffect,
                     false,
+                    additionalStatusEffects: additionalStatusEffects,
                     damageType: damageType,
                     statusResistanceType: statusResistanceType,
                     targetVisualEffect: targetVisualEffect,
+                    damagePercentAdjustment: damagePercentAdjustment,
                     enmityBonus: enmityBonus,
                     afterSuccessfulHit: hitTarget => afterSuccessfulHit?.Invoke(activator, hitTarget),
+                    criticalRatePercentAdjustment: criticalRatePercentAdjustment,
                     useNPCStatScaling: ShouldUseNPCStatScaling(activator));
             });
+
+            ability.MimicryElement(damageType);
+
+            return ability;
         }
 
-        public static void BuildArea(
+        public static AbilityBuilder BuildArea(
             AbilityBuilder builder,
             FeatType feat,
             string name,
@@ -150,7 +311,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
             float maxRange = 0f,
             bool centerOnActivator = false,
             int enmityBonus = 0,
-            IEnumerable<Type> additionalStatusEffects = null)
+            IEnumerable<Type> additionalStatusEffects = null,
+            Func<uint, int> damagePercentAdjustment = null,
+            Action<uint, uint> afterSuccessfulHit = null)
         {
             var ability = builder
                 .Create(feat, profile.PlayerPerkType)
@@ -160,9 +323,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                 .UsesAnimation(animation)
                 .IsCastedAbility()
                 .IsAreaAbility()
-                .RequiresTarget()
                 .IsHostileAbility()
                 .RequirementStamina(stamina);
+
+            // The AI only selects a targeted area ability when it has an enemy in hand, so the NPC
+            // original requires a target. The player-facing technique clears this in
+            // MimicryTechnique() - its cursor-aimed line/cone/placed area must allow empty-ground
+            // casts.
+            if (!centerOnActivator)
+            {
+                ability.RequiresTarget();
+            }
 
             if (maxRange > 0f)
             {
@@ -181,7 +352,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                     target,
                     location,
                     ResolveSkillType(activator, profile),
-                    baseDamage,
+                    ScaleForMimicryPotency(activator, profile, baseDamage),
                     duration,
                     statusEffect,
                     shape,
@@ -194,12 +365,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                     statusResistanceType: statusResistanceType,
                     targetVisualEffect: targetVisualEffect,
                     areaVisualEffect: areaVisualEffect,
+                    damagePercentAdjustment: damagePercentAdjustment,
                     enmityBonus: enmityBonus,
+                    afterSuccessfulHit: hitTarget => afterSuccessfulHit?.Invoke(activator, hitTarget),
                     useNPCStatScaling: ShouldUseNPCStatScaling(activator));
             });
+
+            ability.MimicryElement(damageType);
+
+            return ability;
         }
 
-        public static void BuildSelfBuff(
+        public static AbilityBuilder BuildSelfBuff(
             AbilityBuilder builder,
             FeatType feat,
             string name,
@@ -213,7 +390,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
             float duration,
             VisualEffect targetVisualEffect = VisualEffect.None)
         {
-            builder
+            var ability = builder
                 .Create(feat, profile.PlayerPerkType)
                 .Name(name)
                 .HasActivationDelay(activationDelay)
@@ -230,6 +407,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                         ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(targetVisualEffect), activator);
                     }
                 });
+
+            return ability;
         }
 
         private static bool HasNaturalWeapon(uint creature)

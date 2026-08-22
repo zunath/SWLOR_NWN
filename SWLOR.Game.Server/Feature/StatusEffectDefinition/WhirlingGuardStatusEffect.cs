@@ -12,7 +12,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public WhirlingGuardStatusEffect()
         {
             StatGroup.Stats[StatType.Guard] = 20;
-            StatGroup.Stats[StatType.GuardRetaliationDamage] = 8;
+            StatGroup.Stats[StatType.GuardRetaliationDMG] = 8;
         }
     }
 }

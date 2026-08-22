@@ -21,6 +21,15 @@ namespace SWLOR.Game.Server.Service
         public const string EventCommsAreaVariable = "COMMS_EVENT_AREA";
         private const string DisabledChannelMessage = "This chat channel is disabled.";
         private const string CommsOutOfRangeMessage = "Your Comms message could not reach one or more out-of-range receivers.";
+        // Base-game dialog.tlk 66755 is the PlayerParty chat-input label, while 10303 is the
+        // prefix rendered on received PlayerParty messages. Comms must still use the native
+        // Party packet so NWNX_Rename can apply observer-specific player names, but neither
+        // player-facing chat label should expose the underlying Party transport.
+        private const int PartyChatChannelNameStrRef = 66755;
+        private const int PartyChatMessagePrefixStrRef = 10303;
+        private const string CommsChannelName = "Comms";
+        private const string CommsMessagePrefix = "[Comms] ";
+        private const string WhisperMessagePrefix = "[Whisper] ";
 
         public static (byte, byte, byte) OOCChatColor { get; } = (64, 64, 64);
         public static (byte, byte, byte) EmoteChatColor { get; } = (0, 255, 0);
@@ -42,6 +51,18 @@ namespace SWLOR.Game.Server.Service
             ColonForward,
             ColonBackward
         };
+
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        public static void ApplyCommsChannelName()
+        {
+            var player = GetEnteringObject();
+            if (!GetIsPC(player))
+                return;
+
+            // The chat-channel selector treats angle-bracket color markup as TLK substitution tokens.
+            PlayerPlugin.SetTlkOverride(player, PartyChatChannelNameStrRef, CommsChannelName);
+            PlayerPlugin.SetTlkOverride(player, PartyChatMessagePrefixStrRef, CommsMessagePrefix);
+        }
 
         /// <summary>
         /// Whenever a DM possesses a creature, track the NPC on their object so that messages can be
@@ -275,10 +296,13 @@ namespace SWLOR.Game.Server.Service
 
                     var distance = GetDistanceBetween(sender, target);
 
+                    // Preserve the Master behavior for overhearing: anyone in the same area and
+                    // within the channel's local range can hear the message, regardless of party
+                    // membership or long-range Comms scope. Comms scope applies only to the party
+                    // member delivery pass above.
                     if (GetArea(target) == GetArea(sender) &&
                         distance <= distanceCheck &&
-                        !recipients.Contains(target) &&
-                        (channel != ChatChannel.PlayerParty || IsCommsReceiverInRange(sender, target)))
+                        !recipients.Contains(target))
                     {
                         recipients.Add(target);
                     }
@@ -287,7 +311,26 @@ namespace SWLOR.Game.Server.Service
 
             if (outOfRangeCommsPartyMembers > 0)
             {
-                SendMessageToPC(sender, ColorToken.Red(CommsOutOfRangeMessage));
+                var dbSender = DB.Get<Player>(GetObjectUUID(sender));
+                if (dbSender?.Settings?.DisplayCommsOutOfRangeWarnings ?? true)
+                {
+                    SendMessageToPC(sender, ColorToken.Red(CommsOutOfRangeMessage));
+                }
+            }
+
+            // The speaker and the language being spoken are the same for every recipient, so resolve
+            // them once before dispatching rather than recomputing (and re-writing language state)
+            // per receiver.
+            var speaker = GetEffectiveChatSpeaker(sender);
+            var isHoloComRelay = sender != speaker;
+            var language = Language.GetActiveLanguage(speaker);
+
+            // Wookiees cannot speak any other language (but they can understand them).
+            // Swap their language if they attempt to speak in any other language.
+            if (GetRacialType(speaker) == RacialType.Wookiee && language != SkillType.Shyriiwook)
+            {
+                Language.SetActiveLanguage(speaker, SkillType.Shyriiwook);
+                language = SkillType.Shyriiwook;
             }
 
             // Now we have a list of who is going to actually receive a message, we need to modify
@@ -302,8 +345,6 @@ namespace SWLOR.Game.Server.Service
 
                 if (channel == ChatChannel.PlayerParty)
                 {
-                    finalMessage.Append("[Comms] ");
-
                     if (GetIsDM(receiver))
                     {
                         // Convenience for DMs - append the party members.
@@ -338,22 +379,21 @@ namespace SWLOR.Game.Server.Service
                         finalMessage.Append(" } ");
                     }
                 }
-                var speaker = GetEffectiveChatSpeaker(sender);
-                var language = Language.GetActiveLanguage(speaker);
 
-                // Wookiees cannot speak any other language (but they can understand them).
-                // Swap their language if they attempt to speak in any other language.
-                var race = GetRacialType(speaker);
-                if (race == RacialType.Wookiee && language != SkillType.Shyriiwook)
+                // HoloCom holograms have a deliberately generic object name because the nearby
+                // observers may know their owner by different names. Render the owner's chat name
+                // into the direct relay message separately for each observer instead of exposing the
+                // hologram's shared object name or globally renaming it.
+                if (isHoloComRelay)
                 {
-                    Language.SetActiveLanguage(speaker, SkillType.Shyriiwook);
-                    language = SkillType.Shyriiwook;
+                    finalMessage.Append(GetHoloComRelayChannelPrefix(channel));
+                    finalMessage.Append(PlayerName.GetColoredChatDisplayName(receiver, speaker));
+                    finalMessage.Append(": ");
                 }
 
                 var (r, g, b) = Language.GetColor(language);
 
-                if (dbReceiver != null &&
-                    dbReceiver.Settings.LanguageChatColors != null &&
+                if (dbReceiver?.Settings?.LanguageChatColors != null &&
                     dbReceiver.Settings.LanguageChatColors.ContainsKey(language))
                 {
                     r = dbReceiver.Settings.LanguageChatColors[language].Red;
@@ -378,8 +418,7 @@ namespace SWLOR.Game.Server.Service
 
                     if (component.IsOOC)
                     {
-                        if (dbReceiver != null &&
-                            dbReceiver.Settings.OOCChatColor != null)
+                        if (dbReceiver?.Settings?.OOCChatColor != null)
                         {
                             r = dbReceiver.Settings.OOCChatColor.Red;
                             g = dbReceiver.Settings.OOCChatColor.Green;
@@ -397,8 +436,7 @@ namespace SWLOR.Game.Server.Service
                     {
                         byte emoteRed, emoteGreen, emoteBlue;
 
-                        if (dbReceiver != null &&
-                            dbReceiver.Settings.EmoteChatColor != null)
+                        if (dbReceiver?.Settings?.EmoteChatColor != null)
                         {
                             emoteRed = dbReceiver.Settings.EmoteChatColor.Red;
                             emoteGreen = dbReceiver.Settings.EmoteChatColor.Green;
@@ -427,25 +465,52 @@ namespace SWLOR.Game.Server.Service
                     finalMessageColored = ColorToken.Orange(finalMessageColored);
                 }
 
-                SendProcessedChatMessage(channel, receiver, speaker, finalMessageColored);
+                SendProcessedChatMessage(channel, receiver, sender, speaker, finalMessageColored);
             }
+        }
+
+        private static string GetHoloComRelayChannelPrefix(ChatChannel channel)
+        {
+            if (channel == ChatChannel.PlayerWhisper)
+                return WhisperMessagePrefix;
+
+            if (channel == ChatChannel.PlayerParty)
+                return CommsMessagePrefix;
+
+            return string.Empty;
         }
 
         private static void SendProcessedChatMessage(
             ChatChannel channel,
             uint receiver,
-            uint speaker,
+            uint transportSpeaker,
+            uint identitySpeaker,
             string message)
         {
-            // Comms uses DMTalk to cross area boundaries without adding the native party chat label.
-            var finalChannel = channel == ChatChannel.PlayerParty
-                ? ChatChannel.DMTalk
-                : channel;
+            // Native Talk/Whisper packets cannot use the distant HoloCom owner as their sender, while
+            // using the area-local hologram would expose its generic shared object name. The caller has
+            // already rendered the owner's observer-specific chat name into the message, so deliver it
+            // directly without a native sender label. The hologram's ActionSpeakString still supplies
+            // the visible speaking animation that initiated this processed relay.
+            if (transportSpeaker != identitySpeaker)
+            {
+                ChatPlugin.SendMessage(ChatChannel.ServerMessage, message, transportSpeaker, receiver);
+                return;
+            }
 
+            // NWNX_Rename only patches the per-observer PC name override around three native chat
+            // functions - Party, Shout, and Tell (see the plugin's HOOK_CHAT registrations). Talk and
+            // Whisper are not among them; they render correctly today only because the speaker's
+            // object update is already visible/patched for a nearby observer. DM_Talk is not hooked at
+            // all, so routing cross-area Comms through it (as before) always rendered the speaker's
+            // true name regardless of the override. Route Comms through the native Party channel
+            // instead - Rename patches it, and an explicit per-receiver target dispatches directly
+            // rather than broadcasting to nearby party members, so it still crosses area/planet
+            // boundaries the same way DMTalk did.
             PlayerName.SendChatMessageWithChatNameOverride(
                 receiver,
-                speaker,
-                () => ChatPlugin.SendMessage(finalChannel, message, speaker, receiver));
+                identitySpeaker,
+                () => ChatPlugin.SendMessage(channel, message, identitySpeaker, receiver));
         }
 
         private static bool IsChatCommandMessage(string message)
@@ -737,9 +802,13 @@ namespace SWLOR.Game.Server.Service
 
                 if (length != -1)
                 {
+                    // This block only runs when an emote delimiter has closed (bracket, asterisk, or
+                    // double-colon), so the captured segment is always an emote and must carry the
+                    // emote (custom) color. The previous bracket-specific condition left bracketed
+                    // emotes uncolored and untranslated, rendering them as plain language-colored text.
                     var component = new CommunicationComponent
                     {
-                        IsCustomColor = workingOn != WorkingOnEmoteStyle.Bracket || message[indexStart] == '[',
+                        IsCustomColor = true,
                         IsTranslatable = false,
                         Text = message.Substring(indexStart, length)
                     };
@@ -867,7 +936,7 @@ namespace SWLOR.Game.Server.Service
                 var playerId = GetObjectUUID(player);
                 var dbPlayer = DB.Get<Player>(playerId);
 
-                return dbPlayer.EmoteStyle;
+                return dbPlayer?.EmoteStyle ?? EmoteStyle.Regular;
             }
 
             return EmoteStyle.Regular;
@@ -879,6 +948,9 @@ namespace SWLOR.Game.Server.Service
             {
                 var playerId = GetObjectUUID(player);
                 var dbPlayer = DB.Get<Player>(playerId);
+                if (dbPlayer == null)
+                    return;
+
                 dbPlayer.EmoteStyle = style;
                 DB.Set(dbPlayer);
             }

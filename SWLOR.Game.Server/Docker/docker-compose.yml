@@ -4,7 +4,7 @@ services:
         hostname: redis
         image: redislabs/redismod:latest
         volumes:
-          - ${PWD-.}/redis:/data
+          - ./redis:/data
         restart: unless-stopped
                 
     redis-commander:
@@ -22,23 +22,26 @@ services:
     swlor-server:
         hostname: nwnx-server
         stop_signal: SIGINT
-        image: zunath/nwn-dotnet:8193.37.15-1
-        env_file: ${PWD-.}/swlor.env
+        build:
+          context: .
+          dockerfile: Dockerfile
+        image: zunath/nwn-dotnet:8193.37.15-2
+        env_file: ./swlor.env
         links:
             - "redis:redis"
         stdin_open: true
         tty: true
         volumes:
-            - ${PWD-.}/logs:/nwn/run/logs.0
-            - ${PWD-.}/:/nwn/home
-            - ${PWD-.}/logs:/nwn/data/bin/linux-x86/logs.0
+            - ./logs:/nwn/run/logs.0
+            - ./:/nwn/home
+            - ./logs:/nwn/data/bin/linux-x86/logs.0
         ports:
             - "5121:5121/udp"
 
     background-services:
         hostname: background-services
         image: zunath/swlor-background-worker:latest
-        env_file: ${PWD-.}/swlor.env
+        env_file: ./swlor.env
         depends_on:
             - redis
         restart: unless-stopped

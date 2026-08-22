@@ -1,6 +1,5 @@
 using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Enumeration;
-using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -39,8 +38,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         // two-row tab panel (76f for two rows).
         private const float TabPanelHeight = 112f;
 
-        private static bool HazardsAreAvailable =>
-            ApplicationSettings.Get().ServerEnvironment != ServerEnvironmentType.Production;
+        private static bool HazardsAreAvailable
+        {
+            get
+            {
+                var environment = ApplicationSettings.Get().ServerEnvironment;
+                return environment == ServerEnvironmentType.Development ||
+                       environment == ServerEnvironmentType.Test;
+            }
+        }
 
         public GuiConstructedWindow BuildWindow()
         {

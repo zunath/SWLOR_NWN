@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
+using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -21,7 +22,7 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// When the module loads, cache all of the GUI windows for later retrieval.
         /// </summary>
-        [NWNEventHandler(ScriptName.OnSwlorSkillCache)]
+        [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
         public static void CacheData()
         {
             LoadWindowTemplates();
@@ -121,7 +122,11 @@ namespace SWLOR.Game.Server.Service
                 // A window that failed a client-side layout solve can report a degenerate
                 // size, which then persists on close and poisons every future open of that
                 // window at the broken size. Discard implausibly small saved sizes.
-                const float MinimumSaneDimension = 100f;
+                // Some intentional HUD windows are as small as 72x52, so only
+                // reject the non-positive geometry produced by a failed solve.
+                // A broad pixel threshold would erase valid saved positions for
+                // PlayerStatusPortrait and the other compact status windows.
+                const float MinimumSaneDimension = 1f;
                 if (playerGeometry.Width < MinimumSaneDimension ||
                     playerGeometry.Height < MinimumSaneDimension)
                 {
@@ -405,14 +410,48 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player))
                 return;
 
-            foreach (var windowType in _windowTypesByRefreshEvent[typeof(T)])
+            if (!_windowTypesByRefreshEvent.TryGetValue(typeof(T), out var windowTypes))
+                return;
+
+            var playerId = GetObjectUUID(player);
+            if (!_playerWindows.TryGetValue(playerId, out var playerWindows))
+                return;
+
+            foreach (var windowType in windowTypes)
             {
-                var playerId = GetObjectUUID(player);
-                var playerWindow = _playerWindows[playerId][windowType];
+                if (!playerWindows.TryGetValue(windowType, out var playerWindow))
+                    continue;
+
                 var windowId = BuildWindowId(windowType);
 
                 if(NuiFindWindow(player, windowId) != 0)
                     ((IGuiRefreshable<T>)playerWindow.ViewModel).Refresh(payload);
+            }
+        }
+
+        /// <summary>
+        /// Refreshes every open character sheet currently displaying the supplied target.
+        /// This includes sheets opened by another player, such as DM-inspected creatures.
+        /// </summary>
+        public static void PublishCharacterSheetRefreshEvent<T>(uint target, T payload)
+            where T : IGuiRefreshEvent
+        {
+            var windowId = BuildWindowId(GuiWindowType.CharacterSheet);
+
+            for (var observer = GetFirstPC(); GetIsObjectValid(observer); observer = GetNextPC())
+            {
+                var observerId = GetObjectUUID(observer);
+                if (!_playerWindows.TryGetValue(observerId, out var windows) ||
+                    !windows.TryGetValue(GuiWindowType.CharacterSheet, out var playerWindow) ||
+                    NuiFindWindow(observer, windowId) == 0 ||
+                    playerWindow.ViewModel is not CharacterSheetViewModel viewModel ||
+                    !viewModel.IsViewingTarget(target) ||
+                    viewModel is not IGuiRefreshable<T> refreshable)
+                {
+                    continue;
+                }
+
+                refreshable.Refresh(payload);
             }
         }
 

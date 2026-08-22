@@ -1,0 +1,317 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:factions="using:SWLOR.Toolset.Factions"
+        mc:Ignorable="d"
+        d:DesignWidth="1080" d:DesignHeight="760"
+        x:Class="SWLOR.Toolset.Factions.FactionEditorWindow"
+        x:DataType="factions:FactionEditorViewModel"
+        Title="Factions · SWLOR Toolset"
+        Icon="/Assets/swlor-logo.png"
+        Width="1080" Height="760"
+        MinWidth="820" MinHeight="620"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource PanelBrush}">
+
+  <Window.Styles>
+    <Style Selector="TextBlock.pageTitle">
+      <Setter Property="FontSize" Value="22" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="TextBlock.sectionTitle">
+      <Setter Property="FontSize" Value="15" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="TextBlock.kicker">
+      <Setter Property="FontSize" Value="11" />
+      <Setter Property="Foreground" Value="{DynamicResource InkTertiaryBrush}" />
+    </Style>
+    <Style Selector="Border.card">
+      <Setter Property="Padding" Value="16" />
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="Background" Value="{DynamicResource PanelRaisedBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource RuleBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+    </Style>
+    <Style Selector="ListBox.attitudes">
+      <Setter Property="Background" Value="Transparent" />
+      <Setter Property="BorderThickness" Value="0" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+    </Style>
+    <Style Selector="ListBox.attitudes ListBoxItem">
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+      <Setter Property="Padding" Value="11,6" />
+      <Setter Property="Margin" Value="0,0,4,0" />
+      <Setter Property="CornerRadius" Value="3" />
+      <Setter Property="Background" Value="{DynamicResource PanelBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource RuleBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+    </Style>
+    <Style Selector="ListBox.attitudes ListBoxItem:selected">
+      <Setter Property="Background" Value="{DynamicResource DockApplicationAccentBrushLow}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+    </Style>
+    <Style Selector="ListBox.factionList ListBoxItem">
+      <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    </Style>
+  </Window.Styles>
+
+  <Grid RowDefinitions="Auto,*,Auto">
+    <Border Grid.Row="0"
+            Padding="18,12"
+            Background="{DynamicResource PanelHeaderBrush}"
+            BorderBrush="{DynamicResource RuleBrush}"
+            BorderThickness="0,0,0,1">
+      <Grid ColumnDefinitions="*,Auto" ColumnSpacing="18">
+        <StackPanel>
+          <TextBlock Classes="pageTitle" Text="Factions" />
+          <TextBlock Classes="dim"
+                     Text="Set how each group initially reacts to every other group in this module." />
+        </StackPanel>
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6"
+                    VerticalAlignment="Center">
+          <Button Content="Undo" Command="{Binding UndoCommand}" />
+          <Button Content="Redo" Command="{Binding RedoCommand}" />
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <Grid Grid.Row="1" ColumnDefinitions="280,*" IsEnabled="{Binding !IsSaving}">
+      <Border Grid.Column="0"
+              Padding="12"
+              Background="{DynamicResource PanelRaisedBrush}"
+              BorderBrush="{DynamicResource RuleBrush}"
+              BorderThickness="0,0,1,0">
+        <Grid RowDefinitions="Auto,*,Auto,Auto">
+          <StackPanel Grid.Row="0" Margin="4,2,4,10">
+            <TextBlock Classes="kicker" Text="MODULE FACTIONS" />
+            <TextBlock Classes="dim" Text="Select one group to edit its reactions." />
+          </StackPanel>
+
+          <ListBox x:Name="FactionList" Grid.Row="1" Classes="factionList"
+                   ItemsSource="{Binding Factions}"
+                   SelectedItem="{Binding SelectedFaction, Mode=TwoWay}">
+            <ListBox.ItemTemplate>
+              <DataTemplate x:DataType="factions:FactionListItemViewModel">
+                <Grid ColumnDefinitions="*,Auto" Margin="1,6">
+                  <TextBlock Text="{Binding Name}" FontWeight="SemiBold"
+                             VerticalAlignment="Center"
+                             TextTrimming="CharacterEllipsis"
+                             ToolTip.Tip="{Binding Name}" />
+                  <Border Grid.Column="1" Margin="10,0,2,0" Padding="6,2"
+                          CornerRadius="3"
+                          Background="{DynamicResource PanelBrush}"
+                          IsVisible="{Binding IsStandard}">
+                    <TextBlock Classes="kicker" FontSize="10" Text="STANDARD" />
+                  </Border>
+                </Grid>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+
+          <StackPanel Grid.Row="2" Margin="0,10,0,0" Spacing="6">
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="6">
+              <Button Grid.Column="0" Content="Add faction"
+                      Command="{Binding BeginAddFactionCommand}" />
+              <Button Grid.Column="1" Content="Remove"
+                      Command="{Binding RequestRemoveFactionCommand}" />
+            </Grid>
+          </StackPanel>
+
+          <Border Grid.Row="3" Classes="card" Margin="0,10,0,0"
+                  IsVisible="{Binding IsAddingFaction}">
+            <StackPanel Spacing="8">
+              <TextBlock Classes="sectionTitle" Text="New faction" />
+              <TextBox Text="{Binding NewFactionName, Mode=TwoWay}"
+                       Watermark="Faction name" />
+              <TextBlock Classes="kicker" Text="START FROM" />
+              <ComboBox ItemsSource="{Binding ParentChoices}"
+                        SelectedItem="{Binding SelectedNewFactionParent, Mode=TwoWay}">
+                <ComboBox.ItemTemplate>
+                  <DataTemplate x:DataType="factions:FactionListItemViewModel">
+                    <TextBlock Text="{Binding Name}" />
+                  </DataTemplate>
+                </ComboBox.ItemTemplate>
+              </ComboBox>
+              <TextBlock Classes="dim" TextWrapping="Wrap"
+                         Text="The parent supplies the starting attitudes and receives any members if this faction is later removed." />
+              <Grid ColumnDefinitions="*,*" ColumnSpacing="6">
+                <Button Content="Cancel" Command="{Binding CancelAddFactionCommand}" />
+                <Button Grid.Column="1" Classes="primary" Content="Create"
+                        Command="{Binding CreateFactionCommand}" />
+              </Grid>
+            </StackPanel>
+          </Border>
+        </Grid>
+      </Border>
+
+      <Grid Grid.Column="1">
+        <Grid IsVisible="{Binding !IsConfirmingRemove}"
+              RowDefinitions="Auto,*"
+              Margin="20,16">
+          <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="16"
+                Margin="2,0,2,12">
+            <StackPanel>
+              <TextBlock Classes="pageTitle" Text="{Binding SelectedFactionName}" />
+              <TextBlock Classes="dim" Text="{Binding UsedBy}"
+                         IsVisible="{Binding HasUsageSummary}" />
+            </StackPanel>
+            <TextBlock Grid.Column="1" Classes="kicker"
+                       VerticalAlignment="Center" Text="repute.fac" />
+          </Grid>
+
+          <TabControl Grid.Row="1" SelectedIndex="{Binding EditorPage, Mode=TwoWay}">
+            <TabItem Header="Simple editor">
+              <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                <StackPanel Margin="4,14,10,18" Spacing="14">
+                  <Border Classes="card">
+                    <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="140,*"
+                          RowSpacing="10" ColumnSpacing="12">
+                      <TextBlock Grid.Row="0" Grid.Column="0" VerticalAlignment="Center"
+                                 Text="Name" />
+                      <TextBox Grid.Row="0" Grid.Column="1"
+                               Text="{Binding FactionName, Mode=TwoWay}"
+                               IsReadOnly="{Binding IsNameReadOnly}" />
+                      <TextBlock Grid.Row="1" Grid.Column="0" VerticalAlignment="Center"
+                                 Text="Template parent" />
+                      <TextBlock Grid.Row="1" Grid.Column="1" VerticalAlignment="Center"
+                                 Text="{Binding ParentName}" />
+                      <TextBlock Grid.Row="2" Grid.Column="0" VerticalAlignment="Top"
+                                 Text="Global effect" />
+                      <StackPanel Grid.Row="2" Grid.Column="1">
+                        <CheckBox IsChecked="{Binding GlobalEffect, Mode=TwoWay}"
+                                  Content="The whole faction notices actions against any member" />
+                        <TextBlock Classes="dim" Margin="24,3,0,0" TextWrapping="Wrap"
+                                   Text="When off, only members who perceive the action react. This changes runtime reputation reactions, not the starting attitudes below." />
+                      </StackPanel>
+                    </Grid>
+                  </Border>
+
+                  <StackPanel>
+                    <TextBlock Classes="sectionTitle" Text="Starting attitudes" />
+                    <TextBlock Classes="dim" TextWrapping="Wrap"
+                               Text="Choose how this faction reacts to each target. The opposite direction can be different." />
+                  </StackPanel>
+
+                  <ItemsControl ItemsSource="{Binding Relationships}">
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate x:DataType="factions:FactionRelationshipRowViewModel">
+                        <Border Classes="card" Margin="0,0,0,8">
+                          <Grid ColumnDefinitions="190,*,Auto" ColumnSpacing="12">
+                            <StackPanel VerticalAlignment="Center">
+                              <TextBlock FontWeight="SemiBold" Text="{Binding TargetName}" />
+                              <TextBlock Classes="dim" FontSize="11"
+                                         Text="{Binding OppositeSummary}" />
+                            </StackPanel>
+                            <ListBox Grid.Column="1" Classes="attitudes"
+                                     ItemsSource="{Binding AttitudeOptions}"
+                                     SelectedItem="{Binding SelectedAttitude, Mode=TwoWay}">
+                              <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate><UniformGrid Rows="1" /></ItemsPanelTemplate>
+                              </ListBox.ItemsPanel>
+                            </ListBox>
+                            <Button Grid.Column="2" VerticalAlignment="Center"
+                                    Content="Match opposite"
+                                    Command="{Binding MatchOppositeCommand}" />
+                          </Grid>
+                        </Border>
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                </StackPanel>
+              </ScrollViewer>
+            </TabItem>
+
+            <TabItem Header="Advanced">
+              <Grid Margin="4,14,10,18" RowDefinitions="Auto,*,Auto">
+                <Border Grid.Row="0" Classes="card" Margin="0,0,0,12">
+                  <StackPanel>
+                    <TextBlock Classes="sectionTitle" Text="Advanced reputation values" />
+                    <TextBlock Classes="dim" TextWrapping="Wrap"
+                               Text="Use exact 0–100 values when the three simple categories are not enough. NWN treats 0–10 as hostile, 11–89 as neutral, and 90–100 as friendly." />
+                  </StackPanel>
+                </Border>
+                <DataGrid Grid.Row="1"
+                          ItemsSource="{Binding Relationships}"
+                          SelectedItem="{Binding SelectedRelationship, Mode=TwoWay}"
+                          AutoGenerateColumns="False"
+                          CanUserSortColumns="True"
+                          GridLinesVisibility="Horizontal"
+                          IsReadOnly="False">
+                  <DataGrid.Columns>
+                    <DataGridTextColumn Header="Target faction" Width="1.35*"
+                                        Binding="{Binding TargetName}" IsReadOnly="True" />
+                    <DataGridTemplateColumn Header="Value" Width="130">
+                      <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate x:DataType="factions:FactionRelationshipRowViewModel">
+                          <NumericUpDown Value="{Binding Value, Mode=TwoWay}"
+                                         Minimum="0" Maximum="100" Increment="1"
+                                         FormatString="0" Margin="4" />
+                        </DataTemplate>
+                      </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="Result" Width="120"
+                                        Binding="{Binding Result}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="Opposite direction" Width="1.7*"
+                                        Binding="{Binding OppositeSummary}" IsReadOnly="True" />
+                  </DataGrid.Columns>
+                </DataGrid>
+                <Border Grid.Row="2" Classes="card" Margin="0,12,0,0"
+                        IsVisible="{Binding HasSelectedRelationship}">
+                  <TextBlock Text="{Binding SelectedRelationshipSummary}" TextWrapping="Wrap" />
+                </Border>
+              </Grid>
+            </TabItem>
+          </TabControl>
+        </Grid>
+
+        <Border Classes="card"
+                Margin="40"
+                MaxWidth="640"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                IsVisible="{Binding IsConfirmingRemove}">
+          <StackPanel Spacing="12">
+            <TextBlock Classes="pageTitle" Text="{Binding RemoveHeadline}" />
+            <TextBlock Text="{Binding RemoveSummary}" TextWrapping="Wrap" />
+            <Border Padding="12" CornerRadius="3"
+                    Background="{DynamicResource PanelBrush}"
+                    BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1">
+              <StackPanel>
+                <TextBlock Classes="kicker" Text="MEMBERS MOVE TO" />
+                <TextBlock FontSize="17" FontWeight="SemiBold"
+                           Text="{Binding RemoveDestination}" />
+              </StackPanel>
+            </Border>
+            <TextBlock Classes="dim" TextWrapping="Wrap"
+                       Text="Nothing is written until Save. Removing a faction also compacts higher faction IDs and updates affected module resources together." />
+            <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+              <Button Grid.Column="1" Content="Cancel"
+                      Command="{Binding CancelRemoveFactionCommand}" />
+              <Button Grid.Column="2" Classes="danger" Content="Remove faction"
+                      Command="{Binding ConfirmRemoveFactionCommand}" />
+            </Grid>
+          </StackPanel>
+        </Border>
+      </Grid>
+    </Grid>
+
+    <Border Grid.Row="2"
+            Padding="14,9"
+            Background="{DynamicResource PanelHeaderBrush}"
+            BorderBrush="{DynamicResource RuleBrush}"
+            BorderThickness="0,1,0,0">
+      <Grid ColumnDefinitions="*,Auto" ColumnSpacing="18">
+        <TextBlock VerticalAlignment="Center" Classes="dim"
+                   Text="{Binding StatusText}" TextTrimming="CharacterEllipsis" />
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+          <Button Content="Revert" Command="{Binding RevertCommand}" />
+          <Button Content="Close" Click="OnCloseClicked" />
+          <Button Classes="primary" Content="Save" Command="{Binding SaveCommand}" />
+        </StackPanel>
+      </Grid>
+    </Border>
+  </Grid>
+</Window>

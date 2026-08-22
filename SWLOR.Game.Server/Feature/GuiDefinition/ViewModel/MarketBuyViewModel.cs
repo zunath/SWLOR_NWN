@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Feature.GuiDefinition.Component;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
@@ -223,26 +222,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void UpdatePagination(long totalRecordCount)
         {
             _skipPaginationSearch = true;
-            var pageNumbers = new GuiBindingList<GuiComboEntry>();
-            var pages = (int)(totalRecordCount / ListingsPerPage + (totalRecordCount % ListingsPerPage == 0 ? 0 : 1));
-
-            // Always add page 1. In the event no items are for sale,
-            // it still needs to be displayed.
-            pageNumbers.Add(new GuiComboEntry($"Page 1", 0));
-            for (var x = 2; x <= pages; x++)
-            {
-                pageNumbers.Add(new GuiComboEntry($"Page {x}", x-1));
-            }
-
-            PageNumbers = pageNumbers;
-
-            // In the event no results are found, default the index to zero
-            if (pages <= 0)
-                SelectedPageIndex = 0;
-            // Otherwise, if current page is outside the new page bounds,
-            // set it to the last page in the list.
-            else if (SelectedPageIndex > pages - 1)
-                SelectedPageIndex = pages - 1;
+            var pagination = GuiPaginationState.Create(
+                totalRecordCount,
+                ListingsPerPage,
+                SelectedPageIndex);
+            PageNumbers = pagination.PageNumbers;
+            SelectedPageIndex = pagination.SelectedPageIndex;
 
             _skipPaginationSearch = false;
         }
@@ -330,7 +315,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 // Item's price has been changed since the player's search.
                 // Notify them and refresh the search.
-                if (dbItem.Price != _rows[index].Price)
+                if (dbItem.Price != row.Price)
                 {
                     FloatingTextStringOnCreature("The price of this item has been changed by the seller. Please try again.", Player, false);
                     Search();
@@ -352,7 +337,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ObjectPlugin.AcquireItem(Player, item);
 
                 // Remove this item from the client's search results.
-                ItemsTable.RemoveRowAt(this, _rows, index);
+                var currentIndex = _rows.IndexOf(row);
+                if (currentIndex >= 0)
+                    ItemsTable.RemoveRowAt(this, _rows, currentIndex);
 
                 // Remove the item from the database.
                 DB.Delete<MarketItem>(itemId);

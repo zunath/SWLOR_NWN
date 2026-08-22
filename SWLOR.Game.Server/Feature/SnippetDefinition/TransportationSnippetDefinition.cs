@@ -22,6 +22,8 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
         {
             _builder.Create("action-teleport")
                 .Description("Teleports a player to the waypoint with the specified tag.")
+                .Phrase("sends the player to {waypointTag}")
+                .Argument("waypointTag", SnippetArgumentType.WaypointTag)
                 .ActionsTakenAction((player, args) =>
                 {
                     if (args.Length <= 0)
@@ -29,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         const string Error = "'action-teleport' requires a waypoint tag argument.";
                         SendMessageToPC(player, Error);
                         Log.Write(LogGroup.Error, Error);
-                        return;
+                        return false;
                     }
 
                     var waypointTag = args[0];
@@ -40,11 +42,12 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                         var error = $"Could not locate waypoint with tag '{waypointTag}' for snippet 'action-teleport'";
                         SendMessageToPC(player, error);
                         Log.Write(LogGroup.Error, error);
-                        return;
+                        return false;
                     }
 
                     var location = GetLocation(waypoint);
                     AssignCommand(player, () => ActionJumpToLocation(location));
+                    return true;
                 });
         }
     }

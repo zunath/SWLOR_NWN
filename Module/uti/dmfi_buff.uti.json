@@ -33,7 +33,7 @@
   "Description": {
     "type": "cexolocstring",
     "value": {
-      "0": ""
+      "0": "A clever little tool to allow you to quickly buff a single target or a group of enemies to punish your favorite players.\n\n~~\nCreated by:  Demetrious\n"
     }
   },
   "Identified": {
@@ -109,6 +109,26 @@
   "TemplateResRef": {
     "type": "resref",
     "value": "dmfi_buff"
+  },
+  "VarTable": {
+    "type": "list",
+    "value": [
+      {
+        "__struct_id": 0,
+        "Name": {
+          "type": "cexostring",
+          "value": "NO_ECONOMY"
+        },
+        "Type": {
+          "type": "dword",
+          "value": 1
+        },
+        "Value": {
+          "type": "int",
+          "value": 1
+        }
+      }
+    ]
   },
   "xModelPart1": {
     "type": "word",

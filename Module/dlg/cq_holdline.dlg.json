@@ -64,7 +64,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hold the Line is no longer a lesson on my ledger. You proved it in Dantooine Medical Sublevel; keep proving it when nobody is keeping score."
+            "0": "You held it the way it should have been held the first time. The sublevel is a hospital again - Sera is back on nights, and the beds are full of patients instead of barricades. Whatever door you stand in front of next, it is lucky to have you."
           }
         }
       },
@@ -113,7 +113,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not yet. Hold the Line is not a conversation I start on instinct or reputation. Come back when your work can survive the proof I keep for Dantooine Medical Sublevel."
+            "0": "Thirty seconds. That is how long the inner doors held while we carried the burn cases out. Jorra counted them aloud so the orderlies would not run. I still hear her at eleven... forgive me. You carry yourself like someone people follow, but this ward needs more than promise. When there is nothing left anyone can teach you about holding people steady, come and find me."
           }
         }
       },
@@ -258,7 +258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "A line in a clinic is not a symbol. It is bodies behind you. The medical sublevel needs someone who understands that. Go to Dantooine Medical Sublevel on Dantooine, defeat the Hold the Line adepts, and bring back the Hold the Line field report."
+            "0": "You came. Good. The sublevel under this facility was my ward for twenty years, and the staff I trained have sealed it from the inside. They call what they practice down there holding the line. It is not. They drill in my old triage hall and turn the sick away at the door. Six of their adepts run the intake now. Put them down, and bring me the Triage Ward Ledger they keep at the desk. I signed every name in that book, and I want it back where names still mean something."
           }
         }
       },
@@ -307,7 +307,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Dantooine Medical Sublevel. I want proof, not a story about almost having it."
+            "0": "Then take the sublevel key. It opens the sealed service door below this facility - the one they think I forgot. Start in the triage hall; the adepts will find you before you find them. And walk in like you belong to the ward. You do, now."
           }
         }
       },
@@ -376,7 +376,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hold the Line is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "In a battle there is ground behind you. In a hospital there is no ground - there are beds, and the people in them cannot move. Holding the line here means you do not step back, because the step back lands on someone who trusted you. That is the whole discipline. The rest is practice."
           }
         }
       },
@@ -445,7 +445,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dantooine Medical Sublevel is on Dantooine. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "My own people. Orderlies I trained, ward guards I chose, a charge nurse I trusted with the night shift. Something in the doctrine curdled for them. They decided the ward could only be kept safe if it was kept empty, so they barricaded the sublevel against its own patients. I do not need them punished. I need them stopped."
           }
         }
       },
@@ -514,7 +514,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "The ledger is the ward's memory. Admissions, allergies, who is owed a visit and who has nobody. Without it, everyone down there is a stranger, and strangers are easy to turn away. Bring it back, and the sublevel starts being a hospital again - one name at a time."
           }
         }
       },
@@ -563,7 +563,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dantooine Medical Sublevel still holds your first proof for Hold the Line. Finish the target there before you bring me anything else."
+            "0": "The triage hall is still theirs. Six adepts, and my ledger on the desk between them. Do not let the ward wait longer than it must."
           }
         }
       },
@@ -632,7 +632,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Hold the Line lesson clean."
+            "0": "You are carrying my book. I would know its weight anywhere - I carried it through two collapses. Let me see it."
           }
         }
       },
@@ -681,7 +681,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Hold the Line is one step closer to belonging to you."
+            "0": "There. Marn. Sera's mother. Old Toben, who lies about his breathing. Names again, not obstacles. You did more than clear a room - you gave the ward back its memory. Rest. I will have more for you, and it will be heavier."
           }
         }
       },
@@ -826,7 +826,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Hold the Line proof is waiting in Dantooine Medical Sublevel. This one is about second proof, not repetition. Go to Dantooine Medical Sublevel on Dantooine, defeat the Hold the Line specialists, and bring back the Hold the Line calibration core."
+            "0": "The ledger told me what they are doing for supplies. They cut the kolto feeds to the upper wards and run the pressure down to their own barricades. My recovery patients are healing on bandages and patience. Their specialists hold the conduit junctions - five of them, and they were the best I ever trained at standing still. Clear the junctions and bring me the Kolto Conduit Coupler. Without it they cannot starve my wards again, and with it I can restore the flow the same day."
           }
         }
       },
@@ -875,7 +875,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Dantooine Medical Sublevel. I want proof, not a story about almost having it."
+            "0": "Good. The junction rooms are past the triage hall, deeper in - follow the pipes and the cold. The specialists will not chase you. They will wait where the conduits meet and make you come to them. That patience is the lesson, if you live through it."
           }
         }
       },
@@ -944,7 +944,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hold the Line is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "Denn is one of them, I would wager. He once stood a whole night at a quarantine door while people screamed at him from both sides, and he never raised his voice. That is what a specialist is - someone who has decided in advance that they will not move. If Denn is there, do not talk to him. He is better at waiting than you are."
           }
         }
       },
@@ -1013,7 +1013,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dantooine Medical Sublevel is on Dantooine. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "That coupler is the heart valve of this facility. Every drop of kolto that reaches my wards passes through it. They pulled it so no one could undo their rationing without coming to them on their knees. I do not kneel well anymore. Bring me the valve instead."
           }
         }
       },
@@ -1082,7 +1082,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "Cold, first - they shut the heat to the junction level. Then quiet. The specialists do not drill and do not shout. You will walk into a room that looks empty, and it will not be. If you bring anyone, keep them talking, and if you hear nothing back, you have found the enemy."
           }
         }
       },
@@ -1131,7 +1131,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dantooine Medical Sublevel still holds your second proof for Hold the Line. Finish the target there before you bring me anything else."
+            "0": "My wards are still dry. The junctions, the five who hold them, and the coupler. Everything else can wait."
           }
         }
       },
@@ -1200,7 +1200,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Hold the Line lesson clean."
+            "0": "The pressure gauges climbed an hour ago - I felt the pipes hum through the floor. That is the coupler in your pack, or I am no judge of plumbing. Give it here."
           }
         }
       },
@@ -1249,7 +1249,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Hold the Line is one step closer to belonging to you."
+            "0": "Listen. That hiss in the walls is kolto moving where it should. Recovery gets full flow tonight for the first time in a season. You are not a stranger to this ward anymore - the night staff know your name, and I use it carefully. Be ready for what I ask next. It is the door I have been dreading."
           }
         }
       },
@@ -1394,7 +1394,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Hold the Line proof is waiting in Dantooine Medical Sublevel. This one is about breach proof, not repetition. Go to Dantooine Medical Sublevel on Dantooine, defeat the Hold the Line warden, and bring back the Hold the Line broken seal."
+            "0": "Now the part I have put off. The recovery ward below is sealed behind its own doors, and the one who holds them is their warden - the charge nurse I gave the night shift to, once. She has stood post so long the others believe the door cannot open while she lives. Perhaps they are right. So you will not go alone. Bring shoulders on both sides of yours, two at least, people you would trust with a stretcher in a corridor fire. Put the warden down and bring me the Fractured Ward Sigil she wears. It was the ward's seal of care before they made it a lock."
           }
         }
       },
@@ -1443,7 +1443,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Dantooine Medical Sublevel. I want proof, not a story about almost having it."
+            "0": "Take whoever you bring past the junction level and down the recovery stair. She will meet you at the door - she will not hide, hiding is not in her. When it is done, do not linger over her. Take the sigil and come home."
           }
         }
       },
@@ -1512,7 +1512,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hold the Line is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "Isa. I taught her that a door held is a life saved, and she learned it too well. When the doctrine curdled she was the first to stand post and the last who will ever leave it. If I went down there she would open the door for me - and then close it behind me forever. That is why it must be you."
           }
         }
       },
@@ -1581,7 +1581,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dantooine Medical Sublevel is on Dantooine. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "Because I have carried too many people out of stairwells who went in alone. A breach is not a duel. Someone holds her attention, someone watches the flank, someone is free to act when the moment turns. That is the arithmetic of a doorway, and it does not work with one. I never sent a lone orderly into a collapsing ward, and I will not start with you."
           }
         }
       },
@@ -1650,7 +1650,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "The sigil was cast when this facility opened - the mark of the matron's ward, carried by whoever answered for every bed on the floor. It cracked the night everything went wrong down there, and Isa wears it fractured, like a wound she is proud of. Bring it to me. Broken things can be answered for. Worn like that, they only keep the wound open."
           }
         }
       },
@@ -1699,7 +1699,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dantooine Medical Sublevel still holds your breach proof for Hold the Line. Finish the target there before you bring me anything else."
+            "0": "Isa still holds the recovery door, and I still want the sigil she wears. Do not go back down until there are shoulders on both sides of yours."
           }
         }
       },
@@ -1768,7 +1768,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Hold the Line lesson clean."
+            "0": "You came back up the stairs slower than you went down. I know what that weight is. Show me the sigil."
           }
         }
       },
@@ -1817,7 +1817,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Hold the Line is one step closer to belonging to you."
+            "0": "Fractured, but whole enough. I will have it recast when this is over - the crack can stay, as a record. You did what I could not, and you did it without making it cruel. The night staff lit a lamp for Isa. So did I. What is left below is the circle that taught her, and then the one who taught them all."
           }
         }
       },
@@ -1962,7 +1962,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Hold the Line proof is waiting in Dantooine Medical Sublevel. This one is about circle proof, not repetition. Go to Dantooine Medical Sublevel on Dantooine, defeat the Hold the Line inner circle, and bring back the Hold the Line command mark."
+            "0": "Four of them left, before the last door. They were my senior staff - the ones who sat with me when the ward charter was read, who knew every name I knew. They call themselves the inner circle now, and they hold the sublevel's deep wards as if patients were a siege. One of them carries the Matron's Ward Token. It was mine. You put it in the hand of whoever speaks for the ward when the matron cannot, and they took it to make their mutiny look like succession. Defeat all four and bring my token home."
           }
         }
       },
@@ -2011,7 +2011,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Dantooine Medical Sublevel. I want proof, not a story about almost having it."
+            "0": "They will not stand together - that was always their flaw. Each holds a deep ward and each believes theirs is the one that matters. Take your time, take your people, and take each room as its own night shift. The token will be with whichever of them still believes they are me."
           }
         }
       },
@@ -2080,7 +2080,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hold the Line is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "Veth ran supply and never once lost a crate. Amara kept the isolation ward gentle, which is the hardest gentleness there is. The other two came after my time, trained on the curdled doctrine from their first shift - I do not know their names, and that is its own grief. They will not fight like guards. They will fight like people defending the only thing they think they have left."
           }
         }
       },
@@ -2149,7 +2149,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dantooine Medical Sublevel is on Dantooine. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "A flat disc, worn smooth, older than the facility's charter. Whoever holds it answers for every bed. That is all it means, and that is everything. In their hands it says the ward belongs to them. In yours, on the way back up the stairs, it will say the ward belongs to its patients again. Do you see now why I sent you for a book first? You have been earning the right to carry that token since the day you walked in."
           }
         }
       },
@@ -2218,7 +2218,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "The deep wards are a maze of privacy screens and dead lifts - sight lines of three beds at most. They will use that. Bring the same people who stood with you at Isa's door; rooms like those punish anyone who clears them alone, and I would rather you inherit my token than my regrets."
           }
         }
       },
@@ -2267,7 +2267,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dantooine Medical Sublevel still holds your circle proof for Hold the Line. Finish the target there before you bring me anything else."
+            "0": "Four senior staff, four deep wards, and my token in one of their pockets. Finish it, and then we will talk about the last door."
           }
         }
       },
@@ -2336,7 +2336,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Hold the Line lesson clean."
+            "0": "Your hand has been closed around something since you walked in. I know the shape of it. Let me see my token."
           }
         }
       },
@@ -2385,7 +2385,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Hold the Line is one step closer to belonging to you."
+            "0": "Smooth as I remember. My thumb wore this edge down over twenty years of night rounds - feel it, there. When this is over, I will not take it back. Note that I did not say if. There is one room left, and the one inside it has held a line longer than anyone alive. Go and rest first. That is not a suggestion. Matrons do not make suggestions."
           }
         }
       },
@@ -2530,7 +2530,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "The next Hold the Line proof is waiting in Dantooine Medical Sublevel. This one is about mastery proof, not repetition. Go to Dantooine Medical Sublevel on Dantooine, defeat the Hold the Line master, and return with the final proof."
+            "0": "The last door. Behind it is the one who wrote their doctrine - the master, though the staff only ever called him the Anchor. He held this sublevel through the outbreak year, longer than anyone believed a person could stand, and it saved every soul on the floor. Then the crisis ended and he refused to stop holding. Everything you have fought down there grew in his shadow, and what you have been learning, he perfected - the stand that does not break lives in him the way it will live in you. There is no relic to bring me this time. His stand ending is the proof. And hear me: his ward has yet to discharge anyone who went in without help. Do not walk in alone."
           }
         }
       },
@@ -2579,7 +2579,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Good. Use the access I have authorized and keep your attention on Dantooine Medical Sublevel. I want proof, not a story about almost having it."
+            "0": "Take the people who have bled for this with you, and when you face him, do not try to outlast him - you cannot, no one can. Break the thing he is protecting instead: his certainty that he is still needed. Hold your own line in front of his, and let him see it held by more than one pair of shoulders. That is the only argument he has ever lost."
           }
         }
       },
@@ -2648,7 +2648,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Hold the Line is the part of the discipline that remains after the easy motions stop helping. I am asking because this proof belongs to my work, and because a public training floor would get people hurt."
+            "0": "He held the line for the wrong reason, in the end. Not for the patients - for the holding itself. Somewhere in the outbreak year the stand stopped being a means and became the man. That is the failure I have been vaccinating you against with every errand. The ledger, the kolto, Isa's door, my token: you hold for the names behind you. The moment you hold for your own legend, you are him."
           }
         }
       },
@@ -2717,7 +2717,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dantooine Medical Sublevel is on Dantooine. The area builder will place the route and the gated entry; once it exists, follow that access point and keep to the capstone space."
+            "0": "When it is done, we open the sublevel. Sera's mother goes back to a real recovery bed. The deep wards get sunlight lamps, and the triage hall gets its desk back. And the doctrine gets taught again - properly, by someone who has carried it up and down those stairs. I had planned to say by me. We both know I mean by you."
           }
         }
       },
@@ -2786,7 +2786,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Expect level 50 opposition built for this proof. Do not drag them into public routes, and do not expect ordinary patrol habits from the final encounter."
+            "0": "He will not rage and he will not chase. He will stand, and the standing will feel like a wall falling on you slowly, for as long as you insist on being there. Alone, you would spend everything you have and he would not have moved. Bring the friends who held the breach with you - rested, willing, more than one - and make him divide a stillness that was never meant to be divided."
           }
         }
       },
@@ -2835,7 +2835,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Dantooine Medical Sublevel still holds your mastery proof for Hold the Line. Finish the target there before you bring me anything else."
+            "0": "The Anchor still holds the last ward, and every night he holds it is a night the sublevel stays a fortress. Gather your people. Finish his stand."
           }
         }
       },
@@ -2904,7 +2904,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "That is the proof I asked for. Hand it over and I will mark the Hold the Line lesson clean."
+            "0": "The floor is quiet. Not the barricade quiet - the real kind, the kind a ward makes when it finally sleeps. He is finished, then. Tell me it was clean."
           }
         }
       },
@@ -2953,7 +2953,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Recorded. Credits are hazard pay; the real reward is that Hold the Line is one step closer to belonging to you."
+            "0": "Then it is over, and you were the one holding when it ended. Take the lesson with my witness: Hold the Line is yours now, the true stand, the one that keeps its feet because of the names behind it. The credits are for your people - spend them on whoever stood beside you. And when someone one day asks you how long a line can hold, tell them the truth. Thirty seconds. Then thirty more. For as long as someone you love is behind it."
           }
         }
       }
@@ -3023,7 +3023,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Tell me the task again."
           }
         }
       },
@@ -3100,7 +3100,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the first proof."
+            "0": "I'll bring your ledger home."
           }
         }
       },
@@ -3165,7 +3165,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Hold the Line demand?"
+            "0": "What does holding the line mean, here?"
           }
         }
       },
@@ -3230,7 +3230,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Who sealed the sublevel?"
           }
         }
       },
@@ -3295,7 +3295,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "Why the ledger, of everything down there?"
           }
         }
       },
@@ -3340,7 +3340,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Not yet. I'd fail you tired."
           }
         }
       },
@@ -3417,7 +3417,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "Your ledger, matron. Every page accounted for."
           }
         }
       },
@@ -3482,7 +3482,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Tell me about the junctions again."
           }
         }
       },
@@ -3559,7 +3559,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the second proof."
+            "0": "Your wards will have their kolto."
           }
         }
       },
@@ -3624,7 +3624,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Hold the Line demand?"
+            "0": "Who is holding the junctions?"
           }
         }
       },
@@ -3689,7 +3689,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "What does the coupler give you back?"
           }
         }
       },
@@ -3754,7 +3754,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "What is waiting for me down there?"
           }
         }
       },
@@ -3799,7 +3799,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Not yet. Give me a night first."
           }
         }
       },
@@ -3876,7 +3876,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "The coupler. Your pipes should already be singing."
           }
         }
       },
@@ -3941,7 +3941,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "About the warden's door again."
           }
         }
       },
@@ -4018,7 +4018,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the breach proof."
+            "0": "I'll bring friends, and I'll bring back the sigil."
           }
         }
       },
@@ -4083,7 +4083,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Hold the Line demand?"
+            "0": "Who is the warden to you?"
           }
         }
       },
@@ -4148,7 +4148,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "Why won't you let me go alone?"
           }
         }
       },
@@ -4213,7 +4213,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "What is the sigil?"
           }
         }
       },
@@ -4258,7 +4258,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Not yet. I don't have the right people with me."
           }
         }
       },
@@ -4335,7 +4335,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "The sigil. She held until the very end."
           }
         }
       },
@@ -4400,7 +4400,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Go over the deep wards again."
           }
         }
       },
@@ -4477,7 +4477,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the circle proof."
+            "0": "All four, and your token comes home."
           }
         }
       },
@@ -4542,7 +4542,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Hold the Line demand?"
+            "0": "Who are the inner circle?"
           }
         }
       },
@@ -4607,7 +4607,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "What does the token mean?"
           }
         }
       },
@@ -4672,7 +4672,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "How will they defend the deep wards?"
           }
         }
       },
@@ -4717,7 +4717,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Not yet. Let me stand my people down a day."
           }
         }
       },
@@ -4794,7 +4794,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "Your token, matron. Carried up the stairs, like you said."
           }
         }
       },
@@ -4859,7 +4859,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Back to the proof."
+            "0": "Tell me about the Anchor again."
           }
         }
       },
@@ -4936,7 +4936,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "I will take the mastery proof."
+            "0": "Then his stand ends. We go together, all of us."
           }
         }
       },
@@ -5001,7 +5001,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What does Hold the Line demand?"
+            "0": "Why did he fall, if he held so long?"
           }
         }
       },
@@ -5066,7 +5066,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Where is this proof held?"
+            "0": "What happens to the sublevel after?"
           }
         }
       },
@@ -5131,7 +5131,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "What should I expect inside?"
+            "0": "How do we fight a man who cannot be moved?"
           }
         }
       },
@@ -5176,7 +5176,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Not right now."
+            "0": "Not yet. If we went now, I'd be going alone - and you taught me better."
           }
         }
       },
@@ -5253,7 +5253,7 @@
         "Text": {
           "type": "cexolocstring",
           "value": {
-            "0": "Here is the proof."
+            "0": "It's done. He fell standing, and no one fell with him."
           }
         }
       }

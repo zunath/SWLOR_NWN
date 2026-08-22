@@ -1,0 +1,54 @@
+{
+  "Id": "rev_shuttleguard",
+  "Title": "rev_shuttleguard",
+  "EntryPoints": [
+    {
+      "TargetNodeId": "entry-00000",
+      "Conditions": []
+    }
+  ],
+  "Nodes": {
+    "entry-00000": {
+      "Id": "entry-00000",
+      "SpeakerName": "",
+      "SpeakerTag": "",
+      "PortraitResref": "",
+      "SoundResref": "",
+      "Animation": 0,
+      "AnimationLoops": true,
+      "Delay": 4294967295,
+      "Comment": "",
+      "JournalQuest": "",
+      "Text": [
+        {
+          "Text": "This Honor Guard stands a watchful vigil over those who would seek passage upon the shuttle to Project Praxeum. Armed with holo-scanners and a charged blaster rifle, he checks those who passes by.\n\nOOC: WARNING - The Praxeum Project is highly classified amongst the Lin-Harik Loyalist. Any betrayal of its existence will be taken as permission for consequences amounting to the permanent death of your character. Please seek DM oversight if you are bringing any unauthorized individuals to the Twilight Praxeum. Please seek DM oversight if you are not of the  Lin-Harik Loyalist and seeking to enter the Twilight Praxeum. Failure to do so would be considered a breach of the server's rules.",
+          "Style": 0,
+          "Color": null
+        }
+      ],
+      "OnEnterActions": [],
+      "Choices": []
+    }
+  },
+  "Choices": {},
+  "DefaultNpcDelay": 0,
+  "DefaultPlayerDelay": 0,
+  "PreventZoomIn": false,
+  "OnStartActions": [],
+  "OnEndActions": [
+    {
+      "Key": "system.execute-owner-script",
+      "Arguments": [
+        "nw_walk_wp"
+      ]
+    }
+  ],
+  "OnAbortActions": [
+    {
+      "Key": "system.execute-owner-script",
+      "Arguments": [
+        "nw_walk_wp"
+      ]
+    }
+  ]
+}

@@ -8,18 +8,7 @@ namespace SWLOR.Game.Server.Tests.Feature;
 public class PlayerAbilityRadialMenuTests
 {
     private const int GeneratedFeatStart = 2000;
-    private const int GeneratedFeatEnd = 2717;
-
-    private static readonly HashSet<FeatType> ManualHotbarFeats =
-    [
-        FeatType.ForceJudgment1,
-        FeatType.ForceJudgment2,
-        FeatType.ForceJudgment3,
-        FeatType.PurifyingWave1,
-        FeatType.RadiantLance1,
-        FeatType.RadiantLance2,
-        FeatType.RadiantLance3
-    ];
+    private const int GeneratedFeatEnd = 2899;
 
     [Test]
     public void CustomPlayerAbilityFeats_AreLinkedAndAvailableOnFighterMenu()
@@ -28,33 +17,41 @@ public class PlayerAbilityRadialMenuTests
         var featRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "feat.2da");
         var spellRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "spells.2da");
         var classFeatRows = Read2da(root / "SWLOR_Haks" / "sw_2da" / "CLS_FEAT_FIGHT.2da");
-        var playerAbilityFeats = BuildPlayerAbilityFeats()
-            .Where(feat => (int)feat >= GeneratedFeatStart)
-            .OrderBy(feat => (int)feat)
+        var playerAbilities = BuildPlayerAbilities()
+            .Where(entry => (int)entry.Key >= GeneratedFeatStart)
+            .OrderBy(entry => (int)entry.Key)
             .ToArray();
-        var playerAbilityFeatIds = playerAbilityFeats
-            .Select(feat => (int)feat)
+        var playerAbilityFeatIds = playerAbilities
+            .Select(entry => (int)entry.Key)
             .ToHashSet();
         var npcAbilityFeatIds = BuildNpcAbilityFeats()
             .Select(feat => (int)feat)
             .ToHashSet();
+        // Mimicry trait techniques are passive: they are granted (and appear in the class feat
+        // table) like other techniques but are not cast, so they intentionally have no spells.2da
+        // link. Their passiveness is validated by MimicryTests instead.
+        var mimicryTraitFeatIds = BuildMimicryTraitFeatIds();
         var failures = new List<string>();
 
-        playerAbilityFeats.Should().NotBeEmpty();
+        playerAbilities.Should().NotBeEmpty();
 
-        foreach (var feat in playerAbilityFeats)
+        foreach (var (feat, ability) in playerAbilities)
         {
             var featId = (int)feat;
             featRows.Should().ContainKey(featId, $"{feat} must exist in feat.2da");
 
             var featRow = featRows[featId];
             var featLabel = featRow["LABEL"];
-            featRow["SPELLID"].Should().NotBe("****", $"{feat} must link to spells.2da");
 
-            var spellId = int.Parse(featRow["SPELLID"]);
-            spellRows.Should().ContainKey(spellId, $"{feat} must have a spell row");
-            spellRows[spellId]["Label"].Should().Be(featLabel, $"{feat} spell row should use the feat.2da label");
-            spellRows[spellId]["FeatID"].Should().Be(featId.ToString(), $"{feat} spell row should point back to its feat");
+            if (!mimicryTraitFeatIds.Contains(featId))
+            {
+                featRow["SPELLID"].Should().NotBe("****", $"{feat} must link to spells.2da");
+
+                var spellId = int.Parse(featRow["SPELLID"]);
+                spellRows.Should().ContainKey(spellId, $"{feat} must have a spell row");
+                spellRows[spellId]["Label"].Should().Be(featLabel, $"{feat} spell row should use the feat.2da label");
+                spellRows[spellId]["FeatID"].Should().Be(featId.ToString(), $"{feat} spell row should point back to its feat");
+            }
 
             var classFeatEntry = classFeatRows
                 .Should()
@@ -66,9 +63,25 @@ public class PlayerAbilityRadialMenuTests
             classFeatRow["List"].Should().Be("1");
             classFeatRow["GrantedOnLevel"].Should().Be("99");
             classFeatRow["OnMenu"].Should().Be("1");
-            if (ManualHotbarFeats.Contains(feat))
+            var requiresManualTargetCursor =
+                ability.IsHostileAbility &&
+                ability.ActivationType != AbilityActivationType.Weapon &&
+                (ability.RequiresTarget || ability.RequiresLocationTarget);
+            if (requiresManualTargetCursor)
             {
-                classFeatEntry.Key.Should().BeLessThan(1024, $"{feat} must be within the class feat rows scanned for manual hotbar selection");
+                if (featRow["TARGETSELF"] != "****" || featRow["HostileFeat"] != "1")
+                {
+                    failures.Add(
+                        $"{feat} requires a manual hostile cursor but feat.2da has " +
+                        $"TARGETSELF={featRow["TARGETSELF"]} HostileFeat={featRow["HostileFeat"]}.");
+                }
+
+                if (classFeatEntry.Key >= 1024)
+                {
+                    failures.Add(
+                        $"{feat} requires a manual targeting cursor but its class-feat row is " +
+                        $"{classFeatEntry.Key}, outside the client hotbar scan range.");
+                }
             }
         }
 
@@ -118,10 +131,10 @@ public class PlayerAbilityRadialMenuTests
         failures.Should().BeEmpty(string.Join(Environment.NewLine, failures));
     }
 
-    private static HashSet<FeatType> BuildPlayerAbilityFeats()
+    private static Dictionary<FeatType, AbilityDetail> BuildPlayerAbilities()
     {
         var definitionType = typeof(IAbilityListDefinition);
-        var feats = new HashSet<FeatType>();
+        var abilities = new Dictionary<FeatType, AbilityDetail>();
         var definitions = definitionType.Assembly
             .GetTypes()
             .Where(type =>
@@ -133,13 +146,38 @@ public class PlayerAbilityRadialMenuTests
 
         foreach (var definition in definitions)
         {
-            foreach (var feat in definition.BuildAbilities().Keys)
+            foreach (var (feat, ability) in definition.BuildAbilities())
             {
-                feats.Add(feat);
+                abilities[feat] = ability;
             }
         }
 
-        return feats;
+        return abilities;
+    }
+
+    private static HashSet<int> BuildMimicryTraitFeatIds()
+    {
+        var definitionType = typeof(IAbilityListDefinition);
+        var ids = new HashSet<int>();
+        var definitions = definitionType.Assembly
+            .GetTypes()
+            .Where(type =>
+                type.IsClass &&
+                !type.IsAbstract &&
+                definitionType.IsAssignableFrom(type) &&
+                type.Namespace == "SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry")
+            .Select(type => (IAbilityListDefinition)Activator.CreateInstance(type)!);
+
+        foreach (var definition in definitions)
+        {
+            foreach (var (feat, detail) in definition.BuildAbilities())
+            {
+                if (detail.IsMimicryTrait)
+                    ids.Add((int)feat);
+            }
+        }
+
+        return ids;
     }
 
     private static HashSet<FeatType> BuildNpcAbilityFeats()

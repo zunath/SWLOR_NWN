@@ -4,16 +4,11 @@ using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Service.GuiService.Component
 {
-    public class GuiGroup<T> : GuiExpandableComponent<T>, IGuiScrollable
+    public class GuiGroup<T> : GuiExpandableComponent<T>
         where T: IGuiViewModel
     {
         private bool ShowBorder { get; set; }
-
-        /// <summary>
-        /// The scroll mode of the group. Readable so layout validation can treat
-        /// scrollable groups as decoupling their content from parent constraints.
-        /// </summary>
-        public NuiScrollbars Scrollbars { get; private set; }
+        private NuiScrollbars Scrollbars { get; set; }
 
         public GuiGroup()
         {

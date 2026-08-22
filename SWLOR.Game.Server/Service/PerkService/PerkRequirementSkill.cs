@@ -17,6 +17,8 @@ namespace SWLOR.Game.Server.Service.PerkService
             RequiredRank = requiredRank;
         }
 
+        public PerkRequirementCategory Category => PerkRequirementCategory.Skill;
+
         public string CheckRequirements(uint player)
         {
             var playerId = GetObjectUUID(player);

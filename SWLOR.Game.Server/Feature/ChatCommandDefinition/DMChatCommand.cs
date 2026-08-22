@@ -1,15 +1,20 @@
 using System.Collections.Generic;
+using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.FactionService;
+using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.Game.Server.Service.LogService;
 using Faction = SWLOR.Game.Server.Service.Faction;
 using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
+using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -21,6 +26,9 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
     {
         private readonly ChatCommandBuilder _builder = new ChatCommandBuilder();
         private static readonly ApplicationSettings _appSettings = ApplicationSettings.Get();
+        private static string[] _spawnBeastEggHelpMessages = Array.Empty<string>();
+
+        private const int SpawnEggTypesPerHelpMessage = 20;
 
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
         {
@@ -37,6 +45,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             SetLocalVariable();
             SetPortrait();
             SpawnItem();
+            SpawnBeastEgg();
             GiveRPXP();
             ResetPerkCooldown();
             PlayVFX();
@@ -57,8 +66,112 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             GetScale();
             ShipStats();
             RepairShip();
+            LearnAllTechniques();
+            UnlockCapstoneQuests();
 
             return _builder.Build();
+        }
+
+        [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
+        public static void CacheSpawnBeastEggHelp()
+        {
+            var beastTypes = BeastMastery.GetAllBeastTypes()
+                .OrderBy(type => type.ToString())
+                .ToArray();
+            var messages = new List<string>
+            {
+                "Usage: /spawnegg <beast type>",
+                "Available beast types:"
+            };
+
+            for (var index = 0; index < beastTypes.Length; index += SpawnEggTypesPerHelpMessage)
+            {
+                messages.Add(string.Join(", ", beastTypes.Skip(index).Take(SpawnEggTypesPerHelpMessage)));
+            }
+
+            _spawnBeastEggHelpMessages = messages.ToArray();
+        }
+
+        private void UnlockCapstoneQuests()
+        {
+            _builder.Create("unlockcapstones")
+                .Description("Marks every perk-gating quest chain (capstone mastery lines) complete for yourself. Testing tool.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
+                .Action((user, target, location, args) =>
+                {
+                    if (!GetIsPC(user) || GetIsDM(user))
+                    {
+                        SendMessageToPC(user, "Only players may unlock capstone quest gates.");
+                        return;
+                    }
+
+                    var questIds = GetPerkGatingQuestChains();
+                    foreach (var questId in questIds)
+                    {
+                        Quest.ForceCompleteQuest(user, questId);
+                    }
+
+                    Log.Write(LogGroup.DM,
+                        $"Player '{GetName(user)}' ({GetObjectUUID(user)}) used unlockcapstones to mark {questIds.Count} perk-gating quest(s) complete: {string.Join(", ", questIds.OrderBy(x => x))}");
+
+                    SendMessageToPC(user,
+                        $"Marked {questIds.Count} perk-gating quest(s) complete. Quest-gated perks can now be purchased and their abilities tested.");
+                });
+        }
+
+        private static HashSet<string> GetPerkGatingQuestChains()
+        {
+            var questIds = new HashSet<string>();
+            foreach (var perk in Perk.GetAllPerks().Values)
+            {
+                foreach (var perkLevel in perk.PerkLevels.Values)
+                {
+                    foreach (var requirement in perkLevel.Requirements.OfType<PerkRequirementQuest>())
+                    {
+                        CollectQuestChain(requirement.QuestId, questIds);
+                    }
+                }
+            }
+
+            return questIds;
+        }
+
+        private static void CollectQuestChain(string questId, ISet<string> questIds)
+        {
+            if (string.IsNullOrWhiteSpace(questId) || questIds.Contains(questId))
+                return;
+
+            var quest = Quest.GetQuestByIdOrDefault(questId);
+            if (quest == null)
+                return;
+
+            questIds.Add(questId);
+
+            foreach (var prerequisite in quest.Prerequisites.OfType<RequiredQuestPrerequisite>())
+            {
+                CollectQuestChain(prerequisite.QuestId, questIds);
+            }
+        }
+
+        private void LearnAllTechniques()
+        {
+            _builder.Create("learntechniques")
+                .Description("Grants (learns) every Mimicry technique to yourself. Testing tool.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
+                .Action((user, target, location, args) =>
+                {
+                    if (!GetIsPC(user) || GetIsDM(user))
+                    {
+                        SendMessageToPC(user, "Only players may learn Mimicry techniques.");
+                        return;
+                    }
+
+                    var learnedCount = Mimicry.GrantAllTechniques(user);
+                    SendMessageToPC(user,
+                        $"Learned {learnedCount} new Mimicry technique(s). Open the Techniques window to equip them.");
+                });
         }
 
         private void CopyTargetItem()
@@ -550,6 +663,50 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
 
                     SetIdentified(item, true);
+                });
+        }
+
+        private void SpawnBeastEgg()
+        {
+            _builder.Create("spawnegg")
+                .Description("Spawns a beast egg by beast type. Use /spawnegg help to list available types.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
+                .Validate((user, args) =>
+                {
+                    if (args.Length <= 0)
+                    {
+                        return ColorToken.Red("Please specify a beast type. Use /spawnegg help to list available types.");
+                    }
+
+                    if (args[0].Equals("help", StringComparison.OrdinalIgnoreCase))
+                        return string.Empty;
+
+                    if (!Enum.TryParse(args[0], true, out BeastType beastType) ||
+                        !BeastMastery.GetAllBeastTypes().Contains(beastType))
+                    {
+                        return ColorToken.Red($"Unknown beast type '{args[0]}'. Use /spawnegg help to list available types.");
+                    }
+
+                    return string.Empty;
+                })
+                .Action((user, target, location, args) =>
+                {
+                    if (args[0].Equals("help", StringComparison.OrdinalIgnoreCase))
+                    {
+                        foreach (var message in _spawnBeastEggHelpMessages)
+                        {
+                            SendMessageToPC(user, message);
+                        }
+
+                        return;
+                    }
+
+                    Enum.TryParse(args[0], true, out BeastType beastType);
+                    var egg = BeastMastery.CreateBeastEgg(beastType, user);
+                    var beastDetail = BeastMastery.GetBeastDetail(beastType);
+
+                    SendMessageToPC(user, $"Spawned '{GetName(egg)}' for beast type {beastType} ({beastDetail.Name}).");
                 });
         }
 

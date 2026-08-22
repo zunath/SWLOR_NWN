@@ -135,7 +135,7 @@ namespace SWLOR.Game.Server.Feature.RecipeDefinition.SmitheryRecipeDefinition
             // Frontier Necklace
             _builder.Create(RecipeType.FrontierNecklace, SkillType.Smithery)
                 .Category(RecipeCategoryType.Necklace)
-                .Resref("frontier_necklace")
+                .Resref("frontier_necklac")
                 .Level(20)
                 .Quantity(1)
                 .EnhancementSlots(RecipeEnhancementType.Armor, 2)

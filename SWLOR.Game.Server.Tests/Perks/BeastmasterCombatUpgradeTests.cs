@@ -65,7 +65,8 @@ public class BeastmasterCombatUpgradeTests
         new AlphaRhythm1BeastStatusEffect().StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(10);
         new Assault1StatusEffect().StatGroup.Stats[StatType.EvasionPercentAdjustment].Should().Be(6);
         new Assault3StatusEffect().StatGroup.Stats[StatType.EvasionPercentAdjustment].Should().Be(14);
-        new DistractingFeint1StatusEffect().StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment].Should().Be(-6);
+        new DistractingFeint1StatusEffect().StatGroup.Stats[StatType.AccuracyPercentAdjustment].Should().Be(-4);
+        new DistractingFeint1StatusEffect().StatGroup.Stats[StatType.EvasionPercentAdjustment].Should().Be(-4);
         new EvasiveChallenge1SelfStatusEffect().StatGroup.Stats[StatType.AvoidedAttackSingleStaminaRestore].Should().Be(1);
         new Intercept2StatusEffect().StatGroup.Stats[StatType.DamageTakenRedirectToStatusSourcePercent].Should().Be(50);
         new PredatorsMark1StatusEffect(10).StatGroup.Stats[StatType.DamageTakenFromStatusSourcePercentAdjustment].Should().Be(10);

@@ -482,9 +482,9 @@ public class PlayerNameRecognitionTests
 
         definitionSource.Should().Contain("Identity");
         definitionSource.Should().NotContain("Nameplates");
-        definitionSource.Should().Contain("Show My Descriptor");
+        definitionSource.Should().Contain("Show My Public Description");
         definitionSource.Should().Contain("BindIsChecked(model => model.ShowOwnDescriptor)");
-        definitionSource.Should().Contain("Show Others' Descriptor");
+        definitionSource.Should().Contain("Show Others' Public Descriptions");
         definitionSource.Should().Contain("BindIsChecked(model => model.ShowDescriptorsForNamedPlayers)");
         definitionSource.Should().NotContain(".SetText(\"Account\")");
         definitionSource.Should().Contain("Hide My Account Name");
@@ -824,8 +824,8 @@ public class PlayerNameRecognitionTests
         disguiseDefinitionSource.Should().Contain(".SetWidth(FormFieldWidth)");
 
         // Field labels spell out who sees each value; lengths come from constants, never magic numbers.
-        disguiseDefinitionSource.Should().Contain("AddTextField(col, \"Private Name  (only you see this)\", model => model.PrivateName, Disguise.MaxPrivateNameLength);");
-        disguiseDefinitionSource.Should().Contain("AddTextField(col, \"Public Descriptor  (shown to others)\", model => model.Descriptor, PlayerName.MaxKnownNameLength);");
+        disguiseDefinitionSource.Should().Contain("AddTextField(col, \"Private Slot Label  (only you see this)\", model => model.PrivateName, Disguise.MaxPrivateNameLength);");
+        disguiseDefinitionSource.Should().Contain("AddTextField(col, \"Public Description  (shown to others)\", model => model.Descriptor, PlayerName.MaxKnownNameLength);");
         disguiseDefinitionSource.Should().NotContain(", model => model.PrivateName, 32)");
         disguiseDefinitionSource.Should().NotContain(", model => model.Descriptor, 64)");
         disguiseDefinitionSource.Should().Contain("Hide Account Name");

@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private uint _controllerPlayer;
         private bool _hasImplicitCloseChoice;
         private bool _isClosing;
+        private int _lastDialogueSegmentLimit;
 
         public string SpeakerName
         {
@@ -68,10 +69,35 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _session = initialPayload.Session;
             _controllerPlayer = initialPayload.ControllerPlayer;
             _isClosing = false;
+            _lastDialogueSegmentLimit = 0;
 
             try
             {
                 RefreshConversation();
+            }
+            catch (Exception ex)
+            {
+                HandleRuntimeError(ex);
+            }
+        }
+
+        protected override void OnClientPropertyUpdated(string propertyName)
+        {
+            if (propertyName != nameof(Geometry) ||
+                _session == null ||
+                _session.HasEnded ||
+                _isClosing)
+            {
+                return;
+            }
+
+            try
+            {
+                var segmentCharacterLimit = CalculateDialogueSegmentLimit(Geometry?.Width ?? 650f);
+                if (segmentCharacterLimit == _lastDialogueSegmentLimit)
+                    return;
+
+                RefreshConversation(false);
             }
             catch (Exception ex)
             {
@@ -129,7 +155,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _isClosing = false;
         };
 
-        private void RefreshConversation()
+        private void RefreshConversation(bool playPresentation = true)
         {
             var node = _session.CurrentNode;
             if (node == null)
@@ -139,17 +165,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SpeakerName = ResolveSpeakerName(node, speaker);
             PortraitResref = ResolvePortrait(node, speaker);
             HasPortrait = !string.IsNullOrWhiteSpace(PortraitResref);
-            PlayPresentation(speaker, node.SoundResref, node.Animation, node.AnimationLoops);
+            if (playPresentation)
+                PlayPresentation(speaker, node.SoundResref, node.Animation, node.AnimationLoops);
 
             var lineTexts = new GuiBindingList<string>();
             var lineColors = new GuiBindingList<GuiColor>();
+            var segmentCharacterLimit = CalculateDialogueSegmentLimit(Geometry?.Width ?? 650f);
             foreach (var block in _session.CurrentText)
             {
                 if (block == null || string.IsNullOrWhiteSpace(block.Text))
                     continue;
 
                 var resolvedText = NormalizeNuiText(_session.ResolveText(block.Text));
-                foreach (var segment in SplitDialogueText(resolvedText))
+                foreach (var segment in SplitDialogueText(resolvedText, segmentCharacterLimit))
                 {
                     lineTexts.Add(segment);
                     lineColors.Add(ToGuiColor(block));
@@ -184,34 +212,53 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             LineColors = lineColors;
             ChoiceTexts = choiceTexts;
             ChoiceColors = choiceColors;
+            _lastDialogueSegmentLimit = segmentCharacterLimit;
         }
 
-        private static IEnumerable<string> SplitDialogueText(string text)
+        private static int CalculateDialogueSegmentLimit(float windowWidth)
         {
-            const int segmentCharacterLimit = 320;
-            const int minimumPreferredSegmentLength = segmentCharacterLimit / 2;
+            const float defaultWindowWidth = 650f;
+            const float nonDialogueWidth = 190f;
+            const float estimatedCharacterWidth = 8f;
 
+            // NUI lists require a fixed row height and do not expose font measurement. Keep each
+            // segment to one estimated display line so the text widget cannot wrap within a row and
+            // introduce extra vertical space before the next segment.
+            var effectiveWindowWidth = windowWidth > 0f ? windowWidth : defaultWindowWidth;
+            var dialogueWidth = Math.Max(estimatedCharacterWidth, effectiveWindowWidth - nonDialogueWidth);
+            var charactersPerLine = (int)Math.Floor(dialogueWidth / estimatedCharacterWidth);
+
+            return Math.Max(charactersPerLine, 1);
+        }
+
+        private static IEnumerable<string> SplitDialogueText(string text, int segmentCharacterLimit)
+        {
             if (string.IsNullOrWhiteSpace(text))
                 yield break;
 
-            var remaining = text.Trim();
-            while (remaining.Length > segmentCharacterLimit)
+            var normalizedText = text
+                .Replace("\r\n", "\n", StringComparison.Ordinal)
+                .Replace('\r', '\n');
+
+            foreach (var line in normalizedText.Split('\n'))
             {
-                var splitIndex = remaining.LastIndexOf('\n', segmentCharacterLimit);
-                if (splitIndex < minimumPreferredSegmentLength)
-                    splitIndex = remaining.LastIndexOf(' ', segmentCharacterLimit);
-                if (splitIndex < minimumPreferredSegmentLength)
-                    splitIndex = segmentCharacterLimit;
+                var remaining = line.Trim();
+                while (remaining.Length > segmentCharacterLimit)
+                {
+                    var splitIndex = remaining.LastIndexOf(' ', segmentCharacterLimit);
+                    if (splitIndex <= 0)
+                        splitIndex = segmentCharacterLimit;
 
-                var segment = remaining[..splitIndex].Trim();
-                if (segment.Length > 0)
-                    yield return segment;
+                    var segment = remaining[..splitIndex].Trim();
+                    if (segment.Length > 0)
+                        yield return segment;
 
-                remaining = remaining[splitIndex..].TrimStart();
+                    remaining = remaining[splitIndex..].TrimStart();
+                }
+
+                if (remaining.Length > 0)
+                    yield return remaining;
             }
-
-            if (remaining.Length > 0)
-                yield return remaining;
         }
 
         private uint ResolveSpeakerObject(ConversationNode node)

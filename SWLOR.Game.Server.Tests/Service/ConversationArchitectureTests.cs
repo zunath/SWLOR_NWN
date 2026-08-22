@@ -76,6 +76,51 @@ public class ConversationArchitectureTests
     }
 
     [Test]
+    public void EveryDirectlyColoredCodeDrivenHeader_WrapsItsEntireTextInOneColor()
+    {
+        var root = FindRepositoryRoot().FullName;
+        var dialogDirectory = Path.Combine(
+            root,
+            "SWLOR.Game.Server",
+            "Feature",
+            "DialogDefinition");
+        var errors = new List<string>();
+        var assignmentPattern = new Regex(
+            @"page\.Header\s*\+?=\s*(?<expression>.*?);",
+            RegexOptions.Singleline);
+
+        foreach (var path in Directory.EnumerateFiles(dialogDirectory, "*.cs"))
+        {
+            var source = File.ReadAllText(path);
+            foreach (Match assignment in assignmentPattern.Matches(source))
+            {
+                var expression = assignment.Groups["expression"].Value.Trim();
+                var colorRunCount = Regex.Matches(expression, @"ColorToken\.\w+\(").Count;
+                if (colorRunCount == 0)
+                    continue;
+
+                if (colorRunCount != 1 ||
+                    !expression.StartsWith("ColorToken.", StringComparison.Ordinal) ||
+                    expression.Contains('+'))
+                {
+                    errors.Add($"{Path.GetFileName(path)}: {expression}");
+                }
+            }
+        }
+
+        errors.Should().BeEmpty(
+            "mixed inline header colors must be corrected in the conversation definition instead of flattened by shared rendering code");
+
+        var markupSource = File.ReadAllText(Path.Combine(
+            root,
+            "SWLOR.Game.Server",
+            "Service",
+            "ConversationService",
+            "ConversationMarkup.cs"));
+        markupSource.Should().NotContain("CollapseForHeader");
+    }
+
+    [Test]
     public void EveryAuthoredDialog_IsMigratedOrUsesTheApprovedDmfiNativePath()
     {
         var root = FindRepositoryRoot().FullName;
@@ -157,7 +202,7 @@ public class ConversationArchitectureTests
     }
 
     [Test]
-    public void ConversationWindow_UsesOneNpcTextScrollbarAndAStableTitle()
+    public void ConversationWindow_UsesCompactNpcTextRowsAndAStableTitle()
     {
         var root = FindRepositoryRoot().FullName;
         var definitionSource = File.ReadAllText(Path.Combine(
@@ -177,10 +222,35 @@ public class ConversationArchitectureTests
 
         var textPanelSource = definitionSource[textPanelStart..textPanelEnd];
         textPanelSource.Should().Contain(".SetScrollbars(NuiScrollbars.None)",
-            "dialogue text must wrap without adding a nested scrollbar");
+            "individual dialogue lines must not add a nested scrollbar");
         textPanelSource.Should().Contain(".SetScrollbars(NuiScrollbars.Y)",
             "the containing dialogue list owns the panel's only scrollbar");
         textPanelSource.Should().NotContain(".SetScrollbars(NuiScrollbars.Auto)");
+        textPanelSource.Should().Contain(".SetPadding(4f)",
+            "compact dialogue rows must retain reduced text padding");
+        textPanelSource.Should().NotContain(".SetPadding(8f)");
+        textPanelSource.Should().Contain(".SetHeight(24f)",
+            "each text widget should fit one display line rather than wrapping inside a fixed-height row");
+        textPanelSource.Should().Contain(".SetRowHeight(28f)",
+            "successive dialogue lines should flow without multi-line row spacing");
+        textPanelSource.Should().NotContain(".SetHeight(48f)");
+        textPanelSource.Should().NotContain(".SetRowHeight(56f)");
+        textPanelSource.Should().NotContain(".SetHeight(196f)");
+        textPanelSource.Should().NotContain(".SetRowHeight(208f)");
+
+        var viewModelSource = File.ReadAllText(Path.Combine(
+            root,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "ConversationViewModel.cs"));
+        viewModelSource.Should().Contain("RefreshConversation(false)",
+            "resizing should reflow the text for the available width");
+        viewModelSource.Should().Contain("segmentCharacterLimit == _lastDialogueSegmentLimit",
+            "position, height, and equivalent-width geometry events should not rebuild conversation bindings");
+        viewModelSource.Should().NotContain("MinimumWindowWidth");
+        viewModelSource.Should().NotContain("EnsureReadableWindowGeometry");
     }
 
     [Test]
@@ -192,11 +262,141 @@ public class ConversationArchitectureTests
         method.Should().NotBeNull();
 
         var source = string.Join(" ", Enumerable.Repeat("dialogue", 100));
-        var segments = ((IEnumerable<string>)method!.Invoke(null, new object[] { source })!).ToArray();
+        var segments = ((IEnumerable<string>)method!.Invoke(null, new object[] { source, 80 })!).ToArray();
 
         segments.Should().HaveCountGreaterThan(1);
-        segments.Should().OnlyContain(segment => segment.Length <= 320);
+        segments.Should().OnlyContain(segment => segment.Length <= 80);
         string.Join(" ", segments).Should().Be(source);
+    }
+
+    [Test]
+    public void ConversationWindow_UsesTheAvailableWidthWhenSplittingRows()
+    {
+        var limitMethod = typeof(ConversationViewModel).GetMethod(
+            "CalculateDialogueSegmentLimit",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+        limitMethod.Should().NotBeNull();
+
+        ((int)limitMethod!.Invoke(null, new object[] { 650f })!).Should().Be(57);
+        ((int)limitMethod.Invoke(null, new object[] { 400f })!).Should().Be(26);
+        ((int)limitMethod.Invoke(null, new object[] { 300f })!).Should().Be(13);
+        ((int)limitMethod.Invoke(null, new object[] { 208f })!).Should().Be(2);
+        ((int)limitMethod.Invoke(null, new object[] { 200f })!).Should().Be(1);
+        ((int)limitMethod.Invoke(null, new object[] { 180f })!).Should().Be(1);
+
+        var splitMethod = typeof(ConversationViewModel).GetMethod(
+            "SplitDialogueText",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+        var source = string.Join(" ", Enumerable.Repeat("responsive", 30));
+        var segmentLimit = (int)limitMethod.Invoke(null, new object[] { 400f })!;
+        var segments = ((IEnumerable<string>)splitMethod!.Invoke(
+            null,
+            new object[] { source, segmentLimit })!).ToArray();
+
+        segments.Should().OnlyContain(segment => segment.Length <= segmentLimit);
+        string.Join(" ", segments).Should().Be(source);
+    }
+
+    [Test]
+    public void DefaultWidthConversationText_FlowsThroughSingleLineRows()
+    {
+        var limitMethod = typeof(ConversationViewModel).GetMethod(
+            "CalculateDialogueSegmentLimit",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+        var splitMethod = typeof(ConversationViewModel).GetMethod(
+            "SplitDialogueText",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+        limitMethod.Should().NotBeNull();
+        splitMethod.Should().NotBeNull();
+
+        const string source =
+            "We will be landing onto CZ-220 shortly. Please make sure you have all your belongings before exiting the ship.";
+        var segmentLimit = (int)limitMethod!.Invoke(null, new object[] { 650f })!;
+        var segments = ((IEnumerable<string>)splitMethod!.Invoke(
+            null,
+            new object[] { source, segmentLimit })!).ToArray();
+
+        segments.Should().Equal(
+            "We will be landing onto CZ-220 shortly. Please make sure",
+            "you have all your belongings before exiting the ship.");
+        segments.Should().OnlyContain(segment => segment.Length <= segmentLimit);
+    }
+
+    [Test]
+    public void NarrowConversationRows_PreserveAvailableWordBoundaries()
+    {
+        var method = typeof(ConversationViewModel).GetMethod(
+            "SplitDialogueText",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+        method.Should().NotBeNull();
+
+        const string source = "A real wipe can end it";
+        var segments = ((IEnumerable<string>)method!.Invoke(null, new object[] { source, 4 })!).ToArray();
+
+        segments.Should().Equal("A", "real", "wipe", "can", "end", "it");
+        string.Join(" ", segments).Should().Be(source);
+    }
+
+    [Test]
+    public void ExplicitConversationLines_AreSplitIntoSeparateCompactRows()
+    {
+        var method = typeof(ConversationViewModel).GetMethod(
+            "SplitDialogueText",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+        method.Should().NotBeNull();
+
+        const string source = "Destination: Dantooine\r\nArriving in: 5 minutes\n\nReady.";
+        var segments = ((IEnumerable<string>)method!.Invoke(null, new object[] { source, 80 })!).ToArray();
+
+        segments.Should().Equal(
+            "Destination: Dantooine",
+            "Arriving in: 5 minutes",
+            "Ready.");
+    }
+
+    [Test]
+    public void EveryAuthoredConversationBlock_FitsCompactRows()
+    {
+        var splitMethod = typeof(ConversationViewModel).GetMethod(
+            "SplitDialogueText",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+        var limitMethod = typeof(ConversationViewModel).GetMethod(
+            "CalculateDialogueSegmentLimit",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+        splitMethod.Should().NotBeNull();
+        limitMethod.Should().NotBeNull();
+        var defaultSegmentLimit = (int)limitMethod!.Invoke(null, new object[] { 650f })!;
+
+        var conversationDirectory = Path.Combine(
+            FindRepositoryRoot().FullName,
+            "SWLOR.Game.Server",
+            "ConversationData");
+        var errors = new List<string>();
+
+        foreach (var path in Directory.EnumerateFiles(conversationDirectory, "*.conversation.json"))
+        {
+            var document = JObject.Parse(File.ReadAllText(path));
+            foreach (var node in document["Nodes"]?.Children<JProperty>() ?? [])
+            {
+                foreach (var block in node.Value["Text"]?.Children<JObject>() ?? [])
+                {
+                    var source = block["Text"]?.Value<string>() ?? string.Empty;
+                    var segments = ((IEnumerable<string>)splitMethod!.Invoke(
+                        null,
+                        new object[] { source, defaultSegmentLimit })!).ToArray();
+                    if (!string.IsNullOrWhiteSpace(source) && segments.Length == 0)
+                        errors.Add($"{Path.GetFileName(path)}:{node.Name} produced no display rows");
+                    if (segments.Any(segment =>
+                            segment.Length > defaultSegmentLimit ||
+                            segment.Contains('\n') ||
+                            segment.Contains('\r')))
+                        errors.Add($"{Path.GetFileName(path)}:{node.Name} produced an oversized display row");
+                }
+            }
+        }
+
+        errors.Should().BeEmpty(
+            "all authored dialogue must pass through the compact, word-safe row layout");
     }
 
     [Test]

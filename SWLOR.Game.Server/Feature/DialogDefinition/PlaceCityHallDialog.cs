@@ -65,11 +65,11 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
             {
                 var city = Property.GetLayoutByType(PropertyLayoutType.City);
                 page.Header = "Placing a City Hall structure will claim the area to be used as a city. Please review the following details about this land.\n\n" +
-                              $"{ColorToken.Green("Initial Price:")} {city.InitialPrice} credits\n" +
-                              $"{ColorToken.Green("Price Per Day:")} {city.PricePerDay} credits\n" +
-                              $"{ColorToken.Green("Structure Limit:")} {city.StructureLimit}\n" +
-                              $"{ColorToken.Green("Building Limit:")} {city.BuildingLimit}\n\n" +
-                              $"{ColorToken.Red("WARNING:")} Placing this city hall will make you mayor of this land. Every three weeks (real world time) an election will be held to vote for the new mayor. You will be required to participate or you will lose your position as Mayor.\n\n" +
+                              $"Initial Price: {city.InitialPrice} credits\n" +
+                              $"Price Per Day: {city.PricePerDay} credits\n" +
+                              $"Structure Limit: {city.StructureLimit}\n" +
+                              $"Building Limit: {city.BuildingLimit}\n\n" +
+                              "WARNING: Placing this city hall will make you mayor of this land. Every three weeks (real world time) an election will be held to vote for the new mayor. You will be required to participate or you will lose your position as Mayor.\n\n" +
                               "Additionally, you will be required to pay upkeep on all structures placed. Failure to do so will result in decay of the structures. Failing to pay upkeep for four weeks (real world time) will result in the loss of the city.\n\n" +
                               $"A minimum of {Property.GetCitizensRequiredForNextCityLevel(1)} citizens must be registered in your city within 18 hours or it will be removed upon the next reset. If you ever fall below this amount you will have 18 hours from the time of the next server reset to rectify it. Failure to do so will result in the loss of your city, structures, items, etc.\n\n" +
                               "Credits paid cannot be refunded. Are you sure you want to claim this area and establish a city?";

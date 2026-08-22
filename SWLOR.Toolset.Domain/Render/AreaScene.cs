@@ -411,6 +411,43 @@ namespace SWLOR.Toolset.Domain.Render
             var instances = Instances.ToArray();
             instances[index] = replacement;
 
+            return WithInstances(instances);
+        }
+
+        /// <summary>
+        /// This scene with one newly placed instance added, leaving every area-wide render input shared.
+        /// </summary>
+        /// <remarks>
+        /// Full scene assembly groups markers by kind. Insert into that same ordering so the cheap
+        /// placement path produces the same list shape as <see cref="AreaSceneBuilder.Build"/>, while
+        /// preserving the tile list by reference so the renderer does not rebuild its tile batches.
+        /// </remarks>
+        public AreaScene WithInstanceAdded(InstanceMarker instance)
+        {
+            ArgumentNullException.ThrowIfNull(instance);
+
+            var insertAt = Instances.Count;
+            for (var i = 0; i < Instances.Count; i++)
+            {
+                if (Instances[i].Kind > instance.Kind)
+                {
+                    insertAt = i;
+                    break;
+                }
+            }
+
+            var instances = new InstanceMarker[Instances.Count + 1];
+            for (var i = 0; i < insertAt; i++)
+                instances[i] = Instances[i];
+            instances[insertAt] = instance;
+            for (var i = insertAt; i < Instances.Count; i++)
+                instances[i + 1] = Instances[i];
+
+            return WithInstances(instances);
+        }
+
+        private AreaScene WithInstances(IReadOnlyList<InstanceMarker> instances)
+        {
             return new AreaScene
             {
                 Tileset = Tileset,
@@ -420,6 +457,7 @@ namespace SWLOR.Toolset.Domain.Render
                 Instances = instances,
                 Diagnostics = Diagnostics,
                 DoorAnchors = DoorAnchors,
+                IsInteriorTileset = IsInteriorTileset,
                 Lighting = Lighting
             };
         }

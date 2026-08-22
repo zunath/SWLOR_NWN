@@ -56,12 +56,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                             .BindColor(model => model.LineColors)
                                             .SetShowBorder(false)
                                             .SetScrollbars(NuiScrollbars.None)
-                                            .SetPadding(8f)
-                                            .SetHeight(196f);
+                                            .SetPadding(4f)
+                                            .SetHeight(24f);
                                     });
                                 })
                                     .BindRowCount(model => model.LineTexts)
-                                    .SetRowHeight(208f)
+                                    .SetRowHeight(28f)
                                     .SetShowBorders(false)
                                     .SetScrollbars(NuiScrollbars.Y);
                             });

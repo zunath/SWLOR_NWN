@@ -70,7 +70,7 @@ public class ConversationMenuSessionTests
     }
 
     [Test]
-    public void NuiMenu_ConvertsLegacyColorTokensIntoExplicitNuiColor()
+    public void NuiMenu_DoesNotSilentlyFlattenMixedInlineHeaderColors()
     {
         var menu = new ConversationMenuBuilder()
             .AddPage("main", page =>
@@ -83,15 +83,37 @@ public class ConversationMenuSessionTests
 
         session.Start();
 
-        session.CurrentNode.Text.Should().Contain(block =>
-            block.Text == "danger" &&
-            block.Style == ConversationTextStyle.Custom &&
-            block.Color.Red == 255 &&
-            block.Color.Green == 0 &&
-            block.Color.Blue == 0);
+        session.CurrentNode.Text.Should().HaveCount(2);
+        session.CurrentNode.Text[0].Text.Should().Be("Status: ");
+        session.CurrentNode.Text[0].Style.Should().Be(ConversationTextStyle.Normal);
+        session.CurrentNode.Text[0].Color.Should().BeNull();
+        session.CurrentNode.Text[1].Text.Should().Be("danger");
+        session.CurrentNode.Text[1].Style.Should().Be(ConversationTextStyle.Custom);
+        session.CurrentNode.Text[1].Color.Red.Should().Be(255);
         session.VisibleChoices[0].Text.Text.Should().Be("Proceed");
         session.VisibleChoices[0].Text.Style.Should().Be(ConversationTextStyle.Custom);
         session.VisibleChoices[0].Text.Color.Green.Should().Be(255);
+    }
+
+    [Test]
+    public void NuiMenu_PreservesAHeaderWrappedInOneColor()
+    {
+        var menu = new ConversationMenuBuilder()
+            .AddPage("main", page =>
+            {
+                page.Header = ColorToken.Cyan("Destination: Dantooine\nArriving in: 5 minutes");
+            })
+            .Build();
+        var session = CreateSession(menu);
+
+        session.Start();
+
+        session.CurrentNode.Text.Should().ContainSingle();
+        session.CurrentNode.Text[0].Text.Should().Be("Destination: Dantooine\nArriving in: 5 minutes");
+        session.CurrentNode.Text[0].Style.Should().Be(ConversationTextStyle.Custom);
+        session.CurrentNode.Text[0].Color.Red.Should().Be(0);
+        session.CurrentNode.Text[0].Color.Green.Should().Be(255);
+        session.CurrentNode.Text[0].Color.Blue.Should().Be(255);
     }
 
     [Test]

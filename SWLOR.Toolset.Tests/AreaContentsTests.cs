@@ -567,7 +567,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public async Task SavingAGitOnlyEditPublishesTheAreaCatalogChange()
+        public async Task SavingAGitOnlyEditDoesNotPublishAnAreaCatalogChange()
         {
             var editor = CreateEditor();
             var section = editor.SectionFor(ResourceType.Utp)!;
@@ -580,10 +580,10 @@ namespace SWLOR.Toolset.Tests
             section.DetailTag = "git_only_catalog_refresh";
 
             (await editor.TrySaveAsync()).Should().BeTrue();
-            notifications.Should().Be(1,
-                "placed-instance tags and script slots are indexed from GIT, not ARE");
+            notifications.Should().Be(0,
+                "the area catalog entry is parsed from ARE metadata, never the paired GIT");
             placementNotifications.Should().Be(1,
-                "a saved GIT changes the module placement index");
+                "a saved GIT changes the module's GIT-derived indexes");
             new GitDocument(JsonGffDocument.Load(
                     Path.Combine(_moduleRoot, "git", $"{AreaResRef}.git.json")))
                 .Placeables[0].GetStringOrNull("Tag")
@@ -612,7 +612,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public async Task ReloadingAnExternalGitChangePublishesTheAreaCatalogChange()
+        public async Task ReloadingAnExternalGitChangeDoesNotPublishAnAreaCatalogChange()
         {
             var editor = CreateEditor(new ReloadPrompts());
             var section = editor.SectionFor(ResourceType.Utp)!;
@@ -632,7 +632,8 @@ namespace SWLOR.Toolset.Tests
 
             (await editor.TrySaveAsync()).Should().BeTrue();
 
-            notifications.Should().Be(1);
+            notifications.Should().Be(0,
+                "reloading GIT instance data cannot change catalog metadata read from the ARE");
             placementNotifications.Should().Be(1,
                 "reloading the paired GIT changes the placement snapshot");
             editor.SectionFor(ResourceType.Utp)!.Rows[0].Tag.Should().Be(diskTag);

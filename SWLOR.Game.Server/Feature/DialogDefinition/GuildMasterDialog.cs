@@ -61,9 +61,9 @@ namespace SWLOR.Game.Server.Feature.DialogDefinition
                 : new PlayerGuild();
             var requiredPoints = Guild.GetGPRequiredForRank(pcGuild.Rank);
 
-            page.Header = ColorToken.Green("Guild: ") + guild.Name + "\n" +
-                          ColorToken.Green("Rank: ") + pcGuild.Rank + " (" + pcGuild.Points + " / " + requiredPoints + " GP)\n" +
-                          ColorToken.Green("Description: ") + guild.Name + "\n\n" +
+            page.Header = "Guild: " + guild.Name + "\n" +
+                          "Rank: " + pcGuild.Rank + " (" + pcGuild.Points + " / " + requiredPoints + " GP)\n" +
+                          "Description: " + guild.Name + "\n\n" +
                           "Welcome to my guild. What can I help you with?";
 
             page.AddResponse("Tell me about guilds.", () =>

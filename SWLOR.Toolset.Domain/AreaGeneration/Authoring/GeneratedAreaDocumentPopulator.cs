@@ -137,6 +137,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                         git,
                         gic,
                         draft.Composition.Content.ExitDoorResref,
+                        draft.Composition.Content.ExitDisplayName,
                         $"PG_DOOR_{(isEntrance ? "ENT" : "EXIT")}_{index}",
                         transition.DoorX,
                         transition.DoorY,
@@ -155,7 +156,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                         anchorY,
                         anchorZ,
                         facingDegrees: 0f,
-                        visualScale: 1f);
+                        visualScale: 1f,
+                        displayName: draft.Composition.Content.ExitDisplayName);
                 }
             }
         }
@@ -195,6 +197,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             GitDocument git,
             GicDocument gic,
             string resref,
+            string displayName,
             string tag,
             float x,
             float y,
@@ -213,6 +216,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                 Math.Cos(radians),
                 Math.Sin(radians));
             InstanceFieldMap.SetTag(instance, tag);
+            instance.GetOrAddLocString("LocName").Text = displayName;
 
             var list = git.Fields.GetOrAddList(DoorList);
             list.Add(instance);
@@ -284,7 +288,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             float y,
             float z,
             float facingDegrees,
-            float visualScale)
+            float visualScale,
+            string? displayName = null)
         {
             if (string.IsNullOrWhiteSpace(resref))
                 throw new InvalidOperationException($"Placeable '{tag}' has no configured blueprint resref.");
@@ -301,6 +306,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                 Math.Cos(radians),
                 Math.Sin(radians));
             InstanceFieldMap.SetTag(instance, tag);
+            if (!string.IsNullOrWhiteSpace(displayName))
+                instance.GetOrAddLocString("LocName").Text = displayName;
             ApplyVisualScale(instance, visualScale);
 
             var list = git.Fields.GetOrAddList(PlaceableList);

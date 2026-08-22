@@ -275,7 +275,8 @@ public class AreaGenerationToolsetIntegrationTests
             Content = new DungeonDetail
             {
                 ExitDoorResref = "_mdrn_dt_rough",
-                ExitPlaceableResref = "structure_rubble"
+                ExitPlaceableResref = "structure_rubble",
+                ExitDisplayName = "Test Maintenance Hatch"
             },
             Tileset = tilesetProfile,
             Layout = new DungeonLayoutProfile()
@@ -331,6 +332,8 @@ public class AreaGenerationToolsetIntegrationTests
         git.Fields.GetListOrEmpty("WaypointList").Should().HaveCount(2);
         git.Fields.GetListOrEmpty("Door List").Should().ContainSingle()
             .Which.GetStringOrNull("Tag").Should().Be("PG_DOOR_EXIT_1");
+        git.Fields.GetListOrEmpty("Door List").Single()
+            .GetLocStringOrNull("LocName")!.Text.Should().Be("Test Maintenance Hatch");
         git.Fields.GetListOrEmpty("Placeable List").Should().HaveCount(2);
         git.Fields.GetListOrEmpty("Placeable List")
             .Select(instance => instance.GetStringOrNull("Tag"))
@@ -338,6 +341,8 @@ public class AreaGenerationToolsetIntegrationTests
         git.Fields.GetListOrEmpty("Placeable List")[0]
             .GetSingleOrNull("Z").Should().BeApproximately(12f, 0.001f,
                 "placeable transitions use the sloped tile's center height");
+        git.Fields.GetListOrEmpty("Placeable List")[0]
+            .GetLocStringOrNull("LocName")!.Text.Should().Be("Test Maintenance Hatch");
         git.Fields.GetListOrEmpty("Placeable List")[1]
             .GetSingleOrNull("Z").Should().BeApproximately(11.06f, 0.001f,
                 "ordinary decorations interpolate the rotated tile's corner heights at their XY position");

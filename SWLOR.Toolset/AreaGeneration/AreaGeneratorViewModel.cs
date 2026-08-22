@@ -233,6 +233,18 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
             MinRoomSize = value;
     }
 
+    partial void OnAccentEnabledChanged(bool value)
+    {
+        if (value && AccentDensityPercent < AreaSettingsBounds.AccentDensityPercentMin)
+            AccentDensityPercent = AreaSettingsBounds.AccentDensityPercentMin;
+    }
+
+    partial void OnAccentDensityPercentChanged(double value)
+    {
+        if (AccentEnabled && value < AreaSettingsBounds.AccentDensityPercentMin)
+            AccentDensityPercent = AreaSettingsBounds.AccentDensityPercentMin;
+    }
+
     partial void OnPreviewChanging(Bitmap? oldValue, Bitmap? newValue)
     {
         if (!ReferenceEquals(oldValue, newValue))
@@ -295,7 +307,7 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
                         !string.IsNullOrWhiteSpace(SelectedTilesetProfile.Value.AccentTerrain);
         AccentDensityPercent = Math.Round(parameters.AccentDensity * 100);
         FeatureDensityPercent = Math.Round(parameters.FeatureDensity * 100);
-        ElevationRegions = parameters.ElevationRegions;
+        ElevationRegions = Math.Max(parameters.ElevationRegions, parameters.ReliefRegions);
         EnableDecorations = true;
         DecorationDensityPercent = 100;
 

@@ -99,6 +99,8 @@ namespace SWLOR.Game.Server.Entity
             UndisguisedPortraitId = -1;
             UndisguisedPortraitResref = string.Empty;
             UndisguisedSoundSetId = -1;
+            UndisguisedDescription = string.Empty;
+            HasUndisguisedDescriptionSnapshot = false;
         }
 
 
@@ -173,6 +175,8 @@ namespace SWLOR.Game.Server.Entity
         public int UndisguisedPortraitId { get; set; }
         public string UndisguisedPortraitResref { get; set; }
         public int UndisguisedSoundSetId { get; set; }
+        public string UndisguisedDescription { get; set; }
+        public bool HasUndisguisedDescriptionSnapshot { get; set; }
 
         public PlayerSettings Settings { get; set; }
         public Dictionary<SkillType, int> Control { get; set; }

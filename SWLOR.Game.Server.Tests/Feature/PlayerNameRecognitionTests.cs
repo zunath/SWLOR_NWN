@@ -512,6 +512,36 @@ public class PlayerNameRecognitionTests
     }
 
     [Test]
+    public void NormalBiographyEditor_CannotOverwriteAnActiveDisguiseBiography()
+    {
+        var root = FindRepositoryRoot();
+        var settingsSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "SettingsViewModel.cs"));
+        var descriptionSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "ChangeDescriptionViewModel.cs"));
+
+        var openEditorMethod = ExtractMethod(settingsSource, "public Action OnClickChangeDescription()");
+        openEditorMethod.Should().Contain("Disguise.GetActiveDisguise(Player) != null");
+        openEditorMethod.Should().Contain("Deactivate it to edit your normal biography.");
+        openEditorMethod.Should().Contain("return;");
+
+        var saveMethod = ExtractMethod(descriptionSource, "public Action OnClickSave()");
+        saveMethod.Should().Contain("Disguise.GetActiveDisguise(Player) != null");
+        saveMethod.Should().Contain("Edit your active disguise's biography from the Disguises window.");
+        saveMethod.Should().Contain("return;");
+    }
+
+    [Test]
     public void DisguiseIdentityMutations_AreAuditedWithCanonicalIdentityAndRelevantState()
     {
         var root = FindRepositoryRoot();
@@ -529,9 +559,11 @@ public class PlayerNameRecognitionTests
         var saveMethod = ExtractMethod(source, "public static SaveDisguiseResult SaveDisguise(");
         saveMethod.Should().Contain("var previousPrivateName = disguise.PrivateName;");
         saveMethod.Should().Contain("var previousDescriptor = disguise.Descriptor;");
+        saveMethod.Should().Contain("var previousBiography = disguise.Biography ?? string.Empty;");
         saveMethod.Should().Contain("Disguise saved: PlayerId={PlayerId} PlayerName={PlayerName} DisguiseId={DisguiseId}");
         saveMethod.Should().Contain("PreviousPrivateName={PreviousPrivateName} PrivateName={PrivateName}");
         saveMethod.Should().Contain("PreviousDescriptor={PreviousDescriptor} Descriptor={Descriptor}");
+        saveMethod.Should().Contain("PreviousBiographyLength={PreviousBiographyLength} BiographyLength={BiographyLength}");
         saveMethod.Should().Contain("PreviousPortraitInternalId={PreviousPortraitInternalId} PortraitInternalId={PortraitInternalId}");
         saveMethod.Should().Contain("PreviousSoundSetId={PreviousSoundSetId} SoundSetId={SoundSetId}");
         saveMethod.Should().Contain("PreviousScrambleAccountId={PreviousScrambleAccountId} ScrambleAccountId={ScrambleAccountId}");
@@ -656,10 +688,15 @@ public class PlayerNameRecognitionTests
         entitySource.Should().Contain("public string PlayerId { get; set; }");
         entitySource.Should().Contain("public bool IsRetired { get; set; }");
         entitySource.Should().Contain("public bool ScrambleAccountId { get; set; }");
+        entitySource.Should().Contain("Biography = string.Empty;");
+        entitySource.Should().Contain("public string Biography { get; set; }");
         playerSource.Should().Contain("public const int DefaultDisguiseSlotLimit = 1;");
         playerSource.Should().Contain("DisguiseSlotLimit = DefaultDisguiseSlotLimit;");
         playerSource.Should().Contain("UndisguisedPortraitResref = string.Empty;");
         playerSource.Should().Contain("public string UndisguisedPortraitResref { get; set; }");
+        playerSource.Should().Contain("UndisguisedDescription = string.Empty;");
+        playerSource.Should().Contain("public string UndisguisedDescription { get; set; }");
+        playerSource.Should().Contain("public bool HasUndisguisedDescriptionSnapshot { get; set; }");
 
         viewModelSource.Should().Contain("public bool IsAvailableSelected");
         viewModelSource.Should().Contain("public bool IsRetiredSelected");
@@ -667,6 +704,7 @@ public class PlayerNameRecognitionTests
         viewModelSource.Should().Contain("public string EmptyStateTitle");
         viewModelSource.Should().Contain("public string EmptyStateText");
         viewModelSource.Should().Contain("public bool ScrambleAccountId");
+        viewModelSource.Should().Contain("public string Biography");
         viewModelSource.Should().Contain("public bool ShowUnretireButton");
         viewModelSource.Should().NotContain("public bool ShowDetailActionRow");
         viewModelSource.Should().Contain("public const string ContentPartialElement");
@@ -676,7 +714,10 @@ public class PlayerNameRecognitionTests
         viewModelSource.Should().Contain("public const string ContentEmptyPartial");
         disguiseSource.Should().Contain("PrivateName = $\"Disguise #{usedSlots + 1}\"");
         disguiseSource.Should().Contain("public const int MaxPrivateNameLength = 32;");
+        disguiseSource.Should().Contain("public const int MaxBiographyLength = 5000;");
         disguiseSource.Should().Contain("privateName.Length > MaxPrivateNameLength");
+        disguiseSource.Should().Contain("biography.Length > MaxBiographyLength");
+        disguiseSource.Should().Contain("disguise.Biography = biography;");
         disguiseSource.Should().Contain("Private disguise names may be no longer than {MaxPrivateNameLength} characters.");
         disguiseSource.Should().Contain("Unable to locate that disguise.");
         disguiseSource.Should().Contain("Retired disguises cannot be edited.");
@@ -686,6 +727,17 @@ public class PlayerNameRecognitionTests
         disguiseSource.Should().Contain("if (!string.IsNullOrWhiteSpace(dbPlayer.UndisguisedPortraitResref))");
         disguiseSource.Should().Contain("SetPortraitResRef(player, dbPlayer.UndisguisedPortraitResref);");
         disguiseSource.Should().Contain("dbPlayer.UndisguisedPortraitResref = string.Empty;");
+        disguiseSource.Should().Contain("dbPlayer.UndisguisedDescription = GetDescription(player) ?? string.Empty;");
+        disguiseSource.Should().Contain("dbPlayer.HasUndisguisedDescriptionSnapshot = true;");
+        disguiseSource.Should().Contain("SetDescription(player, disguise.Biography ?? string.Empty);");
+        disguiseSource.Should().Contain("SetDescription(player, dbPlayer.UndisguisedDescription ?? string.Empty);");
+        disguiseSource.Should().Contain("dbPlayer.HasUndisguisedDescriptionSnapshot = false;");
+        var ensureDescriptionSnapshotMethod = ExtractMethod(disguiseSource, "private static void EnsureUndisguisedDescriptionSnapshot(uint player)");
+        ensureDescriptionSnapshotMethod.Should().Contain("dbPlayer.UndisguisedDescription = GetDescription(player) ?? string.Empty;");
+        ensureDescriptionSnapshotMethod.Should().Contain("dbPlayer.HasUndisguisedDescriptionSnapshot = true;");
+        ensureDescriptionSnapshotMethod.Should().Contain("DB.Set(dbPlayer);");
+        ExtractMethod(disguiseSource, "private static void ApplyAppearance(uint player, PlayerDisguise disguise)")
+            .Should().Contain("EnsureUndisguisedDescriptionSnapshot(player);");
         viewModelSource.Should().Contain("Creating a new disguise will consume one of your disguise slots. Retired disguises also occupy disguise slots until they are wiped. Are you sure?");
         viewModelSource.Should().Contain("ActivateButtonText = IsSelectedDisguiseActive() ? \"Deactivate\" : \"Activate\";");
         viewModelSource.Should().Contain("Disguise.Deactivate(Player)");
@@ -713,6 +765,10 @@ public class PlayerNameRecognitionTests
         viewModelSource.Should().Contain("private bool _suppressSoundSetPageChange");
         viewModelSource.Should().Contain("private int _selectedSoundSetId");
         viewModelSource.Should().Contain("SelectSoundSet(disguise.SoundSetId);");
+        viewModelSource.Should().Contain("Biography = disguise.Biography ?? string.Empty;");
+        viewModelSource.Should().Contain("WatchOnClient(model => model.Biography);");
+        ExtractMethod(viewModelSource, "public Action OnClickSave()")
+            .Should().Contain("Biography,");
         viewModelSource.Should().Contain("private void LoadSoundSetPageOptions");
         viewModelSource.Should().Contain("private void LoadSoundSetPageNumbers");
         viewModelSource.Should().Contain("private int GetSelectedSoundSetIndexOnCurrentPage");
@@ -826,6 +882,9 @@ public class PlayerNameRecognitionTests
         // Field labels spell out who sees each value; lengths come from constants, never magic numbers.
         disguiseDefinitionSource.Should().Contain("AddTextField(col, \"Private Slot Label  (only you see this)\", model => model.PrivateName, Disguise.MaxPrivateNameLength);");
         disguiseDefinitionSource.Should().Contain("AddTextField(col, \"Public Description  (shown to others)\", model => model.Descriptor, PlayerName.MaxKnownNameLength);");
+        disguiseDefinitionSource.Should().Contain(".SetText(\"Biography  (shown when examined)\")");
+        disguiseDefinitionSource.Should().Contain(".BindValue(model => model.Biography)");
+        disguiseDefinitionSource.Should().Contain(".SetMaxLength(Disguise.MaxBiographyLength)");
         disguiseDefinitionSource.Should().NotContain(", model => model.PrivateName, 32)");
         disguiseDefinitionSource.Should().NotContain(", model => model.Descriptor, 64)");
         disguiseDefinitionSource.Should().Contain("Hide Account Name");

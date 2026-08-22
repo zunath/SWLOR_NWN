@@ -1,8 +1,11 @@
 using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Headless.NUnit;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform;
+using Avalonia.Threading;
+using Avalonia.VisualTree;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.AreaGeneration;
@@ -26,6 +29,61 @@ public sealed class AreaGeneratorWindowRenderTests
         window.Content.Should().NotBeNull();
 
         window.Close();
+    }
+
+    [AvaloniaTest]
+    public void AreaEditorsRemainReadableAtTheDefaultWindowSize()
+    {
+        using var viewModel = CreateViewModel();
+        var window = new AreaGeneratorWindow(viewModel);
+
+        try
+        {
+            window.Show();
+            Dispatcher.UIThread.RunJobs();
+            window.UpdateLayout();
+
+            var width = window.FindControl<NumericUpDown>("WidthInput")!;
+            var height = window.FindControl<NumericUpDown>("HeightInput")!;
+            var resref = window.FindControl<TextBox>("ResRefInput")!;
+            var displayName = window.FindControl<TextBox>("DisplayNameInput")!;
+
+            new[] { width.Bounds.Width, height.Bounds.Width, resref.Bounds.Width, displayName.Bounds.Width }
+                .Should().OnlyContain(controlWidth => controlWidth >= 180,
+                    "each Area editor needs enough room for its value rather than only spinner buttons");
+            width.GetVisualDescendants().OfType<TextBox>().Single().Bounds.Width.Should().BeGreaterThan(100);
+            height.GetVisualDescendants().OfType<TextBox>().Single().Bounds.Width.Should().BeGreaterThan(100);
+        }
+        finally
+        {
+            window.Close();
+            Dispatcher.UIThread.RunJobs();
+        }
+    }
+
+    [AvaloniaTest]
+    public void PreviewModeUsesABuilderFacingLabel()
+    {
+        using var viewModel = CreateViewModel();
+        var window = new AreaGeneratorWindow(viewModel);
+
+        try
+        {
+            window.Show();
+            Dispatcher.UIThread.RunJobs();
+            window.UpdateLayout();
+
+            var selector = window.FindControl<ComboBox>("PreviewModeSelector")!;
+            selector.GetVisualDescendants().OfType<TextBlock>()
+                .Should().Contain(block => block.Text == "Map graphics");
+            selector.GetVisualDescendants().OfType<TextBlock>()
+                .Should().NotContain(block => block.Text == "MapGraphics");
+        }
+        finally
+        {
+            window.Close();
+            Dispatcher.UIThread.RunJobs();
+        }
     }
 
     [Test]

@@ -3,6 +3,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:generator="using:SWLOR.Toolset.AreaGeneration"
+        xmlns:areaGeneration="using:SWLOR.Toolset.Domain.AreaGeneration"
+        xmlns:authoring="using:SWLOR.Toolset.Domain.AreaGeneration.Authoring"
         mc:Ignorable="d"
         d:DesignWidth="1180" d:DesignHeight="800"
         x:Class="SWLOR.Toolset.AreaGeneration.AreaGeneratorWindow"
@@ -91,23 +93,27 @@
             <Border Classes="card">
               <StackPanel Spacing="8">
                 <TextBlock Classes="sectionTitle" Text="Area" />
-                <Grid ColumnDefinitions="90,*,90,*" RowDefinitions="Auto,Auto,Auto"
-                      ColumnSpacing="8" RowSpacing="8">
+                <Grid ColumnDefinitions="110,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto"
+                      ColumnSpacing="10" RowSpacing="8">
                   <TextBlock Grid.Row="0" Grid.Column="0" Classes="label" Text="Width" />
-                  <NumericUpDown Grid.Row="0" Grid.Column="1" Value="{Binding Width, Mode=TwoWay}"
+                  <NumericUpDown x:Name="WidthInput" Grid.Row="0" Grid.Column="1"
+                                 Value="{Binding Width, Mode=TwoWay}"
                                  Minimum="{Binding MinimumDimension}" Maximum="32" Increment="1" FormatString="0" />
-                  <TextBlock Grid.Row="0" Grid.Column="2" Classes="label" Text="Height" />
-                  <NumericUpDown Grid.Row="0" Grid.Column="3" Value="{Binding Height, Mode=TwoWay}"
+                  <TextBlock Grid.Row="1" Grid.Column="0" Classes="label" Text="Height" />
+                  <NumericUpDown x:Name="HeightInput" Grid.Row="1" Grid.Column="1"
+                                 Value="{Binding Height, Mode=TwoWay}"
                                  Minimum="{Binding MinimumDimension}" Maximum="32" Increment="1" FormatString="0" />
-                  <TextBlock Grid.Row="1" Grid.Column="0" Classes="label" Text="Seed" />
-                  <NumericUpDown Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"
+                  <TextBlock Grid.Row="2" Grid.Column="0" Classes="label" Text="Seed" />
+                  <NumericUpDown Grid.Row="2" Grid.Column="1"
                                  Value="{Binding Seed, Mode=TwoWay}"
                                  Minimum="0" Maximum="2147482647" Increment="1" FormatString="0" />
-                  <TextBlock Grid.Row="2" Grid.Column="0" Classes="label" Text="ResRef" />
-                  <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding ResRef, Mode=TwoWay}"
+                  <TextBlock Grid.Row="3" Grid.Column="0" Classes="label" Text="ResRef" />
+                  <TextBox x:Name="ResRefInput" Grid.Row="3" Grid.Column="1"
+                           Text="{Binding ResRef, Mode=TwoWay}"
                            Watermark="generated_area" />
-                  <TextBlock Grid.Row="2" Grid.Column="2" Classes="label" Text="Name" />
-                  <TextBox Grid.Row="2" Grid.Column="3" Text="{Binding DisplayName, Mode=TwoWay}" />
+                  <TextBlock Grid.Row="4" Grid.Column="0" Classes="label" Text="Display name" />
+                  <TextBox x:Name="DisplayNameInput" Grid.Row="4" Grid.Column="1"
+                           Text="{Binding DisplayName, Mode=TwoWay}" />
                 </Grid>
               </StackPanel>
             </Border>
@@ -118,7 +124,13 @@
                       ColumnSpacing="10" RowSpacing="7">
                   <TextBlock Grid.Row="0" Classes="label" Text="Style" />
                   <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding LayoutStyles}"
-                            SelectedItem="{Binding LayoutStyle, Mode=TwoWay}" />
+                            SelectedItem="{Binding LayoutStyle, Mode=TwoWay}">
+                    <ComboBox.ItemTemplate>
+                      <DataTemplate x:DataType="areaGeneration:DungeonLayoutStyle">
+                        <TextBlock Text="{Binding Converter={x:Static generator:AreaGeneratorOptionLabelConverter.Instance}}" />
+                      </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                  </ComboBox>
                   <TextBlock Grid.Row="1" Classes="label" Text="Minimum rooms" />
                   <NumericUpDown Grid.Row="1" Grid.Column="1" Value="{Binding MinRooms, Mode=TwoWay}" Minimum="2" Maximum="12" Increment="1" />
                   <TextBlock Grid.Row="2" Classes="label" Text="Maximum rooms" />
@@ -178,8 +190,15 @@
 
       <Grid Grid.Column="1" RowDefinitions="Auto,*,Auto" Margin="16">
         <Grid Grid.Row="0" ColumnDefinitions="Auto,Auto,Auto,Auto,*,Auto" ColumnSpacing="10" Margin="0,0,0,10">
-          <ComboBox Grid.Column="0" Width="150" ItemsSource="{Binding PreviewModes}"
-                    SelectedItem="{Binding PreviewMode, Mode=TwoWay}" />
+          <ComboBox x:Name="PreviewModeSelector" Grid.Column="0" Width="150"
+                    ItemsSource="{Binding PreviewModes}"
+                    SelectedItem="{Binding PreviewMode, Mode=TwoWay}">
+            <ComboBox.ItemTemplate>
+              <DataTemplate x:DataType="authoring:AreaPreviewMode">
+                <TextBlock Text="{Binding Converter={x:Static generator:AreaGeneratorOptionLabelConverter.Instance}}" />
+              </DataTemplate>
+            </ComboBox.ItemTemplate>
+          </ComboBox>
           <CheckBox Grid.Column="1" VerticalAlignment="Center" Content="Rooms" IsChecked="{Binding ShowRooms, Mode=TwoWay}" />
           <CheckBox Grid.Column="2" VerticalAlignment="Center" Content="Transitions" IsChecked="{Binding ShowTransitions, Mode=TwoWay}" />
           <CheckBox Grid.Column="3" VerticalAlignment="Center" Content="Decorations" IsChecked="{Binding ShowDecorations, Mode=TwoWay}" />

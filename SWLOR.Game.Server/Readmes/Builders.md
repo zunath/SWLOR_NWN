@@ -411,6 +411,48 @@ builder.Create("rat_loot")
 - **IsRare()** - Mark as rare loot table
 - **AddItem(string, int, int, int)** - Add item with chance and quantity range
 
+### 17. GuiWindowBuilder
+
+**Location**: `Service/GuiService/GuiWindowBuilder.cs`
+
+The GuiWindowBuilder creates NUI windows (definition + partial views) for the MVVM GUI
+layer. Windows also need a `GuiWindowType` enum entry and a ViewModel deriving
+`GuiViewModelBase<TDerived, TPayload>`.
+
+#### Basic Usage
+
+```csharp
+var builder = new GuiWindowBuilder<ExampleViewModel>();
+var window = builder.CreateWindow(GuiWindowType.Example)
+    .SetInitialGeometry(0, 0, 900f, 560f)
+    .SetTitle("Example")
+    .SetIsResizable(true)
+    .DefinePartialView(ExampleViewModel.FirstTabPartial, AddFirstTab);
+
+// The only root layout shape proven to track window geometry (rule R5):
+window.AddStandardLayout(layout =>
+{
+    layout.SetTabPanelHeight(48f);
+    layout.AddTabRow(row => { /* toggles row */ });
+    layout.SetContentPartialElement(ExampleViewModel.TabContentElement);
+    layout.AddSideColumn(AddSideRail, 240f);
+});
+
+return builder.Build();
+```
+
+#### Key Methods
+
+- **CreateWindow(GuiWindowType)** - Initialize the window (returns `GuiWindow<T>`)
+- **SetInitialGeometry / SetTitle / SetIsResizable / SetIsCollapsible** - Window chrome
+- **DefinePartialView(string, Action<GuiGroup<T>>)** - Declare a swappable layout
+- **AddStandardLayout(Action<GuiStandardLayoutConfig<T>>)** - Emit the proven tab/content/rail shape (`GuiStandardLayout` extension)
+- **AddLeadingColumn / AddSideColumn** - Place fixed or flexible rails before or after the standard content column
+- **Build()** - Normalize and validate the root, log confirmed findings, and return the constructed window
+
+Full guide: `GuiWindowAuthoring.md`. Layout rules: `NuiLayoutRules.md`. Living widget
+reference: the DebugNuiGallery window (`/nuigallery`).
+
 ## Best Practices
 
 1. **Always call Build()** - Most builders require calling Build() to return the final result

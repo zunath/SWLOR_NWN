@@ -8,7 +8,7 @@ The Core layer contains fundamental systems, abstractions, and utilities that pr
 
 ## Directory Structure
 
-```
+```text
 Core/
 ├── Async/
 │   ├── Awaiters/
@@ -121,20 +121,25 @@ await NwTask.Run(() => {
 - `NuiChartType.cs` - Chart types
 - Various GUI components
 
-**Usage**:
-```csharp
-// Create NUI window
-var window = new NuiWindow("MyWindow", "My Window")
-{
-    Geometry = new NuiRect(0, 0, 400, 300)
-};
+**Usage**: Windows are NOT built against this low-level layer directly. Author them
+with the MVVM wrapper: an `IGuiWindowDefinition` using `GuiWindowBuilder<TViewModel>`
+plus a `GuiViewModelBase` ViewModel:
 
-// Add elements to window
-window.Elements.Add(new NuiLabel("Hello World")
+```csharp
+var window = _builder.CreateWindow(GuiWindowType.Example)
+    .SetInitialGeometry(0, 0, 900f, 560f)
+    .SetTitle("Example");
+
+window.AddStandardLayout(layout =>
 {
-    Geometry = new NuiRect(10, 10, 100, 20)
+    layout.SetContentPartialElement(ExampleViewModel.TabContentElement);
 });
+
+return _builder.Build();
 ```
+
+See `Readmes/GuiWindowAuthoring.md` for the full authoring guide and
+`Readmes/NuiLayoutRules.md` for the layout rules.
 
 ### 5. Bioware Extensions
 

@@ -24,8 +24,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
         /// <summary>Effective secondary district terrain label used by this layout (empty = no districts).</summary>
         public string SecondaryOpenTerrain { get; set; } = string.Empty;
         /// <summary>
-        /// The MacroLayout's own edge-crosser grid, carried through unchanged by TileResolver.TryResolve
-        /// (see AreaLayout.MacroLayout.Crossers) -- exposes LayoutRoadCarver's carved road-lane edges
+        /// The <see cref="MacroLayout.Crossers"/> grid, carried through unchanged by
+        /// TileResolver.TryResolve, exposes LayoutRoadCarver's carved road-lane edges
         /// (and every other post-pass crosser: Fence, accent-channel Bridge, etc.) to downstream
         /// consumers that only ever see the resolved layout, not the macro one. DungeonDecorationPlanner
         /// reads this to anchor road-side decoration along a carved lane -- see

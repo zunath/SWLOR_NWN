@@ -67,9 +67,9 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 .ExitGroup("Exit02")
                 .ExitGroup("Exit03");
 
-            // Cavern's own bulk "set dressing" palette — mined from tdt01 hand-built reference areas
-            // (decoration_evidence/evidence_by_tileset.json['tdt01'], 4 areas: barrows_door_corridor,
-            // proof_barrows, etc). Strongest co-occurrence pair: plc_waterdrip + zep_fireflies001 (13
+            // Cavern's own bulk "set dressing" palette — mined from 4 tdt01 hand-built reference
+            // areas (barrows_door_corridor, proof_barrows, etc). Strongest co-occurrence pair:
+            // plc_waterdrip + zep_fireflies001 (13
             // occurrences) -> CaveDripGlow vignette.
             _builder
                 .Decoration("zep_water001", 4, DecorationContext.WallAdjacent)
@@ -133,8 +133,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 .ExitGroup("Exit01")
                 .ExitGroup("Exit02");
 
-            // Sewers' own bulk palette — mined from tds01 hand-built reference areas
-            // (decoration_evidence/evidence_by_tileset.json['tds01'], 4 areas). Strongest
+            // Sewers' own bulk palette — mined from 4 tds01 hand-built reference areas. Strongest
             // co-occurrence pairs: plc_dustplume + x0_tomb (63) and _mdrn_pl_pall009 + _mdrn_pl_ration
             // (38) -> vignettes.
             _builder
@@ -209,8 +208,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 .SetPiece("StairsUP", 1)
                 .SetPiece("StairsDOWN", 1);
 
-            // Facility's own bulk palette — mined from zsf01 hand-built reference areas
-            // (decoration_evidence/evidence_by_tileset.json['zsf01'], 8 areas). Strongest
+            // Facility's own bulk palette — mined from 8 zsf01 hand-built reference areas. Strongest
             // co-occurrence pair: _mdrn_pl_hwall33 + _mdrn_pl_lghtpl3 (8) -> vignette.
             _builder
                 .Decoration("_mdrn_pl_contpan", 3, DecorationContext.WallAdjacent)
@@ -309,8 +307,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 .ExitGroup("ExteriorExit01")
                 .ExitGroup("ExteriorExit02");
 
-            // Ancient Ruin's own bulk palette — mined from vmr01 hand-built reference areas
-            // (decoration_evidence/evidence_by_tileset.json['vmr01'], 5 areas). Strongest
+            // Ancient Ruin's own bulk palette — mined from 5 vmr01 hand-built reference areas. Strongest
             // co-occurrence pair: _mdrn_pl_frcf002 + _mdrn_pl_frcfw (36, a force-field gate pairing)
             // -> vignette.
             _builder

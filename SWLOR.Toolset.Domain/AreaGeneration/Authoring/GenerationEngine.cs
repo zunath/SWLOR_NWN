@@ -26,10 +26,9 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             var openTerrainOverride = composition.Tileset?.PrimaryOpenTerrain ?? string.Empty;
             var solved = LayoutSolver.Solve(baseParameters, tileset, width, height, seed, openTerrainOverride);
 
-            // Decorations are pure/engine-free (DungeonDecorationPlanner.Plan) exactly like the layout
-            // solver itself, so preview and module writing compute the same plan
-            // would produce for this composition+seed -- without ever touching the schematic/map
-            // render, which stays tile-only (see GenerationResult.PlannedDecorationCount doc comment).
+            // Decoration planning is pure, like layout solving, so preview and module writing consume
+            // the same composition-and-seed result. The schematic/map render stays tile-only (see
+            // GenerationResult.PlannedDecorationCount).
             IReadOnlyList<PlannedDecoration> plannedDecorations = Array.Empty<PlannedDecoration>();
             if (solved.Success && composition.Content != null && (overrides?.EnableDecorations ?? true))
             {

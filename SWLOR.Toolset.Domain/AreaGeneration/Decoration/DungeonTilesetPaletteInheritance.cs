@@ -10,9 +10,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
     /// variant (<see cref="DungeonTilesetProfile.IsPaletteVariant"/>) that declared no
     /// Decorations/Vignettes of its own inherits them in place from the first non-variant profile
     /// registered under the same <see cref="DungeonTilesetProfile.TilesetResref"/> — see the
-    /// Decorations doc comment. Every consumer that discovers tileset profiles (runtime
-    /// DungeonContentPlacer.Bootstrap, SWLOR.ProcgenReview, SWLOR.ContentBuilder's DefinitionCatalog)
-    /// calls this exactly once right after discovery, so an ordinary `tileset.Decorations`/
+    /// Decorations doc comment. <see cref="Authoring.DefinitionCatalog"/> calls this once immediately
+    /// after profile discovery, so an ordinary `tileset.Decorations`/
     /// `tileset.Vignettes` read anywhere else in the codebase already reflects the effective palette —
     /// no call site needs its own inheritance-lookup logic.
     /// </summary>

@@ -5,13 +5,13 @@ using SWLOR.Toolset.Domain.AreaGeneration.Tileset;
 namespace SWLOR.Toolset.Domain.AreaGeneration
 {
     /// <summary>
-    /// Offline-solves a macro layout and resolves it to concrete tiles: no NWN engine calls, no
-    /// area/door/waypoint realization (see <see cref="AreaGeneration"/> for the live-server facade
-    /// that adds those on top). This is the single shared implementation of the seed-derived retry
+    /// Solves a macro layout and resolves it to concrete tiles without writing module resources.
+    /// <see cref="Authoring.GenerationEngine"/> adds dressing to the solved result, while preview and
+    /// <see cref="Authoring.GeneratedAreaDocumentPopulator"/> consume that same draft. This is the
+    /// single shared implementation of the seed-derived retry
     /// loop (MacroLayoutGenerator.Generate can throw for an unlucky roll; TileResolver.TryResolve can
     /// fail to cover a corner combination -- either is worth a retry with the next seed before giving
-    /// up) that both the native preview and module writer use,
-    /// so the two can never independently drift out of parity with each other again.
+    /// up), keeping preview and module creation in parity.
     /// </summary>
     public static class LayoutSolver
     {

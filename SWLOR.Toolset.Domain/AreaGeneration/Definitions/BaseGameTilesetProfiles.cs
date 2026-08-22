@@ -12,8 +12,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
     /// City Interior (tin01), resolved from basegame_sets via the shared TilesetSetSource (see
     /// the base-game tileset census, SWLOR.Toolset.Tests/AreaGeneration/TileCoverageCensusTests.cs).
     /// These are tileset profiles only -- no theme/content is registered here; the existing themes
-    /// keep their StandardTilesetProfiles defaults, and these three are only reachable via an
-    /// explicit tileset override (ContentBuilder's tileset dropdown, or an --areas/--matrix override).
+    /// keep their StandardTilesetProfiles defaults, and these profiles are selected explicitly from
+    /// the Area Generator's tileset picker.
     ///
     /// All three stamp onto the existing gen_placeholder1 module area (cross-tileset override is
     /// proven live -- see the base-game tileset census work).
@@ -1267,9 +1267,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // have (see LayoutGroupStamper.CorridorInsertCrossersFor/CorridorStubCrossersFor). Every
             // other Grey group (Platforms, Wall Sections, Pillar, Stairs 2x2, Treasure, Chessboard,
             // Portal, Mass Grave, Exit 1/2) mirrors Tan's own wired set piece/feature-tile/exit-group
-            // shapes tile-for-tile. IsPaletteVariant() excludes this profile from --matrix's full
-            // tileset x layout cross-product (see SWLOR.ProcgenReview/Program.cs) -- it gets one
-            // showcase area instead.
+            // shapes tile-for-tile. PaletteVariant() marks it as a selectable district of the same
+            // physical tileset and enables family-level palette inheritance.
             _builder.Create(CryptGrey, "Crypts* (Grey)")
                 .Tileset("tdc01")
                 .Placeholder("gen_placeholder1")
@@ -1464,8 +1463,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // now are; each variant also declares the full MaxElevationRegions/MaxPoolRegions/
             // MaxReliefRegions(2) trio the base profile carries -- the vocabulary is per-accent
             // symmetric (verified by the same probes: every accent family carries the identical
-            // rim/pool-bank/relief shapes, see TileCoverageCensusTests). PaletteVariant() excludes
-            // each from --matrix's full cross-product -- one showcase area each instead.
+            // rim/pool-bank/relief shapes, see TileCoverageCensusTests). PaletteVariant() marks each
+            // as another district of the same physical tileset.
             _builder.Create(DungeonWater, "Dungeon* (Water)")
                 .Tileset("tde01")
                 .MaxElevationRegions(2)
@@ -2054,9 +2053,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 .ExitGroup("CorridorExit")
                 .ExitGroup("CorridorExitBig");
 
-            // City Interior's own bulk palette — mined from tin01 hand-built reference areas
-            // (decoration_evidence/evidence_by_theme_keyword.json/evidence_named_exemplars.json,
-            // undercity keyword match — small sample, e.g. pw_ar_velundr). Strongest co-occurrence
+            // City Interior's own bulk palette — mined from tin01 hand-built reference areas using
+            // an undercity keyword match (small sample, e.g. pw_ar_velundr). Strongest co-occurrence
             // pair: plc_sacks + x0_ruglarge (5) -> vignette.
             _builder
                 .Decoration("zep_bedrolls002", 3, DecorationContext.WallAdjacent)
@@ -2248,8 +2246,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 .ExitGroup("[Cave] Exit 2")
                 .ExitGroup("[Cave] Exit 3");
 
-            // Mines and Caverns' own bulk palette — mined from tdm01 hand-built reference areas
-            // (decoration_evidence/evidence_by_tileset.json['tdm01'], 13 areas). Strongest
+            // Mines and Caverns' own bulk palette — mined from 13 tdm01 hand-built reference areas. Strongest
             // co-occurrence pair: zep_grasstuft001 + zep_shrub036 (40) -> vignette.
             _builder
                 .Decoration("zep_shrub036", 3, DecorationContext.WallAdjacent)
@@ -2295,9 +2292,9 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // comment). Every other Desert group (Platforms, Pillar, Stairs 2x2, Treasure,
             // Crystal Casket/Column/Crypt, Chessboard, Portal, Mineshaft, Wall Section, Exit 1/2/3)
             // mirrors [Cave]'s own wired set piece/feature-tile/exit-group shapes tile-for-tile.
-            // IsPaletteVariant() excludes this profile from --matrix's full cross-product (see
-            // SWLOR.ProcgenReview/Program.cs) -- it gets one showcase area instead. [Organic] and [City]
-            // remain unwired (left for future work; [Organic] mirrors [Desert]'s shape closely but
+            // PaletteVariant() marks it as a selectable district of the same physical tileset and
+            // enables family-level palette inheritance. [Organic] and [City] remain unwired (left for
+            // future work; [Organic] mirrors [Desert]'s shape closely but
             // [City] has a much smaller, differently-shaped tile family and would need its own probe).
             _builder.Create(MinesAndCavernsDesert, "Mines and Caverns* (Desert)")
                 .Tileset("tdm01")
@@ -2434,7 +2431,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // CityWater bank tiles whose Floor/CityWater corners sit at per-corner-independent mixed
             // grades. No blend terrain ([City] has none), no alternate Tunnel family wired (the
             // canonical Corridor/Doorway family composes normally on the shared solid/Floor terrain).
-            // PaletteVariant() -- one showcase area, excluded from --matrix.
+            // PaletteVariant() marks this as another district of the same physical tileset.
             _builder.Create(MinesAndCavernsCity, "Mines and Caverns* (City Water)")
                 .Tileset("tdm01")
                 .MaxElevationRegions(2)
@@ -2473,9 +2470,9 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // are an all-solid single-Tracks-edge dead end with a door slot (SetPieceCorridorStub) --
             // both verified directly against the .set data. Everything else mirrors the base
             // MinesAndCaverns profile's own wiring (same solid/open terrain, same feature tiles/other set
-            // pieces/exit groups); PaletteVariant() excludes this from --matrix's full cross-product, one
-            // showcase area instead -- closing TileCoverageCensusTests.PilotAlternateVocabCrossers["tdm01"]'s
-            // "Tracks" entry.
+            // pieces/exit groups). PaletteVariant() marks this as another district of the same
+            // physical tileset, closing
+            // TileCoverageCensusTests.PilotAlternateVocabCrossers["tdm01"]'s "Tracks" entry.
             _builder.Create(MinesAndCavernsTracks, "Mines and Caverns* (Tracks)")
                 .Tileset("tdm01")
                 .Placeholder("gen_placeholder1")
@@ -2676,8 +2673,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 .ExitGroup("ExteriorExit01")
                 .ExitGroup("ExteriorExit02");
 
-            // Ruins' own bulk palette — mined from tdr01 hand-built reference areas
-            // (decoration_evidence/evidence_by_tileset.json['tdr01'], 5 areas). Strongest
+            // Ruins' own bulk palette — mined from 5 tdr01 hand-built reference areas. Strongest
             // co-occurrence pair: zep_book001 + zep_notes001 (9) -> vignette.
             _builder
                 .Decoration("zep_bbook003", 2, DecorationContext.WallAdjacent)
@@ -2790,9 +2786,9 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 .SetPiece("[Castle] Room - Bath 1 (2x1)")
                 .SetPiece("[Castle] Room - Bath 2 (2x1)");
 
-            // Castle Interior's own bulk palette — mined from tic01 hand-built reference areas
-            // (decoration_evidence/evidence_by_theme_keyword.json, sithacademy keyword match, 37
-            // areas). Strongest thematic pairing: zep_arch002 + swp_banner0001 (both spike in the
+            // Castle Interior's own bulk palette — mined from 37 tic01 hand-built reference areas
+            // matching the Sith Academy theme. Strongest thematic pairing: zep_arch002 +
+            // swp_banner0001 (both spike in the
             // ar_scor_kacademy exemplar) -> vignette.
             _builder
                 .Decoration("swd3_wall001", 3, DecorationContext.WallAdjacent)
@@ -2832,8 +2828,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // Exit - Corridor/Big, Round Corner - Empty/Decorated Stone, Stairs - Up/Down Stone Corner,
             // Dais, every Room-* WallRoom family) already work regardless of which PrimaryOpenTerrain is
             // composed, so they are NOT re-wired here -- these variants add ONLY their own
-            // district-specific pieces. PaletteVariant() excludes each from --matrix's full
-            // cross-product -- one showcase area each instead.
+            // district-specific pieces. PaletteVariant() marks each as another district of the same
+            // physical tileset.
             _builder.Create(CastleInteriorStorage, "Castle Interior 1* (Storage)")
                 .Tileset("tic01")
                 .Placeholder("gen_placeholder1")
@@ -2951,9 +2947,9 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 .SetPiece("Room")
                 .SetPiece("Under Well (4x3)");
 
-            // Drow Interior's own bulk palette — mined via nightsistercoven keyword match
-            // (decoration_evidence/evidence_by_theme_keyword.json — dath_grottos/dathgrottocavern/
-            // pw_sc_dath_apexd, 3 areas). Strongest structural pairing: the two grotto cliff-face
+            // Drow Interior's own bulk palette — mined from 3 Nightsister-themed reference areas
+            // (dath_grottos/dathgrottocavern/pw_sc_dath_apexd). Strongest structural pairing: the
+            // two grotto cliff-face
             // variants -> vignette.
             _builder
                 .Decoration("zep_tno_cliff_1", 3, DecorationContext.WallAdjacent)
@@ -3014,8 +3010,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 .SetPiece("Cell")
                 .SetPiece("Transition Door");
 
-            // Illithid Interior's own bulk palette — mined from tii01 hand-built reference areas
-            // (decoration_evidence/evidence_by_tileset.json['tii01'], 3 areas). Strongest
+            // Illithid Interior's own bulk palette — mined from 3 tii01 hand-built reference areas. Strongest
             // co-occurrence pairs: plc_altrevil + plc_fountain (67) and x3_plc_mist + x3_plc_slightr
             // (47) -> vignettes.
             _builder
@@ -3151,8 +3146,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 .ExitGroup("Exit01")
                 .ExitGroup("Exit02");
 
-            // Steamworks' own bulk palette — mined from tsw01 hand-built reference areas
-            // (decoration_evidence/evidence_by_tileset.json['tsw01'], 1 area). Strongest
+            // Steamworks' own bulk palette — mined from 1 tsw01 hand-built reference area. Strongest
             // co-occurrence pair: _mdrn_pl_brlrad + zep_splat005 (32, a leaking radioactive-barrel
             // spill) -> vignette.
             _builder
@@ -3260,9 +3254,9 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 .ExitGroup("Exit_Down_1x1")
                 .ExitGroup("Exit_CollapsedWall");
 
-            // Fort Interior's own bulk palette — mined via mandogarrison keyword match
-            // (decoration_evidence/evidence_by_theme_keyword.json — dan_repgarrison/manda_facility/
-            // sol_mandaloriani, 3 areas). Strongest structural pairing: bunk beds anchored by a nearby
+            // Fort Interior's own bulk palette — mined from 3 Mandalorian-garrison reference areas
+            // (dan_repgarrison/manda_facility/sol_mandaloriani). Strongest structural pairing: bunk
+            // beds anchored by a nearby
             // locker -> vignette.
             _builder
                 .Decoration("_mdrn_pl_bunkbd5", 3, DecorationContext.WallAdjacent)
@@ -3308,8 +3302,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             //
             // Large_Door is NOT wired here either: its TILE36 has mixed floor/black corners and never
             // classifies under any mechanism (see TileCoverageCensusTests.PilotExpectedExemptions).
-            // PaletteVariant() excludes this from --matrix's full cross-product -- one showcase area
-            // instead.
+            // PaletteVariant() marks this as another district of the same physical tileset.
             _builder.Create(FortInteriorLegacy, "TNO: Fort Interior (Legacy)")
                 .Tileset("twc03")
                 .Placeholder("gen_placeholder1")
@@ -3489,9 +3482,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 .ExitGroup("ChasmStairs")
                 .ExitGroup("CaveEntrance");
 
-            // Desert's own bulk palette — mined from ttd01 hand-built reference areas
-            // (decoration_evidence/evidence_by_tileset.json['ttd01'], 49 areas — the richest sample of
-            // any registered family). Strongest co-occurrence pairs among the desert-scrub family
+            // Desert's own bulk palette — mined from 49 ttd01 hand-built reference areas, the richest
+            // sample of any registered family. Strongest co-occurrence pairs among the desert-scrub family
             // (nw_plc_kelp*, a desert scrub/weed reskin) -> vignette.
             _builder
                 .Decoration("_mdrn_pl_bldstn", 3, DecorationContext.WallAdjacent)
@@ -3518,8 +3510,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // Direct probe (mirroring IsTerrainReliefReachable) confirms all 3 resolve under
             // RampCrosser("Road"). TILE255 (Dunes AND Road edges on the SAME tile) stays exempt: a
             // dual-crosser conflict no single composition can express, the same shape as ttf01's
-            // TILE606-609 (Slope+Road). PaletteVariant() excludes this from --matrix's full
-            // cross-product -- one showcase area.
+            // TILE606-609 (Slope+Road). PaletteVariant() marks this as another district of the same
+            // physical tileset.
             _builder.Create(DesertRoad, "[SW] Tatooine (Road)")
                 .Tileset("ttd01")
                 .Placeholder("gen_placeholder1")
@@ -3737,9 +3729,9 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 .ExitGroup("House - Ruined")
                 .ExitGroup("Tower - Stone");
 
-            // Forest's own bulk palette — mined from ttf01 hand-built reference areas
-            // (decoration_evidence/evidence_by_tileset.json['ttf01'], 1 area — sparse dathomirwild
-            // sample). Strongest co-occurrence pair: _mdrn_pl_campfre + plc_flamemedium (2) ->
+            // Forest's own bulk palette — mined from 1 ttf01 hand-built reference area, a sparse
+            // Dathomir Wildlands sample. Strongest co-occurrence pair: _mdrn_pl_campfre +
+            // plc_flamemedium (2) ->
             // vignette.
             _builder
                 .Decoration("_mdrn_pl_mtlhut4", 2, DecorationContext.WallAdjacent)
@@ -3813,7 +3805,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // Forest/Halls: 35.7%, 107/300). Complex-paired compositions (MaxRoomCornerSize=5, zero
             // slack) remain a genuine, separate geometric ceiling this fix cannot address -- see
             // OpenSetPiecePlacementRateTests' own doc comment for the full before/after accounting.
-            // PaletteVariant() excludes this from --matrix's full cross-product -- one showcase area.
+            // PaletteVariant() marks this as another district of the same physical tileset.
             _builder.Create(ForestPlatform, "Forest* (Platform)")
                 .Tileset("ttf01")
                 .Placeholder("gen_placeholder1")
@@ -3879,7 +3871,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // a SEPARATE gap (a composition carries only one RampCrosser slot, already claimed by
             // "Slope" here -- see the closure toolkit's "additional families = additional variants"
             // note).
-            // PaletteVariant() excludes this from --matrix's full cross-product -- one showcase area.
+            // PaletteVariant() marks this as another district of the same physical tileset.
             _builder.Create(ForestRural, "Forest* (Rural)")
                 .Tileset("ttf01")
                 .Placeholder("gen_placeholder1")
@@ -3925,8 +3917,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // would be dead code. Real-generation placement proof: OpenSetPiecePlacementRateTests'
             // GoodEvilCastleDoorGroups_PlaceAsGroupExits (Halls composition, both factions, isolated
             // ExitGroup measured across 150 seeds each -- 150/150 for all six groups).
-            // PaletteVariant() excludes each from --matrix's full cross-product -- one showcase area
-            // apiece.
+            // PaletteVariant() marks each as another district of the same physical tileset.
             _builder.Create(ForestGoodCastle, "Forest* (Good Castle)")
                 .Tileset("ttf01")
                 .Placeholder("gen_placeholder1")
@@ -3978,7 +3969,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // directly against real tile data, e.g. TILE512/528/543/896) -- tolerated by the existing
             // seed-retry pipeline (an occasional unresolvable cell fails that seed's attempt, not the
             // whole composition) rather than requiring a structural guard.
-            // PaletteVariant() excludes this from --matrix's full cross-product -- one showcase area.
+            // PaletteVariant() marks this as another district of the same physical tileset.
             _builder.Create(ForestMarsh, "Forest* (Marsh)")
                 .Tileset("ttf01")
                 .Placeholder("gen_placeholder1")
@@ -4025,8 +4016,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             //     NON-adjacent two-terrain split) stays exempt: the same diagonal-split gap ForestRural
             //     already documented for TILE512/528/543/896 (IsReliefFieldReachable's BFS never finds
             //     a resolving intermediate chain for a diagonal split, only adjacent-corner splits).
-            // PaletteVariant() excludes each from --matrix's full cross-product -- one showcase area
-            // apiece.
+            // PaletteVariant() marks each as another district of the same physical tileset.
 
             // Forest (City Wall) -- closes CityWall's 31 raised ungrouped lanes (TILE741-744/759/763-
             // 765/772-775/801-804, pure-Forest-cornered, 16 tiles; TILE745/746/748-754/766-771,
@@ -4367,9 +4357,9 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 .ExitGroup("Tower01")
                 .ExitGroup("d_house02");
 
-            // Futuristic City's own bulk palette — mined from the fcx01 user-named exemplar
-            // (decoration_evidence/evidence_named_exemplars.json['pw_ar_narpromena'], "Smuggler's Moon
-            // Promenade") and the 24 hand-built fcx01 areas' decorative inventory (10477 placeables,
+            // Futuristic City's own bulk palette — mined from the fcx01 exemplar
+            // pw_ar_narpromena ("Smuggler's Moon Promenade") and the 24 hand-built fcx01 areas'
+            // decorative inventory (10477 placeables,
             // re-mined July 2026 city review pass): streetlights, holo-sign kiosks, cargo, benches,
             // consoles, parked speeders — this is the fix for the reported "Alien Ruin content dressed
             // with Alien Ruin's own palette regardless of the Futuristic City tileset it was actually
@@ -4554,9 +4544,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 // SIGNATURE COMPOSITION: the street-canyon packed city at 24 -- the pairing/scale
                 // where tile canyon blocks (BuildingBlockContiguity), placeable frontage, municipal
                 // lamp lines, night-city atmosphere, and full dressing all compose into the
-                // hand-built promenade look. Review tooling defaults to this when the family is
-                // picked (every other layout/size stays selectable) and the default review module
-                // carries one signature showcase.
+                // hand-built promenade look while every other layout and size stays selectable.
                 .SignatureComposition(StandardLayoutProfiles.Packed, 24)
                 // STRUCTURAL-ITEM REMOVALS (July 2026 semantic-context pass, user report "this gate
                 // without a wall ... doesn't make a lot of sense" -- see DecorationAnchoring):
@@ -5263,9 +5251,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // the base profile's generic StairsUp/StairsDown/CorridorExit/CorridorExitBig), and
             // "Livingroom Blank" (1x1, all-Wall, doorless -- a WallAlcove-adjacent decorative filler
             // already classify-eligible via CornerEdgeResolver regardless of this variant, wired here for
-            // completeness since it shares the district's own art). PaletteVariant() excludes this from
-            // --matrix's full cross-product (one showcase area instead, matching every other district
-            // variant in this file). Placement proof: OpenSetPiecePlacementRateTests.
+            // completeness since it shares the district's own art). PaletteVariant() marks it as
+            // another district of the same physical tileset. Placement proof: OpenSetPiecePlacementRateTests.
             // LabStorageDistrictGroups_PlaceInIsolation.
             _builder.Create(LabStorageLivingroom, "Complex laps storage (Livingroom)")
                 .Tileset("tqq01")
@@ -5386,8 +5373,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // base OfficeInteriors profile above uses. See OfficeInteriorsService's own doc comment
             // above for the full probe writeup (tile-for-tile parity with Office_Vinyl's own group
             // family, the WallRoom door-group classify-but-never-place verdict). PaletteVariant()
-            // excludes each from --matrix's full cross-product -- one showcase area each instead. Each
-            // district's own "*_Entry 2x1" pair is wired too, same shape/reasoning as Office_Vinyl_Entry
+            // marks each as another district of the same physical tileset. Each district's own
+            // "*_Entry 2x1" pair is wired too, same shape/reasoning as Office_Vinyl_Entry
             // above (all-Wall member + open member whose sole "Door" edge faces its own group-mate,
             // interior-only, verified directly against this district's own raw .set data).
             _builder.Create(OfficeInteriorsService, "D20 Office Interiors UDP (Service)")
@@ -5902,8 +5889,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // place these door groups for real, and additionally paints the raised all-<faction>Castle
             // uniform tile (TILE644 Evil/TILE645 Good, pathnode-restricted) and the plain ungrouped
             // Grass/<faction>Castle blend tiles as real wall fill via CornerEdgeResolver.
-            // PaletteVariant() excludes each from --matrix's full cross-product -- one showcase area
-            // apiece.
+            // PaletteVariant() marks each as another district of the same physical tileset.
             _builder.Create(RuralGrassGoodCastle, "Rural Grass* (Good Castle)")
                 .Tileset("ttr01")
                 .Placeholder("gen_placeholder1")
@@ -6413,8 +6399,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // placeholder stubs, see FortInteriorLegacy's own ExcludedTiles(...) above). Only 14 of
             // tno01's own physical .mdl files are hak-shipped (the t01-t06/v05_61 castle-tower set); the
             // other 1230 unique Model= resrefs the .set references all resolve through the base game's
-            // own KEY/BIF (verified directly: a purpose-built reader reusing SWLOR.ContentBuilder's own
-            // KeyBifReader parsed data/nwn_base.key and pulled MDL (restype 2002) bytes for every one of
+            // own KEY/BIF (verified directly: a purpose-built KEY/BIF reader parsed data/nwn_base.key
+            // and pulled MDL (restype 2002) bytes for every one of
             // those 1230 resrefs). Every single one resolved (found=1230, missing=0) -- unlike twc03,
             // there is no missing-resource gap here. None carry the twc03 "newmodel "-prefixed
             // hand-written ASCII header (asciiStub=0). Exactly one, "tno01_b20_04" (TILE990, ungrouped),
@@ -6648,7 +6634,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // SolidTerrain/OpenTerrain pair -- dirt-as-Accent on the base profile never qualifies).
             // "Castle-Stairs" and "Stables On Wall" (castlewall+dirt mixed groups) classify here for
             // the same reason. RoadCrosser("road") -- SupportsRoads(dirt, road) verified TRUE directly.
-            // PaletteVariant() excludes this from --matrix's full cross-product.
+            // PaletteVariant() marks this as another district of the same physical tileset.
             _builder.Create(CastleExteriorRuralVillage, "Castle Exterior, Rural* (Village)")
                 .Tileset("tno01")
                 .Placeholder("gen_placeholder1")
@@ -6725,7 +6711,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // are NOT wired: LayoutGroupStamper's OpenSetPiece corner rule is a strict two-terrain
             // (solid+open, or solid+secondary) match, so a three-terrain group fails classification
             // under EVERY tno01 composition -- census-exempt via PilotExpectedExemptions with that
-            // proof. PaletteVariant() excludes this from --matrix's full cross-product.
+            // proof. PaletteVariant() marks this as another district of the same physical tileset.
             _builder.Create(CastleExteriorRuralCastleWall, "Castle Exterior, Rural* (Castle Wall)")
                 .Tileset("tno01")
                 .Placeholder("gen_placeholder1")
@@ -6752,8 +6738,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // GroupExitPlanner's wall-ring candidates always carry at least two open-facing corners, so
             // an all-solid door tile never corner-matches any ring cell) both measured 0/150 isolated
             // and are NOT wired; both remain census-covered as structural ExitGroups (eligibility is
-            // vocabulary-independent). PaletteVariant() excludes this from --matrix's full
-            // cross-product.
+            // vocabulary-independent). PaletteVariant() marks this as another district of the same
+            // physical tileset.
             _builder.Create(CastleExteriorRuralKeep, "Castle Exterior, Rural* (Keep)")
                 .Tileset("tno01")
                 .Placeholder("gen_placeholder1")
@@ -6783,8 +6769,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // only to never place (this tileset has no Tunnel vocabulary, and the direct
             // isolated-placement probe below measured 0 across all three layouts) -- the identical
             // verdict ttr01's own "Wall - Road Gate" exemption documents. Census-exempt via
-            // PilotExpectedExemptions. PaletteVariant() excludes this from --matrix's full
-            // cross-product.
+            // PilotExpectedExemptions. PaletteVariant() marks this as another district of the same
+            // physical tileset.
             _builder.Create(CastleExteriorRuralWater, "Castle Exterior, Rural* (Water)")
                 .Tileset("tno01")
                 .Placeholder("gen_placeholder1")
@@ -6808,7 +6794,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // spontaneously occurs in a 20x20 generated room; kept wired anyway per the project's
             // "keep it wired, document the ceiling" convention (the same
             // CavePlatform1OnMinesAndCavernsComplex/RuralGrassWater Cave-Sea/Pier precedent).
-            // PaletteVariant() excludes this from --matrix's full cross-product.
+            // PaletteVariant() marks this as another district of the same physical tileset.
             // No RoadCrosser here: a carved road lane that reaches the water shoreline needs a
             // road-edged water/dirt blend for EVERY corner arrangement, and the inventory only covers
             // a few (TILE394/403-405) -- a direct pipeline run with RoadCrosser("road") failed on

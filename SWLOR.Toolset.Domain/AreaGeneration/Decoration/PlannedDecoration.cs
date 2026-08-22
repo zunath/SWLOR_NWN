@@ -9,9 +9,9 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
 {
     /// <summary>
     /// One planned decorative placeable spawn point: a resref, a flat (ungrounded, Z=0) world
-    /// position, a facing, and the context it was planned under. Purely a data record — grounding
-    /// (GetGroundHeight) and CreateObject happen in DungeonContentPlacer, which is the only part of
-    /// this pass that touches the live engine, so Plan() itself is unit-testable without an area.
+    /// position, a facing, and the context it was planned under. Purely a data record; grounding
+    /// and blueprint realization happen later in <see cref="Authoring.GeneratedAreaDocumentPopulator"/>,
+    /// so planning remains unit-testable without a module workspace.
     /// </summary>
     public class PlannedDecoration
     {
@@ -22,28 +22,25 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
 
         /// <summary>Per-instance uniform visual scale (1 = none). Non-1 only for frontage
         /// buildings on families declaring <see cref="DungeonTilesetProfile.FrontageScaleJitter"/>;
-        /// persisted as a .git VisualTransform struct offline (the toolset and client both render
-        /// it -- hand-built SWLOR areas carry the same struct) and applied via
-        /// SetObjectVisualTransform on the live path.</summary>
+        /// persisted as a .git VisualTransform struct by the generated-area document populator (the
+        /// toolset and client both render it; hand-built SWLOR areas carry the same struct).</summary>
         public float VisualScale { get; set; } = 1f;
 
         /// <summary>
         /// World-space SUPPORT ANCHOR for grounding, or null to ground at the placement's own XY
         /// (every ordinary decoration). Set by BuildingFrontagePlanner for frontage buildings: a
-        /// point just inside the fronted open (platform) cell, so the live path's
-        /// GetGroundHeight sample lands on the platform surface the building's face stands flush
-        /// with -- never on a chasm floor far below the footprint's center (fcx01's "holes"
-        /// margins), which is what a naive center sample returns for a deep tower whose body
-        /// overhangs the drop.
+        /// point just inside the fronted open (platform) cell, so document realization samples the
+        /// platform surface the building's face stands flush with -- never a chasm floor far below
+        /// the footprint's center (fcx01's "holes" margins), which is what a naive center sample
+        /// returns for a deep tower whose body overhangs the drop.
         /// </summary>
         public Vector2? GroundAnchor { get; set; }
 
         /// <summary>
-        /// Plan-time absolute ground-height estimate (m) at <see cref="GroundAnchor"/> -- used by
-        /// live-generation validation. The standalone writer independently interpolates the
-        /// resolved tile's oriented corner-height profile at the anchor (or placement) XY before
-        /// adding Position.Z, so sloped tiles are grounded correctly offline as well. 0 for
-        /// anchor-less decorations and for flat layouts.
+        /// Plan-time absolute ground-height estimate (m) at <see cref="GroundAnchor"/>. The document
+        /// populator independently interpolates the resolved tile's oriented corner-height profile
+        /// at the anchor (or placement) XY before adding Position.Z, so sloped tiles are grounded
+        /// correctly. 0 for anchor-less decorations and flat layouts.
         /// </summary>
         public float GroundZ { get; set; }
     }

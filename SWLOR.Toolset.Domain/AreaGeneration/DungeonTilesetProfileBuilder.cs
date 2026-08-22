@@ -572,9 +572,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
         /// <summary>
         /// Declares this family's SIGNATURE composition (see
         /// <see cref="DungeonTilesetProfile.SignatureLayoutProfileKey"/>/<see cref="DungeonTilesetProfile.SignatureSize"/>):
-        /// the layout pairing and scale review tooling should default to so a first-time pick of
-        /// this tileset produces the family's hand-built reference look. Purely a default -- every
-        /// other layout/size stays selectable.
+        /// the layout pairing and scale that best reproduce the family's hand-built reference look.
+        /// Purely authoring metadata; every other layout and size stays selectable.
         /// </summary>
         public DungeonTilesetProfileBuilder SignatureComposition(string layoutProfileKey, int size)
         {

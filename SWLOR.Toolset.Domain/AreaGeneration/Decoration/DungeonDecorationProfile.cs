@@ -12,9 +12,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
     /// city palette deliberately excludes. A named profile fully REPLACES the standard
     /// Decorations/Vignettes lists when selected (no merging), so each profile reads as one coherent
     /// visual statement; the theme's own small accent list still layers on top as usual. Selected via
-    /// <see cref="DungeonDetail.DecorationProfile"/> (theme declaration) or
-    /// AreaGenerationRequest.DecorationProfile / the review tooling's decoration-profile override
-    /// (explicit per-request pick). Unknown/empty names fall back to the standard palette.
+    /// <see cref="DungeonDetail.DecorationProfile"/> (theme declaration) or the Area Generator's
+    /// explicit per-draft selection. Unknown or empty names fall back to the standard palette.
     /// </summary>
     public class DungeonDecorationProfile
     {

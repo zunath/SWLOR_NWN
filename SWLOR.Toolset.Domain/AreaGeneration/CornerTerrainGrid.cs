@@ -20,7 +20,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
         /// Corner-granularity elevation plan, parallel to <see cref="Labels"/> ((Width+1) x
         /// (Height+1), same [x, y] indexing). All-zero by default — no layout style paints this yet;
         /// this grid exists so heights are representable, resolvable (see TileResolver), and emitted
-        /// (see AreaSynthesizer/ProcgenReview), independent of the corner-terrain label at that corner
+        /// by <see cref="Authoring.GeneratedAreaDocumentPopulator"/>, independent of the terrain label
+        /// at that corner
         /// (a corner's identity for matching purposes is the (terrain, height) pair — empirically
         /// confirmed against hand-built areas: every terrain label sampled appears at multiple
         /// heights). A world corner's absolute elevation is Tile_Height (ResolvedTile.Height) plus the

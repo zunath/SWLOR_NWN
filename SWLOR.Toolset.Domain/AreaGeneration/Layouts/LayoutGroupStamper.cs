@@ -1943,10 +1943,10 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Layouts
         /// LayoutElevationPoolPainter/LayoutReliefPainter, all of which already ran and already treated
         /// the OLD center as their own forbidden/protected cell — see those passes' own CenterTile
         /// doc comments) outside the extended rectangle to become the room's new representative center.
-        /// CenterTile is read afterward only by AreaSynthesizer's connectivity walk and
-        /// DungeonContentPlacer's spawn/objective anchor (see AreaLayout.cs's own doc comment) -- both
-        /// consume the FINAL layout returned from MacroLayoutGenerator.Generate, after Stamp has
-        /// already run, so a relocation here is never observed as stale by an earlier pass. If no
+        /// CenterTile is read afterward as the room's representative anchor by the resolved-layout
+        /// preview and decoration planning. Both consume the final layout returned from
+        /// MacroLayoutGenerator.Generate after Stamp has run, so a relocation here is never observed
+        /// as stale by an earlier pass. If no
         /// such alternate tile exists (the footprint + margin would consume the room's entire open
         /// interior), the site is rejected exactly as before -- there would be nothing left to anchor
         /// the room's own connectivity/spawn point to.

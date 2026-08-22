@@ -13,11 +13,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Atmosphere
     /// this is the area's own .are-level atmosphere: skybox, day/night behavior, sun/moon
     /// ambient/diffuse colors, fog, shadows, wind, and weather chances.
     ///
-    /// Consumed on both output paths: SWLOR.ProcgenReview patches these fields into every emitted
-    /// .are (see AreaAtmosphereAreWriter), and AreaSynthesizer.Realize applies the runtime-settable
-    /// subset to live instances after CreateArea. Three fields are .are-only -- the engine exposes
-    /// no runtime setter for SunShadows/MoonShadows, LightingScheme, or LoadScreenId -- so live
-    /// instances keep the placeholder area's values for those; everything else applies on both paths.
+    /// <see cref="Authoring.GeneratedAreaDocumentPopulator"/> writes these values into the generated
+    /// ARE document before the area triplet is committed to the open module.
     /// </summary>
     public class DungeonAreaAtmosphere
     {
@@ -35,9 +32,9 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Atmosphere
         public int SunFogColor { get; set; }
         public int MoonFogAmount { get; set; }
         public int MoonFogColor { get; set; }
-        /// <summary>.are-only: no runtime setter exists; live instances keep the placeholder's value.</summary>
+        /// <summary>Whether sunlight casts shadows.</summary>
         public bool SunShadows { get; set; }
-        /// <summary>.are-only: no runtime setter exists; live instances keep the placeholder's value.</summary>
+        /// <summary>Whether moonlight casts shadows.</summary>
         public bool MoonShadows { get; set; }
         public int ShadowOpacity { get; set; } = 50;
         /// <summary>0 (none), 1 (light), or 2 (strong).</summary>
@@ -45,11 +42,11 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Atmosphere
         public int ChanceRain { get; set; }
         public int ChanceSnow { get; set; }
         public int ChanceLightning { get; set; }
-        /// <summary>.are-only: no runtime setter exists; live instances keep the placeholder's value.</summary>
+        /// <summary>Lighting-scheme row written to the ARE document.</summary>
         public int LightingScheme { get; set; }
         public float FogClipDist { get; set; } = 45f;
         /// <summary>
-        /// .are-only loadscreens.2da row, and deliberately nullable: only set when the family
+        /// Optional loadscreens.2da row. Deliberately nullable: only set when the family
         /// evidence agrees on a meaningful non-zero loadscreen (e.g. ttd01's Tatooine screen);
         /// null keeps the placeholder .are's value untouched.
         /// </summary>

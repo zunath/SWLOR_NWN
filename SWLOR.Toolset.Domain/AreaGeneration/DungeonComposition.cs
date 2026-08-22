@@ -22,7 +22,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
         {
             var parameters = Layout.Template.Clone();
             // Exterior solid inversion (see DungeonTilesetProfile.SolidTerrainOverride): stamp the
-            // profile's declared solid so LayoutSolver.Solve/AreaGeneration keep it instead of
+            // profile's declared solid so LayoutSolver.Solve keeps it instead of
             // defaulting to the tileset's GENERAL Default terrain. Empty for every interior profile --
             // Solve's own empty-means-Default stamp is unchanged there.
             parameters.SolidTerrain = Tileset.SolidTerrainOverride ?? string.Empty;

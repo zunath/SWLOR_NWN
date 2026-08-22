@@ -142,7 +142,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
         /// composing with the default solid would carve unwalkable rock "rooms" out of a walkable
         /// "wall" mass. Declaring SolidTerrainOverride("Cliff") + PrimaryOpenTerrain("Desert") gives
         /// real dungeon-style enclosure: cliff-walled canyons with walkable clearings. Consumed by
-        /// DungeonComposition.BuildLayoutParameters; LayoutSolver.Solve/AreaGeneration keep stamping
+        /// DungeonComposition.BuildLayoutParameters; LayoutSolver.Solve keeps stamping
         /// the tileset Default whenever the composed parameters carry no explicit solid.
         /// </summary>
         public string SolidTerrainOverride { get; set; } = string.Empty;
@@ -314,24 +314,19 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
         /// True for a profile that recomposes an already-registered physical tileset resref against a different
         /// terrain/district palette (e.g. "crypt_grey" recomposing tdc01's Grey palette alongside the
         /// base "crypt" profile's Tan palette) rather than registering a new physical tileset. Palette
-        /// variants exist purely to close tile-coverage census exemptions and offer the palette as a
-        /// composable option -- they are deliberately excluded from SWLOR.ProcgenReview's --matrix
-        /// full cross-product (tileset x layout) to keep the review module's area count from ballooning
-        /// as more palettes are registered; each variant instead gets exactly one showcase area appended
-        /// via --extra-areas. See TileCoverageCensusTests, which iterates every profile sharing a
-        /// TilesetResref (variant or not) so a tile counts as reachable if ANY of them composes it.
+        /// variants offer the palette as a composable option and inherit family-level defaults through
+        /// <see cref="DungeonTilesetPaletteInheritance"/>. TileCoverageCensusTests iterates every
+        /// profile sharing a TilesetResref, so a tile counts as reachable when any variant composes it.
         /// </summary>
         public bool IsPaletteVariant { get; set; } = false;
 
         /// <summary>
         /// This tileset FAMILY's own bulk "set dressing" palette, mined from its own hand-built
-        /// reference areas (decoration_evidence/evidence_by_tileset.json,
-        /// decoration_evidence/evidence_by_theme_keyword.json, decoration_evidence/
-        /// evidence_named_exemplars.json) rather than from the theme composed onto it — decoration is a
+        /// reference areas rather than from the theme composed onto it — decoration is a
         /// function of the VISUAL family (what the tileset's own art depicts), not the content theme.
         /// A palette-variant profile (<see cref="IsPaletteVariant"/>) with no entries of its own
         /// automatically inherits the palette of the first non-variant profile sharing its
-        /// <see cref="TilesetResref"/> (see DungeonContentPlacer.GetEffectiveTilesetDecorations) — only
+        /// <see cref="TilesetResref"/> through <see cref="DungeonTilesetPaletteInheritance"/> — only
         /// declare entries here directly when that district's own evidence genuinely differs. Empty on
         /// a base (non-variant) profile = no mined evidence exists for this family yet; documented
         /// per-profile rather than silently guessing another family's dressing.
@@ -406,9 +401,9 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
         /// not mined evidence: hand-built areas achieve silhouette variety with model mixing, but
         /// they also ship per-instance VisualTransform scale on placeables (90 instances in
         /// ar_pw_indusvel alone), so the mechanism itself is an established hand-building tool.
-        /// The scale is applied to the footprint BEFORE the walkable-clearance fit check, persists
-        /// through the review module as a .git VisualTransform struct (toolset + client render it)
-        /// and through the live path as SetObjectVisualTransform. Off (the default) for every
+        /// The scale is applied to the footprint before the walkable-clearance fit check and is
+        /// persisted by the generated-area document populator as a .git VisualTransform struct,
+        /// which the toolset and client both render. Off (the default) for every
         /// family that does not declare it. Inherited by palette variants like
         /// <see cref="Decorations"/>.
         /// </summary>
@@ -450,13 +445,10 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
         public List<StreetDressingEntry> StreetDressings { get; set; } = new();
 
         /// <summary>
-        /// The layout-profile key of this family's SIGNATURE composition -- the pairing its
-        /// hand-built reference areas actually look like, used as the out-of-the-box default by
-        /// review tooling (SWLOR.ContentBuilder pre-selects it when the tileset is picked;
-        /// SWLOR.ProcgenReview's default review set includes one signature showcase per declaring
-        /// family). Empty (the default) = no signature pairing; tooling keeps its generic
-        /// first-alphabetical defaults. Never restricts anything: every other layout stays
-        /// selectable. Inherited by palette variants like <see cref="Decorations"/>.
+        /// The layout-profile key of this family's signature composition: the pairing its hand-built
+        /// reference areas most closely resemble. Empty means no recommended pairing. This is
+        /// authoring metadata and never restricts the selectable layouts. Inherited by palette
+        /// variants like <see cref="Decorations"/>.
         /// </summary>
         public string SignatureLayoutProfileKey { get; set; } = string.Empty;
 
@@ -464,7 +456,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
         /// The area size (tiles per side) of the signature composition above -- the scale the
         /// family's hand-built reference areas dress at (e.g. the fcx01 street-canyon city at 24,
         /// where tile canyon blocks, placeable frontage, lamp lines, and full dressing all
-        /// compose). 0 = tooling keeps its generic default size.
+        /// compose). 0 means no recommended size.
         /// </summary>
         public int SignatureSize { get; set; }
 
@@ -472,9 +464,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
         /// This tileset FAMILY's standard AREA atmosphere (see <see cref="DungeonAreaAtmosphere"/>),
         /// mined from its own hand-built exemplar areas' .are properties. Null (the default) = no
         /// unambiguous family evidence exists (fewer than 3 hand-built areas agreeing on the core
-        /// atmosphere tuple, or a dead tie between candidate tuples): both output paths then keep
-        /// their current defaults (the placeholder .are's values offline, the cloned instance's
-        /// values at runtime) rather than guessing. Inherited by palette variants the same way as
+        /// atmosphere tuple, or a dead tie between candidate tuples): generated documents keep the
+        /// source ARE values rather than guessing. Inherited by palette variants the same way as
         /// <see cref="Decorations"/> (see DungeonTilesetPaletteInheritance).
         /// </summary>
         public DungeonAreaAtmosphere Atmosphere { get; set; }

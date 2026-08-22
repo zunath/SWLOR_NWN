@@ -50,20 +50,18 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
     ///
     /// Exclusions (never decorated):
     ///  - Set-piece rooms (LayoutRoom.IsSetPiece) — walkable only via their own baked walkmesh, not
-    ///    the abstract tile grid this planner reasons about (same rule DungeonContentPlacer.Populate
-    ///    already applies to ambient/boss content).
+    ///    the abstract tile grid this planner reasons about.
     ///  - Every transition anchor cell (TransitionPoint.Tile) and, for Door/GroupExit-style
     ///    transitions, the DoorCell/DoorwayCell — the tile-center "waypoint under geometry" lesson
     ///    (see TileDoorPlanner's own doc comments) applies here too: a decoration at a doorway's
     ///    exact tile center can land inside the doorframe's own baked art.
-    ///  - A room's CenterTile — reserved for boss/treasure/exit content placement (see
-    ///    DungeonContentPlacer.PopulateBossRoom/PlaceExit), regardless of room role.
+    ///  - A room's CenterTile — reserved as the room's representative content anchor.
     ///
     /// Scope note (CorridorSide): corridors carved in OpenLane mode are never recorded as their own
     /// LayoutRoom (see RoomsAndCorridorsLayout/WarrenLayout — only rectangular/chamber rooms become
     /// LayoutRoom objects) and Tunnel-mode corridors are solid cells with no open tile to decorate at
-    /// all; ResolvedLayout exposes no general "is this tile open" query outside room membership
-    /// (AreaSynthesizer.ComputeWalkablePoints is room-tiles-only too). CorridorSide therefore targets
+    /// all; ResolvedLayout exposes no general "is this tile open" query outside room membership.
+    /// CorridorSide therefore targets
     /// long/narrow ROOMS (a room whose tile bounding box has a short axis &lt;= 2 tiles — the
     /// corridor-like chambers Warren/Labyrinth/RoomsAndCorridors actually produce as real LayoutRoom
     /// objects) rather than carved corridor cells. A true carved-corridor decoration pass would need a
@@ -82,8 +80,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
         private const float WallOffset = 3.5f;
 
         /// <summary>
-        /// Centerpiece decorations sit off-center — never ON CenterTile, which is reserved — mirroring
-        /// DungeonContentPlacer's own FeatureOffset convention for treasure/exit placement.
+        /// Centerpiece decorations sit off-center, never on the reserved CenterTile itself.
         /// </summary>
         private const float CenterOffset = 2.5f;
 
@@ -96,8 +93,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
         /// RoomCenter centerpieces rather than wall/corridor/doorway "hugging" placements — the
         /// mid-point of the mined evidence's per-family center_fraction proxy (roughly 3-24% of a
         /// family's decorative placeables sit away from the perimeter, clustering 3-9% outside one
-        /// single-area outlier family; see decoration_evidence/evidence_by_tileset.json
-        /// context_proxy.center_fraction). Centerpieces are additionally gated per-room by
+        /// single-area outlier family). Centerpieces are additionally gated per-room by
         /// MinCenterpieceRoomTiles/isCorridorLike regardless of this share.
         /// </summary>
         private const double CenterpieceTargetShare = 0.08;
@@ -358,7 +354,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
         /// to <see cref="MaxRunSegmentLength"/> (that caps one straight segment; this caps the whole
         /// room, so four capped sides can't still add up to one uniform ring of the same fixture).
         /// Derived from the hand-built grid-bucket same-resref-repeat p90 across the typical
-        /// (non-warehouse-density) mined families — see decoration_evidence/handbuilt_summary.json.
+        /// non-warehouse-density reference families.
         /// Once every motif/palette entry for a room+context hits this cap, PlaceWallRuns stops
         /// dressing that bucket rather than overflowing it (a real hand-built room does not have
         /// unlimited copies of one fixture either).
@@ -372,8 +368,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
         /// </summary>
         internal const int MotifResrefCap = 3;
 
-        /// <summary>Salt XORed into the layout seed so this pass draws a different RNG stream than
-        /// DungeonContentPlacer's tier-scaled content pass (which uses seed ^ (tier * 397)).</summary>
+        /// <summary>Salt XORed into the layout seed so decoration draws use a stream isolated from
+        /// geometry generation and other authoring stages.</summary>
         private const int SeedSalt = 0x0EC0;
 
         /// <summary>
@@ -528,9 +524,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
         /// empty/unknown name means the standard palette.
         ///
         /// Calibration: DungeonDetail.DecorationBaseDensity is evidence-derived as placeables PER TOTAL
-        /// AREA TILE (layout.Width * layout.Height) from the hand-built reference areas — see
-        /// decoration_evidence/mine_evidence.py's own "density: decorative placeables per tile (area
-        /// Width*Height)" convention; this stays theme-owned (it is the overall dressing INTENSITY, not
+        /// AREA TILE (layout.Width * layout.Height) from the hand-built reference areas. This stays
+        /// theme-owned (it is the overall dressing INTENSITY, not
         /// the palette). The eligible tile POOL this planner can actually decorate (room perimeter cells
         /// with a curated palette bucket) is a much smaller fraction of the total area (corridors
         /// carved outside LayoutRooms, interior room tiles, and every excluded cell are never eligible —
@@ -1048,9 +1043,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
                     centerEntries.Count > 0 &&
                     rng.NextDouble() < centerProbability)
                 {
-                    // Never the CenterTile itself — that cell is reserved for boss/treasure/exit
-                    // content placement (see DungeonContentPlacer.PopulateBossRoom/PlaceExit) — so
-                    // pick the nearest OTHER room tile to stand the centerpiece on instead.
+                    // Never the CenterTile itself; that cell is the room's representative content
+                    // anchor, so pick the nearest other room tile for the centerpiece instead.
                     var anchor = NearestOtherTile(room.CenterTile, room.Tiles, excluded);
                     // Urban road integrity: the set piece steps off the street ribbon to the nearest
                     // non-road tile instead (the plaza stays intentional, the walkway stays clear).

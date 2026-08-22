@@ -113,13 +113,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Leadership
             if (!CanRousingShoutAffectTarget(activator, target))
                 return;
 
+            // Temporary HP can raise the engine-reported current HP immediately. Capture the
+            // danger state first so the rescue rider is decided from the target's pre-shout HP.
+            var targetWasInDanger = IsTargetInDanger(target);
             durationSeconds = LeadershipAbilityEffects.ApplyFieldStewardCommandDurationBonus(activator, durationSeconds);
             ApplyTemporaryHP(
                 target,
                 AbilityEffectScaling.ScaleValueBySourceSocial(activator, temporaryHPPercent, temporaryHPCap),
                 durationSeconds);
 
-            if (IsTargetInDanger(target))
+            if (targetWasInDanger)
             {
                 StatusEffect.ApplyStatusEffect(activator, target, lowHPStatusEffect, durationSeconds);
             }

@@ -4,14 +4,14 @@ using System;
 namespace SWLOR.Toolset.Domain.AreaGeneration
 {
     /// <summary>
-    /// Normalizes <see cref="MacroLayoutParameters"/> so that every combination Content Builder's
+    /// Normalizes <see cref="MacroLayoutParameters"/> so that every combination the Area Generator's
     /// Advanced Settings sliders can produce is guaranteed generation-safe under the standard
     /// 6-attempt retry, instead of relying on callers to only ever offer safe values.
     ///
-    /// Every bound here was measured empirically with a scratch probe harness (30+ single-attempt
-    /// seeds per data point, see the July 2026 procedural-areas advanced-settings-hardening probe
-    /// tables) rather than guessed, and each formula is documented with the evidence that justifies
-    /// it. Formulas intentionally UNDER-approximate the true empirical safe ceiling (and OVER-
+    /// Every bound here was measured empirically with a probe harness (30+ single-attempt seeds per
+    /// data point in the July 2026 parameter-safety measurements) rather than guessed, and each
+    /// formula is documented with the evidence that justifies it. Formulas intentionally
+    /// UNDER-approximate the true empirical safe ceiling (and OVER-
     /// approximate any empirical safe floor) so a formula that's slightly conservative is preferred
     /// over one that's exactly tight to the measured 95% cutoff.
     /// </summary>
@@ -78,9 +78,9 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
 
             // Room counts: swap first so Min<=Max always holds. Un-swapped Min>Max reaches
             // System.Random.Next(min, max+1) in every style but PackedRooms (which never rolls
-            // MinRooms/MaxRooms at all) and throws ArgumentOutOfRangeException -- confirmed by probe
-            // Part 2b, reachable directly from the UI (Min Rooms slider tops out at 12, Max Rooms
-            // slider bottoms out at 2, and the two sliders are otherwise uncoupled).
+            // MinRooms/MaxRooms at all) and throws ArgumentOutOfRangeException -- confirmed by the
+            // inverted room-count probe, reachable directly from the UI (Min Rooms tops out at 12,
+            // Max Rooms bottoms out at 2, and the two sliders are otherwise uncoupled).
             if (parameters.MinRooms > parameters.MaxRooms)
                 (parameters.MinRooms, parameters.MaxRooms) = (parameters.MaxRooms, parameters.MinRooms);
             parameters.MinRooms = Math.Max(2, parameters.MinRooms);
@@ -92,9 +92,9 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
             // widens the EFFECTIVE room size to Min instead of honoring the user's stated Max -- e.g.
             // Min Room Size=10/Max Room Size=3 (both directly reachable: the sliders are 2-10 and
             // 3-12 respectively) at RoomsAndCorridors' 11x11 size floor produced a real
-            // InvalidOperationException ("only 0 fit") in probe Part 2c, because the self-correction
-            // widened every room to 10 corners with no further size cap applied. Swapping first means
-            // the RoomSizeBounds cap below is what actually governs the outcome.
+            // InvalidOperationException ("only 0 fit") in the inverted room-size probe, because the
+            // self-correction widened every room to 10 corners with no further size cap applied.
+            // Swapping first means the RoomSizeBounds cap below governs the outcome.
             if (parameters.MinRoomCornerSize > parameters.MaxRoomCornerSize)
                 (parameters.MinRoomCornerSize, parameters.MaxRoomCornerSize) = (parameters.MaxRoomCornerSize, parameters.MinRoomCornerSize);
             parameters.MinRoomCornerSize = Math.Max(2, parameters.MinRoomCornerSize);
@@ -107,10 +107,10 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
             // OrganicCave: OpenFillTarget has a hard safe floor that rises steeply as the area shrinks
             // toward its size floor -- at the 12x12 floor, only fill>=~58% reliably percolates past
             // OrganicCaveLayout.MinComponentSize (8 corners) and the >=2-spacious-seed-point
-            // requirement; the Content Builder slider's own range (30-60%) offers values as low as
-            // 30%, which measured a flat 0% single-attempt success at size 12 in probe Part 3 (not
-            // merely low-probability -- structurally near-impossible, so no amount of 6-attempt retry
-            // rescues it). See MinSafeOpenFillTarget for the measured breakpoints.
+            // requirement; the Area Generator slider's own range (30-60%) offers values as low as
+            // 30%, which measured a flat 0% single-attempt success at size 12 in the fill-target
+            // probe (not merely low-probability -- structurally near-impossible, so no amount of
+            // 6-attempt retry rescues it). See MinSafeOpenFillTarget for the measured breakpoints.
             if (parameters.Style == DungeonLayoutStyle.OrganicCave)
             {
                 var minFill = MinSafeOpenFillTarget(parameters.Width, parameters.Height);
@@ -120,16 +120,16 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
 
             // CorridorWidth: every layout style already applies Math.Max(1, CorridorWidth) internally,
             // but normalizing here too means RoomSizeBounds/other future consumers can trust the
-            // parameters object directly without re-deriving that floor themselves. Probe Part 4 found
-            // CorridorWidth has no measurable effect on success/failure at any tested size (the
-            // dominant failure modes are room size and organic fill), so no per-style/per-size cap is
-            // needed beyond this floor.
+            // parameters object directly without re-deriving that floor themselves. Corridor-width
+            // probes found CorridorWidth has no measurable effect on success/failure at any tested
+            // size (the dominant failure modes are room size and organic fill), so no
+            // per-style/per-size cap is needed beyond this floor.
             if (parameters.CorridorWidth < 1) parameters.CorridorWidth = 1;
 
-            // Entrances/Exits: clamp to the UI's own 1-3 range so non-UI callers (review specs,
-            // /genarea) can't request more anchor points than TransitionAssignment's room-count-aware
-            // placement was verified against. Probe Part 5b found EntranceCount=ExitCount=3 never
-            // fails on its own merits once room size / organic fill are within bounds.
+            // Entrances/Exits: clamp to the UI's own 1-3 range so direct API callers can't request
+            // more anchor points than TransitionAssignment's room-count-aware placement was verified
+            // against. Transition-count probes found EntranceCount=ExitCount=3 never fails on its own
+            // merits once room size / organic fill are within bounds.
             parameters.EntranceCount = Math.Clamp(parameters.EntranceCount, 1, 3);
             parameters.ExitCount = Math.Clamp(parameters.ExitCount, 1, 3);
         }
@@ -256,7 +256,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
         /// Largest room/chamber corner size (see <see cref="MacroLayoutParameters.MaxRoomCornerSize"/>)
         /// that reliably (>=95% single-attempt, verified by probe) generates for <paramref name="style"/>
         /// at the given area dimensions. The returned Min is always 2 (every style's own generator
-        /// already floors MinRoomCornerSize at 2). Exposed so Content Builder can bound the Min/Max
+        /// already floors MinRoomCornerSize at 2). Exposed so the Area Generator can bound the Min/Max
         /// Room Size sliders identically to what <see cref="ClampToValid"/> enforces, rather than
         /// letting the UI offer values the engine will silently override.
         ///
@@ -276,7 +276,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
         ///   Math.Min(MaxRoomCornerSize, 5/4). Exposed here defensively too because that internal cap
         ///   only fires through Math.Max(minSize, Math.Min(max,5/4)) -- a MinRoomCornerSize above the
         ///   hardcap (reachable: the Min Room Size slider goes up to 10) silently overrides it to
-        ///   MinRoomCornerSize instead (verified harmless in probe Part 7 only because
+        ///   MinRoomCornerSize instead (verified harmless by the chamber-size probe only because
         ///   CarveChambers additionally clamps each room rect against Width/Height directly; capping
         ///   here keeps the exposed bound honest about what the layout was designed for).
         /// - OrganicCave: room-size knobs are structurally unused (rooms are sampled from the smoothed

@@ -75,7 +75,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
 
         /// <summary>
         /// Sets the door blueprint used when a transition is realized as a real tileset door.
-        /// Must be a generic-door utd (tile door slots are Type=0 generic).
+        /// The blueprint supplies default appearance and behavior for generic SET slots (Type=0);
+        /// a positive slot type replaces its appearance with the matching doortypes.2da row.
         /// </summary>
         public DungeonDefinitionBuilder ExitDoor(string resref)
         {

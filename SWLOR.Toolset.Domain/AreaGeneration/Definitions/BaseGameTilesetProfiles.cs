@@ -3294,8 +3294,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // directly against the raw .set group data). Those models are literal Tyrants-of-the-
             // Moonsea (xp3.bif) placeholder stubs: 1.8-4.7KB hand-written ASCII .mdl files whose visible
             // render trimesh has "bitmap NULL" (no texture at all) sitting on top of or instead of the
-            // room's floor -- confirmed by dumping the raw model text (see
-            // audit_placeholder_art.py in the procedural-areas scratchpad) -- and they render as flat
+            // room's floor -- confirmed by dumping the raw model text during a visual placeholder
+            // audit -- and they render as flat
             // white tiles in-game. All 15 groups are removed here (not just their broken tile) since a
             // furnished room missing its own floor/entrance tile isn't a usable set piece regardless.
             // ExcludedTiles(...) below declares the 15 physical IDs so TileResolver's shared candidate

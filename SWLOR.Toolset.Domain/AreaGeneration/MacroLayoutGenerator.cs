@@ -146,8 +146,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
 
             // Normalize every Advanced Settings knob (room counts/sizes, organic fill, corridor width,
             // entrance/exit counts, size floor) to a combination LayoutParameterConstraints has
-            // verified is generation-safe. Content Builder's sliders can otherwise reach combinations
-            // that throw outright (e.g. Min Rooms > Max Rooms) or silently degrade into a
+            // verified is generation-safe. The Area Generator's sliders can otherwise reach
+            // combinations that throw outright (e.g. Min Rooms > Max Rooms) or silently degrade into a
             // near-certain failure (e.g. Min Room Size > Max Room Size, or OrganicCave's Organic Fill
             // slider floor at a small size) -- see LayoutParameterConstraints.ClampToValid for the
             // probe evidence behind each bound. NeedsClamping is a pure value check (no allocation) so

@@ -214,6 +214,9 @@ namespace SWLOR.Toolset.Tests
             File.Exists(workspace.GetResourcePath(ResourceType.Area, "broken_custom")).Should().BeFalse();
             File.Exists(Path.Combine(_moduleRoot, "git", "broken_custom.git.json")).Should().BeFalse();
             File.Exists(Path.Combine(_moduleRoot, "gic", "broken_custom.gic.json")).Should().BeFalse();
+            File.Exists(Path.Combine(
+                _moduleRoot,
+                ".swlor-toolset-new-area-broken_custom.pending")).Should().BeFalse();
             IfoDocument.Load(Path.Combine(_moduleRoot, "ifo", "module.ifo.json"))
                 .AreaResRefs.Should().NotContain("broken_custom");
         }

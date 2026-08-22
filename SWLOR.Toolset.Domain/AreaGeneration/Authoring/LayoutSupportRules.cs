@@ -36,10 +36,21 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             var solidTerrain = string.IsNullOrEmpty(tilesetProfile.SolidTerrainOverride)
                 ? model.DefaultTerrain
                 : tilesetProfile.SolidTerrainOverride;
+            var crosserType = layoutProfile.Template.CorridorCrosserType;
+            var bodyCrosser = layoutProfile.Template.TunnelBodyCrosser;
+            var portCrosser = layoutProfile.Template.TunnelPortCrosser;
+            if (crosserType == CorridorCrosserType.Corridor &&
+                !string.IsNullOrEmpty(tilesetProfile.TunnelBodyCrosser) &&
+                !string.IsNullOrEmpty(tilesetProfile.TunnelPortCrosser))
+            {
+                crosserType = CorridorCrosserType.Custom;
+                bodyCrosser = tilesetProfile.TunnelBodyCrosser;
+                portCrosser = tilesetProfile.TunnelPortCrosser;
+            }
 
             return TunnelVocabularyCheck.SupportsTunnels(
                 model, openTerrain, tilesetProfile.SecondaryOpenTerrain, solidTerrain,
-                layoutProfile.Template.CorridorCrosserType);
+                crosserType, bodyCrosser, portCrosser, tilesetProfile.DoorSlotCrossers);
         }
     }
 }

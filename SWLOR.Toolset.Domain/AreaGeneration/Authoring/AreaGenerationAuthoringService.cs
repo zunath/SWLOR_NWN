@@ -81,6 +81,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             settings.Overrides?.ApplyTo(parameters, composition.Tileset);
             parameters.Width = settings.Width;
             parameters.Height = settings.Height;
+            if (settings.Overrides == null)
+                LayoutParameterConstraints.ClampToValid(parameters);
             var bounds = LayoutParameterConstraints.RoomSizeBounds(
                 parameters.Style,
                 parameters.Width,

@@ -36,6 +36,25 @@ public sealed class AreaGeneratorWindowRenderTests
     }
 
     [Test]
+    public void SelectingACompositionInput_ReevaluatesTheGenerateCommand()
+    {
+        using var viewModel = CreateViewModel();
+        var notifications = 0;
+        viewModel.GeneratePreviewCommand.CanExecuteChanged += (_, _) => notifications++;
+        var profile = new AreaGeneratorViewModel.TilesetChoice(new DungeonTilesetProfile
+        {
+            Key = "command_probe",
+            DisplayName = "Command Probe",
+            TilesetResref = "unavailable_command_probe"
+        });
+        viewModel.TilesetProfiles.Add(profile);
+
+        viewModel.SelectedTilesetProfile = profile;
+
+        notifications.Should().BeGreaterThan(0);
+    }
+
+    [Test]
     public void ReliefOnlyComposition_PreservesItsDefaultInTheSharedHeightControl()
     {
         using var viewModel = CreateViewModel();

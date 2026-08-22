@@ -497,13 +497,14 @@ public class MacroLayoutGeneratorTests
     {
         const string road = "Road";
         const string fence = "Fence";
-        var layout = new MacroLayout(new CornerTerrainGrid(4, 1, "Floor"));
+        var layout = new MacroLayout(new CornerTerrainGrid(4, 2, "Floor"));
         layout.StampedOpenSetPieceFootprints.Add([(0, 0)]);
         layout.PinnedTiles[(0, 0)] = (0, 0, 0);
+        layout.PinnedTiles[(2, 0)] = (0, 0, 0);
         layout.Crossers.SetEdge(3, 0, EdgeSlot.Top, road);
         layout.Crossers.SetEdge(1, 0, EdgeSlot.Right, fence);
 
-        var parameters = DefaultParameters(width: 4, height: 1, minRooms: 2, maxRooms: 2);
+        var parameters = DefaultParameters(width: 4, height: 2, minRooms: 2, maxRooms: 2);
         parameters.RoadCrosser = road;
         var tileset = new TilesetModel
         {
@@ -521,6 +522,8 @@ public class MacroLayoutGeneratorTests
         LayoutRoadCarver.CarveSpurs(layout, parameters, tileset, new Random(1));
 
         layout.Crossers.GetEdge(1, 0, EdgeSlot.Right).Should().Be(fence);
+        layout.Crossers.GetEdge(1, 0, EdgeSlot.Top).Should().Be(road,
+            "the spur must route around the pinned foreign-crosser edge and still be carved");
     }
 
     private static TileRecord RoadTile(

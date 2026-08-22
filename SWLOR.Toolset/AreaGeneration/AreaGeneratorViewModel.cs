@@ -6,6 +6,7 @@ using Avalonia.Media.Imaging;
 using Avalonia.Platform;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Serilog;
 using SWLOR.Toolset.Domain.AreaGeneration;
 using SWLOR.Toolset.Domain.AreaGeneration.Authoring;
 using SWLOR.Toolset.Domain.AreaGeneration.Tileset;
@@ -90,9 +91,15 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
             SelectedTilesetProfile.Value.MaxElevationRegions,
             SelectedTilesetProfile.Value.MaxReliefRegions);
 
-    [ObservableProperty] private ThemeChoice? _selectedTheme;
-    [ObservableProperty] private TilesetChoice? _selectedTilesetProfile;
-    [ObservableProperty] private LayoutChoice? _selectedLayoutProfile;
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(GeneratePreviewCommand))]
+    private ThemeChoice? _selectedTheme;
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(GeneratePreviewCommand))]
+    private TilesetChoice? _selectedTilesetProfile;
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(GeneratePreviewCommand))]
+    private LayoutChoice? _selectedLayoutProfile;
     [ObservableProperty] private DecorationChoice? _selectedDecorationProfile;
     [ObservableProperty] private AreaPreviewMode _previewMode = AreaPreviewMode.MapGraphics;
     [ObservableProperty] private bool _showRooms = true;
@@ -359,6 +366,7 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
         }
         catch (Exception ex)
         {
+            Log.Error(ex, "Area generation preview failed.");
             Preview = null;
             SetPreviewedDraft(null);
             StatusMessage = ex.GetBaseException().Message;
@@ -409,6 +417,7 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
         }
         catch (Exception ex)
         {
+            Log.Error(ex, "Creating generated area {ResRef} failed.", ResRef);
             StatusMessage = ex.GetBaseException().Message;
         }
         finally

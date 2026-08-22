@@ -126,6 +126,38 @@ public class AreaGenerationToolsetIntegrationTests
     }
 
     [Test]
+    public void AuthoringService_ClampsLayoutProfileDefaultsBeforeValidation()
+    {
+        var (service, _) = CreateAuthoringService();
+        var settings = CreateSettings(service, seed: 77231) with
+        {
+            LayoutProfileKey = StandardLayoutProfiles.Halls,
+            Width = 16,
+            Height = 16,
+            Overrides = null
+        };
+
+        var draft = service.Generate(settings);
+
+        draft.Result.Success.Should().BeTrue(draft.Result.FailureReason,
+            "profile and composition defaults use the generator's normal safe clamp");
+    }
+
+    [Test]
+    public void LayoutSupportRules_ProbeTilesetDeclaredCustomTunnelVocabulary()
+    {
+        var definition = SetFileParser.ParseFile(
+            Path.Combine(RepoRoot, "SWLOR_Haks", "sw_t_crypt", "tdc01.set"));
+        var model = TilesetSetParser.FromDefinition("tdc01", definition);
+        var catalog = new DefinitionCatalog();
+        var tileset = catalog.TilesetProfiles[BaseGameTilesetProfiles.CryptGrey];
+        var layout = catalog.LayoutProfiles[StandardLayoutProfiles.Complex];
+
+        LayoutSupportRules.Supports(tileset, layout, model).Should().BeTrue(
+            "Crypt Grey declares a verified GreyCorridor/Doorway tunnel family");
+    }
+
+    [Test]
     public void TileResolver_RejectsPlateauCandidatesThatWouldProduceNegativeTileHeight()
     {
         var corners = new CornerTerrainGrid(2, 1, "Floor");
@@ -343,6 +375,10 @@ public class AreaGenerationToolsetIntegrationTests
                 "placeable transitions use the sloped tile's center height");
         git.Fields.GetListOrEmpty("Placeable List")[0]
             .GetLocStringOrNull("LocName")!.Text.Should().Be("Test Maintenance Hatch");
+        git.Fields.GetListOrEmpty("Placeable List")[0]
+            .GetStringOrNull("OnUsed").Should().BeEmpty();
+        new VarTable(git.Fields.GetListOrEmpty("Placeable List")[0])
+            .GetString("Destination").Should().BeNull();
         git.Fields.GetListOrEmpty("Placeable List")[1]
             .GetSingleOrNull("Z").Should().BeApproximately(11.06f, 0.001f,
                 "ordinary decorations interpolate the rotated tile's corner heights at their XY position");

@@ -157,7 +157,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                         anchorZ,
                         facingDegrees: 0f,
                         visualScale: 1f,
-                        displayName: draft.Composition.Content.ExitDisplayName);
+                        displayName: draft.Composition.Content.ExitDisplayName,
+                        clearInheritedTransitionBehavior: true);
                 }
             }
         }
@@ -216,7 +217,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                 Math.Cos(radians),
                 Math.Sin(radians));
             InstanceFieldMap.SetTag(instance, tag);
-            instance.GetOrAddLocString("LocName").Text = displayName;
+            if (!string.IsNullOrWhiteSpace(displayName))
+                instance.GetOrAddLocString("LocName").Text = displayName;
 
             var list = git.Fields.GetOrAddList(DoorList);
             list.Add(instance);
@@ -289,7 +291,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             float z,
             float facingDegrees,
             float visualScale,
-            string? displayName = null)
+            string? displayName = null,
+            bool clearInheritedTransitionBehavior = false)
         {
             if (string.IsNullOrWhiteSpace(resref))
                 throw new InvalidOperationException($"Placeable '{tag}' has no configured blueprint resref.");
@@ -308,6 +311,11 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             InstanceFieldMap.SetTag(instance, tag);
             if (!string.IsNullOrWhiteSpace(displayName))
                 instance.GetOrAddLocString("LocName").Text = displayName;
+            if (clearInheritedTransitionBehavior)
+            {
+                instance.SetString("OnUsed", GffFieldType.ResRef, string.Empty);
+                new VarTable(instance).Remove("Destination");
+            }
             ApplyVisualScale(instance, visualScale);
 
             var list = git.Fields.GetOrAddList(PlaceableList);

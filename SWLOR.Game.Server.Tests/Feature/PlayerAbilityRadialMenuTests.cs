@@ -63,6 +63,11 @@ public class PlayerAbilityRadialMenuTests
             classFeatRow["List"].Should().Be("1");
             classFeatRow["GrantedOnLevel"].Should().Be("99");
             classFeatRow["OnMenu"].Should().Be("1");
+            if (feat == FeatType.GhostProtocol)
+            {
+                classFeatEntry.Key.Should().BeLessThan(1024,
+                    "Ghost Protocol must remain discoverable when automatic quickbar placement has no primary-bar slot");
+            }
             var requiresManualTargetCursor =
                 ability.IsHostileAbility &&
                 ability.ActivationType != AbilityActivationType.Weapon &&

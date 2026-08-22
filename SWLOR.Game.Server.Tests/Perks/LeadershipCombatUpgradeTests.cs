@@ -106,6 +106,15 @@ public class LeadershipCombatUpgradeTests
         markTargetRider.Should().BeGreaterThan(affectedTargetGuard,
             "Break Morale must grant Mark Target once after at least one direct status application succeeds");
 
+        var rousingShout = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Leadership" / "RousingShoutAbilityDefinition.cs").FullName);
+        var dangerSnapshot = rousingShout.IndexOf("var targetWasInDanger = IsTargetInDanger(target);", StringComparison.Ordinal);
+        dangerSnapshot.Should().BeGreaterThanOrEqualTo(0);
+        var temporaryHitPointGrant = rousingShout.IndexOf("ApplyTemporaryHP(", dangerSnapshot, StringComparison.Ordinal);
+        var rescueStatusApplication = rousingShout.IndexOf("if (targetWasInDanger)", temporaryHitPointGrant, StringComparison.Ordinal);
+        temporaryHitPointGrant.Should().BeGreaterThan(dangerSnapshot,
+            "Rousing Shout must measure the low-HP threshold before temporary HP changes the target's reported HP");
+        rescueStatusApplication.Should().BeGreaterThan(temporaryHitPointGrant);
+
         var leadershipPerks = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "PerkDefinition" / "LeadershipVanguardCommandPerkDefinition.cs").FullName);
         var commandPresence = leadershipPerks[leadershipPerks.IndexOf("private void CommandPresence()", StringComparison.Ordinal)..];
         commandPresence = commandPresence[..commandPresence.IndexOf("private void ", 1, StringComparison.Ordinal)];
@@ -215,6 +224,18 @@ public class LeadershipCombatUpgradeTests
             }
             .Should().BeEquivalentTo(new[] { -10, 0 },
                 "equal reductions must contribute once regardless of which tied effect wins");
+
+        var bolsterTracker = new CreatureStatusEffect();
+        var bolster = ApplyLeadershipEffect(bolsterTracker, new BolsterResolve2StatusEffect());
+        var lowerRousingShout = ApplyLeadershipEffect(bolsterTracker, new RousingShout1StatusEffect());
+        bolsterTracker.StatGroup.Stats[StatType.LeadershipPhysicalDamageTakenPercentAdjustment].Should().Be(-12,
+            "Bolster Resolve II is the stronger Leadership reduction at base SOC and should not stack with Rousing Shout I");
+        lowerRousingShout.StatGroup.Stats[StatType.LeadershipPhysicalDamageTakenPercentAdjustment].Should().Be(0);
+        var strongerRousingShout = ApplyLeadershipEffect(bolsterTracker, new RousingShout3StatusEffect());
+        bolsterTracker.StatGroup.Stats[StatType.LeadershipPhysicalDamageTakenPercentAdjustment].Should().Be(-20,
+            "Rousing Shout III's low-HP rescue reduction must supersede the Bolster Resolve II rider");
+        bolster.StatGroup.Stats[StatType.LeadershipPhysicalDamageTakenPercentAdjustment].Should().Be(0);
+        strongerRousingShout.StatGroup.Stats[StatType.LeadershipPhysicalDamageTakenPercentAdjustment].Should().Be(-20);
     }
 
     [Test]
@@ -421,11 +442,11 @@ public class LeadershipCombatUpgradeTests
             (FeatType.ChargeOrder1, "Aura: Party members within Leadership range (5m base) gain +10% movement speed and +30 Mobility Resistance. SOC scaling can raise these to +12% movement speed and +40 Mobility Resistance."),
             (FeatType.PressTheAttack2, "Party members within Leadership range (5m base) deal +8% damage for 30 seconds. SOC scaling can raise this to +10%."),
             (FeatType.RallyingStandard2, "Aura: Party members within Leadership range (5m base) gain +5% physical and Force ability hit chance. SOC scaling can raise this to +6%."),
-            (FeatType.BreakMorale1, "Enemies within Leadership range (5m base) suffer Flash for 30 seconds, reducing physical and Force ability hit chance by 10%. SOC scaling can raise the penalty to 12%. This command applies reliably to valid enemies within Leadership range (5m base)."),
+            (FeatType.BreakMorale1, "Enemies within Leadership range (5m base) suffer Flash for 30 seconds, reducing Ability Accuracy by 10%. SOC scaling can raise the penalty to 12%. This command applies reliably to valid enemies within Leadership range (5m base)."),
             (FeatType.CoordinatedFocus2, "Aura: Party members within Leadership range (5m base) gain +4% critical hit chance and +5% critical damage. SOC scaling can raise these to +5% and +7%."),
             (FeatType.ChargeOrder2, "Aura: Party members within Leadership range (5m base) gain +15% movement speed and +50 Mobility Resistance. SOC scaling can raise these to +18% movement speed and +65 Mobility Resistance."),
             (FeatType.PressTheAttack3, "Party members within Leadership range (5m base) gain +10% damage and +5% physical and Force ability hit chance for 30 seconds. SOC scaling can raise these to +12% damage and +7% hit chance."),
-            (FeatType.BreakMorale2, "Enemies within Leadership range (5m base) suffer Flash, reducing physical and Force ability hit chance by 15%, and Weakened, reducing Attack by 12%, for 30 seconds. SOC scaling can raise these penalties to 18% and 15%. This command applies reliably to valid enemies within Leadership range (5m base)."),
+            (FeatType.BreakMorale2, "Enemies within Leadership range (5m base) suffer Flash, reducing Ability Accuracy by 15%, and Weakened, reducing Attack by 12%, for 30 seconds. SOC scaling can raise these penalties to 18% and 15%. This command applies reliably to valid enemies within Leadership range (5m base)."),
             (FeatType.CoordinatedFocus3, "Aura: Party members within Leadership range (5m base) gain +6% critical hit chance and +8% critical damage. SOC scaling can raise these to +7% and +10%."),
             (FeatType.DecisiveCommand1, "For 45 seconds, party members within Leadership range (5m base), including you, gain +12% damage, +6% physical and Force ability hit chance, +6% critical hit chance, and restore 1 STM every 3 seconds. SOC scaling can raise the bonuses to +15%, +8%, and +8%."),
             (FeatType.WatchfulPresence1, "Aura: Party members within Leadership range (5m base) take 4% less physical and Force damage. SOC scaling can raise this to 5%."),

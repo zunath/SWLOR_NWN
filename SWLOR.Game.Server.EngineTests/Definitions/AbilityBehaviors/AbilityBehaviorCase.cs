@@ -111,6 +111,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
         public bool ExpectsTargetHealing { get; set; }
 
         /// <summary>
+        /// Optional target HP percentage established immediately before activation. Use this
+        /// for threshold-gated behavior that must be exercised through the live engine path.
+        /// Values must be between 1 and 100 inclusive.
+        /// </summary>
+        public int? TargetHitPointPercentBeforeActivation { get; set; }
+
+        /// <summary>
         /// Minimum hit points the revived target must have after impact. Use this to distinguish
         /// a bare resurrection from ranks which promise meaningful post-revival healing.
         /// Requires <see cref="ExpectsTargetRevived"/>.

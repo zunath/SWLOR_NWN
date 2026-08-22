@@ -198,22 +198,26 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     SetupNPCPerkLevels = new() { [PerkType.RallyingStandard] = 2 },
                 },
 
-                // RousingShoutAbilityDefinition - self/ally target; grants raw temp HP always, but
-                // the low-HP status rider only applies when the target is at or below 35% HP,
-                // which a freshly spawned full-health test creature never is.
+                // RousingShoutAbilityDefinition - exercise the 35%-HP rescue threshold through
+                // the live activation path. Each rank must grant raw temp HP and retain the
+                // pre-shout danger state long enough to apply its rank-specific status rider.
                 new()
                 {
                     Feat = FeatType.RousingShout1,
                     Target = AbilityTargetKind.Self,
+                    TargetHitPointPercentBeforeActivation = 35,
+                    ExpectedActivatorStatusEffects = new[] { typeof(RousingShout1StatusEffect) },
                     ExpectsActivatorTemporaryHP = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "Grants raw temporary HP unconditionally; the low-HP status rider requires the target at or below 35% HP, which a fresh full-health spawn never is. TriageProtocol/BolsterResolve riders are also stat-gated to 0.",
+                    Notes = "Exercises the inclusive low-HP threshold before temporary HP changes the engine-reported current HP. TriageProtocol/BolsterResolve riders are also stat-gated to 0.",
                 },
                 new()
                 {
                     Feat = FeatType.RousingShout2,
                     Target = AbilityTargetKind.Self,
+                    TargetHitPointPercentBeforeActivation = 35,
+                    ExpectedActivatorStatusEffects = new[] { typeof(RousingShout2StatusEffect) },
                     ExpectsActivatorTemporaryHP = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
@@ -222,6 +226,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 {
                     Feat = FeatType.RousingShout3,
                     Target = AbilityTargetKind.Self,
+                    TargetHitPointPercentBeforeActivation = 35,
+                    ExpectedActivatorStatusEffects = new[] { typeof(RousingShout3StatusEffect) },
                     ExpectsActivatorTemporaryHP = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,

@@ -14,6 +14,7 @@ using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.Formats.Tlk;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -433,6 +434,7 @@ public class LeadershipCombatUpgradeTests
         var featRows = Read2daRows(root / "SWLOR_Haks" / "sw_2da" / "feat.2da");
         var abilityRows = Read2daRows(root / "SWLOR_Haks" / "sw_2da" / "spells.2da");
         var tlkEntries = ReadTlkEntries(root / "SWLOR_Haks" / "sw_tlk" / "sw_tlk.tlk.json");
+        var binaryTlk = TlkReader.Read((root / "SWLOR_Haks" / "sw_tlk" / "sw_tlk.tlk").FullName);
         const int CustomTlkOffset = 16777216;
         var descriptions = new[]
         {
@@ -469,10 +471,14 @@ public class LeadershipCombatUpgradeTests
             var featRow = featRows[(int)featType];
             var featDescriptionId = int.Parse(featRow["DESCRIPTION"]) - CustomTlkOffset;
             tlkEntries[featDescriptionId].Should().Be(expectedDescription);
+            binaryTlk.GetString((uint)featDescriptionId).Should().Be(expectedDescription,
+                $"the deployed TLK binary entry {featDescriptionId} must match its JSON source");
 
             var abilityRow = abilityRows[int.Parse(featRow["SPELLID"])];
             var abilityDescriptionId = int.Parse(abilityRow["SpellDesc"]) - CustomTlkOffset;
             tlkEntries[abilityDescriptionId].Should().Be(expectedDescription);
+            binaryTlk.GetString((uint)abilityDescriptionId).Should().Be(expectedDescription,
+                $"the deployed TLK binary entry {abilityDescriptionId} must match its JSON source");
         }
     }
 

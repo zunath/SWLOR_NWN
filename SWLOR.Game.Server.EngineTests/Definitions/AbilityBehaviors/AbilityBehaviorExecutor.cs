@@ -296,6 +296,26 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                         target);
                 }
 
+                if (behaviorCase.TargetHitPointPercentBeforeActivation.HasValue)
+                {
+                    var targetHitPointPercent = behaviorCase.TargetHitPointPercentBeforeActivation.Value;
+                    ctx.Assert(
+                        targetHitPointPercent is >= 1 and <= 100,
+                        "target HP setup percentage must be between 1 and 100");
+                    var targetMaximumHitPoints = GetMaxHitPoints(target);
+                    var desiredTargetHitPoints = Math.Max(1, targetMaximumHitPoints * targetHitPointPercent / 100);
+                    var targetDamage = GetCurrentHitPoints(target) - desiredTargetHitPoints;
+                    ctx.Assert(targetDamage >= 0, "target HP setup cannot raise hit points");
+                    if (targetDamage > 0)
+                    {
+                        ApplyEffectToObject(DurationType.Instant, EffectDamage(targetDamage), target);
+                    }
+
+                    ctx.Assert(
+                        GetCurrentHitPoints(target) == desiredTargetHitPoints,
+                        $"target HP setup expected {desiredTargetHitPoints}/{targetMaximumHitPoints} before activation");
+                }
+
                 if (behaviorCase.MaximumActivatorDistanceToTargetAfterImpact.HasValue)
                 {
                     ctx.Assert(

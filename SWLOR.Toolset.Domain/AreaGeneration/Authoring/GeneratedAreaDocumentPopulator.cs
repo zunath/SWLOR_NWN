@@ -138,7 +138,6 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                         gic,
                         draft.Composition.Content.ExitDoorResref,
                         draft.Composition.Content.ExitDisplayName,
-                        transition.DoorType,
                         $"PG_DOOR_{(isEntrance ? "ENT" : "EXIT")}_{index}",
                         transition.DoorX,
                         transition.DoorY,
@@ -200,7 +199,6 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             GicDocument gic,
             string resref,
             string displayName,
-            int doorType,
             string tag,
             float x,
             float y,
@@ -219,11 +217,6 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                 Math.Cos(radians),
                 Math.Sin(radians));
             InstanceFieldMap.SetTag(instance, tag);
-            if (doorType > 0)
-            {
-                instance.SetInt("Appearance", GffFieldType.Dword, doorType);
-                instance.SetInt("GenericType_New", GffFieldType.Dword, 0);
-            }
             if (!string.IsNullOrWhiteSpace(displayName))
                 instance.GetOrAddLocString("LocName").Text = displayName;
 

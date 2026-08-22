@@ -72,8 +72,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
                     tileset, layout, tiles, width, height, room, originalTile,
                     edgeCandidates, terminatorCandidates, claimed,
                     out var roomSideCell, out var roomEdgeCell, out var solidCell,
-                    out var doorX, out var doorY, out var doorZ, out var doorOrientation,
-                    out var doorType);
+                    out var doorX, out var doorY, out var doorZ, out var doorOrientation);
 
                 if (placed)
                 {
@@ -88,7 +87,6 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
                     transition.DoorY = doorY;
                     transition.DoorZ = doorZ;
                     transition.DoorOrientation = doorOrientation;
-                    transition.DoorType = doorType;
 
                     claimed.Add(roomSideCell);
                     claimed.Add(roomEdgeCell);
@@ -115,14 +113,12 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
             out (int X, int Y) roomSideCell,
             out (int X, int Y) roomEdgeCell,
             out (int X, int Y) solidCell,
-            out float doorX, out float doorY, out float doorZ, out float doorOrientation,
-            out int doorType)
+            out float doorX, out float doorY, out float doorZ, out float doorOrientation)
         {
             roomSideCell = default;
             roomEdgeCell = default;
             solidCell = default;
             doorX = doorY = doorZ = doorOrientation = 0f;
-            doorType = 0;
 
             // room.Tiles only lists fully-open (all-4-corner-Floor) interior cells — the wall itself,
             // where a door tile would actually go, is the ring of cells one step outside that set (its
@@ -227,7 +223,6 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
                 doorY = wy;
                 doorZ = wz;
                 doorOrientation = worientation;
-                doorType = slot.Type;
                 return true;
             }
 

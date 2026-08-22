@@ -61,7 +61,6 @@ public sealed class TransitionPlannerTests
         tiles[5].Orientation.Should().Be(3);
         transition.DoorX.Should().Be(20f);
         transition.DoorY.Should().Be(15f);
-        transition.DoorType.Should().Be(176);
     }
 
     [Test]

@@ -588,6 +588,9 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Layouts
                         parameters.StraightStreetRouting, out var path))
                     continue;
 
+                if (!IsPathClear(layout, crossers, road, path))
+                    continue;
+
                 CommitPath(crossers, road, path);
             }
         }

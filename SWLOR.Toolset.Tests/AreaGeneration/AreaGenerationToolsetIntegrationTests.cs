@@ -103,6 +103,29 @@ public class AreaGenerationToolsetIntegrationTests
     }
 
     [Test]
+    public void AuthoringService_RejectsRoomSizesThatWouldBeSilentlyClamped()
+    {
+        var (service, _) = CreateAuthoringService();
+        var settings = CreateSettings(service, seed: 77231);
+        var unsafeRooms = settings with
+        {
+            Width = 16,
+            Height = 16,
+            Overrides = settings.Overrides! with
+            {
+                Style = DungeonLayoutStyle.RoomsAndCorridors,
+                MinRoomCornerSize = 3,
+                MaxRoomCornerSize = 12
+            }
+        };
+
+        var action = () => service.Generate(unsafeRooms);
+
+        action.Should().Throw<ArgumentOutOfRangeException>()
+            .WithMessage("*Room sizes must be 2-5*");
+    }
+
+    [Test]
     public void TileResolver_RejectsPlateauCandidatesThatWouldProduceNegativeTileHeight()
     {
         var corners = new CornerTerrainGrid(2, 1, "Floor");
@@ -205,6 +228,7 @@ public class AreaGenerationToolsetIntegrationTests
             TilesetResref = "tdt01",
             Width = 2,
             Height = 2,
+            HeightTransition = 2f,
             Tiles = tiles,
             Transitions =
             [
@@ -265,8 +289,7 @@ public class AreaGenerationToolsetIntegrationTests
                 new PlannedDecoration
                 {
                     Resref = "structure_rubble",
-                    Position = new Vector3(6f, 7f, 0.5f),
-                    GroundZ = 1f,
+                    Position = new Vector3(16f, 17f, 0.5f),
                     Facing = 180f,
                     VisualScale = 1.25f
                 }
@@ -298,6 +321,9 @@ public class AreaGenerationToolsetIntegrationTests
         git.Fields.GetListOrEmpty("Placeable List")
             .Select(instance => instance.GetStringOrNull("Tag"))
             .Should().Equal("PG_TRANS_ENT_1", "PG_DEC_1");
+        git.Fields.GetListOrEmpty("Placeable List")[1]
+            .GetSingleOrNull("Z").Should().Be(6.5f,
+                "ordinary decorations use the resolved tile height plus their planned Z offset");
         gic.Fields.GetListOrEmpty("WaypointList").Should().HaveCount(2);
         gic.Fields.GetListOrEmpty("Door List").Should().ContainSingle();
         gic.Fields.GetListOrEmpty("Placeable List").Should().HaveCount(2);

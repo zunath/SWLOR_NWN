@@ -12,6 +12,7 @@ public partial class AreaGeneratorWindow : Window
     public AreaGeneratorWindow()
     {
         InitializeComponent();
+        Closed += OnClosed;
     }
 
     public AreaGeneratorWindow(AreaGeneratorViewModel viewModel) : this()
@@ -42,5 +43,11 @@ public partial class AreaGeneratorWindow : Window
     {
         if (DataContext is AreaGeneratorViewModel { IsBusy: true })
             e.Cancel = true;
+    }
+
+    private void OnClosed(object? sender, EventArgs e)
+    {
+        if (DataContext is IDisposable disposable)
+            disposable.Dispose();
     }
 }

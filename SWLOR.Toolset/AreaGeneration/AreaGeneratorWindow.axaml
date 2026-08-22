@@ -124,15 +124,18 @@
                   <TextBlock Grid.Row="2" Classes="label" Text="Maximum rooms" />
                   <NumericUpDown Grid.Row="2" Grid.Column="1" Value="{Binding MaxRooms, Mode=TwoWay}" Minimum="2" Maximum="16" Increment="1" />
                   <TextBlock Grid.Row="3" Classes="label" Text="Minimum room size" />
-                  <NumericUpDown Grid.Row="3" Grid.Column="1" Value="{Binding MinRoomSize, Mode=TwoWay}" Minimum="2" Maximum="10" Increment="1" />
+                  <NumericUpDown Grid.Row="3" Grid.Column="1" Value="{Binding MinRoomSize, Mode=TwoWay}"
+                                 Minimum="{Binding MinimumRoomSizeBound}" Maximum="{Binding MaximumRoomSizeBound}" Increment="1" />
                   <TextBlock Grid.Row="4" Classes="label" Text="Maximum room size" />
-                  <NumericUpDown Grid.Row="4" Grid.Column="1" Value="{Binding MaxRoomSize, Mode=TwoWay}" Minimum="3" Maximum="12" Increment="1" />
+                  <NumericUpDown Grid.Row="4" Grid.Column="1" Value="{Binding MaxRoomSize, Mode=TwoWay}"
+                                 Minimum="{Binding MinimumRoomSizeBound}" Maximum="{Binding MaximumRoomSizeBound}" Increment="1" />
                   <TextBlock Grid.Row="5" Classes="label" Text="Corridor width" />
                   <NumericUpDown Grid.Row="5" Grid.Column="1" Value="{Binding CorridorWidth, Mode=TwoWay}" Minimum="1" Maximum="3" Increment="1" />
                   <TextBlock Grid.Row="6" Classes="label" Text="Loop factor (%)" />
                   <NumericUpDown Grid.Row="6" Grid.Column="1" Value="{Binding LoopFactorPercent, Mode=TwoWay}" Minimum="0" Maximum="100" Increment="1" />
                   <TextBlock Grid.Row="7" Classes="label" Text="Organic fill (%)" />
-                  <NumericUpDown Grid.Row="7" Grid.Column="1" Value="{Binding OpenFillPercent, Mode=TwoWay}" Minimum="30" Maximum="60" Increment="1" />
+                  <NumericUpDown Grid.Row="7" Grid.Column="1" Value="{Binding OpenFillPercent, Mode=TwoWay}"
+                                 Minimum="{Binding MinimumOpenFillPercent}" Maximum="60" Increment="1" />
                   <TextBlock Grid.Row="8" Classes="label" Text="Entrances" />
                   <NumericUpDown Grid.Row="8" Grid.Column="1" Value="{Binding EntranceCount, Mode=TwoWay}" Minimum="1" Maximum="3" Increment="1" />
                   <TextBlock Grid.Row="9" Classes="label" Text="Exits" />
@@ -144,7 +147,8 @@
                   <TextBlock Grid.Row="13" Classes="label" Text="Feature density (%)" />
                   <NumericUpDown Grid.Row="13" Grid.Column="1" Value="{Binding FeatureDensityPercent, Mode=TwoWay}" Minimum="0" Maximum="15" Increment="1" />
                   <TextBlock Grid.Row="14" Classes="label" Text="Elevation regions" />
-                  <NumericUpDown Grid.Row="14" Grid.Column="1" Value="{Binding ElevationRegions, Mode=TwoWay}" Minimum="0" Maximum="3" Increment="1" />
+                  <NumericUpDown Grid.Row="14" Grid.Column="1" Value="{Binding ElevationRegions, Mode=TwoWay}"
+                                 Minimum="0" Maximum="{Binding MaximumElevationRegions}" Increment="1" />
                   <CheckBox Grid.Row="15" Grid.ColumnSpan="2" IsChecked="{Binding EnableDecorations, Mode=TwoWay}" Content="Place decorations" />
                 </Grid>
               </Border>

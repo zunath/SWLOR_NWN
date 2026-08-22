@@ -1,5 +1,7 @@
 #nullable disable
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SWLOR.Toolset.Domain.AreaGeneration.Layouts
 {
@@ -157,24 +159,61 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Layouts
             foreach (var cell in orderedCells)
             {
                 var apronLabel = ringLabels[cell];
-                var cellCorners = new[]
+                var cellCorners = new List<(int X, int Y)>
                 {
                     (cell.X, cell.Y), (cell.X + 1, cell.Y), (cell.X, cell.Y + 1), (cell.X + 1, cell.Y + 1)
                 };
-                foreach (var (cx, cy) in cellCorners)
-                {
-                    if (corners.Labels[cx, cy] != parameters.SolidTerrain)
-                        continue;
-                    // Border corners stay solid: the generator's border invariant, and the rim
-                    // drop hand-built skylines overhang.
-                    if (cx == 0 || cy == 0 || cx == width || cy == height)
-                        continue;
-                    if (TouchesPinnedCell(cx, cy, layout))
-                        continue;
 
-                    corners.Labels[cx, cy] = apronLabel;
+                // Pinned cells can block the two shared corners between adjacent apron rings.
+                // Paint only the portion of this cell that can reach an already-open corner of the
+                // same paving label; otherwise a far corner could become an isolated open island.
+                var connected = new HashSet<(int X, int Y)>(
+                    cellCorners.Where(corner => corners.Labels[corner.X, corner.Y] == apronLabel));
+                var remaining = cellCorners
+                    .Where(corner => CanPaintCorner(
+                        corner.X,
+                        corner.Y,
+                        corners,
+                        parameters.SolidTerrain,
+                        width,
+                        height,
+                        layout))
+                    .ToList();
+
+                var painted = true;
+                while (painted && remaining.Count > 0)
+                {
+                    painted = false;
+                    for (var index = remaining.Count - 1; index >= 0; index--)
+                    {
+                        var corner = remaining[index];
+                        if (!connected.Any(existing =>
+                                Math.Abs(existing.X - corner.X) + Math.Abs(existing.Y - corner.Y) == 1))
+                        {
+                            continue;
+                        }
+
+                        corners.Labels[corner.X, corner.Y] = apronLabel;
+                        connected.Add(corner);
+                        remaining.RemoveAt(index);
+                        painted = true;
+                    }
                 }
             }
+        }
+
+        private static bool CanPaintCorner(
+            int cx,
+            int cy,
+            CornerTerrainGrid corners,
+            string solidTerrain,
+            int width,
+            int height,
+            MacroLayout layout)
+        {
+            return corners.Labels[cx, cy] == solidTerrain &&
+                   cx != 0 && cy != 0 && cx != width && cy != height &&
+                   !TouchesPinnedCell(cx, cy, layout);
         }
 
         /// <summary>The first non-solid, non-empty label among a cell's corners in fixed order --

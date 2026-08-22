@@ -610,7 +610,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Frontage
             for (var cy = minCellY; cy <= maxCellY; cy++)
             for (var cx = minCellX; cx <= maxCellX; cx++)
             {
-                if (cx < 0 || cy < 0)
+                if (cx < 0 || cy < 0 || cx >= layout.Width || cy >= layout.Height)
                     continue;
 
                 if (CellPenetration(box, cx, cy) >= OccupiedCoverage)

@@ -15,7 +15,7 @@ using SWLOR.Toolset.Domain.Workspace;
 namespace SWLOR.Toolset.AreaGeneration;
 
 /// <summary>Native toolset workflow for previewing and creating deterministic generated areas.</summary>
-public partial class AreaGeneratorViewModel : ObservableObject
+public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
 {
     public sealed record ThemeChoice(DungeonDetail Value)
     {
@@ -39,6 +39,7 @@ public partial class AreaGeneratorViewModel : ObservableObject
     private readonly TilesetCatalog _tilesets;
     private readonly ModuleWorkspace _workspace;
     private bool _loadingDefaults;
+    private bool _adjustingRanges;
     private AreaGenerationDraft? _previewedDraft;
 
     private static readonly HashSet<string> GenerationInputProperties = new(StringComparer.Ordinal)
@@ -76,6 +77,18 @@ public partial class AreaGeneratorViewModel : ObservableObject
     public IReadOnlyList<DungeonLayoutStyle> LayoutStyles { get; } = Enum.GetValues<DungeonLayoutStyle>();
     public IReadOnlyList<AreaPreviewMode> PreviewModes { get; } = Enum.GetValues<AreaPreviewMode>();
     public int MinimumDimension => LayoutStyleSizeFloor.For(LayoutStyle);
+    public int MinimumRoomSizeBound => EffectiveRoomSizeBounds().Min;
+    public int MaximumRoomSizeBound => Math.Min(
+        EffectiveRoomSizeBounds().Max,
+        AreaSettingsBounds.RoomSizeSliderAbsoluteMax);
+    public int MinimumOpenFillPercent => LayoutStyle == DungeonLayoutStyle.OrganicCave
+        ? (int)Math.Ceiling(LayoutParameterConstraints.MinSafeOpenFillTarget((int)Width, (int)Height) * 100)
+        : AreaSettingsBounds.OrganicFillPercentMin;
+    public int MaximumElevationRegions => SelectedTilesetProfile == null
+        ? AreaSettingsBounds.ElevationRegionsMin
+        : Math.Max(
+            SelectedTilesetProfile.Value.MaxElevationRegions,
+            SelectedTilesetProfile.Value.MaxReliefRegions);
 
     [ObservableProperty] private ThemeChoice? _selectedTheme;
     [ObservableProperty] private TilesetChoice? _selectedTilesetProfile;
@@ -162,6 +175,8 @@ public partial class AreaGeneratorViewModel : ObservableObject
 
     partial void OnSelectedTilesetProfileChanged(TilesetChoice? value)
     {
+        OnPropertyChanged(nameof(MaximumElevationRegions));
+        ElevationRegions = Math.Min(ElevationRegions, MaximumElevationRegions);
         if (_loadingDefaults)
             return;
 
@@ -187,6 +202,41 @@ public partial class AreaGeneratorViewModel : ObservableObject
         var minimum = LayoutStyleSizeFloor.For(value);
         Width = Math.Max(Width, minimum);
         Height = Math.Max(Height, minimum);
+        RefreshEffectiveRanges();
+    }
+
+    partial void OnWidthChanged(double value) => RefreshEffectiveRanges();
+
+    partial void OnHeightChanged(double value) => RefreshEffectiveRanges();
+
+    partial void OnMinRoomsChanged(double value)
+    {
+        if (!_loadingDefaults && !_adjustingRanges && value > MaxRooms)
+            MaxRooms = value;
+    }
+
+    partial void OnMaxRoomsChanged(double value)
+    {
+        if (!_loadingDefaults && !_adjustingRanges && value < MinRooms)
+            MinRooms = value;
+    }
+
+    partial void OnMinRoomSizeChanged(double value)
+    {
+        if (!_loadingDefaults && !_adjustingRanges && value > MaxRoomSize)
+            MaxRoomSize = value;
+    }
+
+    partial void OnMaxRoomSizeChanged(double value)
+    {
+        if (!_loadingDefaults && !_adjustingRanges && value < MinRoomSize)
+            MinRoomSize = value;
+    }
+
+    partial void OnPreviewChanging(Bitmap? oldValue, Bitmap? newValue)
+    {
+        if (!ReferenceEquals(oldValue, newValue))
+            oldValue?.Dispose();
     }
 
     private void RefreshLayoutProfiles(string? preferredKey = null)
@@ -257,6 +307,7 @@ public partial class AreaGeneratorViewModel : ObservableObject
             choice.Key.Equals(SelectedTheme.Value.DecorationProfile, StringComparison.OrdinalIgnoreCase))
             ?? DecorationProfiles[0];
         _loadingDefaults = false;
+        RefreshEffectiveRanges();
         InvalidatePreview("Composition changed. Generate a preview to solve the area.");
     }
 
@@ -307,7 +358,7 @@ public partial class AreaGeneratorViewModel : ObservableObject
     }
 
     [RelayCommand(CanExecute = nameof(CanCreate))]
-    private void CreateArea()
+    private async Task CreateArea()
     {
         var draft = _previewedDraft;
         if (draft == null)
@@ -321,19 +372,26 @@ public partial class AreaGeneratorViewModel : ObservableObject
         string? createdResref = null;
         try
         {
-            if (!GeneratedAreaWriter.TryCreate(
+            var resRef = ResRef;
+            var displayName = DisplayName;
+            var createResult = await Task.Run(() =>
+            {
+                var success = GeneratedAreaWriter.TryCreate(
                     _workspace,
                     _tilesets,
                     draft,
-                    ResRef,
-                    DisplayName,
-                    out var error))
+                    resRef,
+                    displayName,
+                    out var error);
+                return (Success: success, Error: error);
+            });
+            if (!createResult.Success)
             {
-                StatusMessage = error;
+                StatusMessage = createResult.Error;
                 return;
             }
 
-            var normalized = ResRef.Trim().ToLowerInvariant();
+            var normalized = resRef.Trim().ToLowerInvariant();
             StatusMessage = $"Created '{normalized}' in the open module.";
             createdResref = normalized;
         }
@@ -366,6 +424,36 @@ public partial class AreaGeneratorViewModel : ObservableObject
         Preview = null;
         SetPreviewedDraft(null);
         StatusMessage = status;
+    }
+
+    private (int Min, int Max) EffectiveRoomSizeBounds()
+    {
+        var width = Math.Clamp((int)Width, AreaSettingsBounds.WidthMin, AreaSettingsBounds.WidthMax);
+        var height = Math.Clamp((int)Height, AreaSettingsBounds.HeightMin, AreaSettingsBounds.HeightMax);
+        return LayoutParameterConstraints.RoomSizeBounds(LayoutStyle, width, height);
+    }
+
+    private void RefreshEffectiveRanges()
+    {
+        OnPropertyChanged(nameof(MinimumRoomSizeBound));
+        OnPropertyChanged(nameof(MaximumRoomSizeBound));
+        OnPropertyChanged(nameof(MinimumOpenFillPercent));
+        if (_loadingDefaults || _adjustingRanges)
+            return;
+
+        _adjustingRanges = true;
+        try
+        {
+            MinRoomSize = Math.Clamp(MinRoomSize, MinimumRoomSizeBound, MaximumRoomSizeBound);
+            MaxRoomSize = Math.Clamp(MaxRoomSize, MinimumRoomSizeBound, MaximumRoomSizeBound);
+            if (MinRoomSize > MaxRoomSize)
+                MinRoomSize = MaxRoomSize;
+            OpenFillPercent = Math.Max(OpenFillPercent, MinimumOpenFillPercent);
+        }
+        finally
+        {
+            _adjustingRanges = false;
+        }
     }
 
     private void SetPreviewedDraft(AreaGenerationDraft? draft)
@@ -445,5 +533,12 @@ public partial class AreaGeneratorViewModel : ObservableObject
                 stride);
         }
         return bitmap;
+    }
+
+    public void Dispose()
+    {
+        PropertyChanged -= OnGenerationInputChanged;
+        Preview = null;
+        SetPreviewedDraft(null);
     }
 }

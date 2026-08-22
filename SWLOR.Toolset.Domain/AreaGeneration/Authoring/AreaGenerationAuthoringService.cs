@@ -61,6 +61,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                 Tileset = tilesetProfile,
                 Layout = layoutProfile
             };
+            ValidateEffectiveLayoutSettings(composition, settings);
             var result = GenerationEngine.Generate(
                 composition,
                 tileset,
@@ -70,6 +71,33 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                 settings.Overrides);
 
             return new AreaGenerationDraft(settings, composition, tileset, result);
+        }
+
+        private static void ValidateEffectiveLayoutSettings(
+            DungeonComposition composition,
+            AreaGenerationSettings settings)
+        {
+            var parameters = composition.BuildLayoutParameters();
+            settings.Overrides?.ApplyTo(parameters, composition.Tileset);
+            parameters.Width = settings.Width;
+            parameters.Height = settings.Height;
+            var bounds = LayoutParameterConstraints.RoomSizeBounds(
+                parameters.Style,
+                parameters.Width,
+                parameters.Height);
+            var invalidRoomSizes = parameters.MinRoomCornerSize < bounds.Min ||
+                                   parameters.MinRoomCornerSize > bounds.Max ||
+                                   parameters.MaxRoomCornerSize < bounds.Min ||
+                                   parameters.MaxRoomCornerSize > bounds.Max ||
+                                   parameters.MinRoomCornerSize > parameters.MaxRoomCornerSize;
+            if (!invalidRoomSizes)
+                return;
+
+            throw new ArgumentOutOfRangeException(
+                nameof(settings),
+                $"Layout settings are outside the safe bounds for {parameters.Style} at " +
+                $"{parameters.Width}x{parameters.Height}. Room sizes must be {bounds.Min}-{bounds.Max}, " +
+                "and the minimum room size cannot exceed the maximum.");
         }
 
         private static void ValidateDimensions(

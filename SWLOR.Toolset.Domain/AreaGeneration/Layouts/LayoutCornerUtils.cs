@@ -198,7 +198,13 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Layouts
                 if (linkEdges.TryGetValue(current, out var throughTunnels))
                 {
                     foreach (var (to, length) in throughTunnels)
+                    {
+                        if (to.X < 0 || to.X > corners.Width || to.Y < 0 || to.Y > corners.Height)
+                            continue;
+                        if (!labels.Contains(corners.Labels[to.X, to.Y]))
+                            continue;
                         Relax(to, Math.Max(1, length));
+                    }
                 }
             }
 

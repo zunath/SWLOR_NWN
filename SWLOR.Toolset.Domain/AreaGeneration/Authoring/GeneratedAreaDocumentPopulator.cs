@@ -224,6 +224,9 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             var sequence = 0;
             foreach (var planned in draft.Result.PlannedDecorations)
             {
+                var groundZ = planned.GroundAnchor.HasValue
+                    ? planned.GroundZ
+                    : GroundHeightAt(draft.Result.Resolved, planned.Position.X, planned.Position.Y);
                 AddPlaceable(
                     workspace,
                     git,
@@ -232,10 +235,17 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                     $"PG_DEC_{++sequence}",
                     planned.Position.X,
                     planned.Position.Y,
-                    planned.GroundZ + planned.Position.Z,
+                    groundZ + planned.Position.Z,
                     planned.Facing,
                     planned.VisualScale);
             }
+        }
+
+        private static float GroundHeightAt(ResolvedLayout layout, float worldX, float worldY)
+        {
+            var tileX = Math.Clamp((int)MathF.Floor(worldX / 10f), 0, layout.Width - 1);
+            var tileY = Math.Clamp((int)MathF.Floor(worldY / 10f), 0, layout.Height - 1);
+            return layout.GetTile(tileX, tileY).Height * layout.HeightTransition;
         }
 
         private static void AddPlaceable(

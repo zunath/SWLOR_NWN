@@ -4,6 +4,9 @@ using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.AreaGeneration;
+using SWLOR.Toolset.Domain.AreaGeneration.Frontage;
+using SWLOR.Toolset.Domain.AreaGeneration.Layouts;
+using SWLOR.Toolset.Domain.AreaGeneration.Tileset;
 
 namespace SWLOR.Toolset.Tests.AreaGeneration;
 
@@ -385,5 +388,154 @@ public class MacroLayoutGeneratorTests
             var fraction = (double)accentCount / total;
             fraction.Should().BeInRange(0.01, 0.2, $"seed {seed}: accent fraction should be roughly the requested density");
         }
+    }
+
+    [Test]
+    public void FrontagePlanner_RimOverhangPublishesOnlyInBoundsOccupiedCells()
+    {
+        var layout = new ResolvedLayout
+        {
+            Width = 2,
+            Height = 2,
+            Seed = 7,
+            Tiles = Enumerable.Range(0, 4).Select(_ => new ResolvedTile()).ToArray(),
+            Rooms =
+            [
+                new LayoutRoom
+                {
+                    Id = 1,
+                    CenterTile = (0, 0),
+                    Tiles = [(0, 0)]
+                }
+            ]
+        };
+        var profile = new DungeonTilesetProfile
+        {
+            FrontageBuildings =
+            [
+                new BuildingFrontageEntry
+                {
+                    Resref = "tower",
+                    Weight = 1,
+                    FaceWidth = 5f,
+                    Depth = 30f,
+                    DominantEligible = true
+                }
+            ]
+        };
+
+        var result = BuildingFrontagePlanner.PlanFrontage(
+            layout,
+            profile,
+            new HashSet<(int X, int Y)>(),
+            string.Empty);
+
+        result.Placements.Should().NotBeEmpty();
+        result.OccupiedCells.Should().OnlyContain(cell =>
+            cell.X >= 0 && cell.X < layout.Width && cell.Y >= 0 && cell.Y < layout.Height);
+    }
+
+    [Test]
+    public void TunnelLinks_ToOtherTerrain_DoNotPolluteFilteredConnectivity()
+    {
+        var corners = new CornerTerrainGrid(1, 1, "Wall");
+        corners.Labels[0, 0] = "Floor";
+        corners.Labels[1, 0] = "Floor";
+        var links = new[]
+        {
+            new TunnelLink
+            {
+                CornerA = (0, 0),
+                CornerB = (0, 1),
+                Length = 3
+            }
+        };
+
+        LayoutCornerUtils.IsConnectedWithLinks(corners, "Floor", links).Should().BeTrue();
+    }
+
+    [Test]
+    public void PlatformApron_PinnedGapDoesNotCreateAnIsolatedOpenIsland()
+    {
+        var corners = new CornerTerrainGrid(9, 9, "Wall");
+        var roomCells = new List<(int X, int Y)> { (2, 2), (2, 3) };
+        foreach (var (x, y) in roomCells)
+        {
+            corners.Labels[x, y] = "Floor";
+            corners.Labels[x + 1, y] = "Floor";
+            corners.Labels[x, y + 1] = "Floor";
+            corners.Labels[x + 1, y + 1] = "Floor";
+        }
+
+        var layout = new MacroLayout(corners)
+        {
+            Rooms =
+            [
+                new LayoutRoom
+                {
+                    Id = 1,
+                    CenterTile = (2, 2),
+                    Tiles = roomCells
+                }
+            ]
+        };
+        layout.PinnedTiles[(3, 1)] = (0, 0, 0);
+        layout.PinnedTiles[(3, 3)] = (0, 0, 0);
+        var parameters = DefaultParameters(width: 9, height: 9, minRooms: 2, maxRooms: 2);
+        parameters.PlatformApron = true;
+
+        LayoutPlatformApronPainter.Paint(layout, parameters);
+
+        LayoutCornerUtils.IsConnectedWithLinks(corners, "Floor", Array.Empty<TunnelLink>())
+            .Should().BeTrue();
+        corners.Labels[5, 2].Should().Be("Wall");
+        corners.Labels[5, 3].Should().Be("Wall");
+    }
+
+    [Test]
+    public void RoadSpur_DoesNotOverwriteAnExistingForeignCrosser()
+    {
+        const string road = "Road";
+        const string fence = "Fence";
+        var layout = new MacroLayout(new CornerTerrainGrid(4, 1, "Floor"));
+        layout.StampedOpenSetPieceFootprints.Add([(0, 0)]);
+        layout.PinnedTiles[(0, 0)] = (0, 0, 0);
+        layout.Crossers.SetEdge(3, 0, EdgeSlot.Top, road);
+        layout.Crossers.SetEdge(1, 0, EdgeSlot.Right, fence);
+
+        var parameters = DefaultParameters(width: 4, height: 1, minRooms: 2, maxRooms: 2);
+        parameters.RoadCrosser = road;
+        var tileset = new TilesetModel
+        {
+            Crossers = [road],
+            Tiles =
+            [
+                RoadTile(0, "", road, "", ""),
+                RoadTile(1, "", road, "", road),
+                RoadTile(2, road, "", "", road),
+                RoadTile(3, road, road, "", road),
+                RoadTile(4, road, road, road, road)
+            ]
+        };
+
+        LayoutRoadCarver.CarveSpurs(layout, parameters, tileset, new Random(1));
+
+        layout.Crossers.GetEdge(1, 0, EdgeSlot.Right).Should().Be(fence);
+    }
+
+    private static TileRecord RoadTile(
+        int tileId,
+        string top,
+        string right,
+        string bottom,
+        string left)
+    {
+        return new TileRecord
+        {
+            TileId = tileId,
+            Corners = ["Floor", "Floor", "Floor", "Floor"],
+            Edges = [top, right, bottom, left],
+            PathNode = "A"
+        };
     }
 }

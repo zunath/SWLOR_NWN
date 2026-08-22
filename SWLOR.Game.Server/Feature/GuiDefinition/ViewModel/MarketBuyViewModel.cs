@@ -19,6 +19,36 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private static readonly List<MarketCategoryType> _categoryTypes = new();
         private static readonly GuiBindingList<string> _categories = new();
 
+        // Row DTO for the item-listing table below - one list of these per
+        // Search(), instead of hand-synced parallel _itemIds/_itemPrices
+        // lists plus 4 separate GuiBindingList<T> builds.
+        private sealed class MarketListingEntry
+        {
+            public string ItemId { get; }
+            public string IconResref { get; }
+            public string Name { get; }
+            public string PriceName { get; }
+            public int Price { get; }
+            public bool BuyEnabled { get; }
+
+            public MarketListingEntry(string itemId, string iconResref, string name, string priceName, int price, bool buyEnabled)
+            {
+                ItemId = itemId;
+                IconResref = iconResref;
+                Name = name;
+                PriceName = priceName;
+                Price = price;
+                BuyEnabled = buyEnabled;
+            }
+        }
+
+        private static readonly GuiTableSource<MarketBuyViewModel, MarketListingEntry> ItemsTable =
+            new GuiTableSource<MarketBuyViewModel, MarketListingEntry>()
+                .Column((m, v) => m.ItemIconResrefs = v, r => r.IconResref, m => m.ItemIconResrefs)
+                .Column((m, v) => m.ItemNames = v, r => r.Name, m => m.ItemNames)
+                .Column((m, v) => m.ItemPriceNames = v, r => r.PriceName, m => m.ItemPriceNames)
+                .Column((m, v) => m.ItemBuyEnabled = v, r => r.BuyEnabled, m => m.ItemBuyEnabled);
+
         private bool _skipPaginationSearch;
         private readonly List<int> _activeCategoryIdFilters = new();
         private MarketRegionType _regionType;
@@ -68,8 +98,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         }
 
-        private readonly List<string> _itemIds = new();
-        private readonly List<int> _itemPrices = new();
+        private IList<MarketListingEntry> _rows = new List<MarketListingEntry>();
 
         public GuiBindingList<string> CategoryNames
         {
@@ -175,27 +204,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var credits = GetGold(Player);
             var results = DB.Search(query);
 
-            _itemIds.Clear();
-            _itemPrices.Clear();
-            var itemIconResrefs = new GuiBindingList<string>();
-            var itemNames = new GuiBindingList<string>();
-            var itemPriceNames = new GuiBindingList<string>();
-            var itemBuyEnabled = new GuiBindingList<bool>();
-
+            var rows = new List<MarketListingEntry>();
             foreach (var record in results)
             {
-                _itemIds.Add(record.Id);
-                _itemPrices.Add(record.Price);
-                itemIconResrefs.Add(record.IconResref);
-                itemNames.Add($"{record.Quantity}x {record.Name}");
-                itemPriceNames.Add($"{record.Price} cr");
-                itemBuyEnabled.Add(credits >= record.Price);
+                rows.Add(new MarketListingEntry(
+                    record.Id,
+                    record.IconResref,
+                    $"{record.Quantity}x {record.Name}",
+                    $"{record.Price} cr",
+                    record.Price,
+                    credits >= record.Price));
             }
 
-            ItemIconResrefs = itemIconResrefs;
-            ItemNames = itemNames;
-            ItemPriceNames = itemPriceNames;
-            ItemBuyEnabled = itemBuyEnabled;
+            _rows = ItemsTable.Refresh(this, rows);
         }
 
         private void UpdatePagination(long totalRecordCount)
@@ -246,7 +267,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickExamine() => () =>
         {
             var index = NuiGetEventArrayIndex();
-            var itemId = _itemIds[index];
+            var itemId = _rows[index].ItemId;
             var dbItem = DB.Get<MarketItem>(itemId);
 
             var item = ObjectPlugin.Deserialize(dbItem.Data);
@@ -258,9 +279,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnClickBuy() => () =>
         {
             var index = NuiGetEventArrayIndex();
-            var itemId = _itemIds[index];
-            var itemName = ItemNames[index];
-            var price = _itemPrices[index];
+            var row = _rows[index];
+            var itemId = row.ItemId;
+            var itemName = row.Name;
+            var price = row.Price;
 
             ShowModal($"Are you sure you want to buy '{itemName}' for {price} credits?", () =>
             {
@@ -293,7 +315,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 // Item's price has been changed since the player's search.
                 // Notify them and refresh the search.
-                if (dbItem.Price != _itemPrices[index])
+                if (dbItem.Price != row.Price)
                 {
                     FloatingTextStringOnCreature("The price of this item has been changed by the seller. Please try again.", Player, false);
                     Search();
@@ -315,12 +337,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ObjectPlugin.AcquireItem(Player, item);
 
                 // Remove this item from the client's search results.
-                _itemIds.RemoveAt(index);
-                _itemPrices.RemoveAt(index);
-                ItemIconResrefs.RemoveAt(index);
-                ItemNames.RemoveAt(index);
-                ItemPriceNames.RemoveAt(index);
-                ItemBuyEnabled.RemoveAt(index);
+                var currentIndex = _rows.IndexOf(row);
+                if (currentIndex >= 0)
+                    ItemsTable.RemoveRowAt(this, _rows, currentIndex);
 
                 // Remove the item from the database.
                 DB.Delete<MarketItem>(itemId);

@@ -119,6 +119,23 @@ namespace SWLOR.Game.Server.Service
                     playerGeometry.Height = defaultGeometry.Height;
                 }
 
+                // A window that failed a client-side layout solve can report a degenerate
+                // size, which then persists on close and poisons every future open of that
+                // window at the broken size. Discard implausibly small saved sizes.
+                // Some intentional HUD windows are as small as 72x52, so only
+                // reject the non-positive geometry produced by a failed solve.
+                // A broad pixel threshold would erase valid saved positions for
+                // PlayerStatusPortrait and the other compact status windows.
+                const float MinimumSaneDimension = 1f;
+                if (playerGeometry.Width < MinimumSaneDimension ||
+                    playerGeometry.Height < MinimumSaneDimension)
+                {
+                    playerGeometry.Width = defaultGeometry.Width;
+                    playerGeometry.Height = defaultGeometry.Height;
+                    playerGeometry.X = defaultGeometry.X;
+                    playerGeometry.Y = defaultGeometry.Y;
+                }
+
                 // Add the window
                 var playerWindow = window.CreatePlayerWindowAction();
                 playerWindow.ViewModel.Geometry = playerGeometry;
@@ -174,6 +191,29 @@ namespace SWLOR.Game.Server.Service
             dbPlayer.WindowGeometries[windowType] = geometry;
 
             DB.Set(dbPlayer);
+        }
+
+        private const float GeometrySaveDebounceSeconds = 2f;
+        private static readonly HashSet<string> _pendingGeometrySaves = new();
+
+        /// <summary>
+        /// Persists window geometry shortly after the client reports a move/resize.
+        /// Dragging fires a stream of watch events and each save is a full player
+        /// document write, so writes are coalesced to at most one per window per
+        /// debounce interval. The delayed save reads the view model's geometry at
+        /// fire time, so it always persists the latest reported rect.
+        /// </summary>
+        private static void QueueWindowGeometrySave(string playerId, GuiWindowType windowType, GuiPlayerWindow playerWindow)
+        {
+            var key = $"{playerId}:{windowType}";
+            if (!_pendingGeometrySaves.Add(key))
+                return;
+
+            DelayCommand(GeometrySaveDebounceSeconds, () =>
+            {
+                _pendingGeometrySaves.Remove(key);
+                SaveWindowGeometry(playerId, windowType, playerWindow.ViewModel.Geometry);
+            });
         }
 
         /// <summary>
@@ -270,6 +310,11 @@ namespace SWLOR.Game.Server.Service
             var playerWindow = playerWindows[windowType];
 
             playerWindow.ViewModel.UpdatePropertyFromClient(propertyName);
+
+            // Geometry changes are persisted as they happen (debounced) so window
+            // positions survive crashes and close paths that skip the close-time save.
+            if (propertyName == nameof(IGuiViewModel.Geometry))
+                QueueWindowGeometrySave(playerId, windowType, playerWindow);
         }
 
         /// <summary>

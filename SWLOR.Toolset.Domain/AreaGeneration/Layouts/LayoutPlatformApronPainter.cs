@@ -14,8 +14,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Layouts
     /// structural frontage buildings later erected on those margins -- their full footprints,
     /// not just their anchor cells -- and the chasm drop begins BEYOND them.
     ///
-    /// This is the hand-built composition (r16 support-evidence pass,
-    /// _scratch_decor/r16_mine_support.py): fcx01 city areas are platform-dominant -- median
+    /// This is the hand-built composition from the support-evidence audit: fcx01 city areas are
+    /// platform-dominant -- median
     /// "holes" chasm corner share ~0.17 with several flagship areas at 0.00 (pw_ar_narpromena's
     /// towers stand ON flat cobble, abyss beyond the rim) -- while ungated generated chasm-margin
     /// layouts ran 0.72, leaving deep towers nothing to stand on. With the apron, workhorse
@@ -25,7 +25,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Layouts
     /// non-workhorse salience ceiling.
     ///
     /// The DEPTH is what makes the zero-overhang support envelope satisfiable (street-coherence
-    /// round, user override -- see FrontageSupportRule): at depth 1 a deep workhorse tower
+    /// override -- see FrontageSupportRule): at depth 1 a deep workhorse tower
     /// (build004, 20.3m) standing on the ring still hung its back half over the abyss, which the
     /// removed moat/overhang tolerances used to forgive. At depth 2 the painted corner rows reach
     /// 20m out from the open boundary, whose quadrants cover the footprint of every model up to

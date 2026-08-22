@@ -2158,7 +2158,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // "[Cave] Cave Entrance" are both wired via LayoutGroupStamper's ReliefPiece kind (see the
             // SetPiece entries below) -- ReliefPiece now tolerates a door slot the same way WallAlcove/
             // OpenSetPiece/WallRoom already do (never spawns a door object), which closes "Cave
-            // Entrance"'s raised-rim-plus-doorframe shape (round-4 exterior-tail-closure generalization;
+            // Entrance"'s raised-rim-plus-doorframe shape (raised exterior set-piece classification;
             // see LayoutGroupStamper.TryClassifyReliefPiece's own doc comment). "[Cave] Door -
             // Transition", "[Cave] Ship - Docked", "[Cave] Docks (1x2)" don't structurally classify
             // under any current mechanism and are excluded.
@@ -3480,8 +3480,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 // LayoutGroupStamper's ReliefPiece kind onto a painted raised rim edge.
                 .SetPiece("Ramp", 1)
                 // Baked-mesh cave-mouth piece (1x1 GROUP, non-flat [Desert 1,1,0,0], crosser-free, one
-                // door slot) -- same ReliefPiece kind as "Ramp" above, now door-tolerant (round-4
-                // exterior-tail-closure generalization -- shares tdm01 Cave Entrance's exact shape, see
+                // door slot) -- same ReliefPiece kind as "Ramp" above, now door-tolerant (the raised
+                // exterior set-piece rule -- shares tdm01 Cave Entrance's exact shape, see
                 // LayoutGroupStamper.TryClassifyReliefPiece's own doc comment). Distinct from the
                 // ExitGroup("CaveEntrance") flat door-tile family below.
                 .SetPiece("SmallCave", 1)
@@ -3510,8 +3510,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 .VignetteMember("zep_boulder003", 0f, 0f)
                 .VignetteMember("zep_boulder003", 0.6f, 0.4f);
 
-            // Desert (Road) -- ttd01's second raised-lane crosser family (round 3 of exterior tail
-            // closure; see the ttf01 wave-level comment below for the shared "one RampCrosser slot
+            // Desert (Road) -- ttd01's second raised-lane crosser family (see the ttf01 wave-level
+            // comment below for the shared "one RampCrosser slot
             // per composition" argument this mirrors). The base Desert profile above declares
             // RampCrosser("Dunes"); TILE239-241 are raised, ungrouped, doorless Road-edged lanes (all
             // pure-Desert-cornered) that stay height-exempt under that vocabulary because
@@ -3565,7 +3565,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // LayoutReliefPainter.TrySpliceReliefLane can never produce -- it only ever carves a lane
             // exactly ONE cell wide along a single axis (see that method's own doc comment), so no
             // painted field can ever match a 2-column mass; left exempt, documented rather than
-            // engineered further (round-4 exterior-tail-closure work). "Cave" (raised AND door-bearing,
+            // engineered further during raised exterior support work. "Cave" (raised AND door-bearing,
             // the tdm01 Cave Entrance shape) and the 1x1 "Wall - Breach/Door/Tower 1/2,
             // City/Forest,Water,Cobbles"/"Ramp - City Wall"/"Ramp - Moss Wall"/"Wall - Breach/Door,
             // Moss" family are now CLOSED: LayoutGroupStamper.TryClassifyReliefPiece tolerates a door
@@ -3725,8 +3725,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 // onto a painted raised rim edge.
                 .SetPiece("Ramp", 1)
                 // Baked-mesh cave-mouth piece (1x1 GROUP, non-flat [Forest 1,1,0,0], crosser-free, one
-                // door slot) -- same ReliefPiece kind as "Ramp" above, now door-tolerant (round-4
-                // exterior-tail-closure generalization -- shares tdm01 Cave Entrance's exact shape).
+                // door slot) -- same ReliefPiece kind as "Ramp" above, now door-tolerant (the raised
+                // exterior set-piece rule -- shares tdm01 Cave Entrance's exact shape).
                 .SetPiece("Cave", 1)
                 .ExitGroup("Exit")
                 .ExitGroup("Stairs - Cliff")
@@ -3989,7 +3989,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 .PrimaryOpenTerrain("Forest")
                 .AccentTerrain("Marsh");
 
-            // Forest raised-lane crosser families (round 3 of exterior tail closure) -- ttf01's base
+            // Forest raised-lane crosser families -- ttf01's base
             // Forest profile above and ForestRural both declare RampCrosser("Slope"), but a
             // composition carries only ONE RampCrosser slot (LayoutReliefPainter.TrySpliceReliefLane
             // writes a single declared crosser name per composition -- see MinesAndCavernsTracks'
@@ -4010,7 +4010,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // variant are genuinely unmodeled, not missed:
             //   - the 1x1 raised GROUPS on these families (Wall - Breach/Door/Tower 1/2,
             //     City/Forest,Water,Cobbles; Ramp - City Wall/Moss Wall; Wall - Breach/Door, Moss) are
-            //     now CLOSED (round-4 exterior-tail-closure): LayoutGroupStamper.TryClassifyReliefPiece
+            //     now CLOSED by the raised exterior set-piece rule: LayoutGroupStamper.TryClassifyReliefPiece
             //     tolerates a door slot and an edge matching the composition's own declared RampCrosser
             //     -- see that method's own doc comment and the SetPiece wiring below. Only the 2x2
             //     "City Gate - Forest/Cobbles" GROUPS stay height-exempt: a genuine "2-wide wall mass"
@@ -4032,8 +4032,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // Forest (City Wall) -- closes CityWall's 31 raised ungrouped lanes (TILE741-744/759/763-
             // 765/772-775/801-804, pure-Forest-cornered, 16 tiles; TILE745/746/748-754/766-771,
             // RuralWater-mixed, 15 more via AccentTerrain("RuralWater")) of 49 total CityWall-edged
-            // tiles. Verified directly via probe. Also wires the family's 1x1 raised GROUPS (round-4
-            // exterior-tail-closure): "Ramp - City Wall" (doorless), and the door-bearing "Wall -
+            // tiles. Verified directly via probe. Also wires the family's 1x1 raised GROUPS through
+            // the raised exterior set-piece rule: "Ramp - City Wall" (doorless), and the door-bearing "Wall -
             // Breach/Door/Tower 1/2, City/Forest,Water,Cobbles" family -- all now reachable via
             // LayoutGroupStamper.TryClassifyReliefPiece's door + RampCrosser tolerance (see that
             // method's own doc comment). "Wall - Tower 1/2, City/Water" mix RuralWater corners, closed
@@ -4062,8 +4062,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
 
             // Forest (Moss Wall) -- closes MossWall's 11 raised ungrouped lanes (TILE814-824, all
             // pure-Forest-cornered -- no RuralWater mixing on this family, verified directly) of 14
-            // total MossWall-edged tiles. Also wires the family's 1x1 raised GROUPS (round-4
-            // exterior-tail-closure): "Ramp - Moss Wall" (doorless) and the door-bearing "Wall -
+            // total MossWall-edged tiles. Also wires the family's 1x1 raised GROUPS through the
+            // raised exterior set-piece rule: "Ramp - Moss Wall" (doorless) and the door-bearing "Wall -
             // Breach/Door, Moss" pair -- see the City Wall profile's own comment above for the
             // mechanism (LayoutGroupStamper.TryClassifyReliefPiece's door + RampCrosser tolerance).
             _builder.Create(ForestMossWall, "Forest* (Moss Wall)")
@@ -4252,8 +4252,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 .SolidTerrainOverride("holes")
                 .PrimaryOpenTerrain("Cobble")
                 // "holes" renders as a bottomless chasm drop, so frontage buildings obey the mined
-                // footprint-support envelope against the resolved corner plan (round-16 floating-
-                // building pass, _scratch_decor/r16_mine_support.py over the 19 hand-built fcx01
+                // footprint-support envelope against the resolved corner plan (the frontage support
+                // audit over the 19 hand-built fcx01
                 // city areas: platform-level towers keep in-grid chasm footprint share <= 0.36 and
                 // in-grid chasm overhang <= 9m, while off-grid rim overhang is free) -- see
                 // FrontageSupportRule. Inherited by the Cobble2 plaza variant like the frontage
@@ -4287,8 +4287,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 .TileLighting(0, 0, 0, 0)
                 .FeatureTile("b_arbre")
                 .FeatureTile("b_arbre2")
-                // Zone-marking feature tiles obligate a composed ensemble (round 9 "a park with no
-                // park" fix -- see FeatureZoneDressing/DungeonDecorationPlanner.PlanZoneDressings):
+                // Zone-marking feature tiles obligate a composed ensemble (the "a park with no park"
+                // fix -- see FeatureZoneDressing/DungeonDecorationPlanner.PlanZoneDressings):
                 // the flat grass lawn composes a PARK (tree/monument + facing bench ring); the
                 // fountain court composes its seating surround. Tree/water tiles fill their own
                 // cell and stay untouched.
@@ -4304,8 +4304,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 // consumes a 4x4-tile rectangle + margin inside one corner-size-6 room), so the budget
                 // is set above the observed per-area site count rather than exactly at it.
                 //
-                // Re-measured at size 32 (_scratch_decor/DecorGen, 20 seeds, before/after budget-only
-                // sweep): raising every group's budget substantially (Tower00 3->6, Tower02/03 1->5,
+                // Re-measured at size 32 over 20 seeds with a before/after budget-only sweep: raising
+                // every group's budget substantially (Tower00 3->6, Tower02/03 1->5,
                 // etc.) moved group_share from 0.0398 to 0.0393 -- statistically flat, and per-seed
                 // counts show REDISTRIBUTION (some seeds up, some down) rather than growth, because
                 // Stamp's own loop (see its doc comment above) breaks a group's attempts on the FIRST
@@ -4329,13 +4329,12 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 // supply flat, budgets already scaled) -> 0.150 vs the hand-built 0.152 reference --
                 // Tower07 (6x6) and Tower05 (4x3) only become placeable at all once corner-size-9/10
                 // rooms exist. See LayoutParameterConstraints.ApplySetPieceRoomSupplyScaling for the
-                // derivation and _scratch_decor/tilecomp_m1_before32.json /
-                // tilecomp_m1_after32_final.json for the raw measurements this comment summarizes.
+                // derivation and the size-32 tile-composition audit summarized here.
                 .SetPieceRoomSupplyScaling()
                 // Hand-built tile-built fcx01 city areas assemble their towers into CONTIGUOUS blocks
                 // (24-48 adjoined tiles spanning several groups at 0.17-0.28 building share, dominated
-                // by same-group self-tiling with corner-agreeing seams -- measured July 2026 street-
-                // canyon pass, _scratch_decor/promenade_benchmark.py over ns_comrcial_ka/
+                // by same-group self-tiling with corner-agreeing seams -- measured by the street-
+                // canyon benchmark over ns_comrcial_ka/
                 // pw_ar_nsshipyard/vrotrnsslums/narshadaar_promi), while isolated-margin stamping
                 // plateaued at 0.145 mean share with blocks capped at single-group footprints. Every
                 // Cobble-district tower group's perimeter is uniformly Cobble-cornered and crosser-
@@ -4378,7 +4377,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // generated on" bug. Strongest structural pairing: a holo kiosk lit by a nearby
             // streetlight -> vignette.
             //
-            // STANDARD-vs-RUINED SPLIT (city review round 6, user directive "if you're going to do
+            // STANDARD-vs-RUINED SPLIT (user directive "if you're going to do
             // things like destruction, these need to be separate profiles"): the STANDARD palette
             // below is CLEAN urban dressing only -- neat cargo (crates/containers/barrels), street
             // furniture (lamps/kiosks/benches/consoles/barricades), and floor decals that read as
@@ -4400,29 +4399,29 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 // City dressing intensity is a family property: the 19 decorated hand-built fcx01
                 // areas measure 1.61 decorative placeables per tile AGGREGATE (flagship promenade
                 // areas 2.8-4.6), versus ~0.10-0.15 the theme-owned densities produced here -- the
-                // round-5 reported "vast empty plaza" gap. The declared 2.6 target realizes ~1.4-1.5
+                // reported "vast empty plaza" gap. The declared 2.6 target realizes ~1.4-1.5
                 // per TOTAL tile on Packed (rooms cover about half the grid; the arrangement
                 // mechanisms' own per-room caps absorb the rest) and ~0.65 per total tile on Halls,
                 // whose chambers cover only ~70/400 tiles -- per ROOM tile both land at the
-                // hand-built flagship 2.5-3.5 band (measured in the _scratch_decor round-5 harness);
-                // Round 8 recalibration: 2.6 -> 3.3 -- district-scoped pools plus per-area caps
+                // hand-built flagship 2.5-3.5 band (measured in the decoration-density audit);
+                // District-pool recalibration: 2.6 -> 3.3 -- district-scoped pools plus per-area caps
                 // shave realized pile density ~15%, and 3.0 restores the packed20 realized band
                 // (~1.25-1.35 per total tile) without touching any mechanism share.
-                // Round 9 recalibration: 3.3 -> 3.8 -- composed ensembles/depot blocks commit
+                // Ensemble/depot recalibration: 3.3 -> 3.8 -- composed ensembles/depot blocks commit
                 // partially (satellite skips, segment margins), industrial pile damping trades
                 // loose singles for depot rows, and the pile mechanism runs at its saturation cap
                 // (so budget alone cannot restore it); measured packed20 realized 1.16 at 3.3 and
                 // ~1.24 at 3.6 with the urban cap/floor adjustments -- 3.8 keeps the realized band
                 // (1.2-1.35 per total tile) with margin.
-                // (Round 15 checked a 3.8 -> 3.9 bump to lift three 24/32 sweep seeds sitting
+                // (A later calibration checked a 3.8 -> 3.9 bump to lift three 24/32 sweep seeds sitting
                 // 0.5-3% under the hand-built 2.845 decoratives-per-open-tile floor after the
                 // frontage budget trim; realized output was BYTE-IDENTICAL -- the arrangement
-                // mechanisms run cap-saturated, exactly as the round-9 note predicts -- so the
+                // mechanisms run cap-saturated, exactly as the cap-saturation analysis predicts -- so the
                 // knob stays at its calibrated 3.8 and those seeds are documented sweep variance,
-                // the same band-edge tail the pre-round-15 baseline showed on other cells.)
+                // the same band-edge tail the earlier baseline showed on other cells.)
                 // see DungeonTilesetProfile.DecorationDensityPerTile.
                 .DecorationDensity(3.8)
-                // Urban placement grammar (round 6, "it still feels like a scattering of different
+                // Urban placement grammar ("it still feels like a scattering of different
                 // objects randomly placed"): hand-built fcx01 dressing is 73% cardinal-aligned
                 // (within 7.5 degrees of 0/90/180/270 -- measured across all 24 areas' 10477
                 // decoratives) and same-resref groups share a dominant orientation; generated areas
@@ -4430,19 +4429,17 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 // set (bearing alignment, road integrity, facade rows, cargo grids, pile zone
                 // discipline) this declaration enables for the fcx01 family only.
                 .UrbanDressing()
-                // BUILDING-PLACEABLE CANYON FRONTAGE (round-11 vertical-dressing pass -- see
-                // BuildingFrontagePlanner and _scratch_decor/r11_mine_buildings.py): the flagship
+                // BUILDING-PLACEABLE CANYON FRONTAGE (see BuildingFrontagePlanner): the flagship
                 // promenade's canyon walls are SKYSCRAPER PLACEABLES standing on flat cobble --
                 // pw_ar_narpromena (12x12) carries 30 swd_build* placeables and ZERO building
                 // tiles, build007 rows at 9.8-10.1m pitch with 100% cardinal bearings;
                 // pw_ar_narscorpd (16x22) 77 swd_build*, pw_ar_nsshipyard (24x24) 60+. Weights
                 // follow the mined mix (build007 dominant at ~46-61% of placements; the rest
-                // accents), footprints are the measured model XY extents
-                // (_scratch_decor/r11_model_sizes.json; FaceWidth x Depth). This is the separate
-                // STRUCTURAL channel the round-7 removal note anticipated: swd_build007 stays
+                // accents), footprints are the measured model XY extents (FaceWidth x Depth). This
+                // separate STRUCTURAL channel keeps swd_build007
                 // Excluded from every scatter palette, and returns here as deliberate composed
                 // structure only.
-                // ROUND-15 SALIENCE CLASSIFICATION (_scratch_decor/r15_mine_salience.py; user:
+                // SALIENCE CLASSIFICATION (user:
                 // "Still seeing a lot of repetition -- maybe even more than before"): perceived
                 // variety follows the per-model histogram SHAPE, not entropy -- hand-builders
                 // repeat PLAIN workhorse towers heavily (build007 18-36 per area) while
@@ -4459,7 +4456,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 //  - Every other model is an ACCENT: hard per-area cap at its hand-built maximum
                 //    in comparable-mass (<=60-building) areas, plus an omnidirectional
                 //    minSpacing floor mined from the hand-built same-model cross-line
-                //    nearest-neighbor distances (r15 evidence), so the same distinctive tower
+                //    nearest-neighbor distances from the salience audit, so the same distinctive tower
                 //    never recurs across parallel rows or facing pairs the way the reviewed
                 //    halls-20 showcase repeated the cyan-lit build003 through the plaza.
                 //  - FAMILIES: build001/002/003/005/006 share the daf_sw011_5/6 neon poster
@@ -4471,8 +4468,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 .FrontageBuilding("swd_build007", 6, 13.8f, 15.1f, maxPerArea: 36, workhorse: true)
                 .FrontageBuilding("swd_build003", 3, 19.3f, 9.3f, maxPerArea: 4, minSpacing: 15f,
                     family: "dafneon", familyMaxPerArea: 15)
-                // The narrow lift cylinder is the mined repeat-risk accent (round-14 variety
-                // pass): hand-built same-model NN medians run 18.9-36.0m (narpromena 18.9,
+                // The narrow lift cylinder is the mined repeat-risk accent: hand-built same-model
+                // NN medians run 18.9-36.0m (narpromena 18.9,
                 // nsshipyard 27.4, narscorpd 36.0) while unspaced generated areas packed pairs
                 // 10m apart -- minSpacing enforces the mined spread floor.
                 .FrontageBuilding("swd2_elev002", 2, 5.4f, 5.5f, maxPerArea: 9, minSpacing: 15f)
@@ -4491,11 +4488,11 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 // accents carry) and the shared usage ledger keeps the combined count at the
                 // hand-built max of 4.
                 .FrontageBuilding("_mdrn_pl_indtowr", 1, 11.8f, 11.8f, maxPerArea: 4, minSpacing: 10f)
-                // ROUND-14 POOL EXPANSION (user directive "a lot of reuse of assets -- any way to
+                // FRONTAGE POOL EXPANSION (user directive "a lot of reuse of assets -- any way to
                 // get more variety?"): the delivered showcases drew 8-10 distinct building models
                 // per area while comparable-mass hand-built areas draw 12-17 (nsshipyard 17,
                 // narshadaar_promi 16, narscorpd 12, ns_comrcial_ka 23 --
-                // _scratch_decor/r14_mine_variety.py building pool). Every entry below is mined
+                // mined building pool). Every entry below is mined
                 // from that pool (multi-area hand-built usage, measured model XY extents from
                 // r11_model_sizes.json, caps at the hand-built per-area maxima) and passes the
                 // same walkable-clearance fit rules as the original ten. _mdrn_pl_pillr03 (68x68m,
@@ -4514,12 +4511,12 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 .FrontageBuilding("_mdrn_pl_pillr06", 1, 19.6f, 13.8f, maxPerArea: 4, minSpacing: 15f)
                 .FrontageBuilding("_mdrn_pl_colony1", 1, 24.5f, 21.9f, maxPerArea: 2, minSpacing: 17f)
                 .FrontageBuilding("_mdrn_pl_mechtwb", 1, 24.8f, 16.4f, maxPerArea: 2, minSpacing: 25f)
-                // Subtle per-instance scale jitter on the frontage walls (round-14; see
+                // Subtle per-instance scale jitter on the frontage walls (see
                 // DungeonTilesetProfile.FrontageScaleJitter -- documented judgment call, applied
                 // to the fit-checked footprint, persisted as .git VisualTransform offline and
                 // SetObjectVisualTransform live).
                 .FrontageScaleJitter()
-                // WALL-MOUNTED FACADE DRESSING (round-11 -- see BuildingFrontagePlanner.
+                // WALL-MOUNTED FACADE DRESSING (see BuildingFrontagePlanner.
                 // PlanFacadeMounts): the dense hand-built city areas hang holo signage on building
                 // faces at Z bands mined per resref (velundr/narscorpd/nsshipyard/ns_comrcial_ka/
                 // narshadaar_promi measure 0.13-0.23 of decoratives above Z 0.5m, sign-family
@@ -4563,8 +4560,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 // carries one signature showcase.
                 .SignatureComposition(StandardLayoutProfiles.Packed, 24)
                 // STRUCTURAL-ITEM REMOVALS (July 2026 semantic-context pass, user report "this gate
-                // without a wall ... doesn't make a lot of sense" -- see DecorationAnchoring and
-                // _scratch_decor/mine_r7_semantics.py):
+                // without a wall ... doesn't make a lot of sense" -- see DecorationAnchoring):
                 //  - swd_build007 is GONE (Excluded class): its model is an entire whole-tile
                 //    building fragment, not dressing. The 103 hand-built placements are
                 //    builder-composed architecture (median 86m from other building mass because it
@@ -4579,13 +4575,13 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 //    not placeable scatter. DungeonDecorationPlanner.MergePalette additionally
                 //    strips any future RunSegment/Excluded curation outright.
                 //
-                // ROUND-8 DISTRICT VOCABULARY (user report "still a lot of repetition ... make it
+                // DISTRICT VOCABULARY (user report "still a lot of repetition ... make it
                 // more varied and realistic to how a city might actually be laid out"): the palette
-                // below is mined per DISTRICT from the 24 hand-built fcx01 areas
-                // (_scratch_decor/mine_r8_districts.py -- industrial = shipyard/docks/industrial
+                // below is mined per DISTRICT from the 24 hand-built fcx01 areas (industrial =
+                // shipyard/docks/industrial
                 // sector, commercial = promenades/commerce, civic = corporate/cloud-city plazas).
                 // Every entry carries: a size class measured from its decompiled model's XY extent
-                // (_scratch_decor/r8_model_sizes.json -- Small <1.2m, Medium 1.2-3m, Large 3-8m,
+                // (Small <1.2m, Medium 1.2-3m, Large 3-8m,
                 // Huge >=8m), a district affinity (Districts(...) -- evidence-derived from the
                 // per-district placement counts), and, for repeat-risk art, a per-area cap from the
                 // hand-built per-area p95 within its district (MaxPerArea(...)). Entries without
@@ -4635,7 +4631,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 // commercial placements at 80% road adjacency, spaced rows).
                 .Decoration("swlor_0137", 1, DecorationContext.CorridorSide)
                     .Districts((DistrictFlavor.Commercial, 2), (DistrictFlavor.Civic, 1)).MaxPerArea(10)
-                // CLUTTER BACKBONE -- NEAT CARGO ONLY (round-6 destruction split): crates/containers/
+                // CLUTTER BACKBONE -- NEAT CARGO ONLY (clean-city profile split): crates/containers/
                 // barrels placed as tight piles and stacked rows, now district-scoped: the heavy
                 // industrial movers concentrate in yard rooms, the promenade crates/market goods in
                 // commercial rooms. Clutter-role entries feed the clutter-pile arrangement AND their
@@ -4643,7 +4639,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 // Rubbish/debris/dirt content is deliberately ABSENT -- it lives in the "ruined"
                 // profile below. _mdrn_pl_crate09 stays GONE (zero hand-built evidence, anachronism).
                 // _mdrn_pl_kyru08 (the 11.4m storage silo) has MOVED to the Huge yard block at the
-                // end of this palette -- an 83-silo blanket over one generated area was the round-7
+                // end of this palette -- an 83-silo blanket over one generated area was the
                 // reported repetition.
                 .Decoration("_mdrn_pl_crate08", 2, DecorationContext.WallAdjacent, DecorationRole.Clutter)
                     .Districts((DistrictFlavor.Industrial, 2), (DistrictFlavor.Civic, 2), (DistrictFlavor.Commercial, 1)).MaxPerArea(35).Stackable(1.46f)
@@ -4716,7 +4712,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                     .Districts((DistrictFlavor.Industrial, 1), (DistrictFlavor.Civic, 1))
                 // Industrial floor hatchways (GroundDecal role: layered under yard piles, 100%
                 // cardinal in the mined reference -- flrhch4 59 placements). Size Small (1.6m
-                // models): these are the PILE-scale pads under the round-9 decal size-matching
+                // models): these are the PILE-scale pads under the decal size-matching
                 // rule (see DungeonDecorationPlanner.PickUrbanDecal).
                 .Decoration("_mdrn_pl_flrhch4", 2, DecorationContext.WallAdjacent, DecorationRole.GroundDecal, size: DecorationSize.Small)
                     .Districts((DistrictFlavor.Industrial, 2))
@@ -4724,7 +4720,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                     .Districts((DistrictFlavor.Civic, 1), (DistrictFlavor.Industrial, 1))
                 .Decoration("_mdrn_pl_flrhch2", 1, DecorationContext.WallAdjacent, DecorationRole.GroundDecal, size: DecorationSize.Small)
                     .Districts((DistrictFlavor.Commercial, 1), (DistrictFlavor.Industrial, 1))
-                // GROUND DECALS -- SIGNAGE/MARKINGS ONLY (round-6 destruction split): swd_floorm01
+                // GROUND DECALS -- SIGNAGE/MARKINGS ONLY (clean-city profile split): swd_floorm01
                 // (top structured floor piece, 360 mined placements at 100% cardinal) and the hex
                 // floor plate (flormh01, 100% cardinal). Hand-built areas use decals as LAYERING
                 // UNDER arrangements, never lone patches, so GroundDecal-role entries are only
@@ -4733,7 +4729,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 // "ruined" profile -- dirt is destruction dressing, not clean-city signage.
                 // flormh01 (metal hex) is the CIVIC floor signature (82 of its 92 mined placements
                 // sit in civic areas). Size Large (8.5-9.6m PLATES, measured from the decompiled
-                // models -- round-9 decal size discipline): a whole-tile plate may base a composed
+                // models; decal size discipline): a whole-tile plate may base a composed
                 // ensemble/courtyard with verified clearance, but never pads a 2m junk pile -- the
                 // reported "same square gray decal under every cluster" motif. swd_florrd01 (the
                 // dark ROAD-marking plate) was removed from this pool in the street-coherence
@@ -4784,7 +4780,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                     .Districts((DistrictFlavor.Civic, 1), (DistrictFlavor.Industrial, 1)).MaxPerArea(4)
                 .Decoration("_mdrn_pl_indtwr2", 1, DecorationContext.StructureAdjacent, size: DecorationSize.Large)
                     .Districts((DistrictFlavor.Industrial, 2)).MaxPerArea(6)
-                // Vehicles are LANDMARK one-offs (round-5 vignette-integrity fix): they park against
+                // Vehicles are LANDMARK one-offs under the vignette-integrity rule: they park against
                 // stamped building frontages only, now spread across six vehicle models plus the
                 // industrial forklift and parked speeder bikes so no single vehicle repeats across
                 // every frontage (per-area caps at the hand-built p95).
@@ -4824,9 +4820,9 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                     .Districts((DistrictFlavor.Civic, 1), (DistrictFlavor.Commercial, 1)).MaxPerArea(4)
                 .Decoration("swd_canopy01", 1, DecorationContext.RoomCenter, size: DecorationSize.Large)
                     .Districts((DistrictFlavor.Commercial, 1), (DistrictFlavor.Civic, 1)).MaxPerArea(3)
-                // Round-14 repeat cap: the round pale kiosk pavilion measured 7-12 per delivered
+                // Repeat cap: the round pale kiosk pavilion measured 7-12 per delivered
                 // area across its four channels while the hand-built per-area max is 6 (NN median
-                // 14.8m -- _scratch_decor/r14_mine_variety.py large-prop pool). The cap is
+                // 14.8m in the large-prop audit). The cap is
                 // declared on EVERY kiosk004 entry so the shared per-resref ledger holds the
                 // hand-built ceiling across all channels combined.
                 .Decoration("swd2_kiosk004", 2, DecorationContext.DoorwayFlank, size: DecorationSize.Large)
@@ -4877,7 +4873,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 .Decoration("swd_floorm01", 3, DecorationContext.CourtyardCenter, DecorationRole.GroundDecal, size: DecorationSize.Large)
                 .Decoration("swd_flormh01", 1, DecorationContext.CourtyardCenter, DecorationRole.GroundDecal, size: DecorationSize.Large)
                     .Districts((DistrictFlavor.Civic, 2))
-                // The 10m floor light strips carry Size Large so the round-9 ensemble/park
+                // The 10m floor light strips carry Size Large so the ensemble/park
                 // mechanisms never stand one as a CENTERPIECE (a standing item's slot); they remain
                 // courtyard centers exactly as before.
                 .Decoration("_mdrn_pl_lghtflr", 2, DecorationContext.CourtyardCenter, size: DecorationSize.Large)
@@ -4886,7 +4882,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                     .Districts((DistrictFlavor.Industrial, 2), (DistrictFlavor.Commercial, 1))
                 .Decoration("swd_holog01", 1, DecorationContext.CourtyardCenter)
                     .Districts((DistrictFlavor.Civic, 1))
-                // Round-9 mid-room ensemble centerpieces (see DungeonDecorationPlanner.
+                // Mid-room ensemble centerpieces (see DungeonDecorationPlanner.
                 // PlanInteriorEnsemble/PlanZoneDressings): the holotree "planter" tree centers park
                 // lawns and civic gardens (holot03 is the mined commercial/civic greenery -- 17
                 // commercial placements), the market kiosk and fruit stand center commercial plaza
@@ -4930,13 +4926,13 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 .VignetteMember("_mdrn_pl_marktfr", 0f, 0f)
                 .VignetteMember("_mdrn_pl_umbllar", 0.3f, 0.5f)
 
-                // BUILDING-SCALE (Huge) INDUSTRIAL YARD ART -- the round-8 size-discipline block.
+                // BUILDING-SCALE (Huge) INDUSTRIAL YARD ART -- the size-discipline block.
                 // These models measure 8m+ (kyru08 storage silo 11.4x11.4x15.6m, indtowr 11.8m,
                 // genl01 generator 9.2m, df_ss5 parked starfighter 11.2m -- decompiled-model
-                // measurements in _scratch_decor/r8_model_sizes.json) and place ONLY as composed
+                // measurements) and place ONLY as composed
                 // cargo-yard rows/pairs in Industrial-flavor rooms (see
                 // DungeonDecorationPlanner.PlanCargoYard): consecutive wall tiles, shared bearing,
-                // hard per-area caps. The round-7 regen carried 83 silos blanketing one area at
+                // hard per-area caps. Uncapped generation carried 83 silos blanketing one area at
                 // 1.4m spacing -- the reported "same massive building placeables" repetition; the
                 // hand-built evidence concentrates them in shipyard/dock yards in single-digit
                 // per-area counts (kyru08 industrial per-area p95 = 1-10, row pitch 10m).
@@ -4950,10 +4946,10 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                     .Districts((DistrictFlavor.Industrial, 1)).MaxPerArea(2)
 
                 // ============================================================================
-                // "ruined" -- the DESTRUCTION decoration profile (round-6 split): every
+                // "ruined" -- the DESTRUCTION decoration profile: every
                 // wreckage/rubble/debris/dirt-decal resref the standard clean-city palette
                 // deliberately excludes, mined from the same 24 hand-built fcx01 areas
-                // (rubb029-032 388 combined placements, pape019 69, debri01/03/20 mined round 5,
+                // (rubb029-032 388 combined placements, pape019 69, debri01/03/20 mined from reference areas,
                 // wallblk 30, jkpl002 44, dirtyg1-4 815 combined). Selected ONLY via a theme's
                 // DecorationProfile declaration or an explicit request/review override -- the
                 // default for every composition (including the Alien Ruin showcases) stays the
@@ -5024,9 +5020,9 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 .Decoration("_mdrn_pl_conta36", 2, DecorationContext.Courtyard)
                 .Decoration("_mdrn_pl_crate08", 2, DecorationContext.Courtyard)
                 .Decoration("_mdrn_pl_barrim2", 1, DecorationContext.Courtyard)
-                // ROUND-8 DEBRIS-VARIETY EXPANSION, mined from the slum/undercity/ruins reference
-                // areas (vrotrnsslums, pw_ar_velundr, randoncity_02 -- _scratch_decor/
-                // mine_r8_districts.py): scattered newspapers and rubbish bags (pape003-006 mined
+                // DEBRIS-VARIETY EXPANSION, mined from the slum/undercity/ruins reference
+                // areas (vrotrnsslums, pw_ar_velundr, randoncity_02): scattered newspapers and
+                // rubbish bags (pape003-006 mined
                 // 13-21 placements each), a second full debris-pile family (swd3_dbpil02), wrecked
                 // equipment and vehicle parts (debri06/debri11), destroyed droids (droidsd/
                 // droidd4), loose drums, fallen girders, and tipped trash cans -- so ruined blocks
@@ -5080,8 +5076,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 // Tower04/d_build02 (2x2) are the Cobble2 district's only groups that fit size-20-24
                 // rooms -- same site-limited ceiling reasoning as FutCity's Tower00 budget above.
                 //
-                // Re-measured at size 32 (_scratch_decor/DecorGen, 20 seeds against the Complex layout
-                // pairing): a budget-only sweep was tried here too and reverted for the identical reason
+                // Re-measured at size 32 over 20 seeds against the Complex layout pairing: a
+                // budget-only sweep was tried here too and reverted for the identical reason
                 // documented on FutCity's Tower00 SetPiece above (no measured group_share benefit --
                 // Complex's own MinRooms=6/MaxRooms=9 caps room supply at size 32 regardless of budget).
                 // platform1 wired here too (2x2, same TryClassify self-verification safety as FutCity).

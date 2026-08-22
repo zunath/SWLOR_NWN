@@ -249,21 +249,21 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
 
         /// <summary>
         /// Share of the total decoration budget reserved for composed MID-ROOM ensembles under the
-        /// urban grammar (see PlanInteriorEnsemble/PlanDepotBlock) -- the round-9 "barren plaza
-        /// middles" fix. Hand-built fcx01 city rooms carry REAL interior content: measured room-scale
-        /// interior share (decoratives with no building/road tile within Chebyshev 1 --
-        /// _scratch_decor/mine_r9_interiors.py) runs 0.16-0.51 across the structured commercial/
-        /// industrial/civic reference areas, while round-8 generated flagships measured 0.10
+        /// urban grammar (see PlanInteriorEnsemble/PlanDepotBlock) -- the "barren plaza middles"
+        /// fix. Hand-built fcx01 city rooms carry REAL interior content: measured room-scale
+        /// interior share (decoratives with no building/road tile within Chebyshev 1) runs 0.16-0.51
+        /// across the structured commercial/
+        /// industrial/civic reference areas, while earlier generated flagships measured 0.10
         /// (packed 32). Active ONLY under the urban grammar when at least one room offers an
         /// ensemble anchor or depot segment, so every non-urban plan keeps its exact budget split
         /// and RNG stream. Together with <see cref="UrbanClutterPileTargetShare"/> the urban share
-        /// sum stays at the round-8 total (0.91), leaving the wall/street runs their original 0.09.
+        /// sum stays at the calibrated total (0.91), leaving the wall/street runs their original 0.09.
         /// </summary>
         private const double InteriorEnsembleTargetShare = 0.10;
 
         /// <summary>
         /// URBAN pile share: the ensemble/depot share above is carved out of the pile budget (piles
-        /// were the round-8 dominant 0.55), not out of the street/wall runs -- composed depot rows
+        /// were the dominant 0.55), not out of the street/wall runs -- composed depot rows
         /// and mid-room ensembles ARE the structured replacement for part of the loose-pile mass.
         /// Non-urban palettes keep <see cref="ClutterPileTargetShare"/> bit for bit.
         /// </summary>
@@ -294,7 +294,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
         /// <summary>
         /// Under-decal chance for clutter piles under the URBAN grammar -- slightly below the
         /// non-urban <see cref="DecalUnderPileChance"/>: the hand-built decal-to-cluster ratio is
-        /// ~1.0 INCLUDING the plates that anchor big compositions, and round-8's per-pile 0.65 pad
+        /// ~1.0 INCLUDING the plates that anchor big compositions, and the prior per-pile 0.65 pad
         /// chance was the reported "pad under every cluster" motif. Non-urban palettes keep the
         /// original constant and RNG path bit-for-bit.
         /// </summary>
@@ -303,7 +303,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
         /// <summary>
         /// Depot-block geometry (see PlanDepotBlock), measured from the hand-built industrial
         /// reference areas (pw_ar_nsshipyard/ns_industrialsec/narshadaar_midoc/vrotrnsdockbay/
-        /// vrotrbeslanding -- _scratch_decor/mine_r9_interiors.py): crate-family same-family NN
+        /// vrotrbeslanding): crate-family same-family NN
         /// median 0.09m (builders literally stack), 93% within 2.2m, colinear runs median 4 / p90
         /// 12, cluster bearing dominant-share 0.81. Generated blocks use a 1.35m pitch -- true
         /// butt-joint for the 0.75-1.5m crate family without z-fighting overlap -- in 1-2 parallel
@@ -333,13 +333,13 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
 
         /// <summary>
         /// Largest number of consecutive placements PlaceWallRuns emits along one (context, wall
-        /// direction) bucket before forcing a real gap and starting a fresh segment — round-3
+        /// direction) bucket before forcing a real gap and starting a fresh segment — the
         /// decoration-quality fix for the reported "ring" artifact: an open room's perimeter used to
         /// be dressed as ONE continuous run per wall-facing direction with no cap, so a room whose
         /// entire perimeter was wall-eligible (the common case on tilesets like fcx01 where "solid
         /// terrain" is platform gaps, not real walls) got the SAME motif wrapped evenly around all
         /// four sides — a closed ring no hand-built reference area produces at this fixture density
-        /// (see decoration_evidence/ round-3 statistics harness: hand-built same-resref closed-loop
+        /// (the decoration statistics audit found the hand-built same-resref closed-loop
         /// rate is near-zero for wall-hugging set dressing, and what little occurs is a different
         /// kind of thing — floor-decal motifs, not repeated vertical fixtures). 6 matches the
         /// hand-built per-family longest-run p90 for the typical (non-warehouse-density) families.
@@ -383,13 +383,13 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
         /// industrial-flavor rooms -- the hand-built pattern where silo/tank rows concentrate in
         /// shipyard/dock districts (kyru08's mined per-area counts cluster in the industrial and
         /// undercity yards; the commercial promenades carry zero) instead of blanketing the map
-        /// (the round-7 regen placed 83 silos across one area -- the reported repetition).
+        /// (an uncapped generation placed 83 silos across one area -- the reported repetition).
         /// </summary>
         private const double YardTargetPerArea = 2.0;
 
         /// <summary>Hard per-area total across every Huge placement -- two full rows plus a
         /// landmark one-off. Hand-built mixed-city areas carry Huge silo/tower art in single-digit
-        /// counts (per-area p95 by district in the round-8 evidence).</summary>
+        /// counts (per-area p95 by district in the decoration evidence).</summary>
         internal const int MaxHugePerArea = 6;
 
         /// <summary>Members per composed yard row (consecutive wall tiles, shared bearing) --
@@ -584,7 +584,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
             var vignettes = namedProfile?.Vignettes ?? tileset?.Vignettes ?? new List<DungeonVignette>();
             var roadCrosser = tileset?.RoadCrosser ?? string.Empty;
 
-            // Per-resref area-cap ceiling for VIGNETTE members (round-14): the vignette mechanism
+            // Per-resref area-cap ceiling for VIGNETTE members: the vignette mechanism
             // records member usage against the shared per-area ledger but never used to CHECK it,
             // so a capped repeat-risk model (swd2_kiosk004, hand-built per-area max 6) could still
             // blanket an area through its vignette. The ceiling per resref is the largest cap any
@@ -685,7 +685,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
             foreach (var tile in rooms[i].Room.Tiles)
                 tileToRoom.TryAdd(tile, i);
 
-            // URBAN GROUND-FILL CEILINGS (round-13 convergence): the family density constant is
+            // URBAN GROUND-FILL CEILINGS: the family density constant is
             // calibrated per TOTAL area tile at the packed-20 eligible-surface fraction, but the
             // open-surface fraction varies with size/layout -- small promenade-scale grids realize
             // a much larger fraction of the target and, with the structural channels (frontage,
@@ -869,7 +869,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
                 ? Math.Min(0.9, YardTargetPerArea / yardEligibleRoomCount)
                 : 0.0;
             // Civic/commercial ensembles roll per interior anchor. The DEPOT floor is deterministic
-            // (every eligible industrial room composes at least one block -- the round-9 acceptance
+            // (every eligible industrial room composes at least one block -- the acceptance
             // gate that pad-singles become the exception in yards), so the anchor-probability math
             // only spreads whatever ensemble budget remains after the depot floor's expected items.
             var depotExpectedItems = (DepotBlockMinItems + DepotBlockMaxItems) / 2.0 + 2.5; // + satellites/pad
@@ -879,7 +879,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
                 ? Math.Min(0.85, (ensembleBudgetAfterDepots / ensembleExpectedItems) / ensembleAnchorTotal)
                 : 0.0;
             // A packed layout can starve the roll entirely (many depot rooms eat the share); keep a
-            // real floor so civic plazas still compose gardens -- the whole point of the round.
+            // real floor so civic plazas still compose gardens -- the intent of the ensemble channel.
             // 0.5 measured against the packed20 realized-density band: the pile mechanism runs at
             // its saturation cap there, so interior ensembles are what keeps the realized total in
             // the hand-built band.
@@ -892,10 +892,10 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
             // cap) -- shared by every mechanism below. Entries without caps are never filtered, so
             // palettes that declare no caps keep their exact pick pools.
             var areaUsage = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-            // Round 15: frontage buildings seed the ledger, so a model that stands in BOTH the
+            // Frontage buildings seed the ledger, so a model that stands in BOTH the
             // structural frontage pool and a capped scatter palette (the dual-channel industrial
             // towers kyru08/indtowr) keeps its COMBINED per-area count at the hand-built ceiling
-            // -- the round-15 delivered-module audit caught indtowr at 6 (4 frontage + 2 yard)
+            // -- the delivered-module audit caught indtowr at 6 (4 frontage + 2 yard)
             // against its hand-built per-area max of 4. No-op for tilesets without frontage
             // (the ledger stays empty exactly as before, and no RNG is consumed).
             if (frontage != null)
@@ -914,7 +914,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
             {
                 var pairView = rooms[tileToRoom[pair.A]].View;
                 var doorwayFallback = UnderAreaCap(pairView.DoorwayFallback, areaUsage);
-                // Round-14: a flank PAIR places up to two copies, so a capped repeat-risk entry
+                // A flank PAIR places up to two copies, so a capped repeat-risk entry
                 // needs two units of headroom -- picking it at cap-1 overshot the hand-built
                 // per-area ceiling by one. No-op for cap-free palettes (identical list and RNG).
                 if (doorwayFallback != null && doorwayFallback.Any(e => e.MaxPerArea > 0))
@@ -990,7 +990,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
 
                 // Composed DEPOT blocks (urban industrial rooms -- see PlanDepotBlock): the FIRST
                 // block is deterministic for every eligible room (dense butt-jointed cargo rows are
-                // the industrial default, loose pad-singles the exception -- the round-9 gate); a
+                // the industrial default, loose pad-singles the exception); a
                 // second block rolls in large yards. Committed blocks damp the room's loose-pile
                 // probability (see IndustrialPileDamping).
                 var depotBlocksPlaced = 0;
@@ -1081,7 +1081,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
                     {
                         if (urban)
                         {
-                            // Urban rule (round-9 monument sweep): a plaza set piece NEVER stands
+                            // Urban monument rule: a plaza set piece NEVER stands
                             // free -- the plain single-item roll composes the same
                             // centerpiece+satellites ensemble the interior anchors use, or places
                             // nothing at all (a monument with no bench/planter court was the
@@ -1121,7 +1121,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
                     if (anchor != null)
                     {
                         var vignette = PickWeightedVignette(vignettes, rng);
-                        // Round-14: a vignette whose member would push a capped repeat-risk model
+                        // A vignette whose member would push a capped repeat-risk model
                         // past its hand-built per-area ceiling is skipped outright (see
                         // vignetteCapByResref above). No-op for palettes without caps.
                         var underCaps = vignette.Members.All(m =>
@@ -1280,7 +1280,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
         }
 
         /// <summary>
-        /// Round-14 cap-aware motif cycling for composed rings/surrounds: ring motifs cycle 2-3
+        /// Cap-aware motif cycling for composed rings/surrounds: ring motifs cycle 2-3
         /// resrefs across several members, so a capped repeat-risk entry drawn while UNDER its cap
         /// could still exceed its hand-built per-area ceiling by the cycle count. Returns the first
         /// motif entry (starting at the member's own cycle index) whose committed-plus-pending
@@ -1473,7 +1473,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
 
         /// <summary>
         /// Deterministically (no RNG) assigns each open, non-set-piece room a district flavor --
-        /// the round-8 realism mechanism: hand-built city repetition is district-scoped, so a
+        /// the district-realism mechanism: hand-built city repetition is district-scoped, so a
         /// generated city needs recognizable neighborhoods rather than one uniform mix. Scoring
         /// mirrors how the hand-built areas ARE laid out:
         ///  - COMMERCIAL prefers road-frontage rooms near the entrances (promenades line the
@@ -1556,7 +1556,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
             }
 
             // Balancing pass: with enough real rooms, every flavor should exist somewhere -- a city
-            // of only warehouses is as monotonous as the round-7 uniform mix. Flip the best-scoring
+            // of only warehouses is as monotonous as a uniform mix. Flip the best-scoring
             // candidate into each missing flavor, never emptying another flavor below one room.
             var nonCorridorCount = rooms.Count(r => !r.IsCorridorLike);
             if (nonCorridorCount >= 3)
@@ -1904,7 +1904,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
 
             // A SECOND small motif per (room, context), drawn lazily only once the primary motif's
             // per-resref budget (MaxSameResrefPerRoomContext) runs out — "second motif ... filling
-            // beyond the cap" per the round-3 decoration-quality brief, rather than falling back to
+            // beyond the cap" per the decoration-quality brief, rather than falling back to
             // the room's entire palette bucket (which would blow past the hand-built-evidence-backed
             // "a room repeats a small handful of fixture types" pattern PickMotif exists to encode).
             var secondaryMotifCache = new Dictionary<DecorationContext, List<string>>();
@@ -2025,8 +2025,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
 
                 // Jittered, segmented walk along the run instead of a perfectly even `i += spacing`
                 // stride: hand-built reference wall/corridor spacing has a real coefficient of
-                // variation (~0.5-1.4 across mined families, see decoration_evidence/ round-3
-                // statistics harness) — machine-even spacing is itself part of what reads as
+                // variation (~0.5-1.4 across mined families in the decoration statistics audit) —
+                // machine-even spacing is itself part of what reads as
                 // artificial. jitterRange = spacing gives a uniform-distributed step with CV ~0.58, a
                 // conservative move toward that measured irregularity without risking a degenerate
                 // (near-zero or negative) step.
@@ -2326,7 +2326,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
                 memberTiles.Add(tile);
             }
 
-            // Urban commit floor is 4 (round-9 monument sweep): a 3-member ring spread over a
+            // Urban commit floor is 4: a 3-member ring spread over a
             // 5-6.5m radius reads as free-standing fragments, not a composed court -- the
             // hand-built rings measure 4-13 members. Non-urban keeps the original 3.
             if (members.Count < (urban ? 4 : 3))
@@ -2418,11 +2418,11 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
         }
 
         /// <summary>
-        /// Weighted decal pick under the urban grammar's decal discipline (round 9): entries rotate
+        /// Weighted decal pick under the urban grammar's decal discipline: entries rotate
         /// by inverse per-area usage (weight / (1 + uses)) so one resref can never dominate the
         /// area's pads -- the hand-built clean-decal family splits its placements across four+
         /// models (floorm01 at 0.55, florrd01 0.18, flormh01 0.14, the hatch grills 0.13 combined
-        /// -- _scratch_decor/mine_r9_interiors.py) while round-8 output put ~70% on one plate --
+        /// in the interior audit) while earlier output put ~70% on one plate --
         /// and Large (8.5-9.6m) floor plates are size-matched via <paramref name="largeFactor"/>:
         /// full weight under big compositions (ensemble bases), damped under small consumers (a
         /// junk pile's pad leans to the 1.6m hatch grills), 0 to exclude them outright. Returns
@@ -2462,8 +2462,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
         }
 
         /// <summary>
-        /// Composes one mid-room ensemble at an interior anchor -- the round-9 "barren plaza
-        /// middles" arrangement: a centerpiece (monument/kiosk/tree from the flavor's
+        /// Composes one mid-room ensemble at an interior anchor -- the "barren plaza middles"
+        /// arrangement: a centerpiece (monument/kiosk/tree from the flavor's
         /// CourtyardCenter+RoomCenter pools), an optional base floor decal underneath (Large plates
         /// only with full 3x3 clearance -- size-matched), and 3-5 satellites (benches, planters,
         /// lamps, seating from the flavor's Courtyard ring pool) facing the centerpiece at a
@@ -2671,11 +2671,11 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
         }
 
         /// <summary>
-        /// Composes one industrial DEPOT block against a wall segment -- the round-9 replacement
+        /// Composes one industrial DEPOT block against a wall segment -- the structured replacement
         /// for "crates as evenly-spaced exhibits, each on its own pad". Hand-built industrial
         /// reference areas butt their cargo into dense rows (crate-family same-family NN median
-        /// 0.09m, 93% within 2.2m, colinear runs of 4-12 sharing a dominant bearing --
-        /// _scratch_decor/mine_r9_interiors.py); a generated block therefore lays 4-9 crates in 1-2
+        /// 0.09m, 93% within 2.2m, colinear runs of 4-12 sharing a dominant bearing); a generated
+        /// block therefore lays 4-9 crates in 1-2
         /// parallel rows at 1.35m pitch (true butt-joint for the 0.75-1.5m crate family), all
         /// sharing the wall's outward bearing (with occasional quarter turns), drawn from a 2-3
         /// type mixed-height motif of the room's Clutter pool, with 1-2 small satellite props at
@@ -2871,7 +2871,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
 
         /// <summary>
         /// Dresses zone-marking FEATURE TILES (see DungeonTilesetProfile.FeatureTileDressings) that
-        /// landed inside open rooms -- the round-9 "empty zone decal" rule: an area-marking tile
+        /// landed inside open rooms -- the "empty zone decal" rule: an area-marking tile
         /// IMPLIES content, so a grass lawn composes a PARK (tree/monument centerpiece + facing
         /// bench/light ring) and a fountain court composes its seating surround, all ON the feature
         /// cell itself. Deterministic obligation (no placement roll): a bare park patch is exactly
@@ -3065,7 +3065,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
             {
                 if (urban)
                 {
-                    // Urban decal discipline (round 9): lower per-pile pad chance, inverse-usage
+                    // Urban decal discipline: lower per-pile pad chance, inverse-usage
                     // rotation through the decal family, and NO Large floor plates under a 2m junk
                     // pile -- see PickUrbanDecal. Non-urban palettes keep the original chance,
                     // pick, and RNG path bit for bit.

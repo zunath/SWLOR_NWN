@@ -11,7 +11,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Frontage
     /// tile faces and <see cref="BuildingFrontageEntry"/> placeable faces -- at an evidence-derived
     /// height band. Mined from the dense hand-built fcx01 city areas' elevated (Z &gt; 0.5m)
     /// decoratives: sign-family items sit ON building faces (median face distance ~0) at per-resref
-    /// Z bands between 1.1 and 7.0m -- _scratch_decor/r11_mine_buildings.py.
+    /// Z bands between 1.1 and 7.0m in the frontage audit.
     /// </summary>
     public class FacadeMountEntry
     {

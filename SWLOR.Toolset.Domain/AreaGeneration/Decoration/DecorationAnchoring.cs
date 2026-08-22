@@ -10,8 +10,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
     /// (if any) the blueprint's own art demands before a placement of it can read as intentional.
     /// Mined per resref from hand-built reference usage (placement count, distance-to-nearest
     /// building-architecture distribution, same-family nearest-neighbor spacing) plus the blueprint
-    /// model's measured footprint -- see the July 2026 fcx01 semantic-context pass
-    /// (_scratch_decor/mine_r7_semantics.py): a fence DOOR standing alone in an open plaza (the
+    /// model's measured footprint -- see the fcx01 semantic-context audit: a fence DOOR standing
+    /// alone in an open plaza (the
     /// reported "gate without a wall") is the artifact class this classification exists to prevent.
     /// Orthogonal to <see cref="DecorationRole"/> (what arrangement mechanisms may place it) and
     /// <see cref="DecorationContext"/> (which bucket it is curated under): anchoring says what the

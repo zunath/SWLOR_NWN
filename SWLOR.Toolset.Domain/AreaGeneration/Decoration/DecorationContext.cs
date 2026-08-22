@@ -92,7 +92,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
         /// butt-jointed rows at near-model-width pitch with a shared bearing, mixed crate heights,
         /// and end-of-row satellite props. The hand-built shipyard/dock storage pattern
         /// (crate-family nearest-neighbor median under 1m, 93% within 2.2m, colinear runs of 4-12,
-        /// cluster bearing dominant-share 0.81 -- _scratch_decor/mine_r9_interiors.py).
+        /// cluster bearing dominant-share 0.81 in the interior-placement audit).
         /// </summary>
         DepotRow = 12,
         /// <summary>
@@ -102,7 +102,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
         /// boundary, bearing = the face's outward normal, at ~10m pitch along the run. The
         /// hand-built promenade-family canyon mechanism: pw_ar_narpromena (12x12) walls its plaza
         /// with 30 swd_build* placeables on flat cobble (zero building tiles), build007 rows at
-        /// 9.8-10.1m center pitch, 100% cardinal bearings -- _scratch_decor/r11_mine_buildings.py.
+        /// 9.8-10.1m center pitch, 100% cardinal bearings in the frontage audit.
         /// Deliberately a separate channel from decoration clutter: DecorationAnchoring.Excluded
         /// still strips whole-building art from every scatter palette.
         /// </summary>

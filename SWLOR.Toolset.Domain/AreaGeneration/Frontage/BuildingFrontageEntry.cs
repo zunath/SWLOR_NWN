@@ -12,8 +12,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Frontage
     /// lines at ~10m pitch). DELIBERATELY separate from <see cref="DungeonDecorationEntry"/>:
     /// whole-building art is structure, not dressing (DecorationAnchoring.Excluded strips it from
     /// every scatter palette), and placement is geometric (footprint fit against the walkable grid)
-    /// rather than palette-bucket driven. Footprints are measured model XY extents
-    /// (_scratch_decor/r11_model_sizes.json): FaceWidth spans along the fronted face, Depth extends
+    /// rather than palette-bucket driven. Footprints are measured model XY extents: FaceWidth spans
+    /// along the fronted face, Depth extends
     /// into the non-walkable margin.
     /// </summary>
     public class BuildingFrontageEntry
@@ -32,30 +32,29 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Frontage
         /// area (0 = no spacing rule), enforced omnidirectionally -- across parallel rows and
         /// facing pairs, not just within a collinear run. Mined for narrow repeat-risk accent
         /// towers: hand-built same-model NN medians run 18.9-36.0m for the swd2_elev002 lift
-        /// cylinder (_scratch_decor/r14_mine_variety.py); the salience pass
-        /// (_scratch_decor/r15_mine_salience.py) extends the rule to every non-workhorse frontage
+        /// cylinder; the salience audit extends the rule to every non-workhorse frontage
         /// model from the mined same-model cross-line nearest-neighbor distances. Workhorse
         /// models carry no spacing because hand-built areas stand them directly across the street
         /// from themselves (narpromena build007 mutually-facing pairs at 10.1m).</summary>
         public float MinSameModelSpacing { get; set; }
 
         /// <summary>Whether this model may be elected a street/run DOMINANT (the model a frontage
-        /// run repeats). Mined workhorse classification (_scratch_decor/r15_mine_salience.py over
+        /// run repeats). Mined workhorse classification over
         /// the hand-built fcx01 areas): a model is a workhorse when its two highest per-area
         /// counts sum to 20+ (hand-builders demonstrably wall whole streets with it: build007
         /// 36+30, build004 21+7, kyru08 10+10) AND its texture set is low-salience (diffuse
         /// neon-pixel share under 0.15 -- distinctive neon/emissive towers stay rare in
         /// hand-built areas regardless of size: the neon-clad build003 tops out at 1-4 per
         /// comparable-mass area). Non-eligible models still interleave as accents, but a street
-        /// can never legally elect a distinctive tower and repeat it -- the round-15 clone-city
+        /// can never legally elect a distinctive tower and repeat it -- the clone-city
         /// report was a high-salience model elected dominant.</summary>
         public bool DominantEligible { get; set; }
 
         /// <summary>Visual family key (null/empty = the model stands alone). Models that share
         /// their dominant texture atlases read as the same building line to a player even when
         /// their meshes differ (the daf neon towers build001/002/003/005/006 share the
-        /// daf_sw011_5/6 neon poster atlases; jsf_batimt02/04 share the full jsf_bldgtx set --
-        /// _scratch_decor/r15_mine_salience.py bitmap analysis; no same-mesh recolor pairs exist
+        /// daf_sw011_5/6 neon poster atlases; jsf_batimt02/04 share the full jsf_bldgtx set; the
+        /// bitmap analysis found no same-mesh recolor pairs
         /// in the frontage pool). Per-area caps aggregate across the family via
         /// <see cref="FamilyMaxPerArea"/>.</summary>
         public string FamilyKey { get; set; }

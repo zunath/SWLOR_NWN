@@ -47,7 +47,12 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             parameters.MaxRooms = MaxRooms;
             parameters.MinRoomCornerSize = MinRoomCornerSize;
             parameters.MaxRoomCornerSize = MaxRoomCornerSize;
-            parameters.CorridorWidth = CorridorWidth;
+            var minimumCorridorWidth = tileset != null
+                ? System.Math.Max(1, tileset.MinimumOpeningWidth)
+                : 1;
+            if (tileset != null && !string.IsNullOrEmpty(tileset.RoadCrosser))
+                minimumCorridorWidth = System.Math.Max(minimumCorridorWidth, 2);
+            parameters.CorridorWidth = System.Math.Max(CorridorWidth, minimumCorridorWidth);
             parameters.LoopFactor = LoopFactorPercent / 100.0;
             parameters.OpenFillTarget = OpenFillTargetPercent / 100.0;
             parameters.EntranceCount = EntranceCount;

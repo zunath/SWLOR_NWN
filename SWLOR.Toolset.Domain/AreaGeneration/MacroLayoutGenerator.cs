@@ -219,8 +219,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
             // Reordered (was: Stamp then CarveRoads): CarveRoads now runs BEFORE Stamp, from transition
             // anchors and room centers through open space that no building has claimed yet -- matching
             // hand-built fcx01 evidence that real cities are streets-first (buildings front an already-
-            // laid-out road network, not the other way around; see _scratch_decor/
-            // measure_fcx01_frontage.py). Nothing is pinned yet at this point (LayoutGroupStamper is the
+            // laid-out road network, not the other way around). Nothing is pinned yet at this point
+            // (LayoutGroupStamper is the
             // only pass that writes PinnedTiles), so a lane threads directly between anchors instead of
             // detouring around not-yet-existing buildings -- see LayoutRoadCarver's own doc comment for
             // the full rationale and RoadCarverTests for the "never overlaps a stamped tile" invariant,

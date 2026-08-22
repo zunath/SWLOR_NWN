@@ -10,8 +10,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Frontage
     /// building's footprint must stand on real platform surface the way every hand-built
     /// platform-level tower does, instead of hanging over the visible abyss.
     ///
-    /// PLATFORM MODEL (identical to the offline evidence miner/audit,
-    /// _scratch_decor/r16_mine_support.py): the resolved corner-terrain plan
+    /// PLATFORM MODEL (identical to the offline support audit): the resolved corner-terrain plan
     /// (<see cref="ResolvedLayout.CornerTerrains"/>) partitions the grid into 5x5m corner-owned
     /// quadrants -- the square [cx*10-5, cy*10-5, cx*10+5, cy*10+5] clipped to the grid belongs to
     /// corner (cx, cy) -- and a quadrant is PLATFORM iff its corner label is not a declared chasm
@@ -19,7 +18,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Frontage
     /// area edge freely (off-grid footprint shares up to 0.58 on the flagship family) because
     /// there is no visible drop past the edge, only skyline.
     ///
-    /// ENVELOPE (USER OVERRIDE, street-coherence review round): buildings must be EFFECTIVELY
+    /// ENVELOPE (street-coherence rule): buildings must be EFFECTIVELY
     /// FULLY platform-supported -- total in-grid chasm share (interior abyss AND the map-edge
     /// moat, i.e. chasm quadrants owned by grid-border corners) at most
     /// <see cref="MaxChasmShare"/> = 0.05, overhang at most <see cref="MaxChasmOverhang"/> = 2m,

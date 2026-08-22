@@ -17,8 +17,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Layouts
     ///
     /// Runs BEFORE LayoutGroupStamper in MacroLayoutGenerator's post-pass pipeline (reordered from an
     /// earlier "after Stamp" design -- see below), immediately after the height/relief passes settle
-    /// final corner terrain. Hand-built fcx01 evidence (_scratch_decor/measure_fcx01_frontage.py, 15
-    /// hand-built areas with a real street network) shows cities are streets-first: 61% of building
+    /// final corner terrain. Evidence from 15 hand-built fcx01 areas with a real street network shows
+    /// cities are streets-first: 61% of building
     /// groups sit directly on a road edge, and buildings cluster ALONG carved streets rather than
     /// streets being threaded through the gaps between wherever buildings happened to land. Carving
     /// first, from transition anchors and room centers through open space nothing has claimed yet,

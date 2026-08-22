@@ -311,7 +311,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Layouts
 
             // Hand-derived building-mass ceiling for contiguous-block city compositions above the
             // tuning baseline: hand-built promenade-family building-tile share tops out at 0.284
-            // of area tiles (_scratch_decor/measure_fcx01_frontage.py band 0.170-0.284, the
+            // of area tiles (measured band 0.170-0.284, the
             // CityBlockContiguityTests gate). The attempt budget above is deliberately an
             // over-request bounded by real site supply -- but site supply itself moves with the
             // street network's geometry (the fewest-turns road carver freed interior stamp sites
@@ -359,8 +359,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Layouts
         /// onboarded tileset's SetPieces budget was individually tuned (and measured/commented) against
         /// its own hand-built reference at the machinery's usual 16-24 test sizes and stays untouched.
         ///
-        /// Hand-built fcx01 areas with a real street network measure ~19.9 building tiles per 100 area
-        /// tiles (_scratch_decor/measure_fcx01_frontage.py, 15 areas). The configured per-tileset
+        /// Fifteen hand-built fcx01 areas with a real street network measure ~19.9 building tiles per
+        /// 100 area tiles. The configured per-tileset
         /// budgets (e.g. FutCity's Tower00: 3) were tuned against a 20x20 baseline; a 32x32 area has
         /// 2.56x the floor space (1024 vs 400 tiles) and, on PackedRooms/Complex-style layouts, a
         /// correspondingly larger population of SetPieceRoomCornerFloor-sized rooms to host them, so
@@ -2179,8 +2179,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Layouts
 
         /// <summary>
         /// Hand-built promenade-family ceiling on one contiguous building block's tile count -- see
-        /// the cap check in IsOpenSetPieceSiteValid (largest measured hand-built block is 48 tiles,
-        /// _scratch_decor/promenade_benchmark.py; the largest single fcx01 group footprint is 36).
+        /// the cap check in IsOpenSetPieceSiteValid (largest measured hand-built block is 48 tiles;
+        /// the largest single fcx01 group footprint is 36).
         /// </summary>
         private const int MaxContiguousBlockTiles = 48;
 

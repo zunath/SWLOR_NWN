@@ -13,8 +13,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Frontage
     /// along open-area perimeter edges and street margins so streets and plazas read as canyons
     /// walled by building mass -- the hand-built promenade-family mechanism.
     ///
-    /// Evidence (_scratch_decor/r11_mine_buildings.py over pw_ar_narpromena / pw_ar_narscorpd /
-    /// pw_ar_nsshipyard): the 12x12 flagship promenade walls its plaza with 30 swd_build*
+    /// Evidence from pw_ar_narpromena / pw_ar_narscorpd / pw_ar_nsshipyard: the 12x12 flagship
+    /// promenade walls its plaza with 30 swd_build*
     /// placeables standing on flat cobble (ZERO building tiles) -- swd_build007 rows at 9.8-10.1m
     /// center pitch (one per 10m tile edge, footprints overlapping laterally into a continuous
     /// wall), 100% cardinal-quantized bearings, centers concentrated on tile boundaries
@@ -76,8 +76,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Frontage
         /// <summary>Chance each further slot of a frontage run repeats the run's dominant model
         /// rather than drawing from the accent deck -- hand-built wall lines are dominant-model
         /// runs (build007 x4-5 consecutive) with occasional accents. Retuned 0.7 -> 0.6 in the
-        /// round-15 salience pass: with dominants restricted to the three workhorse models
-        /// (round-14 rotated the election across the whole pool, so 0.7 spread across many
+        /// salience calibration: with dominants restricted to the three workhorse models
+        /// (the earlier election rotated across the whole pool, so 0.7 spread across many
         /// models), 0.7 concentrated small areas on one workhorse past the hand-built texture --
         /// packed-12 seeds measured model entropy under the mined 2.11-4.15 canyon band and
         /// top-model share past the narpromena flagship's 0.462; at 0.6 the sweep measures
@@ -86,7 +86,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Frontage
         internal const double DominantShare = 0.6;
 
         /// <summary>Hard ceiling on CONSECUTIVE same-model placements along one frontage run --
-        /// the round-14 variety pass. Mined (_scratch_decor/r14_mine_variety.py over the 24
+        /// the frontage-variety rule. Mined over the 24
         /// hand-built fcx01 areas): hand-built collinear building lines top out at same-model runs
         /// of 4 (narpromena/nsshipyard/narcatwalk/randoncity all max 4; narscorpd carries the
         /// single 5 outlier), broken by accent models -- while ungated generated areas ran 6-9
@@ -95,21 +95,21 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Frontage
         /// resets the count exactly as a gap breaks the visual row.</summary>
         internal const int MaxSameModelRun = 4;
 
-        /// <summary>Softening divisor for the per-run DOMINANT pick (round-14): a model's
+        /// <summary>Softening divisor for the per-run DOMINANT pick: a model's
         /// dominant-pick weight is divided by (1 + timesAlreadyDominant / this), so different
         /// streets rotate toward different dominant models -- the hand-built pattern where
         /// build007 anchors one area's lines but pillr03 the shipyard's and kyru12 the commercial
         /// district's -- while the highest-weight workhorse still leads overall. Tuned against the
         /// mined per-area dominant share (build007 carries 37-46%% of hand-built canyon walls) and
         /// the mined distinct-model band (12-17 models on comparable-mass hand-built areas).
-        /// Round 15: only <see cref="BuildingFrontageEntry.DominantEligible"/> workhorse models
-        /// enter the election at all -- round-14's rotation could legally elect the neon-clad
+        /// Only <see cref="BuildingFrontageEntry.DominantEligible"/> workhorse models
+        /// enter the election at all -- unrestricted rotation could legally elect the neon-clad
         /// build003 as a street dominant and repeat it across the plaza, statistically in band but
         /// visually the reported clone city.</summary>
         internal const double DominantRotationDamping = 3.0;
 
-        /// <summary>Frontage budget ceiling: buildings erected per open floor tile, the round-15
-        /// count calibration. Mined (_scratch_decor/r15_mine_salience.py + promenade_benchmark.py
+        /// <summary>Frontage budget ceiling: buildings erected per open floor tile, the
+        /// count calibration. Mined from the frontage salience and promenade benchmarks
         /// handbuilt over the placeable-canyon fcx01 areas): hand-built per-OPEN-TILE building
         /// density follows the layout's edge/open shape -- plaza-like areas run 0.15-0.39
         /// (narpromena 0.275, nsshipyard 0.392, narscorpd 0.293) while the edge-heaviest
@@ -123,7 +123,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Frontage
         /// practice for edge-heavy layouts; the clone-city perception came from salience
         /// clustering, fixed by the histogram/spacing mechanisms. This ceiling pins the densest
         /// hand-built precedent (+5%% jitter headroom) so no pathological layout can exceed it --
-        /// the round-14 12x12 packed showcase measured 0.726, ABOVE every hand-built area, and is
+        /// a 12x12 packed showcase measured 0.726, ABOVE every hand-built area, and is
         /// pulled back to the narcatwalk pole. Runs fill longest-first so when the ceiling binds,
         /// plaza rims and main streets keep their full canyon walls and the pruning lands on
         /// short alley stubs.</summary>
@@ -131,7 +131,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Frontage
 
         /// <summary>
         /// Ceiling on the AREA-WIDE non-workhorse (accent) share of placed frontage buildings --
-        /// the mined hand-built comparable-mass maximum (r15 salience evidence: hand areas top out
+        /// the mined hand-built comparable-mass maximum (the salience audit found hand areas top out
         /// at 0.571 non-workhorse; the perceived clone-city/accent-soup poles both live outside
         /// that band). When an accent draw would push the running share past this ceiling and a
         /// workhorse fits the slot, the highest-weight fitting workhorse takes it instead
@@ -267,7 +267,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Frontage
             }
 
             // Deterministic run grouping: for a horizontal outward normal the run advances along Y
-            // (a vertical face line), and vice versa. Runs fill LONGEST-FIRST (round-15 budget
+            // (a vertical face line), and vice versa. Runs fill LONGEST-FIRST (frontage budget
             // pass): plaza rims and main streets keep their full canyon walls while the budget
             // pruning lands on short alley stubs; ties keep the (direction, face line) order.
             var runs = candidates
@@ -277,7 +277,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Frontage
                 .Select(g => g.OrderBy(c => c.Dir.Dx != 0 ? c.Cell.Y : c.Cell.X).ToList())
                 .ToList();
 
-            // Round-15 building budget (see MaxBuildingsPerOpenTile): hand-built dense plaza
+            // Building budget (see MaxBuildingsPerOpenTile): hand-built dense plaza
             // areas erect at most ~0.39 buildings per open floor tile; the ungated fill-every-slot
             // pass ran up to 0.73.
             var budget = Math.Max(1, (int)Math.Round(frontableCells.Count * MaxBuildingsPerOpenTile));
@@ -289,7 +289,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Frontage
             var dominantUses = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
             var placedCenters = new Dictionary<string, List<Vector2>>(StringComparer.OrdinalIgnoreCase);
 
-            // Round-15 deal-without-replacement accent deck: non-dominant slots draw the first
+            // Deal-without-replacement accent deck: non-dominant slots draw the first
             // FITTING entry of a weighted-shuffled deck of the ACCENT pool (non-workhorse
             // entries; workhorse mass comes from the dominant channel), so accents cycle through
             // the pool before any model repeats -- weighted-with-replacement rolls clumped the

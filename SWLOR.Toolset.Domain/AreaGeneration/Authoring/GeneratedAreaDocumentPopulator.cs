@@ -1,5 +1,6 @@
 #nullable enable
 using SWLOR.Toolset.Domain.AreaGeneration.Atmosphere;
+using SWLOR.Toolset.Domain.AreaGeneration.Tileset;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.GameData.Tilesets;
 using SWLOR.Toolset.Domain.Gff;
@@ -105,8 +106,11 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
 
                 var anchorX = transition.Tile.X * 10f + 5f;
                 var anchorY = transition.Tile.Y * 10f + 5f;
-                var anchorZ = draft.Result.Resolved.GetTile(transition.Tile.X, transition.Tile.Y).Height *
-                              draft.Result.Resolved.HeightTransition;
+                var anchorZ = GroundHeightAt(
+                    draft.Result.Resolved,
+                    draft.Tileset,
+                    anchorX,
+                    anchorY);
                 var waypointX = anchorX;
                 var waypointY = anchorY;
                 var waypointZ = anchorZ;
@@ -224,9 +228,14 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             var sequence = 0;
             foreach (var planned in draft.Result.PlannedDecorations)
             {
-                var groundZ = planned.GroundAnchor.HasValue
-                    ? planned.GroundZ
-                    : GroundHeightAt(draft.Result.Resolved, planned.Position.X, planned.Position.Y);
+                var groundPoint = planned.GroundAnchor ?? new System.Numerics.Vector2(
+                    planned.Position.X,
+                    planned.Position.Y);
+                var groundZ = GroundHeightAt(
+                    draft.Result.Resolved,
+                    draft.Tileset,
+                    groundPoint.X,
+                    groundPoint.Y);
                 AddPlaceable(
                     workspace,
                     git,
@@ -241,11 +250,28 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             }
         }
 
-        private static float GroundHeightAt(ResolvedLayout layout, float worldX, float worldY)
+        private static float GroundHeightAt(
+            ResolvedLayout layout,
+            TilesetModel tileset,
+            float worldX,
+            float worldY)
         {
             var tileX = Math.Clamp((int)MathF.Floor(worldX / 10f), 0, layout.Width - 1);
             var tileY = Math.Clamp((int)MathF.Floor(worldY / 10f), 0, layout.Height - 1);
-            return layout.GetTile(tileX, tileY).Height * layout.HeightTransition;
+            var resolved = layout.GetTile(tileX, tileY);
+            var tile = tileset.Tiles[resolved.TileId];
+            var localX = Math.Clamp((worldX - tileX * 10f) / 10f, 0f, 1f);
+            var localY = Math.Clamp((worldY - tileY * 10f) / 10f, 0f, 1f);
+
+            var topLeft = tile.GetCornerHeightAt(resolved.Orientation, CornerSlot.TopLeft);
+            var topRight = tile.GetCornerHeightAt(resolved.Orientation, CornerSlot.TopRight);
+            var bottomRight = tile.GetCornerHeightAt(resolved.Orientation, CornerSlot.BottomRight);
+            var bottomLeft = tile.GetCornerHeightAt(resolved.Orientation, CornerSlot.BottomLeft);
+            var bottom = bottomLeft + (bottomRight - bottomLeft) * localX;
+            var top = topLeft + (topRight - topLeft) * localX;
+            var cornerOffset = bottom + (top - bottom) * localY;
+
+            return (resolved.Height + cornerOffset) * layout.HeightTransition;
         }
 
         private static void AddPlaceable(

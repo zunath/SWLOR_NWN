@@ -221,7 +221,7 @@ public class AreaGenerationToolsetIntegrationTests
         var git = GitDocument.Load(Path.Combine(moduleRoot, "git", "area_template.git.json"));
         var gic = GicDocument.Load(Path.Combine(moduleRoot, "gic", "area_template.gic.json"));
         var tiles = Enumerable.Range(0, 4)
-            .Select(index => new ResolvedTile { TileId = 20 + index, Orientation = index % 4, Height = index })
+            .Select(index => new ResolvedTile { TileId = index, Orientation = index % 4, Height = index })
             .ToArray();
         var resolved = new ResolvedLayout
         {
@@ -235,7 +235,7 @@ public class AreaGenerationToolsetIntegrationTests
                 new TransitionPoint
                 {
                     Kind = TransitionKind.Entrance,
-                    Tile = (0, 0),
+                    Tile = (1, 1),
                     Style = TransitionStyle.Placeable
                 },
                 new TransitionPoint
@@ -298,7 +298,21 @@ public class AreaGenerationToolsetIntegrationTests
         var draft = new AreaGenerationDraft(
             new AreaGenerationSettings { ThemeKey = "test", Width = 2, Height = 2 },
             composition,
-            new TilesetModel { Resref = "tdt01" },
+            new TilesetModel
+            {
+                Resref = "tdt01",
+                Tiles =
+                [
+                    new TileRecord { TileId = 0 },
+                    new TileRecord { TileId = 1 },
+                    new TileRecord { TileId = 2 },
+                    new TileRecord
+                    {
+                        TileId = 3,
+                        CornerHeights = [2, 4, 6, 0]
+                    }
+                ]
+            },
             result);
 
         using (EditScope.EnterConstruction())
@@ -307,7 +321,7 @@ public class AreaGenerationToolsetIntegrationTests
             GeneratedAreaDocumentPopulator.Populate(draft, workspace, are, git, gic);
         }
 
-        AreaTiles.At(are, 1, 1)!.Value.TileId.Should().Be(23);
+        AreaTiles.At(are, 1, 1)!.Value.TileId.Should().Be(3);
         AreaTiles.At(are, 1, 1)!.Value.Orientation.Should().Be(3);
         AreaTiles.HeightLevelOf(are, 1, 1).Should().Be(3);
         are.SkyBox.Should().Be(7);
@@ -321,9 +335,12 @@ public class AreaGenerationToolsetIntegrationTests
         git.Fields.GetListOrEmpty("Placeable List")
             .Select(instance => instance.GetStringOrNull("Tag"))
             .Should().Equal("PG_TRANS_ENT_1", "PG_DEC_1");
+        git.Fields.GetListOrEmpty("Placeable List")[0]
+            .GetSingleOrNull("Z").Should().BeApproximately(12f, 0.001f,
+                "placeable transitions use the sloped tile's center height");
         git.Fields.GetListOrEmpty("Placeable List")[1]
-            .GetSingleOrNull("Z").Should().Be(6.5f,
-                "ordinary decorations use the resolved tile height plus their planned Z offset");
+            .GetSingleOrNull("Z").Should().BeApproximately(11.06f, 0.001f,
+                "ordinary decorations interpolate the rotated tile's corner heights at their XY position");
         gic.Fields.GetListOrEmpty("WaypointList").Should().HaveCount(2);
         gic.Fields.GetListOrEmpty("Door List").Should().ContainSingle();
         gic.Fields.GetListOrEmpty("Placeable List").Should().HaveCount(2);

@@ -39,12 +39,11 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
         public Vector2? GroundAnchor { get; set; }
 
         /// <summary>
-        /// Plan-time absolute ground height (m) at <see cref="GroundAnchor"/> -- the anchor tile's
-        /// Height index times the tileset's height transition (see
-        /// ResolvedLayout.HeightTransition). 0 for anchor-less decorations and for flat layouts.
-        /// The offline review module emits Z = GroundZ + Position.Z (Position.Z stays the height
-        /// OFFSET above ground), and the live self-test asserts GetGroundHeight at the anchor
-        /// agrees with this value, keeping the two paths from diverging.
+        /// Plan-time absolute ground-height estimate (m) at <see cref="GroundAnchor"/> -- used by
+        /// live-generation validation. The standalone writer independently interpolates the
+        /// resolved tile's oriented corner-height profile at the anchor (or placement) XY before
+        /// adding Position.Z, so sloped tiles are grounded correctly offline as well. 0 for
+        /// anchor-less decorations and for flat layouts.
         /// </summary>
         public float GroundZ { get; set; }
     }

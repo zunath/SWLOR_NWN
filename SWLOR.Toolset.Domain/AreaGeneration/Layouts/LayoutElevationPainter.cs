@@ -686,7 +686,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Layouts
 
             return TileResolver.HasHeightAwareCandidate(
                 cache, tl, tr, br, bl, top, right, bottom, left,
-                hTl - min, hTr - min, hBr - min, hBl - min);
+                hTl - min, hTr - min, hBr - min, hBl - min,
+                min);
         }
 
         private static void Shuffle<T>(List<T> list, System.Random random)

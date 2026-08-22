@@ -659,6 +659,24 @@ public class MacroLayoutGeneratorTests
             "the only matching mixed-crosser tile starts above this cell's grid minimum");
     }
 
+    [Test]
+    public void ElevationCellValidation_DoesNotUseAPlateauCandidateBelowItsMinimumHeight()
+    {
+        var corners = new CornerTerrainGrid(2, 1, "Floor");
+        corners.Heights[2, 1] = 1;
+        var crossers = new EdgeCrosserGrid(2, 1);
+        var plateau = RoadTile(0, "", "", "", "");
+        plateau.CornerHeights = [1, 1, 1, 1];
+        var tileset = new TilesetModel { Tiles = [plateau] };
+        var cache = TileResolver.BuildHeightAwareProbeCache(tileset);
+
+        var resolves = LayoutElevationPainter.CellResolves(corners, crossers, cache, 0, 0);
+
+        corners.HasAnyHeight().Should().BeTrue();
+        resolves.Should().BeFalse(
+            "the only normalized-profile match starts above the flat target cell's grid minimum");
+    }
+
     private static TileRecord RoadTile(
         int tileId,
         string top,

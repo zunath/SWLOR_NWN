@@ -120,7 +120,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                     // BaseGameTilesetProfiles.Dungeon -- see DungeonComposition.BuildLayoutParameters,
                     // which clamps this down, and LayoutElevationPainter, which independently re-probes
                     // the real tileset before ever painting a corner). Not set on Halls/Organic yet --
-                    // Dungeon's own onboarded pairing is Complex/Halls/Organic, but only Complex is
+                    // Dungeon's own registered pairing is Complex/Halls/Organic, but only Complex is
                     // exercised with elevation by the current profile.
                     p.ElevationRegions = 2;
                     // Ramp lanes are a bonus on top of ElevationRegions' own placed blobs (no-op

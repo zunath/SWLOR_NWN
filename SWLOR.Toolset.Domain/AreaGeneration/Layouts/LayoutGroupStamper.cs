@@ -356,7 +356,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Layouts
         /// <summary>
         /// Scales a configured SetPiece budget up for larger road-declaring (city) compositions only --
         /// gated on parameters.RoadCrosser being set, i.e. only FutCity/FutCityPlaza today. Every other
-        /// onboarded tileset's SetPieces budget was individually tuned (and measured/commented) against
+        /// registered tileset's SetPieces budget was individually tuned (and measured/commented) against
         /// its own hand-built reference at the machinery's usual 16-24 test sizes and stays untouched.
         ///
         /// Fifteen hand-built fcx01 areas with a real street network measure ~19.9 building tiles per

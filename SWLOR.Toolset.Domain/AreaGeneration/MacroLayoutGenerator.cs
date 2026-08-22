@@ -51,7 +51,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
             // failures on the same seeds. Unifies each split group of labels to the tileset's own
             // declared [TERRAIN] spelling (falling back to the first spelling seen when the label is
             // not a declared terrain), on a clone so the caller's object is never mutated. Gated on an
-            // actual split existing: every composition whose labels already agree (all onboarded
+            // actual split existing: every composition whose labels already agree (all registered
             // profiles except ttz01's grass-open pair) takes zero clones and zero behavior change.
             if (tileset != null)
             {
@@ -92,7 +92,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
 
             // Tunnel mode (Corridor or Custom crosser type, post Alley-downgrade above) needs the full
             // body/port SHAPE inventory the tunnel carver can emit, not merely both crosser names present
-            // in the tileset's own declared vocabulary. Some onboarded tilesets (e.g. Barrows/tbw01)
+            // in the tileset's own declared vocabulary. Some registered tilesets (e.g. Barrows/tbw01)
             // carve a real "corridor" crosser but never declare a "Doorway" crosser at all -- Tunnel
             // mode's port carving always needs one. Others (Illithid Interior/tii01) declare both names
             // but are missing a specific junction shape (a corridor bend merging directly into a room's
@@ -132,7 +132,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
             // runs BEFORE ClampToValid so the derived counts still pass through the same normalization
             // every caller-supplied count does. Gated on the declared flag, so every composition that
             // never declares it takes zero new branches, zero clones, and zero RNG difference here
-            // (RoomSupplyScalingIsolationTests pins that byte-identity across the onboarded tilesets).
+            // (RoomSupplyScalingIsolationTests pins that byte-identity across the registered tilesets).
             if (LayoutParameterConstraints.NeedsSetPieceRoomSupplyScaling(parameters))
             {
                 if (!wasCloned)

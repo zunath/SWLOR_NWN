@@ -36,7 +36,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         public const string DungeonPit = "dungeon_pit";
         public const string CityInterior = "cityinterior";
 
-        // Palette-variant profiles: recompose an already-onboarded tileset resref against one of its
+        // Palette-variant profiles: recompose an already-registered physical tileset resref against one of its
         // alternate district/palette families (see DungeonTilesetProfile.IsPaletteVariant). Registered
         // to close TileCoverageCensusTests' "alternate-palette/decorative vocabulary" exemption bucket --
         // the census counts a tile reachable if ANY profile sharing its TilesetResref composes it.
@@ -119,7 +119,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         // PathNodeOpeningWidthAudit (with the profile's own solid/open pair) confirms
         // MinimumOpeningWidth stays the default 1 for all three (partial Cliff-vs-Desert/Forest
         // combos carry pathnode-A candidates) -- locked in by
-        // OnboardedTilesetPipelineTests.MinimumOpeningWidth_MatchesFreshPathNodeAudit.
+        // the minimum-opening-width path-node audit coverage.
         public const string Desert = "desert";
         public const string DesertRoad = "desert_road";
         public const string Forest = "forest";
@@ -242,7 +242,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         public const string CastleExteriorRuralHarbor = "castleexteriorrural_harbor";
 
         // City Exterior* (tcn01, SWLOR_Haks/sw_t_cityext -- hak wins over the basegame_sets
-        // fallback, 1460 tiles / 295 groups, the largest onboarded set yet). See CityExterior's own doc
+        // fallback, 1460 tiles / 295 groups, the largest registered set yet). See CityExterior's own doc
         // comment for the full composition writeup.
         public const string CityExterior = "cityexterior";
         public const string CityExteriorFieldstone = "cityexterior_fieldstone";
@@ -385,7 +385,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         // EarlyWinterMountain (see its own doc comment) is a second, INVERTED profile
         // (SolidTerrainOverride("mountain")) recomposing the SAME .set data to unlock that door/cave
         // family as real dungeon-style wall content -- a genuinely new shape among this project's
-        // onboarded variants: not a PaletteVariant recomposition of an existing accent slot (like
+        // registered variants: not a PaletteVariant recomposition of an existing accent slot (like
         // Tropical's Sand) but a second FULL inversion sharing the tileset with an open-field sibling.
         //
         // Chasm (40 pure tiles: CliffBottomCave1/2, CliffTopCave1, CliffPath1/2, CliffCaveEntry,
@@ -873,7 +873,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
         public const string OfficeInteriorsFoyerU = "officeinteriors_foyer_u";
 
         // [CEP] Dungeon (zde01, SWLOR_Haks/sw_t_cepdungeon).
-        // zde01.set is BYTE-IDENTICAL to the already-onboarded SWLOR hak copy of tde01 (SWLOR_Haks/
+        // zde01.set is BYTE-IDENTICAL to the already-registered SWLOR hak copy of tde01 (SWLOR_Haks/
         // sw_t_dungeon/tde01.set) except for the [GENERAL] Name/UnlocalizedName header fields (verified
         // directly: `diff` between the two .set files returns only those two lines) -- 1092 tiles, 60
         // groups, identical Wall/Floor/Lava/Water/Sewer/Ice/Pit terrain family, identical Bridge/
@@ -1326,7 +1326,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // canonical port, it's a genuine missing boundary shape (locked in by
             // TunnelVocabularyCheckTests.ExpectedUnsupported), and MacroLayoutGenerator downgrades
             // Complex's Tunnel mode to OpenLane before dispatch -- the same machinery as Barrows'
-            // missing-Doorway gap, verified green in OnboardedTilesetPipelineTests. "[Dwarven] Cave
+            // missing-Doorway gap, verified by the registered-tileset pipeline coverage. "[Dwarven] Cave
             // Entrance (2x1)" mixes THREE terrains (DwarvenFloor/DwarvenPit/
             // Wall) in one group -- outside ClassifyMultiTileSetPiece's two-terrain (Solid/Open or
             // Solid/Secondary) shape -- and stays exempted, a genuine structural gap shared with the
@@ -2099,7 +2099,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // dedicated CorridorStubChain classification/placement for exactly this shape (splices onto
             // an existing "corridor" chain the same way TryPlaceCorridorStub's single-cell version does,
             // via IsCorridorStubChainSiteValid) -- wired below via three SetPiece calls; verified placing
-            // via OnboardedTilesetPipelineTests.CorridorStubChainFamily_ComplexActuallyPlacesTheGroup.
+            // via the corridor-stub-chain placement regression coverage.
             // TILE51 (ungrouped) stays exempt: a diagonal-split-corner door tile with NO crosser at all
             // (TileDoorPlanner's TryGetSingleDoorwaySlot requires exactly one Doorway edge, which this
             // tile has zero of) -- a genuinely different, unaddressed door mechanism, left exempt (see
@@ -2983,7 +2983,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // codebase's "structurally-valid config counts even if not currently exercised" convention
             // (see TileCoverageCensusTests' own class doc comment). tii01 fails
             // TunnelVocabularyCheck.SupportsTunnels purely on its missing T-with-port junction shape
-            // (see IllithidComplexDowngradesToOpenLaneWithNoTunnelCrossers in OnboardedTilesetPipelineTests),
+            // (see the Illithid Complex open-lane downgrade regression coverage),
             // so Complex -- this tileset's only Tunnel-mode-composed layout -- always downgrades to
             // OpenLane before dispatch, and tii01 has no other declared crosser pair (only the canonical
             // "Doorway"/"Corridor" exist in this tileset's vocabulary at all -- verified directly against
@@ -2995,7 +2995,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // capability probe (the same boundary shape TunnelVocabularyCheck.SupportsBoundaryShape
             // already verifies for every ordinary room door) so it can never stamp an unresolvable cell.
             // Confirmed via direct 200-seed isolated probe: 200/200 placements (see
-            // OnboardedTilesetPipelineTests.DoorSlotWallRoomFamily_ComplexActuallyPlacesTheGroup, which
+            // the door-slot wall-room Complex placement regression coverage, which
             // now covers Illithid alongside every other tileset in that sweep). "Transporter"
             // is the tileset's only FeatureTile-eligible group (1x1, flat, crosser-free, doorless,
             // pathnode A). No ExitGroup candidate exists in this tileset.
@@ -3491,7 +3491,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
 
             // Desert's own bulk palette — mined from ttd01 hand-built reference areas
             // (decoration_evidence/evidence_by_tileset.json['ttd01'], 49 areas — the richest sample of
-            // any onboarded family). Strongest co-occurrence pairs among the desert-scrub family
+            // any registered family). Strongest co-occurrence pairs among the desert-scrub family
             // (nw_plc_kelp*, a desert scrub/weed reskin) -> vignette.
             _builder
                 .Decoration("_mdrn_pl_bldstn", 3, DecorationContext.WallAdjacent)
@@ -4259,7 +4259,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 // pool itself.
                 .ChasmTerrain("holes")
                 // PathNodeOpeningWidthAudit (fresh against fcx01's real pathnode data, Solid=holes/
-                // Open=Cobble) computes 2, not the default 1 -- locked in by OnboardedTilesetPipelineTests.
+                // Open=Cobble) computes 2, not the default 1 -- locked in by registered-tileset pipeline coverage.
                 // MinimumOpeningWidth_MatchesFreshPathNodeAudit.
                 .MinimumOpeningWidth(2)
                 // Tower00 (2x2) needs rooms of corner size 6+; Tower02/Tower03 (3x3) and Tower05 (4x3)
@@ -5498,7 +5498,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 // PathNodeOpeningWidthAudit (fresh against udp2's real pathnode data, Solid=Wall/
                 // Open=Foyer_U) computes 2, not the default 1: unlike the other five districts, none of
                 // Foyer_U's crosser-free ungrouped partial-open Wall/Foyer_U tiles carry a pathnode-'A'
-                // node -- locked in by OnboardedTilesetPipelineTests.MinimumOpeningWidth_MatchesFreshPathNodeAudit.
+                // node -- locked in by the minimum-opening-width path-node audit coverage.
                 .MinimumOpeningWidth(2)
                 .PaletteVariant()
                 .PrimaryOpenTerrain("Foyer_U")
@@ -6353,7 +6353,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // except tts02 has only ONE unified Fort faction, not a Good/Evil split. UNLIKE that castle
             // pair, the fresh PathNodeOpeningWidthAudit for Solid=Fort/Open=Snow computes 2, not the
             // default 1 (verified directly, locked in by
-            // OnboardedTilesetPipelineTests.MinimumOpeningWidth_MatchesFreshPathNodeAudit) -- so this
+            // the minimum-opening-width path-node audit coverage) -- so this
             // profile explicitly declares MinimumOpeningWidth(2), unlike RuralWinterGoodCastle/
             // EvilCastle which left it at the default.
             //
@@ -6827,7 +6827,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 .SetPiece("Ship_3x1_Docked", 1);
 
             // City Exterior* (tcn01, SWLOR_Haks/sw_t_cityext -- UnlocalizedName "City Exterior*";
-            // hak wins over basegame_sets, 1460 tiles / 295 groups, the largest onboarded set yet).
+            // hak wins over basegame_sets, 1460 tiles / 295 groups, the largest registered set yet).
             // GENERAL: Border=Water, Default=Water, Floor=Cobble -- Default != Floor already (a
             // conventional composition, unlike the degenerate ttr01/tts01 Rural pair where Default ==
             // Floor forced an explicit PrimaryOpenTerrain override). No SolidTerrainOverride/
@@ -7342,7 +7342,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // "Ship - Air, Above Pit (3x1)" is all-Pit (door-bearing) -- unlike RuralGrass's own
             // "Ship - Air, Above Trees (3x1)" (exempt there because Trees is a totally unwired,
             // uncomposed terrain), Pit here IS this base profile's own composed Solid terrain, so this
-            // group is wired as a SetPiece too; see TileCoverageCensusTests/OnboardedTilesetPipelineTests
+            // group is wired as a SetPiece too; see tile-coverage and registered-tileset pipeline tests
             // for whether it actually places (an all-Solid-cornered door group anchored on the
             // composition's own wall mass, structurally analogous to Desert/Forest's own Solid-anchored
             // door groups).
@@ -7431,7 +7431,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // probe confirms Solid=sand/Open=sand (i.e. sand recomposed as its OWN open field, the same
             // "no wall concept" shape the base grass profile uses) reaches full internal coverage, and
             // sand vs water/grass both reach 16/16 either direction. This is a genuinely NEW
-            // PaletteVariant shape among this project's onboarded tilesets: every existing variant
+            // PaletteVariant shape among this project's registered tilesets: every existing variant
             // (Good/EvilCastle, Water, castlewall/keep) is an INVERSION (SolidTerrainOverride differs
             // from PrimaryOpenTerrain, carving rooms/docks out of a wall/water mass). TropicalSand
             // instead explicitly declares SolidTerrainOverride("sand") == PrimaryOpenTerrain("sand") --
@@ -7575,7 +7575,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
 
             // Tropical's Sand accent-slot palette -- PaletteVariant profile recomposing the SAME ttz01
             // hak data the base Tropical profile above uses, but a genuinely NEW shape among this
-            // project's onboarded variants: SolidTerrainOverride("sand") == PrimaryOpenTerrain("sand"),
+            // project's registered variants: SolidTerrainOverride("sand") == PrimaryOpenTerrain("sand"),
             // an open field on sand rather than an inversion. See Tropical's own doc comment above for
             // the full reasoning. No RoadCrosser (sand fails 2 of RoadVocabularyCheck's 5 shapes).
             _builder.Create(TropicalSand, "Tropical* (Sand)")
@@ -8100,7 +8100,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // placement-proof tests pinned to these measured rates.
             //
             // This fix is a shared LayoutGroupStamper change, not tib01-specific -- it also affects every
-            // OTHER already-onboarded tileset with a renamed Custom-mode body crosser (CryptGrey's
+            // OTHER already-registered tileset with a renamed Custom-mode body crosser (CryptGrey's
             // "GreyCorridor", MinesAndCavernsDesert/Organic's "DesertCorridor"/"OrganicCorridor", the
             // MinesAndCavernsTracks family, CityExterior's Dock/FieldDock/GothicDock), all re-measured at
             // 145-150/150 (unchanged) when the fix landed -- their wired door-transition wall rooms
@@ -8124,7 +8124,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
             // misc clutter) as WallAdjacent, weighted by the sampled occurrence counts. qionhiveslime00*/
             // _mdrn_pl_alnhve* pull from the same alien-hive family QionHiveDungeonDefinition/
             // AlienRuinDungeonDefinition already use -- the closest existing content-theme pairing for
-            // this tileset (no theme change made here; this pass onboards the tileset profile only).
+            // this tileset (no theme change made here; this pass registers the tileset profile only).
             _builder.Create(Beholder, "Beholder Interior*")
                 .Tileset("tib01")
                 .Placeholder("gen_placeholder1")

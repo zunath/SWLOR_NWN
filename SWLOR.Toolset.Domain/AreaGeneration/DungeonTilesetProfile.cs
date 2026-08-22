@@ -311,13 +311,13 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
         public HashSet<int> ExcludedTiles { get; set; } = new();
 
         /// <summary>
-        /// True for a profile that recomposes an ALREADY-onboarded tileset resref against a different
+        /// True for a profile that recomposes an already-registered physical tileset resref against a different
         /// terrain/district palette (e.g. "crypt_grey" recomposing tdc01's Grey palette alongside the
-        /// base "crypt" profile's Tan palette) rather than onboarding a new physical tileset. Palette
+        /// base "crypt" profile's Tan palette) rather than registering a new physical tileset. Palette
         /// variants exist purely to close tile-coverage census exemptions and offer the palette as a
         /// composable option -- they are deliberately excluded from SWLOR.ProcgenReview's --matrix
         /// full cross-product (tileset x layout) to keep the review module's area count from ballooning
-        /// as more palettes are onboarded; each variant instead gets exactly one showcase area appended
+        /// as more palettes are registered; each variant instead gets exactly one showcase area appended
         /// via --extra-areas. See TileCoverageCensusTests, which iterates every profile sharing a
         /// TilesetResref (variant or not) so a tile counts as reachable if ANY of them composes it.
         /// </summary>

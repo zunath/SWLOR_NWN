@@ -251,7 +251,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
         /// as door-implying for its crosser+door-slot admission gate -- usually stamped from
         /// DungeonTilesetProfile.DoorSlotCrossers by DungeonComposition.BuildLayoutParameters. Empty =
         /// no alternate door-slot vocabulary (default; fully back-compat -- see TileResolver's class
-        /// doc comment). Some onboarded tilesets rename their door-implying crosser entirely rather
+        /// doc comment). Some registered tilesets rename their door-implying crosser entirely rather
         /// than merely renaming the Tunnel body half (e.g. Barrows/tbw01's "door_corridor" paired with
         /// its own "corridor" body crosser, see BaseGameTilesetProfiles.Barrows) -- declaring it here is
         /// what lets a door-slot tile carrying that crosser resolve as an ordinary structural tile the

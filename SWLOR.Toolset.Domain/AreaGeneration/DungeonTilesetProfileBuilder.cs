@@ -325,7 +325,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
         }
 
         /// <summary>
-        /// Marks the active profile as a palette/district variant of an already-onboarded tileset
+        /// Marks the active profile as a palette/district variant of an already-registered physical tileset
         /// resref (same .set file, different terrain composition) -- see
         /// DungeonTilesetProfile.IsPaletteVariant.
         /// </summary>

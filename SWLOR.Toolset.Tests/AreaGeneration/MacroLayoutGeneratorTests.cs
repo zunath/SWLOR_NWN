@@ -421,6 +421,48 @@ public class MacroLayoutGeneratorTests
     }
 
     [Test]
+    public void RecomputeFullyOpenRoomTiles_PreservesSecondaryDistrictMembership()
+    {
+        var corners = new CornerTerrainGrid(3, 1, "Wall");
+        foreach (var x in new[] { 0, 1 })
+        {
+            corners.Labels[x, 0] = "Floor";
+            corners.Labels[x, 1] = "Floor";
+        }
+        foreach (var x in new[] { 2, 3 })
+        {
+            corners.Labels[x, 0] = "Chasm";
+            corners.Labels[x, 1] = "Chasm";
+        }
+
+        var layout = new MacroLayout(corners)
+        {
+            Rooms =
+            [
+                new LayoutRoom
+                {
+                    Id = 1,
+                    OpenTerrain = "Floor",
+                    CenterTile = (0, 0),
+                    Tiles = [(0, 0)]
+                },
+                new LayoutRoom
+                {
+                    Id = 2,
+                    OpenTerrain = "Chasm",
+                    CenterTile = (2, 0),
+                    Tiles = [(2, 0)]
+                }
+            ]
+        };
+
+        LayoutCornerUtils.RecomputeFullyOpenRoomTiles(layout, "Floor");
+
+        layout.Rooms[0].Tiles.Should().Equal((0, 0));
+        layout.Rooms[1].Tiles.Should().Equal((2, 0));
+    }
+
+    [Test]
     public void FrontagePlanner_RimOverhangPublishesOnlyInBoundsOccupiedCells()
     {
         var layout = new ResolvedLayout

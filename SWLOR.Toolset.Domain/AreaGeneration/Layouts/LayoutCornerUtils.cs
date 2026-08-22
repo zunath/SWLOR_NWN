@@ -252,16 +252,20 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Layouts
         /// <summary>
         /// Drops any tile from each room's reported Tiles list that lost full-open status because a
         /// post-pass (accent blob painting, accent channel carving) painted one of its four corners
-        /// non-open. Center tiles are guaranteed to survive since callers forbid painting their
-        /// corners. Shared by every post-pass that repaints open corners after LayoutRoomBuilder
-        /// first populates Rooms.Tiles.
+        /// away from that room's own open terrain. Center tiles are guaranteed to survive since callers
+        /// forbid painting their corners. Shared by every post-pass that repaints open corners after
+        /// LayoutRoomBuilder first populates Rooms.Tiles. Rooms created before terrain-aware membership
+        /// was introduced may have no OpenTerrain, so they retain the caller's primary-terrain fallback.
         /// </summary>
         internal static void RecomputeFullyOpenRoomTiles(MacroLayout layout, string openTerrain)
         {
             foreach (var room in layout.Rooms)
             {
+                var roomOpenTerrain = string.IsNullOrEmpty(room.OpenTerrain)
+                    ? openTerrain
+                    : room.OpenTerrain;
                 room.Tiles = room.Tiles
-                    .Where(t => IsTileFullyOpen(layout.Corners, t.X, t.Y, openTerrain))
+                    .Where(t => IsTileFullyOpen(layout.Corners, t.X, t.Y, roomOpenTerrain))
                     .ToList();
             }
         }

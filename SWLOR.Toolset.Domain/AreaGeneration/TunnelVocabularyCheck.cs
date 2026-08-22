@@ -13,7 +13,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
     /// LayoutAccentChannelCarver.CanCarve's "probe TileResolver.HasCandidate for the exact shapes,
     /// don't just check crosser presence" pattern, extended to tunnel carving's larger shape set.
     ///
-    /// Two onboarded tilesets motivated this: Illithid Interior (tii01) declares both "Doorway" and
+    /// Two registered tilesets motivated this: Illithid Interior (tii01) declares both "Doorway" and
     /// "Corridor" (so a bare Crossers.Contains check passes) but has no tile for a solid cell carrying
     /// a Doorway edge together with two Corridor edges (a "T-with-port" junction, i.e. a corridor bend
     /// merging directly into a room's doorway port) -- verified below via <see cref="SupportsTunnels"/>
@@ -45,7 +45,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
     ///   - T-with-port        [port,body,body,-]   -- REQUIRED: this is tii01's exact missing shape --
     ///     a corridor bend merging directly into a doorway port. Confirmed empirically to be the ONLY
     ///     failing shape for tii01 (58-66% single-attempt / up to 98.5% six-attempt-retry failures);
-    ///     every other onboarded tileset (13/13) plus all four original generation tilesets support it.
+    ///     every other registered tileset (13/13) plus all four original generation tilesets support it.
     ///   - X-with-port        [port,body,body,body] -- REQUIRED for symmetry with T-with-port (a rarer,
     ///     more extreme merge); every probed tileset that has T-with-port also has this, so requiring it
     ///     costs nothing in practice while closing the same class of gap one merge further.

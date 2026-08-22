@@ -38,7 +38,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
     /// part contains a Doorway or Bridge crosser (a door slot implies a door frame, so such a tile must
     /// never leak into a blank-edge cell) OR one of the composition's own declared extra door-slot
     /// crossers (see <see cref="MacroLayout.DoorSlotCrossers"/>/<see cref="MacroLayoutParameters.DoorSlotCrossers"/>/
-    /// DungeonTilesetProfile.DoorSlotCrossers) -- some onboarded tilesets rename their door-implying
+    /// DungeonTilesetProfile.DoorSlotCrossers) -- some registered tilesets rename their door-implying
     /// crosser entirely (e.g. Barrows/tbw01's "door_corridor", paired with its own "corridor" body
     /// crosser rather than the canonical Corridor/Doorway pair) rather than merely renaming the body
     /// half the way tdc01's "GreyCorridor" does. Declaring the alternate name here is what lets such a

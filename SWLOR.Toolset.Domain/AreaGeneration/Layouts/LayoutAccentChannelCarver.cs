@@ -47,7 +47,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Layouts
             if (string.IsNullOrEmpty(accent)) return;
 
             // Zero-config capability probe, mirroring LayoutFenceCarver's own tileset != null guard:
-            // some onboarded tilesets configure a ChannelTerrain that has a verified Bridge-gated WALL
+            // some registered tilesets configure a ChannelTerrain that has a verified Bridge-gated WALL
             // crossing (a CorridorInsert SetPiece like BridgeDoor01) but no crosser-free tile blending
             // the primary open terrain and the channel terrain -- an OPEN-SPACE crossing (what this
             // carver paints) can never resolve there (e.g. Ruins/tdr01's Chasm, see

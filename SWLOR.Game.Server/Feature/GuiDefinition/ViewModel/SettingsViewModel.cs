@@ -378,6 +378,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickChangeDescription() => () =>
         {
+            if (Disguise.GetActiveDisguise(Player) != null)
+            {
+                SendMessageToPC(Player, ColorToken.Red("Edit your active disguise's biography from the Disguises window. Deactivate it to edit your normal biography."));
+                return;
+            }
+
             Gui.TogglePlayerWindow(Player, GuiWindowType.ChangeDescription);
         };
 

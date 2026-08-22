@@ -21,6 +21,8 @@ namespace SWLOR.Game.Server.Service
         public const int MinimumActivationDelayMinutes = 5;
 
         public const int MaxPrivateNameLength = 32;
+        public const int MaxBiographyLength = 5000;
+        private const string BlankBiographyPlaceholder = "No description is available.";
         private const int DisguiseQueryPageSize = 50;
 
         [NWNEventHandler(ScriptName.OnModuleEnter)]
@@ -195,6 +197,7 @@ namespace SWLOR.Game.Server.Service
                 PlayerId = playerId,
                 PrivateName = $"Disguise #{usedSlots + 1}",
                 Descriptor = PlayerDescriptor.GetUnknownDisplayName(player),
+                Biography = string.Empty,
                 PortraitInternalId = portraitInternalId,
                 SoundSetId = GetSoundset(player),
                 ScrambleAccountId = true
@@ -204,12 +207,13 @@ namespace SWLOR.Game.Server.Service
 
             Log.WriteStructured(
                 LogGroup.PlayerName,
-                "Disguise created: PlayerId={PlayerId} PlayerName={PlayerName} DisguiseId={DisguiseId} PrivateName={PrivateName} Descriptor={Descriptor} PortraitInternalId={PortraitInternalId} SoundSetId={SoundSetId} ScrambleAccountId={ScrambleAccountId}",
+                "Disguise created: PlayerId={PlayerId} PlayerName={PlayerName} DisguiseId={DisguiseId} PrivateName={PrivateName} Descriptor={Descriptor} BiographyLength={BiographyLength} PortraitInternalId={PortraitInternalId} SoundSetId={SoundSetId} ScrambleAccountId={ScrambleAccountId}",
                 playerId,
                 GetName(player),
                 disguise.Id,
                 disguise.PrivateName,
                 disguise.Descriptor,
+                disguise.Biography.Length,
                 disguise.PortraitInternalId,
                 disguise.SoundSetId,
                 disguise.ScrambleAccountId);
@@ -222,6 +226,7 @@ namespace SWLOR.Game.Server.Service
             string disguiseId,
             string privateName,
             string descriptor,
+            string biography,
             int portraitInternalId,
             int soundSetId,
             bool scrambleAccountId)
@@ -242,17 +247,23 @@ namespace SWLOR.Game.Server.Service
             if (!string.IsNullOrWhiteSpace(descriptorError))
                 return SaveDisguiseResult.Failure(descriptorError);
 
+            biography ??= string.Empty;
+            if (biography.Length > MaxBiographyLength)
+                return SaveDisguiseResult.Failure($"Disguise biographies may be no longer than {MaxBiographyLength} characters.");
+
             portraitInternalId = Math.Clamp(portraitInternalId, 1, GetMaxPortraitCount());
             soundSetId = ResolveSoundSetId(soundSetId);
 
             var previousPrivateName = disguise.PrivateName;
             var previousDescriptor = disguise.Descriptor;
+            var previousBiography = disguise.Biography ?? string.Empty;
             var previousPortraitInternalId = disguise.PortraitInternalId;
             var previousSoundSetId = disguise.SoundSetId;
             var previousScrambleAccountId = disguise.ScrambleAccountId;
 
             disguise.PrivateName = PlayerName.SanitizeKnownName(privateName);
             disguise.Descriptor = PlayerName.SanitizeKnownName(descriptor);
+            disguise.Biography = biography;
             disguise.PortraitInternalId = portraitInternalId;
             disguise.SoundSetId = soundSetId;
             disguise.ScrambleAccountId = scrambleAccountId;
@@ -260,7 +271,7 @@ namespace SWLOR.Game.Server.Service
 
             Log.WriteStructured(
                 LogGroup.PlayerName,
-                "Disguise saved: PlayerId={PlayerId} PlayerName={PlayerName} DisguiseId={DisguiseId} PreviousPrivateName={PreviousPrivateName} PrivateName={PrivateName} PreviousDescriptor={PreviousDescriptor} Descriptor={Descriptor} PreviousPortraitInternalId={PreviousPortraitInternalId} PortraitInternalId={PortraitInternalId} PreviousSoundSetId={PreviousSoundSetId} SoundSetId={SoundSetId} PreviousScrambleAccountId={PreviousScrambleAccountId} ScrambleAccountId={ScrambleAccountId}",
+                "Disguise saved: PlayerId={PlayerId} PlayerName={PlayerName} DisguiseId={DisguiseId} PreviousPrivateName={PreviousPrivateName} PrivateName={PrivateName} PreviousDescriptor={PreviousDescriptor} Descriptor={Descriptor} PreviousBiographyLength={PreviousBiographyLength} BiographyLength={BiographyLength} PreviousPortraitInternalId={PreviousPortraitInternalId} PortraitInternalId={PortraitInternalId} PreviousSoundSetId={PreviousSoundSetId} SoundSetId={SoundSetId} PreviousScrambleAccountId={PreviousScrambleAccountId} ScrambleAccountId={ScrambleAccountId}",
                 playerId,
                 GetName(player),
                 disguise.Id,
@@ -268,6 +279,8 @@ namespace SWLOR.Game.Server.Service
                 disguise.PrivateName,
                 previousDescriptor,
                 disguise.Descriptor,
+                previousBiography.Length,
+                disguise.Biography.Length,
                 previousPortraitInternalId,
                 disguise.PortraitInternalId,
                 previousSoundSetId,
@@ -321,6 +334,8 @@ namespace SWLOR.Game.Server.Service
                 dbPlayer.UndisguisedPortraitId = GetPortraitId(player);
                 dbPlayer.UndisguisedPortraitResref = GetPortraitResRef(player);
                 dbPlayer.UndisguisedSoundSetId = GetSoundset(player);
+                dbPlayer.UndisguisedDescription = GetDescription(player) ?? string.Empty;
+                dbPlayer.HasUndisguisedDescriptionSnapshot = true;
             }
 
             dbPlayer.ActiveDisguiseId = disguise.Id;
@@ -367,10 +382,17 @@ namespace SWLOR.Game.Server.Service
             if (dbPlayer.UndisguisedSoundSetId >= 0)
                 SetSoundset(player, dbPlayer.UndisguisedSoundSetId);
 
+            if (dbPlayer.HasUndisguisedDescriptionSnapshot)
+                SetDescription(player, dbPlayer.UndisguisedDescription ?? string.Empty);
+            else
+                SetDescription(player, GetDescription(player, true) ?? string.Empty);
+
             dbPlayer.ActiveDisguiseId = string.Empty;
             dbPlayer.UndisguisedPortraitId = -1;
             dbPlayer.UndisguisedPortraitResref = string.Empty;
             dbPlayer.UndisguisedSoundSetId = -1;
+            dbPlayer.UndisguisedDescription = string.Empty;
+            dbPlayer.HasUndisguisedDescriptionSnapshot = false;
             DB.Set(dbPlayer);
 
             Log.WriteStructured(
@@ -682,6 +704,28 @@ namespace SWLOR.Game.Server.Service
             var soundSetId = ResolveSoundSetId(disguise.SoundSetId);
             if (soundSetId >= 0)
                 SetSoundset(player, soundSetId);
+
+            EnsureUndisguisedDescriptionSnapshot(player);
+            var biography = string.IsNullOrWhiteSpace(disguise.Biography)
+                ? BlankBiographyPlaceholder
+                : disguise.Biography;
+            SetDescription(player, biography);
+        }
+
+        private static void EnsureUndisguisedDescriptionSnapshot(uint player)
+        {
+            var playerId = GetObjectUUID(player);
+            var dbPlayer = DB.Get<Player>(playerId);
+            if (dbPlayer == null ||
+                string.IsNullOrWhiteSpace(dbPlayer.ActiveDisguiseId) ||
+                dbPlayer.HasUndisguisedDescriptionSnapshot)
+            {
+                return;
+            }
+
+            dbPlayer.UndisguisedDescription = GetDescription(player) ?? string.Empty;
+            dbPlayer.HasUndisguisedDescriptionSnapshot = true;
+            DB.Set(dbPlayer);
         }
 
         private static void RefreshDisguiseDisplay(uint player)

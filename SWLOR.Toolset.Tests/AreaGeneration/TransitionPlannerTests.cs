@@ -51,6 +51,24 @@ public sealed class TransitionPlannerTests
     }
 
     [Test]
+    public void TileDoorPlanner_CarriesTheSelectedDoorSlotType()
+    {
+        var tileset = CreateDoorTileset();
+        var layout = CreateLayout(3, 3, (0, 0), (1, 0), "Wall");
+        layout.Corners.Labels[0, 0] = "Floor";
+        layout.Corners.Labels[1, 0] = "Floor";
+        layout.Corners.Labels[0, 1] = "Floor";
+        layout.Corners.Labels[1, 1] = "Floor";
+        var tiles = ResolvedTiles(9);
+
+        TileDoorPlanner.ApplyDoorTransitions(tileset, layout, tiles, 3, 3);
+
+        var transition = layout.Transitions.Single();
+        transition.Style.Should().Be(TransitionStyle.Door);
+        transition.DoorType.Should().Be(88);
+    }
+
+    [Test]
     public void GroupExitPlanner_DoesNotMoveTheArrivalAnchorOntoASlopedRoomTile()
     {
         var tileset = CreateGroupExitTileset();
@@ -83,6 +101,7 @@ public sealed class TransitionPlannerTests
         tiles[5].Orientation.Should().Be(3);
         transition.DoorX.Should().Be(20f);
         transition.DoorY.Should().Be(15f);
+        transition.DoorType.Should().Be(176);
     }
 
     [Test]
@@ -139,7 +158,7 @@ public sealed class TransitionPlannerTests
                     1,
                     ["Floor", "Wall", "Wall", "Floor"],
                     ["", "Doorway", "", ""],
-                    new TileDoorRecord { X = 5f }),
+                    new TileDoorRecord { Type = 88, X = 5f }),
                 Tile(
                     2,
                     ["Wall", "Wall", "Wall", "Wall"],

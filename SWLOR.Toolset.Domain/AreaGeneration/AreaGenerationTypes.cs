@@ -143,5 +143,10 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
         public float DoorY { get; set; }
         public float DoorZ { get; set; }
         public float DoorOrientation { get; set; }
+        /// <summary>
+        /// Specific doortypes.2da appearance declared by the selected tileset door slot; zero keeps
+        /// the configured theme door blueprint's generic appearance.
+        /// </summary>
+        public int DoorType { get; set; }
     }
 }

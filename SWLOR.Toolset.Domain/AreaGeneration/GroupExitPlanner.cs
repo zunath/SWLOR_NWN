@@ -73,7 +73,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
                 var placed = TryPlaceGroupExit(
                     tileset, layout, tiles, width, height, room, originalTile, candidateGroups, claimed,
                     out var cell, out var innerTile, out var tileId, out var orientation,
-                    out var doorX, out var doorY, out var doorZ, out var doorOrientation);
+                    out var doorX, out var doorY, out var doorZ, out var doorOrientation,
+                    out var doorType);
 
                 if (placed)
                 {
@@ -93,6 +94,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
                     transition.DoorY = doorY;
                     transition.DoorZ = doorZ;
                     transition.DoorOrientation = doorOrientation;
+                    transition.DoorType = doorType;
 
                     claimed.Add(cell);
                     claimed.Add(innerTile);
@@ -149,13 +151,15 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
             int width, int height, LayoutRoom room, (int X, int Y) originalTile,
             List<ExitGroupCandidate> candidateGroups, HashSet<(int X, int Y)> claimed,
             out (int X, int Y) cell, out (int X, int Y) innerTile, out int tileId, out int orientation,
-            out float doorX, out float doorY, out float doorZ, out float doorOrientation)
+            out float doorX, out float doorY, out float doorZ, out float doorOrientation,
+            out int doorType)
         {
             cell = default;
             innerTile = default;
             tileId = 0;
             orientation = 0;
             doorX = doorY = doorZ = doorOrientation = 0f;
+            doorType = 0;
 
             // room.Tiles only lists fully-open interior cells; the wall itself (where the exit group
             // tile would go) is the ring of cells one step outside that set — the same enumeration
@@ -234,6 +238,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
                         doorY = wy;
                         doorZ = wz;
                         doorOrientation = worientation;
+                        doorType = slot.Type;
                         return true;
                     }
                 }

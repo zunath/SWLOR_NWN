@@ -278,7 +278,8 @@ public class AreaGenerationToolsetIntegrationTests
                     DoorX = 10f,
                     DoorY = 15f,
                     DoorZ = 1f,
-                    DoorOrientation = 90f
+                    DoorOrientation = 90f,
+                    DoorType = 176
                 }
             ]
         };
@@ -367,9 +368,9 @@ public class AreaGenerationToolsetIntegrationTests
         git.Fields.GetListOrEmpty("Door List").Single()
             .GetLocStringOrNull("LocName")!.Text.Should().Be("Test Maintenance Hatch");
         git.Fields.GetListOrEmpty("Door List").Single()
-            .GetIntOrNull("Appearance").Should().Be(0);
+            .GetIntOrNull("Appearance").Should().Be(176);
         git.Fields.GetListOrEmpty("Door List").Single()
-            .GetIntOrNull("GenericType_New").Should().Be(42);
+            .GetIntOrNull("GenericType_New").Should().Be(0);
         git.Fields.GetListOrEmpty("Placeable List").Should().HaveCount(2);
         git.Fields.GetListOrEmpty("Placeable List")
             .Select(instance => instance.GetStringOrNull("Tag"))

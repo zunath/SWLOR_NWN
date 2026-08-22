@@ -68,6 +68,28 @@ public sealed class TransitionPlannerTests
         transition.DoorType.Should().Be(88);
     }
 
+    [TestCase(1, 0)]
+    [TestCase(2, 0)]
+    public void TileDoorPlanner_DoesNotOverwriteAResolvedFeatureGroup(int featureX, int featureY)
+    {
+        var tileset = CreateDoorTileset();
+        var layout = CreateLayout(3, 3, (0, 0), (1, 0), "Wall");
+        layout.Corners.Labels[0, 0] = "Floor";
+        layout.Corners.Labels[1, 0] = "Floor";
+        layout.Corners.Labels[0, 1] = "Floor";
+        layout.Corners.Labels[1, 1] = "Floor";
+        var tiles = ResolvedTiles(9);
+        var featureCell = (X: featureX, Y: featureY);
+        tiles[featureY * 3 + featureX] = new ResolvedTile { TileId = 3 };
+
+        TileDoorPlanner.ApplyDoorTransitions(tileset, layout, tiles, 3, 3);
+
+        tiles[featureY * 3 + featureX].TileId.Should().Be(3);
+        var transition = layout.Transitions.Single();
+        transition.DoorwayCell.Should().NotBe(featureCell);
+        transition.DoorCell.Should().NotBe(featureCell);
+    }
+
     [Test]
     public void GroupExitPlanner_DoesNotMoveTheArrivalAnchorOntoASlopedRoomTile()
     {
@@ -162,7 +184,12 @@ public sealed class TransitionPlannerTests
                 Tile(
                     2,
                     ["Wall", "Wall", "Wall", "Wall"],
-                    ["", "", "", "Doorway"])
+                    ["", "", "", "Doorway"]),
+                Tile(3, ["Floor", "Floor", "Floor", "Floor"], groupIndex: 0)
+            ],
+            Groups =
+            [
+                new TileGroupRecord { Name = "Feature", Rows = 1, Columns = 1, TileIds = [3] }
             ]
         };
     }

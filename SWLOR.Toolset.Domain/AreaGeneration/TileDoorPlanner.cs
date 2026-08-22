@@ -153,6 +153,14 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
                     if (solid.X < 0 || solid.Y < 0 || solid.X >= width || solid.Y >= height)
                         continue;
 
+                    // Feature groups were deliberately selected and recorded by TileResolver.
+                    // Replacing either wall-side cell would leave FeatureTileCells describing art
+                    // that no longer exists and could make the decoration planner dress the wrong
+                    // feature. The inner anchor is protected above; protect the full door footprint.
+                    if (ResolvedTileBelongsToGroup(tileset, tiles, width, roomEdge) ||
+                        ResolvedTileBelongsToGroup(tileset, tiles, width, solid))
+                        continue;
+
                     // Cells carrying tunnel crossers already resolved to corridor/doorway tiles whose
                     // edges their neighbors depend on; substituting a transition door there would
                     // sever the tunnel and break edge agreement.
@@ -234,6 +242,16 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
             }
 
             return false;
+        }
+
+        private static bool ResolvedTileBelongsToGroup(
+            TilesetModel tileset,
+            ResolvedTile[] tiles,
+            int width,
+            (int X, int Y) cell)
+        {
+            var resolved = tiles[cell.Y * width + cell.X];
+            return tileset.Tiles[resolved.TileId].GroupIndex != -1;
         }
 
         /// <summary>

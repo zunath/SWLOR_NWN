@@ -43,6 +43,8 @@
         <MenuItem Header="_Pack Module" Command="{Binding PackModuleCommand}" />
       </MenuItem>
       <MenuItem Header="_Tools">
+        <MenuItem x:Name="AreaGeneratorMenuItem" Header="_Area Generator..."
+                  Command="{Binding AreaGeneratorCommand}" />
         <MenuItem x:Name="FactionEditorMenuItem" Header="_Faction Editor..."
                   Command="{Binding FactionEditorCommand}" />
         <Separator />

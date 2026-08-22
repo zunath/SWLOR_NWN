@@ -89,6 +89,7 @@ file-writing path could be covered.
 | `Editors/` | Field schemas driving the blueprint forms, and lookup keys |
 | `GameData/` | 2DA, TLK, resource index, game-code index, editor lookups |
 | `GameData/Tilesets/` | `.set` parsing, tile adjacency, SET rule matcher, terrain painter |
+| `AreaGeneration/` | deterministic layouts, tile resolution, decoration planning, native area projection |
 | `Render/` | MDL meshes, textures, walkmesh, area scene assembly |
 | `Validation/` | Module validation rules |
 | `Workspace/` | Module enumeration/loading, new-area writing |
@@ -167,7 +168,9 @@ Phases 0–7 of [PLAN.md](PLAN.md) are complete. In practice:
   selection sync, move/rotate gizmos, place-from-palette, and trigger footprint sizing.
 - **Paint terrain** with automatic neighbour blending that respects terrain, crossers, and absolute
   corner elevation, plus rotate and raise/lower brushes.
-- **Create areas** from a template, registered in `module.ifo`.
+- **Create areas** from a template, registered in `module.ifo`, or use **Tools → Area Generator**
+  to preview a deterministic themed layout and write its tiles, atmosphere, transitions, doors,
+  and decorations directly into the open module. Export remains in the existing ERF Manager.
 - **Validate and pack** without leaving the app.
 
 `WORKLOG.md` records what each work package did and, more usefully, *why* — including the bugs found

@@ -4,9 +4,14 @@ using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Controls;
+using SWLOR.Toolset.AreaGeneration;
 using SWLOR.Toolset.Archives;
 using SWLOR.Toolset.Factions;
+using SWLOR.Toolset.Domain.AreaGeneration.Authoring;
+using SWLOR.Toolset.Domain.GameData.Lookups;
+using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Script;
+using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Settings;
@@ -60,9 +65,12 @@ namespace SWLOR.Toolset.Shell
         [ObservableProperty]
         private bool _isManagingFactions;
 
+        [ObservableProperty]
+        private bool _isGeneratingArea;
+
         public bool IsModuleMutationLocked =>
             IsPacking || IsValidationRunning || IsBuildingScripts ||
-            IsManagingErfArchives || IsManagingFactions;
+            IsManagingErfArchives || IsManagingFactions || IsGeneratingArea;
         public bool IsActiveEditorBusy => _activeEditor?.IsBusy == true;
         public bool IsInteractionBlocked => IsModuleMutationLocked || IsActiveEditorBusy;
 
@@ -98,6 +106,8 @@ namespace SWLOR.Toolset.Shell
         private readonly AreaContentsViewModel? _areaContents;
         private readonly ErfArchiveService? _erfArchiveService;
         private readonly ModuleCustomContentService? _moduleCustomContent;
+        private readonly TilesetCatalog? _tilesetCatalog;
+        private readonly ResourceIndex? _resourceIndex;
 
         /// <summary>Guards against a second rescan starting while one is already reopening the catalog.</summary>
         private bool _isRescanningAfterWatcherOverflow;
@@ -126,8 +136,12 @@ namespace SWLOR.Toolset.Shell
             StartupNotice? startupNotice = null,
             ModuleMutationLock? mutationLock = null,
             ErfArchiveService? erfArchiveService = null,
-            ModuleCustomContentService? moduleCustomContent = null)
+            ModuleCustomContentService? moduleCustomContent = null,
+            TilesetCatalog? tilesetCatalog = null,
+            ResourceIndex? resourceIndex = null)
         {
+            _resourceIndex = resourceIndex;
+            _tilesetCatalog = tilesetCatalog;
             _moduleCustomContent = moduleCustomContent;
             _areaContents = areaContents;
             _erfArchiveService = erfArchiveService;
@@ -220,6 +234,71 @@ namespace SWLOR.Toolset.Shell
                         ? $"Custom content reloaded: {result.LoadedHakCount} HAK layer(s)."
                         : $"Custom content reloaded with {result.MissingHaks.Count} missing HAK(s).";
                 });
+            }
+        }
+
+        /// <summary>Opens the native generator and commits its result through the normal area writer.</summary>
+        [RelayCommand(CanExecute = nameof(CanMutateModule))]
+        private async Task AreaGenerator()
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null || _tilesetCatalog == null)
+            {
+                StatusText = "Area Generator needs an open module and loaded game data.";
+                return;
+            }
+
+            if (ScriptCompileService.AnyCompilationActive)
+            {
+                StatusText = "Area Generator will be available after the active script compile finishes.";
+                return;
+            }
+
+            IsGeneratingArea = true;
+            try
+            {
+                using (ModuleMutationLock.AllowModuleWrites())
+                {
+                    if (!await _editorService.Value.SaveAllAsync().ConfigureAwait(true))
+                    {
+                        StatusText = "Area Generator cancelled: an open editor could not be saved.";
+                        return;
+                    }
+                }
+
+                StatusText = "Opening Area Generator...";
+                string? createdResref;
+                using (ModuleMutationLock.AllowModuleWrites())
+                {
+                    var authoring = new AreaGenerationAuthoringService(_tilesetCatalog);
+                    var renderer = new AreaGenerationPreviewRenderer(_resourceIndex);
+                    createdResref = await AreaGeneratorWindow.ShowAsync(
+                        authoring,
+                        renderer,
+                        _tilesetCatalog,
+                        workspace).ConfigureAwait(true);
+                }
+
+                if (string.IsNullOrWhiteSpace(createdResref))
+                {
+                    StatusText = "Area Generator closed.";
+                    return;
+                }
+
+                _workspaceContext.RefreshCatalogEntry(ResourceType.Area, createdResref);
+                _workspaceContext.InvalidatePlacementIndex();
+                _explorer.Refresh();
+                _editorService.Value.TryOpenEditor(ResourceType.Area, createdResref);
+                StatusText = $"Created generated area '{createdResref}'.";
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Area Generator failed: {ex.Message}");
+                StatusText = "Area Generator could not be opened; see Output.";
+            }
+            finally
+            {
+                IsGeneratingArea = false;
             }
         }
 
@@ -785,6 +864,11 @@ namespace SWLOR.Toolset.Shell
             NotifyMutationStateChanged();
         }
 
+        partial void OnIsGeneratingAreaChanged(bool value)
+        {
+            NotifyMutationStateChanged();
+        }
+
         private void NotifyMutationStateChanged()
         {
             OnPropertyChanged(nameof(IsModuleMutationLocked));
@@ -802,6 +886,7 @@ namespace SWLOR.Toolset.Shell
             SaveAllCommand.NotifyCanExecuteChanged();
             ErfArchivesCommand.NotifyCanExecuteChanged();
             FactionEditorCommand.NotifyCanExecuteChanged();
+            AreaGeneratorCommand.NotifyCanExecuteChanged();
             PackModuleCommand.NotifyCanExecuteChanged();
             BuildAllScriptsCommand.NotifyCanExecuteChanged();
             ModulePropertiesCommand.NotifyCanExecuteChanged();

@@ -171,6 +171,28 @@ namespace SWLOR.Toolset.Tests
                 .AreaResRefs.Should().Contain("guarded_new");
         }
 
+        [Test]
+        public void TryCreate_WithPopulator_PersistsCustomizationBeforeAtomicWrite()
+        {
+            var workspace = new ModuleWorkspace(_moduleRoot);
+
+            NewAreaWriter.TryCreate(
+                    workspace,
+                    SyntheticTilesets(),
+                    "customized",
+                    "Customized",
+                    "synthetic",
+                    2,
+                    2,
+                    (are, _, _) => are.FogClipDist = 73.5f,
+                    out var error)
+                .Should().BeTrue(error);
+
+            workspace.LoadArea("customized").Are.FogClipDist.Should().Be(73.5f);
+            IfoDocument.Load(Path.Combine(_moduleRoot, "ifo", "module.ifo.json"))
+                .AreaResRefs.Should().Contain("customized");
+        }
+
         /// <summary>
         /// Gives the "fills from the tileset's floor" rule real teeth. tms01 declares a single
         /// terrain, so there it cannot tell "used Floor" apart from "used the only terrain". ztd01

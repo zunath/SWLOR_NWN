@@ -1,0 +1,206 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:generator="using:SWLOR.Toolset.AreaGeneration"
+        mc:Ignorable="d"
+        d:DesignWidth="1180" d:DesignHeight="800"
+        x:Class="SWLOR.Toolset.AreaGeneration.AreaGeneratorWindow"
+        x:DataType="generator:AreaGeneratorViewModel"
+        Title="Area Generator · SWLOR Toolset"
+        Icon="/Assets/swlor-logo.png"
+        Width="1180" Height="800"
+        MinWidth="920" MinHeight="650"
+        WindowStartupLocation="CenterOwner"
+        Background="{DynamicResource PanelBrush}">
+
+  <Window.Styles>
+    <Style Selector="TextBlock.pageTitle">
+      <Setter Property="FontSize" Value="22" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="TextBlock.sectionTitle">
+      <Setter Property="FontSize" Value="14" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="TextBlock.label">
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Foreground" Value="{DynamicResource InkSecondaryBrush}" />
+    </Style>
+    <Style Selector="Border.card">
+      <Setter Property="Padding" Value="14" />
+      <Setter Property="CornerRadius" Value="4" />
+      <Setter Property="Background" Value="{DynamicResource PanelRaisedBrush}" />
+      <Setter Property="BorderBrush" Value="{DynamicResource RuleBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+    </Style>
+  </Window.Styles>
+
+  <Grid RowDefinitions="Auto,*,Auto">
+    <Border Grid.Row="0" Padding="18,12"
+            Background="{DynamicResource PanelHeaderBrush}"
+            BorderBrush="{DynamicResource RuleBrush}"
+            BorderThickness="0,0,0,1">
+      <StackPanel>
+        <TextBlock Classes="pageTitle" Text="Procedural Area Generator" />
+        <TextBlock Classes="dim"
+                   Text="Solve a deterministic layout, inspect it, then add it directly to the open module." />
+      </StackPanel>
+    </Border>
+
+    <Grid Grid.Row="1" ColumnDefinitions="400,*" IsEnabled="{Binding !IsBusy}">
+      <Border Grid.Column="0" Padding="14"
+              Background="{DynamicResource PanelRaisedBrush}"
+              BorderBrush="{DynamicResource RuleBrush}"
+              BorderThickness="0,0,1,0">
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+          <StackPanel Spacing="12">
+            <Border Classes="card">
+              <StackPanel Spacing="8">
+                <TextBlock Classes="sectionTitle" Text="Composition" />
+                <TextBlock Classes="label" Text="Theme" />
+                <ComboBox ItemsSource="{Binding Themes}"
+                          SelectedItem="{Binding SelectedTheme, Mode=TwoWay}">
+                  <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="generator:AreaGeneratorViewModel+ThemeChoice">
+                      <TextBlock Text="{Binding Label}" />
+                    </DataTemplate>
+                  </ComboBox.ItemTemplate>
+                </ComboBox>
+                <TextBlock Classes="label" Text="Tileset profile" />
+                <ComboBox ItemsSource="{Binding TilesetProfiles}"
+                          SelectedItem="{Binding SelectedTilesetProfile, Mode=TwoWay}">
+                  <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="generator:AreaGeneratorViewModel+TilesetChoice">
+                      <TextBlock Text="{Binding Label}" />
+                    </DataTemplate>
+                  </ComboBox.ItemTemplate>
+                </ComboBox>
+                <TextBlock Classes="label" Text="Layout profile" />
+                <ComboBox ItemsSource="{Binding LayoutProfiles}"
+                          SelectedItem="{Binding SelectedLayoutProfile, Mode=TwoWay}">
+                  <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="generator:AreaGeneratorViewModel+LayoutChoice">
+                      <TextBlock Text="{Binding Label}" />
+                    </DataTemplate>
+                  </ComboBox.ItemTemplate>
+                </ComboBox>
+              </StackPanel>
+            </Border>
+
+            <Border Classes="card">
+              <StackPanel Spacing="8">
+                <TextBlock Classes="sectionTitle" Text="Area" />
+                <Grid ColumnDefinitions="90,*,90,*" RowDefinitions="Auto,Auto,Auto"
+                      ColumnSpacing="8" RowSpacing="8">
+                  <TextBlock Grid.Row="0" Grid.Column="0" Classes="label" Text="Width" />
+                  <NumericUpDown Grid.Row="0" Grid.Column="1" Value="{Binding Width, Mode=TwoWay}"
+                                 Minimum="8" Maximum="32" Increment="1" FormatString="0" />
+                  <TextBlock Grid.Row="0" Grid.Column="2" Classes="label" Text="Height" />
+                  <NumericUpDown Grid.Row="0" Grid.Column="3" Value="{Binding Height, Mode=TwoWay}"
+                                 Minimum="8" Maximum="32" Increment="1" FormatString="0" />
+                  <TextBlock Grid.Row="1" Grid.Column="0" Classes="label" Text="Seed" />
+                  <NumericUpDown Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="3"
+                                 Value="{Binding Seed, Mode=TwoWay}"
+                                 Minimum="0" Maximum="2147482647" Increment="1" FormatString="0" />
+                  <TextBlock Grid.Row="2" Grid.Column="0" Classes="label" Text="ResRef" />
+                  <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding ResRef, Mode=TwoWay}"
+                           Watermark="generated_area" />
+                  <TextBlock Grid.Row="2" Grid.Column="2" Classes="label" Text="Name" />
+                  <TextBox Grid.Row="2" Grid.Column="3" Text="{Binding DisplayName, Mode=TwoWay}" />
+                </Grid>
+              </StackPanel>
+            </Border>
+
+            <Expander Header="Advanced layout" IsExpanded="False">
+              <Border Classes="card" Margin="0,6,0,0">
+                <Grid ColumnDefinitions="170,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto"
+                      ColumnSpacing="10" RowSpacing="7">
+                  <TextBlock Grid.Row="0" Classes="label" Text="Style" />
+                  <ComboBox Grid.Row="0" Grid.Column="1" ItemsSource="{Binding LayoutStyles}"
+                            SelectedItem="{Binding LayoutStyle, Mode=TwoWay}" />
+                  <TextBlock Grid.Row="1" Classes="label" Text="Minimum rooms" />
+                  <NumericUpDown Grid.Row="1" Grid.Column="1" Value="{Binding MinRooms, Mode=TwoWay}" Minimum="2" Maximum="12" Increment="1" />
+                  <TextBlock Grid.Row="2" Classes="label" Text="Maximum rooms" />
+                  <NumericUpDown Grid.Row="2" Grid.Column="1" Value="{Binding MaxRooms, Mode=TwoWay}" Minimum="2" Maximum="16" Increment="1" />
+                  <TextBlock Grid.Row="3" Classes="label" Text="Minimum room size" />
+                  <NumericUpDown Grid.Row="3" Grid.Column="1" Value="{Binding MinRoomSize, Mode=TwoWay}" Minimum="2" Maximum="10" Increment="1" />
+                  <TextBlock Grid.Row="4" Classes="label" Text="Maximum room size" />
+                  <NumericUpDown Grid.Row="4" Grid.Column="1" Value="{Binding MaxRoomSize, Mode=TwoWay}" Minimum="3" Maximum="12" Increment="1" />
+                  <TextBlock Grid.Row="5" Classes="label" Text="Corridor width" />
+                  <NumericUpDown Grid.Row="5" Grid.Column="1" Value="{Binding CorridorWidth, Mode=TwoWay}" Minimum="1" Maximum="3" Increment="1" />
+                  <TextBlock Grid.Row="6" Classes="label" Text="Loop factor (%)" />
+                  <NumericUpDown Grid.Row="6" Grid.Column="1" Value="{Binding LoopFactorPercent, Mode=TwoWay}" Minimum="0" Maximum="100" Increment="1" />
+                  <TextBlock Grid.Row="7" Classes="label" Text="Organic fill (%)" />
+                  <NumericUpDown Grid.Row="7" Grid.Column="1" Value="{Binding OpenFillPercent, Mode=TwoWay}" Minimum="30" Maximum="60" Increment="1" />
+                  <TextBlock Grid.Row="8" Classes="label" Text="Entrances" />
+                  <NumericUpDown Grid.Row="8" Grid.Column="1" Value="{Binding EntranceCount, Mode=TwoWay}" Minimum="1" Maximum="3" Increment="1" />
+                  <TextBlock Grid.Row="9" Classes="label" Text="Exits" />
+                  <NumericUpDown Grid.Row="9" Grid.Column="1" Value="{Binding ExitCount, Mode=TwoWay}" Minimum="1" Maximum="3" Increment="1" />
+                  <CheckBox Grid.Row="10" Grid.ColumnSpan="2" IsChecked="{Binding DoorTransitions, Mode=TwoWay}" Content="Use door transitions where supported" />
+                  <CheckBox Grid.Row="11" Grid.ColumnSpan="2" IsChecked="{Binding AccentEnabled, Mode=TwoWay}" Content="Enable accent terrain" />
+                  <TextBlock Grid.Row="12" Classes="label" Text="Accent density (%)" />
+                  <NumericUpDown Grid.Row="12" Grid.Column="1" Value="{Binding AccentDensityPercent, Mode=TwoWay}" Minimum="1" Maximum="20" Increment="1" />
+                  <TextBlock Grid.Row="13" Classes="label" Text="Feature density (%)" />
+                  <NumericUpDown Grid.Row="13" Grid.Column="1" Value="{Binding FeatureDensityPercent, Mode=TwoWay}" Minimum="0" Maximum="15" Increment="1" />
+                  <TextBlock Grid.Row="14" Classes="label" Text="Elevation regions" />
+                  <NumericUpDown Grid.Row="14" Grid.Column="1" Value="{Binding ElevationRegions, Mode=TwoWay}" Minimum="0" Maximum="3" Increment="1" />
+                  <CheckBox Grid.Row="15" Grid.ColumnSpan="2" IsChecked="{Binding EnableDecorations, Mode=TwoWay}" Content="Place decorations" />
+                </Grid>
+              </Border>
+            </Expander>
+
+            <Border Classes="card">
+              <StackPanel Spacing="8">
+                <TextBlock Classes="sectionTitle" Text="Decorations" />
+                <ComboBox ItemsSource="{Binding DecorationProfiles}"
+                          SelectedItem="{Binding SelectedDecorationProfile, Mode=TwoWay}">
+                  <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="generator:AreaGeneratorViewModel+DecorationChoice">
+                      <TextBlock Text="{Binding Label}" />
+                    </DataTemplate>
+                  </ComboBox.ItemTemplate>
+                </ComboBox>
+                <Grid ColumnDefinitions="170,*" ColumnSpacing="10">
+                  <TextBlock Classes="label" Text="Density (%)" />
+                  <NumericUpDown Grid.Column="1" Value="{Binding DecorationDensityPercent, Mode=TwoWay}" Minimum="0" Maximum="200" Increment="5" />
+                </Grid>
+              </StackPanel>
+            </Border>
+          </StackPanel>
+        </ScrollViewer>
+      </Border>
+
+      <Grid Grid.Column="1" RowDefinitions="Auto,*,Auto" Margin="16">
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,Auto,Auto,Auto,*,Auto" ColumnSpacing="10" Margin="0,0,0,10">
+          <ComboBox Grid.Column="0" Width="150" ItemsSource="{Binding PreviewModes}"
+                    SelectedItem="{Binding PreviewMode, Mode=TwoWay}" />
+          <CheckBox Grid.Column="1" VerticalAlignment="Center" Content="Rooms" IsChecked="{Binding ShowRooms, Mode=TwoWay}" />
+          <CheckBox Grid.Column="2" VerticalAlignment="Center" Content="Transitions" IsChecked="{Binding ShowTransitions, Mode=TwoWay}" />
+          <CheckBox Grid.Column="3" VerticalAlignment="Center" Content="Decorations" IsChecked="{Binding ShowDecorations, Mode=TwoWay}" />
+          <Button Grid.Column="5" Classes="primary" Content="Generate Preview" Command="{Binding GeneratePreviewCommand}" />
+        </Grid>
+        <Border Grid.Row="1" Background="#15181B" BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" CornerRadius="4">
+          <Grid>
+            <Image Source="{Binding Preview}" Stretch="Uniform" Margin="12" />
+            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
+                       Foreground="{DynamicResource InkTertiaryBrush}"
+                       Text="Preview appears here"
+                       IsVisible="{Binding Preview, Converter={x:Static ObjectConverters.IsNull}}" />
+          </Grid>
+        </Border>
+        <TextBlock Grid.Row="2" Margin="2,10,2,0" Classes="dim" TextWrapping="Wrap" Text="{Binding StatusMessage}" />
+      </Grid>
+    </Grid>
+
+    <Border Grid.Row="2" Padding="14,10" Background="{DynamicResource PanelHeaderBrush}"
+            BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1,0,0">
+      <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+        <TextBlock VerticalAlignment="Center" Classes="dim"
+                   Text="The created area can be exported later through the existing ERF Manager." />
+        <Button Grid.Column="1" Content="Close" Click="OnCloseClicked" />
+        <Button Grid.Column="2" Classes="primary" Content="Create Area in Module" Command="{Binding CreateAreaCommand}" />
+      </Grid>
+    </Border>
+  </Grid>
+</Window>

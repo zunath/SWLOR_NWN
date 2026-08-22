@@ -530,7 +530,7 @@ namespace SWLOR.Game.Server.Service
                 // Undisguised identity keys are the canonical player Id and may use it.
                 FallbackName = Disguise.IsDisguiseIdentityKey(identityKey)
                     ? descriptor
-                    : PlayerName.GetDisplayName(observer, target)
+                    : PlayerName.GetCanonicalName(target)
             });
             DB.Set(dbFavorites);
             return string.Empty;
@@ -566,14 +566,21 @@ namespace SWLOR.Game.Server.Service
         {
             for (var pc = GetFirstPC(); GetIsObjectValid(pc); pc = GetNextPC())
             {
-                if (GetIsDM(pc) || GetIsDMPossessed(pc) || Space.IsPlayerInSpaceMode(pc))
-                    continue;
-
-                if (pc == observer)
+                if (!IsCallableOnlinePlayer(observer, pc))
                     continue;
 
                 yield return pc;
             }
+        }
+
+        public static bool IsCallableOnlinePlayer(uint observer, uint target)
+        {
+            return GetIsObjectValid(target) &&
+                   GetIsPC(target) &&
+                   target != observer &&
+                   !GetIsDM(target) &&
+                   !GetIsDMPossessed(target) &&
+                   !Space.IsPlayerInSpaceMode(target);
         }
 
         public static uint FindOnlinePlayerByPlayerId(string playerId)
@@ -604,6 +611,14 @@ namespace SWLOR.Game.Server.Service
             return OBJECT_INVALID;
         }
 
+        public static uint FindCallableOnlinePlayerByIdentityKey(uint observer, string identityKey)
+        {
+            var target = FindOnlinePlayerByIdentityKey(identityKey);
+            return IsCallableOnlinePlayer(observer, target)
+                ? target
+                : OBJECT_INVALID;
+        }
+
         /// <summary>
         /// Starts a call attempt from sender to receiver. Ported from the old
         /// HoloComDialog's call button handler.
@@ -622,6 +637,12 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            if (!IsCallableOnlinePlayer(sender, receiver))
+            {
+                SendMessageToPC(sender, "That player is not available for HoloCom calls.");
+                return;
+            }
+
             if (IsInCall(sender) || IsCallSender(sender) || IsCallReceiver(sender))
             {
                 SendMessageToPC(sender, "You are already in a call.");
@@ -634,7 +655,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            if (Space.IsPlayerInSpaceMode(sender) || Space.IsPlayerInSpaceMode(receiver))
+            if (Space.IsPlayerInSpaceMode(sender))
             {
                 SendMessageToPC(sender, "HoloCom calls cannot be made in space.");
                 return;
@@ -675,6 +696,13 @@ namespace SWLOR.Game.Server.Service
                     CleanupCallAttempt(sender, receiver);
                     SendMessageToPC(sender, "Your HoloCom call went unanswered.");
                 }
+                return;
+            }
+
+            if (!IsCallableOnlinePlayer(sender, receiver) || Space.IsPlayerInSpaceMode(sender))
+            {
+                CleanupCallAttempt(sender, receiver);
+                SendMessageToPC(sender, "That contact is no longer available for HoloCom calls.");
                 return;
             }
 

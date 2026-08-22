@@ -85,6 +85,16 @@ namespace SWLOR.Game.Server.Service
             return ResolveDisplayName(observer, target, out _);
         }
 
+        /// <summary>
+        /// Returns the canonical live character name for identity snapshots that will
+        /// later be formatted through this service. Do not display this value directly
+        /// on player-facing surfaces.
+        /// </summary>
+        public static string GetCanonicalName(uint target)
+        {
+            return GetIsObjectValid(target) ? GetName(target) : string.Empty;
+        }
+
         public static string GetChatDisplayName(uint observer, uint target)
         {
             return ResolveChatDisplayName(observer, target, out _);

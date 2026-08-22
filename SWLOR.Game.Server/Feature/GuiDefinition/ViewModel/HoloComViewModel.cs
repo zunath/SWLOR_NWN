@@ -51,12 +51,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private sealed class OnlinePlayerRow
         {
             public string PlayerId { get; }
+            public string IdentityKey { get; }
             public string DisplayName { get; }
             public GuiColor NameColor { get; }
 
-            public OnlinePlayerRow(string playerId, string displayName, GuiColor nameColor)
+            public OnlinePlayerRow(string playerId, string identityKey, string displayName, GuiColor nameColor)
             {
                 PlayerId = playerId;
+                IdentityKey = identityKey;
                 DisplayName = displayName;
                 NameColor = nameColor;
             }
@@ -102,9 +104,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private int _inboxPageIndex;
         private IList<MessageRow> _messageRows = new List<MessageRow>();
-        private List<uint> _onlinePlayerObjects = new();
+        private IList<OnlinePlayerRow> _onlinePlayerRows = new List<OnlinePlayerRow>();
         private IList<FavoriteRow> _favoriteRows = new List<FavoriteRow>();
         private string _composeRecipientId;
+        private string _composeRecipientIdentityKey;
         private string _composeRecipientName;
 
         public int SelectedTabId
@@ -279,13 +282,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public void Refresh(HoloComCallStateChangedRefreshEvent payload)
         {
-            // Updates the call-state banner binds (and contact lists when no call is
-            // active). Only binds change - no partial swap - so this is safe regardless
-            // of which tab or screen the player currently has open.
-            RefreshContacts();
+            // Engine-timer refreshes must not replace array-indexed contact rows while
+            // a click from the rendered generation may still be queued.
+            RefreshCallStatus();
         }
 
         private void RefreshContacts()
+        {
+            RefreshCallStatus();
+            RefreshOnlinePlayers();
+            RefreshFavorites();
+        }
+
+        private void RefreshCallStatus()
         {
             var isInCall = HoloCom.IsInCall(Player);
             var hasIncomingCall = !isInCall && HoloCom.IsCallReceiver(Player);
@@ -319,25 +328,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             IsAnswerEnabled = hasIncomingCall;
             IsDeclineEndEnabled = isInCall || hasIncomingCall || hasOutgoingCall;
-
-            RefreshOnlinePlayers();
-            RefreshFavorites();
         }
 
         private void RefreshOnlinePlayers()
         {
-            _onlinePlayerObjects = HoloCom.GetCallableOnlinePlayers(Player).ToList();
-
-            var rows = _onlinePlayerObjects
+            var rows = HoloCom.GetCallableOnlinePlayers(Player)
                 .Select(pc => new OnlinePlayerRow(
                     GetObjectUUID(pc),
+                    Disguise.GetIdentityKey(pc),
                     GetPlainLiveDisplayName(pc),
                     HoloCom.IsInCall(pc) || HoloCom.IsCallSender(pc) || HoloCom.IsCallReceiver(pc)
                         ? GuiColor.Red
                         : GuiColor.White))
                 .ToList();
 
-            OnlinePlayersTable.Refresh(this, rows);
+            _onlinePlayerRows = OnlinePlayersTable.Refresh(this, rows);
         }
 
         private void RefreshFavorites()
@@ -347,7 +352,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             foreach (var favorite in favorites)
             {
-                var onlineObject = HoloCom.FindOnlinePlayerByIdentityKey(favorite.IdentityKey);
+                var identityObject = HoloCom.FindOnlinePlayerByIdentityKey(favorite.IdentityKey);
+                var onlineObject = HoloCom.FindCallableOnlinePlayerByIdentityKey(Player, favorite.IdentityKey);
                 var isOnline = GetIsObjectValid(onlineObject);
                 var displayName = isOnline
                     ? GetPlainLiveDisplayName(onlineObject)
@@ -356,7 +362,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         favorite.IdentityKey,
                         favorite.Descriptor,
                         favorite.FallbackName);
-                var canMessage = isOnline || !Disguise.IsDisguiseIdentityKey(favorite.IdentityKey);
+                var canMessage = isOnline ||
+                                 (!GetIsObjectValid(identityObject) &&
+                                  !Disguise.IsDisguiseIdentityKey(favorite.IdentityKey));
 
                 rows.Add(new FavoriteRow(
                     favorite.IdentityKey,
@@ -420,11 +428,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             var displayName = GetPlainLiveDisplayName(target);
+            var targetPlayerId = GetObjectUUID(target);
+            var targetIdentityKey = Disguise.GetIdentityKey(target);
 
             ShowModal($"Call {displayName}?",
                 () =>
                 {
-                    HoloCom.InitiateCall(Player, target);
+                    var currentTarget = HoloCom.FindCallableOnlinePlayerByIdentityKey(Player, targetIdentityKey);
+                    if (!GetIsObjectValid(currentTarget) || GetObjectUUID(currentTarget) != targetPlayerId)
+                    {
+                        SendMessageToPC(Player, "That contact is no longer available under this identity.");
+                        return;
+                    }
+
+                    HoloCom.InitiateCall(Player, currentTarget);
                 });
         };
 
@@ -433,7 +450,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!TryGetOnlinePlayer(out var target))
                 return;
 
-            OpenComposeModal(GetObjectUUID(target), GetPlainLiveDisplayName(target), string.Empty);
+            OpenComposeModal(
+                GetObjectUUID(target),
+                Disguise.GetIdentityKey(target),
+                GetPlainLiveDisplayName(target),
+                string.Empty);
         };
 
         public Action OnClickFavoriteOnline() => () =>
@@ -456,7 +477,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!TryGetFavoriteRow(out var row))
                 return;
 
-            var target = HoloCom.FindOnlinePlayerByIdentityKey(row.IdentityKey);
+            var target = HoloCom.FindCallableOnlinePlayerByIdentityKey(Player, row.IdentityKey);
             if (!GetIsObjectValid(target))
             {
                 SendMessageToPC(Player, "That player is not currently online.");
@@ -466,7 +487,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ShowModal($"Call {row.DisplayName}?",
                 () =>
                 {
-                    HoloCom.InitiateCall(Player, target);
+                    var currentTarget = HoloCom.FindCallableOnlinePlayerByIdentityKey(Player, row.IdentityKey);
+                    if (!GetIsObjectValid(currentTarget))
+                    {
+                        SendMessageToPC(Player, "That contact is no longer available under this identity.");
+                        return;
+                    }
+
+                    HoloCom.InitiateCall(Player, currentTarget);
                 });
         };
 
@@ -475,12 +503,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!TryGetFavoriteRow(out var row))
                 return;
 
-            var target = HoloCom.FindOnlinePlayerByIdentityKey(row.IdentityKey);
+            var identityObject = HoloCom.FindOnlinePlayerByIdentityKey(row.IdentityKey);
+            var target = HoloCom.FindCallableOnlinePlayerByIdentityKey(Player, row.IdentityKey);
             var recipientPlayerId = GetIsObjectValid(target)
                 ? GetObjectUUID(target)
                 : Disguise.IsDisguiseIdentityKey(row.IdentityKey)
                     ? string.Empty
-                    : row.IdentityKey;
+                    : GetIsObjectValid(identityObject)
+                        ? string.Empty
+                        : row.IdentityKey;
 
             if (string.IsNullOrWhiteSpace(recipientPlayerId))
             {
@@ -489,7 +520,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            OpenComposeModal(recipientPlayerId, row.DisplayName, string.Empty);
+            OpenComposeModal(recipientPlayerId, row.IdentityKey, row.DisplayName, string.Empty);
         };
 
         public Action OnClickRemoveFavorite() => () =>
@@ -504,9 +535,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 });
         };
 
-        private void OpenComposeModal(string recipientId, string recipientName, string initialText)
+        private void OpenComposeModal(
+            string recipientId,
+            string recipientIdentityKey,
+            string recipientName,
+            string initialText)
         {
             _composeRecipientId = recipientId;
+            _composeRecipientIdentityKey = recipientIdentityKey;
             _composeRecipientName = recipientName;
             ShowInputModal($"Message to {recipientName}:", initialText, SendComposedMessage);
         }
@@ -532,7 +568,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private bool TryGetOnlinePlayer(out uint target)
         {
             var index = NuiGetEventArrayIndex();
-            if (index < 0 || index >= _onlinePlayerObjects.Count || !GetIsObjectValid(_onlinePlayerObjects[index]))
+            if (index < 0 || index >= _onlinePlayerRows.Count)
             {
                 target = OBJECT_INVALID;
                 SendMessageToPC(Player, "That player is no longer online.");
@@ -540,8 +576,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return false;
             }
 
-            target = _onlinePlayerObjects[index];
-            return true;
+            var row = _onlinePlayerRows[index];
+            target = HoloCom.FindCallableOnlinePlayerByIdentityKey(Player, row.IdentityKey);
+            if (GetIsObjectValid(target) && GetObjectUUID(target) == row.PlayerId)
+                return true;
+
+            target = OBJECT_INVALID;
+            SendMessageToPC(Player, "That contact is no longer available under this identity.");
+            RefreshContacts();
+            return false;
         }
 
         private bool TryGetFavoriteRow(out FavoriteRow row)
@@ -559,6 +602,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void SendComposedMessage()
         {
+            if (Disguise.IsDisguiseIdentityKey(_composeRecipientIdentityKey))
+            {
+                var target = HoloCom.FindCallableOnlinePlayerByIdentityKey(Player, _composeRecipientIdentityKey);
+                if (!GetIsObjectValid(target) || GetObjectUUID(target) != _composeRecipientId)
+                {
+                    SendMessageToPC(Player, ColorToken.Red("That disguised contact is no longer available under this identity."));
+                    return;
+                }
+            }
+            else
+            {
+                var onlineTarget = HoloCom.FindOnlinePlayerByIdentityKey(_composeRecipientIdentityKey);
+                if (GetIsObjectValid(onlineTarget) && !HoloCom.IsCallableOnlinePlayer(Player, onlineTarget))
+                {
+                    SendMessageToPC(Player, ColorToken.Red("That contact is not available for HoloCom messages."));
+                    return;
+                }
+            }
+
             var error = HoloComMessaging.SendMessage(Player, _composeRecipientId, ModalInputText);
             if (!string.IsNullOrWhiteSpace(error))
             {
@@ -567,7 +629,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 // the composer on the next tick so that restoration does not overwrite
                 // the modal, and preserve the rejected text for correction.
                 var rejectedText = ModalInputText;
-                DelayCommand(0.1f, () => OpenComposeModal(_composeRecipientId, _composeRecipientName, rejectedText));
+                var rejectedRecipientId = _composeRecipientId;
+                var rejectedIdentityKey = _composeRecipientIdentityKey;
+                var rejectedRecipientName = _composeRecipientName;
+                DelayCommand(0.1f, () => OpenComposeModal(
+                    rejectedRecipientId,
+                    rejectedIdentityKey,
+                    rejectedRecipientName,
+                    rejectedText));
                 return;
             }
 

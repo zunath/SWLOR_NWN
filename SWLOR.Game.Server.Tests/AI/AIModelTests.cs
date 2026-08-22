@@ -323,7 +323,7 @@ public class AIModelTests
         var rangeStartIndex = aiSource.IndexOf("static bool IsInAggroRange", StringComparison.Ordinal);
         var rangeBody = aiSource.Substring(
             rangeStartIndex,
-            aiSource.IndexOf("private static void TryAcquireAggro", StringComparison.Ordinal) -
+            aiSource.IndexOf("public static void TryAcquireAggroAfterDetection", StringComparison.Ordinal) -
             rangeStartIndex);
 
         rangeBody.Should().Contain("LineOfSightObject(target, creature)");
@@ -525,15 +525,29 @@ public class AIModelTests
     public void NativeAttackAction_CancelsLeashedCreaturesBeforePathingOrResolvingAttack()
     {
         var source = ReadSource("SWLOR.Game.Server", "Native", "OnAIActionAttackObject.cs").Replace("\r\n", "\n");
+        var activeTargetIndex = source.IndexOf("if (bTargetActive)", StringComparison.Ordinal);
         var activeTargetBody = source.Substring(
-            source.IndexOf("if (bTargetActive)", StringComparison.Ordinal),
-            source.IndexOf("if (pCreature.m_pcCombatRound == null)", StringComparison.Ordinal) -
-            source.IndexOf("if (bTargetActive)", StringComparison.Ordinal));
+            activeTargetIndex,
+            source.IndexOf("pCreature.m_vLastAttackPosition = new Vector();", activeTargetIndex, StringComparison.Ordinal) -
+            activeTargetIndex);
         var pendingAttackIndex = source.IndexOf("case CNWSCOMBATROUND_TYPE_ATTACK:", StringComparison.Ordinal);
         var pendingAttackBody = source.Substring(
             pendingAttackIndex,
             source.IndexOf("case CNWSCOMBATROUND_TYPE_PARRY:", pendingAttackIndex, StringComparison.Ordinal) -
             pendingAttackIndex);
+        var combatRoundGuardIndex = source.IndexOf(
+            "var pCombatRound = pCreature.m_pcCombatRound;",
+            StringComparison.Ordinal);
+        var activeTargetPathingIndex = source.IndexOf(
+            "pCreature.AddActionToFront",
+            activeTargetIndex,
+            StringComparison.Ordinal);
+        var equippedWeaponFallbackIndex = source.IndexOf(
+            "var attackSkillType = Combat.GetEquippedWeaponSkillType(pCreature.m_idSelf);",
+            StringComparison.Ordinal);
+        var currentSwingWeaponIndex = source.IndexOf(
+            "var currentWeaponAttackType = pCombatRound.GetWeaponAttackType();",
+            StringComparison.Ordinal);
 
         source.Should().Contain("private static bool TryCancelAttackForCombatLeash");
         source.Should().Contain("AI.TryStartCombatLeashEvade(pCreature.m_idSelf, target)");
@@ -543,6 +557,16 @@ public class AIModelTests
         activeTargetBody.IndexOf("TryCancelAttackForCombatLeash(pCreature, pNode, oidAttackTarget)", StringComparison.Ordinal)
             .Should()
             .BeLessThan(activeTargetBody.IndexOf("pCreature.AddActionToFront", StringComparison.Ordinal));
+        combatRoundGuardIndex.Should().BeGreaterThanOrEqualTo(0);
+        activeTargetPathingIndex.Should().BeGreaterThanOrEqualTo(0);
+        equippedWeaponFallbackIndex.Should().BeGreaterThanOrEqualTo(0);
+        currentSwingWeaponIndex.Should().BeGreaterThanOrEqualTo(0);
+        combatRoundGuardIndex.Should().BeGreaterThan(activeTargetPathingIndex,
+            "a missing combat round must not bypass target validation, combat-leash cancellation, or pathing");
+        equippedWeaponFallbackIndex.Should().BeLessThan(combatRoundGuardIndex,
+            "pre-round range and pathing need the safe equipped-weapon fallback");
+        currentSwingWeaponIndex.Should().BeGreaterThan(combatRoundGuardIndex,
+            "the actual main-hand or off-hand weapon is only valid once a combat round exists");
         pendingAttackBody.Should().Contain("TryCancelAttackForCombatLeash(pCreature, pNode, oidTarget)");
         pendingAttackBody.IndexOf("TryCancelAttackForCombatLeash(pCreature, pNode, oidTarget)", StringComparison.Ordinal)
             .Should()

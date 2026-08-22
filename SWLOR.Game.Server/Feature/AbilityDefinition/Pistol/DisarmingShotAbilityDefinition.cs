@@ -43,8 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 AbilityType.Perception,
                 new GeneratedWeaponAbilityProfile
                 {
-                    TargetAttackPercent = -10,
-                    TargetAttackDurationSeconds = 30
+                    StatusEffectFactory = () => new DisarmingShotStatusEffect(10)
                 });
 
             ConfigureGeneratedWeaponAbility(
@@ -73,8 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 AbilityType.Perception,
                 new GeneratedWeaponAbilityProfile
                 {
-                    TargetAttackPercent = -12,
-                    TargetAttackDurationSeconds = 30
+                    StatusEffectFactory = () => new DisarmingShotStatusEffect(12)
                 });
 
             ConfigureGeneratedWeaponAbility(
@@ -103,8 +101,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 AbilityType.Perception,
                 new GeneratedWeaponAbilityProfile
                 {
-                    TargetAttackPercent = -15,
-                    TargetAttackDurationSeconds = 30
+                    StatusEffectFactory = () => new DisarmingShotStatusEffect(15)
                 });
 
             ConfigureGeneratedWeaponAbility(
@@ -133,8 +130,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 AbilityType.Perception,
                 new GeneratedWeaponAbilityProfile
                 {
-                    TargetAttackPercent = -18,
-                    TargetAttackDurationSeconds = 30
+                    StatusEffectFactory = () => new DisarmingShotStatusEffect(18)
                 });
 
             return builder.Build();

@@ -124,6 +124,49 @@ public class CharacterSheetCombatUpgradeTests
     }
 
     [Test]
+    public void CharacterSheet_IncludesLimitedHasteAndLeadershipDamageReduction()
+    {
+        var viewModel = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot().FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "CharacterSheetViewModel.cs"));
+
+        var attackDelay = ExtractMethod(viewModel, "private (string Value, string Tooltip) GetAttackDelayInfo()");
+        attackDelay.Should().Contain("StatusEffect.TryGetLimitedAttackDelayReduction(");
+        attackDelay.Should().Contain("limitedAttackDelayReductionPercent");
+        attackDelay.Should().Contain("Combat.CalculateAttackDelay(");
+
+        var damageTaken = ExtractMethod(viewModel, "private int GetDamageTakenPercent(CombatDamageType damageType)");
+        damageTaken.Should().Contain("StatType.LeadershipPhysicalDamageTakenPercentAdjustment");
+        damageTaken.Should().Contain("StatType.LeadershipForceDamageTakenPercentAdjustment");
+        damageTaken.Should().Contain("StatType.LeadershipOtherDamageTakenPercentAdjustment");
+        damageTaken.Should().Contain("percent = ApplyDamageTakenPercentAdjustment(percent, leadershipAdjustment);");
+        damageTaken.Should().NotContain("+ otherLeadershipAdjustment");
+        damageTaken.IndexOf("ApplyDamageTakenPercentAdjustment(100, typeAdjustment)", StringComparison.Ordinal)
+            .Should().BeLessThan(
+                damageTaken.IndexOf("ApplyDamageTakenPercentAdjustment(percent, leadershipAdjustment)", StringComparison.Ordinal));
+        damageTaken.IndexOf("ApplyDamageTakenPercentAdjustment(percent, leadershipAdjustment)", StringComparison.Ordinal)
+            .Should().BeLessThan(
+                damageTaken.IndexOf("Stat.GetStatAdjustment(_target, StatType.DamageTakenPercentAdjustment)", StringComparison.Ordinal),
+                "every Leadership channel must remain a separate multiplicative stage before the generic adjustment");
+
+        var applyAdjustment = typeof(CharacterSheetViewModel).GetMethod(
+            "ApplyDamageTakenPercentAdjustment",
+            BindingFlags.Static | BindingFlags.NonPublic);
+        applyAdjustment.Should().NotBeNull();
+        var afterTypedAdjustment = (int)applyAdjustment!.Invoke(null, new object[] { 100, -20 })!;
+        var afterLeadershipAdjustment = (int)applyAdjustment.Invoke(null, new object[] { afterTypedAdjustment, -20 })!;
+        afterLeadershipAdjustment.Should().Be(64,
+            "the sheet must mirror runtime's separate multiplicative typed and Leadership stages");
+
+        var criticalRate = ExtractMethod(viewModel, "private int GetCriticalRate(SkillType skillType)");
+        criticalRate.Should().Contain("Combat.GetSkillCriticalRatePercentAdjustment(_target, skillType)");
+    }
+
+    [Test]
     public void PlayerDamageRefresh_RunsDamageTakenEffectsBeforeRefreshingSheet()
     {
         var root = FindRepositoryRoot();

@@ -472,6 +472,11 @@ namespace SWLOR.NWN.API.NWScript.Enum
         RestoredStaminaAttackStatusEffect = 466,
         HostileAbilityForceAttackStatusEffect = 467,
         RestoredFPHasteStatusEffect = 468,
+        DisarmingShotStatusEffect = 469,
+        DuelistsDistanceStatusEffect = 470,
+        PointBlankBurstStatusEffect = 471,
+        ReloadTempoStatusEffect = 472,
+        CleanseOrder1StatusEffect = 473,
         // End custom status effect icons
     }
 }

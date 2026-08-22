@@ -70,10 +70,18 @@ public class EspionageSystemTests
             "Stealth",
             PerkType.Stealth);
 
-        stealth.PerkLevels[1].StatBonuses.Single(x => x.Stat == StatType.Stealth).Calculate(0).Should().Be(5);
-        stealth.PerkLevels[2].StatBonuses.Single(x => x.Stat == StatType.Stealth).Calculate(0).Should().Be(10);
-        stealth.PerkLevels[3].StatBonuses.Single(x => x.Stat == StatType.Stealth).Calculate(0).Should().Be(15);
-        stealth.PerkLevels[4].StatBonuses.Single(x => x.Stat == StatType.Stealth).Calculate(0).Should().Be(20);
+        stealth.PerkLevels[1].StatBonuses.Single(x => x.Stat == StatType.ActiveStealthBonus).Calculate(0).Should().Be(5);
+        stealth.PerkLevels[2].StatBonuses.Single(x => x.Stat == StatType.ActiveStealthBonus).Calculate(0).Should().Be(10);
+        stealth.PerkLevels[3].StatBonuses.Single(x => x.Stat == StatType.ActiveStealthBonus).Calculate(0).Should().Be(15);
+        stealth.PerkLevels[4].StatBonuses.Single(x => x.Stat == StatType.ActiveStealthBonus).Calculate(0).Should().Be(20);
+        stealth.PerkLevels.Values
+            .SelectMany(x => x.StatBonuses)
+            .Should().NotContain(x => x.Stat == StatType.Stealth,
+                "the rank bonus applies only while the native stealth mode is active");
+        stealth.PurchasedTriggers.Should().ContainSingle()
+            .Which.Method.Name.Should().Be("RefreshActiveStatusAfterPerkLevelChange");
+        stealth.RefundedTriggers.Should().ContainSingle()
+            .Which.Method.Name.Should().Be("RefreshActiveStatusAfterPerkLevelChange");
 
         var silentStride = BuildPerkWithout2daLookup(
             new EspionagePerkDefinition(),
@@ -95,7 +103,34 @@ public class EspionageSystemTests
             "StatusEffectDefinition",
             "StealthStatusEffect.cs"));
         statusSource.Should().Contain("StatType.StealthMovementSpeedPercentAdjustment");
+        statusSource.Should().Contain("Stat.GetStatAdjustment(creature, StatType.ActiveStealthBonus)");
+        statusSource.Should().Contain("StatGroup.Stats[StatType.Stealth] = stealthBonus;");
         statusSource.Should().Contain("StatGroup.Stats[StatType.MovementSpeedPercentAdjustment] = movementSpeedBonus;");
+
+        var stealthServiceSource = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot(),
+            "SWLOR.Game.Server",
+            "Service",
+            "Stealth.cs"));
+        var refreshStart = stealthServiceSource.IndexOf(
+            "public static void RefreshActiveStatusAfterPerkLevelChange(uint creature)",
+            StringComparison.Ordinal);
+        var refreshEnd = stealthServiceSource.IndexOf(
+            "public static void RecordPlayerCombatInitiation()",
+            refreshStart,
+            StringComparison.Ordinal);
+        refreshStart.Should().BeGreaterThanOrEqualTo(0);
+        refreshEnd.Should().BeGreaterThan(refreshStart);
+        var refreshBody = stealthServiceSource[refreshStart..refreshEnd];
+        refreshBody.Should().Contain("StatusEffect.RemoveStatusEffect<StealthStatusEffect>(creature);");
+        refreshBody.Should().Contain("Perk.GetPerkLevel(creature, PerkType.Stealth) <= 0");
+        refreshBody.Should().Contain("SetActionMode(creature, ActionMode.Stealth, false);");
+        refreshBody.Should().Contain("StatusEffect.ApplyStatusEffect<StealthStatusEffect>(creature, creature, 0f);");
+        refreshBody.IndexOf("StatusEffect.RemoveStatusEffect<StealthStatusEffect>(creature);", StringComparison.Ordinal)
+            .Should().BeLessThan(refreshBody.IndexOf(
+                "StatusEffect.ApplyStatusEffect<StealthStatusEffect>(creature, creature, 0f);",
+                StringComparison.Ordinal),
+                "a rank change must remove the old stat snapshot before applying the new one");
     }
 
     [Test]
@@ -162,20 +197,60 @@ public class EspionageSystemTests
     [Test]
     public void SuccessfulSpotDetection_ExitsPlayerStealth()
     {
+        var root = FindRepositoryRoot();
         var stealthSource = File.ReadAllText(Path.Combine(
-            FindRepositoryRoot(),
+            root,
             "SWLOR.Game.Server",
             "Service",
             "Stealth.cs"));
+        var aiSource = File.ReadAllText(Path.Combine(
+            root,
+            "SWLOR.Game.Server",
+            "Service",
+            "AI.cs"));
 
-        stealthSource.Should().MatchRegex(@"if \(detected\)\s+ExitDetectedPlayerStealth\(target\);");
-        stealthSource.Should().Contain("private static void ExitDetectedPlayerStealth(uint target)");
+        var resolveStart = stealthSource.IndexOf(
+            "private static bool ResolveDetection(uint observer, uint target, bool acquireAggroOnDetection)",
+            StringComparison.Ordinal);
+        var resolveEnd = stealthSource.IndexOf(
+            "private static void ExitDetectedPlayerStealth(uint observer, uint target)",
+            resolveStart,
+            StringComparison.Ordinal);
+        resolveStart.Should().BeGreaterThanOrEqualTo(0);
+        resolveEnd.Should().BeGreaterThan(resolveStart);
+        var resolveDetection = stealthSource[resolveStart..resolveEnd];
+
+        var exitIndex = resolveDetection.IndexOf("ExitDetectedPlayerStealth(observer, target);", StringComparison.Ordinal);
+        var acquireGuardIndex = resolveDetection.IndexOf("if (acquireAggroOnDetection)", StringComparison.Ordinal);
+        var acquireIndex = resolveDetection.IndexOf(
+            "AI.TryAcquireAggroAfterDetection(observer, target);",
+            StringComparison.Ordinal);
+
+        resolveDetection.Should().Contain("if (detected)");
+        exitIndex.Should().BeGreaterThanOrEqualTo(0);
+        acquireGuardIndex.Should().BeGreaterThan(exitIndex);
+        acquireIndex.Should().BeGreaterThan(acquireGuardIndex);
+        stealthSource.Should().Contain("private static void ExitDetectedPlayerStealth(uint observer, uint target)");
         stealthSource.Should().Contain("!GetIsPC(target) ||");
         stealthSource.Should().Contain("GetIsDM(target) ||");
         stealthSource.Should().Contain("!GetActionMode(target, ActionMode.Stealth)");
         stealthSource.Should().Contain("SetActionMode(target, ActionMode.Stealth, false);");
         stealthSource.Should().Contain("DelayCommand(0f, () =>");
         stealthSource.Should().Contain("StatusEffect.RemoveStatusEffect<StealthStatusEffect>(target);");
+        stealthSource.Should().Contain("ResolveDetection(observer, target, true)");
+        stealthSource.Should().Contain("ResolveDetection(observer, target, false)");
+        stealthSource.Should().Contain("Stealth perk refresh removed active status snapshot");
+        stealthSource.Should().Contain("Stealth perk refresh reapplied active status snapshot");
+        stealthSource.Should().Contain("Stealth perk full refund forced native stealth exit");
+        stealthSource.Should().Contain("Stealth detection forced native stealth exit");
+        aiSource.Should().Contain("public static void TryAcquireAggroAfterDetection(uint observer, uint target)");
+        aiSource.Should().Contain("if (!IsAIEnabled(observer))");
+        aiSource.Should().Contain("if (!TryAcquireAggro(observer, target))");
+        var successfulAggroIndex = aiSource.IndexOf("if (!TryAcquireAggro(observer, target))", StringComparison.Ordinal);
+        var successfulAggroLogIndex = aiSource.IndexOf("Stealth detection acquired normal proximity aggro", StringComparison.Ordinal);
+        successfulAggroIndex.Should().BeGreaterThanOrEqualTo(0);
+        successfulAggroLogIndex.Should().BeGreaterThan(successfulAggroIndex,
+            "the handoff log must describe a completed acquisition, not a rejected attempt");
     }
 
     [Test]
@@ -283,7 +358,16 @@ public class EspionageSystemTests
         stealthSource.Should().Contain("EspionageInfiltration.RecordPlayerCombatInitiation(attacker);");
         stealthSource.Should().Contain("EspionageInfiltration.CancelPlayer(creature);");
         aiSource.Should().Contain("EspionageInfiltration.TryBegin(entering, self);");
+        aiSource.Should().Contain("if (!Stealth.CanAcquireAggro(self, entering))");
         aiSource.Should().Contain("EspionageInfiltration.Complete(exiting, self);");
+        aiSource.IndexOf("EspionageInfiltration.TryBegin(entering, self);", StringComparison.Ordinal)
+            .Should().BeLessThan(
+                aiSource.IndexOf("if (!Stealth.CanAcquireAggro(self, entering))", StringComparison.Ordinal),
+                "the attempt must exist before the first opposed detection result is recorded");
+        aiSource.IndexOf("if (!Stealth.CanAcquireAggro(self, entering))", StringComparison.Ordinal)
+            .Should().BeLessThan(
+                aiSource.IndexOf("TryAcquireAggro(self, entering);", StringComparison.Ordinal),
+                "an undetected stealthed player must not enter the hostile's enmity table");
         infiltrationSource.Should().Contain("private const float MovementSampleIntervalSeconds = 1f;");
         infiltrationSource.Should().Contain("DelayCommand(MovementSampleIntervalSeconds, () => SampleMovement(player, samplerId));");
         infiltrationSource.Should().Contain("CreaturePlugin.GetFaction(npc) != HostileFactionId");

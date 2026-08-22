@@ -1338,28 +1338,28 @@ namespace SWLOR.Game.Server.Service.StatService
         DeflectionNextSkillAbilityNoDelayWindowSeconds = 243,
 
         /// <summary>
-        /// SkillType id required before a critical hit grants no activation delay to the next ability.
+        /// SkillType id required before a critical hit grants limited Haste.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        CriticalNextAbilityNoDelayTriggerSkillType = 244,
+        CriticalHitLimitedHasteTriggerSkillType = 244,
 
         /// <summary>
-        /// SkillType id that receives no activation delay after the critical-hit trigger.
+        /// Percent Haste granted by a matching critical hit.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
-        CriticalNextAbilityNoDelaySkillType = 245,
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CriticalHitLimitedHastePercentAdjustment = 245,
 
         /// <summary>
-        /// Duration in seconds for CriticalNextAbilityNoDelaySkillType.
+        /// Duration in seconds for CriticalHitLimitedHastePercentAdjustment.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        CriticalNextAbilityNoDelayDurationSeconds = 246,
+        CriticalHitLimitedHasteDurationSeconds = 246,
 
         /// <summary>
-        /// Cooldown in seconds for the critical-hit no-delay trigger.
+        /// Number of direct attacks that retain the critical-hit Haste effect.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        CriticalNextAbilityNoDelayCooldownSeconds = 247,
+        CriticalHitLimitedHasteAttackCount = 247,
 
         /// <summary>
         /// Percent adjustment applied to FP restored to the creature.
@@ -3360,22 +3360,22 @@ namespace SWLOR.Game.Server.Service.StatService
         AbilityUsedEvasionDurationSeconds = 588,
 
         /// <summary>
-        /// SkillType value of abilities that trigger AbilityUsedRangedEvasionPercentAdjustment.
+        /// SkillType value of abilities that trigger AbilityUsedRangedDeflection.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        AbilityUsedRangedEvasionPercentAdjustmentSkillType = 826,
+        AbilityUsedRangedDeflectionSkillType = 826,
 
         /// <summary>
-        /// Temporary percent Ranged Evasion adjustment applied after using a matching ability.
+        /// Temporary Ranged Deflection granted after using a matching ability.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        AbilityUsedRangedEvasionPercentAdjustment = 827,
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Ranged)]
+        AbilityUsedRangedDeflection = 827,
 
         /// <summary>
-        /// Duration in seconds for AbilityUsedRangedEvasionPercentAdjustment.
+        /// Duration in seconds for AbilityUsedRangedDeflection.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        AbilityUsedRangedEvasionDurationSeconds = 828,
+        AbilityUsedRangedDeflectionDurationSeconds = 828,
 
         /// <summary>
         /// SkillType value of single-target abilities that trigger SingleTargetAbilityAttackDeflection.
@@ -3900,10 +3900,10 @@ namespace SWLOR.Game.Server.Service.StatService
         BleedingTargetAbilityBleedSpreadMaxTargets = 680,
 
         /// <summary>
-        /// Duration used to refresh ability-used Evasion after avoiding an attack.
+        /// Duration used to refresh ability-used Ranged Deflection after avoiding an attack.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        AvoidedAttackAbilityUsedEvasionRefreshDurationSeconds = 681,
+        AvoidedAttackAbilityUsedRangedDeflectionRefreshDurationSeconds = 681,
 
         /// <summary>
         /// SkillType value whose next auto-attack is quickened after avoiding an attack.
@@ -5679,12 +5679,10 @@ namespace SWLOR.Game.Server.Service.StatService
         SkillAbilityBleedingTargetStaminaRestoreCooldownSeconds = 987,
 
         /// <summary>
-        /// Percent (1-99) the critical-hit next-ability trigger reduces the activation delay by
-        /// instead of removing it entirely. Zero or absent keeps the full no-delay behavior for
-        /// perks whose wording removes the delay outright.
+        /// Percent critical-rate adjustment applied to ranged weapon attacks and abilities.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        CriticalNextAbilityDelayReductionPercent = 988,
+        RangedCriticalRatePercentAdjustment = 988,
 
         /// <summary>
         /// Internal temporary partner to NextAttackNoDelay: the percent (1-99) the armed next
@@ -5794,6 +5792,88 @@ namespace SWLOR.Game.Server.Service.StatService
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
         RestoredStaminaAttackDurationSeconds = 1005,
+
+        /// <summary>
+        /// Effect icon displayed while CriticalHitLimitedHastePercentAdjustment is active.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        CriticalHitLimitedHasteStatusEffectIcon = 1006,
+
+        /// <summary>
+        /// Effect icon displayed while AbilityUsedRangedDeflection is active.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AbilityUsedRangedDeflectionStatusEffectIcon = 1007,
+
+        /// <summary>
+        /// When enabled, ranged weapon auto-attacks and hostile ranged weapon abilities use no
+        /// activation delay. Limited status effects that grant this stat account for attempts.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        RangedAttackNoDelay = 1008,
+
+        /// <summary>
+        /// Leadership-family percent adjustment to incoming physical damage. Leadership effects
+        /// reconcile this channel independently so only its strongest contribution applies.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative)]
+        LeadershipPhysicalDamageTakenPercentAdjustment = 1009,
+
+        /// <summary>
+        /// Leadership-family percent adjustment to incoming Force damage. Leadership effects
+        /// reconcile this channel independently so only its strongest contribution applies.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative)]
+        LeadershipForceDamageTakenPercentAdjustment = 1010,
+
+        /// <summary>
+        /// Leadership-family percent adjustment to damage that is neither physical nor Force.
+        /// Leadership effects reconcile this channel independently.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative)]
+        LeadershipOtherDamageTakenPercentAdjustment = 1011,
+
+        /// <summary>
+        /// When enabled, positive attack-delay-reduction effects cannot accelerate attacks or
+        /// hostile weapon abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative, StatTypeAggregation.Maximum)]
+        AttackDelayReductionSuppressed = 1012,
+
+        /// <summary>
+        /// String reference displayed by the configured status applied through
+        /// RangedAbilityHitNearTargetDamageDealtPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        RangedAbilityHitNearTargetStatusEffectNameStrRef = 1013,
+
+        /// <summary>
+        /// Effect icon displayed by the configured status applied through
+        /// RangedAbilityHitNearTargetDamageDealtPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        RangedAbilityHitNearTargetStatusEffectIcon = 1014,
+
+        /// <summary>
+        /// Cleanse channels supported by the configured status applied through
+        /// RangedAbilityHitNearTargetDamageDealtPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.BitwiseOr)]
+        RangedAbilityHitNearTargetStatusEffectCleanseTypes = 1015,
+
+        /// <summary>
+        /// Resistance channel used by the configured status applied through
+        /// RangedAbilityHitNearTargetDamageDealtPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        RangedAbilityHitNearTargetStatusEffectResistanceType = 1016,
+
+        /// <summary>
+        /// Flat Stealth rating granted while the creature's native stealth mode is active.
+        /// The Stealth status effect transfers this value into the ordinary Stealth channel.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ActiveStealthBonus = 1017,
 
     }
 

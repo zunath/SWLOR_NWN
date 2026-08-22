@@ -1470,14 +1470,60 @@ function Get-StatusEffectStrRefsByKey([object[]]$statusRows, [hashtable]$tlkText
     return $map
 }
 
-function Update-EffectIconTypeEnum([object[]]$statusRows, [string]$path) {
+function Get-StatusEffectIconRowsByKey([object[]]$statusRows, [string]$path) {
+    $text = Get-Content -Path $path -Raw
+    $existingRowsByKey = @{}
+    $maximumExistingRow = $StatusEffectIconStart - 1
+    $assignmentPattern = [regex]::new("(?m)^\s*([A-Za-z][A-Za-z0-9_]*)\s*=\s*(\d+),\s*$")
+
+    foreach ($match in $assignmentPattern.Matches($text)) {
+        $row = [int]$match.Groups[2].Value
+        if ($row -lt $StatusEffectIconStart) {
+            continue
+        }
+
+        $key = $match.Groups[1].Value
+        $existingRowsByKey[$key] = $row
+        $maximumExistingRow = [Math]::Max($maximumExistingRow, $row)
+    }
+
+    $rowsByKey = @{}
+    $usedRows = [System.Collections.Generic.HashSet[int]]::new()
+    foreach ($entry in $statusRows) {
+        if (!$existingRowsByKey.ContainsKey($entry.Key)) {
+            continue
+        }
+
+        $row = [int]$existingRowsByKey[$entry.Key]
+        if (!$usedRows.Add($row)) {
+            throw "EffectIconType row $row is assigned to more than one status effect."
+        }
+
+        $rowsByKey[$entry.Key] = $row
+    }
+
+    foreach ($entry in $statusRows) {
+        if ($rowsByKey.ContainsKey($entry.Key)) {
+            continue
+        }
+
+        do {
+            $maximumExistingRow++
+        } while (!$usedRows.Add($maximumExistingRow))
+
+        $rowsByKey[$entry.Key] = $maximumExistingRow
+    }
+
+    return $rowsByKey
+}
+
+function Update-EffectIconTypeEnum([object[]]$statusRows, [string]$path, [hashtable]$statusEffectRowsByKey) {
     $text = Get-Content -Path $path -Raw
     $blockLines = [System.Collections.Generic.List[string]]::new()
     $blockLines.Add($GeneratedEnumStartMarker) | Out-Null
-    $row = $StatusEffectIconStart
-    foreach ($entry in $statusRows) {
+    foreach ($entry in @($statusRows | Sort-Object { [int]$statusEffectRowsByKey[$_.Key] })) {
+        $row = [int]$statusEffectRowsByKey[$entry.Key]
         $blockLines.Add("        $($entry.Key) = $row,") | Out-Null
-        $row++
     }
     $blockLines.Add($GeneratedEnumEndMarker) | Out-Null
     $block = ($blockLines -join [Environment]::NewLine)
@@ -1494,7 +1540,11 @@ function Update-EffectIconTypeEnum([object[]]$statusRows, [string]$path) {
     Set-Content -Path $path -Value $text -NoNewline
 }
 
-function Update-EffectIcons2da([object[]]$statusRows, [string]$path, [hashtable]$statusEffectStrRefsByKey) {
+function Update-EffectIcons2da(
+    [object[]]$statusRows,
+    [string]$path,
+    [hashtable]$statusEffectStrRefsByKey,
+    [hashtable]$statusEffectRowsByKey) {
     $baseLines = @()
     foreach ($line in Get-Content -Path $path) {
         $trimmed = $line.Trim()
@@ -1507,15 +1557,14 @@ function Update-EffectIcons2da([object[]]$statusRows, [string]$path, [hashtable]
         $baseLines += $line
     }
 
-    $row = $StatusEffectIconStart
-    foreach ($entry in $statusRows) {
+    foreach ($entry in @($statusRows | Sort-Object { [int]$statusEffectRowsByKey[$_.Key] })) {
+        $row = [int]$statusEffectRowsByKey[$entry.Key]
         $label = Get-EffectIconLabel $entry
         if (!$statusEffectStrRefsByKey.ContainsKey($entry.Key)) {
             throw "No TLK string ref found for status effect '$($entry.Key)'."
         }
 
         $baseLines += ("{0,-5} {1,-45} {2,-18} {3}" -f $row, $label, $entry.IconResRef, $statusEffectStrRefsByKey[$entry.Key])
-        $row++
     }
 
     # Write as UTF-8 without a BOM. NWN's 2DA parser rejects any file that
@@ -2010,8 +2059,9 @@ $tlkTextToStrRef = Get-CustomTlkTextToStrRef (Resolve-RepoPath $TlkJsonPath)
 $statusEffectStrRefsByKey = Get-StatusEffectStrRefsByKey $statusRows $tlkTextToStrRef
 
 if ($UpdateStatusEffectCode) {
-    Update-EffectIconTypeEnum $statusRows (Resolve-RepoPath $EffectIconTypePath)
-    Update-EffectIcons2da $statusRows (Resolve-RepoPath $EffectIcons2daPath) $statusEffectStrRefsByKey
+    $statusEffectRowsByKey = Get-StatusEffectIconRowsByKey $statusRows (Resolve-RepoPath $EffectIconTypePath)
+    Update-EffectIconTypeEnum $statusRows (Resolve-RepoPath $EffectIconTypePath) $statusEffectRowsByKey
+    Update-EffectIcons2da $statusRows (Resolve-RepoPath $EffectIcons2daPath) $statusEffectStrRefsByKey $statusEffectRowsByKey
     Update-StatusEffectCode $statusRows
     Write-Host "Updated EffectIconType, effecticons.2da, and $($statusRows.Count) status effect icon properties."
 }

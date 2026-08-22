@@ -323,6 +323,24 @@ public class CrossSkillPerkInteractionSafetyTests
         areaRestore.Should().Contain("if (restoredFP > 0 && restoredStamina > 0)");
     }
 
+    [Test]
+    public void AvoidedAttackRangedDeflectionRefresh_RunsAbilityGrantedDeflectionRiders()
+    {
+        var root = FindRepositoryRoot();
+        var combat = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
+        var refresh = ExtractMethod(
+            combat,
+            "private static void ApplyAvoidedAttackAbilityUsedRangedDeflectionRefresh(");
+
+        refresh.Should().Contain("if (StatusEffect.ApplyStatusEffect(",
+            "deflection riders must run only when the refreshed status was actually applied");
+        refresh.Should().Contain(
+            "Stat.GetStatTypeDeflectionSource(StatType.AbilityUsedRangedDeflection)",
+            "the refreshed deflection must retain the stat-declared ranged source");
+        refresh.Should().Contain("ApplyAbilityGrantedAttackDeflectionEffects(creature, source)",
+            "Last Word refreshes must trigger Force Gyre and any future stat-driven deflection riders");
+    }
+
     private static int CalculateCrossResourceRestore(int cost, int percent)
     {
         return (int)typeof(Combat)

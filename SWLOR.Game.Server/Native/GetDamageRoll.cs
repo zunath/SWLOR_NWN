@@ -142,17 +142,21 @@ namespace SWLOR.Game.Server.Native
                     out totalDamage,
                     out var effectiveCritical);
 
-                if (isLandedAttack && totalDamage > 0)
+                if (isLandedAttack)
                 {
                     using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(attacker.m_idSelf);
 
                     if (defender.m_nObjectType == (int)ObjectType.Creature)
                     {
-                        Combat.SendTemporaryHitPointDamageFeedback(attacker.m_idSelf, defender.m_idSelf, totalDamage);
+                        if (totalDamage > 0)
+                        {
+                            Combat.SendTemporaryHitPointDamageFeedback(attacker.m_idSelf, defender.m_idSelf, totalDamage);
+                        }
+
                         Combat.ApplyCriticalHitEffects(attacker.m_idSelf, defender.m_idSelf, totalDamage, effectiveCritical, true, weaponSkillType);
                     }
 
-                    if (defender.m_bPlotObject == 0)
+                    if (totalDamage > 0 && defender.m_bPlotObject == 0)
                     {
                         var weaponId = weapon?.m_idSelf ?? OBJECT_INVALID;
                         PublishDamageDealtEvent(attacker.m_idSelf, defender.m_idSelf, weaponId, totalDamage, weaponSkillType, damageProfile.DamageType);
@@ -566,6 +570,9 @@ namespace SWLOR.Game.Server.Native
                 Combat.ApplyIncomingPhysicalToForceConversion(attacker.m_idSelf, target.m_idSelf, damageType, ref damage);
             }
 
+            // Conversion must split first so each portion receives only its own typed Leadership channel.
+            damage = Combat.ApplyTypedLeadershipDamageTakenModifier(target.m_idSelf, damage, damageType);
+
             damage = Resistance.ApplyResistanceToDamageNative(target, damageType, damage);
 
             // Apply droid electrical damage bonus
@@ -602,7 +609,8 @@ namespace SWLOR.Game.Server.Native
                 attacker.m_idSelf,
                 damageType,
                 preTargetStatusStageDamage: damageBeforeTargetStatusStage,
-                isLandedAttack: isLandedAttack);
+                isLandedAttack: isLandedAttack,
+                typedLeadershipReductionAlreadyApplied: true);
             if (isLandedAttack)
             {
                 Combat.ApplyNextAttackGuardedHitEnmityBonus(

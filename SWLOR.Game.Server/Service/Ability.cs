@@ -98,7 +98,10 @@ namespace SWLOR.Game.Server.Service
             return _abilities[featType];
         }
 
-        public static void BeginAbilityImpact(uint activator, AbilityDetail ability)
+        public static void BeginAbilityImpact(
+            uint activator,
+            AbilityDetail ability,
+            bool countsAsAttackAttempt = true)
         {
             if (!GetIsObjectValid(activator) || ability == null)
                 return;
@@ -122,7 +125,8 @@ namespace SWLOR.Game.Server.Service
                 nextSkillAbilityBonuses.CriticalRatePercentAdjustment + guardedHitBonuses.CriticalRatePercentAdjustment,
                 nextSkillAbilityBonuses.DefenseIgnorePercentAdjustment,
                 guardedHitBonuses.EnmityBonus,
-                statusAppliedNextAttackDamageBonus);
+                statusAppliedNextAttackDamageBonus,
+                countsAsAttackAttempt);
         }
 
         private static void BeginAbilityImpact(
@@ -132,7 +136,8 @@ namespace SWLOR.Game.Server.Service
             int nextAbilityCriticalRatePercentAdjustment,
             int nextAbilityDefenseIgnorePercentAdjustment = 0,
             int nextAttackEnmityBonus = 0,
-            int statusAppliedNextAttackDamageBonus = 0)
+            int statusAppliedNextAttackDamageBonus = 0,
+            bool countsAsAttackAttempt = true)
         {
             if (!GetIsObjectValid(activator) || ability == null)
                 return;
@@ -143,7 +148,8 @@ namespace SWLOR.Game.Server.Service
                 nextAbilityCriticalRatePercentAdjustment,
                 nextAbilityDefenseIgnorePercentAdjustment,
                 nextAttackEnmityBonus,
-                statusAppliedNextAttackDamageBonus);
+                statusAppliedNextAttackDamageBonus,
+                countsAsAttackAttempt);
         }
 
         public static AbilityImpactSummary EndAbilityImpact(uint activator)
@@ -153,6 +159,13 @@ namespace SWLOR.Game.Server.Service
 
             _trackedAbilityImpacts.Remove(activator);
             impact.FlushDamageEffects(activator);
+            if (impact.Ability.IsHostileAbility && impact.CountsAsAttackAttempt)
+            {
+                StatusEffect.NotifyAttackAttemptStatusEffects(
+                    activator,
+                    impact.Summary.SkillType,
+                    impact.Summary);
+            }
             _lastCompletedImpactSummaries[activator] = impact.Summary;
             return impact.Summary;
         }
@@ -1627,7 +1640,8 @@ namespace SWLOR.Game.Server.Service
                             nextAbilityCriticalRatePercentAdjustment,
                             nextAbilityDefenseIgnorePercentAdjustment,
                             nextAttackEnmityBonus,
-                            statusAppliedNextAttackDamageBonus);
+                            statusAppliedNextAttackDamageBonus,
+                            countsAsAttackAttempt: false);
                         impactStarted = true;
                         RecordAbilityImpactShape(creator, skillType, true);
                     }
@@ -2079,7 +2093,8 @@ namespace SWLOR.Game.Server.Service
                 statusApplied,
                 statusEffect,
                 additionalStatusEffects,
-                firstHostileAbilityHitDamageBonusApplied);
+                firstHostileAbilityHitDamageBonusApplied,
+                trackedImpact == null || trackedImpact.Summary.ImpactedTargetCount == 0);
 
             if ((damage > 0 || statusApplied) && targetVisualEffect != VisualEffect.None)
             {
@@ -2497,8 +2512,15 @@ namespace SWLOR.Game.Server.Service
             // Saber Ward / Aegis Eternal: re-type a share of an incoming physical hit into a real Force
             // instance (mitigated by Force resistance, shown as Force) before physical resistance.
             Combat.ApplyIncomingPhysicalToForceConversion(activator, target, damageType, ref calculatedDamage);
+            // Conversion must split first so each portion receives only its own typed Leadership channel.
+            calculatedDamage = Combat.ApplyTypedLeadershipDamageTakenModifier(target, calculatedDamage, damageType);
             calculatedDamage = Resistance.ApplyResistanceToDamage(target, damageType, calculatedDamage);
-            calculatedDamage = Combat.ApplyDamageTakenModifiers(target, calculatedDamage, activator, damageType);
+            calculatedDamage = Combat.ApplyDamageTakenModifiers(
+                target,
+                calculatedDamage,
+                activator,
+                damageType,
+                typedLeadershipReductionAlreadyApplied: true);
 
             if (criticalRating > 0)
             {
@@ -2720,8 +2742,15 @@ namespace SWLOR.Game.Server.Service
             // Saber Ward / Aegis Eternal: re-type a share of an incoming physical hit into a real Force
             // instance (mitigated by Force resistance, shown as Force) before physical resistance.
             Combat.ApplyIncomingPhysicalToForceConversion(activator, target, damageType, ref calculatedDamage);
+            // Conversion must split first so each portion receives only its own typed Leadership channel.
+            calculatedDamage = Combat.ApplyTypedLeadershipDamageTakenModifier(target, calculatedDamage, damageType);
             calculatedDamage = Resistance.ApplyResistanceToDamage(target, damageType, calculatedDamage);
-            calculatedDamage = Combat.ApplyDamageTakenModifiers(target, calculatedDamage, activator, damageType);
+            calculatedDamage = Combat.ApplyDamageTakenModifiers(
+                target,
+                calculatedDamage,
+                activator,
+                damageType,
+                typedLeadershipReductionAlreadyApplied: true);
 
             if (criticalRating > 0)
             {
@@ -3042,6 +3071,7 @@ namespace SWLOR.Game.Server.Service
 
             public AbilityDetail Ability { get; }
             public AbilityImpactSummary Summary { get; }
+            public bool CountsAsAttackAttempt { get; }
             public int NextAbilityDamageBonus { get; private set; }
             public int NextAbilityCriticalRatePercentAdjustment { get; }
             public int NextAbilityDefenseIgnorePercentAdjustment { get; }
@@ -3056,7 +3086,8 @@ namespace SWLOR.Game.Server.Service
                 int nextAbilityCriticalRatePercentAdjustment,
                 int nextAbilityDefenseIgnorePercentAdjustment,
                 int nextAttackEnmityBonus,
-                int statusAppliedNextAttackDamageBonus)
+                int statusAppliedNextAttackDamageBonus,
+                bool countsAsAttackAttempt)
             {
                 Ability = ability;
                 NextAbilityDamageBonus = nextAbilityDamageBonus;
@@ -3064,6 +3095,7 @@ namespace SWLOR.Game.Server.Service
                 NextAbilityDefenseIgnorePercentAdjustment = nextAbilityDefenseIgnorePercentAdjustment;
                 NextAttackEnmityBonus = nextAttackEnmityBonus;
                 StatusAppliedNextAttackDamageBonus = statusAppliedNextAttackDamageBonus;
+                CountsAsAttackAttempt = countsAsAttackAttempt;
                 Summary = new AbilityImpactSummary
                 {
                     SkillType = ability.SkillType,

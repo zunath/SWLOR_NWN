@@ -48,25 +48,25 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DisarmingShot1)
-                .Description("Deals weapon DMG + 8 and reduces the target's Attack by 10% for 30 seconds.")
+                .Description("Deals weapon DMG + 8 and inflicts Disarming Shot for 30 seconds, reducing the target's Attack by 10%.")
                 .Price(2)
                 .RequirementSkill(SkillType.Pistol, 2)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DisarmingShot2)
-                .Description("Deals weapon DMG + 18 and reduces the target's Attack by 12% for 30 seconds.")
+                .Description("Deals weapon DMG + 18 and inflicts Disarming Shot for 30 seconds, reducing the target's Attack by 12%.")
                 .Price(2)
                 .RequirementSkill(SkillType.Pistol, 12)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DisarmingShot3)
-                .Description("Deals weapon DMG + 28 and reduces the target's Attack by 15% for 30 seconds.")
+                .Description("Deals weapon DMG + 28 and inflicts Disarming Shot for 30 seconds, reducing the target's Attack by 15%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Pistol, 28)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DisarmingShot4)
-                .Description("Deals weapon DMG + 38 and reduces the target's Attack by 18% for 30 seconds.")
+                .Description("Deals weapon DMG + 38 and inflicts Disarming Shot for 30 seconds, reducing the target's Attack by 18%.")
                 .Price(5)
                 .RequirementSkill(SkillType.Pistol, 40);
         }
@@ -93,26 +93,29 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.SnapRollTrait)
-                .Description("After using a hostile ranged ability, gain +5% Ranged Evasion for 30 seconds.")
-                .IncreasesStat(StatType.AbilityUsedRangedEvasionPercentAdjustmentSkillType, (int)SkillType.Pistol)
-                .IncreasesStat(StatType.AbilityUsedRangedEvasionPercentAdjustment, 5)
-                .IncreasesStat(StatType.AbilityUsedRangedEvasionDurationSeconds, 30)
+                .Description("After using a hostile ranged ability, gain +5 Ranged Deflection for 30 seconds.")
+                .IncreasesStat(StatType.AbilityUsedRangedDeflectionSkillType, (int)SkillType.Pistol)
+                .IncreasesStat(StatType.AbilityUsedRangedDeflection, 5)
+                .IncreasesStat(StatType.AbilityUsedRangedDeflectionDurationSeconds, 30)
+                .IncreasesStat(StatType.AbilityUsedRangedDeflectionStatusEffectIcon, (int)EffectIconType.SnapRollStatusEffect)
                 .Price(2)
                 .RequirementSkill(SkillType.Pistol, 8)
 
                 .AddPerkLevel()
-                .Description("After using a hostile ranged ability, gain +8% Ranged Evasion for 30 seconds.")
-                .IncreasesStat(StatType.AbilityUsedRangedEvasionPercentAdjustmentSkillType, (int)SkillType.Pistol)
-                .IncreasesStat(StatType.AbilityUsedRangedEvasionPercentAdjustment, 8)
-                .IncreasesStat(StatType.AbilityUsedRangedEvasionDurationSeconds, 30)
+                .Description("After using a hostile ranged ability, gain +8 Ranged Deflection for 30 seconds.")
+                .IncreasesStat(StatType.AbilityUsedRangedDeflectionSkillType, (int)SkillType.Pistol)
+                .IncreasesStat(StatType.AbilityUsedRangedDeflection, 8)
+                .IncreasesStat(StatType.AbilityUsedRangedDeflectionDurationSeconds, 30)
+                .IncreasesStat(StatType.AbilityUsedRangedDeflectionStatusEffectIcon, (int)EffectIconType.SnapRollStatusEffect)
                 .Price(4)
                 .RequirementSkill(SkillType.Pistol, 22)
 
                 .AddPerkLevel()
-                .Description("After using a hostile ranged ability, gain +12% Ranged Evasion for 30 seconds.")
-                .IncreasesStat(StatType.AbilityUsedRangedEvasionPercentAdjustmentSkillType, (int)SkillType.Pistol)
-                .IncreasesStat(StatType.AbilityUsedRangedEvasionPercentAdjustment, 12)
-                .IncreasesStat(StatType.AbilityUsedRangedEvasionDurationSeconds, 30)
+                .Description("After using a hostile ranged ability, gain +12 Ranged Deflection for 30 seconds.")
+                .IncreasesStat(StatType.AbilityUsedRangedDeflectionSkillType, (int)SkillType.Pistol)
+                .IncreasesStat(StatType.AbilityUsedRangedDeflection, 12)
+                .IncreasesStat(StatType.AbilityUsedRangedDeflectionDurationSeconds, 30)
+                .IncreasesStat(StatType.AbilityUsedRangedDeflectionStatusEffectIcon, (int)EffectIconType.SnapRollStatusEffect)
                 .Price(4)
                 .RequirementSkill(SkillType.Pistol, 45);
         }
@@ -163,13 +166,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PointBlankBurst1)
-                .Description("Deals weapon DMG + 16 to enemies within 5m and grants +10% Evasion for 30 seconds.")
+                .Description("Deals weapon DMG + 16 to enemies within 5m and grants Point Blank Burst, providing +10% Evasion for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Pistol, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PointBlankBurst2)
-                .Description("Deals weapon DMG + 30 to enemies within 5m and grants +15% Evasion for 30 seconds.")
+                .Description("Deals weapon DMG + 30 to enemies within 5m and grants Point Blank Burst, providing +15% Evasion for 30 seconds.")
                 .Price(3)
                 .RequirementSkill(SkillType.Pistol, 32);
         }
@@ -193,10 +196,14 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DuelistsDistanceTrait)
-                .Description("Targets within 5m deal -10% damage to you for 30 seconds after you hit them with a ranged ability.")
+                .Description("Targets within 5m receive Duelist's Distance for 30 seconds after you hit them with a ranged ability, causing them to deal 10% less damage to all targets.")
                 .IncreasesStat(StatType.RangedAbilityHitNearTargetDamageDealtPercentAdjustment, -10)
                 .IncreasesStat(StatType.RangedAbilityHitNearTargetRangeMeters, 5)
                 .IncreasesStat(StatType.RangedAbilityHitNearTargetDurationSeconds, 30)
+                .IncreasesStat(StatType.RangedAbilityHitNearTargetStatusEffectNameStrRef, 16780744)
+                .IncreasesStat(StatType.RangedAbilityHitNearTargetStatusEffectIcon, (int)EffectIconType.DuelistsDistanceStatusEffect)
+                .IncreasesStat(StatType.RangedAbilityHitNearTargetStatusEffectCleanseTypes, (int)StatusEffectCleanseType.TreatmentKit1)
+                .IncreasesStat(StatType.RangedAbilityHitNearTargetStatusEffectResistanceType, (int)ResistanceType.Trauma)
                 .Price(4)
                 .RequirementSkill(SkillType.Pistol, 25);
         }
@@ -392,11 +399,12 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ReloadTempoTrait)
-                .Description("After a critical hit, your next ranged ability within 30 seconds has its attack delay reduced by 20%.")
-                .IncreasesStat(StatType.CriticalNextAbilityNoDelayTriggerSkillType, (int)SkillType.Pistol)
-                .IncreasesStat(StatType.CriticalNextAbilityNoDelaySkillType, (int)SkillType.Pistol)
-                .IncreasesStat(StatType.CriticalNextAbilityNoDelayDurationSeconds, 30)
-                .IncreasesStat(StatType.CriticalNextAbilityDelayReductionPercent, 20)
+                .Description("After a critical hit with a Pistol attack or hostile Pistol ability, gain +20% Haste for your next two attacks. Expires after 30 seconds.")
+                .IncreasesStat(StatType.CriticalHitLimitedHasteTriggerSkillType, (int)SkillType.Pistol)
+                .IncreasesStat(StatType.CriticalHitLimitedHastePercentAdjustment, 20)
+                .IncreasesStat(StatType.CriticalHitLimitedHasteDurationSeconds, 30)
+                .IncreasesStat(StatType.CriticalHitLimitedHasteAttackCount, 2)
+                .IncreasesStat(StatType.CriticalHitLimitedHasteStatusEffectIcon, (int)EffectIconType.ReloadTempoStatusEffect)
                 .Price(2)
                 .RequirementSkill(SkillType.Pistol, 35);
         }

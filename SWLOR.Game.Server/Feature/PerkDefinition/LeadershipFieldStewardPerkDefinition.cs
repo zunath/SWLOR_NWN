@@ -59,19 +59,19 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Rousing Shout")
 
                 .AddPerkLevel()
-                .Description("Bolsters one living ally, granting temporary HP equal to 10% of maximum HP for 30 seconds. SOC scaling can raise this to 13%. If the target is at or below 35% HP, they also take 10% less damage, scaling up to 12%.")
+                .Description("Bolsters one living ally, granting temporary HP equal to 10% of maximum HP for 30 seconds. SOC scaling can raise this to 13%. If the target is at or below 35% HP, they also take 10% less physical and Force damage, scaling up to 12%.")
                 .Price(2)
                 .RequirementSkill(SkillType.Leadership, 5)
                 .GrantsFeat(FeatType.RousingShout1)
 
                 .AddPerkLevel()
-                .Description("Bolsters one living ally, granting temporary HP equal to 15% of maximum HP for 30 seconds. SOC scaling can raise this to 19%. If the target is at or below 35% HP, they also take 15% less damage, scaling up to 18%.")
+                .Description("Bolsters one living ally, granting temporary HP equal to 15% of maximum HP for 30 seconds. SOC scaling can raise this to 19%. If the target is at or below 35% HP, they also take 15% less physical and Force damage, scaling up to 18%.")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 18)
                 .GrantsFeat(FeatType.RousingShout2)
 
                 .AddPerkLevel()
-                .Description("Bolsters one living ally, granting temporary HP equal to 20% of maximum HP for 30 seconds. SOC scaling can raise this to 25%. If the target is at or below 35% HP, they also take 20% less damage, scaling up to 25%.")
+                .Description("Bolsters one living ally, granting temporary HP equal to 20% of maximum HP for 30 seconds. SOC scaling can raise this to 25%. If the target is at or below 35% HP, they also take 20% less physical and Force damage, scaling up to 25%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Leadership, 40)
                 .GrantsFeat(FeatType.RousingShout3);
@@ -110,7 +110,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.LeadershipFieldStewardBolsterResolveRank, 1)
 
                 .AddPerkLevel()
-                .Description("Field Steward recovery commands also grant party members within Leadership range (5m base) temporary HP equal to 12% of maximum HP and 12% damage reduction for 30 seconds. SOC scaling can raise these to 15% temporary HP and 15% damage reduction.")
+                .Description("Field Steward recovery commands also grant party members within Leadership range (5m base) temporary HP equal to 12% of maximum HP and 12% physical and Force damage reduction for 30 seconds. SOC scaling can raise these to 15% temporary HP and 15% physical and Force damage reduction.")
                 .Price(4)
                 .RequirementSkill(SkillType.Leadership, 35)
                 .IncreasesStat(StatType.LeadershipFieldStewardBolsterResolveRank, 2);
@@ -148,7 +148,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .GrantsFeat(FeatType.CleanseOrder1)
 
                 .AddPerkLevel()
-                .Description("Removes one major negative status effect from party members within Leadership range (5m base) and grants 12% damage reduction for 30 seconds. SOC scaling can raise this to 15%.")
+                .Description("Removes one major negative status effect from party members within Leadership range (5m base) and grants temporary HP equal to 12% of maximum HP for 30 seconds. SOC scaling can raise temporary HP to 15%.")
                 .Price(4)
                 .RequirementSkill(SkillType.Leadership, 42)
                 .GrantsFeat(FeatType.CleanseOrder2);

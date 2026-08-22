@@ -44,7 +44,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 new GeneratedWeaponAbilityProfile
                 {
                     CriticalRateIfNotRecentTarget = 10,
-                    NotRecentTargetWindowSeconds = 30.0f
+                    NotRecentTargetWindowSeconds = 30.0f,
+                    CriticalRateIfNotRecentTargetFeedbackLabel = "Quick Draw"
                 });
 
             ConfigureGeneratedWeaponAbility(
@@ -74,7 +75,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 new GeneratedWeaponAbilityProfile
                 {
                     CriticalRateIfNotRecentTarget = 12,
-                    NotRecentTargetWindowSeconds = 30.0f
+                    NotRecentTargetWindowSeconds = 30.0f,
+                    CriticalRateIfNotRecentTargetFeedbackLabel = "Quick Draw"
                 });
 
             ConfigureGeneratedWeaponAbility(
@@ -104,7 +106,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 new GeneratedWeaponAbilityProfile
                 {
                     CriticalRateIfNotRecentTarget = 15,
-                    NotRecentTargetWindowSeconds = 30.0f
+                    NotRecentTargetWindowSeconds = 30.0f,
+                    CriticalRateIfNotRecentTargetFeedbackLabel = "Quick Draw"
                 });
 
             ConfigureGeneratedWeaponAbility(
@@ -134,7 +137,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 new GeneratedWeaponAbilityProfile
                 {
                     CriticalRateIfNotRecentTarget = 18,
-                    NotRecentTargetWindowSeconds = 30.0f
+                    NotRecentTargetWindowSeconds = 30.0f,
+                    CriticalRateIfNotRecentTargetFeedbackLabel = "Quick Draw"
                 });
 
             return builder.Build();

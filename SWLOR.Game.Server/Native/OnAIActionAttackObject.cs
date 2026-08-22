@@ -413,12 +413,26 @@ namespace SWLOR.Game.Server.Native
 
                 _rangedRepositionDirections.Remove(pCreature.m_idSelf);
 
-
-
-                if (pCreature.m_pcCombatRound == null)
+                // Preserve the engine action's cleanup, target validation, leash, and pathing
+                // behavior before requiring a combat round. The active round is only needed once
+                // this action is ready to resolve a swing.
+                var pCombatRound = pCreature.m_pcCombatRound;
+                if (pCombatRound == null)
                 {
                     pCreature.ChangeAttackTarget(pNode, OBJECT_INVALID);
                     return ACTION_FAILED;
+                }
+
+                // The equipped-weapon skill above is the safe pre-round fallback used for range
+                // and pathing. At resolution time, prefer the weapon for the actual main-hand or
+                // off-hand swing so skill-scoped limited effects consume the correct charge.
+                var currentWeaponAttackType = pCombatRound.GetWeaponAttackType();
+                var currentAttackWeapon = pCombatRound.GetCurrentAttackWeapon(
+                    currentWeaponAttackType == WEAPON_ATTACK_TYPE_OFFHAND ? 1 : 0);
+                if (currentAttackWeapon != null)
+                {
+                    attackSkillType = SWLOR.Game.Server.Service.Skill.GetSkillTypeByBaseItem(
+                        (SWLOR.NWN.API.NWScript.Enum.Item.BaseItem)currentAttackWeapon.m_nBaseItem);
                 }
 
                 pCreature.m_vLastAttackPosition = new Vector();
@@ -440,16 +454,46 @@ namespace SWLOR.Game.Server.Native
                     }
                 }
 
-                var useDefaultMinimumDelay = Combat.HasNextAutoAttackNoDelay(pCreature.m_idSelf, attackSkillType);
-                var calculatedDelay = Combat.CalculateAttackDelay(pCreature.m_idSelf);
+                var hasLimitedAttackDelayReduction = StatusEffect.TryGetLimitedAttackDelayReduction(
+                    pCreature.m_idSelf,
+                    attackSkillType,
+                    out var limitedAttackDelayReductionPercent,
+                    out var limitedAttackDelayReductionRemainingAttacks);
+                var hasLimitedAttackNoDelay = StatusEffect.TryGetLimitedAttackNoDelay(
+                    pCreature.m_idSelf,
+                    attackSkillType,
+                    out var limitedAttackNoDelayRemainingAttacks);
+                var hasArmedNoDelay = Combat.HasTemporaryNextAutoAttackNoDelay(
+                    pCreature.m_idSelf,
+                    attackSkillType);
+                var useDefaultMinimumDelay = hasArmedNoDelay || hasLimitedAttackNoDelay;
+
+                // Limited Haste is skill-scoped. Supply it to this swing's delay calculation
+                // instead of contributing a creature-wide AttackDelayReductionPercent stat.
+                var calculatedDelayWithoutLimitedReduction = Combat.CalculateAttackDelay(pCreature.m_idSelf);
+                var calculatedDelay = hasLimitedAttackDelayReduction
+                    ? Combat.CalculateAttackDelay(pCreature.m_idSelf, limitedAttackDelayReductionPercent)
+                    : calculatedDelayWithoutLimitedReduction;
                 var effectiveAttackDelay = Combat.CalculateEffectiveAttackDelay(calculatedDelay, useDefaultMinimumDelay);
+                var effectiveDelayWithoutLimitedReduction = Combat.CalculateEffectiveAttackDelay(
+                    calculatedDelayWithoutLimitedReduction,
+                    hasArmedNoDelay);
+
+                var limitedDelayReductionRemainingAttacks = hasLimitedAttackDelayReduction
+                    ? limitedAttackDelayReductionRemainingAttacks
+                    : 0;
+                var limitedNoDelayRemainingAttacks = hasLimitedAttackNoDelay
+                    ? limitedAttackNoDelayRemainingAttacks
+                    : 0;
 
                 // The delay the attacker would have without a no-delay buff. Lowering the delay to
                 // the floor is meaningless for a build already at the floor, so this is passed to
                 // ConsumeAttacksPerSwing alongside useDefaultMinimumDelay to guarantee the buff is
                 // worth an extra attack either way. Both values are equal for a build already at the
                 // floor, so the buff state has to travel separately from the delays.
-                var unbuffedAttackDelay = Combat.CalculateEffectiveAttackDelay(calculatedDelay, false);
+                var unbuffedAttackDelay = Combat.CalculateEffectiveAttackDelay(
+                    calculatedDelayWithoutLimitedReduction,
+                    false);
 
                 // Check attack delay before starting or processing combat
                 // First attack is always instant, subsequent attacks respect delay
@@ -597,7 +641,10 @@ namespace SWLOR.Game.Server.Native
                                                         pCreature.m_idSelf,
                                                         effectiveAttackDelay,
                                                         unbuffedAttackDelay,
-                                                        useDefaultMinimumDelay);
+                                                        useDefaultMinimumDelay,
+                                                        effectiveDelayWithoutLimitedReduction,
+                                                        limitedDelayReductionRemainingAttacks,
+                                                        limitedNoDelayRemainingAttacks);
 
                                                     if (nAttacks > 1)
                                                     {
@@ -612,7 +659,15 @@ namespace SWLOR.Game.Server.Native
                                                     }
                                                 }
 
-                                                pCreature.ResolveAttack(oidTarget, nAttacks, nTimeAnimation);
+                                                StatusEffect.BeginNativeAttackSwing(pCreature.m_idSelf);
+                                                try
+                                                {
+                                                    pCreature.ResolveAttack(oidTarget, nAttacks, nTimeAnimation);
+                                                }
+                                                finally
+                                                {
+                                                    StatusEffect.EndNativeAttackSwing(pCreature.m_idSelf);
+                                                }
                                                 bTargetActive = true;
 
                                                 // Set the delay timestamp after the attack resolves

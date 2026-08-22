@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service.AIService;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -267,6 +268,9 @@ namespace SWLOR.Game.Server.Service
             }
 
             EspionageInfiltration.TryBegin(entering, self);
+            if (!Stealth.CanAcquireAggro(self, entering))
+                return;
+
             TryAcquireAggro(self, entering);
         }
 
@@ -778,7 +782,27 @@ namespace SWLOR.Game.Server.Service
                    LineOfSightObject(target, creature);
         }
 
-        private static void TryAcquireAggro(uint self, uint target)
+        /// <summary>
+        /// Re-enters the normal proximity-aggro path when a later native Spot check reveals a
+        /// stealthed player who is still inside the observer's aggro aura. Non-AI observers and
+        /// targets that no longer satisfy the ordinary aggro guards are ignored.
+        /// </summary>
+        public static void TryAcquireAggroAfterDetection(uint observer, uint target)
+        {
+            if (!IsAIEnabled(observer))
+                return;
+
+            if (!TryAcquireAggro(observer, target))
+                return;
+
+            Log.WriteStructured(
+                LogGroup.AI,
+                "Stealth detection acquired normal proximity aggro: Observer={Observer} Target={Target}",
+                observer,
+                target);
+        }
+
+        private static bool TryAcquireAggro(uint self, uint target)
         {
             if (self == target ||
                 !GetIsObjectValid(target) ||
@@ -789,11 +813,12 @@ namespace SWLOR.Game.Server.Service
                 TryStartLeashEvade(self, target) ||
                 !TryAddProximityEnmity(target, self))
             {
-                return;
+                return false;
             }
 
             ProcessTrigger(self, AITriggerType.Aggro, target);
             AddNearbyAllyProximityEnmity(self, target);
+            return true;
         }
 
         private static void AddNearbyAllyProximityEnmity(uint self, uint target)

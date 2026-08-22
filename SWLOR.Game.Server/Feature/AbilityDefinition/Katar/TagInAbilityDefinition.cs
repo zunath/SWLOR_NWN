@@ -46,6 +46,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                     RequiresGuardedTarget = true,
                     FriendlyTargetTemporaryHPPercent = 15,
                     FriendlyTargetTemporaryHPDurationSeconds = 30,
+                    FriendlyTargetTemporaryHPUsesActivatorMaximum = true,
                     SelfGuardPercent = 20,
                     SelfGuardDurationSeconds = 30
                 });

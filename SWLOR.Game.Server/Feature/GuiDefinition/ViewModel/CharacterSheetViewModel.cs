@@ -877,8 +877,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private (string Value, string Tooltip) GetAttackDelayInfo()
         {
-            var attackerDelayMilliseconds = Combat.CalculateAttackDelay(_target);
             var attackSkillType = Combat.GetEquippedWeaponSkillType(_target);
+            StatusEffect.TryGetLimitedAttackDelayReduction(
+                _target,
+                attackSkillType,
+                out var limitedAttackDelayReductionPercent,
+                out _);
+            var attackerDelayMilliseconds = Combat.CalculateAttackDelay(
+                _target,
+                limitedAttackDelayReductionPercent);
             var useDefaultMinimumDelay = Combat.HasNextAutoAttackNoDelay(_target, attackSkillType);
             var effectiveDelayMilliseconds = Combat.CalculateEffectiveAttackDelay(attackerDelayMilliseconds, useDefaultMinimumDelay);
             var attackerDelaySeconds = attackerDelayMilliseconds / 1000f;
@@ -1055,11 +1062,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private int GetCriticalRate(SkillType skillType)
         {
+            var criticalRateAdjustment = Stat.GetStatAdjustment(
+                _target,
+                StatType.CriticalRatePercentAdjustment);
+            criticalRateAdjustment += Combat.GetSkillCriticalRatePercentAdjustment(_target, skillType);
+
             return Combat.CalculateCriticalRate(
                 GetAbilityScore(_target, AbilityType.Perception),
                 GetAbilityScore(_target, AbilityType.Vitality),
                 GetSkillRank(skillType),
-                Stat.GetStatAdjustment(_target, StatType.CriticalRatePercentAdjustment));
+                criticalRateAdjustment);
         }
 
         private int GetAssaultGadgetCriticalRate()
@@ -1114,12 +1126,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             var typeAdjustment = damageType switch
             {
-                CombatDamageType.Physical => Stat.GetStatAdjustment(_target, StatType.PhysicalDamageTakenPercentAdjustment),
-                CombatDamageType.Force => Stat.GetStatAdjustment(_target, StatType.ForceDamageTakenPercentAdjustment),
+                CombatDamageType.Physical =>
+                    Stat.GetStatAdjustment(_target, StatType.PhysicalDamageTakenPercentAdjustment),
+                CombatDamageType.Force =>
+                    Stat.GetStatAdjustment(_target, StatType.ForceDamageTakenPercentAdjustment),
                 _ => 0
+            };
+            var leadershipAdjustment = damageType switch
+            {
+                CombatDamageType.Physical =>
+                    Stat.GetStatAdjustment(_target, StatType.LeadershipPhysicalDamageTakenPercentAdjustment),
+                CombatDamageType.Force =>
+                    Stat.GetStatAdjustment(_target, StatType.LeadershipForceDamageTakenPercentAdjustment),
+                _ => Stat.GetStatAdjustment(_target, StatType.LeadershipOtherDamageTakenPercentAdjustment)
             };
 
             var percent = ApplyDamageTakenPercentAdjustment(100, typeAdjustment);
+            percent = ApplyDamageTakenPercentAdjustment(percent, leadershipAdjustment);
             return ApplyDamageTakenPercentAdjustment(
                 percent,
                 Stat.GetStatAdjustment(_target, StatType.DamageTakenPercentAdjustment));

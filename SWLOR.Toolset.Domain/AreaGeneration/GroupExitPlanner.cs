@@ -27,8 +27,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
     /// GroupExit style (done there).
     ///
     /// No RNG is used — candidate order is by (Manhattan distance from the transition's original
-    /// tile, then grid index), and the first group/cell/orientation match wins, so results are fully
-    /// deterministic for a given resolved grid.
+    /// tile, then grid index), and the first group/cell/orientation/door-slot match that faces the
+    /// room wins, so results are fully deterministic for a given resolved grid.
     /// </summary>
     internal static class GroupExitPlanner
     {
@@ -192,10 +192,15 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
                 .Where(c => !claimed.Contains(c.Cell) && !claimed.Contains(c.InnerTile))
                 .Where(c => !layout.PinnedTiles.ContainsKey(c.Cell))
                 .Where(c => !TileDoorGeometry.HasAnyCrosserEdge(layout.Crossers, c.Cell))
+                // Feature-group cells were resolved before this pass and may drive later
+                // feature-specific decoration planning. Never replace their art while leaving that
+                // bookkeeping behind.
+                .Where(c => tileset.Tiles[tiles[c.Cell.Y * width + c.Cell.X].TileId].GroupIndex == -1)
                 // Defensive: no layout style paints CornerTerrainGrid.Heights yet, so this is always
                 // true today, but a raised cell can never structurally match this planner's flat-only
                 // exit-group candidates (see BuildCandidateGroups).
-                .Where(c => TileDoorGeometry.IsFlatCell(layout.Corners, c.Cell.X, c.Cell.Y))
+                .Where(c => TileDoorGeometry.IsFlatCell(layout.Corners, c.InnerTile.X, c.InnerTile.Y) &&
+                            TileDoorGeometry.IsFlatCell(layout.Corners, c.Cell.X, c.Cell.Y))
                 .OrderBy(c => ManhattanDistance(c.Cell, originalTile))
                 .ThenBy(c => c.Cell.Y * width + c.Cell.X)
                 .ToList();
@@ -216,7 +221,9 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
                         if (!TileDoorGeometry.Eq(group.Tile.GetCornerAt(o, CornerSlot.BottomRight), br)) continue;
                         if (!TileDoorGeometry.Eq(group.Tile.GetCornerAt(o, CornerSlot.BottomLeft), bl)) continue;
 
-                        var slot = group.Tile.Doors[0];
+                        var slot = FindDoorSlotFacingInner(group.Tile, o, candidateCell, inner);
+                        if (slot == null)
+                            continue;
                         var (wx, wy, wz, worientation) = TileDoorGeometry.DoorWorldTransform(slot, candidateCell.X, candidateCell.Y, o);
 
                         cell = candidateCell;
@@ -233,6 +240,31 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
             }
 
             return false;
+        }
+
+        private static TileDoorRecord FindDoorSlotFacingInner(
+            TileRecord tile,
+            int orientation,
+            (int X, int Y) cell,
+            (int X, int Y) inner)
+        {
+            const float tolerance = 1.5f;
+            var dx = inner.X - cell.X;
+            var dy = inner.Y - cell.Y;
+
+            foreach (var slot in tile.Doors)
+            {
+                var (rx, ry) = TileDoorGeometry.RotateCcw90Multiple(slot.X, slot.Y, orientation);
+                if ((dx < 0 && rx <= -5f + tolerance) ||
+                    (dx > 0 && rx >= 5f - tolerance) ||
+                    (dy < 0 && ry <= -5f + tolerance) ||
+                    (dy > 0 && ry >= 5f - tolerance))
+                {
+                    return slot;
+                }
+            }
+
+            return null;
         }
 
         private static int ManhattanDistance((int X, int Y) a, (int X, int Y) b)

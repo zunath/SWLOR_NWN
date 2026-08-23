@@ -65,6 +65,14 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             return reach > 0f && distance <= reach;
         }
 
+        public static bool IsWithinDeclaredPlacementRange(
+            bool hasExplicitMaxRange,
+            float distance,
+            float maxRange)
+        {
+            return hasExplicitMaxRange && IsWithinAreaReach(distance, maxRange);
+        }
+
         public static bool IsWithinSelfOriginAreaReach(
             AbilityTargetingShapeType shape,
             bool originOnSelf,

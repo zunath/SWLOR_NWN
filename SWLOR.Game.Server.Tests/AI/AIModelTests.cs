@@ -1365,6 +1365,22 @@ public class AIModelTests
         releaseRest.Should().Contain("Activity.ClearBusy(companion)");
     }
 
+    [Test]
+    public void StandGroundPlacedAreasRequireAnExplicitPlacementRange()
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server",
+            "Service",
+            "CompanionControlService",
+            "CompanionControl.cs");
+        var checkAbilities = ExtractMethodBody(source, "private static bool CanUseHostileAbilityWithoutMoving");
+
+        checkAbilities.Should().Contain("!isSelfOriginArea");
+        checkAbilities.Should().Contain("CompanionControlPolicy.IsWithinDeclaredPlacementRange(");
+        checkAbilities.Should().Contain("ability.HasExplicitMaxRange");
+        checkAbilities.Should().Contain("ability.MaxRange");
+    }
+
     private static float ReadConstFloat(string name, params string[] pathParts)
     {
         var source = ReadSource(pathParts);

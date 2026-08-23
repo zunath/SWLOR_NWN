@@ -184,4 +184,21 @@ public class CompanionControlPolicyTests
             .Be(expected);
     }
 
+    [TestCase(true, 15f, 15f, true)]
+    [TestCase(true, 15.01f, 15f, false)]
+    [TestCase(false, 1f, 15f, false)]
+    public void PlacedAreasRequireADeclaredRangeAndStayWithinIt(
+        bool hasExplicitMaxRange,
+        float distance,
+        float maxRange,
+        bool expected)
+    {
+        CompanionControlPolicy.IsWithinDeclaredPlacementRange(
+                hasExplicitMaxRange,
+                distance,
+                maxRange)
+            .Should()
+            .Be(expected);
+    }
+
 }

@@ -757,11 +757,22 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
                                          ability.Targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf);
                 var isSelfOriginArea = ability.IsAreaAbility &&
                                        ability.Targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf);
+                var targetDistance = GetDistanceBetween(companion, target);
+                if (ability.IsAreaAbility &&
+                    !isSelfOriginArea &&
+                    !CompanionControlPolicy.IsWithinDeclaredPlacementRange(
+                        ability.HasExplicitMaxRange,
+                        targetDistance,
+                        ability.MaxRange))
+                {
+                    continue;
+                }
+
                 if (isSelfOriginArea &&
                     !CompanionControlPolicy.IsWithinSelfOriginAreaReach(
                         ability.Targeting.Shape,
                         true,
-                        GetDistanceBetween(companion, target),
+                        targetDistance,
                         ability.Targeting.ResolveSizeX(companion, true)))
                 {
                     continue;

@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Feature.AbilityDefinition.Rifle;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Perks;
@@ -18,9 +19,12 @@ public sealed class RifleSuppressionFeedbackTests
     {
         new KillBoxStatusEffect(4).Name.Should().Be("Kill Box");
         new KillBoxStatusEffect(4).Icon.Should().Be(EffectIconType.SuppressionStanceStatusEffect);
+        new KillBoxStatusEffect(4).StackingType.Should().Be(StatusEffectStackType.StackFromMultipleSources);
+        new KillBoxStatusEffect(4).Should().BeAssignableTo<IRangedHitSuppressionSource>();
         new OverwatchStatusEffect().Name.Should().Be("Overwatch");
         new OverwatchStatusEffect().Icon.Should().Be(EffectIconType.TacticalUplinkStatusEffect);
         new ContainmentNetStatusEffect(-10).DamageAdjustmentPercent.Should().Be(-10);
+        new ContainmentNetStatusEffect(-10).StackingType.Should().Be(StatusEffectStackType.StackFromMultipleSources);
         new ContainmentNetStatusEffect(-10).StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(-10);
         new SustainedFireStatusEffect(3, 5, 9).Stacks.Should().Be(3);
         new SustainedFireStatusEffect(3, 5, 9).DamageBonus.Should().Be(9);
@@ -44,7 +48,14 @@ public sealed class RifleSuppressionFeedbackTests
         combat.Should().NotContain("GetSuppressionDamageDealtToOtherTargetsAdjustment");
         combat.Should().Contain("SuppressionStackDamageDealtRequiredStacks");
         combat.Should().Contain("SuppressionStackDamageDealtPercentAdjustment");
-        combat.Should().Contain("OfType<KillBoxStatusEffect>()");
+        combat.Should().Contain("OfType<IRangedHitSuppressionSource>()");
+        combat.Should().NotContain("OfType<KillBoxStatusEffect>()");
+        var suppressionStatus = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "SuppressionStatusEffect.cs"));
+        var statusEffectService = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "StatusEffect.cs"));
+        suppressionStatus.Should().Contain("IStatusEffectRemovedHandler");
+        suppressionStatus.Should().Contain("Combat.ReconcileContainmentNetStatus(Source, creature);");
+        suppressionStatus.Should().NotContain("DelayCommand");
+        statusEffectService.Should().Contain("NotifyStatusEffectRemoved(creature, statusEffect);");
         killBox.Should().Contain("StatusEffectFactory = () => new KillBoxStatusEffect()");
         killBox.Should().Contain("8.0f");
         killBox.Should().Contain("AbilityTargetingFlags.HarmsEnemies");

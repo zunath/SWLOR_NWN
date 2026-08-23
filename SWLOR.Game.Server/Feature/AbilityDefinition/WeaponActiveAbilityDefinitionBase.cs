@@ -840,7 +840,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             private bool IsIdle(uint activator)
             {
-                return IdleWindowSeconds > 0f && !Combat.HasRecentAttackActivity(activator, IdleWindowSeconds);
+                if (IdleWindowSeconds <= 0f)
+                    return false;
+
+                var lastActivity = Combat.GetLastCompletedOffensiveActivityAt(activator);
+                return lastActivity == default ||
+                       (DateTime.UtcNow - lastActivity).TotalSeconds >= IdleWindowSeconds;
             }
 
             private static bool IsTargetBelowThreshold(uint target, int thresholdPercent)

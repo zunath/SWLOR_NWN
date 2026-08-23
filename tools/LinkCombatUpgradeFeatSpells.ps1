@@ -209,6 +209,18 @@ foreach ($label in $generatedQueuedWeaponAbilityLabels) {
     $featTargetSelfByLabel[$label] = "1"
 }
 
+# These legacy active feats own curated spell rows outside the generated ability-definition
+# discovery range. Preserve their explicit links when the linker rebuilds feat.2da.
+$preservedSpellIdsByLabel = @{
+    "HackingBlade1" = 1303
+    "HackingBlade2" = 1306
+    "ForceSpark3" = 988
+    "Stealth1" = 1711
+    "Stealth2" = 1712
+    "Stealth3" = 1713
+    "Stealth4" = 1714
+}
+
 foreach ($label in $hostileTargetingLabels) {
     $featTargetSelfByLabel[$label] = "****"
     $spellTargetingByLabel[$label] = $hostileSpellTargetingProfile
@@ -307,7 +319,12 @@ for ($i = $featHeaderIndex + 1; $i -lt $featLines.Count; $i++) {
         continue
     }
     if (!$playerAbilityLabels.Contains($label)) {
-        Set-TokenByHeader $tokens $featHeaders "SPELLID" "****"
+        if ($preservedSpellIdsByLabel.ContainsKey($label)) {
+            Set-TokenByHeader $tokens $featHeaders "SPELLID" $preservedSpellIdsByLabel[$label].ToString()
+        }
+        else {
+            Set-TokenByHeader $tokens $featHeaders "SPELLID" "****"
+        }
         $featLines[$i] = Format-2DARow $tokens.ToArray() $featColumnWidths
         continue
     }

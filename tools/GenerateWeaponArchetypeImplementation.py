@@ -618,16 +618,28 @@ def write_generated_targeting_spell_ids(spell_ids):
 
 
 def generated_targeting_update(row, was_generator_owned):
+    base, _ = base_and_level(row.get("PerkName", ""))
+    targeting_values = {}
+
+    # Headshot is a queued self activation. Its spell row must be non-hostile/self-compatible
+    # even though it has no area shape for the generator to own.
+    if base == "Headshot":
+        targeting_values.update({
+            "TargetType": "0x03",
+            "HostileSetting": "0",
+        })
+
     inferred = infer_targeting_from_description(row)
     if not inferred:
         if not was_generator_owned:
-            return None, False
-        return {
+            return (targeting_values or None), False
+        targeting_values.update({
             "TargetShape": "****",
             "TargetSizeX": "****",
             "TargetSizeY": "****",
             "TargetFlags": "****",
-        }, False
+        })
+        return targeting_values, False
 
     shape_expression, size_x_literal, size_y_literal, _ = inferred
     shape = {
@@ -638,21 +650,29 @@ def generated_targeting_update(row, was_generator_owned):
     size_x = f"{float(size_x_literal[:-1]):g}"
     size_y_value = float(size_y_literal[:-1])
     size_y = f"{size_y_value:g}" if size_y_value > 0 else "****"
-    flags = "1" if shape == "sphere" and is_aimed_area(row) else "17"
-    return {
+    is_aimed = is_aimed_area(row)
+    flags = "1" if shape == "sphere" and is_aimed else "17"
+    targeting_values.update({
         "TargetShape": shape,
         "TargetSizeX": size_x,
         "TargetSizeY": size_y,
         "TargetFlags": flags,
-    }, True
+    })
+    if is_aimed and not is_friendly_target_active(row.get("Description", "")):
+        targeting_values.update({
+            "TargetType": "0x3E",
+            "HostileSetting": "1",
+        })
+    return targeting_values, True
 
 
 def update_spell_targeting(spell_updates):
     """Keep generated ability targeting metadata aligned with the Bible description.
 
     The feat row controls whether the client opens a manual cursor, while the spell row controls
-    the marker's shape and size. Updating only the feat row leaves a valid-looking ability with a
-    stale (or entirely blank) marker, so both halves are generated from the same wording.
+    the marker's shape, size, and hostile activation profile. Updating only the feat row leaves a
+    valid-looking ability with a stale (or entirely blank) marker, so both halves are generated
+    from the same wording.
     """
     spells_path = ROOT / "SWLOR_Haks" / "sw_2da" / "spells.2da"
     lines = spells_path.read_text().splitlines()
@@ -1452,7 +1472,10 @@ def description_stat_entries(row, base):
         add_stat(stats, "RangedAbilityTargetDefenseReductionPercent", parse_percent(r"Defense by (\d+)%", description))
         add_stat(stats, "RangedAbilityTargetDefenseReductionDurationSeconds", parse_duration(description) or 30)
     if base == "Scope Calibration":
-        add_stat(stats, "RangedAbilityLongRangeMinimumRangeMeters", 10)
+        add_stat(
+            stats,
+            "RangedAbilityLongRangeMinimumRangeMeters",
+            first_int(r"at least (\d+)m", description) or 10)
         add_stat(stats, "RangedAbilityLongRangeHitChancePercentAdjustment", parse_percent(r"\+(\d+)% Accuracy", description))
         add_stat(stats, "RangedAbilityLongRangeCriticalRatePercentAdjustment", parse_percent(r"\+(\d+)% Critical Rate", description))
     if base == "Dead Center":

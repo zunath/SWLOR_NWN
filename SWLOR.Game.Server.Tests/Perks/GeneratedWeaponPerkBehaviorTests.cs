@@ -271,6 +271,40 @@ public class GeneratedWeaponPerkBehaviorTests
         killBox.Targeting.Flags.Should().HaveFlag(AbilityTargetingFlags.HarmsEnemies);
         killBox.Targeting.Flags.Should().NotHaveFlag(AbilityTargetingFlags.OriginOnSelf);
 
+        var featRows = Read2da(root, "SWLOR_Haks", "sw_2da", "feat.2da");
+        var spellRows = Read2da(root, "SWLOR_Haks", "sw_2da", "spells.2da");
+        foreach (var feat in new[] { FeatType.Headshot1, FeatType.Headshot2 })
+        {
+            var featRow = featRows[(int)feat];
+            featRow["TARGETSELF"].Should().Be("1");
+            featRow["HostileFeat"].Should().Be("****");
+            var spellRow = spellRows[int.Parse(featRow["SPELLID"])];
+            spellRow["TargetType"].Should().Be("0x03");
+            spellRow["HostileSetting"].Should().Be("0");
+        }
+
+        var killBoxFeatRow = featRows[(int)FeatType.KillBox1];
+        killBoxFeatRow["TARGETSELF"].Should().Be("****");
+        killBoxFeatRow["HostileFeat"].Should().Be("1");
+        var killBoxSpellRow = spellRows[int.Parse(killBoxFeatRow["SPELLID"])];
+        killBoxSpellRow["TargetType"].Should().Be("0x3E");
+        killBoxSpellRow["HostileSetting"].Should().Be("1");
+        killBoxSpellRow["TargetShape"].Should().Be("sphere");
+        killBoxSpellRow["TargetSizeX"].Should().Be("8");
+        killBoxSpellRow["TargetFlags"].Should().Be("1");
+
+        featRows[(int)FeatType.ForceSpark3]["SPELLID"].Should().Be("988");
+        foreach (var (feat, spellId) in new[]
+                 {
+                     (FeatType.Stealth1, "1711"),
+                     (FeatType.Stealth2, "1712"),
+                     (FeatType.Stealth3, "1713"),
+                     (FeatType.Stealth4, "1714")
+                 })
+        {
+            featRows[(int)feat]["SPELLID"].Should().Be(spellId);
+        }
+
         var combatSource = File.ReadAllText(Path.Combine(
             root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
         combatSource.Should().Contain("QueuedWeaponAbilityActivationCriticalRatePercentAdjustment");

@@ -12,6 +12,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override string Name => "Containment Net";
         public override EffectIconType Icon => EffectIconType.SuppressionStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
+        public override StatusEffectStackType StackingType => StatusEffectStackType.StackFromMultipleSources;
         public override bool PersistsOnLogout => false;
 
         public int DamageAdjustmentPercent { get; }

@@ -3165,6 +3165,13 @@ namespace SWLOR.Game.Server.Service
             return Stat.GetStatAdjustment(attacker, StatType.OpeningAutoAttackCriticalRatePercentAdjustment);
         }
 
+        public static DateTime GetLastCompletedOffensiveActivityAt(uint creature)
+        {
+            _lastAttackActivity.TryGetValue(creature, out var lastAttack);
+            _lastCombatAbilityUse.TryGetValue(creature, out var lastAbility);
+            return lastAttack > lastAbility ? lastAttack : lastAbility;
+        }
+
         public static int ConsumeOpeningAutoAttackCriticalDamageAdjustment(uint attacker)
         {
             return TemporaryStatModifier.Consume(
@@ -6063,7 +6070,7 @@ namespace SWLOR.Game.Server.Service
             // Containment Net and the evasion rider remain source-owned.
             foreach (var killBox in StatusEffect.GetCreatureStatusEffects(defender)
                          .GetAllEffects()
-                         .OfType<KillBoxStatusEffect>()
+                         .OfType<IRangedHitSuppressionSource>()
                          .Where(effect => GetIsObjectValid(effect.Source)))
             {
                 // The caster already receives the normal ranged-hit rider from the temporary
@@ -6077,25 +6084,9 @@ namespace SWLOR.Game.Server.Service
                     suppressionPenalty = Stat.GetStatAdjustment(
                         killBox.Source,
                         StatType.RangedHitSuppressionStackEvasionPenaltyPercent);
-                    if (suppressionPenalty > 0)
-                    {
-                        var remainingSeconds = Math.Max(1, (int)Math.Ceiling(killBox.DurationTicks * killBox.Frequency));
-                        StatusEffect.RemoveStatusEffect(defender, typeof(KillBoxStatusEffect), killBox.Source, false);
-                        StatusEffect.ApplyStatusEffect(
-                            killBox.Source,
-                            defender,
-                            new KillBoxStatusEffect(suppressionPenalty),
-                            remainingSeconds,
-                            damageType);
-                    }
                 }
 
-                ApplySuppressionStack(
-                    killBox.Source,
-                    defender,
-                    suppressionPenalty,
-                    30,
-                    damageType);
+                ApplySuppressionStack(killBox.Source, defender, suppressionPenalty, killBox.SuppressionDurationSeconds, damageType);
             }
         }
 
@@ -6127,7 +6118,7 @@ namespace SWLOR.Game.Server.Service
                 durationSeconds,
                 damageType);
 
-            RefreshContainmentNetStatus(attacker, defender);
+            ReconcileContainmentNetStatus(attacker, defender);
         }
 
         public static int GetSuppressionStackCount(uint target, uint source = OBJECT_INVALID)
@@ -6141,7 +6132,7 @@ namespace SWLOR.Game.Server.Service
                 .Count(effect => !GetIsObjectValid(source) || effect.Source == source);
         }
 
-        private static void RefreshContainmentNetStatus(uint source, uint target)
+        public static void ReconcileContainmentNetStatus(uint source, uint target)
         {
             if (!GetIsObjectValid(source) || !GetIsObjectValid(target))
                 return;
@@ -8152,7 +8143,15 @@ namespace SWLOR.Game.Server.Service
             }
 
             _pendingSuppressionAbilityUses.Remove(key);
-            StatusEffect.RemoveStatusEffect(attacker, typeof(OverwatchStatusEffect), false);
+            var hasAnotherPendingUse = _pendingSuppressionAbilityUses
+                .Where(entry => entry.Key.Item1 == attacker)
+                .Any(entry => entry.Value.Expiration > DateTime.UtcNow &&
+                              HasCurrentSuppressionAbilityUseStack(
+                                  attacker,
+                                  entry.Key.Item2,
+                                  entry.Value.SuppressionEffectIds));
+            if (!hasAnotherPendingUse)
+                StatusEffect.RemoveStatusEffect(attacker, typeof(OverwatchStatusEffect), false);
             if (GetIsPC(attacker))
             {
                 SendMessageToPC(attacker, ColorToken.Combat($"Overwatch: +{adjustment}% Accuracy."));
@@ -8790,6 +8789,13 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             ScheduleIdleReadinessRefresh(creature);
+
+            if (Stat.GetStatAdjustment(creature, StatType.OpeningAutoAttackSkillType) <= 0 ||
+                Stat.GetStatAdjustment(creature, StatType.OpeningAutoAttackIdleSeconds) <= 0)
+                StatusEffect.RemoveStatusEffect(creature, typeof(SteadyAimReadyStatusEffect), false);
+            if (Stat.GetStatAdjustment(creature, StatType.IdleSkillAbilitySkillType) <= 0 ||
+                Stat.GetStatAdjustment(creature, StatType.IdleSkillAbilityRequiredIdleSeconds) <= 0)
+                StatusEffect.RemoveStatusEffect(creature, typeof(PatienceReadyStatusEffect), false);
 
             if (Stat.GetStatAdjustment(creature, StatType.RangedAutoAttackCycleCriticalRateRequiredCount) <= 0 ||
                 Stat.GetStatAdjustment(creature, StatType.RangedAutoAttackCycleCriticalRatePercentAdjustment) <= 0)

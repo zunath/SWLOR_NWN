@@ -13,6 +13,18 @@ SPEC.loader.exec_module(GENERATOR)
 
 
 class GeneratedWeaponTargetingTests(unittest.TestCase):
+    def test_scope_calibration_reads_minimum_range_from_description(self):
+        properties = dict(GENERATOR.description_stat_entries(
+            {
+                "Tab": "Rifle",
+                "Type": "Trait",
+                "PerkName": "Scope Calibration",
+                "Description": "Ranged abilities gain +10% Accuracy against targets at least 12m away.",
+            },
+            "Scope Calibration"))
+
+        self.assertEqual("12", properties["RangedAbilityLongRangeMinimumRangeMeters"])
+
     def test_headshot_queues_and_only_grants_critical_rate_after_idle_window(self):
         row = {
             "Tab": "Rifle",
@@ -68,6 +80,21 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
         self.assertEqual("sphere", values["TargetShape"])
         self.assertEqual("8", values["TargetSizeX"])
         self.assertEqual("1", values["TargetFlags"])
+        self.assertEqual("0x3E", values["TargetType"])
+        self.assertEqual("1", values["HostileSetting"])
+
+    def test_headshot_spell_profile_is_non_hostile_and_self_compatible(self):
+        row = {
+            "Tab": "Rifle",
+            "PerkName": "Headshot I",
+            "Description": "Queues your next auto-attack to deal weapon DMG + 16.",
+        }
+
+        values, owns_targeting = GENERATOR.generated_targeting_update(row, False)
+
+        self.assertFalse(owns_targeting)
+        self.assertEqual("0x03", values["TargetType"])
+        self.assertEqual("0", values["HostileSetting"])
 
     def test_dead_center_applies_to_abilities_and_opening_auto_attacks(self):
         row = {

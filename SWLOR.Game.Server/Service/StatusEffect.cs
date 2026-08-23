@@ -787,6 +787,7 @@ namespace SWLOR.Game.Server.Service
 
                 statusEffect.RemoveEffect(creature);
                 effects.Remove(statusEffect);
+                NotifyStatusEffectRemoved(creature, statusEffect);
                 RemoveEffectByTag(creature, statusEffect.Id);
             }
         }
@@ -1565,6 +1566,7 @@ namespace SWLOR.Game.Server.Service
 
             statusEffect.RemoveEffect(creature, isReplacement);
             creatureEffects.Remove(statusEffect);
+            NotifyStatusEffectRemoved(creature, statusEffect);
 
             if (statusEffect is ILeadershipDamageReductionStatusEffect)
             {
@@ -1593,6 +1595,12 @@ namespace SWLOR.Game.Server.Service
         {
             var type = statusEffect.GetType();
             return creatureEffects.GetAllEffects().Count(effect => effect.GetType() == type) <= 1;
+        }
+
+        private static void NotifyStatusEffectRemoved(uint creature, IStatusEffect statusEffect)
+        {
+            if (statusEffect is IStatusEffectRemovedHandler handler)
+                handler.AfterRemoved(creature);
         }
 
         /// <summary>

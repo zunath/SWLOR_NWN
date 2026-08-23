@@ -45,6 +45,27 @@ public sealed class AreaGeneratorWindowRenderTests
     }
 
     [AvaloniaTest]
+    public void Footer_DoesNotShowTheRedundantErfExportNotice()
+    {
+        using var viewModel = CreateViewModel();
+        var window = new AreaGeneratorWindow(viewModel);
+
+        try
+        {
+            window.Show();
+            Dispatcher.UIThread.RunJobs();
+
+            window.GetVisualDescendants().OfType<TextBlock>()
+                .Should().NotContain(block => block.Text != null && block.Text.Contains("ERF Manager"));
+        }
+        finally
+        {
+            window.Close();
+            Dispatcher.UIThread.RunJobs();
+        }
+    }
+
+    [AvaloniaTest]
     public void OpeningWithoutAvailableTilesets_RandomizesTheSeedWithoutHidingTheDiagnostic()
     {
         using var viewModel = CreateViewModel();

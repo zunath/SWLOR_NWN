@@ -256,8 +256,6 @@
     <Border Grid.Row="2" Padding="14,10" Background="{DynamicResource PanelHeaderBrush}"
             BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1,0,0">
       <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
-        <TextBlock VerticalAlignment="Center" Classes="dim"
-                   Text="The created area can be exported later through the existing ERF Manager." />
         <Button Grid.Column="1" Content="Close" Click="OnCloseClicked" IsEnabled="{Binding !IsBusy}" />
         <Button Grid.Column="2" Classes="primary" Content="Create Area in Module" Command="{Binding CreateAreaCommand}" />
       </Grid>

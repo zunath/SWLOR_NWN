@@ -182,7 +182,7 @@ namespace SWLOR.Game.Server.Native
                 // Overwatch is a next ranged attack trigger. Resolve it in the native
                 // auto-attack path as well as the casted-ability path, and only when the
                 // selected defender is the suppressed target that armed the trigger.
-                accuracyModifiers += Combat.GetSuppressionRangedAttackAccuracyAdjustment(
+                accuracyModifiers += Combat.ConsumeSuppressionRangedAttackAccuracyAdjustment(
                     attacker.m_idSelf,
                     defender.m_idSelf,
                     weaponSkillType);
@@ -372,6 +372,9 @@ namespace SWLOR.Game.Server.Native
                 {
                     Combat.TrackAvoidedAttack(defender.m_idSelf, attacker.m_idSelf);
                 }
+
+                if (!IsSuccessfulAttackResult(pAttackData.m_nAttackResult))
+                    Combat.ClearOpeningAutoAttackModifiers(attacker.m_idSelf);
 
                 // A landed queued weapon ability is finalized through Ability.EndAbilityImpact,
                 // which sends the single attempt notification for that originating swing. A miss

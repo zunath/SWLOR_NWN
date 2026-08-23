@@ -80,6 +80,7 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
         self.assertEqual("sphere", values["TargetShape"])
         self.assertEqual("8", values["TargetSizeX"])
         self.assertEqual("1", values["TargetFlags"])
+        self.assertEqual("M", values["Range"])
         self.assertEqual("0x3E", values["TargetType"])
         self.assertEqual("1", values["HostileSetting"])
 

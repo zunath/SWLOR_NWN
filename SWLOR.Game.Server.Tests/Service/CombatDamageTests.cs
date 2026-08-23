@@ -274,6 +274,49 @@ public class CombatDamageTests
     }
 
     [Test]
+    public void IdleReadiness_UsesCompletedOffensiveActivityForRefreshAndDelayedGuard()
+    {
+        var root = FindRepositoryRoot();
+        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var refresh = ExtractMethod(combatSource, "private static void RefreshIdleReadiness(uint creature)");
+        var schedule = ExtractMethod(combatSource, "private static void ScheduleIdleReadinessRefresh(uint creature)");
+
+        refresh.Should().Contain("GetLastCompletedOffensiveActivityAt(creature)");
+        refresh.Should().NotContain("GetLastOffensiveActivityAt(creature)");
+        schedule.Should().Contain("var scheduledActivity = GetLastCompletedOffensiveActivityAt(creature);");
+        schedule.Should().Contain("GetLastCompletedOffensiveActivityAt(creature) == scheduledActivity");
+        schedule.Should().NotContain("GetLastOffensiveActivityAt(creature)");
+    }
+
+    [Test]
+    public void SuppressionRangedAccuracy_UsesConsumeNamingAtEveryCallSite()
+    {
+        var root = FindRepositoryRoot();
+        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var nativeSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
+
+        combatSource.Should().Contain("public static int ConsumeSuppressionRangedAttackAccuracyAdjustment(");
+        combatSource.Should().NotContain("GetSuppressionRangedAttackAccuracyAdjustment");
+        nativeSource.Should().Contain("Combat.ConsumeSuppressionRangedAttackAccuracyAdjustment(");
+        nativeSource.Should().NotContain("Combat.GetSuppressionRangedAttackAccuracyAdjustment(");
+    }
+
+    [Test]
+    public void OpeningAutoAttack_UsesCompletedActivityAndClearsOnDefensiveAvoidance()
+    {
+        var root = FindRepositoryRoot();
+        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var nativeSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
+        var prepare = ExtractMethod(combatSource, "public static int PrepareOpeningAutoAttack(uint attacker, SkillType skillType)");
+
+        prepare.Should().Contain("GetLastCompletedOffensiveActivityAt(attacker)",
+            "a completed hostile ability must restart Steady Aim and Dead Center's idle window");
+        nativeSource.Should().MatchRegex(
+            @"attacker\.ResolveDefensiveEffects\(defender, isHit \? 1 : 0\);[\s\S]*?if \(!IsSuccessfulAttackResult\(pAttackData\.m_nAttackResult\)\)[\s\S]*?Combat\.ClearOpeningAutoAttackModifiers\(attacker\.m_idSelf\);",
+            "concealment, miss, or deflection must consume opening riders before another swing can inherit them");
+    }
+
+    [Test]
     public void MeleeAutoAttackScope_AllowsCrossSkillMeleeTraitsWithoutAffectingRangedWeapons()
     {
         Combat.IsMeleeWeaponSkill(SkillType.Vibroblade).Should().BeTrue();

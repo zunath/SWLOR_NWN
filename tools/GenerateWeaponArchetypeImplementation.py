@@ -660,6 +660,7 @@ def generated_targeting_update(row, was_generator_owned):
     })
     if is_aimed and not is_friendly_target_active(row.get("Description", "")):
         targeting_values.update({
+            "Range": "M",
             "TargetType": "0x3E",
             "HostileSetting": "1",
         })

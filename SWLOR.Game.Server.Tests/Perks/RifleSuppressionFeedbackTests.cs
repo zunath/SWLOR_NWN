@@ -48,6 +48,9 @@ public sealed class RifleSuppressionFeedbackTests
         combat.Should().NotContain("GetSuppressionDamageDealtToOtherTargetsAdjustment");
         combat.Should().Contain("SuppressionStackDamageDealtRequiredStacks");
         combat.Should().Contain("SuppressionStackDamageDealtPercentAdjustment");
+        combat.Should().Contain("public static bool ApplySuppressionStack(");
+        combat.Should().Contain("if (applied && GetIsPC(attacker))");
+        combat.Should().Contain("ContainmentNetStatusEffect.ShouldRemainActive(");
         combat.Should().Contain("OfType<IRangedHitSuppressionSource>()");
         combat.Should().NotContain("OfType<KillBoxStatusEffect>()");
         var suppressionStatus = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "SuppressionStatusEffect.cs"));
@@ -60,7 +63,7 @@ public sealed class RifleSuppressionFeedbackTests
         killBox.Should().Contain("8.0f");
         killBox.Should().Contain("AbilityTargetingFlags.HarmsEnemies");
         killBox.Should().NotContain("OriginOnSelf");
-        native.Should().Contain("GetSuppressionRangedAttackAccuracyAdjustment");
+        native.Should().Contain("ConsumeSuppressionRangedAttackAccuracyAdjustment");
     }
 
     [Test]

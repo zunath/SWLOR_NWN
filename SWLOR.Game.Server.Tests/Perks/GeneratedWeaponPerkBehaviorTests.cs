@@ -1315,7 +1315,7 @@ public class GeneratedWeaponPerkBehaviorTests
         combatSource.Should().Contain("SuppressionStackEvasionPenaltyPercentAdjustment");
         combatSource.Should().Contain("if (adjustedEvasionPenaltyPercent <= 0)");
         combatSource.Should().Contain("TrackSuppressionAbilityUse(activator, now)");
-        combatSource.Should().Contain("GetSuppressionRangedAttackAccuracyAdjustment(attacker, defender, skillType)");
+        combatSource.Should().Contain("ConsumeSuppressionRangedAttackAccuracyAdjustment(attacker, defender, skillType)");
         combatSource.Should().Contain("!IsRangedWeaponSkill(skillType)");
         combatSource.Should().Contain("_pendingSuppressionAbilityUses.TryGetValue(key, out var state)");
         combatSource.Should().Contain("state.Expiration <= DateTime.UtcNow");

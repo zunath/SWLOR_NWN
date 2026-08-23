@@ -3151,9 +3151,9 @@ namespace SWLOR.Game.Server.Service
             if (idleSeconds <= 0)
                 return 0;
 
-            var now = DateTime.UtcNow;
-            if (_lastCombatActivity.TryGetValue(attacker, out var lastActivity) &&
-                (now - lastActivity).TotalSeconds < idleSeconds)
+            var lastActivity = GetLastCompletedOffensiveActivityAt(attacker);
+            if (lastActivity != default &&
+                (DateTime.UtcNow - lastActivity).TotalSeconds < idleSeconds)
                 return 0;
 
             TrackCombatActivity(attacker);
@@ -3197,6 +3197,18 @@ namespace SWLOR.Game.Server.Service
         public static int ConsumeOpeningAutoAttackCriticalDamageAdjustment(uint attacker)
         {
             return TemporaryStatModifier.Consume(
+                attacker,
+                StatType.CurrentAutoAttackCriticalDamagePercentAdjustment,
+                StatType.CurrentAutoAttackCriticalDamagePercentAdjustment);
+        }
+
+        public static void ClearOpeningAutoAttackModifiers(uint attacker)
+        {
+            TemporaryStatModifier.Consume(
+                attacker,
+                StatType.CurrentAutoAttackDamageBonus,
+                StatType.CurrentAutoAttackDamageBonus);
+            TemporaryStatModifier.Consume(
                 attacker,
                 StatType.CurrentAutoAttackCriticalDamagePercentAdjustment,
                 StatType.CurrentAutoAttackCriticalDamagePercentAdjustment);
@@ -6057,14 +6069,14 @@ namespace SWLOR.Game.Server.Service
             if (chance <= 0 || duration <= 0 || Random.D100(1) > chance)
                 return;
 
-            ApplySuppressionStack(
+            var applied = ApplySuppressionStack(
                 attacker,
                 defender,
                 Stat.GetStatAdjustment(attacker, StatType.AutoAttackSuppressionStackEvasionPenaltyPercent),
                 duration,
                 damageType);
 
-            if (GetIsPC(attacker))
+            if (applied && GetIsPC(attacker))
             {
                 SendMessageToPC(attacker, ColorToken.Combat("Pinning Fire: Suppression applied."));
                 FloatingTextStringOnCreature(ColorToken.Combat("Pinning Fire"), attacker, false);
@@ -6112,7 +6124,7 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        public static void ApplySuppressionStack(
+        public static bool ApplySuppressionStack(
             uint attacker,
             uint defender,
             int evasionPenaltyPercent,
@@ -6123,7 +6135,7 @@ namespace SWLOR.Game.Server.Service
                 !GetIsObjectValid(defender) ||
                 durationSeconds <= 0)
             {
-                return;
+                return false;
             }
 
             var adjustedEvasionPenaltyPercent = Math.Max(
@@ -6131,16 +6143,19 @@ namespace SWLOR.Game.Server.Service
                 evasionPenaltyPercent +
                 Stat.GetStatAdjustment(attacker, StatType.SuppressionStackEvasionPenaltyPercentAdjustment));
             if (adjustedEvasionPenaltyPercent <= 0)
-                return;
+                return false;
 
-            StatusEffect.ApplyStatusEffect(
+            var applied = StatusEffect.ApplyStatusEffect(
                 attacker,
                 defender,
                 new SuppressionStatusEffect(adjustedEvasionPenaltyPercent),
                 durationSeconds,
                 damageType);
 
-            ReconcileContainmentNetStatus(attacker, defender);
+            if (applied)
+                ReconcileContainmentNetStatus(attacker, defender);
+
+            return applied;
         }
 
         public static int GetSuppressionStackCount(uint target, uint source = OBJECT_INVALID)
@@ -6161,7 +6176,10 @@ namespace SWLOR.Game.Server.Service
 
             var requiredStacks = Stat.GetStatAdjustment(source, StatType.SuppressionStackDamageDealtRequiredStacks);
             var adjustment = Stat.GetStatAdjustment(source, StatType.SuppressionStackDamageDealtPercentAdjustment);
-            if (requiredStacks <= 0 || adjustment == 0 || GetSuppressionStackCount(target, source) < requiredStacks)
+            if (!ContainmentNetStatusEffect.ShouldRemainActive(
+                    GetSuppressionStackCount(target, source),
+                    requiredStacks,
+                    adjustment))
             {
                 StatusEffect.RemoveStatusEffect(target, typeof(ContainmentNetStatusEffect), source, false);
                 return;
@@ -7983,7 +8001,7 @@ namespace SWLOR.Game.Server.Service
             modifier += GetIncomingAbilityHitChanceAdjustment(defender, skillType);
             modifier += GetSideAttackHitChanceAdjustment(attacker, defender, skillType);
             modifier += GetIdleAbilityHitChanceAdjustment(attacker, skillType);
-            modifier += GetSuppressionRangedAttackAccuracyAdjustment(attacker, defender, skillType);
+            modifier += ConsumeSuppressionRangedAttackAccuracyAdjustment(attacker, defender, skillType);
             modifier += GetHitChanceAgainstSunderedTargetAdjustment(attacker, defender);
             if (skillType == SkillType.Force)
             {
@@ -8134,7 +8152,7 @@ namespace SWLOR.Game.Server.Service
                 : 0;
         }
 
-        public static int GetSuppressionRangedAttackAccuracyAdjustment(uint attacker, uint defender, SkillType skillType)
+        public static int ConsumeSuppressionRangedAttackAccuracyAdjustment(uint attacker, uint defender, SkillType skillType)
         {
             if (!IsRangedWeaponSkill(skillType))
                 return 0;
@@ -9798,7 +9816,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(creature))
                 return;
 
-            var lastActivity = GetLastOffensiveActivityAt(creature);
+            var lastActivity = GetLastCompletedOffensiveActivityAt(creature);
             var elapsed = lastActivity == default
                 ? double.MaxValue
                 : (DateTime.UtcNow - lastActivity).TotalSeconds;
@@ -9831,7 +9849,7 @@ namespace SWLOR.Game.Server.Service
         private static void ScheduleIdleReadinessRefresh(uint creature)
         {
             var openingSeconds = Stat.GetStatAdjustment(creature, StatType.OpeningAutoAttackIdleSeconds);
-            var scheduledActivity = GetLastOffensiveActivityAt(creature);
+            var scheduledActivity = GetLastCompletedOffensiveActivityAt(creature);
             var delays = _idleSkillAbilityStatChannels
                 .Select(channel => Stat.GetStatAdjustment(creature, channel.RequiredIdleSeconds))
                 .Append(openingSeconds)
@@ -9841,7 +9859,7 @@ namespace SWLOR.Game.Server.Service
             {
                 DelayCommand(delay, () =>
                 {
-                    if (GetIsObjectValid(creature) && GetLastOffensiveActivityAt(creature) == scheduledActivity)
+                    if (GetIsObjectValid(creature) && GetLastCompletedOffensiveActivityAt(creature) == scheduledActivity)
                         RefreshIdleReadiness(creature);
                 });
             }

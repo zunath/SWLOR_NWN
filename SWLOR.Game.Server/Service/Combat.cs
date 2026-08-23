@@ -539,10 +539,13 @@ namespace SWLOR.Game.Server.Service
             return adjustment;
         }
 
-        public static int GetAutoAttackCriticalRateAdjustment(uint attacker, uint defender, SkillType skillType)
+        public static int GetAutoAttackCriticalRateAdjustment(
+            uint attacker,
+            uint defender,
+            int cycleCriticalRateAdjustment)
         {
             return GetTargetStatusCriticalRateAdjustment(attacker, defender) +
-                   PrepareAutoAttackCycleCriticalRate(attacker, skillType);
+                   cycleCriticalRateAdjustment;
         }
 
         public static int GetRangedAttackDamageFlatAdjustment(uint attacker, SkillType skillType)
@@ -3130,7 +3133,7 @@ namespace SWLOR.Game.Server.Service
             return Stat.GetStatAdjustment(attacker, StatType.OpeningAutoAttackCriticalRatePercentAdjustment);
         }
 
-        private static int PrepareAutoAttackCycleCriticalRate(uint attacker, SkillType skillType)
+        public static int PrepareAutoAttackCycleCriticalRate(uint attacker, SkillType skillType)
         {
             if (!GetIsObjectValid(attacker) || skillType == SkillType.Invalid)
                 return 0;

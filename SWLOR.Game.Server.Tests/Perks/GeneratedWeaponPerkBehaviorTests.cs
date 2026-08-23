@@ -175,6 +175,16 @@ public class GeneratedWeaponPerkBehaviorTests
         combat.Should().Contain("new DeadeyeReloadStatusEffect(currentTotal)");
         combat.Should().Contain("new LuckyChamberStatusEffect(count)");
         combat.Should().Contain("ConsumePersistentNextSkillAbilityCriticalRateBonus");
+        var resolveAttackRoll = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
+        var luckyChamberPreparation = resolveAttackRoll.IndexOf(
+            "Combat.PrepareAutoAttackCycleCriticalRate(attacker.m_idSelf, weaponSkillType)",
+            StringComparison.Ordinal);
+        var hitBranch = resolveAttackRoll.IndexOf("if (isHit)", StringComparison.Ordinal);
+        luckyChamberPreparation.Should().BeGreaterThan(-1);
+        luckyChamberPreparation.Should().BeLessThan(hitBranch,
+            "Lucky Chamber must advance before hit, miss, or deflection resolution");
+        resolveAttackRoll.Should().Contain("autoAttackCycleCriticalRate);");
         combat.Should().Contain("new DamageDealtAdjustmentStatusEffect(");
         combat.Should().NotContain("new DuelistsDistanceStatusEffect(",
             "shared combat must not couple generic near-target stats to one perk-specific status class");

@@ -157,6 +157,36 @@ public class AreaAbilityTargetingTests
     }
 
     [Test]
+    public void QueuedWeaponAbilities_DoNotPromptForATargetInFeat2da()
+    {
+        var feats = ReadFeat2da();
+        var playerFeats = GetPlayerGrantedFeats();
+
+        var offenders = new List<string>();
+        foreach (var ability in GetAllAbilities()
+                     .Where(x => x.ActivationType == AbilityActivationType.Weapon)
+                     .Where(x => playerFeats.Contains(x.Feat)))
+        {
+            if (!feats.TryGetValue(ability.Feat.ToString(), out var row))
+            {
+                offenders.Add($"{ability.Feat} has no feat.2da row");
+                continue;
+            }
+
+            if (row.TargetSelf != "1" || row.HostileFeat != "****")
+            {
+                offenders.Add(
+                    $"{ability.Feat} has TARGETSELF={row.TargetSelf} HostileFeat={row.HostileFeat}, " +
+                    "expected TARGETSELF=1 HostileFeat=****");
+            }
+        }
+
+        offenders.Should().BeEmpty(
+            "queued weapon abilities activate immediately and resolve on the next landed attack. " +
+            $"Offenders: {string.Join("; ", offenders)}");
+    }
+
+    [Test]
     public void SelfCenteredAreaAbilities_DoNotRequireATargetInCode()
     {
         var playerFeats = GetPlayerGrantedFeats();
@@ -232,6 +262,7 @@ public class AreaAbilityTargetingTests
         bool RequiresLocationTarget,
         bool HasExplicitMaxRange,
         SkillType SkillType,
+        AbilityActivationType ActivationType,
         bool IsMimicryTechnique);
 
     /// <summary>
@@ -283,6 +314,7 @@ public class AreaAbilityTargetingTests
                     ability.RequiresLocationTarget,
                     ability.HasExplicitMaxRange,
                     ability.SkillType,
+                    ability.ActivationType,
                     ability.IsMimicryTechnique);
             }
         }

@@ -7,6 +7,7 @@ using Avalonia.Platform;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Serilog;
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.AreaGeneration;
 using SWLOR.Toolset.Domain.AreaGeneration.Authoring;
 using SWLOR.Toolset.Domain.AreaGeneration.Tileset;
@@ -44,6 +45,7 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
     private bool _loadingDefaults;
     private bool _adjustingRanges;
     private bool _automaticPreviewEnabled;
+    private bool _showResRefValidation;
     private bool _disposed;
     private CancellationTokenSource? _automaticPreviewCancellation;
     private AreaGenerationDraft? _previewedDraft;
@@ -134,7 +136,11 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
     [ObservableProperty] private double _decorationDensityPercent = 100;
     [ObservableProperty] private Bitmap? _preview;
     [ObservableProperty] private string _statusMessage = "The preview generates automatically when this window opens.";
+    [ObservableProperty] private string _resRefError = string.Empty;
+    [ObservableProperty] private bool _statusIsError;
     [ObservableProperty] private bool _isBusy;
+
+    public bool HasResRefError => !string.IsNullOrEmpty(ResRefError);
 
     public event Action<string>? AreaCreated;
 
@@ -166,7 +172,7 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
         RefreshLayoutProfiles();
 
         if (TilesetProfiles.Count == 0)
-            StatusMessage = "No generator tilesets are available from the current game-data index.";
+            SetStatus("No generator tilesets are available from the current game-data index.", isError: true);
 
         PropertyChanged += OnGenerationInputChanged;
     }
@@ -206,6 +212,30 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
     {
         GeneratePreviewCommand.NotifyCanExecuteChanged();
         CreateAreaCommand.NotifyCanExecuteChanged();
+    }
+
+    partial void OnResRefChanged(string value)
+    {
+        if (!_showResRefValidation)
+            return;
+
+        var previousError = ResRefError;
+        ValidateResRef();
+        if (HasResRefError)
+        {
+            SetStatus(ResRefError, isError: true);
+        }
+        else if (!string.IsNullOrEmpty(previousError) &&
+                 StatusIsError &&
+                 StatusMessage.Equals(previousError, StringComparison.Ordinal))
+        {
+            SetStatus("ResRef corrected. Ready to create the previewed area.");
+        }
+    }
+
+    partial void OnResRefErrorChanged(string value)
+    {
+        OnPropertyChanged(nameof(HasResRefError));
     }
 
     partial void OnLayoutStyleChanged(DungeonLayoutStyle value)
@@ -363,7 +393,7 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
         CancelAutomaticPreviewRequest();
         SetPreviewedDraft(null);
         IsBusy = true;
-        StatusMessage = "Generating area...";
+        SetStatus("Generating area...");
         try
         {
             var settings = BuildSettings();
@@ -371,7 +401,7 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
             if (!draft.Result.Success)
             {
                 Preview = null;
-                StatusMessage = draft.Result.FailureReason;
+                SetStatus(draft.Result.FailureReason, isError: true);
                 return;
             }
 
@@ -383,14 +413,14 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
                 ShowDecorations));
             Preview = ToBitmap(image);
             SetPreviewedDraft(draft);
-            StatusMessage = Describe(draft, image);
+            SetStatus(Describe(draft, image));
         }
         catch (Exception ex)
         {
             Log.Error(ex, "Area generation preview failed.");
             Preview = null;
             SetPreviewedDraft(null);
-            StatusMessage = ex.GetBaseException().Message;
+            SetStatus(ex.GetBaseException().Message, isError: true);
         }
         finally
         {
@@ -404,12 +434,19 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
         var draft = _previewedDraft;
         if (draft == null)
         {
-            StatusMessage = "Wait for the current settings to finish previewing before creating the area.";
+            SetStatus("Wait for the current settings to finish previewing before creating the area.", isError: true);
+            return;
+        }
+
+        _showResRefValidation = true;
+        if (!ValidateResRef())
+        {
+            SetStatus(ResRefError, isError: true);
             return;
         }
 
         IsBusy = true;
-        StatusMessage = "Creating the previewed area...";
+        SetStatus("Creating the previewed area...");
         string? createdResref = null;
         try
         {
@@ -428,18 +465,18 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
             });
             if (!createResult.Success)
             {
-                StatusMessage = createResult.Error;
+                SetStatus(createResult.Error, isError: true);
                 return;
             }
 
             var normalized = resRef.Trim().ToLowerInvariant();
-            StatusMessage = $"Created '{normalized}' in the open module.";
+            SetStatus($"Created '{normalized}' in the open module.");
             createdResref = normalized;
         }
         catch (Exception ex)
         {
             Log.Error(ex, "Creating generated area {ResRef} failed.", ResRef);
-            StatusMessage = ex.GetBaseException().Message;
+            SetStatus(ex.GetBaseException().Message, isError: true);
         }
         finally
         {
@@ -474,7 +511,7 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
         _automaticPreviewEnabled = true;
         if (CanGenerate())
         {
-            StatusMessage = "Preparing the preview...";
+            SetStatus("Preparing the preview...");
             RequestAutomaticPreview();
         }
     }
@@ -507,7 +544,7 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
     {
         Preview = null;
         SetPreviewedDraft(null);
-        StatusMessage = status;
+        SetStatus(status);
     }
 
     private void InvalidatePreviewDisplay()
@@ -591,6 +628,21 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
         {
             _adjustingRanges = false;
         }
+    }
+
+    private bool ValidateResRef()
+    {
+        var normalized = (ResRef ?? string.Empty).Trim().ToLowerInvariant();
+        ResRefError = NwnResRef.IsCanonical(normalized)
+            ? string.Empty
+            : $"ResRef must be 1-{NwnResRef.MaxLength} characters, lowercase letters/digits/underscore only.";
+        return !HasResRefError;
+    }
+
+    private void SetStatus(string message, bool isError = false)
+    {
+        StatusIsError = isError;
+        StatusMessage = message;
     }
 
     private void SetPreviewedDraft(AreaGenerationDraft? draft)

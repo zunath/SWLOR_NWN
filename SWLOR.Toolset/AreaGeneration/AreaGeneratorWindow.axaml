@@ -36,6 +36,22 @@
       <Setter Property="BorderBrush" Value="{DynamicResource RuleBrush}" />
       <Setter Property="BorderThickness" Value="1" />
     </Style>
+    <Style Selector="TextBox.validationError">
+      <Setter Property="BorderBrush" Value="{DynamicResource ErrorBrush}" />
+      <Setter Property="BorderThickness" Value="2" />
+    </Style>
+    <Style Selector="TextBox.validationError:focus /template/ Border#PART_BorderElement">
+      <Setter Property="BorderBrush" Value="{DynamicResource ErrorBrush}" />
+    </Style>
+    <Style Selector="TextBlock.validationError">
+      <Setter Property="Foreground" Value="{DynamicResource ErrorBrush}" />
+      <Setter Property="FontSize" Value="11" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="TextBlock.statusError">
+      <Setter Property="Foreground" Value="{DynamicResource ErrorBrush}" />
+      <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
   </Window.Styles>
 
   <Grid RowDefinitions="Auto,*,Auto">
@@ -108,9 +124,17 @@
                                  Value="{Binding Seed, Mode=TwoWay}"
                                  Minimum="0" Maximum="2147482647" Increment="1" FormatString="0" />
                   <TextBlock Grid.Row="3" Grid.Column="0" Classes="label" Text="ResRef" />
-                  <TextBox x:Name="ResRefInput" Grid.Row="3" Grid.Column="1"
-                           Text="{Binding ResRef, Mode=TwoWay}"
-                           Watermark="generated_area" />
+                  <StackPanel Grid.Row="3" Grid.Column="1" Spacing="4">
+                    <TextBox x:Name="ResRefInput"
+                             Classes.validationError="{Binding HasResRefError}"
+                             Text="{Binding ResRef, Mode=TwoWay}"
+                             Watermark="generated_area" />
+                    <TextBlock x:Name="ResRefErrorText"
+                               Classes="validationError"
+                               Text="{Binding ResRefError}"
+                               TextWrapping="Wrap"
+                               IsVisible="{Binding HasResRefError}" />
+                  </StackPanel>
                   <TextBlock Grid.Row="4" Grid.Column="0" Classes="label" Text="Display name" />
                   <TextBox x:Name="DisplayNameInput" Grid.Row="4" Grid.Column="1"
                            Text="{Binding DisplayName, Mode=TwoWay}" />
@@ -221,7 +245,10 @@
                        IsVisible="{Binding Preview, Converter={x:Static ObjectConverters.IsNull}}" />
           </Grid>
         </Border>
-        <TextBlock Grid.Row="2" Margin="2,10,2,0" Classes="dim" TextWrapping="Wrap" Text="{Binding StatusMessage}" />
+        <TextBlock x:Name="StatusMessageText" Grid.Row="2" Margin="2,10,2,0"
+                   Classes.dim="{Binding !StatusIsError}"
+                   Classes.statusError="{Binding StatusIsError}"
+                   TextWrapping="Wrap" Text="{Binding StatusMessage}" />
       </Grid>
     </Grid>
 

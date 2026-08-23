@@ -193,6 +193,49 @@ public sealed class AreaGeneratorWindowRenderTests
         }
     }
 
+    [AvaloniaTest]
+    public async Task InvalidResRef_HighlightsTheEditorAndStatusUntilCorrected()
+    {
+        using var viewModel = CreateGeneratableViewModel();
+        viewModel.PreviewMode = AreaPreviewMode.Schematic;
+        var window = new AreaGeneratorWindow(viewModel);
+
+        try
+        {
+            window.Show();
+            Dispatcher.UIThread.RunJobs();
+            await WaitUntilAsync(
+                () => viewModel.Preview != null && !viewModel.IsBusy,
+                () => viewModel.StatusMessage);
+
+            viewModel.ResRef.Should().BeEmpty("the visible generated_area text is only a watermark");
+            await viewModel.CreateAreaCommand.ExecuteAsync(null);
+            Dispatcher.UIThread.RunJobs();
+
+            viewModel.HasResRefError.Should().BeTrue();
+            viewModel.StatusIsError.Should().BeTrue();
+            viewModel.ResRefError.Should().Be(
+                "ResRef must be 1-16 characters, lowercase letters/digits/underscore only.");
+            window.FindControl<TextBox>("ResRefInput")!.Classes.Should().Contain("validationError");
+            window.FindControl<TextBlock>("ResRefErrorText")!.IsVisible.Should().BeTrue();
+            window.FindControl<TextBlock>("StatusMessageText")!.Classes.Should().Contain("statusError");
+
+            viewModel.ResRef = "generated_area";
+            Dispatcher.UIThread.RunJobs();
+
+            viewModel.HasResRefError.Should().BeFalse();
+            viewModel.StatusIsError.Should().BeFalse();
+            window.FindControl<TextBox>("ResRefInput")!.Classes.Should().NotContain("validationError");
+            window.FindControl<TextBlock>("ResRefErrorText")!.IsVisible.Should().BeFalse();
+            window.FindControl<TextBlock>("StatusMessageText")!.Classes.Should().NotContain("statusError");
+        }
+        finally
+        {
+            window.Close();
+            Dispatcher.UIThread.RunJobs();
+        }
+    }
+
     [Test]
     public void EnablingAccentTerrain_SeedsAValidNonzeroDensity()
     {

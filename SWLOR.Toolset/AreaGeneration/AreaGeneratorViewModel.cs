@@ -287,13 +287,6 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
             AccentDensityPercent = AreaSettingsBounds.AccentDensityPercentMin;
     }
 
-    partial void OnAccentDensityPercentChanged(double value)
-    {
-        if (!_loadingDefaults && AccentEnabled && SupportsBlobAccents() &&
-            value < AreaSettingsBounds.AccentDensityPercentMin)
-            AccentDensityPercent = AreaSettingsBounds.AccentDensityPercentMin;
-    }
-
     partial void OnPreviewModeChanged(AreaPreviewMode value) => InvalidatePreviewDisplay();
 
     partial void OnShowRoomsChanged(bool value) => InvalidatePreviewDisplay();

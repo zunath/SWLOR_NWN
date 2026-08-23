@@ -399,6 +399,25 @@ public sealed class AreaGeneratorWindowRenderTests
             density.Value.Should().Be(0);
             viewModel.AccentDensityPercent.Should().Be(0,
                 "binding the channel-only default must not invent a blob accent pass");
+
+            viewModel.AccentDensityPercent = 5;
+            viewModel.AccentDensityPercent = 0;
+            Dispatcher.UIThread.RunJobs();
+
+            density.Value.Should().Be(0);
+            viewModel.AccentDensityPercent.Should().Be(0,
+                "zero explicitly disables blob painting even while the channel pass remains enabled");
+
+            var parameters = new MacroLayoutParameters { AccentChannels = 1 };
+            new LayoutKnobOverrides
+            {
+                AccentEnabled = viewModel.AccentEnabled,
+                AccentDensityPercent = (int)viewModel.AccentDensityPercent
+            }.ApplyTo(parameters, mixedProfile.Value);
+
+            parameters.AccentDensity.Should().Be(0);
+            parameters.ChannelTerrain.Should().Be("Pit");
+            parameters.AccentChannels.Should().Be(1);
         }
         finally
         {

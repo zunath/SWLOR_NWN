@@ -367,6 +367,36 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             GitDocument git,
             GicDocument gic)
         {
+            foreach (var placement in PlanCreatures(draft, workspace))
+            {
+                AddCreature(
+                    git,
+                    gic,
+                    placement.Spawn,
+                    placement.X,
+                    placement.Y,
+                    placement.Z,
+                    placement.FacingDegrees);
+            }
+        }
+
+        /// <summary>
+        /// Runs the exact deterministic encounter plan used during area writing, without changing
+        /// documents. The authoring service calls this before accepting a draft for preview.
+        /// </summary>
+        public static void ValidateEncounterPlacement(
+            AreaGenerationDraft draft,
+            ModuleWorkspace workspace)
+        {
+            ArgumentNullException.ThrowIfNull(draft);
+            ArgumentNullException.ThrowIfNull(workspace);
+            _ = PlanCreatures(draft, workspace);
+        }
+
+        private static IReadOnlyList<CreaturePlacement> PlanCreatures(
+            AreaGenerationDraft draft,
+            ModuleWorkspace workspace)
+        {
             if (!draft.Composition.Content.Tiers.TryGetValue(draft.Settings.Tier, out var tier))
             {
                 throw new InvalidOperationException(
@@ -391,6 +421,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                 0x51ED270B));
             var occupied = CreatureOccupiedAnchors(draft);
             var appearanceTable = LoadCreatureAppearanceTable(workspace.ResourceIndex);
+            var placements = new List<CreaturePlacement>();
 
             foreach (var room in draft.Result.Resolved.Rooms
                          .Where(room => room.Role == RoomRole.Standard)
@@ -414,20 +445,18 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                 {
                     var spawn = spawns[index];
                     var (x, y) = anchors[index];
-                    AddCreature(
-                        git,
-                        gic,
+                    placements.Add(new CreaturePlacement(
                         spawn,
                         x,
                         y,
                         GroundHeightAt(draft.Result.Resolved, draft.Tileset, x, y),
-                        (float)(random.NextDouble() * 360.0));
+                        (float)(random.NextDouble() * 360.0)));
                 }
             }
 
             var bossRoom = draft.Result.Resolved.Rooms.FirstOrDefault(room => room.Role == RoomRole.Boss);
             if (bossRoom == null)
-                return;
+                return placements;
 
             var bossSpawn = LoadCreatureSpawn(workspace, tier.BossResref, appearanceTable);
             var bossAnchor = SelectCreatureAnchors(
@@ -436,14 +465,13 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                 [bossSpawn.Radius],
                 occupied,
                 random).Single();
-            AddCreature(
-                git,
-                gic,
+            placements.Add(new CreaturePlacement(
                 bossSpawn,
                 bossAnchor.X,
                 bossAnchor.Y,
                 GroundHeightAt(draft.Result.Resolved, draft.Tileset, bossAnchor.X, bossAnchor.Y),
-                (float)(random.NextDouble() * 360.0));
+                (float)(random.NextDouble() * 360.0)));
+            return placements;
         }
 
         private static List<(float X, float Y, float Radius)> CreatureOccupiedAnchors(
@@ -627,6 +655,12 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
         }
 
         private sealed record CreatureSpawn(string Resref, JsonGffDocument Blueprint, float Radius);
+        private sealed record CreaturePlacement(
+            CreatureSpawn Spawn,
+            float X,
+            float Y,
+            float Z,
+            float FacingDegrees);
 
         private static CreatureSpawn LoadCreatureSpawn(
             ModuleWorkspace workspace,
@@ -695,6 +729,14 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                 Math.Sin(radians));
             instance.SetInt("FactionID", GffFieldType.Word, HostileFactionId);
             instance.SetInt("IsImmortal", GffFieldType.Byte, 0);
+            var variables = new VarTable(instance);
+            foreach (var questLocal in variables
+                         .Select(entry => entry.Name)
+                         .Where(name => name.StartsWith("QUEST_", StringComparison.Ordinal))
+                         .ToList())
+            {
+                variables.Remove(questLocal);
+            }
 
             var list = git.Fields.GetOrAddList(CreatureList);
             list.Add(instance);

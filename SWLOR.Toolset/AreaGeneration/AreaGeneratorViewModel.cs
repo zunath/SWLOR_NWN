@@ -438,8 +438,8 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
         try
         {
             var settings = BuildSettings();
-            BusyMessage = "Solving the layout and placing transitions and decorations...";
-            var draft = await _backgroundTasks.RunAsync(() => _authoring.Generate(settings)).ConfigureAwait(true);
+            BusyMessage = "Solving the layout and validating encounters...";
+            var draft = await _backgroundTasks.RunAsync(() => _authoring.Generate(settings, _workspace)).ConfigureAwait(true);
             if (!draft.Result.Success)
             {
                 Preview = null;

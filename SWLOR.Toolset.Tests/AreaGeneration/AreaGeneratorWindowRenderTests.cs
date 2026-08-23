@@ -308,7 +308,7 @@ public sealed class AreaGeneratorWindowRenderTests
 
             viewModel.IsBusy.Should().BeTrue();
             viewModel.BusyMessage.Should().Be(
-                "Solving the layout and placing transitions and decorations...");
+                "Solving the layout and validating encounters...");
             window.FindControl<StackPanel>("GenerationProgressPanel")!.IsVisible.Should().BeTrue();
             window.FindControl<TextBlock>("GenerationProgressText")!.Text.Should().Be(viewModel.BusyMessage);
             window.FindControl<ProgressBar>("GenerationProgressBar")!.IsIndeterminate.Should().BeTrue();

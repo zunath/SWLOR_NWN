@@ -401,7 +401,7 @@ public class AreaGenerationToolsetIntegrationTests
                         Tier = 2,
                         Creatures =
                         [
-                            new DungeonCreatureEntry { Resref = "vrepnpctroop1", Weight = 1 }
+                            new DungeonCreatureEntry { Resref = "colicoidexp", Weight = 1 }
                         ],
                         MinCreaturesPerRoom = 2,
                         MaxCreaturesPerRoom = 2,
@@ -509,10 +509,10 @@ public class AreaGenerationToolsetIntegrationTests
                 "ordinary decorations interpolate the rotated tile's corner heights at their XY position");
         git.Fields.GetListOrEmpty("Creature List")
             .Select(instance => instance.GetStringOrNull("TemplateResRef"))
-            .Should().Equal("vrepnpctroop1", "vrepnpctroop1", "republictrooperf");
+            .Should().Equal("colicoidexp", "colicoidexp", "republictrooperf");
         git.Fields.GetListOrEmpty("Creature List")
             .Select(instance => instance.GetStringOrNull("Tag"))
-            .Should().Equal(["RepublicSoldier", "RepublicSoldier", "RepublicTrooper"],
+            .Should().Equal(["colicoidexp", "colicoidexp", "RepublicTrooper"],
                 "generated encounters retain blueprint-authored tags used by creature scripts");
         git.Fields.GetListOrEmpty("Creature List")
             .Should().OnlyContain(instance => instance.GetIntOrNull("FactionID") == 1,
@@ -520,6 +520,11 @@ public class AreaGenerationToolsetIntegrationTests
         git.Fields.GetListOrEmpty("Creature List")
             .Should().OnlyContain(instance => instance.GetIntOrNull("IsImmortal") == 0,
                 "generated dungeon encounters must always be killable");
+        git.Fields.GetListOrEmpty("Creature List")
+            .Should().OnlyContain(instance =>
+                    !new VarTable(instance).Any(variable =>
+                        variable.Name.StartsWith("QUEST_", StringComparison.Ordinal)),
+                "generated encounters must not inherit quest-credit locals from source blueprints");
         gic.Fields.GetListOrEmpty("WaypointList").Should().HaveCount(3);
         gic.Fields.GetListOrEmpty("Door List").Should().ContainSingle();
         gic.Fields.GetListOrEmpty("Placeable List").Should().HaveCount(4);

@@ -1,6 +1,7 @@
 #nullable enable
 using SWLOR.Toolset.Domain.AreaGeneration.Tileset;
 using SWLOR.Toolset.Domain.GameData.Lookups;
+using SWLOR.Toolset.Domain.Workspace;
 
 namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
 {
@@ -94,6 +95,21 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                 settings.Overrides);
 
             return new AreaGenerationDraft(settings, composition, tileset, result);
+        }
+
+        /// <summary>
+        /// Generates a draft and verifies that all configured encounters can be loaded and placed
+        /// before the draft is shown as a creatable preview.
+        /// </summary>
+        public AreaGenerationDraft Generate(
+            AreaGenerationSettings settings,
+            ModuleWorkspace workspace)
+        {
+            ArgumentNullException.ThrowIfNull(workspace);
+            var draft = Generate(settings);
+            if (draft.Result.Success)
+                GeneratedAreaDocumentPopulator.ValidateEncounterPlacement(draft, workspace);
+            return draft;
         }
 
         private static void ValidateEffectiveLayoutSettings(

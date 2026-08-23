@@ -116,6 +116,25 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
         self.assertEqual("3", stats["OpeningAutoAttackIdleSeconds"])
         self.assertEqual("15", stats["OpeningAutoAttackCriticalDamagePercentAdjustment"])
 
+    def test_staff_idle_bonus_uses_an_independent_stat_channel(self):
+        row = {
+            "Tab": "Staff",
+            "PerkName": "Patient Sentinel",
+            "Type": "Trait",
+            "Description": (
+                "After 3 seconds without attacking, your next hostile Staff ability "
+                "gains +10 DMG and +8% Accuracy."
+            ),
+        }
+
+        stats = dict(GENERATOR.description_stat_entries(row, "Patient Sentinel"))
+
+        self.assertEqual("(int)SkillType.Staff", stats["AlternateIdleSkillAbilitySkillType"])
+        self.assertEqual("3", stats["AlternateIdleSkillAbilityRequiredIdleSeconds"])
+        self.assertEqual("10", stats["AlternateIdleSkillAbilityDamageBonus"])
+        self.assertEqual("8", stats["AlternateIdleSkillAbilityHitChancePercentAdjustment"])
+        self.assertNotIn("IdleSkillAbilitySkillType", stats)
+
     def test_point_blank_burst_applies_self_status_on_activation(self):
         properties = dict(GENERATOR.profile_property_lines(
             {

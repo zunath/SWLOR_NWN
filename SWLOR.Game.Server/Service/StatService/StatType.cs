@@ -1628,7 +1628,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Seconds without combat activity required before the next auto-attack is considered an opening attack.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         OpeningAutoAttackIdleSeconds = 295,
 
         /// <summary>
@@ -1862,7 +1862,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Seconds since the last combat ability required before idle-time ability bonuses apply.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         IdleSkillAbilityRequiredIdleSeconds = 334,
 
         /// <summary>
@@ -5976,6 +5976,36 @@ namespace SWLOR.Game.Server.Service.StatService
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         CurrentAutoAttackCriticalDamagePercentAdjustment = 1034,
+
+        /// <summary>
+        /// Independent SkillType selector for a second idle-time ability bonus channel.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        AlternateIdleSkillAbilitySkillType = 1035,
+
+        /// <summary>
+        /// Seconds since the last offensive activity required by the alternate idle-time channel.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        AlternateIdleSkillAbilityRequiredIdleSeconds = 1036,
+
+        /// <summary>
+        /// Flat damage bonus supplied by the alternate idle-time ability channel.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AlternateIdleSkillAbilityDamageBonus = 1037,
+
+        /// <summary>
+        /// Hit chance bonus supplied by the alternate idle-time ability channel.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AlternateIdleSkillAbilityHitChancePercentAdjustment = 1038,
+
+        /// <summary>
+        /// Critical damage bonus supplied by the alternate idle-time ability channel.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AlternateIdleSkillAbilityCriticalDamagePercentAdjustment = 1039,
 
     }
 

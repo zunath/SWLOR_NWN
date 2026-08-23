@@ -89,7 +89,29 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<uint, int> _meleeAutoAttackCycleCounts = new();
         private static readonly Dictionary<uint, SameTargetPressureState> _sameTargetPressureStates = new();
         private static readonly Dictionary<(uint Creature, AbilityDetail Ability), AbilityStaminaCostState> _abilityStaminaCosts = new();
+        private static readonly IdleSkillAbilityStatChannel[] _idleSkillAbilityStatChannels =
+        {
+            new(
+                StatType.IdleSkillAbilitySkillType,
+                StatType.IdleSkillAbilityRequiredIdleSeconds,
+                StatType.IdleSkillAbilityDamageBonus,
+                StatType.IdleSkillAbilityHitChancePercentAdjustment,
+                StatType.IdleSkillAbilityCriticalDamagePercentAdjustment),
+            new(
+                StatType.AlternateIdleSkillAbilitySkillType,
+                StatType.AlternateIdleSkillAbilityRequiredIdleSeconds,
+                StatType.AlternateIdleSkillAbilityDamageBonus,
+                StatType.AlternateIdleSkillAbilityHitChancePercentAdjustment,
+                StatType.AlternateIdleSkillAbilityCriticalDamagePercentAdjustment),
+        };
         private static bool _damageTypesCached;
+
+        private readonly record struct IdleSkillAbilityStatChannel(
+            StatType SkillType,
+            StatType RequiredIdleSeconds,
+            StatType DamageBonus,
+            StatType HitChancePercentAdjustment,
+            StatType CriticalDamagePercentAdjustment);
 
         private sealed class HostileAbilitySequenceState
         {
@@ -8793,8 +8815,7 @@ namespace SWLOR.Game.Server.Service
             if (Stat.GetStatAdjustment(creature, StatType.OpeningAutoAttackSkillType) <= 0 ||
                 Stat.GetStatAdjustment(creature, StatType.OpeningAutoAttackIdleSeconds) <= 0)
                 StatusEffect.RemoveStatusEffect(creature, typeof(SteadyAimReadyStatusEffect), false);
-            if (Stat.GetStatAdjustment(creature, StatType.IdleSkillAbilitySkillType) <= 0 ||
-                Stat.GetStatAdjustment(creature, StatType.IdleSkillAbilityRequiredIdleSeconds) <= 0)
+            if (!HasConfiguredIdleSkillAbilityChannel(creature))
                 StatusEffect.RemoveStatusEffect(creature, typeof(PatienceReadyStatusEffect), false);
 
             if (Stat.GetStatAdjustment(creature, StatType.RangedAutoAttackCycleCriticalRateRequiredCount) <= 0 ||
@@ -9734,11 +9755,6 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(activator) || skillType == SkillType.Invalid)
                 return (0, 0, 0);
 
-            var requiredSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(activator, StatType.IdleSkillAbilitySkillType));
-            var requiredIdleSeconds = Stat.GetStatAdjustment(activator, StatType.IdleSkillAbilityRequiredIdleSeconds);
-            if (!SkillTypeMatches(skillType, requiredSkillType) || requiredIdleSeconds <= 0)
-                return (0, 0, 0);
-
             var lastAttack = _lastAttackActivity.TryGetValue(activator, out var attackTime)
                 ? attackTime
                 : DateTime.MinValue;
@@ -9746,13 +9762,32 @@ namespace SWLOR.Game.Server.Service
                 ? abilityTime
                 : DateTime.MinValue;
             var lastOffensiveUse = lastAttack > lastAbility ? lastAttack : lastAbility;
-            if (lastOffensiveUse != DateTime.MinValue &&
-                (DateTime.UtcNow - lastOffensiveUse).TotalSeconds < requiredIdleSeconds)
+            var elapsedSeconds = lastOffensiveUse == DateTime.MinValue
+                ? double.MaxValue
+                : (DateTime.UtcNow - lastOffensiveUse).TotalSeconds;
+            var damageBonus = 0;
+            var accuracyBonus = 0;
+            var criticalDamageBonus = 0;
+            var hasReadyChannel = false;
+
+            foreach (var channel in _idleSkillAbilityStatChannels)
+            {
+                var requiredSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(activator, channel.SkillType));
+                var requiredIdleSeconds = Stat.GetStatAdjustment(activator, channel.RequiredIdleSeconds);
+                if (!SkillTypeMatches(skillType, requiredSkillType) ||
+                    requiredIdleSeconds <= 0 ||
+                    elapsedSeconds < requiredIdleSeconds)
+                    continue;
+
+                hasReadyChannel = true;
+                damageBonus += Stat.GetStatAdjustment(activator, channel.DamageBonus);
+                accuracyBonus += Stat.GetStatAdjustment(activator, channel.HitChancePercentAdjustment);
+                criticalDamageBonus += Stat.GetStatAdjustment(activator, channel.CriticalDamagePercentAdjustment);
+            }
+
+            if (!hasReadyChannel)
                 return (0, 0, 0);
 
-            var damageBonus = Stat.GetStatAdjustment(activator, StatType.IdleSkillAbilityDamageBonus);
-            var accuracyBonus = Stat.GetStatAdjustment(activator, StatType.IdleSkillAbilityHitChancePercentAdjustment);
-            var criticalDamageBonus = Stat.GetStatAdjustment(activator, StatType.IdleSkillAbilityCriticalDamagePercentAdjustment);
             StatusEffect.RemoveStatusEffect(activator, typeof(PatienceReadyStatusEffect), false);
 
             return (damageBonus, accuracyBonus, criticalDamageBonus);
@@ -9778,9 +9813,13 @@ namespace SWLOR.Game.Server.Service
                     FloatingTextStringOnCreature(ColorToken.Combat("Steady Aim Ready"), creature, false);
             }
 
-            var idleSkill = GetSkillTypeFromStat(Stat.GetStatAdjustment(creature, StatType.IdleSkillAbilitySkillType));
-            var idleSeconds = Stat.GetStatAdjustment(creature, StatType.IdleSkillAbilityRequiredIdleSeconds);
-            if (idleSkill != SkillType.Invalid && idleSeconds > 0 && elapsed >= idleSeconds &&
+            var hasReadyIdleSkillChannel = _idleSkillAbilityStatChannels.Any(channel =>
+            {
+                var idleSkill = GetSkillTypeFromStat(Stat.GetStatAdjustment(creature, channel.SkillType));
+                var idleSeconds = Stat.GetStatAdjustment(creature, channel.RequiredIdleSeconds);
+                return idleSkill != SkillType.Invalid && idleSeconds > 0 && elapsed >= idleSeconds;
+            });
+            if (hasReadyIdleSkillChannel &&
                 !StatusEffect.HasStatusEffect(creature, typeof(PatienceReadyStatusEffect)))
             {
                 StatusEffect.ApplyStatusEffect(creature, creature, new PatienceReadyStatusEffect(), -1);
@@ -9792,9 +9831,12 @@ namespace SWLOR.Game.Server.Service
         private static void ScheduleIdleReadinessRefresh(uint creature)
         {
             var openingSeconds = Stat.GetStatAdjustment(creature, StatType.OpeningAutoAttackIdleSeconds);
-            var idleSeconds = Stat.GetStatAdjustment(creature, StatType.IdleSkillAbilityRequiredIdleSeconds);
             var scheduledActivity = GetLastOffensiveActivityAt(creature);
-            var delays = new[] { openingSeconds, idleSeconds }.Where(value => value > 0).Distinct();
+            var delays = _idleSkillAbilityStatChannels
+                .Select(channel => Stat.GetStatAdjustment(creature, channel.RequiredIdleSeconds))
+                .Append(openingSeconds)
+                .Where(value => value > 0)
+                .Distinct();
             foreach (var delay in delays)
             {
                 DelayCommand(delay, () =>
@@ -9803,6 +9845,13 @@ namespace SWLOR.Game.Server.Service
                         RefreshIdleReadiness(creature);
                 });
             }
+        }
+
+        private static bool HasConfiguredIdleSkillAbilityChannel(uint creature)
+        {
+            return _idleSkillAbilityStatChannels.Any(channel =>
+                GetSkillTypeFromStat(Stat.GetStatAdjustment(creature, channel.SkillType)) != SkillType.Invalid &&
+                Stat.GetStatAdjustment(creature, channel.RequiredIdleSeconds) > 0);
         }
 
         private static int GetIdleAbilityHitChanceAdjustment(uint activator, SkillType skillType)

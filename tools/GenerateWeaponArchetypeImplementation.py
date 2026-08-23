@@ -997,6 +997,9 @@ def description_stat_entries(row, base):
     stats = OrderedDict()
     skill_expr = skill_type_expression(row)
     skill = SKILL_BY_TAB[row["Tab"]]
+    idle_skill_stat_prefix = (
+        "AlternateIdleSkillAbility" if row["Tab"] == "Staff" else "IdleSkillAbility"
+    )
 
     if base == "Suppressing Shot":
         stack_strength = parse_suppression_stack_evasion_penalty(description)
@@ -1479,9 +1482,9 @@ def description_stat_entries(row, base):
         add_stat(stats, "RangedAbilityLongRangeHitChancePercentAdjustment", parse_percent(r"\+(\d+)% Accuracy", description))
         add_stat(stats, "RangedAbilityLongRangeCriticalRatePercentAdjustment", parse_percent(r"\+(\d+)% Critical Rate", description))
     if base == "Dead Center":
-        add_stat(stats, "IdleSkillAbilitySkillType", skill_expr)
-        add_stat(stats, "IdleSkillAbilityRequiredIdleSeconds", parse_count(r"After (\d+) seconds without attacking", description) or 3)
-        add_stat(stats, "IdleSkillAbilityCriticalDamagePercentAdjustment", parse_percent(r"deals \+(\d+)% damage", description))
+        add_stat(stats, f"{idle_skill_stat_prefix}SkillType", skill_expr)
+        add_stat(stats, f"{idle_skill_stat_prefix}RequiredIdleSeconds", parse_count(r"After (\d+) seconds without attacking", description) or 3)
+        add_stat(stats, f"{idle_skill_stat_prefix}CriticalDamagePercentAdjustment", parse_percent(r"deals \+(\d+)% damage", description))
         add_stat(stats, "OpeningAutoAttackSkillType", skill_expr)
         add_stat(stats, "OpeningAutoAttackIdleSeconds", parse_count(r"After (\d+) seconds without attacking", description) or 3)
         add_stat(stats, "OpeningAutoAttackCriticalDamagePercentAdjustment", parse_percent(r"deals \+(\d+)% damage", description))
@@ -1641,19 +1644,19 @@ def description_stat_entries(row, base):
             add_stat(stats, "OpeningAutoAttackDamageBonus", parse_count(r"deals \+(\d+) DMG", description))
             add_stat(stats, "OpeningAutoAttackIdleSeconds", 3)
         else:
-            add_stat(stats, "IdleSkillAbilitySkillType", skill_expr)
-            add_stat(stats, "IdleSkillAbilityRequiredIdleSeconds", 3)
-            add_stat(stats, "IdleSkillAbilityDamageBonus", parse_count(r"\+(\d+) DMG", description))
-            add_stat(stats, "IdleSkillAbilityHitChancePercentAdjustment", parse_percent(r"\+(\d+)% Accuracy", description))
+            add_stat(stats, f"{idle_skill_stat_prefix}SkillType", skill_expr)
+            add_stat(stats, f"{idle_skill_stat_prefix}RequiredIdleSeconds", 3)
+            add_stat(stats, f"{idle_skill_stat_prefix}DamageBonus", parse_count(r"\+(\d+) DMG", description))
+            add_stat(stats, f"{idle_skill_stat_prefix}HitChancePercentAdjustment", parse_percent(r"\+(\d+)% Accuracy", description))
     if "Long-range hostile ranged abilities" in description:
         add_stat(stats, "AbilityHitChancePercentAdjustmentSkillType", skill_expr)
         add_stat(stats, "AbilityHitChancePercentAdjustment", parse_percent(r"\+(\d+)% Accuracy", description))
         add_stat(stats, "AbilityCriticalRatePercentAdjustmentSkillType", skill_expr)
         add_stat(stats, "AbilityCriticalRatePercentAdjustment", parse_percent(r"\+(\d+)% Critical Rate", description))
     if "critical hits after a 3-second aim window" in lowered:
-        add_stat(stats, "IdleSkillAbilitySkillType", skill_expr)
-        add_stat(stats, "IdleSkillAbilityRequiredIdleSeconds", 3)
-        add_stat(stats, "IdleSkillAbilityCriticalDamagePercentAdjustment", parse_percent(r"deal \+(\d+)% damage", description))
+        add_stat(stats, f"{idle_skill_stat_prefix}SkillType", skill_expr)
+        add_stat(stats, f"{idle_skill_stat_prefix}RequiredIdleSeconds", 3)
+        add_stat(stats, f"{idle_skill_stat_prefix}CriticalDamagePercentAdjustment", parse_percent(r"deal \+(\d+)% damage", description))
 
     if row["Tab"] == "Throwing":
         if "one additional nearby enemy" in lowered or re.search(r"one additional (?:one )?enemy", lowered):

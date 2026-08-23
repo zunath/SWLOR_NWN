@@ -1,6 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CompanionControlService;
 using SWLOR.NWN.API.NWScript.Enum;
 using AssociateCommand = SWLOR.NWN.API.NWScript.Enum.Associate.Command;
@@ -142,6 +143,45 @@ public class CompanionControlPolicyTests
             !ability.IsHostileAbility &&
             ability.IsSingleTargetAbility &&
             ability.RequiresTarget);
+    }
+
+    [TestCase(AbilityTargetingShapeType.Sphere, 5f, 5f, true)]
+    [TestCase(AbilityTargetingShapeType.HSphere, 5f, 5f, true)]
+    [TestCase(AbilityTargetingShapeType.Rect, 6f, 6f, true)]
+    [TestCase(AbilityTargetingShapeType.Cone, 6f, 6f, true)]
+    [TestCase(AbilityTargetingShapeType.Cone, 6.01f, 6f, false)]
+    [TestCase(AbilityTargetingShapeType.None, 1f, 6f, false)]
+    public void SelfOriginAreaReachUsesTheDeclaredShapeLength(
+        AbilityTargetingShapeType shape,
+        float distance,
+        float sizeX,
+        bool expected)
+    {
+        CompanionControlPolicy.IsWithinSelfOriginAreaReach(shape, true, distance, sizeX)
+            .Should()
+            .Be(expected);
+    }
+
+    [Test]
+    public void SelfOriginAreaReachRequiresASelfOriginFlag()
+    {
+        CompanionControlPolicy.IsWithinSelfOriginAreaReach(
+                AbilityTargetingShapeType.Sphere,
+                false,
+                1f,
+                5f)
+            .Should()
+            .BeFalse();
+    }
+
+    [TestCase(5f, 5f, true)]
+    [TestCase(5.01f, 5f, false)]
+    [TestCase(0f, 0f, false)]
+    public void LegacySelfAreaReachUsesItsExplicitRange(float distance, float reach, bool expected)
+    {
+        CompanionControlPolicy.IsWithinAreaReach(distance, reach)
+            .Should()
+            .Be(expected);
     }
 
 }

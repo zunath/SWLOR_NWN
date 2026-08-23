@@ -349,7 +349,33 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
                 return OBJECT_INVALID;
 
             if (ability.IsAreaAbility && selectedTarget == companion)
-                return companion;
+            {
+                if (GetArea(companion) != GetArea(authorizedTarget))
+                    return OBJECT_INVALID;
+
+                var distance = GetDistanceBetween(companion, authorizedTarget);
+                if (ability.Targeting == null)
+                {
+                    return CompanionControlPolicy.IsWithinAreaReach(distance, ability.MaxRange)
+                        ? companion
+                        : OBJECT_INVALID;
+                }
+
+                if (ability.Targeting.Shape is not AbilityTargetingShapeType.Sphere and
+                    not AbilityTargetingShapeType.HSphere)
+                {
+                    return OBJECT_INVALID;
+                }
+
+                var sizeX = ability.Targeting.ResolveSizeX(companion, true);
+                return CompanionControlPolicy.IsWithinSelfOriginAreaReach(
+                    ability.Targeting.Shape,
+                    ability.Targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf),
+                    distance,
+                    sizeX)
+                    ? companion
+                    : OBJECT_INVALID;
+            }
 
             return selectedTarget == authorizedTarget
                 ? selectedTarget
@@ -681,8 +707,14 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
                 var isSelfCenteredArea = ability.IsAreaAbility &&
                                          ability.Targeting?.Shape == AbilityTargetingShapeType.Sphere &&
                                          ability.Targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf);
-                if (isSelfCenteredArea &&
-                    GetDistanceBetween(companion, target) > ability.Targeting.ResolveSizeX(companion, true))
+                var isSelfOriginArea = ability.IsAreaAbility &&
+                                       ability.Targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf);
+                if (isSelfOriginArea &&
+                    !CompanionControlPolicy.IsWithinSelfOriginAreaReach(
+                        ability.Targeting.Shape,
+                        true,
+                        GetDistanceBetween(companion, target),
+                        ability.Targeting.ResolveSizeX(companion, true)))
                 {
                     continue;
                 }

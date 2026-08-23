@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service.CompanionControlService
@@ -57,6 +58,25 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
         public static bool ReturnsToFollowWhenComplete(CompanionEngagementType engagementType)
         {
             return engagementType == CompanionEngagementType.AttackNearest;
+        }
+
+        public static bool IsWithinAreaReach(float distance, float reach)
+        {
+            return reach > 0f && distance <= reach;
+        }
+
+        public static bool IsWithinSelfOriginAreaReach(
+            AbilityTargetingShapeType shape,
+            bool originOnSelf,
+            float distance,
+            float sizeX)
+        {
+            return originOnSelf &&
+                   shape is (AbilityTargetingShapeType.Sphere or
+                       AbilityTargetingShapeType.HSphere or
+                       AbilityTargetingShapeType.Rect or
+                       AbilityTargetingShapeType.Cone) &&
+                   IsWithinAreaReach(distance, sizeX);
         }
     }
 }

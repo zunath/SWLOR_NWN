@@ -53,16 +53,33 @@ namespace SWLOR.Toolset.Workspace
         /// (also timed, with progress logged periodically). Returns once the workspace itself is
         /// open - the catalog build continues in the background after this method returns.
         /// </summary>
-        public void Open(string moduleRoot)
+        /// <remarks>
+        /// This synchronous entry point is intended for headless and already-background callers.
+        /// Avalonia callers must use <see cref="OpenAsync"/> so cross-process recovery lease waits
+        /// cannot block the UI thread.
+        /// </remarks>
+        public void Open(string moduleRoot) => CompleteOpen(moduleRoot, RecoverBeforeOpen(moduleRoot));
+
+        /// <summary>
+        /// Recovers interrupted filesystem transactions on a worker, then publishes the replacement
+        /// workspace on the caller's captured context. UI callers therefore keep
+        /// <see cref="WorkspaceOpened"/> and its subscribers on the Avalonia thread without making
+        /// that thread wait for another process's module leases.
+        /// </summary>
+        public async Task OpenAsync(string moduleRoot)
+        {
+            var recovery = await Task.Run(() => RecoverBeforeOpen(moduleRoot))
+                .ConfigureAwait(true);
+            CompleteOpen(moduleRoot, recovery);
+        }
+
+        private static WorkspaceRecoveryResult RecoverBeforeOpen(string moduleRoot)
         {
             // A logical resource delete can span several files (and an area's IFO registration).
             // Restore an interrupted transaction before any workspace enumeration can observe only
             // the companions that had not moved when the prior process exited.
-            foreach (var recovered in Services.ModuleResourceDeletionService
-                         .RecoverInterruptedDeletes(moduleRoot))
-            {
-                _log.AppendLine($"Recovered {recovered} from an interrupted delete.");
-            }
+            var deletes = Services.ModuleResourceDeletionService
+                .RecoverInterruptedDeletes(moduleRoot);
 
             // Before anything reads the folder. A grouped save that was interrupted between moving
             // an original aside and installing its replacement leaves the canonical ARE, GIT, or
@@ -74,16 +91,26 @@ namespace SWLOR.Toolset.Workspace
             // returning partial success, and that must propagate out of Open so the caller's
             // existing "failed to open" handling refuses the module rather than opening it with an
             // area at mixed ARE/GIT/GIC generations.
-            foreach (var recovered in Services.SaveService.RecoverInterruptedSaves(moduleRoot))
-                _log.AppendLine($"Recovered '{recovered}' from an interrupted save.");
+            var saves = Services.SaveService.RecoverInterruptedSaves(moduleRoot);
 
             // A ResRef rename may contain one of the grouped GIT saves recovered above. Restore that
             // inner transaction first, then the outer rename transaction can reliably see either
             // every original companion or every installed companion instead of a half-moved set.
-            foreach (var recovered in Services.ItemRenameRecovery.RecoverInterruptedRenames(moduleRoot))
-                _log.AppendLine($"Recovered '{recovered}' from an interrupted blueprint rename.");
+            var renames = Services.ItemRenameRecovery.RecoverInterruptedRenames(moduleRoot);
 
-            foreach (var recovered in Services.ErfArchiveService.RecoverInterruptedImports(moduleRoot))
+            var imports = Services.ErfArchiveService.RecoverInterruptedImports(moduleRoot);
+            return new WorkspaceRecoveryResult(deletes, saves, renames, imports);
+        }
+
+        private void CompleteOpen(string moduleRoot, WorkspaceRecoveryResult recovery)
+        {
+            foreach (var recovered in recovery.Deletes)
+                _log.AppendLine($"Recovered {recovered} from an interrupted delete.");
+            foreach (var recovered in recovery.Saves)
+                _log.AppendLine($"Recovered '{recovered}' from an interrupted save.");
+            foreach (var recovered in recovery.Renames)
+                _log.AppendLine($"Recovered '{recovered}' from an interrupted blueprint rename.");
+            foreach (var recovered in recovery.Imports)
                 _log.AppendLine($"Recovered '{recovered}' from an interrupted ERF import.");
 
             var openStopwatch = Stopwatch.StartNew();
@@ -182,6 +209,12 @@ namespace SWLOR.Toolset.Workspace
             WorkspaceOpened?.Invoke();
             InvalidateScriptUsages();
         }
+
+        private sealed record WorkspaceRecoveryResult(
+            IReadOnlyList<string> Deletes,
+            IReadOnlyList<string> Saves,
+            IReadOnlyList<string> Renames,
+            IReadOnlyList<string> Imports);
 
         /// <summary>
         /// The resource kinds <see cref="BlueprintCatalog"/>'s initial build actually indexes - areas

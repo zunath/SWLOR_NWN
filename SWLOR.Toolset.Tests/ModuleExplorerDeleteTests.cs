@@ -1,6 +1,8 @@
 using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text.Json;
+using Avalonia.Headless.NUnit;
+using Avalonia.Threading;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.NWN.Formats.Common;
@@ -316,6 +318,75 @@ namespace SWLOR.Toolset.Tests
             holderFailure.Should().BeNull();
             File.Exists(source).Should().BeFalse();
             explorer.IsDeletingResource.Should().BeFalse();
+        }
+
+        [AvaloniaTest]
+        public async Task WorkspaceOpenAsync_RecoveryLeaseWaitKeepsUiResponsive()
+        {
+            var uiThreadId = Environment.CurrentManagedThreadId;
+            var log = new OutputLogService();
+            var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
+            int? openedThreadId = null;
+            workspace.WorkspaceOpened += () => openedThreadId = Environment.CurrentManagedThreadId;
+
+            using var acquired = new ManualResetEventSlim();
+            using var release = new ManualResetEventSlim();
+            Exception? holderFailure = null;
+            var holder = new Thread(() =>
+            {
+                try
+                {
+                    using var lease = ModuleWriteLock.Acquire(_module);
+                    acquired.Set();
+                    release.Wait();
+                }
+                catch (Exception ex)
+                {
+                    holderFailure = ex;
+                    acquired.Set();
+                }
+            });
+            holder.Start();
+            acquired.Wait(TimeSpan.FromSeconds(5)).Should().BeTrue();
+            holderFailure.Should().BeNull();
+
+            using var emergencyRelease = new CancellationTokenSource();
+            var emergencyReleaseTask = Task.Run(async () =>
+            {
+                try
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(3), emergencyRelease.Token);
+                    release.Set();
+                }
+                catch (OperationCanceledException)
+                {
+                }
+            });
+
+            var openTask = workspace.OpenAsync(_module);
+            try
+            {
+                openTask.IsCompleted.Should().BeFalse();
+                var uiHeartbeat = new TaskCompletionSource<bool>(
+                    TaskCreationOptions.RunContinuationsAsynchronously);
+                Dispatcher.UIThread.Post(() => uiHeartbeat.TrySetResult(true));
+                await uiHeartbeat.Task.WaitAsync(TimeSpan.FromSeconds(1));
+                openTask.IsCompleted.Should().BeFalse(
+                    "recovery should still be waiting for the held module lease");
+            }
+            finally
+            {
+                release.Set();
+                emergencyRelease.Cancel();
+            }
+
+            await openTask.WaitAsync(TimeSpan.FromSeconds(5));
+            holder.Join(TimeSpan.FromSeconds(5)).Should().BeTrue();
+            await emergencyReleaseTask;
+            holderFailure.Should().BeNull();
+            workspace.Workspace.Should().NotBeNull();
+            openedThreadId.Should().Be(uiThreadId,
+                "WorkspaceOpened subscribers own UI-thread-only editor state");
         }
 
         private (ModuleExplorerViewModel Explorer, CategoryService Categories) CreateExplorer(

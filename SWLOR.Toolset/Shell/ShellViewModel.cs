@@ -927,16 +927,11 @@ namespace SWLOR.Toolset.Shell
 
             try
             {
-                // WorkspaceContext.Open synchronously raises WorkspaceOpened before returning, and
-                // subscribers (e.g. EditorService) mutate plain, non-concurrent collections from that
-                // handler. Open itself is cheap - ModuleWorkspace only does lazy/directory-listing
-                // enumeration, and BlueprintCatalog kicks its own heavy build off via an internal
-                // Task.Run - so running the whole call on the UI thread (rather than on a background
-                // thread via Task.Run, which would publish WorkspaceOpened off-thread) keeps every
-                // WorkspaceOpened subscriber's assumption that it only ever runs on the UI thread true,
-                // without blocking the UI for the actual catalog build. See the matching comment in
-                // OnFileWatcherRescanRequested, which must publish on the same thread.
-                await Dispatcher.UIThread.InvokeAsync(() => _workspaceContext.Open(moduleRoot));
+                // OpenAsync runs all crash recovery and cross-process lease waits on a worker, then
+                // resumes on this Avalonia context before replacing the workspace and raising
+                // WorkspaceOpened. Subscribers such as EditorService can keep their UI-thread-only
+                // collections without making module startup freeze behind another process's lease.
+                await _workspaceContext.OpenAsync(moduleRoot);
             }
             catch (Exception ex)
             {
@@ -1037,15 +1032,10 @@ namespace SWLOR.Toolset.Shell
 
             try
             {
-                // Publish on the UI thread, matching InitializeAsync above: Open synchronously raises
-                // WorkspaceOpened, and EditorService's handler clears _choiceSets (a plain Dictionary,
-                // not concurrent-safe) on whatever thread invokes it. The old Task.Run here ran Open -
-                // and therefore that publish - on a worker thread while the UI thread could be
-                // concurrently opening an editor and reading/populating the same dictionary. Open is
-                // cheap enough for the UI thread: ModuleWorkspace only does lazy/directory-listing
-                // enumeration, and BlueprintCatalog's actual (slow) build already runs on its own
-                // Task.Run-backed BuildTask regardless of which thread constructs it.
-                await Dispatcher.UIThread.InvokeAsync(() => _workspaceContext.Open(moduleRoot));
+                // Recovery and lease waits run on OpenAsync's worker. The continuation resumes on
+                // this Avalonia context before WorkspaceOpened is raised, matching startup and
+                // preserving EditorService's UI-thread-only subscriber state.
+                await _workspaceContext.OpenAsync(moduleRoot);
             }
             catch (Exception ex)
             {

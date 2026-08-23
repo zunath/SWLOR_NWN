@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.ActivityService;
+using SWLOR.Game.Server.Service.CompanionControlService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -47,6 +48,9 @@ namespace SWLOR.Game.Server.Feature
 
         private static uint GetResumeAttackTarget(uint activator, uint target, AbilityDetail ability)
         {
+            if (CompanionControl.IsRegisteredCompanion(activator))
+                return CompanionControl.PeekAuthorizedTarget(activator);
+
             if (GetCurrentAction(activator) == ActionType.AttackObject)
             {
                 var attackTarget = GetAttackTarget(activator);
@@ -93,6 +97,17 @@ namespace SWLOR.Game.Server.Feature
             if (!GetIsObjectValid(activator) ||
                 GetCurrentHitPoints(activator) <= 0)
             {
+                return;
+            }
+
+            if (CompanionControl.TryProcessPendingDefensiveReaction(activator))
+                return;
+
+            if (CompanionControl.IsRegisteredCompanion(activator) &&
+                (!GetIsObjectValid(target) ||
+                 CompanionControl.PeekAuthorizedTarget(activator) != target))
+            {
+                CompanionControl.ResumeModePosition(activator);
                 return;
             }
 
@@ -174,8 +189,10 @@ namespace SWLOR.Game.Server.Feature
         {
             // Autonomous NPCs reacquire their highest-enmity target inside ResumeAttack. Schedule
             // the callback even when the target saved before the cast has since become invalid.
+            var isPlayerControlled = GetIsPC(activator) || GetIsPC(GetMaster(activator));
             if (!GetIsObjectValid(target) &&
-                (GetIsPC(activator) || GetIsPC(GetMaster(activator))))
+                isPlayerControlled &&
+                !CompanionControl.IsRegisteredCompanion(activator))
             {
                 return;
             }
@@ -545,6 +562,14 @@ namespace SWLOR.Game.Server.Feature
                 // Channeled abilities applied their impact, costs, and recast when the channel
                 // started; completing the channel only releases the activator.
                 if (ability.IsChanneled)
+                {
+                    CancelActivation(true);
+                    return;
+                }
+
+                if (ability.IsHostileAbility &&
+                    CompanionControl.IsRegisteredCompanion(activator) &&
+                    !CompanionControl.IsHostileAbilityTargetAuthorized(activator, ability, target))
                 {
                     CancelActivation(true);
                     return;

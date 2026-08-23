@@ -533,6 +533,17 @@ namespace SWLOR.Game.Server.Service.AbilityService
             return this;
         }
 
+        /// <summary>
+        /// Marks this ability as a healing option for explicit companion Heal Me orders.
+        /// </summary>
+        /// <returns>An ability builder with the configured options</returns>
+        public AbilityBuilder IsHealingAbility()
+        {
+            _activeAbility.IsHealingAbility = true;
+
+            return this;
+        }
+
         public AbilityBuilder SuppressesSourceStatusStackRiders()
         {
             _activeAbility.SuppressesSourceStatusStackRiders = true;

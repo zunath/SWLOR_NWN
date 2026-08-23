@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.ChatCommandService;
+using SWLOR.Game.Server.Service.CompanionControlService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -556,6 +557,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var associate = GetHenchman(user);
                     if (target == associate)
                     {
+                        CompanionControl.CancelExplicitOrder(associate);
                         AssignCommand(associate, () =>
                         {
                             ClearAllActions();
@@ -563,6 +565,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
                     else if (GetIsEnemy(target, user) || GetObjectType(target) == ObjectType.Placeable)
                     {
+                        CompanionControl.BeginExplicitOrder(associate);
                         AssignCommand(associate, () =>
                         {
                             ClearAllActions();
@@ -571,6 +574,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
                     else if (GetObjectType(target) == ObjectType.Door && !GetLocked(target))
                     {
+                        CompanionControl.BeginExplicitOrder(associate);
                         AssignCommand(associate, () =>
                         {
                             ClearAllActions();

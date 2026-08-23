@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.CompanionControlService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -293,7 +294,6 @@ namespace SWLOR.Game.Server.Service
             SetEventScript(beast, EventScript.Creature_OnDeath, ScriptName.OnBeastDeath);
             SetEventScript(beast, EventScript.Creature_OnDisturbed, ScriptName.OnBeastDisturbed);
             SetEventScript(beast, EventScript.Creature_OnHeartbeat, ScriptName.OnBeastHeartbeat);
-            SetEventScript(beast, EventScript.Creature_OnNotice, ScriptName.OnBeastPerception);
             SetEventScript(beast, EventScript.Creature_OnMeleeAttacked, ScriptName.OnBeastAttacked);
             SetEventScript(beast, EventScript.Creature_OnRested, ScriptName.OnBeastRest);
             SetEventScript(beast, EventScript.Creature_OnSpawnIn, ScriptName.OnBeastSpawn);
@@ -421,6 +421,7 @@ namespace SWLOR.Game.Server.Service
         {
             var player = OBJECT_SELF;
             var beast = GetAssociate(AssociateType.Henchman, player);
+            CompanionControl.Clear(beast);
             DestroyObject(beast);
         }
 
@@ -460,30 +461,27 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnBeastRoundEnd)]
         public static void BeastOnEndCombatRound()
         {
-            var beast = OBJECT_SELF;
-            if (!Activity.IsBusy(beast))
-            {
-                ExecuteScript("x0_ch_hen_combat", OBJECT_SELF);
-                AI.ProcessTrigger(beast, AITriggerType.CombatRound);
-            }
+            CompanionControl.ProcessCombatRound(OBJECT_SELF);
         }
 
         [NWNEventHandler(ScriptName.OnBeastConversation)]
         public static void BeastOnConversation()
         {
-            ExecuteScript("x0_ch_hen_conv", OBJECT_SELF);
+            if (!CompanionControl.HandleConversation(OBJECT_SELF))
+                ExecuteScript("x0_ch_hen_conv", OBJECT_SELF);
         }
 
         [NWNEventHandler(ScriptName.OnBeastDamaged)]
         public static void BeastOnDamaged()
         {
-            ExecuteScript("x0_ch_hen_damage", OBJECT_SELF);
+            CompanionControl.RegisterDefensiveThreat(OBJECT_SELF, GetLastDamager(OBJECT_SELF));
         }
 
         [NWNEventHandler(ScriptName.OnBeastDeath)]
         public static void BeastOnDeath()
         {
             var beast = OBJECT_SELF;
+            CompanionControl.Clear(beast);
             ExecuteScript("x2_hen_death", beast);
 
             var beastId = GetBeastId(beast);
@@ -505,22 +503,14 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnBeastHeartbeat)]
         public static void BeastOnHeartbeat()
         {
-            ExecuteScript("x0_ch_hen_heart", OBJECT_SELF);
             Stat.RestoreNPCStats(false);
-        }
-
-        [NWNEventHandler(ScriptName.OnBeastPerception)]
-        public static void BeastOnPerception()
-        {
-            ExecuteScript("x0_ch_hen_percep", OBJECT_SELF);
-
+            CompanionControl.ProcessHeartbeat(OBJECT_SELF);
         }
 
         [NWNEventHandler(ScriptName.OnBeastAttacked)]
         public static void BeastOnPhysicalAttacked()
         {
-            ExecuteScript("x0_ch_hen_attack", OBJECT_SELF);
-
+            CompanionControl.RegisterDefensiveThreat(OBJECT_SELF, GetLastAttacker(OBJECT_SELF));
         }
 
         [NWNEventHandler(ScriptName.OnBeastRest)]
@@ -538,20 +528,20 @@ namespace SWLOR.Game.Server.Service
         public static void BeastOnSpawn()
         {
             var beast = OBJECT_SELF;
-            ExecuteScript("x0_ch_hen_spawn", beast);
             AssignCommand(beast, () =>
             {
                 SetIsDestroyable(true, false, false);
             });
             Stat.LoadNPCStats();
             Stat.ApplyCreatureMovementRate(beast);
+            CompanionControl.Initialize(beast);
         }
 
         [NWNEventHandler(ScriptName.OnBeastSpellCast)]
         public static void BeastOnSpellCastAt()
         {
-            ExecuteScript("x2_hen_spell", OBJECT_SELF);
-
+            if (GetLastSpellHarmful())
+                CompanionControl.RegisterDefensiveThreat(OBJECT_SELF, GetLastSpellCaster());
         }
 
         [NWNEventHandler(ScriptName.OnBeastUserDefined)]

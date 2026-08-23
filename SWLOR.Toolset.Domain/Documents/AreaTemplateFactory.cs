@@ -93,5 +93,39 @@ namespace SWLOR.Toolset.Domain.Documents
             list.Add(areaStruct);
             return true;
         }
+
+        /// <summary>
+        /// Removes every registration for <paramref name="resRef"/> from the module's
+        /// <c>Mod_Area_list</c>. Older or hand-edited modules can contain duplicate entries, so a
+        /// delete removes all of them rather than leaving a second registration pointing at files
+        /// that no longer exist.
+        /// </summary>
+        /// <returns>The number of registrations removed.</returns>
+        public static int RemoveAreaFromModule(IfoDocument ifo, string resRef)
+        {
+            ArgumentNullException.ThrowIfNull(ifo);
+            if (string.IsNullOrWhiteSpace(resRef))
+                throw new ArgumentException("ResRef must be provided.", nameof(resRef));
+
+            if (!ifo.Fields.TryGet("Mod_Area_list", out var field) || field.Elements == null)
+                return 0;
+
+            var removed = 0;
+            for (var index = field.Elements.Count - 1; index >= 0; index--)
+            {
+                if (!string.Equals(
+                        field.Elements[index].GetStringOrNull("Area_Name"),
+                        resRef,
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                field.Elements.RemoveAt(index);
+                removed++;
+            }
+
+            return removed;
+        }
     }
 }

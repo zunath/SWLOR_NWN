@@ -171,6 +171,56 @@ namespace SWLOR.Toolset.Tests
                 .AreaResRefs.Should().Contain("guarded_new");
         }
 
+        [Test]
+        public void TryCreate_WithPopulator_PersistsCustomizationBeforeAtomicWrite()
+        {
+            var workspace = new ModuleWorkspace(_moduleRoot);
+
+            NewAreaWriter.TryCreate(
+                    workspace,
+                    SyntheticTilesets(),
+                    "customized",
+                    "Customized",
+                    "synthetic",
+                    2,
+                    2,
+                    (are, _, _) => are.FogClipDist = 73.5f,
+                    out var error)
+                .Should().BeTrue(error);
+
+            workspace.LoadArea("customized").Are.FogClipDist.Should().Be(73.5f);
+            IfoDocument.Load(Path.Combine(_moduleRoot, "ifo", "module.ifo.json"))
+                .AreaResRefs.Should().Contain("customized");
+        }
+
+        [Test]
+        public void TryCreate_WhenPopulatorThrows_RollsBackTripletAndModuleRegistration()
+        {
+            var workspace = new ModuleWorkspace(_moduleRoot);
+
+            NewAreaWriter.TryCreate(
+                    workspace,
+                    SyntheticTilesets(),
+                    "broken_custom",
+                    "Broken Customization",
+                    "synthetic",
+                    2,
+                    2,
+                    (_, _, _) => throw new FileNotFoundException("missing generated blueprint"),
+                    out var error)
+                .Should().BeFalse();
+
+            error.Should().Contain("missing generated blueprint");
+            File.Exists(workspace.GetResourcePath(ResourceType.Area, "broken_custom")).Should().BeFalse();
+            File.Exists(Path.Combine(_moduleRoot, "git", "broken_custom.git.json")).Should().BeFalse();
+            File.Exists(Path.Combine(_moduleRoot, "gic", "broken_custom.gic.json")).Should().BeFalse();
+            File.Exists(Path.Combine(
+                _moduleRoot,
+                ".swlor-toolset-new-area-broken_custom.pending")).Should().BeFalse();
+            IfoDocument.Load(Path.Combine(_moduleRoot, "ifo", "module.ifo.json"))
+                .AreaResRefs.Should().NotContain("broken_custom");
+        }
+
         /// <summary>
         /// Gives the "fills from the tileset's floor" rule real teeth. tms01 declares a single
         /// terrain, so there it cannot tell "used Floor" apart from "used the only terrain". ztd01

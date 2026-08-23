@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.VisualTree;
@@ -24,7 +25,23 @@ namespace SWLOR.Toolset.Shell.Views
 
         private void OnItemsDoubleTapped(object? sender, TappedEventArgs e)
         {
-            (DataContext as ModuleExplorerViewModel)?.OpenSelectedItem();
+            // Context-menu items remain logical children of the row even though Avalonia renders the
+            // popup in a separate visual tree. A quick right-click followed by a menu selection can
+            // therefore reach this ListBox as a DoubleTapped gesture on Windows. Only a gesture whose
+            // visual source is actually inside one of this tree's row containers may open a resource.
+            if (e.Source is not Visual source ||
+                (source as ListBoxItem ?? source.FindAncestorOfType<ListBoxItem>()) is not
+                    { DataContext: ExplorerNodeViewModel row })
+            {
+                return;
+            }
+
+            if (DataContext is ModuleExplorerViewModel viewModel)
+            {
+                viewModel.SelectedRow = row;
+                viewModel.OpenSelectedItem();
+                e.Handled = true;
+            }
         }
 
         /// <summary>

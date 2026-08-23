@@ -341,6 +341,9 @@ namespace SWLOR.Game.Server.Core
         public const string OnScavengeDisturbed = "scav_disturbed";
         public const string OnScavengeClosed = "scav_closed";
 
+        // Procedural treasure events
+        public const string OnProceduralTreasureOpened = "proc_loot_open";
+
         // NWNX Events - Associate events
         public const string OnAssociateAddAfter = "asso_add_aft";
         public const string OnAssociateRemoveAfter = "asso_rem_aft";

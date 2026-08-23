@@ -1381,6 +1381,30 @@ public class AIModelTests
         checkAbilities.Should().Contain("ability.MaxRange");
     }
 
+    [Test]
+    public void SelfOriginAreaAuthorizationChecksShapeReachInEveryMode()
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server",
+            "Service",
+            "CompanionControlService",
+            "CompanionControl.cs");
+        var resolveTarget = ExtractMethodBody(source, "public static uint ResolveHostileAbilityTarget");
+        var shapeReach = resolveTarget.IndexOf(
+            "CompanionControlPolicy.IsWithinSelfOriginAreaReach(",
+            StringComparison.Ordinal);
+        var selfSelectedArea = resolveTarget.IndexOf(
+            "if (ability.IsAreaAbility && selectedTarget == companion)",
+            StringComparison.Ordinal);
+        var authorizedTargetEquality = resolveTarget.LastIndexOf(
+            "return selectedTarget == authorizedTarget",
+            StringComparison.Ordinal);
+
+        shapeReach.Should().BeGreaterThanOrEqualTo(0);
+        selfSelectedArea.Should().BeGreaterThan(shapeReach);
+        authorizedTargetEquality.Should().BeGreaterThan(shapeReach);
+    }
+
     private static float ReadConstFloat(string name, params string[] pathParts)
     {
         var source = ReadSource(pathParts);

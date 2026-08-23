@@ -375,6 +375,25 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             if (!GetIsObjectValid(authorizedTarget))
                 return OBJECT_INVALID;
 
+            if (ability.IsAreaAbility &&
+                ability.Targeting != null &&
+                ability.Targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf))
+            {
+                if (GetArea(companion) != GetArea(authorizedTarget))
+                    return OBJECT_INVALID;
+
+                var distance = GetDistanceBetween(companion, authorizedTarget);
+                var sizeX = ability.Targeting.ResolveSizeX(companion, true);
+                if (!CompanionControlPolicy.IsWithinSelfOriginAreaReach(
+                        ability.Targeting.Shape,
+                        true,
+                        distance,
+                        sizeX))
+                {
+                    return OBJECT_INVALID;
+                }
+            }
+
             if (ability.IsAreaAbility && selectedTarget == companion)
             {
                 if (GetArea(companion) != GetArea(authorizedTarget))
@@ -394,12 +413,7 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
                     return OBJECT_INVALID;
                 }
 
-                var sizeX = ability.Targeting.ResolveSizeX(companion, true);
-                return CompanionControlPolicy.IsWithinSelfOriginAreaReach(
-                    ability.Targeting.Shape,
-                    ability.Targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf),
-                    distance,
-                    sizeX)
+                return ability.Targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf)
                     ? companion
                     : OBJECT_INVALID;
             }

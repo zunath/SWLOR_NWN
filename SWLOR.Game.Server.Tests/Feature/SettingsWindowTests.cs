@@ -47,7 +47,7 @@ public class SettingsWindowTests
     }
 
     [Test]
-    public void PartialChanges_RepublishExistingListBindingsAfterInsertion()
+    public void PartialChanges_RepublishExistingBindingsAfterInsertion()
     {
         var (_, viewModelSource) = LoadSettingsSources();
         var changeSettingsView = ExtractMethod(
@@ -68,6 +68,9 @@ public class SettingsWindowTests
         partialSwap.Should().BeGreaterThanOrEqualTo(0);
         refresh.Should().BeGreaterThan(partialSwap);
         changeSettingsView.Should().NotContain("partialName == ChatPartial");
+        changeSettingsView.Should().Contain("OnPropertyChanged(nameof(ShowOwnDescriptor));");
+        changeSettingsView.Should().Contain("OnPropertyChanged(nameof(ShowDescriptorsForNamedPlayers));");
+        changeSettingsView.Should().Contain("OnPropertyChanged(nameof(ScrambleAccountName));");
         changeSettingsView.Should().Contain("ChatColorNames?.ResetBindings();");
         changeSettingsView.Should().Contain("ChatColors?.ResetBindings();");
         changeSettingsView.Should().Contain("ChatColorToggles?.ResetBindings();");

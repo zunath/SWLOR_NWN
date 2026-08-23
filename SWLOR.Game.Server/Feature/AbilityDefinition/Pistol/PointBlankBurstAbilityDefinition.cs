@@ -44,7 +44,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 new GeneratedWeaponAbilityProfile
                 {
                     SelfStatusEffectFactory = () => new PointBlankBurstStatusEffect(10),
-                    SelfStatDurationSeconds = 30
+                    SelfStatDurationSeconds = 30,
+                    ApplySelfModifiersOnHostileActivation = true
                 });
 
             ConfigureGeneratedWeaponAbility(
@@ -74,7 +75,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 new GeneratedWeaponAbilityProfile
                 {
                     SelfStatusEffectFactory = () => new PointBlankBurstStatusEffect(15),
-                    SelfStatDurationSeconds = 30
+                    SelfStatDurationSeconds = 30,
+                    ApplySelfModifiersOnHostileActivation = true
                 });
 
             return builder.Build();

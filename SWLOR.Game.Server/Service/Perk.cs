@@ -981,6 +981,8 @@ namespace SWLOR.Game.Server.Service
             {
                 StatusEffect.RemoveStatusEffect(creature, statusEffectType, false);
             }
+
+            Combat.RefreshStatDrivenTrackerEffects(creature);
         }
 
         public static bool ShouldEnforceActiveAbilityFeatReplacement(uint creature, PerkType perkType)

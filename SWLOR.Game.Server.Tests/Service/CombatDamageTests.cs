@@ -224,6 +224,14 @@ public class CombatDamageTests
         grantNextSkillBonuses.Should().NotContain("skillType == SkillType.Invalid");
         consumeNextSkillBonuses.Should().Contain("if (!SkillTypeMatches(skillType, storedSkillType))");
         consumeNextSkillBonuses.Should().NotContain("storedSkillType != skillType");
+        consumeNextSkillBonuses.Should().Contain("TemporaryStatModifier.Consume(",
+            "ordinary next-ability Critical Rate bonuses must still be consumed on the next ability");
+
+        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
+        var endAbilityImpact = ExtractMethod(abilitySource, "public static AbilityImpactSummary EndAbilityImpact");
+        endAbilityImpact.Should().Contain("impact.Summary.CriticalHitCount > 0");
+        endAbilityImpact.Should().Contain("Combat.ConsumePersistentNextSkillAbilityCriticalRateBonus");
+        endAbilityImpact.Should().Contain("Combat.ApplyNonCriticalAbilityEffects");
     }
 
     [Test]

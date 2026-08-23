@@ -539,10 +539,13 @@ namespace SWLOR.Game.Server.Service
             return adjustment;
         }
 
-        public static int GetAutoAttackCriticalRateAdjustment(uint attacker, uint defender, SkillType skillType)
+        public static int GetAutoAttackCriticalRateAdjustment(
+            uint attacker,
+            uint defender,
+            int cycleCriticalRateAdjustment)
         {
             return GetTargetStatusCriticalRateAdjustment(attacker, defender) +
-                   PrepareAutoAttackCycleCriticalRate(attacker, skillType);
+                   cycleCriticalRateAdjustment;
         }
 
         public static int GetRangedAttackDamageFlatAdjustment(uint attacker, SkillType skillType)
@@ -2071,27 +2074,45 @@ namespace SWLOR.Game.Server.Service
 
             TemporaryStatModifier.Replace(
                 activator,
-                StatType.NextSkillAbilitySkillType,
+                StatType.PersistentNextSkillAbilityCriticalRateSkillType,
                 (int)skillType,
                 duration,
-                StatType.NextSkillAbilitySkillType);
+                StatType.PersistentNextSkillAbilityCriticalRateSkillType);
             TemporaryStatModifier.AddCapped(
                 activator,
-                StatType.NextSkillAbilityCriticalRatePercentAdjustment,
+                StatType.PersistentNextSkillAbilityCriticalRatePercentAdjustment,
                 criticalRate,
                 duration,
                 maximum,
-                StatType.NextSkillAbilitySkillType,
-                1);
+                StatType.PersistentNextSkillAbilityCriticalRateSkillType,
+                1,
+                refreshExistingStacks: true);
 
             var currentTotal = TemporaryStatModifier.GetStatAdjustment(
                 activator,
-                StatType.NextSkillAbilityCriticalRatePercentAdjustment,
-                StatType.NextSkillAbilitySkillType);
-            if (GetIsPC(activator) && currentTotal > 0)
+                StatType.PersistentNextSkillAbilityCriticalRatePercentAdjustment,
+                StatType.PersistentNextSkillAbilityCriticalRateSkillType);
+            if (currentTotal > 0)
             {
+                var trackerIcon = GetEffectIconTypeFromStat(Stat.GetStatAdjustment(
+                    activator,
+                    StatType.NonCriticalAbilityNextSkillAbilityCriticalRateTrackerEffectIconType));
+                StatusEffect.RemoveStatusEffect(
+                    activator,
+                    typeof(CriticalRateStackTrackerStatusEffect),
+                    false);
+                if (trackerIcon != EffectIconType.Invalid)
+                {
+                    StatusEffect.ApplyStatusEffect(
+                        activator,
+                        activator,
+                        new CriticalRateStackTrackerStatusEffect(
+                            $"Next ranged ability: +{currentTotal}% Critical Rate",
+                            trackerIcon),
+                        duration);
+                }
                 FloatingTextStringOnCreature(
-                    ColorToken.Combat($"Deadeye Reload +{currentTotal}% Critical Rate"),
+                    ColorToken.Combat($"Next ranged ability +{currentTotal}% Critical Rate"),
                     activator,
                     false);
             }
@@ -3123,18 +3144,38 @@ namespace SWLOR.Game.Server.Service
             return Stat.GetStatAdjustment(attacker, StatType.OpeningAutoAttackCriticalRatePercentAdjustment);
         }
 
-        private static int PrepareAutoAttackCycleCriticalRate(uint attacker, SkillType skillType)
+        public static int PrepareAutoAttackCycleCriticalRate(uint attacker, SkillType skillType)
         {
             if (!GetIsObjectValid(attacker) || skillType == SkillType.Invalid)
                 return 0;
 
             var requiredCount = Stat.GetStatAdjustment(attacker, StatType.RangedAutoAttackCycleCriticalRateRequiredCount);
             var criticalRate = Stat.GetStatAdjustment(attacker, StatType.RangedAutoAttackCycleCriticalRatePercentAdjustment);
-            if (!IsRangedWeaponSkill(skillType) || requiredCount <= 0 || criticalRate <= 0)
+            if (requiredCount <= 0 || criticalRate <= 0)
+            {
+                ClearAutoAttackCycleCriticalRateTracker(attacker);
+                return 0;
+            }
+
+            if (!IsRangedWeaponSkill(skillType))
                 return 0;
 
             _autoAttackCycleCriticalCounts.TryGetValue(attacker, out var count);
             count++;
+            var trackerIcon = GetEffectIconTypeFromStat(Stat.GetStatAdjustment(
+                attacker,
+                StatType.RangedAutoAttackCycleCriticalRateTrackerEffectIconType));
+            StatusEffect.RemoveStatusEffect(attacker, typeof(AttackCycleTrackerStatusEffect), false);
+            if (trackerIcon != EffectIconType.Invalid)
+            {
+                StatusEffect.ApplyStatusEffect(
+                    attacker,
+                    attacker,
+                    new AttackCycleTrackerStatusEffect(
+                        $"Ranged attack cycle: {Math.Min(count, requiredCount)}/{requiredCount}",
+                        trackerIcon),
+                    count >= requiredCount ? 3f : 0f);
+            }
             if (count < requiredCount)
             {
                 _autoAttackCycleCriticalCounts[attacker] = count;
@@ -3142,14 +3183,17 @@ namespace SWLOR.Game.Server.Service
             }
 
             _autoAttackCycleCriticalCounts[attacker] = 0;
-            if (GetIsPC(attacker))
-            {
-                FloatingTextStringOnCreature(
-                    ColorToken.Combat($"Lucky Chamber +{criticalRate}% Critical Rate"),
-                    attacker,
-                    false);
-            }
+            FloatingTextStringOnCreature(
+                ColorToken.Combat($"Ranged attack +{criticalRate}% Critical Rate"),
+                attacker,
+                false);
             return criticalRate;
+        }
+
+        private static void ClearAutoAttackCycleCriticalRateTracker(uint creature)
+        {
+            _autoAttackCycleCriticalCounts.Remove(creature);
+            StatusEffect.RemoveStatusEffect(creature, typeof(AttackCycleTrackerStatusEffect), false);
         }
 
         private static int GetLowHPCriticalRateAdjustment(uint attacker)
@@ -8468,6 +8512,120 @@ namespace SWLOR.Game.Server.Service
                 StatType.NextSkillAbilitySkillType);
 
             return (damageBonus, criticalRate, defenseIgnore);
+        }
+
+        public static int ConsumePersistentNextSkillAbilityCriticalRateBonus(uint creature, SkillType skillType)
+        {
+            if (skillType == SkillType.Invalid)
+                return 0;
+
+            var storedSkillType = GetSkillTypeFromStat(TemporaryStatModifier.GetStatAdjustment(
+                creature,
+                StatType.PersistentNextSkillAbilityCriticalRateSkillType,
+                StatType.PersistentNextSkillAbilityCriticalRateSkillType));
+            if (!SkillTypeMatches(skillType, storedSkillType))
+                return 0;
+
+            var criticalRate = TemporaryStatModifier.Consume(
+                creature,
+                StatType.PersistentNextSkillAbilityCriticalRatePercentAdjustment,
+                StatType.PersistentNextSkillAbilityCriticalRateSkillType);
+            TemporaryStatModifier.Consume(
+                creature,
+                StatType.PersistentNextSkillAbilityCriticalRateSkillType,
+                StatType.PersistentNextSkillAbilityCriticalRateSkillType);
+            StatusEffect.RemoveStatusEffect(creature, typeof(CriticalRateStackTrackerStatusEffect), false);
+            return criticalRate;
+        }
+
+        public static int GetPersistentNextSkillAbilityCriticalRateBonus(uint creature, SkillType skillType)
+        {
+            var storedSkillType = GetSkillTypeFromStat(TemporaryStatModifier.GetStatAdjustment(
+                creature,
+                StatType.PersistentNextSkillAbilityCriticalRateSkillType,
+                StatType.PersistentNextSkillAbilityCriticalRateSkillType));
+            return SkillTypeMatches(skillType, storedSkillType)
+                ? TemporaryStatModifier.GetStatAdjustment(
+                    creature,
+                    StatType.PersistentNextSkillAbilityCriticalRatePercentAdjustment,
+                    StatType.PersistentNextSkillAbilityCriticalRateSkillType)
+                : 0;
+        }
+
+        public static void StoreQueuedWeaponAbilityCriticalRateBonus(
+            uint creature,
+            SkillType skillType,
+            int criticalRatePercentAdjustment)
+        {
+            if (!GetIsObjectValid(creature) ||
+                skillType == SkillType.Invalid ||
+                criticalRatePercentAdjustment <= 0)
+            {
+                return;
+            }
+
+            TemporaryStatModifier.Replace(
+                creature,
+                StatType.QueuedWeaponAbilityCriticalRateSkillType,
+                (int)skillType,
+                6,
+                StatType.QueuedWeaponAbilityCriticalRateSkillType);
+            TemporaryStatModifier.Replace(
+                creature,
+                StatType.QueuedWeaponAbilityCriticalRatePercentAdjustment,
+                criticalRatePercentAdjustment,
+                6,
+                StatType.QueuedWeaponAbilityCriticalRateSkillType);
+        }
+
+        public static int ConsumeQueuedWeaponAbilityCriticalRateBonus(uint creature, SkillType skillType)
+        {
+            var storedSkillType = GetSkillTypeFromStat(TemporaryStatModifier.GetStatAdjustment(
+                creature,
+                StatType.QueuedWeaponAbilityCriticalRateSkillType,
+                StatType.QueuedWeaponAbilityCriticalRateSkillType));
+            if (!SkillTypeMatches(skillType, storedSkillType))
+                return 0;
+
+            var criticalRate = TemporaryStatModifier.Consume(
+                creature,
+                StatType.QueuedWeaponAbilityCriticalRatePercentAdjustment,
+                StatType.QueuedWeaponAbilityCriticalRateSkillType);
+            TemporaryStatModifier.Consume(
+                creature,
+                StatType.QueuedWeaponAbilityCriticalRateSkillType,
+                StatType.QueuedWeaponAbilityCriticalRateSkillType);
+            return criticalRate;
+        }
+
+        public static void RefreshStatDrivenTrackerEffects(uint creature)
+        {
+            if (!GetIsObjectValid(creature))
+                return;
+
+            if (Stat.GetStatAdjustment(creature, StatType.RangedAutoAttackCycleCriticalRateRequiredCount) <= 0 ||
+                Stat.GetStatAdjustment(creature, StatType.RangedAutoAttackCycleCriticalRatePercentAdjustment) <= 0)
+            {
+                ClearAutoAttackCycleCriticalRateTracker(creature);
+            }
+
+            if (Stat.GetStatAdjustment(
+                    creature,
+                    StatType.NonCriticalAbilityNextSkillAbilityCriticalRatePercentAdjustment) <= 0)
+            {
+                TemporaryStatModifier.Consume(
+                    creature,
+                    StatType.PersistentNextSkillAbilityCriticalRatePercentAdjustment,
+                    StatType.PersistentNextSkillAbilityCriticalRateSkillType);
+                TemporaryStatModifier.Consume(
+                    creature,
+                    StatType.PersistentNextSkillAbilityCriticalRateSkillType,
+                    StatType.PersistentNextSkillAbilityCriticalRateSkillType);
+                StatusEffect.RemoveStatusEffect(
+                    creature,
+                    typeof(CriticalRateStackTrackerStatusEffect),
+                    false);
+            }
         }
 
         public static (int DMGBonus, int CriticalRatePercentAdjustment, int EnmityBonus) ConsumeNextAttackGuardedHitBonuses(

@@ -1421,11 +1421,13 @@ def description_stat_entries(row, base):
         # "Every fourth ranged attack" is cross-skill ranged, mirroring the melee cycle family.
         add_stat(stats, "RangedAutoAttackCycleCriticalRateRequiredCount", 4)
         add_stat(stats, "RangedAutoAttackCycleCriticalRatePercentAdjustment", parse_percent(r"gains \+(\d+)% Critical Rate", description))
+        add_stat(stats, "RangedAutoAttackCycleCriticalRateTrackerEffectIconType", "(int)EffectIconType.LuckyChamberStatusEffect")
     if base == "Deadeye Reload":
         add_stat(stats, "NonCriticalAbilityNextSkillAbilityCriticalRateSkillType", skill_expr)
         add_stat(stats, "NonCriticalAbilityNextSkillAbilityCriticalRatePercentAdjustment", parse_percent(r"gain \+(\d+)% Critical Rate", description))
         add_stat(stats, "NonCriticalAbilityNextSkillAbilityCriticalRateMax", parse_percent(r"stacking up to \+(\d+)%", description))
         add_stat(stats, "NonCriticalAbilityNextSkillAbilityCriticalRateWindowSeconds", 30)
+        add_stat(stats, "NonCriticalAbilityNextSkillAbilityCriticalRateTrackerEffectIconType", "(int)EffectIconType.DeadeyeReloadStatusEffect")
     if base == "High Noon":
         add_stat(stats, "CriticalDamageHighHPTargetThresholdPercent", parse_percent(r"above (\d+)% HP", description))
         add_stat(stats, "CriticalDamageHighHPTargetPercentAdjustment", parse_percent(r"deal \+(\d+)% damage", description))
@@ -2194,6 +2196,7 @@ def profile_property_lines(row, level, primary_status):
         if evasion:
             add_profile_property("SelfStatusEffectFactory", f"() => new PointBlankBurstStatusEffect({evasion})")
             add_profile_property("SelfStatDurationSeconds", str(parse_duration(description) or 30))
+            add_profile_property("ApplySelfModifiersOnHostileActivation", "true")
     if guarded_channel:
         add_profile_property("SelfDefensePercent", guarded_channel.group(1))
         add_profile_property("SelfStatResourceAboveThresholdPercent", guarded_channel.group(2))

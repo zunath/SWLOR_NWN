@@ -232,6 +232,10 @@ namespace SWLOR.Game.Server.Native
                     attackerAccuracy + accuracyModifiers,
                     defenderEvasion,
                     hitChanceModifier);
+                // Lucky Chamber advances on every ranged attack attempt, including misses and
+                // deflections. Its returned bonus is only consulted if this attempt lands.
+                var autoAttackCycleCriticalRate =
+                    Combat.PrepareAutoAttackCycleCriticalRate(attacker.m_idSelf, weaponSkillType);
                 var isHit = Combat.GetAutoAttackHitResolutionOverride() ?? attackRoll <= hitRate;
 
                 Log.Write(LogGroup.Attack, $"attackerAccuracy = {attackerAccuracy}, modifiers = {accuracyModifiers}, defenderEvasion = {defenderEvasion}");
@@ -270,7 +274,10 @@ namespace SWLOR.Game.Server.Native
                         criticalModifier += Combat.ConsumeNextAttackGuardedHitCriticalRateBonus(attacker.m_idSelf);
                         criticalModifier += Combat.ConsumeNextAutoAttackCriticalRateBonus(attacker.m_idSelf, weaponSkillType);
                         criticalModifier += Combat.PrepareOpeningAutoAttack(attacker.m_idSelf, weaponSkillType);
-                        criticalModifier += Combat.GetAutoAttackCriticalRateAdjustment(attacker.m_idSelf, defender.m_idSelf, weaponSkillType);
+                        criticalModifier += Combat.GetAutoAttackCriticalRateAdjustment(
+                            attacker.m_idSelf,
+                            defender.m_idSelf,
+                            autoAttackCycleCriticalRate);
                         criticalModifier += Combat.GetSideAttackCriticalRateAdjustment(attacker.m_idSelf, defender.m_idSelf, weaponSkillType);
                         criticalModifier += Combat.GetBackAttackCriticalRateAdjustment(attacker.m_idSelf, defender.m_idSelf, weaponSkillType);
                         var criticalSkillRank = GetCriticalSkillRank(attacker, weapon);
@@ -365,7 +372,14 @@ namespace SWLOR.Game.Server.Native
                 var queuedWeaponAbilityWillResolve =
                     IsSuccessfulAttackResult(pAttackData.m_nAttackResult) &&
                     UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType);
-                if (!queuedWeaponAbilityWillResolve)
+                if (queuedWeaponAbilityWillResolve)
+                {
+                    Combat.StoreQueuedWeaponAbilityCriticalRateBonus(
+                        attacker.m_idSelf,
+                        weaponSkillType,
+                        autoAttackCycleCriticalRate);
+                }
+                else
                 {
                     StatusEffect.NotifyAttackAttemptStatusEffects(
                         attacker.m_idSelf,

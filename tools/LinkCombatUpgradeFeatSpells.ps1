@@ -123,6 +123,7 @@ if ([System.IO.Directory]::Exists($npcAbilityDefinitionPath)) {
 
 $playerAbilityLabels = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
 $mimicryTraitLabels = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
+$queuedWeaponAbilityLabels = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
 if ([System.IO.Directory]::Exists($abilityDefinitionPath)) {
     Get-ChildItem $abilityDefinitionPath -Filter "*.cs" -File -Recurse |
         Where-Object { $_.FullName -notlike "*\Feature\AbilityDefinition\NPC\*" } |
@@ -139,6 +140,12 @@ if ([System.IO.Directory]::Exists($abilityDefinitionPath)) {
             if ($content -match "\.MimicryTrait\s*\(") {
                 foreach ($match in [regex]::Matches($content, "\.Create\s*\(\s*FeatType\.(\w+)")) {
                     $mimicryTraitLabels.Add($match.Groups[1].Value) | Out-Null
+                }
+            }
+
+            if ($content -match "\.IsWeaponAbility\s*\(") {
+                foreach ($match in [regex]::Matches($content, "\.Create\s*\(\s*FeatType\.(\w+)")) {
+                    $queuedWeaponAbilityLabels.Add($match.Groups[1].Value) | Out-Null
                 }
             }
         }
@@ -178,6 +185,11 @@ $hostileSpellTargetingProfile = @{
 }
 
 foreach ($label in $selfTargetingLabels) {
+    $featTargetSelfByLabel[$label] = "1"
+    $spellTargetingByLabel[$label] = $selfSpellTargetingProfile
+}
+
+foreach ($label in $queuedWeaponAbilityLabels) {
     $featTargetSelfByLabel[$label] = "1"
     $spellTargetingByLabel[$label] = $selfSpellTargetingProfile
 }
@@ -309,7 +321,9 @@ for ($i = $featHeaderIndex + 1; $i -lt $featLines.Count; $i++) {
     }
 
     if ($featTargetSelfByLabel.ContainsKey($label)) {
-        Set-TokenByHeader $tokens $featHeaders "TARGETSELF" $featTargetSelfByLabel[$label]
+        $targetSelf = $featTargetSelfByLabel[$label]
+        Set-TokenByHeader $tokens $featHeaders "TARGETSELF" $targetSelf
+        Set-TokenByHeader $tokens $featHeaders "HostileFeat" $(if ($targetSelf -eq "1") { "****" } else { "1" })
     }
 
     # TARGETSELF/HostileFeat are the client-facing materialization of the ability definition's

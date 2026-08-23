@@ -39,6 +39,24 @@ public class PerksWindowTests
     }
 
     [Test]
+    public void DefaultSort_IsSkillLevelAscendingForEveryPerkMode()
+    {
+        var root = FindRepositoryRoot();
+        var viewModelSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "PerksViewModel.cs"));
+
+        viewModelSource.Should().Contain(
+            "SelectedSortOrderId = (int)PerkSortOrder.SkillLevelAscending;");
+        viewModelSource.Should().NotContain(
+            "SelectedSortOrderId = (int)PerkSortOrder.AlphabeticalAscending;");
+    }
+
+    [Test]
     public void SelectedPerkDetails_ShowVisibleRecastGroupAfterCategory()
     {
         var root = FindRepositoryRoot();

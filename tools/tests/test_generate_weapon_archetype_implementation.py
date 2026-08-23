@@ -13,6 +13,20 @@ SPEC.loader.exec_module(GENERATOR)
 
 
 class GeneratedWeaponTargetingTests(unittest.TestCase):
+    def test_point_blank_burst_applies_self_status_on_activation(self):
+        properties = dict(GENERATOR.profile_property_lines(
+            {
+                "Type": "Active",
+                "PerkName": "Point Blank Burst I",
+                "Description": "Deals weapon DMG + 16 to enemies within 5m. Grants +10% Evasion for 30 seconds.",
+            },
+            1,
+            None))
+
+        self.assertEqual("() => new PointBlankBurstStatusEffect(10)", properties["SelfStatusEffectFactory"])
+        self.assertEqual("30", properties["SelfStatDurationSeconds"])
+        self.assertEqual("true", properties["ApplySelfModifiersOnHostileActivation"])
+
     def test_ownership_manifest_matches_current_inferred_area_rows(self):
         rows = GENERATOR.read_manifest()
         _, feat_values = GENERATOR.parse_enum_values(

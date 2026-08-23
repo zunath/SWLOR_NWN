@@ -166,6 +166,9 @@ public class CharacterSheetCombatUpgradeTests
 
         var criticalRate = ExtractMethod(viewModel, "private int GetCriticalRate(SkillType skillType)");
         criticalRate.Should().Contain("Combat.GetSkillCriticalRatePercentAdjustment(_target, skillType)");
+        criticalRate.Should().NotContain("GetPersistentNextSkillAbilityCriticalRateBonus");
+        viewModel.Should().Contain("AddStat(\"Next Ability Crit\"");
+        viewModel.Should().Contain("Combat.GetPersistentNextSkillAbilityCriticalRateBonus(_target, combatProfile.Skill)");
     }
 
     [Test]

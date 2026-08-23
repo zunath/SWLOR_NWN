@@ -5889,6 +5889,46 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenNegative)]
         LeadershipRecoveryForceDamageTakenPercentAdjustment = 1019,
 
+        /// <summary>
+        /// Skill selector for a next-ability Critical Rate bonus that persists and grows after
+        /// noncritical abilities until an ability critically hits.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        PersistentNextSkillAbilityCriticalRateSkillType = 1020,
+
+        /// <summary>
+        /// Stored Critical Rate for the selected skill. Unlike ordinary next-ability bonuses,
+        /// this channel is consumed only when an ability critically hits.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        PersistentNextSkillAbilityCriticalRatePercentAdjustment = 1021,
+
+        /// <summary>
+        /// Effect icon used by the generic tracker for a noncritical-ability Critical Rate stack.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        NonCriticalAbilityNextSkillAbilityCriticalRateTrackerEffectIconType = 1022,
+
+        /// <summary>
+        /// Effect icon used by the generic ranged auto-attack cycle tracker.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        RangedAutoAttackCycleCriticalRateTrackerEffectIconType = 1023,
+
+        /// <summary>
+        /// Skill selector for an attempt-specific Critical Rate bonus being carried from a landed
+        /// auto-attack into its queued weapon ability.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        QueuedWeaponAbilityCriticalRateSkillType = 1024,
+
+        /// <summary>
+        /// Attempt-specific Critical Rate carried from a landed auto-attack into its queued weapon
+        /// ability impact.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        QueuedWeaponAbilityCriticalRatePercentAdjustment = 1025,
+
     }
 
     public class StatTypeAttribute : Attribute

@@ -22,6 +22,12 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
     private static readonly TimeSpan AutomaticPreviewDelay = TimeSpan.FromMilliseconds(300);
     private const string InitialStatusMessage = "The preview generates automatically when this window opens.";
 
+    private enum StatusSource
+    {
+        Preview,
+        Creation
+    }
+
     public sealed record ThemeChoice(DungeonDetail Value)
     {
         public string Label => Value.DisplayName;
@@ -50,6 +56,9 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
     private bool _disposed;
     private string _statusWithoutResRefValidation = InitialStatusMessage;
     private bool _statusWithoutResRefValidationIsError;
+    private string _latestPreviewStatus = InitialStatusMessage;
+    private bool _latestPreviewStatusIsError;
+    private StatusSource _statusSource;
     private CancellationTokenSource? _automaticPreviewCancellation;
     private AreaGenerationDraft? _previewedDraft;
 
@@ -222,11 +231,11 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
         if (!_showResRefValidation)
             return;
 
+        if (_statusSource == StatusSource.Creation)
+            RestoreLatestPreviewStatus();
+
         ValidateResRef();
-        if (HasResRefError)
-            SetStatus(ResRefError, isError: true);
-        else
-            ApplyStatus();
+        ApplyStatus();
     }
 
     partial void OnResRefErrorChanged(string value)
@@ -430,19 +439,22 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
         var draft = _previewedDraft;
         if (draft == null)
         {
-            SetStatus("Wait for the current settings to finish previewing before creating the area.", isError: true);
+            SetStatus(
+                "Wait for the current settings to finish previewing before creating the area.",
+                isError: true,
+                source: StatusSource.Creation);
             return;
         }
 
         _showResRefValidation = true;
         if (!ValidateResRef())
         {
-            SetStatus(ResRefError, isError: true);
+            ApplyStatus();
             return;
         }
 
         IsBusy = true;
-        SetStatus("Creating the previewed area...");
+        SetStatus("Creating the previewed area...", source: StatusSource.Creation);
         string? createdResref = null;
         try
         {
@@ -461,18 +473,18 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
             });
             if (!createResult.Success)
             {
-                SetStatus(createResult.Error, isError: true);
+                SetStatus(createResult.Error, isError: true, source: StatusSource.Creation);
                 return;
             }
 
             var normalized = resRef.Trim().ToLowerInvariant();
-            SetStatus($"Created '{normalized}' in the open module.");
+            SetStatus($"Created '{normalized}' in the open module.", source: StatusSource.Creation);
             createdResref = normalized;
         }
         catch (Exception ex)
         {
             Log.Error(ex, "Creating generated area {ResRef} failed.", ResRef);
-            SetStatus(ex.GetBaseException().Message, isError: true);
+            SetStatus(ex.GetBaseException().Message, isError: true, source: StatusSource.Creation);
         }
         finally
         {
@@ -635,15 +647,29 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
         return !HasResRefError;
     }
 
-    private void SetStatus(string message, bool isError = false)
+    private void SetStatus(
+        string message,
+        bool isError = false,
+        StatusSource source = StatusSource.Preview)
     {
-        if (!HasResRefError || !message.Equals(ResRefError, StringComparison.Ordinal))
+        if (source == StatusSource.Preview)
         {
-            _statusWithoutResRefValidation = message;
-            _statusWithoutResRefValidationIsError = isError;
+            _latestPreviewStatus = message;
+            _latestPreviewStatusIsError = isError;
         }
 
+        _statusWithoutResRefValidation = message;
+        _statusWithoutResRefValidationIsError = isError;
+        _statusSource = source;
+
         ApplyStatus();
+    }
+
+    private void RestoreLatestPreviewStatus()
+    {
+        _statusWithoutResRefValidation = _latestPreviewStatus;
+        _statusWithoutResRefValidationIsError = _latestPreviewStatusIsError;
+        _statusSource = StatusSource.Preview;
     }
 
     private void ApplyStatus()

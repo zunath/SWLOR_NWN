@@ -261,6 +261,26 @@ public sealed class AreaGeneratorWindowRenderTests
 
             viewModel.StatusIsError.Should().BeFalse();
             window.FindControl<TextBlock>("StatusMessageText")!.Classes.Should().NotContain("statusError");
+
+            var existingAreaPath = Directory.EnumerateFiles(
+                Path.Combine(CorpusLocator.ModuleDirectory, "are"),
+                "*.are.json").First();
+            var existingResRef = Path.GetFileNameWithoutExtension(
+                Path.GetFileNameWithoutExtension(existingAreaPath));
+            viewModel.ResRef = existingResRef;
+            await viewModel.CreateAreaCommand.ExecuteAsync(null);
+
+            viewModel.StatusIsError.Should().BeTrue();
+            viewModel.StatusMessage.Should().Contain($"An area named '{existingResRef}' already exists");
+
+            viewModel.ResRef = "new_resref_test";
+            Dispatcher.UIThread.RunJobs();
+
+            viewModel.HasResRefError.Should().BeFalse();
+            viewModel.StatusIsError.Should().BeFalse(
+                "a creation error for the previous ResRef is stale after the field changes");
+            viewModel.StatusMessage.Should().NotContain(existingResRef);
+            window.FindControl<TextBlock>("StatusMessageText")!.Classes.Should().NotContain("statusError");
         }
         finally
         {

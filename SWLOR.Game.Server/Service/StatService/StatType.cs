@@ -6007,6 +6007,20 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         AlternateIdleSkillAbilityCriticalDamagePercentAdjustment = 1039,
 
+        /// <summary>
+        /// Attempt-specific opening damage carried from a landed auto-attack into its queued
+        /// weapon ability impact.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        QueuedWeaponAbilityDamageBonus = 1040,
+
+        /// <summary>
+        /// Attempt-specific opening critical damage carried from a landed auto-attack into its
+        /// queued weapon ability impact.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        QueuedWeaponAbilityCriticalDamagePercentAdjustment = 1041,
+
     }
 
     public class StatTypeAttribute : Attribute

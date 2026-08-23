@@ -289,6 +289,22 @@ public class CombatDamageTests
     }
 
     [Test]
+    public void IdleReadiness_SchedulesAfterCompletedAbilityTimestampIsRecorded()
+    {
+        var root = FindRepositoryRoot();
+        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var trackAttempt = ExtractMethod(combatSource, "public static void TrackHostileAbilityActivity(uint creature)");
+        var trackCompleted = ExtractMethod(combatSource, "private static void TrackCombatAbilityUse(uint activator, AbilityDetail ability)");
+
+        trackAttempt.Should().Contain("ScheduleIdleReadinessRefresh(creature);",
+            "a cancelled cast must not leave its readiness marker permanently removed");
+        var timestampIndex = trackCompleted.IndexOf("_lastCombatAbilityUse[activator] = now;", StringComparison.Ordinal);
+        var scheduleIndex = trackCompleted.IndexOf("ScheduleIdleReadinessRefresh(activator);", StringComparison.Ordinal);
+        timestampIndex.Should().BeGreaterThanOrEqualTo(0);
+        scheduleIndex.Should().BeGreaterThan(timestampIndex);
+    }
+
+    [Test]
     public void SuppressionRangedAccuracy_UsesConsumeNamingAtEveryCallSite()
     {
         var root = FindRepositoryRoot();
@@ -314,6 +330,9 @@ public class CombatDamageTests
         nativeSource.Should().MatchRegex(
             @"attacker\.ResolveDefensiveEffects\(defender, isHit \? 1 : 0\);[\s\S]*?if \(!IsSuccessfulAttackResult\(pAttackData\.m_nAttackResult\)\)[\s\S]*?Combat\.ClearOpeningAutoAttackModifiers\(attacker\.m_idSelf\);",
             "concealment, miss, or deflection must consume opening riders before another swing can inherit them");
+        new SteadyAimReadyStatusEffect().Name.Should().Be("Opening Attack Ready");
+        var refresh = ExtractMethod(combatSource, "private static void RefreshIdleReadiness(uint creature)");
+        refresh.Should().Contain("Opening Attack Ready");
     }
 
     [Test]
@@ -463,8 +482,12 @@ public class CombatDamageTests
             nativeCriticalPreparationIndex - queuedWeaponHitBranchIndex);
         queuedWeaponHitBranchBody.Should().Contain("pAttackData.m_nAttackResult = AttackResultRegularHit;");
         queuedWeaponHitBranchBody.Should().Contain("else");
+        queuedWeaponHitBranchBody.Should().Contain("Combat.PrepareQueuedWeaponAbilityOpeningAttack");
         queuedWeaponHitBranchBody.Should().NotContain("Combat.PrepareOpeningAutoAttack");
         queuedWeaponHitBranchBody.Should().NotContain("StatType.CurrentIncomingAttackMinimumDamage");
+        abilitySource.Should().Contain("Combat.ConsumeQueuedWeaponAbilityBonuses(activator, abilitySkillType)");
+        abilitySource.Should().Contain("queuedWeaponBonuses.DamageBonus");
+        abilitySource.Should().Contain("queuedWeaponBonuses.CriticalDamagePercentAdjustment");
     }
 
     [Test]

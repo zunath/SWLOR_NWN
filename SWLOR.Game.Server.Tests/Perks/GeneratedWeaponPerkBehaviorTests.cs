@@ -198,7 +198,7 @@ public class GeneratedWeaponPerkBehaviorTests
         resolveAttackRoll.Should().Contain("autoAttackCycleCriticalRate);");
         resolveAttackRoll.Should().Contain("Combat.StoreQueuedWeaponAbilityCriticalRateBonus(");
         var ability = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
-        ability.Should().Contain("Combat.ConsumeQueuedWeaponAbilityCriticalRateBonus(activator, abilitySkillType)");
+        ability.Should().Contain("Combat.ConsumeQueuedWeaponAbilityBonuses(activator, abilitySkillType)");
         combat.Should().Contain("new DamageDealtAdjustmentStatusEffect(");
         combat.Should().NotContain("new DuelistsDistanceStatusEffect(",
             "shared combat must not couple generic near-target stats to one perk-specific status class");
@@ -1321,7 +1321,8 @@ public class GeneratedWeaponPerkBehaviorTests
         combatSource.Should().Contain("state.Expiration <= DateTime.UtcNow");
         combatSource.Should().Contain("HasCurrentSuppressionAbilityUseStack(attacker, defender, state.SuppressionEffectIds)");
         combatSource.Should().Contain("effects.Max(effect => effect.DurationTicks * effect.Frequency)");
-        combatSource.Should().Contain("SuppressionEffectIds = effects.Select(effect => effect.Id).ToHashSet()");
+        combatSource.Should().Contain("var effectIds = effects.Select(effect => effect.Id).ToHashSet()");
+        combatSource.Should().Contain("SuppressionEffectIds = effectIds");
         combatSource.Should().Contain("ApplySkillAreaAbilityDamageModifier(");
         combatSource.Should().Contain("ApplySkillAbilityDamageModifier(");
         combatSource.Should().Contain("ApplyHostileAbilityUsedEvasion(");

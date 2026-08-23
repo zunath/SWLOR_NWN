@@ -3033,6 +3033,8 @@ namespace SWLOR.Game.Server.Service
             _lastHostileAbilityAttemptActivity[creature] = now;
             StatusEffect.RemoveStatusEffect(creature, typeof(SteadyAimReadyStatusEffect), false);
             StatusEffect.RemoveStatusEffect(creature, typeof(PatienceReadyStatusEffect), false);
+            // Re-arm readiness even if the cast is cancelled before an impact completes. A
+            // completed impact schedules again after its completed-activity timestamp is stored.
             ScheduleIdleReadinessRefresh(creature);
         }
 
@@ -3187,6 +3189,22 @@ namespace SWLOR.Game.Server.Service
             return Stat.GetStatAdjustment(attacker, StatType.OpeningAutoAttackCriticalRatePercentAdjustment);
         }
 
+        public static void PrepareQueuedWeaponAbilityOpeningAttack(uint attacker, SkillType skillType)
+        {
+            var criticalRate = PrepareOpeningAutoAttack(attacker, skillType);
+            var damageBonus = TemporaryStatModifier.Consume(
+                attacker,
+                StatType.CurrentAutoAttackDamageBonus,
+                StatType.CurrentAutoAttackDamageBonus);
+            var criticalDamage = ConsumeOpeningAutoAttackCriticalDamageAdjustment(attacker);
+            StoreQueuedWeaponAbilityAttemptBonuses(
+                attacker,
+                skillType,
+                damageBonus,
+                criticalRate,
+                criticalDamage);
+        }
+
         public static DateTime GetLastCompletedOffensiveActivityAt(uint creature)
         {
             _lastAttackActivity.TryGetValue(creature, out var lastAttack);
@@ -3212,6 +3230,7 @@ namespace SWLOR.Game.Server.Service
                 attacker,
                 StatType.CurrentAutoAttackCriticalDamagePercentAdjustment,
                 StatType.CurrentAutoAttackCriticalDamagePercentAdjustment);
+            ClearQueuedWeaponAbilityAttemptBonuses(attacker);
         }
 
         public static int PrepareAutoAttackCycleCriticalRate(uint attacker, SkillType skillType)
@@ -8183,15 +8202,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             _pendingSuppressionAbilityUses.Remove(key);
-            var hasAnotherPendingUse = _pendingSuppressionAbilityUses
-                .Where(entry => entry.Key.Item1 == attacker)
-                .Any(entry => entry.Value.Expiration > DateTime.UtcNow &&
-                              HasCurrentSuppressionAbilityUseStack(
-                                  attacker,
-                                  entry.Key.Item2,
-                                  entry.Value.SuppressionEffectIds));
-            if (!hasAnotherPendingUse)
-                StatusEffect.RemoveStatusEffect(attacker, typeof(OverwatchStatusEffect), false);
+            RefreshOverwatchMarker(attacker, DateTime.UtcNow);
             if (GetIsPC(attacker))
             {
                 SendMessageToPC(attacker, ColorToken.Combat($"Overwatch: +{adjustment}% Accuracy."));
@@ -8209,6 +8220,44 @@ namespace SWLOR.Game.Server.Service
                 .GetAllEffects()
                 .OfType<SuppressionStatusEffect>()
                 .Any(effect => effect.Source == attacker && suppressionEffectIds.Contains(effect.Id));
+        }
+
+        private static void RefreshOverwatchMarker(uint attacker, DateTime now)
+        {
+            var pendingKeys = _pendingSuppressionAbilityUses
+                .Where(entry => entry.Key.Item1 == attacker)
+                .Select(entry => entry.Key)
+                .ToArray();
+            var latestExpiration = DateTime.MinValue;
+            foreach (var pendingKey in pendingKeys)
+            {
+                var pending = _pendingSuppressionAbilityUses[pendingKey];
+                if (pending.Expiration <= now ||
+                    !HasCurrentSuppressionAbilityUseStack(
+                        attacker,
+                        pendingKey.Item2,
+                        pending.SuppressionEffectIds))
+                {
+                    _pendingSuppressionAbilityUses.Remove(pendingKey);
+                    continue;
+                }
+
+                if (pending.Expiration > latestExpiration)
+                    latestExpiration = pending.Expiration;
+            }
+
+            StatusEffect.RemoveStatusEffect(attacker, typeof(OverwatchStatusEffect), false);
+            if (latestExpiration == DateTime.MinValue)
+                return;
+
+            var durationSeconds = latestExpiration == DateTime.MaxValue
+                ? -1
+                : Math.Max(1, (int)Math.Ceiling((latestExpiration - now).TotalSeconds));
+            StatusEffect.ApplyStatusEffect(
+                attacker,
+                attacker,
+                new OverwatchStatusEffect(),
+                durationSeconds);
         }
 
         public static int GetHitChanceAgainstSunderedTargetAdjustment(uint attacker, uint defender)
@@ -8726,11 +8775,46 @@ namespace SWLOR.Game.Server.Service
             SkillType skillType,
             int criticalRatePercentAdjustment)
         {
+            StoreQueuedWeaponAbilityAttemptBonuses(
+                creature,
+                skillType,
+                0,
+                criticalRatePercentAdjustment,
+                0);
+        }
+
+        private static void StoreQueuedWeaponAbilityAttemptBonuses(
+            uint creature,
+            SkillType skillType,
+            int damageBonus,
+            int criticalRatePercentAdjustment,
+            int criticalDamagePercentAdjustment)
+        {
             if (!GetIsObjectValid(creature) ||
                 skillType == SkillType.Invalid ||
-                criticalRatePercentAdjustment <= 0)
-            {
+                (damageBonus == 0 &&
+                 criticalRatePercentAdjustment == 0 &&
+                 criticalDamagePercentAdjustment == 0))
                 return;
+
+            var storedSkillType = GetSkillTypeFromStat(TemporaryStatModifier.GetStatAdjustment(
+                creature,
+                StatType.QueuedWeaponAbilityCriticalRateSkillType,
+                StatType.QueuedWeaponAbilityCriticalRateSkillType));
+            if (SkillTypeMatches(skillType, storedSkillType))
+            {
+                damageBonus += TemporaryStatModifier.GetStatAdjustment(
+                    creature,
+                    StatType.QueuedWeaponAbilityDamageBonus,
+                    StatType.QueuedWeaponAbilityCriticalRateSkillType);
+                criticalRatePercentAdjustment += TemporaryStatModifier.GetStatAdjustment(
+                    creature,
+                    StatType.QueuedWeaponAbilityCriticalRatePercentAdjustment,
+                    StatType.QueuedWeaponAbilityCriticalRateSkillType);
+                criticalDamagePercentAdjustment += TemporaryStatModifier.GetStatAdjustment(
+                    creature,
+                    StatType.QueuedWeaponAbilityCriticalDamagePercentAdjustment,
+                    StatType.QueuedWeaponAbilityCriticalRateSkillType);
             }
 
             TemporaryStatModifier.Replace(
@@ -8743,6 +8827,18 @@ namespace SWLOR.Game.Server.Service
                 creature,
                 StatType.QueuedWeaponAbilityCriticalRatePercentAdjustment,
                 criticalRatePercentAdjustment,
+                6,
+                StatType.QueuedWeaponAbilityCriticalRateSkillType);
+            TemporaryStatModifier.Replace(
+                creature,
+                StatType.QueuedWeaponAbilityDamageBonus,
+                damageBonus,
+                6,
+                StatType.QueuedWeaponAbilityCriticalRateSkillType);
+            TemporaryStatModifier.Replace(
+                creature,
+                StatType.QueuedWeaponAbilityCriticalDamagePercentAdjustment,
+                criticalDamagePercentAdjustment,
                 6,
                 StatType.QueuedWeaponAbilityCriticalRateSkillType);
         }
@@ -8785,18 +8881,33 @@ namespace SWLOR.Game.Server.Service
                 StatType.QueuedWeaponAbilityActivationCriticalRateSkillType);
         }
 
-        public static int ConsumeQueuedWeaponAbilityCriticalRateBonus(uint creature, SkillType skillType)
+        public static (
+            int DamageBonus,
+            int CriticalRatePercentAdjustment,
+            int CriticalDamagePercentAdjustment) ConsumeQueuedWeaponAbilityBonuses(
+                uint creature,
+                SkillType skillType)
         {
+            var damageBonus = 0;
             var criticalRate = 0;
+            var criticalDamage = 0;
             var storedSkillType = GetSkillTypeFromStat(TemporaryStatModifier.GetStatAdjustment(
                 creature,
                 StatType.QueuedWeaponAbilityCriticalRateSkillType,
                 StatType.QueuedWeaponAbilityCriticalRateSkillType));
             if (SkillTypeMatches(skillType, storedSkillType))
             {
+                damageBonus = TemporaryStatModifier.Consume(
+                    creature,
+                    StatType.QueuedWeaponAbilityDamageBonus,
+                    StatType.QueuedWeaponAbilityCriticalRateSkillType);
                 criticalRate += TemporaryStatModifier.Consume(
                     creature,
                     StatType.QueuedWeaponAbilityCriticalRatePercentAdjustment,
+                    StatType.QueuedWeaponAbilityCriticalRateSkillType);
+                criticalDamage = TemporaryStatModifier.Consume(
+                    creature,
+                    StatType.QueuedWeaponAbilityCriticalDamagePercentAdjustment,
                     StatType.QueuedWeaponAbilityCriticalRateSkillType);
                 TemporaryStatModifier.Consume(
                     creature,
@@ -8820,7 +8931,27 @@ namespace SWLOR.Game.Server.Service
                     StatType.QueuedWeaponAbilityActivationCriticalRateSkillType);
             }
 
-            return criticalRate;
+            return (damageBonus, criticalRate, criticalDamage);
+        }
+
+        private static void ClearQueuedWeaponAbilityAttemptBonuses(uint creature)
+        {
+            TemporaryStatModifier.Consume(
+                creature,
+                StatType.QueuedWeaponAbilityDamageBonus,
+                StatType.QueuedWeaponAbilityCriticalRateSkillType);
+            TemporaryStatModifier.Consume(
+                creature,
+                StatType.QueuedWeaponAbilityCriticalRatePercentAdjustment,
+                StatType.QueuedWeaponAbilityCriticalRateSkillType);
+            TemporaryStatModifier.Consume(
+                creature,
+                StatType.QueuedWeaponAbilityCriticalDamagePercentAdjustment,
+                StatType.QueuedWeaponAbilityCriticalRateSkillType);
+            TemporaryStatModifier.Consume(
+                creature,
+                StatType.QueuedWeaponAbilityCriticalRateSkillType,
+                StatType.QueuedWeaponAbilityCriticalRateSkillType);
         }
 
         public static void RefreshStatDrivenTrackerEffects(uint creature)
@@ -9583,6 +9714,7 @@ namespace SWLOR.Game.Server.Service
             var now = DateTime.UtcNow;
             _lastCombatAbilityUse[activator] = now;
             TrackSuppressionAbilityUse(activator, now);
+            ScheduleIdleReadinessRefresh(activator);
         }
 
         private static void TrackSuppressionAbilityUse(uint activator, DateTime usedAt)
@@ -9606,24 +9738,26 @@ namespace SWLOR.Game.Server.Service
                     expiration = usedAt.AddSeconds(durationSeconds);
                 }
 
-                _pendingSuppressionAbilityUses[(sourceEffects.Key, activator)] = new SuppressionAbilityUseState
+                var key = (sourceEffects.Key, activator);
+                var effectIds = effects.Select(effect => effect.Id).ToHashSet();
+                if (_pendingSuppressionAbilityUses.TryGetValue(key, out var existingPending) &&
+                    existingPending.Expiration >= expiration)
+                {
+                    // A later trigger must not shorten an already armed Overwatch window.
+                    effectIds.UnionWith(existingPending.SuppressionEffectIds);
+                    expiration = existingPending.Expiration;
+                }
+
+                _pendingSuppressionAbilityUses[key] = new SuppressionAbilityUseState
                 {
                     Expiration = expiration,
-                    SuppressionEffectIds = effects.Select(effect => effect.Id).ToHashSet()
+                    SuppressionEffectIds = effectIds
                 };
 
                 if (Stat.GetStatAdjustment(sourceEffects.Key,
                         StatType.RangedAttackAccuracyAgainstSuppressionStackPercentAdjustment) != 0)
                 {
-                    StatusEffect.RemoveStatusEffect(sourceEffects.Key, typeof(OverwatchStatusEffect), false);
-                    var durationSeconds = expiration == DateTime.MaxValue
-                        ? 30
-                        : Math.Max(1, (int)Math.Ceiling((expiration - usedAt).TotalSeconds));
-                    StatusEffect.ApplyStatusEffect(
-                        sourceEffects.Key,
-                        sourceEffects.Key,
-                        new OverwatchStatusEffect(),
-                        durationSeconds);
+                    RefreshOverwatchMarker(sourceEffects.Key, usedAt);
                 }
             }
         }
@@ -9828,7 +9962,7 @@ namespace SWLOR.Game.Server.Service
             {
                 StatusEffect.ApplyStatusEffect(creature, creature, new SteadyAimReadyStatusEffect(), -1);
                 if (GetIsPC(creature))
-                    FloatingTextStringOnCreature(ColorToken.Combat("Steady Aim Ready"), creature, false);
+                    FloatingTextStringOnCreature(ColorToken.Combat("Opening Attack Ready"), creature, false);
             }
 
             var hasReadyIdleSkillChannel = _idleSkillAbilityStatChannels.Any(channel =>

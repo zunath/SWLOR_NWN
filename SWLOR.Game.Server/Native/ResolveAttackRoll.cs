@@ -270,6 +270,9 @@ namespace SWLOR.Game.Server.Native
                 {
                     if (UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType))
                     {
+                        // Capture opening-attack riders before this swing updates offensive
+                        // activity, then carry them into the queued ability impact.
+                        Combat.PrepareQueuedWeaponAbilityOpeningAttack(attacker.m_idSelf, weaponSkillType);
                         Log.Write(LogGroup.Attack, $"Queued weapon ability hit - attack result 1");
                         pAttackData.m_nAttackResult = AttackResultRegularHit;
                     }

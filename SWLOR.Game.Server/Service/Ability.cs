@@ -112,9 +112,9 @@ namespace SWLOR.Game.Server.Service
             var persistentCriticalRate = Combat.GetPersistentNextSkillAbilityCriticalRateBonus(
                 activator,
                 abilitySkillType);
-            var queuedWeaponCriticalRate = ability.ActivationType == AbilityActivationType.Weapon
-                ? Combat.ConsumeQueuedWeaponAbilityCriticalRateBonus(activator, abilitySkillType)
-                : 0;
+            var queuedWeaponBonuses = ability.ActivationType == AbilityActivationType.Weapon
+                ? Combat.ConsumeQueuedWeaponAbilityBonuses(activator, abilitySkillType)
+                : default;
             var guardedHitBonuses = ability.IsHostileAbility
                 ? Combat.ConsumeNextAttackGuardedHitBonuses(activator)
                 : (DMGBonus: 0, CriticalRatePercentAdjustment: 0, EnmityBonus: 0);
@@ -127,15 +127,17 @@ namespace SWLOR.Game.Server.Service
                 nextAbilityDamageBonus +
                 nextSkillAbilityBonuses.DamageBonus +
                 guardedHitBonuses.DMGBonus +
-                statusAppliedNextAttackDamageBonus,
+                statusAppliedNextAttackDamageBonus +
+                queuedWeaponBonuses.DamageBonus,
                 nextSkillAbilityBonuses.CriticalRatePercentAdjustment +
                 persistentCriticalRate +
-                queuedWeaponCriticalRate +
+                queuedWeaponBonuses.CriticalRatePercentAdjustment +
                 guardedHitBonuses.CriticalRatePercentAdjustment,
                 nextSkillAbilityBonuses.DefenseIgnorePercentAdjustment,
                 guardedHitBonuses.EnmityBonus,
                 statusAppliedNextAttackDamageBonus,
-                countsAsAttackAttempt);
+                countsAsAttackAttempt,
+                queuedWeaponBonuses.CriticalDamagePercentAdjustment);
         }
 
         private static void BeginAbilityImpact(
@@ -146,7 +148,8 @@ namespace SWLOR.Game.Server.Service
             int nextAbilityDefenseIgnorePercentAdjustment = 0,
             int nextAttackEnmityBonus = 0,
             int statusAppliedNextAttackDamageBonus = 0,
-            bool countsAsAttackAttempt = true)
+            bool countsAsAttackAttempt = true,
+            int nextAbilityCriticalDamagePercentAdjustment = 0)
         {
             if (!GetIsObjectValid(activator) || ability == null)
                 return;
@@ -158,7 +161,8 @@ namespace SWLOR.Game.Server.Service
                 nextAbilityDefenseIgnorePercentAdjustment,
                 nextAttackEnmityBonus,
                 statusAppliedNextAttackDamageBonus,
-                countsAsAttackAttempt);
+                countsAsAttackAttempt,
+                nextAbilityCriticalDamagePercentAdjustment);
         }
 
         public static AbilityImpactSummary EndAbilityImpact(uint activator)
@@ -2498,7 +2502,8 @@ namespace SWLOR.Game.Server.Service
                 criticalRating,
                 skillType,
                 target,
-                idleBonuses.CriticalDamagePercentAdjustment);
+                idleBonuses.CriticalDamagePercentAdjustment +
+                (trackedImpact?.NextAbilityCriticalDamagePercentAdjustment ?? 0));
             calculatedDamage = Combat.ApplySideAttackDamageModifier(activator, target, skillType, calculatedDamage);
             calculatedDamage = Combat.ApplyTwinBladeAbilityShapeDamageModifier(
                 activator,
@@ -2723,7 +2728,8 @@ namespace SWLOR.Game.Server.Service
                 criticalRating,
                 skillType,
                 target,
-                idleBonuses.CriticalDamagePercentAdjustment);
+                idleBonuses.CriticalDamagePercentAdjustment +
+                (trackedImpact?.NextAbilityCriticalDamagePercentAdjustment ?? 0));
             calculatedDamage = Combat.ApplySideAttackDamageModifier(activator, target, skillType, calculatedDamage);
             calculatedDamage = Combat.ApplyTwinBladeAbilityShapeDamageModifier(
                 activator,
@@ -3087,6 +3093,7 @@ namespace SWLOR.Game.Server.Service
             public bool CountsAsAttackAttempt { get; }
             public int NextAbilityDamageBonus { get; private set; }
             public int NextAbilityCriticalRatePercentAdjustment { get; }
+            public int NextAbilityCriticalDamagePercentAdjustment { get; }
             public int NextAbilityDefenseIgnorePercentAdjustment { get; }
             public int NextAttackEnmityBonus { get; }
             public int StatusAppliedNextAttackDamageBonus { get; }
@@ -3100,11 +3107,13 @@ namespace SWLOR.Game.Server.Service
                 int nextAbilityDefenseIgnorePercentAdjustment,
                 int nextAttackEnmityBonus,
                 int statusAppliedNextAttackDamageBonus,
-                bool countsAsAttackAttempt)
+                bool countsAsAttackAttempt,
+                int nextAbilityCriticalDamagePercentAdjustment)
             {
                 Ability = ability;
                 NextAbilityDamageBonus = nextAbilityDamageBonus;
                 NextAbilityCriticalRatePercentAdjustment = nextAbilityCriticalRatePercentAdjustment;
+                NextAbilityCriticalDamagePercentAdjustment = nextAbilityCriticalDamagePercentAdjustment;
                 NextAbilityDefenseIgnorePercentAdjustment = nextAbilityDefenseIgnorePercentAdjustment;
                 NextAttackEnmityBonus = nextAttackEnmityBonus;
                 StatusAppliedNextAttackDamageBonus = statusAppliedNextAttackDamageBonus;

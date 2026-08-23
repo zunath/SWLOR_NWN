@@ -6,7 +6,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
     [StatConfiguredIcon]
     public sealed class SteadyAimReadyStatusEffect : StatusEffectBase
     {
-        public override string Name => "Steady Aim Ready";
+        public override string Name => "Opening Attack Ready";
         public override EffectIconType Icon => EffectIconType.FocusedStanceStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
         public override bool PersistsOnLogout => false;

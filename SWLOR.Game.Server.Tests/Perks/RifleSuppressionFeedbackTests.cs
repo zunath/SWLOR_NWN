@@ -51,6 +51,12 @@ public sealed class RifleSuppressionFeedbackTests
         combat.Should().Contain("public static bool ApplySuppressionStack(");
         combat.Should().Contain("if (applied && GetIsPC(attacker))");
         combat.Should().Contain("ContainmentNetStatusEffect.ShouldRemainActive(");
+        combat.Should().Contain("existingPending.Expiration >= expiration");
+        combat.Should().Contain("effectIds.UnionWith(existingPending.SuppressionEffectIds)");
+        combat.Should().Contain("private static void RefreshOverwatchMarker(uint attacker, DateTime now)");
+        combat.Should().Contain("if (pending.Expiration > latestExpiration)");
+        combat.Should().Contain("RefreshOverwatchMarker(sourceEffects.Key, usedAt);");
+        combat.Should().Contain("RefreshOverwatchMarker(attacker, DateTime.UtcNow);");
         combat.Should().Contain("OfType<IRangedHitSuppressionSource>()");
         combat.Should().NotContain("OfType<KillBoxStatusEffect>()");
         var suppressionStatus = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "SuppressionStatusEffect.cs"));

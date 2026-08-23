@@ -582,11 +582,11 @@ namespace SWLOR.Game.Server.Service
 
             var leadershipPhysicalAdjustment = !typedLeadershipReductionAlreadyApplied &&
                                                damageType.IsPhysicalDamageType()
-                ? Stat.GetStatAdjustment(defender, StatType.LeadershipPhysicalDamageTakenPercentAdjustment)
+                ? GetLeadershipPhysicalDamageTakenPercentAdjustment(defender)
                 : 0;
             var leadershipForceAdjustment = !typedLeadershipReductionAlreadyApplied &&
                                             damageType == CombatDamageType.Force
-                ? Stat.GetStatAdjustment(defender, StatType.LeadershipForceDamageTakenPercentAdjustment)
+                ? GetLeadershipForceDamageTakenPercentAdjustment(defender)
                 : 0;
             var leadershipOtherAdjustment = !typedLeadershipReductionAlreadyApplied &&
                                             !damageType.IsPhysicalDamageType() &&
@@ -667,10 +667,10 @@ namespace SWLOR.Game.Server.Service
             CombatDamageType damageType)
         {
             var leadershipPhysicalAdjustment = damageType.IsPhysicalDamageType()
-                ? Stat.GetStatAdjustment(defender, StatType.LeadershipPhysicalDamageTakenPercentAdjustment)
+                ? GetLeadershipPhysicalDamageTakenPercentAdjustment(defender)
                 : 0;
             var leadershipForceAdjustment = damageType == CombatDamageType.Force
-                ? Stat.GetStatAdjustment(defender, StatType.LeadershipForceDamageTakenPercentAdjustment)
+                ? GetLeadershipForceDamageTakenPercentAdjustment(defender)
                 : 0;
             var leadershipOtherAdjustment = !damageType.IsPhysicalDamageType() &&
                                             damageType != CombatDamageType.Force
@@ -682,6 +682,18 @@ namespace SWLOR.Game.Server.Service
                 leadershipPhysicalAdjustment,
                 leadershipForceAdjustment,
                 leadershipOtherAdjustment);
+        }
+
+        private static int GetLeadershipPhysicalDamageTakenPercentAdjustment(uint defender)
+        {
+            return Stat.GetStatAdjustment(defender, StatType.LeadershipPhysicalDamageTakenPercentAdjustment) +
+                   Stat.GetStatAdjustment(defender, StatType.LeadershipRecoveryPhysicalDamageTakenPercentAdjustment);
+        }
+
+        private static int GetLeadershipForceDamageTakenPercentAdjustment(uint defender)
+        {
+            return Stat.GetStatAdjustment(defender, StatType.LeadershipForceDamageTakenPercentAdjustment) +
+                   Stat.GetStatAdjustment(defender, StatType.LeadershipRecoveryForceDamageTakenPercentAdjustment);
         }
 
         private static int ApplyTypedLeadershipDamageTakenPercentageModifier(

@@ -981,6 +981,18 @@ namespace SWLOR.Toolset.Shell.Panels
             if (!confirmed)
                 return;
 
+            // The warning is scoped to the editor state the builder confirmed. If the resource was
+            // closed when the dialog opened but became open while it was displayed, do not silently
+            // extend that consent to discarding a new buffer. Leave it intact and require a second
+            // Delete whose confirmation describes the close explicitly.
+            if (!closesOpenEditor && editorService?.IsOpen(type, resRef) == true)
+            {
+                StatusMessage =
+                    $"'{displayName}' was opened while the delete confirmation was active. " +
+                    "It was not deleted; choose Delete again to confirm closing its editor.";
+                return;
+            }
+
             // The destructive prompt above covers the open buffer too. Close it now so its document
             // sessions cannot save the resource back after the filesystem transaction completes.
             if (editorService?.IsOpen(type, resRef) == true &&

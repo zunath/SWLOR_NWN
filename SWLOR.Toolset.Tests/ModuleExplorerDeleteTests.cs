@@ -242,6 +242,56 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task ScriptOpenedDuringConfirmation_RemainsOpenAndIsNotDeleted()
+        {
+            const string resRef = "late_open_script";
+            var source = Path.Combine(_module, "nss", resRef + ".nss");
+            File.WriteAllText(source, "void main() {}");
+            Action? openScript = null;
+            Editors.EditorService? editors = null;
+            Editors.ScriptEditorViewModel? document = null;
+            var prompts = new RecordingPrompts(answer: true, onConfirm: () => openScript!());
+            var (explorer, _) = CreateExplorer(
+                ResourceType.Nss,
+                prompts,
+                editorServiceFactory: (workspace, log) =>
+                {
+                    var dockFactory = new ToolsetDockFactory(
+                        null!, null!, null!, null!, null!, null!, null!, null!, null!);
+                    editors = new Editors.EditorService(
+                        workspace,
+                        new Editors.LookupOptionProvider(workspace),
+                        log,
+                        dockFactory,
+                        prompts);
+                    openScript = () =>
+                    {
+                        document = new Editors.ScriptEditorViewModel(source, resRef, log, prompts);
+                        document.OnTextChanged("void main() { // newly opened and unsaved\n}");
+                        var openScripts = (Dictionary<string, Editors.ScriptEditorViewModel>)
+                            typeof(Editors.EditorService)
+                                .GetField("_openScriptEditors", System.Reflection.BindingFlags.Instance |
+                                                                   System.Reflection.BindingFlags.NonPublic)!
+                                .GetValue(editors)!;
+                        document.Closed += closed => openScripts.Remove(closed.FilePath);
+                        openScripts[source] = document;
+                    };
+                    return editors;
+                });
+            explorer.SelectedRow = UnsortedResource(explorer, resRef);
+
+            await explorer.DeleteSelectedResourceCommand.ExecuteAsync(null);
+
+            File.Exists(source).Should().BeTrue();
+            editors!.IsOpen(ResourceType.Nss, resRef).Should().BeTrue();
+            document!.IsDirty.Should().BeTrue();
+            prompts.Message.Should().NotContain("unsaved changes discarded",
+                "the editor was not open when this confirmation was composed");
+            explorer.StatusMessage.Should().Contain("opened while the delete confirmation was active")
+                .And.Contain("choose Delete again");
+        }
+
+        [Test]
         public async Task DeleteDialog_RemovesGraphAndLegacyForms()
         {
             const string resRef = "delete_dialog";

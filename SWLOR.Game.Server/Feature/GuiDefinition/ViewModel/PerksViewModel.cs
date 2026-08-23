@@ -20,7 +20,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public class PerksViewModel : GuiViewModelBase<PerksViewModel, GuiPayloadBase>,
         IGuiRefreshable<SkillXPRefreshEvent>,
-        IGuiRefreshable<PerkResetAcquiredRefreshEvent>
+        IGuiRefreshable<PerkResetAcquiredRefreshEvent>,
+        IGuiRefreshable<PerkRefundCooldownResetRefreshEvent>
     {
         private const int ItemsPerPage = 30;
         private const int AutoAddHotBarSlots = 11;
@@ -1408,6 +1409,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public void Refresh(PerkResetAcquiredRefreshEvent payload)
         {
             LoadDetails();
+        }
+
+        public void Refresh(PerkRefundCooldownResetRefreshEvent payload)
+        {
+            var selectedPerkIndex = SelectedPerkIndex;
+            LoadDetails();
+
+            if (selectedPerkIndex > -1)
+            {
+                SelectPerkAt(selectedPerkIndex);
+            }
         }
 
         public Action OnClickMyPerks() => () =>

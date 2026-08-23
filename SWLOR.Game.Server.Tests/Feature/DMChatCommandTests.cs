@@ -113,8 +113,19 @@ public class DMChatCommandTests
         var methodStart = source.IndexOf("private void ResetAbilityRecastTimers()", StringComparison.Ordinal);
         var methodEnd = source.IndexOf("private void AdjustFactionStanding()", methodStart, StringComparison.Ordinal);
         var method = source[methodStart..methodEnd];
+        var perksViewModelSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "PerksViewModel.cs"));
 
         method.Should().Contain("dbPlayer.DatePerkRefundAvailable = DateTime.UtcNow;");
+        method.Should().Contain("Gui.PublishRefreshEvent(target, new PerkRefundCooldownResetRefreshEvent());");
+        perksViewModelSource.Should().Contain("IGuiRefreshable<PerkRefundCooldownResetRefreshEvent>");
+        perksViewModelSource.Should().Contain("public void Refresh(PerkRefundCooldownResetRefreshEvent payload)");
+        perksViewModelSource.Should().Contain("SelectPerkAt(selectedPerkIndex);");
     }
 
     private static DirectoryInfo FindRepositoryRoot()

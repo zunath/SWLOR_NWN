@@ -790,6 +790,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     dbPlayer.DatePerkRefundAvailable = DateTime.UtcNow;
 
                     DB.Set(dbPlayer);
+                    Gui.PublishRefreshEvent(target, new PerkRefundCooldownResetRefreshEvent());
                     SendMessageToPC(target, $"A DM has reset your perk refund cooldown.");
                 });
         }
@@ -855,6 +856,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     dbPlayer.RecastTimes.Clear();
                     dbPlayer.DatePerkRefundAvailable = DateTime.UtcNow;
                     DB.Set(dbPlayer);
+                    Gui.PublishRefreshEvent(target, new PerkRefundCooldownResetRefreshEvent());
                     AbilityCooldownVisual.ClearAllRecastDelays(target);
                     Disguise.ResetActivationCooldowns(target);
 

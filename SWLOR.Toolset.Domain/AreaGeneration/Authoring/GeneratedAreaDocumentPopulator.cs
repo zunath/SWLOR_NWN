@@ -53,6 +53,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                 are,
                 draft.Composition.Tileset.ResolveAtmosphere(draft.Composition.Content.AtmosphereProfile));
             WriteTransitions(draft, workspace, git, gic);
+            WriteTreasure(draft, workspace, git, gic);
             WriteDecorations(draft, workspace, git, gic);
 
             Logger.Information(
@@ -288,6 +289,34 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                     planned.Facing,
                     planned.VisualScale);
             }
+        }
+
+        /// <summary>Places the theme's configured treasure container at the Boss room anchor.</summary>
+        private static void WriteTreasure(
+            AreaGenerationDraft draft,
+            ModuleWorkspace workspace,
+            GitDocument git,
+            GicDocument gic)
+        {
+            var bossRoom = draft.Result.Resolved.Rooms.FirstOrDefault(room => room.Role == RoomRole.Boss);
+            if (bossRoom == null)
+                return;
+
+            var x = bossRoom.CenterTile.X * 10f + 5f;
+            var y = bossRoom.CenterTile.Y * 10f + 5f;
+            var z = GroundHeightAt(draft.Result.Resolved, draft.Tileset, x, y);
+            AddPlaceable(
+                workspace,
+                git,
+                gic,
+                draft.Composition.Content.TreasurePlaceableResref,
+                "PG_TREASURE",
+                x,
+                y,
+                z,
+                facingDegrees: 0f,
+                visualScale: 1f,
+                displayName: draft.Composition.Content.TreasureDisplayName);
         }
 
         private static float GroundHeightAt(

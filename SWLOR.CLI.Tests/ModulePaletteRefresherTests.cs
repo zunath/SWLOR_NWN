@@ -292,6 +292,11 @@ public sealed class ModulePaletteRefresherTests
         File.WriteAllText(
             canonicalScript + "." + Guid.NewGuid().ToString("N") + ".save-backup",
             "stale backup");
+        var deleteBackup = Path.Combine(
+            _moduleRoot,
+            "uti",
+            "probe.uti.json." + Guid.NewGuid().ToString("N") + ".delete-backup");
+        File.WriteAllText(deleteBackup, "stale committed-delete backup");
 
         var previousDirectory = Environment.CurrentDirectory;
         try
@@ -306,6 +311,8 @@ public sealed class ModulePaletteRefresherTests
 
         var modulePath = Path.Combine(_moduleRoot, "palette-probe.mod");
         File.Exists(modulePath).Should().BeTrue();
+        File.Exists(deleteBackup).Should().BeTrue(
+            "packing ignores committed-delete cleanup debris rather than consuming it");
         Directory.Exists(Path.Combine(_moduleRoot, "packing")).Should().BeFalse();
         Directory.Exists(Path.Combine(_moduleRoot, "palette-refresh")).Should().BeFalse();
 

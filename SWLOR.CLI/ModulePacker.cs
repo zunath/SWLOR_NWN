@@ -678,14 +678,15 @@ namespace SWLOR.CLI
                 if (!Directory.Exists(folder))
                     continue;
 
-                // Only the real resources. Atomic-save temporaries and rollback backups can remain
-                // beside their target after an interrupted/locked write. GetFileNameWithoutExtension
-                // strips their final suffix, so accepting either would convert and pack transaction
-                // debris as a real module resource.
+                // Only the real resources. Atomic-save temporaries and rollback/delete backups can
+                // remain beside their target after an interrupted or locked cleanup.
+                // GetFileNameWithoutExtension strips their final suffix, so accepting any of them
+                // would convert and pack transaction debris as a real module resource.
                 results.AddRange(Directory.GetFiles(folder)
                     .Where(file =>
                         !file.EndsWith(".tmp", StringComparison.OrdinalIgnoreCase) &&
-                        !file.EndsWith(".save-backup", StringComparison.OrdinalIgnoreCase)));
+                        !file.EndsWith(".save-backup", StringComparison.OrdinalIgnoreCase) &&
+                        !file.EndsWith(".delete-backup", StringComparison.OrdinalIgnoreCase)));
             }
 
             return results;

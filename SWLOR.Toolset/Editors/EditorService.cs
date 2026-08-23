@@ -99,6 +99,7 @@ namespace SWLOR.Toolset.Editors
         private readonly Dictionary<string, BlueprintEditorViewModel> _openEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, AreaEditorViewModel> _openAreaEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly HashSet<string> _openingAreaEditors = new(StringComparer.OrdinalIgnoreCase);
+        private readonly HashSet<string> _cancelledAreaEditorLoads = new(StringComparer.OrdinalIgnoreCase);
         private readonly AreaInstanceClipboard _areaInstanceClipboard = new();
         private readonly Dictionary<string, ObjectPlacement> _pendingAreaReveals =
             new(StringComparer.OrdinalIgnoreCase);
@@ -1417,14 +1418,22 @@ namespace SWLOR.Toolset.Editors
         /// covers the resource and any unsaved buffer held by its editor, so these closes deliberately
         /// bypass the ordinary save/discard prompt. The caller keeps the shared deletion reservation
         /// until this closes every document session, preventing a later save from recreating the
-        /// deleted files. An area still loading has no live document to save; the reservation makes
-        /// its publish check fail once loading completes.
+        /// deleted files. An area still loading has no live document to save; it is tombstoned so
+        /// that the completed parse cannot publish after the deletion reservation is released.
         /// </remarks>
         internal bool TryCloseResourceForDeletion(ResourceType type, string resRef)
         {
             var documents = OpenResourceDocuments(type, resRef);
             if (documents.Count == 0)
-                return (type == ResourceType.Area && _openingAreaEditors.Contains(resRef)) || !IsOpen(type, resRef);
+            {
+                if (type == ResourceType.Area && _openingAreaEditors.Contains(resRef))
+                {
+                    _cancelledAreaEditorLoads.Add(resRef);
+                    return true;
+                }
+
+                return !IsOpen(type, resRef);
+            }
 
             foreach (var document in documents)
             {
@@ -3498,6 +3507,9 @@ namespace SWLOR.Toolset.Editors
                     await Task.WhenAll(transitionTagsTask, documentLoadTask).ConfigureAwait(true);
                     var transitionDestinationTags = await transitionTagsTask.ConfigureAwait(true);
                     var loadedDocuments = await documentLoadTask.ConfigureAwait(true);
+                    if (_cancelledAreaEditorLoads.Contains(resRef))
+                        return;
+
                     var currentWorkspace = _workspaceContext.Workspace;
                     if (transitionDestinationTags == null ||
                         !ReferenceEquals(workspace, currentWorkspace))
@@ -3528,7 +3540,7 @@ namespace SWLOR.Toolset.Editors
                     // The load started before deletion was reserved and may have completed while the
                     // delete command was waiting on its filesystem transaction. Do not publish a
                     // document backed by files that are now being removed.
-                    if (IsResourceOpeningBlocked(resRef))
+                    if (_cancelledAreaEditorLoads.Contains(resRef) || IsResourceOpeningBlocked(resRef))
                         return;
 
                     var editor = new AreaEditorViewModel(
@@ -3589,6 +3601,7 @@ namespace SWLOR.Toolset.Editors
             finally
             {
                 _openingAreaEditors.Remove(resRef);
+                _cancelledAreaEditorLoads.Remove(resRef);
                 if (!_openAreaEditors.ContainsKey(resRef))
                     _pendingAreaReveals.Remove(resRef);
             }

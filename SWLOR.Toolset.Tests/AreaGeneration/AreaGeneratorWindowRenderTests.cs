@@ -32,6 +32,32 @@ public sealed class AreaGeneratorWindowRenderTests
     }
 
     [AvaloniaTest]
+    public void OpeningWithoutAvailableTilesets_RandomizesTheSeedWithoutHidingTheDiagnostic()
+    {
+        using var viewModel = CreateViewModel();
+        var seedBeforeOpening = viewModel.Seed;
+        var window = new AreaGeneratorWindow(viewModel);
+
+        try
+        {
+            window.Show();
+            Dispatcher.UIThread.RunJobs();
+
+            viewModel.Seed.Should().NotBe(seedBeforeOpening);
+            var randomizedSeed = viewModel.Seed;
+            viewModel.EnableAutomaticPreview();
+            viewModel.Seed.Should().Be(randomizedSeed, "the seed changes only once per window instance");
+            viewModel.StatusMessage.Should().Be(
+                "No generator tilesets are available from the current game-data index.");
+        }
+        finally
+        {
+            window.Close();
+            Dispatcher.UIThread.RunJobs();
+        }
+    }
+
+    [AvaloniaTest]
     public void AreaEditorsRemainReadableAtTheDefaultWindowSize()
     {
         using var viewModel = CreateViewModel();
@@ -129,7 +155,7 @@ public sealed class AreaGeneratorWindowRenderTests
     }
 
     [AvaloniaTest]
-    public async Task OpeningTheWindowAndChangingSettings_GeneratesPreviewsAutomatically()
+    public async Task OpeningTheWindow_RandomizesTheSeedAndGeneratesPreviewsAutomatically()
     {
         using var viewModel = CreateGeneratableViewModel();
         viewModel.PreviewMode = AreaPreviewMode.Schematic;
@@ -137,17 +163,20 @@ public sealed class AreaGeneratorWindowRenderTests
 
         try
         {
+            var seedBeforeOpening = viewModel.Seed;
             viewModel.TilesetProfiles.Should().NotBeEmpty();
             viewModel.GeneratePreviewCommand.CanExecute(null).Should().BeTrue();
             window.Show();
             Dispatcher.UIThread.RunJobs();
+            viewModel.Seed.Should().NotBe(seedBeforeOpening);
+            viewModel.Seed.Should().BeInRange(0, AreaSettingsBounds.MaxSeed);
             viewModel.StatusMessage.Should().Be("Preparing the preview...");
             await WaitUntilAsync(
                 () => viewModel.Preview != null && !viewModel.IsBusy,
                 () => viewModel.StatusMessage);
 
             var firstPreview = viewModel.Preview;
-            viewModel.Seed += 1;
+            viewModel.Seed = viewModel.Seed == AreaSettingsBounds.MaxSeed ? 0 : viewModel.Seed + 1;
             viewModel.Preview.Should().BeNull("changing generation settings invalidates the old result immediately");
 
             await WaitUntilAsync(

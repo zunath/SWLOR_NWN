@@ -470,11 +470,30 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
         if (_automaticPreviewEnabled || _disposed)
             return;
 
+        RandomizeInitialSeed();
         _automaticPreviewEnabled = true;
         if (CanGenerate())
         {
             StatusMessage = "Preparing the preview...";
             RequestAutomaticPreview();
+        }
+    }
+
+    private void RandomizeInitialSeed()
+    {
+        var seed = Random.Shared.Next(AreaSettingsBounds.MaxSeed + 1);
+        if (seed == Seed)
+            seed = seed == AreaSettingsBounds.MaxSeed ? 0 : seed + 1;
+
+        var wasLoadingDefaults = _loadingDefaults;
+        _loadingDefaults = true;
+        try
+        {
+            Seed = seed;
+        }
+        finally
+        {
+            _loadingDefaults = wasLoadingDefaults;
         }
     }
 

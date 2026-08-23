@@ -20,6 +20,19 @@ namespace SWLOR.Toolset.Tests.AreaGeneration;
 
 public sealed class AreaGeneratorWindowRenderTests
 {
+    [Test]
+    public void TilesetChoices_ShowOnlyTheVisualName()
+    {
+        var choice = new AreaGeneratorViewModel.TilesetChoice(new DungeonTilesetProfile
+        {
+            DisplayName = "City Interior",
+            TilesetResref = "tin01"
+        });
+
+        choice.Label.Should().Be("City Interior");
+        choice.Label.Should().NotContain("tin01");
+    }
+
     [AvaloniaTest]
     public void Window_LoadsItsCompiledXaml()
     {

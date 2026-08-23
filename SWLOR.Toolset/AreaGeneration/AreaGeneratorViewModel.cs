@@ -35,7 +35,7 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
 
     public sealed record TilesetChoice(DungeonTilesetProfile Value)
     {
-        public string Label => $"{Value.DisplayName} ({Value.TilesetResref})";
+        public string Label => Value.DisplayName;
     }
 
     public sealed record LayoutChoice(DungeonLayoutProfile Value)

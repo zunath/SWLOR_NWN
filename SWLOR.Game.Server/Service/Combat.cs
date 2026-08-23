@@ -582,11 +582,11 @@ namespace SWLOR.Game.Server.Service
 
             var leadershipPhysicalAdjustment = !typedLeadershipReductionAlreadyApplied &&
                                                damageType.IsPhysicalDamageType()
-                ? Stat.GetStatAdjustment(defender, StatType.LeadershipPhysicalDamageTakenPercentAdjustment)
+                ? GetLeadershipPhysicalDamageTakenPercentAdjustment(defender)
                 : 0;
             var leadershipForceAdjustment = !typedLeadershipReductionAlreadyApplied &&
                                             damageType == CombatDamageType.Force
-                ? Stat.GetStatAdjustment(defender, StatType.LeadershipForceDamageTakenPercentAdjustment)
+                ? GetLeadershipForceDamageTakenPercentAdjustment(defender)
                 : 0;
             var leadershipOtherAdjustment = !typedLeadershipReductionAlreadyApplied &&
                                             !damageType.IsPhysicalDamageType() &&
@@ -667,10 +667,10 @@ namespace SWLOR.Game.Server.Service
             CombatDamageType damageType)
         {
             var leadershipPhysicalAdjustment = damageType.IsPhysicalDamageType()
-                ? Stat.GetStatAdjustment(defender, StatType.LeadershipPhysicalDamageTakenPercentAdjustment)
+                ? GetLeadershipPhysicalDamageTakenPercentAdjustment(defender)
                 : 0;
             var leadershipForceAdjustment = damageType == CombatDamageType.Force
-                ? Stat.GetStatAdjustment(defender, StatType.LeadershipForceDamageTakenPercentAdjustment)
+                ? GetLeadershipForceDamageTakenPercentAdjustment(defender)
                 : 0;
             var leadershipOtherAdjustment = !damageType.IsPhysicalDamageType() &&
                                             damageType != CombatDamageType.Force
@@ -682,6 +682,18 @@ namespace SWLOR.Game.Server.Service
                 leadershipPhysicalAdjustment,
                 leadershipForceAdjustment,
                 leadershipOtherAdjustment);
+        }
+
+        private static int GetLeadershipPhysicalDamageTakenPercentAdjustment(uint defender)
+        {
+            return Stat.GetStatAdjustment(defender, StatType.LeadershipPhysicalDamageTakenPercentAdjustment) +
+                   Stat.GetStatAdjustment(defender, StatType.LeadershipRecoveryPhysicalDamageTakenPercentAdjustment);
+        }
+
+        private static int GetLeadershipForceDamageTakenPercentAdjustment(uint defender)
+        {
+            return Stat.GetStatAdjustment(defender, StatType.LeadershipForceDamageTakenPercentAdjustment) +
+                   Stat.GetStatAdjustment(defender, StatType.LeadershipRecoveryForceDamageTakenPercentAdjustment);
         }
 
         private static int ApplyTypedLeadershipDamageTakenPercentageModifier(
@@ -9867,7 +9879,14 @@ namespace SWLOR.Game.Server.Service
 
         private static bool IsWeaponOrForceAbility(SkillType skillType)
         {
-            return skillType == SkillType.Force || IsWeaponSkillType(skillType);
+            // Natural-creature physical abilities resolve through Beast Mastery rather than a
+            // weapon-category skill. They still use the same physical/Force ability hit-chance
+            // modifiers as weapon abilities; excluding them made Flash and similar effects appear
+            // on NPCs without changing the displayed hit chance of abilities such as
+            // Disorienting Screech.
+            return skillType == SkillType.Force ||
+                   skillType == SkillType.BeastMastery ||
+                   IsWeaponSkillType(skillType);
         }
 
         public static int GetCombatImpactWeaponDamage(uint activator, SkillType skillType)

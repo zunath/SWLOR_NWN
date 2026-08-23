@@ -192,6 +192,42 @@ public class GeneratedTreasureReviewRegressionTests
     }
 
     [Test]
+    public async Task CreatureAnchors_FailPromptlyWhenLargeCreaturesCannotAllFit()
+    {
+        var room = new LayoutRoom
+        {
+            Id = 8,
+            Role = RoomRole.Standard,
+            CenterTile = (1, 0),
+            Tiles =
+            [
+                (0, 0), (1, 0), (2, 0), (3, 0),
+                (0, 1), (1, 1), (2, 1), (3, 1)
+            ]
+        };
+        var resolved = new ResolvedLayout
+        {
+            Width = 4,
+            Height = 2,
+            Rooms = [room]
+        };
+        var occupied = new List<(float X, float Y, float Radius)>();
+
+        var action = () => Task.Run(() =>
+                GeneratedAreaDocumentPopulator.SelectCreatureAnchors(
+                    resolved,
+                    room,
+                    [5.5f, 5.5f, 5.5f, 5.5f],
+                    occupied,
+                    new Random(91)))
+            .WaitAsync(TimeSpan.FromSeconds(3));
+
+        await action.Should().ThrowAsync<InvalidOperationException>()
+            .WithMessage("*cannot fit 4 creatures*");
+        occupied.Should().BeEmpty("failed placement must not reserve partial anchors");
+    }
+
+    [Test]
     public void SciFiBaseTierTwo_UsesOnlyMortalAmbientBlueprints()
     {
         var tier = new SciFiBaseDungeonDefinition()

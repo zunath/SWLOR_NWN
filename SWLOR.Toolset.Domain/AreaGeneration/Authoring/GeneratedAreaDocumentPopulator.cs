@@ -26,6 +26,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
         private const float TreasureAnchorClearance = 3f;
         private const float DefaultCreatureRadius = 1f;
         private const float GeneratedObjectRadius = 1f;
+        private const int MaxCreaturePlacementAttempts = 200_000;
         private static readonly ILogger Logger = Log.ForContext<GeneratedAreaDocumentPopulator>();
 
         private GeneratedAreaDocumentPopulator()
@@ -520,6 +521,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
 
             var boundarySegments = CreatureBoundarySegments(tiles);
             var candidatesByCreature = new List<List<(float X, float Y)>>(creatureRadii.Count);
+            var fixedObstacles = occupied.ToList();
             foreach (var radius in creatureRadii)
             {
                 var candidates = new List<(float X, float Y)>();
@@ -529,8 +531,15 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                     for (var offsetX = 0.5f; offsetX < 10f; offsetX += 1f)
                     {
                         var candidate = (tile.X * 10f + offsetX, tile.Y * 10f + offsetY);
-                        if (HasCreatureBoundaryClearance(candidate, radius, boundarySegments))
-                            candidates.Add(candidate);
+                        if (!HasCreatureBoundaryClearance(candidate, radius, boundarySegments) ||
+                            fixedObstacles.Any(point =>
+                                DistanceSquared(candidate, (point.X, point.Y)) + 0.0001f <
+                                (radius + point.Radius) * (radius + point.Radius)))
+                        {
+                            continue;
+                        }
+
+                        candidates.Add(candidate);
                     }
                 }
 
@@ -550,6 +559,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             }
 
             var selected = new List<(float X, float Y, float Radius)>(creatureRadii.Count);
+            var attempts = 0;
             bool TryPlace(int creatureIndex)
             {
                 if (creatureIndex == creatureRadii.Count)
@@ -558,7 +568,10 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                 var radius = creatureRadii[creatureIndex];
                 foreach (var candidate in candidatesByCreature[creatureIndex])
                 {
-                    if (!occupied.Concat(selected).All(point =>
+                    if (++attempts > MaxCreaturePlacementAttempts)
+                        return false;
+
+                    if (!selected.All(point =>
                             DistanceSquared(candidate, (point.X, point.Y)) + 0.0001f >=
                             (radius + point.Radius) * (radius + point.Radius)))
                     {

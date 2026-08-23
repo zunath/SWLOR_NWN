@@ -69,6 +69,7 @@ public class CompanionControlPolicyTests
             "CompanionControl.cs"));
         source.Should().Contain("AssociateCastingLabelStrRef = 8127");
         source.Should().Contain("PlayerPlugin.SetTlkOverride(player, AssociateCastingLabelStrRef, \"abilities\")");
+        source.Should().Contain("PlayerName.GetDisplayName(master, target)");
     }
 
     [Test]
@@ -112,6 +113,20 @@ public class CompanionControlPolicyTests
             source.Should().Contain("CompanionControl.HandleConversation");
             source.Should().Contain("CompanionControl.ProcessCombatRound");
         }
+    }
+
+    [Test]
+    public void QueuedAttackActionsDoNotMaskTheNoProgressTimeout()
+    {
+        var repositoryRoot = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            repositoryRoot,
+            "SWLOR.Game.Server",
+            "Service",
+            "CompanionControlService",
+            "CompanionControl.cs"));
+
+        source.Should().NotContain("GetCurrentAction(companion) == ActionType.AttackObject");
     }
 
     private static string FindRepositoryRoot()

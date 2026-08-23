@@ -348,6 +348,7 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             var target = FindNearestVisibleEnemy(companion);
             if (!GetIsObjectValid(target))
             {
+                ResetToFollow(companion, false, true);
                 SendResponse(companion, $"No visible enemy is within {CompanionControlPolicy.AttackNearestRangeMeters:0} meters.");
                 return;
             }
@@ -358,7 +359,8 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             ClearEngagements(state);
             state.AttackNearestTarget = target;
             StartTracking(state, companion, target);
-            SendResponse(companion, $"Attacking {GetName(target)}, then returning to Follow.");
+            var master = GetMaster(companion);
+            SendResponse(companion, $"Attacking {PlayerName.GetDisplayName(master, target)}, then returning to Follow.");
             ProcessCombatRound(companion);
         }
 
@@ -478,10 +480,7 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
 
             var distance = GetDistanceBetween(companion, target);
             var hasOpportunity = IsWithinWeaponRange(companion, target) ||
-                                 CanUseHostileAbilityWithoutMoving(companion, target) ||
-                                 Activity.IsBusy(companion) ||
-                                 GetCurrentAction(companion) == ActionType.AttackObject &&
-                                 GetAttackTarget(companion) == target;
+                                 CanUseHostileAbilityWithoutMoving(companion, target);
 
             if (hasOpportunity || distance + ProgressDistanceMeters < state.LastDistanceToTarget)
             {

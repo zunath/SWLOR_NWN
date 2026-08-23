@@ -370,7 +370,7 @@ public sealed class AreaGeneratorWindowRenderTests
         viewModel.AccentDensityPercent.Should().Be(0);
     }
 
-    [Test]
+    [AvaloniaTest]
     public void ChannelLayout_OnBlobCapableTileset_PreservesZeroBlobDensityWhileLoadingDefaults()
     {
         using var viewModel = CreateViewModel();
@@ -389,6 +389,22 @@ public sealed class AreaGeneratorWindowRenderTests
 
         viewModel.AccentEnabled.Should().BeTrue();
         viewModel.AccentDensityPercent.Should().Be(0);
+
+        var window = new AreaGeneratorWindow(viewModel);
+        try
+        {
+            Dispatcher.UIThread.RunJobs();
+            var density = window.FindControl<NumericUpDown>("AccentDensityInput")!;
+            density.Minimum.Should().Be(0);
+            density.Value.Should().Be(0);
+            viewModel.AccentDensityPercent.Should().Be(0,
+                "binding the channel-only default must not invent a blob accent pass");
+        }
+        finally
+        {
+            window.Close();
+            Dispatcher.UIThread.RunJobs();
+        }
     }
 
     [AvaloniaTest]

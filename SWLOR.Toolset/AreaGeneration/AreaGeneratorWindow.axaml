@@ -179,8 +179,9 @@
                   <CheckBox Grid.Row="10" Grid.ColumnSpan="2" IsChecked="{Binding DoorTransitions, Mode=TwoWay}" Content="Use door transitions where supported" />
                   <CheckBox Grid.Row="11" Grid.ColumnSpan="2" IsChecked="{Binding AccentEnabled, Mode=TwoWay}" Content="Enable accent terrain" />
                   <TextBlock Grid.Row="12" Classes="label" Text="Accent density (%)" />
-                  <NumericUpDown Grid.Row="12" Grid.Column="1" Value="{Binding AccentDensityPercent, Mode=TwoWay}"
-                                 Minimum="1" Maximum="20" Increment="1" IsEnabled="{Binding AccentEnabled}" />
+                  <NumericUpDown x:Name="AccentDensityInput" Grid.Row="12" Grid.Column="1"
+                                 Value="{Binding AccentDensityPercent, Mode=TwoWay}"
+                                 Minimum="0" Maximum="20" Increment="1" IsEnabled="{Binding AccentEnabled}" />
                   <TextBlock Grid.Row="13" Classes="label" Text="Feature density (%)" />
                   <NumericUpDown Grid.Row="13" Grid.Column="1" Value="{Binding FeatureDensityPercent, Mode=TwoWay}" Minimum="0" Maximum="15" Increment="1" />
                   <TextBlock Grid.Row="14" Classes="label" Text="Height regions (elevation / relief)" />

@@ -27,11 +27,11 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
         }
 
         public static bool HasCombatProgress(
-            bool hasAttackOpportunity,
+            bool hasNewOffensiveActivity,
             float previousDistance,
             float currentDistance)
         {
-            return hasAttackOpportunity ||
+            return hasNewOffensiveActivity ||
                    currentDistance + ProgressDistanceMeters < previousDistance;
         }
 

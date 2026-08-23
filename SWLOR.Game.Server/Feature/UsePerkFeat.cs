@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.ActivityService;
+using SWLOR.Game.Server.Service.CompanionControlService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
@@ -96,6 +97,12 @@ namespace SWLOR.Game.Server.Feature
                 return;
             }
 
+            if (!GetIsObjectValid(target) && CompanionControl.IsRegisteredCompanion(activator))
+            {
+                CompanionControl.ResumeModePosition(activator);
+                return;
+            }
+
             if (!GetIsPC(activator) && !GetIsPC(GetMaster(activator)))
                 target = Enmity.GetHighestEnmityTarget(activator);
 
@@ -174,8 +181,10 @@ namespace SWLOR.Game.Server.Feature
         {
             // Autonomous NPCs reacquire their highest-enmity target inside ResumeAttack. Schedule
             // the callback even when the target saved before the cast has since become invalid.
+            var isPlayerControlled = GetIsPC(activator) || GetIsPC(GetMaster(activator));
             if (!GetIsObjectValid(target) &&
-                (GetIsPC(activator) || GetIsPC(GetMaster(activator))))
+                isPlayerControlled &&
+                !CompanionControl.IsRegisteredCompanion(activator))
             {
                 return;
             }

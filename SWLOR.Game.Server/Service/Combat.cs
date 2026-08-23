@@ -3068,6 +3068,15 @@ namespace SWLOR.Game.Server.Service
             return isRecent;
         }
 
+        public static DateTime GetLastOffensiveActivityAt(uint creature)
+        {
+            _lastAttackActivity.TryGetValue(creature, out var lastAttack);
+            _lastHostileAbilityAttemptActivity.TryGetValue(creature, out var lastHostileAbility);
+            return lastAttack > lastHostileAbility
+                ? lastAttack
+                : lastHostileAbility;
+        }
+
         public static int PrepareOpeningAutoAttack(uint attacker, SkillType skillType)
         {
             if (!GetIsObjectValid(attacker) || skillType == SkillType.Invalid)

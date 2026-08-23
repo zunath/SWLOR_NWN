@@ -33,6 +33,7 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             public uint TrackedTarget { get; set; } = OBJECT_INVALID;
             public float LastDistanceToTarget { get; set; } = float.MaxValue;
             public DateTime LastProgressAt { get; set; }
+            public DateTime LastOffensiveActivityAt { get; set; }
             public uint LastMasterArea { get; set; } = OBJECT_INVALID;
             public DateTime ExplicitOrderUntil { get; set; }
             public int HostileAbilityFeatCount { get; set; } = -1;
@@ -231,6 +232,12 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
 
             state.LastMasterArea = masterArea;
             ProcessCombatRound(companion);
+        }
+
+        public static void ResumeModePosition(uint companion)
+        {
+            if (IsControlledCompanion(companion))
+                MaintainModePosition(companion);
         }
 
         private static uint AdvanceAuthorizedTarget(uint companion)
@@ -576,16 +583,17 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
                 return true;
 
             var distance = GetDistanceBetween(companion, target);
-            var hasOpportunity = IsWithinWeaponRange(companion, target) ||
-                                 CanUseHostileAbilityWithoutMoving(companion, target);
+            var offensiveActivityAt = Combat.GetLastOffensiveActivityAt(companion);
+            var hasNewOffensiveActivity = offensiveActivityAt > state.LastOffensiveActivityAt;
 
             if (CompanionControlPolicy.HasCombatProgress(
-                    hasOpportunity,
+                    hasNewOffensiveActivity,
                     state.LastDistanceToTarget,
                     distance))
             {
                 state.LastProgressAt = DateTime.UtcNow;
                 state.LastDistanceToTarget = distance;
+                state.LastOffensiveActivityAt = offensiveActivityAt;
                 return true;
             }
 
@@ -623,6 +631,7 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             state.TrackedTarget = target;
             state.LastDistanceToTarget = GetDistanceBetween(companion, target);
             state.LastProgressAt = DateTime.UtcNow;
+            state.LastOffensiveActivityAt = Combat.GetLastOffensiveActivityAt(companion);
         }
 
         private static bool CanEngageWithoutMoving(uint companion, uint target)
@@ -779,6 +788,7 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             state.TrackedTarget = OBJECT_INVALID;
             state.LastDistanceToTarget = float.MaxValue;
             state.LastProgressAt = default;
+            state.LastOffensiveActivityAt = default;
         }
 
         private static void InterruptAndClear(uint companion)

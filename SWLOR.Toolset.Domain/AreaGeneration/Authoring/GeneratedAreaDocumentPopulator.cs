@@ -15,6 +15,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
         private const string WaypointList = "WaypointList";
         private const string DoorList = "Door List";
         private const string PlaceableList = "Placeable List";
+        private const float TreasureAnchorClearance = 3f;
         private static readonly ILogger Logger = Log.ForContext<GeneratedAreaDocumentPopulator>();
 
         private GeneratedAreaDocumentPopulator()
@@ -302,8 +303,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             if (bossRoom == null)
                 return;
 
-            var x = bossRoom.CenterTile.X * 10f + 5f;
-            var y = bossRoom.CenterTile.Y * 10f + 5f;
+            var (x, y) = FindTreasureAnchor(draft, bossRoom);
             var z = GroundHeightAt(draft.Result.Resolved, draft.Tileset, x, y);
             AddPlaceable(
                 workspace,
@@ -317,6 +317,72 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                 facingDegrees: 0f,
                 visualScale: 1f,
                 displayName: draft.Composition.Content.TreasureDisplayName);
+        }
+
+        /// <summary>
+        /// Prefers the Boss room center, then other room-tile centers and inset quarter points that
+        /// stay clear of generated transitions and decorations. A one-tile Boss room can also host
+        /// the required placeable exit, so its center is not unconditionally safe.
+        /// </summary>
+        private static (float X, float Y) FindTreasureAnchor(
+            AreaGenerationDraft draft,
+            LayoutRoom bossRoom)
+        {
+            var tiles = bossRoom.Tiles
+                .DefaultIfEmpty(bossRoom.CenterTile)
+                .Distinct()
+                .OrderBy(tile => Math.Abs(tile.X - bossRoom.CenterTile.X) + Math.Abs(tile.Y - bossRoom.CenterTile.Y))
+                .ThenBy(tile => tile.Y)
+                .ThenBy(tile => tile.X)
+                .ToList();
+            var candidates = new List<(float X, float Y)>
+            {
+                (bossRoom.CenterTile.X * 10f + 5f, bossRoom.CenterTile.Y * 10f + 5f)
+            };
+            foreach (var tile in tiles)
+                candidates.Add((tile.X * 10f + 5f, tile.Y * 10f + 5f));
+            foreach (var tile in tiles)
+            {
+                candidates.Add((tile.X * 10f + 2.5f, tile.Y * 10f + 2.5f));
+                candidates.Add((tile.X * 10f + 7.5f, tile.Y * 10f + 2.5f));
+                candidates.Add((tile.X * 10f + 7.5f, tile.Y * 10f + 7.5f));
+                candidates.Add((tile.X * 10f + 2.5f, tile.Y * 10f + 7.5f));
+            }
+
+            candidates = candidates.Distinct().ToList();
+            var occupied = new List<(float X, float Y)>();
+            foreach (var transition in draft.Result.Resolved.Transitions)
+            {
+                occupied.Add(transition.Style == TransitionStyle.Placeable
+                    ? (transition.Tile.X * 10f + 5f, transition.Tile.Y * 10f + 5f)
+                    : (transition.DoorX, transition.DoorY));
+            }
+
+            occupied.AddRange(draft.Result.PlannedDecorations.Select(decoration =>
+                (decoration.Position.X, decoration.Position.Y)));
+            if (occupied.Count == 0)
+                return candidates[0];
+
+            var requiredDistanceSquared = TreasureAnchorClearance * TreasureAnchorClearance;
+            foreach (var candidate in candidates)
+            {
+                if (occupied.All(point => DistanceSquared(candidate, point) >= requiredDistanceSquared))
+                    return candidate;
+            }
+
+            // Extremely dense synthetic layouts may leave no candidate with the full clearance.
+            // Pick the deterministic candidate with the greatest available separation instead of
+            // falling back to an exact overlap.
+            return candidates
+                .OrderByDescending(candidate => occupied.Min(point => DistanceSquared(candidate, point)))
+                .First();
+        }
+
+        private static float DistanceSquared((float X, float Y) left, (float X, float Y) right)
+        {
+            var dx = left.X - right.X;
+            var dy = left.Y - right.Y;
+            return dx * dx + dy * dy;
         }
 
         private static float GroundHeightAt(

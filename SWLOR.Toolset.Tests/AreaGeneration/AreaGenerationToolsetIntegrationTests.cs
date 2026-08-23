@@ -316,6 +316,13 @@ public class AreaGenerationToolsetIntegrationTests
                     DoorZ = 1f,
                     DoorOrientation = 90f,
                     DoorType = 176
+                },
+                new TransitionPoint
+                {
+                    Kind = TransitionKind.Exit,
+                    Tile = (0, 0),
+                    RoomId = 1,
+                    Style = TransitionStyle.Placeable
                 }
             ]
         };
@@ -400,7 +407,7 @@ public class AreaGenerationToolsetIntegrationTests
         are.IsNight.Should().BeTrue();
         are.ChanceRain.Should().Be(33);
         are.FogClipDist.Should().Be(88f);
-        git.Fields.GetListOrEmpty("WaypointList").Should().HaveCount(2);
+        git.Fields.GetListOrEmpty("WaypointList").Should().HaveCount(3);
         git.Fields.GetListOrEmpty("Door List").Should().ContainSingle()
             .Which.GetStringOrNull("Tag").Should().Be("PG_DOOR_EXIT_1");
         git.Fields.GetListOrEmpty("Door List").Single()
@@ -409,10 +416,10 @@ public class AreaGenerationToolsetIntegrationTests
             .GetIntOrNull("Appearance").Should().Be(176);
         git.Fields.GetListOrEmpty("Door List").Single()
             .GetIntOrNull("GenericType_New").Should().Be(0);
-        git.Fields.GetListOrEmpty("Placeable List").Should().HaveCount(3);
+        git.Fields.GetListOrEmpty("Placeable List").Should().HaveCount(4);
         git.Fields.GetListOrEmpty("Placeable List")
             .Select(instance => instance.GetStringOrNull("Tag"))
-            .Should().Equal("PG_TRANS_ENT_1", "PG_TREASURE", "PG_DEC_1");
+            .Should().Equal("PG_TRANS_ENT_1", "PG_TRANS_EXIT_2", "PG_TREASURE", "PG_DEC_1");
         git.Fields.GetListOrEmpty("Placeable List")[0]
             .GetSingleOrNull("Z").Should().BeApproximately(12f, 0.001f,
                 "placeable transitions use the sloped tile's center height");
@@ -422,17 +429,23 @@ public class AreaGenerationToolsetIntegrationTests
             .GetStringOrNull("OnUsed").Should().BeEmpty();
         new VarTable(git.Fields.GetListOrEmpty("Placeable List")[0])
             .GetString("Destination").Should().BeNull();
-        git.Fields.GetListOrEmpty("Placeable List")[1]
+        var bossExit = git.Fields.GetListOrEmpty("Placeable List")[1];
+        var treasure = git.Fields.GetListOrEmpty("Placeable List")[2];
+        treasure
             .GetLocStringOrNull("LocName")!.Text.Should().Be("Test Treasure Cache");
-        git.Fields.GetListOrEmpty("Placeable List")[1]
+        treasure
             .GetSingleOrNull("Z").Should().BeApproximately(0f, 0.001f,
-                "the boss-room treasure is grounded at its center tile");
-        git.Fields.GetListOrEmpty("Placeable List")[2]
+                "the boss-room treasure is grounded at its selected point");
+        var treasureDx = treasure.GetSingleOrNull("X")!.Value - bossExit.GetSingleOrNull("X")!.Value;
+        var treasureDy = treasure.GetSingleOrNull("Y")!.Value - bossExit.GetSingleOrNull("Y")!.Value;
+        MathF.Sqrt(treasureDx * treasureDx + treasureDy * treasureDy).Should().BeGreaterThanOrEqualTo(3f,
+            "a one-tile Boss room must keep its treasure clear of a placeable exit at the center");
+        git.Fields.GetListOrEmpty("Placeable List")[3]
             .GetSingleOrNull("Z").Should().BeApproximately(11.06f, 0.001f,
                 "ordinary decorations interpolate the rotated tile's corner heights at their XY position");
-        gic.Fields.GetListOrEmpty("WaypointList").Should().HaveCount(2);
+        gic.Fields.GetListOrEmpty("WaypointList").Should().HaveCount(3);
         gic.Fields.GetListOrEmpty("Door List").Should().ContainSingle();
-        gic.Fields.GetListOrEmpty("Placeable List").Should().HaveCount(3);
+        gic.Fields.GetListOrEmpty("Placeable List").Should().HaveCount(4);
     }
 
     private static (AreaGenerationAuthoringService Service, TilesetCatalog Tilesets) CreateAuthoringService()

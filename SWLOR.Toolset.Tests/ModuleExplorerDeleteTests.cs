@@ -1,5 +1,9 @@
+using System.Diagnostics;
+using System.Security.Cryptography;
+using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Services;
@@ -160,6 +164,160 @@ namespace SWLOR.Toolset.Tests
             explorer.StatusMessage.Should().Contain("changed while the delete confirmation was open");
         }
 
+        [Test]
+        public void WorkspaceOpen_RollsBackDeleteInterruptedBetweenCompanionMoves()
+        {
+            var interrupted = SimulateInterruptedScriptDelete("interrupted_open");
+            var log = new OutputLogService();
+            var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
+
+            workspace.Open(_module);
+
+            File.ReadAllText(interrupted.Source).Should().Be("void main() { // original\n}");
+            File.ReadAllBytes(interrupted.Compiled).Should().Equal(1, 2, 3);
+            File.Exists(interrupted.Backup).Should().BeFalse();
+            File.Exists(interrupted.Manifest).Should().BeFalse();
+        }
+
+        [Test]
+        public void WorkspaceOpen_RestoresInterruptedAreaFilesAndIfoRegistration()
+        {
+            const string resRef = "interrupted_area";
+            CopyAreaTemplate(resRef);
+            var ifoPath = Path.GetFullPath(Path.Combine(_module, "ifo", "module.ifo.json"));
+            File.Copy(Path.Combine(CorpusLocator.ModuleDirectory, "ifo", "module.ifo.json"), ifoPath);
+            var originalIfo = IfoDocument.Load(ifoPath);
+            AreaTemplateFactory.AddAreaToModule(originalIfo, resRef).Should().BeTrue();
+            var expectedIfo = originalIfo.ToBytes();
+            File.WriteAllBytes(ifoPath, expectedIfo);
+
+            var updatedIfoDocument = IfoDocument.Parse(expectedIfo);
+            AreaTemplateFactory.RemoveAreaFromModule(updatedIfoDocument, resRef).Should().Be(1);
+            var updatedIfo = updatedIfoDocument.ToBytes();
+            var transactionId = Guid.NewGuid().ToString("N");
+            var paths = new[]
+            {
+                Path.GetFullPath(Path.Combine(_module, "are", resRef + ".are.json")),
+                Path.GetFullPath(Path.Combine(_module, "git", resRef + ".git.json")),
+                Path.GetFullPath(Path.Combine(_module, "gic", resRef + ".gic.json"))
+            };
+            var entries = paths.Select(path => new
+            {
+                SourcePath = path,
+                BackupPath = path + "." + transactionId + ".delete-backup",
+                SourceSha256 = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path)))
+            }).ToArray();
+            var manifest = Path.Combine(
+                _module,
+                "." + transactionId + ".resource-delete-transaction.json");
+            File.WriteAllText(manifest, JsonSerializer.Serialize(new
+            {
+                Version = 1,
+                TransactionId = transactionId,
+                ModuleRoot = Path.GetFullPath(_module),
+                Type = ResourceType.Area.ToString(),
+                ResRef = resRef,
+                Entries = entries,
+                IfoPath = ifoPath,
+                ExpectedIfoBase64 = Convert.ToBase64String(expectedIfo),
+                UpdatedIfoSha256 = Convert.ToHexString(SHA256.HashData(updatedIfo))
+            }));
+
+            File.WriteAllBytes(ifoPath, updatedIfo);
+            File.Move(entries[0].SourcePath, entries[0].BackupPath);
+            new WorkspaceContext(root => new ModuleWorkspace(root), new OutputLogService()).Open(_module);
+
+            paths.Should().OnlyContain(path => File.Exists(path));
+            entries.Select(entry => entry.BackupPath).Should().OnlyContain(path => !File.Exists(path));
+            File.Exists(manifest).Should().BeFalse();
+            IfoDocument.Load(ifoPath).AreaResRefs.Should().Contain(resRef);
+        }
+
+        [Test]
+        public async Task Pack_RollsBackInterruptedDeleteBeforeReadingModuleSources()
+        {
+            var interrupted = SimulateInterruptedScriptDelete("interrupted_pack");
+            var log = new OutputLogService();
+
+            var exitCode = await new PackService(log).PackAsync(_module);
+
+            exitCode.Should().Be(-1, "the synthetic repository intentionally has no CLI project");
+            File.Exists(interrupted.Source).Should().BeTrue();
+            File.Exists(interrupted.Compiled).Should().BeTrue();
+            File.Exists(interrupted.Backup).Should().BeFalse();
+            File.Exists(interrupted.Manifest).Should().BeFalse();
+        }
+
+        [Test]
+        public async Task WaitingForModuleLease_DoesNotBlockTheCallingThread()
+        {
+            const string resRef = "background_delete";
+            var source = Path.Combine(_module, "nss", resRef + ".nss");
+            File.WriteAllText(source, "void main() {}");
+            var (explorer, _) = CreateExplorer(ResourceType.Nss, new RecordingPrompts(answer: true));
+            explorer.SelectedRow = UnsortedResource(explorer, resRef);
+
+            using var acquired = new ManualResetEventSlim();
+            using var release = new ManualResetEventSlim();
+            Exception? holderFailure = null;
+            var holder = new Thread(() =>
+            {
+                try
+                {
+                    using var lease = ModuleWriteLock.Acquire(_module);
+                    acquired.Set();
+                    release.Wait();
+                }
+                catch (Exception ex)
+                {
+                    holderFailure = ex;
+                    acquired.Set();
+                }
+            });
+            holder.Start();
+            acquired.Wait(TimeSpan.FromSeconds(5)).Should().BeTrue();
+            holderFailure.Should().BeNull();
+
+            // A delayed release prevents a failed implementation from hanging the test for the
+            // lock's full 30-second timeout. A UI-safe implementation returns from ExecuteAsync
+            // immediately with an incomplete task while its worker waits for the lease.
+            using var emergencyRelease = new CancellationTokenSource();
+            var emergencyReleaseTask = Task.Run(async () =>
+            {
+                try
+                {
+                    await Task.Delay(TimeSpan.FromSeconds(3), emergencyRelease.Token);
+                    release.Set();
+                }
+                catch (OperationCanceledException)
+                {
+                }
+            });
+
+            var stopwatch = Stopwatch.StartNew();
+            var deleteTask = explorer.DeleteSelectedResourceCommand.ExecuteAsync(null);
+            stopwatch.Stop();
+
+            try
+            {
+                stopwatch.Elapsed.Should().BeLessThan(TimeSpan.FromSeconds(1));
+                deleteTask.IsCompleted.Should().BeFalse();
+                explorer.IsDeletingResource.Should().BeTrue();
+            }
+            finally
+            {
+                release.Set();
+                emergencyRelease.Cancel();
+            }
+
+            await deleteTask.WaitAsync(TimeSpan.FromSeconds(5));
+            holder.Join(TimeSpan.FromSeconds(5)).Should().BeTrue();
+            await emergencyReleaseTask;
+            holderFailure.Should().BeNull();
+            File.Exists(source).Should().BeFalse();
+            explorer.IsDeletingResource.Should().BeFalse();
+        }
+
         private (ModuleExplorerViewModel Explorer, CategoryService Categories) CreateExplorer(
             ResourceType type,
             IEditorPromptService prompts,
@@ -203,6 +361,56 @@ namespace SWLOR.Toolset.Tests
                     Path.Combine(_module, folder, targetResRef + "." + extension));
             }
         }
+
+        private InterruptedDelete SimulateInterruptedScriptDelete(string resRef)
+        {
+            var source = Path.GetFullPath(Path.Combine(_module, "nss", resRef + ".nss"));
+            var compiled = Path.GetFullPath(Path.Combine(_module, "ncs", resRef + ".ncs"));
+            File.WriteAllText(source, "void main() { // original\n}");
+            File.WriteAllBytes(compiled, new byte[] { 1, 2, 3 });
+
+            var transactionId = Guid.NewGuid().ToString("N");
+            var backup = source + "." + transactionId + ".delete-backup";
+            var manifest = Path.Combine(
+                _module,
+                "." + transactionId + ".resource-delete-transaction.json");
+            var sourceSha = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(source)));
+            var compiledSha = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(compiled)));
+            var compiledBackup = compiled + "." + transactionId + ".delete-backup";
+
+            File.WriteAllText(manifest, JsonSerializer.Serialize(new
+            {
+                Version = 1,
+                TransactionId = transactionId,
+                ModuleRoot = Path.GetFullPath(_module),
+                Type = ResourceType.Nss.ToString(),
+                ResRef = resRef,
+                Entries = new[]
+                {
+                    new { SourcePath = source, BackupPath = backup, SourceSha256 = sourceSha },
+                    new
+                    {
+                        SourcePath = compiled,
+                        BackupPath = compiledBackup,
+                        SourceSha256 = compiledSha
+                    }
+                },
+                IfoPath = (string?)null,
+                ExpectedIfoBase64 = (string?)null,
+                UpdatedIfoSha256 = (string?)null
+            }));
+
+            // Simulate a hard process exit after the first companion move. The normal catch block
+            // never runs, so the durable manifest is the only way to restore the logical script.
+            File.Move(source, backup);
+            return new InterruptedDelete(source, compiled, backup, manifest);
+        }
+
+        private sealed record InterruptedDelete(
+            string Source,
+            string Compiled,
+            string Backup,
+            string Manifest);
 
         private sealed class RecordingPrompts(
             bool answer,

@@ -42,6 +42,15 @@ namespace SWLOR.Toolset.Services
                     return -1;
                 }
 
+                // The previous process may have exited between companion moves in a logical
+                // resource delete. Recover that transaction on a worker before either MSBuild or
+                // the CLI enumerates the module and conversation source trees.
+                var recoveredDeletes = await Task.Run(
+                        () => ModuleResourceDeletionService.RecoverInterruptedDeletes(moduleRoot))
+                    .ConfigureAwait(false);
+                foreach (var recovered in recoveredDeletes)
+                    _log.AppendLine($"Recovered {recovered} from an interrupted delete before packing.");
+
                 // Conversation saves use this same cross-process key. Hold it before MSBuild reads
                 // the graph files until the matching module/server generation has been deployed, so
                 // another editor cannot successfully save a graph that the just-built assembly lacks.

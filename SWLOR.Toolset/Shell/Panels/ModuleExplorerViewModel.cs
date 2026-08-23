@@ -74,6 +74,9 @@ namespace SWLOR.Toolset.Shell.Panels
         [ObservableProperty]
         private string? _statusMessage;
 
+        [ObservableProperty]
+        private bool _isDeletingResource;
+
         /// <summary>The new-area wizard while it is open, or null - the view shows it as an overlay.</summary>
         [ObservableProperty]
         private NewAreaViewModel? _activeNewArea;
@@ -895,6 +898,7 @@ namespace SWLOR.Toolset.Shell.Panels
         /// reader or writer owns the workspace.
         /// </summary>
         public bool CanDeleteSelectedResource =>
+            !IsDeletingResource &&
             SelectedRow?.Item != null &&
             SelectedRow.Type is ResourceType.Area or ResourceType.Dlg or ResourceType.Nss &&
             _mutationLock?.IsLocked != true;
@@ -1000,15 +1004,22 @@ namespace SWLOR.Toolset.Shell.Panels
             }
 
             ModuleResourceDeletionResult result;
+            IsDeletingResource = true;
+            StatusMessage = $"Deleting {kind} '{displayName}'...";
             try
             {
-                result = ModuleResourceDeletionService.Commit(plan);
+                result = await Task.Run(() => ModuleResourceDeletionService.Commit(plan))
+                    .ConfigureAwait(true);
             }
             catch (Exception ex)
             {
                 StatusMessage = $"'{displayName}' was not deleted: {ex.Message}";
                 _log.AppendLine($"Deleting {kind} '{resRef}' failed: {ex.Message}");
                 return;
+            }
+            finally
+            {
+                IsDeletingResource = false;
             }
 
             _workspaceContext.RemoveCatalogEntry(type, resRef);
@@ -1269,6 +1280,12 @@ namespace SWLOR.Toolset.Shell.Panels
             // Nothing in this panel has a model any more - areas, dialogs and scripts all have
             // none - so the preview is left showing whatever the Palette last put there rather than
             // being cleared to "no preview available" on every click.
+        }
+
+        partial void OnIsDeletingResourceChanged(bool value)
+        {
+            OnPropertyChanged(nameof(CanDeleteSelectedResource));
+            DeleteSelectedResourceCommand.NotifyCanExecuteChanged();
         }
 
         // ----- tree assembly -----

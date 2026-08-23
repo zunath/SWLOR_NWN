@@ -55,6 +55,15 @@ namespace SWLOR.Toolset.Workspace
         /// </summary>
         public void Open(string moduleRoot)
         {
+            // A logical resource delete can span several files (and an area's IFO registration).
+            // Restore an interrupted transaction before any workspace enumeration can observe only
+            // the companions that had not moved when the prior process exited.
+            foreach (var recovered in Services.ModuleResourceDeletionService
+                         .RecoverInterruptedDeletes(moduleRoot))
+            {
+                _log.AppendLine($"Recovered {recovered} from an interrupted delete.");
+            }
+
             // Before anything reads the folder. A grouped save that was interrupted between moving
             // an original aside and installing its replacement leaves the canonical ARE, GIT, or
             // GIC missing and its only copy sitting beside it under a .save-backup name; opening

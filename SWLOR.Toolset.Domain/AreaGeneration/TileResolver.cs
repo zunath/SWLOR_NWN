@@ -73,11 +73,11 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
             var heightAware = layout.Corners.HasAnyHeight();
 
             var candidateLookup = BuildCandidateLookup(tileset, heightAware, layout.DoorSlotCrossers, layout.ExcludedTiles);
-            // Feature sprinkling stays scoped to flat layouts for now (v1): no layout style paints
-            // elevation yet, so this is not a behavior change; a future task can extend feature
-            // sprinkling to height-aware cells deliberately.
-            var featureLookup = !heightAware && layout.FeatureTiles.Count > 0
-                ? BuildFeatureLookup(tileset, layout.FeatureTiles, layout.ExcludedTiles)
+            // Feature groups are flat 1x1 tiles. In an elevated layout their height-aware key has an
+            // all-zero delta profile, so they remain eligible on level cells at any absolute height
+            // while sloped cells keep their structural tile.
+            var featureLookup = layout.FeatureTiles.Count > 0
+                ? BuildFeatureLookup(tileset, layout.FeatureTiles, heightAware, layout.ExcludedTiles)
                 : null;
             var tiles = new ResolvedTile[width * height];
 
@@ -226,6 +226,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
                             {
                                 tileId = featurePick.TileId;
                                 orientation = featurePick.Orientation;
+                                tileMin = 0;
                                 placedFeatures.Add((x, y));
                                 placedFeatureCells[(x, y)] = featurePick.GroupName;
                             }
@@ -453,7 +454,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
         /// was written.
         /// </summary>
         private static Dictionary<string, FeatureCandidateSet> BuildFeatureLookup(
-            TilesetModel tileset, IReadOnlyDictionary<string, int> featureTiles,
+            TilesetModel tileset, IReadOnlyDictionary<string, int> featureTiles, bool heightAware,
             IReadOnlyCollection<int> excludedTiles = null)
         {
             var lookup = new Dictionary<string, FeatureCandidateSet>();
@@ -500,7 +501,12 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
 
                     // Structurally eligible group tiles are crosser-free by construction (checked
                     // above), so their edge tuple is always blank under every orientation.
-                    var key = MakeKey(tl, tr, br, bl, string.Empty, string.Empty, string.Empty, string.Empty);
+                    var key = heightAware
+                        ? MakeHeightAwareKey(
+                            tl, tr, br, bl,
+                            string.Empty, string.Empty, string.Empty, string.Empty,
+                            0, 0, 0, 0)
+                        : MakeKey(tl, tr, br, bl, string.Empty, string.Empty, string.Empty, string.Empty);
 
                     if (!lookup.TryGetValue(key, out var set))
                     {

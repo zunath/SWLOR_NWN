@@ -68,7 +68,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
         /// reads this to dress area-marking feature tiles (a grass lawn patch, a fountain court)
         /// with a composed ensemble instead of leaving a bare zone marker -- see
         /// DungeonTilesetProfile.FeatureTileDressings. Empty for every composition without feature
-        /// tiles (and for height-aware layouts, where feature sprinkling is disabled).
+        /// tiles. Height-aware layouts may place flat feature groups on compatible level cells.
         /// </summary>
         public Dictionary<(int X, int Y), string> FeatureTileCells { get; set; } = new();
 

@@ -976,15 +976,6 @@ namespace SWLOR.Toolset.Shell.Panels
                 return;
             }
 
-            // The destructive prompt above covers the open buffer too. Close it now so its document
-            // sessions cannot save the resource back after the filesystem transaction completes.
-            if (editorService?.IsOpen(type, resRef) == true &&
-                !editorService.TryCloseResourceForDeletion(type, resRef))
-            {
-                StatusMessage = $"'{displayName}' was not deleted because its editor could not be closed.";
-                return;
-            }
-
             // Reserve the shared deletion state before rechecking editor ownership. The reservation
             // blocks every editor-opening route until the deletion and its catalog cleanup finish,
             // closing the race between these checks and entering the filesystem transaction.
@@ -996,9 +987,15 @@ namespace SWLOR.Toolset.Shell.Panels
                 return;
             }
 
-            if (editorService?.IsOpen(type, resRef) == true)
+            // An editor that was already open when the builder confirmed stays alive until Commit
+            // succeeds. That preserves its dirty buffer if the module becomes locked or the prepared
+            // filesystem generation changes while the confirmation is open. A newly opened editor
+            // was not covered by the warning and still cancels the delete.
+            if (!closesOpenEditor && editorService?.IsOpen(type, resRef) == true)
             {
-                StatusMessage = $"'{displayName}' is now open in an editor - close that tab first.";
+                StatusMessage =
+                    $"'{displayName}' was opened while the delete confirmation was active. " +
+                    "It was not deleted; choose Delete again to confirm closing its editor.";
                 return;
             }
 
@@ -1043,6 +1040,16 @@ namespace SWLOR.Toolset.Shell.Panels
             finally
             {
                 IsDeletingResource = false;
+            }
+
+            // The filesystem transaction committed, so the confirmed unsaved buffer can now be
+            // discarded safely. Keeping the editor alive until this point means every refusal or
+            // failed commit leaves the builder's in-memory work intact.
+            if (editorService?.IsOpen(type, resRef) == true &&
+                !editorService.TryCloseResourceForDeletion(type, resRef))
+            {
+                _log.AppendLine(
+                    $"Deleted {kind} '{resRef}', but its editor could not be closed. Close it without saving.");
             }
 
             _workspaceContext.RemoveCatalogEntry(type, resRef);

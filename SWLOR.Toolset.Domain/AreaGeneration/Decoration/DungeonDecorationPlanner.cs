@@ -1757,52 +1757,70 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
 
         /// <summary>
         /// Finds every transition's mirrored doorway-flank tile pair: two DIFFERENT wall-eligible,
-        /// non-excluded room tiles within Chebyshev distance 1 of the transition's anchor that reflect
-        /// each other across it (tileA + tileB == 2 * anchor) — the "either side of the doorway" shape
-        /// a symmetric flank needs. A transition with no such pair (most corridor-end/alcove doorways)
-        /// contributes nothing; PlanDoorwayFlanks never places a single lopsided flank.
+        /// non-excluded room tiles within Chebyshev distance 1 of the transition's room-side tile that
+        /// reflect each other across it (tileA + tileB == 2 * anchor) — the "either side of the doorway"
+        /// shape a symmetric flank needs. DoorwayCell is the wall cell outside the owning room, so it
+        /// cannot be the discrete symmetry point for candidates constrained to room tiles. A transition
+        /// with no such pair (most corridor-end/alcove doorways) contributes nothing;
+        /// PlanDoorwayFlanks never places a single lopsided flank.
         /// </summary>
         private static List<(int TransitionIndex, (int X, int Y) A, (int X, int Y) B)> FindDoorwayFlankPairs(
             ResolvedLayout layout, HashSet<(int X, int Y)> excluded, Dictionary<(int X, int Y), int> tileToRoom,
             List<RoomState> rooms)
         {
             var results = new List<(int, (int X, int Y), (int X, int Y))>();
+            var roomTileSets = rooms.Select(room => room.TileSet).ToList();
 
             for (var t = 0; t < layout.Transitions.Count; t++)
             {
-                var transition = layout.Transitions[t];
-                var anchor = transition.Style is TransitionStyle.Door or TransitionStyle.GroupExit
-                    ? transition.DoorwayCell
-                    : transition.Tile;
-
-                var candidates = new List<(int X, int Y)>();
-                foreach (var (dx, dy) in FlankProbeOrder)
-                {
-                    var candidate = (anchor.X + dx, anchor.Y + dy);
-                    if (excluded.Contains(candidate) || !tileToRoom.TryGetValue(candidate, out var roomIndex))
-                        continue;
-                    if (NearestWallDirection(candidate, rooms[roomIndex].TileSet) == null)
-                        continue;
-                    candidates.Add(candidate);
-                }
-
-                (int X, int Y)? bestA = null, bestB = null;
-                foreach (var candidate in candidates)
-                {
-                    var mirror = (2 * anchor.X - candidate.X, 2 * anchor.Y - candidate.Y);
-                    if (mirror == candidate || !candidates.Contains(mirror))
-                        continue;
-
-                    bestA = candidate;
-                    bestB = mirror;
-                    break;
-                }
-
-                if (bestA != null && bestB != null)
-                    results.Add((t, bestA.Value, bestB.Value));
+                var pair = FindDoorwayFlankPair(
+                    layout.Transitions[t], excluded, tileToRoom, roomTileSets);
+                if (pair != null)
+                    results.Add((t, pair.Value.A, pair.Value.B));
             }
 
             return results;
+        }
+
+        /// <summary>
+        /// Selects one mirrored room-tile pair around a transition's room-side anchor. Internal so
+        /// the geometry invariant can be regression-tested independently of the planner's other
+        /// doorway-context mechanisms and density budgets.
+        /// </summary>
+        internal static ((int X, int Y) A, (int X, int Y) B)? FindDoorwayFlankPair(
+            TransitionPoint transition,
+            HashSet<(int X, int Y)> excluded,
+            Dictionary<(int X, int Y), int> tileToRoom,
+            IReadOnlyList<HashSet<(int X, int Y)>> roomTileSets)
+        {
+            var anchor = transition.Tile;
+
+            var candidates = new List<(int X, int Y)>();
+            foreach (var (dx, dy) in FlankProbeOrder)
+            {
+                var candidate = (anchor.X + dx, anchor.Y + dy);
+                if (excluded.Contains(candidate) ||
+                    !tileToRoom.TryGetValue(candidate, out var roomIndex) ||
+                    roomIndex < 0 || roomIndex >= roomTileSets.Count)
+                {
+                    continue;
+                }
+
+                if (NearestWallDirection(candidate, roomTileSets[roomIndex]) == null)
+                    continue;
+                candidates.Add(candidate);
+            }
+
+            foreach (var candidate in candidates)
+            {
+                var mirror = (2 * anchor.X - candidate.X, 2 * anchor.Y - candidate.Y);
+                if (mirror == candidate || !candidates.Contains(mirror))
+                    continue;
+
+                return (candidate, mirror);
+            }
+
+            return null;
         }
 
         /// <summary>

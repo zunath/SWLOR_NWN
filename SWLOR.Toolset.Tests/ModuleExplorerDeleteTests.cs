@@ -244,6 +244,52 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task ChangedFileRefusesDeleteWithoutDiscardingOpenDirtyScript()
+        {
+            const string resRef = "changed_open_script";
+            var source = Path.Combine(_module, "nss", resRef + ".nss");
+            File.WriteAllText(source, "void main() { // original\n}");
+            Editors.EditorService? editors = null;
+            Editors.ScriptEditorViewModel? document = null;
+            var prompts = new RecordingPrompts(
+                answer: true,
+                onConfirm: () => File.WriteAllText(source, "void main() { // external\n}"));
+            var (explorer, _) = CreateExplorer(
+                ResourceType.Nss,
+                prompts,
+                editorServiceFactory: (workspace, log) =>
+                {
+                    var dockFactory = new ToolsetDockFactory(
+                        null!, null!, null!, null!, null!, null!, null!, null!, null!);
+                    editors = new Editors.EditorService(
+                        workspace,
+                        new Editors.LookupOptionProvider(workspace),
+                        log,
+                        dockFactory,
+                        prompts);
+                    document = new Editors.ScriptEditorViewModel(source, resRef, log, prompts);
+                    document.OnTextChanged("void main() { // unsaved\n}");
+                    var openScripts = (Dictionary<string, Editors.ScriptEditorViewModel>)
+                        typeof(Editors.EditorService)
+                            .GetField("_openScriptEditors", System.Reflection.BindingFlags.Instance |
+                                                               System.Reflection.BindingFlags.NonPublic)!
+                            .GetValue(editors)!;
+                    document.Closed += closed => openScripts.Remove(closed.FilePath);
+                    openScripts[source] = document;
+                    return editors;
+                });
+            explorer.SelectedRow = UnsortedResource(explorer, resRef);
+
+            await explorer.DeleteSelectedResourceCommand.ExecuteAsync(null);
+
+            File.ReadAllText(source).Should().Contain("// external");
+            editors!.IsOpen(ResourceType.Nss, resRef).Should().BeTrue();
+            document!.IsDirty.Should().BeTrue();
+            document.TextBinding.Should().Contain("// unsaved");
+            explorer.StatusMessage.Should().Contain("changed while the delete confirmation was open");
+        }
+
+        [Test]
         public async Task ScriptOpenedDuringConfirmation_RemainsOpenAndIsNotDeleted()
         {
             const string resRef = "late_open_script";

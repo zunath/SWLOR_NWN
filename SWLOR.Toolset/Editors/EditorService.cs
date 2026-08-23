@@ -1410,19 +1410,21 @@ namespace SWLOR.Toolset.Editors
         }
 
         /// <summary>
-        /// Closes the editor that owns a resource immediately before that resource is deleted.
+        /// Closes the editor that owns a resource immediately after that resource is deleted.
         /// </summary>
         /// <remarks>
         /// The caller must already have received explicit destructive confirmation. That confirmation
         /// covers the resource and any unsaved buffer held by its editor, so these closes deliberately
-        /// bypass the ordinary save/discard prompt. Closing first disposes every document session and
-        /// prevents a later save from recreating the deleted files.
+        /// bypass the ordinary save/discard prompt. The caller keeps the shared deletion reservation
+        /// until this closes every document session, preventing a later save from recreating the
+        /// deleted files. An area still loading has no live document to save; the reservation makes
+        /// its publish check fail once loading completes.
         /// </remarks>
         internal bool TryCloseResourceForDeletion(ResourceType type, string resRef)
         {
             var documents = OpenResourceDocuments(type, resRef);
             if (documents.Count == 0)
-                return !IsOpen(type, resRef);
+                return (type == ResourceType.Area && _openingAreaEditors.Contains(resRef)) || !IsOpen(type, resRef);
 
             foreach (var document in documents)
             {

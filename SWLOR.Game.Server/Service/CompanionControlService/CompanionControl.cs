@@ -336,19 +336,18 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
         public static uint ResolveHostileAbilityTarget(
             uint companion,
             AbilityDetail ability,
-            uint authorizedTarget)
+            uint authorizedTarget,
+            uint selectedTarget)
         {
             if (!GetIsObjectValid(authorizedTarget))
                 return OBJECT_INVALID;
 
-            if (ability.IsAreaAbility &&
-                ability.Targeting?.Shape == AbilityTargetingShapeType.Sphere &&
-                ability.Targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf))
-            {
+            if (ability.IsAreaAbility && selectedTarget == companion)
                 return companion;
-            }
 
-            return authorizedTarget;
+            return selectedTarget == authorizedTarget
+                ? selectedTarget
+                : OBJECT_INVALID;
         }
 
         public static bool CanIssueAttackCommand(uint companion, uint target)
@@ -500,6 +499,9 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             InterruptAndClear(companion);
             var state = GetState(companion);
             state.AbilitiesEnabled = !state.AbilitiesEnabled;
+            if (!state.AbilitiesEnabled)
+                UsePerkFeat.DequeueWeaponAbility(companion, false);
+
             SendResponse(companion, state.AbilitiesEnabled
                 ? "Abilities enabled."
                 : "Abilities disabled; basic attacks only.");
@@ -659,7 +661,11 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
                     continue;
                 }
 
-                var abilityTarget = ResolveHostileAbilityTarget(companion, ability, target);
+                var abilityTarget = ResolveHostileAbilityTarget(
+                    companion,
+                    ability,
+                    target,
+                    isSelfCenteredArea ? companion : target);
                 var targetLocation = GetLocation(
                     isSelfCenteredArea
                         ? companion

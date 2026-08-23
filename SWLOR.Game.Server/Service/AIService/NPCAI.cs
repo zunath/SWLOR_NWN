@@ -381,32 +381,32 @@ namespace SWLOR.Game.Server.Service.AIService
             if (action.Type == AIActionType.AttackHighestEnmity)
                 return context.CurrentEnmityTarget;
 
-            if (action.TargetSelector != null)
-            {
-                if (action.Type != AIActionType.Ability ||
-                    !CompanionControl.IsControlledCompanion(context.Self) ||
-                    !Ability.GetAbilityDetail(action.Feat).IsHostileAbility)
-                {
-                    return action.TargetSelector(context);
-                }
-            }
-
             if (action.Type == AIActionType.Ability)
             {
                 var ability = Ability.GetAbilityDetail(action.Feat);
+                AITargetSelector selector;
+                if (action.TargetSelector != null)
+                    selector = action.TargetSelector;
+                else if (AITarget.TryGetDefaultOverride(action.Feat, out var defaultSelector))
+                    selector = defaultSelector;
+                else
+                    selector = AITarget.InferDefault(action.Feat, ability);
+
+                var selectedTarget = selector(context);
                 if (ability.IsHostileAbility && CompanionControl.IsControlledCompanion(context.Self))
                 {
                     return CompanionControl.ResolveHostileAbilityTarget(
                         context.Self,
                         ability,
-                        context.CurrentEnmityTarget);
+                        context.CurrentEnmityTarget,
+                        selectedTarget);
                 }
 
-                if (AITarget.TryGetDefaultOverride(action.Feat, out var selector))
-                    return selector(context);
-
-                return AITarget.InferDefault(action.Feat, ability)(context);
+                return selectedTarget;
             }
+
+            if (action.TargetSelector != null)
+                return action.TargetSelector(context);
 
             return context.Self;
         }

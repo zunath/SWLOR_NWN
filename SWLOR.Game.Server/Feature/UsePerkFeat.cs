@@ -48,6 +48,9 @@ namespace SWLOR.Game.Server.Feature
 
         private static uint GetResumeAttackTarget(uint activator, uint target, AbilityDetail ability)
         {
+            if (CompanionControl.IsRegisteredCompanion(activator))
+                return CompanionControl.PeekAuthorizedTarget(activator);
+
             if (GetCurrentAction(activator) == ActionType.AttackObject)
             {
                 var attackTarget = GetAttackTarget(activator);
@@ -97,7 +100,9 @@ namespace SWLOR.Game.Server.Feature
                 return;
             }
 
-            if (!GetIsObjectValid(target) && CompanionControl.IsRegisteredCompanion(activator))
+            if (CompanionControl.IsRegisteredCompanion(activator) &&
+                (!GetIsObjectValid(target) ||
+                 CompanionControl.PeekAuthorizedTarget(activator) != target))
             {
                 CompanionControl.ResumeModePosition(activator);
                 return;

@@ -148,6 +148,7 @@ namespace SWLOR.CLI
                     .Replace("%%STM%%", FormatInteger(row["STM"]))
                     .Replace("%%FP%%", FormatInteger(row["FP"]))
                     .Replace("%%DMG%%", FormatInteger(row["Base Damage"]))
+                    .Replace("%%DELAY%%", FormatInteger(row["Attack Delay"]))
 
                     .Replace("%%MGT%%", FormatInteger(row["MGT"]))
                     .Replace("%%PER%%", FormatInteger(row["PER"]))

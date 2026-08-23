@@ -27,6 +27,7 @@ Generated files are copied into the matching server definition folders after rev
 
 ## Generated Code Features
 - Uses `BeastType`, `AbilityType`, role, appearance, portrait, soundset, and scale data from `Beast Levels`.
-- Emits level-specific HP, STM, FP, attributes, damage, combat bonuses, defenses, and resistances.
+- Emits level-specific HP, STM, FP, attributes, damage, attack delay, combat bonuses, defenses, and resistances.
+- Reads `Attack Delay` from every `Beast Levels` row. A species keeps one explicit delay across all 50 levels, while its per-hit damage is balanced for that cadence.
 - Emits mutation outcomes, weights, enzyme requirements, and day-of-week requirements from the private workbook.
 - Keeps mutation requirements out of the public Design Bible workbook.

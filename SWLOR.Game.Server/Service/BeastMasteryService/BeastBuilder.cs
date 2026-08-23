@@ -175,6 +175,21 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
         }
 
         /// <summary>
+        /// Specifies the natural weapon delay assigned to the beast at the current level.
+        /// </summary>
+        /// <param name="amount">The delay cost-table value to assign.</param>
+        /// <returns>A configured BeastBuilder object</returns>
+        public BeastBuilder Delay(int amount)
+        {
+            if (amount <= 0)
+                throw new ArgumentOutOfRangeException(nameof(amount), amount, "Beast attack delay must be positive.");
+
+            _activeLevel.Delay = amount;
+
+            return this;
+        }
+
+        /// <summary>
         /// Specifies the value of a specific stat for the beast at the current level being configured.
         /// </summary>
         /// <param name="type">The stat to assign</param>
@@ -373,6 +388,18 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
         /// <returns>A collection of beast details.</returns>
         public Dictionary<BeastType, BeastDetail> Build()
         {
+            foreach (var (beastType, beast) in _beasts)
+            {
+                foreach (var (level, detail) in beast.Levels)
+                {
+                    if (detail.Delay <= 0)
+                    {
+                        throw new InvalidOperationException(
+                            $"Beast '{beastType}' level {level} must specify a positive attack delay.");
+                    }
+                }
+            }
+
             return _beasts;
         }
     }

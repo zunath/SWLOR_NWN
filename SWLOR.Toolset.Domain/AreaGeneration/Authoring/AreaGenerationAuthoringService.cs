@@ -31,6 +31,19 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             if (theme == null)
                 throw new ArgumentException($"Unknown area theme '{settings.ThemeKey}'.", nameof(settings));
 
+            if (!theme.Tiers.TryGetValue(settings.Tier, out var tier))
+            {
+                throw new ArgumentException(
+                    $"Theme '{theme.DisplayName}' does not define tier {settings.Tier}.",
+                    nameof(settings));
+            }
+            if (string.IsNullOrWhiteSpace(tier.TreasureLootTableId) || tier.TreasureItemCount < 1)
+            {
+                throw new ArgumentException(
+                    $"Theme '{theme.DisplayName}' tier {settings.Tier} has invalid treasure settings.",
+                    nameof(settings));
+            }
+
             var tilesetKey = string.IsNullOrWhiteSpace(settings.TilesetProfileKey)
                 ? theme.TilesetProfileKey
                 : settings.TilesetProfileKey;

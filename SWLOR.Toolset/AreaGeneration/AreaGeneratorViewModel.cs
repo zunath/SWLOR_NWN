@@ -43,6 +43,11 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
         public string Label => Value.DisplayName;
     }
 
+    public sealed record TierChoice(DungeonTierDetail Value)
+    {
+        public string Label => $"Tier {Value.Tier}";
+    }
+
     public sealed record DecorationChoice(string Key, string Label);
 
     private readonly AreaGenerationAuthoringService _authoring;
@@ -66,6 +71,7 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
     private static readonly HashSet<string> GenerationInputProperties = new(StringComparer.Ordinal)
     {
         nameof(SelectedTheme),
+        nameof(SelectedTier),
         nameof(SelectedTilesetProfile),
         nameof(SelectedLayoutProfile),
         nameof(SelectedDecorationProfile),
@@ -92,6 +98,7 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
     };
 
     public ObservableCollection<ThemeChoice> Themes { get; } = new();
+    public ObservableCollection<TierChoice> Tiers { get; } = new();
     public ObservableCollection<TilesetChoice> TilesetProfiles { get; } = new();
     public ObservableCollection<LayoutChoice> LayoutProfiles { get; } = new();
     public ObservableCollection<DecorationChoice> DecorationProfiles { get; } = new();
@@ -114,6 +121,9 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(GeneratePreviewCommand))]
     private ThemeChoice? _selectedTheme;
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(GeneratePreviewCommand))]
+    private TierChoice? _selectedTier;
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(GeneratePreviewCommand))]
     private TilesetChoice? _selectedTilesetProfile;
@@ -211,6 +221,7 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
         SelectedTilesetProfile = TilesetProfiles.FirstOrDefault(choice =>
             choice.Value.Key.Equals(value.Value.TilesetProfileKey, StringComparison.OrdinalIgnoreCase))
             ?? SelectedTilesetProfile;
+        RefreshTiers();
         RefreshLayoutProfiles(value.Value.LayoutProfileKey);
         _loadingDefaults = false;
         LoadCompositionDefaults();
@@ -345,6 +356,20 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
         _loadingDefaults = false;
     }
 
+    private void RefreshTiers()
+    {
+        var priorTier = SelectedTier?.Value.Tier;
+        Tiers.Clear();
+        if (SelectedTheme != null)
+        {
+            foreach (var tier in SelectedTheme.Value.Tiers.Values.OrderBy(tier => tier.Tier))
+                Tiers.Add(new TierChoice(tier));
+        }
+
+        SelectedTier = Tiers.FirstOrDefault(choice => choice.Value.Tier == priorTier)
+                       ?? Tiers.FirstOrDefault();
+    }
+
     private void LoadCompositionDefaults()
     {
         if (SelectedTheme == null || SelectedTilesetProfile == null || SelectedLayoutProfile == null)
@@ -396,6 +421,7 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
 
     private bool CanGenerate() => !IsBusy &&
                                   SelectedTheme != null &&
+                                  SelectedTier != null &&
                                   SelectedTilesetProfile != null &&
                                   SelectedLayoutProfile != null;
 
@@ -738,6 +764,7 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
         return new AreaGenerationSettings
         {
             ThemeKey = SelectedTheme!.Value.ThemeKey,
+            Tier = SelectedTier!.Value.Tier,
             TilesetProfileKey = SelectedTilesetProfile!.Value.Key,
             LayoutProfileKey = SelectedLayoutProfile!.Value.Key,
             Width = (int)Width,

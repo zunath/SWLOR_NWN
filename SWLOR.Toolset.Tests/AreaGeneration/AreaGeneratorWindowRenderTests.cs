@@ -34,6 +34,37 @@ public sealed class AreaGeneratorWindowRenderTests
         choice.Label.Should().NotContain("tin01");
     }
 
+    [Test]
+    public void TierChoices_UseShortBuilderFacingLabels()
+    {
+        using var viewModel = CreateGeneratableViewModel();
+
+        viewModel.Tiers.Select(choice => choice.Label)
+            .Should().Equal("Tier 1", "Tier 2", "Tier 3");
+        viewModel.SelectedTier!.Label.Should().Be("Tier 1");
+    }
+
+    [AvaloniaTest]
+    public void CompositionCard_ShowsTheTierSelector()
+    {
+        using var viewModel = CreateGeneratableViewModel();
+        var window = new AreaGeneratorWindow(viewModel);
+
+        try
+        {
+            window.Show();
+            Dispatcher.UIThread.RunJobs();
+
+            var selector = window.FindControl<ComboBox>("TierSelector")!;
+            selector.SelectedItem.Should().BeSameAs(viewModel.SelectedTier);
+        }
+        finally
+        {
+            window.Close();
+            Dispatcher.UIThread.RunJobs();
+        }
+    }
+
     [AvaloniaTest]
     public void Window_LoadsItsCompiledXaml()
     {

@@ -85,6 +85,16 @@
                     </DataTemplate>
                   </ComboBox.ItemTemplate>
                 </ComboBox>
+                <TextBlock Classes="label" Text="Tier" />
+                <ComboBox x:Name="TierSelector"
+                          ItemsSource="{Binding Tiers}"
+                          SelectedItem="{Binding SelectedTier, Mode=TwoWay}">
+                  <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="generator:AreaGeneratorViewModel+TierChoice">
+                      <TextBlock Text="{Binding Label}" />
+                    </DataTemplate>
+                  </ComboBox.ItemTemplate>
+                </ComboBox>
                 <TextBlock Classes="label" Text="Tileset profile" />
                 <ComboBox ItemsSource="{Binding TilesetProfiles}"
                           SelectedItem="{Binding SelectedTilesetProfile, Mode=TwoWay}">

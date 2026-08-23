@@ -1,6 +1,7 @@
 #nullable enable
 using Serilog;
 using SWLOR.Toolset.Domain.AreaGeneration.Atmosphere;
+using SWLOR.Toolset.Domain.AreaGeneration.Decoration;
 using SWLOR.Toolset.Domain.AreaGeneration.Tileset;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.GameData.Tilesets;
@@ -15,6 +16,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
         private const string WaypointList = "WaypointList";
         private const string DoorList = "Door List";
         private const string PlaceableList = "Placeable List";
+        private const string GeneratedTreasureOpenScript = "proc_loot_open";
         private const float TreasureAnchorClearance = 3f;
         private static readonly ILogger Logger = Log.ForContext<GeneratedAreaDocumentPopulator>();
 
@@ -303,6 +305,12 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             if (bossRoom == null)
                 return;
 
+            if (!draft.Composition.Content.Tiers.TryGetValue(draft.Settings.Tier, out var tier))
+            {
+                throw new InvalidOperationException(
+                    $"Theme '{draft.Composition.Content.DisplayName}' does not define tier {draft.Settings.Tier}.");
+            }
+
             var (x, y) = FindTreasureAnchor(draft, bossRoom);
             var z = GroundHeightAt(draft.Result.Resolved, draft.Tileset, x, y);
             AddPlaceable(
@@ -316,7 +324,28 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                 z,
                 facingDegrees: 0f,
                 visualScale: 1f,
-                displayName: draft.Composition.Content.TreasureDisplayName);
+                displayName: draft.Composition.Content.TreasureDisplayName,
+                configureInstance: instance => ConfigureTreasure(instance, tier));
+        }
+
+        private static void ConfigureTreasure(JsonGffStruct instance, DungeonTierDetail tier)
+        {
+            if (string.IsNullOrWhiteSpace(tier.TreasureLootTableId) || tier.TreasureItemCount < 1)
+                throw new InvalidOperationException($"Tier {tier.Tier} has invalid treasure settings.");
+
+            instance.SetInt("Useable", GffFieldType.Byte, 1);
+            instance.SetInt("HasInventory", GffFieldType.Byte, 1);
+            instance.SetInt("Static", GffFieldType.Byte, 0);
+            instance.SetString("OnOpen", GffFieldType.ResRef, GeneratedTreasureOpenScript);
+            instance.SetString("OnClosed", GffFieldType.ResRef, string.Empty);
+            instance.SetString("OnInvDisturbed", GffFieldType.ResRef, string.Empty);
+
+            var variables = new VarTable(instance);
+            variables.Remove("SCAVENGE_POINT_LEVEL");
+            variables.Remove("SCAVENGE_POINT_LOOT_TABLE_NAME");
+            variables.SetString(
+                "LOOT_TABLE_1",
+                $"{tier.TreasureLootTableId},100,{tier.TreasureItemCount}");
         }
 
         /// <summary>
@@ -324,7 +353,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
         /// stay clear of generated transitions and decorations. A one-tile Boss room can also host
         /// the required placeable exit, so its center is not unconditionally safe.
         /// </summary>
-        private static (float X, float Y) FindTreasureAnchor(
+        internal static (float X, float Y) FindTreasureAnchor(
             AreaGenerationDraft draft,
             LayoutRoom bossRoom)
         {
@@ -349,7 +378,16 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                 candidates.Add((tile.X * 10f + 2.5f, tile.Y * 10f + 7.5f));
             }
 
-            candidates = candidates.Distinct().ToList();
+            candidates = candidates
+                .Distinct()
+                .Where(candidate => IsTreasureSurfaceEligible(draft, candidate))
+                .ToList();
+            if (candidates.Count == 0)
+            {
+                throw new InvalidOperationException(
+                    "The Boss room has no treasure anchor clear of feature geometry and roads.");
+            }
+
             var occupied = new List<(float X, float Y)>();
             foreach (var transition in draft.Result.Resolved.Transitions)
             {
@@ -376,6 +414,21 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             return candidates
                 .OrderByDescending(candidate => occupied.Min(point => DistanceSquared(candidate, point)))
                 .First();
+        }
+
+        private static bool IsTreasureSurfaceEligible(
+            AreaGenerationDraft draft,
+            (float X, float Y) candidate)
+        {
+            var tile = ((int)MathF.Floor(candidate.X / 10f), (int)MathF.Floor(candidate.Y / 10f));
+            var resolved = draft.Result.Resolved;
+            if (resolved.FeatureTileCells.ContainsKey(tile))
+                return false;
+
+            return !DungeonDecorationPlanner.TileCarriesRoadEdge(
+                tile,
+                resolved,
+                draft.Composition.Tileset.RoadCrosser);
         }
 
         private static float DistanceSquared((float X, float Y) left, (float X, float Y) right)
@@ -421,7 +474,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             float facingDegrees,
             float visualScale,
             string? displayName = null,
-            bool clearInheritedTransitionBehavior = false)
+            bool clearInheritedTransitionBehavior = false,
+            Action<JsonGffStruct>? configureInstance = null)
         {
             if (string.IsNullOrWhiteSpace(resref))
                 throw new InvalidOperationException($"Placeable '{tag}' has no configured blueprint resref.");
@@ -445,6 +499,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                 instance.SetString("OnUsed", GffFieldType.ResRef, string.Empty);
                 new VarTable(instance).Remove("Destination");
             }
+            configureInstance?.Invoke(instance);
             ApplyVisualScale(instance, visualScale);
 
             var list = git.Fields.GetOrAddList(PlaceableList);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.AreaGeneration;
+using SWLOR.Toolset.Domain.AreaGeneration.Authoring;
 using SWLOR.Toolset.Domain.AreaGeneration.Decoration;
 using SWLOR.Toolset.Domain.AreaGeneration.Tileset;
 
@@ -105,4 +106,47 @@ public class TileResolverReviewRegressionTests
         Corners = ["Floor", "Floor", "Floor", "Floor"],
         CornerHeights = heights
     };
+}
+
+public class GeneratedTreasureReviewRegressionTests
+{
+    [Test]
+    public void Anchor_SkipsFeatureAndRoadTilesBeforeTestingClearance()
+    {
+        const string road = "Road";
+        var crossers = new EdgeCrosserGrid(3, 1);
+        crossers.SetEdge(1, 0, EdgeSlot.Top, road);
+        var bossRoom = new LayoutRoom
+        {
+            Id = 1,
+            Role = RoomRole.Boss,
+            CenterTile = (0, 0),
+            Tiles = [(0, 0), (1, 0), (2, 0)]
+        };
+        var resolved = new ResolvedLayout
+        {
+            Width = 3,
+            Height = 1,
+            Tiles = [new ResolvedTile(), new ResolvedTile(), new ResolvedTile()],
+            Rooms = [bossRoom],
+            Crossers = crossers,
+            FeatureTileCells = new Dictionary<(int X, int Y), string>
+            {
+                [(0, 0)] = "Pillars"
+            }
+        };
+        var draft = new AreaGenerationDraft(
+            new AreaGenerationSettings { ThemeKey = "test" },
+            new DungeonComposition
+            {
+                Content = new DungeonDetail(),
+                Tileset = new DungeonTilesetProfile { RoadCrosser = road },
+                Layout = new DungeonLayoutProfile()
+            },
+            new TilesetModel(),
+            new GenerationResult { Success = true, Resolved = resolved });
+
+        GeneratedAreaDocumentPopulator.FindTreasureAnchor(draft, bossRoom)
+            .Should().Be((25f, 5f));
+    }
 }

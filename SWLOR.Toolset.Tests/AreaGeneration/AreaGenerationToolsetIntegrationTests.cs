@@ -129,6 +129,18 @@ public class AreaGenerationToolsetIntegrationTests
     }
 
     [Test]
+    public void AuthoringService_RejectsATierTheThemeDoesNotDefine()
+    {
+        var (service, _) = CreateAuthoringService();
+        var settings = CreateSettings(service, seed: 77231) with { Tier = 99 };
+
+        var action = () => service.Generate(settings);
+
+        action.Should().Throw<ArgumentException>()
+            .WithMessage("*does not define tier 99*");
+    }
+
+    [Test]
     public void AuthoringService_RejectsRoomSizesThatWouldBeSilentlyClamped()
     {
         var (service, _) = CreateAuthoringService();
@@ -354,7 +366,16 @@ public class AreaGenerationToolsetIntegrationTests
                 ExitPlaceableResref = "structure_rubble",
                 ExitDisplayName = "Test Maintenance Hatch",
                 TreasurePlaceableResref = "structure_rubble",
-                TreasureDisplayName = "Test Treasure Cache"
+                TreasureDisplayName = "Test Treasure Cache",
+                Tiers = new Dictionary<int, DungeonTierDetail>
+                {
+                    [2] = new()
+                    {
+                        Tier = 2,
+                        TreasureLootTableId = "TEST_LOOT",
+                        TreasureItemCount = 3
+                    }
+                }
             },
             Tileset = tilesetProfile,
             Layout = new DungeonLayoutProfile()
@@ -375,7 +396,7 @@ public class AreaGenerationToolsetIntegrationTests
             ]
         };
         var draft = new AreaGenerationDraft(
-            new AreaGenerationSettings { ThemeKey = "test", Width = 2, Height = 2 },
+            new AreaGenerationSettings { ThemeKey = "test", Tier = 2, Width = 2, Height = 2 },
             composition,
             new TilesetModel
             {
@@ -433,6 +454,15 @@ public class AreaGenerationToolsetIntegrationTests
         var treasure = git.Fields.GetListOrEmpty("Placeable List")[2];
         treasure
             .GetLocStringOrNull("LocName")!.Text.Should().Be("Test Treasure Cache");
+        treasure.GetIntOrNull("Useable").Should().Be(1);
+        treasure.GetIntOrNull("HasInventory").Should().Be(1);
+        treasure.GetStringOrNull("OnOpen").Should().Be("proc_loot_open");
+        treasure.GetStringOrNull("OnClosed").Should().BeEmpty();
+        treasure.GetStringOrNull("OnInvDisturbed").Should().BeEmpty();
+        var treasureVariables = new VarTable(treasure);
+        treasureVariables.GetString("LOOT_TABLE_1").Should().Be("TEST_LOOT,100,3");
+        treasureVariables.GetInt("SCAVENGE_POINT_LEVEL").Should().BeNull();
+        treasureVariables.GetString("SCAVENGE_POINT_LOOT_TABLE_NAME").Should().BeNull();
         treasure
             .GetSingleOrNull("Z").Should().BeApproximately(0f, 0.001f,
                 "the boss-room treasure is grounded at its selected point");

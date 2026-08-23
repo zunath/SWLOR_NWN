@@ -359,6 +359,30 @@ public sealed class ModulePaletteRefresherTests
         }
     }
 
+    [Test]
+    [NonParallelizable]
+    public void PackModule_RejectsAnInterruptedResourceDeleteManifest()
+    {
+        var manifest = Path.Combine(
+            _moduleRoot,
+            "." + Guid.NewGuid().ToString("N") + ".resource-delete-transaction.json");
+        File.WriteAllText(manifest, "{}");
+
+        var previousDirectory = Environment.CurrentDirectory;
+        try
+        {
+            Environment.CurrentDirectory = _moduleRoot;
+            var action = () => new ModulePacker().PackModule("blocked.mod", noPrompt: true);
+
+            action.Should().Throw<InvalidOperationException>()
+                .WithMessage("*Interrupted toolset resource delete*");
+        }
+        finally
+        {
+            Environment.CurrentDirectory = previousDirectory;
+        }
+    }
+
     private string WritePalette(string paletteName, params JObject[] categories)
     {
         var palette = new JObject

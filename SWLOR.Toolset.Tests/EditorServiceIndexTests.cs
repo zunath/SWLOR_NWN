@@ -347,6 +347,43 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void ResourceDeletionBlocksPublicAndDirectScriptOpeningRoutes()
+        {
+            const string resRef = "delete_in_progress";
+            var moduleRoot = NewModuleRoot();
+            Directory.CreateDirectory(Path.Combine(moduleRoot, "nss"));
+            File.WriteAllText(
+                Path.Combine(moduleRoot, "nss", resRef + ".nss"),
+                "void main() {}");
+            var log = new OutputLogService();
+            var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
+            var mutationLock = new ModuleMutationLock();
+            var editors = new EditorService(
+                workspace,
+                new LookupOptionProvider(workspace),
+                log,
+                factory: null!,
+                prompts: null!,
+                mutationLock: mutationLock);
+            workspace.Open(moduleRoot);
+
+            using (mutationLock.BeginResourceDeletion())
+            {
+                editors.TryOpenEditor(ResourceType.Nss, resRef);
+                typeof(EditorService)
+                    .GetMethod("OpenScriptEditor", BindingFlags.Instance | BindingFlags.NonPublic)!
+                    .Invoke(editors, new object[] { workspace.Workspace!, resRef });
+            }
+
+            var openScripts = (Dictionary<string, ScriptEditorViewModel>)typeof(EditorService)
+                .GetField("_openScriptEditors", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .GetValue(editors)!;
+            openScripts.Should().BeEmpty();
+            log.Lines.Count(line => line.Contains("a module resource deletion is in progress"))
+                .Should().Be(2, "both the shared entry point and direct include-navigation path are gated");
+        }
+
+        [Test]
         public async Task PlacementInvalidationReloadsAnOpenObjectSource()
         {
             var moduleRoot = NewModuleRoot();

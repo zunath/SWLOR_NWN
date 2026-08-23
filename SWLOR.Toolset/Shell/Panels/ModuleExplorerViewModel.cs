@@ -1006,11 +1006,19 @@ namespace SWLOR.Toolset.Shell.Panels
             }
 
             ModuleResourceDeletionResult result;
+            using var deletionOperation = _mutationLock?.BeginResourceDeletion();
             IsDeletingResource = true;
             StatusMessage = $"Deleting {kind} '{displayName}'...";
             try
             {
-                result = await Task.Run(() => ModuleResourceDeletionService.Commit(plan))
+                result = await Task.Run(() =>
+                    {
+                        // The deletion owns the shared module-operation lock. Its worker alone may
+                        // perform the guarded filesystem writes while every editor/save/open route
+                        // remains blocked until this command finishes its catalog cleanup.
+                        using var allowance = ModuleMutationLock.AllowModuleWrites();
+                        return ModuleResourceDeletionService.Commit(plan);
+                    })
                     .ConfigureAwait(true);
             }
             catch (Exception ex)

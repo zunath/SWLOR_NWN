@@ -68,15 +68,18 @@ namespace SWLOR.Toolset.Shell
         [ObservableProperty]
         private bool _isGeneratingArea;
 
-        public bool IsModuleMutationLocked =>
+        private bool IsShellModuleMutationLocked =>
             IsPacking || IsValidationRunning || IsBuildingScripts ||
             IsManagingErfArchives || IsManagingFactions || IsGeneratingArea;
+        public bool IsModuleMutationLocked =>
+            IsShellModuleMutationLocked || _mutationLock.IsResourceDeletionActive;
         public bool IsActiveEditorBusy => _activeEditor?.IsBusy == true;
         public bool IsInteractionBlocked => IsModuleMutationLocked || IsActiveEditorBusy;
 
         /// <summary>
         /// The shared answer to <see cref="IsModuleMutationLocked"/>, published for the panels and
-        /// editor tabs that also write to the module. The shell is its only writer.
+        /// editor tabs that also write to the module. The shell publishes its own operations; Module
+        /// Contents adds scoped resource deletions so shared open/save/close routes see them too.
         /// </summary>
         private readonly ModuleMutationLock _mutationLock;
 
@@ -146,6 +149,7 @@ namespace SWLOR.Toolset.Shell
             _areaContents = areaContents;
             _erfArchiveService = erfArchiveService;
             _mutationLock = mutationLock ?? new ModuleMutationLock();
+            _mutationLock.Changed += OnPublishedMutationStateChanged;
 
             // Every module write is checked against this, wherever it comes from. The eight editor
             // tabs each have their own Save button that goes straight to their own TrySaveAsync,
@@ -875,7 +879,13 @@ namespace SWLOR.Toolset.Shell
             // Publish before the local notifications: every other panel and open editor tab learns
             // about the lock from here, and they should all flip in the same frame the menu does.
             // The palette, explorer, validation panel and script tabs all subscribe to it.
-            _mutationLock.Set(IsModuleMutationLocked);
+            _mutationLock.Set(IsShellModuleMutationLocked);
+            NotifyInteractionStateChanged();
+        }
+
+        private void OnPublishedMutationStateChanged()
+        {
+            OnPropertyChanged(nameof(IsModuleMutationLocked));
             NotifyInteractionStateChanged();
         }
 

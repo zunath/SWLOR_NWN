@@ -18,33 +18,98 @@ namespace SWLOR.Toolset.Services
     /// can-execute, and re-raise their own can-execute from <see cref="Changed"/>.
     /// </para>
     /// <para>
-    /// The shell is the only writer. It is the thing that knows a pack started, and routing every
-    /// panel through one writer is what keeps "is the module locked" from being three different
-    /// answers depending on which panel is asked.
+    /// The shell publishes its own operations through <see cref="Set"/>. Module Contents also owns
+    /// a scoped resource-deletion state through <see cref="BeginResourceDeletion"/>, because that
+    /// background operation must block shared editor routes and application shutdown too.
     /// </para>
     /// </remarks>
     public sealed class ModuleMutationLock
     {
         private static readonly AsyncLocal<int> ModuleWriteAllowance = new();
-        private bool _isLocked;
+        private readonly object _stateGate = new();
+        private bool _shellOperationActive;
+        private int _resourceDeletionCount;
 
         /// <summary>True while a module-wide operation is running.</summary>
-        public bool IsLocked => _isLocked;
+        public bool IsLocked
+        {
+            get
+            {
+                lock (_stateGate)
+                    return _shellOperationActive || _resourceDeletionCount > 0;
+            }
+        }
+
+        /// <summary>
+        /// True while Module Contents is deleting a logical resource, including any wait for its
+        /// cross-process lease and the UI-side catalog cleanup after the filesystem commit.
+        /// </summary>
+        public bool IsResourceDeletionActive
+        {
+            get
+            {
+                lock (_stateGate)
+                    return _resourceDeletionCount > 0;
+            }
+        }
 
         /// <summary>Raised when <see cref="IsLocked"/> flips, on whichever thread set it.</summary>
         public event Action? Changed;
 
         /// <summary>
-        /// Records whether a module-wide operation is running. Called by the shell; idempotent, so
-        /// repeating the current state raises nothing.
+        /// Records whether a shell-owned module-wide operation is running. Idempotent, so repeating
+        /// the current state raises nothing; scoped resource deletions are counted independently.
         /// </summary>
         public void Set(bool isLocked)
         {
-            if (_isLocked == isLocked)
-                return;
+            bool changed;
+            lock (_stateGate)
+            {
+                var wasLocked = _shellOperationActive || _resourceDeletionCount > 0;
+                _shellOperationActive = isLocked;
+                changed = wasLocked != (_shellOperationActive || _resourceDeletionCount > 0);
+            }
 
-            _isLocked = isLocked;
-            Changed?.Invoke();
+            if (changed)
+                Changed?.Invoke();
+        }
+
+        /// <summary>
+        /// Publishes a resource deletion as a module-wide operation until the returned scope is
+        /// disposed. This blocks every editor-opening and write route and lets the shell refuse
+        /// shutdown while the background filesystem transaction is still in flight.
+        /// </summary>
+        public IDisposable BeginResourceDeletion()
+        {
+            var changed = false;
+            lock (_stateGate)
+            {
+                var wasLocked = _shellOperationActive || _resourceDeletionCount > 0;
+                _resourceDeletionCount++;
+                changed = wasLocked != (_shellOperationActive || _resourceDeletionCount > 0);
+            }
+
+            if (changed)
+                Changed?.Invoke();
+
+            return new ResourceDeletionScope(this);
+        }
+
+        private void EndResourceDeletion()
+        {
+            var changed = false;
+            lock (_stateGate)
+            {
+                if (_resourceDeletionCount == 0)
+                    return;
+
+                var wasLocked = _shellOperationActive || _resourceDeletionCount > 0;
+                _resourceDeletionCount--;
+                changed = wasLocked != (_shellOperationActive || _resourceDeletionCount > 0);
+            }
+
+            if (changed)
+                Changed?.Invoke();
         }
 
         /// <summary>
@@ -101,6 +166,16 @@ namespace SWLOR.Toolset.Services
 
                 _disposed = true;
                 ModuleWriteAllowance.Value = Math.Max(0, ModuleWriteAllowance.Value - 1);
+            }
+        }
+
+        private sealed class ResourceDeletionScope(ModuleMutationLock owner) : IDisposable
+        {
+            private ModuleMutationLock? _owner = owner;
+
+            public void Dispose()
+            {
+                Interlocked.Exchange(ref _owner, null)?.EndResourceDeletion();
             }
         }
     }

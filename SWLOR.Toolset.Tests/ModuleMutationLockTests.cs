@@ -59,6 +59,26 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void ResourceDeletionPublishesANestableModuleOperation()
+        {
+            var mutationLock = new ModuleMutationLock();
+            var announcements = 0;
+            mutationLock.Changed += () => announcements++;
+
+            using (mutationLock.BeginResourceDeletion())
+            {
+                mutationLock.IsLocked.Should().BeTrue();
+                mutationLock.IsResourceDeletionActive.Should().BeTrue();
+                using (mutationLock.BeginResourceDeletion())
+                    announcements.Should().Be(1, "nested owners do not change the published state");
+            }
+
+            mutationLock.IsLocked.Should().BeFalse();
+            mutationLock.IsResourceDeletionActive.Should().BeFalse();
+            announcements.Should().Be(2);
+        }
+
+        [Test]
         public void ValidationStandsDownWhileTheModuleIsLocked()
         {
             var (workspace, log) = Context();

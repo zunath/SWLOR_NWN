@@ -736,6 +736,11 @@ namespace SWLOR.Toolset.Editors
         /// <summary>Opens a NWScript source file as a text editor tab, or activates its open tab.</summary>
         private void OpenScriptEditor(ModuleWorkspace workspace, string resRef)
         {
+            // Include navigation calls this method directly after a script tab is already open, so
+            // the public TryOpenEditor gate alone would leave that route able to race a deletion.
+            if (IsResourceOpeningBlocked(resRef))
+                return;
+
             var filePath = workspace.GetResourcePath(ResourceType.Nss, resRef);
             if (!File.Exists(filePath))
             {
@@ -816,6 +821,9 @@ namespace SWLOR.Toolset.Editors
 
         public void TryOpenEditor(ResourceType type, string resRef)
         {
+            if (IsResourceOpeningBlocked(resRef))
+                return;
+
             var workspace = _workspaceContext.Workspace;
             if (workspace == null)
                 return;
@@ -984,6 +992,16 @@ namespace SWLOR.Toolset.Editors
             {
                 _log.AppendLine($"Failed to open editor for {resRef}: {ex.Message}");
             }
+        }
+
+        private bool IsResourceOpeningBlocked(string resRef)
+        {
+            if (_mutationLock?.IsResourceDeletionActive != true)
+                return false;
+
+            _log.AppendLine(
+                $"Could not open '{resRef}': a module resource deletion is in progress.");
+            return true;
         }
 
         /// <summary>

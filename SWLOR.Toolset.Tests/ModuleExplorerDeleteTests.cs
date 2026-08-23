@@ -256,7 +256,11 @@ namespace SWLOR.Toolset.Tests
             const string resRef = "background_delete";
             var source = Path.Combine(_module, "nss", resRef + ".nss");
             File.WriteAllText(source, "void main() {}");
-            var (explorer, _) = CreateExplorer(ResourceType.Nss, new RecordingPrompts(answer: true));
+            var mutationLock = new ModuleMutationLock();
+            var (explorer, _) = CreateExplorer(
+                ResourceType.Nss,
+                new RecordingPrompts(answer: true),
+                mutationLock);
             explorer.SelectedRow = UnsortedResource(explorer, resRef);
 
             using var acquired = new ManualResetEventSlim();
@@ -305,6 +309,8 @@ namespace SWLOR.Toolset.Tests
                 stopwatch.Elapsed.Should().BeLessThan(TimeSpan.FromSeconds(1));
                 deleteTask.IsCompleted.Should().BeFalse();
                 explorer.IsDeletingResource.Should().BeTrue();
+                mutationLock.IsResourceDeletionActive.Should().BeTrue(
+                    "all editor-opening routes and application shutdown share this state");
                 explorer.CanOpenSelectedType.Should().BeFalse(
                     "an editor opened while the delete waits could save the resource back afterward");
                 explorer.OpenSelectedCommand.CanExecute(null).Should().BeFalse();
@@ -325,6 +331,7 @@ namespace SWLOR.Toolset.Tests
             holderFailure.Should().BeNull();
             File.Exists(source).Should().BeFalse();
             explorer.IsDeletingResource.Should().BeFalse();
+            mutationLock.IsResourceDeletionActive.Should().BeFalse();
         }
 
         [AvaloniaTest]

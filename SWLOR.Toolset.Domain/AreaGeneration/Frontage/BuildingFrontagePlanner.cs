@@ -589,6 +589,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Frontage
                     Facing = DungeonDecorationPlanner.CardinalFacing(dir.Dx, dir.Dy),
                     Context = DecorationContext.BuildingFrontage,
                     VisualScale = scale,
+                    FootprintRadius = MathF.Sqrt(
+                        entry.FaceWidth * entry.FaceWidth + entry.Depth * entry.Depth) / 2f,
                     GroundAnchor = anchor,
                     GroundZ = groundZ
                 },

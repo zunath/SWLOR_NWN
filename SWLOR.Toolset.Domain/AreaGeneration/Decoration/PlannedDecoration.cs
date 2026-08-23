@@ -27,6 +27,13 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
         public float VisualScale { get; set; } = 1f;
 
         /// <summary>
+        /// Unscaled world-space radius of the placeable's declared XY footprint. Creature
+        /// clearance multiplies this by <see cref="VisualScale"/> so scaled art reserves the same
+        /// space it renders into.
+        /// </summary>
+        public float FootprintRadius { get; set; } = 1f;
+
+        /// <summary>
         /// World-space SUPPORT ANCHOR for grounding, or null to ground at the placement's own XY
         /// (every ordinary decoration). Set by BuildingFrontagePlanner for frontage buildings: a
         /// point just inside the fronted open (platform) cell, so document realization samples the

@@ -1251,7 +1251,34 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
                     IsOverChasm(p.Position.X, p.Position.Y, layout, tileset.ChasmTerrains));
             }
 
+            var footprintByResref = palette
+                .GroupBy(entry => entry.Resref, StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(
+                    group => group.Key,
+                    group => group.Max(DeclaredFootprintRadius),
+                    StringComparer.OrdinalIgnoreCase);
+            foreach (var decoration in plan)
+            {
+                if (footprintByResref.TryGetValue(decoration.Resref, out var declaredRadius))
+                    decoration.FootprintRadius = MathF.Max(decoration.FootprintRadius, declaredRadius);
+            }
+
             return plan;
+        }
+
+        internal static float DeclaredFootprintRadius(DungeonDecorationEntry entry)
+        {
+            if (entry.FootprintRadius > 0f)
+                return entry.FootprintRadius;
+
+            return entry.Size switch
+            {
+                DecorationSize.Small => 0.6f,
+                DecorationSize.Medium => 1.5f,
+                DecorationSize.Large => 4f,
+                DecorationSize.Huge => 6f,
+                _ => 1.5f
+            };
         }
 
         /// <summary>True when world point (x, y) lies in a chasm corner-quadrant (the 5x5m square
@@ -1421,6 +1448,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
                 Anchoring = entry.Anchoring,
                 AllowOnRoadSurface = entry.AllowOnRoadSurface,
                 Size = entry.Size,
+                FootprintRadius = entry.FootprintRadius,
                 DistrictWeights = entry.DistrictWeights,
                 MaxPerArea = entry.MaxPerArea,
                 StackHeight = entry.StackHeight

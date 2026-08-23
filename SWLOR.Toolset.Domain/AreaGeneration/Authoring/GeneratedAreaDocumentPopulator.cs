@@ -25,7 +25,6 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
         private const int HostileFactionId = 1;
         private const float TreasureAnchorClearance = 3f;
         private const float DefaultCreatureRadius = 1f;
-        private const float GeneratedObjectRadius = 1f;
         private const int MaxCreaturePlacementAttempts = 200_000;
         private static readonly ILogger Logger = Log.ForContext<GeneratedAreaDocumentPopulator>();
 
@@ -36,12 +35,15 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
         public static void Populate(
             AreaGenerationDraft draft,
             ModuleWorkspace workspace,
+            string areaResref,
             AreDocument are,
             GitDocument git,
             GicDocument gic)
         {
             ArgumentNullException.ThrowIfNull(draft);
             ArgumentNullException.ThrowIfNull(workspace);
+            if (string.IsNullOrWhiteSpace(areaResref))
+                throw new ArgumentException("Area ResRef must be provided.", nameof(areaResref));
             ArgumentNullException.ThrowIfNull(are);
             ArgumentNullException.ThrowIfNull(git);
             ArgumentNullException.ThrowIfNull(gic);
@@ -65,10 +67,10 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             WriteAtmosphere(
                 are,
                 draft.Composition.Tileset.ResolveAtmosphere(draft.Composition.Content.AtmosphereProfile));
-            WriteTransitions(draft, workspace, git, gic);
-            WriteTreasure(draft, workspace, git, gic);
+            WriteTransitions(draft, workspace, areaResref, git, gic);
+            WriteTreasure(draft, workspace, areaResref, git, gic);
             WriteCreatures(draft, workspace, git, gic);
-            WriteDecorations(draft, workspace, git, gic);
+            WriteDecorations(draft, workspace, areaResref, git, gic);
 
             Logger.Information(
                 "Populated generated area documents for a {Width}x{Height} layout: " +
@@ -136,6 +138,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
         private static void WriteTransitions(
             AreaGenerationDraft draft,
             ModuleWorkspace workspace,
+            string areaResref,
             GitDocument git,
             GicDocument gic)
         {
@@ -146,7 +149,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                 var isEntrance = transition.Kind == TransitionKind.Entrance;
                 var index = isEntrance ? ++entranceCount : ++exitCount;
                 var label = isEntrance ? "Entrance" : "Exit";
-                var tag = (isEntrance ? "PG_ENT_" : "PG_EXIT_") + index;
+                var transitionKind = isEntrance ? "ENT" : "EXIT";
+                var tag = GeneratedTag(areaResref, $"{transitionKind}_{index}");
 
                 var anchorX = transition.Tile.X * 10f + 5f;
                 var anchorY = transition.Tile.Y * 10f + 5f;
@@ -183,7 +187,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                         draft.Composition.Content.ExitDoorResref,
                         draft.Composition.Content.ExitDisplayName,
                         transition.DoorType,
-                        $"PG_DOOR_{(isEntrance ? "ENT" : "EXIT")}_{index}",
+                        GeneratedTag(areaResref, $"DOOR_{transitionKind}_{index}"),
                         transition.DoorX,
                         transition.DoorY,
                         transition.DoorZ,
@@ -196,7 +200,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                         git,
                         gic,
                         draft.Composition.Content.ExitPlaceableResref,
-                        $"PG_TRANS_{(isEntrance ? "ENT" : "EXIT")}_{index}",
+                        GeneratedTag(areaResref, $"TRANS_{transitionKind}_{index}"),
                         anchorX,
                         anchorY,
                         anchorZ,
@@ -279,6 +283,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
         private static void WriteDecorations(
             AreaGenerationDraft draft,
             ModuleWorkspace workspace,
+            string areaResref,
             GitDocument git,
             GicDocument gic)
         {
@@ -298,7 +303,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                     git,
                     gic,
                     planned.Resref,
-                    $"PG_DEC_{++sequence}",
+                    GeneratedTag(areaResref, $"DEC_{++sequence}"),
                     planned.Position.X,
                     planned.Position.Y,
                     groundZ + planned.Position.Z,
@@ -311,6 +316,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
         private static void WriteTreasure(
             AreaGenerationDraft draft,
             ModuleWorkspace workspace,
+            string areaResref,
             GitDocument git,
             GicDocument gic)
         {
@@ -331,7 +337,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                 git,
                 gic,
                 draft.Composition.Content.TreasurePlaceableResref,
-                "PG_TREASURE",
+                GeneratedTag(areaResref, "TREASURE"),
                 x,
                 y,
                 z,
@@ -475,25 +481,38 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             return placements;
         }
 
-        private static List<(float X, float Y, float Radius)> CreatureOccupiedAnchors(
+        internal static List<(float X, float Y, float Radius)> CreatureOccupiedAnchors(
             AreaGenerationDraft draft)
         {
             var occupied = draft.Result.Resolved.Transitions
                 .Select(transition => transition.Style == TransitionStyle.Placeable
-                    ? (transition.Tile.X * 10f + 5f, transition.Tile.Y * 10f + 5f, GeneratedObjectRadius)
-                    : (transition.DoorX, transition.DoorY, GeneratedObjectRadius))
+                    ? (transition.Tile.X * 10f + 5f,
+                        transition.Tile.Y * 10f + 5f,
+                        draft.Composition.Content.ExitPlaceableFootprintRadius)
+                    : (transition.DoorX,
+                        transition.DoorY,
+                        draft.Composition.Content.ExitDoorFootprintRadius))
                 .ToList();
             occupied.AddRange(draft.Result.PlannedDecorations.Select(decoration =>
-                (decoration.Position.X, decoration.Position.Y, GeneratedObjectRadius)));
+                (decoration.Position.X, decoration.Position.Y, EffectiveFootprintRadius(decoration))));
 
             var bossRoom = draft.Result.Resolved.Rooms.FirstOrDefault(room => room.Role == RoomRole.Boss);
             if (bossRoom != null)
             {
                 var treasure = FindTreasureAnchor(draft, bossRoom);
-                occupied.Add((treasure.X, treasure.Y, GeneratedObjectRadius));
+                occupied.Add((
+                    treasure.X,
+                    treasure.Y,
+                    draft.Composition.Content.TreasurePlaceableFootprintRadius));
             }
 
             return occupied;
+        }
+
+        internal static float EffectiveFootprintRadius(PlannedDecoration decoration)
+        {
+            ArgumentNullException.ThrowIfNull(decoration);
+            return MathF.Max(0f, decoration.FootprintRadius) * MathF.Max(0f, decoration.VisualScale);
         }
 
         internal static IReadOnlyList<(float X, float Y)> SelectCreatureAnchors(
@@ -796,31 +815,51 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                     "The Boss room has no treasure anchor clear of feature geometry, stamped structures, and roads.");
             }
 
-            var occupied = new List<(float X, float Y)>();
+            var occupied = new List<(float X, float Y, float Radius)>();
             foreach (var transition in draft.Result.Resolved.Transitions)
             {
                 occupied.Add(transition.Style == TransitionStyle.Placeable
-                    ? (transition.Tile.X * 10f + 5f, transition.Tile.Y * 10f + 5f)
-                    : (transition.DoorX, transition.DoorY));
+                    ? (transition.Tile.X * 10f + 5f,
+                        transition.Tile.Y * 10f + 5f,
+                        draft.Composition.Content.ExitPlaceableFootprintRadius)
+                    : (transition.DoorX,
+                        transition.DoorY,
+                        draft.Composition.Content.ExitDoorFootprintRadius));
             }
 
             occupied.AddRange(draft.Result.PlannedDecorations.Select(decoration =>
-                (decoration.Position.X, decoration.Position.Y)));
+                (decoration.Position.X, decoration.Position.Y, EffectiveFootprintRadius(decoration))));
             if (occupied.Count == 0)
                 return candidates[0];
 
-            var requiredDistanceSquared = TreasureAnchorClearance * TreasureAnchorClearance;
+            var treasureRadius = draft.Composition.Content.TreasurePlaceableFootprintRadius;
             foreach (var candidate in candidates)
             {
-                if (occupied.All(point => DistanceSquared(candidate, point) >= requiredDistanceSquared))
+                if (occupied.All(point =>
+                {
+                    var requiredDistance = MathF.Max(
+                        TreasureAnchorClearance,
+                        treasureRadius + point.Radius);
+                    return DistanceSquared(candidate, (point.X, point.Y)) >=
+                           requiredDistance * requiredDistance;
+                }))
+                {
                     return candidate;
+                }
             }
 
             // Extremely dense synthetic layouts may leave no candidate with the full clearance.
             // Pick the deterministic candidate with the greatest available separation instead of
             // falling back to an exact overlap.
             return candidates
-                .OrderByDescending(candidate => occupied.Min(point => DistanceSquared(candidate, point)))
+                .OrderByDescending(candidate => occupied.Min(point =>
+                {
+                    var requiredDistance = MathF.Max(
+                        TreasureAnchorClearance,
+                        treasureRadius + point.Radius);
+                    return DistanceSquared(candidate, (point.X, point.Y)) /
+                           (requiredDistance * requiredDistance);
+                }))
                 .First();
         }
 
@@ -928,5 +967,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             transform.SetSingle("ScaleZ", scale);
             instance.Add("VisualTransform", field);
         }
+
+        internal static string GeneratedTag(string areaResref, string suffix) =>
+            $"PG_{areaResref}_{suffix}";
     }
 }

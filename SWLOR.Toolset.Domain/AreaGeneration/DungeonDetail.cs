@@ -33,6 +33,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
         /// </summary>
         public string ExitPlaceableResref { get; set; } = "_mdrn_placedoord";
         public string ExitDisplayName { get; set; } = "Exit";
+        public float ExitPlaceableFootprintRadius { get; set; } = 2f;
 
         /// <summary>
         /// Door blueprint spawned for Door-style transitions (doorway tiles embedded in room walls).
@@ -40,10 +41,12 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
         /// the matching tileset-specific doortypes.2da row while retaining the blueprint's behavior.
         /// </summary>
         public string ExitDoorResref { get; set; } = "_mdrn_dt_wood";
+        public float ExitDoorFootprintRadius { get; set; } = 1.5f;
 
         /// <summary>Treasure container spawned in the Boss room. Must have HasInventory=1 and a real appearance.</summary>
         public string TreasurePlaceableResref { get; set; } = "structure_rubble";
         public string TreasureDisplayName { get; set; } = "Treasure Cache";
+        public float TreasurePlaceableFootprintRadius { get; set; } = 2f;
 
         /// <summary>
         /// Weighted "set dressing" placeable palette curated from hand-built reference areas of this

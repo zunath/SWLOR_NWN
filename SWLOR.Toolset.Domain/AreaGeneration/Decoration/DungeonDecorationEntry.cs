@@ -34,11 +34,17 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Decoration
         public bool AllowOnRoadSurface { get; set; }
 
         /// <summary>
-        /// Physical size class of the blueprint's art -- see <see cref="DecorationSize"/>. Only
-        /// read under the urban placement grammar (size-aware repetition control); the Medium
-        /// default keeps every non-declaring entry's behavior unchanged.
+        /// Physical size class of the blueprint's art -- see <see cref="DecorationSize"/>. Used
+        /// for conservative generated-creature clearance in every composition and for size-aware
+        /// repetition control under the urban placement grammar.
         /// </summary>
         public DecorationSize Size { get; set; } = DecorationSize.Medium;
+
+        /// <summary>
+        /// Optional measured XY footprint radius in meters. Zero uses the conservative radius for
+        /// <see cref="Size"/>; set this when a model's measured footprint is available.
+        /// </summary>
+        public float FootprintRadius { get; set; }
 
         /// <summary>
         /// District affinity of this entry (see <see cref="DistrictFlavor"/>), evidence-derived

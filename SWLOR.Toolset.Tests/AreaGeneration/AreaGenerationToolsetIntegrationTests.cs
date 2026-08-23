@@ -452,7 +452,7 @@ public class AreaGenerationToolsetIntegrationTests
         using (EditScope.EnterConstruction())
         {
             AreaTemplateFactory.PopulateNewArea(are, "test", "Test", "tdt01", 2, 2, 0, 0);
-            GeneratedAreaDocumentPopulator.Populate(draft, workspace, are, git, gic);
+            GeneratedAreaDocumentPopulator.Populate(draft, workspace, "test", are, git, gic);
         }
 
         AreaTiles.At(are, 1, 1)!.Value.TileId.Should().Be(3);
@@ -463,8 +463,11 @@ public class AreaGenerationToolsetIntegrationTests
         are.ChanceRain.Should().Be(33);
         are.FogClipDist.Should().Be(88f);
         git.Fields.GetListOrEmpty("WaypointList").Should().HaveCount(3);
+        git.Fields.GetListOrEmpty("WaypointList")
+            .Select(instance => instance.GetStringOrNull("Tag"))
+            .Should().Equal("PG_test_ENT_1", "PG_test_EXIT_1", "PG_test_EXIT_2");
         git.Fields.GetListOrEmpty("Door List").Should().ContainSingle()
-            .Which.GetStringOrNull("Tag").Should().Be("PG_DOOR_EXIT_1");
+            .Which.GetStringOrNull("Tag").Should().Be("PG_test_DOOR_EXIT_1");
         git.Fields.GetListOrEmpty("Door List").Single()
             .GetLocStringOrNull("LocName")!.Text.Should().Be("Test Maintenance Hatch");
         git.Fields.GetListOrEmpty("Door List").Single()
@@ -474,7 +477,11 @@ public class AreaGenerationToolsetIntegrationTests
         git.Fields.GetListOrEmpty("Placeable List").Should().HaveCount(4);
         git.Fields.GetListOrEmpty("Placeable List")
             .Select(instance => instance.GetStringOrNull("Tag"))
-            .Should().Equal("PG_TRANS_ENT_1", "PG_TRANS_EXIT_2", "PG_TREASURE", "PG_DEC_1");
+            .Should().Equal(
+                "PG_test_TRANS_ENT_1",
+                "PG_test_TRANS_EXIT_2",
+                "PG_test_TREASURE",
+                "PG_test_DEC_1");
         git.Fields.GetListOrEmpty("Placeable List")[0]
             .GetSingleOrNull("Z").Should().BeApproximately(12f, 0.001f,
                 "placeable transitions use the sloped tile's center height");

@@ -66,10 +66,14 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
         /// <summary>
         /// Sets the exit placeable spawned in the Entrance room and its display name.
         /// </summary>
-        public DungeonDefinitionBuilder ExitPlaceable(string resref, string displayName)
+        public DungeonDefinitionBuilder ExitPlaceable(
+            string resref,
+            string displayName,
+            float footprintRadius = 2f)
         {
             _activeDungeon.ExitPlaceableResref = resref;
             _activeDungeon.ExitDisplayName = displayName;
+            _activeDungeon.ExitPlaceableFootprintRadius = footprintRadius;
             return this;
         }
 
@@ -78,19 +82,24 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
         /// The blueprint supplies default appearance and behavior for generic SET slots (Type=0);
         /// a positive slot type replaces its appearance with the matching doortypes.2da row.
         /// </summary>
-        public DungeonDefinitionBuilder ExitDoor(string resref)
+        public DungeonDefinitionBuilder ExitDoor(string resref, float footprintRadius = 1.5f)
         {
             _activeDungeon.ExitDoorResref = resref;
+            _activeDungeon.ExitDoorFootprintRadius = footprintRadius;
             return this;
         }
 
         /// <summary>
         /// Sets the treasure container spawned in the Boss room and its display name.
         /// </summary>
-        public DungeonDefinitionBuilder TreasurePlaceable(string resref, string displayName)
+        public DungeonDefinitionBuilder TreasurePlaceable(
+            string resref,
+            string displayName,
+            float footprintRadius = 2f)
         {
             _activeDungeon.TreasurePlaceableResref = resref;
             _activeDungeon.TreasureDisplayName = displayName;
+            _activeDungeon.TreasurePlaceableFootprintRadius = footprintRadius;
             return this;
         }
 

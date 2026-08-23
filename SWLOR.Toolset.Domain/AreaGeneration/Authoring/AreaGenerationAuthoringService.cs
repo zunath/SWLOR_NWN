@@ -44,6 +44,14 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                     $"Theme '{theme.DisplayName}' tier {settings.Tier} has invalid treasure settings.",
                     nameof(settings));
             }
+            if (theme.ExitPlaceableFootprintRadius <= 0f ||
+                theme.ExitDoorFootprintRadius <= 0f ||
+                theme.TreasurePlaceableFootprintRadius <= 0f)
+            {
+                throw new ArgumentException(
+                    $"Theme '{theme.DisplayName}' has invalid generated-object footprint settings.",
+                    nameof(settings));
+            }
             if (tier.Creatures.Count == 0 ||
                 tier.Creatures.Any(creature => string.IsNullOrWhiteSpace(creature.Resref) || creature.Weight < 1) ||
                 tier.MinCreaturesPerRoom < 0 ||

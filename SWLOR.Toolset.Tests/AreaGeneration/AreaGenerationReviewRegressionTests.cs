@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Toolset.Domain.AreaGeneration;
@@ -225,6 +226,78 @@ public class GeneratedTreasureReviewRegressionTests
         await action.Should().ThrowAsync<InvalidOperationException>()
             .WithMessage("*cannot fit 4 creatures*");
         occupied.Should().BeEmpty("failed placement must not reserve partial anchors");
+    }
+
+    [Test]
+    public void GeneratedObjectFootprints_UseDeclarationsAndVisualScale()
+    {
+        var resolved = new ResolvedLayout
+        {
+            Width = 2,
+            Height = 1,
+            Transitions =
+            [
+                new TransitionPoint
+                {
+                    Kind = TransitionKind.Entrance,
+                    Style = TransitionStyle.Placeable,
+                    Tile = (0, 0)
+                },
+                new TransitionPoint
+                {
+                    Kind = TransitionKind.Exit,
+                    Style = TransitionStyle.Door,
+                    Tile = (1, 0),
+                    DoorX = 10f,
+                    DoorY = 5f
+                }
+            ]
+        };
+        var draft = new AreaGenerationDraft(
+            new AreaGenerationSettings { ThemeKey = "test", Width = 2, Height = 1 },
+            new DungeonComposition
+            {
+                Content = new DungeonDetail
+                {
+                    ExitPlaceableFootprintRadius = 2.5f,
+                    ExitDoorFootprintRadius = 1.75f
+                },
+                Tileset = new DungeonTilesetProfile(),
+                Layout = new DungeonLayoutProfile()
+            },
+            new TilesetModel(),
+            new GenerationResult
+            {
+                Success = true,
+                Resolved = resolved,
+                PlannedDecorations =
+                [
+                    new PlannedDecoration
+                    {
+                        Position = new Vector3(7f, 5f, 0f),
+                        FootprintRadius = 4f,
+                        VisualScale = 1.25f
+                    }
+                ]
+            });
+
+        GeneratedAreaDocumentPopulator.CreatureOccupiedAnchors(draft)
+            .Select(anchor => anchor.Radius)
+            .Should().Equal(2.5f, 1.75f, 5f);
+        DungeonDecorationPlanner.DeclaredFootprintRadius(
+                new DungeonDecorationEntry { Size = DecorationSize.Large })
+            .Should().Be(4f);
+        DungeonDecorationPlanner.DeclaredFootprintRadius(
+                new DungeonDecorationEntry { Size = DecorationSize.Huge, FootprintRadius = 7.25f })
+            .Should().Be(7.25f);
+    }
+
+    [Test]
+    public void GeneratedTransitionTags_IncludeTheUniqueAreaResref()
+    {
+        GeneratedAreaDocumentPopulator.GeneratedTag("dungeon_one", "ENT_1")
+            .Should().Be("PG_dungeon_one_ENT_1")
+            .And.NotBe(GeneratedAreaDocumentPopulator.GeneratedTag("dungeon_two", "ENT_1"));
     }
 
     [Test]

@@ -458,6 +458,20 @@ namespace SWLOR.Toolset.Domain.AreaGeneration
         }
 
         /// <summary>
+        /// Declares the LAST <see cref="Decoration"/> entry's measured XY footprint radius in
+        /// meters. Omit it to use the entry's conservative <see cref="DecorationSize"/> radius.
+        /// </summary>
+        public DungeonTilesetProfileBuilder FootprintRadius(float radius)
+        {
+            if (_lastDecorationEntry == null)
+                throw new System.InvalidOperationException("FootprintRadius() must follow a Decoration() call.");
+            if (radius <= 0f)
+                throw new ArgumentOutOfRangeException(nameof(radius));
+            _lastDecorationEntry.FootprintRadius = radius;
+            return this;
+        }
+
+        /// <summary>
         /// Declares the LAST <see cref="Decoration"/> entry as stackable cargo (see
         /// <see cref="DungeonDecorationEntry.StackHeight"/>): a committed pile/depot member may
         /// carry a second copy of itself directly above at this Z step -- the hand-built

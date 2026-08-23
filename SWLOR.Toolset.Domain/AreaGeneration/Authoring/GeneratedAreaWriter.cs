@@ -49,7 +49,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                 draft.Result.Resolved.Width,
                 draft.Result.Resolved.Height,
                 (are, git, gic) =>
-                    GeneratedAreaDocumentPopulator.Populate(draft, workspace, are, git, gic),
+                    GeneratedAreaDocumentPopulator.Populate(draft, workspace, resref, are, git, gic),
                 out error);
 
             if (created)

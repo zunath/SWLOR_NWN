@@ -662,7 +662,6 @@ namespace SWLOR.Game.Server.Service
             SetEventScript(droid, EventScript.Creature_OnDeath, ScriptName.OnDroidDeath);
             SetEventScript(droid, EventScript.Creature_OnDisturbed, ScriptName.OnDroidDisturbed);
             SetEventScript(droid, EventScript.Creature_OnHeartbeat, ScriptName.OnDroidHeartbeat);
-            SetEventScript(droid, EventScript.Creature_OnNotice, ScriptName.OnDroidPerception);
             SetEventScript(droid, EventScript.Creature_OnMeleeAttacked, ScriptName.OnDroidAttacked);
             SetEventScript(droid, EventScript.Creature_OnRested, ScriptName.OnDroidRest);
             SetEventScript(droid, EventScript.Creature_OnSpawnIn, ScriptName.OnDroidSpawn);
@@ -1027,11 +1026,6 @@ namespace SWLOR.Game.Server.Service
         {
             Stat.RestoreNPCStats(false);
             CompanionControl.ProcessHeartbeat(OBJECT_SELF);
-        }
-
-        [NWNEventHandler(ScriptName.OnDroidPerception)]
-        public static void DroidOnPerception()
-        {
         }
 
         [NWNEventHandler(ScriptName.OnDroidAttacked)]

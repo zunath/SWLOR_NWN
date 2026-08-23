@@ -46,7 +46,7 @@ namespace SWLOR.Game.Server.Service.AIService
 
                 _currentEnmityTargetLoaded = true;
                 _currentEnmityTarget = CompanionControl.IsRegisteredCompanion(Self)
-                    ? CompanionControl.GetAuthorizedTarget(Self)
+                    ? EventTarget
                     : Enmity.GetHighestEnmityTarget(Self);
 
                 return _currentEnmityTarget;

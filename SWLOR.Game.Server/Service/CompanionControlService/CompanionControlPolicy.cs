@@ -1,3 +1,5 @@
+using SWLOR.NWN.API.NWScript.Enum;
+
 namespace SWLOR.Game.Server.Service.CompanionControlService
 {
     public static class CompanionControlPolicy
@@ -6,6 +8,7 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
         public const float GuardTetherMeters = 8f;
         public const float AttackNearestRangeMeters = 15f;
         public const float PathingTimeoutSeconds = 5f;
+        public const float ProgressDistanceMeters = 0.25f;
 
         public static float GetTetherMeters(CompanionMode mode, CompanionEngagementType engagementType)
         {
@@ -21,6 +24,24 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
         {
             return lastProgressAt != default &&
                    (now - lastProgressAt).TotalSeconds >= PathingTimeoutSeconds;
+        }
+
+        public static bool HasCombatProgress(
+            bool hasAttackOpportunity,
+            float previousDistance,
+            float currentDistance)
+        {
+            return hasAttackOpportunity ||
+                   currentDistance + ProgressDistanceMeters < previousDistance;
+        }
+
+        public static bool ShouldPreserveExplicitOrder(
+            DateTime expiresAt,
+            DateTime now,
+            ActionType currentAction)
+        {
+            return expiresAt > now &&
+                   currentAction is not ActionType.Invalid and not ActionType.Follow;
         }
 
         public static bool ReturnsToFollowWhenComplete(CompanionEngagementType engagementType)

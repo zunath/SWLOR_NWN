@@ -538,19 +538,26 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static void AttackHighestEnmityTarget(uint creature)
         {
+            uint target;
             if (CompanionControl.IsRegisteredCompanion(creature))
             {
-                CompanionControl.TryIssueAuthorizedAttack(creature);
-                return;
+                target = CompanionControl.PeekAuthorizedTarget(creature);
             }
-
-            var target = GetHighestEnmityTarget(creature);
-            while (GetIsObjectValid(target) && ShouldRemoveStaleProximityTarget(creature, target))
+            else
             {
-                RemoveProximityEnmity(target, creature);
                 target = GetHighestEnmityTarget(creature);
+                while (GetIsObjectValid(target) && ShouldRemoveStaleProximityTarget(creature, target))
+                {
+                    RemoveProximityEnmity(target, creature);
+                    target = GetHighestEnmityTarget(creature);
+                }
             }
 
+            AttackTargetIfNeeded(creature, target);
+        }
+
+        private static void AttackTargetIfNeeded(uint creature, uint target)
+        {
             if (!GetIsObjectValid(target) ||
                 GetArea(creature) != GetArea(target))
                 return;

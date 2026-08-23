@@ -294,7 +294,6 @@ namespace SWLOR.Game.Server.Service
             SetEventScript(beast, EventScript.Creature_OnDeath, ScriptName.OnBeastDeath);
             SetEventScript(beast, EventScript.Creature_OnDisturbed, ScriptName.OnBeastDisturbed);
             SetEventScript(beast, EventScript.Creature_OnHeartbeat, ScriptName.OnBeastHeartbeat);
-            SetEventScript(beast, EventScript.Creature_OnNotice, ScriptName.OnBeastPerception);
             SetEventScript(beast, EventScript.Creature_OnMeleeAttacked, ScriptName.OnBeastAttacked);
             SetEventScript(beast, EventScript.Creature_OnRested, ScriptName.OnBeastRest);
             SetEventScript(beast, EventScript.Creature_OnSpawnIn, ScriptName.OnBeastSpawn);
@@ -506,11 +505,6 @@ namespace SWLOR.Game.Server.Service
         {
             Stat.RestoreNPCStats(false);
             CompanionControl.ProcessHeartbeat(OBJECT_SELF);
-        }
-
-        [NWNEventHandler(ScriptName.OnBeastPerception)]
-        public static void BeastOnPerception()
-        {
         }
 
         [NWNEventHandler(ScriptName.OnBeastAttacked)]

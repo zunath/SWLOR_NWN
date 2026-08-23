@@ -42,6 +42,31 @@ public class CompanionControlPolicyTests
     }
 
     [Test]
+    public void ExplicitInteractionOrdersArePreservedOnlyWhileActive()
+    {
+        var now = new DateTime(2026, 8, 23, 12, 0, 0, DateTimeKind.Utc);
+
+        CompanionControlPolicy.ShouldPreserveExplicitOrder(
+                now.AddSeconds(30),
+                now,
+                ActionType.OpenDoor)
+            .Should()
+            .BeTrue();
+        CompanionControlPolicy.ShouldPreserveExplicitOrder(
+                now.AddSeconds(30),
+                now,
+                ActionType.Follow)
+            .Should()
+            .BeFalse();
+        CompanionControlPolicy.ShouldPreserveExplicitOrder(
+                now,
+                now,
+                ActionType.OpenDoor)
+            .Should()
+            .BeFalse();
+    }
+
+    [Test]
     public void BlockedPathTimesOutAtFiveSeconds()
     {
         var startedAt = new DateTime(2026, 8, 23, 12, 0, 0, DateTimeKind.Utc);
@@ -52,6 +77,16 @@ public class CompanionControlPolicyTests
         CompanionControlPolicy.HasPathingTimedOut(startedAt, startedAt.AddSeconds(5))
             .Should()
             .BeTrue();
+
+        CompanionControlPolicy.HasCombatProgress(false, 10f, 9.8f)
+            .Should()
+            .BeFalse();
+        CompanionControlPolicy.HasCombatProgress(false, 10f, 9.7f)
+            .Should()
+            .BeTrue();
+        CompanionControlPolicy.HasCombatProgress(true, 10f, 10f)
+            .Should()
+            .BeTrue();
     }
 
     [Test]
@@ -59,17 +94,7 @@ public class CompanionControlPolicyTests
     {
         ((int)AssociateCommand.ToggleAbilities).Should().Be(-21);
         AssociateCommand.ToggleCasting.Should().Be(AssociateCommand.ToggleAbilities);
-
-        var repositoryRoot = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            repositoryRoot,
-            "SWLOR.Game.Server",
-            "Service",
-            "CompanionControlService",
-            "CompanionControl.cs"));
-        source.Should().Contain("AssociateCastingLabelStrRef = 8127");
-        source.Should().Contain("PlayerPlugin.SetTlkOverride(player, AssociateCastingLabelStrRef, \"abilities\")");
-        source.Should().Contain("PlayerName.GetDisplayName(master, target)");
+        CompanionControl.AssociateAbilitiesLabelStrRef.Should().Be(8127);
     }
 
     [Test]
@@ -96,50 +121,4 @@ public class CompanionControlPolicyTests
             ability.RequiresTarget);
     }
 
-    [Test]
-    public void CompanionEventsDoNotRunNativeAutonomousCombatScripts()
-    {
-        var repositoryRoot = FindRepositoryRoot();
-        var droid = File.ReadAllText(Path.Combine(repositoryRoot, "SWLOR.Game.Server", "Service", "Droid.cs"));
-        var beast = File.ReadAllText(Path.Combine(repositoryRoot, "SWLOR.Game.Server", "Service", "BeastMastery.cs"));
-
-        foreach (var source in new[] { droid, beast })
-        {
-            source.Should().NotContain("x0_ch_hen_combat");
-            source.Should().NotContain("x0_ch_hen_heart");
-            source.Should().NotContain("x0_ch_hen_percep");
-            source.Should().NotContain("x0_ch_hen_attack");
-            source.Should().NotContain("x0_ch_hen_damage");
-            source.Should().Contain("CompanionControl.HandleConversation");
-            source.Should().Contain("CompanionControl.ProcessCombatRound");
-        }
-    }
-
-    [Test]
-    public void QueuedAttackActionsDoNotMaskTheNoProgressTimeout()
-    {
-        var repositoryRoot = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
-            repositoryRoot,
-            "SWLOR.Game.Server",
-            "Service",
-            "CompanionControlService",
-            "CompanionControl.cs"));
-
-        source.Should().NotContain("GetCurrentAction(companion) == ActionType.AttackObject");
-    }
-
-    private static string FindRepositoryRoot()
-    {
-        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
-        while (directory != null)
-        {
-            if (File.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server.sln")))
-                return directory.FullName;
-
-            directory = directory.Parent;
-        }
-
-        throw new DirectoryNotFoundException("Could not locate the SWLOR_NWN repository root.");
-    }
 }

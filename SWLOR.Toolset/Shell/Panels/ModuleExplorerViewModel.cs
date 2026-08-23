@@ -74,6 +74,9 @@ namespace SWLOR.Toolset.Shell.Panels
         [ObservableProperty]
         private string? _statusMessage;
 
+        [ObservableProperty]
+        private bool _isDeletingResource;
+
         /// <summary>The new-area wizard while it is open, or null - the view shows it as an overlay.</summary>
         [ObservableProperty]
         private NewAreaViewModel? _activeNewArea;
@@ -194,15 +197,19 @@ namespace SWLOR.Toolset.Shell.Panels
         /// module.ifo, so a pack that runs between those two steps can capture an IFO entry with no
         /// area behind it — or an area the module never lists.
         /// </remarks>
-        public bool CanCreateSelectedType => _mutationLock?.IsLocked != true;
+        public bool CanCreateSelectedType =>
+            !IsDeletingResource &&
+            _mutationLock?.IsLocked != true;
 
         /// <summary>Re-reads <see cref="CanCreateSelectedType"/> after the module-wide lock flips.</summary>
         private void OnMutationLockChanged()
         {
             OnPropertyChanged(nameof(CanCreateSelectedType));
             OnPropertyChanged(nameof(CanCompileSelectedType));
+            OnPropertyChanged(nameof(CanDeleteSelectedResource));
             NewItemCommand.NotifyCanExecuteChanged();
             CompileSelectedCommand.NotifyCanExecuteChanged();
+            DeleteSelectedResourceCommand.NotifyCanExecuteChanged();
         }
 
         /// <summary>Builds the tree for the selected tab.</summary>
@@ -400,9 +407,9 @@ namespace SWLOR.Toolset.Shell.Panels
 
             // Rechecked after the prompts: the builder was looking at a dialog while a pack could
             // have started behind it, and the write below is what a pack must not race.
-            if (_mutationLock?.IsLocked == true)
+            if (!CanCreateSelectedType)
             {
-                StatusMessage = "Creating resources is unavailable while the module is being packed or built.";
+                StatusMessage = "Creating resources is unavailable while another module operation is in progress.";
                 return;
             }
 
@@ -475,7 +482,7 @@ namespace SWLOR.Toolset.Shell.Panels
                 // The wizard writes the ARE/GIT/GIC triplet and then edits module.ifo. A pack that
                 // starts between those two writes captures one without the other, so the wizard has
                 // to ask again at the moment it commits rather than trusting the check that opened it.
-                () => _mutationLock?.IsLocked != true);
+                () => !IsDeletingResource && _mutationLock?.IsLocked != true);
         }
 
         /// <summary>
@@ -889,10 +896,202 @@ namespace SWLOR.Toolset.Shell.Panels
         // ----- browsing -----
 
         /// <summary>
+        /// Only real area, dialog, and script rows can be deleted, and never while a module-wide
+        /// reader or writer owns the workspace.
+        /// </summary>
+        public bool CanDeleteSelectedResource =>
+            !IsDeletingResource &&
+            SelectedRow?.Item != null &&
+            SelectedRow.Type is ResourceType.Area or ResourceType.Dlg or ResourceType.Nss &&
+            _mutationLock?.IsLocked != true;
+
+        /// <summary>
+        /// Deletes the logical resource represented by the selected row. Areas include their whole
+        /// triplet and module registration; dialogs include graph and legacy forms; scripts include
+        /// source and same-resref compiled output.
+        /// </summary>
+        [RelayCommand(CanExecute = nameof(CanDeleteSelectedResource))]
+        private async Task DeleteSelectedResourceAsync()
+        {
+            var row = SelectedRow;
+            var item = row?.Item;
+            var workspace = _workspaceContext.Workspace;
+            if (row == null || item == null || workspace == null || _prompts == null)
+                return;
+
+            var type = row.Type;
+            var resRef = item.ResRef;
+            var displayName = string.IsNullOrWhiteSpace(item.Name) ? row.Name : item.Name;
+            var kind = type.SingularDisplayName().ToLowerInvariant();
+            var editorService = _editorService?.Invoke();
+
+            if (type == ResourceType.Area && editorService?.IsModulePropertiesOpen == true)
+            {
+                StatusMessage = "Module Properties is open - close that tab before deleting an area.";
+                return;
+            }
+
+            var section = _categories.Section(type);
+            if (section?.FoldersContaining(resRef).Any() == true)
+            {
+                var preflight = _categories.CanSaveChanges();
+                if (!preflight.Saved)
+                {
+                    StatusMessage = $"'{displayName}' was not deleted: {preflight.Problem}";
+                    _log.AppendLine($"Deleting {kind} '{resRef}' was refused: {preflight.Problem}");
+                    return;
+                }
+            }
+
+            ModuleResourceDeletionPlan plan;
+            try
+            {
+                plan = ModuleResourceDeletionService.Prepare(workspace, type, resRef);
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"'{displayName}' was not deleted: {ex.Message}";
+                _log.AppendLine($"Deleting {kind} '{resRef}' was refused: {ex.Message}");
+                return;
+            }
+
+            var closesOpenEditor = editorService?.IsOpen(type, resRef) == true;
+            var confirmed = await _prompts.ConfirmDestructiveAsync(
+                $"Delete '{displayName}'?",
+                (closesOpenEditor ? "Unsaved changes in the open editor will be lost. " : string.Empty) +
+                "This cannot be undone.",
+                "Delete").ConfigureAwait(true);
+            if (!confirmed)
+                return;
+
+            // The warning is scoped to the editor state the builder confirmed. If the resource was
+            // closed when the dialog opened but became open while it was displayed, do not silently
+            // extend that consent to discarding a new buffer. Leave it intact and require a second
+            // Delete whose confirmation describes the close explicitly.
+            if (!closesOpenEditor && editorService?.IsOpen(type, resRef) == true)
+            {
+                StatusMessage =
+                    $"'{displayName}' was opened while the delete confirmation was active. " +
+                    "It was not deleted; choose Delete again to confirm closing its editor.";
+                return;
+            }
+
+            // Reserve the shared deletion state before rechecking editor ownership. The reservation
+            // blocks every editor-opening route until the deletion and its catalog cleanup finish,
+            // closing the race between these checks and entering the filesystem transaction.
+            using var deletionOperation = _mutationLock?.TryBeginResourceDeletion();
+            if (_mutationLock != null && deletionOperation == null)
+            {
+                StatusMessage = $"'{displayName}' was not deleted: the module is being packed, validated, or built.";
+                _log.AppendLine($"Deleting {kind} '{resRef}' was refused: the module is locked.");
+                return;
+            }
+
+            // An editor that was already open when the builder confirmed stays alive until Commit
+            // succeeds. That preserves its dirty buffer if the module becomes locked or the prepared
+            // filesystem generation changes while the confirmation is open. A newly opened editor
+            // was not covered by the warning and still cancels the delete.
+            if (!closesOpenEditor && editorService?.IsOpen(type, resRef) == true)
+            {
+                StatusMessage =
+                    $"'{displayName}' was opened while the delete confirmation was active. " +
+                    "It was not deleted; choose Delete again to confirm closing its editor.";
+                return;
+            }
+
+            if (type == ResourceType.Area && editorService?.IsModulePropertiesOpen == true)
+            {
+                StatusMessage = "Module Properties is now open - close that tab before deleting an area.";
+                return;
+            }
+
+            if (section?.FoldersContaining(resRef).Any() == true)
+            {
+                var recheck = _categories.CanSaveChanges();
+                if (!recheck.Saved)
+                {
+                    StatusMessage = $"'{displayName}' was not deleted: {recheck.Problem}";
+                    _log.AppendLine($"Deleting {kind} '{resRef}' was refused: {recheck.Problem}");
+                    return;
+                }
+            }
+
+            ModuleResourceDeletionResult result;
+            IsDeletingResource = true;
+            StatusMessage = $"Deleting {kind} '{displayName}'...";
+            try
+            {
+                result = await Task.Run(() =>
+                    {
+                        // The deletion owns the shared module-operation lock. Its worker alone may
+                        // perform the guarded filesystem writes while every editor/save/open route
+                        // remains blocked until this command finishes its catalog cleanup.
+                        using var allowance = ModuleMutationLock.AllowModuleWrites();
+                        return ModuleResourceDeletionService.Commit(plan);
+                    })
+                    .ConfigureAwait(true);
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"'{displayName}' was not deleted: {ex.Message}";
+                _log.AppendLine($"Deleting {kind} '{resRef}' failed: {ex.Message}");
+                return;
+            }
+            finally
+            {
+                IsDeletingResource = false;
+            }
+
+            // The filesystem transaction committed, so the confirmed unsaved buffer can now be
+            // discarded safely. Keeping the editor alive until this point means every refusal or
+            // failed commit leaves the builder's in-memory work intact.
+            if (editorService?.IsOpen(type, resRef) == true &&
+                !editorService.TryCloseResourceForDeletion(type, resRef))
+            {
+                _log.AppendLine(
+                    $"Deleted {kind} '{resRef}', but its editor could not be closed. Close it without saving.");
+            }
+
+            _workspaceContext.RemoveCatalogEntry(type, resRef);
+
+            var unfiled = true;
+            if (section != null)
+            {
+                var folders = section.FoldersContaining(resRef).ToList();
+                foreach (var folder in folders)
+                    folder.RemoveMember(resRef);
+
+                if (folders.Count > 0)
+                    unfiled = SaveCategories();
+            }
+
+            SelectedRow = null;
+            ClearResourceMoveHistory();
+            Refresh();
+
+            var cleanup = result.CleanupWarnings.Count == 0
+                ? string.Empty
+                : $" Temporary delete backup cleanup needs attention: {string.Join("; ", result.CleanupWarnings)}";
+            if (unfiled)
+            {
+                StatusMessage = cleanup.TrimStart();
+            }
+            else
+            {
+                StatusMessage =
+                    $"Deleted {kind} '{displayName}', but its Module Contents folder still lists it. {StatusMessage}{cleanup}";
+            }
+
+            _log.AppendLine(
+                $"Deleted {kind} '{resRef}' ({string.Join(", ", result.DeletedPaths)}).{cleanup}");
+        }
+
+        /// <summary>
         /// Whether the selected tab's resources can actually be opened. All three kinds can now:
         /// areas in the area editor, scripts in the script editor, and conversations in Play-it.
         /// </summary>
         public bool CanOpenSelectedType =>
+            !IsDeletingResource &&
             SelectedType is ResourceType.Area or ResourceType.Nss or ResourceType.Dlg;
 
         /// <summary>
@@ -901,6 +1100,7 @@ namespace SWLOR.Toolset.Shell.Panels
         /// include, when the dependents needing a rebuild are not the file you were working in.
         /// </summary>
         public bool CanCompileSelectedType =>
+            !IsDeletingResource &&
             SelectedType == ResourceType.Nss &&
             _mutationLock?.IsLocked != true;
 
@@ -910,9 +1110,9 @@ namespace SWLOR.Toolset.Shell.Panels
             if (SelectedRow?.Item is not { } item || SelectedType != ResourceType.Nss)
                 return;
 
-            if (_mutationLock?.IsLocked == true)
+            if (!CanCompileSelectedType)
             {
-                StatusMessage = "Compiling scripts is unavailable while the module is being packed, validated, or built.";
+                StatusMessage = "Compiling scripts is unavailable while another module operation is in progress.";
                 return;
             }
 
@@ -925,7 +1125,7 @@ namespace SWLOR.Toolset.Shell.Panels
         }
 
         /// <summary>The context menu's Open, which is the double-click by another route.</summary>
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(CanOpenSelectedType))]
         private void OpenSelected() => OpenSelectedItem();
 
         /// <summary>Double-click: open a resource, or expand a folder.</summary>
@@ -942,7 +1142,9 @@ namespace SWLOR.Toolset.Shell.Panels
 
             if (!CanOpenSelectedType)
             {
-                StatusMessage = $"{SelectedType.DisplayName()} cannot be edited in the toolset yet.";
+                StatusMessage = IsDeletingResource
+                    ? "Opening resources is unavailable while a delete is in progress."
+                    : $"{SelectedType.DisplayName()} cannot be edited in the toolset yet.";
                 return;
             }
 
@@ -1100,6 +1302,8 @@ namespace SWLOR.Toolset.Shell.Panels
         partial void OnSelectedRowChanged(ExplorerNodeViewModel? value)
         {
             OnPropertyChanged(nameof(HasFolderSelected));
+            OnPropertyChanged(nameof(CanDeleteSelectedResource));
+            DeleteSelectedResourceCommand.NotifyCanExecuteChanged();
 
             if (value?.Item == null)
                 return;
@@ -1110,6 +1314,18 @@ namespace SWLOR.Toolset.Shell.Panels
             // Nothing in this panel has a model any more - areas, dialogs and scripts all have
             // none - so the preview is left showing whatever the Palette last put there rather than
             // being cleared to "no preview available" on every click.
+        }
+
+        partial void OnIsDeletingResourceChanged(bool value)
+        {
+            OnPropertyChanged(nameof(CanCreateSelectedType));
+            OnPropertyChanged(nameof(CanOpenSelectedType));
+            OnPropertyChanged(nameof(CanCompileSelectedType));
+            OnPropertyChanged(nameof(CanDeleteSelectedResource));
+            NewItemCommand.NotifyCanExecuteChanged();
+            OpenSelectedCommand.NotifyCanExecuteChanged();
+            CompileSelectedCommand.NotifyCanExecuteChanged();
+            DeleteSelectedResourceCommand.NotifyCanExecuteChanged();
         }
 
         // ----- tree assembly -----

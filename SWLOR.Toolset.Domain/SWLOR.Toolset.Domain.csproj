@@ -17,6 +17,7 @@
   <ItemGroup>
     <!-- BioWare's proprietary DDS variant is wrapped as standard DXT before Pfim decodes it. -->
     <PackageReference Include="Pfim" Version="0.11.4" />
+    <PackageReference Include="Serilog" Version="4.4.0" />
   </ItemGroup>
 
 </Project>

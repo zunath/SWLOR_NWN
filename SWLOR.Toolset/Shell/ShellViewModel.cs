@@ -4,9 +4,14 @@ using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Controls;
+using SWLOR.Toolset.AreaGeneration;
 using SWLOR.Toolset.Archives;
 using SWLOR.Toolset.Factions;
+using SWLOR.Toolset.Domain.AreaGeneration.Authoring;
+using SWLOR.Toolset.Domain.GameData.Lookups;
+using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Script;
+using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Settings;
@@ -60,15 +65,21 @@ namespace SWLOR.Toolset.Shell
         [ObservableProperty]
         private bool _isManagingFactions;
 
-        public bool IsModuleMutationLocked =>
+        [ObservableProperty]
+        private bool _isGeneratingArea;
+
+        private bool IsShellModuleMutationLocked =>
             IsPacking || IsValidationRunning || IsBuildingScripts ||
-            IsManagingErfArchives || IsManagingFactions;
+            IsManagingErfArchives || IsManagingFactions || IsGeneratingArea;
+        public bool IsModuleMutationLocked =>
+            IsShellModuleMutationLocked || _mutationLock.IsResourceDeletionActive;
         public bool IsActiveEditorBusy => _activeEditor?.IsBusy == true;
         public bool IsInteractionBlocked => IsModuleMutationLocked || IsActiveEditorBusy;
 
         /// <summary>
         /// The shared answer to <see cref="IsModuleMutationLocked"/>, published for the panels and
-        /// editor tabs that also write to the module. The shell is its only writer.
+        /// editor tabs that also write to the module. The shell publishes its own operations; Module
+        /// Contents adds scoped resource deletions so shared open/save/close routes see them too.
         /// </summary>
         private readonly ModuleMutationLock _mutationLock;
 
@@ -98,6 +109,8 @@ namespace SWLOR.Toolset.Shell
         private readonly AreaContentsViewModel? _areaContents;
         private readonly ErfArchiveService? _erfArchiveService;
         private readonly ModuleCustomContentService? _moduleCustomContent;
+        private readonly TilesetCatalog? _tilesetCatalog;
+        private readonly ResourceIndex? _resourceIndex;
 
         /// <summary>Guards against a second rescan starting while one is already reopening the catalog.</summary>
         private bool _isRescanningAfterWatcherOverflow;
@@ -126,12 +139,17 @@ namespace SWLOR.Toolset.Shell
             StartupNotice? startupNotice = null,
             ModuleMutationLock? mutationLock = null,
             ErfArchiveService? erfArchiveService = null,
-            ModuleCustomContentService? moduleCustomContent = null)
+            ModuleCustomContentService? moduleCustomContent = null,
+            TilesetCatalog? tilesetCatalog = null,
+            ResourceIndex? resourceIndex = null)
         {
+            _resourceIndex = resourceIndex;
+            _tilesetCatalog = tilesetCatalog;
             _moduleCustomContent = moduleCustomContent;
             _areaContents = areaContents;
             _erfArchiveService = erfArchiveService;
             _mutationLock = mutationLock ?? new ModuleMutationLock();
+            _mutationLock.Changed += OnPublishedMutationStateChanged;
 
             // Every module write is checked against this, wherever it comes from. The eight editor
             // tabs each have their own Save button that goes straight to their own TrySaveAsync,
@@ -220,6 +238,71 @@ namespace SWLOR.Toolset.Shell
                         ? $"Custom content reloaded: {result.LoadedHakCount} HAK layer(s)."
                         : $"Custom content reloaded with {result.MissingHaks.Count} missing HAK(s).";
                 });
+            }
+        }
+
+        /// <summary>Opens the native generator and commits its result through the normal area writer.</summary>
+        [RelayCommand(CanExecute = nameof(CanMutateModule))]
+        private async Task AreaGenerator()
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null || _tilesetCatalog == null)
+            {
+                StatusText = "Area Generator needs an open module and loaded game data.";
+                return;
+            }
+
+            if (ScriptCompileService.AnyCompilationActive)
+            {
+                StatusText = "Area Generator will be available after the active script compile finishes.";
+                return;
+            }
+
+            IsGeneratingArea = true;
+            try
+            {
+                using (ModuleMutationLock.AllowModuleWrites())
+                {
+                    if (!await _editorService.Value.SaveAllAsync().ConfigureAwait(true))
+                    {
+                        StatusText = "Area Generator cancelled: an open editor could not be saved.";
+                        return;
+                    }
+                }
+
+                StatusText = "Opening Area Generator...";
+                string? createdResref;
+                using (ModuleMutationLock.AllowModuleWrites())
+                {
+                    var authoring = new AreaGenerationAuthoringService(_tilesetCatalog);
+                    var renderer = new AreaGenerationPreviewRenderer(_resourceIndex);
+                    createdResref = await AreaGeneratorWindow.ShowAsync(
+                        authoring,
+                        renderer,
+                        _tilesetCatalog,
+                        workspace).ConfigureAwait(true);
+                }
+
+                if (string.IsNullOrWhiteSpace(createdResref))
+                {
+                    StatusText = "Area Generator closed.";
+                    return;
+                }
+
+                _workspaceContext.RefreshCatalogEntry(ResourceType.Area, createdResref);
+                _workspaceContext.InvalidatePlacementIndex();
+                _explorer.Refresh();
+                _editorService.Value.TryOpenEditor(ResourceType.Area, createdResref);
+                StatusText = $"Created generated area '{createdResref}'.";
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Area Generator failed: {ex.Message}");
+                StatusText = "Area Generator could not be opened; see Output.";
+            }
+            finally
+            {
+                IsGeneratingArea = false;
             }
         }
 
@@ -785,13 +868,24 @@ namespace SWLOR.Toolset.Shell
             NotifyMutationStateChanged();
         }
 
+        partial void OnIsGeneratingAreaChanged(bool value)
+        {
+            NotifyMutationStateChanged();
+        }
+
         private void NotifyMutationStateChanged()
         {
             OnPropertyChanged(nameof(IsModuleMutationLocked));
             // Publish before the local notifications: every other panel and open editor tab learns
             // about the lock from here, and they should all flip in the same frame the menu does.
             // The palette, explorer, validation panel and script tabs all subscribe to it.
-            _mutationLock.Set(IsModuleMutationLocked);
+            _mutationLock.Set(IsShellModuleMutationLocked);
+            NotifyInteractionStateChanged();
+        }
+
+        private void OnPublishedMutationStateChanged()
+        {
+            OnPropertyChanged(nameof(IsModuleMutationLocked));
             NotifyInteractionStateChanged();
         }
 
@@ -802,6 +896,7 @@ namespace SWLOR.Toolset.Shell
             SaveAllCommand.NotifyCanExecuteChanged();
             ErfArchivesCommand.NotifyCanExecuteChanged();
             FactionEditorCommand.NotifyCanExecuteChanged();
+            AreaGeneratorCommand.NotifyCanExecuteChanged();
             PackModuleCommand.NotifyCanExecuteChanged();
             BuildAllScriptsCommand.NotifyCanExecuteChanged();
             ModulePropertiesCommand.NotifyCanExecuteChanged();
@@ -842,16 +937,11 @@ namespace SWLOR.Toolset.Shell
 
             try
             {
-                // WorkspaceContext.Open synchronously raises WorkspaceOpened before returning, and
-                // subscribers (e.g. EditorService) mutate plain, non-concurrent collections from that
-                // handler. Open itself is cheap - ModuleWorkspace only does lazy/directory-listing
-                // enumeration, and BlueprintCatalog kicks its own heavy build off via an internal
-                // Task.Run - so running the whole call on the UI thread (rather than on a background
-                // thread via Task.Run, which would publish WorkspaceOpened off-thread) keeps every
-                // WorkspaceOpened subscriber's assumption that it only ever runs on the UI thread true,
-                // without blocking the UI for the actual catalog build. See the matching comment in
-                // OnFileWatcherRescanRequested, which must publish on the same thread.
-                await Dispatcher.UIThread.InvokeAsync(() => _workspaceContext.Open(moduleRoot));
+                // OpenAsync runs all crash recovery and cross-process lease waits on a worker, then
+                // resumes on this Avalonia context before replacing the workspace and raising
+                // WorkspaceOpened. Subscribers such as EditorService can keep their UI-thread-only
+                // collections without making module startup freeze behind another process's lease.
+                await _workspaceContext.OpenAsync(moduleRoot);
             }
             catch (Exception ex)
             {
@@ -952,15 +1042,10 @@ namespace SWLOR.Toolset.Shell
 
             try
             {
-                // Publish on the UI thread, matching InitializeAsync above: Open synchronously raises
-                // WorkspaceOpened, and EditorService's handler clears _choiceSets (a plain Dictionary,
-                // not concurrent-safe) on whatever thread invokes it. The old Task.Run here ran Open -
-                // and therefore that publish - on a worker thread while the UI thread could be
-                // concurrently opening an editor and reading/populating the same dictionary. Open is
-                // cheap enough for the UI thread: ModuleWorkspace only does lazy/directory-listing
-                // enumeration, and BlueprintCatalog's actual (slow) build already runs on its own
-                // Task.Run-backed BuildTask regardless of which thread constructs it.
-                await Dispatcher.UIThread.InvokeAsync(() => _workspaceContext.Open(moduleRoot));
+                // Recovery and lease waits run on OpenAsync's worker. The continuation resumes on
+                // this Avalonia context before WorkspaceOpened is raised, matching startup and
+                // preserving EditorService's UI-thread-only subscriber state.
+                await _workspaceContext.OpenAsync(moduleRoot);
             }
             catch (Exception ex)
             {

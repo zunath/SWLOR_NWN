@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using Dock.Model.Mvvm.Controls;
 using SWLOR.Toolset.Domain.Editors;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Schemas;
@@ -98,6 +99,7 @@ namespace SWLOR.Toolset.Editors
         private readonly Dictionary<string, BlueprintEditorViewModel> _openEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, AreaEditorViewModel> _openAreaEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly HashSet<string> _openingAreaEditors = new(StringComparer.OrdinalIgnoreCase);
+        private readonly HashSet<string> _cancelledAreaEditorLoads = new(StringComparer.OrdinalIgnoreCase);
         private readonly AreaInstanceClipboard _areaInstanceClipboard = new();
         private readonly Dictionary<string, ObjectPlacement> _pendingAreaReveals =
             new(StringComparer.OrdinalIgnoreCase);
@@ -176,6 +178,13 @@ namespace SWLOR.Toolset.Editors
         private Services.SoundPreviewService? _soundPreviews;
         private readonly Workspace.ModuleCustomContentService? _moduleCustomContent;
         private Module.ModulePropertiesDocumentViewModel? _moduleProperties;
+
+        /// <summary>
+        /// Whether module.ifo.json is currently owned by the Module Properties editor. Area deletion
+        /// must not rewrite that file underneath the document because a later save could restore the
+        /// deleted area's registration.
+        /// </summary>
+        public bool IsModulePropertiesOpen => _moduleProperties != null;
 
         // Keyed by path like the blueprint map rather than by resref like the area map: a script is
         // one file, so the path is its identity and there is no are/git/gic triplet to name.
@@ -470,6 +479,9 @@ namespace SWLOR.Toolset.Editors
         /// <summary>Opens Module Properties as the single document tab for module.ifo.</summary>
         public void OpenModuleProperties(Module.ModulePropertiesActions? actions = null)
         {
+            if (IsResourceOpeningBlocked("Module Properties"))
+                return;
+
             var workspace = _workspaceContext.Workspace;
             if (workspace == null)
             {
@@ -509,6 +521,7 @@ namespace SWLOR.Toolset.Editors
             }
             catch (Exception ex)
             {
+                _moduleProperties = null;
                 _log.AppendLine($"Failed to open Module Properties: {ex.Message}");
             }
         }
@@ -736,6 +749,11 @@ namespace SWLOR.Toolset.Editors
         /// <summary>Opens a NWScript source file as a text editor tab, or activates its open tab.</summary>
         private void OpenScriptEditor(ModuleWorkspace workspace, string resRef)
         {
+            // Include navigation calls this method directly after a script tab is already open, so
+            // the public TryOpenEditor gate alone would leave that route able to race a deletion.
+            if (IsResourceOpeningBlocked(resRef))
+                return;
+
             var filePath = workspace.GetResourcePath(ResourceType.Nss, resRef);
             if (!File.Exists(filePath))
             {
@@ -816,6 +834,9 @@ namespace SWLOR.Toolset.Editors
 
         public void TryOpenEditor(ResourceType type, string resRef)
         {
+            if (IsResourceOpeningBlocked(resRef))
+                return;
+
             var workspace = _workspaceContext.Workspace;
             if (workspace == null)
                 return;
@@ -984,6 +1005,16 @@ namespace SWLOR.Toolset.Editors
             {
                 _log.AppendLine($"Failed to open editor for {resRef}: {ex.Message}");
             }
+        }
+
+        private bool IsResourceOpeningBlocked(string resRef)
+        {
+            if (_mutationLock?.IsResourceDeletionActive != true)
+                return false;
+
+            _log.AppendLine(
+                $"Could not open '{resRef}': a module resource deletion is in progress.");
+            return true;
         }
 
         /// <summary>
@@ -1168,6 +1199,9 @@ namespace SWLOR.Toolset.Editors
 
         private void GoToObjectPlacement(ObjectPlacement placement)
         {
+            if (IsResourceOpeningBlocked(placement.AreaResRef))
+                return;
+
             var workspace = _workspaceContext.Workspace;
             if (workspace == null)
             {
@@ -1354,14 +1388,15 @@ namespace SWLOR.Toolset.Editors
         public bool IsOpen(ResourceType type, string resRef)
         {
             if (type == ResourceType.Area)
-                return _openAreaEditors.ContainsKey(resRef);
+                return _openAreaEditors.ContainsKey(resRef) || _openingAreaEditors.Contains(resRef);
 
             var workspace = _workspaceContext.Workspace;
             if (workspace == null)
                 return false;
 
             var path = workspace.GetResourcePath(type, resRef);
-            return _openEditors.ContainsKey(path)
+            return _openScriptEditors.ContainsKey(path)
+                   || _openEditors.ContainsKey(path)
                    || _openTriggerEditors.ContainsKey(path)
                    || _openWaypointEditors.ContainsKey(path)
                    || _openDoorEditors.ContainsKey(path)
@@ -1371,8 +1406,92 @@ namespace SWLOR.Toolset.Editors
                    || _openMerchantEditors.ContainsKey(path)
                    || _openConversations.ContainsKey(path)
                    || (type == ResourceType.Dlg &&
-                       _openNuiConversations.Values.Any(editor =>
-                           editor.ResRef.Equals(resRef, StringComparison.OrdinalIgnoreCase)));
+                        _openNuiConversations.Values.Any(editor =>
+                            editor.ResRef.Equals(resRef, StringComparison.OrdinalIgnoreCase)));
+        }
+
+        /// <summary>
+        /// Closes the editor that owns a resource immediately after that resource is deleted.
+        /// </summary>
+        /// <remarks>
+        /// The caller must already have received explicit destructive confirmation. That confirmation
+        /// covers the resource and any unsaved buffer held by its editor, so these closes deliberately
+        /// bypass the ordinary save/discard prompt. The caller keeps the shared deletion reservation
+        /// until this closes every document session, preventing a later save from recreating the
+        /// deleted files. An area still loading has no live document to save; it is tombstoned so
+        /// that the completed parse cannot publish after the deletion reservation is released.
+        /// </remarks>
+        internal bool TryCloseResourceForDeletion(ResourceType type, string resRef)
+        {
+            var documents = OpenResourceDocuments(type, resRef);
+            if (documents.Count == 0)
+            {
+                if (type == ResourceType.Area && _openingAreaEditors.Contains(resRef))
+                {
+                    _cancelledAreaEditorLoads.Add(resRef);
+                    return true;
+                }
+
+                return !IsOpen(type, resRef);
+            }
+
+            foreach (var document in documents)
+            {
+                switch (document)
+                {
+                    case AreaEditorViewModel area:
+                        area.ApproveApplicationClose();
+                        break;
+                    case ScriptEditorViewModel script:
+                        script.ApproveApplicationClose();
+                        break;
+                    case ConversationEditorViewModel conversation:
+                        conversation.ApproveApplicationClose();
+                        break;
+                    case NuiConversationEditorViewModel graph:
+                        graph.ApproveApplicationClose();
+                        break;
+                    default:
+                        return false;
+                }
+
+                _factory.CloseDocument(document);
+            }
+
+            return !IsOpen(type, resRef);
+        }
+
+        private IReadOnlyList<Document> OpenResourceDocuments(ResourceType type, string resRef)
+        {
+            if (type == ResourceType.Area)
+            {
+                return _openAreaEditors.TryGetValue(resRef, out var area)
+                    ? new Document[] { area }
+                    : Array.Empty<Document>();
+            }
+
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return Array.Empty<Document>();
+
+            if (type == ResourceType.Nss)
+            {
+                var path = workspace.GetResourcePath(type, resRef);
+                return _openScriptEditors.TryGetValue(path, out var script)
+                    ? new Document[] { script }
+                    : Array.Empty<Document>();
+            }
+
+            if (type != ResourceType.Dlg)
+                return Array.Empty<Document>();
+
+            var documents = new List<Document>();
+            var legacyPath = workspace.GetResourcePath(type, resRef);
+            if (_openConversations.TryGetValue(legacyPath, out var conversation))
+                documents.Add(conversation);
+            documents.AddRange(_openNuiConversations.Values.Where(editor =>
+                editor.ResRef.Equals(resRef, StringComparison.OrdinalIgnoreCase)));
+            return documents;
         }
 
         /// <summary>
@@ -3368,83 +3487,112 @@ namespace SWLOR.Toolset.Editors
 
             try
             {
-                var arePath = workspace.GetResourcePath(ResourceType.Area, resRef);
-                var gitPath = Path.Combine(workspace.ModuleRoot, "git", resRef + ".git.json");
-                var gicPath = Path.Combine(workspace.ModuleRoot, "gic", resRef + ".gic.json");
-                if (!File.Exists(arePath) || !File.Exists(gitPath) || !File.Exists(gicPath))
+                while (true)
                 {
-                    _log.AppendLine($"Area files not found for '{resRef}' (.are/.git/.gic set required).");
-                    return;
-                }
+                    var arePath = workspace.GetResourcePath(ResourceType.Area, resRef);
+                    var gitPath = Path.Combine(workspace.ModuleRoot, "git", resRef + ".git.json");
+                    var gicPath = Path.Combine(workspace.ModuleRoot, "gic", resRef + ".gic.json");
+                    if (!File.Exists(arePath) || !File.Exists(gitPath) || !File.Exists(gicPath))
+                    {
+                        _log.AppendLine($"Area files not found for '{resRef}' (.are/.git/.gic set required).");
+                        return;
+                    }
 
-                // Both cold operations start together: the module-wide waypoint scan and this
-                // area's file read/JSON parse. Neither owns Avalonia's UI thread, so a large area can
-                // load while the builder keeps working in another document.
-                var transitionTagsTask = GetCurrentTransitionDestinationTagsAsync(workspace);
-                var documentLoadTask = Task.Run(() =>
-                    _areaDocumentsLoader(arePath, gitPath, gicPath));
-                await Task.WhenAll(transitionTagsTask, documentLoadTask).ConfigureAwait(true);
-                var transitionDestinationTags = await transitionTagsTask.ConfigureAwait(true);
-                var loadedDocuments = await documentLoadTask.ConfigureAwait(true);
-                if (transitionDestinationTags == null ||
-                    !ReferenceEquals(workspace, _workspaceContext.Workspace))
-                    return;
+                    // Both cold operations start together: the module-wide waypoint scan and this
+                    // area's file read/JSON parse. Neither owns Avalonia's UI thread, so a large area can
+                    // load while the builder keeps working in another document.
+                    var transitionTagsTask = GetCurrentTransitionDestinationTagsAsync(workspace);
+                    var documentLoadTask = Task.Run(() =>
+                        _areaDocumentsLoader(arePath, gitPath, gicPath));
+                    await Task.WhenAll(transitionTagsTask, documentLoadTask).ConfigureAwait(true);
+                    var transitionDestinationTags = await transitionTagsTask.ConfigureAwait(true);
+                    var loadedDocuments = await documentLoadTask.ConfigureAwait(true);
+                    if (_cancelledAreaEditorLoads.Contains(resRef))
+                        return;
 
-                if (_openAreaEditors.TryGetValue(resRef, out existing))
-                {
-                    _factory.ActivateDocument(existing);
-                    DispatchPendingAreaReveal(existing);
-                    return;
-                }
+                    var currentWorkspace = _workspaceContext.Workspace;
+                    if (transitionDestinationTags == null ||
+                        !ReferenceEquals(workspace, currentWorkspace))
+                    {
+                        // A file-watcher overflow reopens the same module to rebuild its catalog. If
+                        // that replacement lands while a newly generated area is loading, retry with
+                        // the current workspace instead of silently dropping the automatic open. A
+                        // genuinely different module still cancels the stale request.
+                        if (currentWorkspace == null || !string.Equals(
+                                workspace.ModuleRoot,
+                                currentWorkspace.ModuleRoot,
+                                StringComparison.OrdinalIgnoreCase))
+                        {
+                            return;
+                        }
 
-                var editor = new AreaEditorViewModel(
-                    resRef, workspace, _lookups, _gameCodeIndex, _log,
-                    _tilesetCatalog, _tileModelCache, _resourceIndex,
-                    _placeableAppearances, _doorTypes, _tileWalkmeshCache, _prompts,
-                    ResolveBlueprintName, TryOpenEditor,
-                    _tlkService != null ? _tlkService.GetString : null, _waypointAppearances,
-                    _previewRenderer != null
-                        ? (type, blueprintResRef, useIndexed) =>
-                            _previewRenderer.BuildModelResult(type, blueprintResRef, useIndexed)
-                        : null,
-                    CreateScriptSlotHost($"Area '{resRef}'"),
-                    _previewRenderer != null
-                        ? instance => _previewRenderer.BuildModel(ResourceType.Utc, instance)
-                        : null,
-                    new Doors.DoorEditorServices(
-                        resRef,
-                        ResolveDoorTag,
-                        ResolveDoorChoices,
-                        DoorAppearances(),
-                        _resourceIndex,
+                        workspace = currentWorkspace;
+                        continue;
+                    }
+
+                    if (_openAreaEditors.TryGetValue(resRef, out existing))
+                    {
+                        _factory.ActivateDocument(existing);
+                        DispatchPendingAreaReveal(existing);
+                        return;
+                    }
+
+                    // The load started before deletion was reserved and may have completed while the
+                    // delete command was waiting on its filesystem transaction. Do not publish a
+                    // document backed by files that are now being removed.
+                    if (_cancelledAreaEditorLoads.Contains(resRef) || IsResourceOpeningBlocked(resRef))
+                        return;
+
+                    var editor = new AreaEditorViewModel(
+                        resRef, workspace, _lookups, _gameCodeIndex, _log,
+                        _tilesetCatalog, _tileModelCache, _resourceIndex,
+                        _placeableAppearances, _doorTypes, _tileWalkmeshCache, _prompts,
+                        ResolveBlueprintName, TryOpenEditor,
+                        _tlkService != null ? _tlkService.GetString : null, _waypointAppearances,
                         _previewRenderer != null
-                            ? door => _previewRenderer.BuildModelResult(ResourceType.Utd, door)
+                            ? (type, blueprintResRef, useIndexed) =>
+                                _previewRenderer.BuildModelResult(type, blueprintResRef, useIndexed)
                             : null,
-                        _thumbnails,
-                        ChoicePreviews()),
-                    new Waypoints.WaypointEditorServices(
-                        resRef,
-                        new Domain.Editors.Waypoints.WaypointBehaviorCatalog(
-                            _gameCodeIndex,
-                            transitionDestinationTags),
-                        ResolveWaypointChoices,
-                        ChoicePreviews()),
-                    ResolveSoundChoices,
-                    SoundResources(),
-                    SoundPreviews(),
-                    loadedDocuments,
-                    TryEditCopyAndOpenBlueprint,
-                    _mutationLock,
-                    _areaInstanceClipboard);
-                editor.Closed += _ => _openAreaEditors.Remove(resRef);
-                editor.TilesetChanged += () => _factory.NotifyActiveAreaChanged();
-                editor.CloseRequested += _ => _factory.CloseDocument(editor);
-                editor.CatalogEntryChanged += () =>
-                    _workspaceContext.RefreshCatalogEntry(ResourceType.Area, resRef);
-                editor.PlacementsChanged += _workspaceContext.InvalidateGitIndexes;
-                _openAreaEditors[resRef] = editor;
-                _factory.OpenDocument(editor);
-                DispatchPendingAreaReveal(editor);
+                        CreateScriptSlotHost($"Area '{resRef}'"),
+                        _previewRenderer != null
+                            ? instance => _previewRenderer.BuildModel(ResourceType.Utc, instance)
+                            : null,
+                        new Doors.DoorEditorServices(
+                            resRef,
+                            ResolveDoorTag,
+                            ResolveDoorChoices,
+                            DoorAppearances(),
+                            _resourceIndex,
+                            _previewRenderer != null
+                                ? door => _previewRenderer.BuildModelResult(ResourceType.Utd, door)
+                                : null,
+                            _thumbnails,
+                            ChoicePreviews()),
+                        new Waypoints.WaypointEditorServices(
+                            resRef,
+                            new Domain.Editors.Waypoints.WaypointBehaviorCatalog(
+                                _gameCodeIndex,
+                                transitionDestinationTags),
+                            ResolveWaypointChoices,
+                            ChoicePreviews()),
+                        ResolveSoundChoices,
+                        SoundResources(),
+                        SoundPreviews(),
+                        loadedDocuments,
+                        TryEditCopyAndOpenBlueprint,
+                        _mutationLock,
+                        _areaInstanceClipboard);
+                    editor.Closed += _ => _openAreaEditors.Remove(resRef);
+                    editor.TilesetChanged += () => _factory.NotifyActiveAreaChanged();
+                    editor.CloseRequested += _ => _factory.CloseDocument(editor);
+                    editor.CatalogEntryChanged += () =>
+                        _workspaceContext.RefreshCatalogEntry(ResourceType.Area, resRef);
+                    editor.PlacementsChanged += _workspaceContext.InvalidateGitIndexes;
+                    _openAreaEditors[resRef] = editor;
+                    _factory.OpenDocument(editor);
+                    DispatchPendingAreaReveal(editor);
+                    return;
+                }
             }
             catch (Exception ex)
             {
@@ -3453,6 +3601,7 @@ namespace SWLOR.Toolset.Editors
             finally
             {
                 _openingAreaEditors.Remove(resRef);
+                _cancelledAreaEditorLoads.Remove(resRef);
                 if (!_openAreaEditors.ContainsKey(resRef))
                     _pendingAreaReveals.Remove(resRef);
             }

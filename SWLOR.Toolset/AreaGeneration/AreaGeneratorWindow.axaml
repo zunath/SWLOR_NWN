@@ -120,9 +120,16 @@
                                  Value="{Binding Height, Mode=TwoWay}"
                                  Minimum="{Binding MinimumDimension}" Maximum="32" Increment="1" FormatString="0" />
                   <TextBlock Grid.Row="2" Grid.Column="0" Classes="label" Text="Seed" />
-                  <NumericUpDown Grid.Row="2" Grid.Column="1"
-                                 Value="{Binding Seed, Mode=TwoWay}"
-                                 Minimum="0" Maximum="2147482647" Increment="1" FormatString="0" />
+                  <Grid Grid.Row="2" Grid.Column="1" ColumnDefinitions="*,Auto" ColumnSpacing="8">
+                    <NumericUpDown x:Name="SeedInput"
+                                   Value="{Binding Seed, Mode=TwoWay}"
+                                   Minimum="0" Maximum="2147482647" Increment="1" FormatString="0"
+                                   ShowButtonSpinner="False" />
+                    <Button x:Name="RandomizeSeedButton" Grid.Column="1"
+                            Content="Randomize"
+                            Command="{Binding RandomizeSeedCommand}"
+                            ToolTip.Tip="Choose a new random seed" />
+                  </Grid>
                   <TextBlock Grid.Row="3" Grid.Column="0" Classes="label" Text="ResRef" />
                   <StackPanel Grid.Row="3" Grid.Column="1" Spacing="4">
                     <TextBox x:Name="ResRefInput"

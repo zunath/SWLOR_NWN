@@ -106,6 +106,7 @@ public sealed class AreaGeneratorWindowRenderTests
 
             var width = window.FindControl<NumericUpDown>("WidthInput")!;
             var height = window.FindControl<NumericUpDown>("HeightInput")!;
+            var seed = window.FindControl<NumericUpDown>("SeedInput")!;
             var resref = window.FindControl<TextBox>("ResRefInput")!;
             var displayName = window.FindControl<TextBox>("DisplayNameInput")!;
 
@@ -114,6 +115,7 @@ public sealed class AreaGeneratorWindowRenderTests
                     "each Area editor needs enough room for its value rather than only spinner buttons");
             width.GetVisualDescendants().OfType<TextBox>().Single().Bounds.Width.Should().BeGreaterThan(100);
             height.GetVisualDescendants().OfType<TextBox>().Single().Bounds.Width.Should().BeGreaterThan(100);
+            seed.GetVisualDescendants().OfType<TextBox>().Single().Bounds.Width.Should().BeGreaterThan(70);
         }
         finally
         {
@@ -181,6 +183,36 @@ public sealed class AreaGeneratorWindowRenderTests
                     pane.Bounds.Width + 0.5,
                     $"{control.Name} must remain inside the preview pane at the minimum window width");
             }
+        }
+        finally
+        {
+            window.Close();
+            Dispatcher.UIThread.RunJobs();
+        }
+    }
+
+    [AvaloniaTest]
+    public void SeedUsesRandomizeButtonInsteadOfSpinnerArrows()
+    {
+        using var viewModel = CreateViewModel();
+        var window = new AreaGeneratorWindow(viewModel);
+
+        try
+        {
+            window.Show();
+            Dispatcher.UIThread.RunJobs();
+
+            var seedInput = window.FindControl<NumericUpDown>("SeedInput")!;
+            var randomize = window.FindControl<Button>("RandomizeSeedButton")!;
+            seedInput.ShowButtonSpinner.Should().BeFalse();
+            randomize.Content.Should().Be("Randomize");
+            randomize.Command.Should().BeSameAs(viewModel.RandomizeSeedCommand);
+
+            var previousSeed = viewModel.Seed;
+            randomize.Command!.Execute(randomize.CommandParameter);
+
+            viewModel.Seed.Should().NotBe(previousSeed);
+            viewModel.Seed.Should().BeInRange(0, AreaSettingsBounds.MaxSeed);
         }
         finally
         {

@@ -546,20 +546,31 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
 
     private void RandomizeInitialSeed()
     {
-        var seed = Random.Shared.Next(AreaSettingsBounds.MaxSeed + 1);
-        if (seed == Seed)
-            seed = seed == AreaSettingsBounds.MaxSeed ? 0 : seed + 1;
-
         var wasLoadingDefaults = _loadingDefaults;
         _loadingDefaults = true;
         try
         {
-            Seed = seed;
+            Seed = NextRandomSeed();
         }
         finally
         {
             _loadingDefaults = wasLoadingDefaults;
         }
+    }
+
+    [RelayCommand]
+    private void RandomizeSeed()
+    {
+        Seed = NextRandomSeed();
+    }
+
+    private int NextRandomSeed()
+    {
+        var seed = Random.Shared.Next(AreaSettingsBounds.MaxSeed + 1);
+        if (seed == Seed)
+            seed = seed == AreaSettingsBounds.MaxSeed ? 0 : seed + 1;
+
+        return seed;
     }
 
     private void InvalidateAndRequestPreview(string status)

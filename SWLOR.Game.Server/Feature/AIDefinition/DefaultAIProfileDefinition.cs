@@ -77,7 +77,10 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
                 .DecisionThrottle(0.25f)
                 .MaxCandidateActions(MaxKnownActionCandidates());
 
-            AddRegisteredAbilities();
+            // Guarded Bite has a real ability recast, but companion decisions can be
+            // triggered repeatedly while that activation is still settling. Keep the
+            // beast AI from repeatedly selecting the same bite and draining STM.
+            AddRegisteredAbilities(applyGuardedBiteInternalCooldown: true);
 
             _builder
                 .AttackHighestEnmity()
@@ -85,7 +88,7 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
                 .Priority(999);
         }
 
-        private void AddRegisteredAbilities()
+        private void AddRegisteredAbilities(bool applyGuardedBiteInternalCooldown = false)
         {
             var priority = 100;
 
@@ -96,9 +99,17 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
                 if (ability.AITargetSelector != null)
                     _builder.Target(ability.AITargetSelector);
 
-                _builder
+                var action = _builder
                     .Score(ability.AIScore ?? AIScore.Ability(ability))
                     .Priority(priority);
+
+                if (applyGuardedBiteInternalCooldown &&
+                    ability.RecastGroup == RecastGroup.GuardedBite)
+                {
+                    action.Cooldown(
+                        nameof(RecastGroup.GuardedBite),
+                        ability.RecastDelay?.Invoke(0) ?? 0f);
+                }
 
                 priority++;
             }

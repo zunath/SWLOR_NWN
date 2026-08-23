@@ -3,6 +3,7 @@ using NUnit.Framework;
 using System.Text.RegularExpressions;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Katar;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Pistol;
+using SWLOR.Game.Server.Feature.AbilityDefinition.Rifle;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Spear;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Throwing;
@@ -238,6 +239,47 @@ public class GeneratedWeaponPerkBehaviorTests
 
         combat.Should().Contain("StatType.PhysicalDamageDealtHPPercentRestore");
         combat.Should().Contain("ApplyDamageDerivedHealing(attacker, damage, hpRestorePercent)");
+    }
+
+    [Test]
+    public void RifleReportedFailures_GenerateConditionalHeadshotAndPlacedKillBoxBehavior()
+    {
+        var root = FindRepositoryRoot();
+        var headshotSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "Rifle",
+            "HeadshotAbilityDefinition.cs"));
+        (headshotSource.Split("IsQueuedWeaponAbility = true").Length - 1).Should().Be(2);
+        (headshotSource.Split("IdleWindowSeconds = 3.0f").Length - 1).Should().Be(2);
+        headshotSource.Should().Contain("CriticalRateIfIdle = 15");
+        headshotSource.Should().Contain("CriticalRateIfIdle = 25");
+        headshotSource.Should().NotContain("CriticalRatePercentAdjustment =");
+        headshotSource.Should().NotContain("SelfCriticalRatePercent =");
+
+        var headshotAbilities = new HeadshotAbilityDefinition().BuildAbilities();
+        headshotAbilities[FeatType.Headshot1].ActivationType.Should().Be(AbilityActivationType.Weapon);
+        headshotAbilities[FeatType.Headshot2].ActivationType.Should().Be(AbilityActivationType.Weapon);
+
+        var killBox = new KillBoxAbilityDefinition().BuildAbilities()[FeatType.KillBox1];
+        killBox.RequiresTarget.Should().BeFalse();
+        killBox.Targeting.Should().NotBeNull();
+        killBox.Targeting!.Shape.Should().Be(AbilityTargetingShapeType.Sphere);
+        killBox.Targeting.SizeX.Should().Be(8f);
+        killBox.Targeting.Flags.Should().HaveFlag(AbilityTargetingFlags.HarmsEnemies);
+        killBox.Targeting.Flags.Should().NotHaveFlag(AbilityTargetingFlags.OriginOnSelf);
+
+        var combatSource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        combatSource.Should().Contain("QueuedWeaponAbilityActivationCriticalRatePercentAdjustment");
+        combatSource.Should().Contain("criticalRate += TemporaryStatModifier.Consume(");
+
+        var usePerkFeatSource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs"));
+        usePerkFeatSource.Should().Contain("ability.ActivationAction.Invoke(");
+        usePerkFeatSource.Should().Contain("ClearQueuedWeaponAbilityActivationCriticalRateBonus");
     }
 
     [Test]
@@ -627,8 +669,9 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("RiflePerkDefinition.cs", StatType.AutoAttackSuppressionStackDurationSeconds, "30");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.AutoAttackSuppressionStackEvasionPenaltyPercent, "5");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.RangedHitSuppressionStackEvasionPenaltyPercent, "5");
-        AssertSourceStat("RiflePerkDefinition.cs", StatType.AbilityHitChanceAgainstSuppressionStackPercentAdjustment, "10");
-        AssertSourceStat("RiflePerkDefinition.cs", StatType.DefenseIgnoreHitPhysicalDefensePercentAdjustment, "-10");
+        AssertSourceStat("RiflePerkDefinition.cs", StatType.RangedAttackAccuracyAgainstSuppressionStackPercentAdjustment, "10");
+        AssertSourceStat("RiflePerkDefinition.cs", StatType.RangedAbilityTargetDefenseReductionPercent, "10");
+        AssertSourceStat("RiflePerkDefinition.cs", StatType.RangedAbilityTargetDefenseReductionDurationSeconds, "30");
 
         AssertSourceStat("ThrowingPerkDefinition.cs", StatType.ThrowingBombardierClusterStormDamageBonus, "10");
         AssertSourceStat("ThrowingPerkDefinition.cs", StatType.ThrowingBombardierClusterStormMaximumTargets, "1");
@@ -833,20 +876,20 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertStatusStat(infiniteConduit, StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent, 70);
         AssertStatusStat(infiniteConduit, StatType.HighFPAndStaminaAbilityDamageBonus, 20);
 
-        var restoredFPForceAttack = new RestoredFPForceAttackStatusEffect(8);
+        var restoredFPForceAttack = new ForceLensForceAttackStatusEffect(8);
         AssertStatusStat(restoredFPForceAttack, StatType.ForceAttackPercentAdjustment, 8);
         restoredFPForceAttack.Name.Should().Be("Force Lens: Force Attack");
-        restoredFPForceAttack.Icon.Should().Be(EffectIconType.RestoredFPForceAttackStatusEffect);
+        restoredFPForceAttack.Icon.Should().Be(EffectIconType.ForceLensForceAttackStatusEffect);
 
-        var restoredStaminaAttack = new RestoredStaminaAttackStatusEffect(8);
+        var restoredStaminaAttack = new ForceLensAttackStatusEffect(8);
         AssertStatusStat(restoredStaminaAttack, StatType.AttackPercentAdjustment, 8);
         restoredStaminaAttack.Name.Should().Be("Force Lens: Attack");
-        restoredStaminaAttack.Icon.Should().Be(EffectIconType.RestoredStaminaAttackStatusEffect);
+        restoredStaminaAttack.Icon.Should().Be(EffectIconType.ForceLensAttackStatusEffect);
 
-        var restoredFPHaste = new RestoredFPHasteStatusEffect(10);
+        var restoredFPHaste = new EnergizedFormsHasteStatusEffect(10);
         AssertStatusStat(restoredFPHaste, StatType.AttackDelayReductionPercent, 10);
         restoredFPHaste.Name.Should().Be("Energized Forms: Haste");
-        restoredFPHaste.Icon.Should().Be(EffectIconType.RestoredFPHasteStatusEffect);
+        restoredFPHaste.Icon.Should().Be(EffectIconType.EnergizedFormsHasteStatusEffect);
 
         var hostileAbilityForceAttack = new HostileAbilityForceAttackStatusEffect(15);
         AssertStatusStat(hostileAbilityForceAttack, StatType.ForceAttackPercentAdjustment, 15);
@@ -1205,9 +1248,9 @@ public class GeneratedWeaponPerkBehaviorTests
         combatSource.Should().Contain("StatType.HighFPAndStaminaAbilityDamagePercentAdjustmentThresholdPercent");
         combatSource.Should().Contain("StatType.HighFPAndStaminaAbilityDamagePercentAdjustment");
         combatSource.Should().Contain("new HostileAbilityForceAttackStatusEffect(total)");
-        combatSource.Should().Contain("new RestoredFPHasteStatusEffect(haste)");
-        combatSource.Should().Contain("new RestoredFPForceAttackStatusEffect(forceAttack)");
-        combatSource.Should().Contain("new RestoredStaminaAttackStatusEffect(attack)");
+        combatSource.Should().Contain("new EnergizedFormsHasteStatusEffect(haste)");
+        combatSource.Should().Contain("new ForceLensForceAttackStatusEffect(forceAttack)");
+        combatSource.Should().Contain("new ForceLensAttackStatusEffect(attack)");
         combatSource.Should().NotContain("SaberstaffConduitForceLens",
             "shared resource restoration must remain stat-driven rather than checking a specific perk identity");
         generatorSource.Should().Contain(
@@ -1232,7 +1275,7 @@ public class GeneratedWeaponPerkBehaviorTests
         combatSource.Should().Contain("SuppressionStackEvasionPenaltyPercentAdjustment");
         combatSource.Should().Contain("if (adjustedEvasionPenaltyPercent <= 0)");
         combatSource.Should().Contain("TrackSuppressionAbilityUse(activator, now)");
-        combatSource.Should().Contain("GetSuppressionAbilityHitChanceAdjustment(attacker, defender, skillType)");
+        combatSource.Should().Contain("GetSuppressionRangedAttackAccuracyAdjustment(attacker, defender, skillType)");
         combatSource.Should().Contain("!IsRangedWeaponSkill(skillType)");
         combatSource.Should().Contain("_pendingSuppressionAbilityUses.TryGetValue(key, out var state)");
         combatSource.Should().Contain("state.Expiration <= DateTime.UtcNow");

@@ -4261,22 +4261,23 @@ namespace SWLOR.Game.Server.Service.StatService
         CriticalDamageHighHPTargetPercentAdjustment = 741,
 
         /// <summary>
-        /// Ability hit chance adjustment against source-suppressed targets after they use a combat ability.
+        /// Accuracy adjustment for the next ranged attack against a source-suppressed target after
+        /// it uses a combat ability.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        AbilityHitChanceAgainstSuppressionStackPercentAdjustment = 742,
+        RangedAttackAccuracyAgainstSuppressionStackPercentAdjustment = 742,
 
         /// <summary>
-        /// Source-owned Suppression stack count required before a target's damage to other targets is adjusted.
+        /// Source-owned Suppression stack count required before the target's outgoing Damage Dealt is adjusted.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        SuppressionStackDamageDealtToOtherTargetsRequiredStacks = 743,
+        SuppressionStackDamageDealtRequiredStacks = 743,
 
         /// <summary>
-        /// Damage percent adjustment for suppressed targets attacking someone other than the Suppression source.
+        /// Damage Dealt percent adjustment applied to a source-suppressed target's outgoing damage.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenNegative)]
-        SuppressionStackDamageDealtToOtherTargetsPercentAdjustment = 744,
+        SuppressionStackDamageDealtPercentAdjustment = 744,
 
         /// <summary>
         /// Physical Defense percent applied when an ability with defense ignore hits.
@@ -5928,6 +5929,40 @@ namespace SWLOR.Game.Server.Service.StatService
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         QueuedWeaponAbilityCriticalRatePercentAdjustment = 1025,
+
+        /// <summary>Minimum target range for ranged ability long-range bonuses.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        RangedAbilityLongRangeMinimumRangeMeters = 1026,
+
+        /// <summary>Accuracy adjustment for ranged abilities at or beyond the long-range threshold.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RangedAbilityLongRangeHitChancePercentAdjustment = 1027,
+
+        /// <summary>Critical Rate adjustment for ranged abilities at or beyond the long-range threshold.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RangedAbilityLongRangeCriticalRatePercentAdjustment = 1028,
+
+        /// <summary>Defense reduction applied to targets hit by hostile ranged abilities.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RangedAbilityTargetDefenseReductionPercent = 1029,
+
+        /// <summary>Duration of RangedAbilityTargetDefenseReductionPercent.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RangedAbilityTargetDefenseReductionDurationSeconds = 1030,
+
+        /// <summary>
+        /// Skill selector for a conditional Critical Rate bonus captured when a queued weapon
+        /// ability is activated.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        QueuedWeaponAbilityActivationCriticalRateSkillType = 1031,
+
+        /// <summary>
+        /// Conditional Critical Rate captured when a queued weapon ability is activated and held
+        /// until that queue resolves or expires.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        QueuedWeaponAbilityActivationCriticalRatePercentAdjustment = 1032,
 
     }
 

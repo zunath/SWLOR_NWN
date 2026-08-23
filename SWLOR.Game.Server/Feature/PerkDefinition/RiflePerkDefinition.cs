@@ -203,7 +203,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.OverwatchTrait)
                 .Description("When an enemy with Suppression stacks uses an ability, your next ranged attack against it gains +10% Accuracy.")
-                .IncreasesStat(StatType.AbilityHitChanceAgainstSuppressionStackPercentAdjustment, 10)
+                .IncreasesStat(StatType.RangedAttackAccuracyAgainstSuppressionStackPercentAdjustment, 10)
                 .Price(4)
                 .RequirementSkill(SkillType.Rifle, 25);
         }
@@ -215,9 +215,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ContainmentNetTrait)
-                .Description("Targets with 3 Suppression stacks deal -10% damage to allies other than you.")
-                .IncreasesStat(StatType.SuppressionStackDamageDealtToOtherTargetsRequiredStacks, 3)
-                .IncreasesStat(StatType.SuppressionStackDamageDealtToOtherTargetsPercentAdjustment, -10)
+                .Description("Targets with 3 or more Suppression stacks have -10% Damage Dealt while those stacks remain.")
+                .IncreasesStat(StatType.SuppressionStackDamageDealtRequiredStacks, 3)
+                .IncreasesStat(StatType.SuppressionStackDamageDealtPercentAdjustment, -10)
                 .Price(2)
                 .RequirementSkill(SkillType.Rifle, 35);
         }
@@ -229,7 +229,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.KillBox1)
-                .Description("Deals weapon DMG + 20 to enemies within 5m. For 45 seconds, ranged hits add Suppression stacks lasting 30 seconds using your Suppressing Shot stack strength, and each Suppression stack reduces Evasion by an additional 3%.")
+                .Description("Target an enemy or location to deal weapon DMG + 20 to enemies within 8m and apply Kill Box for 45 seconds. While Kill Box remains, any player's ranged attacks against affected enemies add Suppression stacks lasting 30 seconds using the Kill Box caster's Suppressing Shot stack strength; each stack reduces Evasion by an additional 3%.")
                 .Price(6)
                 .RequirementSkill(SkillType.Rifle, 50)
                 .RequirementQuest(RifleCapstoneQuestDefinition.KillBoxMasteryQuestId);
@@ -345,11 +345,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ScopeCalibrationTrait)
-                .Description("Long-range hostile ranged abilities gain +10% Accuracy and +8% Critical Rate.")
-                .IncreasesStat(StatType.AbilityHitChancePercentAdjustmentSkillType, (int)SkillType.Rifle)
-                .IncreasesStat(StatType.AbilityHitChancePercentAdjustment, 10)
-                .IncreasesStat(StatType.AbilityCriticalRatePercentAdjustmentSkillType, (int)SkillType.Rifle)
-                .IncreasesStat(StatType.AbilityCriticalRatePercentAdjustment, 8)
+                .Description("Ranged abilities gain +10% Accuracy and +8% Critical Rate against targets at least 10m away.")
+                .IncreasesStat(StatType.RangedAbilityLongRangeMinimumRangeMeters, 10)
+                .IncreasesStat(StatType.RangedAbilityLongRangeHitChancePercentAdjustment, 10)
+                .IncreasesStat(StatType.RangedAbilityLongRangeCriticalRatePercentAdjustment, 8)
                 .Price(4)
                 .RequirementSkill(SkillType.Rifle, 15);
         }
@@ -361,13 +360,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Headshot1)
-                .Description("Deals weapon DMG + 16. If used after 3 seconds without attacking, gains +15% Critical Rate.")
+                .Description("Queues your next auto-attack to deal weapon DMG + 16. If Headshot is used after 3 seconds without attacking, that attack gains +15% Critical Rate.")
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 18)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Headshot2)
-                .Description("Deals weapon DMG + 30. If used after 3 seconds without attacking, gains +25% Critical Rate.")
+                .Description("Queues your next auto-attack to deal weapon DMG + 30. If Headshot is used after 3 seconds without attacking, that attack gains +25% Critical Rate.")
                 .Price(3)
                 .RequirementSkill(SkillType.Rifle, 32);
         }
@@ -391,7 +390,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.DeadCenterTrait)
-                .Description("Critical hits after a 3-second aim window deal +15% damage.")
+                .Description("After 3 seconds without attacking, if your next attack is a critical hit, it deals +15% damage.")
                 .IncreasesStat(StatType.IdleSkillAbilitySkillType, (int)SkillType.Rifle)
                 .IncreasesStat(StatType.IdleSkillAbilityRequiredIdleSeconds, 3)
                 .IncreasesStat(StatType.IdleSkillAbilityCriticalDamagePercentAdjustment, 15)
@@ -406,9 +405,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.BreachRoundTrait)
-                .Description("Piercing effects you apply reduce Defense by 10% for 30 seconds.")
-                .IncreasesStat(StatType.DefenseIgnoreHitPhysicalDefensePercentAdjustment, -10)
-                .IncreasesStat(StatType.DefenseIgnoreHitPhysicalDefenseDurationSeconds, 30)
+                .Description("Hostile ranged attack abilities reduce the target's Defense by 10% for 30 seconds.")
+                .IncreasesStat(StatType.RangedAbilityTargetDefenseReductionPercent, 10)
+                .IncreasesStat(StatType.RangedAbilityTargetDefenseReductionDurationSeconds, 30)
                 .Price(2)
                 .RequirementSkill(SkillType.Rifle, 35);
         }

@@ -13,6 +13,62 @@ SPEC.loader.exec_module(GENERATOR)
 
 
 class GeneratedWeaponTargetingTests(unittest.TestCase):
+    def test_headshot_queues_and_only_grants_critical_rate_after_idle_window(self):
+        row = {
+            "Tab": "Rifle",
+            "PerkName": "Headshot I",
+            "Type": "Combat",
+            "CastingTime": "Instant",
+            "Description": (
+                "Queues your next auto-attack to deal weapon DMG + 16. "
+                "If Headshot is used after 3 seconds without attacking, "
+                "that attack gains +15% Critical Rate."
+            ),
+        }
+
+        properties = dict(GENERATOR.profile_property_lines(row, 1, None))
+
+        self.assertEqual("true", properties["IsQueuedWeaponAbility"])
+        self.assertEqual("3.0f", properties["IdleWindowSeconds"])
+        self.assertEqual("15", properties["CriticalRateIfIdle"])
+        self.assertNotIn("CriticalRatePercentAdjustment", properties)
+        self.assertNotIn("SelfCriticalRatePercent", properties)
+
+    def test_kill_box_generates_placed_status_and_suppression_window(self):
+        row = {
+            "Tab": "Rifle",
+            "PerkName": "Kill Box",
+            "Type": "Capstone",
+            "CastingTime": "2 seconds",
+            "Description": (
+                "Target an enemy or location to deal weapon DMG + 20 to enemies within 8m "
+                "and apply Kill Box for 45 seconds. While Kill Box remains, any player's "
+                "ranged attacks against affected enemies add Suppression stacks lasting "
+                "30 seconds using the Kill Box caster's Suppressing Shot stack strength; "
+                "each stack reduces Evasion by an additional 3%."
+            ),
+        }
+
+        properties = dict(GENERATOR.profile_property_lines(row, 1, None))
+
+        self.assertEqual("() => new KillBoxStatusEffect()", properties["StatusEffectFactory"])
+        self.assertEqual("30", properties["TemporaryRangedHitSuppressionStackDurationSeconds"])
+        self.assertEqual(3, properties["TemporarySuppressionStackEvasionPenaltyPercentAdjustment"])
+        self.assertEqual("45", properties["TemporaryDefeatedEnemyEffectDurationSeconds"])
+
+    def test_kill_box_enemy_or_location_is_an_aimed_sphere(self):
+        row = {
+            "Tab": "Rifle",
+            "Description": "Target an enemy or location to deal weapon DMG + 20 to enemies within 8m.",
+        }
+
+        self.assertTrue(GENERATOR.is_aimed_area(row))
+        values, owns_targeting = GENERATOR.generated_targeting_update(row, False)
+        self.assertTrue(owns_targeting)
+        self.assertEqual("sphere", values["TargetShape"])
+        self.assertEqual("8", values["TargetSizeX"])
+        self.assertEqual("1", values["TargetFlags"])
+
     def test_point_blank_burst_applies_self_status_on_activation(self):
         properties = dict(GENERATOR.profile_property_lines(
             {

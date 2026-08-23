@@ -179,6 +179,13 @@ namespace SWLOR.Game.Server.Native
                 //---------------------------------------------------------------------------------------------
                 // Modifiers - put in modifiers here based on the type of attack (and type of weapon etc.).
                 var accuracyModifiers = 0;
+                // Overwatch is a next ranged attack trigger. Resolve it in the native
+                // auto-attack path as well as the casted-ability path, and only when the
+                // selected defender is the suppressed target that armed the trigger.
+                accuracyModifiers += Combat.GetSuppressionRangedAttackAccuracyAdjustment(
+                    attacker.m_idSelf,
+                    defender.m_idSelf,
+                    weaponSkillType);
 
                 // Defender not targeting the attacker.
                 // Dev note: the GetItem method always creates a new instance of CNWActionNode so there should be no NPEs.

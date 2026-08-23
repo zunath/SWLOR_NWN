@@ -40,7 +40,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public int HighResourceExtraDamageThresholdPercent { get; init; }
             public int ExtraDamageIfBesideOrBehind { get; init; }
             public int ExtraDamageIfIdle { get; init; }
+            public string ExtraDamageIfIdleFeedbackLabel { get; init; }
             public int CriticalRateIfIdle { get; init; }
+            public string CriticalRateIfIdleFeedbackLabel { get; init; }
             public int CriticalRateIfNotRecentTarget { get; init; }
             public string CriticalRateIfNotRecentTargetFeedbackLabel { get; init; }
             public int DefenseIgnoreIfIdle { get; init; }
@@ -234,7 +236,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 }
 
                 if (ExtraDamageIfIdle != 0 && IsIdle(activator))
+                {
                     bonus += ExtraDamageIfIdle;
+                    if (GetIsPC(activator) && !string.IsNullOrWhiteSpace(ExtraDamageIfIdleFeedbackLabel))
+                    {
+                        FloatingTextStringOnCreature(
+                            ColorToken.Combat($"{ExtraDamageIfIdleFeedbackLabel} +{ExtraDamageIfIdle} DMG"),
+                            activator,
+                            false);
+                    }
+                }
 
                 if (ExtraDamageIfTargetBleeding != 0 && IsBleeding(target))
                     bonus += ExtraDamageIfTargetBleeding;
@@ -309,8 +320,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public int GetCriticalRateAdjustment(uint activator, uint target)
             {
                 var adjustment = CriticalRatePercentAdjustment;
-                if (CriticalRateIfIdle != 0 && IsIdle(activator))
+                if (!IsQueuedWeaponAbility && CriticalRateIfIdle != 0 && IsIdle(activator))
+                {
                     adjustment += CriticalRateIfIdle;
+                    if (GetIsPC(activator) && !string.IsNullOrWhiteSpace(CriticalRateIfIdleFeedbackLabel))
+                    {
+                        FloatingTextStringOnCreature(
+                            ColorToken.Combat($"{CriticalRateIfIdleFeedbackLabel} +{CriticalRateIfIdle}% Critical Rate"),
+                            activator,
+                            false);
+                    }
+                }
                 if (CriticalRateIfNotRecentTarget != 0 &&
                     NotRecentTargetWindowSeconds > 0f &&
                     !Combat.HasRecentDamageTarget(activator, target, NotRecentTargetWindowSeconds))
@@ -566,7 +586,25 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 ApplyTemporaryDefeatedEnemyModifiers(activator);
             }
 
-            public void AfterActivation(uint activator)
+            public void PrepareQueuedActivation(uint activator, SkillType skillType)
+            {
+                if (IsQueuedWeaponAbility && CriticalRateIfIdle > 0 && IsIdle(activator))
+                {
+                    Combat.StoreQueuedWeaponAbilityActivationCriticalRateBonus(
+                        activator,
+                        skillType,
+                        CriticalRateIfIdle);
+                    if (GetIsPC(activator) && !string.IsNullOrWhiteSpace(CriticalRateIfIdleFeedbackLabel))
+                    {
+                        FloatingTextStringOnCreature(
+                            ColorToken.Combat($"{CriticalRateIfIdleFeedbackLabel} +{CriticalRateIfIdle}% Critical Rate"),
+                            activator,
+                            false);
+                    }
+                }
+            }
+
+            public void AfterActivation(uint activator, SkillType skillType)
             {
                 ApplyNearbyPartyStatus(activator);
                 ApplySelfImmunity(activator);
@@ -1254,6 +1292,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .UsesImpactAnimation(impactAnimation)
                 .HasActivationAction((activator, target, level, targetLocation) =>
                 {
+                    profile.PrepareQueuedActivation(activator, skill);
                     return isHostile || isFriendlyTarget || statusEffect == null || ToggleSelfStatus(activator, statusEffect);
                 })
                 .HasImpactAction((activator, target, level, targetLocation) =>
@@ -1266,7 +1305,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                             if (profile.ApplyFriendlyTargetStatus(activator, target, duration))
                             {
                                 profile.ApplyFriendlyTargetEffects(activator, target, temporaryHPEffectKey);
-                                profile.AfterActivation(activator);
+                                profile.AfterActivation(activator, skill);
                             }
                             return;
                         }
@@ -1274,7 +1313,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         if (isFriendlyTarget && profile.HasFriendlyTargetEffects())
                         {
                             profile.ApplyFriendlyTargetEffects(activator, target, temporaryHPEffectKey);
-                            profile.AfterActivation(activator);
+                            profile.AfterActivation(activator, skill);
                             return;
                         }
 
@@ -1289,7 +1328,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                             profile.ApplySelfStatusToGuardedTarget(activator, statusEffect, duration);
                         }
 
-                        profile.AfterActivation(activator);
+                            profile.AfterActivation(activator, skill);
                         return;
                     }
 
@@ -1320,12 +1359,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                             afterImpactAction: summary =>
                             {
                                 if (summary.ImpactedTargetCount > 0)
-                                    profile.AfterActivation(activator);
+                                    profile.AfterActivation(activator, skill);
                             },
                             maxTargets: profile.MaximumAreaTargets,
                             enmityBonus: profile.EnmityBonus,
                             beforeImpact: _ => profile.BeforeHit(activator, skill),
-                            afterSuccessfulHit: impactedTarget => profile.AfterSuccessfulHit(activator, impactedTarget, profile.DamageType),
+                            afterSuccessfulHit: impactedTarget =>
+                            {
+                                profile.AfterSuccessfulHit(activator, impactedTarget, profile.DamageType);
+                                Combat.ApplyRangedAbilityTargetDefenseReduction(activator, impactedTarget, skill);
+                            },
                             beforeSuccessfulImpactRiders: impactedTarget => profile.BeforeSuccessfulImpactRiders(activator, impactedTarget),
                             hitChancePercentAdjustment: profile.HitChancePercentAdjustment,
                             criticalRatePercentAdjustment: profile.GetCriticalRateAdjustment(activator, target),
@@ -1356,7 +1399,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                             baseDamageAdjustment: impactedTarget => profile.GetBaseDamageAdjustment(activator, impactedTarget),
                             damagePercentAdjustment: impactedTarget => profile.GetDamagePercentAdjustment(activator, impactedTarget),
                             enmityBonus: profile.EnmityBonus,
-                            afterSuccessfulHit: impactedTarget => profile.AfterSuccessfulHit(activator, impactedTarget, profile.DamageType),
+                            afterSuccessfulHit: impactedTarget =>
+                            {
+                                profile.AfterSuccessfulHit(activator, impactedTarget, profile.DamageType);
+                                Combat.ApplyRangedAbilityTargetDefenseReduction(activator, impactedTarget, skill);
+                            },
                             beforeSuccessfulImpactRiders: impactedTarget => profile.BeforeSuccessfulImpactRiders(activator, impactedTarget),
                             hitChancePercentAdjustment: profile.HitChancePercentAdjustment,
                             criticalRatePercentAdjustment: profile.GetCriticalRateAdjustment(activator, target));

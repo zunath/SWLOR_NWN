@@ -346,8 +346,8 @@ public class CombatReleaseBalanceAuditTests
         StatType.StatusAppliedTargetPhysicalDefensePercentAdjustment,
         StatType.StatusAppliedTargetAccuracyPercentAdjustment,
         StatType.AbilityTargetStatusPhysicalDefensePercentAdjustment,
-        StatType.AbilityHitChanceAgainstSuppressionStackPercentAdjustment,
-        StatType.SuppressionStackDamageDealtToOtherTargetsPercentAdjustment,
+        StatType.RangedAttackAccuracyAgainstSuppressionStackPercentAdjustment,
+        StatType.SuppressionStackDamageDealtPercentAdjustment,
         StatType.DefenseIgnoreHitPhysicalDefensePercentAdjustment,
         StatType.AreaAbilityTargetHitSequenceExposedDurationSeconds,
         StatType.IdleStatusDurationPercentAdjustment

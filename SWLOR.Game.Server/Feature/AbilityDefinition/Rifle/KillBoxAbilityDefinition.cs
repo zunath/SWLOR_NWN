@@ -35,9 +35,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 false,
                 Spell.KillBox1,
                 AbilityTargetingShapeType.Sphere,
-                5.0f,
+                8.0f,
                 0.0f,
-                AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf,
+                AbilityTargetingFlags.HarmsEnemies,
                 Animation.PointPistol,
                 30.0f,
                 AbilityType.Perception,
@@ -46,7 +46,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                     TemporaryRangedHitSuppressionStackDurationSeconds = 30,
                     TemporaryRangedHitSuppressionStackEvasionPenaltyPercent = 0,
                     TemporarySuppressionStackEvasionPenaltyPercentAdjustment = 3,
-                    TemporaryDefeatedEnemyEffectDurationSeconds = 45
+                    TemporaryDefeatedEnemyEffectDurationSeconds = 45,
+                    StatusEffectFactory = () => new KillBoxStatusEffect()
                 });
 
             return builder.Build();

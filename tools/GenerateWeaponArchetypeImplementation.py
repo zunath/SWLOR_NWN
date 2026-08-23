@@ -1444,13 +1444,21 @@ def description_stat_entries(row, base):
         add_stat(stats, "SameTargetPressureReadyDurationSeconds", parse_count(r"gain Spotter's Rhythm for (\d+) seconds", description) or 9)
         add_stat(stats, "SameTargetPressureWeaponAbilityDamageBonus", parse_count(r"deals \+(\d+) DMG", description))
     if base == "Overwatch":
-        add_stat(stats, "AbilityHitChanceAgainstSuppressionStackPercentAdjustment", parse_percent(r"gains \+(\d+)% Accuracy", description))
+        add_stat(stats, "RangedAttackAccuracyAgainstSuppressionStackPercentAdjustment", parse_percent(r"gains \+(\d+)% Accuracy", description))
     if base == "Containment Net":
-        add_stat(stats, "SuppressionStackDamageDealtToOtherTargetsRequiredStacks", parse_count(r"Targets with (\d+) Suppression", description) or 3)
-        add_stat(stats, "SuppressionStackDamageDealtToOtherTargetsPercentAdjustment", -parse_percent(r"deal -(\d+)% damage", description))
+        add_stat(stats, "SuppressionStackDamageDealtRequiredStacks", parse_count(r"Targets with (\d+) Suppression", description) or 3)
+        add_stat(stats, "SuppressionStackDamageDealtPercentAdjustment", -parse_percent(r"-?(\d+)% Damage Dealt", description))
     if base == "Breach Round":
-        add_stat(stats, "DefenseIgnoreHitPhysicalDefensePercentAdjustment", -parse_percent(r"reduce Defense by (\d+)%", description))
-        add_stat(stats, "DefenseIgnoreHitPhysicalDefenseDurationSeconds", parse_duration(description) or 30)
+        add_stat(stats, "RangedAbilityTargetDefenseReductionPercent", parse_percent(r"Defense by (\d+)%", description))
+        add_stat(stats, "RangedAbilityTargetDefenseReductionDurationSeconds", parse_duration(description) or 30)
+    if base == "Scope Calibration":
+        add_stat(stats, "RangedAbilityLongRangeMinimumRangeMeters", 10)
+        add_stat(stats, "RangedAbilityLongRangeHitChancePercentAdjustment", parse_percent(r"\+(\d+)% Accuracy", description))
+        add_stat(stats, "RangedAbilityLongRangeCriticalRatePercentAdjustment", parse_percent(r"\+(\d+)% Critical Rate", description))
+    if base == "Dead Center":
+        add_stat(stats, "IdleSkillAbilitySkillType", skill_expr)
+        add_stat(stats, "IdleSkillAbilityRequiredIdleSeconds", parse_count(r"After (\d+) seconds without attacking", description) or 3)
+        add_stat(stats, "IdleSkillAbilityCriticalDamagePercentAdjustment", parse_percent(r"deals \+(\d+)% damage", description))
     if base == "Shrapnel Casing":
         add_stat(stats, "AreaAbilityFragmentationDamage", parse_count(r"fragmentation for (\d+) physical damage", description))
         add_stat(stats, "AreaAbilityFragmentationPulseSeconds", parse_count(r"every (\d+) seconds", description) or 3)
@@ -1955,7 +1963,7 @@ def profile_property_lines(row, level, primary_status):
     if row["Type"] in {"Stance", "Toggle", "Aura"}:
         return properties
 
-    if row.get("CastingTime", "").strip().lower() == "queued":
+    if row.get("CastingTime", "").strip().lower() == "queued" or base == "Headshot":
         add_profile_property("IsQueuedWeaponAbility", "true")
 
     if "force dmg" in lowered:
@@ -2062,17 +2070,24 @@ def profile_property_lines(row, level, primary_status):
         properties.append(("RecentTargetWindowSeconds", f"{int(match.group(1))}.0f"))
         properties.append(("ExtraDamageIfRecentTarget", match.group(2)))
 
-    idle_match = re.search(r"(?:not attacked|without attacking) for (\d+) seconds", description, re.IGNORECASE)
+    idle_match = re.search(
+        r"(?:(?:not attacked|without attacking) for (\d+) seconds|after (\d+) seconds without attacking)",
+        description,
+        re.IGNORECASE)
     if idle_match:
-        idle_seconds = int(idle_match.group(1))
+        idle_seconds = int(idle_match.group(1) or idle_match.group(2))
         properties.append(("IdleWindowSeconds", f"{idle_seconds}.0f"))
         idle_damage = first_int(r"(?:this deals|deals|gains) \+(\d+) DMG", description)
         idle_crit = first_int(r"gains \+(\d+)% Critical Rate", description)
         idle_ignore = first_int(r"ignores (\d+)% Defense", description)
         if idle_damage:
             properties.append(("ExtraDamageIfIdle", str(idle_damage)))
+            if base == "Aimed Shot":
+                properties.append(("ExtraDamageIfIdleFeedbackLabel", '"Aimed Shot"'))
         if idle_crit:
             properties.append(("CriticalRateIfIdle", str(idle_crit)))
+            if base == "Headshot":
+                properties.append(("CriticalRateIfIdleFeedbackLabel", '"Headshot"'))
         if idle_ignore:
             properties.append(("DefenseIgnoreIfIdle", str(idle_ignore)))
 
@@ -2185,6 +2200,8 @@ def profile_property_lines(row, level, primary_status):
     )
     if direct_self_stats_allowed:
         for property_name, pattern in self_stats:
+            if property_name == "SelfCriticalRatePercent" and idle_match:
+                continue
             value = first_int(pattern, description)
             if value:
                 properties.append((property_name, str(value)))
@@ -2446,13 +2463,17 @@ def profile_property_lines(row, level, primary_status):
         add_profile_property("TemporaryAvoidedAttackNextAutoAttackNoDelaySkillType", skill_type_expression(row))
         add_profile_property("TemporaryAvoidedAttackNextAutoAttackNoDelayDurationSeconds", "30")
         add_profile_property("TemporaryDefeatedEnemyEffectDurationSeconds", str(parse_duration(description) or 45))
-    if "ranged hits add Suppression stacks" in description:
-        add_profile_property("TemporaryRangedHitSuppressionStackDurationSeconds", "30")
+    if "ranged hits add Suppression stacks" in description or base == "Kill Box":
+        add_profile_property(
+            "TemporaryRangedHitSuppressionStackDurationSeconds",
+            str(parse_count(r"stacks lasting (\d+) seconds", description) or 30))
         add_profile_property("TemporaryRangedHitSuppressionStackEvasionPenaltyPercent", "0")
         add_profile_property(
             "TemporarySuppressionStackEvasionPenaltyPercentAdjustment",
             parse_count(r"additional (\d+)%", description) or 0)
         add_profile_property("TemporaryDefeatedEnemyEffectDurationSeconds", str(parse_duration(description) or 45))
+    if base == "Kill Box":
+        add_profile_property("StatusEffectFactory", "() => new KillBoxStatusEffect()")
     if "high-stm abilities also inflict exposed" in lowered:
         add_high_stm_exposed_properties()
     if "area attacks pulse" in lowered or "fragmentation zones" in lowered:
@@ -2530,6 +2551,7 @@ def has_explicit_area_target_point(lowered):
     return any(marker in lowered for marker in (
         "target location",
         "target point",
+        "enemy or location",
         "selected location",
         "selected point",
     ))
@@ -2861,7 +2883,10 @@ def add_missing_feats(rows):
             # area actives originate on the caster. Neither should present a manual target cursor
             # (TARGETSELF=1 / HostileFeat cleared). Single-target hostile casts and *aimed* areas
             # ("in a line" / "in a cone") do pick a target, because the player chooses the direction.
-            is_queued = row.get("CastingTime", "").strip().lower() == "queued"
+            is_queued = (
+                row.get("CastingTime", "").strip().lower() == "queued" or
+                base == "Headshot"
+            )
             is_self_origin_area = is_area(row["Description"]) and not is_aimed_area(row)
             is_automatic_guarded_target = is_automatic_guarded_target_active(row["Description"])
             no_manual_target = target_self or is_queued or is_self_origin_area or is_automatic_guarded_target

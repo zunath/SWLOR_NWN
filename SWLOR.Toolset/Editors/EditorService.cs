@@ -3448,6 +3448,12 @@ namespace SWLOR.Toolset.Editors
                         return;
                     }
 
+                    // The load started before deletion was reserved and may have completed while the
+                    // delete command was waiting on its filesystem transaction. Do not publish a
+                    // document backed by files that are now being removed.
+                    if (IsResourceOpeningBlocked(resRef))
+                        return;
+
                     var editor = new AreaEditorViewModel(
                         resRef, workspace, _lookups, _gameCodeIndex, _log,
                         _tilesetCatalog, _tileModelCache, _resourceIndex,

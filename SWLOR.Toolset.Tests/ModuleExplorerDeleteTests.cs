@@ -305,6 +305,13 @@ namespace SWLOR.Toolset.Tests
                 stopwatch.Elapsed.Should().BeLessThan(TimeSpan.FromSeconds(1));
                 deleteTask.IsCompleted.Should().BeFalse();
                 explorer.IsDeletingResource.Should().BeTrue();
+                explorer.CanOpenSelectedType.Should().BeFalse(
+                    "an editor opened while the delete waits could save the resource back afterward");
+                explorer.OpenSelectedCommand.CanExecute(null).Should().BeFalse();
+                explorer.CanCreateSelectedType.Should().BeFalse(
+                    "creation must not race the prepared delete plan");
+                explorer.CanCompileSelectedType.Should().BeFalse(
+                    "compilation must not recreate a script output while its source is being deleted");
             }
             finally
             {

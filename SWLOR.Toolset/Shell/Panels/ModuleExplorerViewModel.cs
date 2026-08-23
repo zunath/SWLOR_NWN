@@ -197,7 +197,9 @@ namespace SWLOR.Toolset.Shell.Panels
         /// module.ifo, so a pack that runs between those two steps can capture an IFO entry with no
         /// area behind it — or an area the module never lists.
         /// </remarks>
-        public bool CanCreateSelectedType => _mutationLock?.IsLocked != true;
+        public bool CanCreateSelectedType =>
+            !IsDeletingResource &&
+            _mutationLock?.IsLocked != true;
 
         /// <summary>Re-reads <see cref="CanCreateSelectedType"/> after the module-wide lock flips.</summary>
         private void OnMutationLockChanged()
@@ -405,9 +407,9 @@ namespace SWLOR.Toolset.Shell.Panels
 
             // Rechecked after the prompts: the builder was looking at a dialog while a pack could
             // have started behind it, and the write below is what a pack must not race.
-            if (_mutationLock?.IsLocked == true)
+            if (!CanCreateSelectedType)
             {
-                StatusMessage = "Creating resources is unavailable while the module is being packed or built.";
+                StatusMessage = "Creating resources is unavailable while another module operation is in progress.";
                 return;
             }
 
@@ -480,7 +482,7 @@ namespace SWLOR.Toolset.Shell.Panels
                 // The wizard writes the ARE/GIT/GIC triplet and then edits module.ifo. A pack that
                 // starts between those two writes captures one without the other, so the wizard has
                 // to ask again at the moment it commits rather than trusting the check that opened it.
-                () => _mutationLock?.IsLocked != true);
+                () => !IsDeletingResource && _mutationLock?.IsLocked != true);
         }
 
         /// <summary>
@@ -1061,6 +1063,7 @@ namespace SWLOR.Toolset.Shell.Panels
         /// areas in the area editor, scripts in the script editor, and conversations in Play-it.
         /// </summary>
         public bool CanOpenSelectedType =>
+            !IsDeletingResource &&
             SelectedType is ResourceType.Area or ResourceType.Nss or ResourceType.Dlg;
 
         /// <summary>
@@ -1069,6 +1072,7 @@ namespace SWLOR.Toolset.Shell.Panels
         /// include, when the dependents needing a rebuild are not the file you were working in.
         /// </summary>
         public bool CanCompileSelectedType =>
+            !IsDeletingResource &&
             SelectedType == ResourceType.Nss &&
             _mutationLock?.IsLocked != true;
 
@@ -1078,9 +1082,9 @@ namespace SWLOR.Toolset.Shell.Panels
             if (SelectedRow?.Item is not { } item || SelectedType != ResourceType.Nss)
                 return;
 
-            if (_mutationLock?.IsLocked == true)
+            if (!CanCompileSelectedType)
             {
-                StatusMessage = "Compiling scripts is unavailable while the module is being packed, validated, or built.";
+                StatusMessage = "Compiling scripts is unavailable while another module operation is in progress.";
                 return;
             }
 
@@ -1093,7 +1097,7 @@ namespace SWLOR.Toolset.Shell.Panels
         }
 
         /// <summary>The context menu's Open, which is the double-click by another route.</summary>
-        [RelayCommand]
+        [RelayCommand(CanExecute = nameof(CanOpenSelectedType))]
         private void OpenSelected() => OpenSelectedItem();
 
         /// <summary>Double-click: open a resource, or expand a folder.</summary>
@@ -1110,7 +1114,9 @@ namespace SWLOR.Toolset.Shell.Panels
 
             if (!CanOpenSelectedType)
             {
-                StatusMessage = $"{SelectedType.DisplayName()} cannot be edited in the toolset yet.";
+                StatusMessage = IsDeletingResource
+                    ? "Opening resources is unavailable while a delete is in progress."
+                    : $"{SelectedType.DisplayName()} cannot be edited in the toolset yet.";
                 return;
             }
 
@@ -1284,7 +1290,13 @@ namespace SWLOR.Toolset.Shell.Panels
 
         partial void OnIsDeletingResourceChanged(bool value)
         {
+            OnPropertyChanged(nameof(CanCreateSelectedType));
+            OnPropertyChanged(nameof(CanOpenSelectedType));
+            OnPropertyChanged(nameof(CanCompileSelectedType));
             OnPropertyChanged(nameof(CanDeleteSelectedResource));
+            NewItemCommand.NotifyCanExecuteChanged();
+            OpenSelectedCommand.NotifyCanExecuteChanged();
+            CompileSelectedCommand.NotifyCanExecuteChanged();
             DeleteSelectedResourceCommand.NotifyCanExecuteChanged();
         }
 

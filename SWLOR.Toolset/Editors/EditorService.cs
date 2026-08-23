@@ -3369,83 +3369,103 @@ namespace SWLOR.Toolset.Editors
 
             try
             {
-                var arePath = workspace.GetResourcePath(ResourceType.Area, resRef);
-                var gitPath = Path.Combine(workspace.ModuleRoot, "git", resRef + ".git.json");
-                var gicPath = Path.Combine(workspace.ModuleRoot, "gic", resRef + ".gic.json");
-                if (!File.Exists(arePath) || !File.Exists(gitPath) || !File.Exists(gicPath))
+                while (true)
                 {
-                    _log.AppendLine($"Area files not found for '{resRef}' (.are/.git/.gic set required).");
-                    return;
-                }
+                    var arePath = workspace.GetResourcePath(ResourceType.Area, resRef);
+                    var gitPath = Path.Combine(workspace.ModuleRoot, "git", resRef + ".git.json");
+                    var gicPath = Path.Combine(workspace.ModuleRoot, "gic", resRef + ".gic.json");
+                    if (!File.Exists(arePath) || !File.Exists(gitPath) || !File.Exists(gicPath))
+                    {
+                        _log.AppendLine($"Area files not found for '{resRef}' (.are/.git/.gic set required).");
+                        return;
+                    }
 
-                // Both cold operations start together: the module-wide waypoint scan and this
-                // area's file read/JSON parse. Neither owns Avalonia's UI thread, so a large area can
-                // load while the builder keeps working in another document.
-                var transitionTagsTask = GetCurrentTransitionDestinationTagsAsync(workspace);
-                var documentLoadTask = Task.Run(() =>
-                    _areaDocumentsLoader(arePath, gitPath, gicPath));
-                await Task.WhenAll(transitionTagsTask, documentLoadTask).ConfigureAwait(true);
-                var transitionDestinationTags = await transitionTagsTask.ConfigureAwait(true);
-                var loadedDocuments = await documentLoadTask.ConfigureAwait(true);
-                if (transitionDestinationTags == null ||
-                    !ReferenceEquals(workspace, _workspaceContext.Workspace))
-                    return;
+                    // Both cold operations start together: the module-wide waypoint scan and this
+                    // area's file read/JSON parse. Neither owns Avalonia's UI thread, so a large area can
+                    // load while the builder keeps working in another document.
+                    var transitionTagsTask = GetCurrentTransitionDestinationTagsAsync(workspace);
+                    var documentLoadTask = Task.Run(() =>
+                        _areaDocumentsLoader(arePath, gitPath, gicPath));
+                    await Task.WhenAll(transitionTagsTask, documentLoadTask).ConfigureAwait(true);
+                    var transitionDestinationTags = await transitionTagsTask.ConfigureAwait(true);
+                    var loadedDocuments = await documentLoadTask.ConfigureAwait(true);
+                    var currentWorkspace = _workspaceContext.Workspace;
+                    if (transitionDestinationTags == null ||
+                        !ReferenceEquals(workspace, currentWorkspace))
+                    {
+                        // A file-watcher overflow reopens the same module to rebuild its catalog. If
+                        // that replacement lands while a newly generated area is loading, retry with
+                        // the current workspace instead of silently dropping the automatic open. A
+                        // genuinely different module still cancels the stale request.
+                        if (currentWorkspace == null || !string.Equals(
+                                workspace.ModuleRoot,
+                                currentWorkspace.ModuleRoot,
+                                StringComparison.OrdinalIgnoreCase))
+                        {
+                            return;
+                        }
 
-                if (_openAreaEditors.TryGetValue(resRef, out existing))
-                {
-                    _factory.ActivateDocument(existing);
-                    DispatchPendingAreaReveal(existing);
-                    return;
-                }
+                        workspace = currentWorkspace;
+                        continue;
+                    }
 
-                var editor = new AreaEditorViewModel(
-                    resRef, workspace, _lookups, _gameCodeIndex, _log,
-                    _tilesetCatalog, _tileModelCache, _resourceIndex,
-                    _placeableAppearances, _doorTypes, _tileWalkmeshCache, _prompts,
-                    ResolveBlueprintName, TryOpenEditor,
-                    _tlkService != null ? _tlkService.GetString : null, _waypointAppearances,
-                    _previewRenderer != null
-                        ? (type, blueprintResRef, useIndexed) =>
-                            _previewRenderer.BuildModelResult(type, blueprintResRef, useIndexed)
-                        : null,
-                    CreateScriptSlotHost($"Area '{resRef}'"),
-                    _previewRenderer != null
-                        ? instance => _previewRenderer.BuildModel(ResourceType.Utc, instance)
-                        : null,
-                    new Doors.DoorEditorServices(
-                        resRef,
-                        ResolveDoorTag,
-                        ResolveDoorChoices,
-                        DoorAppearances(),
-                        _resourceIndex,
+                    if (_openAreaEditors.TryGetValue(resRef, out existing))
+                    {
+                        _factory.ActivateDocument(existing);
+                        DispatchPendingAreaReveal(existing);
+                        return;
+                    }
+
+                    var editor = new AreaEditorViewModel(
+                        resRef, workspace, _lookups, _gameCodeIndex, _log,
+                        _tilesetCatalog, _tileModelCache, _resourceIndex,
+                        _placeableAppearances, _doorTypes, _tileWalkmeshCache, _prompts,
+                        ResolveBlueprintName, TryOpenEditor,
+                        _tlkService != null ? _tlkService.GetString : null, _waypointAppearances,
                         _previewRenderer != null
-                            ? door => _previewRenderer.BuildModelResult(ResourceType.Utd, door)
+                            ? (type, blueprintResRef, useIndexed) =>
+                                _previewRenderer.BuildModelResult(type, blueprintResRef, useIndexed)
                             : null,
-                        _thumbnails,
-                        ChoicePreviews()),
-                    new Waypoints.WaypointEditorServices(
-                        resRef,
-                        new Domain.Editors.Waypoints.WaypointBehaviorCatalog(
-                            _gameCodeIndex,
-                            transitionDestinationTags),
-                        ResolveWaypointChoices,
-                        ChoicePreviews()),
-                    ResolveSoundChoices,
-                    SoundResources(),
-                    SoundPreviews(),
-                    loadedDocuments,
-                    TryEditCopyAndOpenBlueprint,
-                    _mutationLock,
-                    _areaInstanceClipboard);
-                editor.Closed += _ => _openAreaEditors.Remove(resRef);
-                editor.TilesetChanged += () => _factory.NotifyActiveAreaChanged();
-                editor.CloseRequested += _ => _factory.CloseDocument(editor);
-                editor.CatalogEntryChanged += () =>
-                    _workspaceContext.RefreshCatalogEntry(ResourceType.Area, resRef);
-                editor.PlacementsChanged += _workspaceContext.InvalidateGitIndexes;
-                _openAreaEditors[resRef] = editor;
-                _factory.OpenDocument(editor);
-                DispatchPendingAreaReveal(editor);
+                        CreateScriptSlotHost($"Area '{resRef}'"),
+                        _previewRenderer != null
+                            ? instance => _previewRenderer.BuildModel(ResourceType.Utc, instance)
+                            : null,
+                        new Doors.DoorEditorServices(
+                            resRef,
+                            ResolveDoorTag,
+                            ResolveDoorChoices,
+                            DoorAppearances(),
+                            _resourceIndex,
+                            _previewRenderer != null
+                                ? door => _previewRenderer.BuildModelResult(ResourceType.Utd, door)
+                                : null,
+                            _thumbnails,
+                            ChoicePreviews()),
+                        new Waypoints.WaypointEditorServices(
+                            resRef,
+                            new Domain.Editors.Waypoints.WaypointBehaviorCatalog(
+                                _gameCodeIndex,
+                                transitionDestinationTags),
+                            ResolveWaypointChoices,
+                            ChoicePreviews()),
+                        ResolveSoundChoices,
+                        SoundResources(),
+                        SoundPreviews(),
+                        loadedDocuments,
+                        TryEditCopyAndOpenBlueprint,
+                        _mutationLock,
+                        _areaInstanceClipboard);
+                    editor.Closed += _ => _openAreaEditors.Remove(resRef);
+                    editor.TilesetChanged += () => _factory.NotifyActiveAreaChanged();
+                    editor.CloseRequested += _ => _factory.CloseDocument(editor);
+                    editor.CatalogEntryChanged += () =>
+                        _workspaceContext.RefreshCatalogEntry(ResourceType.Area, resRef);
+                    editor.PlacementsChanged += _workspaceContext.InvalidateGitIndexes;
+                    _openAreaEditors[resRef] = editor;
+                    _factory.OpenDocument(editor);
+                    DispatchPendingAreaReveal(editor);
+                    return;
+                }
             }
             catch (Exception ex)
             {

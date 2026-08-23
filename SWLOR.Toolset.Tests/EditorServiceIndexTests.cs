@@ -285,6 +285,68 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task ReplacingAWorkspaceForTheSameModuleRetriesAreaDocumentLoading()
+        {
+            const string areaResRef = "bank";
+            var moduleRoot = NewModuleRoot();
+            var differentRoot = NewModuleRoot();
+            foreach (var extension in new[] { "are", "git", "gic" })
+            {
+                File.Copy(
+                    Path.Combine(
+                        CorpusLocator.ModuleDirectory,
+                        extension,
+                        $"{areaResRef}.{extension}.json"),
+                    Path.Combine(moduleRoot, extension, $"{areaResRef}.{extension}.json"));
+            }
+
+            var log = new OutputLogService();
+            var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
+            using var firstLoadStarted = new ManualResetEventSlim();
+            using var releaseFirstLoad = new ManualResetEventSlim();
+            using var secondLoadStarted = new ManualResetEventSlim();
+            using var releaseSecondLoad = new ManualResetEventSlim();
+            var loadCount = 0;
+            var editors = new EditorService(
+                workspace,
+                new LookupOptionProvider(workspace),
+                log,
+                factory: null!,
+                prompts: null!,
+                areaDocumentsLoader: (arePath, gitPath, gicPath) =>
+                {
+                    var loadNumber = Interlocked.Increment(ref loadCount);
+                    var started = loadNumber == 1 ? firstLoadStarted : secondLoadStarted;
+                    var release = loadNumber == 1 ? releaseFirstLoad : releaseSecondLoad;
+                    started.Set();
+                    if (!release.Wait(TimeSpan.FromSeconds(5)))
+                        throw new TimeoutException($"Area-load attempt {loadNumber} was not released.");
+
+                    return AreaEditorDocumentLoad.Load(arePath, gitPath, gicPath);
+                });
+
+            workspace.Open(moduleRoot);
+            editors.TryOpenEditor(ResourceType.Area, areaResRef);
+            firstLoadStarted.Wait(TimeSpan.FromSeconds(5)).Should().BeTrue();
+
+            workspace.Open(moduleRoot);
+            releaseFirstLoad.Set();
+            secondLoadStarted.Wait(TimeSpan.FromSeconds(5)).Should().BeTrue(
+                "reopening the same module for a watcher rescan must preserve the pending area open");
+
+            workspace.Open(differentRoot);
+            releaseSecondLoad.Set();
+
+            var openingAreas = (HashSet<string>)typeof(EditorService)
+                .GetField("_openingAreaEditors", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .GetValue(editors)!;
+            await WaitUntilAsync(() => !openingAreas.Contains(areaResRef));
+
+            loadCount.Should().Be(2);
+            log.Lines.Should().NotContain(line => line.Contains("Failed to open area editor"));
+        }
+
+        [Test]
         public async Task PlacementInvalidationReloadsAnOpenObjectSource()
         {
             var moduleRoot = NewModuleRoot();

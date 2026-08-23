@@ -925,15 +925,6 @@ namespace SWLOR.Toolset.Shell.Panels
             var kind = type.SingularDisplayName().ToLowerInvariant();
             var editorService = _editorService?.Invoke();
 
-            // An open editor owns sessions for these files. Deleting underneath it lets the next
-            // save recreate the resource the builder just deleted, so closing is an explicit first
-            // step just as it is for Palette blueprint deletion.
-            if (editorService?.IsOpen(type, resRef) == true)
-            {
-                StatusMessage = $"'{displayName}' is open in an editor - close that tab first.";
-                return;
-            }
-
             if (type == ResourceType.Area && editorService?.IsModulePropertiesOpen == true)
             {
                 StatusMessage = "Module Properties is open - close that tab before deleting an area.";
@@ -978,12 +969,26 @@ namespace SWLOR.Toolset.Shell.Panels
                 _ => throw new ArgumentOutOfRangeException()
             };
 
+            var closesOpenEditor = editorService?.IsOpen(type, resRef) == true;
             var confirmed = await _prompts.ConfirmDestructiveAsync(
                 $"Delete the {kind} '{displayName}'?",
-                details + " This cannot be undone from the toolset.",
+                details +
+                (closesOpenEditor
+                    ? " Its open editor will be closed and any unsaved changes discarded."
+                    : string.Empty) +
+                " This cannot be undone from the toolset.",
                 "Delete").ConfigureAwait(true);
             if (!confirmed)
                 return;
+
+            // The destructive prompt above covers the open buffer too. Close it now so its document
+            // sessions cannot save the resource back after the filesystem transaction completes.
+            if (editorService?.IsOpen(type, resRef) == true &&
+                !editorService.TryCloseResourceForDeletion(type, resRef))
+            {
+                StatusMessage = $"'{displayName}' was not deleted because its editor could not be closed.";
+                return;
+            }
 
             // Reserve the shared deletion state before rechecking editor ownership. The reservation
             // blocks every editor-opening route until the deletion and its catalog cleanup finish,

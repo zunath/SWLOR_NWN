@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using Dock.Model.Mvvm.Controls;
 using SWLOR.Toolset.Domain.Editors;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Schemas;
@@ -1404,8 +1405,82 @@ namespace SWLOR.Toolset.Editors
                    || _openMerchantEditors.ContainsKey(path)
                    || _openConversations.ContainsKey(path)
                    || (type == ResourceType.Dlg &&
-                       _openNuiConversations.Values.Any(editor =>
-                           editor.ResRef.Equals(resRef, StringComparison.OrdinalIgnoreCase)));
+                        _openNuiConversations.Values.Any(editor =>
+                            editor.ResRef.Equals(resRef, StringComparison.OrdinalIgnoreCase)));
+        }
+
+        /// <summary>
+        /// Closes the editor that owns a resource immediately before that resource is deleted.
+        /// </summary>
+        /// <remarks>
+        /// The caller must already have received explicit destructive confirmation. That confirmation
+        /// covers the resource and any unsaved buffer held by its editor, so these closes deliberately
+        /// bypass the ordinary save/discard prompt. Closing first disposes every document session and
+        /// prevents a later save from recreating the deleted files.
+        /// </remarks>
+        internal bool TryCloseResourceForDeletion(ResourceType type, string resRef)
+        {
+            var documents = OpenResourceDocuments(type, resRef);
+            if (documents.Count == 0)
+                return !IsOpen(type, resRef);
+
+            foreach (var document in documents)
+            {
+                switch (document)
+                {
+                    case AreaEditorViewModel area:
+                        area.ApproveApplicationClose();
+                        break;
+                    case ScriptEditorViewModel script:
+                        script.ApproveApplicationClose();
+                        break;
+                    case ConversationEditorViewModel conversation:
+                        conversation.ApproveApplicationClose();
+                        break;
+                    case NuiConversationEditorViewModel graph:
+                        graph.ApproveApplicationClose();
+                        break;
+                    default:
+                        return false;
+                }
+
+                _factory.CloseDocument(document);
+            }
+
+            return !IsOpen(type, resRef);
+        }
+
+        private IReadOnlyList<Document> OpenResourceDocuments(ResourceType type, string resRef)
+        {
+            if (type == ResourceType.Area)
+            {
+                return _openAreaEditors.TryGetValue(resRef, out var area)
+                    ? new Document[] { area }
+                    : Array.Empty<Document>();
+            }
+
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return Array.Empty<Document>();
+
+            if (type == ResourceType.Nss)
+            {
+                var path = workspace.GetResourcePath(type, resRef);
+                return _openScriptEditors.TryGetValue(path, out var script)
+                    ? new Document[] { script }
+                    : Array.Empty<Document>();
+            }
+
+            if (type != ResourceType.Dlg)
+                return Array.Empty<Document>();
+
+            var documents = new List<Document>();
+            var legacyPath = workspace.GetResourcePath(type, resRef);
+            if (_openConversations.TryGetValue(legacyPath, out var conversation))
+                documents.Add(conversation);
+            documents.AddRange(_openNuiConversations.Values.Where(editor =>
+                editor.ResRef.Equals(resRef, StringComparison.OrdinalIgnoreCase)));
+            return documents;
         }
 
         /// <summary>

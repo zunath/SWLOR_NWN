@@ -1,15 +1,22 @@
 using System.Diagnostics;
 using System.Security.Cryptography;
 using System.Text.Json;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Headless;
 using Avalonia.Headless.NUnit;
+using Avalonia.Input;
 using Avalonia.Threading;
+using Avalonia.VisualTree;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Services;
+using SWLOR.Toolset.Shell;
 using SWLOR.Toolset.Shell.Panels;
+using SWLOR.Toolset.Shell.Views;
 using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Tests
@@ -38,6 +45,129 @@ namespace SWLOR.Toolset.Tests
                 Directory.Delete(_root, recursive: true);
         }
 
+        [AvaloniaTest]
+        public Task DeleteAreaContextMenu_RequestsConfirmationWithoutOpeningTheResource()
+        {
+            const string resRef = "menu_area";
+            CopyAreaTemplate(resRef);
+            File.Copy(
+                Path.Combine(CorpusLocator.ModuleDirectory, "ifo", "module.ifo.json"),
+                Path.Combine(_module, "ifo", "module.ifo.json"));
+            return DeleteContextMenuRequestsConfirmation(ResourceType.Area, resRef);
+        }
+
+        [AvaloniaTest]
+        public Task DeleteDialogContextMenu_RequestsConfirmationWithoutOpeningTheResource()
+        {
+            const string resRef = "menu_dialog";
+            File.WriteAllText(
+                Path.Combine(ModuleWorkspace.ResolveConversationDataRoot(_module),
+                    resRef + ".conversation.json"),
+                "{}");
+            return DeleteContextMenuRequestsConfirmation(ResourceType.Dlg, resRef);
+        }
+
+        [AvaloniaTest]
+        public Task DeleteScriptContextMenu_RequestsConfirmationWithoutOpeningTheResource()
+        {
+            const string resRef = "menu_script";
+            File.WriteAllText(Path.Combine(_module, "nss", resRef + ".nss"), "void main() {}");
+            return DeleteContextMenuRequestsConfirmation(ResourceType.Nss, resRef);
+        }
+
+        private async Task DeleteContextMenuRequestsConfirmation(ResourceType type, string resRef)
+        {
+            var prompts = new RecordingPrompts(answer: false);
+            var (explorer, _) = CreateExplorer(type, prompts);
+            var unsorted = explorer.Rows.Single(row => row.Name == "Unsorted");
+            explorer.ToggleCommand.Execute(unsorted);
+            var row = explorer.Rows.Single(node => node.ResRef == resRef);
+            var view = new ModuleExplorerView { DataContext = explorer };
+            var window = new Window { Content = view, Width = 500, Height = 500 };
+            window.Show();
+
+            try
+            {
+                var rowSurface = view.GetVisualDescendants()
+                    .OfType<Grid>()
+                    .Single(control => ReferenceEquals(control.DataContext, row) && control.ContextMenu != null);
+                var rowContainer = rowSurface.FindAncestorOfType<ListBoxItem>()!;
+                var rowPoint = rowContainer.TranslatePoint(
+                    new Point(rowContainer.Bounds.Width - 2d, rowContainer.Bounds.Height / 2d),
+                    window)!.Value;
+
+                window.MouseMove(rowPoint, RawInputModifiers.None);
+                window.MouseDown(rowPoint, MouseButton.Right, RawInputModifiers.RightMouseButton);
+                window.MouseUp(rowPoint, MouseButton.Right, RawInputModifiers.None);
+
+                var menu = rowSurface.ContextMenu!;
+                menu.IsOpen.Should().BeTrue();
+                var delete = menu.Items.OfType<MenuItem>()
+                    .Single(item => Equals(item.Header, "Delete"));
+                var popup = TopLevel.GetTopLevel(delete)!;
+                var deletePoint = delete.TranslatePoint(
+                    new Point(delete.Bounds.Width / 2d, delete.Bounds.Height / 2d),
+                    popup)!.Value;
+
+                popup.MouseMove(deletePoint, RawInputModifiers.None);
+                popup.MouseDown(deletePoint, MouseButton.Left, RawInputModifiers.LeftMouseButton);
+                popup.MouseUp(deletePoint, MouseButton.Left, RawInputModifiers.None);
+                await Dispatcher.UIThread.InvokeAsync(() => { });
+
+                prompts.ConfirmationCount.Should().Be(1);
+                prompts.Headline.Should().Contain(resRef);
+            }
+            finally
+            {
+                window.Close();
+            }
+        }
+
+        [AvaloniaTest]
+        public void ContextMenuDoubleTapGesture_DoesNotOpenTheSelectedTreeRow()
+        {
+            var (explorer, _) = CreateExplorer(ResourceType.Nss, new RecordingPrompts(answer: false));
+            var unsorted = explorer.Rows.Single(row => row.Name == "Unsorted");
+            var view = new ModuleExplorerView { DataContext = explorer };
+            var window = new Window { Content = view, Width = 500, Height = 500 };
+            window.Show();
+
+            try
+            {
+                var tree = view.FindControl<ListBox>("ModuleTree")!;
+                var rowSurface = view.GetVisualDescendants()
+                    .OfType<Grid>()
+                    .Single(control => ReferenceEquals(control.DataContext, unsorted) && control.ContextMenu != null);
+                var rowContainer = rowSurface.FindAncestorOfType<ListBoxItem>()!;
+                var point = rowContainer.TranslatePoint(
+                    new Point(rowContainer.Bounds.Width - 2d, rowContainer.Bounds.Height / 2d),
+                    window)!.Value;
+                PointerPressedEventArgs? pointerEvent = null;
+                rowSurface.PointerPressed += (_, e) => pointerEvent = e;
+
+                window.MouseMove(point, RawInputModifiers.None);
+                window.MouseDown(point, MouseButton.Left, RawInputModifiers.LeftMouseButton);
+                window.MouseUp(point, MouseButton.Left, RawInputModifiers.None);
+                pointerEvent.Should().NotBeNull();
+                var gesture = new TappedEventArgs(InputElement.DoubleTappedEvent, pointerEvent!)
+                {
+                    Source = rowSurface.ContextMenu!.Items.OfType<MenuItem>()
+                        .Single(item => Equals(item.Header, "Delete"))
+                };
+                typeof(ModuleExplorerView)
+                    .GetMethod("OnItemsDoubleTapped", System.Reflection.BindingFlags.Instance |
+                                                       System.Reflection.BindingFlags.NonPublic)!
+                    .Invoke(view, new object?[] { tree, gesture });
+
+                unsorted.IsExpanded.Should().BeFalse(
+                    "a popup gesture must not be treated as a double-click on the selected tree row");
+            }
+            finally
+            {
+                window.Close();
+            }
+        }
+
         [Test]
         public async Task DeleteScript_RemovesSourceCompiledOutputAndFolderMembership()
         {
@@ -64,6 +194,51 @@ namespace SWLOR.Toolset.Tests
             folder.Members.Should().NotContain(resRef);
             prompts.Message.Should().Contain("delete_script.nss").And.Contain("delete_script.ncs");
             explorer.Rows.SelectMany(row => row.Children).Should().NotContain(row => row.ResRef == resRef);
+        }
+
+        [Test]
+        public async Task DeleteOpenDirtyScript_ConfirmsThenClosesEditorAndDeletesResource()
+        {
+            const string resRef = "open_script";
+            var source = Path.Combine(_module, "nss", resRef + ".nss");
+            File.WriteAllText(source, "void main() {}");
+            var prompts = new RecordingPrompts(answer: true);
+            Editors.EditorService? editors = null;
+            Editors.ScriptEditorViewModel? document = null;
+            var (explorer, _) = CreateExplorer(
+                ResourceType.Nss,
+                prompts,
+                editorServiceFactory: (workspace, log) =>
+                {
+                    var dockFactory = new ToolsetDockFactory(
+                        null!, null!, null!, null!, null!, null!, null!, null!, null!);
+                    editors = new Editors.EditorService(
+                        workspace,
+                        new Editors.LookupOptionProvider(workspace),
+                        log,
+                        dockFactory,
+                        prompts);
+                    document = new Editors.ScriptEditorViewModel(source, resRef, log, prompts);
+                    document.OnTextChanged("void main() { // unsaved\n}");
+                    var openScripts = (Dictionary<string, Editors.ScriptEditorViewModel>)
+                        typeof(Editors.EditorService)
+                            .GetField("_openScriptEditors", System.Reflection.BindingFlags.Instance |
+                                                               System.Reflection.BindingFlags.NonPublic)!
+                            .GetValue(editors)!;
+                    document.Closed += closed => openScripts.Remove(closed.FilePath);
+                    openScripts[source] = document;
+                    return editors;
+                });
+            explorer.SelectedRow = UnsortedResource(explorer, resRef);
+
+            await explorer.DeleteSelectedResourceCommand.ExecuteAsync(null);
+
+            prompts.ConfirmationCount.Should().Be(1);
+            prompts.Message.Should().Contain("open editor").And.Contain("unsaved changes discarded");
+            File.Exists(source).Should().BeFalse();
+            editors!.IsOpen(ResourceType.Nss, resRef).Should().BeFalse();
+            document!.IsDirty.Should().BeTrue(
+                "the unsaved buffer is discarded by closing, not written before the resource is deleted");
         }
 
         [Test]
@@ -554,6 +729,8 @@ namespace SWLOR.Toolset.Tests
             bool answer,
             Action? onConfirm = null) : IEditorPromptService
         {
+            public int ConfirmationCount { get; private set; }
+            public string Headline { get; private set; } = string.Empty;
             public string Message { get; private set; } = string.Empty;
 
             public Task<ExternalChangeChoice> ConfirmExternalChangeAsync(string filePath) =>
@@ -564,6 +741,8 @@ namespace SWLOR.Toolset.Tests
 
             public Task<bool> ConfirmDestructiveAsync(string headline, string message, string confirmLabel)
             {
+                ConfirmationCount++;
+                Headline = headline;
                 Message = message;
                 onConfirm?.Invoke();
                 return Task.FromResult(answer);

@@ -330,7 +330,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _initialLoadDone = false;
             SelectedPerkCategoryId = 0;
             SearchText = string.Empty;
-            SelectedSortOrderId = (int)PerkSortOrder.AlphabeticalAscending;
+            SelectedSortOrderId = (int)PerkSortOrder.SkillLevelAscending;
             BuyText = "Buy Upgrade";
             SelectedPage = 1;
             IsPerkSelected = false;

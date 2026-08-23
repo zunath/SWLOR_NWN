@@ -675,7 +675,7 @@ public class PlayerNameRecognitionTests
         disguiseSource.Should().Contain("dbPlayer.UnallocatedXP -= amount");
         disguiseSource.Should().Contain("new RPXPRefreshEvent()");
         disguiseSource.Should().Contain("new DisguiseChangedRefreshEvent()");
-        dmChatCommandSource.Should().Contain(".Description(\"Resets a player's ability and disguise cooldowns.\")");
+        dmChatCommandSource.Should().Contain(".Description(\"Resets a player's ability, disguise, and perk refund cooldowns.\")");
         dmChatCommandSource.Should().Contain("AbilityCooldownVisual.ClearAllRecastDelays(target);");
         dmChatCommandSource.Should().Contain("Disguise.ResetActivationCooldowns(target);");
 

@@ -836,7 +836,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         private void ResetAbilityRecastTimers()
         {
             _builder.Create("resetcooldown", "resetcooldowns")
-                .Description("Resets a player's ability and disguise cooldowns.")
+                .Description("Resets a player's ability, disguise, and perk refund cooldowns.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .AvailableToAllOnTestEnvironment()
                 .RequiresTarget()
@@ -853,6 +853,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var dbPlayer = DB.Get<Player>(playerId);
                     dbPlayer.RecastTimes ??= new();
                     dbPlayer.RecastTimes.Clear();
+                    dbPlayer.DatePerkRefundAvailable = DateTime.UtcNow;
                     DB.Set(dbPlayer);
                     AbilityCooldownVisual.ClearAllRecastDelays(target);
                     Disguise.ResetActivationCooldowns(target);

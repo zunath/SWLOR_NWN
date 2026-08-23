@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 
 namespace SWLOR.Game.Server.Service
 {
@@ -10,21 +12,21 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Dictionary mapping weapon category lists to their delay values
         /// </summary>
-        private static readonly Dictionary<List<BaseItem>, int> _weaponCategoryDelays = new()
+        private static readonly Dictionary<List<BaseItem>, ItemPropertyAttackDelay> _weaponCategoryDelays = new()
         {
-            {Item.VibrobladeBaseItemTypes, 23},
-            {Item.KatarBaseItemTypes, 22},
-            {Item.TwinBladeBaseItemTypes, 29},
-            {Item.VibroknifeBaseItemTypes, 22},
-            {Item.StaffBaseItemTypes, 27},
-            {Item.RifleBaseItemTypes, 30},
-            {Item.HeavyVibrobladeBaseItemTypes, 30},
-            {Item.PistolBaseItemTypes, 25},
-            {Item.LightsaberBaseItemTypes, 24},
-            {Item.SpearBaseItemTypes, 28},
-            {Item.ThrowingWeaponBaseItemTypes, 22},
-            {Item.SaberstaffBaseItemTypes, 29},
-            {Item.CreatureBaseItemTypes, 24}
+            {Item.VibrobladeBaseItemTypes, ItemPropertyAttackDelay.Delay230},
+            {Item.KatarBaseItemTypes, ItemPropertyAttackDelay.Delay220},
+            {Item.TwinBladeBaseItemTypes, ItemPropertyAttackDelay.Delay290},
+            {Item.VibroknifeBaseItemTypes, ItemPropertyAttackDelay.Delay220},
+            {Item.StaffBaseItemTypes, ItemPropertyAttackDelay.Delay270},
+            {Item.RifleBaseItemTypes, ItemPropertyAttackDelay.Delay300},
+            {Item.HeavyVibrobladeBaseItemTypes, ItemPropertyAttackDelay.Delay300},
+            {Item.PistolBaseItemTypes, ItemPropertyAttackDelay.Delay250},
+            {Item.LightsaberBaseItemTypes, ItemPropertyAttackDelay.Delay240},
+            {Item.SpearBaseItemTypes, ItemPropertyAttackDelay.Delay280},
+            {Item.ThrowingWeaponBaseItemTypes, ItemPropertyAttackDelay.Delay220},
+            {Item.SaberstaffBaseItemTypes, ItemPropertyAttackDelay.Delay290},
+            {Item.CreatureBaseItemTypes, ItemPropertyAttackDelay.Delay240}
         };
 
         /// <summary>
@@ -32,7 +34,7 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         /// <param name="baseItemType">The BaseItemType of the weapon</param>
         /// <returns>The delay value, or null if not found</returns>
-        public static int? GetWeaponDelay(BaseItem baseItemType)
+        public static ItemPropertyAttackDelay? GetWeaponDelay(BaseItem baseItemType)
         {
             foreach (var category in _weaponCategoryDelays.Keys)
             {
@@ -65,10 +67,13 @@ namespace SWLOR.Game.Server.Service
         /// Adds a Delay item property to a weapon
         /// </summary>
         /// <param name="item">The weapon item to add the property to</param>
-        /// <param name="delayValue">The delay value to set (cost table value)</param>
-        public static void AddDelayProperty(uint item, int delayValue)
+        /// <param name="delay">The delay value to set.</param>
+        public static void AddDelayProperty(uint item, ItemPropertyAttackDelay delay)
         {
-            var delayProperty = ItemPropertyCustom(ItemPropertyType.Delay, -1, delayValue);
+            if (delay == ItemPropertyAttackDelay.Invalid || !Enum.IsDefined(delay))
+                throw new ArgumentOutOfRangeException(nameof(delay), delay, "Weapon attack delay must be a valid iprp_delay.2da value.");
+
+            var delayProperty = ItemPropertyCustom(ItemPropertyType.Delay, -1, (int)delay);
             BiowareXP2.IPSafeAddItemProperty(item, delayProperty, 0.0f, AddItemPropertyPolicy.ReplaceExisting, true, true);
         }
 
@@ -100,11 +105,11 @@ namespace SWLOR.Game.Server.Service
             }
 
             var baseItemType = GetBaseItemType(item);
-            var delayValue = GetWeaponDelay(baseItemType);
+            var delay = GetWeaponDelay(baseItemType);
 
-            if (delayValue.HasValue)
+            if (delay.HasValue)
             {
-                AddDelayProperty(item, delayValue.Value);
+                AddDelayProperty(item, delay.Value);
             }
         }
 

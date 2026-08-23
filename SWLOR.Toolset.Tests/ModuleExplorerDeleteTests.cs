@@ -115,6 +115,56 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task ModulePropertiesOpeningDuringConfirmation_PreventsAreaDeletion()
+        {
+            const string resRef = "keep_area";
+            CopyAreaTemplate(resRef);
+            var ifoPath = Path.Combine(_module, "ifo", "module.ifo.json");
+            File.Copy(Path.Combine(CorpusLocator.ModuleDirectory, "ifo", "module.ifo.json"), ifoPath);
+            var ifo = IfoDocument.Load(ifoPath);
+            AreaTemplateFactory.AddAreaToModule(ifo, resRef).Should().BeTrue();
+            File.WriteAllBytes(ifoPath, ifo.ToBytes());
+
+            Action? openModuleProperties = null;
+            var prompts = new RecordingPrompts(answer: true, onConfirm: () => openModuleProperties!());
+            var (explorer, _) = CreateExplorer(
+                ResourceType.Area,
+                prompts,
+                editorServiceFactory: (workspace, log) =>
+                {
+                    var editors = new Editors.EditorService(
+                        workspace,
+                        new Editors.LookupOptionProvider(workspace),
+                        log,
+                        factory: null!,
+                        prompts);
+                    openModuleProperties = () =>
+                    {
+                        var document = new Editors.Module.ModulePropertiesDocumentViewModel(
+                            ifoPath,
+                            _module,
+                            workspace.Workspace!,
+                            log,
+                            prompts);
+                        typeof(Editors.EditorService)
+                            .GetField("_moduleProperties", System.Reflection.BindingFlags.Instance |
+                                                          System.Reflection.BindingFlags.NonPublic)!
+                            .SetValue(editors, document);
+                    };
+                    return editors;
+                });
+            explorer.SelectedRow = UnsortedResource(explorer, resRef);
+
+            await explorer.DeleteSelectedResourceCommand.ExecuteAsync(null);
+
+            File.Exists(Path.Combine(_module, "are", resRef + ".are.json")).Should().BeTrue();
+            File.Exists(Path.Combine(_module, "git", resRef + ".git.json")).Should().BeTrue();
+            File.Exists(Path.Combine(_module, "gic", resRef + ".gic.json")).Should().BeTrue();
+            IfoDocument.Load(ifoPath).AreaResRefs.Should().Contain(resRef);
+            explorer.StatusMessage.Should().Contain("Module Properties is now open");
+        }
+
+        [Test]
         public async Task DecliningConfirmation_PreservesEveryScriptFile()
         {
             const string resRef = "keep_script";
@@ -406,7 +456,8 @@ namespace SWLOR.Toolset.Tests
         private (ModuleExplorerViewModel Explorer, CategoryService Categories) CreateExplorer(
             ResourceType type,
             IEditorPromptService prompts,
-            ModuleMutationLock? mutationLock = null)
+            ModuleMutationLock? mutationLock = null,
+            Func<WorkspaceContext, OutputLogService, Editors.EditorService>? editorServiceFactory = null)
         {
             var log = new OutputLogService();
             var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
@@ -414,11 +465,13 @@ namespace SWLOR.Toolset.Tests
             var categories = new CategoryService(workspace, log);
             categories.Section(type)!.IsSeeded = true;
             categories.SaveChanges().Saved.Should().BeTrue();
+            var editorService = editorServiceFactory?.Invoke(workspace, log);
             var explorer = new ModuleExplorerViewModel(
                 workspace,
                 new PropertiesViewModel(workspace, log),
                 categories,
                 log,
+                editorService: editorService == null ? null : () => editorService,
                 prompts: prompts,
                 mutationLock: mutationLock)
             {

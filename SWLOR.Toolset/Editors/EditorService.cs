@@ -177,6 +177,13 @@ namespace SWLOR.Toolset.Editors
         private readonly Workspace.ModuleCustomContentService? _moduleCustomContent;
         private Module.ModulePropertiesDocumentViewModel? _moduleProperties;
 
+        /// <summary>
+        /// Whether module.ifo.json is currently owned by the Module Properties editor. Area deletion
+        /// must not rewrite that file underneath the document because a later save could restore the
+        /// deleted area's registration.
+        /// </summary>
+        public bool IsModulePropertiesOpen => _moduleProperties != null;
+
         // Keyed by path like the blueprint map rather than by resref like the area map: a script is
         // one file, so the path is its identity and there is no are/git/gic triplet to name.
         private readonly Dictionary<string, ScriptEditorViewModel> _openScriptEditors = new(StringComparer.OrdinalIgnoreCase);
@@ -1186,6 +1193,9 @@ namespace SWLOR.Toolset.Editors
 
         private void GoToObjectPlacement(ObjectPlacement placement)
         {
+            if (IsResourceOpeningBlocked(placement.AreaResRef))
+                return;
+
             var workspace = _workspaceContext.Workspace;
             if (workspace == null)
             {

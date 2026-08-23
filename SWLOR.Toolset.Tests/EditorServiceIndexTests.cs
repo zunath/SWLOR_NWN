@@ -347,7 +347,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void ResourceDeletionBlocksPublicAndDirectScriptOpeningRoutes()
+        public void ResourceDeletionBlocksEveryEditorOpeningRoute()
         {
             const string resRef = "delete_in_progress";
             var moduleRoot = NewModuleRoot();
@@ -373,14 +373,33 @@ namespace SWLOR.Toolset.Tests
                 typeof(EditorService)
                     .GetMethod("OpenScriptEditor", BindingFlags.Instance | BindingFlags.NonPublic)!
                     .Invoke(editors, new object[] { workspace.Workspace!, resRef });
+                typeof(EditorService)
+                    .GetMethod("GoToObjectPlacement", BindingFlags.Instance | BindingFlags.NonPublic)!
+                    .Invoke(editors, new object[]
+                    {
+                        new ObjectPlacement(
+                            ResourceType.Utw,
+                            "arrival_wp",
+                            "area_being_deleted",
+                            0,
+                            "ARRIVAL",
+                            1f,
+                            2f,
+                            3f)
+                    });
             }
 
             var openScripts = (Dictionary<string, ScriptEditorViewModel>)typeof(EditorService)
                 .GetField("_openScriptEditors", BindingFlags.Instance | BindingFlags.NonPublic)!
                 .GetValue(editors)!;
             openScripts.Should().BeEmpty();
+            var pendingAreaReveals = (Dictionary<string, ObjectPlacement>)typeof(EditorService)
+                .GetField("_pendingAreaReveals", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .GetValue(editors)!;
+            pendingAreaReveals.Should().BeEmpty(
+                "object-source Go To must not queue an area reveal during deletion");
             log.Lines.Count(line => line.Contains("a module resource deletion is in progress"))
-                .Should().Be(2, "both the shared entry point and direct include-navigation path are gated");
+                .Should().Be(3, "public, include-navigation, and object-source routes are all gated");
         }
 
         [Test]

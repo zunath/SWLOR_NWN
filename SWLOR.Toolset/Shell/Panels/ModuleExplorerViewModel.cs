@@ -923,13 +923,20 @@ namespace SWLOR.Toolset.Shell.Panels
             var resRef = item.ResRef;
             var displayName = string.IsNullOrWhiteSpace(item.Name) ? row.Name : item.Name;
             var kind = type.SingularDisplayName().ToLowerInvariant();
+            var editorService = _editorService?.Invoke();
 
             // An open editor owns sessions for these files. Deleting underneath it lets the next
             // save recreate the resource the builder just deleted, so closing is an explicit first
             // step just as it is for Palette blueprint deletion.
-            if (_editorService?.Invoke().IsOpen(type, resRef) == true)
+            if (editorService?.IsOpen(type, resRef) == true)
             {
                 StatusMessage = $"'{displayName}' is open in an editor - close that tab first.";
+                return;
+            }
+
+            if (type == ResourceType.Area && editorService?.IsModulePropertiesOpen == true)
+            {
+                StatusMessage = "Module Properties is open - close that tab before deleting an area.";
                 return;
             }
 
@@ -978,19 +985,26 @@ namespace SWLOR.Toolset.Shell.Panels
             if (!confirmed)
                 return;
 
-            // Both conditions can change while the confirmation is open. Recheck before entering
-            // the filesystem transaction, and the transaction itself performs the process-wide
-            // mutation check again under its cross-process leases.
-            if (_mutationLock?.IsLocked == true)
+            // Reserve the shared deletion state before rechecking editor ownership. The reservation
+            // blocks every editor-opening route until the deletion and its catalog cleanup finish,
+            // closing the race between these checks and entering the filesystem transaction.
+            using var deletionOperation = _mutationLock?.TryBeginResourceDeletion();
+            if (_mutationLock != null && deletionOperation == null)
             {
                 StatusMessage = $"'{displayName}' was not deleted: the module is being packed, validated, or built.";
                 _log.AppendLine($"Deleting {kind} '{resRef}' was refused: the module is locked.");
                 return;
             }
 
-            if (_editorService?.Invoke().IsOpen(type, resRef) == true)
+            if (editorService?.IsOpen(type, resRef) == true)
             {
                 StatusMessage = $"'{displayName}' is now open in an editor - close that tab first.";
+                return;
+            }
+
+            if (type == ResourceType.Area && editorService?.IsModulePropertiesOpen == true)
+            {
+                StatusMessage = "Module Properties is now open - close that tab before deleting an area.";
                 return;
             }
 
@@ -1006,7 +1020,6 @@ namespace SWLOR.Toolset.Shell.Panels
             }
 
             ModuleResourceDeletionResult result;
-            using var deletionOperation = _mutationLock?.BeginResourceDeletion();
             IsDeletingResource = true;
             StatusMessage = $"Deleting {kind} '{displayName}'...";
             try

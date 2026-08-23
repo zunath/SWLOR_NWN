@@ -95,6 +95,25 @@ namespace SWLOR.Toolset.Services
             return new ResourceDeletionScope(this);
         }
 
+        /// <summary>
+        /// Atomically starts an exclusive resource deletion when no module-wide operation or other
+        /// deletion already owns the workspace. This closes the gap between a caller checking
+        /// <see cref="IsLocked"/> and publishing its own deletion state.
+        /// </summary>
+        public IDisposable? TryBeginResourceDeletion()
+        {
+            lock (_stateGate)
+            {
+                if (_shellOperationActive || _resourceDeletionCount > 0)
+                    return null;
+
+                _resourceDeletionCount = 1;
+            }
+
+            Changed?.Invoke();
+            return new ResourceDeletionScope(this);
+        }
+
         private void EndResourceDeletion()
         {
             var changed = false;

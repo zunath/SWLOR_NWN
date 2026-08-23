@@ -79,6 +79,21 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void ExclusiveResourceDeletionReservationFailsWhenTheModuleIsAlreadyOwned()
+        {
+            var mutationLock = new ModuleMutationLock();
+
+            mutationLock.Set(true);
+            mutationLock.TryBeginResourceDeletion().Should().BeNull();
+            mutationLock.Set(false);
+
+            using var reservation = mutationLock.TryBeginResourceDeletion();
+            reservation.Should().NotBeNull();
+            mutationLock.TryBeginResourceDeletion().Should().BeNull();
+            mutationLock.IsResourceDeletionActive.Should().BeTrue();
+        }
+
+        [Test]
         public void ValidationStandsDownWhileTheModuleIsLocked()
         {
             var (workspace, log) = Context();

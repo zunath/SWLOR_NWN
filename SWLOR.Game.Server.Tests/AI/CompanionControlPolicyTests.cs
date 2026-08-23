@@ -67,6 +67,29 @@ public class CompanionControlPolicyTests
     }
 
     [Test]
+    public void StandGroundStopsActionsThatCanMoveTheCompanion()
+    {
+        CompanionControlPolicy.ShouldStopActionInStandGround(ActionType.AttackObject)
+            .Should()
+            .BeTrue();
+        CompanionControlPolicy.ShouldStopActionInStandGround(ActionType.MoveToPoint)
+            .Should()
+            .BeTrue();
+        CompanionControlPolicy.ShouldStopActionInStandGround(ActionType.OpenDoor)
+            .Should()
+            .BeTrue();
+        CompanionControlPolicy.ShouldStopActionInStandGround(ActionType.CastSpell)
+            .Should()
+            .BeFalse();
+        CompanionControlPolicy.ShouldStopActionInStandGround(ActionType.Wait)
+            .Should()
+            .BeFalse();
+        CompanionControlPolicy.ShouldStopActionInStandGround(ActionType.Invalid)
+            .Should()
+            .BeFalse();
+    }
+
+    [Test]
     public void BlockedPathTimesOutAtFiveSeconds()
     {
         var startedAt = new DateTime(2026, 8, 23, 12, 0, 0, DateTimeKind.Utc);

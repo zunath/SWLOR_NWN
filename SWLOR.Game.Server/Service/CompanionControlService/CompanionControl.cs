@@ -58,7 +58,7 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
                    (Droid.IsDroid(creature) || BeastMastery.IsPlayerBeast(creature));
         }
 
-        public static void Initialize(uint companion)
+        public static void Initialize(uint companion, bool preserveActionQueue = false)
         {
             if (!IsControlledCompanion(companion))
                 return;
@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             };
 
             SetAssociateListenPatterns(companion);
-            IssueFollowAction(companion);
+            IssueFollowAction(companion, !preserveActionQueue);
         }
 
         public static void Clear(uint companion)
@@ -133,6 +133,7 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
                     RegisterOwnerAttack(companion, GetAttackTarget(master));
                     return true;
                 case AssociateCommand.MasterFailedLockpick:
+                case AssociateCommand.MasterSawTrap:
                 case AssociateCommand.PickLock:
                 case AssociateCommand.DisarmTrap:
                     BeginExplicitOrder(companion);
@@ -186,7 +187,7 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
                 state.ExplicitOrderUntil = default;
         }
 
-        public static void ProcessCombatRound(uint companion)
+        public static void ProcessCombatRound(uint companion, bool bypassDecisionThrottle = false)
         {
             if (!IsControlledCompanion(companion) || Activity.IsBusy(companion))
                 return;
@@ -198,7 +199,18 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             if (!GetIsObjectValid(target))
                 MaintainModePosition(companion);
 
-            AI.ProcessTrigger(companion, AITriggerType.CombatRound, target);
+            var actionIssued = AI.ProcessTrigger(
+                companion,
+                AITriggerType.CombatRound,
+                target,
+                bypassDecisionThrottle);
+            var state = GetState(companion);
+            if (actionIssued &&
+                GetIsObjectValid(target) &&
+                state.TrackedTarget != target)
+            {
+                StartTracking(state, companion, target);
+            }
         }
 
         public static void ProcessHeartbeat(uint companion)
@@ -441,10 +453,9 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             state.Mode = CompanionMode.Follow;
             ClearEngagements(state);
             state.AttackNearestTarget = target;
-            StartTracking(state, companion, target);
             var master = GetMaster(companion);
             SendResponse(companion, $"Attacking {PlayerName.GetDisplayName(master, target)}, then returning to Follow.");
-            ProcessCombatRound(companion);
+            ProcessCombatRound(companion, true);
         }
 
         private static void HealMaster(uint companion)
@@ -562,10 +573,7 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
         {
             var state = GetState(companion);
             if (state.TrackedTarget != target)
-            {
-                StartTracking(state, companion, target);
                 return true;
-            }
 
             var distance = GetDistanceBetween(companion, target);
             var hasOpportunity = IsWithinWeaponRange(companion, target) ||
@@ -803,13 +811,19 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
 
             var state = GetState(companion);
             if (state.Mode == CompanionMode.StandGround)
+            {
+                var currentAction = GetCurrentAction(companion);
+                if (CompanionControlPolicy.ShouldStopActionInStandGround(currentAction))
+                    AssignCommand(companion, () => ClearAllActions(true));
+
                 return;
+            }
 
             if (GetCurrentAction(companion) != ActionType.Follow)
                 IssueFollowAction(companion);
         }
 
-        private static void IssueFollowAction(uint companion)
+        private static void IssueFollowAction(uint companion, bool clearActions = true)
         {
             var master = GetMaster(companion);
             if (!GetIsObjectValid(master))
@@ -820,7 +834,9 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
                 : FollowDistanceMeters;
             AssignCommand(companion, () =>
             {
-                ClearAllActions(true);
+                if (clearActions)
+                    ClearAllActions(true);
+
                 ActionForceFollowObject(master, followDistance);
             });
         }

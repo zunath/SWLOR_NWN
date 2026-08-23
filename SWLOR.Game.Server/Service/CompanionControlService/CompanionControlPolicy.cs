@@ -44,6 +44,16 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
                    currentAction is not ActionType.Invalid and not ActionType.Follow;
         }
 
+        public static bool ShouldStopActionInStandGround(ActionType currentAction)
+        {
+            return currentAction is not ActionType.Invalid and
+                   not ActionType.Wait and
+                   not ActionType.Sit and
+                   not ActionType.CastSpell and
+                   not ActionType.ItemCastSpell and
+                   not ActionType.CounterSpell;
+        }
+
         public static bool ReturnsToFollowWhenComplete(CompanionEngagementType engagementType)
         {
             return engagementType == CompanionEngagementType.AttackNearest;

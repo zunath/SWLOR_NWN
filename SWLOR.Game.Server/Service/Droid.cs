@@ -1055,7 +1055,7 @@ namespace SWLOR.Game.Server.Service
             });
             Stat.LoadNPCStats();
             Stat.ApplyCreatureMovementRate(droid);
-            CompanionControl.Initialize(droid);
+            CompanionControl.Initialize(droid, true);
         }
 
         [NWNEventHandler(ScriptName.OnDroidSpellCast)]

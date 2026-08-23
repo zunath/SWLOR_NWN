@@ -124,7 +124,8 @@ namespace SWLOR.Game.Server.Service.AIService
             uint creature,
             AITriggerType trigger,
             uint eventTarget,
-            IReadOnlyList<uint> allies)
+            IReadOnlyList<uint> allies,
+            bool bypassDecisionThrottle = false)
         {
             if (!GetIsObjectValid(creature) ||
                 GetIsPC(creature) ||
@@ -174,7 +175,7 @@ namespace SWLOR.Game.Server.Service.AIService
                 return false;
             }
 
-            if (ShouldThrottle(profile, state, trigger))
+            if (!bypassDecisionThrottle && ShouldThrottle(profile, state, trigger))
                 return false;
 
             state.LastDecisionTime = DateTime.UtcNow;

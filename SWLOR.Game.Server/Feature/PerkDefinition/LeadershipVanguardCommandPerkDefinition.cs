@@ -143,13 +143,13 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Name("Break Morale")
 
                 .AddPerkLevel()
-                .Description("Enemies within Leadership range (5m base) suffer Flash for 30 seconds, reducing physical and Force ability hit chance by 10%. SOC scaling can raise the penalty to 12%. This command applies reliably to valid enemies within Leadership range (5m base).")
+                .Description("Enemies within Leadership range (5m base) suffer Flash for 30 seconds, reducing Ability Accuracy by 10%. SOC scaling can raise the penalty to 12%. This command applies reliably to valid enemies within Leadership range (5m base).")
                 .Price(3)
                 .RequirementSkill(SkillType.Leadership, 25)
                 .GrantsFeat(FeatType.BreakMorale1)
 
                 .AddPerkLevel()
-                .Description("Enemies within Leadership range (5m base) suffer Flash, reducing physical and Force ability hit chance by 15%, and Weakened, reducing Attack by 12%, for 30 seconds. SOC scaling can raise these penalties to 18% and 15%. This command applies reliably to valid enemies within Leadership range (5m base).")
+                .Description("Enemies within Leadership range (5m base) suffer Flash, reducing Ability Accuracy by 15%, and Weakened, reducing Attack by 12%, for 30 seconds. SOC scaling can raise these penalties to 18% and 15%. This command applies reliably to valid enemies within Leadership range (5m base).")
                 .Price(4)
                 .RequirementSkill(SkillType.Leadership, 42)
                 .GrantsFeat(FeatType.BreakMorale2);

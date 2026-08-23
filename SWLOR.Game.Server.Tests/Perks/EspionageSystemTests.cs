@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SlicingService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Creature;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -439,6 +440,9 @@ public class EspionageSystemTests
         shadowStep.Should().Contain("ShadowStep(builder, FeatType.ShadowStep2, \"Shadow Step II\", 2, 14, 15, true);");
         shadowStep.Should().Contain(".HasMaxRange(5f)");
         shadowStep.Should().Contain("targetPosition.X - (float)Math.Cos(facingRadians) * ArrivalDistanceMeters");
+        var shadowStepAbilities = new ShadowStepAbilityDefinition().BuildAbilities();
+        shadowStepAbilities[FeatType.ShadowStep1].AnimationType.Should().Be(Animation.CastOutAnimation);
+        shadowStepAbilities[FeatType.ShadowStep2].AnimationType.Should().Be(Animation.CastOutAnimation);
 
         ghostProtocol.Should().Contain("private const int EnmityReductionPercent = 80;");
         ghostProtocol.Should().Contain("private const float StealthWindowSeconds = 30f;");

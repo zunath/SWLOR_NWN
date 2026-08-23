@@ -1354,14 +1354,15 @@ namespace SWLOR.Toolset.Editors
         public bool IsOpen(ResourceType type, string resRef)
         {
             if (type == ResourceType.Area)
-                return _openAreaEditors.ContainsKey(resRef);
+                return _openAreaEditors.ContainsKey(resRef) || _openingAreaEditors.Contains(resRef);
 
             var workspace = _workspaceContext.Workspace;
             if (workspace == null)
                 return false;
 
             var path = workspace.GetResourcePath(type, resRef);
-            return _openEditors.ContainsKey(path)
+            return _openScriptEditors.ContainsKey(path)
+                   || _openEditors.ContainsKey(path)
                    || _openTriggerEditors.ContainsKey(path)
                    || _openWaypointEditors.ContainsKey(path)
                    || _openDoorEditors.ContainsKey(path)

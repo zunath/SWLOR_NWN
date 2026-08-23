@@ -201,8 +201,10 @@ namespace SWLOR.Toolset.Shell.Panels
         {
             OnPropertyChanged(nameof(CanCreateSelectedType));
             OnPropertyChanged(nameof(CanCompileSelectedType));
+            OnPropertyChanged(nameof(CanDeleteSelectedResource));
             NewItemCommand.NotifyCanExecuteChanged();
             CompileSelectedCommand.NotifyCanExecuteChanged();
+            DeleteSelectedResourceCommand.NotifyCanExecuteChanged();
         }
 
         /// <summary>Builds the tree for the selected tab.</summary>
@@ -889,6 +891,161 @@ namespace SWLOR.Toolset.Shell.Panels
         // ----- browsing -----
 
         /// <summary>
+        /// Only real area, dialog, and script rows can be deleted, and never while a module-wide
+        /// reader or writer owns the workspace.
+        /// </summary>
+        public bool CanDeleteSelectedResource =>
+            SelectedRow?.Item != null &&
+            SelectedRow.Type is ResourceType.Area or ResourceType.Dlg or ResourceType.Nss &&
+            _mutationLock?.IsLocked != true;
+
+        /// <summary>
+        /// Deletes the logical resource represented by the selected row. Areas include their whole
+        /// triplet and module registration; dialogs include graph and legacy forms; scripts include
+        /// source and same-resref compiled output.
+        /// </summary>
+        [RelayCommand(CanExecute = nameof(CanDeleteSelectedResource))]
+        private async Task DeleteSelectedResourceAsync()
+        {
+            var row = SelectedRow;
+            var item = row?.Item;
+            var workspace = _workspaceContext.Workspace;
+            if (row == null || item == null || workspace == null || _prompts == null)
+                return;
+
+            var type = row.Type;
+            var resRef = item.ResRef;
+            var displayName = string.IsNullOrWhiteSpace(item.Name) ? row.Name : item.Name;
+            var kind = type.SingularDisplayName().ToLowerInvariant();
+
+            // An open editor owns sessions for these files. Deleting underneath it lets the next
+            // save recreate the resource the builder just deleted, so closing is an explicit first
+            // step just as it is for Palette blueprint deletion.
+            if (_editorService?.Invoke().IsOpen(type, resRef) == true)
+            {
+                StatusMessage = $"'{displayName}' is open in an editor - close that tab first.";
+                return;
+            }
+
+            var section = _categories.Section(type);
+            if (section?.FoldersContaining(resRef).Any() == true)
+            {
+                var preflight = _categories.CanSaveChanges();
+                if (!preflight.Saved)
+                {
+                    StatusMessage = $"'{displayName}' was not deleted: {preflight.Problem}";
+                    _log.AppendLine($"Deleting {kind} '{resRef}' was refused: {preflight.Problem}");
+                    return;
+                }
+            }
+
+            ModuleResourceDeletionPlan plan;
+            try
+            {
+                plan = ModuleResourceDeletionService.Prepare(workspace, type, resRef);
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"'{displayName}' was not deleted: {ex.Message}";
+                _log.AppendLine($"Deleting {kind} '{resRef}' was refused: {ex.Message}");
+                return;
+            }
+
+            var files = string.Join(", ", plan.ExistingFileNames);
+            var details = type switch
+            {
+                ResourceType.Area =>
+                    $"This deletes {files}" +
+                    (plan.RemovesAreaRegistration ? " and removes the area from module.ifo.json" : string.Empty) +
+                    ". Transitions and other references to this area are not removed.",
+                ResourceType.Dlg =>
+                    $"This deletes every source form of the dialog ({files}). Objects and scripts that reference it are not changed.",
+                ResourceType.Nss =>
+                    $"This deletes the script source and any compiled output that exists ({files}). References to the script are not changed.",
+                _ => throw new ArgumentOutOfRangeException()
+            };
+
+            var confirmed = await _prompts.ConfirmDestructiveAsync(
+                $"Delete the {kind} '{displayName}'?",
+                details + " This cannot be undone from the toolset.",
+                "Delete").ConfigureAwait(true);
+            if (!confirmed)
+                return;
+
+            // Both conditions can change while the confirmation is open. Recheck before entering
+            // the filesystem transaction, and the transaction itself performs the process-wide
+            // mutation check again under its cross-process leases.
+            if (_mutationLock?.IsLocked == true)
+            {
+                StatusMessage = $"'{displayName}' was not deleted: the module is being packed, validated, or built.";
+                _log.AppendLine($"Deleting {kind} '{resRef}' was refused: the module is locked.");
+                return;
+            }
+
+            if (_editorService?.Invoke().IsOpen(type, resRef) == true)
+            {
+                StatusMessage = $"'{displayName}' is now open in an editor - close that tab first.";
+                return;
+            }
+
+            if (section?.FoldersContaining(resRef).Any() == true)
+            {
+                var recheck = _categories.CanSaveChanges();
+                if (!recheck.Saved)
+                {
+                    StatusMessage = $"'{displayName}' was not deleted: {recheck.Problem}";
+                    _log.AppendLine($"Deleting {kind} '{resRef}' was refused: {recheck.Problem}");
+                    return;
+                }
+            }
+
+            ModuleResourceDeletionResult result;
+            try
+            {
+                result = ModuleResourceDeletionService.Commit(plan);
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"'{displayName}' was not deleted: {ex.Message}";
+                _log.AppendLine($"Deleting {kind} '{resRef}' failed: {ex.Message}");
+                return;
+            }
+
+            _workspaceContext.RemoveCatalogEntry(type, resRef);
+
+            var unfiled = true;
+            if (section != null)
+            {
+                var folders = section.FoldersContaining(resRef).ToList();
+                foreach (var folder in folders)
+                    folder.RemoveMember(resRef);
+
+                if (folders.Count > 0)
+                    unfiled = SaveCategories();
+            }
+
+            SelectedRow = null;
+            ClearResourceMoveHistory();
+            Refresh();
+
+            var cleanup = result.CleanupWarnings.Count == 0
+                ? string.Empty
+                : $" Temporary delete backup cleanup needs attention: {string.Join("; ", result.CleanupWarnings)}";
+            if (unfiled)
+            {
+                StatusMessage = $"Deleted {kind} '{displayName}'.{cleanup}";
+            }
+            else
+            {
+                StatusMessage =
+                    $"Deleted {kind} '{displayName}', but its Module Contents folder still lists it. {StatusMessage}{cleanup}";
+            }
+
+            _log.AppendLine(
+                $"Deleted {kind} '{resRef}' ({string.Join(", ", result.DeletedPaths)}).{cleanup}");
+        }
+
+        /// <summary>
         /// Whether the selected tab's resources can actually be opened. All three kinds can now:
         /// areas in the area editor, scripts in the script editor, and conversations in Play-it.
         /// </summary>
@@ -1100,6 +1257,8 @@ namespace SWLOR.Toolset.Shell.Panels
         partial void OnSelectedRowChanged(ExplorerNodeViewModel? value)
         {
             OnPropertyChanged(nameof(HasFolderSelected));
+            OnPropertyChanged(nameof(CanDeleteSelectedResource));
+            DeleteSelectedResourceCommand.NotifyCanExecuteChanged();
 
             if (value?.Item == null)
                 return;

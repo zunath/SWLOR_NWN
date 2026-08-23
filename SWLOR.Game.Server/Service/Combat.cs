@@ -9867,7 +9867,14 @@ namespace SWLOR.Game.Server.Service
 
         private static bool IsWeaponOrForceAbility(SkillType skillType)
         {
-            return skillType == SkillType.Force || IsWeaponSkillType(skillType);
+            // Natural-creature physical abilities resolve through Beast Mastery rather than a
+            // weapon-category skill. They still use the same physical/Force ability hit-chance
+            // modifiers as weapon abilities; excluding them made Flash and similar effects appear
+            // on NPCs without changing the displayed hit chance of abilities such as
+            // Disorienting Screech.
+            return skillType == SkillType.Force ||
+                   skillType == SkillType.BeastMastery ||
+                   IsWeaponSkillType(skillType);
         }
 
         public static int GetCombatImpactWeaponDamage(uint activator, SkillType skillType)

@@ -96,6 +96,25 @@ public class LeadershipCombatUpgradeTests
     }
 
     [Test]
+    public void BreakMoraleFlash_AffectsNaturalCreaturePhysicalAbilities()
+    {
+        var flash = new FlashStatusEffect(15);
+        flash.StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment].Should().Be(-15);
+
+        var classifier = typeof(Combat).GetMethod(
+            "IsWeaponOrForceAbility",
+            BindingFlags.NonPublic | BindingFlags.Static);
+
+        classifier.Should().NotBeNull();
+        classifier!.Invoke(null, new object[] { SkillType.BeastMastery }).Should().Be(true,
+            "NPC natural-creature abilities such as Disorienting Screech resolve through Beast Mastery");
+        classifier.Invoke(null, new object[] { SkillType.Force }).Should().Be(true);
+        classifier.Invoke(null, new object[] { SkillType.Rifle }).Should().Be(true);
+        classifier.Invoke(null, new object[] { SkillType.Mimicry }).Should().Be(false,
+            "the physical/Force modifier deliberately does not affect player Mimicry techniques");
+    }
+
+    [Test]
     public void ReportedLeadershipFailPerks_UseDynamicRadiusAndTemporaryHitPoints()
     {
         var root = FindRepositoryRoot();

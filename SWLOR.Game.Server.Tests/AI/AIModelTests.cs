@@ -1211,6 +1211,33 @@ public class AIModelTests
         return File.ReadAllText(fullPath);
     }
 
+    private static string ExtractMethodBody(string source, string signature)
+    {
+        var signatureIndex = source.IndexOf(signature, StringComparison.Ordinal);
+        signatureIndex.Should().BeGreaterThanOrEqualTo(0);
+
+        var openingBrace = source.IndexOf('{', signatureIndex);
+        openingBrace.Should().BeGreaterThan(signatureIndex);
+
+        var depth = 0;
+        for (var index = openingBrace; index < source.Length; index++)
+        {
+            switch (source[index])
+            {
+                case '{':
+                    depth++;
+                    break;
+                case '}':
+                    depth--;
+                    if (depth == 0)
+                        return source.Substring(signatureIndex, index - signatureIndex + 1);
+                    break;
+            }
+        }
+
+        throw new InvalidOperationException($"Could not find the end of method '{signature}'.");
+    }
+
     [Test]
     public void CompanionDefensiveEventsResumeAfterBusyAbilityActivations()
     {
@@ -1220,10 +1247,39 @@ public class AIModelTests
             "CompanionControlService",
             "CompanionControl.cs");
         var usePerkFeat = ReadSource("SWLOR.Game.Server", "Feature", "UsePerkFeat.cs");
+        var registerThreat = ExtractMethodBody(companionControl, "public static void RegisterDefensiveThreat");
+        var processCombatRound = ExtractMethodBody(companionControl, "public static void ProcessCombatRound");
+        var resumeAttack = ExtractMethodBody(usePerkFeat, "private static void ResumeAttack");
+        var pendingReaction = registerThreat.IndexOf("state.DefensiveReactionPending = true;", StringComparison.Ordinal);
+        var processRound = registerThreat.IndexOf("ProcessCombatRound(companion, true);", StringComparison.Ordinal);
+        var explicitOrderGuard = processCombatRound.IndexOf("if (IsExplicitOrderInProgress(companion))", StringComparison.Ordinal);
+        var consumePending = processCombatRound.IndexOf("state.DefensiveReactionPending = false;", StringComparison.Ordinal);
 
-        companionControl.Should().Contain("state.DefensiveReactionPending = true;");
-        companionControl.Should().Contain("ProcessCombatRound(companion, true);");
-        usePerkFeat.Should().Contain("CompanionControl.TryProcessPendingDefensiveReaction(activator)");
+        pendingReaction.Should().BeGreaterThanOrEqualTo(0);
+        processRound.Should().BeGreaterThan(pendingReaction);
+        explicitOrderGuard.Should().BeGreaterThanOrEqualTo(0);
+        consumePending.Should().BeGreaterThan(explicitOrderGuard);
+        resumeAttack.Should().Contain("CompanionControl.TryProcessPendingDefensiveReaction(activator)");
+    }
+
+    [Test]
+    public void DefensiveTargetQueriesShareAuthorizationAndOrdering()
+    {
+        var companionControl = ReadSource(
+            "SWLOR.Game.Server",
+            "Service",
+            "CompanionControlService",
+            "CompanionControl.cs");
+        var peekTarget = ExtractMethodBody(companionControl, "public static uint PeekAuthorizedTarget");
+        var getTarget = ExtractMethodBody(companionControl, "private static uint GetDefensiveTarget");
+        var selectTarget = ExtractMethodBody(companionControl, "private static uint SelectDefensiveTarget");
+
+        peekTarget.Should().Contain("SelectDefensiveTarget(companion, state, false)");
+        getTarget.Should().Contain("SelectDefensiveTarget(companion, state, true)");
+        selectTarget.Should().Contain("CompanionControlPolicy.PathingTimeoutSeconds");
+        selectTarget.Should().Contain("CompanionEngagementType.Defensive");
+        selectTarget.Should().Contain("OrderByDescending(x => GetAttackTarget(x) == master)");
+        selectTarget.Should().Contain("ThenBy(x => GetDistanceBetween(companion, x))");
     }
 
     [Test]
@@ -1234,10 +1290,7 @@ public class AIModelTests
             "Service",
             "CompanionControlService",
             "CompanionControl.cs");
-        var removeThreat = companionControl.Substring(
-            companionControl.IndexOf("private static void RemoveDefensiveThreat", StringComparison.Ordinal),
-            companionControl.IndexOf("private static bool ValidateAuthorizedTarget", StringComparison.Ordinal) -
-            companionControl.IndexOf("private static void RemoveDefensiveThreat", StringComparison.Ordinal));
+        var removeThreat = ExtractMethodBody(companionControl, "private static void RemoveDefensiveThreat");
 
         removeThreat.Should().Contain("state.DefensiveThreats.Remove(threat);");
         removeThreat.Should().Contain("if (state.TrackedTarget == threat)");
@@ -1253,12 +1306,11 @@ public class AIModelTests
             "GuiDefinition",
             "ViewModel",
             "StablesViewModel.cs");
-        var releaseMethod = source.IndexOf("public Action OnClickReleaseBeast()", StringComparison.Ordinal);
-        var clearState = source.IndexOf("CompanionControl.Clear(beast);", releaseMethod, StringComparison.Ordinal);
-        var destroyBeast = source.IndexOf("DestroyObject(beast);", releaseMethod, StringComparison.Ordinal);
+        var releaseMethod = ExtractMethodBody(source, "public Action OnClickReleaseBeast()");
+        var clearState = releaseMethod.IndexOf("CompanionControl.Clear(beast);", StringComparison.Ordinal);
+        var destroyBeast = releaseMethod.IndexOf("DestroyObject(beast);", StringComparison.Ordinal);
 
-        releaseMethod.Should().BeGreaterThanOrEqualTo(0);
-        clearState.Should().BeGreaterThan(releaseMethod);
+        clearState.Should().BeGreaterThanOrEqualTo(0);
         destroyBeast.Should().BeGreaterThan(clearState);
     }
 

@@ -204,14 +204,14 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
                 return;
 
             var state = GetState(companion);
+            if (IsExplicitOrderInProgress(companion))
+                return;
+
             if (state.DefensiveReactionPending)
             {
                 state.DefensiveReactionPending = false;
                 bypassDecisionThrottle = true;
             }
-
-            if (IsExplicitOrderInProgress(companion))
-                return;
 
             var target = AdvanceAuthorizedTarget(companion);
             if (!GetIsObjectValid(target))
@@ -333,28 +333,7 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
                 return state.AttackNearestTarget;
             }
 
-            var master = GetMaster(companion);
-            var now = DateTime.UtcNow;
-            var defensiveTarget = state.DefensiveThreats
-                .Where(x =>
-                {
-                    var threat = x.Key;
-                    var attackTarget = GetIsObjectValid(threat)
-                        ? GetAttackTarget(threat)
-                        : OBJECT_INVALID;
-                    var activelyThreatening = attackTarget == master || attackTarget == companion;
-                    var recentlyThreatened = (now - x.Value).TotalSeconds <
-                                             CompanionControlPolicy.PathingTimeoutSeconds;
-                    return (activelyThreatening || recentlyThreatened) &&
-                           ValidateAuthorizedTarget(
-                               companion,
-                               threat,
-                               CompanionEngagementType.Defensive);
-                })
-                .Select(x => x.Key)
-                .OrderByDescending(x => GetAttackTarget(x) == master)
-                .ThenBy(x => GetDistanceBetween(companion, x))
-                .FirstOrDefault(OBJECT_INVALID);
+            var defensiveTarget = SelectDefensiveTarget(companion, state, false);
             if (GetIsObjectValid(defensiveTarget))
                 return defensiveTarget;
 
@@ -589,34 +568,7 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
 
         private static uint GetDefensiveTarget(uint companion, CompanionControlState state)
         {
-            var master = GetMaster(companion);
-            var now = DateTime.UtcNow;
-            var candidates = new List<uint>();
-
-            foreach (var (threat, _) in state.DefensiveThreats.ToList())
-            {
-                var attackTarget = GetIsObjectValid(threat)
-                    ? GetAttackTarget(threat)
-                    : OBJECT_INVALID;
-                if (attackTarget == master || attackTarget == companion)
-                    state.DefensiveThreats[threat] = now;
-
-                var recentlyThreatened = (now - state.DefensiveThreats[threat]).TotalSeconds <
-                                         CompanionControlPolicy.PathingTimeoutSeconds;
-                if (!recentlyThreatened ||
-                    !ValidateAuthorizedTarget(companion, threat, CompanionEngagementType.Defensive))
-                {
-                    RemoveDefensiveThreat(state, threat);
-                    continue;
-                }
-
-                candidates.Add(threat);
-            }
-
-            var selected = candidates
-                .OrderByDescending(x => GetAttackTarget(x) == master)
-                .ThenBy(x => GetDistanceBetween(companion, x))
-                .FirstOrDefault(OBJECT_INVALID);
+            var selected = SelectDefensiveTarget(companion, state, true);
 
             if (GetIsObjectValid(selected) &&
                 !TrackProgress(companion, selected, CompanionEngagementType.Defensive))
@@ -627,6 +579,48 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             }
 
             return selected;
+        }
+
+        private static uint SelectDefensiveTarget(
+            uint companion,
+            CompanionControlState state,
+            bool updateState)
+        {
+            var master = GetMaster(companion);
+            var now = DateTime.UtcNow;
+            var candidates = new List<uint>();
+
+            foreach (var (threat, _) in state.DefensiveThreats.ToList())
+            {
+                var attackTarget = GetIsObjectValid(threat)
+                    ? GetAttackTarget(threat)
+                    : OBJECT_INVALID;
+                var activelyThreatening = attackTarget == master || attackTarget == companion;
+                if (updateState && activelyThreatening)
+                    state.DefensiveThreats[threat] = now;
+
+                var recentlyThreatened = (now - state.DefensiveThreats[threat]).TotalSeconds <
+                                         CompanionControlPolicy.PathingTimeoutSeconds;
+                var isAuthorized = (activelyThreatening || recentlyThreatened) &&
+                                   ValidateAuthorizedTarget(
+                                       companion,
+                                       threat,
+                                       CompanionEngagementType.Defensive);
+                if (!isAuthorized)
+                {
+                    if (updateState)
+                        RemoveDefensiveThreat(state, threat);
+
+                    continue;
+                }
+
+                candidates.Add(threat);
+            }
+
+            return candidates
+                .OrderByDescending(x => GetAttackTarget(x) == master)
+                .ThenBy(x => GetDistanceBetween(companion, x))
+                .FirstOrDefault(OBJECT_INVALID);
         }
 
         private static void RemoveDefensiveThreat(CompanionControlState state, uint threat)

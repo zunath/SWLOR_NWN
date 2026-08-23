@@ -657,6 +657,7 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("RiflePerkDefinition.cs", StatType.IdleSkillAbilityDamageBonus, "14");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.IdleSkillAbilityHitChancePercentAdjustment, "8");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.IdleSkillAbilityCriticalDamagePercentAdjustment, "15");
+        AssertSourceStat("RiflePerkDefinition.cs", StatType.OpeningAutoAttackCriticalDamagePercentAdjustment, "15");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.SameTargetPressureBuildSkillType, "(int)SkillType.Rifle");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.SameTargetPressureBuildSeconds, "12");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.SameTargetPressureGraceSeconds, "6");
@@ -876,20 +877,20 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertStatusStat(infiniteConduit, StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent, 70);
         AssertStatusStat(infiniteConduit, StatType.HighFPAndStaminaAbilityDamageBonus, 20);
 
-        var restoredFPForceAttack = new ForceLensForceAttackStatusEffect(8);
-        AssertStatusStat(restoredFPForceAttack, StatType.ForceAttackPercentAdjustment, 8);
-        restoredFPForceAttack.Name.Should().Be("Force Lens: Force Attack");
-        restoredFPForceAttack.Icon.Should().Be(EffectIconType.ForceLensForceAttackStatusEffect);
+        var restoredForcePointsForceAttack = new ForceLensForceAttackStatusEffect(8);
+        AssertStatusStat(restoredForcePointsForceAttack, StatType.ForceAttackPercentAdjustment, 8);
+        restoredForcePointsForceAttack.Name.Should().Be("Force Lens: Force Attack");
+        restoredForcePointsForceAttack.Icon.Should().Be(EffectIconType.ForceLensForceAttackStatusEffect);
 
         var restoredStaminaAttack = new ForceLensAttackStatusEffect(8);
         AssertStatusStat(restoredStaminaAttack, StatType.AttackPercentAdjustment, 8);
         restoredStaminaAttack.Name.Should().Be("Force Lens: Attack");
         restoredStaminaAttack.Icon.Should().Be(EffectIconType.ForceLensAttackStatusEffect);
 
-        var restoredFPHaste = new EnergizedFormsHasteStatusEffect(10);
-        AssertStatusStat(restoredFPHaste, StatType.AttackDelayReductionPercent, 10);
-        restoredFPHaste.Name.Should().Be("Energized Forms: Haste");
-        restoredFPHaste.Icon.Should().Be(EffectIconType.EnergizedFormsHasteStatusEffect);
+        var restoredForcePointsHaste = new EnergizedFormsHasteStatusEffect(10);
+        AssertStatusStat(restoredForcePointsHaste, StatType.AttackDelayReductionPercent, 10);
+        restoredForcePointsHaste.Name.Should().Be("Energized Forms: Haste");
+        restoredForcePointsHaste.Icon.Should().Be(EffectIconType.EnergizedFormsHasteStatusEffect);
 
         var hostileAbilityForceAttack = new HostileAbilityForceAttackStatusEffect(15);
         AssertStatusStat(hostileAbilityForceAttack, StatType.ForceAttackPercentAdjustment, 15);
@@ -1122,6 +1123,10 @@ public class GeneratedWeaponPerkBehaviorTests
             .Should().Be(StatTypeCategory.BeneficialWhenNegative);
         Stat.GetStatTypeCategory(StatType.IdleSkillAbilityCriticalDamagePercentAdjustment)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.OpeningAutoAttackCriticalDamagePercentAdjustment)
+            .Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.CurrentAutoAttackCriticalDamagePercentAdjustment)
+            .Should().Be(StatTypeCategory.BeneficialWhenPositive);
         Stat.GetStatTypeCategory(StatType.TargetLowHPStatusDamageStatusCategory)
             .Should().Be(StatTypeCategory.NonBeneficial);
         Stat.GetStatTypeCategory(StatType.TargetLowHPStatusDamagePercentAdjustment)
@@ -1244,6 +1249,7 @@ public class GeneratedWeaponPerkBehaviorTests
         var nativeAttackSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
         var statusEffectSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "StatusEffect.cs"));
         var generatorSource = File.ReadAllText(Path.Combine(root.FullName, "tools", "GenerateWeaponArchetypeImplementation.py"));
+        var linkerSource = File.ReadAllText(Path.Combine(root.FullName, "tools", "LinkCombatUpgradeFeatSpells.ps1"));
         combatSource.Should().Contain("ApplyCriticalBleedingStatusDurationExtension(attacker, defender)");
         combatSource.Should().Contain("StatType.HighFPAndStaminaAbilityDamagePercentAdjustmentThresholdPercent");
         combatSource.Should().Contain("StatType.HighFPAndStaminaAbilityDamagePercentAdjustment");
@@ -1328,6 +1334,9 @@ public class GeneratedWeaponPerkBehaviorTests
         combatSource.Should().Contain("ApplyTargetLowHPStatusDamageModifier(attacker, defender, damage)");
         combatSource.Should().Contain("ApplyDamageTakenShareToStatusSource(defender, attacker, damage, damageType)");
         combatSource.Should().Contain("IdleSkillAbilityCriticalDamagePercentAdjustment");
+        combatSource.Should().Contain("OpeningAutoAttackCriticalDamagePercentAdjustment");
+        linkerSource.Should().Contain("IsQueuedWeaponAbility\\s*=\\s*true");
+        linkerSource.Should().Contain("ConfigureGeneratedWeaponAbility");
         combatSource.Should().Contain("TargetHasSourceAppliedStatusCategory(defender, attacker, category)");
         combatSource.Should().Contain("ApplySourceStatusStackEffects(attacker, defender)");
         combatSource.Should().Contain("ApplyHostileAbilityHitNextAutoAttackNoDelay(activator, ability)");

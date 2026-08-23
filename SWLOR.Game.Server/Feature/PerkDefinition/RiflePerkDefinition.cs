@@ -394,6 +394,9 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.IdleSkillAbilitySkillType, (int)SkillType.Rifle)
                 .IncreasesStat(StatType.IdleSkillAbilityRequiredIdleSeconds, 3)
                 .IncreasesStat(StatType.IdleSkillAbilityCriticalDamagePercentAdjustment, 15)
+                .IncreasesStat(StatType.OpeningAutoAttackSkillType, (int)SkillType.Rifle)
+                .IncreasesStat(StatType.OpeningAutoAttackIdleSeconds, 3)
+                .IncreasesStat(StatType.OpeningAutoAttackCriticalDamagePercentAdjustment, 15)
                 .Price(4)
                 .RequirementSkill(SkillType.Rifle, 25);
         }

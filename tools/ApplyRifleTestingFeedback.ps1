@@ -123,11 +123,64 @@ function Write-WorksheetEntry {
     }
 }
 
+function Assert-RifleDescriptionUpdates {
+    param(
+        [string]$Path,
+        [Collections.IDictionary]$Updates
+    )
+
+    $validationZip = [IO.Compression.ZipFile]::OpenRead($Path)
+    try {
+        [xml]$workbookXml = Read-ZipEntryText $validationZip "xl/workbook.xml"
+        [xml]$relationshipsXml = Read-ZipEntryText $validationZip "xl/_rels/workbook.xml.rels"
+        $relationshipPaths = @{}
+        foreach ($relationship in $relationshipsXml.Relationships.Relationship) {
+            $relationshipPaths[$relationship.Id] = Get-WorkbookEntryPath $relationship.Target
+        }
+
+        $manager = [Xml.XmlNamespaceManager]::new($workbookXml.NameTable)
+        $manager.AddNamespace("d", "http://schemas.openxmlformats.org/spreadsheetml/2006/main")
+        $manager.AddNamespace("r", "http://schemas.openxmlformats.org/officeDocument/2006/relationships")
+        $rifleSheet = $workbookXml.SelectNodes("//d:sheets/d:sheet", $manager) |
+            Where-Object { $_.GetAttribute("name") -eq "Rifle" } |
+            Select-Object -First 1
+        if ($null -eq $rifleSheet) {
+            throw "Replacement workbook does not contain the Rifle sheet."
+        }
+
+        $relationshipId = $rifleSheet.GetAttribute(
+            "id",
+            "http://schemas.openxmlformats.org/officeDocument/2006/relationships")
+        $rifleEntryPath = $relationshipPaths[$relationshipId]
+        $worksheet = [System.Xml.Linq.XDocument]::Parse(
+            (Read-ZipEntryText $validationZip $rifleEntryPath),
+            [System.Xml.Linq.LoadOptions]::PreserveWhitespace)
+        $namespace = [System.Xml.Linq.XNamespace]"http://schemas.openxmlformats.org/spreadsheetml/2006/main"
+        $worksheetStrings = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
+        foreach ($text in $worksheet.Descendants($namespace + "t")) {
+            $worksheetStrings.Add($text.Value) | Out-Null
+        }
+
+        foreach ($entry in $Updates.GetEnumerator()) {
+            if (!$worksheetStrings.Contains([string]$entry.Value)) {
+                throw "Replacement workbook did not persist the Rifle description for '$($entry.Key)'."
+            }
+        }
+    }
+    finally {
+        $validationZip.Dispose()
+    }
+}
+
 if (!(Test-Path -LiteralPath $workbookFullPath)) {
     throw "Workbook '$workbookFullPath' was not found."
 }
 
-$tempWorkbookPath = Join-Path ([IO.Path]::GetTempPath()) ("swlor-rifle-feedback-{0}.xlsx" -f [guid]::NewGuid())
+$workbookDirectory = [IO.Path]::GetDirectoryName($workbookFullPath)
+$workbookName = [IO.Path]::GetFileName($workbookFullPath)
+$tempWorkbookPath = Join-Path $workbookDirectory (".{0}.{1}.tmp.xlsx" -f $workbookName, [guid]::NewGuid())
+$backupWorkbookPath = Join-Path $workbookDirectory (".{0}.{1}.backup.xlsx" -f $workbookName, [guid]::NewGuid())
+$replacementValidated = $false
 [IO.File]::Copy($workbookFullPath, $tempWorkbookPath, $false)
 try {
     $zip = [IO.Compression.ZipFile]::Open($tempWorkbookPath, [IO.Compression.ZipArchiveMode]::Update)
@@ -210,11 +263,25 @@ try {
         $zip.Dispose()
     }
 
-    [IO.File]::Copy($tempWorkbookPath, $workbookFullPath, $true)
+    try {
+        [IO.File]::Replace($tempWorkbookPath, $workbookFullPath, $backupWorkbookPath, $true)
+        Assert-RifleDescriptionUpdates $workbookFullPath $descriptionUpdates
+        $replacementValidated = $true
+    }
+    catch {
+        $replacementError = $_
+        if ([IO.File]::Exists($backupWorkbookPath)) {
+            [IO.File]::Replace($backupWorkbookPath, $workbookFullPath, $null, $true)
+        }
+        throw $replacementError
+    }
 }
 finally {
     if ([IO.File]::Exists($tempWorkbookPath)) {
         [IO.File]::Delete($tempWorkbookPath)
+    }
+    if ($replacementValidated -and [IO.File]::Exists($backupWorkbookPath)) {
+        [IO.File]::Delete($backupWorkbookPath)
     }
 }
 

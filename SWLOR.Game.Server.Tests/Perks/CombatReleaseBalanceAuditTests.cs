@@ -203,7 +203,8 @@ public class CombatReleaseBalanceAuditTests
         StatType.RangedCriticalDamagePercentAdjustment,
         StatType.CriticalDamageHighHPTargetPercentAdjustment,
         StatType.CriticalDamageTargetStatusPercentAdjustment,
-        StatType.IdleSkillAbilityCriticalDamagePercentAdjustment
+        StatType.IdleSkillAbilityCriticalDamagePercentAdjustment,
+        StatType.OpeningAutoAttackCriticalDamagePercentAdjustment
     };
 
     private static readonly StatType[] HasteStats =

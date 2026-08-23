@@ -253,7 +253,8 @@ public class CombatDamageTests
         abilitySource.Should().Contain("Combat.ApplyCriticalDamageModifier(");
         abilitySource.Should().Contain("idleBonuses.CriticalDamagePercentAdjustment");
         abilitySource.Should().Contain("Combat.GetAbilityDamageFlatAdjustment(activator, perkType, skillType)");
-        damageRollSource.Should().Contain("Combat.ApplyCriticalDamageModifier(attacker.m_idSelf, damage, effectiveCritical, skillType, target.m_idSelf)");
+        damageRollSource.Should().Contain("Combat.ConsumeOpeningAutoAttackCriticalDamageAdjustment(attacker.m_idSelf)");
+        damageRollSource.Should().Contain("openingCriticalDamageAdjustment);");
         damageRollSource.Should().Contain("Combat.GetRangedAttackDamageFlatAdjustment(attacker.m_idSelf, skillType)");
         damageRollSource.Should().Contain("Combat.ApplyRangedAttackDefenseIgnore(attacker.m_idSelf, defense, skillType)");
         damageRollSource.Should().Contain("ApplyMightModifierDamageBonus(attacker, weapon, damageProfile)");

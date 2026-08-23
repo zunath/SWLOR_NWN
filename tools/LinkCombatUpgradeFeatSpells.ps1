@@ -124,6 +124,7 @@ if ([System.IO.Directory]::Exists($npcAbilityDefinitionPath)) {
 $playerAbilityLabels = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
 $mimicryTraitLabels = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
 $queuedWeaponAbilityLabels = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
+$generatedQueuedWeaponAbilityLabels = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
 if ([System.IO.Directory]::Exists($abilityDefinitionPath)) {
     Get-ChildItem $abilityDefinitionPath -Filter "*.cs" -File -Recurse |
         Where-Object { $_.FullName -notlike "*\Feature\AbilityDefinition\NPC\*" } |
@@ -133,8 +134,10 @@ if ([System.IO.Directory]::Exists($abilityDefinitionPath)) {
                 return
             }
 
+            $definitionAbilityLabels = [System.Collections.Generic.List[string]]::new()
             foreach ($match in [regex]::Matches($content, "\bFeatType\.(\w+)")) {
                 $playerAbilityLabels.Add($match.Groups[1].Value) | Out-Null
+                $definitionAbilityLabels.Add($match.Groups[1].Value)
             }
 
             if ($content -match "\.MimicryTrait\s*\(") {
@@ -143,10 +146,15 @@ if ([System.IO.Directory]::Exists($abilityDefinitionPath)) {
                 }
             }
 
-            if ($content -match "\.IsWeaponAbility\s*\(") {
-                foreach ($match in [regex]::Matches($content, "\.Create\s*\(\s*FeatType\.(\w+)")) {
-                    $queuedWeaponAbilityLabels.Add($match.Groups[1].Value) | Out-Null
+            if ($content -match "\.IsWeaponAbility\s*\(" -or $content -match "\bConfigureWeapon\s*\(") {
+                foreach ($label in $definitionAbilityLabels) {
+                    $queuedWeaponAbilityLabels.Add($label) | Out-Null
                 }
+            }
+
+            $generatedQueuedAbilityPattern = "(?s)ConfigureGeneratedWeaponAbility\s*\(\s*builder\.Create\s*\(\s*FeatType\.(\w+)(?:(?!ConfigureGeneratedWeaponAbility).)*?IsQueuedWeaponAbility\s*=\s*true(?:(?!ConfigureGeneratedWeaponAbility).)*?\}\s*\);"
+            foreach ($match in [regex]::Matches($content, $generatedQueuedAbilityPattern)) {
+                $generatedQueuedWeaponAbilityLabels.Add($match.Groups[1].Value) | Out-Null
             }
         }
 }
@@ -192,6 +200,13 @@ foreach ($label in $selfTargetingLabels) {
 foreach ($label in $queuedWeaponAbilityLabels) {
     $featTargetSelfByLabel[$label] = "1"
     $spellTargetingByLabel[$label] = $selfSpellTargetingProfile
+}
+
+foreach ($label in $generatedQueuedWeaponAbilityLabels) {
+    # Generated queued abilities must not prompt for a target, but retain their curated spell
+    # range/type metadata. Several hostile queues use that metadata for activation behavior even
+    # though TARGETSELF is what suppresses the client cursor.
+    $featTargetSelfByLabel[$label] = "1"
 }
 
 foreach ($label in $hostileTargetingLabels) {

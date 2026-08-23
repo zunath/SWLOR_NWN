@@ -1610,7 +1610,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value required for an opening auto-attack bonus.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         OpeningAutoAttackSkillType = 292,
 
         /// <summary>
@@ -1856,7 +1856,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value that can receive idle-time ability bonuses.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         IdleSkillAbilitySkillType = 333,
 
         /// <summary>
@@ -5963,6 +5963,19 @@ namespace SWLOR.Game.Server.Service.StatService
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         QueuedWeaponAbilityActivationCriticalRatePercentAdjustment = 1032,
+
+        /// <summary>
+        /// Critical damage adjustment applied to a matching opening auto-attack after the
+        /// configured idle window.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        OpeningAutoAttackCriticalDamagePercentAdjustment = 1033,
+
+        /// <summary>
+        /// One-shot critical damage adjustment prepared for the current opening auto-attack.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CurrentAutoAttackCriticalDamagePercentAdjustment = 1034,
 
     }
 

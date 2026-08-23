@@ -3149,7 +3149,28 @@ namespace SWLOR.Game.Server.Service
 
             }
 
+            var criticalDamageBonus = Stat.GetStatAdjustment(
+                attacker,
+                StatType.OpeningAutoAttackCriticalDamagePercentAdjustment);
+            if (criticalDamageBonus != 0)
+            {
+                TemporaryStatModifier.Replace(
+                    attacker,
+                    StatType.CurrentAutoAttackCriticalDamagePercentAdjustment,
+                    criticalDamageBonus,
+                    6,
+                    StatType.CurrentAutoAttackCriticalDamagePercentAdjustment);
+            }
+
             return Stat.GetStatAdjustment(attacker, StatType.OpeningAutoAttackCriticalRatePercentAdjustment);
+        }
+
+        public static int ConsumeOpeningAutoAttackCriticalDamageAdjustment(uint attacker)
+        {
+            return TemporaryStatModifier.Consume(
+                attacker,
+                StatType.CurrentAutoAttackCriticalDamagePercentAdjustment,
+                StatType.CurrentAutoAttackCriticalDamagePercentAdjustment);
         }
 
         public static int PrepareAutoAttackCycleCriticalRate(uint attacker, SkillType skillType)

@@ -69,6 +69,26 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
         self.assertEqual("8", values["TargetSizeX"])
         self.assertEqual("1", values["TargetFlags"])
 
+    def test_dead_center_applies_to_abilities_and_opening_auto_attacks(self):
+        row = {
+            "Tab": "Rifle",
+            "PerkName": "Dead Center",
+            "Type": "Trait",
+            "Description": (
+                "After 3 seconds without attacking, if your next attack is a critical hit, "
+                "it deals +15% damage."
+            ),
+        }
+
+        stats = dict(GENERATOR.description_stat_entries(row, "Dead Center"))
+
+        self.assertEqual("(int)SkillType.Rifle", stats["IdleSkillAbilitySkillType"])
+        self.assertEqual("3", stats["IdleSkillAbilityRequiredIdleSeconds"])
+        self.assertEqual("15", stats["IdleSkillAbilityCriticalDamagePercentAdjustment"])
+        self.assertEqual("(int)SkillType.Rifle", stats["OpeningAutoAttackSkillType"])
+        self.assertEqual("3", stats["OpeningAutoAttackIdleSeconds"])
+        self.assertEqual("15", stats["OpeningAutoAttackCriticalDamagePercentAdjustment"])
+
     def test_point_blank_burst_applies_self_status_on_activation(self):
         properties = dict(GENERATOR.profile_property_lines(
             {

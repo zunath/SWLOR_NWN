@@ -536,7 +536,16 @@ namespace SWLOR.Game.Server.Native
                 Combat.SendIncomingCriticalHitDowngradeFeedback(attacker.m_idSelf, target.m_idSelf);
             }
 
-            damage = Combat.ApplyCriticalDamageModifier(attacker.m_idSelf, damage, effectiveCritical, skillType, target.m_idSelf);
+            var openingCriticalDamageAdjustment = isLandedAttack
+                ? Combat.ConsumeOpeningAutoAttackCriticalDamageAdjustment(attacker.m_idSelf)
+                : 0;
+            damage = Combat.ApplyCriticalDamageModifier(
+                attacker.m_idSelf,
+                damage,
+                effectiveCritical,
+                skillType,
+                target.m_idSelf,
+                openingCriticalDamageAdjustment);
 
             if (isLandedAttack)
             {

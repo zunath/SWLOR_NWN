@@ -1459,6 +1459,9 @@ def description_stat_entries(row, base):
         add_stat(stats, "IdleSkillAbilitySkillType", skill_expr)
         add_stat(stats, "IdleSkillAbilityRequiredIdleSeconds", parse_count(r"After (\d+) seconds without attacking", description) or 3)
         add_stat(stats, "IdleSkillAbilityCriticalDamagePercentAdjustment", parse_percent(r"deals \+(\d+)% damage", description))
+        add_stat(stats, "OpeningAutoAttackSkillType", skill_expr)
+        add_stat(stats, "OpeningAutoAttackIdleSeconds", parse_count(r"After (\d+) seconds without attacking", description) or 3)
+        add_stat(stats, "OpeningAutoAttackCriticalDamagePercentAdjustment", parse_percent(r"deals \+(\d+)% damage", description))
     if base == "Shrapnel Casing":
         add_stat(stats, "AreaAbilityFragmentationDamage", parse_count(r"fragmentation for (\d+) physical damage", description))
         add_stat(stats, "AreaAbilityFragmentationPulseSeconds", parse_count(r"every (\d+) seconds", description) or 3)

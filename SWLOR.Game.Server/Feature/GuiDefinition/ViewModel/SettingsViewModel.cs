@@ -290,6 +290,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             OnPropertyChanged(nameof(ShowOwnDescriptor));
             OnPropertyChanged(nameof(ShowDescriptorsForNamedPlayers));
             OnPropertyChanged(nameof(ScrambleAccountName));
+            OnPropertyChanged(nameof(SelectedColor));
             OnPropertyChanged(nameof(CurrentRed));
             OnPropertyChanged(nameof(CurrentGreen));
             OnPropertyChanged(nameof(CurrentBlue));

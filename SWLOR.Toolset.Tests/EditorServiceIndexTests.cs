@@ -387,6 +387,7 @@ namespace SWLOR.Toolset.Tests
                             2f,
                             3f)
                     });
+                editors.OpenModuleProperties();
             }
 
             var openScripts = (Dictionary<string, ScriptEditorViewModel>)typeof(EditorService)
@@ -399,7 +400,8 @@ namespace SWLOR.Toolset.Tests
             pendingAreaReveals.Should().BeEmpty(
                 "object-source Go To must not queue an area reveal during deletion");
             log.Lines.Count(line => line.Contains("a module resource deletion is in progress"))
-                .Should().Be(3, "public, include-navigation, and object-source routes are all gated");
+                .Should().Be(4,
+                    "public, include-navigation, object-source, and Module Properties routes are all gated");
         }
 
         [Test]

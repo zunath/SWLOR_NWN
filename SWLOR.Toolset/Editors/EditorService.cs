@@ -477,6 +477,9 @@ namespace SWLOR.Toolset.Editors
         /// <summary>Opens Module Properties as the single document tab for module.ifo.</summary>
         public void OpenModuleProperties(Module.ModulePropertiesActions? actions = null)
         {
+            if (IsResourceOpeningBlocked("Module Properties"))
+                return;
+
             var workspace = _workspaceContext.Workspace;
             if (workspace == null)
             {
@@ -516,6 +519,7 @@ namespace SWLOR.Toolset.Editors
             }
             catch (Exception ex)
             {
+                _moduleProperties = null;
                 _log.AppendLine($"Failed to open Module Properties: {ex.Message}");
             }
         }

@@ -38,6 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasRecastDelay(RecastGroup.Innervate, 12f)
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()
+                .IsHealingAbility()
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>
                     AbilityTargeting.ValidateFriendlyTarget(activator, target))
@@ -58,6 +59,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasRecastDelay(RecastGroup.Innervate, 12f)
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()
+                .IsHealingAbility()
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>
                     AbilityTargeting.ValidateFriendlyTarget(activator, target))
@@ -78,6 +80,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasRecastDelay(RecastGroup.Innervate, 12f)
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()
+                .IsHealingAbility()
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>
                     AbilityTargeting.ValidateFriendlyTarget(activator, target))

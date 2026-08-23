@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Core.Bioware;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.CompanionControlService;
 using SWLOR.Game.Server.Service.DroidService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -843,6 +844,7 @@ namespace SWLOR.Game.Server.Service
                 SpeakString(personality.DismissedPhrase());
             });
 
+            CompanionControl.Clear(droid);
             DestroyObject(droid, 0.1f);
             ClearTemporaryData(player, droid);
 
@@ -980,25 +982,20 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnDroidRoundEnd)]
         public static void DroidOnEndCombatRound()
         {
-            var droid = OBJECT_SELF;
-            if (!Activity.IsBusy(droid))
-            {
-                ExecuteScript("x0_ch_hen_combat", OBJECT_SELF);
-                AI.ProcessTrigger(droid, AITriggerType.CombatRound);
-            }
+            CompanionControl.ProcessCombatRound(OBJECT_SELF);
         }
 
         [NWNEventHandler(ScriptName.OnDroidConversation)]
         public static void DroidOnConversation()
         {
-            ExecuteScript("x0_ch_hen_conv", OBJECT_SELF);
+            if (!CompanionControl.HandleConversation(OBJECT_SELF))
+                ExecuteScript("x0_ch_hen_conv", OBJECT_SELF);
         }
 
         [NWNEventHandler(ScriptName.OnDroidDamaged)]
         public static void DroidOnDamaged()
         {
-            ExecuteScript("x0_ch_hen_damage", OBJECT_SELF);
-
+            CompanionControl.RegisterDefensiveThreat(OBJECT_SELF, GetLastDamager(OBJECT_SELF));
         }
 
         [NWNEventHandler(ScriptName.OnDroidDeath)]
@@ -1006,6 +1003,7 @@ namespace SWLOR.Game.Server.Service
         {
             var droid = OBJECT_SELF;
             var player = GetMaster(droid);
+            CompanionControl.Clear(droid);
             ExecuteScript("x2_hen_death", droid);
 
             var item = GetControllerItem(droid);
@@ -1027,22 +1025,19 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnDroidHeartbeat)]
         public static void DroidOnHeartbeat()
         {
-            ExecuteScript("x0_ch_hen_heart", OBJECT_SELF);
             Stat.RestoreNPCStats(false);
+            CompanionControl.ProcessHeartbeat(OBJECT_SELF);
         }
 
         [NWNEventHandler(ScriptName.OnDroidPerception)]
         public static void DroidOnPerception()
         {
-            ExecuteScript("x0_ch_hen_percep", OBJECT_SELF);
-
         }
 
         [NWNEventHandler(ScriptName.OnDroidAttacked)]
         public static void DroidOnPhysicalAttacked()
         {
-            ExecuteScript("x0_ch_hen_attack", OBJECT_SELF);
-
+            CompanionControl.RegisterDefensiveThreat(OBJECT_SELF, GetLastAttacker(OBJECT_SELF));
         }
 
         [NWNEventHandler(ScriptName.OnDroidRest)]
@@ -1060,20 +1055,20 @@ namespace SWLOR.Game.Server.Service
         public static void DroidOnSpawn()
         {
             var droid = OBJECT_SELF;
-            ExecuteScript("x0_ch_hen_spawn", droid);
             AssignCommand(droid, () =>
             {
                 SetIsDestroyable(true, false, false);
             });
             Stat.LoadNPCStats();
             Stat.ApplyCreatureMovementRate(droid);
+            CompanionControl.Initialize(droid);
         }
 
         [NWNEventHandler(ScriptName.OnDroidSpellCast)]
         public static void DroidOnSpellCastAt()
         {
-            ExecuteScript("x2_hen_spell", OBJECT_SELF);
-
+            if (GetLastSpellHarmful())
+                CompanionControl.RegisterDefensiveThreat(OBJECT_SELF, GetLastSpellCaster());
         }
 
         [NWNEventHandler(ScriptName.OnDroidUserDefined)]

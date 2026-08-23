@@ -64,13 +64,6 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
             AddRegisteredAbilities();
 
             _builder
-                .MoveToTarget()
-                .Target(AITarget.Master())
-                .When(context => GetIsObjectValid(context.Master))
-                .When(context => context.DistanceToMaster > 8f)
-                .Score(AIScoreBand.Positioning)
-                .Priority(900)
-
                 .AttackHighestEnmity()
                 .Score(AIScoreBand.BasicAttack)
                 .Priority(999);

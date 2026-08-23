@@ -42,6 +42,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public bool CanBeUsedInSpace { get; set; }
         public float MaxRange { get; set; }
         public bool IsHostileAbility { get; set; }
+        public bool IsHealingAbility { get; set; }
         public bool DisplaysActivationMessage { get; set; }
         public bool BreaksStealth { get; set; }
         public bool PreservesStealthDuringActivation { get; set; }

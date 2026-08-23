@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Service.CompanionControlService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
@@ -537,6 +538,12 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static void AttackHighestEnmityTarget(uint creature)
         {
+            if (CompanionControl.IsRegisteredCompanion(creature))
+            {
+                CompanionControl.TryIssueAuthorizedAttack(creature);
+                return;
+            }
+
             var target = GetHighestEnmityTarget(creature);
             while (GetIsObjectValid(target) && ShouldRemoveStaleProximityTarget(creature, target))
             {
@@ -593,6 +600,9 @@ namespace SWLOR.Game.Server.Service
             {
                 return;
             }
+
+            if (!CompanionControl.CanIssueAttackCommand(creature, target))
+                return;
 
             if (AI.TryStartCombatLeashEvade(creature, target))
                 return;

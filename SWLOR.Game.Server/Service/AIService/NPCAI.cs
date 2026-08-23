@@ -3,6 +3,7 @@ using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CompanionControlService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.NWN.API.NWNX;
@@ -145,6 +146,12 @@ namespace SWLOR.Game.Server.Service.AIService
 
             if (GetHasEffect(creature, EffectTypeScript.Petrify))
                 return false;
+
+            if (CompanionControl.IsControlledCompanion(creature) &&
+                !GetIsObjectValid(CompanionControl.GetAuthorizedTarget(creature)))
+            {
+                return false;
+            }
 
             var profileType = GetProfileType(creature);
             if (!_profiles.TryGetValue(profileType, out var profile))
@@ -376,12 +383,25 @@ namespace SWLOR.Game.Server.Service.AIService
 
         private static uint ResolveTarget(AIContext context, AIActionDefinition action)
         {
+            if (action.Type == AIActionType.AttackHighestEnmity)
+                return context.CurrentEnmityTarget;
+
             if (action.TargetSelector != null)
-                return action.TargetSelector(context);
+            {
+                if (action.Type != AIActionType.Ability ||
+                    !CompanionControl.IsControlledCompanion(context.Self) ||
+                    !Ability.GetAbilityDetail(action.Feat).IsHostileAbility)
+                {
+                    return action.TargetSelector(context);
+                }
+            }
 
             if (action.Type == AIActionType.Ability)
             {
                 var ability = Ability.GetAbilityDetail(action.Feat);
+                if (ability.IsHostileAbility && CompanionControl.IsControlledCompanion(context.Self))
+                    return CompanionControl.ResolveHostileAbilityTarget(context.Self, ability);
+
                 if (AITarget.TryGetDefaultOverride(action.Feat, out var selector))
                     return selector(context);
 
@@ -419,6 +439,12 @@ namespace SWLOR.Game.Server.Service.AIService
         {
             if (action.Feat == FeatType.Invalid || !Ability.IsFeatRegistered(action.Feat))
                 return false;
+
+            if (CompanionControl.IsControlledCompanion(context.Self) &&
+                !CompanionControl.AreAbilitiesEnabled(context.Self))
+            {
+                return false;
+            }
 
             if (!GetHasFeat(action.Feat, context.Self))
                 return false;
@@ -459,7 +485,10 @@ namespace SWLOR.Game.Server.Service.AIService
                         ExecuteAbility(context.Self, action, evaluation.Target);
                         break;
                     case AIActionType.AttackHighestEnmity:
-                        Enmity.AttackHighestEnmityTarget(context.Self);
+                        if (CompanionControl.IsControlledCompanion(context.Self))
+                            CompanionControl.TryIssueAuthorizedAttack(context.Self);
+                        else
+                            Enmity.AttackHighestEnmityTarget(context.Self);
                         break;
                     case AIActionType.MoveToTarget:
                         AssignCommand(context.Self, () =>
@@ -524,12 +553,52 @@ namespace SWLOR.Game.Server.Service.AIService
                 return;
 
             if (!GetIsObjectValid(target) || target == creature)
-                target = Enmity.GetHighestEnmityTarget(creature);
+            {
+                target = CompanionControl.IsControlledCompanion(creature)
+                    ? CompanionControl.GetAuthorizedTarget(creature)
+                    : Enmity.GetHighestEnmityTarget(creature);
+            }
 
             if (!GetIsObjectValid(target))
                 return;
 
-            Enmity.IssueAttackCommand(creature, target);
+            if (CompanionControl.IsControlledCompanion(creature))
+                CompanionControl.TryIssueAuthorizedAttack(creature);
+            else
+                Enmity.IssueAttackCommand(creature, target);
+        }
+
+        public static bool TryUseBestTargetedSupportAbility(uint creature, uint target, out string abilityName)
+        {
+            abilityName = string.Empty;
+            if (!GetIsObjectValid(creature) ||
+                !GetIsObjectValid(target) ||
+                GetCurrentHitPoints(target) >= GetMaxHitPoints(target))
+            {
+                return false;
+            }
+
+            var candidates = Ability.GetAllAbilityDetails()
+                .Where(x => x.Value.IsHealingAbility &&
+                            !x.Value.IsHostileAbility &&
+                            x.Value.RequiresTarget &&
+                            x.Value.IsSingleTargetAbility &&
+                            GetHasFeat(x.Key, creature))
+                .OrderByDescending(x => x.Value.AbilityLevel)
+                .ThenBy(x => x.Value.Name)
+                .ToList();
+
+            foreach (var (feat, ability) in candidates)
+            {
+                var targetLocation = GetLocation(target);
+                if (!UsePerkFeat.TryUseAbility(creature, target, feat, targetLocation))
+                    continue;
+
+                abilityName = ability.Name;
+                return true;
+            }
+
+            return false;
         }
 
         private static bool IsOnCooldown(AIContext context, AIActionDefinition action)

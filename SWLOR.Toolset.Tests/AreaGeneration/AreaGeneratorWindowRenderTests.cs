@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Headless.NUnit;
@@ -225,6 +226,67 @@ public sealed class AreaGeneratorWindowRenderTests
             window.Close();
             Dispatcher.UIThread.RunJobs();
         }
+    }
+
+    [AvaloniaTest]
+    public async Task GeneratingPreview_ShowsProgressWhileTheUiThreadRemainsResponsive()
+    {
+        var uiThreadId = Environment.CurrentManagedThreadId;
+        var backgroundTasks = new GatedBackgroundTaskRunner();
+        using var viewModel = CreateGeneratableViewModel(backgroundTasks);
+        viewModel.PreviewMode = AreaPreviewMode.Schematic;
+        var window = new AreaGeneratorWindow(viewModel);
+
+        try
+        {
+            window.Show();
+            await backgroundTasks.FirstOperationStarted.WaitAsync(TimeSpan.FromSeconds(5));
+            Dispatcher.UIThread.RunJobs();
+
+            viewModel.IsBusy.Should().BeTrue();
+            viewModel.BusyMessage.Should().Be(
+                "Solving the layout and placing transitions and decorations...");
+            window.FindControl<StackPanel>("GenerationProgressPanel")!.IsVisible.Should().BeTrue();
+            window.FindControl<TextBlock>("GenerationProgressText")!.Text.Should().Be(viewModel.BusyMessage);
+            window.FindControl<ProgressBar>("GenerationProgressBar")!.IsIndeterminate.Should().BeTrue();
+
+            var uiPulse = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+            Dispatcher.UIThread.Post(() => uiPulse.TrySetResult(true));
+            await uiPulse.Task.WaitAsync(TimeSpan.FromSeconds(2));
+
+            backgroundTasks.Release();
+            await WaitUntilAsync(
+                () => viewModel.Preview != null && !viewModel.IsBusy,
+                () => viewModel.StatusMessage);
+
+            backgroundTasks.WorkerThreadIds.Should().HaveCountGreaterThanOrEqualTo(3);
+            backgroundTasks.WorkerThreadIds.Should().OnlyContain(threadId => threadId != uiThreadId);
+            window.FindControl<StackPanel>("GenerationProgressPanel")!.IsVisible.Should().BeFalse();
+        }
+        finally
+        {
+            backgroundTasks.Release();
+            if (viewModel.IsBusy)
+            {
+                await WaitUntilAsync(
+                    () => !viewModel.IsBusy,
+                    () => viewModel.StatusMessage);
+            }
+
+            window.Close();
+            Dispatcher.UIThread.RunJobs();
+        }
+    }
+
+    [Test]
+    public async Task DefaultBackgroundTaskRunner_RunsWorkOffTheCallingThread()
+    {
+        var callingThreadId = Environment.CurrentManagedThreadId;
+        var runner = new AreaGeneratorBackgroundTaskRunner();
+
+        var workerThreadId = await runner.RunAsync(() => Environment.CurrentManagedThreadId);
+
+        workerThreadId.Should().NotBe(callingThreadId);
     }
 
     [AvaloniaTest]
@@ -498,7 +560,8 @@ public sealed class AreaGeneratorWindowRenderTests
             new ModuleWorkspace(CorpusLocator.ModuleDirectory));
     }
 
-    private static AreaGeneratorViewModel CreateGeneratableViewModel()
+    private static AreaGeneratorViewModel CreateGeneratableViewModel(
+        IAreaGeneratorBackgroundTaskRunner? backgroundTasks = null)
     {
         var resources = new ResourceIndex(
             baseLayer: null,
@@ -510,11 +573,47 @@ public sealed class AreaGeneratorWindowRenderTests
             });
         resources.EnsureInitialized();
         var tilesets = new TilesetCatalog(resources);
-        return new AreaGeneratorViewModel(
-            new AreaGenerationAuthoringService(tilesets),
-            new AreaGenerationPreviewRenderer(resources: null),
-            tilesets,
-            new ModuleWorkspace(CorpusLocator.ModuleDirectory));
+        return backgroundTasks == null
+            ? new AreaGeneratorViewModel(
+                new AreaGenerationAuthoringService(tilesets),
+                new AreaGenerationPreviewRenderer(resources: null),
+                tilesets,
+                new ModuleWorkspace(CorpusLocator.ModuleDirectory))
+            : new AreaGeneratorViewModel(
+                new AreaGenerationAuthoringService(tilesets),
+                new AreaGenerationPreviewRenderer(resources: null),
+                tilesets,
+                new ModuleWorkspace(CorpusLocator.ModuleDirectory),
+                backgroundTasks);
+    }
+
+    private sealed class GatedBackgroundTaskRunner : IAreaGeneratorBackgroundTaskRunner
+    {
+        private readonly TaskCompletionSource<bool> _firstOperationStarted =
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private readonly TaskCompletionSource<bool> _release =
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private int _operationCount;
+
+        public Task FirstOperationStarted => _firstOperationStarted.Task;
+        public ConcurrentBag<int> WorkerThreadIds { get; } = new();
+
+        public Task<T> RunAsync<T>(Func<T> operation)
+        {
+            return Task.Run(() =>
+            {
+                WorkerThreadIds.Add(Environment.CurrentManagedThreadId);
+                if (Interlocked.Increment(ref _operationCount) == 1)
+                {
+                    _firstOperationStarted.TrySetResult(true);
+                    _release.Task.GetAwaiter().GetResult();
+                }
+
+                return operation();
+            });
+        }
+
+        public void Release() => _release.TrySetResult(true);
     }
 
     private static async Task WaitUntilAsync(Func<bool> condition, Func<string> currentStatus)

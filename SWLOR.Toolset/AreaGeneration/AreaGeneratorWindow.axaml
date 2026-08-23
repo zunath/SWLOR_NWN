@@ -256,6 +256,12 @@
     <Border Grid.Row="2" Padding="14,10" Background="{DynamicResource PanelHeaderBrush}"
             BorderBrush="{DynamicResource RuleBrush}" BorderThickness="0,1,0,0">
       <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+        <StackPanel x:Name="GenerationProgressPanel" Grid.Column="0" Margin="0,0,20,0"
+                    VerticalAlignment="Center" Spacing="5" IsVisible="{Binding IsBusy}">
+          <TextBlock x:Name="GenerationProgressText" Text="{Binding BusyMessage}"
+                     FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+          <ProgressBar x:Name="GenerationProgressBar" Height="4" IsIndeterminate="True" />
+        </StackPanel>
         <Button Grid.Column="1" Content="Close" Click="OnCloseClicked" IsEnabled="{Binding !IsBusy}" />
         <Button Grid.Column="2" Classes="primary" Content="Create Area in Module" Command="{Binding CreateAreaCommand}" />
       </Grid>

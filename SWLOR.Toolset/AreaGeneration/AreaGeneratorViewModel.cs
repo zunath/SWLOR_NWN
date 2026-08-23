@@ -49,6 +49,7 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
     private readonly AreaGenerationPreviewRenderer _renderer;
     private readonly TilesetCatalog _tilesets;
     private readonly ModuleWorkspace _workspace;
+    private readonly IAreaGeneratorBackgroundTaskRunner _backgroundTasks;
     private bool _loadingDefaults;
     private bool _adjustingRanges;
     private bool _automaticPreviewEnabled;
@@ -151,6 +152,7 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
     [ObservableProperty] private string _resRefError = string.Empty;
     [ObservableProperty] private bool _statusIsError;
     [ObservableProperty] private bool _isBusy;
+    [ObservableProperty] private string _busyMessage = string.Empty;
 
     public bool HasResRefError => !string.IsNullOrEmpty(ResRefError);
 
@@ -161,11 +163,22 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
         AreaGenerationPreviewRenderer renderer,
         TilesetCatalog tilesets,
         ModuleWorkspace workspace)
+        : this(authoring, renderer, tilesets, workspace, new AreaGeneratorBackgroundTaskRunner())
+    {
+    }
+
+    public AreaGeneratorViewModel(
+        AreaGenerationAuthoringService authoring,
+        AreaGenerationPreviewRenderer renderer,
+        TilesetCatalog tilesets,
+        ModuleWorkspace workspace,
+        IAreaGeneratorBackgroundTaskRunner backgroundTasks)
     {
         _authoring = authoring;
         _renderer = renderer;
         _tilesets = tilesets;
         _workspace = workspace;
+        _backgroundTasks = backgroundTasks ?? throw new ArgumentNullException(nameof(backgroundTasks));
 
         foreach (var theme in authoring.Definitions.Themes)
             Themes.Add(new ThemeChoice(theme));
@@ -222,6 +235,9 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
 
     partial void OnIsBusyChanged(bool value)
     {
+        if (!value)
+            BusyMessage = string.Empty;
+
         GeneratePreviewCommand.NotifyCanExecuteChanged();
         CreateAreaCommand.NotifyCanExecuteChanged();
     }
@@ -390,12 +406,14 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
     {
         CancelAutomaticPreviewRequest();
         SetPreviewedDraft(null);
+        BusyMessage = "Preparing generation settings...";
         IsBusy = true;
         SetStatus("Generating area...");
         try
         {
             var settings = BuildSettings();
-            var draft = await Task.Run(() => _authoring.Generate(settings));
+            BusyMessage = "Solving the layout and placing transitions and decorations...";
+            var draft = await _backgroundTasks.RunAsync(() => _authoring.Generate(settings)).ConfigureAwait(true);
             if (!draft.Result.Success)
             {
                 Preview = null;
@@ -403,13 +421,22 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
                 return;
             }
 
-            var image = await Task.Run(() => _renderer.Render(
+            var previewMode = PreviewMode;
+            var showRooms = ShowRooms;
+            var showTransitions = ShowTransitions;
+            var showDecorations = ShowDecorations;
+            BusyMessage = previewMode == AreaPreviewMode.MapGraphics
+                ? "Rendering tiles and preview overlays..."
+                : "Rendering the schematic preview...";
+            var image = await _backgroundTasks.RunAsync(() => _renderer.Render(
                 draft,
-                PreviewMode,
-                ShowRooms,
-                ShowTransitions,
-                ShowDecorations));
-            Preview = ToBitmap(image);
+                previewMode,
+                showRooms,
+                showTransitions,
+                showDecorations)).ConfigureAwait(true);
+            BusyMessage = "Preparing the preview image...";
+            var bitmap = await _backgroundTasks.RunAsync(() => ToBitmap(image)).ConfigureAwait(true);
+            Preview = bitmap;
             SetPreviewedDraft(draft);
             SetStatus(Describe(draft, image));
         }
@@ -446,6 +473,7 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
             return;
         }
 
+        BusyMessage = "Writing the generated area into the open module...";
         IsBusy = true;
         SetStatus("Creating the previewed area...", source: StatusSource.Creation);
         string? createdResref = null;
@@ -453,7 +481,7 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
         {
             var resRef = ResRef;
             var displayName = DisplayName;
-            var createResult = await Task.Run(() =>
+            var createResult = await _backgroundTasks.RunAsync(() =>
             {
                 var success = GeneratedAreaWriter.TryCreate(
                     _workspace,
@@ -463,7 +491,7 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
                     displayName,
                     out var error);
                 return (Success: success, Error: error);
-            });
+            }).ConfigureAwait(true);
             if (!createResult.Success)
             {
                 SetStatus(createResult.Error, isError: true, source: StatusSource.Creation);

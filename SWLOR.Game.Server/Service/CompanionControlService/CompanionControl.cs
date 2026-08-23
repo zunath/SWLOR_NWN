@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             public DateTime LastOffensiveActivityAt { get; set; }
             public uint LastMasterArea { get; set; } = OBJECT_INVALID;
             public DateTime ExplicitOrderUntil { get; set; }
+            public bool DefensiveReactionPending { get; set; }
             public int HostileAbilityFeatCount { get; set; } = -1;
             public int HostileAbilityFeatChecksum { get; set; }
             public List<(FeatType Feat, AbilityDetail Ability)> HostileAbilities { get; } = new();
@@ -154,7 +155,10 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             state.ExplicitOrderUntil = default;
 
             if (!GetIsObjectValid(state.AttackNearestTarget))
-                ProcessCombatRound(companion);
+            {
+                state.DefensiveReactionPending = true;
+                ProcessCombatRound(companion, true);
+            }
         }
 
         public static void RegisterOwnerAttack(uint companion, uint target)
@@ -193,6 +197,13 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             if (!IsControlledCompanion(companion) || Activity.IsBusy(companion))
                 return;
 
+            var state = GetState(companion);
+            if (state.DefensiveReactionPending)
+            {
+                state.DefensiveReactionPending = false;
+                bypassDecisionThrottle = true;
+            }
+
             if (IsExplicitOrderInProgress(companion))
                 return;
 
@@ -205,7 +216,6 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
                 AITriggerType.CombatRound,
                 target,
                 bypassDecisionThrottle);
-            var state = GetState(companion);
             if (actionIssued &&
                 GetIsObjectValid(target) &&
                 state.TrackedTarget != target)
@@ -238,6 +248,18 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
         {
             if (IsControlledCompanion(companion))
                 MaintainModePosition(companion);
+        }
+
+        public static bool TryProcessPendingDefensiveReaction(uint companion)
+        {
+            if (!_states.TryGetValue(companion, out var state) ||
+                !state.DefensiveReactionPending)
+            {
+                return false;
+            }
+
+            ProcessCombatRound(companion, true);
+            return true;
         }
 
         private static uint AdvanceAuthorizedTarget(uint companion)
@@ -844,6 +866,7 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             state.AttackNearestTarget = OBJECT_INVALID;
             state.OwnerAssistTarget = OBJECT_INVALID;
             state.DefensiveThreats.Clear();
+            state.DefensiveReactionPending = false;
             ResetProgress(state);
         }
 

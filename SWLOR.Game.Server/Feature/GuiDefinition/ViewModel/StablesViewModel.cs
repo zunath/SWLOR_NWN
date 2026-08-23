@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.CompanionControlService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -717,6 +718,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var beast = GetAssociate(AssociateType.Henchman, Player);
                     if (BeastMastery.IsPlayerBeast(beast) && BeastMastery.GetBeastId(beast) == beastId)
                     {
+                        CompanionControl.Clear(beast);
                         DestroyObject(beast);
                     }
 

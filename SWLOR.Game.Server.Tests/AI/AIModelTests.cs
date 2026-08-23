@@ -1211,6 +1211,39 @@ public class AIModelTests
         return File.ReadAllText(fullPath);
     }
 
+    [Test]
+    public void CompanionDefensiveEventsResumeAfterBusyAbilityActivations()
+    {
+        var companionControl = ReadSource(
+            "SWLOR.Game.Server",
+            "Service",
+            "CompanionControlService",
+            "CompanionControl.cs");
+        var usePerkFeat = ReadSource("SWLOR.Game.Server", "Feature", "UsePerkFeat.cs");
+
+        companionControl.Should().Contain("state.DefensiveReactionPending = true;");
+        companionControl.Should().Contain("ProcessCombatRound(companion, true);");
+        usePerkFeat.Should().Contain("CompanionControl.TryProcessPendingDefensiveReaction(activator)");
+    }
+
+    [Test]
+    public void ReleasingAnActiveBeastClearsCompanionStateBeforeDestruction()
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "StablesViewModel.cs");
+        var releaseMethod = source.IndexOf("public Action OnClickReleaseBeast()", StringComparison.Ordinal);
+        var clearState = source.IndexOf("CompanionControl.Clear(beast);", releaseMethod, StringComparison.Ordinal);
+        var destroyBeast = source.IndexOf("DestroyObject(beast);", releaseMethod, StringComparison.Ordinal);
+
+        releaseMethod.Should().BeGreaterThanOrEqualTo(0);
+        clearState.Should().BeGreaterThan(releaseMethod);
+        destroyBeast.Should().BeGreaterThan(clearState);
+    }
+
     private static float ReadConstFloat(string name, params string[] pathParts)
     {
         var source = ReadSource(pathParts);

@@ -100,6 +100,9 @@ namespace SWLOR.Game.Server.Feature
                 return;
             }
 
+            if (CompanionControl.TryProcessPendingDefensiveReaction(activator))
+                return;
+
             if (CompanionControl.IsRegisteredCompanion(activator) &&
                 (!GetIsObjectValid(target) ||
                  CompanionControl.PeekAuthorizedTarget(activator) != target))

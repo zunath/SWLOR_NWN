@@ -230,6 +230,23 @@ public sealed class AreaGeneratorWindowRenderTests
             viewModel.StatusMessage.Should().Be(viewModel.ResRefError);
             window.FindControl<TextBox>("ResRefInput")!.Classes.Should().Contain("validationError");
 
+            var validSeed = viewModel.Seed;
+            viewModel.Seed = 0.5;
+            await WaitUntilAsync(
+                () => !viewModel.IsBusy &&
+                      viewModel.StatusMessage.Contains("Generator numeric settings must be whole numbers."),
+                () => viewModel.StatusMessage);
+
+            viewModel.StatusIsError.Should().BeTrue();
+            viewModel.StatusMessage.Should().StartWith(viewModel.ResRefError);
+            viewModel.StatusMessage.Should().Contain("Generator numeric settings must be whole numbers.");
+            window.FindControl<TextBox>("ResRefInput")!.Classes.Should().Contain("validationError");
+
+            viewModel.Seed = validSeed;
+            await WaitUntilAsync(
+                () => viewModel.Preview != null && !viewModel.IsBusy,
+                () => viewModel.StatusMessage);
+
             viewModel.ResRef = "generated_area";
             Dispatcher.UIThread.RunJobs();
 

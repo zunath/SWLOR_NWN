@@ -20,6 +20,7 @@ namespace SWLOR.Toolset.AreaGeneration;
 public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
 {
     private static readonly TimeSpan AutomaticPreviewDelay = TimeSpan.FromMilliseconds(300);
+    private const string InitialStatusMessage = "The preview generates automatically when this window opens.";
 
     public sealed record ThemeChoice(DungeonDetail Value)
     {
@@ -47,6 +48,8 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
     private bool _automaticPreviewEnabled;
     private bool _showResRefValidation;
     private bool _disposed;
+    private string _statusWithoutResRefValidation = InitialStatusMessage;
+    private bool _statusWithoutResRefValidationIsError;
     private CancellationTokenSource? _automaticPreviewCancellation;
     private AreaGenerationDraft? _previewedDraft;
 
@@ -135,7 +138,7 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
     [ObservableProperty] private bool _enableDecorations = true;
     [ObservableProperty] private double _decorationDensityPercent = 100;
     [ObservableProperty] private Bitmap? _preview;
-    [ObservableProperty] private string _statusMessage = "The preview generates automatically when this window opens.";
+    [ObservableProperty] private string _statusMessage = InitialStatusMessage;
     [ObservableProperty] private string _resRefError = string.Empty;
     [ObservableProperty] private bool _statusIsError;
     [ObservableProperty] private bool _isBusy;
@@ -219,18 +222,11 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
         if (!_showResRefValidation)
             return;
 
-        var previousError = ResRefError;
         ValidateResRef();
         if (HasResRefError)
-        {
             SetStatus(ResRefError, isError: true);
-        }
-        else if (!string.IsNullOrEmpty(previousError) &&
-                 StatusIsError &&
-                 StatusMessage.Equals(previousError, StringComparison.Ordinal))
-        {
-            SetStatus("ResRef corrected. Ready to create the previewed area.");
-        }
+        else
+            ApplyStatus();
     }
 
     partial void OnResRefErrorChanged(string value)
@@ -641,14 +637,28 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
 
     private void SetStatus(string message, bool isError = false)
     {
-        if (HasResRefError && !isError)
+        if (!HasResRefError || !message.Equals(ResRefError, StringComparison.Ordinal))
         {
-            message = ResRefError;
-            isError = true;
+            _statusWithoutResRefValidation = message;
+            _statusWithoutResRefValidationIsError = isError;
         }
 
-        StatusIsError = isError;
-        StatusMessage = message;
+        ApplyStatus();
+    }
+
+    private void ApplyStatus()
+    {
+        if (!HasResRefError)
+        {
+            StatusIsError = _statusWithoutResRefValidationIsError;
+            StatusMessage = _statusWithoutResRefValidation;
+            return;
+        }
+
+        StatusIsError = true;
+        StatusMessage = _statusWithoutResRefValidationIsError
+            ? $"{ResRefError}{Environment.NewLine}{_statusWithoutResRefValidation}"
+            : ResRefError;
     }
 
     private void SetPreviewedDraft(AreaGenerationDraft? draft)

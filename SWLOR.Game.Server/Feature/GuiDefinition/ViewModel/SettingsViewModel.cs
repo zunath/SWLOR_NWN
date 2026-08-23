@@ -279,8 +279,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void RefreshPartialViewBindings()
         {
-            // Republish list bindings after replacing the partial so any newly inserted list can
-            // populate its rows without reloading persisted values over unsaved changes.
+            // Republish scalar bindings after replacing the partial. Newly inserted controls
+            // otherwise render their client-side defaults until the value changes, which makes
+            // default-enabled settings such as account-name hiding appear unchecked.
+            OnPropertyChanged(nameof(DisplayAchievementNotification));
+            OnPropertyChanged(nameof(SubdualMode));
+            OnPropertyChanged(nameof(DisplayServerResetReminders));
+            OnPropertyChanged(nameof(PortraitVitals));
+            OnPropertyChanged(nameof(DisplayCommsOutOfRangeWarnings));
+            OnPropertyChanged(nameof(ShowOwnDescriptor));
+            OnPropertyChanged(nameof(ShowDescriptorsForNamedPlayers));
+            OnPropertyChanged(nameof(ScrambleAccountName));
+            OnPropertyChanged(nameof(CurrentRed));
+            OnPropertyChanged(nameof(CurrentGreen));
+            OnPropertyChanged(nameof(CurrentBlue));
+
+            // Republish list bindings so any newly inserted list can populate its rows without
+            // reloading persisted values over unsaved changes.
             ChatColorNames?.ResetBindings();
             ChatColors?.ResetBindings();
             ChatColorToggles?.ResetBindings();

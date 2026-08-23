@@ -38,6 +38,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasRecastDelay(RecastGroup.Resuscitation, 60f)
                 .SkillType(SkillType.FirstAid)
                 .IsSingleTargetAbility()
+                .IsHealingAbility()
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>
                     AbilityTargeting.ValidateFriendlyTarget(activator, target, requireDead: true))
@@ -60,6 +61,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
                 .HasRecastDelay(RecastGroup.Resuscitation, 60f)
                 .SkillType(SkillType.FirstAid)
                 .IsSingleTargetAbility()
+                .IsHealingAbility()
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>
                     AbilityTargeting.ValidateFriendlyTarget(activator, target, requireDead: true))

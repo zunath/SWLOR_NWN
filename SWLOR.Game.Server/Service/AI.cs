@@ -303,12 +303,18 @@ namespace SWLOR.Game.Server.Service
         public static bool ProcessTrigger(
             uint creature,
             AITriggerType trigger,
-            uint eventTarget = OBJECT_INVALID)
+            uint eventTarget = OBJECT_INVALID,
+            bool bypassDecisionThrottle = false)
         {
             if (trigger != AITriggerType.Death && !IsAIEnabled(creature))
                 return false;
 
-            return NPCAI.ProcessTrigger(creature, trigger, eventTarget, BuildAllies(creature));
+            return NPCAI.ProcessTrigger(
+                creature,
+                trigger,
+                eventTarget,
+                BuildAllies(creature),
+                bypassDecisionThrottle);
         }
 
         public static void SetAIProfile(uint creature, AIProfileType profile)

@@ -21,6 +21,20 @@ else {
 # rewrite formula-backed sheets through a spreadsheet library.
 $perkChanges = @(
     @{
+        Sheet = "Leadership"
+        PerkName = "Decisive Command"
+        Values = @{
+            Notes = "Player capstone: shared Capstone timer; uses a fixed 90-second capstone cooldown with a 45-second active duration and has no weapon/tool activation requirement. Only one Leadership command effect can be active per leader; a new command replaces the previous one. Ordinary Leadership damage-reduction effects do not stack; the strongest active source applies. Bolster Resolve's additional Field Steward recovery rider stacks with that strongest source."
+        }
+    },
+    @{
+        Sheet = "Leadership"
+        PerkName = "Bolster Resolve II"
+        Values = @{
+            Notes = "Support command. Affects the leader and nearby party members; valid use grants +2 Leadership CP to tagged NPCs. Its physical and Force reduction is an additional Field Steward recovery rider that stacks with the strongest ordinary Leadership damage-reduction source. Converted from separate active ability to Trait row for the 4-6 active-button budget. Former active values: STM 8; casting 1 second; cooldown 45 seconds."
+        }
+    },
+    @{
         Sheet = "Lightsaber"
         PerkName = "Force Sheath II"
         Values = @{

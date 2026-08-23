@@ -79,8 +79,10 @@ public class LeadershipCombatUpgradeTests
         AssertAppliedStat(new RousingShout3StatusEffect(), StatType.LeadershipPhysicalDamageTakenPercentAdjustment, -20);
         AssertAppliedStat(new RousingShout3StatusEffect(), StatType.LeadershipForceDamageTakenPercentAdjustment, -20);
         AssertAppliedStat(new RousingShout3StatusEffect(), StatType.DamageTakenPercentAdjustment, 0);
-        AssertAppliedStat(new BolsterResolve2StatusEffect(), StatType.LeadershipPhysicalDamageTakenPercentAdjustment, -12);
-        AssertAppliedStat(new BolsterResolve2StatusEffect(), StatType.LeadershipForceDamageTakenPercentAdjustment, -12);
+        AssertAppliedStat(new BolsterResolve2StatusEffect(), StatType.LeadershipRecoveryPhysicalDamageTakenPercentAdjustment, -12);
+        AssertAppliedStat(new BolsterResolve2StatusEffect(), StatType.LeadershipRecoveryForceDamageTakenPercentAdjustment, -12);
+        AssertAppliedStat(new BolsterResolve2StatusEffect(), StatType.LeadershipPhysicalDamageTakenPercentAdjustment, 0);
+        AssertAppliedStat(new BolsterResolve2StatusEffect(), StatType.LeadershipForceDamageTakenPercentAdjustment, 0);
         AssertAppliedStat(new BolsterResolve2StatusEffect(), StatType.DamageTakenPercentAdjustment, 0);
         AssertAppliedStat(new CleanseOrder2StatusEffect(), StatType.DamageTakenPercentAdjustment, 0);
         AssertAppliedStat(new CleanseOrder2StatusEffect(), StatType.PhysicalDamageTakenPercentAdjustment, 0);
@@ -93,6 +95,25 @@ public class LeadershipCombatUpgradeTests
         AssertAppliedStat(new HoldTheLine1StatusEffect(), StatType.LeadershipOtherDamageTakenPercentAdjustment, -18);
         AssertAppliedResistance(new HoldTheLine1StatusEffect(), ResistanceType.Mind, 100);
         AssertAppliedResistance(new HoldTheLine1StatusEffect(), ResistanceType.Mobility, 100);
+    }
+
+    [Test]
+    public void BreakMoraleFlash_AffectsNaturalCreaturePhysicalAbilities()
+    {
+        var flash = new FlashStatusEffect(15);
+        flash.StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment].Should().Be(-15);
+
+        var classifier = typeof(Combat).GetMethod(
+            "IsWeaponOrForceAbility",
+            BindingFlags.NonPublic | BindingFlags.Static);
+
+        classifier.Should().NotBeNull();
+        classifier!.Invoke(null, new object[] { SkillType.BeastMastery }).Should().Be(true,
+            "NPC natural-creature abilities such as Disorienting Screech resolve through Beast Mastery");
+        classifier.Invoke(null, new object[] { SkillType.Force }).Should().Be(true);
+        classifier.Invoke(null, new object[] { SkillType.Rifle }).Should().Be(true);
+        classifier.Invoke(null, new object[] { SkillType.Mimicry }).Should().Be(false,
+            "the physical/Force modifier deliberately does not affect player Mimicry techniques");
     }
 
     [Test]
@@ -177,6 +198,8 @@ public class LeadershipCombatUpgradeTests
         combat.Should().Contain("StatType.LeadershipPhysicalDamageTakenPercentAdjustment");
         combat.Should().Contain("StatType.LeadershipForceDamageTakenPercentAdjustment");
         combat.Should().Contain("StatType.LeadershipOtherDamageTakenPercentAdjustment");
+        combat.Should().Contain("StatType.LeadershipRecoveryPhysicalDamageTakenPercentAdjustment");
+        combat.Should().Contain("StatType.LeadershipRecoveryForceDamageTakenPercentAdjustment");
     }
 
     [Test]
@@ -225,18 +248,41 @@ public class LeadershipCombatUpgradeTests
             }
             .Should().BeEquivalentTo(new[] { -10, 0 },
                 "equal reductions must contribute once regardless of which tied effect wins");
+    }
 
-        var bolsterTracker = new CreatureStatusEffect();
-        var bolster = ApplyLeadershipEffect(bolsterTracker, new BolsterResolve2StatusEffect());
-        var lowerRousingShout = ApplyLeadershipEffect(bolsterTracker, new RousingShout1StatusEffect());
-        bolsterTracker.StatGroup.Stats[StatType.LeadershipPhysicalDamageTakenPercentAdjustment].Should().Be(-12,
-            "Bolster Resolve II is the stronger Leadership reduction at base SOC and should not stack with Rousing Shout I");
-        lowerRousingShout.StatGroup.Stats[StatType.LeadershipPhysicalDamageTakenPercentAdjustment].Should().Be(0);
-        var strongerRousingShout = ApplyLeadershipEffect(bolsterTracker, new RousingShout3StatusEffect());
-        bolsterTracker.StatGroup.Stats[StatType.LeadershipPhysicalDamageTakenPercentAdjustment].Should().Be(-20,
-            "Rousing Shout III's low-HP rescue reduction must supersede the Bolster Resolve II rider");
-        bolster.StatGroup.Stats[StatType.LeadershipPhysicalDamageTakenPercentAdjustment].Should().Be(0);
-        strongerRousingShout.StatGroup.Stats[StatType.LeadershipPhysicalDamageTakenPercentAdjustment].Should().Be(-20);
+    [Test]
+    public void BolsterResolveDamageReduction_StacksWithRousingShoutOnRecoveryChannel()
+    {
+        var tracker = new CreatureStatusEffect();
+        var bolster = new BolsterResolve2StatusEffect();
+        bolster.ApplyEffect(0, 0, -1);
+        tracker.Add(bolster);
+        var rousingShout = ApplyLeadershipEffect(tracker, new RousingShout3StatusEffect());
+
+        tracker.StatGroup.Stats[StatType.LeadershipRecoveryPhysicalDamageTakenPercentAdjustment].Should().Be(-12);
+        tracker.StatGroup.Stats[StatType.LeadershipRecoveryForceDamageTakenPercentAdjustment].Should().Be(-12);
+        tracker.StatGroup.Stats[StatType.LeadershipPhysicalDamageTakenPercentAdjustment].Should().Be(-20);
+        tracker.StatGroup.Stats[StatType.LeadershipForceDamageTakenPercentAdjustment].Should().Be(-20);
+        bolster.StatGroup.Stats[StatType.LeadershipRecoveryPhysicalDamageTakenPercentAdjustment].Should().Be(-12,
+            "Bolster Resolve is an additional Field Steward recovery rider and must survive Leadership-family reconciliation");
+        rousingShout.StatGroup.Stats[StatType.LeadershipPhysicalDamageTakenPercentAdjustment].Should().Be(-20);
+
+        ApplyTypedLeadershipDamageTakenPercentageModifier(
+                100,
+                CombatDamageType.Physical,
+                physicalAdjustment: -32,
+                forceAdjustment: -32,
+                otherAdjustment: 0)
+            .Should().Be(68,
+                "the base-SOC Rousing Shout III and Bolster Resolve II reductions must add in the same typed stage");
+        ApplyTypedLeadershipDamageTakenPercentageModifier(
+                100,
+                CombatDamageType.Force,
+                physicalAdjustment: -40,
+                forceAdjustment: -40,
+                otherAdjustment: 0)
+            .Should().Be(60,
+                "maximum SOC must deliver the tested 25% plus 15% physical and Force reduction");
     }
 
     [Test]
@@ -332,9 +378,9 @@ public class LeadershipCombatUpgradeTests
 
         genericStage.Should().Contain("bool typedLeadershipReductionAlreadyApplied = false");
         genericStage.Should().Contain("ApplyDamageTakenPercentageModifiers(");
-        genericStage.Should().Contain("StatType.LeadershipPhysicalDamageTakenPercentAdjustment");
-        genericStage.Should().Contain("StatType.LeadershipForceDamageTakenPercentAdjustment");
         genericStage.Should().Contain("StatType.LeadershipOtherDamageTakenPercentAdjustment");
+        genericStage.Should().Contain("GetLeadershipPhysicalDamageTakenPercentAdjustment(defender)");
+        genericStage.Should().Contain("GetLeadershipForceDamageTakenPercentAdjustment(defender)");
         percentageStage.Should().Contain("if (!typedLeadershipReductionAlreadyApplied)");
         percentageStage.Should().Contain("damage = ApplyTypedLeadershipDamageTakenPercentageModifier(");
         percentageStage.IndexOf("damage = ApplyTypedLeadershipDamageTakenPercentageModifier(", StringComparison.Ordinal)
@@ -350,9 +396,19 @@ public class LeadershipCombatUpgradeTests
             StringComparison.Ordinal)..combat.IndexOf(
             "private static int ApplyTypedLeadershipDamageTakenPercentageModifier(",
             StringComparison.Ordinal)];
-        directTypedStage.Should().Contain("StatType.LeadershipPhysicalDamageTakenPercentAdjustment");
-        directTypedStage.Should().Contain("StatType.LeadershipForceDamageTakenPercentAdjustment");
         directTypedStage.Should().Contain("StatType.LeadershipOtherDamageTakenPercentAdjustment");
+        directTypedStage.Should().Contain("GetLeadershipPhysicalDamageTakenPercentAdjustment(defender)");
+        directTypedStage.Should().Contain("GetLeadershipForceDamageTakenPercentAdjustment(defender)");
+
+        var combinedLeadershipChannels = combat[combat.IndexOf(
+            "private static int GetLeadershipPhysicalDamageTakenPercentAdjustment(",
+            StringComparison.Ordinal)..combat.IndexOf(
+            "private static int ApplyTypedLeadershipDamageTakenPercentageModifier(",
+            StringComparison.Ordinal)];
+        combinedLeadershipChannels.Should().Contain("StatType.LeadershipRecoveryPhysicalDamageTakenPercentAdjustment");
+        combinedLeadershipChannels.Should().Contain("StatType.LeadershipRecoveryForceDamageTakenPercentAdjustment");
+        combinedLeadershipChannels.Should().Contain("StatType.LeadershipPhysicalDamageTakenPercentAdjustment");
+        combinedLeadershipChannels.Should().Contain("StatType.LeadershipForceDamageTakenPercentAdjustment");
 
         var ability = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Ability.cs").FullName);
         (ability.Split("typedLeadershipReductionAlreadyApplied: true").Length - 1).Should().Be(2,

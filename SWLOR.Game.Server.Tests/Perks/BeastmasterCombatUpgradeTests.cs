@@ -76,7 +76,8 @@ public class BeastmasterCombatUpgradeTests
         new GuardingBondBeastStatusEffect().StatGroup.Stats[StatType.EnmityPercentAdjustment].Should().Be(75);
         new PredatoryBondBeastStatusEffect().StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(25);
         new PredatoryBondBeastStatusEffect().StatGroup.Stats[StatType.AttackDelayReductionPercent].Should().Be(15);
-        new PredatoryBondBeastStatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(10);
+        new PredatoryBondBeastStatusEffect().StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment].Should().Be(10);
+        new PredatoryBondBeastStatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(0);
         new PredatoryBondBeastStatusEffect().StatGroup.Stats[StatType.EnmityPercentAdjustment].Should().Be(-40);
     }
 

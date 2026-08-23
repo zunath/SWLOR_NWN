@@ -253,7 +253,10 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
                         companion,
                         state.AttackNearestTarget,
                         CompanionEngagementType.AttackNearest) &&
-                    TrackProgress(companion, state.AttackNearestTarget))
+                    TrackProgress(
+                        companion,
+                        state.AttackNearestTarget,
+                        CompanionEngagementType.AttackNearest))
                 {
                     return state.AttackNearestTarget;
                 }
@@ -272,7 +275,10 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
                         companion,
                         state.OwnerAssistTarget,
                         CompanionEngagementType.OwnerAssist) &&
-                    TrackProgress(companion, state.OwnerAssistTarget))
+                    TrackProgress(
+                        companion,
+                        state.OwnerAssistTarget,
+                        CompanionEngagementType.OwnerAssist))
                 {
                     return state.OwnerAssistTarget;
                 }
@@ -545,10 +551,12 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
                 .ThenBy(x => GetDistanceBetween(companion, x))
                 .FirstOrDefault(OBJECT_INVALID);
 
-            if (GetIsObjectValid(selected) && !TrackProgress(companion, selected))
+            if (GetIsObjectValid(selected) &&
+                !TrackProgress(companion, selected, CompanionEngagementType.Defensive))
             {
                 state.DefensiveThreats.Remove(selected);
-                ReturnToFollowPreservingThreats(companion);
+                ResetProgress(state);
+                MaintainModePosition(companion);
                 return OBJECT_INVALID;
             }
 
@@ -578,7 +586,10 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             return true;
         }
 
-        private static bool TrackProgress(uint companion, uint target)
+        private static bool TrackProgress(
+            uint companion,
+            uint target,
+            CompanionEngagementType engagementType)
         {
             var state = GetState(companion);
             if (state.TrackedTarget != target)
@@ -602,9 +613,17 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             if (!CompanionControlPolicy.HasPathingTimedOut(state.LastProgressAt, DateTime.UtcNow))
                 return true;
 
-            Log.Write(LogGroup.AI, $"{GetName(companion)} timed out pathing to {GetName(target)} and returned to Follow.");
-            SendResponse(companion, "Unable to reach the target; returning to Follow.");
-            ReturnToFollowPreservingThreats(companion);
+            var returnsToFollow = CompanionControlPolicy.ReturnsToFollowWhenComplete(engagementType);
+            Log.Write(
+                LogGroup.AI,
+                returnsToFollow
+                    ? $"{GetName(companion)} timed out pathing to {GetName(target)} and returned to Follow."
+                    : $"{GetName(companion)} timed out pathing to {GetName(target)} and retained {state.Mode} mode.");
+            SendResponse(
+                companion,
+                returnsToFollow
+                    ? "Unable to reach the target; returning to Follow."
+                    : $"Unable to reach the target; remaining in {state.Mode}.");
             return false;
         }
 
@@ -617,15 +636,6 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             ResetProgress(state);
             Log.Write(LogGroup.AI, $"{GetName(companion)} completed Attack Nearest and returned to Follow.");
             MaintainModePosition(companion);
-        }
-
-        private static void ReturnToFollowPreservingThreats(uint companion)
-        {
-            var state = GetState(companion);
-            state.Mode = CompanionMode.Follow;
-            state.AttackNearestTarget = OBJECT_INVALID;
-            state.OwnerAssistTarget = OBJECT_INVALID;
-            ResetProgress(state);
         }
 
         private static void StartTracking(CompanionControlState state, uint companion, uint target)
@@ -650,6 +660,9 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             foreach (var (feat, ability) in GetCachedHostileAbilities(companion))
             {
                 if (ability.ActivationType == AbilityActivationType.Weapon)
+                    continue;
+
+                if (ability.IsAreaAbility && ability.Targeting == null)
                     continue;
 
                 var isSelfCenteredArea = ability.IsAreaAbility &&

@@ -220,6 +220,16 @@ public sealed class AreaGeneratorWindowRenderTests
             window.FindControl<TextBlock>("ResRefErrorText")!.IsVisible.Should().BeTrue();
             window.FindControl<TextBlock>("StatusMessageText")!.Classes.Should().Contain("statusError");
 
+            viewModel.Seed = viewModel.Seed == AreaSettingsBounds.MaxSeed ? 0 : viewModel.Seed + 1;
+            await WaitUntilAsync(
+                () => viewModel.Preview != null && !viewModel.IsBusy,
+                () => viewModel.StatusMessage);
+
+            viewModel.StatusIsError.Should().BeTrue(
+                "automatic preview updates must not hide an active field validation error");
+            viewModel.StatusMessage.Should().Be(viewModel.ResRefError);
+            window.FindControl<TextBox>("ResRefInput")!.Classes.Should().Contain("validationError");
+
             viewModel.ResRef = "generated_area";
             Dispatcher.UIThread.RunJobs();
 

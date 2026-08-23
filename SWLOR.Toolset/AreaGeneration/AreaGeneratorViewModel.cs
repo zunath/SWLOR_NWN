@@ -641,6 +641,12 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
 
     private void SetStatus(string message, bool isError = false)
     {
+        if (HasResRefError && !isError)
+        {
+            message = ResRefError;
+            isError = true;
+        }
+
         StatusIsError = isError;
         StatusMessage = message;
     }

@@ -564,6 +564,14 @@ namespace SWLOR.Game.Server.Feature
                     return;
                 }
 
+                if (ability.IsHostileAbility &&
+                    CompanionControl.IsRegisteredCompanion(activator) &&
+                    !CompanionControl.IsHostileAbilityTargetAuthorized(activator, ability, target))
+                {
+                    CancelActivation(true);
+                    return;
+                }
+
                 var effectivePerkLevel =
                     ability.EffectiveLevelPerkType == PerkType.Invalid
                         ? 1

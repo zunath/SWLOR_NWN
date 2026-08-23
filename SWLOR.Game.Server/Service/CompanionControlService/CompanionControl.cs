@@ -356,6 +356,19 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
                 : OBJECT_INVALID;
         }
 
+        public static bool IsHostileAbilityTargetAuthorized(
+            uint companion,
+            AbilityDetail ability,
+            uint selectedTarget)
+        {
+            var authorizedTarget = PeekAuthorizedTarget(companion);
+            return GetIsObjectValid(ResolveHostileAbilityTarget(
+                companion,
+                ability,
+                authorizedTarget,
+                selectedTarget));
+        }
+
         public static bool CanIssueAttackCommand(uint companion, uint target)
         {
             if (!IsRegisteredCompanion(companion))

@@ -50,8 +50,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Definitions
                 // Boss: Adamantine Guard Adept (CR 50), first rank of the CZ-220 Breaker Yard line.
                 .Tier(2)
                 .AddCreature("nar_rogue_droid", 30)
-                .AddCreature("republictrooper", 40)
-                .AddCreature("vrepnpctroop1", 30)
+                .AddCreature("vrepnpctroop1", 70)
                 .CreaturesPerRoom(2, 3)
                 .Boss("cp_adamguard_ad")
                 .Treasure("CAPSTONE_CZ220_BREAKER_YARD_LESSON_LOOT", 3)

@@ -5,6 +5,7 @@ using NUnit.Framework;
 using SWLOR.Toolset.Domain.AreaGeneration;
 using SWLOR.Toolset.Domain.AreaGeneration.Authoring;
 using SWLOR.Toolset.Domain.AreaGeneration.Decoration;
+using SWLOR.Toolset.Domain.AreaGeneration.Definitions;
 using SWLOR.Toolset.Domain.AreaGeneration.Tileset;
 
 namespace SWLOR.Toolset.Tests.AreaGeneration;
@@ -149,5 +150,56 @@ public class GeneratedTreasureReviewRegressionTests
 
         GeneratedAreaDocumentPopulator.FindTreasureAnchor(draft, bossRoom)
             .Should().Be((35f, 5f));
+    }
+
+    [Test]
+    public void CreatureAnchors_SkipStructuresAndRespectLargeCollisionRadii()
+    {
+        var room = new LayoutRoom
+        {
+            Id = 7,
+            Role = RoomRole.Standard,
+            CenterTile = (2, 0),
+            Tiles =
+            [
+                (0, 0), (1, 0), (2, 0), (3, 0),
+                (0, 1), (1, 1), (2, 1), (3, 1)
+            ]
+        };
+        var resolved = new ResolvedLayout
+        {
+            Width = 4,
+            Height = 2,
+            Rooms = [room],
+            FeatureTileCells = new Dictionary<(int X, int Y), string> { [(0, 0)] = "Pillars" },
+            StampedStructureTiles = [(1, 0)]
+        };
+        var occupied = new List<(float X, float Y, float Radius)>();
+
+        var anchors = GeneratedAreaDocumentPopulator.SelectCreatureAnchors(
+            resolved,
+            room,
+            [5.5f, 5.5f],
+            occupied,
+            new Random(91));
+
+        anchors.Should().HaveCount(2);
+        anchors.Select(anchor => ((int)(anchor.X / 10f), (int)(anchor.Y / 10f)))
+            .Should().NotContain((0, 0)).And.NotContain((1, 0));
+        var dx = anchors[0].X - anchors[1].X;
+        var dy = anchors[0].Y - anchors[1].Y;
+        MathF.Sqrt(dx * dx + dy * dy).Should().BeGreaterThanOrEqualTo(11f);
+    }
+
+    [Test]
+    public void SciFiBaseTierTwo_UsesOnlyMortalAmbientBlueprints()
+    {
+        var tier = new SciFiBaseDungeonDefinition()
+            .BuildDungeons()[SciFiBaseDungeonDefinition.ThemeKey]
+            .Tiers[2];
+
+        tier.Creatures.Select(creature => creature.Resref)
+            .Should().NotContain("republictrooper")
+            .And.Contain("vrepnpctroop1");
     }
 }

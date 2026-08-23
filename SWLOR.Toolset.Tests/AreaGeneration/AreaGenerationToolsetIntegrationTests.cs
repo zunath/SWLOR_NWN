@@ -289,7 +289,7 @@ public class AreaGenerationToolsetIntegrationTests
             gic.Fields.GetListOrEmpty("WaypointList").Should().HaveCount(draft.Result.Resolved.Transitions.Count);
             git.Fields.GetListOrEmpty("Creature List").Should().NotBeEmpty();
             git.Fields.GetListOrEmpty("Creature List")
-                .Should().Contain(instance => instance.GetStringOrNull("Tag") == "PG_BOSS");
+                .Should().Contain(instance => instance.GetStringOrNull("Tag") == "Shyrack");
             IfoDocument.Load(Path.Combine(moduleRoot, "ifo", "module.ifo.json"))
                 .AreaResRefs.Should().Contain("procgen_test");
         }
@@ -510,7 +510,8 @@ public class AreaGenerationToolsetIntegrationTests
             .Should().Equal("korriinitiate", "korriinitiate", "vkorrdun1sword");
         git.Fields.GetListOrEmpty("Creature List")
             .Select(instance => instance.GetStringOrNull("Tag"))
-            .Should().Equal("PG_CREATURE_1", "PG_CREATURE_2", "PG_BOSS");
+            .Should().Equal(["korriaInitiate", "korriaInitiate", "SithTempleGuard"],
+                "generated encounters retain blueprint-authored tags used by creature scripts");
         gic.Fields.GetListOrEmpty("WaypointList").Should().HaveCount(3);
         gic.Fields.GetListOrEmpty("Door List").Should().ContainSingle();
         gic.Fields.GetListOrEmpty("Placeable List").Should().HaveCount(4);

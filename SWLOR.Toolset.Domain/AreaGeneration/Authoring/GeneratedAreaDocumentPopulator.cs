@@ -1,9 +1,13 @@
 #nullable enable
 using Serilog;
+using SWLOR.NWN.Formats;
+using SWLOR.NWN.Formats.TwoDA;
 using SWLOR.Toolset.Domain.AreaGeneration.Atmosphere;
 using SWLOR.Toolset.Domain.AreaGeneration.Decoration;
 using SWLOR.Toolset.Domain.AreaGeneration.Tileset;
 using SWLOR.Toolset.Domain.Documents;
+using SWLOR.Toolset.Domain.GameData.Resources;
+using SWLOR.Toolset.Domain.GameData.TwoDa;
 using SWLOR.Toolset.Domain.GameData.Tilesets;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
@@ -19,7 +23,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
         private const string CreatureList = "Creature List";
         private const string GeneratedTreasureOpenScript = "proc_loot_open";
         private const float TreasureAnchorClearance = 3f;
-        private const float CreatureAnchorClearance = 2f;
+        private const float DefaultCreatureRadius = 1f;
+        private const float GeneratedObjectRadius = 1f;
         private static readonly ILogger Logger = Log.ForContext<GeneratedAreaDocumentPopulator>();
 
         private GeneratedAreaDocumentPopulator()
@@ -384,21 +389,34 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                 draft.Settings.Tier * 7919 ^
                 0x51ED270B));
             var occupied = CreatureOccupiedAnchors(draft);
-            var sequence = 0;
+            var appearanceTable = LoadCreatureAppearanceTable(workspace.ResourceIndex);
 
             foreach (var room in draft.Result.Resolved.Rooms
                          .Where(room => room.Role == RoomRole.Standard)
                          .OrderBy(room => room.Id))
             {
                 var count = random.Next(tier.MinCreaturesPerRoom, tier.MaxCreaturesPerRoom + 1);
-                foreach (var (x, y) in SelectCreatureAnchors(room, count, occupied, random))
-                {
-                    AddCreature(
+                var spawns = Enumerable.Range(0, count)
+                    .Select(_ => LoadCreatureSpawn(
                         workspace,
+                        ChooseCreatureResref(creaturePool, random),
+                        appearanceTable))
+                    .OrderByDescending(spawn => spawn.Radius)
+                    .ToList();
+                var anchors = SelectCreatureAnchors(
+                    draft.Result.Resolved,
+                    room,
+                    spawns.Select(spawn => spawn.Radius).ToList(),
+                    occupied,
+                    random);
+                for (var index = 0; index < spawns.Count; index++)
+                {
+                    var spawn = spawns[index];
+                    var (x, y) = anchors[index];
+                    AddCreature(
                         git,
                         gic,
-                        ChooseCreatureResref(creaturePool, random),
-                        $"PG_CREATURE_{++sequence}",
+                        spawn,
                         x,
                         y,
                         GroundHeightAt(draft.Result.Resolved, draft.Tileset, x, y),
@@ -410,86 +428,185 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             if (bossRoom == null)
                 return;
 
-            var bossAnchor = SelectCreatureAnchors(bossRoom, 1, occupied, random).Single();
+            var bossSpawn = LoadCreatureSpawn(workspace, tier.BossResref, appearanceTable);
+            var bossAnchor = SelectCreatureAnchors(
+                draft.Result.Resolved,
+                bossRoom,
+                [bossSpawn.Radius],
+                occupied,
+                random).Single();
             AddCreature(
-                workspace,
                 git,
                 gic,
-                tier.BossResref,
-                "PG_BOSS",
+                bossSpawn,
                 bossAnchor.X,
                 bossAnchor.Y,
                 GroundHeightAt(draft.Result.Resolved, draft.Tileset, bossAnchor.X, bossAnchor.Y),
                 (float)(random.NextDouble() * 360.0));
         }
 
-        private static List<(float X, float Y)> CreatureOccupiedAnchors(AreaGenerationDraft draft)
+        private static List<(float X, float Y, float Radius)> CreatureOccupiedAnchors(
+            AreaGenerationDraft draft)
         {
             var occupied = draft.Result.Resolved.Transitions
                 .Select(transition => transition.Style == TransitionStyle.Placeable
-                    ? (transition.Tile.X * 10f + 5f, transition.Tile.Y * 10f + 5f)
-                    : (transition.DoorX, transition.DoorY))
+                    ? (transition.Tile.X * 10f + 5f, transition.Tile.Y * 10f + 5f, GeneratedObjectRadius)
+                    : (transition.DoorX, transition.DoorY, GeneratedObjectRadius))
                 .ToList();
             occupied.AddRange(draft.Result.PlannedDecorations.Select(decoration =>
-                (decoration.Position.X, decoration.Position.Y)));
+                (decoration.Position.X, decoration.Position.Y, GeneratedObjectRadius)));
 
             var bossRoom = draft.Result.Resolved.Rooms.FirstOrDefault(room => room.Role == RoomRole.Boss);
             if (bossRoom != null)
-                occupied.Add(FindTreasureAnchor(draft, bossRoom));
+            {
+                var treasure = FindTreasureAnchor(draft, bossRoom);
+                occupied.Add((treasure.X, treasure.Y, GeneratedObjectRadius));
+            }
 
             return occupied;
         }
 
-        private static IReadOnlyList<(float X, float Y)> SelectCreatureAnchors(
+        internal static IReadOnlyList<(float X, float Y)> SelectCreatureAnchors(
+            ResolvedLayout resolved,
             LayoutRoom room,
-            int count,
-            ICollection<(float X, float Y)> occupied,
+            IReadOnlyList<float> creatureRadii,
+            ICollection<(float X, float Y, float Radius)> occupied,
             Random random)
         {
-            if (count == 0)
+            if (creatureRadii.Count == 0)
                 return Array.Empty<(float X, float Y)>();
 
-            var tiles = room.Tiles.DefaultIfEmpty(room.CenterTile).Distinct().ToList();
-            var candidates = new List<(float X, float Y)>();
-            foreach (var tile in tiles)
-            {
-                foreach (var offsetY in new[] { 5f, 2.5f, 7.5f })
-                foreach (var offsetX in new[] { 5f, 2.5f, 7.5f })
-                    candidates.Add((tile.X * 10f + offsetX, tile.Y * 10f + offsetY));
-            }
-
-            for (var index = candidates.Count - 1; index > 0; index--)
-            {
-                var swapIndex = random.Next(index + 1);
-                (candidates[index], candidates[swapIndex]) = (candidates[swapIndex], candidates[index]);
-            }
-
-            if (count > candidates.Count)
+            var tiles = room.Tiles
+                .DefaultIfEmpty(room.CenterTile)
+                .Distinct()
+                .Where(tile =>
+                    !resolved.FeatureTileCells.ContainsKey(tile) &&
+                    !resolved.StampedStructureTiles.Contains(tile))
+                .ToHashSet();
+            if (tiles.Count == 0)
             {
                 throw new InvalidOperationException(
-                    $"Room {room.Id} cannot fit {count} distinct creature anchors.");
+                    $"Room {room.Id} has no creature anchor clear of feature geometry and stamped structures.");
             }
 
-            var selected = new List<(float X, float Y)>(count);
-            var requiredDistanceSquared = CreatureAnchorClearance * CreatureAnchorClearance;
-            while (selected.Count < count)
+            var boundarySegments = CreatureBoundarySegments(tiles);
+            var candidatesByCreature = new List<List<(float X, float Y)>>(creatureRadii.Count);
+            foreach (var radius in creatureRadii)
             {
-                var clearCandidates = candidates.Where(candidate =>
-                    occupied.All(point => DistanceSquared(candidate, point) >= requiredDistanceSquared)).ToList();
-                var next = clearCandidates.Count > 0
-                    ? clearCandidates[0]
-                    : candidates
-                        .OrderByDescending(candidate => occupied.Count == 0
-                            ? float.MaxValue
-                            : occupied.Min(point => DistanceSquared(candidate, point)))
-                        .First();
+                var candidates = new List<(float X, float Y)>();
+                foreach (var tile in tiles)
+                {
+                    for (var offsetY = 0.5f; offsetY < 10f; offsetY += 1f)
+                    for (var offsetX = 0.5f; offsetX < 10f; offsetX += 1f)
+                    {
+                        var candidate = (tile.X * 10f + offsetX, tile.Y * 10f + offsetY);
+                        if (HasCreatureBoundaryClearance(candidate, radius, boundarySegments))
+                            candidates.Add(candidate);
+                    }
+                }
 
-                candidates.Remove(next);
-                selected.Add(next);
-                occupied.Add(next);
+                for (var index = candidates.Count - 1; index > 0; index--)
+                {
+                    var swapIndex = random.Next(index + 1);
+                    (candidates[index], candidates[swapIndex]) = (candidates[swapIndex], candidates[index]);
+                }
+
+                if (candidates.Count == 0)
+                {
+                    throw new InvalidOperationException(
+                        $"Room {room.Id} cannot fit a creature with a {radius:0.##}m collision radius.");
+                }
+
+                candidatesByCreature.Add(candidates);
             }
 
-            return selected;
+            var selected = new List<(float X, float Y, float Radius)>(creatureRadii.Count);
+            bool TryPlace(int creatureIndex)
+            {
+                if (creatureIndex == creatureRadii.Count)
+                    return true;
+
+                var radius = creatureRadii[creatureIndex];
+                foreach (var candidate in candidatesByCreature[creatureIndex])
+                {
+                    if (!occupied.Concat(selected).All(point =>
+                            DistanceSquared(candidate, (point.X, point.Y)) + 0.0001f >=
+                            (radius + point.Radius) * (radius + point.Radius)))
+                    {
+                        continue;
+                    }
+
+                    selected.Add((candidate.X, candidate.Y, radius));
+                    if (TryPlace(creatureIndex + 1))
+                        return true;
+                    selected.RemoveAt(selected.Count - 1);
+                }
+
+                return false;
+            }
+
+            if (!TryPlace(0))
+            {
+                throw new InvalidOperationException(
+                    $"Room {room.Id} cannot fit {creatureRadii.Count} creatures without overlapping geometry.");
+            }
+
+            foreach (var anchor in selected)
+                occupied.Add(anchor);
+            return selected.Select(anchor => (anchor.X, anchor.Y)).ToList();
+        }
+
+        private static IReadOnlyList<((float X, float Y) Start, (float X, float Y) End)>
+            CreatureBoundarySegments(IReadOnlySet<(int X, int Y)> tiles)
+        {
+            var segments = new List<((float X, float Y), (float X, float Y))>();
+            foreach (var tile in tiles)
+            {
+                var left = tile.X * 10f;
+                var right = left + 10f;
+                var bottom = tile.Y * 10f;
+                var top = bottom + 10f;
+                if (!tiles.Contains((tile.X - 1, tile.Y)))
+                    segments.Add(((left, bottom), (left, top)));
+                if (!tiles.Contains((tile.X + 1, tile.Y)))
+                    segments.Add(((right, bottom), (right, top)));
+                if (!tiles.Contains((tile.X, tile.Y - 1)))
+                    segments.Add(((left, bottom), (right, bottom)));
+                if (!tiles.Contains((tile.X, tile.Y + 1)))
+                    segments.Add(((left, top), (right, top)));
+            }
+
+            return segments;
+        }
+
+        private static bool HasCreatureBoundaryClearance(
+            (float X, float Y) candidate,
+            float radius,
+            IReadOnlyList<((float X, float Y) Start, (float X, float Y) End)> boundarySegments)
+        {
+            var requiredDistanceSquared = radius * radius;
+            foreach (var segment in boundarySegments)
+            {
+                if (DistanceSquaredToSegment(candidate, segment.Start, segment.End) < requiredDistanceSquared)
+                    return false;
+            }
+
+            return true;
+        }
+
+        private static float DistanceSquaredToSegment(
+            (float X, float Y) point,
+            (float X, float Y) start,
+            (float X, float Y) end)
+        {
+            var segmentX = end.X - start.X;
+            var segmentY = end.Y - start.Y;
+            var lengthSquared = segmentX * segmentX + segmentY * segmentY;
+            var projection = ((point.X - start.X) * segmentX + (point.Y - start.Y) * segmentY) /
+                             lengthSquared;
+            projection = Math.Clamp(projection, 0f, 1f);
+            var closest = (start.X + projection * segmentX, start.Y + projection * segmentY);
+            return DistanceSquared(point, closest);
         }
 
         private static string ChooseCreatureResref(
@@ -508,29 +625,73 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             return creatures[^1].Resref;
         }
 
-        private static void AddCreature(
+        private sealed record CreatureSpawn(string Resref, JsonGffDocument Blueprint, float Radius);
+
+        private static CreatureSpawn LoadCreatureSpawn(
             ModuleWorkspace workspace,
+            string resref,
+            TwoDaTable? appearanceTable)
+        {
+            var blueprint = workspace.LoadBlueprint(ResourceType.Utc, resref).Document;
+            var radius = DefaultCreatureRadius;
+            if (appearanceTable != null)
+            {
+                var appearanceId = blueprint.Root.GetIntOrNull("Appearance_Type") ?? -1;
+                var rawRadius = appearanceTable.GetString(appearanceId, "CREPERSPACE");
+                if (!float.TryParse(
+                        rawRadius,
+                        System.Globalization.NumberStyles.Float,
+                        System.Globalization.CultureInfo.InvariantCulture,
+                        out radius) ||
+                    radius <= 0f)
+                {
+                    throw new InvalidOperationException(
+                        $"Creature blueprint '{resref}' has no valid CREPERSPACE in appearance.2da row {appearanceId}.");
+                }
+            }
+
+            return new CreatureSpawn(resref, blueprint, radius);
+        }
+
+        private static TwoDaTable? LoadCreatureAppearanceTable(ResourceIndex? resourceIndex)
+        {
+            if (resourceIndex == null)
+                return null;
+
+            var identity = new ResourceIdentity("appearance", ResourceIdentity.TypeFromExtension("2da"));
+            if (!resourceIndex.TryLookup(identity, out var resource))
+                throw new InvalidOperationException("appearance.2da is unavailable for creature placement.");
+
+            try
+            {
+                return new TwoDaTable("appearance", TwoDAReader.Read(resource.GetBytes()));
+            }
+            catch (NwnFormatException ex)
+            {
+                throw new InvalidOperationException(
+                    "appearance.2da could not be read for creature placement.", ex);
+            }
+        }
+
+        private static void AddCreature(
             GitDocument git,
             GicDocument gic,
-            string resref,
-            string tag,
+            CreatureSpawn spawn,
             float x,
             float y,
             float z,
             float facingDegrees)
         {
-            var blueprint = workspace.LoadBlueprint(ResourceType.Utc, resref);
             var radians = facingDegrees * Math.PI / 180.0;
             var instance = InstanceFieldMap.CreateInstance(
                 ResourceType.Utc,
-                blueprint.Document,
-                resref,
+                spawn.Blueprint,
+                spawn.Resref,
                 x,
                 y,
                 z,
                 Math.Cos(radians),
                 Math.Sin(radians));
-            InstanceFieldMap.SetTag(instance, tag);
 
             var list = git.Fields.GetOrAddList(CreatureList);
             list.Add(instance);

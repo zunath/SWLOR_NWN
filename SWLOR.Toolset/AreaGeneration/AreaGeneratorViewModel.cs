@@ -435,8 +435,7 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
                 showTransitions,
                 showDecorations)).ConfigureAwait(true);
             BusyMessage = "Preparing the preview image...";
-            var bitmap = await _backgroundTasks.RunAsync(() => ToBitmap(image)).ConfigureAwait(true);
-            Preview = bitmap;
+            Preview = ToBitmap(image);
             SetPreviewedDraft(draft);
             SetStatus(Describe(draft, image));
         }
@@ -776,6 +775,16 @@ public partial class AreaGeneratorViewModel : ObservableObject, IDisposable
             AlphaFormat.Unpremul);
         using var buffer = bitmap.Lock();
         var stride = image.Width * 4;
+        if (buffer.RowBytes == stride)
+        {
+            System.Runtime.InteropServices.Marshal.Copy(
+                image.Pixels,
+                0,
+                buffer.Address,
+                image.Pixels.Length);
+            return bitmap;
+        }
+
         for (var y = 0; y < image.Height; y++)
         {
             System.Runtime.InteropServices.Marshal.Copy(

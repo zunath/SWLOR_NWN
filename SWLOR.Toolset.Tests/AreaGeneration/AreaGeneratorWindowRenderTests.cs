@@ -259,7 +259,7 @@ public sealed class AreaGeneratorWindowRenderTests
                 () => viewModel.Preview != null && !viewModel.IsBusy,
                 () => viewModel.StatusMessage);
 
-            backgroundTasks.WorkerThreadIds.Should().HaveCountGreaterThanOrEqualTo(3);
+            backgroundTasks.WorkerThreadIds.Should().HaveCountGreaterThanOrEqualTo(2);
             backgroundTasks.WorkerThreadIds.Should().OnlyContain(threadId => threadId != uiThreadId);
             window.FindControl<StackPanel>("GenerationProgressPanel")!.IsVisible.Should().BeFalse();
         }

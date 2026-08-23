@@ -34,28 +34,35 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                 return false;
             }
 
+            var canonicalResref = (resref ?? string.Empty).Trim().ToLowerInvariant();
             NewAreaWriter.TilesetResolver resolver = tilesets.TryGetTileset;
             Logger.Information(
                 "Creating generated area {AreaResref} from a {Width}x{Height} solved layout.",
-                resref,
+                canonicalResref,
                 draft.Result.Resolved.Width,
                 draft.Result.Resolved.Height);
             var created = NewAreaWriter.TryCreate(
                 workspace,
                 resolver,
-                resref,
+                canonicalResref,
                 displayName,
                 draft.Composition.Tileset.TilesetResref,
                 draft.Result.Resolved.Width,
                 draft.Result.Resolved.Height,
                 (are, git, gic) =>
-                    GeneratedAreaDocumentPopulator.Populate(draft, workspace, resref, are, git, gic),
+                    GeneratedAreaDocumentPopulator.Populate(
+                        draft,
+                        workspace,
+                        canonicalResref,
+                        are,
+                        git,
+                        gic),
                 out error);
 
             if (created)
-                Logger.Information("Created generated area {AreaResref}.", resref);
+                Logger.Information("Created generated area {AreaResref}.", canonicalResref);
             else
-                Logger.Warning("Could not create generated area {AreaResref}: {Error}", resref, error);
+                Logger.Warning("Could not create generated area {AreaResref}: {Error}", canonicalResref, error);
 
             return created;
         }

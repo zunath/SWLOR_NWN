@@ -154,6 +154,54 @@ public class GeneratedTreasureReviewRegressionTests
     }
 
     [Test]
+    public void Anchor_RejectsEveryCandidateWhenDeclaredFootprintsCannotFit()
+    {
+        var bossRoom = new LayoutRoom
+        {
+            Id = 1,
+            Role = RoomRole.Boss,
+            CenterTile = (0, 0),
+            Tiles = [(0, 0)]
+        };
+        var resolved = new ResolvedLayout
+        {
+            Width = 1,
+            Height = 1,
+            Tiles = [new ResolvedTile()],
+            Rooms = [bossRoom],
+            Crossers = new EdgeCrosserGrid(1, 1),
+            Transitions =
+            [
+                new TransitionPoint
+                {
+                    Kind = TransitionKind.Exit,
+                    Style = TransitionStyle.Placeable,
+                    Tile = (0, 0)
+                }
+            ]
+        };
+        var draft = new AreaGenerationDraft(
+            new AreaGenerationSettings { ThemeKey = "test" },
+            new DungeonComposition
+            {
+                Content = new DungeonDetail
+                {
+                    ExitPlaceableFootprintRadius = 4f,
+                    TreasurePlaceableFootprintRadius = 4f
+                },
+                Tileset = new DungeonTilesetProfile(),
+                Layout = new DungeonLayoutProfile()
+            },
+            new TilesetModel(),
+            new GenerationResult { Success = true, Resolved = resolved });
+
+        var act = () => GeneratedAreaDocumentPopulator.FindTreasureAnchor(draft, bossRoom);
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*no treasure anchor clear of generated-object footprints*");
+    }
+
+    [Test]
     public void CreatureAnchors_SkipStructuresAndRespectLargeCollisionRadii()
     {
         var room = new LayoutRoom

@@ -262,6 +262,7 @@ public class AreaGenerationToolsetIntegrationTests
     [Test]
     public void GeneratedAreaWriter_CreatesNormalAreaTripletInOpenModule()
     {
+        const string canonicalResref = "procgen_12345678";
         var moduleRoot = CreateFixtureModule();
         try
         {
@@ -274,18 +275,28 @@ public class AreaGenerationToolsetIntegrationTests
                     workspace,
                     tilesets,
                     draft,
-                    "procgen_test",
+                    " PROCGEN_12345678 ",
                     "Generated Test Area",
                     out var error)
                 .Should().BeTrue(error);
 
-            var (are, git, gic) = workspace.LoadArea("procgen_test");
+            var (are, git, gic) = workspace.LoadArea(canonicalResref);
             are.Width.Should().Be(draft.Result.Resolved!.Width);
             are.Height.Should().Be(draft.Result.Resolved.Height);
             are.Tileset.Should().Be("tdt01");
             are.Name.Text.Should().Be("Generated Test Area");
             are.Tiles.Should().HaveCount(draft.Result.Resolved.Width * draft.Result.Resolved.Height);
             git.Fields.GetListOrEmpty("WaypointList").Should().HaveCount(draft.Result.Resolved.Transitions.Count);
+            git.Fields.GetListOrEmpty("WaypointList")
+                .Select(instance => instance.GetStringOrNull("Tag"))
+                .Should().OnlyContain(tag =>
+                    tag != null && tag.StartsWith($"PG_{canonicalResref}_", StringComparison.Ordinal));
+            new[] { "WaypointList", "Door List", "Placeable List" }
+                .SelectMany(listName => git.Fields.GetListOrEmpty(listName))
+                .Select(instance => instance.GetStringOrNull("Tag"))
+                .Where(tag => !string.IsNullOrEmpty(tag))
+                .Should().OnlyContain(tag => tag!.Length <= 32,
+                    "the maximum-length canonical area ResRef must still produce legal tags");
             gic.Fields.GetListOrEmpty("WaypointList").Should().HaveCount(draft.Result.Resolved.Transitions.Count);
             git.Fields.GetListOrEmpty("Creature List").Should().NotBeEmpty();
             git.Fields.GetListOrEmpty("Creature List")
@@ -293,13 +304,30 @@ public class AreaGenerationToolsetIntegrationTests
             git.Fields.GetListOrEmpty("Creature List")
                 .Should().OnlyContain(instance => instance.GetIntOrNull("FactionID") == 1);
             IfoDocument.Load(Path.Combine(moduleRoot, "ifo", "module.ifo.json"))
-                .AreaResRefs.Should().Contain("procgen_test");
+                .AreaResRefs.Should().Contain(canonicalResref);
         }
         finally
         {
             if (Directory.Exists(moduleRoot))
                 Directory.Delete(moduleRoot, recursive: true);
         }
+    }
+
+    [Test]
+    public void GeneratedCreatureSanitization_RemovesProgressionKeyLootButKeepsOrdinaryLoot()
+    {
+        var shaman = UtcDocument.Load(Path.Combine(
+            CorpusLocator.ModuleDirectory,
+            "utc",
+            "byysk_shaman.utc.json"));
+        shaman.VarTable.GetString("LOOT_TABLE_1").Should().Be("QIONHIVE_SHAMAN_KEY,100,1");
+        var ordinaryLoot = shaman.VarTable.GetString("LOOT_TABLE_2");
+        ordinaryLoot.Should().NotBeNullOrWhiteSpace();
+
+        GeneratedAreaDocumentPopulator.SanitizeCreatureVariables(shaman.Fields);
+
+        shaman.VarTable.GetString("LOOT_TABLE_1").Should().BeNull();
+        shaman.VarTable.GetString("LOOT_TABLE_2").Should().Be(ordinaryLoot);
     }
 
     [Test]
@@ -509,8 +537,8 @@ public class AreaGenerationToolsetIntegrationTests
                 "the boss-room treasure is grounded at its selected point");
         var treasureDx = treasure.GetSingleOrNull("X")!.Value - bossExit.GetSingleOrNull("X")!.Value;
         var treasureDy = treasure.GetSingleOrNull("Y")!.Value - bossExit.GetSingleOrNull("Y")!.Value;
-        MathF.Sqrt(treasureDx * treasureDx + treasureDy * treasureDy).Should().BeGreaterThanOrEqualTo(3f,
-            "a one-tile Boss room must keep its treasure clear of a placeable exit at the center");
+        MathF.Sqrt(treasureDx * treasureDx + treasureDy * treasureDy).Should().BeGreaterThanOrEqualTo(4f,
+            "declared treasure and exit footprints must not intersect in a one-tile Boss room");
         git.Fields.GetListOrEmpty("Placeable List")[3]
             .GetSingleOrNull("Z").Should().BeApproximately(11.06f, 0.001f,
                 "ordinary decorations interpolate the rotated tile's corner heights at their XY position");

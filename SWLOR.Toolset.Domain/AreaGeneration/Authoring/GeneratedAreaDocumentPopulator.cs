@@ -761,18 +761,39 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                 Math.Sin(radians));
             instance.SetInt("FactionID", GffFieldType.Word, HostileFactionId);
             instance.SetInt("IsImmortal", GffFieldType.Byte, 0);
-            var variables = new VarTable(instance);
-            foreach (var questLocal in variables
-                         .Select(entry => entry.Name)
-                         .Where(name => name.StartsWith("QUEST_", StringComparison.Ordinal))
-                         .ToList())
-            {
-                variables.Remove(questLocal);
-            }
+            SanitizeCreatureVariables(instance);
 
             var list = git.Fields.GetOrAddList(CreatureList);
             list.Add(instance);
             gic.InsertBlankComment(CreatureList, ResourceType.Utc, list.Count - 1, list.Count);
+        }
+
+        internal static void SanitizeCreatureVariables(JsonGffStruct instance)
+        {
+            ArgumentNullException.ThrowIfNull(instance);
+            var variables = new VarTable(instance);
+            foreach (var inheritedLocal in variables
+                         .Where(entry =>
+                             entry.Name.StartsWith("QUEST_", StringComparison.Ordinal) ||
+                             IsProgressionKeyLoot(entry))
+                         .Select(entry => entry.Name)
+                         .ToList())
+            {
+                variables.Remove(inheritedLocal);
+            }
+        }
+
+        private static bool IsProgressionKeyLoot(VarTableEntry entry)
+        {
+            if (!entry.Name.StartsWith("LOOT_TABLE_", StringComparison.Ordinal) ||
+                string.IsNullOrWhiteSpace(entry.StringValue))
+            {
+                return false;
+            }
+
+            var separator = entry.StringValue.IndexOf(',');
+            var tableId = (separator < 0 ? entry.StringValue : entry.StringValue[..separator]).Trim();
+            return tableId.EndsWith("_KEY", StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -784,6 +805,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             AreaGenerationDraft draft,
             LayoutRoom bossRoom)
         {
+            var treasureRadius = draft.Composition.Content.TreasurePlaceableFootprintRadius;
             var tiles = bossRoom.Tiles
                 .DefaultIfEmpty(bossRoom.CenterTile)
                 .Distinct()
@@ -797,12 +819,17 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             };
             foreach (var tile in tiles)
                 candidates.Add((tile.X * 10f + 5f, tile.Y * 10f + 5f));
+            var inset = MathF.Min(5f, treasureRadius);
             foreach (var tile in tiles)
             {
-                candidates.Add((tile.X * 10f + 2.5f, tile.Y * 10f + 2.5f));
-                candidates.Add((tile.X * 10f + 7.5f, tile.Y * 10f + 2.5f));
-                candidates.Add((tile.X * 10f + 7.5f, tile.Y * 10f + 7.5f));
-                candidates.Add((tile.X * 10f + 2.5f, tile.Y * 10f + 7.5f));
+                var lowX = tile.X * 10f + inset;
+                var highX = tile.X * 10f + 10f - inset;
+                var lowY = tile.Y * 10f + inset;
+                var highY = tile.Y * 10f + 10f - inset;
+                candidates.Add((lowX, lowY));
+                candidates.Add((highX, lowY));
+                candidates.Add((highX, highY));
+                candidates.Add((lowX, highY));
             }
 
             candidates = candidates
@@ -832,7 +859,6 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             if (occupied.Count == 0)
                 return candidates[0];
 
-            var treasureRadius = draft.Composition.Content.TreasurePlaceableFootprintRadius;
             foreach (var candidate in candidates)
             {
                 if (occupied.All(point =>
@@ -848,19 +874,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                 }
             }
 
-            // Extremely dense synthetic layouts may leave no candidate with the full clearance.
-            // Pick the deterministic candidate with the greatest available separation instead of
-            // falling back to an exact overlap.
-            return candidates
-                .OrderByDescending(candidate => occupied.Min(point =>
-                {
-                    var requiredDistance = MathF.Max(
-                        TreasureAnchorClearance,
-                        treasureRadius + point.Radius);
-                    return DistanceSquared(candidate, (point.X, point.Y)) /
-                           (requiredDistance * requiredDistance);
-                }))
-                .First();
+            throw new InvalidOperationException(
+                "The Boss room has no treasure anchor clear of generated-object footprints.");
         }
 
         private static bool IsTreasureSurfaceEligible(

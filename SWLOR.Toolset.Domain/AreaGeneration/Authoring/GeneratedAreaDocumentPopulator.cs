@@ -22,6 +22,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
         private const string PlaceableList = "Placeable List";
         private const string CreatureList = "Creature List";
         private const string GeneratedTreasureOpenScript = "proc_loot_open";
+        private const int HostileFactionId = 1;
         private const float TreasureAnchorClearance = 3f;
         private const float DefaultCreatureRadius = 1f;
         private const float GeneratedObjectRadius = 1f;
@@ -692,6 +693,8 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                 z,
                 Math.Cos(radians),
                 Math.Sin(radians));
+            instance.SetInt("FactionID", GffFieldType.Word, HostileFactionId);
+            instance.SetInt("IsImmortal", GffFieldType.Byte, 0);
 
             var list = git.Fields.GetOrAddList(CreatureList);
             list.Add(instance);

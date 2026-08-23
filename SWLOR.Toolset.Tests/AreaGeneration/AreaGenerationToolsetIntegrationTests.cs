@@ -290,6 +290,8 @@ public class AreaGenerationToolsetIntegrationTests
             git.Fields.GetListOrEmpty("Creature List").Should().NotBeEmpty();
             git.Fields.GetListOrEmpty("Creature List")
                 .Should().Contain(instance => instance.GetStringOrNull("Tag") == "Shyrack");
+            git.Fields.GetListOrEmpty("Creature List")
+                .Should().OnlyContain(instance => instance.GetIntOrNull("FactionID") == 1);
             IfoDocument.Load(Path.Combine(moduleRoot, "ifo", "module.ifo.json"))
                 .AreaResRefs.Should().Contain("procgen_test");
         }
@@ -399,11 +401,11 @@ public class AreaGenerationToolsetIntegrationTests
                         Tier = 2,
                         Creatures =
                         [
-                            new DungeonCreatureEntry { Resref = "korriinitiate", Weight = 1 }
+                            new DungeonCreatureEntry { Resref = "vrepnpctroop1", Weight = 1 }
                         ],
                         MinCreaturesPerRoom = 2,
                         MaxCreaturesPerRoom = 2,
-                        BossResref = "vkorrdun1sword",
+                        BossResref = "republictrooperf",
                         TreasureLootTableId = "TEST_LOOT",
                         TreasureItemCount = 3
                     }
@@ -507,11 +509,17 @@ public class AreaGenerationToolsetIntegrationTests
                 "ordinary decorations interpolate the rotated tile's corner heights at their XY position");
         git.Fields.GetListOrEmpty("Creature List")
             .Select(instance => instance.GetStringOrNull("TemplateResRef"))
-            .Should().Equal("korriinitiate", "korriinitiate", "vkorrdun1sword");
+            .Should().Equal("vrepnpctroop1", "vrepnpctroop1", "republictrooperf");
         git.Fields.GetListOrEmpty("Creature List")
             .Select(instance => instance.GetStringOrNull("Tag"))
-            .Should().Equal(["korriaInitiate", "korriaInitiate", "SithTempleGuard"],
+            .Should().Equal(["RepublicSoldier", "RepublicSoldier", "RepublicTrooper"],
                 "generated encounters retain blueprint-authored tags used by creature scripts");
+        git.Fields.GetListOrEmpty("Creature List")
+            .Should().OnlyContain(instance => instance.GetIntOrNull("FactionID") == 1,
+                "every generated dungeon encounter must be hostile even when its source blueprint is set dressing");
+        git.Fields.GetListOrEmpty("Creature List")
+            .Should().OnlyContain(instance => instance.GetIntOrNull("IsImmortal") == 0,
+                "generated dungeon encounters must always be killable");
         gic.Fields.GetListOrEmpty("WaypointList").Should().HaveCount(3);
         gic.Fields.GetListOrEmpty("Door List").Should().ContainSingle();
         gic.Fields.GetListOrEmpty("Placeable List").Should().HaveCount(4);

@@ -242,18 +242,24 @@ public sealed class AreaGeneratorWindowRenderTests
             viewModel.StatusMessage.Should().Contain("Generator numeric settings must be whole numbers.");
             window.FindControl<TextBox>("ResRefInput")!.Classes.Should().Contain("validationError");
 
-            viewModel.Seed = validSeed;
-            await WaitUntilAsync(
-                () => viewModel.Preview != null && !viewModel.IsBusy,
-                () => viewModel.StatusMessage);
-
             viewModel.ResRef = "generated_area";
             Dispatcher.UIThread.RunJobs();
 
             viewModel.HasResRefError.Should().BeFalse();
-            viewModel.StatusIsError.Should().BeFalse();
+            viewModel.StatusIsError.Should().BeTrue(
+                "correcting one field must not hide an independent preview failure");
+            viewModel.StatusMessage.Should().Be("Generator numeric settings must be whole numbers.");
             window.FindControl<TextBox>("ResRefInput")!.Classes.Should().NotContain("validationError");
             window.FindControl<TextBlock>("ResRefErrorText")!.IsVisible.Should().BeFalse();
+            window.FindControl<TextBlock>("StatusMessageText")!.Classes.Should().Contain("statusError");
+
+            viewModel.Seed = validSeed;
+            await WaitUntilAsync(
+                () => viewModel.Preview != null && !viewModel.IsBusy,
+                () => viewModel.StatusMessage);
+            Dispatcher.UIThread.RunJobs();
+
+            viewModel.StatusIsError.Should().BeFalse();
             window.FindControl<TextBlock>("StatusMessageText")!.Classes.Should().NotContain("statusError");
         }
         finally

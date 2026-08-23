@@ -43,6 +43,16 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                     $"Theme '{theme.DisplayName}' tier {settings.Tier} has invalid treasure settings.",
                     nameof(settings));
             }
+            if (tier.Creatures.Count == 0 ||
+                tier.Creatures.Any(creature => string.IsNullOrWhiteSpace(creature.Resref) || creature.Weight < 1) ||
+                tier.MinCreaturesPerRoom < 0 ||
+                tier.MaxCreaturesPerRoom < tier.MinCreaturesPerRoom ||
+                string.IsNullOrWhiteSpace(tier.BossResref))
+            {
+                throw new ArgumentException(
+                    $"Theme '{theme.DisplayName}' tier {settings.Tier} has invalid creature settings.",
+                    nameof(settings));
+            }
 
             var tilesetKey = string.IsNullOrWhiteSpace(settings.TilesetProfileKey)
                 ? theme.TilesetProfileKey

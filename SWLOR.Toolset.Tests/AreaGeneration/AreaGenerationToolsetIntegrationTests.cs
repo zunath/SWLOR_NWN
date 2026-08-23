@@ -141,6 +141,21 @@ public class AreaGenerationToolsetIntegrationTests
     }
 
     [Test]
+    public void AuthoringService_RejectsIncompleteCreatureSettingsForTheSelectedTier()
+    {
+        var (service, _) = CreateAuthoringService();
+        var settings = CreateSettings(service, seed: 77231);
+        var theme = service.Definitions.Themes.Single(candidate =>
+            candidate.ThemeKey.Equals(settings.ThemeKey, StringComparison.OrdinalIgnoreCase));
+        theme.Tiers[settings.Tier].BossResref = string.Empty;
+
+        var action = () => service.Generate(settings);
+
+        action.Should().Throw<ArgumentException>()
+            .WithMessage("*invalid creature settings*");
+    }
+
+    [Test]
     public void AuthoringService_RejectsRoomSizesThatWouldBeSilentlyClamped()
     {
         var (service, _) = CreateAuthoringService();
@@ -272,6 +287,9 @@ public class AreaGenerationToolsetIntegrationTests
             are.Tiles.Should().HaveCount(draft.Result.Resolved.Width * draft.Result.Resolved.Height);
             git.Fields.GetListOrEmpty("WaypointList").Should().HaveCount(draft.Result.Resolved.Transitions.Count);
             gic.Fields.GetListOrEmpty("WaypointList").Should().HaveCount(draft.Result.Resolved.Transitions.Count);
+            git.Fields.GetListOrEmpty("Creature List").Should().NotBeEmpty();
+            git.Fields.GetListOrEmpty("Creature List")
+                .Should().Contain(instance => instance.GetStringOrNull("Tag") == "PG_BOSS");
             IfoDocument.Load(Path.Combine(moduleRoot, "ifo", "module.ifo.json"))
                 .AreaResRefs.Should().Contain("procgen_test");
         }
@@ -308,6 +326,13 @@ public class AreaGenerationToolsetIntegrationTests
                     Role = RoomRole.Boss,
                     CenterTile = (0, 0),
                     Tiles = [(0, 0)]
+                },
+                new LayoutRoom
+                {
+                    Id = 2,
+                    Role = RoomRole.Standard,
+                    CenterTile = (1, 0),
+                    Tiles = [(1, 0)]
                 }
             ],
             Transitions =
@@ -372,6 +397,13 @@ public class AreaGenerationToolsetIntegrationTests
                     [2] = new()
                     {
                         Tier = 2,
+                        Creatures =
+                        [
+                            new DungeonCreatureEntry { Resref = "korriinitiate", Weight = 1 }
+                        ],
+                        MinCreaturesPerRoom = 2,
+                        MaxCreaturesPerRoom = 2,
+                        BossResref = "vkorrdun1sword",
                         TreasureLootTableId = "TEST_LOOT",
                         TreasureItemCount = 3
                     }
@@ -473,9 +505,16 @@ public class AreaGenerationToolsetIntegrationTests
         git.Fields.GetListOrEmpty("Placeable List")[3]
             .GetSingleOrNull("Z").Should().BeApproximately(11.06f, 0.001f,
                 "ordinary decorations interpolate the rotated tile's corner heights at their XY position");
+        git.Fields.GetListOrEmpty("Creature List")
+            .Select(instance => instance.GetStringOrNull("TemplateResRef"))
+            .Should().Equal("korriinitiate", "korriinitiate", "vkorrdun1sword");
+        git.Fields.GetListOrEmpty("Creature List")
+            .Select(instance => instance.GetStringOrNull("Tag"))
+            .Should().Equal("PG_CREATURE_1", "PG_CREATURE_2", "PG_BOSS");
         gic.Fields.GetListOrEmpty("WaypointList").Should().HaveCount(3);
         gic.Fields.GetListOrEmpty("Door List").Should().ContainSingle();
         gic.Fields.GetListOrEmpty("Placeable List").Should().HaveCount(4);
+        gic.Fields.GetListOrEmpty("Creature List").Should().HaveCount(3);
     }
 
     private static (AreaGenerationAuthoringService Service, TilesetCatalog Tilesets) CreateAuthoringService()
@@ -554,6 +593,13 @@ public class AreaGenerationToolsetIntegrationTests
             Path.Combine(moduleRoot, "ifo", "module.ifo.json"));
         File.Copy(Path.Combine(source, "utp", "_mdrn_placedoord.utp.json"),
             Path.Combine(moduleRoot, "utp", "_mdrn_placedoord.utp.json"));
+        File.Copy(Path.Combine(source, "utp", "structure_rubble.utp.json"),
+            Path.Combine(moduleRoot, "utp", "structure_rubble.utp.json"));
+        foreach (var resref in new[] { "crystalspider", "ww_kinrath", "silkshade", "shyrack" })
+        {
+            File.Copy(Path.Combine(source, "utc", resref + ".utc.json"),
+                Path.Combine(moduleRoot, "utc", resref + ".utc.json"));
+        }
         return moduleRoot;
     }
 }

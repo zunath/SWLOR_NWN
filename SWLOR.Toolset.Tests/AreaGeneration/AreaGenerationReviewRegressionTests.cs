@@ -111,25 +111,26 @@ public class TileResolverReviewRegressionTests
 public class GeneratedTreasureReviewRegressionTests
 {
     [Test]
-    public void Anchor_SkipsFeatureAndRoadTilesBeforeTestingClearance()
+    public void Anchor_SkipsFeatureRoadAndStampedStructureTilesBeforeTestingClearance()
     {
         const string road = "Road";
-        var crossers = new EdgeCrosserGrid(3, 1);
+        var crossers = new EdgeCrosserGrid(4, 1);
         crossers.SetEdge(1, 0, EdgeSlot.Top, road);
         var bossRoom = new LayoutRoom
         {
             Id = 1,
             Role = RoomRole.Boss,
             CenterTile = (0, 0),
-            Tiles = [(0, 0), (1, 0), (2, 0)]
+            Tiles = [(0, 0), (1, 0), (2, 0), (3, 0)]
         };
         var resolved = new ResolvedLayout
         {
-            Width = 3,
+            Width = 4,
             Height = 1,
-            Tiles = [new ResolvedTile(), new ResolvedTile(), new ResolvedTile()],
+            Tiles = [new ResolvedTile(), new ResolvedTile(), new ResolvedTile(), new ResolvedTile()],
             Rooms = [bossRoom],
             Crossers = crossers,
+            StampedStructureTiles = [(2, 0)],
             FeatureTileCells = new Dictionary<(int X, int Y), string>
             {
                 [(0, 0)] = "Pillars"
@@ -147,6 +148,6 @@ public class GeneratedTreasureReviewRegressionTests
             new GenerationResult { Success = true, Resolved = resolved });
 
         GeneratedAreaDocumentPopulator.FindTreasureAnchor(draft, bossRoom)
-            .Should().Be((25f, 5f));
+            .Should().Be((35f, 5f));
     }
 }

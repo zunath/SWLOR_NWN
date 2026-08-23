@@ -16,8 +16,10 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
         private const string WaypointList = "WaypointList";
         private const string DoorList = "Door List";
         private const string PlaceableList = "Placeable List";
+        private const string CreatureList = "Creature List";
         private const string GeneratedTreasureOpenScript = "proc_loot_open";
         private const float TreasureAnchorClearance = 3f;
+        private const float CreatureAnchorClearance = 2f;
         private static readonly ILogger Logger = Log.ForContext<GeneratedAreaDocumentPopulator>();
 
         private GeneratedAreaDocumentPopulator()
@@ -43,6 +45,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             var originalWaypointCount = git.Fields.GetListOrEmpty(WaypointList).Count;
             var originalDoorCount = git.Fields.GetListOrEmpty(DoorList).Count;
             var originalPlaceableCount = git.Fields.GetListOrEmpty(PlaceableList).Count;
+            var originalCreatureCount = git.Fields.GetListOrEmpty(CreatureList).Count;
             Logger.Information(
                 "Populating generated area documents for a {Width}x{Height} layout with " +
                 "{TransitionCount} transitions and {DecorationCount} planned decorations.",
@@ -57,16 +60,19 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                 draft.Composition.Tileset.ResolveAtmosphere(draft.Composition.Content.AtmosphereProfile));
             WriteTransitions(draft, workspace, git, gic);
             WriteTreasure(draft, workspace, git, gic);
+            WriteCreatures(draft, workspace, git, gic);
             WriteDecorations(draft, workspace, git, gic);
 
             Logger.Information(
                 "Populated generated area documents for a {Width}x{Height} layout: " +
-                "{WaypointCount} waypoints, {DoorCount} doors, and {PlaceableCount} placeables added.",
+                "{WaypointCount} waypoints, {DoorCount} doors, {PlaceableCount} placeables, and " +
+                "{CreatureCount} creatures added.",
                 layout.Width,
                 layout.Height,
                 git.Fields.GetListOrEmpty(WaypointList).Count - originalWaypointCount,
                 git.Fields.GetListOrEmpty(DoorList).Count - originalDoorCount,
-                git.Fields.GetListOrEmpty(PlaceableList).Count - originalPlaceableCount);
+                git.Fields.GetListOrEmpty(PlaceableList).Count - originalPlaceableCount,
+                git.Fields.GetListOrEmpty(CreatureList).Count - originalCreatureCount);
         }
 
         private static void WriteTiles(
@@ -348,6 +354,189 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
                 $"{tier.TreasureLootTableId},100,{tier.TreasureItemCount}");
         }
 
+        /// <summary>Populates Standard rooms and the Boss room from the selected tier.</summary>
+        private static void WriteCreatures(
+            AreaGenerationDraft draft,
+            ModuleWorkspace workspace,
+            GitDocument git,
+            GicDocument gic)
+        {
+            if (!draft.Composition.Content.Tiers.TryGetValue(draft.Settings.Tier, out var tier))
+            {
+                throw new InvalidOperationException(
+                    $"Theme '{draft.Composition.Content.DisplayName}' does not define tier {draft.Settings.Tier}.");
+            }
+
+            var creaturePool = tier.Creatures
+                .Where(entry => !string.IsNullOrWhiteSpace(entry.Resref) && entry.Weight > 0)
+                .ToList();
+            if (creaturePool.Count == 0 ||
+                tier.MinCreaturesPerRoom < 0 ||
+                tier.MaxCreaturesPerRoom < tier.MinCreaturesPerRoom ||
+                string.IsNullOrWhiteSpace(tier.BossResref))
+            {
+                throw new InvalidOperationException($"Tier {tier.Tier} has invalid creature settings.");
+            }
+
+            var random = new Random(unchecked(
+                draft.Settings.Seed * 31 ^
+                draft.Result.AttemptSeed * 397 ^
+                draft.Settings.Tier * 7919 ^
+                0x51ED270B));
+            var occupied = CreatureOccupiedAnchors(draft);
+            var sequence = 0;
+
+            foreach (var room in draft.Result.Resolved.Rooms
+                         .Where(room => room.Role == RoomRole.Standard)
+                         .OrderBy(room => room.Id))
+            {
+                var count = random.Next(tier.MinCreaturesPerRoom, tier.MaxCreaturesPerRoom + 1);
+                foreach (var (x, y) in SelectCreatureAnchors(room, count, occupied, random))
+                {
+                    AddCreature(
+                        workspace,
+                        git,
+                        gic,
+                        ChooseCreatureResref(creaturePool, random),
+                        $"PG_CREATURE_{++sequence}",
+                        x,
+                        y,
+                        GroundHeightAt(draft.Result.Resolved, draft.Tileset, x, y),
+                        (float)(random.NextDouble() * 360.0));
+                }
+            }
+
+            var bossRoom = draft.Result.Resolved.Rooms.FirstOrDefault(room => room.Role == RoomRole.Boss);
+            if (bossRoom == null)
+                return;
+
+            var bossAnchor = SelectCreatureAnchors(bossRoom, 1, occupied, random).Single();
+            AddCreature(
+                workspace,
+                git,
+                gic,
+                tier.BossResref,
+                "PG_BOSS",
+                bossAnchor.X,
+                bossAnchor.Y,
+                GroundHeightAt(draft.Result.Resolved, draft.Tileset, bossAnchor.X, bossAnchor.Y),
+                (float)(random.NextDouble() * 360.0));
+        }
+
+        private static List<(float X, float Y)> CreatureOccupiedAnchors(AreaGenerationDraft draft)
+        {
+            var occupied = draft.Result.Resolved.Transitions
+                .Select(transition => transition.Style == TransitionStyle.Placeable
+                    ? (transition.Tile.X * 10f + 5f, transition.Tile.Y * 10f + 5f)
+                    : (transition.DoorX, transition.DoorY))
+                .ToList();
+            occupied.AddRange(draft.Result.PlannedDecorations.Select(decoration =>
+                (decoration.Position.X, decoration.Position.Y)));
+
+            var bossRoom = draft.Result.Resolved.Rooms.FirstOrDefault(room => room.Role == RoomRole.Boss);
+            if (bossRoom != null)
+                occupied.Add(FindTreasureAnchor(draft, bossRoom));
+
+            return occupied;
+        }
+
+        private static IReadOnlyList<(float X, float Y)> SelectCreatureAnchors(
+            LayoutRoom room,
+            int count,
+            ICollection<(float X, float Y)> occupied,
+            Random random)
+        {
+            if (count == 0)
+                return Array.Empty<(float X, float Y)>();
+
+            var tiles = room.Tiles.DefaultIfEmpty(room.CenterTile).Distinct().ToList();
+            var candidates = new List<(float X, float Y)>();
+            foreach (var tile in tiles)
+            {
+                foreach (var offsetY in new[] { 5f, 2.5f, 7.5f })
+                foreach (var offsetX in new[] { 5f, 2.5f, 7.5f })
+                    candidates.Add((tile.X * 10f + offsetX, tile.Y * 10f + offsetY));
+            }
+
+            for (var index = candidates.Count - 1; index > 0; index--)
+            {
+                var swapIndex = random.Next(index + 1);
+                (candidates[index], candidates[swapIndex]) = (candidates[swapIndex], candidates[index]);
+            }
+
+            if (count > candidates.Count)
+            {
+                throw new InvalidOperationException(
+                    $"Room {room.Id} cannot fit {count} distinct creature anchors.");
+            }
+
+            var selected = new List<(float X, float Y)>(count);
+            var requiredDistanceSquared = CreatureAnchorClearance * CreatureAnchorClearance;
+            while (selected.Count < count)
+            {
+                var clearCandidates = candidates.Where(candidate =>
+                    occupied.All(point => DistanceSquared(candidate, point) >= requiredDistanceSquared)).ToList();
+                var next = clearCandidates.Count > 0
+                    ? clearCandidates[0]
+                    : candidates
+                        .OrderByDescending(candidate => occupied.Count == 0
+                            ? float.MaxValue
+                            : occupied.Min(point => DistanceSquared(candidate, point)))
+                        .First();
+
+                candidates.Remove(next);
+                selected.Add(next);
+                occupied.Add(next);
+            }
+
+            return selected;
+        }
+
+        private static string ChooseCreatureResref(
+            IReadOnlyList<DungeonCreatureEntry> creatures,
+            Random random)
+        {
+            var totalWeight = creatures.Sum(entry => entry.Weight);
+            var roll = random.Next(totalWeight);
+            foreach (var creature in creatures)
+            {
+                if (roll < creature.Weight)
+                    return creature.Resref;
+                roll -= creature.Weight;
+            }
+
+            return creatures[^1].Resref;
+        }
+
+        private static void AddCreature(
+            ModuleWorkspace workspace,
+            GitDocument git,
+            GicDocument gic,
+            string resref,
+            string tag,
+            float x,
+            float y,
+            float z,
+            float facingDegrees)
+        {
+            var blueprint = workspace.LoadBlueprint(ResourceType.Utc, resref);
+            var radians = facingDegrees * Math.PI / 180.0;
+            var instance = InstanceFieldMap.CreateInstance(
+                ResourceType.Utc,
+                blueprint.Document,
+                resref,
+                x,
+                y,
+                z,
+                Math.Cos(radians),
+                Math.Sin(radians));
+            InstanceFieldMap.SetTag(instance, tag);
+
+            var list = git.Fields.GetOrAddList(CreatureList);
+            list.Add(instance);
+            gic.InsertBlankComment(CreatureList, ResourceType.Utc, list.Count - 1, list.Count);
+        }
+
         /// <summary>
         /// Prefers the Boss room center, then other room-tile centers and inset quarter points that
         /// stay clear of generated transitions and decorations. A one-tile Boss room can also host
@@ -385,7 +574,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
             if (candidates.Count == 0)
             {
                 throw new InvalidOperationException(
-                    "The Boss room has no treasure anchor clear of feature geometry and roads.");
+                    "The Boss room has no treasure anchor clear of feature geometry, stamped structures, and roads.");
             }
 
             var occupied = new List<(float X, float Y)>();
@@ -422,7 +611,7 @@ namespace SWLOR.Toolset.Domain.AreaGeneration.Authoring
         {
             var tile = ((int)MathF.Floor(candidate.X / 10f), (int)MathF.Floor(candidate.Y / 10f));
             var resolved = draft.Result.Resolved;
-            if (resolved.FeatureTileCells.ContainsKey(tile))
+            if (resolved.FeatureTileCells.ContainsKey(tile) || resolved.StampedStructureTiles.Contains(tile))
                 return false;
 
             return !DungeonDecorationPlanner.TileCarriesRoadEdge(

@@ -192,7 +192,8 @@ namespace SWLOR.Toolset.Tests
             File.Exists(source).Should().BeFalse();
             File.Exists(compiled).Should().BeFalse("a deleted source must not leave runnable orphan bytecode");
             folder.Members.Should().NotContain(resRef);
-            prompts.Message.Should().Contain("delete_script.nss").And.Contain("delete_script.ncs");
+            prompts.Headline.Should().Be("Delete 'delete_script'?");
+            prompts.Message.Should().Be("This cannot be undone.");
             explorer.Rows.SelectMany(row => row.Children).Should().NotContain(row => row.ResRef == resRef);
         }
 
@@ -234,7 +235,8 @@ namespace SWLOR.Toolset.Tests
             await explorer.DeleteSelectedResourceCommand.ExecuteAsync(null);
 
             prompts.ConfirmationCount.Should().Be(1);
-            prompts.Message.Should().Contain("open editor").And.Contain("unsaved changes discarded");
+            prompts.Message.Should().Be(
+                "Unsaved changes in the open editor will be lost. This cannot be undone.");
             File.Exists(source).Should().BeFalse();
             editors!.IsOpen(ResourceType.Nss, resRef).Should().BeFalse();
             document!.IsDirty.Should().BeTrue(
@@ -285,7 +287,7 @@ namespace SWLOR.Toolset.Tests
             File.Exists(source).Should().BeTrue();
             editors!.IsOpen(ResourceType.Nss, resRef).Should().BeTrue();
             document!.IsDirty.Should().BeTrue();
-            prompts.Message.Should().NotContain("unsaved changes discarded",
+            prompts.Message.Should().Be("This cannot be undone.",
                 "the editor was not open when this confirmation was composed");
             explorer.StatusMessage.Should().Contain("opened while the delete confirmation was active")
                 .And.Contain("choose Delete again");
@@ -309,7 +311,8 @@ namespace SWLOR.Toolset.Tests
             File.Exists(graph).Should().BeFalse();
             File.Exists(legacy).Should().BeFalse(
                 "deleting only the graph would make the shadowed legacy dialog reappear in Module Contents");
-            prompts.Message.Should().Contain("delete_dialog.conversation.json").And.Contain("delete_dialog.dlg.json");
+            prompts.Headline.Should().Be("Delete 'delete_dialog'?");
+            prompts.Message.Should().Be("This cannot be undone.");
         }
 
         [Test]
@@ -333,10 +336,8 @@ namespace SWLOR.Toolset.Tests
             File.Exists(Path.Combine(_module, "git", resRef + ".git.json")).Should().BeFalse();
             File.Exists(Path.Combine(_module, "gic", resRef + ".gic.json")).Should().BeFalse();
             IfoDocument.Load(ifoPath).AreaResRefs.Should().NotContain(resRef);
-            prompts.Message.Should().Contain("delete_area.are.json")
-                .And.Contain("delete_area.git.json")
-                .And.Contain("delete_area.gic.json")
-                .And.Contain("module.ifo.json");
+            prompts.Headline.Should().Be("Delete 'delete_area'?");
+            prompts.Message.Should().Be("This cannot be undone.");
         }
 
         [Test]

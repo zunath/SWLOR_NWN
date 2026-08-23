@@ -955,28 +955,11 @@ namespace SWLOR.Toolset.Shell.Panels
                 return;
             }
 
-            var files = string.Join(", ", plan.ExistingFileNames);
-            var details = type switch
-            {
-                ResourceType.Area =>
-                    $"This deletes {files}" +
-                    (plan.RemovesAreaRegistration ? " and removes the area from module.ifo.json" : string.Empty) +
-                    ". Transitions and other references to this area are not removed.",
-                ResourceType.Dlg =>
-                    $"This deletes every source form of the dialog ({files}). Objects and scripts that reference it are not changed.",
-                ResourceType.Nss =>
-                    $"This deletes the script source and any compiled output that exists ({files}). References to the script are not changed.",
-                _ => throw new ArgumentOutOfRangeException()
-            };
-
             var closesOpenEditor = editorService?.IsOpen(type, resRef) == true;
             var confirmed = await _prompts.ConfirmDestructiveAsync(
-                $"Delete the {kind} '{displayName}'?",
-                details +
-                (closesOpenEditor
-                    ? " Its open editor will be closed and any unsaved changes discarded."
-                    : string.Empty) +
-                " This cannot be undone from the toolset.",
+                $"Delete '{displayName}'?",
+                (closesOpenEditor ? "Unsaved changes in the open editor will be lost. " : string.Empty) +
+                "This cannot be undone.",
                 "Delete").ConfigureAwait(true);
             if (!confirmed)
                 return;

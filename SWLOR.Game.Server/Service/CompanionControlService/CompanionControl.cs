@@ -151,6 +151,12 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
                 return;
 
             var state = GetState(companion);
+            if (state.TrackedTarget == threat &&
+                CompanionControlPolicy.HasPathingTimedOut(state.LastProgressAt, DateTime.UtcNow))
+            {
+                ResetProgress(state);
+            }
+
             state.DefensiveThreats[threat] = DateTime.UtcNow;
             state.ExplicitOrderUntil = default;
 
@@ -600,7 +606,7 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
                 if (!recentlyThreatened ||
                     !ValidateAuthorizedTarget(companion, threat, CompanionEngagementType.Defensive))
                 {
-                    state.DefensiveThreats.Remove(threat);
+                    RemoveDefensiveThreat(state, threat);
                     continue;
                 }
 
@@ -615,13 +621,19 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
             if (GetIsObjectValid(selected) &&
                 !TrackProgress(companion, selected, CompanionEngagementType.Defensive))
             {
-                state.DefensiveThreats.Remove(selected);
-                ResetProgress(state);
+                RemoveDefensiveThreat(state, selected);
                 MaintainModePosition(companion);
                 return OBJECT_INVALID;
             }
 
             return selected;
+        }
+
+        private static void RemoveDefensiveThreat(CompanionControlState state, uint threat)
+        {
+            state.DefensiveThreats.Remove(threat);
+            if (state.TrackedTarget == threat)
+                ResetProgress(state);
         }
 
         private static bool ValidateAuthorizedTarget(

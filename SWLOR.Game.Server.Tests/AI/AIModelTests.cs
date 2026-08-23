@@ -1227,6 +1227,24 @@ public class AIModelTests
     }
 
     [Test]
+    public void DiscardingADefensiveThreatClearsItsPathingProgress()
+    {
+        var companionControl = ReadSource(
+            "SWLOR.Game.Server",
+            "Service",
+            "CompanionControlService",
+            "CompanionControl.cs");
+        var removeThreat = companionControl.Substring(
+            companionControl.IndexOf("private static void RemoveDefensiveThreat", StringComparison.Ordinal),
+            companionControl.IndexOf("private static bool ValidateAuthorizedTarget", StringComparison.Ordinal) -
+            companionControl.IndexOf("private static void RemoveDefensiveThreat", StringComparison.Ordinal));
+
+        removeThreat.Should().Contain("state.DefensiveThreats.Remove(threat);");
+        removeThreat.Should().Contain("if (state.TrackedTarget == threat)");
+        removeThreat.Should().Contain("ResetProgress(state);");
+    }
+
+    [Test]
     public void ReleasingAnActiveBeastClearsCompanionStateBeforeDestruction()
     {
         var source = ReadSource(

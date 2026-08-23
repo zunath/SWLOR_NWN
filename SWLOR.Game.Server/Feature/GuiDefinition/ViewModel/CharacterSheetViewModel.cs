@@ -1140,9 +1140,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var leadershipAdjustment = damageType switch
             {
                 CombatDamageType.Physical =>
-                    Stat.GetStatAdjustment(_target, StatType.LeadershipPhysicalDamageTakenPercentAdjustment),
+                    Stat.GetStatAdjustment(_target, StatType.LeadershipPhysicalDamageTakenPercentAdjustment) +
+                    Stat.GetStatAdjustment(_target, StatType.LeadershipRecoveryPhysicalDamageTakenPercentAdjustment),
                 CombatDamageType.Force =>
-                    Stat.GetStatAdjustment(_target, StatType.LeadershipForceDamageTakenPercentAdjustment),
+                    Stat.GetStatAdjustment(_target, StatType.LeadershipForceDamageTakenPercentAdjustment) +
+                    Stat.GetStatAdjustment(_target, StatType.LeadershipRecoveryForceDamageTakenPercentAdjustment),
                 _ => Stat.GetStatAdjustment(_target, StatType.LeadershipOtherDamageTakenPercentAdjustment)
             };
 

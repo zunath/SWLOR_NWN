@@ -143,6 +143,8 @@ public class CharacterSheetCombatUpgradeTests
         damageTaken.Should().Contain("StatType.LeadershipPhysicalDamageTakenPercentAdjustment");
         damageTaken.Should().Contain("StatType.LeadershipForceDamageTakenPercentAdjustment");
         damageTaken.Should().Contain("StatType.LeadershipOtherDamageTakenPercentAdjustment");
+        damageTaken.Should().Contain("StatType.LeadershipRecoveryPhysicalDamageTakenPercentAdjustment");
+        damageTaken.Should().Contain("StatType.LeadershipRecoveryForceDamageTakenPercentAdjustment");
         damageTaken.Should().Contain("percent = ApplyDamageTakenPercentAdjustment(percent, leadershipAdjustment);");
         damageTaken.Should().NotContain("+ otherLeadershipAdjustment");
         damageTaken.IndexOf("ApplyDamageTakenPercentAdjustment(100, typeAdjustment)", StringComparison.Ordinal)

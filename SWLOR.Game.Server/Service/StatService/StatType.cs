@@ -5875,6 +5875,20 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         ActiveStealthBonus = 1017,
 
+        /// <summary>
+        /// Additional physical damage-taken adjustment granted by a Leadership recovery rider.
+        /// This stacks with the strongest ordinary Leadership damage-reduction contribution.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative)]
+        LeadershipRecoveryPhysicalDamageTakenPercentAdjustment = 1018,
+
+        /// <summary>
+        /// Additional Force damage-taken adjustment granted by a Leadership recovery rider.
+        /// This stacks with the strongest ordinary Leadership damage-reduction contribution.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative)]
+        LeadershipRecoveryForceDamageTakenPercentAdjustment = 1019,
+
     }
 
     public class StatTypeAttribute : Attribute

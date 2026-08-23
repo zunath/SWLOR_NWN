@@ -1071,6 +1071,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _target,
                 StatType.CriticalRatePercentAdjustment);
             criticalRateAdjustment += Combat.GetSkillCriticalRatePercentAdjustment(_target, skillType);
+            criticalRateAdjustment += Combat.GetPersistentNextSkillAbilityCriticalRateBonus(_target, skillType);
 
             return Combat.CalculateCriticalRate(
                 GetAbilityScore(_target, AbilityType.Perception),

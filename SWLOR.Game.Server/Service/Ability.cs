@@ -109,6 +109,9 @@ namespace SWLOR.Game.Server.Service
             var abilitySkillType = Combat.GetAbilitySkillType(activator, ability);
             var nextAbilityDamageBonus = Combat.ConsumeNextAbilityDamageBonus(activator, ability.EffectiveLevelPerkType);
             var nextSkillAbilityBonuses = Combat.ConsumeNextSkillAbilityBonuses(activator, abilitySkillType);
+            var persistentCriticalRate = Combat.GetPersistentNextSkillAbilityCriticalRateBonus(
+                activator,
+                abilitySkillType);
             var guardedHitBonuses = ability.IsHostileAbility
                 ? Combat.ConsumeNextAttackGuardedHitBonuses(activator)
                 : (DMGBonus: 0, CriticalRatePercentAdjustment: 0, EnmityBonus: 0);
@@ -122,7 +125,9 @@ namespace SWLOR.Game.Server.Service
                 nextSkillAbilityBonuses.DamageBonus +
                 guardedHitBonuses.DMGBonus +
                 statusAppliedNextAttackDamageBonus,
-                nextSkillAbilityBonuses.CriticalRatePercentAdjustment + guardedHitBonuses.CriticalRatePercentAdjustment,
+                nextSkillAbilityBonuses.CriticalRatePercentAdjustment +
+                persistentCriticalRate +
+                guardedHitBonuses.CriticalRatePercentAdjustment,
                 nextSkillAbilityBonuses.DefenseIgnorePercentAdjustment,
                 guardedHitBonuses.EnmityBonus,
                 statusAppliedNextAttackDamageBonus,
@@ -161,6 +166,20 @@ namespace SWLOR.Game.Server.Service
             impact.FlushDamageEffects(activator);
             if (impact.Ability.IsHostileAbility && impact.CountsAsAttackAttempt)
             {
+                if (impact.Summary.CriticalHitCount > 0)
+                {
+                    Combat.ConsumePersistentNextSkillAbilityCriticalRateBonus(
+                        activator,
+                        impact.Summary.SkillType);
+                }
+                else
+                {
+                    Combat.ApplyNonCriticalAbilityEffects(
+                        activator,
+                        OBJECT_INVALID,
+                        impact.Summary.SkillType);
+                }
+
                 StatusEffect.NotifyAttackAttemptStatusEffects(
                     activator,
                     impact.Summary.SkillType,
@@ -2537,11 +2556,6 @@ namespace SWLOR.Game.Server.Service
                     IsTrackedAbilitySingleTarget(activator),
                     skillType);
             }
-            else
-            {
-                Combat.ApplyNonCriticalAbilityEffects(activator, target, skillType);
-            }
-
             return calculatedDamage;
         }
 
@@ -2767,11 +2781,6 @@ namespace SWLOR.Game.Server.Service
                     IsTrackedAbilitySingleTarget(activator),
                     skillType);
             }
-            else
-            {
-                Combat.ApplyNonCriticalAbilityEffects(activator, target, skillType);
-            }
-
             return calculatedDamage;
         }
 

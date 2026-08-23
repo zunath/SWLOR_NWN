@@ -179,6 +179,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public int TargetAbilityHitChanceDurationSeconds { get; init; }
             public Func<IStatusEffect> StatusEffectFactory { get; init; }
             public Func<IStatusEffect> SelfStatusEffectFactory { get; init; }
+            public bool ApplySelfModifiersOnHostileActivation { get; init; }
             public Func<AbilityImpactSummary, IStatusEffect> SelfStatusEffectOnCriticalHitFactory { get; init; }
             public int SelfStatusEffectOnCriticalHitDurationSeconds { get; init; }
             public bool SelfStatusEffectOnCriticalHitIsPermanent { get; init; }
@@ -315,7 +316,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     !Combat.HasRecentDamageTarget(activator, target, NotRecentTargetWindowSeconds))
                 {
                     adjustment += CriticalRateIfNotRecentTarget;
-                    if (GetIsPC(activator) && !string.IsNullOrWhiteSpace(CriticalRateIfNotRecentTargetFeedbackLabel))
+                    if (!string.IsNullOrWhiteSpace(CriticalRateIfNotRecentTargetFeedbackLabel))
                     {
                         FloatingTextStringOnCreature(
                             ColorToken.Combat($"{CriticalRateIfNotRecentTargetFeedbackLabel} +{CriticalRateIfNotRecentTarget}% Critical Rate"),
@@ -560,7 +561,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     }
                 }
 
-                ApplySelfModifiers(activator);
+                if (!ApplySelfModifiersOnHostileActivation)
+                    ApplySelfModifiers(activator);
                 ApplyTemporaryDefeatedEnemyModifiers(activator);
             }
 
@@ -575,6 +577,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public void AfterHostileActivation(uint activator)
             {
                 ApplySelfInvisibility(activator);
+                if (ApplySelfModifiersOnHostileActivation)
+                    ApplySelfModifiers(activator);
             }
 
             private void ApplySelfInvisibility(uint activator)

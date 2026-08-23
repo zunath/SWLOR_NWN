@@ -2194,6 +2194,7 @@ def profile_property_lines(row, level, primary_status):
         if evasion:
             add_profile_property("SelfStatusEffectFactory", f"() => new PointBlankBurstStatusEffect({evasion})")
             add_profile_property("SelfStatDurationSeconds", str(parse_duration(description) or 30))
+            add_profile_property("ApplySelfModifiersOnHostileActivation", "true")
     if guarded_channel:
         add_profile_property("SelfDefensePercent", guarded_channel.group(1))
         add_profile_property("SelfStatResourceAboveThresholdPercent", guarded_channel.group(2))

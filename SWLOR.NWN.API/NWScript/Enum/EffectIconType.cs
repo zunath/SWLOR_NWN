@@ -477,6 +477,8 @@ namespace SWLOR.NWN.API.NWScript.Enum
         PointBlankBurstStatusEffect = 471,
         ReloadTempoStatusEffect = 472,
         CleanseOrder1StatusEffect = 473,
+        DeadeyeReloadStatusEffect = 474,
+        LuckyChamberStatusEffect = 475,
         // End custom status effect icons
     }
 }

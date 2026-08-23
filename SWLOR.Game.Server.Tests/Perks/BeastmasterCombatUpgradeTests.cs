@@ -84,6 +84,10 @@ public class BeastmasterCombatUpgradeTests
     [Test]
     public void BeastmasterAbilities_MatchTargetingAndResourceCosts()
     {
+        var bite = new BiteAbilityDefinition().BuildAbilities();
+        bite.Values.Should().OnlyContain(x => x.ActivationType == AbilityActivationType.Weapon);
+        bite.Values.Should().OnlyContain(x => !x.RequiresTarget);
+
         var apexBite = new ApexBiteAbilityDefinition().BuildAbilities()[FeatType.ApexBite1];
         AssertStaminaAbility(apexBite, "Apex Bite", RecastGroup.ApexBite, 45f, 10, requiresTarget: true);
 

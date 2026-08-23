@@ -2071,25 +2071,32 @@ namespace SWLOR.Game.Server.Service
 
             TemporaryStatModifier.Replace(
                 activator,
-                StatType.NextSkillAbilitySkillType,
+                StatType.PersistentNextSkillAbilityCriticalRateSkillType,
                 (int)skillType,
                 duration,
-                StatType.NextSkillAbilitySkillType);
+                StatType.PersistentNextSkillAbilityCriticalRateSkillType);
             TemporaryStatModifier.AddCapped(
                 activator,
-                StatType.NextSkillAbilityCriticalRatePercentAdjustment,
+                StatType.PersistentNextSkillAbilityCriticalRatePercentAdjustment,
                 criticalRate,
                 duration,
                 maximum,
-                StatType.NextSkillAbilitySkillType,
-                1);
+                StatType.PersistentNextSkillAbilityCriticalRateSkillType,
+                1,
+                refreshExistingStacks: true);
 
             var currentTotal = TemporaryStatModifier.GetStatAdjustment(
                 activator,
-                StatType.NextSkillAbilityCriticalRatePercentAdjustment,
-                StatType.NextSkillAbilitySkillType);
-            if (GetIsPC(activator) && currentTotal > 0)
+                StatType.PersistentNextSkillAbilityCriticalRatePercentAdjustment,
+                StatType.PersistentNextSkillAbilityCriticalRateSkillType);
+            if (currentTotal > 0)
             {
+                StatusEffect.RemoveStatusEffect(activator, typeof(DeadeyeReloadStatusEffect), false);
+                StatusEffect.ApplyStatusEffect(
+                    activator,
+                    activator,
+                    new DeadeyeReloadStatusEffect(currentTotal),
+                    duration);
                 FloatingTextStringOnCreature(
                     ColorToken.Combat($"Deadeye Reload +{currentTotal}% Critical Rate"),
                     activator,
@@ -3135,6 +3142,12 @@ namespace SWLOR.Game.Server.Service
 
             _autoAttackCycleCriticalCounts.TryGetValue(attacker, out var count);
             count++;
+            StatusEffect.RemoveStatusEffect(attacker, typeof(LuckyChamberStatusEffect), false);
+            StatusEffect.ApplyStatusEffect(
+                attacker,
+                attacker,
+                new LuckyChamberStatusEffect(count),
+                count >= requiredCount ? 3f : 0f);
             if (count < requiredCount)
             {
                 _autoAttackCycleCriticalCounts[attacker] = count;
@@ -3142,13 +3155,10 @@ namespace SWLOR.Game.Server.Service
             }
 
             _autoAttackCycleCriticalCounts[attacker] = 0;
-            if (GetIsPC(attacker))
-            {
-                FloatingTextStringOnCreature(
-                    ColorToken.Combat($"Lucky Chamber +{criticalRate}% Critical Rate"),
-                    attacker,
-                    false);
-            }
+            FloatingTextStringOnCreature(
+                ColorToken.Combat($"Lucky Chamber +{criticalRate}% Critical Rate"),
+                attacker,
+                false);
             return criticalRate;
         }
 
@@ -8468,6 +8478,44 @@ namespace SWLOR.Game.Server.Service
                 StatType.NextSkillAbilitySkillType);
 
             return (damageBonus, criticalRate, defenseIgnore);
+        }
+
+        public static int ConsumePersistentNextSkillAbilityCriticalRateBonus(uint creature, SkillType skillType)
+        {
+            if (skillType == SkillType.Invalid)
+                return 0;
+
+            var storedSkillType = GetSkillTypeFromStat(TemporaryStatModifier.GetStatAdjustment(
+                creature,
+                StatType.PersistentNextSkillAbilityCriticalRateSkillType,
+                StatType.PersistentNextSkillAbilityCriticalRateSkillType));
+            if (!SkillTypeMatches(skillType, storedSkillType))
+                return 0;
+
+            var criticalRate = TemporaryStatModifier.Consume(
+                creature,
+                StatType.PersistentNextSkillAbilityCriticalRatePercentAdjustment,
+                StatType.PersistentNextSkillAbilityCriticalRateSkillType);
+            TemporaryStatModifier.Consume(
+                creature,
+                StatType.PersistentNextSkillAbilityCriticalRateSkillType,
+                StatType.PersistentNextSkillAbilityCriticalRateSkillType);
+            StatusEffect.RemoveStatusEffect(creature, typeof(DeadeyeReloadStatusEffect), false);
+            return criticalRate;
+        }
+
+        public static int GetPersistentNextSkillAbilityCriticalRateBonus(uint creature, SkillType skillType)
+        {
+            var storedSkillType = GetSkillTypeFromStat(TemporaryStatModifier.GetStatAdjustment(
+                creature,
+                StatType.PersistentNextSkillAbilityCriticalRateSkillType,
+                StatType.PersistentNextSkillAbilityCriticalRateSkillType));
+            return SkillTypeMatches(skillType, storedSkillType)
+                ? TemporaryStatModifier.GetStatAdjustment(
+                    creature,
+                    StatType.PersistentNextSkillAbilityCriticalRatePercentAdjustment,
+                    StatType.PersistentNextSkillAbilityCriticalRateSkillType)
+                : 0;
         }
 
         public static (int DMGBonus, int CriticalRatePercentAdjustment, int EnmityBonus) ConsumeNextAttackGuardedHitBonuses(

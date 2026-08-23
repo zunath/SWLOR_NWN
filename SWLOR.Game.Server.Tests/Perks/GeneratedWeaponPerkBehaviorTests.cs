@@ -158,6 +158,7 @@ public class GeneratedWeaponPerkBehaviorTests
         var pointBlankBurst = File.ReadAllText(Path.Combine(
             root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Pistol", "PointBlankBurstAbilityDefinition.cs"));
         (pointBlankBurst.Split("SelfStatusEffectFactory = () => new PointBlankBurstStatusEffect(").Length - 1).Should().Be(2);
+        (pointBlankBurst.Split("ApplySelfModifiersOnHostileActivation = true").Length - 1).Should().Be(2);
 
         var quickDraw = File.ReadAllText(Path.Combine(
             root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Pistol", "QuickDrawAbilityDefinition.cs"));
@@ -171,6 +172,9 @@ public class GeneratedWeaponPerkBehaviorTests
         combat.Should().Contain("High Noon +{adjustment}% critical damage");
         combat.Should().Contain("Deadeye Reload +{currentTotal}% Critical Rate");
         combat.Should().Contain("Lucky Chamber +{criticalRate}% Critical Rate");
+        combat.Should().Contain("new DeadeyeReloadStatusEffect(currentTotal)");
+        combat.Should().Contain("new LuckyChamberStatusEffect(count)");
+        combat.Should().Contain("ConsumePersistentNextSkillAbilityCriticalRateBonus");
         combat.Should().Contain("new DamageDealtAdjustmentStatusEffect(");
         combat.Should().NotContain("new DuelistsDistanceStatusEffect(",
             "shared combat must not couple generic near-target stats to one perk-specific status class");

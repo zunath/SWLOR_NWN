@@ -5889,6 +5889,20 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenNegative)]
         LeadershipRecoveryForceDamageTakenPercentAdjustment = 1019,
 
+        /// <summary>
+        /// Skill selector for a next-ability Critical Rate bonus that persists and grows after
+        /// noncritical abilities until an ability critically hits.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        PersistentNextSkillAbilityCriticalRateSkillType = 1020,
+
+        /// <summary>
+        /// Stored Critical Rate for the selected skill. Unlike ordinary next-ability bonuses,
+        /// this channel is consumed only when an ability critically hits.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        PersistentNextSkillAbilityCriticalRatePercentAdjustment = 1021,
+
     }
 
     public class StatTypeAttribute : Attribute

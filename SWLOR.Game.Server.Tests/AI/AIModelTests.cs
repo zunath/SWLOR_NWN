@@ -1314,6 +1314,57 @@ public class AIModelTests
         destroyBeast.Should().BeGreaterThan(clearState);
     }
 
+    [Test]
+    public void ControlledHostileAbilitiesRejectInvalidTargetsBeforeSelfFallback()
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server",
+            "Service",
+            "AIService",
+            "NPCAI.cs");
+        var canExecute = ExtractMethodBody(source, "private static bool CanExecuteAction");
+        var executeAbility = ExtractMethodBody(source, "private static void ExecuteAbility");
+        var rejectDuringEvaluation = canExecute.IndexOf(
+            "action.Type == AIActionType.Ability && !GetIsObjectValid(target)",
+            StringComparison.Ordinal);
+        var validateAbility = canExecute.IndexOf("return CanUseAbility(context, action, target);", StringComparison.Ordinal);
+        var rejectDuringExecution = executeAbility.IndexOf(
+            "if (isControlledHostileAbility && !GetIsObjectValid(target))",
+            StringComparison.Ordinal);
+        var selfFallback = executeAbility.IndexOf(
+            "if (!GetIsObjectValid(target))",
+            rejectDuringExecution + 1,
+            StringComparison.Ordinal);
+
+        rejectDuringEvaluation.Should().BeGreaterThanOrEqualTo(0);
+        validateAbility.Should().BeGreaterThan(rejectDuringEvaluation);
+        rejectDuringExecution.Should().BeGreaterThanOrEqualTo(0);
+        selfFallback.Should().BeGreaterThan(rejectDuringExecution);
+    }
+
+    [Test]
+    public void CompanionCombatProcessingResumesRestBeforeTheBusyGuard()
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server",
+            "Service",
+            "CompanionControlService",
+            "CompanionControl.cs");
+        var processCombatRound = ExtractMethodBody(source, "public static void ProcessCombatRound");
+        var releaseRest = ExtractMethodBody(source, "private static void ResumeFromRestIfMasterIsActive");
+        var resumeRest = processCombatRound.IndexOf(
+            "ResumeFromRestIfMasterIsActive(companion, GetMaster(companion));",
+            StringComparison.Ordinal);
+        var busyGuard = processCombatRound.IndexOf("if (Activity.IsBusy(companion))", StringComparison.Ordinal);
+
+        resumeRest.Should().BeGreaterThanOrEqualTo(0);
+        busyGuard.Should().BeGreaterThan(resumeRest);
+        releaseRest.Should().Contain("Activity.GetBusyType(companion) != ActivityStatusType.Resting");
+        releaseRest.Should().Contain("Activity.GetBusyType(master) == ActivityStatusType.Resting");
+        releaseRest.Should().Contain("StatusEffect.RemoveStatusEffect(companion, typeof(RestStatusEffect), false)");
+        releaseRest.Should().Contain("Activity.ClearBusy(companion)");
+    }
+
     private static float ReadConstFloat(string name, params string[] pathParts)
     {
         var source = ReadSource(pathParts);

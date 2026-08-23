@@ -2,7 +2,9 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.ActivityService;
 using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -200,7 +202,11 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
 
         public static void ProcessCombatRound(uint companion, bool bypassDecisionThrottle = false)
         {
-            if (!IsControlledCompanion(companion) || Activity.IsBusy(companion))
+            if (!IsControlledCompanion(companion))
+                return;
+
+            ResumeFromRestIfMasterIsActive(companion, GetMaster(companion));
+            if (Activity.IsBusy(companion))
                 return;
 
             var state = GetState(companion);
@@ -248,6 +254,20 @@ namespace SWLOR.Game.Server.Service.CompanionControlService
 
             state.LastMasterArea = masterArea;
             ProcessCombatRound(companion);
+        }
+
+        private static void ResumeFromRestIfMasterIsActive(uint companion, uint master)
+        {
+            if (Activity.GetBusyType(companion) != ActivityStatusType.Resting ||
+                Activity.GetBusyType(master) == ActivityStatusType.Resting)
+            {
+                return;
+            }
+
+            if (StatusEffect.HasStatusEffect(companion, typeof(RestStatusEffect)))
+                StatusEffect.RemoveStatusEffect(companion, typeof(RestStatusEffect), false);
+            else
+                Activity.ClearBusy(companion);
         }
 
         public static void ResumeModePosition(uint companion)

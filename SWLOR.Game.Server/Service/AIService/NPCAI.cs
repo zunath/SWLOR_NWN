@@ -413,9 +413,11 @@ namespace SWLOR.Game.Server.Service.AIService
 
         private static bool CanExecuteAction(AIContext context, AIActionDefinition action, uint target)
         {
-            if (CompanionControl.IsControlledCompanion(context.Self) &&
-                IsHostileIntent(action) &&
-                !GetIsObjectValid(context.CurrentEnmityTarget))
+            var isControlledHostileIntent = CompanionControl.IsControlledCompanion(context.Self) &&
+                                            IsHostileIntent(action);
+            if (isControlledHostileIntent &&
+                (!GetIsObjectValid(context.CurrentEnmityTarget) ||
+                 action.Type == AIActionType.Ability && !GetIsObjectValid(target)))
             {
                 return false;
             }
@@ -568,6 +570,11 @@ namespace SWLOR.Game.Server.Service.AIService
             uint target,
             uint authorizedAttackTarget)
         {
+            var isControlledCompanion = CompanionControl.IsControlledCompanion(creature);
+            var isControlledHostileAbility = isControlledCompanion && IsHostileIntent(action);
+            if (isControlledHostileAbility && !GetIsObjectValid(target))
+                return;
+
             if (!GetIsObjectValid(target))
                 target = creature;
 
@@ -575,7 +582,7 @@ namespace SWLOR.Game.Server.Service.AIService
             if (UsePerkFeat.TryUseAbility(creature, target, action.Feat, targetLocation))
                 return;
 
-            if (CompanionControl.IsControlledCompanion(creature))
+            if (isControlledCompanion)
             {
                 target = authorizedAttackTarget;
             }

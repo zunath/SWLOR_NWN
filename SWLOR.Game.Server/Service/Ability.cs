@@ -112,6 +112,9 @@ namespace SWLOR.Game.Server.Service
             var persistentCriticalRate = Combat.GetPersistentNextSkillAbilityCriticalRateBonus(
                 activator,
                 abilitySkillType);
+            var queuedWeaponCriticalRate = ability.ActivationType == AbilityActivationType.Weapon
+                ? Combat.ConsumeQueuedWeaponAbilityCriticalRateBonus(activator, abilitySkillType)
+                : 0;
             var guardedHitBonuses = ability.IsHostileAbility
                 ? Combat.ConsumeNextAttackGuardedHitBonuses(activator)
                 : (DMGBonus: 0, CriticalRatePercentAdjustment: 0, EnmityBonus: 0);
@@ -127,6 +130,7 @@ namespace SWLOR.Game.Server.Service
                 statusAppliedNextAttackDamageBonus,
                 nextSkillAbilityBonuses.CriticalRatePercentAdjustment +
                 persistentCriticalRate +
+                queuedWeaponCriticalRate +
                 guardedHitBonuses.CriticalRatePercentAdjustment,
                 nextSkillAbilityBonuses.DefenseIgnorePercentAdjustment,
                 guardedHitBonuses.EnmityBonus,

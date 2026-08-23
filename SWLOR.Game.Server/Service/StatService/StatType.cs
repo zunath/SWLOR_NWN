@@ -5903,6 +5903,32 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         PersistentNextSkillAbilityCriticalRatePercentAdjustment = 1021,
 
+        /// <summary>
+        /// Effect icon used by the generic tracker for a noncritical-ability Critical Rate stack.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        NonCriticalAbilityNextSkillAbilityCriticalRateTrackerEffectIconType = 1022,
+
+        /// <summary>
+        /// Effect icon used by the generic ranged auto-attack cycle tracker.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        RangedAutoAttackCycleCriticalRateTrackerEffectIconType = 1023,
+
+        /// <summary>
+        /// Skill selector for an attempt-specific Critical Rate bonus being carried from a landed
+        /// auto-attack into its queued weapon ability.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        QueuedWeaponAbilityCriticalRateSkillType = 1024,
+
+        /// <summary>
+        /// Attempt-specific Critical Rate carried from a landed auto-attack into its queued weapon
+        /// ability impact.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        QueuedWeaponAbilityCriticalRatePercentAdjustment = 1025,
+
     }
 
     public class StatTypeAttribute : Attribute

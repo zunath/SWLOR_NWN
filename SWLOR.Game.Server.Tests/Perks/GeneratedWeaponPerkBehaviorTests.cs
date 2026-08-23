@@ -170,11 +170,21 @@ public class GeneratedWeaponPerkBehaviorTests
 
         var combat = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
         combat.Should().Contain("High Noon +{adjustment}% critical damage");
-        combat.Should().Contain("Deadeye Reload +{currentTotal}% Critical Rate");
-        combat.Should().Contain("Lucky Chamber +{criticalRate}% Critical Rate");
-        combat.Should().Contain("new DeadeyeReloadStatusEffect(currentTotal)");
-        combat.Should().Contain("new LuckyChamberStatusEffect(count)");
+        combat.Should().Contain("Next ranged ability +{currentTotal}% Critical Rate");
+        combat.Should().Contain("Ranged attack +{criticalRate}% Critical Rate");
+        combat.Should().Contain("new CriticalRateStackTrackerStatusEffect(");
+        combat.Should().Contain("new AttackCycleTrackerStatusEffect(");
+        combat.Should().NotContain("new DeadeyeReloadStatusEffect(");
+        combat.Should().NotContain("new LuckyChamberStatusEffect(");
         combat.Should().Contain("ConsumePersistentNextSkillAbilityCriticalRateBonus");
+        var criticalTracker = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "CriticalRateStackTrackerStatusEffect.cs"));
+        var cycleTracker = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "AttackCycleTrackerStatusEffect.cs"));
+        criticalTracker.Should().Contain("[StatConfiguredIcon]");
+        criticalTracker.Should().Contain("Critical Rate stack tracker requires a configured status icon.");
+        cycleTracker.Should().Contain("[StatConfiguredIcon]");
+        cycleTracker.Should().Contain("Attack cycle tracker requires a configured status icon.");
         var resolveAttackRoll = File.ReadAllText(Path.Combine(
             root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
         var luckyChamberPreparation = resolveAttackRoll.IndexOf(
@@ -185,6 +195,9 @@ public class GeneratedWeaponPerkBehaviorTests
         luckyChamberPreparation.Should().BeLessThan(hitBranch,
             "Lucky Chamber must advance before hit, miss, or deflection resolution");
         resolveAttackRoll.Should().Contain("autoAttackCycleCriticalRate);");
+        resolveAttackRoll.Should().Contain("Combat.StoreQueuedWeaponAbilityCriticalRateBonus(");
+        var ability = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
+        ability.Should().Contain("Combat.ConsumeQueuedWeaponAbilityCriticalRateBonus(activator, abilitySkillType)");
         combat.Should().Contain("new DamageDealtAdjustmentStatusEffect(");
         combat.Should().NotContain("new DuelistsDistanceStatusEffect(",
             "shared combat must not couple generic near-target stats to one perk-specific status class");
@@ -697,6 +710,8 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("PistolPerkDefinition.cs", StatType.AbilityUsedRangedDeflection, "12");
         AssertSourceStat("PistolPerkDefinition.cs", StatType.AbilityUsedRangedDeflectionDurationSeconds, "30");
         AssertSourceStat("PistolPerkDefinition.cs", StatType.RangedAutoAttackCycleCriticalRateRequiredCount, "4");
+        AssertSourceStat("PistolPerkDefinition.cs", StatType.RangedAutoAttackCycleCriticalRateTrackerEffectIconType, "(int)EffectIconType.LuckyChamberStatusEffect");
+        AssertSourceStat("PistolPerkDefinition.cs", StatType.NonCriticalAbilityNextSkillAbilityCriticalRateTrackerEffectIconType, "(int)EffectIconType.DeadeyeReloadStatusEffect");
         AssertSourceStat("PistolPerkDefinition.cs", StatType.CriticalDamageHighHPTargetPercentAdjustment, "15");
 
         AssertSourceStat("SpearPerkDefinition.cs", StatType.CostlyAbilityDamageBonus, "14");

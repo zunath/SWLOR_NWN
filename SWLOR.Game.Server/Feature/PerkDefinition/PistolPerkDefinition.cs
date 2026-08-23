@@ -276,6 +276,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .Description("Every fourth ranged attack gains +10% Critical Rate.")
                 .IncreasesStat(StatType.RangedAutoAttackCycleCriticalRateRequiredCount, 4)
                 .IncreasesStat(StatType.RangedAutoAttackCycleCriticalRatePercentAdjustment, 10)
+                .IncreasesStat(StatType.RangedAutoAttackCycleCriticalRateTrackerEffectIconType, (int)EffectIconType.LuckyChamberStatusEffect)
                 .Price(2)
                 .RequirementSkill(SkillType.Pistol, 5);
         }
@@ -344,6 +345,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .IncreasesStat(StatType.NonCriticalAbilityNextSkillAbilityCriticalRatePercentAdjustment, 5)
                 .IncreasesStat(StatType.NonCriticalAbilityNextSkillAbilityCriticalRateMax, 15)
                 .IncreasesStat(StatType.NonCriticalAbilityNextSkillAbilityCriticalRateWindowSeconds, 30)
+                .IncreasesStat(StatType.NonCriticalAbilityNextSkillAbilityCriticalRateTrackerEffectIconType, (int)EffectIconType.DeadeyeReloadStatusEffect)
                 .Price(4)
                 .RequirementSkill(SkillType.Pistol, 15);
         }

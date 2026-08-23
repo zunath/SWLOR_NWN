@@ -62,9 +62,20 @@ public class PerkRefundStatusEffectCleanupTests
 
         perkSource.Should().Contain("StatusEffectTypesRemovedOnPerkRefund");
         perkSource.Should().Contain("StatusEffect.RemoveStatusEffect(creature, statusEffectType, false);");
+        perkSource.Should().Contain("Combat.RefreshStatDrivenTrackerEffects(creature);");
         perkSource.Should().Contain("RemoveStatusEffectsOnPerkRefund(player, perkType);");
         perksViewModelSource.Should().Contain("Perk.RemoveStatusEffectsOnPerkRefund(target, selectedPerk);");
         rebuildViewModelSource.Should().Contain("Perk.RemoveStatusEffectsOnPerkRefund(Player, type);");
+
+        var combatSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Combat.cs"));
+        combatSource.Should().Contain("_autoAttackCycleCriticalCounts.Remove(creature);");
+        combatSource.Should().Contain("typeof(AttackCycleTrackerStatusEffect)");
+        combatSource.Should().Contain("typeof(CriticalRateStackTrackerStatusEffect)");
+        combatSource.Should().Contain("StatType.NonCriticalAbilityNextSkillAbilityCriticalRatePercentAdjustment) <= 0");
     }
 
     [Test]

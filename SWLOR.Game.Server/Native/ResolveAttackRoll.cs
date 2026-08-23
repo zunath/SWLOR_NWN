@@ -372,7 +372,14 @@ namespace SWLOR.Game.Server.Native
                 var queuedWeaponAbilityWillResolve =
                     IsSuccessfulAttackResult(pAttackData.m_nAttackResult) &&
                     UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType);
-                if (!queuedWeaponAbilityWillResolve)
+                if (queuedWeaponAbilityWillResolve)
+                {
+                    Combat.StoreQueuedWeaponAbilityCriticalRateBonus(
+                        attacker.m_idSelf,
+                        weaponSkillType,
+                        autoAttackCycleCriticalRate);
+                }
+                else
                 {
                     StatusEffect.NotifyAttackAttemptStatusEffects(
                         attacker.m_idSelf,

@@ -1074,7 +1074,7 @@ namespace SWLOR.Toolset.Shell.Panels
                 : $" Temporary delete backup cleanup needs attention: {string.Join("; ", result.CleanupWarnings)}";
             if (unfiled)
             {
-                StatusMessage = $"Deleted {kind} '{displayName}'.{cleanup}";
+                StatusMessage = cleanup.TrimStart();
             }
             else
             {

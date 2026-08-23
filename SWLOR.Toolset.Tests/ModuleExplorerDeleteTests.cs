@@ -195,6 +195,8 @@ namespace SWLOR.Toolset.Tests
             prompts.Headline.Should().Be("Delete 'delete_script'?");
             prompts.Message.Should().Be("This cannot be undone.");
             explorer.Rows.SelectMany(row => row.Children).Should().NotContain(row => row.ResRef == resRef);
+            explorer.StatusMessage.Should().BeEmpty(
+                "a successful deletion does not need a persistent status message");
         }
 
         [Test]

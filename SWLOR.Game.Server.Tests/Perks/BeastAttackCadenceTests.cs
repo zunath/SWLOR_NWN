@@ -2,6 +2,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.BeastMasteryService;
+using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
@@ -21,26 +22,40 @@ public class BeastAttackCadenceTests
             beast.Levels.Should().HaveCount(50, $"{beastType} should retain the complete level progression");
             beast.Levels.Keys.Should().BeEquivalentTo(Enumerable.Range(1, 50));
 
-            var delays = beast.Levels.Values.Select(level => level.Delay).Distinct().ToList();
+            var delays = beast.Levels.Values.Select(level => level.AttackDelay).Distinct().ToList();
             delays.Should().ContainSingle($"{beastType} should use one species cadence at every level");
-            delays[0].Should().BeInRange(20, 24, $"{beastType} should remain inside the balanced natural-weapon cadence bands");
+            delays[0].Should().BeOneOf(
+                ItemPropertyAttackDelay.Delay200,
+                ItemPropertyAttackDelay.Delay210,
+                ItemPropertyAttackDelay.Delay220,
+                ItemPropertyAttackDelay.Delay230,
+                ItemPropertyAttackDelay.Delay240);
         }
 
         beasts.Values
-            .Select(beast => beast.Levels[1].Delay)
+            .Select(beast => beast.Levels[1].AttackDelay)
             .Distinct()
             .Should()
-            .BeEquivalentTo(new[] { 20, 21, 22, 23, 24 });
+            .BeEquivalentTo(new[]
+            {
+                ItemPropertyAttackDelay.Delay200,
+                ItemPropertyAttackDelay.Delay210,
+                ItemPropertyAttackDelay.Delay220,
+                ItemPropertyAttackDelay.Delay230,
+                ItemPropertyAttackDelay.Delay240,
+            });
     }
 
-    [TestCase(20, 1583)]
-    [TestCase(21, 1750)]
-    [TestCase(22, 1916)]
-    [TestCase(23, 2083)]
-    [TestCase(24, 2250)]
-    public void BeastDelayBands_ProduceTheExpectedUnhastedCadence(int delay, int expectedMilliseconds)
+    [TestCase(ItemPropertyAttackDelay.Delay200, 1583)]
+    [TestCase(ItemPropertyAttackDelay.Delay210, 1750)]
+    [TestCase(ItemPropertyAttackDelay.Delay220, 1916)]
+    [TestCase(ItemPropertyAttackDelay.Delay230, 2083)]
+    [TestCase(ItemPropertyAttackDelay.Delay240, 2250)]
+    public void BeastDelayBands_ProduceTheExpectedUnhastedCadence(
+        ItemPropertyAttackDelay delay,
+        int expectedMilliseconds)
     {
-        var calculatedDelay = Combat.CalculateAttackDelayMilliseconds(delay * 10, 0, 0, 0);
+        var calculatedDelay = Combat.CalculateAttackDelayMilliseconds((int)delay * 10, 0, 0, 0);
 
         Combat.CalculateEffectiveAttackDelay(calculatedDelay).Should().Be(expectedMilliseconds);
     }
@@ -56,7 +71,7 @@ public class BeastAttackCadenceTests
             "BeastMastery.cs"));
 
         source.Should().Contain(
-            "ItemPropertyCustom(ItemPropertyType.Delay, -1, level.Delay)",
+            "ItemPropertyCustom(ItemPropertyType.Delay, -1, (int)level.AttackDelay)",
             "the generated species cadence must replace the generic beast-claw delay at runtime");
     }
 
@@ -68,7 +83,47 @@ public class BeastAttackCadenceTests
         var template = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.CLI", "Templates", "beast_level_template.txt"));
 
         generator.Should().Contain("row[\"Attack Delay\"]");
-        template.Should().Contain(".Delay(%%DELAY%%)");
+        generator.Should().Contain("FormatAttackDelay(row[\"Attack Delay\"])");
+        template.Should().Contain(".AttackDelay(%%ATTACKDELAY%%)");
+    }
+
+    [Test]
+    public void AttackDelayEnum_MatchesEveryUsableIprpDelayRow()
+    {
+        var root = FindRepositoryRoot();
+        var rows = File.ReadLines(Path.Combine(root.FullName, "SWLOR_Haks", "sw_2da", "iprp_delay.2da"))
+            .Select(line => line.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries))
+            .Where(columns =>
+                columns.Length >= 3 &&
+                int.TryParse(columns[0], out _) &&
+                columns[2] != "****")
+            .Select(columns => (Row: int.Parse(columns[0]), Label: columns[2]))
+            .ToList();
+
+        var enumValues = Enum.GetValues<ItemPropertyAttackDelay>()
+            .Where(delay => delay != ItemPropertyAttackDelay.Invalid)
+            .ToList();
+        enumValues.Should().HaveSameCount(rows);
+
+        foreach (var (row, label) in rows)
+        {
+            Enum.TryParse<ItemPropertyAttackDelay>($"Delay{label}", out var delay).Should().BeTrue();
+            ((int)delay).Should().Be(row, $"Delay{label} must point to iprp_delay.2da row {row}");
+        }
+    }
+
+    [TestCase(0)]
+    [TestCase(10)]
+    [TestCase(101)]
+    public void BeastBuilder_RejectsPlaceholderOrUndefinedAttackDelayRows(int costTableValue)
+    {
+        var builder = new BeastBuilder()
+            .Create(BeastType.Gizka)
+            .AddLevel();
+
+        var assign = () => builder.AttackDelay((ItemPropertyAttackDelay)costTableValue);
+
+        assign.Should().Throw<ArgumentOutOfRangeException>();
     }
 
     private static Dictionary<BeastType, BeastDetail> BuildAllBeasts()

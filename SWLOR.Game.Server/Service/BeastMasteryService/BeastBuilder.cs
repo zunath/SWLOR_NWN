@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 
 namespace SWLOR.Game.Server.Service.BeastMasteryService
 {
@@ -177,14 +178,14 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
         /// <summary>
         /// Specifies the natural weapon delay assigned to the beast at the current level.
         /// </summary>
-        /// <param name="amount">The delay cost-table value to assign.</param>
+        /// <param name="delay">The delay cost-table value to assign.</param>
         /// <returns>A configured BeastBuilder object</returns>
-        public BeastBuilder Delay(int amount)
+        public BeastBuilder AttackDelay(ItemPropertyAttackDelay delay)
         {
-            if (amount <= 0)
-                throw new ArgumentOutOfRangeException(nameof(amount), amount, "Beast attack delay must be positive.");
+            if (delay == ItemPropertyAttackDelay.Invalid || !Enum.IsDefined(delay))
+                throw new ArgumentOutOfRangeException(nameof(delay), delay, "Beast attack delay must be a valid iprp_delay.2da value.");
 
-            _activeLevel.Delay = amount;
+            _activeLevel.AttackDelay = delay;
 
             return this;
         }
@@ -392,10 +393,11 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
             {
                 foreach (var (level, detail) in beast.Levels)
                 {
-                    if (detail.Delay <= 0)
+                    if (detail.AttackDelay == ItemPropertyAttackDelay.Invalid ||
+                        !Enum.IsDefined(detail.AttackDelay))
                     {
                         throw new InvalidOperationException(
-                            $"Beast '{beastType}' level {level} must specify a positive attack delay.");
+                            $"Beast '{beastType}' level {level} must specify an attack delay.");
                     }
                 }
             }

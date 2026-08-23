@@ -7,7 +7,7 @@
 				.FP(%%FP%%)
 				.STM(%%STM%%)
 				.DMG(%%DMG%%)
-				.Delay(%%DELAY%%)
+				.AttackDelay(%%ATTACKDELAY%%)
 				.Stat(AbilityType.Might, %%MGT%%)
 				.Stat(AbilityType.Perception, %%PER%%)
 				.Stat(AbilityType.Vitality, %%VIT%%)

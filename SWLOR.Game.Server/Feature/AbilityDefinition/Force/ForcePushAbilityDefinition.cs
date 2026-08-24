@@ -124,7 +124,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 target,
                 targetLocation,
                 SkillType.Force,
-                0,
+                ForcePush1BaseDamage,
                 KnockdownDurationSeconds,
                 typeof(KnockdownStatusEffect),
                 CombatImpactAreaShape.Cone,
@@ -136,12 +136,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 targetVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst_Silent,
                 areaVisualEffect: VisualEffect.None,
                 maxTargets: 1,
-                afterSuccessfulHit: hitTarget => ApplyForcePushHit(
-                    activator,
-                    hitTarget,
-                    ForcePush1BaseDamage,
-                    ForcePush1HobbleDurationSeconds),
-                playImpactAnimation: false);
+                afterSuccessfulHit: hitTarget => ApplyHobble(activator, hitTarget, ForcePush1HobbleDurationSeconds),
+                playImpactAnimation: false,
+                useUnscaledDamage: true);
             LightGuardianPowerSupport.ApplyDeflectivePresence(activator);
         }
 
@@ -152,7 +149,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 target,
                 targetLocation,
                 SkillType.Force,
-                0,
+                ForcePush2BaseDamage,
                 KnockdownDurationSeconds,
                 typeof(KnockdownStatusEffect),
                 CombatImpactAreaShape.Cone,
@@ -164,12 +161,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 targetVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst_Silent,
                 areaVisualEffect: VisualEffect.None,
                 maxTargets: 2,
-                afterSuccessfulHit: hitTarget => ApplyForcePushHit(
-                    activator,
-                    hitTarget,
-                    ForcePush2BaseDamage,
-                    ForcePush2HobbleDurationSeconds),
-                playImpactAnimation: false);
+                afterSuccessfulHit: hitTarget => ApplyHobble(activator, hitTarget, ForcePush2HobbleDurationSeconds),
+                playImpactAnimation: false,
+                useUnscaledDamage: true);
             LightGuardianPowerSupport.ApplyDeflectivePresence(activator);
         }
 
@@ -180,7 +174,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 target,
                 targetLocation,
                 SkillType.Force,
-                0,
+                ForcePush3BaseDamage,
                 KnockdownDurationSeconds,
                 typeof(KnockdownStatusEffect),
                 CombatImpactAreaShape.Cone,
@@ -192,28 +186,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 targetVisualEffect: VisualEffect.Vfx_Fnf_Sound_Burst_Silent,
                 areaVisualEffect: VisualEffect.None,
                 maxTargets: 3,
-                afterSuccessfulHit: hitTarget => ApplyForcePushHit(
-                    activator,
-                    hitTarget,
-                    ForcePush3BaseDamage,
-                    ForcePush3HobbleDurationSeconds),
-                playImpactAnimation: false);
+                afterSuccessfulHit: hitTarget => ApplyHobble(activator, hitTarget, ForcePush3HobbleDurationSeconds),
+                playImpactAnimation: false,
+                useUnscaledDamage: true);
             LightGuardianPowerSupport.ApplyDeflectivePresence(activator);
-        }
-
-        private static void ApplyForcePushHit(
-            uint activator,
-            uint target,
-            int baseDamage,
-            int hobbleDurationSeconds)
-        {
-            Combat.ApplyTriggeredDamage(
-                activator,
-                target,
-                baseDamage,
-                CombatDamageType.Force,
-                SkillType.Force);
-            ApplyHobble(activator, target, hobbleDurationSeconds);
         }
 
         private static void ApplyHobble(uint activator, uint target, int durationSeconds)

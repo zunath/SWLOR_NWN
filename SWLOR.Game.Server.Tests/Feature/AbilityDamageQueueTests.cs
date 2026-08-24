@@ -94,6 +94,46 @@ public class AbilityDamageQueueTests
     }
 
     [Test]
+    public void UnscaledCombatImpacts_RetainPrimaryDamageHandlingWithoutFormulaScaling()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Ability.cs")).Replace("\r\n", "\n");
+        var primaryImpactBody = source.Substring(
+            source.IndexOf("public static int ApplyHostileCombatImpact(", StringComparison.Ordinal),
+            source.IndexOf("private static int ApplyHostileCombatImpact(", StringComparison.Ordinal) -
+            source.IndexOf("public static int ApplyHostileCombatImpact(", StringComparison.Ordinal));
+        var formulaSelectionBody = source.Substring(
+            source.IndexOf("private static int ApplyHostileCombatImpact(", StringComparison.Ordinal),
+            source.IndexOf("private static bool ShouldResolveCombatImpactHit", StringComparison.Ordinal) -
+            source.IndexOf("private static int ApplyHostileCombatImpact(", StringComparison.Ordinal));
+        var unscaledDamageBody = source.Substring(
+            source.IndexOf("private static int CalculateUnscaledCombatImpactDamage(", StringComparison.Ordinal),
+            source.IndexOf("private static int CalculateCombatImpactDamage(", StringComparison.Ordinal) -
+            source.IndexOf("private static int CalculateUnscaledCombatImpactDamage(", StringComparison.Ordinal));
+
+        source.Should().Contain("useUnscaledDamage: useUnscaledDamage",
+            "the public combat-impact entry points must propagate unscaled damage through every area path");
+        formulaSelectionBody.Should().Contain("useUnscaledDamage\n                ? CalculateUnscaledCombatImpactDamage(");
+        formulaSelectionBody.Should().Contain("return ApplyHostileCombatImpact(",
+            "unscaled damage must retain the primary ability damage, rider, and enmity path");
+        primaryImpactBody.Should().Contain("Combat.SendTemporaryHitPointDamageFeedback(activator, target, damage);");
+        primaryImpactBody.Should().Contain("trackedImpact.QueueDamageEffect(");
+
+        unscaledDamageBody.Should().Contain("Combat.ApplyDamageDealtModifiers(");
+        unscaledDamageBody.Should().Contain("isAbilityDamage: true");
+        unscaledDamageBody.Should().Contain("ApplyCombatReadinessToActivatedAbilityMagnitude(activator, damage)");
+        unscaledDamageBody.Should().Contain("Resistance.ApplyResistanceToDamage(target, damageType, damage)");
+        unscaledDamageBody.Should().Contain("Combat.ApplyDamageTakenModifiers(");
+        unscaledDamageBody.Should().NotContain("CalculateDamageWithCriticalMitigation");
+        unscaledDamageBody.Should().NotContain("Perk.ApplyForceAffinityMagnitude");
+        unscaledDamageBody.Should().NotContain("Combat.GetAbilityDamageBonus");
+    }
+
+    [Test]
     public void FailedAbilityImpacts_AbortTrackedStateForCastAndQueuedPaths()
     {
         var root = FindRepositoryRoot();

@@ -1165,7 +1165,8 @@ namespace SWLOR.Game.Server.Service
             bool playImpactAnimation = true,
             AbilityType combatImpactDamageAbility = AbilityType.Invalid,
             bool resolvesHit = true,
-            bool canCritical = true)
+            bool canCritical = true,
+            bool useUnscaledDamage = false)
         {
             var totalDamage = 0;
             RecordAbilityImpactShape(activator, skillType, isArea);
@@ -1213,7 +1214,8 @@ namespace SWLOR.Game.Server.Service
                     effectDamageType: effectDamageType,
                     combatImpactDamageAbility: combatImpactDamageAbility,
                     resolvesHit: resolvesHit,
-                    canCritical: canCritical);
+                    canCritical: canCritical,
+                    useUnscaledDamage: useUnscaledDamage);
             }
             else if (GetIsObjectValid(target))
             {
@@ -1241,7 +1243,8 @@ namespace SWLOR.Game.Server.Service
                     effectDamageType: effectDamageType,
                     combatImpactDamageAbility: combatImpactDamageAbility,
                     resolvesHit: resolvesHit,
-                    canCritical: canCritical);
+                    canCritical: canCritical,
+                    useUnscaledDamage: useUnscaledDamage);
             }
 
             if (playImpactAnimation)
@@ -1292,7 +1295,8 @@ namespace SWLOR.Game.Server.Service
             bool sendsNoTargetMessage = true,
             bool resolvesHit = true,
             bool canCritical = true,
-            float impactFlashDuration = DefaultImpactFlashDuration)
+            float impactFlashDuration = DefaultImpactFlashDuration,
+            bool useUnscaledDamage = false)
         {
             RecordAbilityImpactShape(activator, skillType, true);
 
@@ -1345,7 +1349,8 @@ namespace SWLOR.Game.Server.Service
                     combatImpactDamageAbility,
                     sendsNoTargetMessage,
                     resolvesHit,
-                    canCritical);
+                    canCritical,
+                    useUnscaledDamage);
                 if (playImpactAnimation)
                     PlayCombatImpactAnimation(activator, impactAnimation);
 
@@ -1398,7 +1403,8 @@ namespace SWLOR.Game.Server.Service
                 combatImpactDamageAbility,
                 sendsNoTargetMessage,
                 resolvesHit,
-                canCritical);
+                canCritical,
+                useUnscaledDamage);
 
             switch (shape)
             {
@@ -1535,7 +1541,8 @@ namespace SWLOR.Game.Server.Service
             AbilityType combatImpactDamageAbility,
             bool sendsNoTargetMessage,
             bool resolvesHit,
-            bool canCritical)
+            bool canCritical,
+            bool useUnscaledDamage)
         {
             RecordAbilityImpactShape(activator, skillType, true);
 
@@ -1586,7 +1593,8 @@ namespace SWLOR.Game.Server.Service
                 combatImpactDamageAbility: combatImpactDamageAbility,
                 sendsNoTargetMessage: sendsNoTargetMessage,
                 resolvesHit: resolvesHit,
-                canCritical: canCritical);
+                canCritical: canCritical,
+                useUnscaledDamage: useUnscaledDamage);
         }
 
         private static ApplyTelegraphEffect BuildTelegraphedCombatImpactAction(
@@ -1624,7 +1632,8 @@ namespace SWLOR.Game.Server.Service
             AbilityType combatImpactDamageAbility,
             bool sendsNoTargetMessage,
             bool resolvesHit,
-            bool canCritical)
+            bool canCritical,
+            bool useUnscaledDamage)
         {
             return (creator, creatures) =>
             {
@@ -1713,7 +1722,8 @@ namespace SWLOR.Game.Server.Service
                         combatImpactDamageAbility: combatImpactDamageAbility,
                         sendsNoTargetMessage: sendsNoTargetMessage,
                         resolvesHit: resolvesHit,
-                        canCritical: canCritical);
+                        canCritical: canCritical,
+                        useUnscaledDamage: useUnscaledDamage);
 
                     if (ability != null)
                     {
@@ -1763,7 +1773,8 @@ namespace SWLOR.Game.Server.Service
             AbilityType combatImpactDamageAbility = AbilityType.Invalid,
             bool sendsNoTargetMessage = true,
             bool resolvesHit = true,
-            bool canCritical = true)
+            bool canCritical = true,
+            bool useUnscaledDamage = false)
         {
             var totalDamage = 0;
             var affectedCount = 0;
@@ -1803,7 +1814,8 @@ namespace SWLOR.Game.Server.Service
                     effectDamageType,
                     combatImpactDamageAbility,
                     resolvesHit,
-                    canCritical);
+                    canCritical,
+                    useUnscaledDamage);
                 affectedCount++;
             }
 
@@ -2165,7 +2177,8 @@ namespace SWLOR.Game.Server.Service
             DamageType? effectDamageType = null,
             AbilityType combatImpactDamageAbility = AbilityType.Invalid,
             bool resolvesHit = true,
-            bool canCritical = true)
+            bool canCritical = true,
+            bool useUnscaledDamage = false)
         {
             using var damageDerivedHealing = Combat.BeginDamageDerivedHealing(activator);
             var trackedImpact = GetTrackedAbilityImpact(activator);
@@ -2217,9 +2230,11 @@ namespace SWLOR.Game.Server.Service
                 activator,
                 skillType,
                 appliedStatusCategories);
-            var damage = usesNPCStatScaling
-                ? CalculateNPCCombatImpactDamage(activator, target, skillType, adjustedBaseDamage, damageType, criticalRatePercentAdjustment, damageAbility, canCritical)
-                : CalculateCombatImpactDamage(activator, target, skillType, adjustedBaseDamage, damageType, criticalRatePercentAdjustment, damageAbility, canCritical);
+            var damage = useUnscaledDamage
+                ? CalculateUnscaledCombatImpactDamage(activator, target, skillType, adjustedBaseDamage, damageType)
+                : usesNPCStatScaling
+                    ? CalculateNPCCombatImpactDamage(activator, target, skillType, adjustedBaseDamage, damageType, criticalRatePercentAdjustment, damageAbility, canCritical)
+                    : CalculateCombatImpactDamage(activator, target, skillType, adjustedBaseDamage, damageType, criticalRatePercentAdjustment, damageAbility, canCritical);
             damage = ApplyDamagePercentAdjustment(target, damage, damagePercentAdjustment);
             damage = ApplyDarkForceTargetLowHPDamageModifier(activator, target, damage);
             return ApplyHostileCombatImpact(
@@ -2431,6 +2446,37 @@ namespace SWLOR.Game.Server.Service
             hpCost = Math.Min(hpCost, Math.Max(0, GetCurrentHitPoints(activator) - 1));
             if (hpCost > 0)
                 AssignCommand(activator, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(hpCost), activator));
+        }
+
+        private static int CalculateUnscaledCombatImpactDamage(
+            uint activator,
+            uint target,
+            SkillType skillType,
+            int baseDamage,
+            CombatDamageType damageType)
+        {
+            if (baseDamage <= 0)
+                return 0;
+
+            var damage = Combat.ApplyDamageDealtModifiers(
+                activator,
+                target,
+                baseDamage,
+                skillType,
+                damageType,
+                isAbilityDamage: true);
+            damage = ApplyCombatReadinessToActivatedAbilityMagnitude(activator, damage);
+            Combat.ApplyIncomingPhysicalToForceConversion(activator, target, damageType, ref damage);
+            damage = Combat.ApplyTypedLeadershipDamageTakenModifier(target, damage, damageType);
+            damage = Resistance.ApplyResistanceToDamage(target, damageType, damage);
+            damage = Combat.ApplyDamageTakenModifiers(
+                target,
+                damage,
+                activator,
+                damageType,
+                typedLeadershipReductionAlreadyApplied: true);
+
+            return damage;
         }
 
         private static int CalculateCombatImpactDamage(

@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Xml.Linq;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 
 namespace SWLOR.CLI
 {
@@ -148,6 +149,7 @@ namespace SWLOR.CLI
                     .Replace("%%STM%%", FormatInteger(row["STM"]))
                     .Replace("%%FP%%", FormatInteger(row["FP"]))
                     .Replace("%%DMG%%", FormatInteger(row["Base Damage"]))
+                    .Replace("%%ATTACKDELAY%%", FormatAttackDelay(row["Attack Delay"]))
 
                     .Replace("%%MGT%%", FormatInteger(row["MGT"]))
                     .Replace("%%PER%%", FormatInteger(row["PER"]))
@@ -315,6 +317,19 @@ namespace SWLOR.CLI
             }
 
             return decimal.ToInt32(decimal.Round(number, 0, MidpointRounding.AwayFromZero)).ToString(CultureInfo.InvariantCulture);
+        }
+
+        private static string FormatAttackDelay(string value)
+        {
+            var costTableValue = int.Parse(FormatInteger(value), CultureInfo.InvariantCulture);
+            if (!Enum.IsDefined(typeof(ItemPropertyAttackDelay), costTableValue) ||
+                costTableValue == (int)ItemPropertyAttackDelay.Invalid)
+            {
+                throw new InvalidOperationException(
+                    $"Attack Delay '{value}' is not a valid iprp_delay.2da cost-table value.");
+            }
+
+            return $"{nameof(ItemPropertyAttackDelay)}.Delay{costTableValue * 10}";
         }
 
         private static string FormatFloat(string value)

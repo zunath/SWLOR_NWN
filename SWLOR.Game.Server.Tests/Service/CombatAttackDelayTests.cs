@@ -14,6 +14,7 @@ using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -106,7 +107,7 @@ public class CombatAttackDelayTests
 
         foreach (var naturalWeaponType in naturalWeaponTypes)
         {
-            WeaponDelay.GetWeaponDelay(naturalWeaponType).Should().Be(24);
+            WeaponDelay.GetWeaponDelay(naturalWeaponType).Should().Be(ItemPropertyAttackDelay.Delay240);
         }
 
         var unmodifiedDelay = Combat.CalculateAttackDelayMilliseconds(240, 0, 0, 0);
@@ -121,7 +122,7 @@ public class CombatAttackDelayTests
     [Test]
     public void LegacySlingPistolDelay_UsesPistolDelay()
     {
-        WeaponDelay.GetWeaponDelay(BaseItem.Sling).Should().Be(25);
+        WeaponDelay.GetWeaponDelay(BaseItem.Sling).Should().Be(ItemPropertyAttackDelay.Delay250);
     }
 
     [Test]
@@ -974,13 +975,13 @@ public class CombatAttackDelayTests
         weaponDelayMigrationSource.Should().Contain("WeaponDelay.GetWeaponDelay(baseItem)");
         weaponDelayMigrationSource.Should().Contain("BuildWeaponBaseItemTypes");
         weaponDelayMigrationSource.Should().Contain("StaffBaseItemTypes");
-        weaponDelayMigrationSource.Should().Contain("[\"t_knife\"] = 22");
-        weaponDelayMigrationSource.Should().Contain("[\"t_shuriken\"] = 22");
-        weaponDelayMigrationSource.Should().Contain("[\"t_rifle\"] = 30");
-        weaponDelayMigrationSource.Should().Contain("[\"t_twinblade\"] = 29");
-        weaponDelayMigrationSource.Should().Contain("[\"byyskwarriorswor\"] = 22");
-        weaponDelayMigrationSource.Should().Contain("[\"sith_blade\"] = 22");
-        weaponDelayMigrationSource.Should().Contain("[\"wswss002\"] = 22");
+        weaponDelayMigrationSource.Should().Contain("[\"t_knife\"] = ItemPropertyAttackDelay.Delay220");
+        weaponDelayMigrationSource.Should().Contain("[\"t_shuriken\"] = ItemPropertyAttackDelay.Delay220");
+        weaponDelayMigrationSource.Should().Contain("[\"t_rifle\"] = ItemPropertyAttackDelay.Delay300");
+        weaponDelayMigrationSource.Should().Contain("[\"t_twinblade\"] = ItemPropertyAttackDelay.Delay290");
+        weaponDelayMigrationSource.Should().Contain("[\"byyskwarriorswor\"] = ItemPropertyAttackDelay.Delay220");
+        weaponDelayMigrationSource.Should().Contain("[\"sith_blade\"] = ItemPropertyAttackDelay.Delay220");
+        weaponDelayMigrationSource.Should().Contain("[\"wswss002\"] = ItemPropertyAttackDelay.Delay220");
         weaponDelayMigrationSource.Should().Contain("GetHasInventory(obj)");
         weaponDelayMigrationSource.Should().Contain("GetItemInSlot((InventorySlot)index, creature)");
     }
@@ -1039,38 +1040,38 @@ public class CombatAttackDelayTests
             .GetValue(null)!;
     }
 
-    private static readonly IReadOnlyDictionary<int, int> WeaponDelayCostByBaseItem = BuildWeaponDelayCostByBaseItem();
+    private static readonly IReadOnlyDictionary<int, ItemPropertyAttackDelay> WeaponDelayByBaseItem = BuildWeaponDelayByBaseItem();
     private static readonly IReadOnlySet<int> ShieldBaseItems = SWLOR.Game.Server.Service.Item.ShieldBaseItemTypes
         .Select(x => (int)x)
         .ToHashSet();
 
-    private static IReadOnlyDictionary<int, int> BuildWeaponDelayCostByBaseItem()
+    private static IReadOnlyDictionary<int, ItemPropertyAttackDelay> BuildWeaponDelayByBaseItem()
     {
-        var delays = new Dictionary<int, int>();
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.VibrobladeBaseItemTypes, 23);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.KatarBaseItemTypes, 22);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.TwinBladeBaseItemTypes, 29);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.VibroknifeBaseItemTypes, 22);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.StaffBaseItemTypes, 27);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.RifleBaseItemTypes, 30);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.HeavyVibrobladeBaseItemTypes, 30);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.PistolBaseItemTypes, 25);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.LightsaberBaseItemTypes, 24);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.SpearBaseItemTypes, 28);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.ThrowingWeaponBaseItemTypes, 22);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.SaberstaffBaseItemTypes, 29);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.CreatureBaseItemTypes, 24);
+        var delays = new Dictionary<int, ItemPropertyAttackDelay>();
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.VibrobladeBaseItemTypes, ItemPropertyAttackDelay.Delay230);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.KatarBaseItemTypes, ItemPropertyAttackDelay.Delay220);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.TwinBladeBaseItemTypes, ItemPropertyAttackDelay.Delay290);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.VibroknifeBaseItemTypes, ItemPropertyAttackDelay.Delay220);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.StaffBaseItemTypes, ItemPropertyAttackDelay.Delay270);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.RifleBaseItemTypes, ItemPropertyAttackDelay.Delay300);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.HeavyVibrobladeBaseItemTypes, ItemPropertyAttackDelay.Delay300);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.PistolBaseItemTypes, ItemPropertyAttackDelay.Delay250);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.LightsaberBaseItemTypes, ItemPropertyAttackDelay.Delay240);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.SpearBaseItemTypes, ItemPropertyAttackDelay.Delay280);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.ThrowingWeaponBaseItemTypes, ItemPropertyAttackDelay.Delay220);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.SaberstaffBaseItemTypes, ItemPropertyAttackDelay.Delay290);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.CreatureBaseItemTypes, ItemPropertyAttackDelay.Delay240);
 
         return delays;
     }
 
     private static void AddWeaponDelays(
-        Dictionary<int, int> delays,
+        Dictionary<int, ItemPropertyAttackDelay> delays,
         IEnumerable<BaseItem> baseItems,
-        int delayCost)
+        ItemPropertyAttackDelay delay)
     {
         foreach (var baseItem in baseItems)
-            delays[(int)baseItem] = delayCost;
+            delays[(int)baseItem] = delay;
     }
 
     private static void InspectWeaponDelays(
@@ -1137,7 +1138,7 @@ public class CombatAttackDelayTests
         string findingPath,
         ICollection<string> findings)
     {
-        if (!WeaponDelayCostByBaseItem.TryGetValue(baseItem, out var expectedDelayCost))
+        if (!WeaponDelayByBaseItem.TryGetValue(baseItem, out var expectedDelay))
             return;
 
         var delayCosts = GetDelayCostValues(propertiesList).ToList();
@@ -1145,9 +1146,9 @@ public class CombatAttackDelayTests
         {
             findings.Add($"{findingPath} missing weapon Delay");
         }
-        else if (delayCosts.Any(x => x != expectedDelayCost))
+        else if (delayCosts.Any(x => x != (int)expectedDelay))
         {
-            findings.Add($"{findingPath} weapon Delay [{string.Join(", ", delayCosts)}] should be {expectedDelayCost}");
+            findings.Add($"{findingPath} weapon Delay [{string.Join(", ", delayCosts)}] should be {(int)expectedDelay} ({expectedDelay})");
         }
     }
 

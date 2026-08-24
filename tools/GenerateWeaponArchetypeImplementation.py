@@ -620,6 +620,7 @@ def write_generated_targeting_spell_ids(spell_ids):
 def generated_targeting_update(row, was_generator_owned):
     base, _ = base_and_level(row.get("PerkName", ""))
     targeting_values = {}
+    generated_targeting_fields = ("Range", "TargetType", "HostileSetting")
 
     # Headshot is a queued self activation. Its spell row must be non-hostile/self-compatible
     # even though it has no area shape for the generator to own.
@@ -633,6 +634,7 @@ def generated_targeting_update(row, was_generator_owned):
     if not inferred:
         if not was_generator_owned:
             return (targeting_values or None), False
+        targeting_values.update({header: "****" for header in generated_targeting_fields})
         targeting_values.update({
             "TargetShape": "****",
             "TargetSizeX": "****",
@@ -662,6 +664,15 @@ def generated_targeting_update(row, was_generator_owned):
         targeting_values.update({
             "Range": "M",
             "TargetType": "0x3E",
+            "HostileSetting": "1",
+        })
+    else:
+        # Self-centered hostile areas are real hostile spells, but the cursor is forced to the
+        # caster. Restore the personal/self profile so a prior aimed M/0x3E profile cannot leak
+        # through when the Bible wording changes from a line/cone/placed sphere to a radius.
+        targeting_values.update({
+            "Range": "P",
+            "TargetType": "0x01",
             "HostileSetting": "1",
         })
     return targeting_values, True
@@ -716,7 +727,15 @@ def update_spell_targeting(spell_updates):
             continue
 
         new_line = lines[row_line[row_number]]
-        for header in ("TargetShape", "TargetSizeX", "TargetSizeY", "TargetFlags"):
+        for header in (
+            "Range",
+            "TargetType",
+            "HostileSetting",
+            "TargetShape",
+            "TargetSizeX",
+            "TargetSizeY",
+            "TargetFlags",
+        ):
             new_line = replace_2da_token(new_line, tokens_by_header(new_line.split(), headers, header), "****")
         if lines[row_line[row_number]] != new_line:
             lines[row_line[row_number]] = new_line
@@ -2493,11 +2512,12 @@ def profile_property_lines(row, level, primary_status):
         add_profile_property("TemporaryAvoidedAttackNextAutoAttackNoDelaySkillType", skill_type_expression(row))
         add_profile_property("TemporaryAvoidedAttackNextAutoAttackNoDelayDurationSeconds", "30")
         add_profile_property("TemporaryDefeatedEnemyEffectDurationSeconds", str(parse_duration(description) or 45))
-    if "ranged hits add Suppression stacks" in description or base == "Kill Box":
+    if "ranged hits add Suppression stacks" in description and base != "Kill Box":
         add_profile_property(
             "TemporaryRangedHitSuppressionStackDurationSeconds",
             str(parse_count(r"stacks lasting (\d+) seconds", description) or 30))
         add_profile_property("TemporaryRangedHitSuppressionStackEvasionPenaltyPercent", "0")
+    if "ranged hits add Suppression stacks" in description or base == "Kill Box":
         add_profile_property(
             "TemporarySuppressionStackEvasionPenaltyPercentAdjustment",
             parse_count(r"additional (\d+)%", description) or 0)

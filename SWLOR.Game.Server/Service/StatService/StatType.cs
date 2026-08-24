@@ -6021,6 +6021,24 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         QueuedWeaponAbilityCriticalDamagePercentAdjustment = 1041,
 
+        /// <summary>
+        /// Idle-time damage captured when a queued weapon ability is activated.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        QueuedWeaponAbilityIdleDamageBonus = 1042,
+
+        /// <summary>
+        /// Idle-time Accuracy captured when a queued weapon ability is activated.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        QueuedWeaponAbilityIdleHitChancePercentAdjustment = 1043,
+
+        /// <summary>
+        /// Idle-time Critical Damage captured when a queued weapon ability is activated.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        QueuedWeaponAbilityIdleCriticalDamagePercentAdjustment = 1044,
+
     }
 
     public class StatTypeAttribute : Attribute

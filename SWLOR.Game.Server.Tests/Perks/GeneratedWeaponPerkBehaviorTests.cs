@@ -313,7 +313,7 @@ public class GeneratedWeaponPerkBehaviorTests
         var usePerkFeatSource = File.ReadAllText(Path.Combine(
             root.FullName, "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs"));
         usePerkFeatSource.Should().Contain("ability.ActivationAction.Invoke(");
-        usePerkFeatSource.Should().Contain("ClearQueuedWeaponAbilityActivationCriticalRateBonus");
+        usePerkFeatSource.Should().Contain("ClearQueuedWeaponAbilityActivationBonuses");
     }
 
     [Test]

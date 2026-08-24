@@ -6126,11 +6126,6 @@ namespace SWLOR.Game.Server.Service
                          .OfType<IRangedHitSuppressionSource>()
                          .Where(effect => GetIsObjectValid(effect.Source)))
             {
-                // The caster already receives the normal ranged-hit rider from the temporary
-                // Kill Box activation stats. Do not double-apply a stack for that same hit.
-                if (killBox.Source == attacker)
-                    continue;
-
                 var suppressionPenalty = killBox.SuppressionPenaltyPercent;
                 if (suppressionPenalty <= 0)
                 {
@@ -8869,8 +8864,71 @@ namespace SWLOR.Game.Server.Service
                 StatType.QueuedWeaponAbilityActivationCriticalRateSkillType);
         }
 
-        public static void ClearQueuedWeaponAbilityActivationCriticalRateBonus(uint creature)
+        public static void StoreQueuedWeaponAbilityActivationIdleBonuses(uint creature, SkillType skillType)
         {
+            if (!GetIsObjectValid(creature) || skillType == SkillType.Invalid)
+                return;
+
+            var idleBonuses = GetIdleSkillAbilityBonuses(creature, skillType);
+            if (idleBonuses == default)
+                return;
+
+            TemporaryStatModifier.Replace(
+                creature,
+                StatType.QueuedWeaponAbilityActivationCriticalRateSkillType,
+                (int)skillType,
+                30,
+                StatType.QueuedWeaponAbilityActivationCriticalRateSkillType);
+            TemporaryStatModifier.Replace(
+                creature,
+                StatType.QueuedWeaponAbilityIdleDamageBonus,
+                idleBonuses.DamageBonus,
+                30,
+                StatType.QueuedWeaponAbilityActivationCriticalRateSkillType);
+            TemporaryStatModifier.Replace(
+                creature,
+                StatType.QueuedWeaponAbilityIdleHitChancePercentAdjustment,
+                idleBonuses.HitChancePercentAdjustment,
+                30,
+                StatType.QueuedWeaponAbilityActivationCriticalRateSkillType);
+            TemporaryStatModifier.Replace(
+                creature,
+                StatType.QueuedWeaponAbilityIdleCriticalDamagePercentAdjustment,
+                idleBonuses.CriticalDamagePercentAdjustment,
+                30,
+                StatType.QueuedWeaponAbilityActivationCriticalRateSkillType);
+        }
+
+        public static int GetQueuedWeaponAbilityActivationHitChanceAdjustment(
+            uint creature,
+            SkillType skillType)
+        {
+            var activationSkillType = GetSkillTypeFromStat(TemporaryStatModifier.GetStatAdjustment(
+                creature,
+                StatType.QueuedWeaponAbilityActivationCriticalRateSkillType,
+                StatType.QueuedWeaponAbilityActivationCriticalRateSkillType));
+            return SkillTypeMatches(skillType, activationSkillType)
+                ? TemporaryStatModifier.GetStatAdjustment(
+                    creature,
+                    StatType.QueuedWeaponAbilityIdleHitChancePercentAdjustment,
+                    StatType.QueuedWeaponAbilityActivationCriticalRateSkillType)
+                : 0;
+        }
+
+        public static void ClearQueuedWeaponAbilityActivationBonuses(uint creature)
+        {
+            TemporaryStatModifier.Consume(
+                creature,
+                StatType.QueuedWeaponAbilityIdleDamageBonus,
+                StatType.QueuedWeaponAbilityActivationCriticalRateSkillType);
+            TemporaryStatModifier.Consume(
+                creature,
+                StatType.QueuedWeaponAbilityIdleHitChancePercentAdjustment,
+                StatType.QueuedWeaponAbilityActivationCriticalRateSkillType);
+            TemporaryStatModifier.Consume(
+                creature,
+                StatType.QueuedWeaponAbilityIdleCriticalDamagePercentAdjustment,
+                StatType.QueuedWeaponAbilityActivationCriticalRateSkillType);
             TemporaryStatModifier.Consume(
                 creature,
                 StatType.QueuedWeaponAbilityActivationCriticalRatePercentAdjustment,
@@ -8921,9 +8979,21 @@ namespace SWLOR.Game.Server.Service
                 StatType.QueuedWeaponAbilityActivationCriticalRateSkillType));
             if (SkillTypeMatches(skillType, activationSkillType))
             {
+                damageBonus += TemporaryStatModifier.Consume(
+                    creature,
+                    StatType.QueuedWeaponAbilityIdleDamageBonus,
+                    StatType.QueuedWeaponAbilityActivationCriticalRateSkillType);
                 criticalRate += TemporaryStatModifier.Consume(
                     creature,
                     StatType.QueuedWeaponAbilityActivationCriticalRatePercentAdjustment,
+                    StatType.QueuedWeaponAbilityActivationCriticalRateSkillType);
+                TemporaryStatModifier.Consume(
+                    creature,
+                    StatType.QueuedWeaponAbilityIdleHitChancePercentAdjustment,
+                    StatType.QueuedWeaponAbilityActivationCriticalRateSkillType);
+                criticalDamage += TemporaryStatModifier.Consume(
+                    creature,
+                    StatType.QueuedWeaponAbilityIdleCriticalDamagePercentAdjustment,
                     StatType.QueuedWeaponAbilityActivationCriticalRateSkillType);
                 TemporaryStatModifier.Consume(
                     creature,

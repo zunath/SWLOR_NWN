@@ -488,6 +488,25 @@ public class CombatDamageTests
         abilitySource.Should().Contain("Combat.ConsumeQueuedWeaponAbilityBonuses(activator, abilitySkillType)");
         abilitySource.Should().Contain("queuedWeaponBonuses.DamageBonus");
         abilitySource.Should().Contain("queuedWeaponBonuses.CriticalDamagePercentAdjustment");
+
+        var weaponAbilityBaseSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "WeaponActiveAbilityDefinitionBase.cs"));
+        weaponAbilityBaseSource.Should().Contain(
+            "Combat.StoreQueuedWeaponAbilityActivationIdleBonuses(activator, skillType);");
+        combatSource.Should().Contain("public static void StoreQueuedWeaponAbilityActivationIdleBonuses(");
+        combatSource.Should().Contain("QueuedWeaponAbilityIdleDamageBonus");
+        combatSource.Should().Contain("QueuedWeaponAbilityIdleCriticalDamagePercentAdjustment");
+        var queuedAccuracyIndex = attackRollSource.IndexOf(
+            "Combat.GetQueuedWeaponAbilityActivationHitChanceAdjustment(",
+            StringComparison.Ordinal);
+        var hitRateIndex = attackRollSource.IndexOf("Combat.CalculateHitRate(", StringComparison.Ordinal);
+        queuedAccuracyIndex.Should().BeGreaterThanOrEqualTo(0);
+        queuedAccuracyIndex.Should().BeLessThan(hitRateIndex,
+            "Patience Accuracy must affect the native roll that lands a queued Headshot");
     }
 
     [Test]

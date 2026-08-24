@@ -46,7 +46,7 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
         self.assertNotIn("CriticalRatePercentAdjustment", properties)
         self.assertNotIn("SelfCriticalRatePercent", properties)
 
-    def test_kill_box_generates_placed_status_and_suppression_window(self):
+    def test_kill_box_generates_source_owned_status_without_global_hit_rider(self):
         row = {
             "Tab": "Rifle",
             "PerkName": "Kill Box",
@@ -64,7 +64,8 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
         properties = dict(GENERATOR.profile_property_lines(row, 1, None))
 
         self.assertEqual("() => new KillBoxStatusEffect()", properties["StatusEffectFactory"])
-        self.assertEqual("30", properties["TemporaryRangedHitSuppressionStackDurationSeconds"])
+        self.assertNotIn("TemporaryRangedHitSuppressionStackDurationSeconds", properties)
+        self.assertNotIn("TemporaryRangedHitSuppressionStackEvasionPenaltyPercent", properties)
         self.assertEqual(3, properties["TemporarySuppressionStackEvasionPenaltyPercentAdjustment"])
         self.assertEqual("45", properties["TemporaryDefeatedEnemyEffectDurationSeconds"])
 
@@ -204,6 +205,9 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
         self.assertEqual("5", area_values["TargetSizeX"])
         self.assertEqual(
             {
+                "Range": "****",
+                "TargetType": "****",
+                "HostileSetting": "****",
                 "TargetShape": "****",
                 "TargetSizeX": "****",
                 "TargetSizeY": "****",
@@ -213,6 +217,29 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
         self.assertFalse(owns_single_target)
         self.assertIsNone(repeated_values)
         self.assertFalse(remains_unowned)
+
+    def test_aimed_area_to_self_centered_area_clears_owned_cursor_profile(self):
+        aimed_row = {
+            "Tab": "Pistol",
+            "Description": "Deals damage in an 8m x 2m line.",
+        }
+        self_centered_row = {
+            "Tab": "Pistol",
+            "Description": "Deals damage to enemies within 4m.",
+        }
+
+        aimed_values, owns_targeting = GENERATOR.generated_targeting_update(aimed_row, False)
+        self_centered_values, remains_owned = GENERATOR.generated_targeting_update(
+            self_centered_row,
+            owns_targeting)
+
+        self.assertEqual("M", aimed_values["Range"])
+        self.assertEqual("0x3E", aimed_values["TargetType"])
+        self.assertEqual("1", aimed_values["HostileSetting"])
+        self.assertEqual("P", self_centered_values["Range"])
+        self.assertEqual("0x01", self_centered_values["TargetType"])
+        self.assertEqual("1", self_centered_values["HostileSetting"])
+        self.assertTrue(remains_owned)
 
     def test_non_area_row_preserves_targeting_that_the_generator_does_not_own(self):
         row = {
@@ -232,8 +259,8 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
             spells_path.parent.mkdir(parents=True)
             spells_path.write_text(
                 "2DA V2.0\n\n"
-                "Label TargetShape TargetSizeX TargetSizeY TargetFlags\n"
-                "123 Owned sphere 5 2 17\n")
+                "Label Range TargetType HostileSetting TargetShape TargetSizeX TargetSizeY TargetFlags\n"
+                "123 Owned M 0x3E 1 sphere 5 2 17\n")
             ownership_path = temporary_root / "tools" / "GeneratedWeaponSpellTargeting.json"
             ownership_path.parent.mkdir(parents=True)
             ownership_path.write_text(json.dumps({"spell_ids": [123]}))
@@ -253,6 +280,9 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
             self.assertEqual("****", row["TargetSizeX"])
             self.assertEqual("****", row["TargetSizeY"])
             self.assertEqual("****", row["TargetFlags"])
+            self.assertEqual("****", row["Range"])
+            self.assertEqual("****", row["TargetType"])
+            self.assertEqual("****", row["HostileSetting"])
             self.assertEqual({"spell_ids": []}, json.loads(ownership_path.read_text()))
 
 

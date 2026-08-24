@@ -291,7 +291,7 @@ namespace SWLOR.Game.Server.Feature
             {
                 if (Ability.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
                 {
-                    Combat.ClearQueuedWeaponAbilityActivationCriticalRateBonus(activator);
+                    Combat.ClearQueuedWeaponAbilityActivationBonuses(activator);
                     var executeQueue = ability.ActivationAction == null ||
                                        ability.ActivationAction.Invoke(
                                            activator,
@@ -1054,7 +1054,7 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="player">The player to clear</param>
         private static void ClearQueuedAbility(uint player)
         {
-            Combat.ClearQueuedWeaponAbilityActivationCriticalRateBonus(player);
+            Combat.ClearQueuedWeaponAbilityActivationBonuses(player);
             var featType = (FeatType)GetLocalInt(player, ActiveAbilityFeatIdName);
             if (Ability.IsFeatRegistered(featType))
             {

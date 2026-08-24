@@ -588,7 +588,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             public void PrepareQueuedActivation(uint activator, SkillType skillType)
             {
-                if (IsQueuedWeaponAbility && CriticalRateIfIdle > 0 && IsIdle(activator))
+                if (!IsQueuedWeaponAbility)
+                    return;
+
+                Combat.StoreQueuedWeaponAbilityActivationIdleBonuses(activator, skillType);
+                if (CriticalRateIfIdle > 0 && IsIdle(activator))
                 {
                     Combat.StoreQueuedWeaponAbilityActivationCriticalRateBonus(
                         activator,

@@ -234,7 +234,10 @@ namespace SWLOR.Game.Server.Native
                 var attackRoll = Random.D100(1);
                 var hitChanceModifier =
                     Combat.GetSideAttackHitChanceAdjustment(attacker.m_idSelf, defender.m_idSelf, weaponSkillType) +
-                    Combat.GetHitChanceAgainstSunderedTargetAdjustment(attacker.m_idSelf, defender.m_idSelf);
+                    Combat.GetHitChanceAgainstSunderedTargetAdjustment(attacker.m_idSelf, defender.m_idSelf) +
+                    Combat.GetQueuedWeaponAbilityActivationHitChanceAdjustment(
+                        attacker.m_idSelf,
+                        weaponSkillType);
                 var hitRate = Combat.CalculateHitRate(
                     attackerAccuracy + accuracyModifiers,
                     defenderEvasion,

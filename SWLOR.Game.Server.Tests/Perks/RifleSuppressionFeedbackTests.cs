@@ -59,6 +59,7 @@ public sealed class RifleSuppressionFeedbackTests
         combat.Should().Contain("RefreshOverwatchMarker(attacker, DateTime.UtcNow);");
         combat.Should().Contain("OfType<IRangedHitSuppressionSource>()");
         combat.Should().NotContain("OfType<KillBoxStatusEffect>()");
+        combat.Should().NotContain("if (killBox.Source == attacker)");
         var suppressionStatus = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "SuppressionStatusEffect.cs"));
         var statusEffectService = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "StatusEffect.cs"));
         suppressionStatus.Should().Contain("IStatusEffectRemovedHandler");
@@ -69,6 +70,8 @@ public sealed class RifleSuppressionFeedbackTests
         killBox.Should().Contain("8.0f");
         killBox.Should().Contain("AbilityTargetingFlags.HarmsEnemies");
         killBox.Should().NotContain("OriginOnSelf");
+        killBox.Should().NotContain("TemporaryRangedHitSuppressionStackDurationSeconds");
+        killBox.Should().NotContain("TemporaryRangedHitSuppressionStackEvasionPenaltyPercent");
         native.Should().Contain("ConsumeSuppressionRangedAttackAccuracyAdjustment");
     }
 

@@ -208,9 +208,10 @@ public class CrossSkillPerkInteractionSafetyTests
 
         var damageEffects = ExtractMethod(combat, "public static void ApplyDamageDealtEffects(");
         damageEffects.Should().Contain("bool isAbilityDamage = false");
-        damageEffects.Should().Contain("if (isAbilityDamage)");
-        damageEffects.Should().Contain("ApplyPredatorsMarkEffects(attacker, defender, skillType);");
-        damageEffects.Should().Contain("else");
+        damageEffects.Should().Contain(
+            "ApplyPredatorsMarkEffects(attacker, defender, isAbilityDamage);",
+            "marked targets must grant Predator's Mark II stacks from both abilities and ordinary attacks");
+        damageEffects.Should().Contain("if (!isAbilityDamage)");
         damageEffects.Should().Contain(
             "ApplyAutoAttackSuppressionStack(attacker, defender, skillType, damageType);");
         damageEffects.Should().Contain(

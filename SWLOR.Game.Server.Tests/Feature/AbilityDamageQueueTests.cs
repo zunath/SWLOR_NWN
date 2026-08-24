@@ -134,6 +134,36 @@ public class AbilityDamageQueueTests
     }
 
     [Test]
+    public void QueuedWeaponAbilities_AreRevalidatedBeforeAttackAndImpact()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "UsePerkFeat.cs")).Replace("\r\n", "\n");
+        var queuedLookupBody = source.Substring(
+            source.IndexOf("public static bool TryGetQueuedWeaponAbility(uint activator, out AbilityDetail ability)", StringComparison.Ordinal),
+            source.IndexOf("private static List<string> DisplayActivationTargetingTelegraphs", StringComparison.Ordinal) -
+            source.IndexOf("public static bool TryGetQueuedWeaponAbility(uint activator, out AbilityDetail ability)", StringComparison.Ordinal));
+        var queuedImpactBody = source.Substring(
+            source.IndexOf("public static void ProcessQueuedWeaponAbility()", StringComparison.Ordinal),
+            source.IndexOf("/// Whenever a player enters the server", StringComparison.Ordinal) -
+            source.IndexOf("public static void ProcessQueuedWeaponAbility()", StringComparison.Ordinal));
+
+        queuedLookupBody.Should().Contain("IsQueuedWeaponAbilityStillAvailable(activator, activeWeaponAbility, ability)");
+        queuedLookupBody.Should().Contain("GetHasFeat(feat, activator)");
+        queuedLookupBody.Should().Contain("Perk.GetPerkLevel(activator, ability.EffectiveLevelPerkType)");
+        queuedLookupBody.Should().Contain("ability.AbilityLevel > effectivePerkLevel");
+        queuedLookupBody.Should().Contain("Perk.ShouldEnforceActiveAbilityFeatReplacement(");
+        queuedLookupBody.Should().Contain("Perk.IsCurrentActiveAbilityFeat(");
+        queuedLookupBody.Should().Contain("ClearQueuedAbility(activator);");
+        queuedImpactBody.Should().Contain("if (!TryGetQueuedWeaponAbility(activator, out var abilityDetail))");
+        queuedImpactBody.IndexOf("TryGetQueuedWeaponAbility", StringComparison.Ordinal)
+            .Should().BeLessThan(queuedImpactBody.IndexOf("Ability.BeginAbilityImpact", StringComparison.Ordinal));
+    }
+
+    [Test]
     public void TwinFangFlurryTriggeredDamageDuringTrackedAbilityImpact_QueuesWithAbilityDamageEffects()
     {
         var root = FindRepositoryRoot();

@@ -17,6 +17,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
         public override StatusEffectStackType StackingType => StatusEffectStackType.StackFromMultipleSources;
         public override bool PersistsOnLogout => false;
+        public override bool SendsApplicationMessage => false;
 
         public int DamageAdjustmentPercent { get; }
 

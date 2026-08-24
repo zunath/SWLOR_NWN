@@ -610,9 +610,26 @@ def read_generated_targeting_spell_ids():
     return {str(spell_id) for spell_id in spell_ids}
 
 
-def write_generated_targeting_spell_ids(spell_ids):
+def read_generated_queued_targeting_spell_ids():
+    if not GENERATED_TARGETING_OWNERSHIP.exists():
+        return set()
+
+    payload = json.loads(GENERATED_TARGETING_OWNERSHIP.read_text())
+    spell_ids = payload.get("queued_spell_ids", [])
+    if not isinstance(spell_ids, list) or any(not str(spell_id).isdigit() for spell_id in spell_ids):
+        raise RuntimeError(f"Invalid generated queued targeting ownership file: {GENERATED_TARGETING_OWNERSHIP}")
+    return {str(spell_id) for spell_id in spell_ids}
+
+
+def write_generated_targeting_spell_ids(spell_ids, queued_spell_ids):
     ordered_spell_ids = sorted({int(spell_id) for spell_id in spell_ids})
-    rendered = json.dumps({"spell_ids": ordered_spell_ids}, indent=2) + "\n"
+    ordered_queued_spell_ids = sorted({int(spell_id) for spell_id in queued_spell_ids})
+    if not set(ordered_queued_spell_ids).issubset(ordered_spell_ids):
+        raise RuntimeError("Queued targeting ownership must be a subset of all targeting ownership")
+    rendered = json.dumps({
+        "spell_ids": ordered_spell_ids,
+        "queued_spell_ids": ordered_queued_spell_ids,
+    }, indent=2) + "\n"
     if not GENERATED_TARGETING_OWNERSHIP.exists() or GENERATED_TARGETING_OWNERSHIP.read_text() != rendered:
         GENERATED_TARGETING_OWNERSHIP.write_text(rendered)
 
@@ -621,7 +638,7 @@ def is_queued_weapon_active(row):
     return row.get("CastingTime", "").strip().lower() == "queued"
 
 
-def generated_targeting_update(row, was_generator_owned):
+def generated_targeting_update(row, was_generator_owned, was_queued_owned=False):
     targeting_values = {}
     generated_targeting_fields = ("Range", "TargetType", "HostileSetting")
     is_queued = is_queued_weapon_active(row)
@@ -636,12 +653,24 @@ def generated_targeting_update(row, was_generator_owned):
 
     inferred = infer_targeting_from_description(row)
     if not inferred:
+        if is_queued:
+            # Queued weapon abilities own their non-targeted cursor/hostility profile.
+            # Range is deliberately preserved because existing queued feats use both
+            # personal and medium spell ranges while TARGETSELF controls activation.
+            targeting_values.update({
+                "TargetShape": "****",
+                "TargetSizeX": "****",
+                "TargetSizeY": "****",
+                "TargetFlags": "****",
+            })
+            return targeting_values, True
         if not was_generator_owned:
-            return (targeting_values or None), False
-        # A queued self activation is not generator-owned targeting, but its
-        # non-hostile/self-compatible spell fields are still canonical. Preserve those fields
-        # when cleaning up targeting that the generator owned on a prior pass.
-        fields_to_clear = ("Range",) if is_queued else generated_targeting_fields
+            return None, False
+        fields_to_clear = (
+            ("TargetType", "HostileSetting")
+            if was_queued_owned
+            else generated_targeting_fields
+        )
         targeting_values.update({header: "****" for header in fields_to_clear})
         targeting_values.update({
             "TargetShape": "****",
@@ -704,7 +733,9 @@ def update_spell_targeting(spell_updates):
             row_line[int(tokens[0])] = line_index
 
     previously_owned_spell_ids = read_generated_targeting_spell_ids()
+    previously_queued_spell_ids = read_generated_queued_targeting_spell_ids()
     currently_owned_spell_ids = set()
+    currently_queued_spell_ids = set()
     processed_spell_ids = set()
     changed = False
     for spell_id, row in spell_updates.items():
@@ -714,9 +745,12 @@ def update_spell_targeting(spell_updates):
         processed_spell_ids.add(spell_id)
         targeting_values, remains_generator_owned = generated_targeting_update(
             row,
-            spell_id in previously_owned_spell_ids)
+            spell_id in previously_owned_spell_ids,
+            spell_id in previously_queued_spell_ids)
         if remains_generator_owned:
             currently_owned_spell_ids.add(spell_id)
+            if is_queued_weapon_active(row):
+                currently_queued_spell_ids.add(spell_id)
         if targeting_values is None:
             continue
 
@@ -735,10 +769,12 @@ def update_spell_targeting(spell_updates):
             continue
 
         new_line = lines[row_line[row_number]]
-        for header in (
-            "Range",
-            "TargetType",
-            "HostileSetting",
+        fields_to_clear = (
+            ("TargetType", "HostileSetting")
+            if spell_id in previously_queued_spell_ids
+            else ("Range", "TargetType", "HostileSetting")
+        )
+        for header in fields_to_clear + (
             "TargetShape",
             "TargetSizeX",
             "TargetSizeY",
@@ -751,7 +787,7 @@ def update_spell_targeting(spell_updates):
 
     if changed:
         spells_path.write_text("\n".join(lines) + "\n")
-    write_generated_targeting_spell_ids(currently_owned_spell_ids)
+    write_generated_targeting_spell_ids(currently_owned_spell_ids, currently_queued_spell_ids)
 
 
 def active_feat_name(row, feat_values):

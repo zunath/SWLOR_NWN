@@ -805,16 +805,45 @@ namespace SWLOR.Game.Server.Feature
             var activeWeaponAbility = (FeatType)GetLocalInt(activator, ActiveAbilityFeatIdName);
             if (!Ability.IsFeatRegistered(activeWeaponAbility))
             {
+                ClearQueuedAbility(activator);
                 ability = null;
                 return false;
             }
 
             ability = Ability.GetAbilityDetail(activeWeaponAbility);
-            if (ability.ActivationType == AbilityActivationType.Weapon)
+            if (ability.ActivationType == AbilityActivationType.Weapon &&
+                IsQueuedWeaponAbilityStillAvailable(activator, activeWeaponAbility, ability))
+            {
                 return true;
+            }
 
+            ClearQueuedAbility(activator);
             ability = null;
             return false;
+        }
+
+        private static bool IsQueuedWeaponAbilityStillAvailable(
+            uint activator,
+            FeatType feat,
+            AbilityDetail ability)
+        {
+            if (!GetHasFeat(feat, activator))
+                return false;
+
+            var effectivePerkLevel =
+                ability.EffectiveLevelPerkType == PerkType.Invalid
+                    ? 1
+                    : Perk.GetPerkLevel(activator, ability.EffectiveLevelPerkType);
+            if (effectivePerkLevel <= 0 || ability.AbilityLevel > effectivePerkLevel)
+                return false;
+
+            return !Perk.ShouldEnforceActiveAbilityFeatReplacement(
+                       activator,
+                       ability.EffectiveLevelPerkType) ||
+                   Perk.IsCurrentActiveAbilityFeat(
+                       feat,
+                       ability.EffectiveLevelPerkType,
+                       effectivePerkLevel);
         }
 
         private static List<string> DisplayActivationTargetingTelegraphs(
@@ -992,16 +1021,12 @@ namespace SWLOR.Game.Server.Feature
             // If this method was triggered by our own armor (from getting hit), return.
             if (GetBaseItemType(item) == BaseItem.Armor) return;
 
-            var activeWeaponAbility = (FeatType)GetLocalInt(activator, ActiveAbilityFeatIdName);
             var activeAbilityEffectivePerkLevel = GetLocalInt(activator, ActiveAbilityEffectivePerkLevelName);
 
-            if (!Ability.IsFeatRegistered(activeWeaponAbility))
-            {
-                ClearQueuedAbility(activator);
+            if (!TryGetQueuedWeaponAbility(activator, out var abilityDetail))
                 return;
-            }
 
-            var abilityDetail = Ability.GetAbilityDetail(activeWeaponAbility);
+            var activeWeaponAbility = (FeatType)GetLocalInt(activator, ActiveAbilityFeatIdName);
             if (!Combat.CanItemTriggerWeaponAbility(item, abilityDetail.SkillType))
                 return;
 

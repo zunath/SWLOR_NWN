@@ -29,6 +29,7 @@ public sealed class RifleSuppressionFeedbackTests
         new ContainmentNetStatusEffect(-10).DamageAdjustmentPercent.Should().Be(-10);
         new ContainmentNetStatusEffect(-10).StackingType.Should().Be(StatusEffectStackType.StackFromMultipleSources);
         new ContainmentNetStatusEffect(-10).Should().BeAssignableTo<IRemoveWhenSourceExits>();
+        new ContainmentNetStatusEffect(-10).SendsApplicationMessage.Should().BeFalse();
         new ContainmentNetStatusEffect(-10).StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(-10);
         new SuppressionStatusEffect().Should().BeAssignableTo<IRemoveWhenSourceExits>();
         new SustainedFireStatusEffect(3, 5, 9).Stacks.Should().Be(3);
@@ -54,7 +55,7 @@ public sealed class RifleSuppressionFeedbackTests
         combat.Should().Contain("Sustained Fire {state.Stacks}/{maxStacks}");
         combat.Should().Contain("Pinning Fire: Suppression applied.");
         combat.Should().Contain("new OverwatchStatusEffect()");
-        combat.Should().Contain("new ContainmentNetStatusEffect(adjustment)");
+        combat.Should().Contain("new ContainmentNetStatusEffect(desired.Value)");
         combat.Should().Contain("new SustainedFireStatusEffect(state.Stacks, maxStacks, stackBonus)");
         combat.Should().NotContain("GetSuppressionDamageDealtToOtherTargetsAdjustment");
         combat.Should().Contain("SuppressionStackDamageDealtRequiredStacks");
@@ -85,6 +86,9 @@ public sealed class RifleSuppressionFeedbackTests
         combat.Should().Contain("killBox.SuppressionEvasionPenaltyAdjustment");
         combat.Should().Contain("ReconcileContainmentNetStatuses(target);");
         combat.Should().Contain("OrderBy(source => source)");
+        combat.Should().Contain("existing[0].DamageAdjustmentPercent == desired.Value");
+        combat.Should().Contain("continue;");
+        combat.Should().NotContain("new ContainmentNetStatusEffect(adjustment)");
         combat.Should().Contain("int evasionPenaltyAdjustment = 0");
         combat.Should().Contain("Stat.GetStatAdjustment(");
         combat.Should().NotContain("OfType<KillBoxStatusEffect>()");

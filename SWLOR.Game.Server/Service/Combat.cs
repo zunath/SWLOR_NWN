@@ -6227,23 +6227,9 @@ namespace SWLOR.Game.Server.Service
 
         public static void ReconcileContainmentNetStatus(uint source, uint target)
         {
-            if (!GetIsObjectValid(source) || !GetIsObjectValid(target))
+            if (!GetIsObjectValid(target))
                 return;
 
-            var requiredStacks = Stat.GetStatAdjustment(source, StatType.SuppressionStackDamageDealtRequiredStacks);
-            var adjustment = Stat.GetStatAdjustment(source, StatType.SuppressionStackDamageDealtPercentAdjustment);
-            if (!ContainmentNetStatusEffect.ShouldRemainActive(
-                    GetSuppressionStackCount(target, source),
-                    requiredStacks,
-                    adjustment))
-            {
-                StatusEffect.RemoveStatusEffect(target, typeof(ContainmentNetStatusEffect), source, false);
-                ReconcileContainmentNetStatuses(target);
-                return;
-            }
-
-            StatusEffect.RemoveStatusEffect(target, typeof(ContainmentNetStatusEffect), source, false);
-            StatusEffect.ApplyStatusEffect(source, target, new ContainmentNetStatusEffect(adjustment), -1f);
             ReconcileContainmentNetStatuses(target);
         }
 
@@ -6254,44 +6240,81 @@ namespace SWLOR.Game.Server.Service
 
             try
             {
-                var allSources = StatusEffect.GetCreatureStatusEffects(target)
+                var allEffects = StatusEffect.GetCreatureStatusEffects(target)
                     .GetAllEffects()
-                    .OfType<ContainmentNetStatusEffect>()
-                    .Select(effect => effect.Source)
-                    .Distinct()
                     .ToList();
-                foreach (var source in allSources.Where(source => !GetIsObjectValid(source)))
-                    StatusEffect.RemoveStatusEffect(target, typeof(ContainmentNetStatusEffect), source, false);
-
-                var sources = allSources
+                var existingEffects = allEffects
+                    .OfType<ContainmentNetStatusEffect>()
+                    .ToList();
+                var suppressionEffects = allEffects
+                    .OfType<SuppressionStatusEffect>()
+                    .ToList();
+                var sources = suppressionEffects
+                    .Select(effect => effect.Source)
+                    .Concat(existingEffects.Select(effect => effect.Source))
+                    .Distinct()
                     .Where(GetIsObjectValid)
                     .OrderBy(source => source)
                     .ToList();
 
-                foreach (var source in sources)
-                    StatusEffect.RemoveStatusEffect(target, typeof(ContainmentNetStatusEffect), source, false);
-
                 var remainingPenaltyPercent = ContainmentNetStatusEffect.MaximumDamagePenaltyPercent;
+                var desiredAdjustments = new Dictionary<uint, int>();
                 foreach (var source in sources)
                 {
                     var requiredStacks = Stat.GetStatAdjustment(source, StatType.SuppressionStackDamageDealtRequiredStacks);
                     var adjustment = Stat.GetStatAdjustment(source, StatType.SuppressionStackDamageDealtPercentAdjustment);
                     if (!ContainmentNetStatusEffect.ShouldRemainActive(
-                            GetSuppressionStackCount(target, source),
+                            suppressionEffects.Count(effect => effect.Source == source),
                             requiredStacks,
                             adjustment))
                         continue;
 
-                    var cappedAdjustment = ContainmentNetStatusEffect.GetCappedDamageAdjustment(
+                    var desiredAdjustment = ContainmentNetStatusEffect.GetCappedDamageAdjustment(
                         adjustment,
                         remainingPenaltyPercent);
+                    desiredAdjustments[source] = desiredAdjustment;
+                    if (desiredAdjustment < 0)
+                        remainingPenaltyPercent = Math.Max(0, remainingPenaltyPercent + desiredAdjustment);
+                }
+
+                var hadInvalidSource = existingEffects.Any(effect => !GetIsObjectValid(effect.Source));
+                if (hadInvalidSource)
+                {
+                    StatusEffect.RemoveStatusEffect(target, typeof(ContainmentNetStatusEffect), false);
+                    existingEffects.Clear();
+                }
+
+                var existingEffectsBySource = existingEffects
+                    .GroupBy(effect => effect.Source)
+                    .ToDictionary(group => group.Key, group => group.ToList());
+                foreach (var existing in existingEffectsBySource)
+                {
+                    if (!desiredAdjustments.TryGetValue(existing.Key, out var desiredAdjustment) ||
+                        existing.Value.Count != 1 ||
+                        existing.Value[0].DamageAdjustmentPercent != desiredAdjustment)
+                    {
+                        StatusEffect.RemoveStatusEffect(
+                            target,
+                            typeof(ContainmentNetStatusEffect),
+                            existing.Key,
+                            false);
+                    }
+                }
+
+                foreach (var desired in desiredAdjustments)
+                {
+                    if (existingEffectsBySource.TryGetValue(desired.Key, out var existing) &&
+                        existing.Count == 1 &&
+                        existing[0].DamageAdjustmentPercent == desired.Value)
+                    {
+                        continue;
+                    }
+
                     StatusEffect.ApplyStatusEffect(
-                        source,
+                        desired.Key,
                         target,
-                        new ContainmentNetStatusEffect(cappedAdjustment),
+                        new ContainmentNetStatusEffect(desired.Value),
                         -1f);
-                    if (cappedAdjustment < 0)
-                        remainingPenaltyPercent = Math.Max(0, remainingPenaltyPercent + cappedAdjustment);
                 }
             }
             finally

@@ -173,13 +173,13 @@ public class CombatDamageTests
         var impactWeaponDamage = ExtractMethod(combatSource, "public static int GetCombatImpactWeaponDamage");
         var impactWeaponSelection = ExtractMethod(combatSource, "private static uint GetCombatImpactWeapon");
 
-        abilitySource.Should().Contain("Combat.GetCombatImpactWeaponDamage(activator, skillType)");
+        abilitySource.Should().Contain("Combat.GetCombatImpactWeaponDamage(activator, skillType");
         abilitySource.Should().Contain("effectDamageType ?? damageType.GetNWScriptDamageType()");
         abilitySource.Should().NotContain("GetNWScriptDamagePower");
         abilitySource.Should().NotContain("GetCombatImpactEffectDamagePower");
         abilitySource.Should().NotContain("private static int GetCombatImpactWeaponDamage");
         combatSource.Should().NotContain("IsWeaponForSkill");
-        impactWeaponDamage.Should().Contain("var weapon = GetCombatImpactWeapon(activator, skillType);");
+        impactWeaponDamage.Should().Contain("var weapon = GetCombatImpactWeapon(activator, skillType");
         impactWeaponSelection.Should().Contain("CanItemTriggerWeaponAbility(rightHand, skillType)");
         impactWeaponSelection.Should().Contain("CanItemTriggerWeaponAbility(leftHand, skillType)");
         damageTypeSource.Should().NotContain("GetNWScriptDamagePower");
@@ -561,6 +561,33 @@ public class CombatDamageTests
         queuedAccuracyIndex.Should().BeGreaterThanOrEqualTo(0);
         queuedAccuracyIndex.Should().BeLessThan(hitRateIndex,
             "Patience Accuracy must affect the native roll that lands a queued Headshot");
+    }
+
+    [Test]
+    public void QueuedBeastWeaponAbilities_IncludeNaturalWeaponDamage()
+    {
+        var root = FindRepositoryRoot();
+        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
+        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var playerDamage = ExtractMethod(abilitySource, "private static int CalculateCombatImpactDamage");
+        var npcDamage = ExtractMethod(abilitySource, "private static int CalculateNPCCombatImpactDamage");
+        var impactWeaponDamage = ExtractMethod(combatSource, "public static int GetCombatImpactWeaponDamage");
+        var impactWeaponSelection = ExtractMethod(combatSource, "private static uint GetCombatImpactWeapon");
+
+        foreach (var damageCalculation in new[] { playerDamage, npcDamage })
+        {
+            damageCalculation.Should().Contain(
+                "trackedImpact?.Ability?.ActivationType == AbilityActivationType.Weapon");
+            damageCalculation.Should().Contain("skillType == SkillType.BeastMastery");
+            damageCalculation.Should().Contain("!usesQueuedNaturalWeapon");
+            damageCalculation.Should().Contain(
+                "Combat.GetCombatImpactWeaponDamage(activator, skillType, usesQueuedNaturalWeapon)");
+        }
+
+        impactWeaponDamage.Should().Contain(
+            "usesQueuedNaturalWeapon && skillType == SkillType.BeastMastery");
+        impactWeaponSelection.Should().Contain(
+            "return GetCreatureNaturalWeapon(activator);");
     }
 
     [Test]

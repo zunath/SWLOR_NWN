@@ -1,10 +1,41 @@
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.AbilityService;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class AbilityDamageQueueTests
 {
+    [Test]
+    public void TrackedAbilityImpact_AddsDefenseIgnoreToTheCurrentImpact()
+    {
+        var trackedImpactType = typeof(Ability).GetNestedType(
+            "TrackedAbilityImpact",
+            System.Reflection.BindingFlags.NonPublic);
+        trackedImpactType.Should().NotBeNull();
+        var constructor = trackedImpactType!.GetConstructors().Single();
+        var trackedImpact = constructor.Invoke(new object[]
+        {
+            new AbilityDetail(),
+            0,
+            0,
+            5,
+            0,
+            0,
+            true,
+            0
+        });
+
+        trackedImpactType.GetMethod("AddDefenseIgnorePercentAdjustment")!
+            .Invoke(trackedImpact, new object[] { 25 });
+
+        trackedImpactType.GetProperty("NextAbilityDefenseIgnorePercentAdjustment")!
+            .GetValue(trackedImpact)
+            .Should()
+            .Be(30);
+    }
+
     [Test]
     public void CompletedCastedAbilities_ApplyImpactBeforeDelayedAttackResume()
     {
@@ -100,6 +131,36 @@ public class AbilityDamageQueueTests
         queuedImpactBody.Should().Contain("impactEnded = true;");
         queuedImpactBody.Should().Contain("if (!impactEnded)");
         queuedImpactBody.Should().Contain("Ability.AbortAbilityImpact(activator);");
+    }
+
+    [Test]
+    public void QueuedWeaponAbilities_AreRevalidatedBeforeAttackAndImpact()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "UsePerkFeat.cs")).Replace("\r\n", "\n");
+        var queuedLookupBody = source.Substring(
+            source.IndexOf("public static bool TryGetQueuedWeaponAbility(uint activator, out AbilityDetail ability)", StringComparison.Ordinal),
+            source.IndexOf("private static List<string> DisplayActivationTargetingTelegraphs", StringComparison.Ordinal) -
+            source.IndexOf("public static bool TryGetQueuedWeaponAbility(uint activator, out AbilityDetail ability)", StringComparison.Ordinal));
+        var queuedImpactBody = source.Substring(
+            source.IndexOf("public static void ProcessQueuedWeaponAbility()", StringComparison.Ordinal),
+            source.IndexOf("/// Whenever a player enters the server", StringComparison.Ordinal) -
+            source.IndexOf("public static void ProcessQueuedWeaponAbility()", StringComparison.Ordinal));
+
+        queuedLookupBody.Should().Contain("IsQueuedWeaponAbilityStillAvailable(activator, activeWeaponAbility, ability)");
+        queuedLookupBody.Should().Contain("GetHasFeat(feat, activator)");
+        queuedLookupBody.Should().Contain("Perk.GetPerkLevel(activator, ability.EffectiveLevelPerkType)");
+        queuedLookupBody.Should().Contain("ability.AbilityLevel > effectivePerkLevel");
+        queuedLookupBody.Should().Contain("Perk.ShouldEnforceActiveAbilityFeatReplacement(");
+        queuedLookupBody.Should().Contain("Perk.IsCurrentActiveAbilityFeat(");
+        queuedLookupBody.Should().Contain("ClearQueuedAbility(activator);");
+        queuedImpactBody.Should().Contain("if (!TryGetQueuedWeaponAbility(activator, out var abilityDetail))");
+        queuedImpactBody.IndexOf("TryGetQueuedWeaponAbility", StringComparison.Ordinal)
+            .Should().BeLessThan(queuedImpactBody.IndexOf("Ability.BeginAbilityImpact", StringComparison.Ordinal));
     }
 
     [Test]
@@ -218,6 +279,48 @@ public class AbilityDamageQueueTests
 
         combatSource.Should().Contain("state.DeferredImpactCount++;");
         combatSource.Should().Contain("state.DeferredImpactCount = Math.Max(0, state.DeferredImpactCount - 1);");
+    }
+
+    [Test]
+    public void DelayedTelegraphedImpacts_CaptureActivationIdleSnapshotsBeforeSharedCleanup()
+    {
+        var root = FindRepositoryRoot();
+        var abilitySource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Ability.cs")).Replace("\r\n", "\n");
+        var weaponAbilitySource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "WeaponActiveAbilityDefinitionBase.cs")).Replace("\r\n", "\n");
+        var telegraphedAreaBranch = weaponAbilitySource.Substring(
+            weaponAbilitySource.IndexOf("if (isArea && ShouldUseTelegraphedCombatImpact", StringComparison.Ordinal),
+            weaponAbilitySource.IndexOf("var totalDamage = 0;", StringComparison.Ordinal) -
+            weaponAbilitySource.IndexOf("if (isArea && ShouldUseTelegraphedCombatImpact", StringComparison.Ordinal));
+
+        telegraphedAreaBranch.Should().Contain("profile.GetBaseDamageAdjustment(\n                                    activator,\n                                    impactedTarget,\n                                    activationIdleBonusSnapshot)",
+            "delayed damage must read the activation's immutable snapshot rather than shared creature state");
+        telegraphedAreaBranch.Should().Contain("finally\n                        {\n                            profile.ClearActivationIdleBonusSnapshots(activator);\n                        }",
+            "shared snapshots must be cleared even if telegraph creation fails");
+        telegraphedAreaBranch.Should().Contain("clearActivationIdleBonusSnapshots: false",
+            "the post-impact hook must not repeat the cleanup performed by the guarded scheduling block");
+        abilitySource.Should().NotContain("afterDeferredCompletion",
+            "an older telegraph completion must never clear a newer activation's shared snapshots");
+
+        var hostileImpactSetup = weaponAbilitySource.Substring(
+            weaponAbilitySource.IndexOf("profile.SpendHitPoints(activator);", StringComparison.Ordinal),
+            weaponAbilitySource.IndexOf("if (isArea && ShouldUseTelegraphedCombatImpact", StringComparison.Ordinal) -
+            weaponAbilitySource.IndexOf("profile.SpendHitPoints(activator);", StringComparison.Ordinal));
+        hostileImpactSetup.Should().Contain("var activationIdleBonusSnapshot = profile.CaptureActivationIdleBonusSnapshot(activator);");
+        hostileImpactSetup.Should().Contain("Ability.AddActiveAbilityDefenseIgnorePercentAdjustment(");
+        hostileImpactSetup.Should().Contain("profile.GetDefenseIgnorePercent(activator, activationIdleBonusSnapshot)",
+            "the activation's defense-ignore snapshot must join the current tracked impact before instant or delayed damage resolves");
+        weaponAbilitySource.Should().NotContain("Combat.GrantNextSkillAbilityBonuses(activator, skillType, 0, 0, 1, defenseIgnore)",
+            "granting a next-ability rider after BeginAbilityImpact would leak defense ignore to a later ability");
+        abilitySource.Should().Contain("NextAbilityDefenseIgnorePercentAdjustment += adjustment;");
     }
 
     private static DirectoryInfo FindRepositoryRoot()

@@ -539,6 +539,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                         CostWaitSeconds,
                         $"recast group {ability.RecastGroup} to be on cooldown");
                 }
+
+                if (behaviorCase.VerifiesImmediateRecastRejection)
+                {
+                    await AssertImmediateRecastRejectionAsync(ctx, behaviorCase, ability, caster, target);
+                }
             }
             finally
             {
@@ -548,6 +553,58 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     DestroyCaseActor(target);
                 DestroyCaseActor(caster);
             }
+        }
+
+        private static async Task AssertImmediateRecastRejectionAsync(
+            EngineTestContext ctx,
+            AbilityBehaviorCase behaviorCase,
+            AbilityDetail ability,
+            uint caster,
+            uint target)
+        {
+            // Restore both pools so the second attempt can only fail because the shared
+            // recast is still active, not because the first activation consumed a resource.
+            ctx.SetNPCResources(caster, ResourcePool, ResourcePool);
+
+            var attempted = false;
+            var used = false;
+            var denial = string.Empty;
+            Exception error = null;
+            AssignCommand(caster, () =>
+            {
+                attempted = true;
+                try
+                {
+                    used = UsePerkFeat.TryUseAbility(caster, target, behaviorCase.Feat, GetLocation(target));
+                    if (!used)
+                        denial = Ability.GetLastActivationDenialReason();
+                }
+                catch (Exception ex)
+                {
+                    error = ex;
+                }
+            });
+
+            var deadline = DateTime.UtcNow.AddSeconds(2);
+            while (!attempted && DateTime.UtcNow < deadline)
+            {
+                await NwTask.Delay(TimeSpan.FromMilliseconds(100), ctx.CancellationToken);
+                ctx.CancellationToken.ThrowIfCancellationRequested();
+            }
+
+            ctx.Assert(attempted, $"the immediate {behaviorCase.Feat} retry command never executed");
+            if (error != null)
+                ctx.Fail($"immediate {behaviorCase.Feat} retry threw {error.GetType().Name}: {error.Message}");
+
+            ctx.Assert(!used, $"{behaviorCase.Feat} was accepted while its shared recast was active");
+            ctx.Assert(
+                denial.Contains("This ability can be used in", StringComparison.Ordinal),
+                $"{behaviorCase.Feat} retry was denied for an unexpected reason: '{denial}'");
+            ctx.Assert(
+                !denial.Contains("busy", StringComparison.OrdinalIgnoreCase) &&
+                !denial.Contains("stamina", StringComparison.OrdinalIgnoreCase) &&
+                !denial.Contains("force points", StringComparison.OrdinalIgnoreCase),
+                $"{behaviorCase.Feat} retry was blocked by busy/resource state instead of recast: '{denial}'");
         }
 
         /// <summary>

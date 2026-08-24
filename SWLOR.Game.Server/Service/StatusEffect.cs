@@ -241,6 +241,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     _creatureEffects[player] = effects;
                     ReapplyNWNEffects(player, effects);
+                    NotifyStatusEffectsRestored(player, effects);
                 }
             }
 
@@ -256,6 +257,8 @@ namespace SWLOR.Game.Server.Service
             var player = GetExitingObject();
             if (!GetIsPC(player) || GetIsDM(player))
                 return;
+
+            RemoveStatusEffectsFromAllTargetsWhenSourceExits(player);
 
             var playerId = GetObjectUUID(player);
             if (_creatureEffects.TryGetValue(player, out var effects) &&
@@ -787,6 +790,7 @@ namespace SWLOR.Game.Server.Service
 
                 statusEffect.RemoveEffect(creature);
                 effects.Remove(statusEffect);
+                NotifyStatusEffectRemoved(creature, statusEffect);
                 RemoveEffectByTag(creature, statusEffect.Id);
             }
         }
@@ -1285,6 +1289,79 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        public static void RemoveStatusEffectsFromAllTargetsBySource(
+            uint source,
+            Type statusEffectType,
+            bool sendsWornOffMessage = true)
+        {
+            if (!GetIsObjectValid(source) || statusEffectType == null)
+                return;
+
+            var effectsByTarget = _creatureEffects
+                .Select(entry => new
+                {
+                    Target = entry.Key,
+                    Effects = entry.Value.GetAllEffects()
+                        .Where(effect => statusEffectType.IsAssignableFrom(effect.GetType()) && effect.Source == source)
+                        .Select(effect => effect.GetType())
+                        .Distinct()
+                        .ToList()
+                })
+                .Where(entry => entry.Effects.Count > 0)
+                .ToList();
+
+            foreach (var entry in effectsByTarget)
+            {
+                foreach (var effectType in entry.Effects)
+                    RemoveStatusEffect(entry.Target, effectType, source, sendsWornOffMessage);
+            }
+
+            foreach (var loggedOutEffects in _loggedOutPlayerEffects.Values)
+            {
+                var sourceOwnedEffects = loggedOutEffects.Effects.GetAllEffects()
+                    .Where(effect =>
+                        statusEffectType.IsAssignableFrom(effect.GetType()) &&
+                        effect.Source == source)
+                    .ToList();
+                foreach (var effect in sourceOwnedEffects)
+                    loggedOutEffects.Effects.Remove(effect);
+            }
+        }
+
+        private static void RemoveStatusEffectsFromAllTargetsWhenSourceExits(uint source)
+        {
+            if (!GetIsObjectValid(source))
+                return;
+
+            var effectsByTarget = _creatureEffects
+                .Select(entry => new
+                {
+                    Target = entry.Key,
+                    EffectTypes = entry.Value.GetAllEffects()
+                        .Where(effect => effect.Source == source && effect is IRemoveWhenSourceExits)
+                        .Select(effect => effect.GetType())
+                        .Distinct()
+                        .ToList()
+                })
+                .Where(entry => entry.EffectTypes.Count > 0)
+                .ToList();
+
+            foreach (var entry in effectsByTarget)
+            {
+                foreach (var effectType in entry.EffectTypes)
+                    RemoveStatusEffect(entry.Target, effectType, source, false);
+            }
+
+            foreach (var loggedOutEffects in _loggedOutPlayerEffects.Values)
+            {
+                var sourceOwnedEffects = loggedOutEffects.Effects.GetAllEffects()
+                    .Where(effect => effect.Source == source && effect is IRemoveWhenSourceExits)
+                    .ToList();
+                foreach (var effect in sourceOwnedEffects)
+                    loggedOutEffects.Effects.Remove(effect);
+            }
+        }
+
         public static void RemoveStatusEffectsWithNegativeStat(
             uint creature,
             StatType statType,
@@ -1565,6 +1642,7 @@ namespace SWLOR.Game.Server.Service
 
             statusEffect.RemoveEffect(creature, isReplacement);
             creatureEffects.Remove(statusEffect);
+            NotifyStatusEffectRemoved(creature, statusEffect);
 
             if (statusEffect is ILeadershipDamageReductionStatusEffect)
             {
@@ -1593,6 +1671,20 @@ namespace SWLOR.Game.Server.Service
         {
             var type = statusEffect.GetType();
             return creatureEffects.GetAllEffects().Count(effect => effect.GetType() == type) <= 1;
+        }
+
+        private static void NotifyStatusEffectRemoved(uint creature, IStatusEffect statusEffect)
+        {
+            if (statusEffect is IStatusEffectRemovedHandler handler)
+                handler.AfterRemoved(creature);
+        }
+
+        private static void NotifyStatusEffectsRestored(uint creature, CreatureStatusEffect effects)
+        {
+            foreach (var handler in effects.GetAllEffects().OfType<IStatusEffectRestoredHandler>().ToList())
+            {
+                handler.AfterRestored(creature);
+            }
         }
 
         /// <summary>

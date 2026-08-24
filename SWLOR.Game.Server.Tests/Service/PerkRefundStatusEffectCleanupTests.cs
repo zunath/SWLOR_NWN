@@ -62,6 +62,8 @@ public class PerkRefundStatusEffectCleanupTests
 
         perkSource.Should().Contain("StatusEffectTypesRemovedOnPerkRefund");
         perkSource.Should().Contain("StatusEffect.RemoveStatusEffect(creature, statusEffectType, false);");
+        perkSource.Should().Contain("SourceOwnedStatusEffectTypesRemovedOnPerkRefund");
+        perkSource.Should().Contain("StatusEffect.RemoveStatusEffectsFromAllTargetsBySource(");
         perkSource.Should().Contain("Combat.RefreshStatDrivenTrackerEffects(creature);");
         perkSource.Should().Contain("RemoveStatusEffectsOnPerkRefund(player, perkType);");
         perksViewModelSource.Should().Contain("Perk.RemoveStatusEffectsOnPerkRefund(target, selectedPerk);");
@@ -76,6 +78,30 @@ public class PerkRefundStatusEffectCleanupTests
         combatSource.Should().Contain("typeof(AttackCycleTrackerStatusEffect)");
         combatSource.Should().Contain("typeof(CriticalRateStackTrackerStatusEffect)");
         combatSource.Should().Contain("StatType.NonCriticalAbilityNextSkillAbilityCriticalRatePercentAdjustment) <= 0");
+        combatSource.Should().Contain("typeof(OpeningAttackReadyStatusEffect)");
+        combatSource.Should().Contain("typeof(IdleSkillAbilityReadyStatusEffect)");
+        combatSource.Should().NotContain("typeof(PatienceReadyStatusEffect)");
+        combatSource.Should().NotContain("typeof(OpeningAutoAttackReadyStatusEffect)");
+    }
+
+    [Test]
+    public void SourceOwnedPerkRefundCleanup_RemovesEffectsFromLoggedOutTargets()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "StatusEffect.cs")).Replace("\r\n", "\n");
+        var cleanupBody = source.Substring(
+            source.IndexOf("public static void RemoveStatusEffectsFromAllTargetsBySource(", StringComparison.Ordinal),
+            source.IndexOf("private static void RemoveStatusEffectsFromAllTargetsWhenSourceExits", StringComparison.Ordinal) -
+            source.IndexOf("public static void RemoveStatusEffectsFromAllTargetsBySource(", StringComparison.Ordinal));
+
+        cleanupBody.Should().Contain("foreach (var loggedOutEffects in _loggedOutPlayerEffects.Values)");
+        cleanupBody.Should().Contain("statusEffectType.IsAssignableFrom(effect.GetType())");
+        cleanupBody.Should().Contain("effect.Source == source");
+        cleanupBody.Should().Contain("loggedOutEffects.Effects.Remove(effect);");
     }
 
     [Test]

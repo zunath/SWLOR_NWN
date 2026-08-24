@@ -610,24 +610,75 @@ def read_generated_targeting_spell_ids():
     return {str(spell_id) for spell_id in spell_ids}
 
 
-def write_generated_targeting_spell_ids(spell_ids):
+def read_generated_queued_targeting_spell_ids():
+    if not GENERATED_TARGETING_OWNERSHIP.exists():
+        return set()
+
+    payload = json.loads(GENERATED_TARGETING_OWNERSHIP.read_text())
+    spell_ids = payload.get("queued_spell_ids", [])
+    if not isinstance(spell_ids, list) or any(not str(spell_id).isdigit() for spell_id in spell_ids):
+        raise RuntimeError(f"Invalid generated queued targeting ownership file: {GENERATED_TARGETING_OWNERSHIP}")
+    return {str(spell_id) for spell_id in spell_ids}
+
+
+def write_generated_targeting_spell_ids(spell_ids, queued_spell_ids):
     ordered_spell_ids = sorted({int(spell_id) for spell_id in spell_ids})
-    rendered = json.dumps({"spell_ids": ordered_spell_ids}, indent=2) + "\n"
+    ordered_queued_spell_ids = sorted({int(spell_id) for spell_id in queued_spell_ids})
+    if not set(ordered_queued_spell_ids).issubset(ordered_spell_ids):
+        raise RuntimeError("Queued targeting ownership must be a subset of all targeting ownership")
+    rendered = json.dumps({
+        "spell_ids": ordered_spell_ids,
+        "queued_spell_ids": ordered_queued_spell_ids,
+    }, indent=2) + "\n"
     if not GENERATED_TARGETING_OWNERSHIP.exists() or GENERATED_TARGETING_OWNERSHIP.read_text() != rendered:
         GENERATED_TARGETING_OWNERSHIP.write_text(rendered)
 
 
-def generated_targeting_update(row, was_generator_owned):
+def is_queued_weapon_active(row):
+    return row.get("CastingTime", "").strip().lower() == "queued"
+
+
+def generated_targeting_update(row, was_generator_owned, was_queued_owned=False):
+    targeting_values = {}
+    generated_targeting_fields = ("Range", "TargetType", "HostileSetting")
+    is_queued = is_queued_weapon_active(row)
+
+    # Queued weapon abilities are self activations. Their spell rows must be
+    # non-hostile/self-compatible even though they have no area shape to own.
+    if is_queued:
+        targeting_values.update({
+            "TargetType": "0x03",
+            "HostileSetting": "0",
+        })
+
     inferred = infer_targeting_from_description(row)
     if not inferred:
+        if is_queued:
+            # Queued weapon abilities own their non-targeted cursor/hostility profile.
+            # Range is deliberately preserved because existing queued feats use both
+            # personal and medium spell ranges while TARGETSELF controls activation.
+            targeting_values.update({
+                "TargetShape": "****",
+                "TargetSizeX": "****",
+                "TargetSizeY": "****",
+                "TargetFlags": "****",
+            })
+            return targeting_values, True
         if not was_generator_owned:
             return None, False
-        return {
+        fields_to_clear = (
+            ("TargetType", "HostileSetting")
+            if was_queued_owned
+            else generated_targeting_fields
+        )
+        targeting_values.update({header: "****" for header in fields_to_clear})
+        targeting_values.update({
             "TargetShape": "****",
             "TargetSizeX": "****",
             "TargetSizeY": "****",
             "TargetFlags": "****",
-        }, False
+        })
+        return targeting_values, False
 
     shape_expression, size_x_literal, size_y_literal, _ = inferred
     shape = {
@@ -638,21 +689,39 @@ def generated_targeting_update(row, was_generator_owned):
     size_x = f"{float(size_x_literal[:-1]):g}"
     size_y_value = float(size_y_literal[:-1])
     size_y = f"{size_y_value:g}" if size_y_value > 0 else "****"
-    flags = "1" if shape == "sphere" and is_aimed_area(row) else "17"
-    return {
+    is_aimed = is_aimed_area(row)
+    flags = "1" if shape == "sphere" and is_aimed else "17"
+    targeting_values.update({
         "TargetShape": shape,
         "TargetSizeX": size_x,
         "TargetSizeY": size_y,
         "TargetFlags": flags,
-    }, True
+    })
+    if is_aimed and not is_friendly_target_active(row.get("Description", "")):
+        targeting_values.update({
+            "Range": "M",
+            "TargetType": "0x3E",
+            "HostileSetting": "1",
+        })
+    else:
+        # Self-centered hostile areas are real hostile spells, but the cursor is forced to the
+        # caster. Restore the personal/self profile so a prior aimed M/0x3E profile cannot leak
+        # through when the Bible wording changes from a line/cone/placed sphere to a radius.
+        targeting_values.update({
+            "Range": "P",
+            "TargetType": "0x01",
+            "HostileSetting": "1",
+        })
+    return targeting_values, True
 
 
 def update_spell_targeting(spell_updates):
     """Keep generated ability targeting metadata aligned with the Bible description.
 
     The feat row controls whether the client opens a manual cursor, while the spell row controls
-    the marker's shape and size. Updating only the feat row leaves a valid-looking ability with a
-    stale (or entirely blank) marker, so both halves are generated from the same wording.
+    the marker's shape, size, and hostile activation profile. Updating only the feat row leaves a
+    valid-looking ability with a stale (or entirely blank) marker, so both halves are generated
+    from the same wording.
     """
     spells_path = ROOT / "SWLOR_Haks" / "sw_2da" / "spells.2da"
     lines = spells_path.read_text().splitlines()
@@ -664,7 +733,9 @@ def update_spell_targeting(spell_updates):
             row_line[int(tokens[0])] = line_index
 
     previously_owned_spell_ids = read_generated_targeting_spell_ids()
+    previously_queued_spell_ids = read_generated_queued_targeting_spell_ids()
     currently_owned_spell_ids = set()
+    currently_queued_spell_ids = set()
     processed_spell_ids = set()
     changed = False
     for spell_id, row in spell_updates.items():
@@ -674,9 +745,12 @@ def update_spell_targeting(spell_updates):
         processed_spell_ids.add(spell_id)
         targeting_values, remains_generator_owned = generated_targeting_update(
             row,
-            spell_id in previously_owned_spell_ids)
+            spell_id in previously_owned_spell_ids,
+            spell_id in previously_queued_spell_ids)
         if remains_generator_owned:
             currently_owned_spell_ids.add(spell_id)
+            if is_queued_weapon_active(row):
+                currently_queued_spell_ids.add(spell_id)
         if targeting_values is None:
             continue
 
@@ -695,7 +769,17 @@ def update_spell_targeting(spell_updates):
             continue
 
         new_line = lines[row_line[row_number]]
-        for header in ("TargetShape", "TargetSizeX", "TargetSizeY", "TargetFlags"):
+        fields_to_clear = (
+            ("TargetType", "HostileSetting")
+            if spell_id in previously_queued_spell_ids
+            else ("Range", "TargetType", "HostileSetting")
+        )
+        for header in fields_to_clear + (
+            "TargetShape",
+            "TargetSizeX",
+            "TargetSizeY",
+            "TargetFlags",
+        ):
             new_line = replace_2da_token(new_line, tokens_by_header(new_line.split(), headers, header), "****")
         if lines[row_line[row_number]] != new_line:
             lines[row_line[row_number]] = new_line
@@ -703,7 +787,7 @@ def update_spell_targeting(spell_updates):
 
     if changed:
         spells_path.write_text("\n".join(lines) + "\n")
-    write_generated_targeting_spell_ids(currently_owned_spell_ids)
+    write_generated_targeting_spell_ids(currently_owned_spell_ids, currently_queued_spell_ids)
 
 
 def active_feat_name(row, feat_values):
@@ -977,6 +1061,9 @@ def description_stat_entries(row, base):
     stats = OrderedDict()
     skill_expr = skill_type_expression(row)
     skill = SKILL_BY_TAB[row["Tab"]]
+    idle_skill_stat_prefix = (
+        "AlternateIdleSkillAbility" if row["Tab"] == "Staff" else "IdleSkillAbility"
+    )
 
     if base == "Suppressing Shot":
         stack_strength = parse_suppression_stack_evasion_penalty(description)
@@ -1444,13 +1531,27 @@ def description_stat_entries(row, base):
         add_stat(stats, "SameTargetPressureReadyDurationSeconds", parse_count(r"gain Spotter's Rhythm for (\d+) seconds", description) or 9)
         add_stat(stats, "SameTargetPressureWeaponAbilityDamageBonus", parse_count(r"deals \+(\d+) DMG", description))
     if base == "Overwatch":
-        add_stat(stats, "AbilityHitChanceAgainstSuppressionStackPercentAdjustment", parse_percent(r"gains \+(\d+)% Accuracy", description))
+        add_stat(stats, "RangedAttackAccuracyAgainstSuppressionStackPercentAdjustment", parse_percent(r"gains \+(\d+)% Accuracy", description))
     if base == "Containment Net":
-        add_stat(stats, "SuppressionStackDamageDealtToOtherTargetsRequiredStacks", parse_count(r"Targets with (\d+) Suppression", description) or 3)
-        add_stat(stats, "SuppressionStackDamageDealtToOtherTargetsPercentAdjustment", -parse_percent(r"deal -(\d+)% damage", description))
+        add_stat(stats, "SuppressionStackDamageDealtRequiredStacks", parse_count(r"Targets with (\d+) Suppression", description) or 3)
+        add_stat(stats, "SuppressionStackDamageDealtPercentAdjustment", -parse_percent(r"-?(\d+)% Damage Dealt", description))
     if base == "Breach Round":
-        add_stat(stats, "DefenseIgnoreHitPhysicalDefensePercentAdjustment", -parse_percent(r"reduce Defense by (\d+)%", description))
-        add_stat(stats, "DefenseIgnoreHitPhysicalDefenseDurationSeconds", parse_duration(description) or 30)
+        add_stat(stats, "RangedAbilityTargetDefenseReductionPercent", parse_percent(r"Defense by (\d+)%", description))
+        add_stat(stats, "RangedAbilityTargetDefenseReductionDurationSeconds", parse_duration(description) or 30)
+    if base == "Scope Calibration":
+        add_stat(
+            stats,
+            "RangedAbilityLongRangeMinimumRangeMeters",
+            first_int(r"at least (\d+)m", description) or 10)
+        add_stat(stats, "RangedAbilityLongRangeHitChancePercentAdjustment", parse_percent(r"\+(\d+)% Accuracy", description))
+        add_stat(stats, "RangedAbilityLongRangeCriticalRatePercentAdjustment", parse_percent(r"\+(\d+)% Critical Rate", description))
+    if base == "Dead Center":
+        add_stat(stats, f"{idle_skill_stat_prefix}SkillType", skill_expr)
+        add_stat(stats, f"{idle_skill_stat_prefix}RequiredIdleSeconds", parse_count(r"After (\d+) seconds without attacking", description) or 3)
+        add_stat(stats, f"{idle_skill_stat_prefix}CriticalDamagePercentAdjustment", parse_percent(r"deals \+(\d+)% damage", description))
+        add_stat(stats, "OpeningAutoAttackSkillType", skill_expr)
+        add_stat(stats, "OpeningAutoAttackIdleSeconds", parse_count(r"After (\d+) seconds without attacking", description) or 3)
+        add_stat(stats, "OpeningAutoAttackCriticalDamagePercentAdjustment", parse_percent(r"deals \+(\d+)% damage", description))
     if base == "Shrapnel Casing":
         add_stat(stats, "AreaAbilityFragmentationDamage", parse_count(r"fragmentation for (\d+) physical damage", description))
         add_stat(stats, "AreaAbilityFragmentationPulseSeconds", parse_count(r"every (\d+) seconds", description) or 3)
@@ -1607,19 +1708,19 @@ def description_stat_entries(row, base):
             add_stat(stats, "OpeningAutoAttackDamageBonus", parse_count(r"deals \+(\d+) DMG", description))
             add_stat(stats, "OpeningAutoAttackIdleSeconds", 3)
         else:
-            add_stat(stats, "IdleSkillAbilitySkillType", skill_expr)
-            add_stat(stats, "IdleSkillAbilityRequiredIdleSeconds", 3)
-            add_stat(stats, "IdleSkillAbilityDamageBonus", parse_count(r"\+(\d+) DMG", description))
-            add_stat(stats, "IdleSkillAbilityHitChancePercentAdjustment", parse_percent(r"\+(\d+)% Accuracy", description))
+            add_stat(stats, f"{idle_skill_stat_prefix}SkillType", skill_expr)
+            add_stat(stats, f"{idle_skill_stat_prefix}RequiredIdleSeconds", 3)
+            add_stat(stats, f"{idle_skill_stat_prefix}DamageBonus", parse_count(r"\+(\d+) DMG", description))
+            add_stat(stats, f"{idle_skill_stat_prefix}HitChancePercentAdjustment", parse_percent(r"\+(\d+)% Accuracy", description))
     if "Long-range hostile ranged abilities" in description:
         add_stat(stats, "AbilityHitChancePercentAdjustmentSkillType", skill_expr)
         add_stat(stats, "AbilityHitChancePercentAdjustment", parse_percent(r"\+(\d+)% Accuracy", description))
         add_stat(stats, "AbilityCriticalRatePercentAdjustmentSkillType", skill_expr)
         add_stat(stats, "AbilityCriticalRatePercentAdjustment", parse_percent(r"\+(\d+)% Critical Rate", description))
     if "critical hits after a 3-second aim window" in lowered:
-        add_stat(stats, "IdleSkillAbilitySkillType", skill_expr)
-        add_stat(stats, "IdleSkillAbilityRequiredIdleSeconds", 3)
-        add_stat(stats, "IdleSkillAbilityCriticalDamagePercentAdjustment", parse_percent(r"deal \+(\d+)% damage", description))
+        add_stat(stats, f"{idle_skill_stat_prefix}SkillType", skill_expr)
+        add_stat(stats, f"{idle_skill_stat_prefix}RequiredIdleSeconds", 3)
+        add_stat(stats, f"{idle_skill_stat_prefix}CriticalDamagePercentAdjustment", parse_percent(r"deal \+(\d+)% damage", description))
 
     if row["Tab"] == "Throwing":
         if "one additional nearby enemy" in lowered or re.search(r"one additional (?:one )?enemy", lowered):
@@ -1955,7 +2056,7 @@ def profile_property_lines(row, level, primary_status):
     if row["Type"] in {"Stance", "Toggle", "Aura"}:
         return properties
 
-    if row.get("CastingTime", "").strip().lower() == "queued":
+    if is_queued_weapon_active(row):
         add_profile_property("IsQueuedWeaponAbility", "true")
 
     if "force dmg" in lowered:
@@ -2062,17 +2163,32 @@ def profile_property_lines(row, level, primary_status):
         properties.append(("RecentTargetWindowSeconds", f"{int(match.group(1))}.0f"))
         properties.append(("ExtraDamageIfRecentTarget", match.group(2)))
 
-    idle_match = re.search(r"(?:not attacked|without attacking) for (\d+) seconds", description, re.IGNORECASE)
+    idle_crit = 0
+    idle_match = re.search(
+        r"(?:"
+        r"\bif\s+you\s+have\s+(?:not\s+attacked|(?:gone|been)\s+without\s+attacking)\s+for\s+"
+        r"(?P<self_idle>\d+)\s+seconds\b"
+        r"|\bif\s+(?:(?:[A-Za-z][A-Za-z0-9' -]*?)\s+is\s+)?used\s+after\s+"
+        r"(?P<used_idle>\d+)\s+seconds\s+without\s+attacking\b"
+        r"|(?:^|(?<=[.!?])\s+)after\s+(?P<after_idle>\d+)\s+seconds\s+without\s+attacking\b"
+        r")",
+        description,
+        re.IGNORECASE)
     if idle_match:
-        idle_seconds = int(idle_match.group(1))
+        idle_seconds = int(next(value for value in idle_match.groupdict().values() if value))
+        idle_clause = description[idle_match.start():].split(".", 1)[0]
         properties.append(("IdleWindowSeconds", f"{idle_seconds}.0f"))
-        idle_damage = first_int(r"(?:this deals|deals|gains) \+(\d+) DMG", description)
-        idle_crit = first_int(r"gains \+(\d+)% Critical Rate", description)
-        idle_ignore = first_int(r"ignores (\d+)% Defense", description)
+        idle_damage = first_int(r"(?:this deals|deals|gains) \+(\d+) DMG", idle_clause)
+        idle_crit = first_int(r"gains \+(\d+)% Critical Rate", idle_clause)
+        idle_ignore = first_int(r"ignores (\d+)% Defense", idle_clause)
         if idle_damage:
             properties.append(("ExtraDamageIfIdle", str(idle_damage)))
+            if base == "Aimed Shot":
+                properties.append(("ExtraDamageIfIdleFeedbackLabel", '"Aimed Shot"'))
         if idle_crit:
             properties.append(("CriticalRateIfIdle", str(idle_crit)))
+            if is_queued_weapon_active(row):
+                properties.append(("CriticalRateIfIdleFeedbackLabel", f'"{base}"'))
         if idle_ignore:
             properties.append(("DefenseIgnoreIfIdle", str(idle_ignore)))
 
@@ -2142,7 +2258,7 @@ def profile_property_lines(row, level, primary_status):
             properties.append(("CriticalRateIfTargetDebuffedOrControlled", str(crit)))
 
     direct_crit = first_int(r"gains? \+(\d+)% Critical Rate", description)
-    if direct_crit and not idle_match and "debuff" not in lowered and "controlled" not in lowered and "control effect" not in lowered:
+    if direct_crit and not idle_crit and "debuff" not in lowered and "controlled" not in lowered and "control effect" not in lowered:
         properties.append(("CriticalRatePercentAdjustment", str(direct_crit)))
 
     direct_accuracy = first_int(r"gains? \+(\d+)% Accuracy", description)
@@ -2185,6 +2301,8 @@ def profile_property_lines(row, level, primary_status):
     )
     if direct_self_stats_allowed:
         for property_name, pattern in self_stats:
+            if property_name == "SelfCriticalRatePercent" and idle_crit:
+                continue
             value = first_int(pattern, description)
             if value:
                 properties.append((property_name, str(value)))
@@ -2446,13 +2564,18 @@ def profile_property_lines(row, level, primary_status):
         add_profile_property("TemporaryAvoidedAttackNextAutoAttackNoDelaySkillType", skill_type_expression(row))
         add_profile_property("TemporaryAvoidedAttackNextAutoAttackNoDelayDurationSeconds", "30")
         add_profile_property("TemporaryDefeatedEnemyEffectDurationSeconds", str(parse_duration(description) or 45))
-    if "ranged hits add Suppression stacks" in description:
-        add_profile_property("TemporaryRangedHitSuppressionStackDurationSeconds", "30")
-        add_profile_property("TemporaryRangedHitSuppressionStackEvasionPenaltyPercent", "0")
+    if "ranged hits add Suppression stacks" in description and base != "Kill Box":
         add_profile_property(
-            "TemporarySuppressionStackEvasionPenaltyPercentAdjustment",
-            parse_count(r"additional (\d+)%", description) or 0)
+            "TemporaryRangedHitSuppressionStackDurationSeconds",
+            str(parse_count(r"stacks lasting (\d+) seconds", description) or 30))
+        add_profile_property("TemporaryRangedHitSuppressionStackEvasionPenaltyPercent", "0")
+    suppression_evasion_penalty_adjustment = 0
+    if "ranged hits add Suppression stacks" in description or base == "Kill Box":
+        suppression_evasion_penalty_adjustment = parse_count(r"additional (\d+)%", description) or 0
         add_profile_property("TemporaryDefeatedEnemyEffectDurationSeconds", str(parse_duration(description) or 45))
+    if base == "Kill Box":
+        add_profile_property("StatusEffectFactory", f"() => new KillBoxStatusEffect(0, {suppression_evasion_penalty_adjustment})")
+        add_profile_property("SourceOwnedStatusEffectTypeRemovedOnPerkRefund", "typeof(KillBoxStatusEffect)")
     if "high-stm abilities also inflict exposed" in lowered:
         add_high_stm_exposed_properties()
     if "area attacks pulse" in lowered or "fragmentation zones" in lowered:
@@ -2530,6 +2653,7 @@ def has_explicit_area_target_point(lowered):
     return any(marker in lowered for marker in (
         "target location",
         "target point",
+        "enemy or location",
         "selected location",
         "selected point",
     ))
@@ -2861,7 +2985,7 @@ def add_missing_feats(rows):
             # area actives originate on the caster. Neither should present a manual target cursor
             # (TARGETSELF=1 / HostileFeat cleared). Single-target hostile casts and *aimed* areas
             # ("in a line" / "in a cone") do pick a target, because the player chooses the direction.
-            is_queued = row.get("CastingTime", "").strip().lower() == "queued"
+            is_queued = is_queued_weapon_active(row)
             is_self_origin_area = is_area(row["Description"]) and not is_aimed_area(row)
             is_automatic_guarded_target = is_automatic_guarded_target_active(row["Description"])
             no_manual_target = target_self or is_queued or is_self_origin_area or is_automatic_guarded_target

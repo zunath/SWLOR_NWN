@@ -179,7 +179,9 @@ namespace SWLOR.Game.Server.Native
                 //---------------------------------------------------------------------------------------------
                 // Modifiers - put in modifiers here based on the type of attack (and type of weapon etc.).
                 var accuracyModifiers = 0;
-
+                // Overwatch is a next ranged attack trigger. Resolve it in the native
+                // auto-attack path as well as the casted-ability path, and only when the
+                // selected defender is the suppressed target that armed the trigger.
                 // Defender not targeting the attacker.
                 // Dev note: the GetItem method always creates a new instance of CNWActionNode so there should be no NPEs.
                 // Note: this always returns object invalid for NPCs (2130706432) as their actions aren't represented the same way.
@@ -225,9 +227,24 @@ namespace SWLOR.Game.Server.Native
                 //---------------------------------------------------------------------------------------------
                 //---------------------------------------------------------------------------------------------
                 var attackRoll = Random.D100(1);
+                var queuedWeaponAbilityLongRangeHitChanceAdjustment =
+                    UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType)
+                        ? Combat.GetRangedAbilityLongRangeHitChanceAdjustment(
+                            attacker.m_idSelf,
+                            defender.m_idSelf,
+                            weaponSkillType)
+                        : 0;
                 var hitChanceModifier =
                     Combat.GetSideAttackHitChanceAdjustment(attacker.m_idSelf, defender.m_idSelf, weaponSkillType) +
-                    Combat.GetHitChanceAgainstSunderedTargetAdjustment(attacker.m_idSelf, defender.m_idSelf);
+                    queuedWeaponAbilityLongRangeHitChanceAdjustment +
+                    Combat.GetHitChanceAgainstSunderedTargetAdjustment(attacker.m_idSelf, defender.m_idSelf) +
+                    Combat.GetQueuedWeaponAbilityActivationHitChanceAdjustment(
+                        attacker.m_idSelf,
+                        weaponSkillType) +
+                    Combat.ConsumeSuppressionRangedAttackAccuracyAdjustment(
+                        attacker.m_idSelf,
+                        defender.m_idSelf,
+                        weaponSkillType);
                 var hitRate = Combat.CalculateHitRate(
                     attackerAccuracy + accuracyModifiers,
                     defenderEvasion,
@@ -365,6 +382,9 @@ namespace SWLOR.Game.Server.Native
                 {
                     Combat.TrackAvoidedAttack(defender.m_idSelf, attacker.m_idSelf);
                 }
+
+                if (!IsSuccessfulAttackResult(pAttackData.m_nAttackResult))
+                    Combat.ClearOpeningAutoAttackModifiers(attacker.m_idSelf);
 
                 // A landed queued weapon ability is finalized through Ability.EndAbilityImpact,
                 // which sends the single attempt notification for that originating swing. A miss

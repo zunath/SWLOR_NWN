@@ -13,6 +13,240 @@ SPEC.loader.exec_module(GENERATOR)
 
 
 class GeneratedWeaponTargetingTests(unittest.TestCase):
+    def test_scope_calibration_reads_minimum_range_from_description(self):
+        properties = dict(GENERATOR.description_stat_entries(
+            {
+                "Tab": "Rifle",
+                "Type": "Trait",
+                "PerkName": "Scope Calibration",
+                "Description": "Ranged abilities gain +10% Accuracy against targets at least 12m away.",
+            },
+            "Scope Calibration"))
+
+        self.assertEqual("12", properties["RangedAbilityLongRangeMinimumRangeMeters"])
+
+    def test_headshot_queues_and_only_grants_critical_rate_after_idle_window(self):
+        row = {
+            "Tab": "Rifle",
+            "PerkName": "Headshot I",
+            "Type": "Combat",
+            "CastingTime": "Queued",
+            "Description": (
+                "Queues your next auto-attack to deal weapon DMG + 16. "
+                "If Headshot is used after 3 seconds without attacking, "
+                "that attack gains +15% Critical Rate."
+            ),
+        }
+
+        properties = dict(GENERATOR.profile_property_lines(row, 1, None))
+
+        self.assertEqual("true", properties["IsQueuedWeaponAbility"])
+        self.assertEqual("3.0f", properties["IdleWindowSeconds"])
+        self.assertEqual("15", properties["CriticalRateIfIdle"])
+        self.assertNotIn("CriticalRatePercentAdjustment", properties)
+        self.assertNotIn("SelfCriticalRatePercent", properties)
+
+    def test_target_inactivity_does_not_become_activator_idle_window(self):
+        row = {
+            "Tab": "Rifle",
+            "PerkName": "Target History",
+            "Type": "Combat",
+            "Description": (
+                "Deals weapon DMG + 8. If the target has not attacked for 3 seconds, "
+                "this deals +8 DMG. Grants +10% Critical Rate for 30 seconds."
+            ),
+        }
+
+        properties = dict(GENERATOR.profile_property_lines(row, 1, None))
+
+        self.assertNotIn("IdleWindowSeconds", properties)
+        self.assertNotIn("ExtraDamageIfIdle", properties)
+        self.assertEqual("10", properties["SelfCriticalRatePercent"])
+
+    def test_idle_damage_does_not_suppress_unconditional_self_critical_rate(self):
+        row = {
+            "Tab": "Rifle",
+            "PerkName": "Patient Marksman",
+            "Type": "Combat",
+            "Description": (
+                "Deals weapon DMG + 8 to enemies; if you have not attacked for 3 seconds, "
+                "this deals +8 DMG. Grants +10% Critical Rate for 30 seconds."
+            ),
+        }
+
+        properties = dict(GENERATOR.profile_property_lines(row, 1, None))
+
+        self.assertEqual("3.0f", properties["IdleWindowSeconds"])
+        self.assertEqual("8", properties["ExtraDamageIfIdle"])
+        self.assertEqual("10", properties["SelfCriticalRatePercent"])
+
+    def test_kill_box_generates_source_owned_status_without_global_hit_rider(self):
+        row = {
+            "Tab": "Rifle",
+            "PerkName": "Kill Box",
+            "Type": "Capstone",
+            "CastingTime": "2 seconds",
+            "Description": (
+                "Target an enemy or location to deal weapon DMG + 20 to enemies within 8m "
+                "and apply Kill Box for 45 seconds. While Kill Box remains, any player's "
+                "ranged attacks against affected enemies add Suppression stacks lasting "
+                "30 seconds using the Kill Box caster's Suppressing Shot stack strength; "
+                "each stack reduces Evasion by an additional 3%."
+            ),
+        }
+
+        properties = dict(GENERATOR.profile_property_lines(row, 1, None))
+
+        self.assertEqual("() => new KillBoxStatusEffect(0, 3)", properties["StatusEffectFactory"])
+        self.assertEqual("typeof(KillBoxStatusEffect)", properties["SourceOwnedStatusEffectTypeRemovedOnPerkRefund"])
+        self.assertNotIn("TemporaryRangedHitSuppressionStackDurationSeconds", properties)
+        self.assertNotIn("TemporaryRangedHitSuppressionStackEvasionPenaltyPercent", properties)
+        self.assertEqual("45", properties["TemporaryDefeatedEnemyEffectDurationSeconds"])
+
+    def test_kill_box_enemy_or_location_is_an_aimed_sphere(self):
+        row = {
+            "Tab": "Rifle",
+            "Description": "Target an enemy or location to deal weapon DMG + 20 to enemies within 8m.",
+        }
+
+        self.assertTrue(GENERATOR.is_aimed_area(row))
+        values, owns_targeting = GENERATOR.generated_targeting_update(row, False)
+        self.assertTrue(owns_targeting)
+        self.assertEqual("sphere", values["TargetShape"])
+        self.assertEqual("8", values["TargetSizeX"])
+        self.assertEqual("1", values["TargetFlags"])
+        self.assertEqual("M", values["Range"])
+        self.assertEqual("0x3E", values["TargetType"])
+        self.assertEqual("1", values["HostileSetting"])
+
+    def test_headshot_spell_profile_is_non_hostile_and_self_compatible(self):
+        row = {
+            "Tab": "Rifle",
+            "PerkName": "Headshot I",
+            "CastingTime": "Queued",
+            "Description": "Queues your next auto-attack to deal weapon DMG + 16.",
+        }
+
+        values, owns_targeting = GENERATOR.generated_targeting_update(row, False)
+
+        self.assertTrue(owns_targeting)
+        self.assertNotIn("Range", values)
+        self.assertEqual("0x03", values["TargetType"])
+        self.assertEqual("0", values["HostileSetting"])
+        self.assertEqual("****", values["TargetShape"])
+
+    def test_headshot_cleanup_preserves_self_compatible_spell_profile(self):
+        row = {
+            "Tab": "Rifle",
+            "PerkName": "Headshot I",
+            "CastingTime": "Queued",
+            "Description": "Queues your next auto-attack to deal weapon DMG + 16.",
+        }
+
+        values, owns_targeting = GENERATOR.generated_targeting_update(row, True)
+
+        self.assertTrue(owns_targeting)
+        self.assertNotIn("Range", values)
+        self.assertEqual("0x03", values["TargetType"])
+        self.assertEqual("0", values["HostileSetting"])
+        self.assertEqual("****", values["TargetShape"])
+        self.assertEqual("****", values["TargetSizeX"])
+        self.assertEqual("****", values["TargetSizeY"])
+        self.assertEqual("****", values["TargetFlags"])
+
+    def test_queued_metadata_drives_queue_profile_and_spell_targeting_without_name_checks(self):
+        row = {
+            "Tab": "Rifle",
+            "PerkName": "Prepared Shot I",
+            "Type": "Combat",
+            "CastingTime": "Queued",
+            "Description": "Queues your next auto-attack to deal weapon DMG + 10.",
+        }
+
+        properties = dict(GENERATOR.profile_property_lines(row, 1, None))
+        targeting, owns_targeting = GENERATOR.generated_targeting_update(row, False)
+
+        self.assertEqual("true", properties["IsQueuedWeaponAbility"])
+        self.assertTrue(owns_targeting)
+        self.assertNotIn("Range", targeting)
+        self.assertEqual("0x03", targeting["TargetType"])
+        self.assertEqual("0", targeting["HostileSetting"])
+        self.assertEqual("****", targeting["TargetShape"])
+
+    def test_queued_to_single_target_transition_clears_owned_spell_profile(self):
+        queued_row = {
+            "Tab": "Rifle",
+            "CastingTime": "Queued",
+            "Description": "Queues your next auto-attack to deal weapon DMG + 10.",
+        }
+        single_target_row = {
+            "Tab": "Rifle",
+            "CastingTime": "Instant",
+            "Description": "Deals weapon DMG + 10 to one target.",
+        }
+
+        queued_values, owns_queued_profile = GENERATOR.generated_targeting_update(
+            queued_row,
+            False)
+        cleared_values, owns_single_target = GENERATOR.generated_targeting_update(
+            single_target_row,
+            owns_queued_profile,
+            was_queued_owned=True)
+
+        self.assertTrue(owns_queued_profile)
+        self.assertEqual("0x03", queued_values["TargetType"])
+        self.assertEqual("0", queued_values["HostileSetting"])
+        self.assertEqual(
+            {
+                "TargetType": "****",
+                "HostileSetting": "****",
+                "TargetShape": "****",
+                "TargetSizeX": "****",
+                "TargetSizeY": "****",
+                "TargetFlags": "****",
+            },
+            cleared_values)
+        self.assertFalse(owns_single_target)
+
+    def test_dead_center_applies_to_abilities_and_opening_auto_attacks(self):
+        row = {
+            "Tab": "Rifle",
+            "PerkName": "Dead Center",
+            "Type": "Trait",
+            "Description": (
+                "After 3 seconds without attacking, if your next attack is a critical hit, "
+                "it deals +15% damage."
+            ),
+        }
+
+        stats = dict(GENERATOR.description_stat_entries(row, "Dead Center"))
+
+        self.assertEqual("(int)SkillType.Rifle", stats["IdleSkillAbilitySkillType"])
+        self.assertEqual("3", stats["IdleSkillAbilityRequiredIdleSeconds"])
+        self.assertEqual("15", stats["IdleSkillAbilityCriticalDamagePercentAdjustment"])
+        self.assertEqual("(int)SkillType.Rifle", stats["OpeningAutoAttackSkillType"])
+        self.assertEqual("3", stats["OpeningAutoAttackIdleSeconds"])
+        self.assertEqual("15", stats["OpeningAutoAttackCriticalDamagePercentAdjustment"])
+
+    def test_staff_idle_bonus_uses_an_independent_stat_channel(self):
+        row = {
+            "Tab": "Staff",
+            "PerkName": "Patient Sentinel",
+            "Type": "Trait",
+            "Description": (
+                "After 3 seconds without attacking, your next hostile Staff ability "
+                "gains +10 DMG and +8% Accuracy."
+            ),
+        }
+
+        stats = dict(GENERATOR.description_stat_entries(row, "Patient Sentinel"))
+
+        self.assertEqual("(int)SkillType.Staff", stats["AlternateIdleSkillAbilitySkillType"])
+        self.assertEqual("3", stats["AlternateIdleSkillAbilityRequiredIdleSeconds"])
+        self.assertEqual("10", stats["AlternateIdleSkillAbilityDamageBonus"])
+        self.assertEqual("8", stats["AlternateIdleSkillAbilityHitChancePercentAdjustment"])
+        self.assertNotIn("IdleSkillAbilitySkillType", stats)
+
     def test_point_blank_burst_applies_self_status_on_activation(self):
         properties = dict(GENERATOR.profile_property_lines(
             {
@@ -27,18 +261,20 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
         self.assertEqual("30", properties["SelfStatDurationSeconds"])
         self.assertEqual("true", properties["ApplySelfModifiersOnHostileActivation"])
 
-    def test_ownership_manifest_matches_current_inferred_area_rows(self):
+    def test_ownership_manifest_matches_current_generated_targeting_rows(self):
         rows = GENERATOR.read_manifest()
         _, feat_values = GENERATOR.parse_enum_values(
             ROOT / "SWLOR.NWN.API" / "NWScript" / "Enum" / "FeatType.cs")
         feat_rows = GENERATOR.read_2da(ROOT / "SWLOR_Haks" / "sw_2da" / "feat.2da")
         spell_rows = GENERATOR.read_2da(ROOT / "SWLOR_Haks" / "sw_2da" / "spells.2da")
-        inferred_spell_ids = set()
+        generated_spell_ids = set()
+        generated_queued_spell_ids = set()
 
         for row in rows:
             if row["Type"] not in GENERATOR.ACTIVE_TYPES:
                 continue
-            if not GENERATOR.infer_targeting_from_description(row):
+            if (not GENERATOR.infer_targeting_from_description(row) and
+                    not GENERATOR.is_queued_weapon_active(row)):
                 continue
 
             feat = GENERATOR.active_feat_name(row, feat_values)
@@ -46,8 +282,13 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
             feat_row = feat_rows.get(str(feat_id))
             if feat_row and feat_row["SPELLID"].isdigit():
                 spell_id = feat_row["SPELLID"]
-                inferred_spell_ids.add(spell_id)
-                expected_values, remains_owned = GENERATOR.generated_targeting_update(row, True)
+                generated_spell_ids.add(spell_id)
+                if GENERATOR.is_queued_weapon_active(row):
+                    generated_queued_spell_ids.add(spell_id)
+                expected_values, remains_owned = GENERATOR.generated_targeting_update(
+                    row,
+                    True,
+                    spell_id in generated_queued_spell_ids)
                 self.assertTrue(remains_owned)
                 self.assertIsNotNone(expected_values)
                 for header, expected_value in expected_values.items():
@@ -57,8 +298,11 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
                         f"spell {spell_id} {header} must already match the generator-owned value")
 
         self.assertEqual(
-            inferred_spell_ids,
+            generated_spell_ids,
             GENERATOR.read_generated_targeting_spell_ids())
+        self.assertEqual(
+            generated_queued_spell_ids,
+            GENERATOR.read_generated_queued_targeting_spell_ids())
 
     def test_area_to_single_target_transition_clears_only_owned_fields_and_is_idempotent(self):
         area_row = {
@@ -81,6 +325,9 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
         self.assertEqual("5", area_values["TargetSizeX"])
         self.assertEqual(
             {
+                "Range": "****",
+                "TargetType": "****",
+                "HostileSetting": "****",
                 "TargetShape": "****",
                 "TargetSizeX": "****",
                 "TargetSizeY": "****",
@@ -90,6 +337,29 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
         self.assertFalse(owns_single_target)
         self.assertIsNone(repeated_values)
         self.assertFalse(remains_unowned)
+
+    def test_aimed_area_to_self_centered_area_clears_owned_cursor_profile(self):
+        aimed_row = {
+            "Tab": "Pistol",
+            "Description": "Deals damage in an 8m x 2m line.",
+        }
+        self_centered_row = {
+            "Tab": "Pistol",
+            "Description": "Deals damage to enemies within 4m.",
+        }
+
+        aimed_values, owns_targeting = GENERATOR.generated_targeting_update(aimed_row, False)
+        self_centered_values, remains_owned = GENERATOR.generated_targeting_update(
+            self_centered_row,
+            owns_targeting)
+
+        self.assertEqual("M", aimed_values["Range"])
+        self.assertEqual("0x3E", aimed_values["TargetType"])
+        self.assertEqual("1", aimed_values["HostileSetting"])
+        self.assertEqual("P", self_centered_values["Range"])
+        self.assertEqual("0x01", self_centered_values["TargetType"])
+        self.assertEqual("1", self_centered_values["HostileSetting"])
+        self.assertTrue(remains_owned)
 
     def test_non_area_row_preserves_targeting_that_the_generator_does_not_own(self):
         row = {
@@ -102,6 +372,59 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
         self.assertIsNone(values)
         self.assertFalse(owns_targeting)
 
+    def test_persisted_queued_ownership_is_consumed_by_a_later_single_target_transition(self):
+        with tempfile.TemporaryDirectory() as directory:
+            temporary_root = Path(directory)
+            spells_path = temporary_root / "SWLOR_Haks" / "sw_2da" / "spells.2da"
+            spells_path.parent.mkdir(parents=True)
+            spells_path.write_text(
+                "2DA V2.0\n\n"
+                "Label Range TargetType HostileSetting TargetShape TargetSizeX TargetSizeY TargetFlags\n"
+                "123 Owned M 0x3E 1 rectangle 8 2 17\n")
+            ownership_path = temporary_root / "tools" / "GeneratedWeaponSpellTargeting.json"
+            ownership_path.parent.mkdir(parents=True)
+            ownership_path.write_text(json.dumps({"spell_ids": []}))
+
+            original_root = GENERATOR.ROOT
+            original_ownership_path = GENERATOR.GENERATED_TARGETING_OWNERSHIP
+            try:
+                GENERATOR.ROOT = temporary_root
+                GENERATOR.GENERATED_TARGETING_OWNERSHIP = ownership_path
+                GENERATOR.update_spell_targeting({
+                    "123": {
+                        "CastingTime": "Queued",
+                        "Description": "Queues your next auto-attack to deal weapon DMG + 10.",
+                    },
+                })
+
+                queued_row = GENERATOR.read_2da(spells_path)["123"]
+                self.assertEqual("M", queued_row["Range"])
+                self.assertEqual("0x03", queued_row["TargetType"])
+                self.assertEqual("0", queued_row["HostileSetting"])
+                self.assertEqual("****", queued_row["TargetShape"])
+                self.assertEqual(
+                    {"spell_ids": [123], "queued_spell_ids": [123]},
+                    json.loads(ownership_path.read_text()))
+
+                GENERATOR.update_spell_targeting({
+                    "123": {
+                        "CastingTime": "Instant",
+                        "Description": "Deals weapon DMG + 10 to one target.",
+                    },
+                })
+            finally:
+                GENERATOR.ROOT = original_root
+                GENERATOR.GENERATED_TARGETING_OWNERSHIP = original_ownership_path
+
+            transitioned_row = GENERATOR.read_2da(spells_path)["123"]
+            self.assertEqual("M", transitioned_row["Range"])
+            self.assertEqual("****", transitioned_row["TargetType"])
+            self.assertEqual("****", transitioned_row["HostileSetting"])
+            self.assertEqual("****", transitioned_row["TargetShape"])
+            self.assertEqual(
+                {"spell_ids": [], "queued_spell_ids": []},
+                json.loads(ownership_path.read_text()))
+
     def test_empty_update_clears_all_previously_owned_rows_and_ownership(self):
         with tempfile.TemporaryDirectory() as directory:
             temporary_root = Path(directory)
@@ -109,8 +432,8 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
             spells_path.parent.mkdir(parents=True)
             spells_path.write_text(
                 "2DA V2.0\n\n"
-                "Label TargetShape TargetSizeX TargetSizeY TargetFlags\n"
-                "123 Owned sphere 5 2 17\n")
+                "Label Range TargetType HostileSetting TargetShape TargetSizeX TargetSizeY TargetFlags\n"
+                "123 Owned M 0x3E 1 sphere 5 2 17\n")
             ownership_path = temporary_root / "tools" / "GeneratedWeaponSpellTargeting.json"
             ownership_path.parent.mkdir(parents=True)
             ownership_path.write_text(json.dumps({"spell_ids": [123]}))
@@ -130,7 +453,12 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
             self.assertEqual("****", row["TargetSizeX"])
             self.assertEqual("****", row["TargetSizeY"])
             self.assertEqual("****", row["TargetFlags"])
-            self.assertEqual({"spell_ids": []}, json.loads(ownership_path.read_text()))
+            self.assertEqual("****", row["Range"])
+            self.assertEqual("****", row["TargetType"])
+            self.assertEqual("****", row["HostileSetting"])
+            self.assertEqual(
+                {"spell_ids": [], "queued_spell_ids": []},
+                json.loads(ownership_path.read_text()))
 
 
 class StatConfiguredIconPatternTests(unittest.TestCase):

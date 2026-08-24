@@ -4,23 +4,23 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
-    public sealed class RestoredFPHasteStatusEffect : StatusEffectBase
+    public sealed class EnergizedFormsHasteStatusEffect : StatusEffectBase
     {
         private readonly int _haste;
 
         public override string Name => "Energized Forms: Haste";
-        public override EffectIconType Icon => EffectIconType.RestoredFPHasteStatusEffect;
+        public override EffectIconType Icon => EffectIconType.EnergizedFormsHasteStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
         public override bool PersistsOnLogout => false;
         public override bool SendsApplicationMessage => false;
         public override bool SendsWornOffMessage => false;
 
-        public RestoredFPHasteStatusEffect()
+        public EnergizedFormsHasteStatusEffect()
             : this(10)
         {
         }
 
-        public RestoredFPHasteStatusEffect(int haste)
+        public EnergizedFormsHasteStatusEffect(int haste)
         {
             _haste = haste;
             StatGroup.Stats[StatType.AttackDelayReductionPercent] = haste;
@@ -28,7 +28,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public override IStatusEffect Clone()
         {
-            return new RestoredFPHasteStatusEffect(_haste);
+            return new EnergizedFormsHasteStatusEffect(_haste);
         }
     }
 }

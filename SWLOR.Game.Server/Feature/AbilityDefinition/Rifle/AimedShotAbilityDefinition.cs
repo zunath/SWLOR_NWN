@@ -44,7 +44,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 new GeneratedWeaponAbilityProfile
                 {
                     IdleWindowSeconds = 3.0f,
-                    ExtraDamageIfIdle = 8
+                    ExtraDamageIfIdle = 8,
+                    ExtraDamageIfIdleFeedbackLabel = "Aimed Shot"
                 });
 
             ConfigureGeneratedWeaponAbility(
@@ -74,7 +75,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 new GeneratedWeaponAbilityProfile
                 {
                     IdleWindowSeconds = 3.0f,
-                    ExtraDamageIfIdle = 14
+                    ExtraDamageIfIdle = 14,
+                    ExtraDamageIfIdleFeedbackLabel = "Aimed Shot"
                 });
 
             ConfigureGeneratedWeaponAbility(
@@ -104,7 +106,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 new GeneratedWeaponAbilityProfile
                 {
                     IdleWindowSeconds = 3.0f,
-                    ExtraDamageIfIdle = 20
+                    ExtraDamageIfIdle = 20,
+                    ExtraDamageIfIdleFeedbackLabel = "Aimed Shot"
                 });
 
             ConfigureGeneratedWeaponAbility(
@@ -134,7 +137,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 new GeneratedWeaponAbilityProfile
                 {
                     IdleWindowSeconds = 3.0f,
-                    ExtraDamageIfIdle = 26
+                    ExtraDamageIfIdle = 26,
+                    ExtraDamageIfIdleFeedbackLabel = "Aimed Shot"
                 });
 
             return builder.Build();

@@ -96,7 +96,7 @@ namespace SWLOR.Game.Server.Feature.AIDefinition
                 if (ability.AITargetSelector != null)
                     _builder.Target(ability.AITargetSelector);
 
-                _builder
+                var action = _builder
                     .Score(ability.AIScore ?? AIScore.Ability(ability))
                     .Priority(priority);
 

@@ -982,6 +982,21 @@ namespace SWLOR.Game.Server.Service
                 StatusEffect.RemoveStatusEffect(creature, statusEffectType, false);
             }
 
+            var sourceOwnedStatusEffectTypes = Ability.GetAllAbilityDetails()
+                .Values
+                .Where(ability => ability.EffectiveLevelPerkType == perkType)
+                .SelectMany(ability => ability.SourceOwnedStatusEffectTypesRemovedOnPerkRefund)
+                .Distinct()
+                .ToList();
+
+            foreach (var statusEffectType in sourceOwnedStatusEffectTypes)
+            {
+                StatusEffect.RemoveStatusEffectsFromAllTargetsBySource(
+                    creature,
+                    statusEffectType,
+                    false);
+            }
+
             Combat.RefreshStatDrivenTrackerEffects(creature);
         }
 

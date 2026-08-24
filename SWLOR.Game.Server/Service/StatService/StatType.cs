@@ -1610,7 +1610,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value required for an opening auto-attack bonus.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         OpeningAutoAttackSkillType = 292,
 
         /// <summary>
@@ -1628,7 +1628,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Seconds without combat activity required before the next auto-attack is considered an opening attack.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         OpeningAutoAttackIdleSeconds = 295,
 
         /// <summary>
@@ -1856,13 +1856,13 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value that can receive idle-time ability bonuses.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         IdleSkillAbilitySkillType = 333,
 
         /// <summary>
         /// Seconds since the last combat ability required before idle-time ability bonuses apply.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         IdleSkillAbilityRequiredIdleSeconds = 334,
 
         /// <summary>
@@ -4261,22 +4261,23 @@ namespace SWLOR.Game.Server.Service.StatService
         CriticalDamageHighHPTargetPercentAdjustment = 741,
 
         /// <summary>
-        /// Ability hit chance adjustment against source-suppressed targets after they use a combat ability.
+        /// Accuracy adjustment for the next ranged attack against a source-suppressed target after
+        /// it uses a combat ability.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        AbilityHitChanceAgainstSuppressionStackPercentAdjustment = 742,
+        RangedAttackAccuracyAgainstSuppressionStackPercentAdjustment = 742,
 
         /// <summary>
-        /// Source-owned Suppression stack count required before a target's damage to other targets is adjusted.
+        /// Source-owned Suppression stack count required before the target's outgoing Damage Dealt is adjusted.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        SuppressionStackDamageDealtToOtherTargetsRequiredStacks = 743,
+        SuppressionStackDamageDealtRequiredStacks = 743,
 
         /// <summary>
-        /// Damage percent adjustment for suppressed targets attacking someone other than the Suppression source.
+        /// Damage Dealt percent adjustment applied to a source-suppressed target's outgoing damage.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenNegative)]
-        SuppressionStackDamageDealtToOtherTargetsPercentAdjustment = 744,
+        SuppressionStackDamageDealtPercentAdjustment = 744,
 
         /// <summary>
         /// Physical Defense percent applied when an ability with defense ignore hits.
@@ -5928,6 +5929,147 @@ namespace SWLOR.Game.Server.Service.StatService
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         QueuedWeaponAbilityCriticalRatePercentAdjustment = 1025,
+
+        /// <summary>Minimum target range for ranged ability long-range bonuses.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        RangedAbilityLongRangeMinimumRangeMeters = 1026,
+
+        /// <summary>Accuracy adjustment for ranged abilities at or beyond the long-range threshold.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RangedAbilityLongRangeHitChancePercentAdjustment = 1027,
+
+        /// <summary>Critical Rate adjustment for ranged abilities at or beyond the long-range threshold.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RangedAbilityLongRangeCriticalRatePercentAdjustment = 1028,
+
+        /// <summary>Defense reduction applied to targets hit by hostile ranged abilities.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RangedAbilityTargetDefenseReductionPercent = 1029,
+
+        /// <summary>Duration of RangedAbilityTargetDefenseReductionPercent.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RangedAbilityTargetDefenseReductionDurationSeconds = 1030,
+
+        /// <summary>
+        /// Skill selector for a conditional Critical Rate bonus captured when a queued weapon
+        /// ability is activated.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        QueuedWeaponAbilityActivationCriticalRateSkillType = 1031,
+
+        /// <summary>
+        /// Conditional Critical Rate captured when a queued weapon ability is activated and held
+        /// until that queue resolves or expires.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        QueuedWeaponAbilityActivationCriticalRatePercentAdjustment = 1032,
+
+        /// <summary>
+        /// Critical damage adjustment applied to a matching opening auto-attack after the
+        /// configured idle window.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        OpeningAutoAttackCriticalDamagePercentAdjustment = 1033,
+
+        /// <summary>
+        /// One-shot critical damage adjustment prepared for the current opening auto-attack.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CurrentAutoAttackCriticalDamagePercentAdjustment = 1034,
+
+        /// <summary>
+        /// Independent SkillType selector for a second idle-time ability bonus channel.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        AlternateIdleSkillAbilitySkillType = 1035,
+
+        /// <summary>
+        /// Seconds since the last offensive activity required by the alternate idle-time channel.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        AlternateIdleSkillAbilityRequiredIdleSeconds = 1036,
+
+        /// <summary>
+        /// Flat damage bonus supplied by the alternate idle-time ability channel.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AlternateIdleSkillAbilityDamageBonus = 1037,
+
+        /// <summary>
+        /// Hit chance bonus supplied by the alternate idle-time ability channel.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AlternateIdleSkillAbilityHitChancePercentAdjustment = 1038,
+
+        /// <summary>
+        /// Critical damage bonus supplied by the alternate idle-time ability channel.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AlternateIdleSkillAbilityCriticalDamagePercentAdjustment = 1039,
+
+        /// <summary>
+        /// Attempt-specific opening damage carried from a landed auto-attack into its queued
+        /// weapon ability impact.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        QueuedWeaponAbilityDamageBonus = 1040,
+
+        /// <summary>
+        /// Attempt-specific opening critical damage carried from a landed auto-attack into its
+        /// queued weapon ability impact.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        QueuedWeaponAbilityCriticalDamagePercentAdjustment = 1041,
+
+        /// <summary>
+        /// Idle-time damage captured when a queued weapon ability is activated.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        QueuedWeaponAbilityIdleDamageBonus = 1042,
+
+        /// <summary>
+        /// Idle-time Accuracy captured when a queued weapon ability is activated.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        QueuedWeaponAbilityIdleHitChancePercentAdjustment = 1043,
+
+        /// <summary>
+        /// Idle-time Critical Damage captured when a queued weapon ability is activated.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        QueuedWeaponAbilityIdleCriticalDamagePercentAdjustment = 1044,
+
+        /// <summary>Marker for idle conditional bonuses captured when a casted weapon ability activates.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        WeaponAbilityActivationIdleSnapshot = 1045,
+
+        /// <summary>Flat damage captured from the activation-time idle condition.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        WeaponAbilityActivationIdleDamageBonus = 1046,
+
+        /// <summary>Critical Rate captured from the activation-time idle condition.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        WeaponAbilityActivationIdleCriticalRatePercentAdjustment = 1047,
+
+        /// <summary>Defense ignore captured from the activation-time idle condition.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        WeaponAbilityActivationIdleDefenseIgnorePercent = 1048,
+
+        /// <summary>Skill selector for idle bonuses captured when a casted ability activates.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        AbilityActivationIdleSkillType = 1049,
+
+        /// <summary>Idle ability damage captured at cast activation.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AbilityActivationIdleDamageBonus = 1050,
+
+        /// <summary>Idle ability Accuracy captured at cast activation.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AbilityActivationIdleHitChancePercentAdjustment = 1051,
+
+        /// <summary>Idle ability critical damage captured at cast activation.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AbilityActivationIdleCriticalDamagePercentAdjustment = 1052,
 
     }
 

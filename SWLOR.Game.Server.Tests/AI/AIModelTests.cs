@@ -1343,6 +1343,31 @@ public class AIModelTests
     }
 
     [Test]
+    public void GuardedBiteAISelectionUsesTheSharedAbilityRecastGate()
+    {
+        var npcAiSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Service",
+            "AIService",
+            "NPCAI.cs");
+        var abilitySource = ReadSource(
+            "SWLOR.Game.Server",
+            "Service",
+            "Ability.cs");
+        var canUseAbility = ExtractMethodBody(npcAiSource, "private static bool CanUseAbility");
+        var abilityValidation = ExtractMethodBody(abilitySource, "public static bool CanUseAbility");
+
+        canUseAbility.Should().Contain("return Ability.CanUseAbility(context.Self, target, action.Feat, effectiveLevel, targetLocation);");
+        abilityValidation.Should().Contain("var (isOnRecast, timeToWait) = Recast.IsOnRecastDelay(activator, ability.RecastGroup);");
+        abilityValidation.Should().Contain("if (isOnRecast)");
+
+        Ability.CacheData();
+        var guardedBite = Ability.GetAbilityDetail(FeatType.GuardedBite1);
+        guardedBite.RecastGroup.Should().Be(RecastGroup.GuardedBite);
+        guardedBite.RecastDelay(0).Should().Be(12f);
+    }
+
+    [Test]
     public void CompanionCombatProcessingResumesRestBeforeTheBusyGuard()
     {
         var source = ReadSource(

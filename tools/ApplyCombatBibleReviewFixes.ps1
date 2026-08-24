@@ -56,6 +56,20 @@ $perkChanges = @(
         }
     },
     @{
+        Sheet = "Rifle"
+        PerkName = "Headshot I"
+        Values = @{
+            "Casting Time" = "Queued"
+        }
+    },
+    @{
+        Sheet = "Rifle"
+        PerkName = "Headshot II"
+        Values = @{
+            "Casting Time" = "Queued"
+        }
+    },
+    @{
         Sheet = "Katar"
         PerkName = "Guard Counter I"
         Values = @{

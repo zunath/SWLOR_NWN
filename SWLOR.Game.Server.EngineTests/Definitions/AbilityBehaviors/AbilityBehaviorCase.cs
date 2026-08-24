@@ -70,6 +70,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
         public bool ExpectsRecast { get; set; }
 
         /// <summary>
+        /// After the first activation commits its recast, retry the same ability immediately
+        /// through TryUseAbility with full resources and assert the shared recast denial.
+        /// </summary>
+        public bool VerifiesImmediateRecastRejection { get; set; }
+
+        /// <summary>
         /// The ability's impact restores part of its own cost (e.g. RestoreStaminaOnHit,
         /// restore-on-crit riders), so the exact post-deduction pool is unobservable - the
         /// refund lands in the same window as the deduction and may be conditional. Cost

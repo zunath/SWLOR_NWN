@@ -167,6 +167,7 @@ namespace SWLOR.Game.Server.Feature
                 receiver => $"{PlayerName.GetDisplayName(receiver, activator)}'s ability has been interrupted.");
             SetLocalInt(activator, activation.ActivationId, (int)ActivationStatus.Interrupted);
             Activity.ClearBusy(activator);
+            ClearAbilityActivationIdleSnapshots(activator);
 
             if (activation.Ability.IsChanneled)
                 activation.Ability.ChannelInterruptAction?.Invoke(activator);
@@ -174,6 +175,12 @@ namespace SWLOR.Game.Server.Feature
             _activeAbilityActivations.Remove(activator);
             ResumeAttack(activator, activation.ResumeAttackTarget);
             return true;
+        }
+
+        private static void ClearAbilityActivationIdleSnapshots(uint activator)
+        {
+            Combat.ClearAbilityActivationIdleBonuses(activator);
+            Combat.ClearWeaponAbilityActivationIdleBonuses(activator);
         }
 
         private static void ClearActiveAbilityActivation(uint activator, string activationId)
@@ -291,11 +298,27 @@ namespace SWLOR.Game.Server.Feature
             {
                 if (Ability.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
                 {
+                    Combat.ClearQueuedWeaponAbilityActivationBonuses(activator);
+                    var executeQueue = ability.ActivationAction == null ||
+                                       ability.ActivationAction.Invoke(
+                                           activator,
+                                           target,
+                                           ability.AbilityLevel,
+                                           targetLocation);
+                    if (!executeQueue)
+                    {
+                        Combat.ClearQueuedWeaponAbilityActivationBonuses(activator);
+                        Combat.ClearQueuedWeaponAbilityAttemptBonuses(activator);
+                        ClearAbilityActivationIdleSnapshots(activator);
+                        return true;
+                    }
+
                     if(ability.DisplaysActivationMessage)
                         Messaging.SendMessageNearbyToPlayers(
                             activator,
                             receiver => $"{PlayerName.GetDisplayName(receiver, activator)} queues {ability.Name} for the next attack.");
                     QueueWeaponAbility(activator, target, ability, feat);
+                    Combat.TrackQueuedWeaponAbilityUse(activator, ability);
                     return true;
                 }
             }
@@ -555,6 +578,7 @@ namespace SWLOR.Game.Server.Feature
                 var activatorIsAlive = GetCurrentHitPoints(activator) > 0;
                 if (!activatorIsAlive)
                 {
+                    ClearAbilityActivationIdleSnapshots(activator);
                     CancelActivation(false);
                     return;
                 }
@@ -563,6 +587,7 @@ namespace SWLOR.Game.Server.Feature
                 // started; completing the channel only releases the activator.
                 if (ability.IsChanneled)
                 {
+                    ClearAbilityActivationIdleSnapshots(activator);
                     CancelActivation(true);
                     return;
                 }
@@ -571,6 +596,7 @@ namespace SWLOR.Game.Server.Feature
                     CompanionControl.IsRegisteredCompanion(activator) &&
                     !CompanionControl.IsHostileAbilityTargetAuthorized(activator, ability, target))
                 {
+                    ClearAbilityActivationIdleSnapshots(activator);
                     CancelActivation(true);
                     return;
                 }
@@ -582,6 +608,7 @@ namespace SWLOR.Game.Server.Feature
 
                 if (!Ability.CanUseAbility(activator, target, feat, effectivePerkLevel, targetLocation))
                 {
+                    ClearAbilityActivationIdleSnapshots(activator);
                     CancelActivation(true);
                     return;
                 }
@@ -628,6 +655,7 @@ namespace SWLOR.Game.Server.Feature
 
             if (executeImpact != true)
             {
+                ClearAbilityActivationIdleSnapshots(activator);
                 ClearActiveAbilityActivation(activator, activationId);
                 DeleteLocalInt(activator, activationId);
                 CancelActivationTargetingTelegraphs(activationTelegraphIds);
@@ -777,16 +805,45 @@ namespace SWLOR.Game.Server.Feature
             var activeWeaponAbility = (FeatType)GetLocalInt(activator, ActiveAbilityFeatIdName);
             if (!Ability.IsFeatRegistered(activeWeaponAbility))
             {
+                ClearQueuedAbility(activator);
                 ability = null;
                 return false;
             }
 
             ability = Ability.GetAbilityDetail(activeWeaponAbility);
-            if (ability.ActivationType == AbilityActivationType.Weapon)
+            if (ability.ActivationType == AbilityActivationType.Weapon &&
+                IsQueuedWeaponAbilityStillAvailable(activator, activeWeaponAbility, ability))
+            {
                 return true;
+            }
 
+            ClearQueuedAbility(activator);
             ability = null;
             return false;
+        }
+
+        private static bool IsQueuedWeaponAbilityStillAvailable(
+            uint activator,
+            FeatType feat,
+            AbilityDetail ability)
+        {
+            if (!GetHasFeat(feat, activator))
+                return false;
+
+            var effectivePerkLevel =
+                ability.EffectiveLevelPerkType == PerkType.Invalid
+                    ? 1
+                    : Perk.GetPerkLevel(activator, ability.EffectiveLevelPerkType);
+            if (effectivePerkLevel <= 0 || ability.AbilityLevel > effectivePerkLevel)
+                return false;
+
+            return !Perk.ShouldEnforceActiveAbilityFeatReplacement(
+                       activator,
+                       ability.EffectiveLevelPerkType) ||
+                   Perk.IsCurrentActiveAbilityFeat(
+                       feat,
+                       ability.EffectiveLevelPerkType,
+                       effectivePerkLevel);
         }
 
         private static List<string> DisplayActivationTargetingTelegraphs(
@@ -964,16 +1021,12 @@ namespace SWLOR.Game.Server.Feature
             // If this method was triggered by our own armor (from getting hit), return.
             if (GetBaseItemType(item) == BaseItem.Armor) return;
 
-            var activeWeaponAbility = (FeatType)GetLocalInt(activator, ActiveAbilityFeatIdName);
             var activeAbilityEffectivePerkLevel = GetLocalInt(activator, ActiveAbilityEffectivePerkLevelName);
 
-            if (!Ability.IsFeatRegistered(activeWeaponAbility))
-            {
-                ClearQueuedAbility(activator);
+            if (!TryGetQueuedWeaponAbility(activator, out var abilityDetail))
                 return;
-            }
 
-            var abilityDetail = Ability.GetAbilityDetail(activeWeaponAbility);
+            var activeWeaponAbility = (FeatType)GetLocalInt(activator, ActiveAbilityFeatIdName);
             if (!Combat.CanItemTriggerWeaponAbility(item, abilityDetail.SkillType))
                 return;
 
@@ -1044,6 +1097,8 @@ namespace SWLOR.Game.Server.Feature
         /// <param name="player">The player to clear</param>
         private static void ClearQueuedAbility(uint player)
         {
+            Combat.ClearQueuedWeaponAbilityActivationBonuses(player);
+            Combat.ClearQueuedWeaponAbilityAttemptBonuses(player);
             var featType = (FeatType)GetLocalInt(player, ActiveAbilityFeatIdName);
             if (Ability.IsFeatRegistered(featType))
             {

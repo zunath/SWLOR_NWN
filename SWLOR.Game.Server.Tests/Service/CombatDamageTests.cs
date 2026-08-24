@@ -253,7 +253,8 @@ public class CombatDamageTests
         abilitySource.Should().Contain("Combat.ApplyCriticalDamageModifier(");
         abilitySource.Should().Contain("idleBonuses.CriticalDamagePercentAdjustment");
         abilitySource.Should().Contain("Combat.GetAbilityDamageFlatAdjustment(activator, perkType, skillType)");
-        damageRollSource.Should().Contain("Combat.ApplyCriticalDamageModifier(attacker.m_idSelf, damage, effectiveCritical, skillType, target.m_idSelf)");
+        damageRollSource.Should().Contain("Combat.ConsumeOpeningAutoAttackCriticalDamageAdjustment(attacker.m_idSelf)");
+        damageRollSource.Should().Contain("openingCriticalDamageAdjustment);");
         damageRollSource.Should().Contain("Combat.GetRangedAttackDamageFlatAdjustment(attacker.m_idSelf, skillType)");
         damageRollSource.Should().Contain("Combat.ApplyRangedAttackDefenseIgnore(attacker.m_idSelf, defense, skillType)");
         damageRollSource.Should().Contain("ApplyMightModifierDamageBonus(attacker, weapon, damageProfile)");
@@ -270,6 +271,116 @@ public class CombatDamageTests
         Combat.IsRangedWeaponSkill(SkillType.Devices).Should().BeFalse();
         Stat.GetStatTypeCategory(StatType.RangedAttackDamageFlatAdjustment).Should().Be(StatTypeCategory.BeneficialWhenPositive);
         Stat.GetStatTypeCategory(StatType.RangedAttackDefenseIgnorePercentAdjustment).Should().Be(StatTypeCategory.BeneficialWhenPositive);
+    }
+
+    [Test]
+    public void IdleReadiness_UsesCompletedOffensiveActivityForRefreshAndDelayedGuard()
+    {
+        var root = FindRepositoryRoot();
+        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var refresh = ExtractMethod(combatSource, "private static void RefreshIdleReadiness(uint creature)");
+        var schedule = ExtractMethod(combatSource, "private static void ScheduleIdleReadinessRefresh(uint creature)");
+
+        refresh.Should().Contain("GetLastCompletedOffensiveActivityAt(creature)");
+        refresh.Should().NotContain("GetLastOffensiveActivityAt(creature)");
+        schedule.Should().Contain("var scheduledActivity = GetLastCompletedOffensiveActivityAt(creature);");
+        schedule.Should().Contain("GetLastCompletedOffensiveActivityAt(creature) == scheduledActivity");
+        schedule.Should().NotContain("GetLastOffensiveActivityAt(creature)");
+    }
+
+    [Test]
+    public void IdleReadiness_SchedulesAfterCompletedAbilityTimestampIsRecorded()
+    {
+        var root = FindRepositoryRoot();
+        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var trackAttempt = ExtractMethod(combatSource, "public static void TrackHostileAbilityActivity(uint creature, bool countAsCompletedOffensiveActivity = false)");
+        var trackCompleted = ExtractMethod(combatSource, "private static void TrackCombatAbilityUse(uint activator, AbilityDetail ability)");
+
+        trackAttempt.Should().Contain("ScheduleIdleReadinessRefresh(creature);",
+            "a cancelled cast must not leave its readiness marker permanently removed");
+        var timestampIndex = trackCompleted.IndexOf("_lastCombatAbilityUse[activator] = now;", StringComparison.Ordinal);
+        var scheduleIndex = trackCompleted.IndexOf("ScheduleIdleReadinessRefresh(activator);", StringComparison.Ordinal);
+        timestampIndex.Should().BeGreaterThanOrEqualTo(0);
+        scheduleIndex.Should().BeGreaterThan(timestampIndex);
+    }
+
+    [Test]
+    public void IdleActivity_ExcludesFriendlyAbilitiesAndConsumesQueuedHostileReadinessAtQueueTime()
+    {
+        var root = FindRepositoryRoot();
+        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var abilitySource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "WeaponActiveAbilityDefinitionBase.cs"));
+        var usePerkFeatSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "UsePerkFeat.cs"));
+        var trackCompleted = ExtractMethod(combatSource, "private static void TrackCombatAbilityUse(uint activator, AbilityDetail ability)");
+        trackCompleted.Should().Contain("if (!ability.IsHostileAbility)");
+        trackCompleted.Should().Contain("return;");
+
+        var activationIndex = abilitySource.IndexOf("profile.PrepareQueuedActivation(activator, skill);", StringComparison.Ordinal);
+        var queueIndex = usePerkFeatSource.IndexOf(
+            "QueueWeaponAbility(activator, target, ability, feat);",
+            StringComparison.Ordinal);
+        var queueActivityIndex = usePerkFeatSource.IndexOf(
+            "Combat.TrackQueuedWeaponAbilityUse(activator, ability);",
+            StringComparison.Ordinal);
+        activationIndex.Should().BeGreaterThanOrEqualTo(0);
+        queueActivityIndex.Should().BeGreaterThan(queueIndex,
+            "queued idle riders snapshot during activation and activity is recorded only after the queue succeeds");
+        abilitySource.Should().NotContain("Combat.TrackHostileAbilityActivity(activator, true);");
+    }
+
+    [Test]
+    public void SuppressionRangedAccuracy_UsesConsumeNamingAtEveryCallSite()
+    {
+        var root = FindRepositoryRoot();
+        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var nativeSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
+
+        combatSource.Should().Contain("public static int ConsumeSuppressionRangedAttackAccuracyAdjustment(");
+        combatSource.Should().NotContain("GetSuppressionRangedAttackAccuracyAdjustment");
+        nativeSource.Should().Contain("Combat.ConsumeSuppressionRangedAttackAccuracyAdjustment(");
+        nativeSource.Should().NotContain("Combat.GetSuppressionRangedAttackAccuracyAdjustment(");
+        var overwatchIndex = nativeSource.IndexOf(
+            "Combat.ConsumeSuppressionRangedAttackAccuracyAdjustment(",
+            StringComparison.Ordinal);
+        var hitChanceIndex = nativeSource.IndexOf(
+            "var hitChanceModifier =",
+            StringComparison.Ordinal);
+        var hitRateIndex = nativeSource.IndexOf(
+            "var hitRate = Combat.CalculateHitRate(",
+            StringComparison.Ordinal);
+        overwatchIndex.Should().BeGreaterThan(hitChanceIndex,
+            "Overwatch's percentage bonus must enter the hit-chance modifier path");
+        overwatchIndex.Should().BeLessThan(hitRateIndex);
+        nativeSource.Should().NotContain(
+            "accuracyModifiers += Combat.ConsumeSuppressionRangedAttackAccuracyAdjustment(",
+            "native Overwatch accuracy is a percentage modifier, not raw attack accuracy");
+    }
+
+    [Test]
+    public void OpeningAutoAttack_UsesCompletedActivityAndClearsOnDefensiveAvoidance()
+    {
+        var root = FindRepositoryRoot();
+        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var nativeSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
+        var prepare = ExtractMethod(combatSource, "public static int PrepareOpeningAutoAttack(uint attacker, SkillType skillType)");
+
+        prepare.Should().Contain("GetLastCompletedOffensiveActivityAt(attacker)",
+            "a completed hostile ability must restart Steady Aim and Dead Center's idle window");
+        nativeSource.Should().MatchRegex(
+            @"attacker\.ResolveDefensiveEffects\(defender, isHit \? 1 : 0\);[\s\S]*?if \(!IsSuccessfulAttackResult\(pAttackData\.m_nAttackResult\)\)[\s\S]*?Combat\.ClearOpeningAutoAttackModifiers\(attacker\.m_idSelf\);",
+            "concealment, miss, or deflection must consume opening riders before another swing can inherit them");
+        new OpeningAttackReadyStatusEffect().Name.Should().Be("Opening Attack Ready");
+        var refresh = ExtractMethod(combatSource, "private static void RefreshIdleReadiness(uint creature)");
+        refresh.Should().Contain("Opening Attack Ready");
     }
 
     [Test]
@@ -419,8 +530,37 @@ public class CombatDamageTests
             nativeCriticalPreparationIndex - queuedWeaponHitBranchIndex);
         queuedWeaponHitBranchBody.Should().Contain("pAttackData.m_nAttackResult = AttackResultRegularHit;");
         queuedWeaponHitBranchBody.Should().Contain("else");
+        queuedWeaponHitBranchBody.Should().NotContain("Combat.PrepareQueuedWeaponAbilityOpeningAttack");
         queuedWeaponHitBranchBody.Should().NotContain("Combat.PrepareOpeningAutoAttack");
         queuedWeaponHitBranchBody.Should().NotContain("StatType.CurrentIncomingAttackMinimumDamage");
+        abilitySource.Should().Contain("Combat.ConsumeQueuedWeaponAbilityBonuses(activator, abilitySkillType)");
+        abilitySource.Should().Contain("queuedWeaponBonuses.DamageBonus");
+        abilitySource.Should().Contain("queuedWeaponBonuses.CriticalDamagePercentAdjustment");
+
+        var weaponAbilityBaseSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "WeaponActiveAbilityDefinitionBase.cs"));
+        weaponAbilityBaseSource.Should().Contain(
+            "Combat.StoreQueuedWeaponAbilityActivationIdleBonuses(activator, skillType);");
+        combatSource.Should().Contain("public static void StoreQueuedWeaponAbilityActivationIdleBonuses(");
+        combatSource.Should().Contain("QueuedWeaponAbilityIdleDamageBonus");
+        combatSource.Should().Contain("QueuedWeaponAbilityIdleCriticalDamagePercentAdjustment");
+        combatSource.Should().Contain(
+            "criticalDamage = Math.Max(criticalDamage, TemporaryStatModifier.Consume(",
+            "a queued Headshot is both the opening attack and the queued ability, so Dead Center must apply only once");
+        combatSource.Should().NotContain(
+            "criticalDamage += TemporaryStatModifier.Consume(",
+            "the same Dead Center rider must not stack through both opening-attack channels");
+        var queuedAccuracyIndex = attackRollSource.IndexOf(
+            "Combat.GetQueuedWeaponAbilityActivationHitChanceAdjustment(",
+            StringComparison.Ordinal);
+        var hitRateIndex = attackRollSource.IndexOf("Combat.CalculateHitRate(", StringComparison.Ordinal);
+        queuedAccuracyIndex.Should().BeGreaterThanOrEqualTo(0);
+        queuedAccuracyIndex.Should().BeLessThan(hitRateIndex,
+            "Patience Accuracy must affect the native roll that lands a queued Headshot");
     }
 
     [Test]

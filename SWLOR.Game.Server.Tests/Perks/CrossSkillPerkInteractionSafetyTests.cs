@@ -13,6 +13,62 @@ namespace SWLOR.Game.Server.Tests.Perks;
 public class CrossSkillPerkInteractionSafetyTests
 {
     [Test]
+    public void IdleAbilityBonuses_KeepStaffAndRifleChannelsIndependent()
+    {
+        var perks = BuildPerksWithout2daLookup().ToDictionary(perk => perk.Type);
+
+        static PerkLevel MaxLevel(PerkDetail perk) => perk.PerkLevels
+            .OrderByDescending(level => level.Key)
+            .First()
+            .Value;
+
+        var patientSentinel = MaxLevel(perks[PerkType.PatientSentinel]);
+        patientSentinel.StatBonuses.Should().Contain(bonus =>
+            bonus.Stat == StatType.AlternateIdleSkillAbilitySkillType);
+        patientSentinel.StatBonuses.Should().NotContain(bonus =>
+            bonus.Stat == StatType.IdleSkillAbilitySkillType,
+            "Staff and Rifle idle payloads need independent selectors and bonus fields");
+
+        var patience = MaxLevel(perks[PerkType.Patience]);
+        patience.StatBonuses.Should().Contain(bonus =>
+            bonus.Stat == StatType.IdleSkillAbilitySkillType);
+        patience.StatBonuses.Should().NotContain(bonus =>
+            bonus.Stat == StatType.AlternateIdleSkillAbilitySkillType);
+
+        Stat.GetStatTypeAggregation(StatType.IdleSkillAbilityRequiredIdleSeconds)
+            .Should().Be(StatTypeAggregation.Maximum);
+        Stat.GetStatTypeAggregation(StatType.AlternateIdleSkillAbilityRequiredIdleSeconds)
+            .Should().Be(StatTypeAggregation.Maximum);
+        Stat.GetStatTypeAggregation(StatType.OpeningAutoAttackIdleSeconds)
+            .Should().Be(StatTypeAggregation.Maximum);
+        Stat.AggregateStatAdjustment(StatType.OpeningAutoAttackIdleSeconds, 3, 3)
+            .Should().Be(3,
+                "Steady Aim and Dead Center each promise the same three-second opening window");
+
+        var root = FindRepositoryRoot();
+        var combat = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
+        combat.Should().Contain("_idleSkillAbilityStatChannels");
+        combat.Should().Contain("StatType.AlternateIdleSkillAbilitySkillType");
+        combat.Should().Contain("foreach (var channel in _idleSkillAbilityStatChannels)");
+        combat.Should().Contain("typeof(IdleSkillAbilityReadyStatusEffect)");
+        combat.Should().Contain("ColorToken.Combat(\"Idle Skill Ability Ready\")");
+        var restoreOnLogin = ExtractMethod(combat, "public static void RestoreIdleReadinessOnPlayerEnter()");
+        restoreOnLogin.Should().Contain("RefreshIdleReadiness(creature)",
+            "non-persistent readiness markers must be rebuilt when a player logs in");
+        restoreOnLogin.Should().Contain("ScheduleIdleReadinessRefresh(creature)");
+        combat.Should().NotContain("Patience Ready",
+            "the shared readiness marker also represents Staff's Patient Sentinel channel");
+
+        var idleReadyStatus = Read(
+            root,
+            "SWLOR.Game.Server",
+            "Feature",
+            "StatusEffectDefinition",
+            "IdleSkillAbilityReadyStatusEffect.cs");
+        idleReadyStatus.Should().Contain("public override string Name => \"Idle Skill Ability Ready\"");
+    }
+
+    [Test]
     public void ChargedBlows_NextAttackBonusSupportsAbilitiesAndAutoAttacks()
     {
         var root = FindRepositoryRoot();

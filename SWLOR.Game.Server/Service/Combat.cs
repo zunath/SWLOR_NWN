@@ -10010,8 +10010,6 @@ namespace SWLOR.Game.Server.Service
             if (!hasReadyChannel)
                 return (0, 0, 0);
 
-            StatusEffect.RemoveStatusEffect(activator, typeof(PatienceReadyStatusEffect), false);
-
             return (damageBonus, accuracyBonus, criticalDamageBonus);
         }
 

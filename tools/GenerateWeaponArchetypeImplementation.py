@@ -634,7 +634,11 @@ def generated_targeting_update(row, was_generator_owned):
     if not inferred:
         if not was_generator_owned:
             return (targeting_values or None), False
-        targeting_values.update({header: "****" for header in generated_targeting_fields})
+        # Headshot's queued self activation is not generator-owned targeting, but its
+        # non-hostile/self-compatible spell fields are still canonical. Preserve those fields
+        # when cleaning up targeting that the generator owned on a prior pass.
+        fields_to_clear = ("Range",) if base == "Headshot" else generated_targeting_fields
+        targeting_values.update({header: "****" for header in fields_to_clear})
         targeting_values.update({
             "TargetShape": "****",
             "TargetSizeX": "****",

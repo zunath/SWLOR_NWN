@@ -98,6 +98,24 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
         self.assertEqual("0x03", values["TargetType"])
         self.assertEqual("0", values["HostileSetting"])
 
+    def test_headshot_cleanup_preserves_self_compatible_spell_profile(self):
+        row = {
+            "Tab": "Rifle",
+            "PerkName": "Headshot I",
+            "Description": "Queues your next auto-attack to deal weapon DMG + 16.",
+        }
+
+        values, owns_targeting = GENERATOR.generated_targeting_update(row, True)
+
+        self.assertFalse(owns_targeting)
+        self.assertEqual("****", values["Range"])
+        self.assertEqual("0x03", values["TargetType"])
+        self.assertEqual("0", values["HostileSetting"])
+        self.assertEqual("****", values["TargetShape"])
+        self.assertEqual("****", values["TargetSizeX"])
+        self.assertEqual("****", values["TargetSizeY"])
+        self.assertEqual("****", values["TargetFlags"])
+
     def test_dead_center_applies_to_abilities_and_opening_auto_attacks(self):
         row = {
             "Tab": "Rifle",

@@ -1339,8 +1339,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     profile.PrepareQueuedActivation(activator, skill);
                     if (profile.IsQueuedWeaponAbility)
                         Combat.PrepareQueuedWeaponAbilityOpeningAttackAtActivation(activator, skill);
-                    if (isHostile && profile.IsQueuedWeaponAbility)
-                        Combat.TrackHostileAbilityActivity(activator, true);
                     return isHostile || isFriendlyTarget || statusEffect == null || ToggleSelfStatus(activator, statusEffect);
                 })
                 .HasImpactAction((activator, target, level, targetLocation) =>

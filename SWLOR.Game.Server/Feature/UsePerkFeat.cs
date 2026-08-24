@@ -318,6 +318,7 @@ namespace SWLOR.Game.Server.Feature
                             activator,
                             receiver => $"{PlayerName.GetDisplayName(receiver, activator)} queues {ability.Name} for the next attack.");
                     QueueWeaponAbility(activator, target, ability, feat);
+                    Combat.TrackQueuedWeaponAbilityUse(activator, ability);
                     return true;
                 }
             }

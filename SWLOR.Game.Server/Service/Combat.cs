@@ -5023,9 +5023,18 @@ namespace SWLOR.Game.Server.Service
             _firstCombatAttackConsumed.Remove(creature);
             _lastAttackActivity.Remove(creature);
             _lastCombatAbilityUse.Remove(creature);
+            var suppressionSourcesToRefresh = _pendingSuppressionAbilityUses.Keys
+                .Where(x => x.Item1 == creature || x.Item2 == creature)
+                .Select(x => x.Item1)
+                .Distinct()
+                .ToList();
             foreach (var key in _pendingSuppressionAbilityUses.Keys.Where(x => x.Item1 == creature || x.Item2 == creature).ToList())
             {
                 _pendingSuppressionAbilityUses.Remove(key);
+            }
+            foreach (var source in suppressionSourcesToRefresh)
+            {
+                RefreshOverwatchMarker(source, DateTime.UtcNow);
             }
 
             _hostileAbilitySequenceStates.Remove(creature);
@@ -5108,6 +5117,12 @@ namespace SWLOR.Game.Server.Service
             ApplyHostileAbilitySequenceEffects(activator, feat, ability);
             ApplyHostileAbilityResourceRestoreEffects(activator, ability);
 
+            if (ability.ActivationType != AbilityActivationType.Weapon)
+                TrackCombatAbilityUse(activator, ability);
+        }
+
+        public static void TrackQueuedWeaponAbilityUse(uint activator, AbilityDetail ability)
+        {
             TrackCombatAbilityUse(activator, ability);
         }
 

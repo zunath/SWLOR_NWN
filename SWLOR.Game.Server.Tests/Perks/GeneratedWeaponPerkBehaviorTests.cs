@@ -384,12 +384,9 @@ public class GeneratedWeaponPerkBehaviorTests
         var snapshotIndex = source.IndexOf(
             "Combat.PrepareQueuedWeaponAbilityOpeningAttackAtActivation(activator, skill);",
             StringComparison.Ordinal);
-        var activityIndex = source.IndexOf(
-            "Combat.TrackHostileAbilityActivity(activator, true);",
-            StringComparison.Ordinal);
-
         snapshotIndex.Should().BeGreaterThanOrEqualTo(0);
-        activityIndex.Should().BeGreaterThan(snapshotIndex);
+        source.Should().NotContain("Combat.TrackHostileAbilityActivity(activator, true);",
+            "queued ability use is recorded only after the queue succeeds");
         var combatSource = File.ReadAllText(Path.Combine(
             root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
         var openingSnapshotIndex = combatSource.IndexOf(
@@ -442,6 +439,18 @@ public class GeneratedWeaponPerkBehaviorTests
         rejectedQueueBody.Should().Contain("Combat.ClearQueuedWeaponAbilityActivationBonuses(activator);");
         rejectedQueueBody.Should().Contain("Combat.ClearQueuedWeaponAbilityAttemptBonuses(activator);");
         rejectedQueueBody.Should().Contain("ClearAbilityActivationIdleSnapshots(activator);");
+        var queuedUseIndex = usePerkFeatSource.IndexOf(
+            "Combat.TrackQueuedWeaponAbilityUse(activator, ability);",
+            StringComparison.Ordinal);
+        var queueIndex = usePerkFeatSource.IndexOf(
+            "QueueWeaponAbility(activator, target, ability, feat);",
+            StringComparison.Ordinal);
+        queuedUseIndex.Should().BeGreaterThan(queueIndex,
+            "Suppression and offensive activity should be recorded only after the weapon ability is queued");
+        var combatActivationSource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        combatActivationSource.Should().Contain("if (ability.ActivationType != AbilityActivationType.Weapon)");
+        combatActivationSource.Should().Contain("public static void TrackQueuedWeaponAbilityUse(uint activator, AbilityDetail ability)");
     }
 
     [Test]
@@ -1159,7 +1168,7 @@ public class GeneratedWeaponPerkBehaviorTests
             guardCounter[feat].ActivationType.Should().Be(AbilityActivationType.Weapon);
             guardCounter[feat].IsHostileAbility.Should().BeTrue();
             guardCounter[feat].RequiresTarget.Should().BeFalse();
-            AssertFeatSpellTargeting(featRows, spellRows, feat, "1", "****", "P", "0x01", "0");
+            AssertFeatSpellTargeting(featRows, spellRows, feat, "1", "****", "P", "0x03", "0");
         }
 
         var guardCounterSource = File.ReadAllText(Path.Combine(

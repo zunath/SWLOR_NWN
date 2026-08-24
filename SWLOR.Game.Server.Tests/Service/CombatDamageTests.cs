@@ -315,18 +315,26 @@ public class CombatDamageTests
             "Feature",
             "AbilityDefinition",
             "WeaponActiveAbilityDefinitionBase.cs"));
+        var usePerkFeatSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "UsePerkFeat.cs"));
         var trackCompleted = ExtractMethod(combatSource, "private static void TrackCombatAbilityUse(uint activator, AbilityDetail ability)");
         trackCompleted.Should().Contain("if (!ability.IsHostileAbility)");
         trackCompleted.Should().Contain("return;");
 
         var activationIndex = abilitySource.IndexOf("profile.PrepareQueuedActivation(activator, skill);", StringComparison.Ordinal);
-        var queueActivityIndex = abilitySource.IndexOf(
-            "Combat.TrackHostileAbilityActivity(activator, true);",
+        var queueIndex = usePerkFeatSource.IndexOf(
+            "QueueWeaponAbility(activator, target, ability, feat);",
+            StringComparison.Ordinal);
+        var queueActivityIndex = usePerkFeatSource.IndexOf(
+            "Combat.TrackQueuedWeaponAbilityUse(activator, ability);",
             StringComparison.Ordinal);
         activationIndex.Should().BeGreaterThanOrEqualTo(0);
-        queueActivityIndex.Should().BeGreaterThan(activationIndex,
-            "queued idle riders must snapshot before queue-time hostile activity resets the idle window");
-        abilitySource.Should().Contain("if (isHostile && profile.IsQueuedWeaponAbility)");
+        queueActivityIndex.Should().BeGreaterThan(queueIndex,
+            "queued idle riders snapshot during activation and activity is recorded only after the queue succeeds");
+        abilitySource.Should().NotContain("Combat.TrackHostileAbilityActivity(activator, true);");
     }
 
     [Test]

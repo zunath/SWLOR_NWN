@@ -30,7 +30,7 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
             "Tab": "Rifle",
             "PerkName": "Headshot I",
             "Type": "Combat",
-            "CastingTime": "Instant",
+            "CastingTime": "Queued",
             "Description": (
                 "Queues your next auto-attack to deal weapon DMG + 16. "
                 "If Headshot is used after 3 seconds without attacking, "
@@ -123,6 +123,7 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
         row = {
             "Tab": "Rifle",
             "PerkName": "Headshot I",
+            "CastingTime": "Queued",
             "Description": "Queues your next auto-attack to deal weapon DMG + 16.",
         }
 
@@ -136,6 +137,7 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
         row = {
             "Tab": "Rifle",
             "PerkName": "Headshot I",
+            "CastingTime": "Queued",
             "Description": "Queues your next auto-attack to deal weapon DMG + 16.",
         }
 
@@ -149,6 +151,23 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
         self.assertEqual("****", values["TargetSizeX"])
         self.assertEqual("****", values["TargetSizeY"])
         self.assertEqual("****", values["TargetFlags"])
+
+    def test_queued_metadata_drives_queue_profile_and_spell_targeting_without_name_checks(self):
+        row = {
+            "Tab": "Rifle",
+            "PerkName": "Prepared Shot I",
+            "Type": "Combat",
+            "CastingTime": "Queued",
+            "Description": "Queues your next auto-attack to deal weapon DMG + 10.",
+        }
+
+        properties = dict(GENERATOR.profile_property_lines(row, 1, None))
+        targeting, owns_targeting = GENERATOR.generated_targeting_update(row, False)
+
+        self.assertEqual("true", properties["IsQueuedWeaponAbility"])
+        self.assertFalse(owns_targeting)
+        self.assertEqual("0x03", targeting["TargetType"])
+        self.assertEqual("0", targeting["HostileSetting"])
 
     def test_dead_center_applies_to_abilities_and_opening_auto_attacks(self):
         row = {

@@ -91,6 +91,8 @@ public sealed class RifleSuppressionFeedbackTests
         statusEffectService.Should().Contain("foreach (var loggedOutEffects in _loggedOutPlayerEffects.Values)");
         statusEffectService.Should().NotContain("typeof(IRangedHitSuppressionSource)");
         statusEffectService.Should().NotContain("typeof(SuppressionStatusEffect)");
+        combat.Should().Contain("var suppressionSourcesToRefresh = _pendingSuppressionAbilityUses.Keys");
+        combat.Should().Contain("RefreshOverwatchMarker(source, DateTime.UtcNow);");
         suppressionStatus.Should().Contain("IStatusEffectRemovedHandler");
         suppressionStatus.Should().Contain("IStatusEffectRestoredHandler");
         suppressionStatus.Should().Contain("IRemoveWhenSourceExits");

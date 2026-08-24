@@ -617,14 +617,18 @@ def write_generated_targeting_spell_ids(spell_ids):
         GENERATED_TARGETING_OWNERSHIP.write_text(rendered)
 
 
+def is_queued_weapon_active(row):
+    return row.get("CastingTime", "").strip().lower() == "queued"
+
+
 def generated_targeting_update(row, was_generator_owned):
-    base, _ = base_and_level(row.get("PerkName", ""))
     targeting_values = {}
     generated_targeting_fields = ("Range", "TargetType", "HostileSetting")
+    is_queued = is_queued_weapon_active(row)
 
-    # Headshot is a queued self activation. Its spell row must be non-hostile/self-compatible
-    # even though it has no area shape for the generator to own.
-    if base == "Headshot":
+    # Queued weapon abilities are self activations. Their spell rows must be
+    # non-hostile/self-compatible even though they have no area shape to own.
+    if is_queued:
         targeting_values.update({
             "TargetType": "0x03",
             "HostileSetting": "0",
@@ -634,10 +638,10 @@ def generated_targeting_update(row, was_generator_owned):
     if not inferred:
         if not was_generator_owned:
             return (targeting_values or None), False
-        # Headshot's queued self activation is not generator-owned targeting, but its
+        # A queued self activation is not generator-owned targeting, but its
         # non-hostile/self-compatible spell fields are still canonical. Preserve those fields
         # when cleaning up targeting that the generator owned on a prior pass.
-        fields_to_clear = ("Range",) if base == "Headshot" else generated_targeting_fields
+        fields_to_clear = ("Range",) if is_queued else generated_targeting_fields
         targeting_values.update({header: "****" for header in fields_to_clear})
         targeting_values.update({
             "TargetShape": "****",
@@ -2016,7 +2020,7 @@ def profile_property_lines(row, level, primary_status):
     if row["Type"] in {"Stance", "Toggle", "Aura"}:
         return properties
 
-    if row.get("CastingTime", "").strip().lower() == "queued" or base == "Headshot":
+    if is_queued_weapon_active(row):
         add_profile_property("IsQueuedWeaponAbility", "true")
 
     if "force dmg" in lowered:
@@ -2147,8 +2151,8 @@ def profile_property_lines(row, level, primary_status):
                 properties.append(("ExtraDamageIfIdleFeedbackLabel", '"Aimed Shot"'))
         if idle_crit:
             properties.append(("CriticalRateIfIdle", str(idle_crit)))
-            if base == "Headshot":
-                properties.append(("CriticalRateIfIdleFeedbackLabel", '"Headshot"'))
+            if is_queued_weapon_active(row):
+                properties.append(("CriticalRateIfIdleFeedbackLabel", f'"{base}"'))
         if idle_ignore:
             properties.append(("DefenseIgnoreIfIdle", str(idle_ignore)))
 
@@ -2945,10 +2949,7 @@ def add_missing_feats(rows):
             # area actives originate on the caster. Neither should present a manual target cursor
             # (TARGETSELF=1 / HostileFeat cleared). Single-target hostile casts and *aimed* areas
             # ("in a line" / "in a cone") do pick a target, because the player chooses the direction.
-            is_queued = (
-                row.get("CastingTime", "").strip().lower() == "queued" or
-                base == "Headshot"
-            )
+            is_queued = is_queued_weapon_active(row)
             is_self_origin_area = is_area(row["Description"]) and not is_aimed_area(row)
             is_automatic_guarded_target = is_automatic_guarded_target_active(row["Description"])
             no_manual_target = target_self or is_queued or is_self_origin_area or is_automatic_guarded_target

@@ -3016,7 +3016,7 @@ namespace SWLOR.Game.Server.Service
 
             _lastAttackActivity[creature] = DateTime.UtcNow;
             StatusEffect.RemoveStatusEffect(creature, typeof(SteadyAimReadyStatusEffect), false);
-            StatusEffect.RemoveStatusEffect(creature, typeof(PatienceReadyStatusEffect), false);
+            StatusEffect.RemoveStatusEffect(creature, typeof(IdleSkillAbilityReadyStatusEffect), false);
             TrackCombatActivity(creature);
             ScheduleIdleReadinessRefresh(creature);
         }
@@ -3032,7 +3032,7 @@ namespace SWLOR.Game.Server.Service
             // Venatic Recovery must still observe the previous landed-combat timestamp.
             _lastHostileAbilityAttemptActivity[creature] = now;
             StatusEffect.RemoveStatusEffect(creature, typeof(SteadyAimReadyStatusEffect), false);
-            StatusEffect.RemoveStatusEffect(creature, typeof(PatienceReadyStatusEffect), false);
+            StatusEffect.RemoveStatusEffect(creature, typeof(IdleSkillAbilityReadyStatusEffect), false);
             // Re-arm readiness even if the cast is cancelled before an impact completes. A
             // completed impact schedules again after its completed-activity timestamp is stored.
             ScheduleIdleReadinessRefresh(creature);
@@ -9019,10 +9019,10 @@ namespace SWLOR.Game.Server.Service
                     creature,
                     StatType.QueuedWeaponAbilityIdleHitChancePercentAdjustment,
                     StatType.QueuedWeaponAbilityActivationCriticalRateSkillType);
-                criticalDamage += TemporaryStatModifier.Consume(
+                criticalDamage = Math.Max(criticalDamage, TemporaryStatModifier.Consume(
                     creature,
                     StatType.QueuedWeaponAbilityIdleCriticalDamagePercentAdjustment,
-                    StatType.QueuedWeaponAbilityActivationCriticalRateSkillType);
+                    StatType.QueuedWeaponAbilityActivationCriticalRateSkillType));
                 TemporaryStatModifier.Consume(
                     creature,
                     StatType.QueuedWeaponAbilityActivationCriticalRateSkillType,
@@ -9063,7 +9063,7 @@ namespace SWLOR.Game.Server.Service
                 Stat.GetStatAdjustment(creature, StatType.OpeningAutoAttackIdleSeconds) <= 0)
                 StatusEffect.RemoveStatusEffect(creature, typeof(SteadyAimReadyStatusEffect), false);
             if (!HasConfiguredIdleSkillAbilityChannel(creature))
-                StatusEffect.RemoveStatusEffect(creature, typeof(PatienceReadyStatusEffect), false);
+                StatusEffect.RemoveStatusEffect(creature, typeof(IdleSkillAbilityReadyStatusEffect), false);
 
             if (Stat.GetStatAdjustment(creature, StatType.RangedAutoAttackCycleCriticalRateRequiredCount) <= 0 ||
                 Stat.GetStatAdjustment(creature, StatType.RangedAutoAttackCycleCriticalRatePercentAdjustment) <= 0)
@@ -10068,11 +10068,11 @@ namespace SWLOR.Game.Server.Service
                 return idleSkill != SkillType.Invalid && idleSeconds > 0 && elapsed >= idleSeconds;
             });
             if (hasReadyIdleSkillChannel &&
-                !StatusEffect.HasStatusEffect(creature, typeof(PatienceReadyStatusEffect)))
+                !StatusEffect.HasStatusEffect(creature, typeof(IdleSkillAbilityReadyStatusEffect)))
             {
-                StatusEffect.ApplyStatusEffect(creature, creature, new PatienceReadyStatusEffect(), -1);
+                StatusEffect.ApplyStatusEffect(creature, creature, new IdleSkillAbilityReadyStatusEffect(), -1);
                 if (GetIsPC(creature))
-                    FloatingTextStringOnCreature(ColorToken.Combat("Patience Ready"), creature, false);
+                    FloatingTextStringOnCreature(ColorToken.Combat("Idle Ability Ready"), creature, false);
             }
         }
 

@@ -500,6 +500,12 @@ public class CombatDamageTests
         combatSource.Should().Contain("public static void StoreQueuedWeaponAbilityActivationIdleBonuses(");
         combatSource.Should().Contain("QueuedWeaponAbilityIdleDamageBonus");
         combatSource.Should().Contain("QueuedWeaponAbilityIdleCriticalDamagePercentAdjustment");
+        combatSource.Should().Contain(
+            "criticalDamage = Math.Max(criticalDamage, TemporaryStatModifier.Consume(",
+            "a queued Headshot is both the opening attack and the queued ability, so Dead Center must apply only once");
+        combatSource.Should().NotContain(
+            "criticalDamage += TemporaryStatModifier.Consume(",
+            "the same Dead Center rider must not stack through both opening-attack channels");
         var queuedAccuracyIndex = attackRollSource.IndexOf(
             "Combat.GetQueuedWeaponAbilityActivationHitChanceAdjustment(",
             StringComparison.Ordinal);

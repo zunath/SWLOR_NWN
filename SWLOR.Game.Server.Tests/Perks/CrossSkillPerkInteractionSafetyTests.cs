@@ -50,6 +50,18 @@ public class CrossSkillPerkInteractionSafetyTests
         combat.Should().Contain("_idleSkillAbilityStatChannels");
         combat.Should().Contain("StatType.AlternateIdleSkillAbilitySkillType");
         combat.Should().Contain("foreach (var channel in _idleSkillAbilityStatChannels)");
+        combat.Should().Contain("typeof(IdleSkillAbilityReadyStatusEffect)");
+        combat.Should().Contain("ColorToken.Combat(\"Idle Ability Ready\")");
+        combat.Should().NotContain("Patience Ready",
+            "the shared readiness marker also represents Staff's Patient Sentinel channel");
+
+        var idleReadyStatus = Read(
+            root,
+            "SWLOR.Game.Server",
+            "Feature",
+            "StatusEffectDefinition",
+            "IdleSkillAbilityReadyStatusEffect.cs");
+        idleReadyStatus.Should().Contain("public override string Name => \"Idle Ability Ready\"");
     }
 
     [Test]

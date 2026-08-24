@@ -4,9 +4,9 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     [StatConfiguredIcon]
-    public sealed class PatienceReadyStatusEffect : StatusEffectBase
+    public sealed class IdleSkillAbilityReadyStatusEffect : StatusEffectBase
     {
-        public override string Name => "Patience Ready";
+        public override string Name => "Idle Ability Ready";
         public override EffectIconType Icon => EffectIconType.SereneFocusStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Buff;
         public override bool PersistsOnLogout => false;

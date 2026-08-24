@@ -71,9 +71,12 @@ public class ForceUniversalTests
         var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ForcePushAbilityDefinition.cs").FullName)
             .Replace("\r\n", "\n");
 
-        source.Should().Contain("SkillType.Force,\n                ForcePush1BaseDamage,");
-        source.Should().Contain("SkillType.Force,\n                ForcePush2BaseDamage,");
-        source.Should().Contain("SkillType.Force,\n                ForcePush3BaseDamage,");
+        source.Should().Contain("hitTarget,\n                    ForcePush1BaseDamage,\n                    ForcePush1HobbleDurationSeconds");
+        source.Should().Contain("hitTarget,\n                    ForcePush2BaseDamage,\n                    ForcePush2HobbleDurationSeconds");
+        source.Should().Contain("hitTarget,\n                    ForcePush3BaseDamage,\n                    ForcePush3HobbleDurationSeconds");
+        source.Split("SkillType.Force,\n                0,", StringSplitOptions.None)
+            .Should().HaveCount(4, "all three Force Push ranks must bypass the stat-scaled combat formula");
+        source.Should().Contain("Combat.ApplyTriggeredDamage(\n                activator,\n                target,\n                baseDamage,\n                CombatDamageType.Force,\n                SkillType.Force);");
     }
 
     [Test]

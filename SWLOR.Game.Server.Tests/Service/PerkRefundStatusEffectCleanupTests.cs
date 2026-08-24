@@ -85,6 +85,26 @@ public class PerkRefundStatusEffectCleanupTests
     }
 
     [Test]
+    public void SourceOwnedPerkRefundCleanup_RemovesEffectsFromLoggedOutTargets()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "StatusEffect.cs")).Replace("\r\n", "\n");
+        var cleanupBody = source.Substring(
+            source.IndexOf("public static void RemoveStatusEffectsFromAllTargetsBySource(", StringComparison.Ordinal),
+            source.IndexOf("private static void RemoveStatusEffectsFromAllTargetsWhenSourceExits", StringComparison.Ordinal) -
+            source.IndexOf("public static void RemoveStatusEffectsFromAllTargetsBySource(", StringComparison.Ordinal));
+
+        cleanupBody.Should().Contain("foreach (var loggedOutEffects in _loggedOutPlayerEffects.Values)");
+        cleanupBody.Should().Contain("statusEffectType.IsAssignableFrom(effect.GetType())");
+        cleanupBody.Should().Contain("effect.Source == source");
+        cleanupBody.Should().Contain("loggedOutEffects.Effects.Remove(effect);");
+    }
+
+    [Test]
     public void CharacterFullRebuild_RemovesUndefinedPerksWithoutLookingUpDetails()
     {
         var root = FindRepositoryRoot();

@@ -1315,6 +1315,17 @@ namespace SWLOR.Game.Server.Service
                 foreach (var effectType in entry.Effects)
                     RemoveStatusEffect(entry.Target, effectType, source, sendsWornOffMessage);
             }
+
+            foreach (var loggedOutEffects in _loggedOutPlayerEffects.Values)
+            {
+                var sourceOwnedEffects = loggedOutEffects.Effects.GetAllEffects()
+                    .Where(effect =>
+                        statusEffectType.IsAssignableFrom(effect.GetType()) &&
+                        effect.Source == source)
+                    .ToList();
+                foreach (var effect in sourceOwnedEffects)
+                    loggedOutEffects.Effects.Remove(effect);
+            }
         }
 
         private static void RemoveStatusEffectsFromAllTargetsWhenSourceExits(uint source)

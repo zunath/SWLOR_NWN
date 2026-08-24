@@ -241,6 +241,7 @@ namespace SWLOR.Game.Server.Service
                 {
                     _creatureEffects[player] = effects;
                     ReapplyNWNEffects(player, effects);
+                    NotifyStatusEffectsRestored(player, effects);
                 }
             }
 
@@ -1601,6 +1602,14 @@ namespace SWLOR.Game.Server.Service
         {
             if (statusEffect is IStatusEffectRemovedHandler handler)
                 handler.AfterRemoved(creature);
+        }
+
+        private static void NotifyStatusEffectsRestored(uint creature, CreatureStatusEffect effects)
+        {
+            foreach (var handler in effects.GetAllEffects().OfType<IStatusEffectRestoredHandler>().ToList())
+            {
+                handler.AfterRestored(creature);
+            }
         }
 
         /// <summary>

@@ -8171,39 +8171,51 @@ namespace SWLOR.Game.Server.Service
             if (!IsRangedWeaponSkill(skillType))
                 return 0;
 
+            var now = DateTime.UtcNow;
             var adjustment = Stat.GetStatAdjustment(
                 attacker,
                 StatType.RangedAttackAccuracyAgainstSuppressionStackPercentAdjustment);
             if (adjustment == 0 ||
                 GetSuppressionStackCount(defender, attacker) <= 0)
             {
+                RefreshOverwatchMarker(attacker, now);
                 return 0;
             }
 
             var key = (attacker, defender);
             if (!_pendingSuppressionAbilityUses.TryGetValue(key, out var state))
+            {
+                RefreshOverwatchMarker(attacker, now);
                 return 0;
+            }
 
-            if (state.Expiration <= DateTime.UtcNow)
+            if (state.Expiration <= now)
             {
                 _pendingSuppressionAbilityUses.Remove(key);
+                RefreshOverwatchMarker(attacker, now);
                 return 0;
             }
 
             if (!HasCurrentSuppressionAbilityUseStack(attacker, defender, state.SuppressionEffectIds))
             {
                 _pendingSuppressionAbilityUses.Remove(key);
+                RefreshOverwatchMarker(attacker, now);
                 return 0;
             }
 
             _pendingSuppressionAbilityUses.Remove(key);
-            RefreshOverwatchMarker(attacker, DateTime.UtcNow);
+            RefreshOverwatchMarker(attacker, now);
             if (GetIsPC(attacker))
             {
                 SendMessageToPC(attacker, ColorToken.Combat($"Overwatch: +{adjustment}% Accuracy."));
                 FloatingTextStringOnCreature(ColorToken.Combat("Overwatch"), attacker, false);
             }
             return adjustment;
+        }
+
+        public static void ReconcileOverwatchStatus(uint source)
+        {
+            RefreshOverwatchMarker(source, DateTime.UtcNow);
         }
 
         private static bool HasCurrentSuppressionAbilityUseStack(
@@ -8223,6 +8235,22 @@ namespace SWLOR.Game.Server.Service
                 .Where(entry => entry.Key.Item1 == attacker)
                 .Select(entry => entry.Key)
                 .ToArray();
+
+            if (!GetIsObjectValid(attacker) ||
+                Stat.GetStatAdjustment(
+                    attacker,
+                    StatType.RangedAttackAccuracyAgainstSuppressionStackPercentAdjustment) == 0)
+            {
+                foreach (var pendingKey in pendingKeys)
+                {
+                    _pendingSuppressionAbilityUses.Remove(pendingKey);
+                }
+
+                if (GetIsObjectValid(attacker))
+                    StatusEffect.RemoveStatusEffect(attacker, typeof(OverwatchStatusEffect), false);
+                return;
+            }
+
             var latestExpiration = DateTime.MinValue;
             foreach (var pendingKey in pendingKeys)
             {

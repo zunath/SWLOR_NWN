@@ -5,7 +5,9 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
-    public sealed class SuppressionStatusEffect : StatusEffectBase, IStatusEffectRemovedHandler
+    public sealed class SuppressionStatusEffect : StatusEffectBase,
+        IStatusEffectRemovedHandler,
+        IStatusEffectRestoredHandler
     {
         public override string Name => "Suppression";
         public override EffectIconType Icon => EffectIconType.SuppressionStatusEffect;
@@ -34,6 +36,12 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         }
 
         public void AfterRemoved(uint creature)
+        {
+            Combat.ReconcileContainmentNetStatus(Source, creature);
+            Combat.ReconcileOverwatchStatus(Source);
+        }
+
+        public void AfterRestored(uint creature)
         {
             Combat.ReconcileContainmentNetStatus(Source, creature);
         }

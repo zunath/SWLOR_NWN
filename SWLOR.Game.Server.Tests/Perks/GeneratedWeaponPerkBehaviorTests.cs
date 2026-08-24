@@ -1318,7 +1318,7 @@ public class GeneratedWeaponPerkBehaviorTests
         combatSource.Should().Contain("ConsumeSuppressionRangedAttackAccuracyAdjustment(attacker, defender, skillType)");
         combatSource.Should().Contain("!IsRangedWeaponSkill(skillType)");
         combatSource.Should().Contain("_pendingSuppressionAbilityUses.TryGetValue(key, out var state)");
-        combatSource.Should().Contain("state.Expiration <= DateTime.UtcNow");
+        combatSource.Should().Contain("state.Expiration <= now");
         combatSource.Should().Contain("HasCurrentSuppressionAbilityUseStack(attacker, defender, state.SuppressionEffectIds)");
         combatSource.Should().Contain("effects.Max(effect => effect.DurationTicks * effect.Frequency)");
         combatSource.Should().Contain("var effectIds = effects.Select(effect => effect.Id).ToHashSet()");

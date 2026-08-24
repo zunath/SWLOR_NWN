@@ -46,6 +46,40 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
         self.assertNotIn("CriticalRatePercentAdjustment", properties)
         self.assertNotIn("SelfCriticalRatePercent", properties)
 
+    def test_target_inactivity_does_not_become_activator_idle_window(self):
+        row = {
+            "Tab": "Rifle",
+            "PerkName": "Target History",
+            "Type": "Combat",
+            "Description": (
+                "Deals weapon DMG + 8. If the target has not attacked for 3 seconds, "
+                "this deals +8 DMG. Grants +10% Critical Rate for 30 seconds."
+            ),
+        }
+
+        properties = dict(GENERATOR.profile_property_lines(row, 1, None))
+
+        self.assertNotIn("IdleWindowSeconds", properties)
+        self.assertNotIn("ExtraDamageIfIdle", properties)
+        self.assertEqual("10", properties["SelfCriticalRatePercent"])
+
+    def test_idle_damage_does_not_suppress_unconditional_self_critical_rate(self):
+        row = {
+            "Tab": "Rifle",
+            "PerkName": "Patient Marksman",
+            "Type": "Combat",
+            "Description": (
+                "Deals weapon DMG + 8 to enemies; if you have not attacked for 3 seconds, "
+                "this deals +8 DMG. Grants +10% Critical Rate for 30 seconds."
+            ),
+        }
+
+        properties = dict(GENERATOR.profile_property_lines(row, 1, None))
+
+        self.assertEqual("3.0f", properties["IdleWindowSeconds"])
+        self.assertEqual("8", properties["ExtraDamageIfIdle"])
+        self.assertEqual("10", properties["SelfCriticalRatePercent"])
+
     def test_kill_box_generates_source_owned_status_without_global_hit_rider(self):
         row = {
             "Tab": "Rifle",

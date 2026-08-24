@@ -2123,16 +2123,24 @@ def profile_property_lines(row, level, primary_status):
         properties.append(("RecentTargetWindowSeconds", f"{int(match.group(1))}.0f"))
         properties.append(("ExtraDamageIfRecentTarget", match.group(2)))
 
+    idle_crit = 0
     idle_match = re.search(
-        r"(?:(?:not attacked|without attacking) for (\d+) seconds|after (\d+) seconds without attacking)",
+        r"(?:"
+        r"\bif\s+you\s+have\s+(?:not\s+attacked|(?:gone|been)\s+without\s+attacking)\s+for\s+"
+        r"(?P<self_idle>\d+)\s+seconds\b"
+        r"|\bif\s+(?:(?:[A-Za-z][A-Za-z0-9' -]*?)\s+is\s+)?used\s+after\s+"
+        r"(?P<used_idle>\d+)\s+seconds\s+without\s+attacking\b"
+        r"|(?:^|(?<=[.!?])\s+)after\s+(?P<after_idle>\d+)\s+seconds\s+without\s+attacking\b"
+        r")",
         description,
         re.IGNORECASE)
     if idle_match:
-        idle_seconds = int(idle_match.group(1) or idle_match.group(2))
+        idle_seconds = int(next(value for value in idle_match.groupdict().values() if value))
+        idle_clause = description[idle_match.start():].split(".", 1)[0]
         properties.append(("IdleWindowSeconds", f"{idle_seconds}.0f"))
-        idle_damage = first_int(r"(?:this deals|deals|gains) \+(\d+) DMG", description)
-        idle_crit = first_int(r"gains \+(\d+)% Critical Rate", description)
-        idle_ignore = first_int(r"ignores (\d+)% Defense", description)
+        idle_damage = first_int(r"(?:this deals|deals|gains) \+(\d+) DMG", idle_clause)
+        idle_crit = first_int(r"gains \+(\d+)% Critical Rate", idle_clause)
+        idle_ignore = first_int(r"ignores (\d+)% Defense", idle_clause)
         if idle_damage:
             properties.append(("ExtraDamageIfIdle", str(idle_damage)))
             if base == "Aimed Shot":
@@ -2210,7 +2218,7 @@ def profile_property_lines(row, level, primary_status):
             properties.append(("CriticalRateIfTargetDebuffedOrControlled", str(crit)))
 
     direct_crit = first_int(r"gains? \+(\d+)% Critical Rate", description)
-    if direct_crit and not idle_match and "debuff" not in lowered and "controlled" not in lowered and "control effect" not in lowered:
+    if direct_crit and not idle_crit and "debuff" not in lowered and "controlled" not in lowered and "control effect" not in lowered:
         properties.append(("CriticalRatePercentAdjustment", str(direct_crit)))
 
     direct_accuracy = first_int(r"gains? \+(\d+)% Accuracy", description)
@@ -2253,7 +2261,7 @@ def profile_property_lines(row, level, primary_status):
     )
     if direct_self_stats_allowed:
         for property_name, pattern in self_stats:
-            if property_name == "SelfCriticalRatePercent" and idle_match:
+            if property_name == "SelfCriticalRatePercent" and idle_crit:
                 continue
             value = first_int(pattern, description)
             if value:

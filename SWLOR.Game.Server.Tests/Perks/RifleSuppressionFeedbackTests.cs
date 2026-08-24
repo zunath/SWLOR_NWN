@@ -66,6 +66,7 @@ public sealed class RifleSuppressionFeedbackTests
         combat.Should().Contain("ClearRangedRepeatedTargetDamageTracker(creature);");
         combat.Should().Contain("RangedRepeatedTargetDamageBonusPerHit");
         combat.Should().Contain("RangedRepeatedTargetDamageBonusMax");
+        combat.Should().Contain("RangedRepeatedTargetDamageDurationSeconds");
         combat.Should().Contain("private static void ClearRangedRepeatedTargetDamageTracker(uint creature)");
         combat.Should().Contain("OfType<IRangedHitSuppressionSource>()");
         combat.Should().Contain("killBox.SuppressionEvasionPenaltyAdjustment");

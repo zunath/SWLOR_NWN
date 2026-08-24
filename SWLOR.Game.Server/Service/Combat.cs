@@ -4549,7 +4549,8 @@ namespace SWLOR.Game.Server.Service
             var durationSeconds = Stat.GetStatAdjustment(attacker, StatType.RangedRepeatedTargetDamageDurationSeconds);
             if (!IsRangedWeaponSkill(skillType) ||
                 bonusPerHit <= 0 ||
-                maxBonus <= 0)
+                maxBonus <= 0 ||
+                durationSeconds <= 0)
             {
                 ClearRangedRepeatedTargetDamageTracker(attacker);
                 return damage;
@@ -9141,7 +9142,8 @@ namespace SWLOR.Game.Server.Service
                 StatusEffect.RemoveStatusEffect(creature, typeof(IdleSkillAbilityReadyStatusEffect), false);
 
             if (Stat.GetStatAdjustment(creature, StatType.RangedRepeatedTargetDamageBonusPerHit) <= 0 ||
-                Stat.GetStatAdjustment(creature, StatType.RangedRepeatedTargetDamageBonusMax) <= 0)
+                Stat.GetStatAdjustment(creature, StatType.RangedRepeatedTargetDamageBonusMax) <= 0 ||
+                Stat.GetStatAdjustment(creature, StatType.RangedRepeatedTargetDamageDurationSeconds) <= 0)
             {
                 ClearRangedRepeatedTargetDamageTracker(creature);
             }

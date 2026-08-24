@@ -4551,8 +4551,7 @@ namespace SWLOR.Game.Server.Service
                 bonusPerHit <= 0 ||
                 maxBonus <= 0)
             {
-                _rangedRepeatedTargetDamageStates.Remove(attacker);
-                StatusEffect.RemoveStatusEffect(attacker, typeof(SustainedFireStatusEffect), false);
+                ClearRangedRepeatedTargetDamageTracker(attacker);
                 return damage;
             }
 
@@ -4588,6 +4587,12 @@ namespace SWLOR.Game.Server.Service
             }
 
             return damage + stackBonus;
+        }
+
+        private static void ClearRangedRepeatedTargetDamageTracker(uint creature)
+        {
+            _rangedRepeatedTargetDamageStates.Remove(creature);
+            StatusEffect.RemoveStatusEffect(creature, typeof(SustainedFireStatusEffect), false);
         }
 
         private static void ApplySameTargetPressureDamageEffects(uint attacker, uint defender, SkillType skillType)
@@ -9134,6 +9139,12 @@ namespace SWLOR.Game.Server.Service
                 StatusEffect.RemoveStatusEffect(creature, typeof(OpeningAttackReadyStatusEffect), false);
             if (!HasConfiguredIdleSkillAbilityChannel(creature))
                 StatusEffect.RemoveStatusEffect(creature, typeof(IdleSkillAbilityReadyStatusEffect), false);
+
+            if (Stat.GetStatAdjustment(creature, StatType.RangedRepeatedTargetDamageBonusPerHit) <= 0 ||
+                Stat.GetStatAdjustment(creature, StatType.RangedRepeatedTargetDamageBonusMax) <= 0)
+            {
+                ClearRangedRepeatedTargetDamageTracker(creature);
+            }
 
             if (Stat.GetStatAdjustment(creature, StatType.RangedAutoAttackCycleCriticalRateRequiredCount) <= 0 ||
                 Stat.GetStatAdjustment(creature, StatType.RangedAutoAttackCycleCriticalRatePercentAdjustment) <= 0)

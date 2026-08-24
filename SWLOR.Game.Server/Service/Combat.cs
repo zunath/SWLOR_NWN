@@ -10956,19 +10956,31 @@ namespace SWLOR.Game.Server.Service
                    IsWeaponSkillType(skillType);
         }
 
-        public static int GetCombatImpactWeaponDamage(uint activator, SkillType skillType)
+        public static int GetCombatImpactWeaponDamage(
+            uint activator,
+            SkillType skillType,
+            bool usesQueuedNaturalWeapon = false)
         {
-            if (!IsWeaponSkillType(skillType))
+            if (!IsWeaponSkillType(skillType) &&
+                !(usesQueuedNaturalWeapon && skillType == SkillType.BeastMastery))
+            {
                 return 0;
+            }
 
-            var weapon = GetCombatImpactWeapon(activator, skillType);
+            var weapon = GetCombatImpactWeapon(activator, skillType, usesQueuedNaturalWeapon);
             return GetIsObjectValid(weapon)
                 ? Item.GetDMG(weapon)
                 : 0;
         }
 
-        private static uint GetCombatImpactWeapon(uint activator, SkillType skillType)
+        private static uint GetCombatImpactWeapon(
+            uint activator,
+            SkillType skillType,
+            bool usesQueuedNaturalWeapon = false)
         {
+            if (usesQueuedNaturalWeapon && skillType == SkillType.BeastMastery)
+                return GetCreatureNaturalWeapon(activator);
+
             var rightHand = GetItemInSlot(InventorySlot.RightHand, activator);
             if (CanItemTriggerWeaponAbility(rightHand, skillType))
                 return rightHand;

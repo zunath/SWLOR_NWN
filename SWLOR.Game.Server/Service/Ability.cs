@@ -2443,15 +2443,22 @@ namespace SWLOR.Game.Server.Service
             AbilityType combatImpactDamageAbility = AbilityType.Invalid,
             bool canCritical = true)
         {
-            if (baseDamage <= 0 && !Combat.IsWeaponSkillType(skillType))
-                return 0;
-
             var trackedImpact = GetTrackedAbilityImpact(activator);
+            var usesQueuedNaturalWeapon =
+                trackedImpact?.Ability?.ActivationType == AbilityActivationType.Weapon &&
+                skillType == SkillType.BeastMastery;
+            if (baseDamage <= 0 &&
+                !Combat.IsWeaponSkillType(skillType) &&
+                !usesQueuedNaturalWeapon)
+            {
+                return 0;
+            }
+
             var ability = GetCombatImpactDamageAbility(activator, combatImpactDamageAbility);
             var perkType = trackedImpact?.Ability?.EffectiveLevelPerkType ?? PerkType.Invalid;
             var idleBonuses = Combat.GetIdleSkillAbilityBonuses(activator, skillType);
             var damage = baseDamage +
-                Combat.GetCombatImpactWeaponDamage(activator, skillType) +
+                Combat.GetCombatImpactWeaponDamage(activator, skillType, usesQueuedNaturalWeapon) +
                 Combat.GetAbilityDamageBonus(activator, skillType) +
                 Combat.GetAbilityDamageFlatAdjustment(activator, perkType, skillType) +
                 Combat.GetCostlyAbilityDamageBonus(activator, trackedImpact?.Ability, skillType) +
@@ -2661,16 +2668,23 @@ namespace SWLOR.Game.Server.Service
             AbilityType combatImpactDamageAbility = AbilityType.Invalid,
             bool canCritical = true)
         {
-            if (baseDamage <= 0 && !Combat.IsWeaponSkillType(skillType))
-                return 0;
-
             var trackedImpact = GetTrackedAbilityImpact(activator);
+            var usesQueuedNaturalWeapon =
+                trackedImpact?.Ability?.ActivationType == AbilityActivationType.Weapon &&
+                skillType == SkillType.BeastMastery;
+            if (baseDamage <= 0 &&
+                !Combat.IsWeaponSkillType(skillType) &&
+                !usesQueuedNaturalWeapon)
+            {
+                return 0;
+            }
+
             var ability = GetCombatImpactDamageAbility(activator, combatImpactDamageAbility);
             var perkType = trackedImpact?.Ability?.EffectiveLevelPerkType ?? PerkType.Invalid;
             var idleBonuses = Combat.GetIdleSkillAbilityBonuses(activator, skillType);
             var scalingRank = GetNPCAbilityScalingRank(activator, skillType, damageType, combatImpactDamageAbility);
             var damage = baseDamage +
-                Combat.GetCombatImpactWeaponDamage(activator, skillType) +
+                Combat.GetCombatImpactWeaponDamage(activator, skillType, usesQueuedNaturalWeapon) +
                 (int)Math.Ceiling(scalingRank * 0.15f) +
                 Combat.GetAbilityDamageFlatAdjustment(activator, perkType, skillType) +
                 Combat.GetCostlyAbilityDamageBonus(activator, trackedImpact?.Ability, skillType) +

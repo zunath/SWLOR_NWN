@@ -20,6 +20,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
         protected sealed class GeneratedWeaponAbilityProfile
         {
+            public sealed class ActivationIdleBonusSnapshot
+            {
+                public bool HasSnapshot { get; init; }
+                public int DamageBonus { get; init; }
+                public int CriticalRatePercentAdjustment { get; init; }
+                public int DefenseIgnorePercent { get; init; }
+            }
+
             public static readonly GeneratedWeaponAbilityProfile Empty = new();
 
             public int HitCount { get; init; } = 1;
@@ -204,7 +212,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public bool SuppressSourceStatusStackRiders { get; init; }
             public int SelfInvisibilityDurationSeconds { get; init; }
 
-            public int GetBaseDamageAdjustment(uint activator, uint target)
+            public int GetBaseDamageAdjustment(
+                uint activator,
+                uint target,
+                ActivationIdleBonusSnapshot activationIdleBonusSnapshot = null)
             {
                 var bonus = 0;
                 if (ExtraDamageIfRecentTarget != 0 &&
@@ -235,14 +246,17 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     }
                 }
 
-                var idleSnapshot = Combat.HasWeaponAbilityActivationIdleSnapshot(activator);
+                var idleSnapshot = activationIdleBonusSnapshot?.HasSnapshot ??
+                                   Combat.HasWeaponAbilityActivationIdleSnapshot(activator);
+                var idleDamageBonus = activationIdleBonusSnapshot?.DamageBonus ??
+                                      Combat.GetWeaponAbilityActivationIdleDamageBonus(activator);
                 if (ExtraDamageIfIdle != 0 &&
                     (idleSnapshot
-                        ? Combat.GetWeaponAbilityActivationIdleDamageBonus(activator) > 0
+                        ? idleDamageBonus > 0
                         : IsIdle(activator)))
                 {
                     bonus += idleSnapshot
-                        ? Combat.GetWeaponAbilityActivationIdleDamageBonus(activator)
+                        ? idleDamageBonus
                         : ExtraDamageIfIdle;
                     if (GetIsPC(activator) && !string.IsNullOrWhiteSpace(ExtraDamageIfIdleFeedbackLabel))
                     {
@@ -323,17 +337,23 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 return adjustment;
             }
 
-            public int GetCriticalRateAdjustment(uint activator, uint target)
+            public int GetCriticalRateAdjustment(
+                uint activator,
+                uint target,
+                ActivationIdleBonusSnapshot activationIdleBonusSnapshot = null)
             {
                 var adjustment = CriticalRatePercentAdjustment;
-                var idleSnapshot = Combat.HasWeaponAbilityActivationIdleSnapshot(activator);
+                var idleSnapshot = activationIdleBonusSnapshot?.HasSnapshot ??
+                                   Combat.HasWeaponAbilityActivationIdleSnapshot(activator);
+                var idleCriticalRate = activationIdleBonusSnapshot?.CriticalRatePercentAdjustment ??
+                                       Combat.GetWeaponAbilityActivationIdleCriticalRateBonus(activator);
                 if (!IsQueuedWeaponAbility && CriticalRateIfIdle != 0 &&
                     (idleSnapshot
-                        ? Combat.GetWeaponAbilityActivationIdleCriticalRateBonus(activator) > 0
+                        ? idleCriticalRate > 0
                         : IsIdle(activator)))
                 {
                     adjustment += idleSnapshot
-                        ? Combat.GetWeaponAbilityActivationIdleCriticalRateBonus(activator)
+                        ? idleCriticalRate
                         : CriticalRateIfIdle;
                     if (GetIsPC(activator) && !string.IsNullOrWhiteSpace(CriticalRateIfIdleFeedbackLabel))
                     {
@@ -366,17 +386,22 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 return adjustment;
             }
 
-            public int GetDefenseIgnorePercent(uint activator)
+            public int GetDefenseIgnorePercent(
+                uint activator,
+                ActivationIdleBonusSnapshot activationIdleBonusSnapshot = null)
             {
                 var adjustment = DefenseIgnorePercent;
-                var idleSnapshot = Combat.HasWeaponAbilityActivationIdleSnapshot(activator);
+                var idleSnapshot = activationIdleBonusSnapshot?.HasSnapshot ??
+                                   Combat.HasWeaponAbilityActivationIdleSnapshot(activator);
+                var idleDefenseIgnore = activationIdleBonusSnapshot?.DefenseIgnorePercent ??
+                                        Combat.GetWeaponAbilityActivationIdleDefenseIgnorePercent(activator);
                 if (DefenseIgnoreIfIdle != 0 &&
                     (idleSnapshot
-                        ? Combat.GetWeaponAbilityActivationIdleDefenseIgnorePercent(activator) > 0
+                        ? idleDefenseIgnore > 0
                         : IsIdle(activator)))
                 {
                     adjustment += idleSnapshot
-                        ? Combat.GetWeaponAbilityActivationIdleDefenseIgnorePercent(activator)
+                        ? idleDefenseIgnore
                         : DefenseIgnoreIfIdle;
                 }
 
@@ -396,15 +421,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
                 AssignCommand(activator, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(hpCost), activator));
                 Combat.ApplyHitPointSpendAbilityEffects(activator, hpCost);
-            }
-
-            public void BeforeHit(uint activator, SkillType skillType)
-            {
-                var defenseIgnore = GetDefenseIgnorePercent(activator);
-                if (defenseIgnore != 0)
-                {
-                    Combat.GrantNextSkillAbilityBonuses(activator, skillType, 0, 0, 1, defenseIgnore);
-                }
             }
 
             public void AfterSuccessfulHit(uint activator, uint target, CombatDamageType damageType)
@@ -531,10 +547,33 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     StatType.DefenseIgnoreHitPhysicalDefensePercentAdjustment);
             }
 
-            public void AfterImpact(uint activator, int totalDamage, int successfulHitCount = 0, AbilityImpactSummary summary = null)
+            public void ClearActivationIdleBonusSnapshots(uint activator)
             {
                 Combat.ClearAbilityActivationIdleBonuses(activator);
                 Combat.ClearWeaponAbilityActivationIdleBonuses(activator);
+            }
+
+            public ActivationIdleBonusSnapshot CaptureActivationIdleBonusSnapshot(uint activator)
+            {
+                return new ActivationIdleBonusSnapshot
+                {
+                    HasSnapshot = Combat.HasWeaponAbilityActivationIdleSnapshot(activator),
+                    DamageBonus = Combat.GetWeaponAbilityActivationIdleDamageBonus(activator),
+                    CriticalRatePercentAdjustment = Combat.GetWeaponAbilityActivationIdleCriticalRateBonus(activator),
+                    DefenseIgnorePercent = Combat.GetWeaponAbilityActivationIdleDefenseIgnorePercent(activator)
+                };
+            }
+
+            public void AfterImpact(
+                uint activator,
+                int totalDamage,
+                int successfulHitCount = 0,
+                AbilityImpactSummary summary = null,
+                bool clearActivationIdleBonusSnapshots = true)
+            {
+                if (clearActivationIdleBonusSnapshots)
+                    ClearActivationIdleBonusSnapshots(activator);
+
                 if (SelfStatusEffectOnCriticalHitFactory != null &&
                     (SelfStatusEffectOnCriticalHitDurationSeconds > 0 ||
                      SelfStatusEffectOnCriticalHitIsPermanent) &&
@@ -1380,46 +1419,69 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
                     profile.SpendHitPoints(activator);
                     profile.AfterHostileActivation(activator);
+                    var activationIdleBonusSnapshot = profile.CaptureActivationIdleBonusSnapshot(activator);
+                    Ability.AddActiveAbilityDefenseIgnorePercentAdjustment(
+                        activator,
+                        profile.GetDefenseIgnorePercent(activator, activationIdleBonusSnapshot));
 
                     if (isArea && ShouldUseTelegraphedCombatImpact(targetingShape, profile))
                     {
-                        var areaDamage = Ability.ApplyTelegraphedCombatImpact(
+                        var areaDamage = 0;
+                        try
+                        {
+                            areaDamage = Ability.ApplyTelegraphedCombatImpact(
+                                activator,
+                                target,
+                                targetLocation,
+                                skill,
+                                baseDamage,
+                                duration,
+                                statusEffect,
+                                ToCombatImpactAreaShape(targetingShape),
+                                profile.TelegraphDuration,
+                                targetingSizeX > 0f ? targetingSizeX : 5.0f,
+                                targetingSizeY,
+                                additionalStatusEffects,
+                                CenterAreaOnActivator(targetingFlags),
+                                profile.StatusEffectFactory,
+                                damageType: profile.DamageType,
+                                combatImpactDamageAbility: combatImpactDamageAbility,
+                                baseDamageAdjustment: impactedTarget => profile.GetBaseDamageAdjustment(
+                                    activator,
+                                    impactedTarget,
+                                    activationIdleBonusSnapshot),
+                                damagePercentAdjustment: impactedTarget => profile.GetDamagePercentAdjustment(activator, impactedTarget),
+                                afterImpactAction: summary =>
+                                {
+                                    if (summary.ImpactedTargetCount > 0)
+                                        profile.AfterActivation(activator, skill);
+                                },
+                                maxTargets: profile.MaximumAreaTargets,
+                                enmityBonus: profile.EnmityBonus,
+                                afterSuccessfulHit: impactedTarget =>
+                                {
+                                    profile.AfterSuccessfulHit(activator, impactedTarget, profile.DamageType);
+                                    Combat.ApplyRangedAbilityTargetDefenseReduction(activator, impactedTarget, skill);
+                                },
+                                beforeSuccessfulImpactRiders: impactedTarget => profile.BeforeSuccessfulImpactRiders(activator, impactedTarget),
+                                hitChancePercentAdjustment: profile.HitChancePercentAdjustment,
+                                criticalRatePercentAdjustment: profile.GetCriticalRateAdjustment(
+                                    activator,
+                                    target,
+                                    activationIdleBonusSnapshot),
+                                impactAnimation: impactAnimation);
+                        }
+                        finally
+                        {
+                            profile.ClearActivationIdleBonusSnapshots(activator);
+                        }
+
+                        profile.AfterImpact(
                             activator,
-                            target,
-                            targetLocation,
-                            skill,
-                            baseDamage,
-                            duration,
-                            statusEffect,
-                            ToCombatImpactAreaShape(targetingShape),
-                            profile.TelegraphDuration,
-                            targetingSizeX > 0f ? targetingSizeX : 5.0f,
-                            targetingSizeY,
-                            additionalStatusEffects,
-                            CenterAreaOnActivator(targetingFlags),
-                            profile.StatusEffectFactory,
-                            damageType: profile.DamageType,
-                            combatImpactDamageAbility: combatImpactDamageAbility,
-                            baseDamageAdjustment: impactedTarget => profile.GetBaseDamageAdjustment(activator, impactedTarget),
-                            damagePercentAdjustment: impactedTarget => profile.GetDamagePercentAdjustment(activator, impactedTarget),
-                            afterImpactAction: summary =>
-                            {
-                                if (summary.ImpactedTargetCount > 0)
-                                    profile.AfterActivation(activator, skill);
-                            },
-                            maxTargets: profile.MaximumAreaTargets,
-                            enmityBonus: profile.EnmityBonus,
-                            beforeImpact: _ => profile.BeforeHit(activator, skill),
-                            afterSuccessfulHit: impactedTarget =>
-                            {
-                                profile.AfterSuccessfulHit(activator, impactedTarget, profile.DamageType);
-                                Combat.ApplyRangedAbilityTargetDefenseReduction(activator, impactedTarget, skill);
-                            },
-                            beforeSuccessfulImpactRiders: impactedTarget => profile.BeforeSuccessfulImpactRiders(activator, impactedTarget),
-                            hitChancePercentAdjustment: profile.HitChancePercentAdjustment,
-                            criticalRatePercentAdjustment: profile.GetCriticalRateAdjustment(activator, target),
-                            impactAnimation: impactAnimation);
-                        profile.AfterImpact(activator, areaDamage, areaDamage > 0 ? 1 : 0, Ability.GetActiveAbilityImpactSummary(activator));
+                            areaDamage,
+                            areaDamage > 0 ? 1 : 0,
+                            Ability.GetActiveAbilityImpactSummary(activator),
+                            clearActivationIdleBonusSnapshots: false);
                         return;
                     }
 
@@ -1428,7 +1490,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     var hitCount = Math.Max(1, profile.HitCount);
                     for (var hit = 0; hit < hitCount; hit++)
                     {
-                        profile.BeforeHit(activator, skill);
                         var hitDamage = Ability.ApplyCombatImpact(
                             activator,
                             target,
@@ -1442,7 +1503,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                             profile.StatusEffectFactory,
                             damageType: profile.DamageType,
                             combatImpactDamageAbility: combatImpactDamageAbility,
-                            baseDamageAdjustment: impactedTarget => profile.GetBaseDamageAdjustment(activator, impactedTarget),
+                            baseDamageAdjustment: impactedTarget => profile.GetBaseDamageAdjustment(
+                                activator,
+                                impactedTarget,
+                                activationIdleBonusSnapshot),
                             damagePercentAdjustment: impactedTarget => profile.GetDamagePercentAdjustment(activator, impactedTarget),
                             enmityBonus: profile.EnmityBonus,
                             afterSuccessfulHit: impactedTarget =>
@@ -1452,7 +1516,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                             },
                             beforeSuccessfulImpactRiders: impactedTarget => profile.BeforeSuccessfulImpactRiders(activator, impactedTarget),
                             hitChancePercentAdjustment: profile.HitChancePercentAdjustment,
-                            criticalRatePercentAdjustment: profile.GetCriticalRateAdjustment(activator, target));
+                            criticalRatePercentAdjustment: profile.GetCriticalRateAdjustment(
+                                activator,
+                                target,
+                                activationIdleBonusSnapshot));
                         totalDamage += hitDamage;
                         if (hitDamage > 0)
                             successfulHitCount++;

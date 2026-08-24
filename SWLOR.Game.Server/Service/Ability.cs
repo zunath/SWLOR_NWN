@@ -254,6 +254,14 @@ namespace SWLOR.Game.Server.Service
             return GetTrackedAbilityImpact(activator)?.Summary;
         }
 
+        public static void AddActiveAbilityDefenseIgnorePercentAdjustment(uint activator, int adjustment)
+        {
+            if (adjustment == 0)
+                return;
+
+            GetTrackedAbilityImpact(activator)?.AddDefenseIgnorePercentAdjustment(adjustment);
+        }
+
         private static TrackedAbilityImpact GetTrackedAbilityImpact(uint activator)
         {
             return _trackedAbilityImpacts.TryGetValue(activator, out var impact)
@@ -3094,7 +3102,7 @@ namespace SWLOR.Game.Server.Service
             public int NextAbilityDamageBonus { get; private set; }
             public int NextAbilityCriticalRatePercentAdjustment { get; }
             public int NextAbilityCriticalDamagePercentAdjustment { get; }
-            public int NextAbilityDefenseIgnorePercentAdjustment { get; }
+            public int NextAbilityDefenseIgnorePercentAdjustment { get; private set; }
             public int NextAttackEnmityBonus { get; }
             public int StatusAppliedNextAttackDamageBonus { get; }
             public bool DarkForceConversionApplied { get; set; }
@@ -3137,6 +3145,11 @@ namespace SWLOR.Game.Server.Service
                 Combat.ConsumeStatusAppliedNextAttackDamageBonus(activator);
                 NextAbilityDamageBonus -= StatusAppliedNextAttackDamageBonus;
                 _statusAppliedNextAttackDamageBonusConsumed = true;
+            }
+
+            public void AddDefenseIgnorePercentAdjustment(int adjustment)
+            {
+                NextAbilityDefenseIgnorePercentAdjustment += adjustment;
             }
 
             public void RecordShape(SkillType skillType, bool isArea)

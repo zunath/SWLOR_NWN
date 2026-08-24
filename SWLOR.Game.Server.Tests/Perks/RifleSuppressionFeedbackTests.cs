@@ -60,6 +60,9 @@ public sealed class RifleSuppressionFeedbackTests
         combat.Should().Contain("RefreshOverwatchMarker(source, DateTime.UtcNow);");
         combat.Should().Contain("RefreshOverwatchMarker(attacker, now);");
         combat.Should().Contain("public static void ReconcileOverwatchStatus(uint source)");
+        combat.Should().Contain("ReconcileOverwatchStatus(creature);");
+        combat.Should().Contain("var lastOffensiveUse = GetLastCompletedOffensiveActivityAt(activator);");
+        combat.Should().NotContain("var lastAttack = _lastAttackActivity.TryGetValue(activator");
         combat.Should().Contain("OfType<IRangedHitSuppressionSource>()");
         combat.Should().Contain("killBox.SuppressionEvasionPenaltyAdjustment");
         combat.Should().Contain("int evasionPenaltyAdjustment = 0");

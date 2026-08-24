@@ -345,7 +345,7 @@ public class CombatDamageTests
         nativeSource.Should().MatchRegex(
             @"attacker\.ResolveDefensiveEffects\(defender, isHit \? 1 : 0\);[\s\S]*?if \(!IsSuccessfulAttackResult\(pAttackData\.m_nAttackResult\)\)[\s\S]*?Combat\.ClearOpeningAutoAttackModifiers\(attacker\.m_idSelf\);",
             "concealment, miss, or deflection must consume opening riders before another swing can inherit them");
-        new SteadyAimReadyStatusEffect().Name.Should().Be("Opening Attack Ready");
+        new OpeningAttackReadyStatusEffect().Name.Should().Be("Opening Attack Ready");
         var refresh = ExtractMethod(combatSource, "private static void RefreshIdleReadiness(uint creature)");
         refresh.Should().Contain("Opening Attack Ready");
     }

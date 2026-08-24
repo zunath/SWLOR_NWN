@@ -76,7 +76,7 @@ public class PerkRefundStatusEffectCleanupTests
         combatSource.Should().Contain("typeof(AttackCycleTrackerStatusEffect)");
         combatSource.Should().Contain("typeof(CriticalRateStackTrackerStatusEffect)");
         combatSource.Should().Contain("StatType.NonCriticalAbilityNextSkillAbilityCriticalRatePercentAdjustment) <= 0");
-        combatSource.Should().Contain("typeof(SteadyAimReadyStatusEffect)");
+        combatSource.Should().Contain("typeof(OpeningAttackReadyStatusEffect)");
         combatSource.Should().Contain("typeof(IdleSkillAbilityReadyStatusEffect)");
         combatSource.Should().NotContain("typeof(PatienceReadyStatusEffect)");
         combatSource.Should().NotContain("typeof(OpeningAutoAttackReadyStatusEffect)");

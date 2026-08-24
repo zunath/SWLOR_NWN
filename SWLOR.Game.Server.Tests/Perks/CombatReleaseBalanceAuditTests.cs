@@ -193,7 +193,8 @@ public class CombatReleaseBalanceAuditTests
         StatType.TargetStatusCriticalRatePercentAdjustment,
         StatType.RangedAutoAttackCycleCriticalRatePercentAdjustment,
         StatType.NonCriticalAbilityNextSkillAbilityCriticalRatePercentAdjustment,
-        StatType.BackAttackCriticalRatePercentAdjustment
+        StatType.BackAttackCriticalRatePercentAdjustment,
+        StatType.RangedAbilityLongRangeCriticalRatePercentAdjustment
     };
 
     private static readonly StatType[] CriticalDamageStats =
@@ -351,7 +352,8 @@ public class CombatReleaseBalanceAuditTests
         StatType.SuppressionStackDamageDealtPercentAdjustment,
         StatType.DefenseIgnoreHitPhysicalDefensePercentAdjustment,
         StatType.AreaAbilityTargetHitSequenceExposedDurationSeconds,
-        StatType.IdleStatusDurationPercentAdjustment
+        StatType.IdleStatusDurationPercentAdjustment,
+        StatType.RangedAbilityTargetDefenseReductionPercent
     };
 
     [Test]
@@ -512,6 +514,13 @@ public class CombatReleaseBalanceAuditTests
             "Tradecraft is explicitly audited non-combat utility");
         packages[PerkCategoryType.EspionageTradecraft].SupportPackageCount.Should().Be(0,
             "non-combat disguise utility must not inflate compound combat-support scores");
+
+        packages[PerkCategoryType.RifleMarksman].Stats[StatType.RangedAbilityLongRangeCriticalRatePercentAdjustment]
+            .Should().Be(8);
+        packages[PerkCategoryType.RifleMarksman].Stats[StatType.RangedAbilityTargetDefenseReductionPercent]
+            .Should().Be(10);
+        CriticalRateStats.Should().Contain(StatType.RangedAbilityLongRangeCriticalRatePercentAdjustment);
+        ControlStats.Should().Contain(StatType.RangedAbilityTargetDefenseReductionPercent);
     }
 
     private static bool IsCompoundReleaseBlocker(ReleaseProfile profile)

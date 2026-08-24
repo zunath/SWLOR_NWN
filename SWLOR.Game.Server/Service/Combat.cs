@@ -3015,7 +3015,7 @@ namespace SWLOR.Game.Server.Service
                 return;
 
             _lastAttackActivity[creature] = DateTime.UtcNow;
-            StatusEffect.RemoveStatusEffect(creature, typeof(SteadyAimReadyStatusEffect), false);
+            StatusEffect.RemoveStatusEffect(creature, typeof(OpeningAttackReadyStatusEffect), false);
             StatusEffect.RemoveStatusEffect(creature, typeof(IdleSkillAbilityReadyStatusEffect), false);
             TrackCombatActivity(creature);
             ScheduleIdleReadinessRefresh(creature);
@@ -3031,7 +3031,7 @@ namespace SWLOR.Game.Server.Service
             // Keep cast attempts separate from landed combat activity. Opening-hit riders such as
             // Venatic Recovery must still observe the previous landed-combat timestamp.
             _lastHostileAbilityAttemptActivity[creature] = now;
-            StatusEffect.RemoveStatusEffect(creature, typeof(SteadyAimReadyStatusEffect), false);
+            StatusEffect.RemoveStatusEffect(creature, typeof(OpeningAttackReadyStatusEffect), false);
             StatusEffect.RemoveStatusEffect(creature, typeof(IdleSkillAbilityReadyStatusEffect), false);
             // Re-arm readiness even if the cast is cancelled before an impact completes. A
             // completed impact schedules again after its completed-activity timestamp is stored.
@@ -3159,7 +3159,7 @@ namespace SWLOR.Game.Server.Service
                 return 0;
 
             TrackCombatActivity(attacker);
-            StatusEffect.RemoveStatusEffect(attacker, typeof(SteadyAimReadyStatusEffect), false);
+            StatusEffect.RemoveStatusEffect(attacker, typeof(OpeningAttackReadyStatusEffect), false);
 
             var damageBonus = Stat.GetStatAdjustment(attacker, StatType.OpeningAutoAttackDamageBonus);
             if (damageBonus != 0)
@@ -9126,11 +9126,12 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(creature))
                 return;
 
+            ReconcileOverwatchStatus(creature);
             ScheduleIdleReadinessRefresh(creature);
 
             if (Stat.GetStatAdjustment(creature, StatType.OpeningAutoAttackSkillType) <= 0 ||
                 Stat.GetStatAdjustment(creature, StatType.OpeningAutoAttackIdleSeconds) <= 0)
-                StatusEffect.RemoveStatusEffect(creature, typeof(SteadyAimReadyStatusEffect), false);
+                StatusEffect.RemoveStatusEffect(creature, typeof(OpeningAttackReadyStatusEffect), false);
             if (!HasConfiguredIdleSkillAbilityChannel(creature))
                 StatusEffect.RemoveStatusEffect(creature, typeof(IdleSkillAbilityReadyStatusEffect), false);
 
@@ -10074,14 +10075,8 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(activator) || skillType == SkillType.Invalid)
                 return (0, 0, 0);
 
-            var lastAttack = _lastAttackActivity.TryGetValue(activator, out var attackTime)
-                ? attackTime
-                : DateTime.MinValue;
-            var lastAbility = _lastCombatAbilityUse.TryGetValue(activator, out var abilityTime)
-                ? abilityTime
-                : DateTime.MinValue;
-            var lastOffensiveUse = lastAttack > lastAbility ? lastAttack : lastAbility;
-            var elapsedSeconds = lastOffensiveUse == DateTime.MinValue
+            var lastOffensiveUse = GetLastCompletedOffensiveActivityAt(activator);
+            var elapsedSeconds = lastOffensiveUse == default
                 ? double.MaxValue
                 : (DateTime.UtcNow - lastOffensiveUse).TotalSeconds;
             var damageBonus = 0;
@@ -10110,6 +10105,20 @@ namespace SWLOR.Game.Server.Service
             return (damageBonus, accuracyBonus, criticalDamageBonus);
         }
 
+        [NWNEventHandler(ScriptName.OnModuleEnter)]
+        public static void RestoreIdleReadinessOnPlayerEnter()
+        {
+            var creature = GetEnteringObject();
+            if (!GetIsPC(creature) || GetIsDM(creature))
+                return;
+
+            DelayCommand(0f, () =>
+            {
+                RefreshIdleReadiness(creature);
+                ScheduleIdleReadinessRefresh(creature);
+            });
+        }
+
         private static void RefreshIdleReadiness(uint creature)
         {
             if (!GetIsObjectValid(creature))
@@ -10123,9 +10132,9 @@ namespace SWLOR.Game.Server.Service
             var openingSkill = GetSkillTypeFromStat(Stat.GetStatAdjustment(creature, StatType.OpeningAutoAttackSkillType));
             var openingSeconds = Stat.GetStatAdjustment(creature, StatType.OpeningAutoAttackIdleSeconds);
             if (openingSkill != SkillType.Invalid && openingSeconds > 0 && elapsed >= openingSeconds &&
-                !StatusEffect.HasStatusEffect(creature, typeof(SteadyAimReadyStatusEffect)))
+                !StatusEffect.HasStatusEffect(creature, typeof(OpeningAttackReadyStatusEffect)))
             {
-                StatusEffect.ApplyStatusEffect(creature, creature, new SteadyAimReadyStatusEffect(), -1);
+                StatusEffect.ApplyStatusEffect(creature, creature, new OpeningAttackReadyStatusEffect(), -1);
                 if (GetIsPC(creature))
                     FloatingTextStringOnCreature(ColorToken.Combat("Opening Attack Ready"), creature, false);
             }
@@ -10141,7 +10150,7 @@ namespace SWLOR.Game.Server.Service
             {
                 StatusEffect.ApplyStatusEffect(creature, creature, new IdleSkillAbilityReadyStatusEffect(), -1);
                 if (GetIsPC(creature))
-                    FloatingTextStringOnCreature(ColorToken.Combat("Idle Ability Ready"), creature, false);
+                    FloatingTextStringOnCreature(ColorToken.Combat("Idle Skill Ability Ready"), creature, false);
             }
         }
 

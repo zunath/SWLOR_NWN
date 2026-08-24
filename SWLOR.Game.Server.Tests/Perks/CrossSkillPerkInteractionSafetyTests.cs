@@ -51,7 +51,11 @@ public class CrossSkillPerkInteractionSafetyTests
         combat.Should().Contain("StatType.AlternateIdleSkillAbilitySkillType");
         combat.Should().Contain("foreach (var channel in _idleSkillAbilityStatChannels)");
         combat.Should().Contain("typeof(IdleSkillAbilityReadyStatusEffect)");
-        combat.Should().Contain("ColorToken.Combat(\"Idle Ability Ready\")");
+        combat.Should().Contain("ColorToken.Combat(\"Idle Skill Ability Ready\")");
+        var restoreOnLogin = ExtractMethod(combat, "public static void RestoreIdleReadinessOnPlayerEnter()");
+        restoreOnLogin.Should().Contain("RefreshIdleReadiness(creature)",
+            "non-persistent readiness markers must be rebuilt when a player logs in");
+        restoreOnLogin.Should().Contain("ScheduleIdleReadinessRefresh(creature)");
         combat.Should().NotContain("Patience Ready",
             "the shared readiness marker also represents Staff's Patient Sentinel channel");
 
@@ -61,7 +65,7 @@ public class CrossSkillPerkInteractionSafetyTests
             "Feature",
             "StatusEffectDefinition",
             "IdleSkillAbilityReadyStatusEffect.cs");
-        idleReadyStatus.Should().Contain("public override string Name => \"Idle Ability Ready\"");
+        idleReadyStatus.Should().Contain("public override string Name => \"Idle Skill Ability Ready\"");
     }
 
     [Test]

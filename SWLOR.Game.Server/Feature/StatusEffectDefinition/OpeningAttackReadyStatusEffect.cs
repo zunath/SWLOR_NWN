@@ -4,7 +4,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     [StatConfiguredIcon]
-    public sealed class SteadyAimReadyStatusEffect : StatusEffectBase
+    public sealed class OpeningAttackReadyStatusEffect : StatusEffectBase
     {
         public override string Name => "Opening Attack Ready";
         public override EffectIconType Icon => EffectIconType.FocusedStanceStatusEffect;

@@ -372,6 +372,68 @@ public class GeneratedWeaponPerkBehaviorTests
     }
 
     [Test]
+    public void QueuedWeaponActivation_SnapshotsOpeningRidersBeforeHostileActivity()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "WeaponActiveAbilityDefinitionBase.cs"));
+        var snapshotIndex = source.IndexOf(
+            "Combat.PrepareQueuedWeaponAbilityOpeningAttackAtActivation(activator, skill);",
+            StringComparison.Ordinal);
+        var activityIndex = source.IndexOf(
+            "Combat.TrackHostileAbilityActivity(activator, true);",
+            StringComparison.Ordinal);
+
+        snapshotIndex.Should().BeGreaterThanOrEqualTo(0);
+        activityIndex.Should().BeGreaterThan(snapshotIndex);
+        var combatSource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        combatSource.Should().Contain("int durationSeconds = 6");
+        Regex.IsMatch(combatSource, @"criticalDamage,\s*30\);").Should().BeTrue(
+            "activation-time opening riders must share the queued ability's 30-second lifetime");
+        var nativeSource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
+        nativeSource.Should().NotContain("PrepareQueuedWeaponAbilityOpeningAttack(",
+            "opening riders are activation snapshots and must not consume later auto-attack modifiers");
+    }
+
+    [Test]
+    public void CastedWeaponActivation_SnapshotsSharedIdleBonusesBeforeHostileActivity()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "WeaponActiveAbilityDefinitionBase.cs"));
+        source.Should().Contain("if (isHostile && !profile.IsQueuedWeaponAbility)");
+        source.Should().Contain("Combat.StoreAbilityActivationIdleBonuses(activator, skill);");
+
+        var combatSource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        combatSource.Should().Contain("CalculateIdleSkillAbilityBonuses(activator, skillType)");
+        combatSource.Should().Contain("AbilityActivationIdleHitChancePercentAdjustment");
+        combatSource.Should().Contain("ClearAbilityActivationIdleBonuses(activator);");
+        var usePerkFeatSource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs"));
+        usePerkFeatSource.Should().Contain("ClearAbilityActivationIdleSnapshots(activator);");
+        usePerkFeatSource.Should().Contain("Combat.ClearAbilityActivationIdleBonuses(activator);");
+        usePerkFeatSource.Should().Contain("Combat.ClearWeaponAbilityActivationIdleBonuses(activator);");
+        usePerkFeatSource.Should().Contain("Combat.ClearQueuedWeaponAbilityAttemptBonuses(player);");
+        var rejectedQueueIndex = usePerkFeatSource.IndexOf("if (!executeQueue)", StringComparison.Ordinal);
+        rejectedQueueIndex.Should().BeGreaterThanOrEqualTo(0);
+        var rejectedQueueBody = usePerkFeatSource.Substring(rejectedQueueIndex, 400);
+        rejectedQueueBody.Should().Contain("Combat.ClearQueuedWeaponAbilityActivationBonuses(activator);");
+        rejectedQueueBody.Should().Contain("Combat.ClearQueuedWeaponAbilityAttemptBonuses(activator);");
+        rejectedQueueBody.Should().Contain("ClearAbilityActivationIdleSnapshots(activator);");
+    }
+
+    [Test]
     public void LimitedAttackBuffs_ConsumeOneChargePerOriginatingAttack()
     {
         var counter = new LimitedAttackCounter(3);

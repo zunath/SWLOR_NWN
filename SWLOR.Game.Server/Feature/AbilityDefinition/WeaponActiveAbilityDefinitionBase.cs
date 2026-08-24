@@ -533,6 +533,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             public void AfterImpact(uint activator, int totalDamage, int successfulHitCount = 0, AbilityImpactSummary summary = null)
             {
+                Combat.ClearAbilityActivationIdleBonuses(activator);
                 Combat.ClearWeaponAbilityActivationIdleBonuses(activator);
                 if (SelfStatusEffectOnCriticalHitFactory != null &&
                     (SelfStatusEffectOnCriticalHitDurationSeconds > 0 ||
@@ -1333,7 +1334,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .HasActivationAction((activator, target, level, targetLocation) =>
                 {
                     profile.PrepareActivationIdleBonuses(activator);
+                    if (isHostile && !profile.IsQueuedWeaponAbility)
+                        Combat.StoreAbilityActivationIdleBonuses(activator, skill);
                     profile.PrepareQueuedActivation(activator, skill);
+                    if (profile.IsQueuedWeaponAbility)
+                        Combat.PrepareQueuedWeaponAbilityOpeningAttackAtActivation(activator, skill);
                     if (isHostile && profile.IsQueuedWeaponAbility)
                         Combat.TrackHostileAbilityActivity(activator, true);
                     return isHostile || isFriendlyTarget || statusEffect == null || ToggleSelfStatus(activator, statusEffect);

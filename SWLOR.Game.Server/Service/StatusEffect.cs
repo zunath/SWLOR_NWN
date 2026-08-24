@@ -258,6 +258,8 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsPC(player) || GetIsDM(player))
                 return;
 
+            RemoveStatusEffectsFromAllTargetsWhenSourceExits(player);
+
             var playerId = GetObjectUUID(player);
             if (_creatureEffects.TryGetValue(player, out var effects) &&
                 effects.GetAllEffects().Count > 0)
@@ -1312,6 +1314,40 @@ namespace SWLOR.Game.Server.Service
             {
                 foreach (var effectType in entry.Effects)
                     RemoveStatusEffect(entry.Target, effectType, source, sendsWornOffMessage);
+            }
+        }
+
+        private static void RemoveStatusEffectsFromAllTargetsWhenSourceExits(uint source)
+        {
+            if (!GetIsObjectValid(source))
+                return;
+
+            var effectsByTarget = _creatureEffects
+                .Select(entry => new
+                {
+                    Target = entry.Key,
+                    EffectTypes = entry.Value.GetAllEffects()
+                        .Where(effect => effect.Source == source && effect is IRemoveWhenSourceExits)
+                        .Select(effect => effect.GetType())
+                        .Distinct()
+                        .ToList()
+                })
+                .Where(entry => entry.EffectTypes.Count > 0)
+                .ToList();
+
+            foreach (var entry in effectsByTarget)
+            {
+                foreach (var effectType in entry.EffectTypes)
+                    RemoveStatusEffect(entry.Target, effectType, source, false);
+            }
+
+            foreach (var loggedOutEffects in _loggedOutPlayerEffects.Values)
+            {
+                var sourceOwnedEffects = loggedOutEffects.Effects.GetAllEffects()
+                    .Where(effect => effect.Source == source && effect is IRemoveWhenSourceExits)
+                    .ToList();
+                foreach (var effect in sourceOwnedEffects)
+                    loggedOutEffects.Effects.Remove(effect);
             }
         }
 

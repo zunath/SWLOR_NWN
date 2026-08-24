@@ -7,7 +7,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     public sealed class SuppressionStatusEffect : StatusEffectBase,
         IStatusEffectRemovedHandler,
-        IStatusEffectRestoredHandler
+        IStatusEffectRestoredHandler,
+        IRemoveWhenSourceExits
     {
         public override string Name => "Suppression";
         public override EffectIconType Icon => EffectIconType.SuppressionStatusEffect;

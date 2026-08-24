@@ -7,7 +7,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     /// <summary>Visible marker for a target whose Suppression is restricting collateral damage.</summary>
     [StatConfiguredIcon]
-    public sealed class ContainmentNetStatusEffect : StatusEffectBase
+    public sealed class ContainmentNetStatusEffect : StatusEffectBase, IRemoveWhenSourceExits
     {
         public override string Name => "Containment Net";
         public override EffectIconType Icon => EffectIconType.SuppressionStatusEffect;

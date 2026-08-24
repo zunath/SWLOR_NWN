@@ -6055,6 +6055,22 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         WeaponAbilityActivationIdleDefenseIgnorePercent = 1048,
 
+        /// <summary>Skill selector for idle bonuses captured when a casted ability activates.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        AbilityActivationIdleSkillType = 1049,
+
+        /// <summary>Idle ability damage captured at cast activation.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AbilityActivationIdleDamageBonus = 1050,
+
+        /// <summary>Idle ability Accuracy captured at cast activation.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AbilityActivationIdleHitChancePercentAdjustment = 1051,
+
+        /// <summary>Idle ability critical damage captured at cast activation.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AbilityActivationIdleCriticalDamagePercentAdjustment = 1052,
+
     }
 
     public class StatTypeAttribute : Attribute

@@ -522,7 +522,7 @@ public class CombatDamageTests
             nativeCriticalPreparationIndex - queuedWeaponHitBranchIndex);
         queuedWeaponHitBranchBody.Should().Contain("pAttackData.m_nAttackResult = AttackResultRegularHit;");
         queuedWeaponHitBranchBody.Should().Contain("else");
-        queuedWeaponHitBranchBody.Should().Contain("Combat.PrepareQueuedWeaponAbilityOpeningAttack");
+        queuedWeaponHitBranchBody.Should().NotContain("Combat.PrepareQueuedWeaponAbilityOpeningAttack");
         queuedWeaponHitBranchBody.Should().NotContain("Combat.PrepareOpeningAutoAttack");
         queuedWeaponHitBranchBody.Should().NotContain("StatType.CurrentIncomingAttackMinimumDamage");
         abilitySource.Should().Contain("Combat.ConsumeQueuedWeaponAbilityBonuses(activator, abilitySkillType)");

@@ -5,12 +5,14 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
     /// <summary>Marks a creature as being inside a rifle Kill Box.</summary>
     [StatConfiguredIcon]
-    public sealed class KillBoxStatusEffect : StatusEffectBase, IRangedHitSuppressionSource
+    public sealed class KillBoxStatusEffect : StatusEffectBase,
+        IRangedHitSuppressionSource,
+        IRemoveWhenSourceExits
     {
         public override string Name => "Kill Box";
         public override EffectIconType Icon => EffectIconType.SuppressionStanceStatusEffect;
         public override StatusEffectCategory Categories => StatusEffectCategory.Debuff;
-        public override bool PersistsOnLogout => false;
+        public override bool PersistsOnLogout => true;
 
         public int SuppressionPenaltyPercent { get; }
         public int SuppressionEvasionPenaltyAdjustment { get; }

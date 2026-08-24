@@ -3198,7 +3198,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(attacker) || skillType == SkillType.Invalid)
                 return;
 
-            // Replace a stale queued attempt when a new queued ability is activated. The
+            // Discard any stale per-swing payload before capturing this queued activation. The
             // opening condition is evaluated before the queued ability records its own activity.
             ClearQueuedWeaponAbilityAttemptBonuses(attacker);
             var criticalRate = PrepareOpeningAutoAttack(attacker, skillType);
@@ -3207,13 +3207,12 @@ namespace SWLOR.Game.Server.Service
                 StatType.CurrentAutoAttackDamageBonus,
                 StatType.CurrentAutoAttackDamageBonus);
             var criticalDamage = ConsumeOpeningAutoAttackCriticalDamageAdjustment(attacker);
-            StoreQueuedWeaponAbilityAttemptBonuses(
+            StoreQueuedWeaponAbilityActivationOpeningBonuses(
                 attacker,
                 skillType,
                 damageBonus,
                 criticalRate,
-                criticalDamage,
-                30);
+                criticalDamage);
         }
 
         public static DateTime GetLastCompletedOffensiveActivityAt(uint creature)
@@ -8859,13 +8858,74 @@ namespace SWLOR.Game.Server.Service
                 0);
         }
 
+        private static void StoreQueuedWeaponAbilityActivationOpeningBonuses(
+            uint creature,
+            SkillType skillType,
+            int damageBonus,
+            int criticalRatePercentAdjustment,
+            int criticalDamagePercentAdjustment)
+        {
+            if (!GetIsObjectValid(creature) ||
+                skillType == SkillType.Invalid ||
+                (damageBonus == 0 &&
+                 criticalRatePercentAdjustment == 0 &&
+                 criticalDamagePercentAdjustment == 0))
+                return;
+
+            var storedSkillType = GetSkillTypeFromStat(TemporaryStatModifier.GetStatAdjustment(
+                creature,
+                StatType.QueuedWeaponAbilityActivationCriticalRateSkillType,
+                StatType.QueuedWeaponAbilityActivationCriticalRateSkillType));
+            if (SkillTypeMatches(skillType, storedSkillType))
+            {
+                damageBonus += TemporaryStatModifier.GetStatAdjustment(
+                    creature,
+                    StatType.QueuedWeaponAbilityIdleDamageBonus,
+                    StatType.QueuedWeaponAbilityActivationCriticalRateSkillType);
+                criticalRatePercentAdjustment += TemporaryStatModifier.GetStatAdjustment(
+                    creature,
+                    StatType.QueuedWeaponAbilityActivationCriticalRatePercentAdjustment,
+                    StatType.QueuedWeaponAbilityActivationCriticalRateSkillType);
+                criticalDamagePercentAdjustment = Math.Max(
+                    criticalDamagePercentAdjustment,
+                    TemporaryStatModifier.GetStatAdjustment(
+                        creature,
+                        StatType.QueuedWeaponAbilityIdleCriticalDamagePercentAdjustment,
+                        StatType.QueuedWeaponAbilityActivationCriticalRateSkillType));
+            }
+
+            TemporaryStatModifier.Replace(
+                creature,
+                StatType.QueuedWeaponAbilityActivationCriticalRateSkillType,
+                (int)skillType,
+                30,
+                StatType.QueuedWeaponAbilityActivationCriticalRateSkillType);
+            TemporaryStatModifier.Replace(
+                creature,
+                StatType.QueuedWeaponAbilityIdleDamageBonus,
+                damageBonus,
+                30,
+                StatType.QueuedWeaponAbilityActivationCriticalRateSkillType);
+            TemporaryStatModifier.Replace(
+                creature,
+                StatType.QueuedWeaponAbilityActivationCriticalRatePercentAdjustment,
+                criticalRatePercentAdjustment,
+                30,
+                StatType.QueuedWeaponAbilityActivationCriticalRateSkillType);
+            TemporaryStatModifier.Replace(
+                creature,
+                StatType.QueuedWeaponAbilityIdleCriticalDamagePercentAdjustment,
+                criticalDamagePercentAdjustment,
+                30,
+                StatType.QueuedWeaponAbilityActivationCriticalRateSkillType);
+        }
+
         private static void StoreQueuedWeaponAbilityAttemptBonuses(
             uint creature,
             SkillType skillType,
             int damageBonus,
             int criticalRatePercentAdjustment,
-            int criticalDamagePercentAdjustment,
-            int durationSeconds = 6)
+            int criticalDamagePercentAdjustment)
         {
             if (!GetIsObjectValid(creature) ||
                 skillType == SkillType.Invalid ||
@@ -8898,25 +8958,25 @@ namespace SWLOR.Game.Server.Service
                 creature,
                 StatType.QueuedWeaponAbilityCriticalRateSkillType,
                 (int)skillType,
-                durationSeconds,
+                6,
                 StatType.QueuedWeaponAbilityCriticalRateSkillType);
             TemporaryStatModifier.Replace(
                 creature,
                 StatType.QueuedWeaponAbilityCriticalRatePercentAdjustment,
                 criticalRatePercentAdjustment,
-                durationSeconds,
+                6,
                 StatType.QueuedWeaponAbilityCriticalRateSkillType);
             TemporaryStatModifier.Replace(
                 creature,
                 StatType.QueuedWeaponAbilityDamageBonus,
                 damageBonus,
-                durationSeconds,
+                6,
                 StatType.QueuedWeaponAbilityCriticalRateSkillType);
             TemporaryStatModifier.Replace(
                 creature,
                 StatType.QueuedWeaponAbilityCriticalDamagePercentAdjustment,
                 criticalDamagePercentAdjustment,
-                durationSeconds,
+                6,
                 StatType.QueuedWeaponAbilityCriticalRateSkillType);
         }
 

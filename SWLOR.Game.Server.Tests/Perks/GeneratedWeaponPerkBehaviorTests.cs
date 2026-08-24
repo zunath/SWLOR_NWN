@@ -392,9 +392,20 @@ public class GeneratedWeaponPerkBehaviorTests
         activityIndex.Should().BeGreaterThan(snapshotIndex);
         var combatSource = File.ReadAllText(Path.Combine(
             root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
-        combatSource.Should().Contain("int durationSeconds = 6");
-        Regex.IsMatch(combatSource, @"criticalDamage,\s*30\);").Should().BeTrue(
-            "activation-time opening riders must share the queued ability's 30-second lifetime");
+        var openingSnapshotIndex = combatSource.IndexOf(
+            "public static void PrepareQueuedWeaponAbilityOpeningAttackAtActivation(uint attacker, SkillType skillType)",
+            StringComparison.Ordinal);
+        openingSnapshotIndex.Should().BeGreaterThanOrEqualTo(0);
+        var openingSnapshot = combatSource.Substring(
+            openingSnapshotIndex,
+            Math.Min(1500, combatSource.Length - openingSnapshotIndex));
+        openingSnapshot.Should().Contain("StoreQueuedWeaponAbilityActivationOpeningBonuses(",
+            "activation-owned opening riders must survive misses while the queued ability remains armed");
+        openingSnapshot.Should().NotContain("StoreQueuedWeaponAbilityAttemptBonuses(",
+            "per-swing bonuses are cleared after misses and defensive avoidance");
+        combatSource.Should().Contain("private static void StoreQueuedWeaponAbilityActivationOpeningBonuses(");
+        combatSource.Should().Contain("criticalDamagePercentAdjustment = Math.Max(",
+            "overlapping shared and opening Critical Damage riders must not double-count");
         var nativeSource = File.ReadAllText(Path.Combine(
             root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
         nativeSource.Should().NotContain("PrepareQueuedWeaponAbilityOpeningAttack(",

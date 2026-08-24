@@ -49,6 +49,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .IsSingleTargetAbility()
                 .HasMaxRange(MaxRangeMeters)
                 .RequiresTarget()
+                .HasActivationAction(BeginLeap)
+                .HasImpactDelay(LeapAnimationDurationSeconds)
                 .HasImpactAction(Pounce1ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -69,6 +71,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .IsSingleTargetAbility()
                 .HasMaxRange(MaxRangeMeters)
                 .RequiresTarget()
+                .HasActivationAction(BeginLeap)
+                .HasImpactDelay(LeapAnimationDurationSeconds)
                 .HasImpactAction(Pounce2ImpactAction)
                 .IsCastedAbility()
                 .IsHostileAbility()
@@ -78,7 +82,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
 
         private static void Pounce1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            LeapAndInterrupt(activator, target);
+            if (!CompleteLeap(activator, target))
+                return;
 
             Ability.ApplyCombatImpact(
                 activator,
@@ -92,11 +97,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Physical,
                 targetVisualEffect: VisualEffect.Vfx_Com_Chunk_Red_Small);
+
+            InterruptTargetActivation(target);
         }
 
         private static void Pounce2ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
-            LeapAndInterrupt(activator, target);
+            if (!CompleteLeap(activator, target))
+                return;
 
             Ability.ApplyCombatImpact(
                 activator,
@@ -110,28 +118,49 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Physical,
                 targetVisualEffect: VisualEffect.Vfx_Com_Chunk_Red_Small);
+
+            InterruptTargetActivation(target);
         }
 
-        private static void LeapAndInterrupt(uint activator, uint target)
+        private static bool BeginLeap(uint activator, uint target, int level, Location targetLocation)
         {
-            if (!GetIsObjectValid(target))
-                return;
+            if (!GetIsObjectValid(activator) || !GetIsObjectValid(target))
+                return false;
 
-            AssignCommand(target, () => ClearAllActions());
             AssignCommand(activator, () =>
             {
                 ClearAllActions();
                 ActionPlayAnimation(Animation.ForceLeap, LeapAnimationSpeed, LeapAnimationDurationSeconds);
-                ActionDoCommand(() =>
-                {
-                    if (!GetIsObjectValid(target))
-                        return;
-
-                    var destination = GetLeapDestination(activator, target);
-                    JumpToLocation(destination);
-                    SetFacingPoint(GetPosition(target));
-                });
             });
+
+            return true;
+        }
+
+        private static bool CompleteLeap(uint activator, uint target)
+        {
+            if (!GetIsObjectValid(activator) ||
+                !GetIsObjectValid(target) ||
+                GetCurrentHitPoints(activator) <= 0 ||
+                GetCurrentHitPoints(target) <= 0 ||
+                GetArea(activator) != GetArea(target))
+            {
+                return false;
+            }
+
+            var destination = GetLeapDestination(activator, target);
+            AssignCommand(activator, () =>
+            {
+                JumpToLocation(destination);
+                SetFacingPoint(GetPosition(target));
+            });
+
+            return true;
+        }
+
+        private static void InterruptTargetActivation(uint target)
+        {
+            AssignCommand(target, () => ClearAllActions());
+            UsePerkFeat.InterruptAbilityActivation(target);
         }
 
         private static int GetPounceScore(AIContext context, int abilityLevel)

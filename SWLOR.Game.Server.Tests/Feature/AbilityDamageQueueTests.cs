@@ -63,6 +63,37 @@ public class AbilityDamageQueueTests
     }
 
     [Test]
+    public void ChoreographedImpacts_ResolveBeforeBusyStateAndAttackResumeAreReleased()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "UsePerkFeat.cs")).Replace("\r\n", "\n");
+        var completeBody = source.Substring(
+            source.IndexOf("void CompleteActivation", StringComparison.Ordinal),
+            source.IndexOf("// Begin the main process", StringComparison.Ordinal) -
+            source.IndexOf("void CompleteActivation", StringComparison.Ordinal));
+        var delayedBranch = completeBody.Substring(
+            completeBody.IndexOf("if (ability.ImpactDelay > 0f)", StringComparison.Ordinal),
+            completeBody.IndexOf("else\n                {", StringComparison.Ordinal) -
+            completeBody.IndexOf("if (ability.ImpactDelay > 0f)", StringComparison.Ordinal));
+
+        delayedBranch.Should().Contain("Activity.SetBusy(activator, ActivityStatusType.AbilityActivation);");
+        delayedBranch.Should().Contain("DelayCommand(ability.ImpactDelay, () =>");
+        delayedBranch.IndexOf("ResolveImpact();", StringComparison.Ordinal)
+            .Should().BeLessThan(delayedBranch.IndexOf("Activity.ClearBusy(activator);", StringComparison.Ordinal));
+
+        var resolveImpact = completeBody.Substring(
+            completeBody.IndexOf("void ResolveImpact()", StringComparison.Ordinal),
+            completeBody.IndexOf("if (ability.ImpactDelay > 0f)", StringComparison.Ordinal) -
+            completeBody.IndexOf("void ResolveImpact()", StringComparison.Ordinal));
+        resolveImpact.IndexOf("ExecuteAbilityImpact(activator, target, feat, ability, targetLocation)", StringComparison.Ordinal)
+            .Should().BeLessThan(resolveImpact.IndexOf("ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f)", StringComparison.Ordinal));
+    }
+
+    [Test]
     public void TrackedAbilityImpacts_FlushQueuedDamageEffectsTogether()
     {
         var root = FindRepositoryRoot();

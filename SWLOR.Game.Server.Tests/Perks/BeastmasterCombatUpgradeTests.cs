@@ -159,12 +159,23 @@ public class BeastmasterCombatUpgradeTests
         pounce.Should().Contain("ActionPlayAnimation(Animation.ForceLeap, LeapAnimationSpeed, LeapAnimationDurationSeconds)");
         pounce.Should().Contain("JumpToLocation(destination)");
         pounce.Should().Contain("SetFacingPoint(GetPosition(target))");
+        pounce.Should().Contain("UsePerkFeat.InterruptAbilityActivation(target)");
         pounce.Should().Contain("PounceOpeningDistanceMeters");
         pounce.Should().Contain("private const float MaxRangeMeters = 15.0f;");
         pounce.Should().Contain("private const int Pounce1Damage = 14;");
         pounce.Should().Contain("private const int Pounce2Damage = 24;");
         pounce.Should().Contain("ClearAllActions()");
         pounce.Should().NotContain("ActionJumpToObject(target)");
+        pounce.Should().NotContain("ActionDoCommand(");
+
+        var pounce1Impact = pounce.Substring(
+            pounce.IndexOf("private static void Pounce1ImpactAction", StringComparison.Ordinal),
+            pounce.IndexOf("private static void Pounce2ImpactAction", StringComparison.Ordinal) -
+            pounce.IndexOf("private static void Pounce1ImpactAction", StringComparison.Ordinal));
+        pounce1Impact.IndexOf("CompleteLeap(activator, target)", StringComparison.Ordinal)
+            .Should().BeLessThan(pounce1Impact.IndexOf("Ability.ApplyCombatImpact(", StringComparison.Ordinal));
+        pounce1Impact.IndexOf("Ability.ApplyCombatImpact(", StringComparison.Ordinal)
+            .Should().BeLessThan(pounce1Impact.IndexOf("InterruptTargetActivation(target)", StringComparison.Ordinal));
 
         var apexBite = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Beastmaster" / "ApexBiteAbilityDefinition.cs").FullName);
         apexBite.Should().Contain("45");
@@ -293,6 +304,8 @@ public class BeastmasterCombatUpgradeTests
         ability.MaxRange.Should().Be(15f);
         ability.HasExplicitMaxRange.Should().BeTrue();
         ability.AIScore.Should().NotBeNull();
+        ability.ActivationAction.Should().NotBeNull();
+        ability.ImpactDelay.Should().Be(1f);
     }
 
     private static void AssertBeastBondAbility(AbilityDetail ability, string name)

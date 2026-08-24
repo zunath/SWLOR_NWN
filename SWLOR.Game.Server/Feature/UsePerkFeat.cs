@@ -617,16 +617,40 @@ namespace SWLOR.Game.Server.Feature
 
                 ApplyRequirementEffects(activator, ability);
                 HandleStealthBreaking(activator, ability);
-                ExecuteAbilityImpact(activator, target, feat, ability, targetLocation);
-                Recast.ApplyRecastDelay(activator, ability.RecastGroup, abilityRecastDelay);
-                ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f);
 
-                // If this is an attack make the NPC react.
-                if (GetIsObjectValid(target) && target != activator)
+                void ResolveImpact()
                 {
-                    Enmity.AttackHighestEnmityTarget(target);
+                    ExecuteAbilityImpact(activator, target, feat, ability, targetLocation);
+                    ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f);
+
+                    // If this is an attack make the NPC react.
+                    if (GetIsObjectValid(target) && target != activator)
+                    {
+                        Enmity.AttackHighestEnmityTarget(target);
+                    }
                 }
 
+                if (ability.ImpactDelay > 0f)
+                {
+                    Recast.ApplyRecastDelay(activator, ability.RecastGroup, abilityRecastDelay);
+                    Activity.SetBusy(activator, ActivityStatusType.AbilityActivation);
+                    DelayCommand(ability.ImpactDelay, () =>
+                    {
+                        try
+                        {
+                            ResolveImpact();
+                        }
+                        finally
+                        {
+                            Activity.ClearBusy(activator);
+                        }
+                    });
+                }
+                else
+                {
+                    ResolveImpact();
+                    Recast.ApplyRecastDelay(activator, ability.RecastGroup, abilityRecastDelay);
+                }
             }
 
             // Begin the main process

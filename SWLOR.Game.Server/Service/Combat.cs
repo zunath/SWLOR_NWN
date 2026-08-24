@@ -6134,7 +6134,13 @@ namespace SWLOR.Game.Server.Service
                         StatType.RangedHitSuppressionStackEvasionPenaltyPercent);
                 }
 
-                ApplySuppressionStack(killBox.Source, defender, suppressionPenalty, killBox.SuppressionDurationSeconds, damageType);
+                ApplySuppressionStack(
+                    killBox.Source,
+                    defender,
+                    suppressionPenalty,
+                    killBox.SuppressionDurationSeconds,
+                    damageType,
+                    killBox.SuppressionEvasionPenaltyAdjustment);
             }
         }
 
@@ -6143,7 +6149,8 @@ namespace SWLOR.Game.Server.Service
             uint defender,
             int evasionPenaltyPercent,
             int durationSeconds,
-            CombatDamageType damageType)
+            CombatDamageType damageType,
+            int evasionPenaltyAdjustment = 0)
         {
             if (!GetIsObjectValid(attacker) ||
                 !GetIsObjectValid(defender) ||
@@ -6155,7 +6162,10 @@ namespace SWLOR.Game.Server.Service
             var adjustedEvasionPenaltyPercent = Math.Max(
                 0,
                 evasionPenaltyPercent +
-                Stat.GetStatAdjustment(attacker, StatType.SuppressionStackEvasionPenaltyPercentAdjustment));
+                Stat.GetStatAdjustment(
+                    attacker,
+                    StatType.SuppressionStackEvasionPenaltyPercentAdjustment) +
+                evasionPenaltyAdjustment);
             if (adjustedEvasionPenaltyPercent <= 0)
                 return false;
 
@@ -8925,6 +8935,65 @@ namespace SWLOR.Game.Server.Service
                 idleBonuses.CriticalDamagePercentAdjustment,
                 30,
                 StatType.QueuedWeaponAbilityActivationCriticalRateSkillType);
+        }
+
+        public static void StoreWeaponAbilityActivationIdleBonuses(
+            uint creature,
+            bool isIdle,
+            int damageBonus,
+            int criticalRatePercentAdjustment,
+            int defenseIgnorePercent)
+        {
+            ClearWeaponAbilityActivationIdleBonuses(creature);
+            if (!GetIsObjectValid(creature))
+                return;
+
+            TemporaryStatModifier.Replace(creature, StatType.WeaponAbilityActivationIdleSnapshot, 1, 30,
+                StatType.WeaponAbilityActivationIdleSnapshot);
+            TemporaryStatModifier.Replace(creature, StatType.WeaponAbilityActivationIdleDamageBonus,
+                isIdle ? damageBonus : 0, 30, StatType.WeaponAbilityActivationIdleSnapshot);
+            TemporaryStatModifier.Replace(creature, StatType.WeaponAbilityActivationIdleCriticalRatePercentAdjustment,
+                isIdle ? criticalRatePercentAdjustment : 0, 30, StatType.WeaponAbilityActivationIdleSnapshot);
+            TemporaryStatModifier.Replace(creature, StatType.WeaponAbilityActivationIdleDefenseIgnorePercent,
+                isIdle ? defenseIgnorePercent : 0, 30, StatType.WeaponAbilityActivationIdleSnapshot);
+        }
+
+        public static bool HasWeaponAbilityActivationIdleSnapshot(uint creature)
+        {
+            return TemporaryStatModifier.GetStatAdjustment(
+                creature,
+                StatType.WeaponAbilityActivationIdleSnapshot,
+                StatType.WeaponAbilityActivationIdleSnapshot) > 0;
+        }
+
+        public static int GetWeaponAbilityActivationIdleDamageBonus(uint creature) =>
+            TemporaryStatModifier.GetStatAdjustment(
+                creature,
+                StatType.WeaponAbilityActivationIdleDamageBonus,
+                StatType.WeaponAbilityActivationIdleSnapshot);
+
+        public static int GetWeaponAbilityActivationIdleCriticalRateBonus(uint creature) =>
+            TemporaryStatModifier.GetStatAdjustment(
+                creature,
+                StatType.WeaponAbilityActivationIdleCriticalRatePercentAdjustment,
+                StatType.WeaponAbilityActivationIdleSnapshot);
+
+        public static int GetWeaponAbilityActivationIdleDefenseIgnorePercent(uint creature) =>
+            TemporaryStatModifier.GetStatAdjustment(
+                creature,
+                StatType.WeaponAbilityActivationIdleDefenseIgnorePercent,
+                StatType.WeaponAbilityActivationIdleSnapshot);
+
+        public static void ClearWeaponAbilityActivationIdleBonuses(uint creature)
+        {
+            TemporaryStatModifier.Consume(creature, StatType.WeaponAbilityActivationIdleDamageBonus,
+                StatType.WeaponAbilityActivationIdleSnapshot);
+            TemporaryStatModifier.Consume(creature, StatType.WeaponAbilityActivationIdleCriticalRatePercentAdjustment,
+                StatType.WeaponAbilityActivationIdleSnapshot);
+            TemporaryStatModifier.Consume(creature, StatType.WeaponAbilityActivationIdleDefenseIgnorePercent,
+                StatType.WeaponAbilityActivationIdleSnapshot);
+            TemporaryStatModifier.Consume(creature, StatType.WeaponAbilityActivationIdleSnapshot,
+                StatType.WeaponAbilityActivationIdleSnapshot);
         }
 
         public static int GetQueuedWeaponAbilityActivationHitChanceAdjustment(

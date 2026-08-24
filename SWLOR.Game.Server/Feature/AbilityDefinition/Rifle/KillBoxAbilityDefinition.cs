@@ -43,9 +43,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 AbilityType.Perception,
                 new GeneratedWeaponAbilityProfile
                 {
-                    TemporarySuppressionStackEvasionPenaltyPercentAdjustment = 3,
                     TemporaryDefeatedEnemyEffectDurationSeconds = 45,
-                    StatusEffectFactory = () => new KillBoxStatusEffect()
+                    StatusEffectFactory = () => new KillBoxStatusEffect(0, 3)
                 });
 
             return builder.Build();

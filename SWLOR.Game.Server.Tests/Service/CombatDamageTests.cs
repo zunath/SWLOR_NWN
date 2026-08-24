@@ -315,6 +315,21 @@ public class CombatDamageTests
         combatSource.Should().NotContain("GetSuppressionRangedAttackAccuracyAdjustment");
         nativeSource.Should().Contain("Combat.ConsumeSuppressionRangedAttackAccuracyAdjustment(");
         nativeSource.Should().NotContain("Combat.GetSuppressionRangedAttackAccuracyAdjustment(");
+        var overwatchIndex = nativeSource.IndexOf(
+            "Combat.ConsumeSuppressionRangedAttackAccuracyAdjustment(",
+            StringComparison.Ordinal);
+        var hitChanceIndex = nativeSource.IndexOf(
+            "var hitChanceModifier =",
+            StringComparison.Ordinal);
+        var hitRateIndex = nativeSource.IndexOf(
+            "var hitRate = Combat.CalculateHitRate(",
+            StringComparison.Ordinal);
+        overwatchIndex.Should().BeGreaterThan(hitChanceIndex,
+            "Overwatch's percentage bonus must enter the hit-chance modifier path");
+        overwatchIndex.Should().BeLessThan(hitRateIndex);
+        nativeSource.Should().NotContain(
+            "accuracyModifiers += Combat.ConsumeSuppressionRangedAttackAccuracyAdjustment(",
+            "native Overwatch accuracy is a percentage modifier, not raw attack accuracy");
     }
 
     [Test]

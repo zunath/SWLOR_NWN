@@ -317,6 +317,45 @@ public class GeneratedWeaponPerkBehaviorTests
     }
 
     [Test]
+    public void OneShot_CapturesIdleConditionAtActivationAndClearsItAfterImpact()
+    {
+        var root = FindRepositoryRoot();
+        var oneShotSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "Rifle",
+            "OneShotAbilityDefinition.cs"));
+        oneShotSource.Should().Contain("IdleWindowSeconds = 3.0f");
+        oneShotSource.Should().Contain("CriticalRateIfIdle = 25");
+        oneShotSource.Should().Contain("DefenseIgnoreIfIdle = 25");
+
+        var weaponBaseSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "WeaponActiveAbilityDefinitionBase.cs"));
+        var activationIndex = weaponBaseSource.IndexOf(
+            "profile.PrepareActivationIdleBonuses(activator);",
+            StringComparison.Ordinal);
+        var impactIndex = weaponBaseSource.IndexOf(
+            ".HasImpactAction((activator, target, level, targetLocation) =>",
+            StringComparison.Ordinal);
+        activationIndex.Should().BeGreaterThanOrEqualTo(0);
+        activationIndex.Should().BeLessThan(impactIndex,
+            "the idle qualification must be captured before the delayed impact begins");
+        weaponBaseSource.Should().Contain("GetWeaponAbilityActivationIdleCriticalRateBonus(activator)");
+        weaponBaseSource.Should().Contain("GetWeaponAbilityActivationIdleDefenseIgnorePercent(activator)");
+        weaponBaseSource.Should().Contain("Combat.ClearWeaponAbilityActivationIdleBonuses(activator);");
+        var snapshotSource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        snapshotSource.Should().Contain("isIdle ? criticalRatePercentAdjustment : 0");
+        snapshotSource.Should().Contain("isIdle ? defenseIgnorePercent : 0");
+    }
+
+    [Test]
     public void LimitedAttackBuffs_ConsumeOneChargePerOriginatingAttack()
     {
         var counter = new LimitedAttackCounter(3);
@@ -1600,7 +1639,7 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertAbilitySourceContains(root, "Pistol", "LastWordAbilityDefinition.cs", "TemporaryAvoidedAttackNextAutoAttackNoDelaySkillType = (int)SkillType.Pistol");
         AssertAbilitySourceContains(root, "Rifle", "SuppressingShotAbilityDefinition.cs", "ApplySuppressionStackOnHit = true");
         AssertAbilitySourceContains(root, "Rifle", "SuppressiveLineAbilityDefinition.cs", "SuppressionDisorientedRequiredStacks = 2");
-        AssertAbilitySourceContains(root, "Rifle", "KillBoxAbilityDefinition.cs", "TemporarySuppressionStackEvasionPenaltyPercentAdjustment = 3");
+        AssertAbilitySourceContains(root, "Rifle", "KillBoxAbilityDefinition.cs", "StatusEffectFactory = () => new KillBoxStatusEffect(0, 3)");
         AssertAbilitySourceContains(root, "TwinBlade", "TempestBloomAbilityDefinition.cs", "TemporaryAreaAbilityFragmentationDamage = 8");
         AssertAbilitySourceContains(root, "Throwing", "RainOfSteelAbilityDefinition.cs", "TemporaryAreaAbilityFragmentationPulseSeconds = 6");
         AssertAbilitySourceContains(root, "Throwing", "ExplosiveTossAbilityDefinition.cs", "typeof(BurnStatusEffect)");

@@ -182,11 +182,6 @@ namespace SWLOR.Game.Server.Native
                 // Overwatch is a next ranged attack trigger. Resolve it in the native
                 // auto-attack path as well as the casted-ability path, and only when the
                 // selected defender is the suppressed target that armed the trigger.
-                accuracyModifiers += Combat.ConsumeSuppressionRangedAttackAccuracyAdjustment(
-                    attacker.m_idSelf,
-                    defender.m_idSelf,
-                    weaponSkillType);
-
                 // Defender not targeting the attacker.
                 // Dev note: the GetItem method always creates a new instance of CNWActionNode so there should be no NPEs.
                 // Note: this always returns object invalid for NPCs (2130706432) as their actions aren't represented the same way.
@@ -237,6 +232,10 @@ namespace SWLOR.Game.Server.Native
                     Combat.GetHitChanceAgainstSunderedTargetAdjustment(attacker.m_idSelf, defender.m_idSelf) +
                     Combat.GetQueuedWeaponAbilityActivationHitChanceAdjustment(
                         attacker.m_idSelf,
+                        weaponSkillType) +
+                    Combat.ConsumeSuppressionRangedAttackAccuracyAdjustment(
+                        attacker.m_idSelf,
+                        defender.m_idSelf,
                         weaponSkillType);
                 var hitRate = Combat.CalculateHitRate(
                     attackerAccuracy + accuracyModifiers,

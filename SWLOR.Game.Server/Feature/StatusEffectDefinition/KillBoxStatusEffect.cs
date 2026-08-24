@@ -13,19 +13,28 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override bool PersistsOnLogout => false;
 
         public int SuppressionPenaltyPercent { get; }
+        public int SuppressionEvasionPenaltyAdjustment { get; }
         public int SuppressionDurationSeconds => 30;
         public override StatusEffectStackType StackingType => StatusEffectStackType.StackFromMultipleSources;
 
         public KillBoxStatusEffect()
-            : this(0)
+            : this(0, 0)
         {
         }
 
         public KillBoxStatusEffect(int suppressionPenaltyPercent)
+            : this(suppressionPenaltyPercent, 0)
         {
-            SuppressionPenaltyPercent = suppressionPenaltyPercent;
         }
 
-        public override IStatusEffect Clone() => new KillBoxStatusEffect(SuppressionPenaltyPercent);
+        public KillBoxStatusEffect(int suppressionPenaltyPercent, int suppressionEvasionPenaltyAdjustment)
+        {
+            SuppressionPenaltyPercent = suppressionPenaltyPercent;
+            SuppressionEvasionPenaltyAdjustment = suppressionEvasionPenaltyAdjustment;
+        }
+
+        public override IStatusEffect Clone() => new KillBoxStatusEffect(
+            SuppressionPenaltyPercent,
+            SuppressionEvasionPenaltyAdjustment);
     }
 }

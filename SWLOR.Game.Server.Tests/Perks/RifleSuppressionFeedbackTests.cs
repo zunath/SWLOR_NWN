@@ -21,6 +21,7 @@ public sealed class RifleSuppressionFeedbackTests
         new KillBoxStatusEffect(4).Icon.Should().Be(EffectIconType.SuppressionStanceStatusEffect);
         new KillBoxStatusEffect(4).StackingType.Should().Be(StatusEffectStackType.StackFromMultipleSources);
         new KillBoxStatusEffect(4).Should().BeAssignableTo<IRangedHitSuppressionSource>();
+        ((IRangedHitSuppressionSource)new KillBoxStatusEffect(4, 3)).SuppressionEvasionPenaltyAdjustment.Should().Be(3);
         new OverwatchStatusEffect().Name.Should().Be("Overwatch");
         new OverwatchStatusEffect().Icon.Should().Be(EffectIconType.TacticalUplinkStatusEffect);
         new ContainmentNetStatusEffect(-10).DamageAdjustmentPercent.Should().Be(-10);
@@ -60,6 +61,9 @@ public sealed class RifleSuppressionFeedbackTests
         combat.Should().Contain("RefreshOverwatchMarker(attacker, now);");
         combat.Should().Contain("public static void ReconcileOverwatchStatus(uint source)");
         combat.Should().Contain("OfType<IRangedHitSuppressionSource>()");
+        combat.Should().Contain("killBox.SuppressionEvasionPenaltyAdjustment");
+        combat.Should().Contain("int evasionPenaltyAdjustment = 0");
+        combat.Should().Contain("Stat.GetStatAdjustment(");
         combat.Should().NotContain("OfType<KillBoxStatusEffect>()");
         combat.Should().NotContain("if (killBox.Source == attacker)");
         var suppressionStatus = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "SuppressionStatusEffect.cs"));
@@ -73,7 +77,7 @@ public sealed class RifleSuppressionFeedbackTests
         statusEffectService.Should().Contain("NotifyStatusEffectsRestored(player, effects);");
         statusEffectService.Should().Contain("OfType<IStatusEffectRestoredHandler>()");
         statusEffectService.Should().NotContain("Combat.ReconcileContainmentNetStatuses");
-        killBox.Should().Contain("StatusEffectFactory = () => new KillBoxStatusEffect()");
+        killBox.Should().Contain("StatusEffectFactory = () => new KillBoxStatusEffect(0, 3)");
         killBox.Should().Contain("8.0f");
         killBox.Should().Contain("AbilityTargetingFlags.HarmsEnemies");
         killBox.Should().NotContain("OriginOnSelf");

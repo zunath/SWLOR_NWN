@@ -126,7 +126,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public int TemporaryAvoidedAttackNextAutoAttackNoDelayDurationSeconds { get; init; }
             public int TemporaryRangedHitSuppressionStackDurationSeconds { get; init; }
             public int TemporaryRangedHitSuppressionStackEvasionPenaltyPercent { get; init; }
-            public int TemporarySuppressionStackEvasionPenaltyPercentAdjustment { get; init; }
             public int TemporaryAreaAbilityFragmentationDamage { get; init; }
             public int TemporaryAreaAbilityFragmentationDurationSeconds { get; init; }
             public int TemporaryAreaAbilityFragmentationPulseSeconds { get; init; }
@@ -235,9 +234,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     }
                 }
 
-                if (ExtraDamageIfIdle != 0 && IsIdle(activator))
+                var idleSnapshot = Combat.HasWeaponAbilityActivationIdleSnapshot(activator);
+                if (ExtraDamageIfIdle != 0 &&
+                    (idleSnapshot
+                        ? Combat.GetWeaponAbilityActivationIdleDamageBonus(activator) > 0
+                        : IsIdle(activator)))
                 {
-                    bonus += ExtraDamageIfIdle;
+                    bonus += idleSnapshot
+                        ? Combat.GetWeaponAbilityActivationIdleDamageBonus(activator)
+                        : ExtraDamageIfIdle;
                     if (GetIsPC(activator) && !string.IsNullOrWhiteSpace(ExtraDamageIfIdleFeedbackLabel))
                     {
                         FloatingTextStringOnCreature(
@@ -320,9 +325,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public int GetCriticalRateAdjustment(uint activator, uint target)
             {
                 var adjustment = CriticalRatePercentAdjustment;
-                if (!IsQueuedWeaponAbility && CriticalRateIfIdle != 0 && IsIdle(activator))
+                var idleSnapshot = Combat.HasWeaponAbilityActivationIdleSnapshot(activator);
+                if (!IsQueuedWeaponAbility && CriticalRateIfIdle != 0 &&
+                    (idleSnapshot
+                        ? Combat.GetWeaponAbilityActivationIdleCriticalRateBonus(activator) > 0
+                        : IsIdle(activator)))
                 {
-                    adjustment += CriticalRateIfIdle;
+                    adjustment += idleSnapshot
+                        ? Combat.GetWeaponAbilityActivationIdleCriticalRateBonus(activator)
+                        : CriticalRateIfIdle;
                     if (GetIsPC(activator) && !string.IsNullOrWhiteSpace(CriticalRateIfIdleFeedbackLabel))
                     {
                         FloatingTextStringOnCreature(
@@ -357,8 +368,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public int GetDefenseIgnorePercent(uint activator)
             {
                 var adjustment = DefenseIgnorePercent;
-                if (DefenseIgnoreIfIdle != 0 && IsIdle(activator))
-                    adjustment += DefenseIgnoreIfIdle;
+                var idleSnapshot = Combat.HasWeaponAbilityActivationIdleSnapshot(activator);
+                if (DefenseIgnoreIfIdle != 0 &&
+                    (idleSnapshot
+                        ? Combat.GetWeaponAbilityActivationIdleDefenseIgnorePercent(activator) > 0
+                        : IsIdle(activator)))
+                {
+                    adjustment += idleSnapshot
+                        ? Combat.GetWeaponAbilityActivationIdleDefenseIgnorePercent(activator)
+                        : DefenseIgnoreIfIdle;
+                }
 
                 return adjustment;
             }
@@ -513,6 +532,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             public void AfterImpact(uint activator, int totalDamage, int successfulHitCount = 0, AbilityImpactSummary summary = null)
             {
+                Combat.ClearWeaponAbilityActivationIdleBonuses(activator);
                 if (SelfStatusEffectOnCriticalHitFactory != null &&
                     (SelfStatusEffectOnCriticalHitDurationSeconds > 0 ||
                      SelfStatusEffectOnCriticalHitIsPermanent) &&
@@ -606,6 +626,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                             false);
                     }
                 }
+            }
+
+            public void PrepareActivationIdleBonuses(uint activator)
+            {
+                Combat.ClearWeaponAbilityActivationIdleBonuses(activator);
+                if (IsQueuedWeaponAbility || IdleWindowSeconds <= 0f ||
+                    (ExtraDamageIfIdle == 0 && CriticalRateIfIdle == 0 && DefenseIgnoreIfIdle == 0))
+                    return;
+
+                Combat.StoreWeaponAbilityActivationIdleBonuses(
+                    activator,
+                    IsIdle(activator),
+                    ExtraDamageIfIdle,
+                    CriticalRateIfIdle,
+                    DefenseIgnoreIfIdle);
             }
 
             public void AfterActivation(uint activator, SkillType skillType)
@@ -771,11 +806,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     activator,
                     StatType.RangedHitSuppressionStackEvasionPenaltyPercent,
                     TemporaryRangedHitSuppressionStackEvasionPenaltyPercent,
-                    duration);
-                ReplaceTemporary(
-                    activator,
-                    StatType.SuppressionStackEvasionPenaltyPercentAdjustment,
-                    TemporarySuppressionStackEvasionPenaltyPercentAdjustment,
                     duration);
                 ReplaceTemporary(activator, StatType.AreaAbilityFragmentationDamage, TemporaryAreaAbilityFragmentationDamage, duration);
                 ReplaceTemporary(
@@ -1301,6 +1331,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 .UsesImpactAnimation(impactAnimation)
                 .HasActivationAction((activator, target, level, targetLocation) =>
                 {
+                    profile.PrepareActivationIdleBonuses(activator);
                     profile.PrepareQueuedActivation(activator, skill);
                     return isHostile || isFriendlyTarget || statusEffect == null || ToggleSelfStatus(activator, statusEffect);
                 })

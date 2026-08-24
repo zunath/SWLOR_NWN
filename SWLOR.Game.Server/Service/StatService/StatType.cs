@@ -6039,6 +6039,22 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         QueuedWeaponAbilityIdleCriticalDamagePercentAdjustment = 1044,
 
+        /// <summary>Marker for idle conditional bonuses captured when a casted weapon ability activates.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        WeaponAbilityActivationIdleSnapshot = 1045,
+
+        /// <summary>Flat damage captured from the activation-time idle condition.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        WeaponAbilityActivationIdleDamageBonus = 1046,
+
+        /// <summary>Critical Rate captured from the activation-time idle condition.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        WeaponAbilityActivationIdleCriticalRatePercentAdjustment = 1047,
+
+        /// <summary>Defense ignore captured from the activation-time idle condition.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        WeaponAbilityActivationIdleDefenseIgnorePercent = 1048,
+
     }
 
     public class StatTypeAttribute : Attribute

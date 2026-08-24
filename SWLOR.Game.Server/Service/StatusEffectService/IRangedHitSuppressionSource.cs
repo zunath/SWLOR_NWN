@@ -5,6 +5,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
     {
         uint Source { get; }
         int SuppressionPenaltyPercent { get; }
+        int SuppressionEvasionPenaltyAdjustment { get; }
         int SuppressionDurationSeconds { get; }
     }
 }

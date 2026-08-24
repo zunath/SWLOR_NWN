@@ -82,8 +82,15 @@ public class AbilityDamageQueueTests
 
         delayedBranch.Should().Contain("Activity.SetBusy(activator, ActivityStatusType.AbilityActivation);");
         delayedBranch.Should().Contain("DelayCommand(ability.ImpactDelay, () =>");
+        delayedBranch.Should().Contain("pendingActivation.ActivationId != activationId");
+        delayedBranch.Should().Contain("GetLocalInt(activator, activationId) != (int)ActivationStatus.Started");
+        delayedBranch.IndexOf("IsDelayedImpactTargetValid(activator, target, targetLocation, ability)", StringComparison.Ordinal)
+            .Should().BeLessThan(delayedBranch.IndexOf("ResolveImpact();", StringComparison.Ordinal));
         delayedBranch.IndexOf("ResolveImpact();", StringComparison.Ordinal)
             .Should().BeLessThan(delayedBranch.IndexOf("Activity.ClearBusy(activator);", StringComparison.Ordinal));
+
+        source.Should().Contain("public bool IsAwaitingImpact { get; set; }");
+        source.Should().Contain("if (activation.IsAwaitingImpact)\n                Combat.CompleteAbilityStaminaCostContext(activator, activation.Ability);");
 
         var resolveImpact = completeBody.Substring(
             completeBody.IndexOf("void ResolveImpact()", StringComparison.Ordinal),

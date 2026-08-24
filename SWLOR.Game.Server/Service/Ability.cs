@@ -2458,10 +2458,12 @@ namespace SWLOR.Game.Server.Service
             if (baseDamage <= 0)
                 return 0;
 
-            var damage = Combat.ApplyDamageDealtModifiers(
+            var trackedImpact = GetTrackedAbilityImpact(activator);
+            var damage = baseDamage + (trackedImpact?.NextAbilityDamageBonus ?? 0);
+            damage = Combat.ApplyDamageDealtModifiers(
                 activator,
                 target,
-                baseDamage,
+                damage,
                 skillType,
                 damageType,
                 isAbilityDamage: true);

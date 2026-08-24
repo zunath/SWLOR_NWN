@@ -123,6 +123,9 @@ public class AbilityDamageQueueTests
         primaryImpactBody.Should().Contain("Combat.SendTemporaryHitPointDamageFeedback(activator, target, damage);");
         primaryImpactBody.Should().Contain("trackedImpact.QueueDamageEffect(");
 
+        unscaledDamageBody.Should().Contain("var trackedImpact = GetTrackedAbilityImpact(activator);");
+        unscaledDamageBody.Should().Contain("baseDamage + (trackedImpact?.NextAbilityDamageBonus ?? 0)",
+            "queued flat next-ability damage must not be consumed without affecting an unscaled hit");
         unscaledDamageBody.Should().Contain("Combat.ApplyDamageDealtModifiers(");
         unscaledDamageBody.Should().Contain("isAbilityDamage: true");
         unscaledDamageBody.Should().Contain("ApplyCombatReadinessToActivatedAbilityMagnitude(activator, damage)");

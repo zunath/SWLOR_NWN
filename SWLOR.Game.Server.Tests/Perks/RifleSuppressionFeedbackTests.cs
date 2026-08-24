@@ -76,6 +76,7 @@ public sealed class RifleSuppressionFeedbackTests
         combat.Should().NotContain("if (killBox.Source == attacker)");
         var suppressionStatus = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "SuppressionStatusEffect.cs"));
         var statusEffectService = File.ReadAllText(Path.Combine(root, "SWLOR.Game.Server", "Service", "StatusEffect.cs"));
+        statusEffectService.Should().Contain("RemoveStatusEffectsFromAllTargetsBySource(");
         suppressionStatus.Should().Contain("IStatusEffectRemovedHandler");
         suppressionStatus.Should().Contain("IStatusEffectRestoredHandler");
         suppressionStatus.Should().Contain("Combat.ReconcileContainmentNetStatus(Source, creature);");

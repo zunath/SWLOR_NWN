@@ -64,6 +64,7 @@ class GeneratedWeaponTargetingTests(unittest.TestCase):
         properties = dict(GENERATOR.profile_property_lines(row, 1, None))
 
         self.assertEqual("() => new KillBoxStatusEffect(0, 3)", properties["StatusEffectFactory"])
+        self.assertEqual("typeof(KillBoxStatusEffect)", properties["SourceOwnedStatusEffectTypeRemovedOnPerkRefund"])
         self.assertNotIn("TemporaryRangedHitSuppressionStackDurationSeconds", properties)
         self.assertNotIn("TemporaryRangedHitSuppressionStackEvasionPenaltyPercent", properties)
         self.assertEqual("45", properties["TemporaryDefeatedEnemyEffectDurationSeconds"])

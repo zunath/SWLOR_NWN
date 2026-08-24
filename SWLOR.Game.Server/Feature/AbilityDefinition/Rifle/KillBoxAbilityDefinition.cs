@@ -44,7 +44,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 new GeneratedWeaponAbilityProfile
                 {
                     TemporaryDefeatedEnemyEffectDurationSeconds = 45,
-                    StatusEffectFactory = () => new KillBoxStatusEffect(0, 3)
+                    StatusEffectFactory = () => new KillBoxStatusEffect(0, 3),
+                    SourceOwnedStatusEffectTypeRemovedOnPerkRefund = typeof(KillBoxStatusEffect)
                 });
 
             return builder.Build();

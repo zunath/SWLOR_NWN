@@ -202,6 +202,24 @@ public class AbilityBuilderTests
             .Be(typeof(TestStatusEffect));
     }
 
+    [Test]
+    public void RemoveSourceOwnedStatusEffectOnPerkRefund_TracksDistinctTypes()
+    {
+        var abilities = new AbilityBuilder()
+            .Create(FeatType.Invalid, PerkType.Invalid)
+            .RemoveSourceOwnedStatusEffectOnPerkRefund(typeof(TestStatusEffect))
+            .RemoveSourceOwnedStatusEffectOnPerkRefund(typeof(TestStatusEffect))
+            .Build();
+
+        abilities[FeatType.Invalid]
+            .SourceOwnedStatusEffectTypesRemovedOnPerkRefund
+            .Should()
+            .ContainSingle()
+            .Which
+            .Should()
+            .Be(typeof(TestStatusEffect));
+    }
+
     private sealed class TestStatusEffect
     {
     }

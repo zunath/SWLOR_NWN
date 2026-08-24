@@ -356,6 +356,22 @@ public class GeneratedWeaponPerkBehaviorTests
     }
 
     [Test]
+    public void QueuedWeaponNativeRolls_UseGenericLongRangeAccuracyAdjustment()
+    {
+        var root = FindRepositoryRoot();
+        var combatSource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var nativeSource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
+
+        combatSource.Should().Contain("public static int GetRangedAbilityLongRangeHitChanceAdjustment(");
+        combatSource.Should().Contain("RangedAbilityLongRangeHitChancePercentAdjustment");
+        nativeSource.Should().Contain("Combat.GetRangedAbilityLongRangeHitChanceAdjustment(");
+        nativeSource.Should().Contain("queuedWeaponAbilityLongRangeHitChanceAdjustment");
+        nativeSource.Should().NotContain("Headshot");
+    }
+
+    [Test]
     public void LimitedAttackBuffs_ConsumeOneChargePerOriginatingAttack()
     {
         var counter = new LimitedAttackCounter(3);
@@ -1640,6 +1656,7 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertAbilitySourceContains(root, "Rifle", "SuppressingShotAbilityDefinition.cs", "ApplySuppressionStackOnHit = true");
         AssertAbilitySourceContains(root, "Rifle", "SuppressiveLineAbilityDefinition.cs", "SuppressionDisorientedRequiredStacks = 2");
         AssertAbilitySourceContains(root, "Rifle", "KillBoxAbilityDefinition.cs", "StatusEffectFactory = () => new KillBoxStatusEffect(0, 3)");
+        AssertAbilitySourceContains(root, "Rifle", "KillBoxAbilityDefinition.cs", "SourceOwnedStatusEffectTypeRemovedOnPerkRefund = typeof(KillBoxStatusEffect)");
         AssertAbilitySourceContains(root, "TwinBlade", "TempestBloomAbilityDefinition.cs", "TemporaryAreaAbilityFragmentationDamage = 8");
         AssertAbilitySourceContains(root, "Throwing", "RainOfSteelAbilityDefinition.cs", "TemporaryAreaAbilityFragmentationPulseSeconds = 6");
         AssertAbilitySourceContains(root, "Throwing", "ExplosiveTossAbilityDefinition.cs", "typeof(BurnStatusEffect)");

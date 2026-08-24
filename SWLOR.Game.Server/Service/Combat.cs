@@ -3021,7 +3021,7 @@ namespace SWLOR.Game.Server.Service
             ScheduleIdleReadinessRefresh(creature);
         }
 
-        public static void TrackHostileAbilityActivity(uint creature)
+        public static void TrackHostileAbilityActivity(uint creature, bool countAsCompletedOffensiveActivity = false)
         {
             if (!GetIsObjectValid(creature))
                 return;
@@ -3033,6 +3033,10 @@ namespace SWLOR.Game.Server.Service
             _lastHostileAbilityAttemptActivity[creature] = now;
             StatusEffect.RemoveStatusEffect(creature, typeof(OpeningAttackReadyStatusEffect), false);
             StatusEffect.RemoveStatusEffect(creature, typeof(IdleSkillAbilityReadyStatusEffect), false);
+            if (countAsCompletedOffensiveActivity)
+            {
+                _lastCombatAbilityUse[creature] = now;
+            }
             // Re-arm readiness even if the cast is cancelled before an impact completes. A
             // completed impact schedules again after its completed-activity timestamp is stored.
             ScheduleIdleReadinessRefresh(creature);
@@ -8120,18 +8124,10 @@ namespace SWLOR.Game.Server.Service
 
             // Long-range bonuses are independent of the generic skill-selector stats. This
             // allows a perk to affect every ranged ability without installing a second selector.
-            var minimumRange = Stat.GetStatAdjustment(creature, StatType.RangedAbilityLongRangeMinimumRangeMeters);
-            if (IsRangedWeaponSkill(skillType) &&
-                GetIsObjectValid(defender) &&
-                minimumRange > 0 &&
-                GetDistanceBetween(creature, defender) >= minimumRange)
-            {
-                adjustment += adjustmentStat == StatType.AbilityHitChancePercentAdjustment
-                    ? Stat.GetStatAdjustment(creature, StatType.RangedAbilityLongRangeHitChancePercentAdjustment)
-                    : adjustmentStat == StatType.AbilityCriticalRatePercentAdjustment
-                        ? Stat.GetStatAdjustment(creature, StatType.RangedAbilityLongRangeCriticalRatePercentAdjustment)
-                        : 0;
-            }
+            if (adjustmentStat == StatType.AbilityHitChancePercentAdjustment)
+                adjustment += GetRangedAbilityLongRangeHitChanceAdjustment(creature, defender, skillType);
+            else if (adjustmentStat == StatType.AbilityCriticalRatePercentAdjustment)
+                adjustment += GetRangedAbilityLongRangeCriticalRateAdjustment(creature, defender, skillType);
 
             if (includePerkTargeting)
             {
@@ -8227,6 +8223,40 @@ namespace SWLOR.Game.Server.Service
                 FloatingTextStringOnCreature(ColorToken.Combat("Overwatch"), attacker, false);
             }
             return adjustment;
+        }
+
+        public static int GetRangedAbilityLongRangeHitChanceAdjustment(
+            uint creature,
+            uint defender,
+            SkillType skillType)
+        {
+            return IsRangedAbilityLongRangeTarget(creature, defender, skillType)
+                ? Stat.GetStatAdjustment(creature, StatType.RangedAbilityLongRangeHitChancePercentAdjustment)
+                : 0;
+        }
+
+        public static int GetRangedAbilityLongRangeCriticalRateAdjustment(
+            uint creature,
+            uint defender,
+            SkillType skillType)
+        {
+            return IsRangedAbilityLongRangeTarget(creature, defender, skillType)
+                ? Stat.GetStatAdjustment(creature, StatType.RangedAbilityLongRangeCriticalRatePercentAdjustment)
+                : 0;
+        }
+
+        private static bool IsRangedAbilityLongRangeTarget(
+            uint creature,
+            uint defender,
+            SkillType skillType)
+        {
+            var minimumRange = Stat.GetStatAdjustment(
+                creature,
+                StatType.RangedAbilityLongRangeMinimumRangeMeters);
+            return IsRangedWeaponSkill(skillType) &&
+                   GetIsObjectValid(defender) &&
+                   minimumRange > 0 &&
+                   GetDistanceBetween(creature, defender) >= minimumRange;
         }
 
         public static void ReconcileOverwatchStatus(uint source)
@@ -9886,6 +9916,9 @@ namespace SWLOR.Game.Server.Service
         private static void TrackCombatAbilityUse(uint activator, AbilityDetail ability)
         {
             if (!GetIsObjectValid(activator) || ability == null)
+                return;
+
+            if (!ability.IsHostileAbility)
                 return;
 
             var skillType = GetAbilitySkillType(activator, ability);

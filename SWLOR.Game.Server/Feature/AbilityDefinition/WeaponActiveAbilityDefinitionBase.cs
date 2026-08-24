@@ -179,6 +179,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public int TargetAbilityHitChancePercent { get; init; }
             public int TargetAbilityHitChanceDurationSeconds { get; init; }
             public Func<IStatusEffect> StatusEffectFactory { get; init; }
+            public Type SourceOwnedStatusEffectTypeRemovedOnPerkRefund { get; init; }
             public Func<IStatusEffect> SelfStatusEffectFactory { get; init; }
             public bool ApplySelfModifiersOnHostileActivation { get; init; }
             public Func<AbilityImpactSummary, IStatusEffect> SelfStatusEffectOnCriticalHitFactory { get; init; }
@@ -1333,6 +1334,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 {
                     profile.PrepareActivationIdleBonuses(activator);
                     profile.PrepareQueuedActivation(activator, skill);
+                    if (isHostile && profile.IsQueuedWeaponAbility)
+                        Combat.TrackHostileAbilityActivity(activator, true);
                     return isHostile || isFriendlyTarget || statusEffect == null || ToggleSelfStatus(activator, statusEffect);
                 })
                 .HasImpactAction((activator, target, level, targetLocation) =>
@@ -1508,6 +1511,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     });
                 if (maxRange > 0f)
                     ability.HasMaxRange(maxRange);
+            }
+
+            if (profile.SourceOwnedStatusEffectTypeRemovedOnPerkRefund != null)
+            {
+                ability.RemoveSourceOwnedStatusEffectOnPerkRefund(
+                    profile.SourceOwnedStatusEffectTypeRemovedOnPerkRefund);
             }
 
             if (stamina > 0)

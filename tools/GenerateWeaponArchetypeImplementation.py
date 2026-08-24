@@ -2527,6 +2527,7 @@ def profile_property_lines(row, level, primary_status):
         add_profile_property("TemporaryDefeatedEnemyEffectDurationSeconds", str(parse_duration(description) or 45))
     if base == "Kill Box":
         add_profile_property("StatusEffectFactory", f"() => new KillBoxStatusEffect(0, {suppression_evasion_penalty_adjustment})")
+        add_profile_property("SourceOwnedStatusEffectTypeRemovedOnPerkRefund", "typeof(KillBoxStatusEffect)")
     if "high-stm abilities also inflict exposed" in lowered:
         add_high_stm_exposed_properties()
     if "area attacks pulse" in lowered or "fragmentation zones" in lowered:

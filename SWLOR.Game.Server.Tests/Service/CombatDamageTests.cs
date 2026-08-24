@@ -293,7 +293,7 @@ public class CombatDamageTests
     {
         var root = FindRepositoryRoot();
         var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
-        var trackAttempt = ExtractMethod(combatSource, "public static void TrackHostileAbilityActivity(uint creature)");
+        var trackAttempt = ExtractMethod(combatSource, "public static void TrackHostileAbilityActivity(uint creature, bool countAsCompletedOffensiveActivity = false)");
         var trackCompleted = ExtractMethod(combatSource, "private static void TrackCombatAbilityUse(uint activator, AbilityDetail ability)");
 
         trackAttempt.Should().Contain("ScheduleIdleReadinessRefresh(creature);",
@@ -302,6 +302,31 @@ public class CombatDamageTests
         var scheduleIndex = trackCompleted.IndexOf("ScheduleIdleReadinessRefresh(activator);", StringComparison.Ordinal);
         timestampIndex.Should().BeGreaterThanOrEqualTo(0);
         scheduleIndex.Should().BeGreaterThan(timestampIndex);
+    }
+
+    [Test]
+    public void IdleActivity_ExcludesFriendlyAbilitiesAndConsumesQueuedHostileReadinessAtQueueTime()
+    {
+        var root = FindRepositoryRoot();
+        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var abilitySource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "WeaponActiveAbilityDefinitionBase.cs"));
+        var trackCompleted = ExtractMethod(combatSource, "private static void TrackCombatAbilityUse(uint activator, AbilityDetail ability)");
+        trackCompleted.Should().Contain("if (!ability.IsHostileAbility)");
+        trackCompleted.Should().Contain("return;");
+
+        var activationIndex = abilitySource.IndexOf("profile.PrepareQueuedActivation(activator, skill);", StringComparison.Ordinal);
+        var queueActivityIndex = abilitySource.IndexOf(
+            "Combat.TrackHostileAbilityActivity(activator, true);",
+            StringComparison.Ordinal);
+        activationIndex.Should().BeGreaterThanOrEqualTo(0);
+        queueActivityIndex.Should().BeGreaterThan(activationIndex,
+            "queued idle riders must snapshot before queue-time hostile activity resets the idle window");
+        abilitySource.Should().Contain("if (isHostile && profile.IsQueuedWeaponAbility)");
     }
 
     [Test]

@@ -1287,6 +1287,34 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
+        public static void RemoveStatusEffectsFromAllTargetsBySource(
+            uint source,
+            Type statusEffectType,
+            bool sendsWornOffMessage = true)
+        {
+            if (!GetIsObjectValid(source) || statusEffectType == null)
+                return;
+
+            var effectsByTarget = _creatureEffects
+                .Select(entry => new
+                {
+                    Target = entry.Key,
+                    Effects = entry.Value.GetAllEffects()
+                        .Where(effect => statusEffectType.IsAssignableFrom(effect.GetType()) && effect.Source == source)
+                        .Select(effect => effect.GetType())
+                        .Distinct()
+                        .ToList()
+                })
+                .Where(entry => entry.Effects.Count > 0)
+                .ToList();
+
+            foreach (var entry in effectsByTarget)
+            {
+                foreach (var effectType in entry.Effects)
+                    RemoveStatusEffect(entry.Target, effectType, source, sendsWornOffMessage);
+            }
+        }
+
         public static void RemoveStatusEffectsWithNegativeStat(
             uint creature,
             StatType statType,

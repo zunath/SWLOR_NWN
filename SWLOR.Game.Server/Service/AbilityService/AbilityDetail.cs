@@ -59,6 +59,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public AbilityTargetingDetail Targeting { get; set; }
         public List<AbilityTargetingDetail> AdditionalActivationTargeting { get; set; }
         public List<Type> StatusEffectTypesRemovedOnPerkRefund { get; set; }
+        public List<Type> SourceOwnedStatusEffectTypesRemovedOnPerkRefund { get; set; }
         public AITargetSelector AITargetSelector { get; set; }
         public AIScoreCalculation AIScore { get; set; }
         public bool IsMimicryTechnique { get; set; }
@@ -165,6 +166,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
             SuppressesSourceStatusStackRiders = false;
             AdditionalActivationTargeting = new List<AbilityTargetingDetail>();
             StatusEffectTypesRemovedOnPerkRefund = new List<Type>();
+            SourceOwnedStatusEffectTypesRemovedOnPerkRefund = new List<Type>();
             MimicrySourceFeat = FeatType.Invalid;
             MimicryElement = CombatDamageType.Invalid;
             MimicryTraitStats = new Dictionary<StatType, int>();

@@ -62,6 +62,8 @@ public class PerkRefundStatusEffectCleanupTests
 
         perkSource.Should().Contain("StatusEffectTypesRemovedOnPerkRefund");
         perkSource.Should().Contain("StatusEffect.RemoveStatusEffect(creature, statusEffectType, false);");
+        perkSource.Should().Contain("SourceOwnedStatusEffectTypesRemovedOnPerkRefund");
+        perkSource.Should().Contain("StatusEffect.RemoveStatusEffectsFromAllTargetsBySource(");
         perkSource.Should().Contain("Combat.RefreshStatDrivenTrackerEffects(creature);");
         perkSource.Should().Contain("RemoveStatusEffectsOnPerkRefund(player, perkType);");
         perksViewModelSource.Should().Contain("Perk.RemoveStatusEffectsOnPerkRefund(target, selectedPerk);");

@@ -86,6 +86,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<uint, RepeatedTargetDamageState> _repeatedTargetDamageStates = new();
         private static readonly Dictionary<uint, RepeatedTargetDamageState> _meleeRepeatedTargetDamageStates = new();
         private static readonly Dictionary<uint, RepeatedTargetDamageState> _rangedRepeatedTargetDamageStates = new();
+        private static readonly HashSet<uint> _containmentNormalizationTargets = new();
         private static readonly Dictionary<uint, int> _meleeAutoAttackCycleCounts = new();
         private static readonly Dictionary<uint, SameTargetPressureState> _sameTargetPressureStates = new();
         private static readonly Dictionary<(uint Creature, AbilityDetail Ability), AbilityStaminaCostState> _abilityStaminaCosts = new();
@@ -6237,11 +6238,66 @@ namespace SWLOR.Game.Server.Service
                     adjustment))
             {
                 StatusEffect.RemoveStatusEffect(target, typeof(ContainmentNetStatusEffect), source, false);
+                ReconcileContainmentNetStatuses(target);
                 return;
             }
 
             StatusEffect.RemoveStatusEffect(target, typeof(ContainmentNetStatusEffect), source, false);
             StatusEffect.ApplyStatusEffect(source, target, new ContainmentNetStatusEffect(adjustment), -1f);
+            ReconcileContainmentNetStatuses(target);
+        }
+
+        public static void ReconcileContainmentNetStatuses(uint target)
+        {
+            if (!GetIsObjectValid(target) || !_containmentNormalizationTargets.Add(target))
+                return;
+
+            try
+            {
+                var allSources = StatusEffect.GetCreatureStatusEffects(target)
+                    .GetAllEffects()
+                    .OfType<ContainmentNetStatusEffect>()
+                    .Select(effect => effect.Source)
+                    .Distinct()
+                    .ToList();
+                foreach (var source in allSources.Where(source => !GetIsObjectValid(source)))
+                    StatusEffect.RemoveStatusEffect(target, typeof(ContainmentNetStatusEffect), source, false);
+
+                var sources = allSources
+                    .Where(GetIsObjectValid)
+                    .OrderBy(source => source)
+                    .ToList();
+
+                foreach (var source in sources)
+                    StatusEffect.RemoveStatusEffect(target, typeof(ContainmentNetStatusEffect), source, false);
+
+                var remainingPenaltyPercent = ContainmentNetStatusEffect.MaximumDamagePenaltyPercent;
+                foreach (var source in sources)
+                {
+                    var requiredStacks = Stat.GetStatAdjustment(source, StatType.SuppressionStackDamageDealtRequiredStacks);
+                    var adjustment = Stat.GetStatAdjustment(source, StatType.SuppressionStackDamageDealtPercentAdjustment);
+                    if (!ContainmentNetStatusEffect.ShouldRemainActive(
+                            GetSuppressionStackCount(target, source),
+                            requiredStacks,
+                            adjustment))
+                        continue;
+
+                    var cappedAdjustment = ContainmentNetStatusEffect.GetCappedDamageAdjustment(
+                        adjustment,
+                        remainingPenaltyPercent);
+                    StatusEffect.ApplyStatusEffect(
+                        source,
+                        target,
+                        new ContainmentNetStatusEffect(cappedAdjustment),
+                        -1f);
+                    if (cappedAdjustment < 0)
+                        remainingPenaltyPercent = Math.Max(0, remainingPenaltyPercent + cappedAdjustment);
+                }
+            }
+            finally
+            {
+                _containmentNormalizationTargets.Remove(target);
+            }
         }
 
         private static int GetDamageToSourceAppliedStatusTargetAdjustment(uint attacker, uint defender)

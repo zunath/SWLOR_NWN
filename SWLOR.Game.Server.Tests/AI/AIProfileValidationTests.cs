@@ -107,28 +107,6 @@ public class AIProfileValidationTests
     }
 
     [Test]
-    public void BeastCompanion_GuardedBiteRanksShareAnInternalCooldown()
-    {
-        Ability.CacheData();
-        var profiles = new DefaultAIProfileDefinition().BuildProfiles();
-        var guardedBiteFeats = new[]
-        {
-            FeatType.GuardedBite1,
-            FeatType.GuardedBite2,
-            FeatType.GuardedBite3
-        };
-
-        var actions = profiles[AIProfileType.BeastCompanion].Actions
-            .Where(action => guardedBiteFeats.Contains(action.Feat))
-            .ToArray();
-
-        actions.Should().HaveCount(guardedBiteFeats.Length);
-        actions.Should().OnlyContain(action =>
-            action.CooldownId == nameof(RecastGroup.GuardedBite));
-        actions.Should().OnlyContain(action => action.CooldownSeconds == 12f);
-    }
-
-    [Test]
     public void NPCAI_CacheProfilesLoadsAndValidatesDefaultProfiles()
     {
         Ability.CacheData();

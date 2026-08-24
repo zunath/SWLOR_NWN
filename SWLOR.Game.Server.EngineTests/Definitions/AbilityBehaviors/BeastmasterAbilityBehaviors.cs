@@ -397,6 +397,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     ExpectsTargetDamage = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
+                    VerifiesImmediateRecastRejection = true,
                 },
                 new()
                 {
@@ -406,6 +407,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     ExpectsTargetDamage = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
+                    VerifiesImmediateRecastRejection = true,
                 },
                 new()
                 {
@@ -415,6 +417,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     ExpectsTargetDamage = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
+                    VerifiesImmediateRecastRejection = true,
                 },
 
                 // GuardingBondAbilityDefinition - PLAYER-only toggle: ValidateBeast requires

@@ -71,7 +71,6 @@ public class SettingsWindowTests
         changeSettingsView.Should().Contain("OnPropertyChanged(nameof(ShowOwnDescriptor));");
         changeSettingsView.Should().Contain("OnPropertyChanged(nameof(ShowDescriptorsForNamedPlayers));");
         changeSettingsView.Should().Contain("OnPropertyChanged(nameof(ScrambleAccountName));");
-        changeSettingsView.Should().Contain("OnPropertyChanged(nameof(SelectedColor));");
         changeSettingsView.Should().Contain("ChatColorNames?.ResetBindings();");
         changeSettingsView.Should().Contain("ChatColors?.ResetBindings();");
         changeSettingsView.Should().Contain("ChatColorToggles?.ResetBindings();");

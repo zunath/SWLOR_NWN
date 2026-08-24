@@ -33,8 +33,12 @@ public sealed class RifleSuppressionFeedbackTests
         new SuppressionStatusEffect().Should().BeAssignableTo<IRemoveWhenSourceExits>();
         new SustainedFireStatusEffect(3, 5, 9).Stacks.Should().Be(3);
         new SustainedFireStatusEffect(3, 5, 9).DamageBonus.Should().Be(9);
+        ContainmentNetStatusEffect.MaximumDamagePenaltyPercent.Should().Be(10);
         ContainmentNetStatusEffect.ShouldRemainActive(3, 3, -10).Should().BeTrue();
         ContainmentNetStatusEffect.ShouldRemainActive(2, 3, -10).Should().BeFalse();
+        ContainmentNetStatusEffect.GetCappedDamageAdjustment(-10, 10).Should().Be(-10);
+        ContainmentNetStatusEffect.GetCappedDamageAdjustment(-10, 0).Should().Be(0);
+        ContainmentNetStatusEffect.GetCappedDamageAdjustment(-5, 5).Should().Be(-5);
     }
 
     [Test]
@@ -79,6 +83,8 @@ public sealed class RifleSuppressionFeedbackTests
         combat.Should().Contain("_lastCombatAbilityUse[activator] = now;");
         combat.Should().Contain("OfType<IRangedHitSuppressionSource>()");
         combat.Should().Contain("killBox.SuppressionEvasionPenaltyAdjustment");
+        combat.Should().Contain("ReconcileContainmentNetStatuses(target);");
+        combat.Should().Contain("OrderBy(source => source)");
         combat.Should().Contain("int evasionPenaltyAdjustment = 0");
         combat.Should().Contain("Stat.GetStatAdjustment(");
         combat.Should().NotContain("OfType<KillBoxStatusEffect>()");
@@ -98,6 +104,8 @@ public sealed class RifleSuppressionFeedbackTests
         suppressionStatus.Should().Contain("IRemoveWhenSourceExits");
         killBoxStatus.Should().Contain("IRemoveWhenSourceExits");
         containmentNetStatus.Should().Contain("IRemoveWhenSourceExits");
+        containmentNetStatus.Should().Contain("IStatusEffectRemovedHandler");
+        containmentNetStatus.Should().Contain("Combat.ReconcileContainmentNetStatuses(creature);");
         suppressionStatus.Should().Contain("Combat.ReconcileContainmentNetStatus(Source, creature);");
         suppressionStatus.Should().Contain("Combat.ReconcileOverwatchStatus(Source);");
         suppressionStatus.Should().NotContain("DelayCommand");

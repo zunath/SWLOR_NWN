@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .Appearance(AppearanceType.BirdGooseCCP)
                 .AppearanceScale(2f)
                 .SoundSetId(38)
-                .PortraitId(2224)
+                .PortraitId(730)
                 .CombatStats(AbilityType.Agility, AbilityType.Social)
                 .Role(BeastRoleType.Balanced)
 

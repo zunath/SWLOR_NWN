@@ -4,6 +4,7 @@ using System.Linq;
 using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.CurrencyService;
 using SWLOR.Game.Server.Service.DBService;
@@ -19,6 +20,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
     public class _22_CombatSystemReplacement : ServerMigrationBase, IServerMigration
     {
         private const int LegacyFlurryStylePerkId = 236;
+        private const string LegacyGoldmaneSahrakName = "Goldmane Sahrak";
+        private const string GoldpeltSahrakName = "Goldpelt Sahrak";
         private static readonly string CurrentFlurryStyleKey = nameof(PerkType.FlurryStyle);
 
         private readonly Dictionary<(PerkType, int), int> _refundMap = new()
@@ -745,6 +748,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
                 migrated |= MigratePurities(jObject);
 
                 var beast = jObject.ToObject<Beast>();
+                migrated |= NormalizeDefaultBeastName(beast);
                 var refund = RefundBeastPerks(beast, out var perkChanged);
                 migrated |= perkChanged;
 
@@ -767,6 +771,18 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration
 
             Log.Write(LogGroup.Migration, $"Migration #22: Migrated beast combat data for {migratedCount} beasts and refunded {totalRefund} SP.", true);
             progress.Finish($"{migratedCount}/{count} beasts changed. Refunded {totalRefund} SP.");
+        }
+
+        private static bool NormalizeDefaultBeastName(Beast beast)
+        {
+            if (beast.Type != BeastType.GoldmaneSahrak ||
+                !string.Equals(beast.Name, LegacyGoldmaneSahrakName, StringComparison.Ordinal))
+            {
+                return false;
+            }
+
+            beast.Name = GoldpeltSahrakName;
+            return true;
         }
 
         private static void MigrateIncubationJobs()

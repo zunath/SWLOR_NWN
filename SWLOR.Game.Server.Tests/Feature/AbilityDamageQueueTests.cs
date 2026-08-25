@@ -98,6 +98,7 @@ public class AbilityDamageQueueTests
             source.IndexOf("private static bool IsDelayedImpactTargetValid", StringComparison.Ordinal));
         delayedTargetValidation.Should().Contain("!LineOfSightObject(activator, target)");
         delayedTargetValidation.Should().Contain("!LineOfSightVector(GetPosition(activator), GetPosition(target))");
+        delayedTargetValidation.Should().Contain("GetDistanceBetween(activator, target) > ability.MaxRange");
         delayedTargetValidation.Should().Contain("!GetIsReactionTypeHostile(target, activator)");
 
         var resolveImpact = completeBody.Substring(

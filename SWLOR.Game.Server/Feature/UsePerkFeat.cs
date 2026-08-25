@@ -209,7 +209,15 @@ namespace SWLOR.Game.Server.Feature
             {
                 if (!GetIsObjectValid(target) ||
                     GetCurrentHitPoints(target) <= 0 ||
-                    GetArea(activator) != GetArea(target))
+                    GetArea(activator) != GetArea(target) ||
+                    !LineOfSightObject(activator, target) ||
+                    !LineOfSightVector(GetPosition(activator), GetPosition(target)))
+                {
+                    return false;
+                }
+
+                if (ability.IsHostileAbility &&
+                    !GetIsReactionTypeHostile(target, activator))
                 {
                     return false;
                 }

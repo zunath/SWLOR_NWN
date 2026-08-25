@@ -92,6 +92,14 @@ public class AbilityDamageQueueTests
         source.Should().Contain("public bool IsAwaitingImpact { get; set; }");
         source.Should().Contain("if (activation.IsAwaitingImpact)\n                Combat.CompleteAbilityStaminaCostContext(activator, activation.Ability);");
 
+        var delayedTargetValidation = source.Substring(
+            source.IndexOf("private static bool IsDelayedImpactTargetValid", StringComparison.Ordinal),
+            source.IndexOf("private static void ResumeAttackAfterDelay", StringComparison.Ordinal) -
+            source.IndexOf("private static bool IsDelayedImpactTargetValid", StringComparison.Ordinal));
+        delayedTargetValidation.Should().Contain("!LineOfSightObject(activator, target)");
+        delayedTargetValidation.Should().Contain("!LineOfSightVector(GetPosition(activator), GetPosition(target))");
+        delayedTargetValidation.Should().Contain("!GetIsReactionTypeHostile(target, activator)");
+
         var resolveImpact = completeBody.Substring(
             completeBody.IndexOf("void ResolveImpact()", StringComparison.Ordinal),
             completeBody.IndexOf("if (ability.ImpactDelay > 0f)", StringComparison.Ordinal) -

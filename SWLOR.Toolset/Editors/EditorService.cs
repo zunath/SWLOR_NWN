@@ -605,7 +605,7 @@ namespace SWLOR.Toolset.Editors
         }
 
         private Action<uint>? TlkRowOpener =>
-            _tlkEditorSource?.IsAvailable == true
+            _tlkEditorSource?.IsAvailable == true && !IsResourceOpeningBlocked("TLK Editor")
                 ? strRef => _ = OpenTlkEditorAsync(strRef)
                 : null;
 

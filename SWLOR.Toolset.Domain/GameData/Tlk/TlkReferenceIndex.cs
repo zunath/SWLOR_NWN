@@ -24,6 +24,22 @@ namespace SWLOR.Toolset.Domain.GameData.Tlk
         /// <summary>Column marker used when a malformed 2DA is covered by raw-text fallback.</summary>
         public const string FallbackColumnName = "<raw-text>";
 
+        /// <summary>Column marker used for conservative references in non-2DA repository text.</summary>
+        public const string RepositoryTextColumnName = "<repository-text>";
+
+        private static readonly HashSet<string> RepositoryTextExtensions = new(
+            new[]
+            {
+                ".axaml", ".bat", ".cmd", ".config", ".cs", ".csproj", ".csv", ".ini",
+                ".json", ".md", ".nss", ".props", ".ps1", ".py", ".resx", ".sh", ".slnx",
+                ".sql", ".targets", ".tml", ".toml", ".txt", ".xml", ".yaml", ".yml"
+            },
+            StringComparer.OrdinalIgnoreCase);
+
+        private static readonly HashSet<string> IgnoredDirectoryNames = new(
+            new[] { ".git", ".idea", ".vs", "bin", "node_modules", "obj" },
+            StringComparer.OrdinalIgnoreCase);
+
         private readonly IReadOnlyDictionary<int, IReadOnlyList<TlkReferenceUsage>> _usagesByEntryId;
 
         public static TlkReferenceIndex Empty { get; } = new(
@@ -50,6 +66,7 @@ namespace SWLOR.Toolset.Domain.GameData.Tlk
         /// <summary>Builds the index from the repository's <c>SWLOR_Haks/sw_2da</c> directory.</summary>
         public static TlkReferenceIndex Build(
             string sw2DaDirectoryPath,
+            string? repositoryRootPath = null,
             CancellationToken cancellationToken = default)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(sw2DaDirectoryPath);
@@ -92,6 +109,9 @@ namespace SWLOR.Toolset.Domain.GameData.Tlk
 
                 ScanTable(fileName, table, usages, cancellationToken);
             }
+
+            if (!string.IsNullOrWhiteSpace(repositoryRootPath))
+                ScanRepositoryText(repositoryRootPath, usages, unscannable, cancellationToken);
 
             var frozen = usages.ToDictionary(
                 pair => pair.Key,
@@ -209,6 +229,132 @@ namespace SWLOR.Toolset.Domain.GameData.Tlk
                 return false;
             }
         }
+
+        private static void ScanRepositoryText(
+            string repositoryRootPath,
+            Dictionary<int, List<TlkReferenceUsage>> usages,
+            List<string> unscannable,
+            CancellationToken cancellationToken)
+        {
+            var root = Path.GetFullPath(repositoryRootPath);
+            try
+            {
+                foreach (var path in EnumerateRepositoryFiles(root))
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    var relativePath = Path.GetRelativePath(root, path);
+                    if (IsIgnoredRepositoryPath(relativePath) ||
+                        Path.GetExtension(path).Equals(".2da", StringComparison.OrdinalIgnoreCase) ||
+                        !RepositoryTextExtensions.Contains(Path.GetExtension(path)))
+                    {
+                        continue;
+                    }
+
+                    if (!TryScanRepositoryTextFile(path, relativePath, usages, cancellationToken))
+                        unscannable.Add(relativePath.Replace('\\', '/'));
+                }
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                unscannable.Add($"{root} (repository enumeration failed)");
+            }
+        }
+
+        private static IEnumerable<string> EnumerateRepositoryFiles(string root)
+        {
+            var pending = new Stack<string>();
+            pending.Push(root);
+            while (pending.Count > 0)
+            {
+                var directory = pending.Pop();
+                foreach (var path in Directory.EnumerateFiles(directory))
+                    yield return path;
+                foreach (var child in Directory.EnumerateDirectories(directory))
+                {
+                    var name = Path.GetFileName(child);
+                    if (!IgnoredDirectoryNames.Contains(name) &&
+                        (File.GetAttributes(child) & FileAttributes.ReparsePoint) == 0)
+                    {
+                        pending.Push(child);
+                    }
+                }
+            }
+        }
+
+        private static bool TryScanRepositoryTextFile(
+            string path,
+            string relativePath,
+            Dictionary<int, List<TlkReferenceUsage>> usages,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                var lineNumber = 0;
+                foreach (var line in File.ReadLines(path))
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    lineNumber++;
+                    ScanDecimalTokens(
+                        line,
+                        relativePath.Replace('\\', '/'),
+                        lineNumber,
+                        RepositoryTextColumnName,
+                        usages);
+                }
+                return true;
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                return false;
+            }
+        }
+
+        private static void ScanDecimalTokens(
+            string text,
+            string fileName,
+            int rowIndex,
+            string columnName,
+            Dictionary<int, List<TlkReferenceUsage>> usages)
+        {
+            var span = text.AsSpan();
+            var cursor = 0;
+            while (cursor < span.Length)
+            {
+                while (cursor < span.Length && !char.IsAsciiDigit(span[cursor]))
+                    cursor++;
+                var start = cursor;
+                while (cursor < span.Length && char.IsAsciiDigit(span[cursor]))
+                    cursor++;
+                if (start == cursor ||
+                    start > 0 && span[start - 1] == '.' ||
+                    cursor < span.Length && span[cursor] == '.' ||
+                    !uint.TryParse(
+                        span[start..cursor],
+                        NumberStyles.None,
+                        CultureInfo.InvariantCulture,
+                        out var strRef) ||
+                    strRef < TlkService.CustomTlkBase)
+                {
+                    continue;
+                }
+
+                var rawEntryId = (long)strRef - TlkService.CustomTlkBase;
+                if (rawEntryId > TlkFormatLimits.MaximumEntryId)
+                    continue;
+
+                AddUsage(usages, new TlkReferenceUsage(
+                    fileName,
+                    rowIndex,
+                    rowIndex.ToString(CultureInfo.InvariantCulture),
+                    columnName,
+                    strRef,
+                    (int)rawEntryId));
+            }
+        }
+
+        private static bool IsIgnoredRepositoryPath(string relativePath) =>
+            relativePath.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+                .Any(IgnoredDirectoryNames.Contains);
 
         private static string BestEffortRowLabel(string line, int lineIndex)
         {

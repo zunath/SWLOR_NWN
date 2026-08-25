@@ -41,7 +41,7 @@ namespace SWLOR.Toolset.Domain.GameData.Tlk
         public int Count => _entries.Count;
 
         /// <summary>The greatest populated row id, or -1 when the document has no entries.</summary>
-        public int MaxEntryId => _entries.Count == 0 ? -1 : _entries.Last().Key;
+        public int MaxEntryId => _entries.Count == 0 ? -1 : Entries[^1].Id;
 
         /// <summary>A stable, id-sorted snapshot of the populated rows.</summary>
         public IReadOnlyList<TlkEntry> Entries =>

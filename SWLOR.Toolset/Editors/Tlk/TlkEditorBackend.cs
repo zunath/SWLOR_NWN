@@ -8,7 +8,11 @@ using SWLOR.Toolset.Services;
 namespace SWLOR.Toolset.Editors.Tlk;
 
 /// <summary>The repository files which make the SWLOR-only TLK editor available.</summary>
-public sealed record TlkEditorSource(string JsonPath, string BinaryPath, string TwoDaDirectory)
+public sealed record TlkEditorSource(
+    string JsonPath,
+    string BinaryPath,
+    string TwoDaDirectory,
+    string? RepositoryRoot = null)
 {
     public bool IsAvailable => File.Exists(JsonPath) && Directory.Exists(TwoDaDirectory);
 
@@ -70,6 +74,7 @@ public sealed class TlkEditorBackend : ITlkEditorBackend
     private FileFingerprint _jsonFingerprint;
     private FileFingerprint _binaryFingerprint;
     private TlkFile? _acceptedBinary;
+    private TlkEditorEntry[]? _entrySnapshot;
 
     public TlkEditorBackend(TlkEditorSource source, TlkService? tlkService = null)
     {
@@ -85,7 +90,7 @@ public sealed class TlkEditorBackend : ITlkEditorBackend
         _document = snapshot.Document;
         _jsonFingerprint = snapshot.JsonFingerprint;
         _binaryFingerprint = snapshot.BinaryFingerprint;
-        _references = TlkReferenceIndex.Build(source.TwoDaDirectory);
+        _references = TlkReferenceIndex.Build(source.TwoDaDirectory, source.RepositoryRoot);
     }
 
     public string JsonPath => _source.JsonPath;
@@ -93,14 +98,24 @@ public sealed class TlkEditorBackend : ITlkEditorBackend
     public int Language => _document.Language;
     public int Count => _document.Count;
     public int MaxEntryId => _document.MaxEntryId;
-    public IReadOnlyList<TlkEditorEntry> Entries =>
+    public IReadOnlyList<TlkEditorEntry> Entries => _entrySnapshot ??=
         _document.Entries.Select(entry => new TlkEditorEntry(entry.Id, entry.Text)).ToArray();
     public IReadOnlyList<string> ReferenceWarnings => _references.UnscannableFiles;
 
     public bool ContainsEntry(int id) => _document.ContainsEntry(id);
     public string? GetText(int id) => _document.GetText(id);
-    public void SetText(int id, string text) => _document.SetText(id, text);
-    public bool Clear(int id) => _document.Clear(id);
+    public void SetText(int id, string text)
+    {
+        _document.SetText(id, text);
+        _entrySnapshot = null;
+    }
+    public bool Clear(int id)
+    {
+        var removed = _document.Clear(id);
+        if (removed)
+            _entrySnapshot = null;
+        return removed;
+    }
     public bool IsReferenced(int id) => _references.IsReferenced(id);
     public int UsageCountFor(int id) => _references.UsageCountFor(id);
     public IReadOnlyList<TlkEditorUsage> UsagesOf(int id) =>
@@ -126,12 +141,13 @@ public sealed class TlkEditorBackend : ITlkEditorBackend
         // Unlike initial open, reload must reject a torn external JSON/binary generation before it
         // can replace the editor state or be published to open toolset fields.
         var snapshot = CaptureSnapshot(verifyBinaryPair: true);
-        var references = TlkReferenceIndex.Build(_source.TwoDaDirectory);
+        var references = TlkReferenceIndex.Build(_source.TwoDaDirectory, _source.RepositoryRoot);
         _document = snapshot.Document;
         _references = references;
         _jsonFingerprint = snapshot.JsonFingerprint;
         _binaryFingerprint = snapshot.BinaryFingerprint;
         _acceptedBinary = snapshot.VerifiedBinary;
+        _entrySnapshot = null;
     }
 
     public void Save(bool overwriteExternalChanges = false)

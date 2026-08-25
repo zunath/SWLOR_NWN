@@ -33,9 +33,12 @@ public class TlkEditorTests
         editor.GoToRowCommand.Execute(null);
         editor.SelectedId.Should().Be(2);
         editor.SelectedStrRef.Should().Be(TlkService.CustomTlkBase + 2);
+        var betaRow = (TlkEditorRowViewModel)editor.Rows[2]!;
 
         editor.FilterText = "alpha";
         editor.Rows.Count.Should().Be(2);
+        editor.Rows.IndexOf(betaRow).Should().Be(-1,
+            "IList.IndexOf must return -1 when a previously visible row is filtered out");
         ((TlkEditorRowViewModel)editor.Rows[0]!).Id.Should().Be(0);
         ((TlkEditorRowViewModel)editor.Rows[1]!).Id.Should().Be(190000);
 

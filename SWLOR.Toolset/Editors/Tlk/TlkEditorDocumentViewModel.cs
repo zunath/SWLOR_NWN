@@ -51,10 +51,12 @@ public sealed class TlkEditorRowViewModel : ObservableObject
 /// </summary>
 public sealed class TlkVirtualRowCollection : IList, INotifyCollectionChanged, INotifyPropertyChanged
 {
+    private const int RowCachePruneThreshold = 512;
     private readonly TlkEditorDocumentViewModel _owner;
     private readonly Dictionary<int, WeakReference<TlkEditorRowViewModel>> _rows = new();
     private int[]? _filteredIds;
     private int _rangeMaximum;
+    private int _rowRequests;
 
     internal TlkVirtualRowCollection(TlkEditorDocumentViewModel owner)
     {
@@ -83,22 +85,42 @@ public sealed class TlkVirtualRowCollection : IList, INotifyCollectionChanged, I
     public event NotifyCollectionChangedEventHandler? CollectionChanged;
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    /// <summary>Number of row view models ever requested by the item presenter.</summary>
+    /// <summary>Number of row view models currently retained by the weak cache.</summary>
     public int CreatedRowCount => _rows.Count;
 
     internal TlkEditorRowViewModel RowForId(int id)
     {
-        if (_rows.TryGetValue(id, out var weak) && weak.TryGetTarget(out var row))
-            return row;
-        row = new TlkEditorRowViewModel(_owner, id);
+        if (_rows.TryGetValue(id, out var weak))
+        {
+            if (weak.TryGetTarget(out var cachedRow))
+                return cachedRow;
+            _rows.Remove(id);
+        }
+
+        if (_rows.Count >= RowCachePruneThreshold && ++_rowRequests % 64 == 0)
+            PruneCollectedRows();
+
+        var row = new TlkEditorRowViewModel(_owner, id);
         _rows[id] = new WeakReference<TlkEditorRowViewModel>(row);
         return row;
+    }
+
+    private void PruneCollectedRows()
+    {
+        foreach (var id in _rows.Where(pair => !pair.Value.TryGetTarget(out _)).Select(pair => pair.Key).ToArray())
+            _rows.Remove(id);
     }
 
     internal bool ContainsId(int id) =>
         _filteredIds == null ? id >= 0 && id <= _rangeMaximum : Array.BinarySearch(_filteredIds, id) >= 0;
 
-    internal int IndexOfId(int id) => _filteredIds == null ? id : Array.BinarySearch(_filteredIds, id);
+    internal int IndexOfId(int id)
+    {
+        if (_filteredIds == null)
+            return id >= 0 && id <= _rangeMaximum ? id : -1;
+        var index = Array.BinarySearch(_filteredIds, id);
+        return index < 0 ? -1 : index;
+    }
 
     internal void ResetRange(int maximum, int[]? filteredIds)
     {
@@ -213,6 +235,9 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
     internal bool ContainsEntry(int id) => _backend.ContainsEntry(id);
     internal string? GetText(int id) => _backend.GetText(id);
     internal int UsageCountFor(int id) => _backend.UsageCountFor(id);
+
+    internal void ReportClipboardFailure(string operation, Exception exception) =>
+        _log.AppendLine($"Could not {operation}: {exception.GetBaseException().Message}");
 
     partial void OnSelectedRowChanged(TlkEditorRowViewModel? value)
     {
@@ -730,7 +755,7 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
         if (_backend.ReferenceWarnings.Count == 0)
             return true;
         NavigationStatus =
-            $"Safe blank search is unavailable because {_backend.ReferenceWarnings.Count} 2DA file(s) could not be indexed.";
+            $"Blank search is unavailable because {_backend.ReferenceWarnings.Count} reference file(s) could not be indexed.";
         return false;
     }
 

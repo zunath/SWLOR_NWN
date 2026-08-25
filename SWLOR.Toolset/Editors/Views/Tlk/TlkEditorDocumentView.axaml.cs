@@ -42,13 +42,33 @@ public partial class TlkEditorDocumentView : UserControl
     private async void OnCopyRowId(object? sender, RoutedEventArgs args)
     {
         if (DataContext is TlkEditorDocumentViewModel viewModel)
-            await SetClipboardTextAsync(viewModel.SelectedIdDisplay);
+        {
+            args.Handled = true;
+            try
+            {
+                await SetClipboardTextAsync(viewModel.SelectedIdDisplay);
+            }
+            catch (Exception ex)
+            {
+                viewModel.ReportClipboardFailure("copy the TLK row ID", ex);
+            }
+        }
     }
 
     private async void OnCopyStrRef(object? sender, RoutedEventArgs args)
     {
         if (DataContext is TlkEditorDocumentViewModel viewModel)
-            await SetClipboardTextAsync(viewModel.SelectedStrRefDisplay);
+        {
+            args.Handled = true;
+            try
+            {
+                await SetClipboardTextAsync(viewModel.SelectedStrRefDisplay);
+            }
+            catch (Exception ex)
+            {
+                viewModel.ReportClipboardFailure("copy the custom StrRef", ex);
+            }
+        }
     }
 
     private async void OnRowGridKeyDown(object? sender, KeyEventArgs args)
@@ -71,17 +91,29 @@ public partial class TlkEditorDocumentView : UserControl
                 .ToArray();
             if (ids.Length > 0)
             {
-                await clipboard.SetTextAsync(viewModel.CopyRows(ids));
                 args.Handled = true;
+                try
+                {
+                    await clipboard.SetTextAsync(viewModel.CopyRows(ids));
+                }
+                catch (Exception ex)
+                {
+                    viewModel.ReportClipboardFailure("copy TLK rows", ex);
+                }
             }
         }
         else if (args.Key == Key.V)
         {
-            var text = await clipboard.TryGetTextAsync();
-            if (text != null)
+            args.Handled = true;
+            try
             {
-                await viewModel.PasteRowsAsync(text);
-                args.Handled = true;
+                var text = await clipboard.TryGetTextAsync();
+                if (text != null)
+                    await viewModel.PasteRowsAsync(text);
+            }
+            catch (Exception ex)
+            {
+                viewModel.ReportClipboardFailure("paste TLK rows", ex);
             }
         }
     }

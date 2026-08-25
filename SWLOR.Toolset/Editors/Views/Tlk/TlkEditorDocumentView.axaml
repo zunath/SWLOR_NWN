@@ -21,8 +21,8 @@
     </Grid>
 
     <Grid Grid.Row="1" ColumnDefinitions="Auto,Auto,18,Auto,*,Auto" ColumnSpacing="7" Margin="0,7,0,7">
-      <Button Grid.Column="0" Content="First safe blank" Command="{Binding FindFirstBlankCommand}" Padding="10,5" />
-      <Button Grid.Column="1" Content="Next safe blank" Command="{Binding FindNextBlankCommand}" Padding="10,5" />
+      <Button Grid.Column="0" Content="First Blank" Command="{Binding FindFirstBlankCommand}" Padding="10,5" />
+      <Button Grid.Column="1" Content="Next Blank" Command="{Binding FindNextBlankCommand}" Padding="10,5" />
       <Button Grid.Column="3" Content="Clear row" Command="{Binding ClearRowCommand}" Padding="10,5" />
       <TextBlock Grid.Column="4" Text="{Binding NavigationStatus}" Classes="dim"
                  VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />

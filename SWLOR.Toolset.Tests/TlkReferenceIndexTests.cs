@@ -66,7 +66,7 @@ namespace SWLOR.Toolset.Tests
         {
             var haks = Path.Combine(CorpusLocator.RepositoryRoot, "SWLOR_Haks");
             var document = TlkDocument.Load(Path.Combine(haks, "sw_tlk", "sw_tlk.tlk.json"));
-            var index = TlkReferenceIndex.Build(Path.Combine(haks, "sw_2da"));
+            var index = TlkReferenceIndex.Build(Path.Combine(haks, "sw_2da"), CorpusLocator.RepositoryRoot);
 
             document.ContainsEntry(80831).Should().BeFalse("the biography slot is intentionally blank");
             index.IsReferenced(80831).Should().BeTrue();
@@ -84,6 +84,36 @@ namespace SWLOR.Toolset.Tests
             TestContext.Out.WriteLine($"First corpus-safe custom TLK gap: {firstSafeGap}");
             firstSafeGap.Should().Be(expectedFirstSafeGap);
             firstSafeGap.Should().Be(6181, "the current corpus's first unpopulated and unreferenced row is stable");
+        }
+
+        [Test]
+        public void Build_IndexesCustomStrRefsOutsideTwoDaFiles()
+        {
+            var root = CreateTempDirectory();
+            try
+            {
+                var twoDaDirectory = Path.Combine(root, "SWLOR_Haks", "sw_2da");
+                var moduleDirectory = Path.Combine(root, "Module", "itp");
+                Directory.CreateDirectory(twoDaDirectory);
+                Directory.CreateDirectory(moduleDirectory);
+                File.WriteAllText(Path.Combine(moduleDirectory, "palette.itp.json"),
+                    "{\n  \"value\": 16777261,\n  \"notAStrRef\": 0.16777262\n}\n");
+
+                var index = TlkReferenceIndex.Build(twoDaDirectory, root);
+
+                index.IsReferenced(45).Should().BeTrue();
+                index.UsagesOf(45).Should().ContainSingle(usage =>
+                    usage.FileName == "Module/itp/palette.itp.json" &&
+                    usage.RowIndex == 2 &&
+                    usage.ColumnName == TlkReferenceIndex.RepositoryTextColumnName);
+                index.IsReferenced(46).Should().BeFalse(
+                    "digits after a decimal point are not standalone StrRef tokens");
+                index.UnscannableFiles.Should().BeEmpty();
+            }
+            finally
+            {
+                Directory.Delete(root, recursive: true);
+            }
         }
 
         private static string CreateTempDirectory()

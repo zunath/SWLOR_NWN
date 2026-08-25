@@ -418,7 +418,8 @@ namespace SWLOR.Toolset
             services.AddSingleton(new Editors.Tlk.TlkEditorSource(
                 swTlkJsonPath,
                 swTlkBinaryPath,
-                sw2DaDirectory));
+                sw2DaDirectory,
+                repoRoot));
 
             // Located once and reused: both the resource index and the base TLK below need it.
             string? nwnInstallPath = null;

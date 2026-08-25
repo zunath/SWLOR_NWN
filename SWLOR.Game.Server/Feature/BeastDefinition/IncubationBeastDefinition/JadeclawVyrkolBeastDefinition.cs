@@ -17,8 +17,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .Name("Jadeclaw Vyrkol")
                 .Appearance(AppearanceType.DragonChrGreenWyrmling)
                 .AppearanceScale(1f)
-                .SoundSetId(49)
-                .PortraitId(320)
+                .SoundSetId(30)
+                .PortraitId(635)
                 .CombatStats(AbilityType.Willpower, AbilityType.Might)
                 .Role(BeastRoleType.Bruiser)
 

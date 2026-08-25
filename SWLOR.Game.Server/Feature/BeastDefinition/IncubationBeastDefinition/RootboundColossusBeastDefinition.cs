@@ -17,8 +17,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .Name("Rootbound Colossus")
                 .Appearance(AppearanceType.ShamblingMound2Hardpoints)
                 .AppearanceScale(0.65f)
-                .SoundSetId(21)
-                .PortraitId(7)
+                .SoundSetId(853)
+                .PortraitId(2035)
                 .CombatStats(AbilityType.Willpower, AbilityType.Perception)
                 .Role(BeastRoleType.Force)
 

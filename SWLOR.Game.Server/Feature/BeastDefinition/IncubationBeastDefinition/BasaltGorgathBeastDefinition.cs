@@ -17,8 +17,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .Name("Basalt Gorgath")
                 .Appearance(AppearanceType.DragonChrBlackWyrmling)
                 .AppearanceScale(1f)
-                .SoundSetId(29)
-                .PortraitId(348)
+                .SoundSetId(30)
+                .PortraitId(634)
                 .CombatStats(AbilityType.Might, AbilityType.Vitality)
                 .Role(BeastRoleType.Tank)
 

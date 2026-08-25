@@ -17,8 +17,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .Name("Bronzecrest Thundros")
                 .Appearance(AppearanceType.DragonMetBronzeWyrmling)
                 .AppearanceScale(1f)
-                .SoundSetId(103)
-                .PortraitId(316)
+                .SoundSetId(30)
+                .PortraitId(639)
                 .CombatStats(AbilityType.Perception, AbilityType.Might)
                 .Role(BeastRoleType.Bruiser)
 

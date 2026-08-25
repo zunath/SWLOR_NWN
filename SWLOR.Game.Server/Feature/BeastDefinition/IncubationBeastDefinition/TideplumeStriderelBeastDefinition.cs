@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .Name("Tideplume Striderel")
                 .Appearance(AppearanceType.BirdGooseCCP)
                 .AppearanceScale(2f)
-                .SoundSetId(38)
+                .SoundSetId(451)
                 .PortraitId(730)
                 .CombatStats(AbilityType.Agility, AbilityType.Social)
                 .Role(BeastRoleType.Balanced)

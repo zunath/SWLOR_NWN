@@ -17,8 +17,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .Name("Ironmaw Bastionback")
                 .Appearance(AppearanceType.BearDire)
                 .AppearanceScale(0.85f)
-                .SoundSetId(856)
-                .PortraitId(158)
+                .SoundSetId(8)
+                .PortraitId(181)
                 .CombatStats(AbilityType.Perception, AbilityType.Vitality)
                 .Role(BeastRoleType.Tank)
 

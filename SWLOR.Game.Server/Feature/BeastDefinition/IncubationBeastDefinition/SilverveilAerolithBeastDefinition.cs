@@ -17,8 +17,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .Name("Silverveil Aerolith")
                 .Appearance(AppearanceType.DragonMetSilverWyrmling)
                 .AppearanceScale(1f)
-                .SoundSetId(330)
-                .PortraitId(3499)
+                .SoundSetId(30)
+                .PortraitId(640)
                 .CombatStats(AbilityType.Willpower, AbilityType.Might)
                 .Role(BeastRoleType.Evasion)
 

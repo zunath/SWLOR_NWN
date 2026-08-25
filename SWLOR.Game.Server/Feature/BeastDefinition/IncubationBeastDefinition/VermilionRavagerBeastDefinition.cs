@@ -17,8 +17,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .Name("Vermilion Ravager")
                 .Appearance(AppearanceType.DragonChrRedWyrmling)
                 .AppearanceScale(1f)
-                .SoundSetId(59)
-                .PortraitId(2097)
+                .SoundSetId(30)
+                .PortraitId(632)
                 .CombatStats(AbilityType.Perception, AbilityType.Agility)
                 .Role(BeastRoleType.Evasion)
 

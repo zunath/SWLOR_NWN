@@ -17,8 +17,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .Name("Rubyback Drakon")
                 .Appearance(AppearanceType.DragonPseudo)
                 .AppearanceScale(1f)
-                .SoundSetId(43)
-                .PortraitId(13)
+                .SoundSetId(331)
+                .PortraitId(631)
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)
                 .Role(BeastRoleType.Balanced)
 

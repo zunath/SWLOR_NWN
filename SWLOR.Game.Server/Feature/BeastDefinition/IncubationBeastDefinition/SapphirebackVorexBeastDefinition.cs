@@ -17,8 +17,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .Name("Sapphireback Vorex")
                 .Appearance(AppearanceType.DragonChrBlueWyrmlingStorvik)
                 .AppearanceScale(0.7f)
-                .SoundSetId(56)
-                .PortraitId(18)
+                .SoundSetId(30)
+                .PortraitId(633)
                 .CombatStats(AbilityType.Might, AbilityType.Perception)
                 .Role(BeastRoleType.Damage)
 

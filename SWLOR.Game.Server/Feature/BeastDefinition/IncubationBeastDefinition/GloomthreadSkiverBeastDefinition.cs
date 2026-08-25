@@ -17,8 +17,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .Name("Gloomthread Skiver")
                 .Appearance(AppearanceType.SpiderDireMediumStorvik)
                 .AppearanceScale(1f)
-                .SoundSetId(87)
-                .PortraitId(2094)
+                .SoundSetId(86)
+                .PortraitId(300)
                 .CombatStats(AbilityType.Perception, AbilityType.Willpower)
                 .Role(BeastRoleType.Evasion)
 

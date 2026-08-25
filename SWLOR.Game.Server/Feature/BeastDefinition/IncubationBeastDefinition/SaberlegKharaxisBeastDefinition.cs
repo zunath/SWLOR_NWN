@@ -17,8 +17,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .Name("Saberleg Kharaxis")
                 .Appearance(AppearanceType.SpiderSwordMediumStorvik)
                 .AppearanceScale(1f)
-                .SoundSetId(41)
-                .PortraitId(12)
+                .SoundSetId(88)
+                .PortraitId(303)
                 .CombatStats(AbilityType.Perception, AbilityType.Vitality)
                 .Role(BeastRoleType.Tank)
 

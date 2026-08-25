@@ -17,8 +17,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .Name("Emeraldcrest Kalyth")
                 .Appearance(AppearanceType.DragonFaerie)
                 .AppearanceScale(1f)
-                .SoundSetId(50)
-                .PortraitId(16)
+                .SoundSetId(330)
+                .PortraitId(630)
                 .CombatStats(AbilityType.Perception, AbilityType.Might)
                 .Role(BeastRoleType.Balanced)
 

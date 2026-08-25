@@ -17,8 +17,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .Name("Azurehorn Kargath")
                 .Appearance(AppearanceType.DragonChrBlueWyrmling)
                 .AppearanceScale(1f)
-                .SoundSetId(441)
-                .PortraitId(6)
+                .SoundSetId(30)
+                .PortraitId(633)
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)
                 .Role(BeastRoleType.Bruiser)
 

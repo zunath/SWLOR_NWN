@@ -17,8 +17,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .Name("Goldpelt Sahrak")
                 .Appearance(AppearanceType.CatLionFemale)
                 .AppearanceScale(0.8f)
-                .SoundSetId(854)
-                .PortraitId(560)
+                .SoundSetId(18)
+                .PortraitId(167)
                 .CombatStats(AbilityType.Perception, AbilityType.Agility)
                 .Role(BeastRoleType.Bruiser)
 

@@ -17,8 +17,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .Name("Viridian Platewyrm")
                 .Appearance(AppearanceType.DragonChrGreenWyrmlingStorvik)
                 .AppearanceScale(0.8f)
-                .SoundSetId(44)
-                .PortraitId(14)
+                .SoundSetId(30)
+                .PortraitId(635)
                 .CombatStats(AbilityType.Vitality, AbilityType.Agility)
                 .Role(BeastRoleType.Tank)
 

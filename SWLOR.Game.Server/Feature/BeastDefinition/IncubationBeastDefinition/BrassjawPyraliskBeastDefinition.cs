@@ -17,8 +17,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .Name("Brassjaw Pyralisk")
                 .Appearance(AppearanceType.DragonMetBrassWyrmling)
                 .AppearanceScale(1f)
-                .SoundSetId(108)
-                .PortraitId(349)
+                .SoundSetId(30)
+                .PortraitId(637)
                 .CombatStats(AbilityType.Perception, AbilityType.Agility)
                 .Role(BeastRoleType.Damage)
 

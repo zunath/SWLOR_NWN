@@ -17,8 +17,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .Name("Crimson Skyrender")
                 .Appearance(AppearanceType.DragonChrRedWyrmlingStorvik)
                 .AppearanceScale(0.48f)
-                .SoundSetId(1)
-                .PortraitId(1)
+                .SoundSetId(30)
+                .PortraitId(632)
                 .CombatStats(AbilityType.Might, AbilityType.Agility)
                 .Role(BeastRoleType.Evasion)
 

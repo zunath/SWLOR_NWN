@@ -17,8 +17,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .Name("Moonthorn Veloria")
                 .Appearance(AppearanceType.TopiaryGuardianDeerTheAmethystDragon)
                 .AppearanceScale(1f)
-                .SoundSetId(2)
-                .PortraitId(2)
+                .SoundSetId(24)
+                .PortraitId(174)
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)
                 .Role(BeastRoleType.Bruiser)
 

@@ -17,8 +17,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .Name("Wraithweb Nythrax")
                 .Appearance(AppearanceType.SpiderWraithMediumStorvik)
                 .AppearanceScale(1f)
-                .SoundSetId(45)
-                .PortraitId(15)
+                .SoundSetId(89)
+                .PortraitId(304)
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)
                 .Role(BeastRoleType.Evasion)
 

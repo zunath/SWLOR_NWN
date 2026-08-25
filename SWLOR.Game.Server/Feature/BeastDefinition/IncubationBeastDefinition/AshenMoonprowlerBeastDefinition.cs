@@ -17,8 +17,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .Name("Ashen Moonprowler")
                 .Appearance(AppearanceType.DogShadowMastiff)
                 .AppearanceScale(1f)
-                .SoundSetId(100)
-                .PortraitId(151)
+                .SoundSetId(27)
+                .PortraitId(286)
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)
                 .Role(BeastRoleType.Balanced)
 

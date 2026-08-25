@@ -17,8 +17,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .Name("Cobalt Hornwyrm")
                 .Appearance(AppearanceType.FelldrakeHornedHardpoints)
                 .AppearanceScale(0.6f)
-                .SoundSetId(51)
-                .PortraitId(17)
+                .SoundSetId(30)
+                .PortraitId(192)
                 .CombatStats(AbilityType.Perception, AbilityType.Vitality)
                 .Role(BeastRoleType.Bruiser)
 

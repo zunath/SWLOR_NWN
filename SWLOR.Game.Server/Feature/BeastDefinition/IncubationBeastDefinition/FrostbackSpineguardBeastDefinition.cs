@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .Appearance(AppearanceType.SpinebackTundraPLUSHHYENAofDOOM)
                 .AppearanceScale(0.5f)
                 .SoundSetId(16)
-                .PortraitId(148)
+                .PortraitId(166)
                 .CombatStats(AbilityType.Agility, AbilityType.Might)
                 .Role(BeastRoleType.Balanced)
 

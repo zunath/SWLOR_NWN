@@ -17,8 +17,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .Name("Veilphase Arachnyx")
                 .Appearance(AppearanceType.SpiderPhaseMediumStorvik)
                 .AppearanceScale(1f)
-                .SoundSetId(39)
-                .PortraitId(10)
+                .SoundSetId(87)
+                .PortraitId(302)
                 .CombatStats(AbilityType.Vitality, AbilityType.Agility)
                 .Role(BeastRoleType.Tank)
 

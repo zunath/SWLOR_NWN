@@ -38,9 +38,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasRecastDelay(RecastGroup.RendingClaw, 12f)
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()
-                .RequiresTarget()
                 .HasImpactAction(RendingClaw1ImpactAction)
-                .IsCastedAbility()
+                .IsWeaponAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(4);
@@ -57,9 +56,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasRecastDelay(RecastGroup.RendingClaw, 12f)
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()
-                .RequiresTarget()
                 .HasImpactAction(RendingClaw2ImpactAction)
-                .IsCastedAbility()
+                .IsWeaponAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(5);
@@ -76,9 +74,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasRecastDelay(RecastGroup.RendingClaw, 12f)
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()
-                .RequiresTarget()
                 .HasImpactAction(RendingClaw3ImpactAction)
-                .IsCastedAbility()
+                .IsWeaponAbility()
                 .IsHostileAbility()
                 .BreaksStealth()
                 .RequirementStamina(7);

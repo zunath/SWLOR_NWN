@@ -21,6 +21,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public string Name { get; set; }
         public AbilityActivationAction ActivationAction { get; set; }
         public AbilityImpactAction ImpactAction { get; set; }
+        public float ImpactDelay { get; set; }
         public AbilityActivationDelayAction ActivationDelay { get; set; }
         public AbilityRecastDelayAction RecastDelay { get; set; }
         public AbilityCustomValidationAction CustomValidation { get; set; }

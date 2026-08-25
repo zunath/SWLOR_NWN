@@ -36,6 +36,7 @@ namespace SWLOR.Game.Server.Feature
             public AbilityDetail Ability { get; init; }
             public List<string> TelegraphIds { get; init; }
             public uint ResumeAttackTarget { get; init; }
+            public bool IsAwaitingImpact { get; set; }
         }
 
         // Variable names for queued abilities.
@@ -172,6 +173,9 @@ namespace SWLOR.Game.Server.Feature
             if (activation.Ability.IsChanneled)
                 activation.Ability.ChannelInterruptAction?.Invoke(activator);
 
+            if (activation.IsAwaitingImpact)
+                Combat.CompleteAbilityStaminaCostContext(activator, activation.Ability);
+
             _activeAbilityActivations.Remove(activator);
             ResumeAttack(activator, activation.ResumeAttackTarget);
             return true;
@@ -190,6 +194,50 @@ namespace SWLOR.Game.Server.Feature
             {
                 _activeAbilityActivations.Remove(activator);
             }
+        }
+
+        private static bool IsDelayedImpactTargetValid(
+            uint activator,
+            uint target,
+            Location targetLocation,
+            AbilityDetail ability)
+        {
+            if (!GetIsObjectValid(activator) || GetCurrentHitPoints(activator) <= 0)
+                return false;
+
+            if (ability.RequiresTarget)
+            {
+                if (!GetIsObjectValid(target) ||
+                    GetCurrentHitPoints(target) <= 0 ||
+                    GetArea(activator) != GetArea(target) ||
+                    GetDistanceBetween(activator, target) > ability.MaxRange ||
+                    !LineOfSightObject(activator, target) ||
+                    !LineOfSightVector(GetPosition(activator), GetPosition(target)))
+                {
+                    return false;
+                }
+
+                if (ability.IsHostileAbility &&
+                    !GetIsReactionTypeHostile(target, activator))
+                {
+                    return false;
+                }
+            }
+
+            if (ability.RequiresLocationTarget &&
+                GetAreaFromLocation(targetLocation) != GetArea(activator))
+            {
+                return false;
+            }
+
+            if (ability.IsHostileAbility &&
+                CompanionControl.IsRegisteredCompanion(activator) &&
+                !CompanionControl.IsHostileAbilityTargetAuthorized(activator, ability, target))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private static void ResumeAttackAfterDelay(uint activator, uint target, float delay, bool clearActions = true)
@@ -613,20 +661,73 @@ namespace SWLOR.Game.Server.Feature
                     return;
                 }
 
-                CancelActivation(false);
-
                 ApplyRequirementEffects(activator, ability);
                 HandleStealthBreaking(activator, ability);
-                ExecuteAbilityImpact(activator, target, feat, ability, targetLocation);
-                Recast.ApplyRecastDelay(activator, ability.RecastGroup, abilityRecastDelay);
-                ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f);
 
-                // If this is an attack make the NPC react.
-                if (GetIsObjectValid(target) && target != activator)
+                void ResolveImpact()
                 {
-                    Enmity.AttackHighestEnmityTarget(target);
+                    ExecuteAbilityImpact(activator, target, feat, ability, targetLocation);
+                    ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f);
+
+                    // If this is an attack make the NPC react.
+                    if (GetIsObjectValid(target) && target != activator)
+                    {
+                        Enmity.AttackHighestEnmityTarget(target);
+                    }
                 }
 
+                if (ability.ImpactDelay > 0f)
+                {
+                    if (!_activeAbilityActivations.TryGetValue(activator, out var delayedActivation) ||
+                        delayedActivation.ActivationId != activationId)
+                    {
+                        ClearAbilityActivationIdleSnapshots(activator);
+                        DeleteLocalInt(activator, activationId);
+                        CancelActivationTargetingTelegraphs(activationTelegraphIds);
+                        Combat.CompleteAbilityStaminaCostContext(activator, ability);
+                        ResumeAttack(activator, resumeAttackTarget);
+                        return;
+                    }
+
+                    delayedActivation.IsAwaitingImpact = true;
+                    Recast.ApplyRecastDelay(activator, ability.RecastGroup, abilityRecastDelay);
+                    Activity.SetBusy(activator, ActivityStatusType.AbilityActivation);
+                    DelayCommand(ability.ImpactDelay, () =>
+                    {
+                        if (!_activeAbilityActivations.TryGetValue(activator, out var pendingActivation) ||
+                            pendingActivation.ActivationId != activationId ||
+                            GetLocalInt(activator, activationId) != (int)ActivationStatus.Started)
+                        {
+                            DeleteLocalInt(activator, activationId);
+                            return;
+                        }
+
+                        try
+                        {
+                            if (!IsDelayedImpactTargetValid(activator, target, targetLocation, ability))
+                            {
+                                ClearAbilityActivationIdleSnapshots(activator);
+                                CancelActivation(false);
+                                Combat.CompleteAbilityStaminaCostContext(activator, ability);
+                                ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f);
+                                return;
+                            }
+
+                            CancelActivation(false);
+                            ResolveImpact();
+                        }
+                        finally
+                        {
+                            Activity.ClearBusy(activator);
+                        }
+                    });
+                }
+                else
+                {
+                    CancelActivation(false);
+                    ResolveImpact();
+                    Recast.ApplyRecastDelay(activator, ability.RecastGroup, abilityRecastDelay);
+                }
             }
 
             // Begin the main process

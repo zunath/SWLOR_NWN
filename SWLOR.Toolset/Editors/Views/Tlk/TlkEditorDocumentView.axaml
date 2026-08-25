@@ -4,31 +4,29 @@
              x:Class="SWLOR.Toolset.Editors.Tlk.TlkEditorDocumentView"
              x:DataType="tlk:TlkEditorDocumentViewModel">
   <Grid RowDefinitions="Auto,Auto,*,5,240,Auto" Margin="8" IsEnabled="{Binding !IsBusy}">
-    <Grid Grid.Row="0" ColumnDefinitions="Auto,190,Auto,18,Auto,*,Auto" ColumnSpacing="7">
+    <Grid Grid.Row="0" ColumnDefinitions="Auto,190,Auto,18,Auto,*" ColumnSpacing="7">
       <TextBlock Grid.Column="0" Text="Go to row / StrRef" VerticalAlignment="Center" />
       <TextBox Grid.Column="1" Text="{Binding GoToValue, Mode=TwoWay}"
                Watermark="Row ID or 16777216+" />
       <Button Grid.Column="2" Content="Go" Command="{Binding GoToRowCommand}" Padding="14,5" />
 
       <TextBlock Grid.Column="4" Text="Filter rows" VerticalAlignment="Center" />
-      <TextBox Grid.Column="5" Text="{Binding FilterText, Mode=TwoWay}"
-               Watermark="Text, row ID, or full StrRef" />
-      <CheckBox Grid.Column="6" Content="Exact" IsChecked="{Binding ExactMatch, Mode=TwoWay}"
-                VerticalAlignment="Center" />
+      <Grid Grid.Column="5" ColumnDefinitions="*,Auto" ColumnSpacing="4">
+        <TextBox Grid.Column="0" Text="{Binding FilterText, Mode=TwoWay}"
+                 Watermark="Text, row ID, or full StrRef" />
+        <Button x:Name="ClearFilterButton" Grid.Column="1" Content="×"
+                Command="{Binding ClearFilterCommand}" Padding="8,4"
+                ToolTip.Tip="Clear filter" />
+      </Grid>
     </Grid>
 
-    <Grid Grid.Row="1" ColumnDefinitions="Auto,Auto,18,Auto,210,Auto,Auto,18,Auto,*,Auto" ColumnSpacing="7" Margin="0,7,0,7">
+    <Grid Grid.Row="1" ColumnDefinitions="Auto,Auto,18,Auto,*,Auto" ColumnSpacing="7" Margin="0,7,0,7">
       <Button Grid.Column="0" Content="First safe blank" Command="{Binding FindFirstBlankCommand}" Padding="10,5" />
       <Button Grid.Column="1" Content="Next safe blank" Command="{Binding FindNextBlankCommand}" Padding="10,5" />
-      <TextBlock Grid.Column="3" Text="Find" VerticalAlignment="Center" />
-      <TextBox Grid.Column="4" Text="{Binding FindText, Mode=TwoWay}"
-               Watermark="Text, row ID, or full StrRef" />
-      <Button Grid.Column="5" Content="Previous" Command="{Binding FindPreviousCommand}" Padding="10,5" />
-      <Button Grid.Column="6" Content="Next" Command="{Binding FindNextCommand}" Padding="10,5" />
-      <Button Grid.Column="8" Content="Clear row" Command="{Binding ClearRowCommand}" Padding="10,5" />
-      <TextBlock Grid.Column="9" Text="{Binding NavigationStatus}" Classes="dim"
+      <Button Grid.Column="3" Content="Clear row" Command="{Binding ClearRowCommand}" Padding="10,5" />
+      <TextBlock Grid.Column="4" Text="{Binding NavigationStatus}" Classes="dim"
                  VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
-      <TextBlock Grid.Column="10"
+      <TextBlock Grid.Column="5"
                  Text="{Binding EntryCount, StringFormat='{}{0:N0} entries'}"
                  Classes="count" VerticalAlignment="Center" />
     </Grid>

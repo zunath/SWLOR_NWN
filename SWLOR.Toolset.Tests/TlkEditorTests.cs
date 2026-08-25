@@ -39,8 +39,12 @@ public class TlkEditorTests
         ((TlkEditorRowViewModel)editor.Rows[0]!).Id.Should().Be(0);
         ((TlkEditorRowViewModel)editor.Rows[1]!).Id.Should().Be(190000);
 
-        editor.FindText = "Alpha Two";
-        editor.FindNextCommand.Execute(null);
+        editor.ClearFilterCommand.Execute(null);
+        editor.FilterText.Should().BeEmpty();
+        editor.Rows.Count.Should().Be(190001);
+
+        editor.FilterText = "alpha";
+        editor.SelectId(190000, clearFilter: false);
         editor.SelectedId.Should().Be(190000);
 
         editor.SelectedText = "No longer matches";
@@ -48,7 +52,7 @@ public class TlkEditorTests
             "editing must not redirect subsequent input when a filtered row stops matching");
         editor.Rows.Count.Should().Be(2,
             "the filtered snapshot is refreshed explicitly rather than on every keystroke");
-        editor.Rows.Count.Should().Be(2, "find navigation must not replace the filtered grid");
+        editor.Rows.Count.Should().Be(2);
 
         editor.FindFirstBlankCommand.Execute(null);
         editor.SelectedId.Should().Be(3, "row 1 is referenced and row 2 is populated");
@@ -401,6 +405,7 @@ public class TlkEditorTests
             window.UpdateLayout();
 
             var grid = view.FindControl<ListBox>("RowGrid")!;
+            view.FindControl<Button>("ClearFilterButton")!.Content.Should().Be("×");
             grid.ItemsSource.Should().BeSameAs(editor.Rows);
             grid.GetVisualDescendants().OfType<ListBoxItem>().Count().Should().BeLessThan(100,
                 "only visible rows should be realized from the 200,000-row virtual range");

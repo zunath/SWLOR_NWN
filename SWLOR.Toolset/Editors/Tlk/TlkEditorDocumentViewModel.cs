@@ -169,8 +169,6 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
     [ObservableProperty] private TlkEditorRowViewModel? _selectedRow;
     [ObservableProperty] private string _selectedText = string.Empty;
     [ObservableProperty] private string _filterText = string.Empty;
-    [ObservableProperty] private string _findText = string.Empty;
-    [ObservableProperty] private bool _exactMatch;
     [ObservableProperty] private string _goToValue = string.Empty;
     [ObservableProperty] private string _navigationStatus = string.Empty;
     [ObservableProperty] private string _referenceStatus = string.Empty;
@@ -256,7 +254,9 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
     }
 
     partial void OnFilterTextChanged(string value) => RefreshFilter();
-    partial void OnExactMatchChanged(bool value) => RefreshFilter();
+
+    [RelayCommand]
+    private void ClearFilter() => FilterText = string.Empty;
 
     [RelayCommand]
     private void GoToRow()
@@ -267,40 +267,6 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
             return;
         }
         SelectId(id, clearFilter: true);
-    }
-
-    [RelayCommand]
-    private void FindNext()
-    {
-        var matches = MatchingEntryIds(FindText).Where(Rows.ContainsId).ToArray();
-        if (matches.Length == 0)
-        {
-            NavigationStatus = string.IsNullOrWhiteSpace(FindText)
-                ? "Enter text or an ID to find."
-                : "No matching TLK rows.";
-            return;
-        }
-
-        var current = SelectedId;
-        var id = matches.FirstOrDefault(candidate => candidate > current, matches[0]);
-        SelectId(id, clearFilter: false);
-    }
-
-    [RelayCommand]
-    private void FindPrevious()
-    {
-        var matches = MatchingEntryIds(FindText).Where(Rows.ContainsId).ToArray();
-        if (matches.Length == 0)
-        {
-            NavigationStatus = string.IsNullOrWhiteSpace(FindText)
-                ? "Enter text or an ID to find."
-                : "No matching TLK rows.";
-            return;
-        }
-
-        var current = SelectedId;
-        var id = matches.LastOrDefault(candidate => candidate < current, matches[^1]);
-        SelectId(id, clearFilter: false);
     }
 
     [RelayCommand]
@@ -732,11 +698,8 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
         if (TryParseRow(query, out var id))
             return new[] { id };
 
-        var comparison = StringComparison.OrdinalIgnoreCase;
         return _backend.Entries
-            .Where(entry => ExactMatch
-                ? string.Equals(entry.Text, query, comparison)
-                : entry.Text.Contains(query, comparison))
+            .Where(entry => entry.Text.Contains(query, StringComparison.OrdinalIgnoreCase))
             .Select(entry => entry.Id)
             .Order()
             .ToArray();

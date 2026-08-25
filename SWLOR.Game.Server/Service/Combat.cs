@@ -1447,9 +1447,8 @@ namespace SWLOR.Game.Server.Service
             ApplySideAttackDamageEffects(attacker, defender, skillType, damage);
             ApplyDamageDealtStaminaRestore(attacker, skillType);
             ApplyDamageDealtAttackDelayReduction(attacker, skillType);
-            if (isAbilityDamage)
-                ApplyPredatorsMarkEffects(attacker, defender, skillType);
-            else
+            ApplyPredatorsMarkEffects(attacker, defender, isAbilityDamage);
+            if (!isAbilityDamage)
                 ApplyAutoAttackSuppressionStack(attacker, defender, skillType, damageType);
 
             ApplyDamageDealtForceErosionEffect(attacker, defender, deliveryType);
@@ -1492,10 +1491,12 @@ namespace SWLOR.Game.Server.Service
             ApplyDamageDerivedHealing(attacker, damage, hpRestorePercent);
         }
 
-        private static void ApplyPredatorsMarkEffects(uint attacker, uint defender, SkillType skillType)
+        private static void ApplyPredatorsMarkEffects(
+            uint attacker,
+            uint defender,
+            bool isAbilityDamage)
         {
-            if (skillType != SkillType.BeastMastery ||
-                !GetIsObjectValid(attacker) ||
+            if (!GetIsObjectValid(attacker) ||
                 !GetIsObjectValid(defender) ||
                 GetIsDead(attacker) ||
                 GetIsDead(defender))
@@ -1508,6 +1509,9 @@ namespace SWLOR.Game.Server.Service
                 ApplyPredatorsMarkFollowUp(attacker);
                 return;
             }
+
+            if (!isAbilityDamage)
+                return;
 
             var damageTakenFromBeastPercent = Stat.GetStatAdjustment(attacker, StatType.PredatorsMarkDamageTakenFromBeastPercent);
             var durationSeconds = Stat.GetStatAdjustment(attacker, StatType.PredatorsMarkDurationSeconds);

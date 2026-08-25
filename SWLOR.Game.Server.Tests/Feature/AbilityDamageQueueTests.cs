@@ -63,6 +63,53 @@ public class AbilityDamageQueueTests
     }
 
     [Test]
+    public void ChoreographedImpacts_ResolveBeforeBusyStateAndAttackResumeAreReleased()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "UsePerkFeat.cs")).Replace("\r\n", "\n");
+        var completeBody = source.Substring(
+            source.IndexOf("void CompleteActivation", StringComparison.Ordinal),
+            source.IndexOf("// Begin the main process", StringComparison.Ordinal) -
+            source.IndexOf("void CompleteActivation", StringComparison.Ordinal));
+        var delayedBranch = completeBody.Substring(
+            completeBody.IndexOf("if (ability.ImpactDelay > 0f)", StringComparison.Ordinal),
+            completeBody.IndexOf("else\n                {", StringComparison.Ordinal) -
+            completeBody.IndexOf("if (ability.ImpactDelay > 0f)", StringComparison.Ordinal));
+
+        delayedBranch.Should().Contain("Activity.SetBusy(activator, ActivityStatusType.AbilityActivation);");
+        delayedBranch.Should().Contain("DelayCommand(ability.ImpactDelay, () =>");
+        delayedBranch.Should().Contain("pendingActivation.ActivationId != activationId");
+        delayedBranch.Should().Contain("GetLocalInt(activator, activationId) != (int)ActivationStatus.Started");
+        delayedBranch.IndexOf("IsDelayedImpactTargetValid(activator, target, targetLocation, ability)", StringComparison.Ordinal)
+            .Should().BeLessThan(delayedBranch.IndexOf("ResolveImpact();", StringComparison.Ordinal));
+        delayedBranch.IndexOf("ResolveImpact();", StringComparison.Ordinal)
+            .Should().BeLessThan(delayedBranch.IndexOf("Activity.ClearBusy(activator);", StringComparison.Ordinal));
+
+        source.Should().Contain("public bool IsAwaitingImpact { get; set; }");
+        source.Should().Contain("if (activation.IsAwaitingImpact)\n                Combat.CompleteAbilityStaminaCostContext(activator, activation.Ability);");
+
+        var delayedTargetValidation = source.Substring(
+            source.IndexOf("private static bool IsDelayedImpactTargetValid", StringComparison.Ordinal),
+            source.IndexOf("private static void ResumeAttackAfterDelay", StringComparison.Ordinal) -
+            source.IndexOf("private static bool IsDelayedImpactTargetValid", StringComparison.Ordinal));
+        delayedTargetValidation.Should().Contain("!LineOfSightObject(activator, target)");
+        delayedTargetValidation.Should().Contain("!LineOfSightVector(GetPosition(activator), GetPosition(target))");
+        delayedTargetValidation.Should().Contain("GetDistanceBetween(activator, target) > ability.MaxRange");
+        delayedTargetValidation.Should().Contain("!GetIsReactionTypeHostile(target, activator)");
+
+        var resolveImpact = completeBody.Substring(
+            completeBody.IndexOf("void ResolveImpact()", StringComparison.Ordinal),
+            completeBody.IndexOf("if (ability.ImpactDelay > 0f)", StringComparison.Ordinal) -
+            completeBody.IndexOf("void ResolveImpact()", StringComparison.Ordinal));
+        resolveImpact.IndexOf("ExecuteAbilityImpact(activator, target, feat, ability, targetLocation)", StringComparison.Ordinal)
+            .Should().BeLessThan(resolveImpact.IndexOf("ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f)", StringComparison.Ordinal));
+    }
+
+    [Test]
     public void TrackedAbilityImpacts_FlushQueuedDamageEffectsTogether()
     {
         var root = FindRepositoryRoot();

@@ -340,6 +340,19 @@ namespace SWLOR.Game.Server.Service.AbilityService
             return this;
         }
 
+        /// <summary>
+        /// Delays impact resolution after activation completes while keeping the activator busy.
+        /// This is intended for effect choreography such as travel animations, not cast time.
+        /// </summary>
+        /// <param name="seconds">The delay between activation completion and impact.</param>
+        /// <returns>An ability builder with the configured options.</returns>
+        public AbilityBuilder HasImpactDelay(float seconds)
+        {
+            _activeAbility.ImpactDelay = seconds;
+
+            return this;
+        }
+
         public AbilityBuilder RemoveStatusEffectOnPerkRefund(Type statusEffectType)
         {
             if (statusEffectType == null)

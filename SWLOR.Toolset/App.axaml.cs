@@ -284,7 +284,8 @@ namespace SWLOR.Toolset
                 sp.GetRequiredService<Services.ModuleMutationLock>(),
                 sp.GetService<CategoryService>(),
                 moduleCustomContent: sp.GetRequiredService<Workspace.ModuleCustomContentService>(),
-                externalLinks: sp.GetRequiredService<Services.IExternalLinkService>()));
+                externalLinks: sp.GetRequiredService<Services.IExternalLinkService>(),
+                tlkEditorSource: sp.GetService<Editors.Tlk.TlkEditorSource>()));
 
             // One parsed engine header shared by every script tab, built lazily on first use: the
             // header is 13,870 lines, so parsing it per tab would be wasteful and parsing it at
@@ -405,11 +406,19 @@ namespace SWLOR.Toolset
 
             var sw2DaDirectory = Path.Combine(repoRoot, "SWLOR_Haks", "sw_2da");
             var swTlkJsonPath = Path.Combine(repoRoot, "SWLOR_Haks", "sw_tlk", "sw_tlk.tlk.json");
+            var swTlkBinaryPath = Path.Combine(repoRoot, "SWLOR_Haks", "sw_tlk", "sw_tlk.tlk");
             var hakBuilderConfigPath = Path.Combine(repoRoot, "Build", "hakbuilder.json");
             var swlorHaksRoot = Path.Combine(repoRoot, "SWLOR_Haks");
 
             var hasTwoDa = Directory.Exists(sw2DaDirectory);
             var hasTlk = File.Exists(swTlkJsonPath);
+
+            // Registered even when one path is missing so the Tools menu can explain why the
+            // repository-only editor is disabled instead of silently disappearing.
+            services.AddSingleton(new Editors.Tlk.TlkEditorSource(
+                swTlkJsonPath,
+                swTlkBinaryPath,
+                sw2DaDirectory));
 
             // Located once and reused: both the resource index and the base TLK below need it.
             string? nwnInstallPath = null;

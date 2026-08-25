@@ -1711,7 +1711,8 @@ namespace SWLOR.Toolset.Editors
             AreaEditorDocumentLoad? loadedDocuments = null,
             Func<ResourceType, string, string?>? editCopyBlueprint = null,
             ModuleMutationLock? mutationLock = null,
-            AreaInstanceClipboard? instanceClipboard = null)
+            AreaInstanceClipboard? instanceClipboard = null,
+            Action<uint>? openTlkRow = null)
         {
             _scriptSlotHost = scriptSlotHost;
             _resolveBlueprintModel = resolveBlueprintModel;
@@ -1755,7 +1756,10 @@ namespace SWLOR.Toolset.Editors
             _savedGicBytes = _gicSession.ToBytes();
 
             var areContext = new EditorFieldContext(
-                _areSession.Document, (description, mutation) => RunAreEdit(description, mutation));
+                _areSession.Document,
+                (description, mutation) => RunAreEdit(description, mutation),
+                resolveStrRef,
+                openTlkRow);
             foreach (var group in AreSchema.Build().Groups)
             {
                 var fields = group.Fields.Select(descriptor => CreateFieldViewModel(descriptor, areContext, lookups, scriptSlotHost)).ToList();
@@ -2880,6 +2884,17 @@ namespace SWLOR.Toolset.Editors
             foreach (var group in AreaPropertyGroups)
             foreach (var field in group.Fields)
                 field.RefreshFromDocument();
+        }
+
+        /// <summary>Re-resolves custom-TLK watermarks after the shared table is regenerated.</summary>
+        public void RefreshTlkLabels()
+        {
+            foreach (var field in AreaPropertyGroups
+                         .SelectMany(group => group.Fields)
+                         .OfType<LocStringFieldViewModel>())
+            {
+                field.RefreshFromDocument();
+            }
         }
 
         private void RefreshInstanceSections()

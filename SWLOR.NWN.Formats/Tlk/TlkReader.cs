@@ -15,7 +15,6 @@ public static class TlkReader
     private const uint TextPresent = 0x0001;
     private const uint SoundPresent = 0x0002;
     private const uint SoundLengthPresent = 0x0004;
-    private const int MaximumEntries = 8_000_000;
 
     public static TlkFile Read(string path)
     {
@@ -35,10 +34,17 @@ public static class TlkReader
 
         var languageId = reader.ReadUInt32(8);
         var count = reader.ReadUInt32(12);
-        if (count > MaximumEntries)
-            throw new NwnFormatException($"TLK entry count {count} exceeds {MaximumEntries}.");
+        if (count > TlkFormatLimits.MaximumEntryCount)
+        {
+            throw new NwnFormatException(
+                $"TLK entry count {count} exceeds {TlkFormatLimits.MaximumEntryCount}.");
+        }
         var stringsOffset = reader.ReadUInt32(16);
-        var tableBytes = GuardedBinaryReader.CheckedCount(count, EntrySize, MaximumEntries, "TLK entries");
+        var tableBytes = GuardedBinaryReader.CheckedCount(
+            count,
+            EntrySize,
+            TlkFormatLimits.MaximumEntryCount,
+            "TLK entries");
         reader.ValidateRange(HeaderSize, tableBytes, "TLK entry table");
         if (stringsOffset < HeaderSize + tableBytes || stringsOffset > reader.Length)
             throw new NwnFormatException("TLK string-data offset is outside the valid data region.");
@@ -47,8 +53,13 @@ public static class TlkReader
         // The entry list, entry objects, and sound resrefs are allocations too - charge them
         // before building anything so an 8M-entry table cannot blow past the budget on metadata
         // alone, the same way the KEY and BIF readers budget their tables.
-        var allocationBudget = new AllocationBudget("TLK");
-        allocationBudget.ReserveElements(count, 64, "TLK entry table");
+        var allocationBudget = new AllocationBudget(
+            "TLK",
+            TlkFormatLimits.MaximumDecodedAllocationBytes);
+        allocationBudget.ReserveElements(
+            count,
+            TlkFormatLimits.EstimatedManagedBytesPerEntry,
+            "TLK entry table");
         var entries = new List<TlkEntry>(checked((int)count));
         // Aliased entries (many records pointing at the same string-data range) share one decoded
         // string, and every unique decode is charged against a cumulative budget so a small file

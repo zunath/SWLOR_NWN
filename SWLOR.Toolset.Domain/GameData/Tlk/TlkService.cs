@@ -139,5 +139,17 @@ namespace SWLOR.Toolset.Domain.GameData.Tlk
             Volatile.Write(ref _customBinaryOverride, replacement);
             CustomTlkReloaded?.Invoke();
         }
+
+        /// <summary>
+        /// Publishes an already parsed and verified custom TLK generation. Editors use this form so
+        /// a later file replacement cannot make runtime labels diverge from the document generation
+        /// the editor accepted.
+        /// </summary>
+        public void PublishCustomTlk(TlkFile customTlk)
+        {
+            ArgumentNullException.ThrowIfNull(customTlk);
+            Volatile.Write(ref _customBinaryOverride, customTlk);
+            CustomTlkReloaded?.Invoke();
+        }
     }
 }

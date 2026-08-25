@@ -26,14 +26,19 @@ namespace SWLOR.Toolset.Editors
         /// </summary>
         public Func<uint, string?>? ResolveStrRef { get; }
 
+        /// <summary>Opens the SWLOR custom TLK editor at a full custom StrRef.</summary>
+        public Action<uint>? OpenTlkRow { get; }
+
         public EditorFieldContext(
             JsonGffDocument document,
             Func<string, Action, bool> runEdit,
-            Func<uint, string?>? resolveStrRef = null)
+            Func<uint, string?>? resolveStrRef = null,
+            Action<uint>? openTlkRow = null)
         {
             _document = document;
             _runEdit = runEdit;
             ResolveStrRef = resolveStrRef;
+            OpenTlkRow = openTlkRow;
         }
 
         public bool RunEdit(string description, Action mutation)
@@ -203,6 +208,13 @@ namespace SWLOR.Toolset.Editors
         private string _text = string.Empty;
 
         public string? StrRefDisplay { get; private set; }
+        public uint? StrRef { get; private set; }
+        public bool CanOpenTlkRow =>
+            StrRef is { } strRef &&
+            strRef >= Domain.GameData.Tlk.TlkService.CustomTlkBase &&
+            strRef - Domain.GameData.Tlk.TlkService.CustomTlkBase <=
+                SWLOR.NWN.Formats.Tlk.TlkFormatLimits.MaximumEntryId &&
+            Context.OpenTlkRow != null;
 
         public LocStringFieldViewModel(FieldDescriptor descriptor, EditorFieldContext context)
             : base(descriptor, context)
@@ -224,6 +236,7 @@ namespace SWLOR.Toolset.Editors
             var field = Context.Document.Root.GetOrNull(Descriptor.FieldName);
             if (field?.GetLocStringId() is { } id)
             {
+                StrRef = id;
                 var resolved = Context.ResolveStrRef?.Invoke(id);
                 StrRefDisplay = string.IsNullOrWhiteSpace(resolved)
                     ? $"strref {id}"
@@ -231,11 +244,22 @@ namespace SWLOR.Toolset.Editors
             }
             else
             {
+                StrRef = null;
                 StrRefDisplay = null;
             }
 
             OnPropertyChanged(nameof(StrRefDisplay));
+            OnPropertyChanged(nameof(StrRef));
+            OnPropertyChanged(nameof(CanOpenTlkRow));
+            OpenTlkRowCommand.NotifyCanExecuteChanged();
             Context.IsRefreshing = false;
+        }
+
+        [RelayCommand(CanExecute = nameof(CanOpenTlkRow))]
+        private void OpenTlkRow()
+        {
+            if (StrRef.HasValue)
+                Context.OpenTlkRow?.Invoke(StrRef.Value);
         }
 
         partial void OnTextChanged(string value)

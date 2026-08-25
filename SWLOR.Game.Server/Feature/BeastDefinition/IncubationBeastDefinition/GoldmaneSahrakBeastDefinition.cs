@@ -14,9 +14,9 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         public Dictionary<BeastType, BeastDetail> Build()
         {
             _builder.Create(BeastType.GoldmaneSahrak)
-                .Name("Goldmane Sahrak")
+                .Name("Goldpelt Sahrak")
                 .Appearance(AppearanceType.CatLionFemale)
-                .AppearanceScale(1f)
+                .AppearanceScale(0.8f)
                 .SoundSetId(854)
                 .PortraitId(560)
                 .CombatStats(AbilityType.Perception, AbilityType.Agility)

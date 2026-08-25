@@ -15,8 +15,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         {
             _builder.Create(BeastType.SapphirebackVorex)
                 .Name("Sapphireback Vorex")
-                .Appearance(AppearanceType.DragonkinBlue2AdamMillerbloodsong)
-                .AppearanceScale(0.5f)
+                .Appearance(AppearanceType.DragonChrBlueWyrmlingStorvik)
+                .AppearanceScale(0.7f)
                 .SoundSetId(56)
                 .PortraitId(18)
                 .CombatStats(AbilityType.Might, AbilityType.Perception)

@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
             _builder.Create(BeastType.DrexclawMarauder)
                 .Name("Drexclaw Marauder")
                 .Appearance(AppearanceType.SWLORDrexBeast)
-                .AppearanceScale(1f)
+                .AppearanceScale(0.8f)
                 .SoundSetId(23)
                 .PortraitId(356)
                 .CombatStats(AbilityType.Perception, AbilityType.Agility)

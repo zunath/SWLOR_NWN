@@ -15,8 +15,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         {
             _builder.Create(BeastType.EmeraldcrestKalyth)
                 .Name("Emeraldcrest Kalyth")
-                .Appearance(AppearanceType.DragonkinGreen2AdamMillerbloodsong)
-                .AppearanceScale(0.5f)
+                .Appearance(AppearanceType.DragonFaerie)
+                .AppearanceScale(1f)
                 .SoundSetId(50)
                 .PortraitId(16)
                 .CombatStats(AbilityType.Perception, AbilityType.Might)

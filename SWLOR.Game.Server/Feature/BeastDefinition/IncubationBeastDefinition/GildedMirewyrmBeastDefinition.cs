@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         {
             _builder.Create(BeastType.GildedMirewyrm)
                 .Name("Gilded Mirewyrm")
-                .Appearance(AppearanceType.DragonMetGold)
+                .Appearance(AppearanceType.DragonMetGoldWyrmling)
                 .AppearanceScale(1f)
                 .SoundSetId(393)
                 .PortraitId(5)

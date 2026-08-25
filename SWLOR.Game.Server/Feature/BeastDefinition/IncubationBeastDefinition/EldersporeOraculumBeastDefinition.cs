@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
             _builder.Create(BeastType.EldersporeOraculum)
                 .Name("Elderspore Oraculum")
                 .Appearance(AppearanceType.MyconidElderSchazzwozzer)
-                .AppearanceScale(1f)
+                .AppearanceScale(0.8f)
                 .SoundSetId(4)
                 .PortraitId(4)
                 .CombatStats(AbilityType.Social, AbilityType.Willpower)

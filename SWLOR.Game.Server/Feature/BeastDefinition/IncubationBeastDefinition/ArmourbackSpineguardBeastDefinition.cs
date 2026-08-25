@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
             _builder.Create(BeastType.ArmourbackSpineguard)
                 .Name("Armourback Spineguard")
                 .Appearance(AppearanceType.SpinebackArmourPLUSHHYENAofDOOM)
-                .AppearanceScale(1f)
+                .AppearanceScale(0.5f)
                 .SoundSetId(16)
                 .PortraitId(148)
                 .CombatStats(AbilityType.Agility, AbilityType.Perception)

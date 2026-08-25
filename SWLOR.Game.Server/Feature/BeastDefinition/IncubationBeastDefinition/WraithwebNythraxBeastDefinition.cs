@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         {
             _builder.Create(BeastType.WraithwebNythrax)
                 .Name("Wraithweb Nythrax")
-                .Appearance(AppearanceType.SpiderWraith)
+                .Appearance(AppearanceType.SpiderWraithMediumStorvik)
                 .AppearanceScale(1f)
                 .SoundSetId(45)
                 .PortraitId(15)

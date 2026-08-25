@@ -15,8 +15,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         {
             _builder.Create(BeastType.JadeclawVyrkol)
                 .Name("Jadeclaw Vyrkol")
-                .Appearance(AppearanceType.DragonChrGreen)
-                .AppearanceScale(0.8f)
+                .Appearance(AppearanceType.DragonChrGreenWyrmling)
+                .AppearanceScale(1f)
                 .SoundSetId(49)
                 .PortraitId(320)
                 .CombatStats(AbilityType.Willpower, AbilityType.Might)

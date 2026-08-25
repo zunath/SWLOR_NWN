@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         {
             _builder.Create(BeastType.VermilionRavager)
                 .Name("Vermilion Ravager")
-                .Appearance(AppearanceType.DragonChrRed)
+                .Appearance(AppearanceType.DragonChrRedWyrmling)
                 .AppearanceScale(1f)
                 .SoundSetId(59)
                 .PortraitId(2097)

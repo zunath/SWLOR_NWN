@@ -15,8 +15,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         {
             _builder.Create(BeastType.RubybackDrakon)
                 .Name("Rubyback Drakon")
-                .Appearance(AppearanceType.DragonkinRed2AdamMillerbloodsong)
-                .AppearanceScale(0.5f)
+                .Appearance(AppearanceType.DragonPseudo)
+                .AppearanceScale(1f)
                 .SoundSetId(43)
                 .PortraitId(13)
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)

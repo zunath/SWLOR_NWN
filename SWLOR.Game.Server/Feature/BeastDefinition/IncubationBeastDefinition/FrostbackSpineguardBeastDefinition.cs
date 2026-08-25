@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
             _builder.Create(BeastType.FrostbackSpineguard)
                 .Name("Frostback Spineguard")
                 .Appearance(AppearanceType.SpinebackTundraPLUSHHYENAofDOOM)
-                .AppearanceScale(1f)
+                .AppearanceScale(0.5f)
                 .SoundSetId(16)
                 .PortraitId(148)
                 .CombatStats(AbilityType.Agility, AbilityType.Might)

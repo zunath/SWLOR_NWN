@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         {
             _builder.Create(BeastType.SaberlegKharaxis)
                 .Name("Saberleg Kharaxis")
-                .Appearance(AppearanceType.SpiderSword)
+                .Appearance(AppearanceType.SpiderSwordMediumStorvik)
                 .AppearanceScale(1f)
                 .SoundSetId(41)
                 .PortraitId(12)

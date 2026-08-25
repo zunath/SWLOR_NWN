@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         {
             _builder.Create(BeastType.PhaselegSilkstalker)
                 .Name("Phaseleg Silkstalker")
-                .Appearance(AppearanceType.SpiderGiant)
+                .Appearance(AppearanceType.SpiderPhaseLargeStorvik)
                 .AppearanceScale(1f)
                 .SoundSetId(13)
                 .PortraitId(2220)

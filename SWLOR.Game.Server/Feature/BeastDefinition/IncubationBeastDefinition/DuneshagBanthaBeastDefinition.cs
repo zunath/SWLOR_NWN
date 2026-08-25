@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
             _builder.Create(BeastType.DuneshagBantha)
                 .Name("Duneshag Bantha")
                 .Appearance(AppearanceType.SWLORBantha)
-                .AppearanceScale(0.6f)
+                .AppearanceScale(0.45f)
                 .SoundSetId(904)
                 .PortraitId(2008)
                 .CombatStats(AbilityType.Agility, AbilityType.Vitality)

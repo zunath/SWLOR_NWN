@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
             _builder.Create(BeastType.GlimmerwingMykal)
                 .Name("Glimmerwing Mykal")
                 .Appearance(AppearanceType.SWLORMykal)
-                .AppearanceScale(1f)
+                .AppearanceScale(0.66f)
                 .SoundSetId(2)
                 .PortraitId(184)
                 .CombatStats(AbilityType.Agility, AbilityType.Might)

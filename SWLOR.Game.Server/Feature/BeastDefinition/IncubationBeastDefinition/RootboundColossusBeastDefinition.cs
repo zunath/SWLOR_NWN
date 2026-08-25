@@ -15,8 +15,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         {
             _builder.Create(BeastType.RootboundColossus)
                 .Name("Rootbound Colossus")
-                .Appearance(AppearanceType.Treant1DLATeam)
-                .AppearanceScale(1f)
+                .Appearance(AppearanceType.ShamblingMound2Hardpoints)
+                .AppearanceScale(0.65f)
                 .SoundSetId(21)
                 .PortraitId(7)
                 .CombatStats(AbilityType.Willpower, AbilityType.Perception)

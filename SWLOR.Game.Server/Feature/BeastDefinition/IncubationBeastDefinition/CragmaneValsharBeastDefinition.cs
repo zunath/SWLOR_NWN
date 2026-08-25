@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
             _builder.Create(BeastType.CragmaneValshar)
                 .Name("Cragmane Valshar")
                 .Appearance(AppearanceType.CatCragCat)
-                .AppearanceScale(1f)
+                .AppearanceScale(0.8f)
                 .SoundSetId(98)
                 .PortraitId(314)
                 .CombatStats(AbilityType.Perception, AbilityType.Agility)

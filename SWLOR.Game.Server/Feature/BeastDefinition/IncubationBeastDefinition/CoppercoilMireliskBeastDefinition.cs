@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         {
             _builder.Create(BeastType.CoppercoilMirelisk)
                 .Name("Coppercoil Mirelisk")
-                .Appearance(AppearanceType.DragonMetCopper)
+                .Appearance(AppearanceType.DragonMetCopperWyrmling)
                 .AppearanceScale(1f)
                 .SoundSetId(209)
                 .PortraitId(350)

@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         {
             _builder.Create(BeastType.StrayfangKavor)
                 .Name("Strayfang Kavor")
-                .Appearance(AppearanceType.JackalGuardianSzule)
+                .Appearance(AppearanceType.ZhackalCCCPLUSHHYENAofDOOM)
                 .AppearanceScale(1f)
                 .SoundSetId(104)
                 .PortraitId(3189)

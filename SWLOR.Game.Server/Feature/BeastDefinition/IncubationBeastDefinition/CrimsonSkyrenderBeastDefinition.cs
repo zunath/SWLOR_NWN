@@ -15,8 +15,8 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         {
             _builder.Create(BeastType.CrimsonSkyrender)
                 .Name("Crimson Skyrender")
-                .Appearance(AppearanceType.DragonkinRed1AdamMillerbloodsong)
-                .AppearanceScale(0.5f)
+                .Appearance(AppearanceType.DragonChrRedWyrmlingStorvik)
+                .AppearanceScale(0.48f)
                 .SoundSetId(1)
                 .PortraitId(1)
                 .CombatStats(AbilityType.Might, AbilityType.Agility)

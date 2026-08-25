@@ -15,7 +15,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         {
             _builder.Create(BeastType.SilverveilAerolith)
                 .Name("Silverveil Aerolith")
-                .Appearance(AppearanceType.DragonMetSilver)
+                .Appearance(AppearanceType.DragonMetSilverWyrmling)
                 .AppearanceScale(1f)
                 .SoundSetId(330)
                 .PortraitId(3499)

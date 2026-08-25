@@ -688,7 +688,7 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         IncubationFieldNoteGlimmerwingMykal = 2059,
         [KeyItem(KeyItemCategoryType.FieldNotes, "Gloomthread Skiver", true, "")]
         IncubationFieldNoteGloomthreadSkiver = 2060,
-        [KeyItem(KeyItemCategoryType.FieldNotes, "Goldmane Sahrak", true, "")]
+        [KeyItem(KeyItemCategoryType.FieldNotes, "Goldpelt Sahrak", true, "")]
         IncubationFieldNoteGoldmaneSahrak = 2061,
         [KeyItem(KeyItemCategoryType.FieldNotes, "Graniteback Ursavar", true, "")]
         IncubationFieldNoteGranitebackUrsavar = 2062,

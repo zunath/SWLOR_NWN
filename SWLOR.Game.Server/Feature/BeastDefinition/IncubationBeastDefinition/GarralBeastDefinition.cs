@@ -22,7 +22,7 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
                 .CombatStats(AbilityType.Perception, AbilityType.Agility)
                 .Role(BeastRoleType.Bruiser)
 
-                .CanMutateInto(BeastType.GoldmaneSahrak)
+                .CanMutateInto(BeastType.GoldpeltSahrak)
 				.MutationWeight(90)
 				.MutationRequiresLyaseColor(EnzymeColorType.Black, 2)
 				.MutationRequiresIsomeraseColor(EnzymeColorType.Red, 2)

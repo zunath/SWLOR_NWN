@@ -15,10 +15,10 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         {
             _builder.Create(BeastType.BronzecrestThundros)
                 .Name("Bronzecrest Thundros")
-                .Appearance(AppearanceType.DragonMetBronze)
-                .AppearanceScale(0.66f)
-                .SoundSetId(103)
-                .PortraitId(316)
+                .Appearance(AppearanceType.DragonMetBronzeWyrmling)
+                .AppearanceScale(1f)
+                .SoundSetId(30)
+                .PortraitId(639)
                 .CombatStats(AbilityType.Perception, AbilityType.Might)
                 .Role(BeastRoleType.Bruiser)
 

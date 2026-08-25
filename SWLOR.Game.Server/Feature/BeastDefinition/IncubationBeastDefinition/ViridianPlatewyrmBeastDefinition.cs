@@ -15,10 +15,10 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         {
             _builder.Create(BeastType.ViridianPlatewyrm)
                 .Name("Viridian Platewyrm")
-                .Appearance(AppearanceType.DragonkinGreen1AdamMillerbloodsong)
-                .AppearanceScale(0.5f)
-                .SoundSetId(44)
-                .PortraitId(14)
+                .Appearance(AppearanceType.DragonChrGreenWyrmlingStorvik)
+                .AppearanceScale(0.8f)
+                .SoundSetId(30)
+                .PortraitId(635)
                 .CombatStats(AbilityType.Vitality, AbilityType.Agility)
                 .Role(BeastRoleType.Tank)
 

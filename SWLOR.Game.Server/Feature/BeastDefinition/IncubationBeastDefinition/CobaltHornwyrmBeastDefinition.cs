@@ -15,10 +15,10 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         {
             _builder.Create(BeastType.CobaltHornwyrm)
                 .Name("Cobalt Hornwyrm")
-                .Appearance(AppearanceType.DragonkinBlue1AdamMillerbloodsong)
-                .AppearanceScale(0.5f)
-                .SoundSetId(51)
-                .PortraitId(17)
+                .Appearance(AppearanceType.FelldrakeHornedHardpoints)
+                .AppearanceScale(0.6f)
+                .SoundSetId(30)
+                .PortraitId(192)
                 .CombatStats(AbilityType.Perception, AbilityType.Vitality)
                 .Role(BeastRoleType.Bruiser)
 

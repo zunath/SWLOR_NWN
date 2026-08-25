@@ -15,10 +15,10 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         {
             _builder.Create(BeastType.VerdantThornwold)
                 .Name("Verdant Thornwold")
-                .Appearance(AppearanceType.TreantWildWoodsTheAmethystDragon)
+                .Appearance(AppearanceType.TopiaryGuardianBearTheAmethystDragon)
                 .AppearanceScale(1f)
-                .SoundSetId(853)
-                .PortraitId(2030)
+                .SoundSetId(8)
+                .PortraitId(181)
                 .CombatStats(AbilityType.Perception, AbilityType.Might)
                 .Role(BeastRoleType.Bruiser)
 

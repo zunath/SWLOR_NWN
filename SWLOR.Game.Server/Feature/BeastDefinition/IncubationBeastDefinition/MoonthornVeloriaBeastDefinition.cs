@@ -15,10 +15,10 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         {
             _builder.Create(BeastType.MoonthornVeloria)
                 .Name("Moonthorn Veloria")
-                .Appearance(AppearanceType.FeyNymph)
-                .AppearanceScale(0.8f)
-                .SoundSetId(2)
-                .PortraitId(2)
+                .Appearance(AppearanceType.TopiaryGuardianDeerTheAmethystDragon)
+                .AppearanceScale(1f)
+                .SoundSetId(24)
+                .PortraitId(174)
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)
                 .Role(BeastRoleType.Bruiser)
 

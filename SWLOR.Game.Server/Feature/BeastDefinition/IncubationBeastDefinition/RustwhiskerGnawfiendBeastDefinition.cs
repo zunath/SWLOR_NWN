@@ -15,9 +15,9 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         {
             _builder.Create(BeastType.RustwhiskerGnawfiend)
                 .Name("Rustwhisker Gnawfiend")
-                .Appearance(AppearanceType.Wererat)
+                .Appearance(AppearanceType.RodentRatSewerNitocrisFinniksa)
                 .AppearanceScale(1f)
-                .SoundSetId(22)
+                .SoundSetId(249)
                 .PortraitId(602)
                 .CombatStats(AbilityType.Might, AbilityType.Vitality)
                 .Role(BeastRoleType.Tank)

@@ -16,9 +16,9 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
             _builder.Create(BeastType.SootbellyMirekit)
                 .Name("Sootbelly Mirekit")
                 .Appearance(AppearanceType.UniqueHaratSmallNWN)
-                .AppearanceScale(1f)
-                .SoundSetId(34)
-                .PortraitId(1279)
+                .AppearanceScale(0.8f)
+                .SoundSetId(259)
+                .PortraitId(1276)
                 .CombatStats(AbilityType.Agility, AbilityType.Perception)
                 .Role(BeastRoleType.Bruiser)
 

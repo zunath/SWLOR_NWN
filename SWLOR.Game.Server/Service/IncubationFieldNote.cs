@@ -259,7 +259,7 @@ namespace SWLOR.Game.Server.Service
             Register(BeastType.GildedMirewyrm, KeyItemType.IncubationFieldNoteGildedMirewyrm, FieldNoteAcquisitionType.DiscoveryOnly);
             Register(BeastType.GlimmerwingMykal, KeyItemType.IncubationFieldNoteGlimmerwingMykal, FieldNoteAcquisitionType.DiscoveryOnly);
             Register(BeastType.GloomthreadSkiver, KeyItemType.IncubationFieldNoteGloomthreadSkiver, FieldNoteAcquisitionType.DiscoveryOnly);
-            Register(BeastType.GoldmaneSahrak, KeyItemType.IncubationFieldNoteGoldmaneSahrak, FieldNoteAcquisitionType.DiscoveryOnly);
+            Register(BeastType.GoldpeltSahrak, KeyItemType.IncubationFieldNoteGoldpeltSahrak, FieldNoteAcquisitionType.DiscoveryOnly);
             Register(BeastType.GranitebackUrsavar, KeyItemType.IncubationFieldNoteGranitebackUrsavar, FieldNoteAcquisitionType.DiscoveryOnly);
             Register(BeastType.GraymireAmalgam, KeyItemType.IncubationFieldNoteGraymireAmalgam, FieldNoteAcquisitionType.DiscoveryOnly);
             Register(BeastType.GreenbulkWallow, KeyItemType.IncubationFieldNoteGreenbulkWallow, FieldNoteAcquisitionType.DiscoveryOnly);

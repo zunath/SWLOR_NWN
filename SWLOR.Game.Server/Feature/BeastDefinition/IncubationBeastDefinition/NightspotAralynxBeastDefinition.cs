@@ -16,9 +16,9 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
             _builder.Create(BeastType.NightspotAralynx)
                 .Name("Nightspot Aralynx")
                 .Appearance(AppearanceType.CatJaguar)
-                .AppearanceScale(1f)
-                .SoundSetId(20)
-                .PortraitId(2154)
+                .AppearanceScale(0.8f)
+                .SoundSetId(19)
+                .PortraitId(555)
                 .CombatStats(AbilityType.Might, AbilityType.Agility)
                 .Role(BeastRoleType.Balanced)
 

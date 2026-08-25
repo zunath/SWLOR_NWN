@@ -15,10 +15,10 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         {
             _builder.Create(BeastType.GildedMirewyrm)
                 .Name("Gilded Mirewyrm")
-                .Appearance(AppearanceType.DragonMetGold)
+                .Appearance(AppearanceType.DragonMetGoldWyrmling)
                 .AppearanceScale(1f)
-                .SoundSetId(393)
-                .PortraitId(5)
+                .SoundSetId(30)
+                .PortraitId(641)
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)
                 .Role(BeastRoleType.Tank)
 

@@ -16,9 +16,9 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
             _builder.Create(BeastType.AmberhideNimbrel)
                 .Name("Amberhide Nimbrel")
                 .Appearance(AppearanceType.UniqueHaratNWN)
-                .AppearanceScale(0.6f)
-                .SoundSetId(28)
-                .PortraitId(1278)
+                .AppearanceScale(0.4f)
+                .SoundSetId(259)
+                .PortraitId(1276)
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)
                 .Role(BeastRoleType.Damage)
 

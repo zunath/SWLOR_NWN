@@ -15,10 +15,10 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         {
             _builder.Create(BeastType.AshenMoonprowler)
                 .Name("Ashen Moonprowler")
-                .Appearance(AppearanceType.Werewolf01)
+                .Appearance(AppearanceType.DogShadowMastiff)
                 .AppearanceScale(1f)
-                .SoundSetId(100)
-                .PortraitId(151)
+                .SoundSetId(27)
+                .PortraitId(286)
                 .CombatStats(AbilityType.Vitality, AbilityType.Might)
                 .Role(BeastRoleType.Balanced)
 

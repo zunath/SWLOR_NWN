@@ -15,10 +15,10 @@ namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
         {
             _builder.Create(BeastType.TideplumeStriderel)
                 .Name("Tideplume Striderel")
-                .Appearance(AppearanceType.BirdEagleIceChild)
-                .AppearanceScale(1f)
-                .SoundSetId(38)
-                .PortraitId(2224)
+                .Appearance(AppearanceType.BirdGooseCCP)
+                .AppearanceScale(2f)
+                .SoundSetId(451)
+                .PortraitId(730)
                 .CombatStats(AbilityType.Agility, AbilityType.Social)
                 .Role(BeastRoleType.Balanced)
 

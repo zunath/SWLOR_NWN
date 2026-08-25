@@ -130,7 +130,7 @@ namespace SWLOR.Game.Server.Service.BeastMasteryService
         DreamcapMyconite = 1088,
         EmberbackBristal = 1089,
         EldersporeOraculum = 1090,
-        GoldmaneSahrak = 1091,
+        GoldpeltSahrak = 1091,
         BloodtuskRavor = 1092,
         RuinfangMongrel = 1093,
         PhaselegSilkstalker = 1094,

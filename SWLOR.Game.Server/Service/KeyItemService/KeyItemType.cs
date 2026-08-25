@@ -689,7 +689,7 @@ namespace SWLOR.Game.Server.Service.KeyItemService
         [KeyItem(KeyItemCategoryType.FieldNotes, "Gloomthread Skiver", true, "")]
         IncubationFieldNoteGloomthreadSkiver = 2060,
         [KeyItem(KeyItemCategoryType.FieldNotes, "Goldpelt Sahrak", true, "")]
-        IncubationFieldNoteGoldmaneSahrak = 2061,
+        IncubationFieldNoteGoldpeltSahrak = 2061,
         [KeyItem(KeyItemCategoryType.FieldNotes, "Graniteback Ursavar", true, "")]
         IncubationFieldNoteGranitebackUrsavar = 2062,
         [KeyItem(KeyItemCategoryType.FieldNotes, "Graymire Amalgam", true, "")]

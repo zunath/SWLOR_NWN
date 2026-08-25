@@ -7,13 +7,13 @@ using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 
 namespace SWLOR.Game.Server.Feature.BeastDefinition.IncubationBeastDefinition
 {
-    public class GoldmaneSahrakBeastDefinition: IBeastListDefinition
+    public class GoldpeltSahrakBeastDefinition: IBeastListDefinition
     {
         private readonly BeastBuilder _builder = new();
 
         public Dictionary<BeastType, BeastDetail> Build()
         {
-            _builder.Create(BeastType.GoldmaneSahrak)
+            _builder.Create(BeastType.GoldpeltSahrak)
                 .Name("Goldpelt Sahrak")
                 .Appearance(AppearanceType.CatLionFemale)
                 .AppearanceScale(0.8f)

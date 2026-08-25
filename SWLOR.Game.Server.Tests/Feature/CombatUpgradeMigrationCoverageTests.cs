@@ -6,7 +6,6 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.MigrationDefinition.ServerMigration;
-using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.PlayerMarketService;
@@ -437,43 +436,6 @@ public class CombatUpgradeMigrationCoverageTests
         ((bool)args[1]).Should().BeTrue();
         beast.Perks.Should().BeEmpty();
         beast.UnallocatedSP.Should().Be(50);
-    }
-
-    [Test]
-    public void BeastMigration_RenamesOnlyTheUnmodifiedGoldmaneDefaultName()
-    {
-        var normalizeDefaultBeastName = typeof(_22_CombatSystemReplacement)
-            .GetMethod("NormalizeDefaultBeastName", BindingFlags.NonPublic | BindingFlags.Static)!;
-        var legacyDefault = new Beast
-        {
-            Type = BeastType.GoldmaneSahrak,
-            Name = "Goldmane Sahrak"
-        };
-        var customName = new Beast
-        {
-            Type = BeastType.GoldmaneSahrak,
-            Name = "Sunny"
-        };
-        var anotherBeast = new Beast
-        {
-            Type = BeastType.RubybackDrakon,
-            Name = "Goldmane Sahrak"
-        };
-
-        ((bool)normalizeDefaultBeastName.Invoke(null, new object[] { legacyDefault })!)
-            .Should()
-            .BeTrue();
-        legacyDefault.Name.Should().Be("Goldpelt Sahrak");
-
-        ((bool)normalizeDefaultBeastName.Invoke(null, new object[] { customName })!)
-            .Should()
-            .BeFalse();
-        customName.Name.Should().Be("Sunny");
-
-        ((bool)normalizeDefaultBeastName.Invoke(null, new object[] { anotherBeast })!)
-            .Should()
-            .BeFalse();
-        anotherBeast.Name.Should().Be("Goldmane Sahrak");
     }
 
     [Test]

@@ -836,6 +836,67 @@ public class MimicryTests
     }
 
     [Test]
+    public void MimicryTechniqueActivation_RequiresTheTechniqueToRemainEquipped()
+    {
+        var root = FindRepositoryRoot();
+        var abilitySource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Ability.cs"));
+
+        abilitySource.Should().Contain("ability.IsMimicryTechnique &&");
+        abilitySource.Should().Contain("!Mimicry.IsTechniqueEquipped(activator, abilityType)",
+            "both the initial and post-cast activation checks use CanUseAbility, so an unequipped technique cannot resolve");
+
+        var equipped = new Player();
+        equipped.EquippedTechniques.Add(FeatType.WardenWallTechnique);
+
+        Mimicry.IsTechniqueEquipped(equipped, FeatType.WardenWallTechnique).Should().BeTrue();
+        Mimicry.IsTechniqueEquipped(equipped, FeatType.SustainBurnTechnique).Should().BeFalse();
+        Mimicry.IsTechniqueEquipped((Player)null, FeatType.WardenWallTechnique).Should().BeFalse();
+    }
+
+    [Test]
+    public void MimicryTechniqueUnequip_RemovesDeclaredPersistentEffects()
+    {
+        var techniques = BuildAllAbilities(MimicryTechniqueNamespace)
+            .ToDictionary(technique => technique.Feat, technique => technique.Detail);
+
+        foreach (var feat in new[]
+                 {
+                     FeatType.ApexCollapseTechnique,
+                     FeatType.SustainBurnTechnique,
+                     FeatType.WardenWallTechnique
+                 })
+        {
+            techniques[feat].IsMimicryStance.Should().BeTrue();
+            techniques[feat].StatusEffectTypesRemovedOnPerkRefund.Should().ContainSingle(
+                $"{feat} must declare its permanent wearer effect for revocation cleanup");
+        }
+
+        techniques[FeatType.WardenWallTechnique]
+            .SourceOwnedStatusEffectTypesRemovedOnPerkRefund
+            .Should().Contain(typeof(WardenWallAuraStatusEffect),
+                "unequipping Warden Wall must also remove the aura it granted to nearby allies");
+
+        var root = FindRepositoryRoot();
+        var mimicrySource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Mimicry.cs"));
+        var revokeStart = mimicrySource.IndexOf("private static void RevokeTechniqueFeat", StringComparison.Ordinal);
+        var revokeEnd = mimicrySource.IndexOf("private static bool IsFeatOnHotBar", revokeStart, StringComparison.Ordinal);
+        var revokeBody = mimicrySource[revokeStart..revokeEnd];
+
+        revokeBody.Should().Contain("detail.StatusEffectTypesRemovedOnPerkRefund");
+        revokeBody.Should().Contain("StatusEffect.RemoveStatusEffect(player, statusEffectType, false);");
+        revokeBody.Should().Contain("detail.SourceOwnedStatusEffectTypesRemovedOnPerkRefund");
+        revokeBody.Should().Contain("StatusEffect.RemoveStatusEffectsFromAllTargetsBySource(");
+    }
+
+    [Test]
     public void Mimicry_LearnChanceScalesWithSkillRankPatternRecognitionAndPerception()
     {
         // Baseline: Mimicry rank at the technique requirement, no Pattern Recognition, Perception at the

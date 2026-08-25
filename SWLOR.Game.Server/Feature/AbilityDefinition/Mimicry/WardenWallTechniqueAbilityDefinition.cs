@@ -23,6 +23,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .MimicryStance(FeatType.WardenWall, 47, 3);
 
             ConfigureToggle(ability, typeof(WardenWallStatusEffect));
+            ability.RemoveSourceOwnedStatusEffectOnPerkRefund(typeof(WardenWallAuraStatusEffect));
 
             return _builder.Build();
         }

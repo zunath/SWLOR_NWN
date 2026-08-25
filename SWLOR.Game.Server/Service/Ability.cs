@@ -430,6 +430,15 @@ namespace SWLOR.Game.Server.Service
                 return Deny("A newer rank has replaced this ability.");
             }
 
+            // Mimicry techniques are granted through the equipped technique loadout rather than
+            // directly by Combat Analyzer. Re-check the loadout at both activation gates so a stale
+            // feat, or a technique unequipped while its cast is winding up, cannot still resolve.
+            if (ability.IsMimicryTechnique &&
+                !Mimicry.IsTechniqueEquipped(activator, abilityType))
+            {
+                return Deny("That technique is not equipped.");
+            }
+
             // Activator is dead.
             if (GetCurrentHitPoints(activator) <= 0)
             {

@@ -865,13 +865,31 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Removes the technique's feat and any hotbar slot referencing it. Trait stats need no
-        /// revoke step; they stop applying as soon as the feat leaves the equipped list.
+        /// Removes the technique's feat, any hotbar slot referencing it, and persistent effects
+        /// declared by the ability. Trait stats need no explicit revoke step; they stop applying as
+        /// soon as the feat leaves the equipped list.
         /// </summary>
         private static void RevokeTechniqueFeat(uint player, FeatType feat)
         {
             if (!GetIsObjectValid(player))
                 return;
+
+            var detail = GetTechniqueDetail(feat);
+            if (detail != null)
+            {
+                foreach (var statusEffectType in detail.StatusEffectTypesRemovedOnPerkRefund)
+                {
+                    StatusEffect.RemoveStatusEffect(player, statusEffectType, false);
+                }
+
+                foreach (var statusEffectType in detail.SourceOwnedStatusEffectTypesRemovedOnPerkRefund)
+                {
+                    StatusEffect.RemoveStatusEffectsFromAllTargetsBySource(
+                        player,
+                        statusEffectType,
+                        false);
+                }
+            }
 
             CreaturePlugin.RemoveFeat(player, feat);
             RemoveFeatFromHotBar(player, feat);
@@ -973,6 +991,27 @@ namespace SWLOR.Game.Server.Service
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Returns true when a technique feat is present in a player's equipped loadout.
+        /// </summary>
+        public static bool IsTechniqueEquipped(uint player, FeatType feat)
+        {
+            if (!GetIsPC(player) || GetIsDM(player))
+                return false;
+
+            var playerId = GetObjectUUID(player);
+            return IsTechniqueEquipped(DB.Get<Player>(playerId), feat);
+        }
+
+        /// <summary>
+        /// Returns true when a technique feat is present in an already-fetched player record's
+        /// equipped loadout.
+        /// </summary>
+        public static bool IsTechniqueEquipped(Player dbPlayer, FeatType feat)
+        {
+            return dbPlayer?.EquippedTechniques.Contains(feat) == true;
         }
 
         /// <summary>

@@ -32,10 +32,17 @@ public class BeastSpawnHealthTests
         var delayedCorrection = beastMastery.IndexOf(
             "DelayCommand(4f",
             StringComparison.Ordinal);
+        var immediateSetMax = beastMastery.IndexOf(
+            "SetCurrentHitPoints(beast, GetMaxHitPoints(beast));",
+            StringComparison.Ordinal);
 
         immediateRestore.Should().BeGreaterThan(-1);
+        immediateSetMax.Should().BeGreaterThan(immediateRestore,
+            "the full-health branch should restore the beast to its maximum hit points");
         delayedCorrection.Should().BeGreaterThan(immediateRestore,
             "full-health spawns should be restored before the delayed HP correction runs");
+        immediateSetMax.Should().BeLessThan(delayedCorrection,
+            "the beast should reach full health immediately rather than after the delayed correction");
     }
 
     private static DirectoryInfo FindRepositoryRoot()

@@ -1,3 +1,4 @@
+using System;
 using SWLOR.Game.Server.Service.AbilityService;
 
 namespace SWLOR.Game.Server.Service.AIService
@@ -20,6 +21,20 @@ namespace SWLOR.Game.Server.Service.AIService
         {
             return context => context.TargetHealthPercent <= thresholdPercent
                 ? score + thresholdPercent - context.TargetHealthPercent
+                : 0;
+        }
+
+        /// <summary>
+        /// Scores a defensive self-buff only while the creature is in combat and the buff is absent.
+        /// </summary>
+        public static AIScoreCalculation SelfStatusMissing(Type statusEffectType, int abilityLevel)
+        {
+            if (statusEffectType == null)
+                throw new ArgumentNullException(nameof(statusEffectType));
+
+            return context => context.CurrentEnmityTarget != OBJECT_INVALID &&
+                              !StatusEffect.HasStatusEffect(context.Self, statusEffectType)
+                ? AIScoreBand.Defensive + abilityLevel
                 : 0;
         }
 

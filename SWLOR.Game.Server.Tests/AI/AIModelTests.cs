@@ -3,10 +3,13 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AIService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using static SWLOR.NWN.API.NWScript.NWScript;
 
@@ -183,6 +186,51 @@ public class AIModelTests
         CreatureToEnemies()[target] = new List<uint> { self };
 
         score(CreateContext(self: self)).Should().Be(AIScoreBand.Defensive + 4);
+    }
+
+    [Test]
+    public void BolsterAttackAIScore_SuppressesEachActiveBuffRank()
+    {
+        const uint self = 100;
+        const uint target = 200;
+        var creatureEffects = (Dictionary<uint, CreatureStatusEffect>)typeof(StatusEffect)
+            .GetField("_creatureEffects", BindingFlags.NonPublic | BindingFlags.Static)!
+            .GetValue(null)!;
+        var tracker = new CreatureStatusEffect();
+        var abilities = new BolsterAttackAbilityDefinition().BuildAbilities();
+        var ranks = new (FeatType Feat, IStatusEffect StatusEffect, int AbilityLevel)[]
+        {
+            (FeatType.BolsterAttack1, new BolsterAttack1StatusEffect(), 1),
+            (FeatType.BolsterAttack2, new BolsterAttack2StatusEffect(), 2),
+            (FeatType.BolsterAttack3, new BolsterAttack3StatusEffect(), 3)
+        };
+
+        EnemyEnmityTables()[self] = new Dictionary<uint, int>
+        {
+            [target] = 1
+        };
+        CreatureToEnemies()[target] = new List<uint> { self };
+        creatureEffects[self] = tracker;
+
+        try
+        {
+            var context = CreateContext(self: self);
+
+            foreach (var (feat, statusEffect, abilityLevel) in ranks)
+            {
+                var score = abilities[feat].AIScore;
+                score.Should().NotBeNull();
+                score!(context).Should().Be(AIScoreBand.Defensive + abilityLevel);
+
+                tracker.Add(statusEffect);
+                score(context).Should().Be(0);
+                tracker.Remove(statusEffect);
+            }
+        }
+        finally
+        {
+            creatureEffects.Remove(self);
+        }
     }
 
     [Test]

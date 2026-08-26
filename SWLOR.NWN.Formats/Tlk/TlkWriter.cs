@@ -75,7 +75,11 @@ public static class TlkWriter
             }
 
             totalTextLength = checked(totalTextLength + encodedText.Length);
-            totalDecodedTextBytes = checked(totalDecodedTextBytes + (long)text.Length * sizeof(char));
+            totalDecodedTextBytes = checked(
+                totalDecodedTextBytes +
+                TlkFormatLimits.EstimatedManagedStringOverheadBytes +
+                TlkFormatLimits.EstimatedDecodedRangeDictionaryBytes +
+                (long)text.Length * sizeof(char));
             maximumId = Math.Max(maximumId, id);
         }
 

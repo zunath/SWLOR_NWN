@@ -108,7 +108,7 @@ public class TlkReaderTests
         BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(12), (uint)count);
         BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(16), (uint)bytes.Length);
 
-        for (var index = 0; index < 2; index++)
+        for (var index = 0; index < 3; index++)
         {
             var entryOffset = 20 + index * 40;
             BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(entryOffset), 0x0002);
@@ -119,5 +119,31 @@ public class TlkReaderTests
 
         read.Should().Throw<NwnFormatException>()
             .WithMessage("*allocation budget*TLK sound ResRef*");
+    }
+
+    [Test]
+    public void UniqueDecodedTextRangesIncludeStringAndDictionaryOverheadInTheBudget()
+    {
+        var count = TlkFormatLimits.MaximumEntryCount;
+        var stringsOffset = checked(20 + count * 40);
+        var bytes = new byte[stringsOffset + 2];
+        "TLK "u8.CopyTo(bytes);
+        "V3.0"u8.CopyTo(bytes.AsSpan(4));
+        BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(12), (uint)count);
+        BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(16), (uint)stringsOffset);
+
+        for (var index = 0; index < 2; index++)
+        {
+            var entryOffset = 20 + index * 40;
+            BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(entryOffset), 0x0001);
+            BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(entryOffset + 28), (uint)index);
+            BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(entryOffset + 32), 1);
+            bytes[stringsOffset + index] = (byte)('a' + index);
+        }
+
+        Action read = () => TlkReader.Read(bytes);
+
+        read.Should().Throw<NwnFormatException>()
+            .WithMessage("*allocation budget*TLK string 1*");
     }
 }

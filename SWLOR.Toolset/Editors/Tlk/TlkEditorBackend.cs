@@ -91,7 +91,7 @@ public sealed class TlkEditorBackend : ITlkEditorBackend
         _document = snapshot.Document;
         _jsonFingerprint = snapshot.JsonFingerprint;
         _binaryFingerprint = snapshot.BinaryFingerprint;
-        _acceptedBinary = LoadAcceptedBinary(_document, BinaryPath);
+        _acceptedBinary = snapshot.VerifiedBinary;
         _references = TlkReferenceIndex.Build(source.TwoDaDirectory, source.RepositoryRoot);
     }
 
@@ -222,14 +222,21 @@ public sealed class TlkEditorBackend : ITlkEditorBackend
     private Snapshot CaptureSnapshot(bool verifyBinaryPair = false)
     {
         using var sourceLease = ModuleWriteLock.AcquireForResourcePath(JsonPath);
-        var document = TlkDocument.Load(JsonPath);
+        var json = CapturedFile.Capture(JsonPath);
+        if (!json.Exists)
+            throw new FileNotFoundException("SWLOR custom TLK source was not found.", JsonPath);
+        var binary = CapturedFile.Capture(BinaryPath);
+        using var jsonStream = new MemoryStream(json.Content, writable: false);
+        var document = TlkDocument.Parse(jsonStream);
         var verifiedBinary = verifyBinaryPair
-            ? VerifyDocumentBinaryPair(document, BinaryPath)
-            : null;
+            ? binary.Exists
+                ? VerifyDocumentBinary(document, TlkReader.Read(binary.Content))
+                : throw new FileNotFoundException("Generated TLK binary was not found.", BinaryPath)
+            : LoadAcceptedBinary(document, binary);
         return new Snapshot(
             document,
-            FileFingerprint.Capture(JsonPath),
-            FileFingerprint.Capture(BinaryPath),
+            json.Fingerprint,
+            binary.Fingerprint,
             verifiedBinary);
     }
 
@@ -256,15 +263,14 @@ public sealed class TlkEditorBackend : ITlkEditorBackend
         return VerifyDocumentBinary(document, TlkReader.Read(TlkWriter.Write((uint)document.Language, entries)));
     }
 
-    private static TlkFile LoadAcceptedBinary(TlkDocument document, string binaryPath)
+    private static TlkFile LoadAcceptedBinary(TlkDocument document, CapturedFile binary)
     {
         try
         {
-            if (File.Exists(binaryPath))
-                return VerifyDocumentBinaryPair(document, binaryPath);
+            if (binary.Exists)
+                return VerifyDocumentBinary(document, TlkReader.Read(binary.Content));
         }
-        catch (Exception ex) when (
-            ex is IOException or UnauthorizedAccessException or InvalidDataException or FormatException)
+        catch (Exception ex) when (ex is InvalidDataException or FormatException)
         {
             // JSON is the editable source of truth. A missing, stale, or malformed generated file
             // is repaired on save, while the in-memory generation below keeps open labels current.
@@ -296,18 +302,31 @@ public sealed class TlkEditorBackend : ITlkEditorBackend
         TlkDocument Document,
         FileFingerprint JsonFingerprint,
         FileFingerprint BinaryFingerprint,
-        TlkFile? VerifiedBinary);
+        TlkFile VerifiedBinary);
+
+    private sealed record CapturedFile(bool Exists, byte[] Content, FileFingerprint Fingerprint)
+    {
+        public static CapturedFile Capture(string path)
+        {
+            if (!File.Exists(path))
+                return new CapturedFile(false, Array.Empty<byte>(), FileFingerprint.Missing);
+
+            var content = File.ReadAllBytes(path);
+            return new CapturedFile(true, content, FileFingerprint.FromContent(path, content));
+        }
+    }
 
     private sealed record FileFingerprint(bool Exists, DateTime LastWriteUtc, byte[] Hash)
     {
+        public static FileFingerprint Missing { get; } =
+            new(false, default, Array.Empty<byte>());
+
+        public static FileFingerprint FromContent(string path, byte[] content) =>
+            new(true, File.GetLastWriteTimeUtc(path), SHA256.HashData(content));
+
         public static FileFingerprint Capture(string path)
         {
-            if (!File.Exists(path))
-                return new FileFingerprint(false, default, Array.Empty<byte>());
-            return new FileFingerprint(
-                true,
-                File.GetLastWriteTimeUtc(path),
-                SHA256.HashData(File.ReadAllBytes(path)));
+            return CapturedFile.Capture(path).Fingerprint;
         }
 
         public bool Matches(string path)

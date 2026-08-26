@@ -16,12 +16,16 @@ public static class TlkFormatLimits
     /// <summary>Conservative object/header charge for each separately decoded managed string.</summary>
     public const int EstimatedManagedStringOverheadBytes = 24;
 
+    /// <summary>Conservative hash-table bucket/entry charge for each unique decoded text range.</summary>
+    public const int EstimatedDecodedRangeDictionaryBytes = 48;
+
     /// <summary>
-    /// Greatest number of entry records accepted by the TLK reader and writer. One record's worth
-    /// of the allocation budget remains for the non-empty final row that makes this count necessary.
+    /// Greatest number of entry records accepted by the TLK reader and writer. The remaining
+    /// allocation covers one unique final-row string, its range-index entry, and 28 UTF-16 characters.
     /// </summary>
     public const int MaximumEntryCount =
-        (int)(MaximumDecodedAllocationBytes / EstimatedManagedBytesPerEntry) - 1;
+        (int)((MaximumDecodedAllocationBytes - EstimatedManagedStringOverheadBytes -
+               EstimatedDecodedRangeDictionaryBytes) / EstimatedManagedBytesPerEntry);
 
     /// <summary>Greatest zero-based entry ID accepted by the TLK reader and writer.</summary>
     public const int MaximumEntryId = MaximumEntryCount - 1;

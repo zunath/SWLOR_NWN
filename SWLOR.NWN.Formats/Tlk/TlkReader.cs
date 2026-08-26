@@ -94,7 +94,9 @@ public static class TlkReader
                     var textBytes = reader.Slice(absoluteTextOffset, textLength, $"TLK string {index}");
                     var characterCount = encoding.GetCharCount(textBytes);
                     allocationBudget.Reserve(
-                        checked((long)characterCount * sizeof(char)),
+                        checked(TlkFormatLimits.EstimatedManagedStringOverheadBytes +
+                                TlkFormatLimits.EstimatedDecodedRangeDictionaryBytes +
+                                (long)characterCount * sizeof(char)),
                         $"TLK string {index}");
                     text = encoding.GetString(textBytes);
                     decodedStrings[(relativeTextOffset, textLength)] = text;

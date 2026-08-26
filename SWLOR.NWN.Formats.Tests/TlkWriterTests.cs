@@ -68,7 +68,7 @@ public class TlkWriterTests
     [Test]
     public void FormatLimits_ExposeConsistentEntryCountAndIdBoundaries()
     {
-        TlkFormatLimits.MaximumEntryCount.Should().Be(1_048_575);
+        TlkFormatLimits.MaximumEntryCount.Should().Be(1_048_574);
         TlkFormatLimits.MaximumEntryId.Should().Be(TlkFormatLimits.MaximumEntryCount - 1);
     }
 
@@ -89,7 +89,7 @@ public class TlkWriterTests
 
         Action exceedDecodedBudget = () => TlkWriter.Write(0, new Dictionary<int, string>
         {
-            [TlkFormatLimits.MaximumEntryId] = new string('x', 33)
+            [TlkFormatLimits.MaximumEntryId] = new string('x', 29)
         });
         exceedDecodedBudget.Should().Throw<ArgumentException>()
             .WithMessage("*decoded metadata and text*");
@@ -103,7 +103,7 @@ public class TlkWriterTests
         uint languageId,
         string character)
     {
-        var text = string.Concat(Enumerable.Repeat(character, 32));
+        var text = string.Concat(Enumerable.Repeat(character, 28));
         var bytes = TlkWriter.Write(languageId, new Dictionary<int, string>
         {
             [TlkFormatLimits.MaximumEntryId] = text

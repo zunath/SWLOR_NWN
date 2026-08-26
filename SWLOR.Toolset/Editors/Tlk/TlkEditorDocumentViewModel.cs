@@ -139,6 +139,15 @@ public sealed class TlkVirtualRowCollection : IList, INotifyCollectionChanged, I
         }
     }
 
+    internal void RefreshCachedRows()
+    {
+        foreach (var weak in _rows.Values)
+        {
+            if (weak.TryGetTarget(out var row))
+                row.Refresh();
+        }
+    }
+
     public IEnumerator GetEnumerator()
     {
         for (var index = 0; index < Count; index++)
@@ -177,6 +186,7 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
     private readonly IEditorPromptService _prompts;
     private readonly Action? _afterSave;
     private readonly List<TlkHistoryEntry> _history = new();
+    private readonly HashSet<int> _confirmedClears = new();
     private int _historyPosition;
     private int _savedPosition;
     private bool _refreshingSelection;
@@ -273,6 +283,14 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
             return;
 
         var id = SelectedRow.Id;
+        if (_backend.ContainsEntry(id) && value.Length == 0)
+        {
+            _refreshingSelection = true;
+            SelectedText = _backend.GetText(id) ?? string.Empty;
+            _refreshingSelection = false;
+            NavigationStatus = $"Use Clear row to blank TLK row {id}.";
+            return;
+        }
         if (value.Length > 0 && id > _backend.MaxEntryId &&
             !CanCreateThrough(id, new Dictionary<int, string> { [id] = value }))
         {
@@ -304,16 +322,20 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
     }
 
     [RelayCommand]
-    private void FindFirstBlank()
+    private async Task FindFirstBlank()
     {
+        if (!await TryRefreshReferencesAsync().ConfigureAwait(true))
+            return;
         if (!CanAllocateBlank())
             return;
         SelectId(_backend.FindFirstAvailableBlank(), clearFilter: true);
     }
 
     [RelayCommand]
-    private void FindNextBlank()
+    private async Task FindNextBlank()
     {
+        if (!await TryRefreshReferencesAsync().ConfigureAwait(true))
+            return;
         if (!CanAllocateBlank())
             return;
         SelectId(_backend.FindNextAvailableBlank(SelectedId), clearFilter: true);
@@ -324,8 +346,11 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
     {
         if (SelectedRow == null || !_backend.ContainsEntry(SelectedRow.Id))
             return;
+        if (!await TryRefreshReferencesAsync().ConfigureAwait(true))
+            return;
 
         var id = SelectedRow.Id;
+        var clearConfirmed = false;
         if (_backend.IsReferenced(id) || _backend.ReferenceWarnings.Count > 0)
         {
             var usages = FormatUsages(_backend.UsagesOf(id));
@@ -333,19 +358,22 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
                 ? string.Empty
                 : $"\n\nWarning: {_backend.ReferenceWarnings.Count} reference file(s) could not be scanned, " +
                   "so additional references may exist.";
-            var confirmed = await _prompts.ConfirmDestructiveAsync(
+            var approved = await _prompts.ConfirmDestructiveAsync(
                 $"Clear possibly referenced TLK row {id}?",
                 $"This leaves row {id} blank." +
-                (usages.Length == 0 ? string.Empty : $" Known 2DA references:\n\n{usages}") +
+                (usages.Length == 0 ? string.Empty : $" Known references:\n\n{usages}") +
                 incomplete,
                 "Clear row anyway").ConfigureAwait(true);
-            if (!confirmed)
+            if (!approved)
                 return;
+            clearConfirmed = true;
         }
 
         ApplyChanges(
             $"Clear TLK row {id}",
             new[] { TlkValueChange.Clear(id, _backend.GetText(id)) });
+        if (clearConfirmed)
+            _confirmedClears.Add(id);
     }
 
     /// <summary>Returns one text line per selected grid row, in row order.</summary>
@@ -395,6 +423,8 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
             NavigationStatus = "Paste would exceed the valid custom TLK row range.";
             return false;
         }
+        if (!await TryRefreshReferencesAsync().ConfigureAwait(true))
+            return false;
 
         var plannedText = lines
             .Select((text, offset) => new KeyValuePair<int, string>(start + offset, text))
@@ -409,11 +439,16 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
         var changes = new List<TlkValueChange>(lines.Count);
         var overwrites = new List<int>();
         var referenced = new List<int>();
+        var cleared = new List<int>();
         for (var offset = 0; offset < lines.Count; offset++)
         {
             var id = start + offset;
             if (_backend.ContainsEntry(id))
+            {
                 overwrites.Add(id);
+                if (lines[offset].Length == 0)
+                    cleared.Add(id);
+            }
             if (_backend.IsReferenced(id))
                 referenced.Add(id);
             changes.Add(TlkValueChange.Set(
@@ -432,6 +467,8 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
                 "Paste rows").ConfigureAwait(true);
             if (!confirmed)
                 return false;
+            foreach (var id in cleared.Where(id => _backend.IsReferenced(id) || _backend.ReferenceWarnings.Count > 0))
+                _confirmedClears.Add(id);
         }
 
         ApplyChanges($"Paste {lines.Count} TLK rows at {start}", changes);
@@ -519,6 +556,11 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
         IsBusy = true;
         try
         {
+            if (!await TryRefreshReferencesAsync().ConfigureAwait(true))
+                return false;
+            if (!await ConfirmNewlyReferencedClearsAsync().ConfigureAwait(true))
+                return false;
+
             var overwrite = false;
             if (await Task.Run(_backend.HasExternalChange).ConfigureAwait(true))
             {
@@ -679,6 +721,8 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
     private void RefreshAfterEdit(IEnumerable<int> changedIds)
     {
         var ids = changedIds.ToArray();
+        foreach (var id in ids.Where(_backend.ContainsEntry))
+            _confirmedClears.Remove(id);
         // Keep the current filtered snapshot stable while text is being edited. Refiltering on
         // every keystroke can evict the selected row and redirect the remaining input elsewhere.
         // The next filter/exact change recomputes the snapshot explicitly.
@@ -702,6 +746,7 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
     {
         var id = SelectedId;
         _history.Clear();
+        _confirmedClears.Clear();
         _historyPosition = 0;
         _savedPosition = 0;
         RefreshReferenceStatus();
@@ -776,6 +821,61 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
         NavigationStatus =
             $"Blank search is unavailable because {_backend.ReferenceWarnings.Count} reference file(s) could not be indexed.";
         return false;
+    }
+
+    private async Task<bool> TryRefreshReferencesAsync()
+    {
+        var wasBusy = IsBusy;
+        IsBusy = true;
+        try
+        {
+            await Task.Run(_backend.RefreshReferences).ConfigureAwait(true);
+            RefreshReferenceStatus();
+            Rows.RefreshCachedRows();
+            if (SelectedRow != null)
+                OnSelectedRowChanged(SelectedRow);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            NavigationStatus = "TLK references could not be refreshed; the operation was cancelled.";
+            _log.AppendLine($"TLK reference refresh failed: {ex.GetBaseException().Message}");
+            return false;
+        }
+        finally
+        {
+            IsBusy = wasBusy;
+        }
+    }
+
+    private async Task<bool> ConfirmNewlyReferencedClearsAsync()
+    {
+        var cleared = _history
+            .Take(_historyPosition)
+            .SelectMany(entry => entry.Changes)
+            .GroupBy(change => change.Id)
+            .Where(group => group.First().OldExists)
+            .Select(group => group.Key)
+            .Where(id =>
+                !_backend.ContainsEntry(id) &&
+                (_backend.IsReferenced(id) || _backend.ReferenceWarnings.Count > 0) &&
+                !_confirmedClears.Contains(id))
+            .Order()
+            .ToArray();
+        if (cleared.Length == 0)
+            return true;
+
+        var confirmed = await _prompts.ConfirmDestructiveAsync(
+            "Save cleared TLK rows with possible references?",
+            "These cleared rows are now referenced, or reference coverage is incomplete:\n\n" +
+            string.Join(", ", cleared) +
+            "\n\nSaving will leave those references without TLK text.",
+            "Save anyway").ConfigureAwait(true);
+        if (!confirmed)
+            return false;
+        foreach (var id in cleared)
+            _confirmedClears.Add(id);
+        return true;
     }
 
     private bool CanCreateThrough(int highestNewId, IReadOnlyDictionary<int, string> plannedText)

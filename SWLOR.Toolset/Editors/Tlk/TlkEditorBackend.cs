@@ -55,6 +55,7 @@ public interface ITlkEditorBackend
     IReadOnlyList<TlkEditorUsage> UsagesOf(int id);
     int FindFirstAvailableBlank();
     int FindNextAvailableBlank(int currentId);
+    void RefreshReferences();
     bool HasExternalChange();
     void Reload();
     void Save(bool overwriteExternalChanges = false);
@@ -130,6 +131,11 @@ public sealed class TlkEditorBackend : ITlkEditorBackend
     public int FindFirstAvailableBlank() => _document.FindFirstAvailableBlank(_references);
     public int FindNextAvailableBlank(int currentId) =>
         _document.FindNextAvailableBlank(currentId, _references);
+    public void RefreshReferences()
+    {
+        var references = TlkReferenceIndex.Build(_source.TwoDaDirectory, _source.RepositoryRoot);
+        _references = references;
+    }
 
     public bool HasExternalChange() =>
         !_jsonFingerprint.Matches(JsonPath) || !_binaryFingerprint.Matches(BinaryPath);

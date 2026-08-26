@@ -21,7 +21,7 @@ namespace SWLOR.Toolset.Tests;
 public class TlkEditorTests
 {
     [Test]
-    public void NavigationFilteringAndBlankSearchUseRawIdsAndCustomStrRefs()
+    public async Task NavigationFilteringAndBlankSearchUseRawIdsAndCustomStrRefs()
     {
         var backend = new MemoryBackend(
             new Dictionary<int, string> { [0] = "Alpha", [2] = "Beta", [190000] = "Alpha Two" },
@@ -57,7 +57,7 @@ public class TlkEditorTests
             "the filtered snapshot is refreshed explicitly rather than on every keystroke");
         editor.Rows.Count.Should().Be(2);
 
-        editor.FindFirstBlankCommand.Execute(null);
+        await editor.FindFirstBlankCommand.ExecuteAsync(null);
         editor.SelectedId.Should().Be(3, "row 1 is referenced and row 2 is populated");
         editor.FilterText.Should().BeEmpty("blank navigation must reveal its result in the grid");
     }
@@ -177,14 +177,14 @@ public class TlkEditorTests
     }
 
     [Test]
-    public void IncompleteReferenceCoverageFailsClosedForBlankAllocation()
+    public async Task IncompleteReferenceCoverageFailsClosedForBlankAllocation()
     {
         var backend = new MemoryBackend(
             new Dictionary<int, string> { [0] = "used" },
             warnings: new[] { "broken.2da" });
         var editor = CreateEditor(backend);
 
-        editor.FindFirstBlankCommand.Execute(null);
+        await editor.FindFirstBlankCommand.ExecuteAsync(null);
 
         editor.SelectedId.Should().Be(0);
         editor.NavigationStatus.Should().Contain("unavailable");
@@ -194,6 +194,57 @@ public class TlkEditorTests
 
         backend.ContainsEntry(1).Should().BeFalse();
         editor.NavigationStatus.Should().Contain("unavailable");
+    }
+
+    [Test]
+    public async Task BlankAndClearOperationsRefreshReferencesAddedAfterOpen()
+    {
+        var backend = new MemoryBackend(new Dictionary<int, string>
+        {
+            [0] = "zero",
+            [2] = "two"
+        })
+        {
+            ReferencesAfterRefresh = new[] { 1, 2 }
+        };
+        var prompts = new StubPrompts { ConfirmDestructive = false };
+        var editor = CreateEditor(backend, prompts);
+
+        await editor.FindFirstBlankCommand.ExecuteAsync(null);
+
+        editor.SelectedId.Should().Be(3, "row 1 became referenced after the editor opened");
+        editor.SelectId(2);
+        await editor.ClearRowCommand.ExecuteAsync(null);
+
+        backend.ContainsEntry(2).Should().BeTrue();
+        prompts.DestructiveMessages.Should().ContainSingle(message => message.Contains("row 2"));
+        backend.ReferenceRefreshCount.Should().Be(2);
+    }
+
+    [Test]
+    public async Task EmptyTextRequiresClearAndSaveRechecksRowsReferencedAfterClearing()
+    {
+        var backend = new MemoryBackend(new Dictionary<int, string> { [4] = "four" });
+        var prompts = new StubPrompts { ConfirmDestructive = true };
+        var editor = CreateEditor(backend, prompts);
+        editor.SelectId(4);
+
+        editor.SelectedText = string.Empty;
+
+        backend.ContainsEntry(4).Should().BeTrue();
+        editor.NavigationStatus.Should().Contain("Clear row");
+        prompts.DestructiveMessages.Should().BeEmpty();
+
+        await editor.ClearRowCommand.ExecuteAsync(null);
+        backend.ContainsEntry(4).Should().BeFalse();
+        prompts.DestructiveMessages.Should().BeEmpty("the row was unreferenced when it was cleared");
+
+        backend.ReferencesAfterRefresh = new[] { 4 };
+        (await editor.TrySaveAsync()).Should().BeTrue();
+
+        prompts.DestructiveMessages.Should().ContainSingle(message =>
+            message.Contains("now referenced", StringComparison.OrdinalIgnoreCase));
+        backend.Saved.Should().BeTrue();
     }
 
     [Test]
@@ -372,6 +423,39 @@ public class TlkEditorTests
     }
 
     [Test]
+    public void ProductionBackendRefreshesReferencesChangedAfterOpen()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "swlor-tlk-reference-refresh-tests", Guid.NewGuid().ToString("N"));
+        var tlkDirectory = Path.Combine(root, "sw_tlk");
+        var twoDaDirectory = Path.Combine(root, "sw_2da");
+        Directory.CreateDirectory(tlkDirectory);
+        Directory.CreateDirectory(twoDaDirectory);
+        var jsonPath = Path.Combine(tlkDirectory, "sw_tlk.tlk.json");
+        var binaryPath = Path.Combine(tlkDirectory, "sw_tlk.tlk");
+        var twoDaPath = Path.Combine(twoDaDirectory, "test.2da");
+        File.WriteAllText(jsonPath,
+            "{\"language\":0,\"entries\":[{\"id\":0,\"text\":\"zero\"}]}");
+        File.WriteAllText(twoDaPath,
+            "2DA V2.0\n\nLABEL STRREF\n0 test ****\n");
+
+        try
+        {
+            var backend = new TlkEditorBackend(new TlkEditorSource(jsonPath, binaryPath, twoDaDirectory));
+            backend.IsReferenced(1).Should().BeFalse();
+            File.WriteAllText(twoDaPath,
+                $"2DA V2.0\n\nLABEL STRREF\n0 test {TlkService.CustomTlkBase + 1}\n");
+
+            backend.RefreshReferences();
+
+            backend.IsReferenced(1).Should().BeTrue();
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Test]
     public void ProductionReloadRejectsAnExternallyTornJsonBinaryPair()
     {
         var root = Path.Combine(Path.GetTempPath(), "swlor-tlk-reload-tests", Guid.NewGuid().ToString("N"));
@@ -520,10 +604,13 @@ public class TlkEditorTests
         public bool ExternalChange { get; set; }
         public Dictionary<int, string>? ReloadEntries { get; set; }
         public IReadOnlyList<string>? ReloadWarnings { get; set; }
+        public IReadOnlyCollection<int>? ReferencesAfterRefresh { get; set; }
+        public Exception? ReferenceRefreshFailure { get; set; }
         public bool Saved { get; private set; }
         public bool Published { get; private set; }
         public int SaveCount { get; private set; }
         public int ReloadCount { get; private set; }
+        public int ReferenceRefreshCount { get; private set; }
         public Exception? ReloadFailure { get; init; }
         public ManualResetEventSlim? SaveStarted { get; init; }
         public ManualResetEventSlim? ContinueSave { get; init; }
@@ -552,6 +639,16 @@ public class TlkEditorTests
                     return id;
             }
             throw new InvalidOperationException();
+        }
+        public void RefreshReferences()
+        {
+            ReferenceRefreshCount++;
+            if (ReferenceRefreshFailure != null)
+                throw ReferenceRefreshFailure;
+            if (ReferencesAfterRefresh == null)
+                return;
+            _referenced.Clear();
+            _referenced.UnionWith(ReferencesAfterRefresh);
         }
         public bool HasExternalChange() => ExternalChange;
         public void Reload()

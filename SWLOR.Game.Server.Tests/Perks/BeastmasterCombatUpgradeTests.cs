@@ -100,6 +100,20 @@ public class BeastmasterCombatUpgradeTests
         var executePrey = new ExecutePreyAbilityDefinition().BuildAbilities()[FeatType.ExecutePrey1];
         AssertQueuedBeastAbility(executePrey, "Execute Prey", RecastGroup.ExecutePrey, 30f, 8);
 
+        var coordinatedStrike = new CoordinatedStrikeAbilityDefinition().BuildAbilities();
+        AssertQueuedBeastAbility(
+            coordinatedStrike[FeatType.CoordinatedStrike1],
+            "Coordinated Strike I",
+            RecastGroup.CoordinatedStrike,
+            15f,
+            5);
+        AssertQueuedBeastAbility(
+            coordinatedStrike[FeatType.CoordinatedStrike2],
+            "Coordinated Strike II",
+            RecastGroup.CoordinatedStrike,
+            15f,
+            7);
+
         var apexBite = new ApexBiteAbilityDefinition().BuildAbilities()[FeatType.ApexBite1];
         AssertQueuedBeastAbility(apexBite, "Apex Bite", RecastGroup.ApexBite, 45f, 10);
 

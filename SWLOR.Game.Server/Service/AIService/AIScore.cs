@@ -1,5 +1,5 @@
-using System;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.StatService;
 
 namespace SWLOR.Game.Server.Service.AIService
 {
@@ -25,15 +25,13 @@ namespace SWLOR.Game.Server.Service.AIService
         }
 
         /// <summary>
-        /// Scores a defensive self-buff only while the creature is in combat and the buff is absent.
+        /// Scores a defensive self-buff only while the creature is in combat and its active rank is
+        /// below the rank supplied by the ability.
         /// </summary>
-        public static AIScoreCalculation SelfStatusMissing(Type statusEffectType, int abilityLevel)
+        public static AIScoreCalculation SelfStatBelow(StatType activeRankStat, int requiredRank, int abilityLevel)
         {
-            if (statusEffectType == null)
-                throw new ArgumentNullException(nameof(statusEffectType));
-
             return context => context.CurrentEnmityTarget != OBJECT_INVALID &&
-                              !StatusEffect.HasStatusEffect(context.Self, statusEffectType)
+                              Stat.GetStatAdjustment(context.Self, activeRankStat) < requiredRank
                 ? AIScoreBand.Defensive + abilityLevel
                 : 0;
         }

@@ -77,7 +77,10 @@ public sealed class TlkEditorBackend : ITlkEditorBackend
     private TlkFile? _acceptedBinary;
     private TlkEditorEntry[]? _entrySnapshot;
 
-    public TlkEditorBackend(TlkEditorSource source, TlkService? tlkService = null)
+    public TlkEditorBackend(
+        TlkEditorSource source,
+        TlkService? tlkService = null,
+        CancellationToken cancellationToken = default)
     {
         _source = source ?? throw new ArgumentNullException(nameof(source));
         if (!source.IsAvailable)
@@ -92,7 +95,11 @@ public sealed class TlkEditorBackend : ITlkEditorBackend
         _jsonFingerprint = snapshot.JsonFingerprint;
         _binaryFingerprint = snapshot.BinaryFingerprint;
         _acceptedBinary = snapshot.VerifiedBinary;
-        _references = TlkReferenceIndex.Build(source.TwoDaDirectory, source.RepositoryRoot);
+        cancellationToken.ThrowIfCancellationRequested();
+        _references = TlkReferenceIndex.Build(
+            source.TwoDaDirectory,
+            source.RepositoryRoot,
+            cancellationToken);
     }
 
     public string JsonPath => _source.JsonPath;

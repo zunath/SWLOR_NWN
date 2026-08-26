@@ -98,6 +98,14 @@ namespace SWLOR.Toolset.Tests
                 Directory.CreateDirectory(moduleDirectory);
                 File.WriteAllText(Path.Combine(moduleDirectory, "palette.itp.json"),
                     "{\n  \"value\": 16777261,\n  \"notAStrRef\": 0.16777262\n}\n");
+                foreach (var ignoredDirectory in new[] { ".agents", ".claude", ".codex" })
+                {
+                    var path = Path.Combine(root, ignoredDirectory, "worktrees");
+                    Directory.CreateDirectory(path);
+                    File.WriteAllText(
+                        Path.Combine(path, "agent-metadata.json"),
+                        $"{{\"notRuntimeContent\":{TlkService.CustomTlkBase + 90}}}\n");
+                }
 
                 var index = TlkReferenceIndex.Build(twoDaDirectory, root);
 
@@ -108,6 +116,8 @@ namespace SWLOR.Toolset.Tests
                     usage.ColumnName == TlkReferenceIndex.RepositoryTextColumnName);
                 index.IsReferenced(46).Should().BeFalse(
                     "digits after a decimal point are not standalone StrRef tokens");
+                index.IsReferenced(90).Should().BeFalse(
+                    "agent metadata and nested agent worktrees are not runtime reference sources");
                 index.UnscannableFiles.Should().BeEmpty();
             }
             finally

@@ -171,6 +171,7 @@ public sealed class TlkVirtualRowCollection : IList, INotifyCollectionChanged, I
 
 /// <summary>A single referenced location displayed below the selected TLK row.</summary>
 public sealed record TlkUsageRowViewModel(
+    string Source,
     string File,
     int Row,
     string RowLabel,
@@ -265,9 +266,15 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
             Usages.Clear();
             if (value != null)
             {
-                foreach (var usage in _backend.UsagesOf(value.Id))
+                foreach (var usage in _backend.UsagesOf(value.Id)
+                             .OrderBy(usage => usage.ColumnName == TlkReferenceIndex.RepositoryTextColumnName ? 1 : 0)
+                             .ThenBy(usage => usage.FileName, StringComparer.OrdinalIgnoreCase)
+                             .ThenBy(usage => usage.RowIndex))
                 {
                     Usages.Add(new TlkUsageRowViewModel(
+                        usage.ColumnName == TlkReferenceIndex.RepositoryTextColumnName
+                            ? "Repository"
+                            : "2DA",
                         usage.FileName,
                         usage.RowIndex,
                         usage.RowLabel ?? string.Empty,

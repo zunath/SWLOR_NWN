@@ -3,7 +3,7 @@
              xmlns:tlk="using:SWLOR.Toolset.Editors.Tlk"
              x:Class="SWLOR.Toolset.Editors.Tlk.TlkEditorDocumentView"
              x:DataType="tlk:TlkEditorDocumentViewModel">
-  <Grid RowDefinitions="Auto,Auto,*,5,240,Auto" Margin="8" IsEnabled="{Binding !IsBusy}">
+  <Grid RowDefinitions="Auto,Auto,*,5,280,Auto" Margin="8" IsEnabled="{Binding !IsBusy}">
     <Grid Grid.Row="0" ColumnDefinitions="Auto,190,Auto,18,Auto,*" ColumnSpacing="7">
       <TextBlock Grid.Column="0" Text="Go to row / StrRef" VerticalAlignment="Center" />
       <TextBox Grid.Column="1" Text="{Binding GoToValue, Mode=TwoWay}"
@@ -79,18 +79,15 @@
 
     <GridSplitter Grid.Row="3" ResizeDirection="Rows" Background="{DynamicResource RuleBrush}" />
 
-    <Grid Grid.Row="4" ColumnDefinitions="3*,8,2*">
+    <Grid Grid.Row="4" ColumnDefinitions="2*,8,3*">
       <Grid Grid.Column="0" RowDefinitions="Auto,*">
-        <Grid Grid.Row="0" ColumnDefinitions="Auto,Auto,12,Auto,Auto,*" ColumnSpacing="6" Margin="0,0,0,6">
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,Auto,12,Auto,Auto" ColumnSpacing="6" Margin="0,0,0,6">
           <TextBlock Grid.Column="0" Text="Row" Classes="dim" VerticalAlignment="Center" />
           <Button Grid.Column="1" Content="{Binding SelectedIdDisplay}"
                   Click="OnCopyRowId" Padding="8,3" ToolTip.Tip="Copy raw TLK row ID" />
           <TextBlock Grid.Column="3" Text="Custom StrRef" Classes="dim" VerticalAlignment="Center" />
           <Button Grid.Column="4" Content="{Binding SelectedStrRefDisplay}"
                   Click="OnCopyStrRef" Padding="8,3" ToolTip.Tip="Copy full custom StrRef" />
-          <TextBlock Grid.Column="5" Text="Paste here preserves newlines in this one entry. Paste in the grid fills consecutive rows."
-                     Classes="dim" FontSize="11" VerticalAlignment="Center"
-                     TextWrapping="Wrap" Margin="10,0,0,0" />
         </Grid>
         <TextBox Grid.Row="1" Text="{Binding SelectedText, Mode=TwoWay}"
                  AcceptsReturn="True" TextWrapping="Wrap"
@@ -105,19 +102,41 @@
 
       <Grid Grid.Column="2" RowDefinitions="Auto,*">
         <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,6">
-          <TextBlock Grid.Column="0" Text="2DA references" FontWeight="SemiBold" />
+          <TextBlock Grid.Column="0" Text="References (2DA first)" FontWeight="SemiBold" />
           <TextBlock Grid.Column="2" Text="{Binding ReferenceStatus}" Classes="dim"
                      FontSize="11" TextTrimming="CharacterEllipsis" />
         </Grid>
-        <DataGrid Grid.Row="1" ItemsSource="{Binding Usages}"
+        <DataGrid x:Name="ReferenceGrid" Grid.Row="1" ItemsSource="{Binding Usages}"
                   IsReadOnly="True" AutoGenerateColumns="False"
                   x:CompileBindings="False"
                   GridLinesVisibility="Horizontal">
           <DataGrid.Columns>
-            <DataGridTextColumn Header="File" Binding="{Binding File}" Width="*" />
-            <DataGridTextColumn Header="Row" Binding="{Binding Row}" Width="70" />
-            <DataGridTextColumn Header="Label" Binding="{Binding RowLabel}" Width="110" />
-            <DataGridTextColumn Header="Column" Binding="{Binding Column}" Width="120" />
+            <DataGridTextColumn Header="Source" Binding="{Binding Source}" Width="85" />
+            <DataGridTemplateColumn Header="File" Width="2*">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate>
+                  <TextBlock Text="{Binding File}" TextTrimming="CharacterEllipsis"
+                             ToolTip.Tip="{Binding File}" />
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTextColumn Header="Row / line" Binding="{Binding Row}" Width="85" />
+            <DataGridTemplateColumn Header="Label" Width="120">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate>
+                  <TextBlock Text="{Binding RowLabel}" TextTrimming="CharacterEllipsis"
+                             ToolTip.Tip="{Binding RowLabel}" />
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+            <DataGridTemplateColumn Header="Column" Width="145">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate>
+                  <TextBlock Text="{Binding Column}" TextTrimming="CharacterEllipsis"
+                             ToolTip.Tip="{Binding Column}" />
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
           </DataGrid.Columns>
         </DataGrid>
       </Grid>

@@ -30,6 +30,8 @@ namespace SWLOR.Toolset.Editors
         private readonly LookupOptionProvider _lookups;
         private readonly Domain.GameData.Tlk.TlkService? _tlkService;
         private readonly Tlk.TlkEditorSource? _tlkEditorSource;
+        private readonly Func<Tlk.TlkEditorSource, Domain.GameData.Tlk.TlkService?, CancellationToken,
+            Tlk.ITlkEditorBackend> _tlkEditorBackendFactory;
         private readonly IGameCodeIndex? _gameCodeIndex;
         private readonly OutputLogService _log;
         private readonly ToolsetDockFactory _factory;
@@ -180,6 +182,7 @@ namespace SWLOR.Toolset.Editors
         private readonly Workspace.ModuleCustomContentService? _moduleCustomContent;
         private Module.ModulePropertiesDocumentViewModel? _moduleProperties;
         private Tlk.TlkEditorDocumentViewModel? _tlkEditor;
+        private Tlk.TlkEditorLoadingDocumentViewModel? _tlkEditorLoading;
         private bool _tlkEditorOpening;
         private uint? _pendingTlkStrRef;
 
@@ -298,9 +301,14 @@ namespace SWLOR.Toolset.Editors
                 string,
                 Task<IReadOnlyList<ObjectPlacement>>>? objectPlacementsFinder = null,
             Func<string, string, string, AreaEditorDocumentLoad>? areaDocumentsLoader = null,
-            Tlk.TlkEditorSource? tlkEditorSource = null)
+            Tlk.TlkEditorSource? tlkEditorSource = null,
+            Func<Tlk.TlkEditorSource, Domain.GameData.Tlk.TlkService?, CancellationToken,
+                Tlk.ITlkEditorBackend>? tlkEditorBackendFactory = null)
         {
             _tlkEditorSource = tlkEditorSource;
+            _tlkEditorBackendFactory = tlkEditorBackendFactory ??
+                ((source, tlk, cancellationToken) =>
+                    new Tlk.TlkEditorBackend(source, tlk, cancellationToken));
             _moduleCustomContent = moduleCustomContent;
             _externalLinks = externalLinks;
             _categories = categories;
@@ -535,7 +543,7 @@ namespace SWLOR.Toolset.Editors
 
         /// <summary>
         /// Opens the repository's SWLOR custom TLK as one docked document. Loading and the complete
-        /// structured 2DA reference scan stay off the UI thread; repeat requests activate the
+        /// reference scan stay off the UI thread; repeat requests activate the
         /// singleton and may navigate it to a custom StrRef.
         /// </summary>
         public async Task OpenTlkEditorAsync(uint? strRef = null)
@@ -553,6 +561,8 @@ namespace SWLOR.Toolset.Editors
             {
                 if (strRef.HasValue)
                     _pendingTlkStrRef = strRef;
+                if (_tlkEditorLoading != null)
+                    _factory.ActivateDocument(_tlkEditorLoading);
                 return;
             }
             if (_tlkEditorSource == null || !_tlkEditorSource.IsAvailable)
@@ -564,12 +574,24 @@ namespace SWLOR.Toolset.Editors
 
             _pendingTlkStrRef = strRef;
             _tlkEditorOpening = true;
+            var loading = new Tlk.TlkEditorLoadingDocumentViewModel(_tlkEditorSource.JsonPath);
+            loading.Closed += closed =>
+            {
+                if (ReferenceEquals(_tlkEditorLoading, closed))
+                    _tlkEditorLoading = null;
+            };
+            _tlkEditorLoading = loading;
+            _factory.OpenDocument(loading);
             try
             {
-                _log.AppendLine("Loading the SWLOR custom TLK and indexing 2DA references...");
+                _log.AppendLine("Loading the SWLOR custom TLK and indexing references...");
                 var backend = await Task.Run(() =>
-                    (Tlk.ITlkEditorBackend)new Tlk.TlkEditorBackend(_tlkEditorSource, _tlkService))
+                    _tlkEditorBackendFactory(
+                        _tlkEditorSource,
+                        _tlkService,
+                        loading.CancellationToken))
                     .ConfigureAwait(true);
+                loading.CancellationToken.ThrowIfCancellationRequested();
 
                 try
                 {
@@ -594,12 +616,17 @@ namespace SWLOR.Toolset.Editors
                         _tlkEditor = null;
                 };
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);
+                CloseTlkLoadingDocument(loading);
                 _tlkEditor = editor;
                 _factory.OpenDocument(editor);
                 if (_pendingTlkStrRef.HasValue)
                     editor.SelectStrRef(_pendingTlkStrRef.Value);
                 _pendingTlkStrRef = null;
                 _log.AppendLine("TLK Editor ready.");
+            }
+            catch (OperationCanceledException) when (loading.CancellationRequested)
+            {
+                _pendingTlkStrRef = null;
             }
             catch (Exception ex)
             {
@@ -608,8 +635,18 @@ namespace SWLOR.Toolset.Editors
             }
             finally
             {
+                if (ReferenceEquals(_tlkEditorLoading, loading))
+                    CloseTlkLoadingDocument(loading);
                 _tlkEditorOpening = false;
             }
+        }
+
+        private void CloseTlkLoadingDocument(Tlk.TlkEditorLoadingDocumentViewModel loading)
+        {
+            loading.Complete();
+            if (ReferenceEquals(_tlkEditorLoading, loading))
+                _tlkEditorLoading = null;
+            _factory.CloseDocument(loading);
         }
 
         private void RefreshOpenTlkLabels()

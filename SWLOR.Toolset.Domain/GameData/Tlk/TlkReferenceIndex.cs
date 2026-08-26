@@ -42,7 +42,10 @@ namespace SWLOR.Toolset.Domain.GameData.Tlk
             StringComparer.OrdinalIgnoreCase);
 
         private static readonly HashSet<string> IgnoredDirectoryNames = new(
-            new[] { ".git", ".idea", ".vs", "bin", "node_modules", "obj" },
+            new[]
+            {
+                ".agents", ".claude", ".codex", ".git", ".idea", ".vs", "bin", "node_modules", "obj"
+            },
             StringComparer.OrdinalIgnoreCase);
 
         private readonly IReadOnlyDictionary<int, IReadOnlyList<TlkReferenceUsage>> _usagesByEntryId;

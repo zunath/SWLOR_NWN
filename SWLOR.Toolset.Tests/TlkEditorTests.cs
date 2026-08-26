@@ -638,6 +638,81 @@ public class TlkEditorTests
     }
 
     [Test]
+    public void ReferenceRowsPutStructuredTwoDaUsagesBeforeRepositoryText()
+    {
+        var strRef = TlkService.CustomTlkBase;
+        var backend = new MemoryBackend(
+            new Dictionary<int, string> { [0] = "used" },
+            referenced: new[] { 0 },
+            usages:
+            [
+                new TlkEditorUsage(
+                    "Module/sample.json", 12, "12", TlkReferenceIndex.RepositoryTextColumnName, strRef),
+                new TlkEditorUsage("spells.2da", 4, "spell_label", "SpellDesc", strRef)
+            ]);
+
+        var editor = CreateEditor(backend);
+
+        editor.Usages.Select(usage => usage.Source).Should().Equal("2DA", "Repository");
+        editor.Usages.Select(usage => usage.File).Should().Equal("spells.2da", "Module/sample.json");
+    }
+
+    [Test]
+    public async Task OpeningShowsALoadingDocumentBeforeReferenceIndexingFinishes()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "swlor-tlk-loading-tests", Guid.NewGuid().ToString("N"));
+        var twoDaDirectory = Path.Combine(root, "sw_2da");
+        var jsonPath = Path.Combine(root, "sw_tlk.tlk.json");
+        var binaryPath = Path.Combine(root, "sw_tlk.tlk");
+        Directory.CreateDirectory(twoDaDirectory);
+        File.WriteAllText(jsonPath, "{\"language\":0,\"entries\":[]}");
+        var indexingStarted = new ManualResetEventSlim();
+        var continueIndexing = new ManualResetEventSlim();
+        var backend = new MemoryBackend(new Dictionary<int, string>());
+
+        try
+        {
+            var log = new OutputLogService();
+            var workspace = new WorkspaceContext(
+                path => new SWLOR.Toolset.Domain.Workspace.ModuleWorkspace(path),
+                log);
+            var service = new EditorService(
+                workspace,
+                new LookupOptionProvider(workspace),
+                log,
+                new ToolsetDockFactory(null!, null!, null!, null!, null!, null!, null!, null!, null!),
+                new StubPrompts(),
+                tlkEditorSource: new TlkEditorSource(jsonPath, binaryPath, twoDaDirectory),
+                tlkEditorBackendFactory: (_, _, cancellationToken) =>
+                {
+                    indexingStarted.Set();
+                    continueIndexing.Wait(cancellationToken);
+                    return backend;
+                });
+
+            var opening = service.OpenTlkEditorAsync();
+            indexingStarted.Wait(TimeSpan.FromSeconds(5)).Should().BeTrue();
+
+            var flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+            typeof(EditorService).GetField("_tlkEditorLoading", flags)!.GetValue(service)
+                .Should().BeOfType<TlkEditorLoadingDocumentViewModel>();
+            typeof(EditorService).GetField("_tlkEditor", flags)!.GetValue(service).Should().BeNull();
+
+            continueIndexing.Set();
+            await opening;
+
+            typeof(EditorService).GetField("_tlkEditorLoading", flags)!.GetValue(service).Should().BeNull();
+            typeof(EditorService).GetField("_tlkEditor", flags)!.GetValue(service)
+                .Should().BeOfType<TlkEditorDocumentViewModel>();
+        }
+        finally
+        {
+            continueIndexing.Set();
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Test]
     public async Task OpeningTheEditorPublishesTheCurrentRepositoryGeneration()
     {
         var root = Path.Combine(Path.GetTempPath(), "swlor-tlk-open-publish-tests", Guid.NewGuid().ToString("N"));
@@ -945,6 +1020,13 @@ public class TlkEditorTests
             editor.Rows.CreatedRowCount.Should().BeLessThan(100,
                 "the item source itself must not be eagerly copied into a collection view");
             view.GetVisualDescendants().OfType<TextBox>().Should().NotBeEmpty();
+            view.GetVisualDescendants().OfType<TextBlock>()
+                .Select(text => text.Text)
+                .Should().NotContain(text =>
+                    text != null && text.Contains("Paste here preserves", StringComparison.Ordinal));
+            view.FindControl<DataGrid>("ReferenceGrid")!.Columns
+                .Select(column => column.Header?.ToString())
+                .Should().ContainInOrder("Source", "File", "Row / line", "Label", "Column");
 
             window.Close();
             editor.OnClose().Should().BeTrue();
@@ -955,6 +1037,26 @@ public class TlkEditorTests
         }
 
         sink.Errors.Should().BeEmpty();
+    }
+
+    [AvaloniaTest]
+    public void TlkLoadingDocumentShowsProgressAndCancelsWhenClosed()
+    {
+        var loading = new TlkEditorLoadingDocumentViewModel("memory/sw_tlk.tlk.json");
+        var view = new TlkEditorLoadingDocumentView { DataContext = loading };
+        var window = new Window { Width = 900, Height = 600, Content = view };
+        window.Show();
+        window.UpdateLayout();
+
+        view.GetVisualDescendants().OfType<TextBlock>()
+            .Should().Contain(text => text.Text == "Loading TLK Editor");
+        view.GetVisualDescendants().OfType<ProgressBar>()
+            .Should().ContainSingle(progress => progress.IsIndeterminate);
+        loading.CancellationRequested.Should().BeFalse();
+
+        window.Close();
+        loading.OnClose().Should().BeTrue();
+        loading.CancellationRequested.Should().BeTrue();
     }
 
     [AvaloniaTest]
@@ -980,11 +1082,13 @@ public class TlkEditorTests
         public MemoryBackend(
             Dictionary<int, string> entries,
             IEnumerable<int>? referenced = null,
-            IReadOnlyList<string>? warnings = null)
+            IReadOnlyList<string>? warnings = null,
+            IReadOnlyList<TlkEditorUsage>? usages = null)
         {
             _entries = new Dictionary<int, string>(entries);
             _referenced = referenced?.ToHashSet() ?? new HashSet<int>();
             ReferenceWarnings = warnings ?? Array.Empty<string>();
+            UsageRows = usages;
         }
 
         public string JsonPath => "memory/sw_tlk.tlk.json";
@@ -1011,6 +1115,7 @@ public class TlkEditorTests
         public ManualResetEventSlim? ContinueSave { get; init; }
         public ManualResetEventSlim? ReferenceRefreshStarted { get; init; }
         public ManualResetEventSlim? ContinueReferenceRefresh { get; init; }
+        public IReadOnlyList<TlkEditorUsage>? UsageRows { get; }
 
         public bool ContainsEntry(int id) => _entries.ContainsKey(id);
         public string? GetText(int id) => _entries.GetValueOrDefault(id);
@@ -1023,10 +1128,23 @@ public class TlkEditorTests
         }
         public bool Clear(int id) => _entries.Remove(id);
         public bool IsReferenced(int id) => _referenced.Contains(id);
-        public int UsageCountFor(int id) => IsReferenced(id) ? 1 : 0;
-        public IReadOnlyList<TlkEditorUsage> UsagesOf(int id) => IsReferenced(id)
-            ? new[] { new TlkEditorUsage("test.2da", 7, "label", "STRREF", TlkService.CustomTlkBase + (uint)id) }
-            : Array.Empty<TlkEditorUsage>();
+        public int UsageCountFor(int id) => UsagesOf(id).Count;
+        public IReadOnlyList<TlkEditorUsage> UsagesOf(int id)
+        {
+            if (UsageRows != null)
+            {
+                var strRef = TlkService.CustomTlkBase + (uint)id;
+                return UsageRows.Where(usage => usage.StrRef == strRef).ToArray();
+            }
+
+            return IsReferenced(id)
+                ? new[]
+                {
+                    new TlkEditorUsage(
+                        "test.2da", 7, "label", "STRREF", TlkService.CustomTlkBase + (uint)id)
+                }
+                : Array.Empty<TlkEditorUsage>();
+        }
         public int FindFirstAvailableBlank() => FindNextAvailableBlank(-1);
         public int FindNextAvailableBlank(int currentId)
         {

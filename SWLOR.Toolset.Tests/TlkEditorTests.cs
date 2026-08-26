@@ -7,6 +7,7 @@ using NUnit.Framework;
 using System.Text;
 using SWLOR.NWN.Formats.Tlk;
 using SWLOR.Toolset.Domain.Editors;
+using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Tlk;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Editors;
@@ -513,6 +514,38 @@ public class TlkEditorTests
         (await save).Should().BeTrue();
         backend.LastSavedEntries.Should().ContainKey(0).WhoseValue.Should().Be("new");
         editor.IsDirty.Should().BeFalse();
+    }
+
+    [Test]
+    public async Task NavigatingAnAlreadyOpenTlkEditorClearsAnyPendingRequest()
+    {
+        var log = new OutputLogService();
+        var workspace = new WorkspaceContext(
+            root => new SWLOR.Toolset.Domain.Workspace.ModuleWorkspace(root),
+            log);
+        var prompts = new StubPrompts();
+        var factory = new ToolsetDockFactory(
+            null!, null!, null!, null!, null!, null!, null!, null!, null!);
+        var service = new EditorService(
+            workspace,
+            new LookupOptionProvider(workspace),
+            log,
+            factory,
+            prompts);
+        var openEditor = CreateEditor(new MemoryBackend(new Dictionary<int, string>
+        {
+            [0] = "zero",
+            [2] = "two"
+        }));
+        var flags = System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+        typeof(EditorService).GetField("_tlkEditor", flags)!.SetValue(service, openEditor);
+        typeof(EditorService).GetField("_pendingTlkStrRef", flags)!
+            .SetValue(service, TlkService.CustomTlkBase + 1);
+
+        await service.OpenTlkEditorAsync(TlkService.CustomTlkBase + 2);
+
+        openEditor.SelectedId.Should().Be(2);
+        typeof(EditorService).GetField("_pendingTlkStrRef", flags)!.GetValue(service).Should().BeNull();
     }
 
     [Test]

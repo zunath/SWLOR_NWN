@@ -539,11 +539,9 @@ namespace SWLOR.Toolset.Editors
         /// </summary>
         public async Task OpenTlkEditorAsync(uint? strRef = null)
         {
-            if (strRef.HasValue)
-                _pendingTlkStrRef = strRef;
-
             if (_tlkEditor != null)
             {
+                _pendingTlkStrRef = null;
                 if (strRef.HasValue)
                     _tlkEditor.SelectStrRef(strRef.Value);
                 _factory.ActivateDocument(_tlkEditor);
@@ -551,7 +549,11 @@ namespace SWLOR.Toolset.Editors
             }
 
             if (_tlkEditorOpening)
+            {
+                if (strRef.HasValue)
+                    _pendingTlkStrRef = strRef;
                 return;
+            }
             if (_tlkEditorSource == null || !_tlkEditorSource.IsAvailable)
             {
                 _log.AppendLine(_tlkEditorSource?.UnavailableReason ??
@@ -559,6 +561,7 @@ namespace SWLOR.Toolset.Editors
                 return;
             }
 
+            _pendingTlkStrRef = strRef;
             _tlkEditorOpening = true;
             try
             {

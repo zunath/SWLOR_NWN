@@ -202,8 +202,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     ExpectsRecast = true,
                 },
 
-                // CoordinatedStrikeAbilityDefinition - hostile direct damage, no status; the
-                // "recent master damage" bonus is a conditional percent adjustment, not asserted.
+                // CoordinatedStrikeAbilityDefinition - queued natural-weapon damage, no status;
+                // the "recent master damage" bonus is a conditional percent adjustment, not asserted.
                 new()
                 {
                     Feat = FeatType.CoordinatedStrike1,

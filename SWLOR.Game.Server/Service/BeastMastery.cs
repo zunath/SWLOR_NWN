@@ -504,7 +504,7 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnBeastHeartbeat)]
         public static void BeastOnHeartbeat()
         {
-            Stat.RestoreNPCStats(false);
+            Stat.RestoreBeastStats();
             CompanionControl.ProcessHeartbeat(OBJECT_SELF);
         }
 

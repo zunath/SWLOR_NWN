@@ -95,6 +95,25 @@ public class TlkWriterTests
             .WithMessage("*decoded metadata and text*");
     }
 
+    [TestCase(128u, "가")]
+    [TestCase(129u, "繁")]
+    [TestCase(130u, "汉")]
+    [TestCase(131u, "あ")]
+    public void WriterAndReader_AgreeNearTheAllocationBoundaryForDbcsLanguages(
+        uint languageId,
+        string character)
+    {
+        var text = string.Concat(Enumerable.Repeat(character, 32));
+        var bytes = TlkWriter.Write(languageId, new Dictionary<int, string>
+        {
+            [TlkFormatLimits.MaximumEntryId] = text
+        });
+
+        var roundTripped = TlkReader.Read(bytes);
+
+        roundTripped.GetString((uint)TlkFormatLimits.MaximumEntryId).Should().Be(text);
+    }
+
     [Test]
     public void Writer_EmptyInputProducesAValidEmptyTlk()
     {

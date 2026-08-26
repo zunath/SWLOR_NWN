@@ -229,6 +229,7 @@ namespace SWLOR.Toolset.Domain.GameData.Tlk
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
             {
+                Logger.Warning(ex, "Could not scan TLK reference source {ReferencePath}", path);
                 return false;
             }
         }

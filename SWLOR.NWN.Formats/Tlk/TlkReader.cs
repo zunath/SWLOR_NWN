@@ -84,13 +84,12 @@ public static class TlkReader
                 {
                     var absoluteTextOffset = checked((long)stringsOffset + relativeTextOffset);
                     reader.ValidateRange(absoluteTextOffset, textLength, $"TLK string {index}");
-                    // NWN encodings are byte-oriented, but System.String stores UTF-16 code units.
-                    // Charge twice the encoded size before GetString so single-byte text cannot
-                    // bypass the managed decoded-allocation ceiling.
+                    var textBytes = reader.Slice(absoluteTextOffset, textLength, $"TLK string {index}");
+                    var characterCount = encoding.GetCharCount(textBytes);
                     allocationBudget.Reserve(
-                        checked((long)textLength * sizeof(char)),
+                        checked((long)characterCount * sizeof(char)),
                         $"TLK string {index}");
-                    text = encoding.GetString(reader.Slice(absoluteTextOffset, textLength, $"TLK string {index}"));
+                    text = encoding.GetString(textBytes);
                     decodedStrings[(relativeTextOffset, textLength)] = text;
                 }
             }

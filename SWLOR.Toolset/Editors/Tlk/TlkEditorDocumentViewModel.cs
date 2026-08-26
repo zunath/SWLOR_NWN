@@ -354,11 +354,12 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
 
     private async Task FindNextBlankCoreAsync()
     {
+        var start = SelectedId;
         if (!await TryRefreshReferencesAsync().ConfigureAwait(true))
             return;
         if (!CanAllocateBlank())
             return;
-        SelectId(_backend.FindNextAvailableBlank(SelectedId), clearFilter: true);
+        SelectId(_backend.FindNextAvailableBlank(start), clearFilter: true);
     }
 
     [RelayCommand(CanExecute = nameof(HasSelectedRow))]
@@ -366,16 +367,16 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
 
     private async Task ClearRowCoreAsync()
     {
-        if (SelectedRow == null || !_backend.ContainsEntry(SelectedRow.Id))
+        var id = SelectedRow?.Id;
+        if (!id.HasValue || !_backend.ContainsEntry(id.Value))
             return;
         if (!await TryRefreshReferencesAsync().ConfigureAwait(true))
             return;
 
-        var id = SelectedRow.Id;
         var clearConfirmed = false;
-        if (_backend.IsReferenced(id) || _backend.ReferenceWarnings.Count > 0)
+        if (_backend.IsReferenced(id.Value) || _backend.ReferenceWarnings.Count > 0)
         {
-            var usages = FormatUsages(_backend.UsagesOf(id));
+            var usages = FormatUsages(_backend.UsagesOf(id.Value));
             var incomplete = _backend.ReferenceWarnings.Count == 0
                 ? string.Empty
                 : $"\n\nWarning: {_backend.ReferenceWarnings.Count} reference file(s) could not be scanned, " +
@@ -393,9 +394,9 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
 
         ApplyChanges(
             $"Clear TLK row {id}",
-            new[] { TlkValueChange.Clear(id, _backend.GetText(id)) });
+            new[] { TlkValueChange.Clear(id.Value, _backend.GetText(id.Value)) });
         if (clearConfirmed)
-            _confirmedClears.Add(id);
+            _confirmedClears.Add(id.Value);
     }
 
     /// <summary>Returns one text line per selected grid row, in row order.</summary>

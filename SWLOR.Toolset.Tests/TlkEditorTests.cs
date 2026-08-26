@@ -268,6 +268,40 @@ public class TlkEditorTests
     }
 
     [Test]
+    public async Task ClearKeepsTheInvokedRowWhenNavigationChangesDuringReferenceRefresh()
+    {
+        using var refreshStarted = new ManualResetEventSlim();
+        using var continueRefresh = new ManualResetEventSlim();
+        var backend = new MemoryBackend(new Dictionary<int, string>
+        {
+            [0] = "zero",
+            [1] = "one"
+        })
+        {
+            ReferenceRefreshStarted = refreshStarted,
+            ContinueReferenceRefresh = continueRefresh
+        };
+        var editor = CreateEditor(backend);
+        editor.SelectId(0);
+
+        var clear = editor.ClearRowCommand.ExecuteAsync(null);
+        try
+        {
+            refreshStarted.Wait(TimeSpan.FromSeconds(10)).Should().BeTrue();
+            editor.SelectId(1);
+        }
+        finally
+        {
+            continueRefresh.Set();
+        }
+        await clear;
+
+        backend.ContainsEntry(0).Should().BeFalse();
+        backend.GetText(1).Should().Be("one");
+        editor.SelectedId.Should().Be(1);
+    }
+
+    [Test]
     public void TypingCannotPopulateAKnownReferencedBlankRowWithoutConfirmation()
     {
         var backend = new MemoryBackend(

@@ -186,8 +186,11 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
     private readonly IEditorPromptService _prompts;
     private readonly Action? _afterSave;
     private readonly List<TlkHistoryEntry> _history = new();
+    private readonly HashSet<int> _savedEntryIds = new();
     private readonly HashSet<int> _confirmedClears = new();
     private readonly HashSet<int> _confirmedReferencedWrites = new();
+    private readonly SemaphoreSlim _operationGate = new(1, 1);
+    private readonly object _busyOperationSync = new();
     private int _historyPosition;
     private int _savedPosition;
     private int _busyOperationCount;
@@ -238,6 +241,7 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
         _log = log ?? throw new ArgumentNullException(nameof(log));
         _prompts = prompts ?? throw new ArgumentNullException(nameof(prompts));
         _afterSave = afterSave;
+        CaptureSavedEntryIds();
         Id = $"tlk-editor:{backend.JsonPath}";
         Rows = new TlkVirtualRowCollection(this);
         RefreshReferenceStatus();
@@ -578,9 +582,10 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
         }
     }
 
-    private async Task<bool> TrySaveCoreAsync()
+    private Task<bool> TrySaveCoreAsync() => RunBusyOperationAsync(SaveCoreAsync);
+
+    private async Task<bool> SaveCoreAsync()
     {
-        BeginBusyOperation();
         try
         {
             if (!await TryRefreshReferencesAsync().ConfigureAwait(true))
@@ -609,6 +614,7 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
 
             await Task.Run(() => _backend.Save(overwrite)).ConfigureAwait(true);
             _savedPosition = _historyPosition;
+            CaptureSavedEntryIds();
             UpdateTitleAndState();
             PublishAndRefreshLabels("save");
             _log.AppendLine($"Saved {_backend.JsonPath} and generated {_backend.BinaryPath}.");
@@ -624,22 +630,23 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
             _log.AppendLine($"TLK save failed: {ex.GetBaseException().Message}");
             return false;
         }
-        finally
-        {
-            EndBusyOperation();
-        }
     }
 
     internal void ApproveApplicationClose() => _closeApproved = true;
 
     internal async Task WaitForActiveOperationAsync()
     {
-        while (IsBusy)
+        while (true)
         {
-            var idle = _idleOperations;
-            if (idle == null)
-                return;
-            await idle.Task.ConfigureAwait(true);
+            Task? idle;
+            lock (_busyOperationSync)
+            {
+                if (_busyOperationCount == 0)
+                    return;
+                idle = _idleOperations?.Task;
+            }
+            if (idle != null)
+                await idle.ConfigureAwait(true);
         }
     }
 
@@ -779,10 +786,9 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
     {
         var id = SelectedId;
         _history.Clear();
-        _confirmedClears.Clear();
-        _confirmedReferencedWrites.Clear();
         _historyPosition = 0;
         _savedPosition = 0;
+        CaptureSavedEntryIds();
         RefreshReferenceStatus();
         RefreshFilter(keepSelection: false);
         SelectId(Math.Min(id, Math.Max(0, _backend.MaxEntryId)), clearFilter: false);
@@ -878,12 +884,7 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
 
     private async Task<bool> ConfirmNewlyReferencedClearsAsync()
     {
-        var cleared = _history
-            .Take(_historyPosition)
-            .SelectMany(entry => entry.Changes)
-            .GroupBy(change => change.Id)
-            .Where(group => group.First().OldExists)
-            .Select(group => group.Key)
+        var cleared = _savedEntryIds
             .Where(id =>
                 !_backend.ContainsEntry(id) &&
                 (_backend.IsReferenced(id) || _backend.ReferenceWarnings.Count > 0) &&
@@ -908,13 +909,10 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
 
     private async Task<bool> ConfirmNewlyReferencedWritesAsync()
     {
-        var filled = _history
-            .Take(_historyPosition)
-            .SelectMany(entry => entry.Changes)
-            .GroupBy(change => change.Id)
-            .Where(group => !group.First().OldExists)
-            .Select(group => group.Key)
+        var filled = _backend.Entries
+            .Select(entry => entry.Id)
             .Where(id =>
+                !_savedEntryIds.Contains(id) &&
                 _backend.ContainsEntry(id) &&
                 (_backend.IsReferenced(id) || _backend.ReferenceWarnings.Count > 0) &&
                 !_confirmedReferencedWrites.Contains(id))
@@ -938,22 +936,37 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
 
     private void BeginBusyOperation()
     {
-        if (_busyOperationCount++ != 0)
-            return;
+        var becameBusy = false;
+        lock (_busyOperationSync)
+        {
+            if (_busyOperationCount++ == 0)
+            {
+                _idleOperations = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+                becameBusy = true;
+            }
+        }
 
-        _idleOperations = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
-        IsBusy = true;
+        if (becameBusy)
+            IsBusy = true;
     }
 
     private void EndBusyOperation()
     {
-        if (--_busyOperationCount != 0)
-            return;
+        TaskCompletionSource? idle = null;
+        lock (_busyOperationSync)
+        {
+            if (--_busyOperationCount == 0)
+            {
+                idle = _idleOperations;
+                _idleOperations = null;
+            }
+        }
 
-        IsBusy = false;
-        var idle = _idleOperations;
-        _idleOperations = null;
-        idle?.TrySetResult();
+        if (idle != null)
+        {
+            IsBusy = false;
+            idle.TrySetResult();
+        }
     }
 
     private async Task RunBusyOperationAsync(Func<Task> operation)
@@ -961,7 +974,15 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
         BeginBusyOperation();
         try
         {
-            await operation().ConfigureAwait(true);
+            await _operationGate.WaitAsync().ConfigureAwait(true);
+            try
+            {
+                await operation().ConfigureAwait(true);
+            }
+            finally
+            {
+                _operationGate.Release();
+            }
         }
         finally
         {
@@ -974,12 +995,29 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
         BeginBusyOperation();
         try
         {
-            return await operation().ConfigureAwait(true);
+            await _operationGate.WaitAsync().ConfigureAwait(true);
+            try
+            {
+                return await operation().ConfigureAwait(true);
+            }
+            finally
+            {
+                _operationGate.Release();
+            }
         }
         finally
         {
             EndBusyOperation();
         }
+    }
+
+    private void CaptureSavedEntryIds()
+    {
+        _savedEntryIds.Clear();
+        foreach (var entry in _backend.Entries)
+            _savedEntryIds.Add(entry.Id);
+        _confirmedClears.Clear();
+        _confirmedReferencedWrites.Clear();
     }
 
     private bool CanCreateThrough(int highestNewId, IReadOnlyDictionary<int, string> plannedText)

@@ -302,6 +302,27 @@ public class TlkEditorTests
     }
 
     [Test]
+    public async Task SavingAfterUndoAcrossTheSavedPositionConfirmsTheNewClear()
+    {
+        var backend = new MemoryBackend(new Dictionary<int, string> { [0] = "zero" });
+        var prompts = new StubPrompts { ConfirmDestructive = true };
+        var editor = CreateEditor(backend, prompts);
+        editor.SelectId(1);
+        editor.SelectedText = "one";
+
+        (await editor.TrySaveAsync()).Should().BeTrue();
+        editor.Undo();
+        backend.ContainsEntry(1).Should().BeFalse();
+        backend.ReferencesAfterRefresh = new[] { 1 };
+
+        (await editor.TrySaveAsync()).Should().BeTrue();
+
+        prompts.DestructiveMessages.Should().ContainSingle(message =>
+            message.Contains("cleared", StringComparison.OrdinalIgnoreCase) && message.Contains("1"));
+        backend.LastSavedEntries.Should().NotContainKey(1);
+    }
+
+    [Test]
     public void LocStringShortcutOnlyOpensCustomTlkRows()
     {
         uint? opened = null;
@@ -468,6 +489,30 @@ public class TlkEditorTests
         backend.ContinueReferenceRefresh.Set();
         await find;
         await closeRequested.Task.WaitAsync(TimeSpan.FromSeconds(5));
+    }
+
+    [Test]
+    public async Task SaveWaitsForAnInProgressPasteBeforeCapturingTheDocument()
+    {
+        var backend = new MemoryBackend(new Dictionary<int, string> { [0] = "old" })
+        {
+            ReferenceRefreshStarted = new ManualResetEventSlim(),
+            ContinueReferenceRefresh = new ManualResetEventSlim(),
+            SaveStarted = new ManualResetEventSlim()
+        };
+        var editor = CreateEditor(backend, new StubPrompts { ConfirmDestructive = true });
+
+        var paste = editor.PasteRowsAsync("new");
+        backend.ReferenceRefreshStarted.Wait(TimeSpan.FromSeconds(5)).Should().BeTrue();
+        var save = editor.TrySaveAsync();
+
+        backend.SaveStarted.IsSet.Should().BeFalse("save must wait behind the active paste");
+        backend.ContinueReferenceRefresh.Set();
+
+        (await paste).Should().BeTrue();
+        (await save).Should().BeTrue();
+        backend.LastSavedEntries.Should().ContainKey(0).WhoseValue.Should().Be("new");
+        editor.IsDirty.Should().BeFalse();
     }
 
     [Test]
@@ -689,6 +734,7 @@ public class TlkEditorTests
         public Exception? ReferenceRefreshFailure { get; set; }
         public bool Saved { get; private set; }
         public bool Published { get; private set; }
+        public Dictionary<int, string> LastSavedEntries { get; private set; } = new();
         public int SaveCount { get; private set; }
         public int ReloadCount { get; private set; }
         public int ReferenceRefreshCount { get; private set; }
@@ -750,6 +796,7 @@ public class TlkEditorTests
         public void Save(bool overwriteExternalChanges = false)
         {
             SaveCount++;
+            LastSavedEntries = new Dictionary<int, string>(_entries);
             SaveStarted?.Set();
             ContinueSave?.Wait(TimeSpan.FromSeconds(5));
             Saved = true;

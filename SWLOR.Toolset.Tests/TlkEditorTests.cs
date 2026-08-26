@@ -713,6 +713,57 @@ public class TlkEditorTests
     }
 
     [Test]
+    public void APreviouslyCapturedTlkRowOpenerRechecksTheModuleLockWhenInvoked()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "swlor-tlk-opener-lock-tests", Guid.NewGuid().ToString("N"));
+        var twoDaDirectory = Path.Combine(root, "sw_2da");
+        var jsonPath = Path.Combine(root, "sw_tlk.tlk.json");
+        Directory.CreateDirectory(twoDaDirectory);
+        File.WriteAllText(jsonPath, "{\"language\":0,\"entries\":[]}");
+
+        try
+        {
+            var log = new OutputLogService();
+            var workspace = new WorkspaceContext(
+                path => new SWLOR.Toolset.Domain.Workspace.ModuleWorkspace(path),
+                log);
+            var mutationLock = new ModuleMutationLock();
+            var backendCreations = 0;
+            var service = new EditorService(
+                workspace,
+                new LookupOptionProvider(workspace),
+                log,
+                new ToolsetDockFactory(null!, null!, null!, null!, null!, null!, null!, null!, null!),
+                new StubPrompts(),
+                mutationLock: mutationLock,
+                tlkEditorSource: new TlkEditorSource(
+                    jsonPath,
+                    Path.Combine(root, "sw_tlk.tlk"),
+                    twoDaDirectory),
+                tlkEditorBackendFactory: (_, _, _) =>
+                {
+                    Interlocked.Increment(ref backendCreations);
+                    return new MemoryBackend(new Dictionary<int, string>());
+                });
+            var opener = (Action<uint>)typeof(EditorService)
+                .GetProperty("TlkRowOpener", System.Reflection.BindingFlags.Instance |
+                    System.Reflection.BindingFlags.NonPublic)!
+                .GetValue(service)!;
+
+            using (mutationLock.BeginResourceDeletion())
+                opener(TlkService.CustomTlkBase);
+
+            backendCreations.Should().Be(0);
+            log.Lines.Should().Contain(line => line.Contains(
+                "module resource deletion is in progress", StringComparison.Ordinal));
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Test]
     public async Task OpeningTheEditorPublishesTheCurrentRepositoryGeneration()
     {
         var root = Path.Combine(Path.GetTempPath(), "swlor-tlk-open-publish-tests", Guid.NewGuid().ToString("N"));

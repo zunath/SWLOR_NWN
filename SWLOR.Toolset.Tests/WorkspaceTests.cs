@@ -319,6 +319,65 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void BlueprintCatalog_RefreshEntryKeepsItsNameSourceWhenInitialBuildFinishesLater()
+        {
+            using var synthetic = SyntheticModule.CreateFromRealFiles(ModuleDirectory);
+            var workspace = new ModuleWorkspace(synthetic.Path);
+            var path = workspace.GetResourcePath(ResourceType.Utp, "zep_shrine");
+            var original = UtpDocument.Load(path);
+            var oldStrRef = original.LocName.StrRef;
+            oldStrRef.Should().NotBeNull();
+            var newStrRef = oldStrRef!.Value + 1;
+            using var initialResolutionEntered = new ManualResetEventSlim();
+            using var releaseInitialResolution = new ManualResetEventSlim();
+            var oldLabel = "Old Label";
+            var newLabel = "New Label";
+            var blockOldOnce = 1;
+
+            string? Resolve(uint strRef)
+            {
+                if (strRef == oldStrRef)
+                {
+                    var captured = Volatile.Read(ref oldLabel);
+                    if (Interlocked.Exchange(ref blockOldOnce, 0) == 1)
+                    {
+                        initialResolutionEntered.Set();
+                        releaseInitialResolution.Wait();
+                    }
+
+                    return captured;
+                }
+
+                return strRef == newStrRef ? Volatile.Read(ref newLabel) : null;
+            }
+
+            var catalog = new BlueprintCatalog(workspace, resolveStrRef: Resolve);
+            try
+            {
+                initialResolutionEntered.Wait(TimeSpan.FromSeconds(10)).Should().BeTrue();
+                var refreshed = UtpDocument.Load(path);
+                refreshed.Fields.Get("LocName").RawLocStringId =
+                    System.Text.Encoding.ASCII.GetBytes(
+                        newStrRef.ToString(System.Globalization.CultureInfo.InvariantCulture));
+                File.WriteAllBytes(path, refreshed.ToBytes());
+
+                catalog.RefreshEntry(ResourceType.Utp, "zep_shrine")!.Name.Should().Be("New Label");
+            }
+            finally
+            {
+                releaseInitialResolution.Set();
+            }
+            catalog.BuildTask.GetAwaiter().GetResult();
+
+            Volatile.Write(ref oldLabel, "Stale Old Label");
+            Volatile.Write(ref newLabel, "Latest New Label");
+            catalog.RefreshTlkLabels().Should().BeTrue();
+            catalog.TryGetEntry(ResourceType.Utp, "zep_shrine", out var entry).Should().BeTrue();
+            entry.Name.Should().Be("Latest New Label",
+                "the entry and its LocString source must be published as one generation");
+        }
+
+        [Test]
         public void BlueprintCatalog_Progress_ReachesTotalCountOnCompletion()
         {
             using var synthetic = SyntheticModule.CreateFromRealFiles(ModuleDirectory);

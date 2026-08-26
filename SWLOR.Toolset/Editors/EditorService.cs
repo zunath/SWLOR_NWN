@@ -676,8 +676,12 @@ namespace SWLOR.Toolset.Editors
         }
 
         private Action<uint>? TlkRowOpener =>
-            _tlkEditorSource?.IsAvailable == true && !IsResourceOpeningBlocked("TLK Editor")
-                ? strRef => _ = OpenTlkEditorAsync(strRef)
+            _tlkEditorSource?.IsAvailable == true
+                ? strRef =>
+                {
+                    if (!IsResourceOpeningBlocked("TLK Editor"))
+                        _ = OpenTlkEditorAsync(strRef);
+                }
                 : null;
 
         /// <summary>Refreshes open resource-backed content after the module HAK stack changes.</summary>

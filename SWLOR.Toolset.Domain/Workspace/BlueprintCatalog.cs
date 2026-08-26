@@ -191,8 +191,8 @@ namespace SWLOR.Toolset.Domain.Workspace
                 if (_removed.ContainsKey(key))
                     return;
 
-                var entry = BuildEntry(item.Type, item.ResRef);
-                if (entry != null)
+                var built = BuildEntry(item.Type, item.ResRef);
+                if (built != null)
                 {
                     lock (_tlkLabelLock)
                     {
@@ -202,12 +202,19 @@ namespace SWLOR.Toolset.Domain.Workspace
                         }
                         else
                         {
+                            var entry = built.Entry;
                             // A TLK publication can race this initial build between parsing and
                             // insertion. Resolve once more while sharing the refresh lock so either
                             // this insertion or RefreshTlkLabels observes the new generation.
-                            if (_nameSources.TryGetValue(key, out var source))
-                                entry = entry with { Name = ResolveName(source) };
-                            _indexedEntries.TryAdd(key, entry);
+                            if (built.NameSource != null)
+                                entry = entry with { Name = ResolveName(built.NameSource) };
+                            if (_indexedEntries.TryAdd(key, entry))
+                            {
+                                if (built.NameSource != null)
+                                    _nameSources[key] = built.NameSource;
+                                else
+                                    _nameSources.TryRemove(key, out _);
+                            }
                         }
                     }
                 }
@@ -241,20 +248,31 @@ namespace SWLOR.Toolset.Domain.Workspace
             // would be published here and then dropped again by a still-running build.
             _removed.TryRemove(key, out _);
 
-            var entry = BuildEntry(type, resRef);
-            if (entry == null)
+            var built = BuildEntry(type, resRef);
+            if (built == null)
             {
                 changed = RemoveEntry(type, resRef);
                 return null;
             }
 
+            var entry = built.Entry;
             lock (_tlkLabelLock)
             {
-                if (_nameSources.TryGetValue(key, out var source))
-                    entry = entry with { Name = ResolveName(source) };
-                if (_indexedEntries.TryGetValue(key, out var existing) && existing == entry)
+                if (built.NameSource != null)
+                    entry = entry with { Name = ResolveName(built.NameSource) };
+
+                var sourceUnchanged = built.NameSource == null
+                    ? !_nameSources.ContainsKey(key)
+                    : _nameSources.TryGetValue(key, out var existingSource) &&
+                      existingSource == built.NameSource;
+                if (_indexedEntries.TryGetValue(key, out var existing) &&
+                    existing == entry && sourceUnchanged)
                     return existing;
 
+                if (built.NameSource != null)
+                    _nameSources[key] = built.NameSource;
+                else
+                    _nameSources.TryRemove(key, out _);
                 _indexedEntries[key] = entry;
             }
             PublishSnapshot();
@@ -300,41 +318,40 @@ namespace SWLOR.Toolset.Domain.Workspace
 
         private static string IdentityKey(ResourceType type, string resRef) => $"{(int)type}:{resRef}";
 
-        private CatalogEntry? BuildEntry(ResourceType type, string resRef)
+        private CatalogBuildResult? BuildEntry(ResourceType type, string resRef)
         {
             var path = _workspace.GetResourcePath(type, resRef);
-            var key = IdentityKey(type, resRef);
 
             try
             {
                 var bytes = File.ReadAllBytes(path);
                 var metadata = ExtractMetadata(type, bytes);
-                _nameSources[key] = metadata.NameSource;
-                return new CatalogEntry(
-                    type,
-                    resRef,
-                    metadata.Name,
-                    metadata.Tag,
-                    path,
-                    metadata.BaseItem);
+                return new CatalogBuildResult(
+                    new CatalogEntry(
+                        type,
+                        resRef,
+                        metadata.Name,
+                        metadata.Tag,
+                        path,
+                        metadata.BaseItem),
+                    metadata.NameSource);
             }
             catch (FileNotFoundException)
             {
-                _nameSources.TryRemove(key, out _);
                 return null;
             }
             catch (DirectoryNotFoundException)
             {
-                _nameSources.TryRemove(key, out _);
                 return null;
             }
             catch (Exception)
             {
-                _nameSources.TryRemove(key, out _);
                 // A file that fails to parse still gets an entry (resref/path are known from the
                 // directory listing) - just without a Name/Tag. The corpus round-trip gate is the
                 // place that should catch a genuinely malformed file; this index tolerates it.
-                return new CatalogEntry(type, resRef, null, null, path);
+                return new CatalogBuildResult(
+                    new CatalogEntry(type, resRef, null, null, path),
+                    null);
             }
         }
 
@@ -465,6 +482,10 @@ namespace SWLOR.Toolset.Domain.Workspace
             string? Tag,
             int? BaseItem,
             CatalogNameSource NameSource);
+
+        private sealed record CatalogBuildResult(
+            CatalogEntry Entry,
+            CatalogNameSource? NameSource);
 
         private readonly record struct LocStringNameSource(string? InlineText, uint? StrRef);
 

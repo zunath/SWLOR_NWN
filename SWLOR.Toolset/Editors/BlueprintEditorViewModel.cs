@@ -27,6 +27,7 @@ namespace SWLOR.Toolset.Editors
         private readonly EditorFieldContext _context;
         private readonly OutputLogService _log;
         private readonly IEditorPromptService _prompts;
+        private readonly LookupOptionProvider _lookups;
         private readonly IGameCodeIndex? _gameCodeIndex;
         private readonly IScriptSlotHost? _scriptSlotHost;
         private readonly BlueprintSaveCoordinator? _saveCoordinator;
@@ -146,6 +147,7 @@ namespace SWLOR.Toolset.Editors
             _resourceLister = resourceLister;
             _log = log;
             _prompts = prompts;
+            _lookups = lookups;
             _gameCodeIndex = gameCodeIndex;
             _saveCoordinator = saveCoordinator;
             Source = source;
@@ -598,6 +600,8 @@ namespace SWLOR.Toolset.Editors
         {
             foreach (var field in Groups.SelectMany(group => group.Fields).OfType<LocStringFieldViewModel>())
                 field.RefreshFromDocument();
+            foreach (var field in Groups.SelectMany(group => group.Fields).OfType<DropdownFieldViewModel>())
+                field.RefreshOptions(_lookups.GetOptions(field.Descriptor.LookupKey));
         }
 
         private void AfterHistoryChange()

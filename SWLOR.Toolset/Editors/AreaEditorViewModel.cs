@@ -59,6 +59,7 @@ namespace SWLOR.Toolset.Editors
         private byte[] _savedGicBytes = Array.Empty<byte>();
         private bool _gicDirty;
         private readonly OutputLogService _log;
+        private readonly LookupOptionProvider _lookups;
         private readonly ModuleWorkspace _workspace;
         private readonly string _areResRef;
         private readonly TilesetCatalog? _tilesetCatalog;
@@ -1726,6 +1727,7 @@ namespace SWLOR.Toolset.Editors
             if (_mutationLock != null)
                 _mutationLock.Changed += OnMutationLockChanged;
             _log = log;
+            _lookups = lookups;
             _workspace = workspace;
             _areResRef = areResRef;
             _tilesetCatalog = tilesetCatalog;
@@ -2889,12 +2891,11 @@ namespace SWLOR.Toolset.Editors
         /// <summary>Re-resolves custom-TLK watermarks after the shared table is regenerated.</summary>
         public void RefreshTlkLabels()
         {
-            foreach (var field in AreaPropertyGroups
-                         .SelectMany(group => group.Fields)
-                         .OfType<LocStringFieldViewModel>())
-            {
+            var fields = AreaPropertyGroups.SelectMany(group => group.Fields).ToArray();
+            foreach (var field in fields.OfType<LocStringFieldViewModel>())
                 field.RefreshFromDocument();
-            }
+            foreach (var field in fields.OfType<DropdownFieldViewModel>())
+                field.RefreshOptions(_lookups.GetOptions(field.Descriptor.LookupKey));
         }
 
         private void RefreshInstanceSections()

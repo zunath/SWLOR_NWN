@@ -273,6 +273,15 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
             return;
 
         var id = SelectedRow.Id;
+        if (value.Length > 0 && id > _backend.MaxEntryId &&
+            !CanCreateThrough(id, new Dictionary<int, string> { [id] = value }))
+        {
+            _refreshingSelection = true;
+            SelectedText = _backend.GetText(id) ?? string.Empty;
+            _refreshingSelection = false;
+            return;
+        }
+
         ApplyChanges(
             $"Edit TLK row {id}",
             new[] { TlkValueChange.Set(id, _backend.ContainsEntry(id), _backend.GetText(id), value) });
@@ -322,7 +331,7 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
             var usages = FormatUsages(_backend.UsagesOf(id));
             var incomplete = _backend.ReferenceWarnings.Count == 0
                 ? string.Empty
-                : $"\n\nWarning: {_backend.ReferenceWarnings.Count} 2DA file(s) could not be scanned, " +
+                : $"\n\nWarning: {_backend.ReferenceWarnings.Count} reference file(s) could not be scanned, " +
                   "so additional references may exist.";
             var confirmed = await _prompts.ConfirmDestructiveAsync(
                 $"Clear possibly referenced TLK row {id}?",
@@ -387,6 +396,16 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
             return false;
         }
 
+        var plannedText = lines
+            .Select((text, offset) => new KeyValuePair<int, string>(start + offset, text))
+            .ToDictionary(pair => pair.Key, pair => pair.Value);
+        var highestNewId = plannedText
+            .Where(pair => pair.Key > _backend.MaxEntryId && pair.Value.Length > 0)
+            .Select(pair => (int?)pair.Key)
+            .Max();
+        if (highestNewId.HasValue && !CanCreateThrough(highestNewId.Value, plannedText))
+            return false;
+
         var changes = new List<TlkValueChange>(lines.Count);
         var overwrites = new List<int>();
         var referenced = new List<int>();
@@ -406,7 +425,7 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
             var preview = BuildPastePreview(start, lines, overwrites, referenced) +
                           (_backend.ReferenceWarnings.Count == 0
                               ? string.Empty
-                              : $"\n\nReference coverage is incomplete: {_backend.ReferenceWarnings.Count} 2DA file(s) could not be scanned.");
+                              : $"\n\nReference coverage is incomplete: {_backend.ReferenceWarnings.Count} reference file(s) could not be scanned.");
             var confirmed = await _prompts.ConfirmDestructiveAsync(
                 $"Paste {lines.Count} TLK rows?",
                 preview,
@@ -694,7 +713,7 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
     private void RefreshReferenceStatus()
     {
         ReferenceStatus = _backend.ReferenceWarnings.Count == 0
-            ? "2DA references indexed."
+            ? "TLK references indexed."
             : $"Reference scan skipped {_backend.ReferenceWarnings.Count} file(s); see Output.";
         foreach (var warning in _backend.ReferenceWarnings)
             _log.AppendLine($"TLK reference scan: {warning}");
@@ -757,6 +776,29 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
         NavigationStatus =
             $"Blank search is unavailable because {_backend.ReferenceWarnings.Count} reference file(s) could not be indexed.";
         return false;
+    }
+
+    private bool CanCreateThrough(int highestNewId, IReadOnlyDictionary<int, string> plannedText)
+    {
+        if (highestNewId <= _backend.MaxEntryId)
+            return true;
+        if (!CanAllocateBlank())
+            return false;
+
+        var blankId = _backend.FindFirstAvailableBlank();
+        for (var id = blankId; id < highestNewId; id++)
+        {
+            if (_backend.ContainsEntry(id) || _backend.IsReferenced(id))
+                continue;
+            if (!plannedText.TryGetValue(id, out var text) || text.Length == 0)
+            {
+                NavigationStatus =
+                    $"Use Blank row {id} before adding row {highestNewId}.";
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private void NotifySelectionState()

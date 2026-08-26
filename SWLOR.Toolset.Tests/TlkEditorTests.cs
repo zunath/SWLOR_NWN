@@ -21,7 +21,7 @@ namespace SWLOR.Toolset.Tests;
 public class TlkEditorTests
 {
     [Test]
-    public void NavigationFilteringAndSafeBlankSearchUseRawIdsAndCustomStrRefs()
+    public void NavigationFilteringAndBlankSearchUseRawIdsAndCustomStrRefs()
     {
         var backend = new MemoryBackend(
             new Dictionary<int, string> { [0] = "Alpha", [2] = "Beta", [190000] = "Alpha Two" },
@@ -101,7 +101,7 @@ public class TlkEditorTests
         {
             [10] = "one\ncontinued",
             [11] = "two"
-        });
+        }, referenced: Enumerable.Range(0, 10));
         var prompts = new StubPrompts { ConfirmDestructive = true };
         var editor = CreateEditor(backend, prompts);
 
@@ -111,23 +111,69 @@ public class TlkEditorTests
         copied.Should().NotEndWith(Environment.NewLine,
             "a trailing selected blank row must not be mistaken for a clipboard terminator");
 
-        editor.SelectId(20);
+        editor.SelectId(12);
         (await editor.PasteRowsAsync(copied)).Should().BeTrue();
-        backend.GetText(20).Should().Be("one\ncontinued");
-        backend.GetText(21).Should().Be("two");
-        backend.ContainsEntry(22).Should().BeFalse();
-        editor.Rows.Count.Should().Be(23,
+        backend.GetText(12).Should().Be("one\ncontinued");
+        backend.GetText(13).Should().Be("two");
+        backend.ContainsEntry(14).Should().BeFalse();
+        editor.Rows.Count.Should().Be(15,
             "the full pasted range remains navigable even when its final row is blank");
 
-        editor.SelectId(21);
+        editor.SelectId(13);
         (await editor.PasteRowsAsync("replacement\r\nnext\r\n")).Should().BeTrue();
-        backend.GetText(21).Should().Be("replacement");
-        backend.GetText(22).Should().Be("next");
-        prompts.DestructiveMessages.Should().Contain(message => message.Contains("21: replacement"));
+        backend.GetText(13).Should().Be("replacement");
+        backend.GetText(14).Should().Be("next");
+        prompts.DestructiveMessages.Should().Contain(message => message.Contains("13: replacement"));
 
         editor.Undo();
-        backend.GetText(21).Should().Be("two");
-        backend.ContainsEntry(22).Should().BeFalse();
+        backend.GetText(13).Should().Be("two");
+        backend.ContainsEntry(14).Should().BeFalse();
+    }
+
+    [Test]
+    public async Task TypingAndPastingCannotSkipAnEarlierBlankRow()
+    {
+        var backend = new MemoryBackend(new Dictionary<int, string>
+        {
+            [0] = "zero",
+            [2] = "two"
+        });
+        var editor = CreateEditor(backend);
+
+        editor.SelectId(3);
+        editor.SelectedText = "append";
+
+        backend.ContainsEntry(3).Should().BeFalse();
+        editor.SelectedText.Should().BeEmpty();
+        editor.NavigationStatus.Should().Contain("Blank row 1");
+        (await editor.PasteRowsAsync("append")).Should().BeFalse();
+
+        editor.SelectId(1);
+        editor.SelectedText = "one";
+        editor.SelectId(3);
+        editor.SelectedText = "three";
+
+        backend.GetText(1).Should().Be("one");
+        backend.GetText(3).Should().Be("three");
+    }
+
+    [Test]
+    public async Task PasteCanAppendWhenItFillsEveryEarlierBlankRow()
+    {
+        var backend = new MemoryBackend(new Dictionary<int, string>
+        {
+            [0] = "zero",
+            [3] = "old three"
+        });
+        var editor = CreateEditor(backend, new StubPrompts { ConfirmDestructive = true });
+        editor.SelectId(1);
+
+        (await editor.PasteRowsAsync("one\ntwo\nnew three\nfour")).Should().BeTrue();
+
+        backend.GetText(1).Should().Be("one");
+        backend.GetText(2).Should().Be("two");
+        backend.GetText(3).Should().Be("new three");
+        backend.GetText(4).Should().Be("four");
     }
 
     [Test]
@@ -141,6 +187,12 @@ public class TlkEditorTests
         editor.FindFirstBlankCommand.Execute(null);
 
         editor.SelectedId.Should().Be(0);
+        editor.NavigationStatus.Should().Contain("unavailable");
+
+        editor.SelectId(1);
+        editor.SelectedText = "new row";
+
+        backend.ContainsEntry(1).Should().BeFalse();
         editor.NavigationStatus.Should().Contain("unavailable");
     }
 

@@ -598,6 +598,7 @@ namespace SWLOR.Toolset.Editors
 
         private void RefreshOpenTlkLabels()
         {
+            ReloadOpenGameResources();
             foreach (var editor in _openEditors.Values)
                 editor.RefreshTlkLabels();
             foreach (var editor in _openAreaEditors.Values)

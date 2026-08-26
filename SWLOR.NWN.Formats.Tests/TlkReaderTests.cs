@@ -77,4 +77,24 @@ public class TlkReaderTests
         Action wrongVersion = () => TlkReader.Read(bytes);
         wrongVersion.Should().Throw<NwnFormatException>();
     }
+
+    [Test]
+    public void SingleByteTextCannotExceedTheDecodedUtf16AllocationBudget()
+    {
+        var encodedLength = checked((int)(
+            (TlkFormatLimits.MaximumDecodedAllocationBytes -
+             TlkFormatLimits.EstimatedManagedBytesPerEntry) / sizeof(char) + 1));
+        var bytes = new byte[60 + encodedLength];
+        "TLK "u8.CopyTo(bytes);
+        "V3.0"u8.CopyTo(bytes.AsSpan(4));
+        BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(12), 1);
+        BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(16), 60);
+        BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(20), 1);
+        BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(48), 0);
+        BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(52), (uint)encodedLength);
+
+        Action read = () => TlkReader.Read(bytes);
+
+        read.Should().Throw<NwnFormatException>().WithMessage("*allocation budget*");
+    }
 }

@@ -39,6 +39,7 @@ public static class TlkWriter
         var encodedEntries = new SortedDictionary<int, byte[]>();
         var maximumId = -1;
         long totalTextLength = 0;
+        long totalDecodedTextBytes = 0;
 
         foreach (var (id, text) in entries)
         {
@@ -74,12 +75,13 @@ public static class TlkWriter
             }
 
             totalTextLength = checked(totalTextLength + encodedText.Length);
+            totalDecodedTextBytes = checked(totalDecodedTextBytes + (long)text.Length * sizeof(char));
             maximumId = Math.Max(maximumId, id);
         }
 
         var entryCount = maximumId + 1;
         var estimatedDecodedAllocation = checked(
-            (long)entryCount * TlkFormatLimits.EstimatedManagedBytesPerEntry + totalTextLength);
+            (long)entryCount * TlkFormatLimits.EstimatedManagedBytesPerEntry + totalDecodedTextBytes);
         if (estimatedDecodedAllocation > TlkFormatLimits.MaximumDecodedAllocationBytes)
         {
             throw new ArgumentException(

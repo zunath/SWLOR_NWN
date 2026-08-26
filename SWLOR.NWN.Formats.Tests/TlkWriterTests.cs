@@ -89,7 +89,7 @@ public class TlkWriterTests
 
         Action exceedDecodedBudget = () => TlkWriter.Write(0, new Dictionary<int, string>
         {
-            [TlkFormatLimits.MaximumEntryId] = new string('x', 65)
+            [TlkFormatLimits.MaximumEntryId] = new string('x', 33)
         });
         exceedDecodedBudget.Should().Throw<ArgumentException>()
             .WithMessage("*decoded metadata and text*");

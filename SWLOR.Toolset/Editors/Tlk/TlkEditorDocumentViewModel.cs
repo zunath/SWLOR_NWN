@@ -347,18 +347,22 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
     }
 
     [RelayCommand]
-    private Task AddRow() => RunBusyOperationAsync(AddRowCoreAsync);
+    private async Task AddRow()
+    {
+        if (await RunBusyOperationAsync(AddRowCoreAsync).ConfigureAwait(true))
+            EntryEditRequested?.Invoke();
+    }
 
-    private async Task AddRowCoreAsync()
+    private async Task<bool> AddRowCoreAsync()
     {
         if (!await TryRefreshReferencesAsync().ConfigureAwait(true))
-            return;
+            return false;
         if (!CanAllocateBlank())
-            return;
+            return false;
         var id = _backend.FindFirstAvailableBlank();
         SelectId(id, clearFilter: true);
         NavigationStatus = $"Row {id} is ready for a new TLK entry.";
-        EntryEditRequested?.Invoke();
+        return true;
     }
 
     [RelayCommand]

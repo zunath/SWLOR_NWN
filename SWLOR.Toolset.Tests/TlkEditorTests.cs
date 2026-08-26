@@ -31,7 +31,12 @@ public class TlkEditorTests
             referenced: new[] { 1 });
         var editor = CreateEditor(backend);
         var editRequests = 0;
-        editor.EntryEditRequested += () => editRequests++;
+        bool? wasBusyWhenEditRequested = null;
+        editor.EntryEditRequested += () =>
+        {
+            editRequests++;
+            wasBusyWhenEditRequested = editor.IsBusy;
+        };
 
         editor.Rows.Count.Should().Be(190001);
         editor.GoToValue = (TlkService.CustomTlkBase + 2).ToString();
@@ -68,6 +73,7 @@ public class TlkEditorTests
         editor.NavigationStatus.Should().Contain("ready for a new TLK entry");
         editor.RemoveRowCommand.CanExecute(null).Should().BeFalse();
         editRequests.Should().Be(1);
+        wasBusyWhenEditRequested.Should().BeFalse("the text editor must be enabled before focus is requested");
     }
 
     [Test]

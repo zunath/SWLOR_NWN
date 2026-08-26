@@ -32,6 +32,26 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void MaxEntryIdTracksSparseAddsAndRemovals()
+        {
+            var document = TlkDocument.Parse(
+                """{ "language": 0, "entries": [ { "id": 2, "text": "two" }, { "id": 8, "text": "eight" } ] }""");
+
+            document.MaxEntryId.Should().Be(8);
+            document.SetText(5, "five");
+            document.MaxEntryId.Should().Be(8);
+            document.SetText(12, "twelve");
+            document.MaxEntryId.Should().Be(12);
+            document.Clear(8);
+            document.MaxEntryId.Should().Be(12);
+            document.Clear(12);
+            document.MaxEntryId.Should().Be(5);
+            document.Clear(5);
+            document.Clear(2);
+            document.MaxEntryId.Should().Be(-1);
+        }
+
+        [Test]
         public void Parse_RejectsNegativeAndDuplicateEntryIds()
         {
             Action negative = () => TlkDocument.Parse(

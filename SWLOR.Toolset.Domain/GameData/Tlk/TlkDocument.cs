@@ -29,11 +29,13 @@ namespace SWLOR.Toolset.Domain.GameData.Tlk
 
         private readonly SortedDictionary<int, string> _entries;
         private TlkEntry[]? _entrySnapshot;
+        private int _maxEntryId;
 
         private TlkDocument(int language, SortedDictionary<int, string> entries)
         {
             Language = language;
             _entries = entries;
+            _maxEntryId = entries.Count == 0 ? -1 : entries.Keys.Last();
         }
 
         public int Language { get; }
@@ -41,7 +43,7 @@ namespace SWLOR.Toolset.Domain.GameData.Tlk
         public int Count => _entries.Count;
 
         /// <summary>The greatest populated row id, or -1 when the document has no entries.</summary>
-        public int MaxEntryId => _entries.Count == 0 ? -1 : Entries[^1].Id;
+        public int MaxEntryId => _maxEntryId;
 
         /// <summary>A stable, id-sorted snapshot of the populated rows.</summary>
         public IReadOnlyList<TlkEntry> Entries =>
@@ -130,6 +132,8 @@ namespace SWLOR.Toolset.Domain.GameData.Tlk
                 return;
 
             _entries[entryId] = text;
+            if (entryId > _maxEntryId)
+                _maxEntryId = entryId;
             _entrySnapshot = null;
         }
 
@@ -139,7 +143,11 @@ namespace SWLOR.Toolset.Domain.GameData.Tlk
             ValidateEntryId(entryId);
             var removed = _entries.Remove(entryId);
             if (removed)
+            {
+                if (entryId == _maxEntryId)
+                    _maxEntryId = _entries.Count == 0 ? -1 : _entries.Keys.Last();
                 _entrySnapshot = null;
+            }
             return removed;
         }
 

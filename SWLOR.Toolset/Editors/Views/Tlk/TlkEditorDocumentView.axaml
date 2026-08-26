@@ -106,7 +106,7 @@
 
       <Grid Grid.Column="2" RowDefinitions="Auto,*">
         <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,6">
-          <TextBlock Grid.Column="0" Text="References (2DA first)" FontWeight="SemiBold" />
+          <TextBlock Grid.Column="0" Text="References" FontWeight="SemiBold" />
           <TextBlock Grid.Column="2" Text="{Binding ReferenceStatus}" Classes="dim"
                      FontSize="11" TextTrimming="CharacterEllipsis" />
         </Grid>

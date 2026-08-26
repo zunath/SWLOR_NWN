@@ -189,7 +189,7 @@ public class AIModelTests
     }
 
     [Test]
-    public void BolsterAttackAIScore_SuppressesEachActiveBuffRank()
+    public void BolsterAttackAIScore_UsesActiveRankStat()
     {
         const uint self = 100;
         const uint target = 200;
@@ -216,6 +216,9 @@ public class AIModelTests
         {
             var context = CreateContext(self: self);
 
+            // A different damage-dealt buff must not be mistaken for Bolster Attack.
+            tracker.Add(new AlphaRhythm1BeastStatusEffect());
+
             foreach (var (feat, statusEffect, abilityLevel) in ranks)
             {
                 var score = abilities[feat].AIScore;
@@ -226,6 +229,11 @@ public class AIModelTests
                 score(context).Should().Be(0);
                 tracker.Remove(statusEffect);
             }
+
+            // A stronger active rank also makes every weaker Bolster rank redundant.
+            tracker.Add(ranks[2].StatusEffect);
+            foreach (var (feat, _, _) in ranks)
+                abilities[feat].AIScore!(context).Should().Be(0);
         }
         finally
         {

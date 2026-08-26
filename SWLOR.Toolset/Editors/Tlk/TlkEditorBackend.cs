@@ -91,6 +91,7 @@ public sealed class TlkEditorBackend : ITlkEditorBackend
         _document = snapshot.Document;
         _jsonFingerprint = snapshot.JsonFingerprint;
         _binaryFingerprint = snapshot.BinaryFingerprint;
+        _acceptedBinary = LoadAcceptedBinary(_document, BinaryPath);
         _references = TlkReferenceIndex.Build(source.TwoDaDirectory, source.RepositoryRoot);
     }
 
@@ -246,7 +247,34 @@ public sealed class TlkEditorBackend : ITlkEditorBackend
 
     private static TlkFile VerifyDocumentBinaryPair(TlkDocument document, string binaryPath)
     {
-        var binary = TlkReader.Read(binaryPath);
+        return VerifyDocumentBinary(document, TlkReader.Read(binaryPath));
+    }
+
+    private static TlkFile CreateVerifiedBinary(TlkDocument document)
+    {
+        var entries = document.Entries.ToDictionary(entry => entry.Id, entry => entry.Text);
+        return VerifyDocumentBinary(document, TlkReader.Read(TlkWriter.Write((uint)document.Language, entries)));
+    }
+
+    private static TlkFile LoadAcceptedBinary(TlkDocument document, string binaryPath)
+    {
+        try
+        {
+            if (File.Exists(binaryPath))
+                return VerifyDocumentBinaryPair(document, binaryPath);
+        }
+        catch (Exception ex) when (
+            ex is IOException or UnauthorizedAccessException or InvalidDataException or FormatException)
+        {
+            // JSON is the editable source of truth. A missing, stale, or malformed generated file
+            // is repaired on save, while the in-memory generation below keeps open labels current.
+        }
+
+        return CreateVerifiedBinary(document);
+    }
+
+    private static TlkFile VerifyDocumentBinary(TlkDocument document, TlkFile binary)
+    {
         if (binary.LanguageId != (uint)document.Language)
             throw new InvalidDataException("Generated TLK language does not match the JSON source.");
 

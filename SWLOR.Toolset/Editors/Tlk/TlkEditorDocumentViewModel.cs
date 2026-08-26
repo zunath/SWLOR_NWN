@@ -590,6 +590,8 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
         {
             if (!await TryRefreshReferencesAsync().ConfigureAwait(true))
                 return false;
+            if (!RevalidateAppendedEntries())
+                return false;
             if (!await ConfirmNewlyReferencedClearsAsync().ConfigureAwait(true))
                 return false;
             if (!await ConfirmNewlyReferencedWritesAsync().ConfigureAwait(true))
@@ -1023,9 +1025,28 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
         _confirmedReferencedWrites.Clear();
     }
 
-    private bool CanCreateThrough(int highestNewId, IReadOnlyDictionary<int, string> plannedText)
+    private bool RevalidateAppendedEntries()
     {
-        if (highestNewId <= _backend.MaxEntryId)
+        var savedMaximum = _savedEntryIds.Count == 0 ? -1 : _savedEntryIds.Max();
+        var highestNewId = _backend.Entries
+            .Where(entry => entry.Id > savedMaximum && !_savedEntryIds.Contains(entry.Id))
+            .Select(entry => (int?)entry.Id)
+            .Max();
+        if (!highestNewId.HasValue)
+            return true;
+
+        return CanCreateThrough(
+            highestNewId.Value,
+            new Dictionary<int, string>(),
+            savedMaximum);
+    }
+
+    private bool CanCreateThrough(
+        int highestNewId,
+        IReadOnlyDictionary<int, string> plannedText,
+        int? existingMaximum = null)
+    {
+        if (highestNewId <= (existingMaximum ?? _backend.MaxEntryId))
             return true;
         if (!CanAllocateBlank())
             return false;

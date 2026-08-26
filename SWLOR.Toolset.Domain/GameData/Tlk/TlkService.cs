@@ -17,7 +17,7 @@ namespace SWLOR.Toolset.Domain.GameData.Tlk
         private TlkFile? _selectedCustomBinary;
         private TlkFile? _publishedRepositoryBinary;
 
-        /// <summary>Raised after the module's selected custom TLK has been atomically replaced.</summary>
+        /// <summary>Raised after either custom TLK source has been atomically replaced.</summary>
         public event Action? CustomTlkReloaded;
 
         public TlkService(TlkJsonFile customTlk, TlkFile? baseTlk = null)
@@ -130,8 +130,9 @@ namespace SWLOR.Toolset.Domain.GameData.Tlk
         }
 
         /// <summary>
-        /// Parses a packed custom TLK away from readers, then publishes it in one pointer swap.
-        /// Passing null restores the repository JSON custom table used at startup.
+        /// Parses a packed module-selected TLK away from readers, then publishes it in one pointer
+        /// swap. Passing null removes that selected layer. A repository generation explicitly
+        /// published by the editor remains authoritative over this module-content layer.
         /// </summary>
         public void ReloadCustomTlk(string? binaryTlkPath)
         {
@@ -143,9 +144,9 @@ namespace SWLOR.Toolset.Domain.GameData.Tlk
         }
 
         /// <summary>
-        /// Publishes an already parsed and verified custom TLK generation. Editors use this form so
-        /// a later file replacement cannot make runtime labels diverge from the document generation
-        /// the editor accepted.
+        /// Publishes an already parsed and verified repository TLK generation. Editors use this
+        /// form so later module-content reloads or file replacements cannot make runtime labels
+        /// diverge from the repository document generation the editor accepted.
         /// </summary>
         public void PublishCustomTlk(TlkFile customTlk)
         {

@@ -570,6 +570,18 @@ namespace SWLOR.Toolset.Editors
                     (Tlk.ITlkEditorBackend)new Tlk.TlkEditorBackend(_tlkEditorSource, _tlkService))
                     .ConfigureAwait(true);
 
+                try
+                {
+                    backend.Publish();
+                    RefreshOpenTlkLabels();
+                }
+                catch (Exception ex)
+                {
+                    _log.AppendLine(
+                        "TLK Editor opened, but publishing its repository generation failed: " +
+                        ex.GetBaseException().Message);
+                }
+
                 var editor = new Tlk.TlkEditorDocumentViewModel(
                     backend,
                     _log,

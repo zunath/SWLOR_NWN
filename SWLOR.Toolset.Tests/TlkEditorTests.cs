@@ -176,6 +176,32 @@ public class TlkEditorTests
     }
 
     [Test]
+    public async Task SaveRevalidatesAppendedRowsAfterAnEarlierReferenceIsRemoved()
+    {
+        var backend = new MemoryBackend(
+            new Dictionary<int, string>
+            {
+                [0] = "zero",
+                [2] = "two"
+            },
+            referenced: new[] { 1 })
+        {
+            ReferencesAfterRefresh = Array.Empty<int>()
+        };
+        var editor = CreateEditor(backend);
+        editor.SelectId(3);
+
+        editor.SelectedText = "three";
+        backend.GetText(3).Should().Be("three",
+            "the cached reference initially makes the earlier blank unavailable");
+
+        (await editor.TrySaveAsync()).Should().BeFalse();
+
+        backend.Saved.Should().BeFalse();
+        editor.NavigationStatus.Should().Contain("Blank row 1");
+    }
+
+    [Test]
     public async Task PasteCanAppendWhenItFillsEveryEarlierBlankRow()
     {
         var backend = new MemoryBackend(new Dictionary<int, string>
@@ -576,6 +602,49 @@ public class TlkEditorTests
     }
 
     [Test]
+    public async Task OpeningTheEditorPublishesTheCurrentRepositoryGeneration()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "swlor-tlk-open-publish-tests", Guid.NewGuid().ToString("N"));
+        var tlkDirectory = Path.Combine(root, "sw_tlk");
+        var twoDaDirectory = Path.Combine(root, "sw_2da");
+        Directory.CreateDirectory(tlkDirectory);
+        Directory.CreateDirectory(twoDaDirectory);
+        var jsonPath = Path.Combine(tlkDirectory, "sw_tlk.tlk.json");
+        var binaryPath = Path.Combine(tlkDirectory, "sw_tlk.tlk");
+        var oldPath = Path.Combine(tlkDirectory, "old.tlk");
+        WritePair(jsonPath, binaryPath, "new repository generation");
+        File.WriteAllBytes(oldPath,
+            TlkWriter.Write(0, new Dictionary<int, string> { [0] = "old published generation" }));
+
+        try
+        {
+            var tlk = new TlkService(TlkJsonFile.Parse(
+                "{\"language\":0,\"entries\":[{\"id\":0,\"text\":\"startup\"}]}"));
+            tlk.PublishCustomTlk(TlkReader.Read(oldPath));
+            var log = new OutputLogService();
+            var workspace = new WorkspaceContext(
+                path => new SWLOR.Toolset.Domain.Workspace.ModuleWorkspace(path),
+                log);
+            var service = new EditorService(
+                workspace,
+                new LookupOptionProvider(workspace),
+                log,
+                new ToolsetDockFactory(null!, null!, null!, null!, null!, null!, null!, null!, null!),
+                new StubPrompts(),
+                tlkService: tlk,
+                tlkEditorSource: new TlkEditorSource(jsonPath, binaryPath, twoDaDirectory));
+
+            await service.OpenTlkEditorAsync();
+
+            tlk.GetCustomText(0).Should().Be("new repository generation");
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Test]
     public void ProductionBackendWritesAndVerifiesTheRepositoryJsonBinaryPair()
     {
         var root = Path.Combine(Path.GetTempPath(), "swlor-tlk-editor-tests", Guid.NewGuid().ToString("N"));
@@ -700,6 +769,42 @@ public class TlkEditorTests
             backend.GetText(0).Should().Be("accepted A");
             service.GetCustomText(0).Should().Be("accepted A",
                 "publication must use the verified snapshot rather than rereading the changed path");
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Test]
+    public void ReopenedProductionBackendCanReplaceAnOlderPublishedRepositoryGeneration()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "swlor-tlk-reopen-publish-tests", Guid.NewGuid().ToString("N"));
+        var tlkDirectory = Path.Combine(root, "sw_tlk");
+        var twoDaDirectory = Path.Combine(root, "sw_2da");
+        Directory.CreateDirectory(tlkDirectory);
+        Directory.CreateDirectory(twoDaDirectory);
+        var jsonPath = Path.Combine(tlkDirectory, "sw_tlk.tlk.json");
+        var binaryPath = Path.Combine(tlkDirectory, "sw_tlk.tlk");
+        var service = new TlkService(TlkJsonFile.Parse(
+            "{\"language\":0,\"entries\":[{\"id\":0,\"text\":\"startup\"}]}"));
+
+        try
+        {
+            WritePair(jsonPath, binaryPath, "old repository generation");
+            var first = new TlkEditorBackend(
+                new TlkEditorSource(jsonPath, binaryPath, twoDaDirectory),
+                service);
+            first.Publish();
+            service.GetCustomText(0).Should().Be("old repository generation");
+
+            WritePair(jsonPath, binaryPath, "new repository generation");
+            var reopened = new TlkEditorBackend(
+                new TlkEditorSource(jsonPath, binaryPath, twoDaDirectory),
+                service);
+            reopened.Publish();
+
+            service.GetCustomText(0).Should().Be("new repository generation");
         }
         finally
         {

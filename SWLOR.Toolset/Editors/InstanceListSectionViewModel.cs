@@ -252,6 +252,13 @@ namespace SWLOR.Toolset.Editors
             SoundEditor?.RefreshPaletteChoices();
         }
 
+        /// <summary>Refreshes TLK-backed choices in the selected specialized placement editor.</summary>
+        public void RefreshTlkLabels()
+        {
+            WaypointEditor?.RefreshTlkLabels();
+            SoundEditor?.RefreshTlkLabels();
+        }
+
         /// <summary>
         /// Rebinds both the currently selected waypoint and future selections to the latest
         /// module transition-destination catalog.

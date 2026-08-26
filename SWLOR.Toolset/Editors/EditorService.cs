@@ -622,6 +622,12 @@ namespace SWLOR.Toolset.Editors
                 editor.RefreshTlkLabels();
             foreach (var editor in _openAreaEditors.Values)
                 editor.RefreshTlkLabels();
+            foreach (var editor in _openTriggerEditors.Values)
+                editor.Editor.RefreshTlkLabels();
+            foreach (var editor in _openWaypointEditors.Values)
+                editor.Editor.RefreshTlkLabels();
+            foreach (var editor in _openSoundEditors.Values)
+                editor.Editor.RefreshTlkLabels();
         }
 
         private Action<uint>? TlkRowOpener =>

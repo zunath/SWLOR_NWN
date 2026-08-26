@@ -2896,6 +2896,8 @@ namespace SWLOR.Toolset.Editors
                 field.RefreshFromDocument();
             foreach (var field in fields.OfType<DropdownFieldViewModel>())
                 field.RefreshOptions(_lookups.GetOptions(field.Descriptor.LookupKey));
+            foreach (var section in Sections)
+                section.RefreshTlkLabels();
         }
 
         private void RefreshInstanceSections()

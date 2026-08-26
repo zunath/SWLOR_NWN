@@ -13,6 +13,9 @@ public static class TlkFormatLimits
     /// <summary>Conservative managed-allocation estimate charged for every entry record.</summary>
     public const int EstimatedManagedBytesPerEntry = 64;
 
+    /// <summary>Conservative object/header charge for each separately decoded managed string.</summary>
+    public const int EstimatedManagedStringOverheadBytes = 24;
+
     /// <summary>
     /// Greatest number of entry records accepted by the TLK reader and writer. One record's worth
     /// of the allocation budget remains for the non-empty final row that makes this count necessary.

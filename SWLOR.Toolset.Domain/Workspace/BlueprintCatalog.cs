@@ -48,6 +48,7 @@ namespace SWLOR.Toolset.Domain.Workspace
         private readonly ModuleWorkspace _workspace;
         private readonly Func<uint, string?>? _resolveStrRef;
         private readonly object _snapshotLock = new();
+        private readonly object _tlkLabelLock = new();
         private readonly ConcurrentDictionary<string, CatalogEntry> _indexedEntries =
             new(StringComparer.OrdinalIgnoreCase);
         private readonly ConcurrentDictionary<string, CatalogNameSource> _nameSources =
@@ -191,8 +192,25 @@ namespace SWLOR.Toolset.Domain.Workspace
                     return;
 
                 var entry = BuildEntry(item.Type, item.ResRef);
-                if (entry != null && !_removed.ContainsKey(key))
-                    _indexedEntries.TryAdd(key, entry);
+                if (entry != null)
+                {
+                    lock (_tlkLabelLock)
+                    {
+                        if (_removed.ContainsKey(key))
+                        {
+                            _nameSources.TryRemove(key, out _);
+                        }
+                        else
+                        {
+                            // A TLK publication can race this initial build between parsing and
+                            // insertion. Resolve once more while sharing the refresh lock so either
+                            // this insertion or RefreshTlkLabels observes the new generation.
+                            if (_nameSources.TryGetValue(key, out var source))
+                                entry = entry with { Name = ResolveName(source) };
+                            _indexedEntries.TryAdd(key, entry);
+                        }
+                    }
+                }
                 var processed = Interlocked.Increment(ref _processedCount);
                 if (processed % publishInterval == 0)
                     PublishSnapshot();
@@ -230,10 +248,15 @@ namespace SWLOR.Toolset.Domain.Workspace
                 return null;
             }
 
-            if (_indexedEntries.TryGetValue(key, out var existing) && existing == entry)
-                return existing;
+            lock (_tlkLabelLock)
+            {
+                if (_nameSources.TryGetValue(key, out var source))
+                    entry = entry with { Name = ResolveName(source) };
+                if (_indexedEntries.TryGetValue(key, out var existing) && existing == entry)
+                    return existing;
 
-            _indexedEntries[key] = entry;
+                _indexedEntries[key] = entry;
+            }
             PublishSnapshot();
             changed = true;
 
@@ -246,16 +269,17 @@ namespace SWLOR.Toolset.Domain.Workspace
         public bool RemoveEntry(ResourceType type, string resRef)
         {
             var key = IdentityKey(type, resRef);
-            _removed[key] = true;
-            _nameSources.TryRemove(key, out _);
-
-            if (_indexedEntries.TryRemove(key, out _))
+            bool removed;
+            lock (_tlkLabelLock)
             {
-                PublishSnapshot();
-                return true;
+                _removed[key] = true;
+                _nameSources.TryRemove(key, out _);
+                removed = _indexedEntries.TryRemove(key, out _);
             }
 
-            return false;
+            if (removed)
+                PublishSnapshot();
+            return removed;
         }
 
         /// <summary>
@@ -389,17 +413,20 @@ namespace SWLOR.Toolset.Domain.Workspace
         public bool RefreshTlkLabels()
         {
             var changed = false;
-            foreach (var (key, source) in _nameSources)
+            lock (_tlkLabelLock)
             {
-                if (!_indexedEntries.TryGetValue(key, out var entry))
-                    continue;
+                foreach (var (key, source) in _nameSources)
+                {
+                    if (!_indexedEntries.TryGetValue(key, out var entry))
+                        continue;
 
-                var name = ResolveName(source);
-                if (string.Equals(name, entry.Name, StringComparison.Ordinal))
-                    continue;
+                    var name = ResolveName(source);
+                    if (string.Equals(name, entry.Name, StringComparison.Ordinal))
+                        continue;
 
-                _indexedEntries[key] = entry with { Name = name };
-                changed = true;
+                    _indexedEntries[key] = entry with { Name = name };
+                    changed = true;
+                }
             }
 
             if (changed)

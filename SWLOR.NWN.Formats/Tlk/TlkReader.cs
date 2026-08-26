@@ -73,6 +73,13 @@ public static class TlkReader
                 ? string.Empty
                 : reader.ReadAscii(
                     entryOffset + 4, NwnResRef.MaxLength, "TLK sound ResRef", trimNull: true);
+            if ((flags & SoundPresent) != 0)
+            {
+                allocationBudget.Reserve(
+                    checked(TlkFormatLimits.EstimatedManagedStringOverheadBytes +
+                            (long)soundResRef.Length * sizeof(char)),
+                    $"TLK sound ResRef {index}");
+            }
             var relativeTextOffset = reader.ReadUInt32(entryOffset + 28);
             var textLength = reader.ReadUInt32(entryOffset + 32);
             var soundLength = (flags & SoundLengthPresent) == 0 ? 0f : reader.ReadSingle(entryOffset + 36);

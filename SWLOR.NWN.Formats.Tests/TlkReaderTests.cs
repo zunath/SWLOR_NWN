@@ -97,4 +97,27 @@ public class TlkReaderTests
 
         read.Should().Throw<NwnFormatException>().WithMessage("*allocation budget*");
     }
+
+    [Test]
+    public void SoundResRefsAreChargedAgainstTheDecodedAllocationBudget()
+    {
+        var count = TlkFormatLimits.MaximumEntryCount;
+        var bytes = new byte[checked(20 + count * 40)];
+        "TLK "u8.CopyTo(bytes);
+        "V3.0"u8.CopyTo(bytes.AsSpan(4));
+        BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(12), (uint)count);
+        BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(16), (uint)bytes.Length);
+
+        for (var index = 0; index < 2; index++)
+        {
+            var entryOffset = 20 + index * 40;
+            BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(entryOffset), 0x0002);
+            Encoding.ASCII.GetBytes("sixteen_char_ref").CopyTo(bytes, entryOffset + 4);
+        }
+
+        Action read = () => TlkReader.Read(bytes);
+
+        read.Should().Throw<NwnFormatException>()
+            .WithMessage("*allocation budget*TLK sound ResRef*");
+    }
 }

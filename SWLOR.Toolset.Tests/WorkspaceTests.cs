@@ -272,6 +272,53 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void BlueprintCatalog_TlkRefreshRacingInitialInsertionUsesTheNewLabel()
+        {
+            using var synthetic = SyntheticModule.CreateFromRealFiles(ModuleDirectory);
+            var workspace = new ModuleWorkspace(synthetic.Path);
+            var placeable = UtpDocument.Load(
+                workspace.GetResourcePath(ResourceType.Utp, "zep_shrine"));
+            var targetStrRef = placeable.LocName.StrRef;
+            targetStrRef.Should().NotBeNull();
+            using var firstResolutionEntered = new ManualResetEventSlim();
+            using var releaseFirstResolution = new ManualResetEventSlim();
+            var label = "Old Label";
+            var blockTargetOnce = 1;
+
+            string? Resolve(uint strRef)
+            {
+                if (strRef != targetStrRef)
+                    return null;
+
+                var captured = Volatile.Read(ref label);
+                if (Interlocked.Exchange(ref blockTargetOnce, 0) == 1)
+                {
+                    firstResolutionEntered.Set();
+                    releaseFirstResolution.Wait();
+                }
+
+                return captured;
+            }
+
+            var catalog = new BlueprintCatalog(workspace, resolveStrRef: Resolve);
+            try
+            {
+                firstResolutionEntered.Wait(TimeSpan.FromSeconds(10)).Should().BeTrue();
+                Volatile.Write(ref label, "New Label");
+                catalog.RefreshTlkLabels().Should().BeFalse(
+                    "the blocked entry has resolved but has not published its name source or entry yet");
+            }
+            finally
+            {
+                releaseFirstResolution.Set();
+            }
+            catalog.BuildTask.GetAwaiter().GetResult();
+
+            catalog.TryGetEntry(ResourceType.Utp, "zep_shrine", out var entry).Should().BeTrue();
+            entry.Name.Should().Be("New Label");
+        }
+
+        [Test]
         public void BlueprintCatalog_Progress_ReachesTotalCountOnCompletion()
         {
             using var synthetic = SyntheticModule.CreateFromRealFiles(ModuleDirectory);

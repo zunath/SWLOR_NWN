@@ -55,9 +55,9 @@ namespace SWLOR.Toolset.Tests
 
             revision = 1;
             door.RefreshPaletteChoices();
-            trigger.RefreshPaletteChoices();
-            waypoint.RefreshPaletteChoices();
-            sound.RefreshPaletteChoices();
+            trigger.RefreshTlkLabels();
+            waypoint.RefreshTlkLabels();
+            sound.RefreshTlkLabels();
 
             CategoryDisplay(door.BasicRows).Should().Be("Category 1");
             CategoryDisplay(trigger.BasicRows).Should().Be("Category 1");

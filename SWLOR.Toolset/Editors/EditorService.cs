@@ -369,6 +369,7 @@ namespace SWLOR.Toolset.Editors
             _workspaceContext.TagIndexInvalidated += OnTagIndexInvalidated;
             _workspaceContext.PlacementIndexInvalidated += ReloadPlacementSources;
             _workspaceContext.CatalogBuildCompleted += RefreshObjectSourceAreaNames;
+            _workspaceContext.CatalogLabelsChanged += RefreshObjectSourceAreaNames;
 
             // Opening another module invalidates every module-derived picker; saving a blueprint
             // invalidates only the ones built out of the module's own content.
@@ -614,6 +615,9 @@ namespace SWLOR.Toolset.Editors
         private void RefreshOpenTlkLabels()
         {
             ReloadOpenGameResources();
+            _workspaceContext.RefreshTlkLabels();
+            _categories?.RefreshTlkLabels();
+            _factory.RefreshTlkLabels();
             foreach (var editor in _openEditors.Values)
                 editor.RefreshTlkLabels();
             foreach (var editor in _openAreaEditors.Values)

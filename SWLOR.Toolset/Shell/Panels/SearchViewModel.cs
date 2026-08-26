@@ -42,6 +42,7 @@ namespace SWLOR.Toolset.Shell.Panels
             Id = "Search";
             Title = "Search";
             _workspaceContext.CatalogEntriesChanged += (_, _) => Refresh();
+            _workspaceContext.CatalogLabelsChanged += Refresh;
         }
 
         /// <summary>

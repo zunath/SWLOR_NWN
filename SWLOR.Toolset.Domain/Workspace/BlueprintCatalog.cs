@@ -50,6 +50,8 @@ namespace SWLOR.Toolset.Domain.Workspace
         private readonly object _snapshotLock = new();
         private readonly ConcurrentDictionary<string, CatalogEntry> _indexedEntries =
             new(StringComparer.OrdinalIgnoreCase);
+        private readonly ConcurrentDictionary<string, CatalogNameSource> _nameSources =
+            new(StringComparer.OrdinalIgnoreCase);
         private IReadOnlyList<CatalogEntry> _entries = Array.Empty<CatalogEntry>();
         private bool _snapshotStale;
         private int _processedCount;
@@ -245,6 +247,7 @@ namespace SWLOR.Toolset.Domain.Workspace
         {
             var key = IdentityKey(type, resRef);
             _removed[key] = true;
+            _nameSources.TryRemove(key, out _);
 
             if (_indexedEntries.TryRemove(key, out _))
             {
@@ -276,11 +279,13 @@ namespace SWLOR.Toolset.Domain.Workspace
         private CatalogEntry? BuildEntry(ResourceType type, string resRef)
         {
             var path = _workspace.GetResourcePath(type, resRef);
+            var key = IdentityKey(type, resRef);
 
             try
             {
                 var bytes = File.ReadAllBytes(path);
                 var metadata = ExtractMetadata(type, bytes);
+                _nameSources[key] = metadata.NameSource;
                 return new CatalogEntry(
                     type,
                     resRef,
@@ -291,14 +296,17 @@ namespace SWLOR.Toolset.Domain.Workspace
             }
             catch (FileNotFoundException)
             {
+                _nameSources.TryRemove(key, out _);
                 return null;
             }
             catch (DirectoryNotFoundException)
             {
+                _nameSources.TryRemove(key, out _);
                 return null;
             }
             catch (Exception)
             {
+                _nameSources.TryRemove(key, out _);
                 // A file that fails to parse still gets an entry (resref/path are known from the
                 // directory listing) - just without a Name/Tag. The corpus round-trip gate is the
                 // place that should catch a genuinely malformed file; this index tolerates it.
@@ -306,7 +314,7 @@ namespace SWLOR.Toolset.Domain.Workspace
             }
         }
 
-        private (string? Name, string? Tag, int? BaseItem) ExtractMetadata(
+        private EntryMetadata ExtractMetadata(
             ResourceType type,
             byte[] bytes)
         {
@@ -315,61 +323,104 @@ namespace SWLOR.Toolset.Domain.Workspace
                 case ResourceType.Area:
                 {
                     var doc = AreDocument.Parse(bytes);
-                    return (ResolveLocString(doc.Name), doc.Tag, null);
+                    var name = CaptureName(doc.Name);
+                    return new EntryMetadata(ResolveName(name), doc.Tag, null, new CatalogNameSource(name));
                 }
                 case ResourceType.Utc:
                 {
                     var doc = UtcDocument.Parse(bytes);
-                    return (JoinName(
-                        ResolveLocString(doc.FirstName),
-                        ResolveLocString(doc.LastName)), doc.Tag, null);
+                    var firstName = CaptureName(doc.FirstName);
+                    var lastName = CaptureName(doc.LastName);
+                    var nameSource = new CatalogNameSource(firstName, lastName);
+                    return new EntryMetadata(ResolveName(nameSource), doc.Tag, null, nameSource);
                 }
                 case ResourceType.Uti:
                 {
                     var doc = UtiDocument.Parse(bytes);
-                    return (ResolveLocString(doc.LocalizedName), doc.Tag, doc.BaseItem);
+                    var name = CaptureName(doc.LocalizedName);
+                    return new EntryMetadata(
+                        ResolveName(name), doc.Tag, doc.BaseItem, new CatalogNameSource(name));
                 }
                 case ResourceType.Utp:
                 {
                     var doc = UtpDocument.Parse(bytes);
-                    return (ResolveLocString(doc.LocName), doc.Tag, null);
+                    var name = CaptureName(doc.LocName);
+                    return new EntryMetadata(ResolveName(name), doc.Tag, null, new CatalogNameSource(name));
                 }
                 case ResourceType.Utd:
                 {
                     var doc = UtdDocument.Parse(bytes);
-                    return (ResolveLocString(doc.LocName), doc.Tag, null);
+                    var name = CaptureName(doc.LocName);
+                    return new EntryMetadata(ResolveName(name), doc.Tag, null, new CatalogNameSource(name));
                 }
                 case ResourceType.Utm:
                 {
                     var doc = UtmDocument.Parse(bytes);
-                    return (ResolveLocString(doc.LocName), doc.Tag, null);
+                    var name = CaptureName(doc.LocName);
+                    return new EntryMetadata(ResolveName(name), doc.Tag, null, new CatalogNameSource(name));
                 }
                 case ResourceType.Utt:
                 {
                     var doc = UttDocument.Parse(bytes);
-                    return (ResolveLocString(doc.LocalizedName), doc.Tag, null);
+                    var name = CaptureName(doc.LocalizedName);
+                    return new EntryMetadata(ResolveName(name), doc.Tag, null, new CatalogNameSource(name));
                 }
                 case ResourceType.Uts:
                 {
                     var doc = UtsDocument.Parse(bytes);
-                    return (ResolveLocString(doc.LocName), doc.Tag, null);
+                    var name = CaptureName(doc.LocName);
+                    return new EntryMetadata(ResolveName(name), doc.Tag, null, new CatalogNameSource(name));
                 }
                 case ResourceType.Utw:
                 {
                     var doc = UtwDocument.Parse(bytes);
-                    return (ResolveLocString(doc.LocalizedName), doc.Tag, null);
+                    var name = CaptureName(doc.LocalizedName);
+                    return new EntryMetadata(ResolveName(name), doc.Tag, null, new CatalogNameSource(name));
                 }
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, "Unknown resource type.");
             }
         }
 
-        private string? ResolveLocString(LocString value)
+        /// <summary>
+        /// Re-resolves every materialized catalog name from the LocString metadata captured during
+        /// the file's last parse. No resource files are reopened when a TLK generation changes.
+        /// </summary>
+        public bool RefreshTlkLabels()
         {
-            if (!string.IsNullOrEmpty(value.Text))
-                return value.Text;
+            var changed = false;
+            foreach (var (key, source) in _nameSources)
+            {
+                if (!_indexedEntries.TryGetValue(key, out var entry))
+                    continue;
 
-            return value.StrRef is { } strRef && strRef != uint.MaxValue
+                var name = ResolveName(source);
+                if (string.Equals(name, entry.Name, StringComparison.Ordinal))
+                    continue;
+
+                _indexedEntries[key] = entry with { Name = name };
+                changed = true;
+            }
+
+            if (changed)
+                PublishSnapshot();
+            return changed;
+        }
+
+        private static LocStringNameSource CaptureName(LocString value) =>
+            new(value.Text, value.StrRef);
+
+        private string? ResolveName(CatalogNameSource source) =>
+            source.Last == null
+                ? ResolveName(source.First)
+                : JoinName(ResolveName(source.First), ResolveName(source.Last.Value));
+
+        private string? ResolveName(LocStringNameSource source)
+        {
+            if (!string.IsNullOrEmpty(source.InlineText))
+                return source.InlineText;
+
+            return source.StrRef is { } strRef && strRef != uint.MaxValue
                 ? _resolveStrRef?.Invoke(strRef)
                 : null;
         }
@@ -381,6 +432,18 @@ namespace SWLOR.Toolset.Domain.Workspace
 
             return string.Join(" ", new[] { first, last }.Where(part => !string.IsNullOrEmpty(part)));
         }
+
+        private sealed record EntryMetadata(
+            string? Name,
+            string? Tag,
+            int? BaseItem,
+            CatalogNameSource NameSource);
+
+        private readonly record struct LocStringNameSource(string? InlineText, uint? StrRef);
+
+        private sealed record CatalogNameSource(
+            LocStringNameSource First,
+            LocStringNameSource? Last = null);
 
         /// <summary>
         /// Searches the current snapshot of <see cref="Entries"/> for resref/name/tag matches

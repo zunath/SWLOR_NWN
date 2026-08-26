@@ -22,6 +22,8 @@ namespace SWLOR.Toolset.Workspace
 
         public event Action? WorkspaceOpened;
         public event Action? CatalogBuildCompleted;
+        /// <summary>Raised once after materialized catalog names are re-resolved from a new TLK.</summary>
+        public event Action? CatalogLabelsChanged;
         /// <summary>
         /// Raised for every saved, reloaded, created, or removed resource so content-dependent
         /// caches can invalidate even when its catalog Name/Tag did not change.
@@ -246,6 +248,16 @@ namespace SWLOR.Toolset.Workspace
             CatalogEntryRefreshed?.Invoke(type, resRef);
             if (catalogChanged)
                 CatalogEntriesChanged?.Invoke(type, resRef);
+        }
+
+        /// <summary>
+        /// Re-resolves catalog display names from cached LocString metadata after a TLK publication.
+        /// This does not reopen the module's blueprint files.
+        /// </summary>
+        public void RefreshTlkLabels()
+        {
+            if (Catalog?.RefreshTlkLabels() == true)
+                CatalogLabelsChanged?.Invoke();
         }
 
         /// <summary>

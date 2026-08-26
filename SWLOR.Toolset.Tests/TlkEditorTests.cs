@@ -10,11 +10,13 @@ using SWLOR.Toolset.Domain.Editors;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Tlk;
 using SWLOR.Toolset.Domain.Gff;
+using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors;
 using SWLOR.Toolset.Editors.Tlk;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Settings;
 using SWLOR.Toolset.Shell;
+using SWLOR.Toolset.Shell.Panels;
 using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Tests;
@@ -625,11 +627,12 @@ public class TlkEditorTests
             var workspace = new WorkspaceContext(
                 path => new SWLOR.Toolset.Domain.Workspace.ModuleWorkspace(path),
                 log);
+            var properties = new PropertiesViewModel(workspace, log, tlkService: tlk);
             var service = new EditorService(
                 workspace,
                 new LookupOptionProvider(workspace),
                 log,
-                new ToolsetDockFactory(null!, null!, null!, null!, null!, null!, null!, null!, null!),
+                new ToolsetDockFactory(null!, properties, null!, null!, null!, null!, null!, null!, null!),
                 new StubPrompts(),
                 tlkService: tlk,
                 tlkEditorSource: new TlkEditorSource(jsonPath, binaryPath, twoDaDirectory));
@@ -642,6 +645,72 @@ public class TlkEditorTests
         {
             Directory.Delete(root, recursive: true);
         }
+    }
+
+    [Test]
+    public async Task TlkPublicationRefreshesCatalogPropertiesAndStandardPaletteCaches()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "swlor-tlk-surface-refresh-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(Path.Combine(root, "are"));
+        Directory.CreateDirectory(Path.Combine(root, "utc"));
+        Directory.CreateDirectory(Path.Combine(root, "uti"));
+        var itemPath = Path.Combine(root, "uti", "test_item.uti.json");
+        File.WriteAllText(itemPath,
+            $"{{\"__data_type\":\"UTI \",\"LocalizedName\":{{\"id\":{TlkService.CustomTlkBase},\"type\":\"cexolocstring\",\"value\":{{}}}}}}");
+        var tlk = new TlkService(TlkJsonFile.Parse("{\"language\":0,\"entries\":[]}"));
+        tlk.PublishCustomTlk(TlkReader.Read(
+            TlkWriter.Write(0, new Dictionary<int, string> { [0] = "Old Label" })));
+
+        try
+        {
+            var log = new OutputLogService();
+            var workspace = new WorkspaceContext(
+                path => new SWLOR.Toolset.Domain.Workspace.ModuleWorkspace(path),
+                log,
+                tlk);
+            workspace.Open(root);
+            await workspace.Catalog!.BuildTask;
+            workspace.Catalog.TryGetEntry(ResourceType.Uti, "test_item", out var entry).Should().BeTrue();
+            entry.Name.Should().Be("Old Label");
+
+            var properties = new PropertiesViewModel(workspace, log, tlkService: tlk);
+            properties.ShowEntry(entry);
+            properties.Rows.Single(row => row.Key == "LocalizedName").Value.Should().Be("Old Label");
+
+            var categories = new CategoryService(workspace, log, tlk);
+            categories.StandardSection(ResourceType.Uti);
+            GetCachedStandardPaletteCount(categories).Should().Be(1);
+            var categoryRefreshes = 0;
+            categories.Changed += () => categoryRefreshes++;
+            var catalogRefreshes = 0;
+            workspace.CatalogLabelsChanged += () => catalogRefreshes++;
+
+            tlk.PublishCustomTlk(TlkReader.Read(
+                TlkWriter.Write(0, new Dictionary<int, string> { [0] = "New Label" })));
+            workspace.RefreshTlkLabels();
+            categories.RefreshTlkLabels();
+            new ToolsetDockFactory(null!, properties, null!, null!, null!, null!, null!, null!, null!)
+                .RefreshTlkLabels();
+
+            workspace.Catalog.TryGetEntry(ResourceType.Uti, "test_item", out entry).Should().BeTrue();
+            entry.Name.Should().Be("New Label");
+            catalogRefreshes.Should().Be(1);
+            properties.Rows.Single(row => row.Key == "LocalizedName").Value.Should().Be("New Label");
+            GetCachedStandardPaletteCount(categories).Should().Be(0);
+            categoryRefreshes.Should().Be(1);
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    private static int GetCachedStandardPaletteCount(CategoryService categories)
+    {
+        const System.Reflection.BindingFlags flags =
+            System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic;
+        var cache = typeof(CategoryService).GetField("_standardPalettes", flags)!.GetValue(categories)!;
+        return (int)cache.GetType().GetProperty("Count")!.GetValue(cache)!;
     }
 
     [Test]

@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                     var playerId = GetObjectUUID(activator);
                     var dbPlayer = DB.Get<Player>(playerId);
 
-                    BeastMastery.SpawnBeast(activator, dbPlayer.ActiveBeastId, 50);
+                    BeastMastery.SpawnBeast(activator, dbPlayer.ActiveBeastId, 100);
 
                     Enmity.ModifyEnmityOnAll(activator, 230);
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.BeastMastery);

@@ -304,6 +304,13 @@ namespace SWLOR.Game.Server.Service
             // because it doesn't exist at the time of the beast being created.
             ExecuteScript(GetEventScript(beast, EventScript.Creature_OnSpawnIn), beast);
 
+            // A normal Call Beast spawn requests 100% health. Restore it immediately so the
+            // companion does not appear near death while waiting for the delayed HP correction.
+            if (percentHeal >= 100)
+            {
+                SetCurrentHitPoints(beast, GetMaxHitPoints(beast));
+            }
+
             AssignCommand(GetModule(), () =>
             {
                 DelayCommand(4f, () =>

@@ -30,6 +30,8 @@ public class TlkEditorTests
             new Dictionary<int, string> { [0] = "Alpha", [2] = "Beta", [190000] = "Alpha Two" },
             referenced: new[] { 1 });
         var editor = CreateEditor(backend);
+        var editRequests = 0;
+        editor.EntryEditRequested += () => editRequests++;
 
         editor.Rows.Count.Should().Be(190001);
         editor.GoToValue = (TlkService.CustomTlkBase + 2).ToString();
@@ -60,13 +62,16 @@ public class TlkEditorTests
             "the filtered snapshot is refreshed explicitly rather than on every keystroke");
         editor.Rows.Count.Should().Be(2);
 
-        await editor.FindFirstBlankCommand.ExecuteAsync(null);
+        await editor.AddRowCommand.ExecuteAsync(null);
         editor.SelectedId.Should().Be(3, "row 1 is referenced and row 2 is populated");
         editor.FilterText.Should().BeEmpty("blank navigation must reveal its result in the grid");
+        editor.NavigationStatus.Should().Contain("ready for a new TLK entry");
+        editor.RemoveRowCommand.CanExecute(null).Should().BeFalse();
+        editRequests.Should().Be(1);
     }
 
     [Test]
-    public async Task TextEditingClearUndoRedoAndSaveFollowOneDocumentHistory()
+    public async Task TextEditingRemoveUndoRedoAndSaveFollowOneDocumentHistory()
     {
         var backend = new MemoryBackend(
             new Dictionary<int, string> { [4] = "Original" },
@@ -84,7 +89,7 @@ public class TlkEditorTests
         editor.Redo();
         backend.GetText(4).Should().Be("Changed\nparagraph");
 
-        await editor.ClearRowCommand.ExecuteAsync(null);
+        await editor.RemoveRowCommand.ExecuteAsync(null);
         backend.ContainsEntry(4).Should().BeFalse();
         prompts.DestructiveMessages.Should().ContainSingle(message => message.Contains("REFER", StringComparison.OrdinalIgnoreCase));
         editor.Undo();
@@ -95,6 +100,31 @@ public class TlkEditorTests
         backend.Published.Should().BeTrue();
         afterSaveCount.Should().Be(1);
         editor.IsDirty.Should().BeFalse();
+    }
+
+    [Test]
+    public async Task RemoveRowLeavesLaterRowIdsUnchangedAndIsUndoable()
+    {
+        var backend = new MemoryBackend(new Dictionary<int, string>
+        {
+            [0] = "zero",
+            [2] = "two"
+        });
+        var editor = CreateEditor(backend);
+        editor.SelectId(0);
+
+        editor.RemoveRowCommand.CanExecute(null).Should().BeTrue();
+        await editor.RemoveRowCommand.ExecuteAsync(null);
+
+        backend.ContainsEntry(0).Should().BeFalse();
+        backend.GetText(2).Should().Be("two");
+        editor.SelectedId.Should().Be(0);
+        editor.RemoveRowCommand.CanExecute(null).Should().BeFalse();
+
+        editor.Undo();
+        backend.GetText(0).Should().Be("zero");
+        backend.GetText(2).Should().Be("two");
+        editor.RemoveRowCommand.CanExecute(null).Should().BeTrue();
     }
 
     [Test]
@@ -230,7 +260,7 @@ public class TlkEditorTests
             warnings: new[] { "broken.2da" });
         var editor = CreateEditor(backend);
 
-        await editor.FindFirstBlankCommand.ExecuteAsync(null);
+        await editor.AddRowCommand.ExecuteAsync(null);
 
         editor.SelectedId.Should().Be(0);
         editor.NavigationStatus.Should().Contain("unavailable");
@@ -256,11 +286,11 @@ public class TlkEditorTests
         var prompts = new StubPrompts { ConfirmDestructive = false };
         var editor = CreateEditor(backend, prompts);
 
-        await editor.FindFirstBlankCommand.ExecuteAsync(null);
+        await editor.AddRowCommand.ExecuteAsync(null);
 
         editor.SelectedId.Should().Be(3, "row 1 became referenced after the editor opened");
         editor.SelectId(2);
-        await editor.ClearRowCommand.ExecuteAsync(null);
+        await editor.RemoveRowCommand.ExecuteAsync(null);
 
         backend.ContainsEntry(2).Should().BeTrue();
         prompts.DestructiveMessages.Should().ContainSingle(message => message.Contains("row 2"));
@@ -284,7 +314,7 @@ public class TlkEditorTests
         var editor = CreateEditor(backend);
         editor.SelectId(0);
 
-        var clear = editor.ClearRowCommand.ExecuteAsync(null);
+        var clear = editor.RemoveRowCommand.ExecuteAsync(null);
         try
         {
             refreshStarted.Wait(TimeSpan.FromSeconds(10)).Should().BeTrue();
@@ -349,10 +379,10 @@ public class TlkEditorTests
         editor.SelectedText = string.Empty;
 
         backend.ContainsEntry(4).Should().BeTrue();
-        editor.NavigationStatus.Should().Contain("Clear row");
+        editor.NavigationStatus.Should().Contain("Remove row");
         prompts.DestructiveMessages.Should().BeEmpty();
 
-        await editor.ClearRowCommand.ExecuteAsync(null);
+        await editor.RemoveRowCommand.ExecuteAsync(null);
         backend.ContainsEntry(4).Should().BeFalse();
         prompts.DestructiveMessages.Should().BeEmpty("the row was unreferenced when it was cleared");
 
@@ -570,7 +600,7 @@ public class TlkEditorTests
         var closeRequested = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         editor.CloseRequested += _ => closeRequested.TrySetResult();
 
-        var find = editor.FindFirstBlankCommand.ExecuteAsync(null);
+        var find = editor.AddRowCommand.ExecuteAsync(null);
         backend.ReferenceRefreshStarted.Wait(TimeSpan.FromSeconds(5)).Should().BeTrue();
 
         editor.OnClose().Should().BeFalse("the reference refresh is still active");
@@ -1065,6 +1095,9 @@ public class TlkEditorTests
 
             var grid = view.FindControl<ListBox>("RowGrid")!;
             view.FindControl<Button>("ClearFilterButton")!.Content.Should().Be("×");
+            view.FindControl<Button>("AddRowButton")!.Content.Should().Be("Add row");
+            view.FindControl<Button>("RemoveRowButton")!.Content.Should().Be("Remove row");
+            view.FindControl<TextBox>("SelectedTextEditor").Should().NotBeNull();
             grid.ItemsSource.Should().BeSameAs(editor.Rows);
             grid.GetVisualDescendants().OfType<ListBoxItem>().Count().Should().BeLessThan(100,
                 "only visible rows should be realized from the 200,000-row virtual range");

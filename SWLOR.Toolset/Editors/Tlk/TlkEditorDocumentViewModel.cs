@@ -221,6 +221,7 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
     public string SelectedIdDisplay => SelectedId.ToString();
     public string SelectedStrRefDisplay => SelectedStrRef.ToString();
     public bool HasSelectedRow => SelectedRow != null;
+    public bool CanRemoveRow => SelectedRow != null && _backend.ContainsEntry(SelectedRow.Id);
     public bool HasUsages => Usages.Count > 0;
     public bool IsDirty => _historyPosition != _savedPosition;
     public bool CanUndo => _historyPosition > 0;
@@ -231,6 +232,7 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
     public event Action<TlkEditorDocumentViewModel>? Closed;
     public event Action<TlkEditorDocumentViewModel>? CloseRequested;
     public event Action<int>? SelectionNavigationRequested;
+    public event Action? EntryEditRequested;
 
     public TlkEditorDocumentViewModel(
         ITlkEditorBackend backend,
@@ -302,7 +304,7 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
             _refreshingSelection = true;
             SelectedText = _backend.GetText(id) ?? string.Empty;
             _refreshingSelection = false;
-            NavigationStatus = $"Use Clear row to blank TLK row {id}.";
+            NavigationStatus = $"Use Remove row to blank TLK row {id} without renumbering later rows.";
             return;
         }
         if (!_backend.ContainsEntry(id) && value.Length > 0 && _backend.IsReferenced(id))
@@ -345,15 +347,18 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
     }
 
     [RelayCommand]
-    private Task FindFirstBlank() => RunBusyOperationAsync(FindFirstBlankCoreAsync);
+    private Task AddRow() => RunBusyOperationAsync(AddRowCoreAsync);
 
-    private async Task FindFirstBlankCoreAsync()
+    private async Task AddRowCoreAsync()
     {
         if (!await TryRefreshReferencesAsync().ConfigureAwait(true))
             return;
         if (!CanAllocateBlank())
             return;
-        SelectId(_backend.FindFirstAvailableBlank(), clearFilter: true);
+        var id = _backend.FindFirstAvailableBlank();
+        SelectId(id, clearFilter: true);
+        NavigationStatus = $"Row {id} is ready for a new TLK entry.";
+        EntryEditRequested?.Invoke();
     }
 
     [RelayCommand]
@@ -369,10 +374,10 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
         SelectId(_backend.FindNextAvailableBlank(start), clearFilter: true);
     }
 
-    [RelayCommand(CanExecute = nameof(HasSelectedRow))]
-    private Task ClearRow() => RunBusyOperationAsync(ClearRowCoreAsync);
+    [RelayCommand(CanExecute = nameof(CanRemoveRow))]
+    private Task RemoveRow() => RunBusyOperationAsync(RemoveRowCoreAsync);
 
-    private async Task ClearRowCoreAsync()
+    private async Task RemoveRowCoreAsync()
     {
         var id = SelectedRow?.Id;
         if (!id.HasValue || !_backend.ContainsEntry(id.Value))
@@ -389,18 +394,18 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
                 : $"\n\nWarning: {_backend.ReferenceWarnings.Count} reference file(s) could not be scanned, " +
                   "so additional references may exist.";
             var approved = await _prompts.ConfirmDestructiveAsync(
-                $"Clear possibly referenced TLK row {id}?",
-                $"This leaves row {id} blank." +
+                $"Remove possibly referenced TLK row {id}?",
+                $"This removes the text and leaves row {id} blank; later row IDs will not change." +
                 (usages.Length == 0 ? string.Empty : $" Known references:\n\n{usages}") +
                 incomplete,
-                "Clear row anyway").ConfigureAwait(true);
+                "Remove row anyway").ConfigureAwait(true);
             if (!approved)
                 return;
             clearConfirmed = true;
         }
 
         ApplyChanges(
-            $"Clear TLK row {id}",
+            $"Remove TLK row {id}",
             new[] { TlkValueChange.Clear(id.Value, _backend.GetText(id.Value)) });
         if (clearConfirmed)
             _confirmedClears.Add(id.Value);
@@ -1082,8 +1087,9 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
         OnPropertyChanged(nameof(SelectedIdDisplay));
         OnPropertyChanged(nameof(SelectedStrRefDisplay));
         OnPropertyChanged(nameof(HasSelectedRow));
+        OnPropertyChanged(nameof(CanRemoveRow));
         OnPropertyChanged(nameof(HasUsages));
-        ClearRowCommand.NotifyCanExecuteChanged();
+        RemoveRowCommand.NotifyCanExecuteChanged();
     }
 
     private void UpdateTitleAndState()

@@ -24,12 +24,16 @@ public partial class TlkEditorDocumentView : UserControl
             return;
         _subscribed = viewModel;
         viewModel.SelectionNavigationRequested += OnSelectionNavigationRequested;
+        viewModel.EntryEditRequested += OnEntryEditRequested;
     }
 
     private void UnsubscribeFromNavigation()
     {
         if (_subscribed != null)
+        {
             _subscribed.SelectionNavigationRequested -= OnSelectionNavigationRequested;
+            _subscribed.EntryEditRequested -= OnEntryEditRequested;
+        }
         _subscribed = null;
     }
 
@@ -38,6 +42,8 @@ public partial class TlkEditorDocumentView : UserControl
         if (DataContext is TlkEditorDocumentViewModel viewModel && viewModel.SelectedRow != null)
             RowGrid.ScrollIntoView(viewModel.SelectedRow);
     }
+
+    private void OnEntryEditRequested() => SelectedTextEditor.Focus();
 
     private async void OnCopyRowId(object? sender, RoutedEventArgs args)
     {

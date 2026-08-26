@@ -187,8 +187,11 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
     private readonly Action? _afterSave;
     private readonly List<TlkHistoryEntry> _history = new();
     private readonly HashSet<int> _confirmedClears = new();
+    private readonly HashSet<int> _confirmedReferencedWrites = new();
     private int _historyPosition;
     private int _savedPosition;
+    private int _busyOperationCount;
+    private TaskCompletionSource? _idleOperations;
     private bool _refreshingSelection;
     private bool _closeApproved;
     private bool _closePromptOpen;
@@ -291,6 +294,15 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
             NavigationStatus = $"Use Clear row to blank TLK row {id}.";
             return;
         }
+        if (!_backend.ContainsEntry(id) && value.Length > 0 && _backend.IsReferenced(id))
+        {
+            _refreshingSelection = true;
+            SelectedText = string.Empty;
+            _refreshingSelection = false;
+            NavigationStatus =
+                $"Blank row {id} is referenced. Use grid paste (Ctrl+V) so the change can be confirmed.";
+            return;
+        }
         if (value.Length > 0 && id > _backend.MaxEntryId &&
             !CanCreateThrough(id, new Dictionary<int, string> { [id] = value }))
         {
@@ -322,7 +334,9 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
     }
 
     [RelayCommand]
-    private async Task FindFirstBlank()
+    private Task FindFirstBlank() => RunBusyOperationAsync(FindFirstBlankCoreAsync);
+
+    private async Task FindFirstBlankCoreAsync()
     {
         if (!await TryRefreshReferencesAsync().ConfigureAwait(true))
             return;
@@ -332,7 +346,9 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
     }
 
     [RelayCommand]
-    private async Task FindNextBlank()
+    private Task FindNextBlank() => RunBusyOperationAsync(FindNextBlankCoreAsync);
+
+    private async Task FindNextBlankCoreAsync()
     {
         if (!await TryRefreshReferencesAsync().ConfigureAwait(true))
             return;
@@ -342,7 +358,9 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
     }
 
     [RelayCommand(CanExecute = nameof(HasSelectedRow))]
-    private async Task ClearRow()
+    private Task ClearRow() => RunBusyOperationAsync(ClearRowCoreAsync);
+
+    private async Task ClearRowCoreAsync()
     {
         if (SelectedRow == null || !_backend.ContainsEntry(SelectedRow.Id))
             return;
@@ -385,16 +403,20 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
     /// Applies a grid paste as one undo step. Newlines divide consecutive rows; the selected-row
     /// text box uses the platform's normal paste instead and therefore preserves those newlines.
     /// </summary>
-    public async Task<bool> PasteRowsAsync(string clipboardText)
+    public Task<bool> PasteRowsAsync(string clipboardText) =>
+        RunBusyOperationAsync(() => PasteRowsCoreAsync(clipboardText));
+
+    private async Task<bool> PasteRowsCoreAsync(string clipboardText)
     {
         if (SelectedRow == null || clipboardText == null)
             return false;
 
-        var lines = clipboardText.Replace("\r\n", "\n", StringComparison.Ordinal)
-            .Replace('\r', '\n')
+        var normalizedText = clipboardText.Replace("\r\n", "\n", StringComparison.Ordinal)
+            .Replace('\r', '\n');
+        var lines = normalizedText
             .Split('\n')
             .ToList();
-        if (lines.Count > 1 && lines[^1].Length == 0 && clipboardText.EndsWith('\n'))
+        if (lines.Count > 1 && lines[^1].Length == 0 && normalizedText.EndsWith('\n'))
             lines.RemoveAt(lines.Count - 1);
         if (lines.Count == 0)
             return false;
@@ -440,6 +462,7 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
         var overwrites = new List<int>();
         var referenced = new List<int>();
         var cleared = new List<int>();
+        var filledBlanks = new List<int>();
         for (var offset = 0; offset < lines.Count; offset++)
         {
             var id = start + offset;
@@ -449,6 +472,8 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
                 if (lines[offset].Length == 0)
                     cleared.Add(id);
             }
+            else if (lines[offset].Length > 0)
+                filledBlanks.Add(id);
             if (_backend.IsReferenced(id))
                 referenced.Add(id);
             changes.Add(TlkValueChange.Set(
@@ -469,6 +494,8 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
                 return false;
             foreach (var id in cleared.Where(id => _backend.IsReferenced(id) || _backend.ReferenceWarnings.Count > 0))
                 _confirmedClears.Add(id);
+            foreach (var id in filledBlanks.Where(id => _backend.IsReferenced(id) || _backend.ReferenceWarnings.Count > 0))
+                _confirmedReferencedWrites.Add(id);
         }
 
         ApplyChanges($"Paste {lines.Count} TLK rows at {start}", changes);
@@ -553,12 +580,14 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
 
     private async Task<bool> TrySaveCoreAsync()
     {
-        IsBusy = true;
+        BeginBusyOperation();
         try
         {
             if (!await TryRefreshReferencesAsync().ConfigureAwait(true))
                 return false;
             if (!await ConfirmNewlyReferencedClearsAsync().ConfigureAwait(true))
+                return false;
+            if (!await ConfirmNewlyReferencedWritesAsync().ConfigureAwait(true))
                 return false;
 
             var overwrite = false;
@@ -597,7 +626,7 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
         }
         finally
         {
-            IsBusy = false;
+            EndBusyOperation();
         }
     }
 
@@ -605,9 +634,13 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
 
     internal async Task WaitForActiveOperationAsync()
     {
-        var activeSave = _activeSave;
-        if (activeSave != null)
-            await activeSave.ConfigureAwait(true);
+        while (IsBusy)
+        {
+            var idle = _idleOperations;
+            if (idle == null)
+                return;
+            await idle.Task.ConfigureAwait(true);
+        }
     }
 
     public override bool OnClose()
@@ -641,9 +674,7 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
 
     private async Task WaitForBusyThenCloseAsync()
     {
-        var activeSave = _activeSave;
-        if (activeSave != null)
-            await activeSave.ConfigureAwait(true);
+        await WaitForActiveOperationAsync().ConfigureAwait(true);
 
         if (_closeApproved || !IsDirty)
         {
@@ -723,6 +754,8 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
         var ids = changedIds.ToArray();
         foreach (var id in ids.Where(_backend.ContainsEntry))
             _confirmedClears.Remove(id);
+        foreach (var id in ids.Where(id => !_backend.ContainsEntry(id)))
+            _confirmedReferencedWrites.Remove(id);
         // Keep the current filtered snapshot stable while text is being edited. Refiltering on
         // every keystroke can evict the selected row and redirect the remaining input elsewhere.
         // The next filter/exact change recomputes the snapshot explicitly.
@@ -747,6 +780,7 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
         var id = SelectedId;
         _history.Clear();
         _confirmedClears.Clear();
+        _confirmedReferencedWrites.Clear();
         _historyPosition = 0;
         _savedPosition = 0;
         RefreshReferenceStatus();
@@ -825,8 +859,6 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
 
     private async Task<bool> TryRefreshReferencesAsync()
     {
-        var wasBusy = IsBusy;
-        IsBusy = true;
         try
         {
             await Task.Run(_backend.RefreshReferences).ConfigureAwait(true);
@@ -841,10 +873,6 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
             NavigationStatus = "TLK references could not be refreshed; the operation was cancelled.";
             _log.AppendLine($"TLK reference refresh failed: {ex.GetBaseException().Message}");
             return false;
-        }
-        finally
-        {
-            IsBusy = wasBusy;
         }
     }
 
@@ -876,6 +904,82 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
         foreach (var id in cleared)
             _confirmedClears.Add(id);
         return true;
+    }
+
+    private async Task<bool> ConfirmNewlyReferencedWritesAsync()
+    {
+        var filled = _history
+            .Take(_historyPosition)
+            .SelectMany(entry => entry.Changes)
+            .GroupBy(change => change.Id)
+            .Where(group => !group.First().OldExists)
+            .Select(group => group.Key)
+            .Where(id =>
+                _backend.ContainsEntry(id) &&
+                (_backend.IsReferenced(id) || _backend.ReferenceWarnings.Count > 0) &&
+                !_confirmedReferencedWrites.Contains(id))
+            .Order()
+            .ToArray();
+        if (filled.Length == 0)
+            return true;
+
+        var confirmed = await _prompts.ConfirmDestructiveAsync(
+            "Save newly populated TLK rows with possible references?",
+            "These newly populated rows are now referenced, or reference coverage is incomplete:\n\n" +
+            string.Join(", ", filled) +
+            "\n\nSaving will replace blank rows that may already be reserved by other content.",
+            "Save anyway").ConfigureAwait(true);
+        if (!confirmed)
+            return false;
+        foreach (var id in filled)
+            _confirmedReferencedWrites.Add(id);
+        return true;
+    }
+
+    private void BeginBusyOperation()
+    {
+        if (_busyOperationCount++ != 0)
+            return;
+
+        _idleOperations = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        IsBusy = true;
+    }
+
+    private void EndBusyOperation()
+    {
+        if (--_busyOperationCount != 0)
+            return;
+
+        IsBusy = false;
+        var idle = _idleOperations;
+        _idleOperations = null;
+        idle?.TrySetResult();
+    }
+
+    private async Task RunBusyOperationAsync(Func<Task> operation)
+    {
+        BeginBusyOperation();
+        try
+        {
+            await operation().ConfigureAwait(true);
+        }
+        finally
+        {
+            EndBusyOperation();
+        }
+    }
+
+    private async Task<T> RunBusyOperationAsync<T>(Func<Task<T>> operation)
+    {
+        BeginBusyOperation();
+        try
+        {
+            return await operation().ConfigureAwait(true);
+        }
+        finally
+        {
+            EndBusyOperation();
+        }
     }
 
     private bool CanCreateThrough(int highestNewId, IReadOnlyDictionary<int, string> plannedText)

@@ -1,4 +1,5 @@
 using System.Globalization;
+using Serilog;
 using SWLOR.NWN.Formats.Tlk;
 using SWLOR.Toolset.Domain.GameData.TwoDa;
 
@@ -21,6 +22,8 @@ namespace SWLOR.Toolset.Domain.GameData.Tlk
     /// </summary>
     public sealed class TlkReferenceIndex
     {
+        private static readonly ILogger Logger = Log.ForContext<TlkReferenceIndex>();
+
         /// <summary>Column marker used when a malformed 2DA is covered by raw-text fallback.</summary>
         public const string FallbackColumnName = "<raw-text>";
 
@@ -256,6 +259,7 @@ namespace SWLOR.Toolset.Domain.GameData.Tlk
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
             {
+                Logger.Warning(ex, "Could not enumerate TLK reference sources under {RepositoryRoot}", root);
                 unscannable.Add($"{root} (repository enumeration failed)");
             }
         }
@@ -305,6 +309,7 @@ namespace SWLOR.Toolset.Domain.GameData.Tlk
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
             {
+                Logger.Warning(ex, "Could not scan TLK reference source {ReferencePath}", path);
                 return false;
             }
         }

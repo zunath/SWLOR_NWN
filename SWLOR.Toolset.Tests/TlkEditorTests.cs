@@ -131,6 +131,23 @@ public class TlkEditorTests
     }
 
     [Test]
+    public async Task GridPasteTreatsOneTrailingCarriageReturnAsAClipboardSeparator()
+    {
+        var backend = new MemoryBackend(new Dictionary<int, string>
+        {
+            [5] = "five",
+            [6] = "six"
+        });
+        var editor = CreateEditor(backend, new StubPrompts { ConfirmDestructive = true });
+        editor.SelectId(5);
+
+        (await editor.PasteRowsAsync("replacement\r")).Should().BeTrue();
+
+        backend.GetText(5).Should().Be("replacement");
+        backend.GetText(6).Should().Be("six", "the clipboard terminator is not another pasted row");
+    }
+
+    [Test]
     public async Task TypingAndPastingCannotSkipAnEarlierBlankRow()
     {
         var backend = new MemoryBackend(new Dictionary<int, string>
@@ -219,6 +236,43 @@ public class TlkEditorTests
         backend.ContainsEntry(2).Should().BeTrue();
         prompts.DestructiveMessages.Should().ContainSingle(message => message.Contains("row 2"));
         backend.ReferenceRefreshCount.Should().Be(2);
+    }
+
+    [Test]
+    public void TypingCannotPopulateAKnownReferencedBlankRowWithoutConfirmation()
+    {
+        var backend = new MemoryBackend(
+            new Dictionary<int, string> { [0] = "zero", [2] = "two" },
+            referenced: new[] { 1 });
+        var editor = CreateEditor(backend);
+        editor.SelectId(1);
+
+        editor.SelectedText = "one";
+
+        backend.ContainsEntry(1).Should().BeFalse();
+        editor.SelectedText.Should().BeEmpty();
+        editor.NavigationStatus.Should().Contain("grid paste");
+    }
+
+    [Test]
+    public async Task SaveConfirmsWhenAJustPopulatedBlankBecomesReferenced()
+    {
+        var backend = new MemoryBackend(new Dictionary<int, string>
+        {
+            [0] = "zero",
+            [2] = "two"
+        });
+        var prompts = new StubPrompts { ConfirmDestructive = true };
+        var editor = CreateEditor(backend, prompts);
+        editor.SelectId(1);
+        editor.SelectedText = "one";
+        backend.ReferencesAfterRefresh = new[] { 1 };
+
+        (await editor.TrySaveAsync()).Should().BeTrue();
+
+        prompts.DestructiveMessages.Should().ContainSingle(message =>
+            message.Contains("newly populated", StringComparison.OrdinalIgnoreCase));
+        backend.Saved.Should().BeTrue();
     }
 
     [Test]
@@ -386,6 +440,33 @@ public class TlkEditorTests
 
         backend.ContinueSave.Set();
         (await save).Should().BeTrue();
+        await closeRequested.Task.WaitAsync(TimeSpan.FromSeconds(5));
+    }
+
+    [Test]
+    public async Task ClosingWaitsForANonSaveReferenceRefresh()
+    {
+        var backend = new MemoryBackend(new Dictionary<int, string>
+        {
+            [0] = "zero",
+            [2] = "two"
+        })
+        {
+            ReferenceRefreshStarted = new ManualResetEventSlim(),
+            ContinueReferenceRefresh = new ManualResetEventSlim()
+        };
+        var editor = CreateEditor(backend);
+        var closeRequested = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        editor.CloseRequested += _ => closeRequested.TrySetResult();
+
+        var find = editor.FindFirstBlankCommand.ExecuteAsync(null);
+        backend.ReferenceRefreshStarted.Wait(TimeSpan.FromSeconds(5)).Should().BeTrue();
+
+        editor.OnClose().Should().BeFalse("the reference refresh is still active");
+        closeRequested.Task.IsCompleted.Should().BeFalse();
+
+        backend.ContinueReferenceRefresh.Set();
+        await find;
         await closeRequested.Task.WaitAsync(TimeSpan.FromSeconds(5));
     }
 
@@ -614,6 +695,8 @@ public class TlkEditorTests
         public Exception? ReloadFailure { get; init; }
         public ManualResetEventSlim? SaveStarted { get; init; }
         public ManualResetEventSlim? ContinueSave { get; init; }
+        public ManualResetEventSlim? ReferenceRefreshStarted { get; init; }
+        public ManualResetEventSlim? ContinueReferenceRefresh { get; init; }
 
         public bool ContainsEntry(int id) => _entries.ContainsKey(id);
         public string? GetText(int id) => _entries.GetValueOrDefault(id);
@@ -643,6 +726,8 @@ public class TlkEditorTests
         public void RefreshReferences()
         {
             ReferenceRefreshCount++;
+            ReferenceRefreshStarted?.Set();
+            ContinueReferenceRefresh?.Wait(TimeSpan.FromSeconds(5));
             if (ReferenceRefreshFailure != null)
                 throw ReferenceRefreshFailure;
             if (ReferencesAfterRefresh == null)

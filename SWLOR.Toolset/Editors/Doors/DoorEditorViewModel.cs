@@ -291,6 +291,27 @@ namespace SWLOR.Toolset.Editors.Doors
             RefreshCompleteness();
         }
 
+        /// <summary>Rebuilds every materialized choice row after TLK-backed labels change.</summary>
+        public void RefreshTlkLabels()
+        {
+            RebuildChoiceRows(BasicRows);
+            RebuildChoiceRows(BehaviorRows);
+            RefreshCompleteness();
+        }
+
+        private void RebuildChoiceRows(ObservableCollection<DoorRowViewModel> rows)
+        {
+            for (var index = 0; index < rows.Count; index++)
+            {
+                if (rows[index].Definition.ChoicesKey == null)
+                    continue;
+
+                var definition = rows[index].Definition;
+                rows[index].Dispose();
+                rows[index] = CreateRow(definition);
+            }
+        }
+
         public void SetDirty(bool value) => IsDirty = value;
 
         private bool RunEdit(string description, Action mutation)

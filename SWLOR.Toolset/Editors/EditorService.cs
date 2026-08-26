@@ -628,6 +628,14 @@ namespace SWLOR.Toolset.Editors
                 editor.Editor.RefreshTlkLabels();
             foreach (var editor in _openSoundEditors.Values)
                 editor.Editor.RefreshTlkLabels();
+            foreach (var editor in _openDoorEditors.Values)
+                editor.Editor.RefreshTlkLabels();
+            foreach (var editor in _openCreatureEditors.Values)
+                editor.Editor.RefreshTlkLabels();
+            foreach (var editor in _openItemEditors.Values)
+                editor.Editor.RefreshTlkLabels();
+            foreach (var editor in _openMerchantEditors.Values)
+                editor.Editor.RefreshTlkLabels();
         }
 
         private Action<uint>? TlkRowOpener =>

@@ -255,6 +255,7 @@ namespace SWLOR.Toolset.Editors
         /// <summary>Refreshes TLK-backed choices in the selected specialized placement editor.</summary>
         public void RefreshTlkLabels()
         {
+            DoorEditor?.RefreshTlkLabels();
             WaypointEditor?.RefreshTlkLabels();
             SoundEditor?.RefreshTlkLabels();
         }

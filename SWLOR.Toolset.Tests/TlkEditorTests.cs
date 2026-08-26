@@ -383,6 +383,33 @@ public class TlkEditorTests
     }
 
     [Test]
+    public async Task ExternalReloadKeepsTheFilterAppliedWhenThePreviousRowNoLongerMatches()
+    {
+        var backend = new MemoryBackend(new Dictionary<int, string>
+        {
+            [0] = "alpha old",
+            [1] = "beta"
+        });
+        var prompts = new StubPrompts { ExternalChoice = ExternalChangeChoice.Reload };
+        var editor = CreateEditor(backend, prompts);
+        editor.FilterText = "alpha";
+        editor.SelectedId.Should().Be(0);
+        backend.ExternalChange = true;
+        backend.ReloadEntries = new Dictionary<int, string>
+        {
+            [0] = "changed",
+            [1] = "alpha new"
+        };
+
+        (await editor.TrySaveAsync()).Should().BeTrue();
+
+        editor.FilterText.Should().Be("alpha");
+        editor.Rows.Count.Should().Be(1);
+        ((TlkEditorRowViewModel)editor.Rows[0]!).Id.Should().Be(1);
+        editor.SelectedId.Should().Be(1);
+    }
+
+    [Test]
     public async Task FailedExternalReloadKeepsTheUnsavedEditorGeneration()
     {
         var backend = new MemoryBackend(new Dictionary<int, string> { [0] = "old" })

@@ -116,6 +116,44 @@ namespace SWLOR.Toolset.Tests
             }
         }
 
+        [Test]
+        public void Refresh_ReusesUnchangedSourcesAndRescansOnlyChangedFiles()
+        {
+            var root = CreateTempDirectory();
+            try
+            {
+                var twoDaDirectory = Path.Combine(root, "SWLOR_Haks", "sw_2da");
+                var moduleDirectory = Path.Combine(root, "Module");
+                Directory.CreateDirectory(twoDaDirectory);
+                Directory.CreateDirectory(moduleDirectory);
+                var twoDaPath = Path.Combine(twoDaDirectory, "sample.2da");
+                var jsonPath = Path.Combine(moduleDirectory, "sample.json");
+                File.WriteAllText(twoDaPath,
+                    $"2DA V2.0\n\nLABEL STRREF\n0 test {TlkService.CustomTlkBase + 1}\n");
+                File.WriteAllText(jsonPath, $"{{\"strRef\":{TlkService.CustomTlkBase + 2}}}\n");
+
+                var initial = TlkReferenceIndex.Build(twoDaDirectory, root);
+                initial.LastRefreshScannedSourceCount.Should().Be(2);
+
+                var unchanged = initial.Refresh(twoDaDirectory, root);
+                unchanged.LastRefreshScannedSourceCount.Should().Be(0,
+                    "an editor action with no repository changes must not reread source contents");
+
+                File.WriteAllText(jsonPath,
+                    $"{{\"strRef\":{TlkService.CustomTlkBase + 30},\"changed\":true}}\n");
+                var changed = unchanged.Refresh(twoDaDirectory, root);
+
+                changed.LastRefreshScannedSourceCount.Should().Be(1);
+                changed.IsReferenced(1).Should().BeTrue("the unchanged 2DA result was retained");
+                changed.IsReferenced(2).Should().BeFalse("the changed file's old result was replaced");
+                changed.IsReferenced(30).Should().BeTrue();
+            }
+            finally
+            {
+                Directory.Delete(root, recursive: true);
+            }
+        }
+
         private static string CreateTempDirectory()
         {
             var path = Path.Combine(Path.GetTempPath(), "SWLOR.Toolset.Tests", Guid.NewGuid().ToString("N"));

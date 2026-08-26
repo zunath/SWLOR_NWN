@@ -784,14 +784,17 @@ public partial class TlkEditorDocumentViewModel : Document, IEditorDocument
 
     private void ApplyReloadedState()
     {
-        var id = SelectedId;
+        var requestedId = Math.Min(SelectedId, Math.Max(0, _backend.MaxEntryId));
         _history.Clear();
         _historyPosition = 0;
         _savedPosition = 0;
         CaptureSavedEntryIds();
         RefreshReferenceStatus();
         RefreshFilter(keepSelection: false);
-        SelectId(Math.Min(id, Math.Max(0, _backend.MaxEntryId)), clearFilter: false);
+        if (Rows.ContainsId(requestedId))
+            SelectId(requestedId, clearFilter: false);
+        else if (SelectedRow != null)
+            SelectId(SelectedRow.Id, clearFilter: false);
         UpdateTitleAndState();
     }
 

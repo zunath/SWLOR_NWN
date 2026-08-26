@@ -1,6 +1,8 @@
 using System.Globalization;
 using Serilog;
+using SWLOR.NWN.Formats;
 using SWLOR.NWN.Formats.Tlk;
+using SWLOR.NWN.Formats.TwoDA;
 using SWLOR.Toolset.Domain.GameData.TwoDa;
 
 namespace SWLOR.Toolset.Domain.GameData.Tlk
@@ -44,19 +46,26 @@ namespace SWLOR.Toolset.Domain.GameData.Tlk
             StringComparer.OrdinalIgnoreCase);
 
         private readonly IReadOnlyDictionary<int, IReadOnlyList<TlkReferenceUsage>> _usagesByEntryId;
+        private readonly IReadOnlyDictionary<string, SourceSnapshot> _sourceSnapshots;
 
         public static TlkReferenceIndex Empty { get; } = new(
             new Dictionary<int, IReadOnlyList<TlkReferenceUsage>>(),
-            Array.Empty<string>());
+            Array.Empty<string>(),
+            new Dictionary<string, SourceSnapshot>(StringComparer.OrdinalIgnoreCase),
+            0);
 
         private TlkReferenceIndex(
             IReadOnlyDictionary<int, IReadOnlyList<TlkReferenceUsage>> usagesByEntryId,
-            IReadOnlyList<string> unscannableFiles)
+            IReadOnlyList<string> unscannableFiles,
+            IReadOnlyDictionary<string, SourceSnapshot> sourceSnapshots,
+            int scannedSourceCount)
         {
             _usagesByEntryId = usagesByEntryId;
+            _sourceSnapshots = sourceSnapshots;
             UnscannableFiles = unscannableFiles;
             ReferencedEntryIds = usagesByEntryId.Keys.OrderBy(id => id).ToArray();
             MaxReferencedEntryId = ReferencedEntryIds.Count == 0 ? -1 : ReferencedEntryIds[^1];
+            LastRefreshScannedSourceCount = scannedSourceCount;
         }
 
         public IReadOnlyList<int> ReferencedEntryIds { get; }
@@ -66,60 +75,194 @@ namespace SWLOR.Toolset.Domain.GameData.Tlk
         /// <summary>Files that could neither be parsed nor read by the raw-text fallback.</summary>
         public IReadOnlyList<string> UnscannableFiles { get; }
 
+        /// <summary>Number of changed or new files whose contents were read by the latest refresh.</summary>
+        internal int LastRefreshScannedSourceCount { get; }
+
         /// <summary>Builds the index from the repository's <c>SWLOR_Haks/sw_2da</c> directory.</summary>
         public static TlkReferenceIndex Build(
+            string sw2DaDirectoryPath,
+            string? repositoryRootPath = null,
+            CancellationToken cancellationToken = default) =>
+            Empty.Refresh(sw2DaDirectoryPath, repositoryRootPath, cancellationToken);
+
+        /// <summary>
+        /// Refreshes repository references while reusing every unchanged file's parsed result.
+        /// Interactive editor commands therefore pay only for directory metadata unless a source
+        /// file was added, removed, or changed since the preceding generation.
+        /// </summary>
+        public TlkReferenceIndex Refresh(
             string sw2DaDirectoryPath,
             string? repositoryRootPath = null,
             CancellationToken cancellationToken = default)
         {
             ArgumentException.ThrowIfNullOrWhiteSpace(sw2DaDirectoryPath);
-            var service = new TwoDaService(sw2DaDirectoryPath);
-            var usages = new Dictionary<int, List<TlkReferenceUsage>>();
-            var unscannable = new List<string>();
+            if (!Directory.Exists(sw2DaDirectoryPath))
+                throw new DirectoryNotFoundException($"2DA directory not found: {sw2DaDirectoryPath}");
 
-            foreach (var tableName in service.GetTableNames().OrderBy(name => name, StringComparer.OrdinalIgnoreCase))
+            var descriptors = new List<SourceDescriptor>();
+            var enumerationWarnings = new List<string>();
+            try
             {
-                cancellationToken.ThrowIfCancellationRequested();
-                var fileName = tableName + ".2da";
-                TwoDaTable? table;
-                try
-                {
-                    if (!service.TryGetTable(tableName, out table) || table == null)
-                    {
-                        if (!TryScanRawText(
-                                Path.Combine(sw2DaDirectoryPath, fileName),
-                                fileName,
-                                usages,
-                                cancellationToken))
-                        {
-                            unscannable.Add(fileName);
-                        }
-                        continue;
-                    }
-                }
-                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
-                {
-                    if (!TryScanRawText(
-                            Path.Combine(sw2DaDirectoryPath, fileName),
-                            fileName,
-                            usages,
-                            cancellationToken))
-                    {
-                        unscannable.Add(fileName);
-                    }
-                    continue;
-                }
-
-                ScanTable(fileName, table, usages, cancellationToken);
+                descriptors.AddRange(Directory.EnumerateFiles(sw2DaDirectoryPath, "*.2da")
+                    .OrderBy(path => path, StringComparer.OrdinalIgnoreCase)
+                    .Select(path => new SourceDescriptor(
+                        Path.GetFullPath(path),
+                        Path.GetFileName(path),
+                        SourceKind.TwoDa)));
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                Logger.Warning(ex, "Could not enumerate TLK reference sources under {TwoDaRoot}", sw2DaDirectoryPath);
+                enumerationWarnings.Add($"{Path.GetFullPath(sw2DaDirectoryPath)} (2DA enumeration failed)");
             }
 
             if (!string.IsNullOrWhiteSpace(repositoryRootPath))
-                ScanRepositoryText(repositoryRootPath, usages, unscannable, cancellationToken);
+                AddRepositorySourceDescriptors(repositoryRootPath, descriptors, enumerationWarnings, cancellationToken);
+
+            var snapshots = new Dictionary<string, SourceSnapshot>(StringComparer.OrdinalIgnoreCase);
+            var scannedSourceCount = 0;
+            foreach (var descriptor in descriptors)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                SourceFingerprint fingerprint;
+                try
+                {
+                    fingerprint = SourceFingerprint.Capture(descriptor.Path);
+                }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+                {
+                    Logger.Warning(ex, "Could not inspect TLK reference source {ReferencePath}", descriptor.Path);
+                    snapshots[descriptor.Path] = new SourceSnapshot(
+                        descriptor,
+                        default,
+                        Array.Empty<TlkReferenceUsage>(),
+                        descriptor.DisplayName);
+                    scannedSourceCount++;
+                    continue;
+                }
+
+                if (_sourceSnapshots.TryGetValue(descriptor.Path, out var previous) &&
+                    previous.Warning == null &&
+                    previous.Descriptor.Kind == descriptor.Kind &&
+                    previous.Descriptor.DisplayName == descriptor.DisplayName &&
+                    previous.Fingerprint == fingerprint)
+                {
+                    snapshots[descriptor.Path] = previous;
+                    continue;
+                }
+
+                snapshots[descriptor.Path] = ScanSource(descriptor, fingerprint, cancellationToken);
+                scannedSourceCount++;
+            }
+
+            var usages = new Dictionary<int, List<TlkReferenceUsage>>();
+            var unscannable = new List<string>(enumerationWarnings);
+            foreach (var snapshot in snapshots.Values)
+            {
+                foreach (var usage in snapshot.Usages)
+                    AddUsage(usages, usage);
+                if (snapshot.Warning != null)
+                    unscannable.Add(snapshot.Warning);
+            }
 
             var frozen = usages.ToDictionary(
                 pair => pair.Key,
                 pair => (IReadOnlyList<TlkReferenceUsage>)pair.Value.ToArray());
-            return new TlkReferenceIndex(frozen, unscannable.ToArray());
+            return new TlkReferenceIndex(frozen, unscannable.ToArray(), snapshots, scannedSourceCount);
+        }
+
+        private static SourceSnapshot ScanSource(
+            SourceDescriptor descriptor,
+            SourceFingerprint fingerprint,
+            CancellationToken cancellationToken)
+        {
+            var usages = new Dictionary<int, List<TlkReferenceUsage>>();
+            var scanned = descriptor.Kind == SourceKind.TwoDa
+                ? TryScanTwoDa(descriptor.Path, descriptor.DisplayName, usages, cancellationToken)
+                : TryScanRepositoryTextFile(
+                    descriptor.Path,
+                    descriptor.DisplayName,
+                    usages,
+                    cancellationToken);
+
+            SourceFingerprint after;
+            try
+            {
+                after = SourceFingerprint.Capture(descriptor.Path);
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                Logger.Warning(ex, "Could not verify TLK reference source {ReferencePath}", descriptor.Path);
+                return new SourceSnapshot(
+                    descriptor,
+                    fingerprint,
+                    Flatten(usages),
+                    descriptor.DisplayName);
+            }
+
+            var warning = scanned && after == fingerprint
+                ? null
+                : descriptor.DisplayName;
+            return new SourceSnapshot(descriptor, after, Flatten(usages), warning);
+        }
+
+        private static bool TryScanTwoDa(
+            string path,
+            string fileName,
+            Dictionary<int, List<TlkReferenceUsage>> usages,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                var table = new TwoDaTable(Path.GetFileNameWithoutExtension(fileName), TwoDAReader.Read(path));
+                ScanTable(fileName, table, usages, cancellationToken);
+                return true;
+            }
+            catch (NwnFormatException)
+            {
+                return TryScanRawText(path, fileName, usages, cancellationToken);
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                Logger.Warning(ex, "Could not parse TLK reference source {ReferencePath}", path);
+                return TryScanRawText(path, fileName, usages, cancellationToken);
+            }
+        }
+
+        private static TlkReferenceUsage[] Flatten(Dictionary<int, List<TlkReferenceUsage>> usages) =>
+            usages.OrderBy(pair => pair.Key).SelectMany(pair => pair.Value).ToArray();
+
+        private static void AddRepositorySourceDescriptors(
+            string repositoryRootPath,
+            List<SourceDescriptor> descriptors,
+            List<string> unscannable,
+            CancellationToken cancellationToken)
+        {
+            var root = Path.GetFullPath(repositoryRootPath);
+            try
+            {
+                foreach (var path in EnumerateRepositoryFiles(root))
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    var relativePath = Path.GetRelativePath(root, path);
+                    if (IsIgnoredRepositoryPath(relativePath) ||
+                        Path.GetExtension(path).Equals(".2da", StringComparison.OrdinalIgnoreCase) ||
+                        !RepositoryTextExtensions.Contains(Path.GetExtension(path)))
+                    {
+                        continue;
+                    }
+
+                    descriptors.Add(new SourceDescriptor(
+                        Path.GetFullPath(path),
+                        relativePath.Replace('\\', '/'),
+                        SourceKind.RepositoryText));
+                }
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                Logger.Warning(ex, "Could not enumerate TLK reference sources under {RepositoryRoot}", root);
+                unscannable.Add($"{root} (repository enumeration failed)");
+            }
         }
 
         public bool IsReferenced(int entryId) =>
@@ -234,37 +377,6 @@ namespace SWLOR.Toolset.Domain.GameData.Tlk
             }
         }
 
-        private static void ScanRepositoryText(
-            string repositoryRootPath,
-            Dictionary<int, List<TlkReferenceUsage>> usages,
-            List<string> unscannable,
-            CancellationToken cancellationToken)
-        {
-            var root = Path.GetFullPath(repositoryRootPath);
-            try
-            {
-                foreach (var path in EnumerateRepositoryFiles(root))
-                {
-                    cancellationToken.ThrowIfCancellationRequested();
-                    var relativePath = Path.GetRelativePath(root, path);
-                    if (IsIgnoredRepositoryPath(relativePath) ||
-                        Path.GetExtension(path).Equals(".2da", StringComparison.OrdinalIgnoreCase) ||
-                        !RepositoryTextExtensions.Contains(Path.GetExtension(path)))
-                    {
-                        continue;
-                    }
-
-                    if (!TryScanRepositoryTextFile(path, relativePath, usages, cancellationToken))
-                        unscannable.Add(relativePath.Replace('\\', '/'));
-                }
-            }
-            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
-            {
-                Logger.Warning(ex, "Could not enumerate TLK reference sources under {RepositoryRoot}", root);
-                unscannable.Add($"{root} (repository enumeration failed)");
-            }
-        }
-
         private static IEnumerable<string> EnumerateRepositoryFiles(string root)
         {
             var pending = new Stack<string>();
@@ -372,6 +484,32 @@ namespace SWLOR.Toolset.Domain.GameData.Tlk
             return length == 0
                 ? lineIndex.ToString(CultureInfo.InvariantCulture)
                 : trimmed[..length].Trim('"').ToString();
+        }
+
+        private enum SourceKind
+        {
+            TwoDa,
+            RepositoryText
+        }
+
+        private sealed record SourceDescriptor(string Path, string DisplayName, SourceKind Kind);
+
+        private sealed record SourceSnapshot(
+            SourceDescriptor Descriptor,
+            SourceFingerprint Fingerprint,
+            TlkReferenceUsage[] Usages,
+            string? Warning);
+
+        private readonly record struct SourceFingerprint(long Length, DateTime LastWriteUtc)
+        {
+            public static SourceFingerprint Capture(string path)
+            {
+                var info = new FileInfo(path);
+                info.Refresh();
+                if (!info.Exists)
+                    throw new FileNotFoundException("TLK reference source no longer exists.", path);
+                return new SourceFingerprint(info.Length, info.LastWriteTimeUtc);
+            }
         }
 
         private static void AddUsage(

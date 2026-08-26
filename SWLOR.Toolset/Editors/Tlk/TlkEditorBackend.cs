@@ -133,8 +133,7 @@ public sealed class TlkEditorBackend : ITlkEditorBackend
         _document.FindNextAvailableBlank(currentId, _references);
     public void RefreshReferences()
     {
-        var references = TlkReferenceIndex.Build(_source.TwoDaDirectory, _source.RepositoryRoot);
-        _references = references;
+        _references = _references.Refresh(_source.TwoDaDirectory, _source.RepositoryRoot);
     }
 
     public bool HasExternalChange() =>
@@ -147,7 +146,7 @@ public sealed class TlkEditorBackend : ITlkEditorBackend
         // Unlike initial open, reload must reject a torn external JSON/binary generation before it
         // can replace the editor state or be published to open toolset fields.
         var snapshot = CaptureSnapshot(verifyBinaryPair: true);
-        var references = TlkReferenceIndex.Build(_source.TwoDaDirectory, _source.RepositoryRoot);
+        var references = _references.Refresh(_source.TwoDaDirectory, _source.RepositoryRoot);
         _document = snapshot.Document;
         _references = references;
         _jsonFingerprint = snapshot.JsonFingerprint;

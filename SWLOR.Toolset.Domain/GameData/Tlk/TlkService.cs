@@ -14,7 +14,8 @@ namespace SWLOR.Toolset.Domain.GameData.Tlk
         public const uint CustomTlkBase = 16777216;
 
         private readonly Lazy<(TlkJsonFile Custom, TlkFile? Base)> _data;
-        private TlkFile? _customBinaryOverride;
+        private TlkFile? _selectedCustomBinary;
+        private TlkFile? _publishedRepositoryBinary;
 
         /// <summary>Raised after the module's selected custom TLK has been atomically replaced.</summary>
         public event Action? CustomTlkReloaded;
@@ -121,7 +122,8 @@ namespace SWLOR.Toolset.Domain.GameData.Tlk
         /// </summary>
         public string? GetCustomText(int id)
         {
-            var binary = Volatile.Read(ref _customBinaryOverride);
+            var binary = Volatile.Read(ref _publishedRepositoryBinary) ??
+                         Volatile.Read(ref _selectedCustomBinary);
             return binary != null
                 ? binary.GetString((uint)id)
                 : _data.Value.Custom.GetText(id);
@@ -136,7 +138,7 @@ namespace SWLOR.Toolset.Domain.GameData.Tlk
             var replacement = string.IsNullOrWhiteSpace(binaryTlkPath)
                 ? null
                 : TlkReader.Read(binaryTlkPath);
-            Volatile.Write(ref _customBinaryOverride, replacement);
+            Volatile.Write(ref _selectedCustomBinary, replacement);
             CustomTlkReloaded?.Invoke();
         }
 
@@ -148,7 +150,7 @@ namespace SWLOR.Toolset.Domain.GameData.Tlk
         public void PublishCustomTlk(TlkFile customTlk)
         {
             ArgumentNullException.ThrowIfNull(customTlk);
-            Volatile.Write(ref _customBinaryOverride, customTlk);
+            Volatile.Write(ref _publishedRepositoryBinary, customTlk);
             CustomTlkReloaded?.Invoke();
         }
     }

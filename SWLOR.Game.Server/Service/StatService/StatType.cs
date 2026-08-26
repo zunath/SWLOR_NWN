@@ -6071,6 +6071,10 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
         AbilityActivationIdleCriticalDamagePercentAdjustment = 1052,
 
+        /// <summary>Current active rank of Bolster Attack.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        BolsterAttackRank = 1053,
+
     }
 
     public class StatTypeAttribute : Attribute

@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.StatService;
 
 namespace SWLOR.Game.Server.Service.AIService
 {
@@ -20,6 +21,18 @@ namespace SWLOR.Game.Server.Service.AIService
         {
             return context => context.TargetHealthPercent <= thresholdPercent
                 ? score + thresholdPercent - context.TargetHealthPercent
+                : 0;
+        }
+
+        /// <summary>
+        /// Scores a defensive self-buff only while the creature is in combat and its active rank is
+        /// below the rank supplied by the ability.
+        /// </summary>
+        public static AIScoreCalculation SelfStatBelow(StatType activeRankStat, int requiredRank, int abilityLevel)
+        {
+            return context => context.CurrentEnmityTarget != OBJECT_INVALID &&
+                              Stat.GetStatAdjustment(context.Self, activeRankStat) < requiredRank
+                ? AIScoreBand.Defensive + abilityLevel
                 : 0;
         }
 

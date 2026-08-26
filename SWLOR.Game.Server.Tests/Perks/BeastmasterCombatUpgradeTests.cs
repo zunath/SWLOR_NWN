@@ -153,6 +153,34 @@ public class BeastmasterCombatUpgradeTests
     }
 
     [Test]
+    public void CoordinatedStrike_UsesSelfTargeted2daRows()
+    {
+        var root = FindRepositoryRoot();
+        var featRows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
+            root.FullName,
+            "SWLOR_Haks",
+            "sw_2da",
+            "feat.2da")));
+        var spellRows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
+            root.FullName,
+            "SWLOR_Haks",
+            "sw_2da",
+            "spells.2da")));
+
+        foreach (var feat in new[] { FeatType.CoordinatedStrike1, FeatType.CoordinatedStrike2 })
+        {
+            var featRow = featRows[(int)feat];
+            featRow["TARGETSELF"].Should().Be("1");
+            featRow["HostileFeat"].Should().Be("****");
+
+            var spellRow = spellRows[int.Parse(featRow["SPELLID"])];
+            spellRow["Range"].Should().Be("P");
+            spellRow["TargetType"].Should().Be("0x01");
+            spellRow["HostileSetting"].Should().Be("0");
+        }
+    }
+
+    [Test]
     public void TameChance_ScalesSocialByThreePercentAndCapsAtSeventyFive()
     {
         var baseline = TameAbilityDefinition.CalculateTameChance(

@@ -1101,8 +1101,11 @@ public class TlkEditorTests
 
             var grid = view.FindControl<ListBox>("RowGrid")!;
             view.FindControl<Button>("ClearFilterButton")!.Content.Should().Be("×");
+            Grid.GetColumn(view.FindControl<Button>("NextBlankButton")!).Should().Be(0);
             view.FindControl<Button>("AddRowButton")!.Content.Should().Be("Add row");
+            Grid.GetColumn(view.FindControl<Button>("AddRowButton")!).Should().Be(1);
             view.FindControl<Button>("RemoveRowButton")!.Content.Should().Be("Remove row");
+            Grid.GetColumn(view.FindControl<Button>("RemoveRowButton")!).Should().Be(2);
             view.FindControl<TextBox>("SelectedTextEditor").Should().NotBeNull();
             grid.ItemsSource.Should().BeSameAs(editor.Rows);
             grid.GetVisualDescendants().OfType<ListBoxItem>().Count().Should().BeLessThan(100,

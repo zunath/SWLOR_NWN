@@ -20,17 +20,18 @@
       </Grid>
     </Grid>
 
-    <Grid Grid.Row="1" ColumnDefinitions="Auto,Auto,18,Auto,*,Auto" ColumnSpacing="7" Margin="0,7,0,7">
-      <Button x:Name="AddRowButton" Grid.Column="0" Content="Add row"
+    <Grid Grid.Row="1" ColumnDefinitions="Auto,Auto,Auto,*,Auto" ColumnSpacing="7" Margin="0,7,0,7">
+      <Button x:Name="NextBlankButton" Grid.Column="0" Content="Next Blank"
+              Command="{Binding FindNextBlankCommand}" Padding="10,5" />
+      <Button x:Name="AddRowButton" Grid.Column="1" Content="Add row"
               Command="{Binding AddRowCommand}" Padding="10,5"
               ToolTip.Tip="Use the first unreferenced blank row without changing existing StrRefs" />
-      <Button Grid.Column="1" Content="Next Blank" Command="{Binding FindNextBlankCommand}" Padding="10,5" />
-      <Button x:Name="RemoveRowButton" Grid.Column="3" Content="Remove row"
+      <Button x:Name="RemoveRowButton" Grid.Column="2" Content="Remove row"
               Command="{Binding RemoveRowCommand}" Padding="10,5"
               ToolTip.Tip="Remove this row's text without renumbering later rows" />
-      <TextBlock Grid.Column="4" Text="{Binding NavigationStatus}" Classes="dim"
+      <TextBlock Grid.Column="3" Text="{Binding NavigationStatus}" Classes="dim"
                  VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
-      <TextBlock Grid.Column="5"
+      <TextBlock Grid.Column="4"
                  Text="{Binding EntryCount, StringFormat='{}{0:N0} entries'}"
                  Classes="count" VerticalAlignment="Center" />
     </Grid>

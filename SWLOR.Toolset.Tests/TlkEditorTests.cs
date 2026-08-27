@@ -943,6 +943,39 @@ public class TlkEditorTests
     }
 
     [Test]
+    public void StablePairFingerprintRejectsJsonChangedWhileTheBinaryIsBeingChecked()
+    {
+        var root = Path.Combine(Path.GetTempPath(), "swlor-tlk-pair-fingerprint-tests", Guid.NewGuid().ToString("N"));
+        Directory.CreateDirectory(root);
+        var jsonPath = Path.Combine(root, "sw_tlk.tlk.json");
+        var binaryPath = Path.Combine(root, "sw_tlk.tlk");
+        File.WriteAllText(jsonPath, "accepted JSON generation");
+        File.WriteAllText(binaryPath, "accepted binary generation");
+        var captureCount = 0;
+
+        try
+        {
+            var pair = TlkEditorBackend.FileFingerprintPair.CaptureStable(
+                jsonPath,
+                binaryPath,
+                path =>
+                {
+                    var fingerprint = TlkEditorBackend.FileFingerprint.Capture(path);
+                    if (++captureCount == 2)
+                        File.WriteAllText(jsonPath, "external JSON generation");
+                    return fingerprint;
+                });
+
+            pair.Should().BeNull(
+                "the reverse pass must observe a JSON replacement made during the binary check");
+        }
+        finally
+        {
+            Directory.Delete(root, recursive: true);
+        }
+    }
+
+    [Test]
     public void ProductionBackendRefreshesReferencesChangedAfterOpen()
     {
         var root = Path.Combine(Path.GetTempPath(), "swlor-tlk-reference-refresh-tests", Guid.NewGuid().ToString("N"));

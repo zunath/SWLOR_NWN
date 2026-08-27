@@ -144,8 +144,11 @@ public sealed class TlkEditorBackend : ITlkEditorBackend
         _references = _references.Refresh(_source.TwoDaDirectory, _source.RepositoryRoot);
     }
 
-    public bool HasExternalChange() =>
-        !_jsonFingerprint.Matches(JsonPath) || !_binaryFingerprint.Matches(BinaryPath);
+    public bool HasExternalChange()
+    {
+        var current = FileFingerprintPair.CaptureStable(JsonPath, BinaryPath);
+        return current == null || !current.Matches(_jsonFingerprint, _binaryFingerprint);
+    }
 
     public void Reload()
     {
@@ -168,8 +171,10 @@ public sealed class TlkEditorBackend : ITlkEditorBackend
         if (overwriteExternalChanges)
         {
             using var acceptedGeneration = ModuleWriteLock.AcquireForResourcePath(JsonPath);
-            _jsonFingerprint = FileFingerprint.Capture(JsonPath);
-            _binaryFingerprint = FileFingerprint.Capture(BinaryPath);
+            var current = FileFingerprintPair.CaptureStable(JsonPath, BinaryPath) ??
+                throw new TlkExternalChangeException(JsonPath);
+            _jsonFingerprint = current.Json;
+            _binaryFingerprint = current.Binary;
         }
         else if (HasExternalChange())
         {
@@ -201,8 +206,10 @@ public sealed class TlkEditorBackend : ITlkEditorBackend
                 if (HasExternalChange())
                     throw new TlkExternalChangeException(JsonPath);
                 SaveService.CommitAll(new[] { jsonStage, binaryStage });
-                _jsonFingerprint = FileFingerprint.Capture(JsonPath);
-                _binaryFingerprint = FileFingerprint.Capture(BinaryPath);
+                // Retain the exact generation we wrote rather than accepting a path reread that a
+                // non-cooperating writer could replace immediately after the grouped commit.
+                _jsonFingerprint = FileFingerprint.FromContent(JsonPath, jsonBytes);
+                _binaryFingerprint = FileFingerprint.FromContent(BinaryPath, binaryBytes);
             }
             _acceptedBinary = verifiedBinary;
             jsonStaged = false;
@@ -323,7 +330,7 @@ public sealed class TlkEditorBackend : ITlkEditorBackend
         }
     }
 
-    private sealed record FileFingerprint(bool Exists, DateTime LastWriteUtc, byte[] Hash)
+    internal sealed record FileFingerprint(bool Exists, DateTime LastWriteUtc, byte[] Hash)
     {
         public static FileFingerprint Missing { get; } =
             new(false, default, Array.Empty<byte>());
@@ -336,14 +343,37 @@ public sealed class TlkEditorBackend : ITlkEditorBackend
             return CapturedFile.Capture(path).Fingerprint;
         }
 
-        public bool Matches(string path)
+        public bool Matches(FileFingerprint other) =>
+            Exists == other.Exists &&
+            LastWriteUtc == other.LastWriteUtc &&
+            Hash.AsSpan().SequenceEqual(other.Hash);
+    }
+
+    internal sealed record FileFingerprintPair(FileFingerprint Json, FileFingerprint Binary)
+    {
+        /// <summary>
+        /// Captures both files, then rechecks them in reverse order. A writer that changes the JSON
+        /// after its first capture or the binary while the pair is being read makes the two passes
+        /// disagree, so callers fail closed instead of accepting a torn generation.
+        /// </summary>
+        public static FileFingerprintPair? CaptureStable(
+            string jsonPath,
+            string binaryPath,
+            Func<string, FileFingerprint>? capture = null)
         {
-            if (!File.Exists(path))
-                return !Exists;
-            if (!Exists || File.GetLastWriteTimeUtc(path) != LastWriteUtc)
-                return false;
-            return SHA256.HashData(File.ReadAllBytes(path)).AsSpan().SequenceEqual(Hash);
+            capture ??= FileFingerprint.Capture;
+            var firstJson = capture(jsonPath);
+            var firstBinary = capture(binaryPath);
+            var secondBinary = capture(binaryPath);
+            var secondJson = capture(jsonPath);
+
+            return firstJson.Matches(secondJson) && firstBinary.Matches(secondBinary)
+                ? new FileFingerprintPair(secondJson, secondBinary)
+                : null;
         }
+
+        public bool Matches(FileFingerprint json, FileFingerprint binary) =>
+            Json.Matches(json) && Binary.Matches(binary);
     }
 }
 

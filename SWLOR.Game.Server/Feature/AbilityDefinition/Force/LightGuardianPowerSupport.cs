@@ -58,11 +58,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 var hasForceTemporaryHP =
                     TemporaryHitPointEffects.IsActivePoolFromSource(
                         friendly,
-                        "GUARDIAN_WARD",
+                        TemporaryHitPointEffectKey.GuardianWard,
                         activator) ||
                     TemporaryHitPointEffects.IsActivePoolFromSource(
                         friendly,
-                        "FATAL_DAMAGE_SAVE",
+                        TemporaryHitPointEffectKey.FatalDamageSave,
                         activator);
                 var resistance = hasForceTemporaryHP
                     ? 15

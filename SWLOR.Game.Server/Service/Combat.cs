@@ -978,13 +978,17 @@ namespace SWLOR.Game.Server.Service
                 TemporaryHitPointEffects.ApplyFlatFromSource(
                     temporaryHPSource,
                     defender,
-                    "FATAL_DAMAGE_SAVE",
+                    TemporaryHitPointEffectKey.FatalDamageSave,
                     tempHP,
                     duration);
             }
             else
             {
-                TemporaryHitPointEffects.ApplyFlat(defender, "FATAL_DAMAGE_SAVE", tempHP, duration);
+                TemporaryHitPointEffects.ApplyFlat(
+                    defender,
+                    TemporaryHitPointEffectKey.FatalDamageSave,
+                    tempHP,
+                    duration);
             }
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), defender);
 

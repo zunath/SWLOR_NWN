@@ -46,7 +46,10 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         private void RemoveWhenGuardianWardPoolEnds(uint creature)
         {
-            if (TemporaryHitPointEffects.IsActivePoolFromSource(creature, "GUARDIAN_WARD", Source))
+            if (TemporaryHitPointEffects.IsActivePoolFromSource(
+                    creature,
+                    TemporaryHitPointEffectKey.GuardianWard,
+                    Source))
                 return;
 
             StatusEffect.RemoveStatusEffect(creature, GetType(), Source, false);

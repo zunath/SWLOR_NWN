@@ -130,8 +130,8 @@ public class ForceLightGuardianTests
 
         var support = File.ReadAllText((forceAbilityRoot / "LightGuardianPowerSupport.cs").FullName);
         support.Should().Contain("TemporaryHitPointEffects.IsActivePoolFromSource(");
-        support.Should().Contain("\"GUARDIAN_WARD\"");
-        support.Should().Contain("\"FATAL_DAMAGE_SAVE\"");
+        support.Should().Contain("TemporaryHitPointEffectKey.GuardianWard");
+        support.Should().Contain("TemporaryHitPointEffectKey.FatalDamageSave");
         support.Should().Contain("StatusEffect.RemoveStatusEffect(target, typeof(ReflectiveBarrier1StatusEffect), false)",
             "replacing a Guardian Ward pool must remove the prior caster's reflection rider");
         support.Should().NotContain("StatusEffect.HasStatusEffect(friendly, typeof(ReflectiveBarrier1StatusEffect), activator)",
@@ -148,13 +148,30 @@ public class ForceLightGuardianTests
         var combat = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
         combat.Should().Contain("StatusEffect.GetStatusEffectSourceWithStat(");
         combat.Should().Contain("TemporaryHitPointEffects.ApplyFlatFromSource(");
+        combat.Should().Contain("TemporaryHitPointEffectKey.FatalDamageSave");
 
         var reflectiveBarrier = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "ReflectiveBarrier1StatusEffect.cs").FullName);
-        reflectiveBarrier.Should().Contain("TemporaryHitPointEffects.IsActivePoolFromSource(creature, \"GUARDIAN_WARD\", Source)");
+        reflectiveBarrier.Should().Contain("TemporaryHitPointEffectKey.GuardianWard");
         reflectiveBarrier.Should().Contain("IPreDamageStatusEffect");
         reflectiveBarrier.Should().Contain("public void OnBeforeDamageTaken(");
         reflectiveBarrier.Should().NotContain("DelayCommand(",
             "an exhausted barrier must be gone before the shared reflection stage reads its stats");
+
+        var temporaryHPKeys = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "TemporaryHitPointEffectKey.cs").FullName);
+        temporaryHPKeys.Should().Contain("public const string FatalDamageSave = \"FATAL_DAMAGE_SAVE\";");
+        temporaryHPKeys.Should().Contain("public const string GuardianWard = \"GUARDIAN_WARD\";");
+
+        var guardianWardDefinitionSource = File.ReadAllText((forceAbilityRoot / "GuardianWardAbilityDefinition.cs").FullName);
+        var temporaryHPKeyConsumers = string.Join(
+            Environment.NewLine,
+            support,
+            combat,
+            reflectiveBarrier,
+            guardianWardDefinitionSource);
+        temporaryHPKeyConsumers.Should().NotContain("\"FATAL_DAMAGE_SAVE\"",
+            "shared temporary-HP identifiers must be referenced through named constants");
+        temporaryHPKeyConsumers.Should().NotContain("\"GUARDIAN_WARD\"",
+            "shared temporary-HP identifiers must be referenced through named constants");
 
         var weaponDamage = File.ReadAllText((root / "SWLOR.Game.Server" / "Native" / "GetDamageRoll.cs").FullName);
         var abilityDamage = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Ability.cs").FullName);

@@ -29,7 +29,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void Tick(uint creature)
         {
-            RemoveWhenGuardianWardPoolEnds(creature, delayUntilAfterDamageResolution: false);
+            RemoveWhenGuardianWardPoolEnds(creature);
         }
 
         protected override void OnDamageTaken(
@@ -38,32 +38,18 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             int damage,
             CombatDamageType damageType)
         {
-            // Damage notifications run immediately before the shared reflection stage. Delay the
-            // removal so the hit that consumes the last temporary HP still reflects, then prevent
-            // every subsequent hit from using the expired barrier.
-            RemoveWhenGuardianWardPoolEnds(defender, delayUntilAfterDamageResolution: true);
+            // Damage notifications run before the engine applies the current hit. The hit that
+            // consumes the final temporary HP therefore still sees an active pool, while the next
+            // hit removes an exhausted barrier before the shared reflection stage reads its stats.
+            RemoveWhenGuardianWardPoolEnds(defender);
         }
 
-        private void RemoveWhenGuardianWardPoolEnds(uint creature, bool delayUntilAfterDamageResolution)
+        private void RemoveWhenGuardianWardPoolEnds(uint creature)
         {
             if (TemporaryHitPointEffects.IsActivePoolFromSource(creature, "GUARDIAN_WARD", Source))
                 return;
 
-            if (delayUntilAfterDamageResolution)
-            {
-                var statusEffectId = Id;
-                var source = Source;
-                DelayCommand(0f, () =>
-                {
-                    var current = StatusEffect.GetStatusEffect(creature, GetType(), source);
-                    if (current?.Id == statusEffectId)
-                        StatusEffect.RemoveStatusEffect(creature, GetType(), source, false);
-                });
-            }
-            else
-            {
-                StatusEffect.RemoveStatusEffect(creature, GetType(), Source, false);
-            }
+            StatusEffect.RemoveStatusEffect(creature, GetType(), Source, false);
         }
     }
 }

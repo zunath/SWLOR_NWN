@@ -151,9 +151,14 @@ public class ForceLightGuardianTests
 
         var reflectiveBarrier = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "ReflectiveBarrier1StatusEffect.cs").FullName);
         reflectiveBarrier.Should().Contain("TemporaryHitPointEffects.IsActivePoolFromSource(creature, \"GUARDIAN_WARD\", Source)");
-        reflectiveBarrier.Should().Contain("RemoveWhenGuardianWardPoolEnds(defender, delayUntilAfterDamageResolution: true)");
-        reflectiveBarrier.Should().Contain("if (current?.Id == statusEffectId)",
-            "a delayed cleanup from an exhausted pool must not remove a newly recast barrier");
+        reflectiveBarrier.Should().Contain("RemoveWhenGuardianWardPoolEnds(defender)");
+        reflectiveBarrier.Should().NotContain("DelayCommand(",
+            "an exhausted barrier must be gone before the shared reflection stage reads its stats");
+
+        var weaponDamage = File.ReadAllText((root / "SWLOR.Game.Server" / "Native" / "GetDamageRoll.cs").FullName);
+        weaponDamage.IndexOf("PublishDamageDealtEvent(", StringComparison.Ordinal)
+            .Should().BeLessThan(weaponDamage.IndexOf("Combat.ApplyDamageReflectionEffects(", StringComparison.Ordinal),
+                "weapon damage-status notifications must remove exhausted conditional reflection before reflection is calculated");
     }
 
     [Test]

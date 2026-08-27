@@ -160,6 +160,11 @@ namespace SWLOR.Game.Server.Native
                     {
                         var weaponId = weapon?.m_idSelf ?? OBJECT_INVALID;
                         PublishDamageDealtEvent(attacker.m_idSelf, defender.m_idSelf, weaponId, totalDamage, weaponSkillType, damageProfile.DamageType);
+                        Combat.ApplyDamageReflectionEffects(
+                            attacker.m_idSelf,
+                            defender.m_idSelf,
+                            totalDamage,
+                            damageProfile.DamageType);
                     }
                 }
 
@@ -238,15 +243,6 @@ namespace SWLOR.Game.Server.Native
             // Ensure damage is never negative
             if (damage < 0)
                 damage = 0;
-
-            if (isLandedAttack && damage > 0 && targetObject.m_nObjectType == (int)ObjectType.Creature)
-            {
-                Combat.ApplyDamageReflectionEffects(
-                    attacker.m_idSelf,
-                    targetObject.m_idSelf,
-                    damage,
-                    damageProfile.DamageType);
-            }
 
             if (damageProfile.DamageType.IsPhysicalDamageType())
             {

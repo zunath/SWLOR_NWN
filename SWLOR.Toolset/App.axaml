@@ -22,14 +22,25 @@
         <TextBlock Text="{Binding Label}" VerticalAlignment="Top" Margin="0,5,0,0"
                    Classes="dim" TextWrapping="Wrap" />
         <Panel>
-          <TextBox Text="{Binding Text, Mode=TwoWay}" IsReadOnly="{Binding IsReadOnly}"
-                   Watermark="{Binding StrRefDisplay}" IsVisible="{Binding IsSingleLine}" />
-          <TextBox Text="{Binding Text, Mode=TwoWay}" IsReadOnly="{Binding IsReadOnly}"
-                   Watermark="{Binding StrRefDisplay}"
-                   IsVisible="{Binding IsMultiline}" AcceptsReturn="True" TextWrapping="Wrap"
-                   MinHeight="140" VerticalContentAlignment="Top"
-                   ScrollViewer.VerticalScrollBarVisibility="Auto"
-                   ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
+          <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding IsSingleLine}">
+            <TextBox Grid.Column="0" Text="{Binding Text, Mode=TwoWay}" IsReadOnly="{Binding IsReadOnly}"
+                     Watermark="{Binding StrRefDisplay}" />
+            <Button Grid.Column="1" Content="Open TLK row" Margin="5,0,0,0" Padding="8,4"
+                    Command="{Binding OpenTlkRowCommand}" IsVisible="{Binding CanOpenTlkRow}"
+                    ToolTip.Tip="Open this custom StrRef in the TLK Editor" />
+          </Grid>
+          <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding IsMultiline}">
+            <TextBox Grid.Column="0" Text="{Binding Text, Mode=TwoWay}" IsReadOnly="{Binding IsReadOnly}"
+                     Watermark="{Binding StrRefDisplay}"
+                     AcceptsReturn="True" TextWrapping="Wrap"
+                     MinHeight="140" VerticalContentAlignment="Top"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
+            <Button Grid.Column="1" Content="Open TLK row" Margin="5,0,0,0" Padding="8,4"
+                    VerticalAlignment="Top"
+                    Command="{Binding OpenTlkRowCommand}" IsVisible="{Binding CanOpenTlkRow}"
+                    ToolTip.Tip="Open this custom StrRef in the TLK Editor" />
+          </Grid>
         </Panel>
       </behaviors:LabeledFieldPanel>
     </DataTemplate>

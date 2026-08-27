@@ -77,4 +77,73 @@ public class TlkReaderTests
         Action wrongVersion = () => TlkReader.Read(bytes);
         wrongVersion.Should().Throw<NwnFormatException>();
     }
+
+    [Test]
+    public void SingleByteTextCannotExceedTheDecodedUtf16AllocationBudget()
+    {
+        var encodedLength = checked((int)(
+            (TlkFormatLimits.MaximumDecodedAllocationBytes -
+             TlkFormatLimits.EstimatedManagedBytesPerEntry) / sizeof(char) + 1));
+        var bytes = new byte[60 + encodedLength];
+        "TLK "u8.CopyTo(bytes);
+        "V3.0"u8.CopyTo(bytes.AsSpan(4));
+        BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(12), 1);
+        BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(16), 60);
+        BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(20), 1);
+        BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(48), 0);
+        BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(52), (uint)encodedLength);
+
+        Action read = () => TlkReader.Read(bytes);
+
+        read.Should().Throw<NwnFormatException>().WithMessage("*allocation budget*");
+    }
+
+    [Test]
+    public void SoundResRefsAreChargedAgainstTheDecodedAllocationBudget()
+    {
+        var count = TlkFormatLimits.MaximumEntryCount;
+        var bytes = new byte[checked(20 + count * 40)];
+        "TLK "u8.CopyTo(bytes);
+        "V3.0"u8.CopyTo(bytes.AsSpan(4));
+        BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(12), (uint)count);
+        BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(16), (uint)bytes.Length);
+
+        for (var index = 0; index < 3; index++)
+        {
+            var entryOffset = 20 + index * 40;
+            BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(entryOffset), 0x0002);
+            Encoding.ASCII.GetBytes("sixteen_char_ref").CopyTo(bytes, entryOffset + 4);
+        }
+
+        Action read = () => TlkReader.Read(bytes);
+
+        read.Should().Throw<NwnFormatException>()
+            .WithMessage("*allocation budget*TLK sound ResRef*");
+    }
+
+    [Test]
+    public void UniqueDecodedTextRangesIncludeStringAndDictionaryOverheadInTheBudget()
+    {
+        var count = TlkFormatLimits.MaximumEntryCount;
+        var stringsOffset = checked(20 + count * 40);
+        var bytes = new byte[stringsOffset + 2];
+        "TLK "u8.CopyTo(bytes);
+        "V3.0"u8.CopyTo(bytes.AsSpan(4));
+        BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(12), (uint)count);
+        BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(16), (uint)stringsOffset);
+
+        for (var index = 0; index < 2; index++)
+        {
+            var entryOffset = 20 + index * 40;
+            BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(entryOffset), 0x0001);
+            BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(entryOffset + 28), (uint)index);
+            BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(entryOffset + 32), 1);
+            bytes[stringsOffset + index] = (byte)('a' + index);
+        }
+
+        Action read = () => TlkReader.Read(bytes);
+
+        read.Should().Throw<NwnFormatException>()
+            .WithMessage("*allocation budget*TLK string 1*");
+    }
 }

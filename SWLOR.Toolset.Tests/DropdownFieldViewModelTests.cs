@@ -10,6 +10,41 @@ namespace SWLOR.Toolset.Tests;
 public class DropdownFieldViewModelTests
 {
     [Test]
+    public void RefreshOptions_ReplacesCachedLabelsWithoutWritingTheDocument()
+    {
+        var document = JsonGffDocument.Parse(Encoding.UTF8.GetBytes(
+            "{\"__data_type\":\"UTP \",\"Appearance\":{\"type\":\"dword\",\"value\":7}}"));
+        var editCount = 0;
+        var context = new EditorFieldContext(
+            document,
+            (_, mutation) =>
+            {
+                editCount++;
+                mutation();
+                return true;
+            });
+        var descriptor = new FieldDescriptor
+        {
+            Label = "Appearance",
+            FieldName = "Appearance",
+            Kind = EditorKind.TwoDaDropdown,
+            FieldType = GffFieldType.Dword,
+            LookupKey = "appearance"
+        };
+        var field = new DropdownFieldViewModel(
+            descriptor,
+            context,
+            new[] { new LookupOption(7, "Old TLK label") });
+
+        field.RefreshOptions(new[] { new LookupOption(7, "New TLK label") });
+
+        field.SelectedOption!.Display.Should().Be("New TLK label");
+        field.Options.Should().ContainSingle(option => option.Id == 7 && option.Display == "New TLK label");
+        editCount.Should().Be(0);
+        document.Root.GetOrNull("Appearance")!.GetInteger().Should().Be(7);
+    }
+
+    [Test]
     public void MissingLookup_ShowsRawValueWithoutAllowingItToBeWritten()
     {
         var document = JsonGffDocument.Parse(Encoding.UTF8.GetBytes(

@@ -24,7 +24,20 @@ internal static class NwnTextEncoding
 
     public static Encoding ForLanguage(uint languageId)
     {
-        var codePage = languageId switch
+        return Encoding.GetEncoding(GetCodePage(languageId));
+    }
+
+    public static Encoding ForLanguageStrict(uint languageId)
+    {
+        return Encoding.GetEncoding(
+            GetCodePage(languageId),
+            EncoderFallback.ExceptionFallback,
+            DecoderFallback.ExceptionFallback);
+    }
+
+    private static int GetCodePage(uint languageId)
+    {
+        return languageId switch
         {
             5 => 1250,
             128 => 949,
@@ -33,7 +46,5 @@ internal static class NwnTextEncoding
             131 => 932,
             _ => 1252
         };
-
-        return Encoding.GetEncoding(codePage);
     }
 }

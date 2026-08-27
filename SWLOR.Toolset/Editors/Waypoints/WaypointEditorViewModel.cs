@@ -229,6 +229,27 @@ namespace SWLOR.Toolset.Editors.Waypoints
             RefreshCompleteness();
         }
 
+        /// <summary>Rebuilds every materialized choice row after TLK-backed labels change.</summary>
+        public void RefreshTlkLabels()
+        {
+            RebuildChoiceRows(BasicRows);
+            RebuildChoiceRows(BehaviorRows);
+            RefreshCompleteness();
+        }
+
+        private void RebuildChoiceRows(ObservableCollection<WaypointRowViewModel> rows)
+        {
+            for (var index = 0; index < rows.Count; index++)
+            {
+                if (rows[index].Definition.ChoicesKey == null)
+                    continue;
+
+                var definition = rows[index].Definition;
+                rows[index].Dispose();
+                rows[index] = CreateRow(definition);
+            }
+        }
+
         public bool PrepareForSave()
         {
             RefreshCompleteness();

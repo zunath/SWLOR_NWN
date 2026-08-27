@@ -27,6 +27,7 @@ namespace SWLOR.Toolset.Shell.Panels
         private readonly PortraitService? _portraitService;
         private readonly TlkService? _tlkService;
         private readonly OutputLogService _log;
+        private CatalogEntry? _selectedEntry;
 
         [ObservableProperty]
         private string _selectionTitle = "(nothing selected)";
@@ -55,6 +56,8 @@ namespace SWLOR.Toolset.Shell.Panels
             var workspace = _workspaceContext.Workspace;
             if (workspace == null)
                 return;
+
+            _selectedEntry = entry;
 
             SelectionTitle = $"{entry.ResourceTypeDisplayName} — {entry.ResRef}";
             Rows.Clear();
@@ -89,6 +92,13 @@ namespace SWLOR.Toolset.Shell.Panels
                 Rows.Add(new PropertyRow("Error", ex.Message));
                 _log.AppendLine($"Failed to load '{entry.ResRef}' ({entry.ResourceTypeDisplayName}): {ex.Message}");
             }
+        }
+
+        /// <summary>Rebuilds the current materialized rows after the active TLK generation changes.</summary>
+        public void RefreshTlkLabels()
+        {
+            if (_selectedEntry != null)
+                ShowEntry(_selectedEntry);
         }
 
         private void ShowConversationSummary(ModuleWorkspace workspace, string resRef)

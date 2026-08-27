@@ -145,6 +145,11 @@ namespace SWLOR.Toolset.Shell.Panels
                 if (_workspaceContext.Catalog is { } catalog)
                     RefreshFromCatalog(catalog);
             };
+            _workspaceContext.CatalogLabelsChanged += () =>
+            {
+                if (_workspaceContext.Catalog is { } catalog)
+                    RefreshFromCatalog(catalog);
+            };
         }
 
         /// <summary>

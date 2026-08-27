@@ -132,6 +132,8 @@ public class ForceLightGuardianTests
         support.Should().Contain("TemporaryHitPointEffects.IsActivePoolFromSource(");
         support.Should().Contain("\"GUARDIAN_WARD\"");
         support.Should().Contain("\"FATAL_DAMAGE_SAVE\"");
+        support.Should().Contain("StatusEffect.RemoveStatusEffect(target, typeof(ReflectiveBarrier1StatusEffect), false)",
+            "replacing a Guardian Ward pool must remove the prior caster's reflection rider");
         support.Should().NotContain("StatusEffect.HasStatusEffect(friendly, typeof(ReflectiveBarrier1StatusEffect), activator)",
             "the stronger resolve bonus depends on Force temporary HP, not ownership of Reflective Barrier");
 
@@ -150,6 +152,8 @@ public class ForceLightGuardianTests
         var reflectiveBarrier = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "ReflectiveBarrier1StatusEffect.cs").FullName);
         reflectiveBarrier.Should().Contain("TemporaryHitPointEffects.IsActivePoolFromSource(creature, \"GUARDIAN_WARD\", Source)");
         reflectiveBarrier.Should().Contain("RemoveWhenGuardianWardPoolEnds(defender, delayUntilAfterDamageResolution: true)");
+        reflectiveBarrier.Should().Contain("if (current?.Id == statusEffectId)",
+            "a delayed cleanup from an exhausted pool must not remove a newly recast barrier");
     }
 
     [Test]

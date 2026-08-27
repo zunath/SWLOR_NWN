@@ -51,7 +51,14 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
             if (delayUntilAfterDamageResolution)
             {
-                DelayCommand(0f, () => StatusEffect.RemoveStatusEffect(creature, GetType(), Source, false));
+                var statusEffectId = Id;
+                var source = Source;
+                DelayCommand(0f, () =>
+                {
+                    var current = StatusEffect.GetStatusEffect(creature, GetType(), source);
+                    if (current?.Id == statusEffectId)
+                        StatusEffect.RemoveStatusEffect(creature, GetType(), source, false);
+                });
             }
             else
             {

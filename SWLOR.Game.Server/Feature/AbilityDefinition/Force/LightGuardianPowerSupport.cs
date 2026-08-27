@@ -36,6 +36,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
             ApplyDeflectivePresence(activator, target);
 
+            // Guardian Ward pools replace one another regardless of caster. Clear any rider tied
+            // to the replaced pool before conditionally applying the new caster's version.
+            StatusEffect.RemoveStatusEffect(target, typeof(ReflectiveBarrier1StatusEffect), false);
             if (Stat.GetStatAdjustment(activator, StatType.LightGuardianTemporaryHPReflectiveBarrier) > 0)
             {
                 StatusEffect.ApplyStatusEffect(activator, target, typeof(ReflectiveBarrier1StatusEffect), durationSeconds);

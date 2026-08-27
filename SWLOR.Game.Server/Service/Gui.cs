@@ -18,6 +18,7 @@ namespace SWLOR.Game.Server.Service
         private static readonly Dictionary<string, Dictionary<string, GuiMethodDetail>> _elementEvents = new();
         private static readonly Dictionary<string, GuiWindowType> _windowTypesByKey = new();
         private static readonly Dictionary<Type, List<GuiWindowType>> _windowTypesByRefreshEvent = new();
+        private static readonly HashSet<string> _openCharacterSheetPlayerIds = new();
 
         /// <summary>
         /// When the module loads, cache all of the GUI windows for later retrieval.
@@ -150,10 +151,12 @@ namespace SWLOR.Game.Server.Service
         public static void SavePlayerWindowGeometry()
         {
             var player = GetExitingObject();
+            var playerId = GetObjectUUID(player);
+            _openCharacterSheetPlayerIds.Remove(playerId);
+
             if (!GetIsPC(player) || GetIsDM(player))
                 return;
 
-            var playerId = GetObjectUUID(player);
             var dbPlayer = DB.Get<Player>(playerId);
 
             foreach (var (type, _) in _windowTemplates)
@@ -242,14 +245,14 @@ namespace SWLOR.Game.Server.Service
             var playerWindow = _playerWindows[playerId][windowType];
             var viewModel = playerWindow.ViewModel;
 
-            if (!_elementEvents.ContainsKey(eventKey))
+            if (eventType == "close")
             {
-                if (eventType == "close")
-                {
-                    SaveWindowGeometry(playerId, windowType, viewModel.Geometry);
-                }
-                return;
+                TrackCharacterSheetWindow(playerId, windowType, false);
+                SaveWindowGeometry(playerId, windowType, viewModel.Geometry);
             }
+
+            if (!_elementEvents.ContainsKey(eventKey))
+                return;
 
             var eventGroup = _elementEvents[eventKey];
 
@@ -276,11 +279,6 @@ namespace SWLOR.Game.Server.Service
             var action = method?.Invoke(playerWindow.ViewModel, args.ToArray());
             ((Action)action)?.Invoke();
 
-            // If the window was closed, save its geometry
-            if (eventType == "close")
-            {
-                SaveWindowGeometry(playerId, windowType, viewModel.Geometry);
-            }
         }
 
         /// <summary>
@@ -339,6 +337,17 @@ namespace SWLOR.Game.Server.Service
             return windowId + "_" + elementId;
         }
 
+        private static void TrackCharacterSheetWindow(string playerId, GuiWindowType windowType, bool isOpen)
+        {
+            if (windowType != GuiWindowType.CharacterSheet)
+                return;
+
+            if (isOpen)
+                _openCharacterSheetPlayerIds.Add(playerId);
+            else
+                _openCharacterSheetPlayerIds.Remove(playerId);
+        }
+
         /// <summary>
         /// Determines whether a player currently has a window of the specified type open on screen.
         /// </summary>
@@ -384,12 +393,14 @@ namespace SWLOR.Game.Server.Service
 
                 playerWindow.WindowToken = NuiCreate(uiTarget, template.Window, template.WindowId);
                 playerWindow.ViewModel.Bind(uiTarget, playerWindow.WindowToken, template.InitialGeometry, type, payload, tetherObject);
+                TrackCharacterSheetWindow(playerId, type, playerWindow.WindowToken > 0);
             }
             // Otherwise the window must already be open. Close it.
             else
             {
                 SaveWindowGeometry(playerId, type, playerWindow.ViewModel.Geometry);
                 NuiDestroy(player, playerWindow.WindowToken);
+                TrackCharacterSheetWindow(playerId, type, false);
 
                 // Call OnWindowClosed to ensure proper cleanup (like returning items to player)
                 playerWindow.ViewModel.OnWindowClosed()?.Invoke();
@@ -436,7 +447,7 @@ namespace SWLOR.Game.Server.Service
         public static void PublishCharacterSheetRefreshEvent<T>(uint target, T payload)
             where T : IGuiRefreshEvent
         {
-            if (_playerWindows.Count == 0)
+            if (_openCharacterSheetPlayerIds.Count == 0)
                 return;
 
             var windowId = BuildWindowId(GuiWindowType.CharacterSheet);
@@ -553,6 +564,7 @@ namespace SWLOR.Game.Server.Service
                 var playerWindow = _playerWindows[playerId][type];
 
                 NuiDestroy(player, playerWindow.WindowToken);
+                TrackCharacterSheetWindow(playerId, type, false);
             }
         }
 

@@ -29,6 +29,9 @@ namespace SWLOR.Toolset.Editors
         private readonly WorkspaceContext _workspaceContext;
         private readonly LookupOptionProvider _lookups;
         private readonly Domain.GameData.Tlk.TlkService? _tlkService;
+        private readonly Tlk.TlkEditorSource? _tlkEditorSource;
+        private readonly Func<Tlk.TlkEditorSource, Domain.GameData.Tlk.TlkService?, CancellationToken,
+            Tlk.ITlkEditorBackend> _tlkEditorBackendFactory;
         private readonly IGameCodeIndex? _gameCodeIndex;
         private readonly OutputLogService _log;
         private readonly ToolsetDockFactory _factory;
@@ -178,6 +181,10 @@ namespace SWLOR.Toolset.Editors
         private Services.SoundPreviewService? _soundPreviews;
         private readonly Workspace.ModuleCustomContentService? _moduleCustomContent;
         private Module.ModulePropertiesDocumentViewModel? _moduleProperties;
+        private Tlk.TlkEditorDocumentViewModel? _tlkEditor;
+        private Tlk.TlkEditorLoadingDocumentViewModel? _tlkEditorLoading;
+        private bool _tlkEditorOpening;
+        private uint? _pendingTlkStrRef;
 
         /// <summary>
         /// Whether module.ifo.json is currently owned by the Module Properties editor. Area deletion
@@ -293,8 +300,15 @@ namespace SWLOR.Toolset.Editors
                 ResourceType,
                 string,
                 Task<IReadOnlyList<ObjectPlacement>>>? objectPlacementsFinder = null,
-            Func<string, string, string, AreaEditorDocumentLoad>? areaDocumentsLoader = null)
+            Func<string, string, string, AreaEditorDocumentLoad>? areaDocumentsLoader = null,
+            Tlk.TlkEditorSource? tlkEditorSource = null,
+            Func<Tlk.TlkEditorSource, Domain.GameData.Tlk.TlkService?, CancellationToken,
+                Tlk.ITlkEditorBackend>? tlkEditorBackendFactory = null)
         {
+            _tlkEditorSource = tlkEditorSource;
+            _tlkEditorBackendFactory = tlkEditorBackendFactory ??
+                ((source, tlk, cancellationToken) =>
+                    new Tlk.TlkEditorBackend(source, tlk, cancellationToken));
             _moduleCustomContent = moduleCustomContent;
             _externalLinks = externalLinks;
             _categories = categories;
@@ -363,6 +377,7 @@ namespace SWLOR.Toolset.Editors
             _workspaceContext.TagIndexInvalidated += OnTagIndexInvalidated;
             _workspaceContext.PlacementIndexInvalidated += ReloadPlacementSources;
             _workspaceContext.CatalogBuildCompleted += RefreshObjectSourceAreaNames;
+            _workspaceContext.CatalogLabelsChanged += RefreshObjectSourceAreaNames;
 
             // Opening another module invalidates every module-derived picker; saving a blueprint
             // invalidates only the ones built out of the module's own content.
@@ -525,6 +540,149 @@ namespace SWLOR.Toolset.Editors
                 _log.AppendLine($"Failed to open Module Properties: {ex.Message}");
             }
         }
+
+        /// <summary>
+        /// Opens the repository's SWLOR custom TLK as one docked document. Loading and the complete
+        /// reference scan stay off the UI thread; repeat requests activate the
+        /// singleton and may navigate it to a custom StrRef.
+        /// </summary>
+        public async Task OpenTlkEditorAsync(uint? strRef = null)
+        {
+            if (_tlkEditor != null)
+            {
+                _pendingTlkStrRef = null;
+                if (strRef.HasValue)
+                    _tlkEditor.SelectStrRef(strRef.Value);
+                _factory.ActivateDocument(_tlkEditor);
+                return;
+            }
+
+            if (_tlkEditorOpening)
+            {
+                if (strRef.HasValue)
+                    _pendingTlkStrRef = strRef;
+                if (_tlkEditorLoading != null)
+                    _factory.ActivateDocument(_tlkEditorLoading);
+                return;
+            }
+            if (_tlkEditorSource == null || !_tlkEditorSource.IsAvailable)
+            {
+                _log.AppendLine(_tlkEditorSource?.UnavailableReason ??
+                    "TLK Editor is unavailable because the SWLOR repository root could not be resolved.");
+                return;
+            }
+
+            _pendingTlkStrRef = strRef;
+            _tlkEditorOpening = true;
+            var loading = new Tlk.TlkEditorLoadingDocumentViewModel(_tlkEditorSource.JsonPath);
+            loading.Closed += closed =>
+            {
+                if (ReferenceEquals(_tlkEditorLoading, closed))
+                    _tlkEditorLoading = null;
+            };
+            _tlkEditorLoading = loading;
+            _factory.OpenDocument(loading);
+            try
+            {
+                _log.AppendLine("Loading the SWLOR custom TLK and indexing references...");
+                var backend = await Task.Run(() =>
+                    _tlkEditorBackendFactory(
+                        _tlkEditorSource,
+                        _tlkService,
+                        loading.CancellationToken))
+                    .ConfigureAwait(true);
+                loading.CancellationToken.ThrowIfCancellationRequested();
+
+                try
+                {
+                    backend.Publish();
+                    RefreshOpenTlkLabels();
+                }
+                catch (Exception ex)
+                {
+                    _log.AppendLine(
+                        "TLK Editor opened, but publishing its repository generation failed: " +
+                        ex.GetBaseException().Message);
+                }
+
+                var editor = new Tlk.TlkEditorDocumentViewModel(
+                    backend,
+                    _log,
+                    _prompts,
+                    RefreshOpenTlkLabels);
+                editor.Closed += closed =>
+                {
+                    if (ReferenceEquals(_tlkEditor, closed))
+                        _tlkEditor = null;
+                };
+                editor.CloseRequested += _ => _factory.CloseDocument(editor);
+                CloseTlkLoadingDocument(loading);
+                _tlkEditor = editor;
+                _factory.OpenDocument(editor);
+                if (_pendingTlkStrRef.HasValue)
+                    editor.SelectStrRef(_pendingTlkStrRef.Value);
+                _pendingTlkStrRef = null;
+                _log.AppendLine("TLK Editor ready.");
+            }
+            catch (OperationCanceledException) when (loading.CancellationRequested)
+            {
+                _pendingTlkStrRef = null;
+            }
+            catch (Exception ex)
+            {
+                _pendingTlkStrRef = null;
+                _log.AppendLine($"Failed to open TLK Editor: {ex.GetBaseException().Message}");
+            }
+            finally
+            {
+                if (ReferenceEquals(_tlkEditorLoading, loading))
+                    CloseTlkLoadingDocument(loading);
+                _tlkEditorOpening = false;
+            }
+        }
+
+        private void CloseTlkLoadingDocument(Tlk.TlkEditorLoadingDocumentViewModel loading)
+        {
+            loading.Complete();
+            if (ReferenceEquals(_tlkEditorLoading, loading))
+                _tlkEditorLoading = null;
+            _factory.CloseDocument(loading);
+        }
+
+        private void RefreshOpenTlkLabels()
+        {
+            ReloadOpenGameResources();
+            _workspaceContext.RefreshTlkLabels();
+            _categories?.RefreshTlkLabels();
+            _factory.RefreshTlkLabels();
+            foreach (var editor in _openEditors.Values)
+                editor.RefreshTlkLabels();
+            foreach (var editor in _openAreaEditors.Values)
+                editor.RefreshTlkLabels();
+            foreach (var editor in _openTriggerEditors.Values)
+                editor.Editor.RefreshTlkLabels();
+            foreach (var editor in _openWaypointEditors.Values)
+                editor.Editor.RefreshTlkLabels();
+            foreach (var editor in _openSoundEditors.Values)
+                editor.Editor.RefreshTlkLabels();
+            foreach (var editor in _openDoorEditors.Values)
+                editor.Editor.RefreshTlkLabels();
+            foreach (var editor in _openCreatureEditors.Values)
+                editor.Editor.RefreshTlkLabels();
+            foreach (var editor in _openItemEditors.Values)
+                editor.Editor.RefreshTlkLabels();
+            foreach (var editor in _openMerchantEditors.Values)
+                editor.Editor.RefreshTlkLabels();
+        }
+
+        private Action<uint>? TlkRowOpener =>
+            _tlkEditorSource?.IsAvailable == true
+                ? strRef =>
+                {
+                    if (!IsResourceOpeningBlocked("TLK Editor"))
+                        _ = OpenTlkEditorAsync(strRef);
+                }
+                : null;
 
         /// <summary>Refreshes open resource-backed content after the module HAK stack changes.</summary>
         public void ReloadOpenGameResources()
@@ -984,7 +1142,8 @@ namespace SWLOR.Toolset.Editors
                     () => _workspaceContext.Workspace,
                     type == ResourceType.Utc ? CreateCreatureAppearanceGallery : null,
                     _blueprintSaves,
-                    CreateObjectSource(type, resRef));
+                    CreateObjectSource(type, resRef),
+                    TlkRowOpener);
                 editor.Closed += closed => _openEditors.Remove(closed.FilePath);
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);
                 editor.CatalogEntryChanged += () =>
@@ -1500,6 +1659,12 @@ namespace SWLOR.Toolset.Editors
         /// </summary>
         public async Task<bool> SaveAllAsync()
         {
+            if (_tlkEditor != null &&
+                !await _tlkEditor.TrySaveAsync().ConfigureAwait(true))
+            {
+                return false;
+            }
+
             if (_moduleProperties != null &&
                 !await _moduleProperties.TrySaveAsync().ConfigureAwait(true))
             {
@@ -1597,7 +1762,20 @@ namespace SWLOR.Toolset.Editors
         /// </summary>
         public async Task<bool> TryPrepareApplicationCloseAsync()
         {
-            if (_moduleProperties?.IsDirty != true &&
+            if (_tlkEditorOpening)
+            {
+                _log.AppendLine("Wait for the TLK Editor reference index to finish loading before closing.");
+                return false;
+            }
+
+            // A clean explicit TLK save still regenerates and verifies the JSON/binary pair. Wait
+            // for that transaction before deciding whether shutdown needs a prompt or approving a
+            // discard, so process exit can never interrupt the paired commit.
+            if (_tlkEditor != null)
+                await _tlkEditor.WaitForActiveOperationAsync().ConfigureAwait(true);
+
+            if (_tlkEditor?.IsDirty != true &&
+                _moduleProperties?.IsDirty != true &&
                 !_openEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openTriggerEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openWaypointEditors.Values.Any(editor => editor.IsDirty) &&
@@ -1619,6 +1797,7 @@ namespace SWLOR.Toolset.Editors
             if (choice != UnsavedChangesChoice.Discard)
                 return false;
 
+            _tlkEditor?.ApproveApplicationClose();
             _moduleProperties?.ApproveApplicationClose();
 
             foreach (var editor in _openEditors.Values)
@@ -3581,7 +3760,8 @@ namespace SWLOR.Toolset.Editors
                         loadedDocuments,
                         TryEditCopyAndOpenBlueprint,
                         _mutationLock,
-                        _areaInstanceClipboard);
+                        _areaInstanceClipboard,
+                        TlkRowOpener);
                     editor.Closed += _ => _openAreaEditors.Remove(resRef);
                     editor.TilesetChanged += () => _factory.NotifyActiveAreaChanged();
                     editor.CloseRequested += _ => _factory.CloseDocument(editor);

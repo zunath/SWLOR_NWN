@@ -25,7 +25,13 @@ namespace SWLOR.Toolset.Domain.GameData.TwoDa
 
         public IReadOnlyList<string> ColumnNames => _file.Columns;
 
+        public IReadOnlyList<string> RowLabels => _file.RowLabels;
+
         public bool HasColumn(string column) => _file.HasColumn(column);
+
+        /// <summary>Returns the source row label, or null when the position is out of range.</summary>
+        public string? GetRowLabel(int row) =>
+            row >= 0 && row < _file.RowLabels.Count ? _file.RowLabels[row] : null;
 
         /// <summary>
         /// Returns the raw cell text, or null if the row/column is out of range, the column does

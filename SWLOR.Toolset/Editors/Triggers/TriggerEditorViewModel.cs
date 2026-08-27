@@ -254,6 +254,27 @@ namespace SWLOR.Toolset.Editors.Triggers
             RefreshCompleteness();
         }
 
+        /// <summary>Rebuilds every materialized choice row after TLK-backed labels change.</summary>
+        public void RefreshTlkLabels()
+        {
+            RebuildChoiceRows(BasicRows);
+            RebuildChoiceRows(BehaviorRows);
+            RefreshCompleteness();
+        }
+
+        private void RebuildChoiceRows(ObservableCollection<TriggerRowViewModel> rows)
+        {
+            for (var index = 0; index < rows.Count; index++)
+            {
+                if (rows[index].Definition.ChoicesKey == null)
+                    continue;
+
+                var definition = rows[index].Definition;
+                rows[index].Dispose();
+                rows[index] = CreateRow(definition);
+            }
+        }
+
         private void ReloadRowsFromDocument()
         {
             foreach (var row in BasicRows.Concat(BehaviorRows))

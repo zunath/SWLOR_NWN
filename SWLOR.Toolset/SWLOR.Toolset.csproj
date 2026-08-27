@@ -55,4 +55,8 @@
     <ProjectReference Include="..\SWLOR.Toolset.Domain\SWLOR.Toolset.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="SWLOR.Toolset.Tests" />
+  </ItemGroup>
+
 </Project>

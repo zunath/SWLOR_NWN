@@ -47,6 +47,9 @@
                   Command="{Binding AreaGeneratorCommand}" />
         <MenuItem x:Name="FactionEditorMenuItem" Header="_Faction Editor..."
                   Command="{Binding FactionEditorCommand}" />
+        <MenuItem x:Name="TlkEditorMenuItem" Header="_TLK Editor..."
+                  Command="{Binding TlkEditorCommand}"
+                  ToolTip.Tip="{Binding TlkEditorAvailabilityMessage}" />
         <Separator />
         <MenuItem Header="Run Validation" Command="{Binding FocusValidationCommand}" />
         <Separator />

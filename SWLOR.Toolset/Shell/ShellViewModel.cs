@@ -111,6 +111,7 @@ namespace SWLOR.Toolset.Shell
         private readonly ModuleCustomContentService? _moduleCustomContent;
         private readonly TilesetCatalog? _tilesetCatalog;
         private readonly ResourceIndex? _resourceIndex;
+        private readonly Editors.Tlk.TlkEditorSource? _tlkEditorSource;
 
         /// <summary>Guards against a second rescan starting while one is already reopening the catalog.</summary>
         private bool _isRescanningAfterWatcherOverflow;
@@ -141,8 +142,10 @@ namespace SWLOR.Toolset.Shell
             ErfArchiveService? erfArchiveService = null,
             ModuleCustomContentService? moduleCustomContent = null,
             TilesetCatalog? tilesetCatalog = null,
-            ResourceIndex? resourceIndex = null)
+            ResourceIndex? resourceIndex = null,
+            Editors.Tlk.TlkEditorSource? tlkEditorSource = null)
         {
+            _tlkEditorSource = tlkEditorSource;
             _resourceIndex = resourceIndex;
             _tilesetCatalog = tilesetCatalog;
             _moduleCustomContent = moduleCustomContent;
@@ -449,6 +452,18 @@ namespace SWLOR.Toolset.Shell
                 RunPackFromModulePropertiesAsync,
                 OpenBuildConfiguration));
         }
+
+        public string TlkEditorAvailabilityMessage => _tlkEditorSource?.IsAvailable == true
+            ? "Edit SWLOR's custom sw_tlk source and generated binary."
+            : _tlkEditorSource?.UnavailableReason ??
+              "TLK Editor is unavailable because the SWLOR repository root could not be resolved.";
+
+        [RelayCommand(CanExecute = nameof(CanOpenTlkEditor))]
+        private async Task TlkEditor() =>
+            await _editorService.Value.OpenTlkEditorAsync().ConfigureAwait(true);
+
+        private bool CanOpenTlkEditor() =>
+            !IsInteractionBlocked && _tlkEditorSource?.IsAvailable == true;
 
         private async Task RunValidationFromModulePropertiesAsync()
         {
@@ -900,6 +915,7 @@ namespace SWLOR.Toolset.Shell
             PackModuleCommand.NotifyCanExecuteChanged();
             BuildAllScriptsCommand.NotifyCanExecuteChanged();
             ModulePropertiesCommand.NotifyCanExecuteChanged();
+            TlkEditorCommand.NotifyCanExecuteChanged();
             NotifyActiveEditorCommandsChanged();
         }
 

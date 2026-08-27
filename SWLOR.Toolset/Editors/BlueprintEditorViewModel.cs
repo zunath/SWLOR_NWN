@@ -27,6 +27,7 @@ namespace SWLOR.Toolset.Editors
         private readonly EditorFieldContext _context;
         private readonly OutputLogService _log;
         private readonly IEditorPromptService _prompts;
+        private readonly LookupOptionProvider _lookups;
         private readonly IGameCodeIndex? _gameCodeIndex;
         private readonly IScriptSlotHost? _scriptSlotHost;
         private readonly BlueprintSaveCoordinator? _saveCoordinator;
@@ -139,12 +140,14 @@ namespace SWLOR.Toolset.Editors
             Func<EditorFieldContext, Func<string, Action, bool>,
                 Appearance.AppearanceGallerySectionViewModel?>? appearanceGallery = null,
             BlueprintSaveCoordinator? saveCoordinator = null,
-            Sources.ObjectSourceSectionViewModel? source = null)
+            Sources.ObjectSourceSectionViewModel? source = null,
+            Action<uint>? openTlkRow = null)
         {
             _scriptSlotHost = scriptSlotHost;
             _resourceLister = resourceLister;
             _log = log;
             _prompts = prompts;
+            _lookups = lookups;
             _gameCodeIndex = gameCodeIndex;
             _saveCoordinator = saveCoordinator;
             Source = source;
@@ -152,7 +155,7 @@ namespace SWLOR.Toolset.Editors
             BlueprintType = type;
             Id = $"editor:{filePath}";
             _session = DocumentSession.Open(filePath);
-            _context = new EditorFieldContext(_session.Document, RunEdit, resolveStrRef);
+            _context = new EditorFieldContext(_session.Document, RunEdit, resolveStrRef, openTlkRow);
 
             var tabbedGroups = new List<(string Tab, EditorGroup Group)>();
             foreach (var group in schema.Groups)
@@ -590,6 +593,15 @@ namespace SWLOR.Toolset.Editors
             PlaceableSections.Behavior.RefreshFromDocument(reclassifyAmbiguousBehavior);
             PlaceableSections.Appearance.RefreshFromDocument();
             RebuildVariablesTab();
+        }
+
+        /// <summary>Re-resolves custom-TLK watermarks after the shared table is regenerated.</summary>
+        public void RefreshTlkLabels()
+        {
+            foreach (var field in Groups.SelectMany(group => group.Fields).OfType<LocStringFieldViewModel>())
+                field.RefreshFromDocument();
+            foreach (var field in Groups.SelectMany(group => group.Fields).OfType<DropdownFieldViewModel>())
+                field.RefreshOptions(_lookups.GetOptions(field.Descriptor.LookupKey));
         }
 
         private void AfterHistoryChange()

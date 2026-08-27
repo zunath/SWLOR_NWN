@@ -151,29 +151,44 @@ public class ForceLightGuardianTests
 
         var reflectiveBarrier = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "ReflectiveBarrier1StatusEffect.cs").FullName);
         reflectiveBarrier.Should().Contain("TemporaryHitPointEffects.IsActivePoolFromSource(creature, \"GUARDIAN_WARD\", Source)");
-        reflectiveBarrier.Should().Contain("RemoveWhenGuardianWardPoolEnds(defender)");
+        reflectiveBarrier.Should().Contain("IPreDamageStatusEffect");
+        reflectiveBarrier.Should().Contain("public void OnBeforeDamageTaken(");
         reflectiveBarrier.Should().NotContain("DelayCommand(",
             "an exhausted barrier must be gone before the shared reflection stage reads its stats");
 
         var weaponDamage = File.ReadAllText((root / "SWLOR.Game.Server" / "Native" / "GetDamageRoll.cs").FullName);
-        weaponDamage.IndexOf("PublishDamageDealtEvent(", StringComparison.Ordinal)
-            .Should().BeLessThan(weaponDamage.IndexOf("Combat.ApplyDamageReflectionEffects(", StringComparison.Ordinal),
-                "weapon damage-status notifications must remove exhausted conditional reflection before reflection is calculated");
-
         var abilityDamage = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Ability.cs").FullName);
-        var abilityNotification = abilityDamage.IndexOf(
+        var abilityPreDamageNotification = abilityDamage.IndexOf(
+            "StatusEffect.NotifyPreDamageStatusEffects(activator, target, damage, damageType);",
+            StringComparison.Ordinal);
+        var abilityPostDamageNotification = abilityDamage.IndexOf(
             "StatusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType);",
             StringComparison.Ordinal);
-        abilityNotification.Should().BeGreaterThan(-1);
-        abilityNotification.Should().BeLessThan(
-            abilityDamage.IndexOf(
-                "EffectDamage(damage, effectDamageType ?? damageType.GetNWScriptDamageType())",
-                abilityNotification,
-                StringComparison.Ordinal),
-            "an ability hit that exhausts Guardian Ward must retain reflection for that originating hit");
-        abilityNotification.Should().BeLessThan(
-            abilityDamage.IndexOf("trackedImpact.QueueDamageEffect(", abilityNotification, StringComparison.Ordinal),
-            "queued ability hits must use the same pre-damage notification ordering");
+        var immediateDamageApplication = abilityDamage.IndexOf(
+            "EffectDamage(damage, effectDamageType ?? damageType.GetNWScriptDamageType())",
+            abilityPreDamageNotification,
+            StringComparison.Ordinal);
+        abilityPreDamageNotification.Should().BeGreaterThan(-1);
+        abilityPreDamageNotification.Should().BeLessThan(
+            immediateDamageApplication,
+            "conditional reflection must be validated before the originating ability hit");
+        abilityPreDamageNotification.Should().BeLessThan(
+            abilityDamage.IndexOf("trackedImpact.QueueDamageEffect(", abilityPreDamageNotification, StringComparison.Ordinal),
+            "queued ability hits must use the same pre-damage validation");
+        abilityPostDamageNotification.Should().BeGreaterThan(
+            immediateDamageApplication,
+            "ordinary damage reactions such as Guardian's Resolve healing must observe post-hit HP");
+
+        var weaponPreDamageNotification = weaponDamage.IndexOf(
+            "StatusEffect.NotifyPreDamageStatusEffects(",
+            StringComparison.Ordinal);
+        weaponPreDamageNotification.Should().BeGreaterThan(-1);
+        weaponPreDamageNotification.Should().BeLessThan(
+            weaponDamage.IndexOf("PublishDamageDealtEvent(", weaponPreDamageNotification, StringComparison.Ordinal),
+            "conditional reflection must be validated before weapon damage callbacks and reflection");
+        weaponPreDamageNotification.Should().BeLessThan(
+            weaponDamage.IndexOf("Combat.ApplyDamageReflectionEffects(", weaponPreDamageNotification, StringComparison.Ordinal),
+            "an exhausted conditional reflection status must be removed before weapon reflection is calculated");
     }
 
     [Test]

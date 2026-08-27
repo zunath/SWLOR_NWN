@@ -7,7 +7,7 @@ using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
-    public sealed class ReflectiveBarrier1StatusEffect : StatusEffectBase
+    public sealed class ReflectiveBarrier1StatusEffect : StatusEffectBase, IPreDamageStatusEffect
     {
         private const int BaseReflectionPercent = 8;
 
@@ -32,15 +32,15 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             RemoveWhenGuardianWardPoolEnds(creature);
         }
 
-        protected override void OnDamageTaken(
+        public void OnBeforeDamageTaken(
             uint defender,
             uint attacker,
             int damage,
-            CombatDamageType damageType)
+            CombatDamageType damageType,
+            CombatDamageDeliveryType deliveryType = CombatDamageDeliveryType.Direct)
         {
-            // Damage notifications run before the engine applies the current hit. The hit that
-            // consumes the final temporary HP therefore still sees an active pool, while the next
-            // hit removes an exhausted barrier before the shared reflection stage reads its stats.
+            // Validate before the originating hit so a hit that consumes the final temporary HP
+            // still reflects, while the next hit cannot read stale reflection stats.
             RemoveWhenGuardianWardPoolEnds(defender);
         }
 

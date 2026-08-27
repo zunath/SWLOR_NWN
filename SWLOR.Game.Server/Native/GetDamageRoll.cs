@@ -159,6 +159,11 @@ namespace SWLOR.Game.Server.Native
                     if (totalDamage > 0 && defender.m_bPlotObject == 0)
                     {
                         var weaponId = weapon?.m_idSelf ?? OBJECT_INVALID;
+                        StatusEffect.NotifyPreDamageStatusEffects(
+                            attacker.m_idSelf,
+                            defender.m_idSelf,
+                            totalDamage,
+                            damageProfile.DamageType);
                         PublishDamageDealtEvent(attacker.m_idSelf, defender.m_idSelf, weaponId, totalDamage, weaponSkillType, damageProfile.DamageType);
                         Combat.ApplyDamageReflectionEffects(
                             attacker.m_idSelf,

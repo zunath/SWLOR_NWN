@@ -2086,13 +2086,8 @@ namespace SWLOR.Game.Server.Service
             if (damage > 0)
             {
                 trackedImpact?.ConsumeStatusAppliedNextAttackDamageBonus(activator);
+                StatusEffect.NotifyPreDamageStatusEffects(activator, target, damage, damageType);
                 Combat.SendTemporaryHitPointDamageFeedback(activator, target, damage);
-
-                // Damage status effects must observe the current hit while conditional defenses
-                // (such as Guardian Ward-backed reflection) are still active. This also matches
-                // weapon damage and queued ability damage, both of which notify before the engine
-                // applies the originating hit.
-                StatusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType);
                 if (trackedImpact == null)
                 {
                     AssignCommand(
@@ -2119,6 +2114,7 @@ namespace SWLOR.Game.Server.Service
                     skillType,
                     damageType,
                     isAbilityDamage: true);
+                StatusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType);
                 Combat.ApplyDamageReflectionEffects(activator, target, damage, damageType);
             }
 

@@ -1,3 +1,4 @@
+using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.NWN.Formats.Tlk;
@@ -157,6 +158,39 @@ namespace SWLOR.Toolset.Tests
                 changed.IsReferenced(1).Should().BeTrue("the unchanged 2DA result was retained");
                 changed.IsReferenced(2).Should().BeFalse("the changed file's old result was replaced");
                 changed.IsReferenced(30).Should().BeTrue();
+            }
+            finally
+            {
+                Directory.Delete(root, recursive: true);
+            }
+        }
+
+        [Test]
+        public void Refresh_RescansSameLengthReplacementWithPreservedTimestamp()
+        {
+            var root = CreateTempDirectory();
+            try
+            {
+                var twoDaPath = Path.Combine(root, "sample.2da");
+                var oldStrRef = TlkService.CustomTlkBase + 1;
+                var newStrRef = TlkService.CustomTlkBase + 9;
+                var original = $"2DA V2.0\n\nLABEL STRREF\n0 test {oldStrRef}\n";
+                var replacement = $"2DA V2.0\n\nLABEL STRREF\n0 test {newStrRef}\n";
+                Encoding.UTF8.GetByteCount(replacement).Should().Be(Encoding.UTF8.GetByteCount(original));
+                File.WriteAllText(twoDaPath, original);
+                var originalWriteTime = File.GetLastWriteTimeUtc(twoDaPath);
+                var initial = TlkReferenceIndex.Build(root);
+
+                File.WriteAllText(twoDaPath, replacement);
+                File.SetLastWriteTimeUtc(twoDaPath, originalWriteTime);
+                new FileInfo(twoDaPath).Length.Should().Be(Encoding.UTF8.GetByteCount(original));
+                File.GetLastWriteTimeUtc(twoDaPath).Should().Be(originalWriteTime);
+
+                var refreshed = initial.Refresh(root);
+
+                refreshed.LastRefreshScannedSourceCount.Should().Be(1);
+                refreshed.IsReferenced(1).Should().BeFalse();
+                refreshed.IsReferenced(9).Should().BeTrue();
             }
             finally
             {

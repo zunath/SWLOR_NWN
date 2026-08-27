@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Security.Cryptography;
 using Serilog;
 using SWLOR.NWN.Formats;
 using SWLOR.NWN.Formats.Tlk;
@@ -78,7 +79,7 @@ namespace SWLOR.Toolset.Domain.GameData.Tlk
         /// <summary>Files that could neither be parsed nor read by the raw-text fallback.</summary>
         public IReadOnlyList<string> UnscannableFiles { get; }
 
-        /// <summary>Number of changed or new files whose contents were read by the latest refresh.</summary>
+        /// <summary>Number of changed or new files whose references were parsed by the latest refresh.</summary>
         internal int LastRefreshScannedSourceCount { get; }
 
         /// <summary>Builds the index from the repository's <c>SWLOR_Haks/sw_2da</c> directory.</summary>
@@ -90,8 +91,8 @@ namespace SWLOR.Toolset.Domain.GameData.Tlk
 
         /// <summary>
         /// Refreshes repository references while reusing every unchanged file's parsed result.
-        /// Interactive editor commands therefore pay only for directory metadata unless a source
-        /// file was added, removed, or changed since the preceding generation.
+        /// Content hashes prevent timestamp-preserving file replacements from reusing stale
+        /// references; unchanged sources are fingerprinted but do not need to be parsed again.
         /// </summary>
         public TlkReferenceIndex Refresh(
             string sw2DaDirectoryPath,
@@ -130,7 +131,7 @@ namespace SWLOR.Toolset.Domain.GameData.Tlk
                 SourceFingerprint fingerprint;
                 try
                 {
-                    fingerprint = SourceFingerprint.Capture(descriptor.Path);
+                    fingerprint = SourceFingerprint.Capture(descriptor.Path, cancellationToken);
                 }
                 catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
                 {
@@ -191,7 +192,7 @@ namespace SWLOR.Toolset.Domain.GameData.Tlk
             SourceFingerprint after;
             try
             {
-                after = SourceFingerprint.Capture(descriptor.Path);
+                after = SourceFingerprint.Capture(descriptor.Path, cancellationToken);
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
             {
@@ -503,15 +504,36 @@ namespace SWLOR.Toolset.Domain.GameData.Tlk
             TlkReferenceUsage[] Usages,
             string? Warning);
 
-        private readonly record struct SourceFingerprint(long Length, DateTime LastWriteUtc)
+        private readonly record struct SourceFingerprint(
+            long Length,
+            DateTime LastWriteUtc,
+            string ContentHash)
         {
-            public static SourceFingerprint Capture(string path)
+            public static SourceFingerprint Capture(string path, CancellationToken cancellationToken)
             {
                 var info = new FileInfo(path);
                 info.Refresh();
                 if (!info.Exists)
                     throw new FileNotFoundException("TLK reference source no longer exists.", path);
-                return new SourceFingerprint(info.Length, info.LastWriteTimeUtc);
+
+                using var stream = new FileStream(
+                    path,
+                    FileMode.Open,
+                    FileAccess.Read,
+                    FileShare.ReadWrite | FileShare.Delete);
+                using var hash = IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
+                Span<byte> buffer = stackalloc byte[16 * 1024];
+                int read;
+                while ((read = stream.Read(buffer)) > 0)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                    hash.AppendData(buffer[..read]);
+                }
+
+                return new SourceFingerprint(
+                    info.Length,
+                    info.LastWriteTimeUtc,
+                    Convert.ToHexString(hash.GetHashAndReset()));
             }
         }
 

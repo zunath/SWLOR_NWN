@@ -161,6 +161,17 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     ExpectsRecast = true,
                 },
 
+                // ForceBurstAbilityDefinition - selected-target sphere with immediate Force damage.
+                new()
+                {
+                    Feat = FeatType.ForceBurst1,
+                    Target = AbilityTargetKind.HostileCreature,
+                    ExpectsTargetDamage = true,
+                    ExpectsFPCost = true,
+                    ExpectsRecast = true,
+                    Notes = "The selected hostile anchors the 5m sphere and receives the direct impact damage.",
+                },
+
                 // ForceInterceptAbilityDefinition - ValidateFriendlyTarget(..., allowSelf: false),
                 // so it rejects a self target; the harness only offers Self or HostileCreature and
                 // HostileCreature fails the friendly check, so no target kind can pass validation.

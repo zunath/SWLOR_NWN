@@ -411,10 +411,29 @@ public class LeadershipCombatUpgradeTests
         combinedLeadershipChannels.Should().Contain("StatType.LeadershipForceDamageTakenPercentAdjustment");
 
         var ability = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Ability.cs").FullName);
-        (ability.Split("typedLeadershipReductionAlreadyApplied: true").Length - 1).Should().Be(2,
-            "both direct ability damage paths apply typed Leadership in the explicit post-conversion stage");
+        (ability.Split("typedLeadershipReductionAlreadyApplied: true").Length - 1).Should().Be(3,
+            "all direct ability damage paths apply typed Leadership in the explicit post-conversion stage");
         (ability.Split("ApplyTypedLeadershipDamageTakenModifier(target, calculatedDamage, damageType)").Length - 1)
             .Should().Be(2);
+        var unscaledStart = ability.IndexOf(
+            "private static int CalculateUnscaledCombatImpactDamage(",
+            StringComparison.Ordinal);
+        unscaledStart.Should().BeGreaterThanOrEqualTo(0);
+        var unscaledEnd = ability.IndexOf(
+            "private static int CalculateCombatImpactDamage(",
+            unscaledStart,
+            StringComparison.Ordinal);
+        unscaledEnd.Should().BeGreaterThan(unscaledStart);
+        var unscaledBody = ability[unscaledStart..unscaledEnd];
+        var conversionIndex = unscaledBody.IndexOf(
+            "ApplyIncomingPhysicalToForceConversion(",
+            StringComparison.Ordinal);
+        conversionIndex.Should().BeGreaterThanOrEqualTo(0);
+        var typedLeadershipIndex = unscaledBody.IndexOf(
+            "ApplyTypedLeadershipDamageTakenModifier(target, damage, damageType)",
+            StringComparison.Ordinal);
+        typedLeadershipIndex.Should().BeGreaterThan(conversionIndex,
+            "the unscaled direct ability damage path must apply typed Leadership after conversion");
 
         var nativeDamageRoll = File.ReadAllText((root / "SWLOR.Game.Server" / "Native" / "GetDamageRoll.cs").FullName);
         nativeDamageRoll.Should().Contain("typedLeadershipReductionAlreadyApplied: true",

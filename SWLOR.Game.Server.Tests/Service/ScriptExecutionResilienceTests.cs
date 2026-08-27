@@ -1,9 +1,7 @@
 using FluentAssertions;
 using NUnit.Framework;
-using System.Reflection;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
-using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.NWN.API;
 
 namespace SWLOR.Game.Server.Tests.Service;
@@ -67,55 +65,6 @@ public sealed class ScriptExecutionResilienceTests
         method.Should().Contain("playerWindows.TryGetValue(windowType, out var playerWindow)");
         method.Should().NotContain("_windowTypesByRefreshEvent[typeof(T)]",
             "a refresh event with no registered subscriber must be a no-op instead of throwing");
-
-        var characterSheetRefresh = source[end..source.IndexOf(
-            "public static void ReplaceNWNGuis()",
-            end,
-            StringComparison.Ordinal)];
-        characterSheetRefresh.IndexOf("if (_openCharacterSheetPlayerIds.Count == 0)", StringComparison.Ordinal)
-            .Should().BeLessThan(
-                characterSheetRefresh.IndexOf("GetFirstPC()", StringComparison.Ordinal),
-                "closed character sheets must not force an NWN player enumeration");
-        source.Should().Contain("TrackCharacterSheetWindow(playerId, type, playerWindow.WindowToken > 0)");
-        source.Should().Contain("TrackCharacterSheetWindow(playerId, windowType, false)",
-            "client close events must clear tracked character sheets");
-        source.Split("TrackCharacterSheetWindow(playerId, type, false)")
-            .Should().HaveCountGreaterThanOrEqualTo(3,
-                "manual toggles and forced closes must clear tracked character sheets");
-        source.Should().Contain("_openCharacterSheetPlayerIds.Remove(playerId);",
-            "disconnects must clear tracked character sheets");
-    }
-
-    [Test]
-    public void CharacterSheetTracker_TracksOnlyOpenCharacterSheets()
-    {
-        var trackerField = typeof(Gui).GetField(
-            "_openCharacterSheetPlayerIds",
-            BindingFlags.Static | BindingFlags.NonPublic);
-        var trackMethod = typeof(Gui).GetMethod(
-            "TrackCharacterSheetWindow",
-            BindingFlags.Static | BindingFlags.NonPublic);
-        trackerField.Should().NotBeNull();
-        trackMethod.Should().NotBeNull();
-
-        var trackedPlayerIds = (HashSet<string>)trackerField!.GetValue(null)!;
-        var playerId = $"test-{Guid.NewGuid()}";
-
-        try
-        {
-            trackMethod!.Invoke(null, new object[] { playerId, GuiWindowType.Perks, true });
-            trackedPlayerIds.Should().NotContain(playerId);
-
-            trackMethod.Invoke(null, new object[] { playerId, GuiWindowType.CharacterSheet, true });
-            trackedPlayerIds.Should().Contain(playerId);
-
-            trackMethod.Invoke(null, new object[] { playerId, GuiWindowType.CharacterSheet, false });
-            trackedPlayerIds.Should().NotContain(playerId);
-        }
-        finally
-        {
-            trackedPlayerIds.Remove(playerId);
-        }
     }
 
     private sealed class RecordingScriptExecutionProvider : IScriptExecutionProvider

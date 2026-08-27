@@ -378,6 +378,53 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void BlueprintCatalog_RemoveEntryWinsOverAnInFlightRefresh()
+        {
+            using var synthetic = SyntheticModule.CreateFromRealFiles(ModuleDirectory);
+            var workspace = new ModuleWorkspace(synthetic.Path);
+            var placeable = UtpDocument.Load(
+                workspace.GetResourcePath(ResourceType.Utp, "zep_shrine"));
+            var targetStrRef = placeable.LocName.StrRef;
+            targetStrRef.Should().NotBeNull();
+            using var refreshResolutionEntered = new ManualResetEventSlim();
+            using var releaseRefreshResolution = new ManualResetEventSlim();
+            var blockNextResolution = 0;
+
+            string? Resolve(uint strRef)
+            {
+                if (strRef != targetStrRef)
+                    return null;
+
+                if (Interlocked.Exchange(ref blockNextResolution, 0) == 1)
+                {
+                    refreshResolutionEntered.Set();
+                    releaseRefreshResolution.Wait();
+                }
+
+                return "Zepher Shrine";
+            }
+
+            var catalog = new BlueprintCatalog(workspace, resolveStrRef: Resolve);
+            catalog.BuildTask.GetAwaiter().GetResult();
+            Volatile.Write(ref blockNextResolution, 1);
+            var refresh = Task.Run(() => catalog.RefreshEntry(ResourceType.Utp, "zep_shrine"));
+            try
+            {
+                refreshResolutionEntered.Wait(TimeSpan.FromSeconds(10)).Should().BeTrue();
+                catalog.RemoveEntry(ResourceType.Utp, "zep_shrine").Should().BeTrue();
+            }
+            finally
+            {
+                releaseRefreshResolution.Set();
+            }
+
+            refresh.GetAwaiter().GetResult().Should().BeNull();
+            catalog.TryGetEntry(ResourceType.Utp, "zep_shrine", out _).Should().BeFalse();
+            catalog.Entries.Should().NotContain(entry =>
+                entry.ResourceType == ResourceType.Utp && entry.ResRef == "zep_shrine");
+        }
+
+        [Test]
         public void BlueprintCatalog_Progress_ReachesTotalCountOnCompletion()
         {
             using var synthetic = SyntheticModule.CreateFromRealFiles(ModuleDirectory);

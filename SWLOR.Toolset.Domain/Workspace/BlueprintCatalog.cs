@@ -258,6 +258,12 @@ namespace SWLOR.Toolset.Domain.Workspace
             var entry = built.Entry;
             lock (_tlkLabelLock)
             {
+                if (_removed.ContainsKey(key))
+                {
+                    _nameSources.TryRemove(key, out _);
+                    return null;
+                }
+
                 if (built.NameSource != null)
                     entry = entry with { Name = ResolveName(built.NameSource) };
 

@@ -159,6 +159,21 @@ public class ForceLightGuardianTests
         weaponDamage.IndexOf("PublishDamageDealtEvent(", StringComparison.Ordinal)
             .Should().BeLessThan(weaponDamage.IndexOf("Combat.ApplyDamageReflectionEffects(", StringComparison.Ordinal),
                 "weapon damage-status notifications must remove exhausted conditional reflection before reflection is calculated");
+
+        var abilityDamage = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Ability.cs").FullName);
+        var abilityNotification = abilityDamage.IndexOf(
+            "StatusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType);",
+            StringComparison.Ordinal);
+        abilityNotification.Should().BeGreaterThan(-1);
+        abilityNotification.Should().BeLessThan(
+            abilityDamage.IndexOf(
+                "EffectDamage(damage, effectDamageType ?? damageType.GetNWScriptDamageType())",
+                abilityNotification,
+                StringComparison.Ordinal),
+            "an ability hit that exhausts Guardian Ward must retain reflection for that originating hit");
+        abilityNotification.Should().BeLessThan(
+            abilityDamage.IndexOf("trackedImpact.QueueDamageEffect(", abilityNotification, StringComparison.Ordinal),
+            "queued ability hits must use the same pre-damage notification ordering");
     }
 
     [Test]

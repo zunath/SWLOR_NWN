@@ -65,6 +65,15 @@ public sealed class ScriptExecutionResilienceTests
         method.Should().Contain("playerWindows.TryGetValue(windowType, out var playerWindow)");
         method.Should().NotContain("_windowTypesByRefreshEvent[typeof(T)]",
             "a refresh event with no registered subscriber must be a no-op instead of throwing");
+
+        var characterSheetRefresh = source[end..source.IndexOf(
+            "public static void ReplaceNWNGuis()",
+            end,
+            StringComparison.Ordinal)];
+        characterSheetRefresh.IndexOf("if (_playerWindows.Count == 0)", StringComparison.Ordinal)
+            .Should().BeLessThan(
+                characterSheetRefresh.IndexOf("GetFirstPC()", StringComparison.Ordinal),
+                "closed character sheets must not force an NWN player enumeration");
     }
 
     private sealed class RecordingScriptExecutionProvider : IScriptExecutionProvider

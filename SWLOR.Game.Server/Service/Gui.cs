@@ -436,6 +436,9 @@ namespace SWLOR.Game.Server.Service
         public static void PublishCharacterSheetRefreshEvent<T>(uint target, T payload)
             where T : IGuiRefreshEvent
         {
+            if (_playerWindows.Count == 0)
+                return;
+
             var windowId = BuildWindowId(GuiWindowType.CharacterSheet);
 
             for (var observer = GetFirstPC(); GetIsObjectValid(observer); observer = GetNextPC())

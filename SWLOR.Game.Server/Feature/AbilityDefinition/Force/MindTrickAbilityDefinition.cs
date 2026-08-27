@@ -81,6 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
         private static void MindTrick1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
             ApplyMindTrickImpact(activator, target, targetLocation);
+            LightGuardianPowerSupport.ApplyCourageousResolve(activator);
         }
 
         private static void MindTrick2ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -90,6 +91,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             {
                 ApplyMindTrickImpact(activator, hostileTarget, GetLocation(hostileTarget));
             }
+            LightGuardianPowerSupport.ApplyCourageousResolve(activator);
         }
 
         private static void ApplyMindTrickImpact(uint activator, uint target, Location targetLocation)

@@ -139,7 +139,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 afterSuccessfulHit: hitTarget => ApplyHobble(activator, hitTarget, ForcePush1HobbleDurationSeconds),
                 playImpactAnimation: false,
                 useUnscaledDamage: true);
-            LightGuardianPowerSupport.ApplyDeflectivePresence(activator);
         }
 
         private static void ForcePush2ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -164,7 +163,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 afterSuccessfulHit: hitTarget => ApplyHobble(activator, hitTarget, ForcePush2HobbleDurationSeconds),
                 playImpactAnimation: false,
                 useUnscaledDamage: true);
-            LightGuardianPowerSupport.ApplyDeflectivePresence(activator);
         }
 
         private static void ForcePush3ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -189,7 +187,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 afterSuccessfulHit: hitTarget => ApplyHobble(activator, hitTarget, ForcePush3HobbleDurationSeconds),
                 playImpactAnimation: false,
                 useUnscaledDamage: true);
-            LightGuardianPowerSupport.ApplyDeflectivePresence(activator);
         }
 
         private static void ApplyHobble(uint activator, uint target, int durationSeconds)

@@ -88,7 +88,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Force,
                 targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative);
-            LightGuardianPowerSupport.ApplyDeflectivePresence(activator);
         }
 
         private static void ForceLeap2ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -106,7 +105,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Force,
                 targetVisualEffect: VisualEffect.Vfx_Imp_Pulse_Negative);
-            LightGuardianPowerSupport.ApplyDeflectivePresence(activator);
         }
 
         private static void LeapAndInterrupt(uint activator, uint target)

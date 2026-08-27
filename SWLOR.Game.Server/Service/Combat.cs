@@ -961,6 +961,9 @@ namespace SWLOR.Game.Server.Service
                 return false;
 
             var scalingAbilityScore = Stat.GetStatAdjustment(defender, StatType.FatalDamageTemporaryHPScalingAbilityScore);
+            var temporaryHPSource = StatusEffect.GetStatusEffectSourceWithStat(
+                defender,
+                StatType.FatalDamageTemporaryHPPercent);
             var tempHP = GameMath.PercentOf(GetMaxHitPoints(defender), temporaryHPPercent);
             if (scalingAbilityScore > 0)
                 tempHP = AbilityEffectScaling.ScaleDirectEffect(tempHP, scalingAbilityScore);
@@ -970,7 +973,19 @@ namespace SWLOR.Game.Server.Service
             if (restoreToOneHP && currentHP <= 0)
                 SetCurrentHitPoints(defender, 1);
 
-            TemporaryHitPointEffects.ApplyFlat(defender, "FATAL_DAMAGE_SAVE", tempHP, duration);
+            if (GetIsObjectValid(temporaryHPSource))
+            {
+                TemporaryHitPointEffects.ApplyFlatFromSource(
+                    temporaryHPSource,
+                    defender,
+                    "FATAL_DAMAGE_SAVE",
+                    tempHP,
+                    duration);
+            }
+            else
+            {
+                TemporaryHitPointEffects.ApplyFlat(defender, "FATAL_DAMAGE_SAVE", tempHP, duration);
+            }
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), defender);
 
             return true;

@@ -10,6 +10,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         private const string EffectTagPrefix = "TEMPORARY_HP_";
         private const string BarrierVisualEffectTagSuffix = "_BARRIER_VFX";
         private const string OwnerVariableSuffix = "_OWNER";
+        private const string SourceVariableSuffix = "_SOURCE";
 
         public static void ApplyFlatPlusPercent(
             uint target,
@@ -29,7 +30,29 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         {
             ValidateEffectKey(effectKey);
             DeleteLocalString(target, GetOwnerVariable(effectKey));
+            DeleteLocalObject(target, GetSourceVariable(effectKey));
             ApplyFlatInternal(target, effectKey, amount, durationSeconds);
+        }
+
+        /// <summary>
+        /// Applies a keyed temporary-HP pool and records the creature that granted it. Source
+        /// ownership is only considered active while the matching native temporary-HP effect
+        /// still exists, so consuming the pool immediately invalidates source-dependent riders.
+        /// </summary>
+        public static void ApplyFlatFromSource(
+            uint source,
+            uint target,
+            string effectKey,
+            int amount,
+            float durationSeconds)
+        {
+            ValidateEffectKey(effectKey);
+            DeleteLocalString(target, GetOwnerVariable(effectKey));
+            DeleteLocalObject(target, GetSourceVariable(effectKey));
+            ApplyFlatInternal(target, effectKey, amount, durationSeconds);
+
+            if (amount > 0 && GetIsObjectValid(source))
+                SetLocalObject(target, GetSourceVariable(effectKey), source);
         }
 
         /// <summary>
@@ -47,6 +70,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             ValidateEffectKey(effectKey);
             ValidateOwnerId(ownerId);
 
+            DeleteLocalObject(target, GetSourceVariable(effectKey));
             ApplyFlatInternal(target, effectKey, amount, durationSeconds);
             if (amount > 0)
                 SetLocalString(target, GetOwnerVariable(effectKey), ownerId);
@@ -95,10 +119,27 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         {
             ValidateEffectKey(effectKey);
             DeleteLocalString(target, GetOwnerVariable(effectKey));
+            DeleteLocalObject(target, GetSourceVariable(effectKey));
 
             var effectTag = EffectTagPrefix + effectKey;
             RemoveEffectByTag(target, effectTag);
             RemoveEffectByTag(target, effectTag + BarrierVisualEffectTagSuffix);
+        }
+
+        public static bool IsActivePoolFromSource(uint target, string effectKey, uint source)
+        {
+            ValidateEffectKey(effectKey);
+            if (!GetIsObjectValid(source) || GetLocalObject(target, GetSourceVariable(effectKey)) != source)
+                return false;
+
+            var effectTag = EffectTagPrefix + effectKey;
+            for (var effect = GetFirstEffect(target); GetIsEffectValid(effect); effect = GetNextEffect(target))
+            {
+                if (GetEffectTag(effect) == effectTag)
+                    return true;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -117,6 +158,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         private static string GetOwnerVariable(string effectKey)
         {
             return EffectTagPrefix + effectKey + OwnerVariableSuffix;
+        }
+
+        private static string GetSourceVariable(string effectKey)
+        {
+            return EffectTagPrefix + effectKey + SourceVariableSuffix;
         }
 
         private static void ValidateEffectKey(string effectKey)

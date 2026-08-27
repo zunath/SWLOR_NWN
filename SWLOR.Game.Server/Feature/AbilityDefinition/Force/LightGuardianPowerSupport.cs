@@ -9,11 +9,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public static class LightGuardianPowerSupport
     {
-        public static void ApplyDeflectivePresence(uint activator)
-        {
-            ApplyDeflectivePresence(activator, activator);
-        }
-
         public static void ApplyDeflectivePresence(uint activator, uint target)
         {
             if (!GetIsObjectValid(activator))
@@ -45,8 +40,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             {
                 StatusEffect.ApplyStatusEffect(activator, target, typeof(ReflectiveBarrier1StatusEffect), durationSeconds);
             }
-
-            ApplyCourageousResolve(activator);
         }
 
         public static void ApplyCourageousResolve(uint activator)
@@ -59,7 +52,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, GetLocation(activator), 5f))
             {
-                var resistance = StatusEffect.HasStatusEffect(friendly, typeof(ReflectiveBarrier1StatusEffect), activator)
+                var hasForceTemporaryHP =
+                    TemporaryHitPointEffects.IsActivePoolFromSource(
+                        friendly,
+                        "GUARDIAN_WARD",
+                        activator) ||
+                    TemporaryHitPointEffects.IsActivePoolFromSource(
+                        friendly,
+                        "FATAL_DAMAGE_SAVE",
+                        activator);
+                var resistance = hasForceTemporaryHP
                     ? 15
                     : 10;
                 StatusEffect.ApplyStatusEffect(activator, friendly, new CourageousResolve1StatusEffect(resistance), 30f);

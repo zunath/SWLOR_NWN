@@ -89,6 +89,70 @@ public class ForceLightGuardianTests
     }
 
     [Test]
+    public void ForceLightGuardianTraitHooks_MatchTheirBiblePowerCategories()
+    {
+        var root = FindRepositoryRoot();
+        var forceAbilityRoot = root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force";
+
+        var guardianWard = File.ReadAllText((forceAbilityRoot / "GuardianWardAbilityDefinition.cs").FullName);
+        guardianWard.Should().Contain("LightGuardianPowerSupport.ApplyTemporaryHPPowerRiders(activator, friendly, 30f)");
+
+        var powersThatDoNotQualifyForProtectivePresence = new[]
+        {
+            "ForcePushAbilityDefinition.cs",
+            "ForceLeapAbilityDefinition.cs",
+            "ForceInterceptAbilityDefinition.cs",
+            "PurifyingWaveAbilityDefinition.cs",
+            "LastStandOfTheLightAbilityDefinition.cs"
+        };
+        foreach (var file in powersThatDoNotQualifyForProtectivePresence)
+        {
+            File.ReadAllText((forceAbilityRoot / file).FullName)
+                .Should().NotContain("ApplyDeflectivePresence(", $"{file} is not a Control protection power");
+        }
+
+        var sensePowerFiles = new[]
+        {
+            "WeakenResolveAbilityDefinition.cs",
+            "ForceJudgmentAbilityDefinition.cs",
+            "RadiantLanceAbilityDefinition.cs",
+            "MindTrickAbilityDefinition.cs",
+            "NightmareFieldAbilityDefinition.cs",
+            "ForceInterceptAbilityDefinition.cs",
+            "EclipseOfResolveAbilityDefinition.cs"
+        };
+        foreach (var file in sensePowerFiles)
+        {
+            File.ReadAllText((forceAbilityRoot / file).FullName)
+                .Should().Contain("LightGuardianPowerSupport.ApplyCourageousResolve(activator)",
+                    $"{file} implements a Sense power");
+        }
+
+        var support = File.ReadAllText((forceAbilityRoot / "LightGuardianPowerSupport.cs").FullName);
+        support.Should().Contain("TemporaryHitPointEffects.IsActivePoolFromSource(");
+        support.Should().Contain("\"GUARDIAN_WARD\"");
+        support.Should().Contain("\"FATAL_DAMAGE_SAVE\"");
+        support.Should().NotContain("StatusEffect.HasStatusEffect(friendly, typeof(ReflectiveBarrier1StatusEffect), activator)",
+            "the stronger resolve bonus depends on Force temporary HP, not ownership of Reflective Barrier");
+
+        var temporaryHP = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "TemporaryHitPointEffects.cs").FullName);
+        temporaryHP.Should().Contain("public static void ApplyFlatFromSource(");
+        temporaryHP.Should().Contain("public static bool IsActivePoolFromSource(");
+        temporaryHP.Should().Contain("GetEffectTag(effect) == effectTag");
+
+        var scaling = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "AbilityEffectScaling.cs").FullName);
+        scaling.Should().Contain("TemporaryHitPointEffects.ApplyFlatFromSource(source, target, effectKey, amount, durationSeconds)");
+
+        var combat = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
+        combat.Should().Contain("StatusEffect.GetStatusEffectSourceWithStat(");
+        combat.Should().Contain("TemporaryHitPointEffects.ApplyFlatFromSource(");
+
+        var reflectiveBarrier = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "ReflectiveBarrier1StatusEffect.cs").FullName);
+        reflectiveBarrier.Should().Contain("TemporaryHitPointEffects.IsActivePoolFromSource(creature, \"GUARDIAN_WARD\", Source)");
+        reflectiveBarrier.Should().Contain("RemoveWhenGuardianWardPoolEnds(defender, delayUntilAfterDamageResolution: true)");
+    }
+
+    [Test]
     public void LastStandOfTheLight_HasDyingFallbackBeforeForcedPlayerDeath()
     {
         var root = FindRepositoryRoot();

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
@@ -34,6 +35,8 @@ namespace SWLOR.Game.Server.Service
         private const float DefaultNPCMovementSpeedIncrease = 0.30f;
         private const int MaximumNPCHitPoints = 30000;
         private const int MaximumNPCHitPointAlignmentPasses = 4;
+        public const float BeastNaturalStaminaRegenDelaySeconds = 6f;
+        private const string BeastNaturalStaminaRegenAvailableAtVariable = "BEAST_STAMINA_REGEN_AVAILABLE_AT";
         public const int DefaultMeleeDeflectionChanceCap = 50;
         public const int DefaultRangedDeflectionChanceCap = 50;
         public const int MaximumDeflectionChanceCap = 100;
@@ -481,12 +484,22 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                var stamina = GetLocalInt(creature, "STAMINA");
+                var currentStamina = GetLocalInt(creature, "STAMINA");
+                var stamina = currentStamina;
                 stamina -= reduceBy;
                 if (stamina < 0)
                     stamina = 0;
 
                 SetLocalInt(creature, "STAMINA", stamina);
+
+                if (stamina < currentStamina && BeastMastery.IsPlayerBeast(creature))
+                {
+                    var availableAt = DateTime.UtcNow.AddSeconds(BeastNaturalStaminaRegenDelaySeconds);
+                    SetLocalString(
+                        creature,
+                        BeastNaturalStaminaRegenAvailableAtVariable,
+                        availableAt.Ticks.ToString(CultureInfo.InvariantCulture));
+                }
             }
 
             ExecuteScript("pc_stm_adjusted", creature);
@@ -2526,6 +2539,25 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static void RestoreNPCStats(bool outOfCombatRegen)
         {
+            RestoreNPCStats(outOfCombatRegen, false);
+        }
+
+        /// <summary>
+        /// Restores a beast's FP and STM. STM regeneration remains active in and out of combat,
+        /// but cannot begin until six seconds after the beast last spent STM.
+        /// </summary>
+        public static void RestoreBeastStats()
+        {
+            RestoreNPCStats(false, true);
+        }
+
+        public static bool IsNaturalStaminaRegenerationAvailable(long availableAtTicks, long currentTicks)
+        {
+            return availableAtTicks <= 0 || currentTicks >= availableAtTicks;
+        }
+
+        private static void RestoreNPCStats(bool outOfCombatRegen, bool respectsStaminaRegenDelay)
+        {
             var self = OBJECT_SELF;
             if (GetLocalInt(self, SuppressNaturalRegenVariable) != 0)
                 return;
@@ -2533,7 +2565,10 @@ namespace SWLOR.Game.Server.Service
             var maxFP = GetMaxFP(self);
             var maxSTM = GetMaxStamina(self);
             var fp = GetLocalInt(self, "FP") + 1;
-            var stm = GetLocalInt(self, "STAMINA") + 1;
+            var stm = GetLocalInt(self, "STAMINA");
+            var canRestoreStamina = !respectsStaminaRegenDelay || CanRestoreBeastStamina(self);
+            if (canRestoreStamina)
+                stm++;
 
             if (fp > maxFP)
                 fp = maxFP;
@@ -2554,6 +2589,29 @@ namespace SWLOR.Game.Server.Service
                     ApplyEffectToObject(DurationType.Instant, EffectHeal((int)hpToHeal), self);
                 }
             }
+        }
+
+        private static bool CanRestoreBeastStamina(uint beast)
+        {
+            var availableAtValue = GetLocalString(beast, BeastNaturalStaminaRegenAvailableAtVariable);
+            if (string.IsNullOrWhiteSpace(availableAtValue))
+                return true;
+
+            if (!long.TryParse(
+                    availableAtValue,
+                    NumberStyles.Integer,
+                    CultureInfo.InvariantCulture,
+                    out var availableAtTicks))
+            {
+                DeleteLocalString(beast, BeastNaturalStaminaRegenAvailableAtVariable);
+                return true;
+            }
+
+            if (!IsNaturalStaminaRegenerationAvailable(availableAtTicks, DateTime.UtcNow.Ticks))
+                return false;
+
+            DeleteLocalString(beast, BeastNaturalStaminaRegenAvailableAtVariable);
+            return true;
         }
     }
 }

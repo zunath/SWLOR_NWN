@@ -60,6 +60,9 @@ public class BeastmasterCombatUpgradeTests
     {
         new BolsterAttack1StatusEffect().StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(5);
         new BolsterAttack3StatusEffect().StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(12);
+        new BolsterAttack1StatusEffect().StatGroup.Stats[StatType.BolsterAttackRank].Should().Be(1);
+        new BolsterAttack2StatusEffect().StatGroup.Stats[StatType.BolsterAttackRank].Should().Be(2);
+        new BolsterAttack3StatusEffect().StatGroup.Stats[StatType.BolsterAttackRank].Should().Be(3);
         new Hasten1StatusEffect().StatGroup.Stats[StatType.AttackDelayReductionPercent].Should().Be(15);
         new Hasten2StatusEffect().StatGroup.Stats[StatType.AttackDelayReductionPercent].Should().Be(25);
         new PrimalOverrun1StatusEffect().StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(12);
@@ -100,6 +103,20 @@ public class BeastmasterCombatUpgradeTests
         var executePrey = new ExecutePreyAbilityDefinition().BuildAbilities()[FeatType.ExecutePrey1];
         AssertQueuedBeastAbility(executePrey, "Execute Prey", RecastGroup.ExecutePrey, 30f, 8);
 
+        var coordinatedStrike = new CoordinatedStrikeAbilityDefinition().BuildAbilities();
+        AssertQueuedBeastAbility(
+            coordinatedStrike[FeatType.CoordinatedStrike1],
+            "Coordinated Strike I",
+            RecastGroup.CoordinatedStrike,
+            15f,
+            5);
+        AssertQueuedBeastAbility(
+            coordinatedStrike[FeatType.CoordinatedStrike2],
+            "Coordinated Strike II",
+            RecastGroup.CoordinatedStrike,
+            15f,
+            7);
+
         var apexBite = new ApexBiteAbilityDefinition().BuildAbilities()[FeatType.ApexBite1];
         AssertQueuedBeastAbility(apexBite, "Apex Bite", RecastGroup.ApexBite, 45f, 10);
 
@@ -136,6 +153,34 @@ public class BeastmasterCombatUpgradeTests
 
         var predatoryBond = new PredatoryBondAbilityDefinition().BuildAbilities()[FeatType.PredatoryBond];
         AssertBeastBondAbility(predatoryBond, "Predatory Bond");
+    }
+
+    [Test]
+    public void CoordinatedStrike_UsesSelfTargeted2daRows()
+    {
+        var root = FindRepositoryRoot();
+        var featRows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
+            root.FullName,
+            "SWLOR_Haks",
+            "sw_2da",
+            "feat.2da")));
+        var spellRows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
+            root.FullName,
+            "SWLOR_Haks",
+            "sw_2da",
+            "spells.2da")));
+
+        foreach (var feat in new[] { FeatType.CoordinatedStrike1, FeatType.CoordinatedStrike2 })
+        {
+            var featRow = featRows[(int)feat];
+            featRow["TARGETSELF"].Should().Be("1");
+            featRow["HostileFeat"].Should().Be("****");
+
+            var spellRow = spellRows[int.Parse(featRow["SPELLID"])];
+            spellRow["Range"].Should().Be("P");
+            spellRow["TargetType"].Should().Be("0x01");
+            spellRow["HostileSetting"].Should().Be("0");
+        }
     }
 
     [Test]

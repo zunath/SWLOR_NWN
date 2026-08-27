@@ -14,6 +14,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public BolsterAttack1StatusEffect()
         {
             StatGroup.Stats[StatType.DamageDealtPercentAdjustment] = 5;
+            StatGroup.Stats[StatType.BolsterAttackRank] = 1;
         }
     }
 }

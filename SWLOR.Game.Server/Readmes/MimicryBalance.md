@@ -69,12 +69,12 @@ Traits declare their bonuses on the ability builder (`MimicryTraitStat` / `Mimic
 
 That is a statement about the trait's own lifecycle, not about what it does in combat. An on-hit proc trait still inflicts an ordinary status effect on its *target* when it fires (see below); those are transient, carry their own icons, and are unaffected by this.
 
-Each trait grants a **unique** effect, and stronger payload bands provide larger bonuses (no two traits are interchangeable). Two flavours exist:
+Each trait grants a distinct effect profile, and stronger payload bands provide larger bonuses. Two flavours exist:
 
 - **On-hit procs** — a percent chance for a landed hit to inflict a status effect. Elemental DoT procs (Poison/Shock/Freezing) scale roughly from 12% to 15–18%. The debuff families (Bleed, Hemorrhage, Sunder) run at **half those rates** (6%, 9–10%, then 12%): their payloads scale with target max HP or strip defenses, so at equal chances they dwarf every perk-priced passive against elite/boss targets. Halved, their steady-state uptime lands near 25–45% instead of 55–85%.
 - **Flat buffs** — a permanent stat bonus, scaling roughly from +4% through +6% to +8%.
 
-Trait proc chances read the shared `DamageDealt*Chance` stats consumed by `Combat.ApplyDamageDealtMimicryTraitProcs`; nothing about the trait system special-cases a perk. The two defensive traits (`Chitin Guard`, `Iron Carapace`) are deliberately given **different** resistance/defense profiles so they are complementary rather than identical.
+Trait proc chances read the shared `DamageDealt*Chance` stats consumed by `Combat.ApplyDamageDealtMimicryTraitProcs`; nothing about the trait system special-cases a perk. Alternative versions of the same loadout role belong to a mutually exclusive trait family: only one of `Chitin Guard` / `Iron Carapace`, and only one of `Force Rend` / `Essence Scar`, may be equipped at once. The two carapace traits retain different resistance/defense profiles so the choice depends on the encounter. This keeps `Apex Collapse`'s defense penalty meaningful: one carapace can soften it, but the pair cannot erase it and leave a net defense bonus.
 
 | Technique | Power band | Slot | Passive trait effect |
 |---|---|---|---|
@@ -111,7 +111,7 @@ Durations follow the conventions used across the other skill trees, not ad-hoc c
 
 Magnitudes are likewise capped to Bible norms: Accuracy debuffs at −10%, movement slows at −18%, Attack/Defense at ±20%, Haste/Attack buffs at +15%, critical chance at +25%, damage-taken marks at +10%, reflect at 20%, and taunt as **+25% Enmity toward you for 30 seconds** (the pattern shared with Covering Strike, etc.) rather than a forced-attack charm.
 
-Passive on-hit trait procs are a deliberate exception to the active-technique duration bands because they can trigger repeatedly without spending Stamina: Bleed and Hemorrhage last 12 seconds, Freezing 6 seconds, Shock 10 seconds, Sunder 14 seconds, and Poison 12 seconds. Sustain Burn overrides the shared Poison proc duration to 30 seconds while its capstone stance is active.
+Passive on-hit trait procs are a deliberate exception to the active-technique duration bands because they can trigger repeatedly without spending Stamina: Bleed and Hemorrhage last 12 seconds, Freezing 6 seconds, Shock 10 seconds, Sunder 14 seconds, and Poison 12 seconds. Freezing's Ice damage scales with twice the source's Perception modifier, its status level, Mimicry Potency when present, and the target's damage-taken modifiers. Sustain Burn overrides the shared Poison proc duration to 30 seconds while its capstone stance is active.
 
 ### Loadout economy (technique slots)
 

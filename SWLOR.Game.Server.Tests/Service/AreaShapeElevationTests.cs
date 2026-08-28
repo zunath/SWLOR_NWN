@@ -73,6 +73,57 @@ public class AreaShapeElevationTests
     }
 
     [Test]
+    public void DirectionalShapeGeometry_IncludesMeleeTargetsAndPreservesForwardReach()
+    {
+        const float authoredLength = 8f;
+        const float authoredWidth = 5f;
+        var origin = CombatImpactShapeGeometry.ResolveOrigin(
+            Vector3.Zero,
+            0f,
+            CombatImpactAreaShape.Cone);
+        var length = CombatImpactShapeGeometry.ResolveLength(
+            CombatImpactAreaShape.Cone,
+            authoredLength);
+        var width = CombatImpactShapeGeometry.ResolveWidth(
+            CombatImpactAreaShape.Cone,
+            authoredLength,
+            authoredWidth);
+
+        origin.Should().Be(new Vector3(-CombatImpactShapeGeometry.DirectionalOriginBackOffset, 0f, 0f));
+        (origin.X + length).Should().Be(authoredLength,
+            "moving the apex behind the caster must not shorten the authored forward reach");
+        (width * authoredLength / length).Should().BeApproximately(authoredWidth, 0.001f,
+            "the cone must retain its authored width at the forward endpoint");
+
+        InvokeCombatImpactShape(
+                new Vector3(0.25f, 0.45f, 0f),
+                origin,
+                0f,
+                CombatImpactAreaShape.Cone,
+                length,
+                width)
+            .Should().BeTrue("a hostile touching the caster should fit within the backed-up cone");
+
+        var lineOrigin = CombatImpactShapeGeometry.ResolveOrigin(
+            Vector3.Zero,
+            0f,
+            CombatImpactAreaShape.Line);
+        var lineLength = CombatImpactShapeGeometry.ResolveLength(
+            CombatImpactAreaShape.Line,
+            authoredLength);
+        InvokeCombatImpactShape(
+                new Vector3(-0.5f, 1f, 0f),
+                lineOrigin,
+                0f,
+                CombatImpactAreaShape.Line,
+                lineLength,
+                2.5f)
+            .Should().BeTrue("a hostile overlapping the caster should fit within a directional line");
+        (lineOrigin.X + lineLength).Should().Be(authoredLength,
+            "backing up a line must not shorten its authored forward reach");
+    }
+
+    [Test]
     public void TelegraphShape_SphereUsesHorizontalDistance()
     {
         InvokeTelegraphShape(

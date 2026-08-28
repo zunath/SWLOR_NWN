@@ -328,6 +328,37 @@ public class MimicryTests
     }
 
     [Test]
+    public void MimicryTraits_AlternateLoadoutRolesAreMutuallyExclusive()
+    {
+        Ability.CacheData();
+        Mimicry.CacheData();
+
+        var techniques = BuildAllAbilities(MimicryTechniqueNamespace)
+            .ToDictionary(technique => technique.Feat, technique => technique.Detail);
+
+        techniques[FeatType.ChitinGuardTechnique].MimicryTraitFamily
+            .Should().Be(MimicryTraitFamily.Carapace);
+        techniques[FeatType.IronCarapaceTechnique].MimicryTraitFamily
+            .Should().Be(MimicryTraitFamily.Carapace);
+        techniques[FeatType.ForceRendTechnique].MimicryTraitFamily
+            .Should().Be(MimicryTraitFamily.ForceOffense);
+        techniques[FeatType.EssenceScarTechnique].MimicryTraitFamily
+            .Should().Be(MimicryTraitFamily.ForceOffense);
+
+        var loadout = new Player();
+        loadout.EquippedTechniques.Add(FeatType.IronCarapaceTechnique);
+        loadout.EquippedTechniques.Add(FeatType.ForceRendTechnique);
+
+        Mimicry.GetTraitFamilyConflict(loadout, FeatType.ChitinGuardTechnique)
+            .Should().Be(FeatType.IronCarapaceTechnique);
+        Mimicry.GetTraitFamilyConflict(loadout, FeatType.EssenceScarTechnique)
+            .Should().Be(FeatType.ForceRendTechnique);
+        Mimicry.GetTraitFamilyConflict(loadout, FeatType.ApexCollapseTechnique)
+            .Should().Be(FeatType.Invalid,
+                "Apex Collapse keeps its defense tradeoff by allowing one, but not both, carapace traits");
+    }
+
+    [Test]
     public void MimicryTraitLoadouts_StayWithinTheReviewedTenSlotCeilings()
     {
         var traits = BuildAllAbilities(MimicryTechniqueNamespace)
@@ -343,7 +374,8 @@ public class MimicryTests
             int index,
             int usedSlots,
             Dictionary<StatType, int> stats,
-            Dictionary<ResistanceType, int> resistances)
+            Dictionary<ResistanceType, int> resistances,
+            HashSet<MimicryTraitFamily> families)
         {
             if (index == traits.Length)
             {
@@ -360,10 +392,13 @@ public class MimicryTests
                 return;
             }
 
-            Enumerate(index + 1, usedSlots, stats, resistances);
+            Enumerate(index + 1, usedSlots, stats, resistances, families);
 
             var trait = traits[index];
             if (usedSlots + trait.MimicrySlotCost > 10)
+                return;
+            if (trait.MimicryTraitFamily != MimicryTraitFamily.None &&
+                families.Contains(trait.MimicryTraitFamily))
                 return;
 
             var withStats = new Dictionary<StatType, int>(stats);
@@ -372,11 +407,19 @@ public class MimicryTests
             var withResistances = new Dictionary<ResistanceType, int>(resistances);
             foreach (var (resistance, value) in trait.MimicryTraitResistances)
                 withResistances[resistance] = withResistances.GetValueOrDefault(resistance) + value;
+            var withFamilies = new HashSet<MimicryTraitFamily>(families);
+            if (trait.MimicryTraitFamily != MimicryTraitFamily.None)
+                withFamilies.Add(trait.MimicryTraitFamily);
 
-            Enumerate(index + 1, usedSlots + trait.MimicrySlotCost, withStats, withResistances);
+            Enumerate(index + 1, usedSlots + trait.MimicrySlotCost, withStats, withResistances, withFamilies);
         }
 
-        Enumerate(0, 0, new Dictionary<StatType, int>(), new Dictionary<ResistanceType, int>());
+        Enumerate(
+            0,
+            0,
+            new Dictionary<StatType, int>(),
+            new Dictionary<ResistanceType, int>(),
+            new HashSet<MimicryTraitFamily>());
 
         maximumByStat.Should().BeEquivalentTo(new Dictionary<StatType, int>
         {
@@ -389,20 +432,20 @@ public class MimicryTests
             [StatType.DamageDealtPoisonChance] = 18,
             [StatType.DamageDealtShockChance] = 18,
             [StatType.DamageDealtSunderChance] = 21,
-            [StatType.ForceAttackPercentAdjustment] = 14,
-            [StatType.ForceDefensePercentAdjustment] = 25,
-            [StatType.PhysicalDefensePercentAdjustment] = 25
+            [StatType.ForceAttackPercentAdjustment] = 8,
+            [StatType.ForceDefensePercentAdjustment] = 15,
+            [StatType.PhysicalDefensePercentAdjustment] = 15
         });
         maximumByResistance.Should().BeEquivalentTo(new Dictionary<ResistanceType, int>
         {
-            [ResistanceType.Fire] = 35,
-            [ResistanceType.Poison] = 35,
+            [ResistanceType.Fire] = 20,
+            [ResistanceType.Poison] = 20,
             [ResistanceType.Trauma] = 25
         });
-        maximumCombinedDefense.Should().Be(50,
-            "stacking both defensive traits costs four of the ten slots and must stay within the reviewed defense budget");
-        maximumCombinedResistance.Should().Be(95,
-            "the two defensive traits may complement one another without approaching immunity to any single damage type");
+        maximumCombinedDefense.Should().Be(25,
+            "only one defensive carapace trait may contribute to a loadout");
+        maximumCombinedResistance.Should().Be(55,
+            "only one defensive carapace trait may contribute to a loadout");
     }
 
     // The builder is the boundary where a bad trait declaration should fail loudly. An Invalid stat
@@ -420,6 +463,8 @@ public class MimicryTests
             .Should().Throw<ArgumentException>("an Invalid stat is not a real stat");
         Trait().Invoking(b => b.MimicryTraitResistance(ResistanceType.Invalid, 10))
             .Should().Throw<ArgumentException>("an Invalid resistance is not a real resistance");
+        Trait().Invoking(b => b.MimicryTraitFamily(MimicryTraitFamily.None))
+            .Should().Throw<ArgumentException>("None does not identify an exclusive trait family");
 
         // Both helpers require MimicryTrait first, so a plain technique cannot accrue trait stats.
         static AbilityBuilder PlainTechnique() => new AbilityBuilder()
@@ -431,6 +476,8 @@ public class MimicryTests
             .Should().Throw<ArgumentException>("only traits declare trait stats");
         PlainTechnique().Invoking(b => b.MimicryTraitResistance(ResistanceType.Fire, 20))
             .Should().Throw<ArgumentException>("only traits declare trait resistances");
+        PlainTechnique().Invoking(b => b.MimicryTraitFamily(MimicryTraitFamily.Carapace))
+            .Should().Throw<ArgumentException>("only traits declare exclusive trait families");
     }
 
     [TestCase(-1)]
@@ -760,6 +807,23 @@ public class MimicryTests
                 targetSelf.Should().Be("****", $"{feat} takes a manual cursor and must not self-target");
             }
         }
+    }
+
+    [Test]
+    public void MimicryDirectionAimedAreas_DoNotRangeCheckTheCursorPoint()
+    {
+        var offenders = BuildAllAbilities(MimicryTechniqueNamespace)
+            .Where(technique => technique.Detail.RequiresLocationTarget)
+            .Where(technique => technique.Detail.Targeting.Shape is
+                AbilityTargetingShapeType.Rect or AbilityTargetingShapeType.Cone)
+            .Where(technique => technique.Detail.Targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf))
+            .Where(technique => technique.Detail.HasExplicitMaxRange)
+            .Select(technique => technique.Feat)
+            .ToList();
+
+        offenders.Should().BeEmpty(
+            "a line or cone cursor selects direction; the authored shape length limits actual reach, " +
+            "so the clicked ground point must not produce an out-of-range rejection");
     }
 
     // Registry-driven TLK check covering every technique in the pool. Replaces the old fixed

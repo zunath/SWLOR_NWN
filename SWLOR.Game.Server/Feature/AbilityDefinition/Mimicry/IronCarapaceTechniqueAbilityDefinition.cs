@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .MimicryTrait(FeatType.IronCarapace, 21, 2)
+                .MimicryTraitFamily(MimicryTraitFamily.Carapace)
                 .MimicryTraitStat(StatType.PhysicalDefensePercentAdjustment, 15)
                 .MimicryTraitStat(StatType.ForceDefensePercentAdjustment, 10)
                 .MimicryTraitResistance(ResistanceType.Trauma, 25)

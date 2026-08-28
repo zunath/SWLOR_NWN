@@ -97,13 +97,24 @@ public class DamageOverTimeStatusEffectTests
     }
 
     [TestCase("DiseaseStatusEffect.cs", "System.Math.Max(1, d2() + perception * _level)")]
-    [TestCase("FreezingStatusEffect.cs", "System.Math.Max(1, d2() + perception * _level)")]
+    [TestCase("FreezingStatusEffect.cs", "System.Math.Max(1, d4() + perception * 2 * _level)")]
     [TestCase("ShockStatusEffect.cs", "System.Math.Max(1, d4() + agility * 2 * _level)")]
     public void ScalingDamageOverTimeStatusEffects_FloorTickDamageBeforeResistance(string fileName, string floorExpression)
     {
         var source = ReadStatusEffectSource(fileName);
 
         source.Should().Contain(floorExpression);
+    }
+
+    [Test]
+    public void FreezingStatusEffect_ScalesWithMimicryAndDamageTakenModifiers()
+    {
+        var source = ReadStatusEffectSource("FreezingStatusEffect.cs");
+
+        source.Should().Contain("Stat.GetStatAdjustment(source, StatType.MimicryPotencyPercent)",
+            "Mimicry progression should improve the damage of copied Freezing effects");
+        source.Should().Contain("Combat.ApplyDamageOverTimeTakenModifiers(creature, damage, CombatDamageType.Ice)");
+        source.Should().Contain("Combat.ApplyDamageTakenModifiers(creature, damage, source, CombatDamageType.Ice)");
     }
 
     private static string ReadStatusEffectSource(string fileName)

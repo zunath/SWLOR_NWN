@@ -428,13 +428,17 @@ namespace SWLOR.Game.Server.Feature
             uint target,
             FeatType feat,
             AbilityDetail ability,
-            Location targetLocation)
+            Location targetLocation,
+            bool hadActivationAreaTelegraph = false)
         {
             var impactEnded = false;
             try
             {
                 PlayAbilitySound(activator, ability.ImpactSound);
-                Ability.BeginAbilityImpact(activator, ability);
+                Ability.BeginAbilityImpact(
+                    activator,
+                    ability,
+                    hadActivationAreaTelegraph: hadActivationAreaTelegraph);
                 ability.ImpactAction?.Invoke(activator, target, ability.AbilityLevel, targetLocation);
                 var summary = Ability.EndAbilityImpact(activator);
                 impactEnded = true;
@@ -666,7 +670,13 @@ namespace SWLOR.Game.Server.Feature
 
                 void ResolveImpact()
                 {
-                    ExecuteAbilityImpact(activator, target, feat, ability, targetLocation);
+                    ExecuteAbilityImpact(
+                        activator,
+                        target,
+                        feat,
+                        ability,
+                        targetLocation,
+                        activationTelegraphIds.Count > 0);
                     ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f);
 
                     // If this is an attack make the NPC react.
@@ -779,7 +789,13 @@ namespace SWLOR.Game.Server.Feature
             {
                 ApplyRequirementEffects(activator, ability);
                 HandleStealthBreaking(activator, ability);
-                ExecuteAbilityImpact(activator, target, feat, ability, targetLocation);
+                ExecuteAbilityImpact(
+                    activator,
+                    target,
+                    feat,
+                    ability,
+                    targetLocation,
+                    activationTelegraphIds.Count > 0);
                 Recast.ApplyRecastDelay(activator, ability.RecastGroup, recastDelay);
             }
 
@@ -1019,27 +1035,48 @@ namespace SWLOR.Game.Server.Feature
                         null);
                     break;
                 case AbilityTargetingShapeType.Rect:
+                {
+                    var originOnSelf = targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf);
+                    var origin = originOnSelf
+                        ? CombatImpactShapeGeometry.ResolveOrigin(position, rotation, CombatImpactAreaShape.Line)
+                        : position;
+                    var length = originOnSelf
+                        ? CombatImpactShapeGeometry.ResolveLength(CombatImpactAreaShape.Line, sizeX)
+                        : sizeX;
                     telegraphId = Telegraph.CreateLineTelegraph(
                         activator,
-                        position,
+                        origin,
                         rotation,
-                        sizeX,
+                        length,
                         sizeY,
                         activationDelay,
                         isHostile,
                         null);
                     break;
+                }
                 case AbilityTargetingShapeType.Cone:
+                {
+                    var originOnSelf = targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf);
+                    var origin = originOnSelf
+                        ? CombatImpactShapeGeometry.ResolveOrigin(position, rotation, CombatImpactAreaShape.Cone)
+                        : position;
+                    var length = originOnSelf
+                        ? CombatImpactShapeGeometry.ResolveLength(CombatImpactAreaShape.Cone, sizeX)
+                        : sizeX;
+                    var width = originOnSelf
+                        ? CombatImpactShapeGeometry.ResolveWidth(CombatImpactAreaShape.Cone, sizeX, sizeY)
+                        : sizeY;
                     telegraphId = Telegraph.CreateConeTelegraph(
                         activator,
-                        position,
+                        origin,
                         rotation,
-                        sizeX,
-                        sizeY,
+                        length,
+                        width,
                         activationDelay,
                         isHostile,
                         null);
                     break;
+                }
                 case AbilityTargetingShapeType.None:
                 default:
                     return;

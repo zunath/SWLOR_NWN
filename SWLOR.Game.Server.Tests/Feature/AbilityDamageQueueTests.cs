@@ -24,7 +24,8 @@ public class AbilityDamageQueueTests
             0,
             0,
             true,
-            0
+            0,
+            false
         });
 
         trackedImpactType.GetMethod("AddDefenseIgnorePercentAdjustment")!
@@ -54,7 +55,7 @@ public class AbilityDamageQueueTests
         source.Should().Contain("Enmity.IssueAttackCommand(activator, target, clearActions);");
         source.Should().Contain("private static void ResumeAttackAfterDelay(uint activator, uint target, float delay, bool clearActions = true)");
         source.Should().Contain("DelayCommand(delay, () =>");
-        var impactIndex = completeBody.IndexOf("ExecuteAbilityImpact(activator, target, feat, ability, targetLocation)", StringComparison.Ordinal);
+        var impactIndex = completeBody.IndexOf("ExecuteAbilityImpact(", StringComparison.Ordinal);
         var resumeIndex = completeBody.IndexOf("ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f)", StringComparison.Ordinal);
 
         impactIndex.Should().BeGreaterThanOrEqualTo(0);

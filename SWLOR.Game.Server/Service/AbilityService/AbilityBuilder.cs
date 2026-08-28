@@ -784,6 +784,14 @@ namespace SWLOR.Game.Server.Service.AbilityService
                 sizeResolver,
                 updatesClientTargeting);
 
+            if (_activeAbility.IsMimicryTechnique &&
+                _activeAbility.IsAreaAbility &&
+                shape is AbilityTargetingShapeType.Rect or AbilityTargetingShapeType.Cone &&
+                flags.HasFlag(AbilityTargetingFlags.OriginOnSelf))
+            {
+                _activeAbility.HasExplicitMaxRange = false;
+            }
+
             return this;
         }
 
@@ -849,6 +857,18 @@ namespace SWLOR.Game.Server.Service.AbilityService
             if (_activeAbility.IsAreaAbility)
             {
                 _activeAbility.RequiresTarget = false;
+
+                // A line or cone cursor selects direction, not placement distance. The shape's own
+                // declared length limits its reach, so retaining the NPC's object-target range here
+                // only makes valid directions fail depending on where the player clicked.
+                if (_activeAbility.Targeting is
+                    {
+                        Shape: AbilityTargetingShapeType.Rect or AbilityTargetingShapeType.Cone
+                    } targeting &&
+                    targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf))
+                {
+                    _activeAbility.HasExplicitMaxRange = false;
+                }
             }
 
             return this;
@@ -911,6 +931,22 @@ namespace SWLOR.Game.Server.Service.AbilityService
                 throw new ArgumentException($"{nameof(resistance)} must be a real resistance.");
 
             _activeAbility.MimicryTraitResistances[resistance] = amount;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Assigns this trait to a mutually exclusive loadout family. A player may equip only one
+        /// trait from a family at a time.
+        /// </summary>
+        public AbilityBuilder MimicryTraitFamily(MimicryTraitFamily family)
+        {
+            if (!_activeAbility.IsMimicryTrait)
+                throw new ArgumentException($"{nameof(MimicryTraitFamily)} requires {nameof(MimicryTrait)} to be called first.");
+            if (family == SWLOR.Game.Server.Service.AbilityService.MimicryTraitFamily.None)
+                throw new ArgumentException($"{nameof(family)} must identify a real trait family.");
+
+            _activeAbility.MimicryTraitFamily = family;
 
             return this;
         }

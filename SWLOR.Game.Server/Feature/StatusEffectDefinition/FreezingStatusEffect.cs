@@ -1,6 +1,7 @@
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
@@ -34,8 +35,16 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         {
             var source = GetIsObjectValid(Source) ? Source : creature;
             var perception = GetAbilityModifier(AbilityType.Perception, source);
-            var damage = System.Math.Max(1, d2() + perception * _level);
+            var damage = System.Math.Max(1, d4() + perception * 2 * _level);
+            var mimicryPotency = Stat.GetStatAdjustment(source, StatType.MimicryPotencyPercent);
+            if (mimicryPotency > 0)
+            {
+                damage += (int)System.Math.Ceiling(damage * (mimicryPotency / 100f));
+            }
+
             damage = Resistance.ApplyResistanceToDamage(creature, ResistanceType, damage);
+            damage = Combat.ApplyDamageOverTimeTakenModifiers(creature, damage, CombatDamageType.Ice);
+            damage = Combat.ApplyDamageTakenModifiers(creature, damage, source, CombatDamageType.Ice);
             if (damage > 0)
             {
                 AssignCommand(source, () => ApplyEffectToObject(DurationType.Instant, EffectDamage(damage, CombatDamageType.Ice.GetNWScriptDamageType()), creature));

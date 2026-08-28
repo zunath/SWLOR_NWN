@@ -22,6 +22,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .MimicryTrait(FeatType.ChitinGuard, 20, 2)
+                .MimicryTraitFamily(MimicryTraitFamily.Carapace)
                 .MimicryTraitStat(StatType.PhysicalDefensePercentAdjustment, 10)
                 .MimicryTraitStat(StatType.ForceDefensePercentAdjustment, 15)
                 .MimicryTraitResistance(ResistanceType.Fire, 20)

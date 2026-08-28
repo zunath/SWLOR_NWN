@@ -76,7 +76,7 @@ public class AbilityLineOfSightTests
             StringComparison.Ordinal);
         var costIndex = completeBody.IndexOf("ApplyRequirementEffects(activator, ability);", StringComparison.Ordinal);
         var impactIndex = completeBody.IndexOf(
-            "ExecuteAbilityImpact(activator, target, feat, ability, targetLocation);",
+            "ExecuteAbilityImpact(",
             StringComparison.Ordinal);
         var recastIndex = completeBody.IndexOf(
             "Recast.ApplyRecastDelay(activator, ability.RecastGroup, abilityRecastDelay);",

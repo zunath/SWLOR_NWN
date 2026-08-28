@@ -25,7 +25,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .HasRecastDelay(RecastGroup.InfernoBlast, 30f)
                 .UsesAnimation(Animation.CastOutAnimation)
                 .IsCastedAbility()
-                .HasMaxRange(10f)
                 .IsAreaAbility()
                 .IsHostileAbility()
                 .RequirementStamina(10)
@@ -65,7 +64,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                     Spell.InfernoBlastTechnique,
                     10f,
                     7f,
-                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf);
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf | AbilityTargetingFlags.BackOffsetOrigin);
 
             return _builder.Build();
         }

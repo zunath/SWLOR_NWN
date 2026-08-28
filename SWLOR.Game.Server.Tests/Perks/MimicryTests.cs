@@ -365,18 +365,20 @@ public class MimicryTests
             var trait = traits[index];
             if (usedSlots + trait.MimicrySlotCost > 10)
                 return;
-
             var withStats = new Dictionary<StatType, int>(stats);
             foreach (var (stat, value) in trait.MimicryTraitStats)
                 withStats[stat] = withStats.GetValueOrDefault(stat) + value;
             var withResistances = new Dictionary<ResistanceType, int>(resistances);
             foreach (var (resistance, value) in trait.MimicryTraitResistances)
                 withResistances[resistance] = withResistances.GetValueOrDefault(resistance) + value;
-
             Enumerate(index + 1, usedSlots + trait.MimicrySlotCost, withStats, withResistances);
         }
 
-        Enumerate(0, 0, new Dictionary<StatType, int>(), new Dictionary<ResistanceType, int>());
+        Enumerate(
+            0,
+            0,
+            new Dictionary<StatType, int>(),
+            new Dictionary<ResistanceType, int>());
 
         maximumByStat.Should().BeEquivalentTo(new Dictionary<StatType, int>
         {
@@ -400,9 +402,9 @@ public class MimicryTests
             [ResistanceType.Trauma] = 25
         });
         maximumCombinedDefense.Should().Be(50,
-            "stacking both defensive traits costs four of the ten slots and must stay within the reviewed defense budget");
+            "both carapace traits may stack when the loadout commits four slots to them");
         maximumCombinedResistance.Should().Be(95,
-            "the two defensive traits may complement one another without approaching immunity to any single damage type");
+            "both carapace traits may stack when the loadout commits four slots to them");
     }
 
     // The builder is the boundary where a bad trait declaration should fail loudly. An Invalid stat
@@ -420,7 +422,6 @@ public class MimicryTests
             .Should().Throw<ArgumentException>("an Invalid stat is not a real stat");
         Trait().Invoking(b => b.MimicryTraitResistance(ResistanceType.Invalid, 10))
             .Should().Throw<ArgumentException>("an Invalid resistance is not a real resistance");
-
         // Both helpers require MimicryTrait first, so a plain technique cannot accrue trait stats.
         static AbilityBuilder PlainTechnique() => new AbilityBuilder()
             .Create(FeatType.ToxicSpitTechnique, PerkType.CombatAnalyzer)
@@ -443,6 +444,43 @@ public class MimicryTests
 
         builder.Invoking(b => b.MimicryTechnique(FeatType.ToxicSpit, skillRequirement, 1))
             .Should().Throw<ArgumentException>("technique requirements must fit within the Mimicry skill's 0-50 range");
+    }
+
+    [TestCase(true)]
+    [TestCase(false)]
+    public void MimicryTechniqueBuilder_DoesNotDiscardExplicitAreaRange(bool targetingFirst)
+    {
+        var builder = new AbilityBuilder()
+            .Create(FeatType.ToxicSpitTechnique, PerkType.CombatAnalyzer)
+            .Name("Contract Test")
+            .IsCastedAbility()
+            .IsAreaAbility()
+            .HasMaxRange(8f);
+
+        if (targetingFirst)
+        {
+            builder
+                .HasTargetingCone(
+                    Spell.CryoBileTechnique,
+                    8f,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
+                .MimicryTechnique(FeatType.ToxicSpit, 24, 1);
+        }
+        else
+        {
+            builder
+                .MimicryTechnique(FeatType.ToxicSpit, 24, 1)
+                .HasTargetingCone(
+                    Spell.CryoBileTechnique,
+                    8f,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf);
+        }
+
+        var detail = builder.Build()[FeatType.ToxicSpitTechnique];
+        detail.HasExplicitMaxRange.Should().BeTrue();
+        detail.MaxRange.Should().Be(8f);
     }
 
     // The declaration tests above prove traits carry data, but not that the data is ever read. The
@@ -760,6 +798,39 @@ public class MimicryTests
                 targetSelf.Should().Be("****", $"{feat} takes a manual cursor and must not self-target");
             }
         }
+    }
+
+    [Test]
+    public void MimicryDirectionAimedAreas_DoNotRangeCheckTheCursorPoint()
+    {
+        var offenders = BuildAllAbilities(MimicryTechniqueNamespace)
+            .Where(technique => technique.Detail.RequiresLocationTarget)
+            .Where(technique => technique.Detail.Targeting.Shape is
+                AbilityTargetingShapeType.Rect or AbilityTargetingShapeType.Cone)
+            .Where(technique => technique.Detail.Targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf))
+            .Where(technique => technique.Detail.HasExplicitMaxRange)
+            .Select(technique => technique.Feat)
+            .ToList();
+
+        offenders.Should().BeEmpty(
+            "a line or cone cursor selects direction; the authored shape length limits actual reach, " +
+            "so the clicked ground point must not produce an out-of-range rejection");
+    }
+
+    [Test]
+    public void MimicryDirectionAimedAreas_ExplicitlyBackOffsetTheirOrigin()
+    {
+        var offenders = BuildAllAbilities(MimicryTechniqueNamespace)
+            .Where(technique => technique.Detail.RequiresLocationTarget)
+            .Where(technique => technique.Detail.Targeting.Shape is
+                AbilityTargetingShapeType.Rect or AbilityTargetingShapeType.Cone)
+            .Where(technique => technique.Detail.Targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf))
+            .Where(technique => !technique.Detail.Targeting.Flags.HasFlag(AbilityTargetingFlags.BackOffsetOrigin))
+            .Select(technique => technique.Feat)
+            .ToList();
+
+        offenders.Should().BeEmpty(
+            "only explicitly flagged Mimicry lines and cones should move their apex behind the caster");
     }
 
     // Registry-driven TLK check covering every technique in the pool. Replaces the old fixed

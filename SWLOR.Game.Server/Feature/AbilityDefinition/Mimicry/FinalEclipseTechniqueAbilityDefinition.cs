@@ -34,7 +34,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 ResistanceType.Disruption,
                 VisualEffect.Vfx_Imp_Aura_Negative_Energy,
                 VisualEffect.Vfx_Fnf_Gas_Explosion_Evil,
-                maxRange: 8f,
                 afterSuccessfulHit: InnateAbility.RestoreFPOnHit(5),
                 damagePercentAdjustment: InnateAbility.ComboBonus(40, typeof(WeakenedStatusEffect)))
                 .SkillType(SkillType.Mimicry)
@@ -45,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                     Spell.FinalEclipseTechnique,
                     8f,
                     2.5f,
-                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf);
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf | AbilityTargetingFlags.BackOffsetOrigin);
 
             return _builder.Build();
         }

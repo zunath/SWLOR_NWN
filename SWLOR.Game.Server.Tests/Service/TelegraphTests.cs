@@ -49,7 +49,7 @@ public class TelegraphTests
     }
 
     [Test]
-    public void ApplyTelegraphedCombatImpact_FlashesTheShapeOnTheInstantPath()
+    public void ApplyTelegraphedCombatImpact_FlashesOnlyWhenActivationDidNotAlreadyShowTheShape()
     {
         // Guards the wiring itself: the zero-telegraph branch must still render something.
         var source = File.ReadAllText(ResolveRepositoryPath("SWLOR.Game.Server", "Service", "Ability.cs"));
@@ -64,8 +64,25 @@ public class TelegraphTests
         // would still pass.
         var branchBody = ExtractBlockBody(source, branchStart);
 
+        branchBody.Should().Contain("HadActivationAreaTelegraph",
+            "a casted area must not tear down and immediately redraw the same telegraph at impact");
         branchBody.IndexOf("ShowAreaImpactFlash(", StringComparison.Ordinal)
             .Should().BeGreaterThan(-1, "the instant-cast path must flash the area it just struck");
+    }
+
+    [Test]
+    public void AbilityActivation_TracksWhetherAnAreaTelegraphWasDisplayed()
+    {
+        var source = File.ReadAllText(ResolveRepositoryPath(
+            "SWLOR.Game.Server",
+            "Feature",
+            "UsePerkFeat.cs"));
+
+        source.Should().Contain("activationTelegraphIds.Count > 0");
+        source.Should().Contain("hadActivationAreaTelegraph: hadActivationAreaTelegraph");
+        source.Should().Contain(
+            "ability.ImpactDelay <= 0f && activationTelegraphIds.Count > 0",
+            "a delayed impact occurs after its activation telegraph has been removed and still needs an impact flash");
     }
 
     [Test]

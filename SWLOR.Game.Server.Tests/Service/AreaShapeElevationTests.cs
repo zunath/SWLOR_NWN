@@ -73,6 +73,115 @@ public class AreaShapeElevationTests
     }
 
     [Test]
+    public void DirectionalShapeGeometry_IncludesMeleeTargetsAndPreservesForwardReach()
+    {
+        const float authoredLength = 8f;
+        const float authoredWidth = 5f;
+        var origin = CombatImpactShapeGeometry.ResolveOrigin(
+            Vector3.Zero,
+            0f,
+            CombatImpactAreaShape.Cone,
+            true);
+        var length = CombatImpactShapeGeometry.ResolveLength(
+            CombatImpactAreaShape.Cone,
+            authoredLength,
+            true);
+
+        origin.Should().Be(new Vector3(-CombatImpactShapeGeometry.DirectionalOriginBackOffset, 0f, 0f));
+        (origin.X + length).Should().Be(authoredLength,
+            "moving the apex behind the caster must not shorten the authored forward reach");
+
+        var widenedWidth = authoredWidth * length / authoredLength;
+        var authoredHalfAngle = MathF.Atan(authoredWidth * 0.5f / length);
+        var widenedHalfAngle = MathF.Atan(widenedWidth * 0.5f / length);
+        var widenedOnlyAngle = (authoredHalfAngle + widenedHalfAngle) * 0.5f;
+        var widenedOnlyProbe = origin + new Vector3(
+            MathF.Cos(widenedOnlyAngle) * authoredLength,
+            MathF.Sin(widenedOnlyAngle) * authoredLength,
+            0f);
+        InvokeCombatImpactShape(
+                widenedOnlyProbe,
+                origin,
+                0f,
+                CombatImpactAreaShape.Cone,
+                length,
+                authoredWidth)
+            .Should().BeFalse("backing up the apex must not scale up the authored cone width");
+
+        InvokeCombatImpactShape(
+                new Vector3(0.25f, 0.45f, 0f),
+                origin,
+                0f,
+                CombatImpactAreaShape.Cone,
+                length,
+                authoredWidth)
+            .Should().BeTrue("a hostile touching the caster should fit within the backed-up cone");
+
+        var lineOrigin = CombatImpactShapeGeometry.ResolveOrigin(
+            Vector3.Zero,
+            0f,
+            CombatImpactAreaShape.Line,
+            true);
+        var lineLength = CombatImpactShapeGeometry.ResolveLength(
+            CombatImpactAreaShape.Line,
+            authoredLength,
+            true);
+        InvokeCombatImpactShape(
+                new Vector3(-0.5f, 1f, 0f),
+                lineOrigin,
+                0f,
+                CombatImpactAreaShape.Line,
+                lineLength,
+                2.5f)
+            .Should().BeTrue("a hostile overlapping the caster should fit within a directional line");
+        (lineOrigin.X + lineLength).Should().Be(authoredLength,
+            "backing up a line must not shorten its authored forward reach");
+    }
+
+    [Test]
+    public void DirectionalShapeGeometry_CapsTargetsFromTheBackedUpOrigin()
+    {
+        var origin = CombatImpactShapeGeometry.ResolveOrigin(
+            Vector3.Zero,
+            0f,
+            CombatImpactAreaShape.Cone,
+            true);
+        var candidates = new[]
+        {
+            (Name: "NearCaster", Position: new Vector3(0.1f, 0f, 0f)),
+            (Name: "NearApex", Position: new Vector3(-1.4f, 0f, 0f))
+        };
+
+        var selected = CombatImpactShapeGeometry.TakeClosestToOrigin(
+                candidates,
+                origin,
+                candidate => candidate.Position,
+                1)
+            .Single();
+
+        selected.Name.Should().Be("NearApex",
+            "capped directional impacts must rank targets from the displayed backed-up origin, not the caster");
+    }
+
+    [Test]
+    public void DirectionalShapeGeometry_LeavesUnflaggedAbilitiesUnchanged()
+    {
+        var casterPosition = new Vector3(3f, 4f, 5f);
+
+        CombatImpactShapeGeometry.ResolveOrigin(
+                casterPosition,
+                0f,
+                CombatImpactAreaShape.Cone,
+                false)
+            .Should().Be(casterPosition);
+        CombatImpactShapeGeometry.ResolveLength(
+                CombatImpactAreaShape.Cone,
+                8f,
+                false)
+            .Should().Be(8f);
+    }
+
+    [Test]
     public void TelegraphShape_SphereUsesHorizontalDistance()
     {
         InvokeTelegraphShape(

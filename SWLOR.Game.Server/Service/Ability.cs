@@ -101,7 +101,8 @@ namespace SWLOR.Game.Server.Service
         public static void BeginAbilityImpact(
             uint activator,
             AbilityDetail ability,
-            bool countsAsAttackAttempt = true)
+            bool countsAsAttackAttempt = true,
+            bool hadActivationAreaTelegraph = false)
         {
             if (!GetIsObjectValid(activator) || ability == null)
                 return;
@@ -137,7 +138,8 @@ namespace SWLOR.Game.Server.Service
                 guardedHitBonuses.EnmityBonus,
                 statusAppliedNextAttackDamageBonus,
                 countsAsAttackAttempt,
-                queuedWeaponBonuses.CriticalDamagePercentAdjustment);
+                queuedWeaponBonuses.CriticalDamagePercentAdjustment,
+                hadActivationAreaTelegraph);
         }
 
         private static void BeginAbilityImpact(
@@ -149,7 +151,8 @@ namespace SWLOR.Game.Server.Service
             int nextAttackEnmityBonus = 0,
             int statusAppliedNextAttackDamageBonus = 0,
             bool countsAsAttackAttempt = true,
-            int nextAbilityCriticalDamagePercentAdjustment = 0)
+            int nextAbilityCriticalDamagePercentAdjustment = 0,
+            bool hadActivationAreaTelegraph = false)
         {
             if (!GetIsObjectValid(activator) || ability == null)
                 return;
@@ -162,7 +165,8 @@ namespace SWLOR.Game.Server.Service
                 nextAttackEnmityBonus,
                 statusAppliedNextAttackDamageBonus,
                 countsAsAttackAttempt,
-                nextAbilityCriticalDamagePercentAdjustment);
+                nextAbilityCriticalDamagePercentAdjustment,
+                hadActivationAreaTelegraph);
         }
 
         public static AbilityImpactSummary EndAbilityImpact(uint activator)
@@ -580,7 +584,8 @@ namespace SWLOR.Game.Server.Service
                     shape,
                     targeting.ResolveSizeX(activator, true),
                     targeting.ResolveSizeY(),
-                    targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf))
+                    targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf),
+                    targeting.Flags.HasFlag(AbilityTargetingFlags.BackOffsetOrigin))
                 .ToList();
 
             if (creatures.Count <= 0 ||
@@ -1308,21 +1313,30 @@ namespace SWLOR.Game.Server.Service
             bool useUnscaledDamage = false)
         {
             RecordAbilityImpactShape(activator, skillType, true);
+            var trackedImpact = GetTrackedAbilityImpact(activator);
+            var backOffsetOrigin = trackedImpact?.Ability.Targeting?.Flags
+                .HasFlag(AbilityTargetingFlags.BackOffsetOrigin) == true;
 
             if (telegraphDuration <= 0f)
             {
                 // Instant-cast area abilities cannot use a pre-cast telegraph without violating the
                 // Bible's "Instant" activation time, so they flash their shape at impact instead.
-                // The flash is purely visual: damage below is still applied immediately.
-                ShowAreaImpactFlash(
-                    activator,
-                    target,
-                    targetLocation,
-                    shape,
-                    lengthOrRadius,
-                    width,
-                    centerOnActivator,
-                    impactFlashDuration);
+                // The flash is purely visual: damage below is still applied immediately. A cast that
+                // already displayed this area through its activation must not tear that shape down
+                // and recreate it at impact, which produces a visible off/on flicker.
+                if (GetTrackedAbilityImpact(activator)?.HadActivationAreaTelegraph != true)
+                {
+                    ShowAreaImpactFlash(
+                        activator,
+                        target,
+                        targetLocation,
+                        shape,
+                        lengthOrRadius,
+                        width,
+                        centerOnActivator,
+                        impactFlashDuration,
+                        backOffsetOrigin);
+                }
 
                 var totalDamage = ApplyCombatImpactInShape(
                     activator,
@@ -1359,21 +1373,30 @@ namespace SWLOR.Game.Server.Service
                     sendsNoTargetMessage,
                     resolvesHit,
                     canCritical,
-                    useUnscaledDamage);
+                    useUnscaledDamage,
+                    backOffsetOrigin);
                 if (playImpactAnimation)
                     PlayCombatImpactAnimation(activator, impactAnimation);
 
                 return totalDamage;
             }
 
+            var impactRotation = GetImpactRotationRadians(activator, target, targetLocation);
+            var directionalOrigin = CombatImpactShapeGeometry.ResolveOrigin(
+                GetPosition(activator),
+                impactRotation,
+                shape,
+                backOffsetOrigin);
+            var adjustedLength = CombatImpactShapeGeometry.ResolveLength(
+                shape,
+                lengthOrRadius,
+                backOffsetOrigin);
             var areaVisualLocation = Location(
                 GetArea(activator),
                 shape == CombatImpactAreaShape.Sphere
                     ? GetAreaImpactPosition(activator, target, targetLocation, centerOnActivator)
-                    : GetPosition(activator),
+                    : directionalOrigin,
                 0f);
-            var impactRotation = GetImpactRotationRadians(activator, target, targetLocation);
-            var trackedImpact = GetTrackedAbilityImpact(activator);
             var deferredNextAbilityDamageBonus =
                 (trackedImpact?.NextAbilityDamageBonus ?? 0) -
                 (trackedImpact?.StatusAppliedNextAttackDamageBonus ?? 0);
@@ -1429,10 +1452,10 @@ namespace SWLOR.Game.Server.Service
                 case CombatImpactAreaShape.Cone:
                     Telegraph.CreateConeTelegraph(
                         activator,
-                        GetPosition(activator),
+                        directionalOrigin,
                         impactRotation,
-                        lengthOrRadius,
-                        width > 0f ? width : lengthOrRadius,
+                        adjustedLength,
+                        width > 0f ? width : adjustedLength,
                         telegraphDuration,
                         true,
                         action);
@@ -1440,9 +1463,9 @@ namespace SWLOR.Game.Server.Service
                 case CombatImpactAreaShape.Line:
                     Telegraph.CreateLineTelegraph(
                         activator,
-                        GetPosition(activator),
+                        directionalOrigin,
                         impactRotation,
-                        lengthOrRadius,
+                        adjustedLength,
                         width > 0f ? width : 2.0f,
                         telegraphDuration,
                         true,
@@ -1473,12 +1496,22 @@ namespace SWLOR.Game.Server.Service
             float lengthOrRadius,
             float width,
             bool centerOnActivator,
-            float flashDuration)
+            float flashDuration,
+            bool backOffsetOrigin)
         {
             if (flashDuration <= 0f || lengthOrRadius <= 0f)
                 return;
 
             var rotation = GetImpactRotationRadians(activator, target, targetLocation);
+            var directionalOrigin = CombatImpactShapeGeometry.ResolveOrigin(
+                GetPosition(activator),
+                rotation,
+                shape,
+                backOffsetOrigin);
+            var adjustedLength = CombatImpactShapeGeometry.ResolveLength(
+                shape,
+                lengthOrRadius,
+                backOffsetOrigin);
 
             switch (shape)
             {
@@ -1494,10 +1527,10 @@ namespace SWLOR.Game.Server.Service
                 case CombatImpactAreaShape.Cone:
                     Telegraph.CreateConeTelegraph(
                         activator,
-                        GetPosition(activator),
+                        directionalOrigin,
                         rotation,
-                        lengthOrRadius,
-                        width > 0f ? width : lengthOrRadius,
+                        adjustedLength,
+                        width > 0f ? width : adjustedLength,
                         flashDuration,
                         true,
                         null);
@@ -1505,9 +1538,9 @@ namespace SWLOR.Game.Server.Service
                 case CombatImpactAreaShape.Line:
                     Telegraph.CreateLineTelegraph(
                         activator,
-                        GetPosition(activator),
+                        directionalOrigin,
                         rotation,
-                        lengthOrRadius,
+                        adjustedLength,
                         width > 0f ? width : 2.0f,
                         flashDuration,
                         true,
@@ -1551,7 +1584,8 @@ namespace SWLOR.Game.Server.Service
             bool sendsNoTargetMessage,
             bool resolvesHit,
             bool canCritical,
-            bool useUnscaledDamage)
+            bool useUnscaledDamage,
+            bool backOffsetOrigin)
         {
             RecordAbilityImpactShape(activator, skillType, true);
 
@@ -1563,7 +1597,8 @@ namespace SWLOR.Game.Server.Service
                     shape,
                     lengthOrRadius,
                     width,
-                    centerOnActivator)
+                    centerOnActivator,
+                    backOffsetOrigin)
                 .Where(creature => HasAbilityLineOfSight(activator, creature))
                 .ToList();
 
@@ -1663,9 +1698,8 @@ namespace SWLOR.Game.Server.Service
                     if (maxTargets > 0)
                     {
                         var impactPosition = GetPositionFromLocation(areaVisualLocation);
-                        hostileCreatures = hostileCreatures
-                            .OrderBy(creature => GetHorizontalDistance(GetPosition(creature), impactPosition))
-                            .Take(maxTargets)
+                        hostileCreatures = CombatImpactShapeGeometry
+                            .TakeClosestToOrigin(hostileCreatures, impactPosition, GetPosition, maxTargets)
                             .ToList();
                     }
 
@@ -1885,12 +1919,21 @@ namespace SWLOR.Game.Server.Service
             CombatImpactAreaShape shape,
             float lengthOrRadius,
             float width,
-            bool centerOnActivator)
+            bool centerOnActivator,
+            bool backOffsetOrigin)
         {
             var origin = GetCombatImpactShapeOrigin(activator, target, targetLocation, shape, centerOnActivator);
-            var maxDistance = GetCombatImpactShapeSearchRadius(shape, lengthOrRadius, width);
             var rotation = GetImpactRotationRadians(activator, target, targetLocation);
-            var originPosition = GetPositionFromLocation(origin);
+            var originPosition = CombatImpactShapeGeometry.ResolveOrigin(
+                GetPositionFromLocation(origin),
+                rotation,
+                shape,
+                backOffsetOrigin);
+            var adjustedLength = CombatImpactShapeGeometry.ResolveLength(
+                shape,
+                lengthOrRadius,
+                backOffsetOrigin);
+            var maxDistance = GetCombatImpactShapeSearchRadius(shape, adjustedLength, width);
             var candidates = GetAliveCreaturesInArea(GetAreaFromLocation(origin))
                 .Select(creature => new
                 {
@@ -1903,7 +1946,7 @@ namespace SWLOR.Game.Server.Service
             foreach (var candidate in candidates)
             {
                 if (GetIsReactionTypeHostile(candidate.Creature, activator) &&
-                    IsPositionInCombatImpactShape(candidate.Position, originPosition, rotation, shape, lengthOrRadius, width))
+                    IsPositionInCombatImpactShape(candidate.Position, originPosition, rotation, shape, adjustedLength, width))
                 {
                     yield return candidate.Creature;
                 }
@@ -3170,6 +3213,7 @@ namespace SWLOR.Game.Server.Service
             public AbilityDetail Ability { get; }
             public AbilityImpactSummary Summary { get; }
             public bool CountsAsAttackAttempt { get; }
+            public bool HadActivationAreaTelegraph { get; }
             public int NextAbilityDamageBonus { get; private set; }
             public int NextAbilityCriticalRatePercentAdjustment { get; }
             public int NextAbilityCriticalDamagePercentAdjustment { get; }
@@ -3187,7 +3231,8 @@ namespace SWLOR.Game.Server.Service
                 int nextAttackEnmityBonus,
                 int statusAppliedNextAttackDamageBonus,
                 bool countsAsAttackAttempt,
-                int nextAbilityCriticalDamagePercentAdjustment)
+                int nextAbilityCriticalDamagePercentAdjustment,
+                bool hadActivationAreaTelegraph)
             {
                 Ability = ability;
                 NextAbilityDamageBonus = nextAbilityDamageBonus;
@@ -3197,6 +3242,7 @@ namespace SWLOR.Game.Server.Service
                 NextAttackEnmityBonus = nextAttackEnmityBonus;
                 StatusAppliedNextAttackDamageBonus = statusAppliedNextAttackDamageBonus;
                 CountsAsAttackAttempt = countsAsAttackAttempt;
+                HadActivationAreaTelegraph = hadActivationAreaTelegraph;
                 Summary = new AbilityImpactSummary
                 {
                     SkillType = ability.SkillType,

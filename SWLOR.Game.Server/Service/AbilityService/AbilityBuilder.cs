@@ -784,14 +784,6 @@ namespace SWLOR.Game.Server.Service.AbilityService
                 sizeResolver,
                 updatesClientTargeting);
 
-            if (_activeAbility.IsMimicryTechnique &&
-                _activeAbility.IsAreaAbility &&
-                shape is AbilityTargetingShapeType.Rect or AbilityTargetingShapeType.Cone &&
-                flags.HasFlag(AbilityTargetingFlags.OriginOnSelf))
-            {
-                _activeAbility.HasExplicitMaxRange = false;
-            }
-
             return this;
         }
 
@@ -857,18 +849,6 @@ namespace SWLOR.Game.Server.Service.AbilityService
             if (_activeAbility.IsAreaAbility)
             {
                 _activeAbility.RequiresTarget = false;
-
-                // A line or cone cursor selects direction, not placement distance. The shape's own
-                // declared length limits its reach, so retaining the NPC's object-target range here
-                // only makes valid directions fail depending on where the player clicked.
-                if (_activeAbility.Targeting is
-                    {
-                        Shape: AbilityTargetingShapeType.Rect or AbilityTargetingShapeType.Cone
-                    } targeting &&
-                    targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf))
-                {
-                    _activeAbility.HasExplicitMaxRange = false;
-                }
             }
 
             return this;

@@ -584,7 +584,8 @@ namespace SWLOR.Game.Server.Service
                     shape,
                     targeting.ResolveSizeX(activator, true),
                     targeting.ResolveSizeY(),
-                    targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf))
+                    targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf),
+                    targeting.Flags.HasFlag(AbilityTargetingFlags.BackOffsetOrigin))
                 .ToList();
 
             if (creatures.Count <= 0 ||
@@ -1312,6 +1313,9 @@ namespace SWLOR.Game.Server.Service
             bool useUnscaledDamage = false)
         {
             RecordAbilityImpactShape(activator, skillType, true);
+            var trackedImpact = GetTrackedAbilityImpact(activator);
+            var backOffsetOrigin = trackedImpact?.Ability.Targeting?.Flags
+                .HasFlag(AbilityTargetingFlags.BackOffsetOrigin) == true;
 
             if (telegraphDuration <= 0f)
             {
@@ -1330,7 +1334,8 @@ namespace SWLOR.Game.Server.Service
                         lengthOrRadius,
                         width,
                         centerOnActivator,
-                        impactFlashDuration);
+                        impactFlashDuration,
+                        backOffsetOrigin);
                 }
 
                 var totalDamage = ApplyCombatImpactInShape(
@@ -1368,7 +1373,8 @@ namespace SWLOR.Game.Server.Service
                     sendsNoTargetMessage,
                     resolvesHit,
                     canCritical,
-                    useUnscaledDamage);
+                    useUnscaledDamage,
+                    backOffsetOrigin);
                 if (playImpactAnimation)
                     PlayCombatImpactAnimation(activator, impactAnimation);
 
@@ -1379,15 +1385,18 @@ namespace SWLOR.Game.Server.Service
             var directionalOrigin = CombatImpactShapeGeometry.ResolveOrigin(
                 GetPosition(activator),
                 impactRotation,
-                shape);
-            var adjustedLength = CombatImpactShapeGeometry.ResolveLength(shape, lengthOrRadius);
+                shape,
+                backOffsetOrigin);
+            var adjustedLength = CombatImpactShapeGeometry.ResolveLength(
+                shape,
+                lengthOrRadius,
+                backOffsetOrigin);
             var areaVisualLocation = Location(
                 GetArea(activator),
                 shape == CombatImpactAreaShape.Sphere
                     ? GetAreaImpactPosition(activator, target, targetLocation, centerOnActivator)
                     : directionalOrigin,
                 0f);
-            var trackedImpact = GetTrackedAbilityImpact(activator);
             var deferredNextAbilityDamageBonus =
                 (trackedImpact?.NextAbilityDamageBonus ?? 0) -
                 (trackedImpact?.StatusAppliedNextAttackDamageBonus ?? 0);
@@ -1487,7 +1496,8 @@ namespace SWLOR.Game.Server.Service
             float lengthOrRadius,
             float width,
             bool centerOnActivator,
-            float flashDuration)
+            float flashDuration,
+            bool backOffsetOrigin)
         {
             if (flashDuration <= 0f || lengthOrRadius <= 0f)
                 return;
@@ -1496,8 +1506,12 @@ namespace SWLOR.Game.Server.Service
             var directionalOrigin = CombatImpactShapeGeometry.ResolveOrigin(
                 GetPosition(activator),
                 rotation,
-                shape);
-            var adjustedLength = CombatImpactShapeGeometry.ResolveLength(shape, lengthOrRadius);
+                shape,
+                backOffsetOrigin);
+            var adjustedLength = CombatImpactShapeGeometry.ResolveLength(
+                shape,
+                lengthOrRadius,
+                backOffsetOrigin);
 
             switch (shape)
             {
@@ -1570,7 +1584,8 @@ namespace SWLOR.Game.Server.Service
             bool sendsNoTargetMessage,
             bool resolvesHit,
             bool canCritical,
-            bool useUnscaledDamage)
+            bool useUnscaledDamage,
+            bool backOffsetOrigin)
         {
             RecordAbilityImpactShape(activator, skillType, true);
 
@@ -1582,7 +1597,8 @@ namespace SWLOR.Game.Server.Service
                     shape,
                     lengthOrRadius,
                     width,
-                    centerOnActivator)
+                    centerOnActivator,
+                    backOffsetOrigin)
                 .Where(creature => HasAbilityLineOfSight(activator, creature))
                 .ToList();
 
@@ -1903,15 +1919,20 @@ namespace SWLOR.Game.Server.Service
             CombatImpactAreaShape shape,
             float lengthOrRadius,
             float width,
-            bool centerOnActivator)
+            bool centerOnActivator,
+            bool backOffsetOrigin)
         {
             var origin = GetCombatImpactShapeOrigin(activator, target, targetLocation, shape, centerOnActivator);
             var rotation = GetImpactRotationRadians(activator, target, targetLocation);
             var originPosition = CombatImpactShapeGeometry.ResolveOrigin(
                 GetPositionFromLocation(origin),
                 rotation,
-                shape);
-            var adjustedLength = CombatImpactShapeGeometry.ResolveLength(shape, lengthOrRadius);
+                shape,
+                backOffsetOrigin);
+            var adjustedLength = CombatImpactShapeGeometry.ResolveLength(
+                shape,
+                lengthOrRadius,
+                backOffsetOrigin);
             var maxDistance = GetCombatImpactShapeSearchRadius(shape, adjustedLength, width);
             var candidates = GetAliveCreaturesInArea(GetAreaFromLocation(origin))
                 .Select(creature => new

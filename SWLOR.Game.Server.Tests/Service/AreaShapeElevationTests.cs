@@ -80,10 +80,12 @@ public class AreaShapeElevationTests
         var origin = CombatImpactShapeGeometry.ResolveOrigin(
             Vector3.Zero,
             0f,
-            CombatImpactAreaShape.Cone);
+            CombatImpactAreaShape.Cone,
+            true);
         var length = CombatImpactShapeGeometry.ResolveLength(
             CombatImpactAreaShape.Cone,
-            authoredLength);
+            authoredLength,
+            true);
 
         origin.Should().Be(new Vector3(-CombatImpactShapeGeometry.DirectionalOriginBackOffset, 0f, 0f));
         (origin.X + length).Should().Be(authoredLength,
@@ -118,10 +120,12 @@ public class AreaShapeElevationTests
         var lineOrigin = CombatImpactShapeGeometry.ResolveOrigin(
             Vector3.Zero,
             0f,
-            CombatImpactAreaShape.Line);
+            CombatImpactAreaShape.Line,
+            true);
         var lineLength = CombatImpactShapeGeometry.ResolveLength(
             CombatImpactAreaShape.Line,
-            authoredLength);
+            authoredLength,
+            true);
         InvokeCombatImpactShape(
                 new Vector3(-0.5f, 1f, 0f),
                 lineOrigin,
@@ -140,7 +144,8 @@ public class AreaShapeElevationTests
         var origin = CombatImpactShapeGeometry.ResolveOrigin(
             Vector3.Zero,
             0f,
-            CombatImpactAreaShape.Cone);
+            CombatImpactAreaShape.Cone,
+            true);
         var candidates = new[]
         {
             (Name: "NearCaster", Position: new Vector3(0.1f, 0f, 0f)),
@@ -156,6 +161,24 @@ public class AreaShapeElevationTests
 
         selected.Name.Should().Be("NearApex",
             "capped directional impacts must rank targets from the displayed backed-up origin, not the caster");
+    }
+
+    [Test]
+    public void DirectionalShapeGeometry_LeavesUnflaggedAbilitiesUnchanged()
+    {
+        var casterPosition = new Vector3(3f, 4f, 5f);
+
+        CombatImpactShapeGeometry.ResolveOrigin(
+                casterPosition,
+                0f,
+                CombatImpactAreaShape.Cone,
+                false)
+            .Should().Be(casterPosition);
+        CombatImpactShapeGeometry.ResolveLength(
+                CombatImpactAreaShape.Cone,
+                8f,
+                false)
+            .Should().Be(8f);
     }
 
     [Test]

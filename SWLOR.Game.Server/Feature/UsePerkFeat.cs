@@ -1038,12 +1038,17 @@ namespace SWLOR.Game.Server.Feature
                 case AbilityTargetingShapeType.Rect:
                 {
                     var originOnSelf = targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf);
-                    var origin = originOnSelf
-                        ? CombatImpactShapeGeometry.ResolveOrigin(position, rotation, CombatImpactAreaShape.Line)
-                        : position;
-                    var length = originOnSelf
-                        ? CombatImpactShapeGeometry.ResolveLength(CombatImpactAreaShape.Line, sizeX)
-                        : sizeX;
+                    var backOffsetOrigin = originOnSelf &&
+                                           targeting.Flags.HasFlag(AbilityTargetingFlags.BackOffsetOrigin);
+                    var origin = CombatImpactShapeGeometry.ResolveOrigin(
+                        position,
+                        rotation,
+                        CombatImpactAreaShape.Line,
+                        backOffsetOrigin);
+                    var length = CombatImpactShapeGeometry.ResolveLength(
+                        CombatImpactAreaShape.Line,
+                        sizeX,
+                        backOffsetOrigin);
                     telegraphId = Telegraph.CreateLineTelegraph(
                         activator,
                         origin,
@@ -1058,12 +1063,17 @@ namespace SWLOR.Game.Server.Feature
                 case AbilityTargetingShapeType.Cone:
                 {
                     var originOnSelf = targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf);
-                    var origin = originOnSelf
-                        ? CombatImpactShapeGeometry.ResolveOrigin(position, rotation, CombatImpactAreaShape.Cone)
-                        : position;
-                    var length = originOnSelf
-                        ? CombatImpactShapeGeometry.ResolveLength(CombatImpactAreaShape.Cone, sizeX)
-                        : sizeX;
+                    var backOffsetOrigin = originOnSelf &&
+                                           targeting.Flags.HasFlag(AbilityTargetingFlags.BackOffsetOrigin);
+                    var origin = CombatImpactShapeGeometry.ResolveOrigin(
+                        position,
+                        rotation,
+                        CombatImpactAreaShape.Cone,
+                        backOffsetOrigin);
+                    var length = CombatImpactShapeGeometry.ResolveLength(
+                        CombatImpactAreaShape.Cone,
+                        sizeX,
+                        backOffsetOrigin);
                     telegraphId = Telegraph.CreateConeTelegraph(
                         activator,
                         origin,

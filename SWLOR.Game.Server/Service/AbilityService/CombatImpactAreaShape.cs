@@ -23,9 +23,11 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public static Vector3 ResolveOrigin(
             Vector3 casterPosition,
             float rotation,
-            CombatImpactAreaShape shape)
+            CombatImpactAreaShape shape,
+            bool backOffsetOrigin)
         {
-            if (shape is not (CombatImpactAreaShape.Cone or CombatImpactAreaShape.Line))
+            if (!backOffsetOrigin ||
+                shape is not (CombatImpactAreaShape.Cone or CombatImpactAreaShape.Line))
                 return casterPosition;
 
             return new Vector3(
@@ -34,9 +36,13 @@ namespace SWLOR.Game.Server.Service.AbilityService
                 casterPosition.Z);
         }
 
-        public static float ResolveLength(CombatImpactAreaShape shape, float forwardLength)
+        public static float ResolveLength(
+            CombatImpactAreaShape shape,
+            float forwardLength,
+            bool backOffsetOrigin)
         {
-            return shape is CombatImpactAreaShape.Cone or CombatImpactAreaShape.Line
+            return backOffsetOrigin &&
+                   shape is CombatImpactAreaShape.Cone or CombatImpactAreaShape.Line
                 ? forwardLength + DirectionalOriginBackOffset
                 : forwardLength;
         }

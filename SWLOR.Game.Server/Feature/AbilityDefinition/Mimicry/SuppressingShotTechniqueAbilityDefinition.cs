@@ -33,8 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 CombatDamageType.Physical,
                 ResistanceType.Mind,
                 VisualEffect.Vfx_Com_Special_Blue_Red,
-                VisualEffect.Vfx_Fnf_Screen_Bump,
-                maxRange: 10f)
+                VisualEffect.Vfx_Fnf_Screen_Bump)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Perception)
@@ -43,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                     Spell.SuppressingShotTechnique,
                     10f,
                     2.5f,
-                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf);
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf | AbilityTargetingFlags.BackOffsetOrigin);
 
             return _builder.Build();
         }

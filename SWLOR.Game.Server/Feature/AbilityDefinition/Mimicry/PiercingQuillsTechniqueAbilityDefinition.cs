@@ -24,7 +24,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .HasRecastDelay(RecastGroup.PiercingQuills, 18f)
                 .UsesAnimation(Animation.ThrowGrenade)
                 .IsCastedAbility()
-                .HasMaxRange(8f)
                 .IsAreaAbility()
                 .IsHostileAbility()
                 .RequirementStamina(5)
@@ -58,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                     Spell.PiercingQuillsTechnique,
                     8f,
                     5f,
-                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf);
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf | AbilityTargetingFlags.BackOffsetOrigin);
 
             return _builder.Build();
         }

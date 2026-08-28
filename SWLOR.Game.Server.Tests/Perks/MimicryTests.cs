@@ -492,6 +492,43 @@ public class MimicryTests
             .Should().Throw<ArgumentException>("technique requirements must fit within the Mimicry skill's 0-50 range");
     }
 
+    [TestCase(true)]
+    [TestCase(false)]
+    public void MimicryTechniqueBuilder_DoesNotDiscardExplicitAreaRange(bool targetingFirst)
+    {
+        var builder = new AbilityBuilder()
+            .Create(FeatType.ToxicSpitTechnique, PerkType.CombatAnalyzer)
+            .Name("Contract Test")
+            .IsCastedAbility()
+            .IsAreaAbility()
+            .HasMaxRange(8f);
+
+        if (targetingFirst)
+        {
+            builder
+                .HasTargetingCone(
+                    Spell.CryoBileTechnique,
+                    8f,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
+                .MimicryTechnique(FeatType.ToxicSpit, 24, 1);
+        }
+        else
+        {
+            builder
+                .MimicryTechnique(FeatType.ToxicSpit, 24, 1)
+                .HasTargetingCone(
+                    Spell.CryoBileTechnique,
+                    8f,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf);
+        }
+
+        var detail = builder.Build()[FeatType.ToxicSpitTechnique];
+        detail.HasExplicitMaxRange.Should().BeTrue();
+        detail.MaxRange.Should().Be(8f);
+    }
+
     // The declaration tests above prove traits carry data, but not that the data is ever read. The
     // stat and resistance pipelines are where a trait actually becomes a bonus, and deleting either
     // hook would silently zero every trait while leaving all the declaration tests green. A true
@@ -824,6 +861,22 @@ public class MimicryTests
         offenders.Should().BeEmpty(
             "a line or cone cursor selects direction; the authored shape length limits actual reach, " +
             "so the clicked ground point must not produce an out-of-range rejection");
+    }
+
+    [Test]
+    public void MimicryDirectionAimedAreas_ExplicitlyBackOffsetTheirOrigin()
+    {
+        var offenders = BuildAllAbilities(MimicryTechniqueNamespace)
+            .Where(technique => technique.Detail.RequiresLocationTarget)
+            .Where(technique => technique.Detail.Targeting.Shape is
+                AbilityTargetingShapeType.Rect or AbilityTargetingShapeType.Cone)
+            .Where(technique => technique.Detail.Targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf))
+            .Where(technique => !technique.Detail.Targeting.Flags.HasFlag(AbilityTargetingFlags.BackOffsetOrigin))
+            .Select(technique => technique.Feat)
+            .ToList();
+
+        offenders.Should().BeEmpty(
+            "only explicitly flagged Mimicry lines and cones should move their apex behind the caster");
     }
 
     // Registry-driven TLK check covering every technique in the pool. Replaces the old fixed

@@ -1387,7 +1387,6 @@ namespace SWLOR.Game.Server.Service
                 impactRotation,
                 shape);
             var adjustedLength = CombatImpactShapeGeometry.ResolveLength(shape, lengthOrRadius);
-            var adjustedWidth = CombatImpactShapeGeometry.ResolveWidth(shape, lengthOrRadius, width);
             var trackedImpact = GetTrackedAbilityImpact(activator);
             var deferredNextAbilityDamageBonus =
                 (trackedImpact?.NextAbilityDamageBonus ?? 0) -
@@ -1447,7 +1446,7 @@ namespace SWLOR.Game.Server.Service
                         directionalOrigin,
                         impactRotation,
                         adjustedLength,
-                        adjustedWidth > 0f ? adjustedWidth : adjustedLength,
+                        width > 0f ? width : adjustedLength,
                         telegraphDuration,
                         true,
                         action);
@@ -1458,7 +1457,7 @@ namespace SWLOR.Game.Server.Service
                         directionalOrigin,
                         impactRotation,
                         adjustedLength,
-                        adjustedWidth > 0f ? adjustedWidth : 2.0f,
+                        width > 0f ? width : 2.0f,
                         telegraphDuration,
                         true,
                         action);
@@ -1499,7 +1498,6 @@ namespace SWLOR.Game.Server.Service
                 rotation,
                 shape);
             var adjustedLength = CombatImpactShapeGeometry.ResolveLength(shape, lengthOrRadius);
-            var adjustedWidth = CombatImpactShapeGeometry.ResolveWidth(shape, lengthOrRadius, width);
 
             switch (shape)
             {
@@ -1518,7 +1516,7 @@ namespace SWLOR.Game.Server.Service
                         directionalOrigin,
                         rotation,
                         adjustedLength,
-                        adjustedWidth > 0f ? adjustedWidth : adjustedLength,
+                        width > 0f ? width : adjustedLength,
                         flashDuration,
                         true,
                         null);
@@ -1529,7 +1527,7 @@ namespace SWLOR.Game.Server.Service
                         directionalOrigin,
                         rotation,
                         adjustedLength,
-                        adjustedWidth > 0f ? adjustedWidth : 2.0f,
+                        width > 0f ? width : 2.0f,
                         flashDuration,
                         true,
                         null);
@@ -1915,8 +1913,7 @@ namespace SWLOR.Game.Server.Service
                 rotation,
                 shape);
             var adjustedLength = CombatImpactShapeGeometry.ResolveLength(shape, lengthOrRadius);
-            var adjustedWidth = CombatImpactShapeGeometry.ResolveWidth(shape, lengthOrRadius, width);
-            var maxDistance = GetCombatImpactShapeSearchRadius(shape, adjustedLength, adjustedWidth);
+            var maxDistance = GetCombatImpactShapeSearchRadius(shape, adjustedLength, width);
             var candidates = GetAliveCreaturesInArea(GetAreaFromLocation(origin))
                 .Select(creature => new
                 {
@@ -1929,7 +1926,7 @@ namespace SWLOR.Game.Server.Service
             foreach (var candidate in candidates)
             {
                 if (GetIsReactionTypeHostile(candidate.Creature, activator) &&
-                    IsPositionInCombatImpactShape(candidate.Position, originPosition, rotation, shape, adjustedLength, adjustedWidth))
+                    IsPositionInCombatImpactShape(candidate.Position, originPosition, rotation, shape, adjustedLength, width))
                 {
                     yield return candidate.Creature;
                 }

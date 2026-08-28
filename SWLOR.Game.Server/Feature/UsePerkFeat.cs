@@ -1063,15 +1063,12 @@ namespace SWLOR.Game.Server.Feature
                     var length = originOnSelf
                         ? CombatImpactShapeGeometry.ResolveLength(CombatImpactAreaShape.Cone, sizeX)
                         : sizeX;
-                    var width = originOnSelf
-                        ? CombatImpactShapeGeometry.ResolveWidth(CombatImpactAreaShape.Cone, sizeX, sizeY)
-                        : sizeY;
                     telegraphId = Telegraph.CreateConeTelegraph(
                         activator,
                         origin,
                         rotation,
                         length,
-                        width,
+                        sizeY,
                         activationDelay,
                         isHostile,
                         null);

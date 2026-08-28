@@ -38,18 +38,5 @@ namespace SWLOR.Game.Server.Service.AbilityService
                 ? forwardLength + DirectionalOriginBackOffset
                 : forwardLength;
         }
-
-        public static float ResolveWidth(
-            CombatImpactAreaShape shape,
-            float forwardLength,
-            float endWidth)
-        {
-            if (shape != CombatImpactAreaShape.Cone || forwardLength <= 0f || endWidth <= 0f)
-                return endWidth;
-
-            // Preserve the declared cone angle after extending its length backward. At the original
-            // forward endpoint the width therefore remains exactly the authored end width.
-            return endWidth * ResolveLength(shape, forwardLength) / forwardLength;
-        }
     }
 }

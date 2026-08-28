@@ -84,16 +84,27 @@ public class AreaShapeElevationTests
         var length = CombatImpactShapeGeometry.ResolveLength(
             CombatImpactAreaShape.Cone,
             authoredLength);
-        var width = CombatImpactShapeGeometry.ResolveWidth(
-            CombatImpactAreaShape.Cone,
-            authoredLength,
-            authoredWidth);
 
         origin.Should().Be(new Vector3(-CombatImpactShapeGeometry.DirectionalOriginBackOffset, 0f, 0f));
         (origin.X + length).Should().Be(authoredLength,
             "moving the apex behind the caster must not shorten the authored forward reach");
-        (width * authoredLength / length).Should().BeApproximately(authoredWidth, 0.001f,
-            "the cone must retain its authored width at the forward endpoint");
+
+        var widenedWidth = authoredWidth * length / authoredLength;
+        var authoredHalfAngle = MathF.Atan(authoredWidth * 0.5f / length);
+        var widenedHalfAngle = MathF.Atan(widenedWidth * 0.5f / length);
+        var widenedOnlyAngle = (authoredHalfAngle + widenedHalfAngle) * 0.5f;
+        var widenedOnlyProbe = origin + new Vector3(
+            MathF.Cos(widenedOnlyAngle) * authoredLength,
+            MathF.Sin(widenedOnlyAngle) * authoredLength,
+            0f);
+        InvokeCombatImpactShape(
+                widenedOnlyProbe,
+                origin,
+                0f,
+                CombatImpactAreaShape.Cone,
+                length,
+                authoredWidth)
+            .Should().BeFalse("backing up the apex must not scale up the authored cone width");
 
         InvokeCombatImpactShape(
                 new Vector3(0.25f, 0.45f, 0f),
@@ -101,7 +112,7 @@ public class AreaShapeElevationTests
                 0f,
                 CombatImpactAreaShape.Cone,
                 length,
-                width)
+                authoredWidth)
             .Should().BeTrue("a hostile touching the caster should fit within the backed-up cone");
 
         var lineOrigin = CombatImpactShapeGeometry.ResolveOrigin(

@@ -223,7 +223,9 @@ public class CombatDamageTests
         getSurcharge.Should().Contain("IsRangedWeaponSkill(GetAbilitySkillType(creature, ability))");
         getSurcharge.Should().Contain("StatType.NonCriticalRangedAbilityStaminaCostFlatAdjustment");
         getSurcharge.Should().NotContain("GamblerStance");
-        trackStaminaCost.Should().Contain("NonCriticalRangedAbilityStaminaCost = Math.Min(");
+        trackStaminaCost.Should().Contain("var nonCriticalRangedAbilityStaminaCost = Math.Min(");
+        trackStaminaCost.Should().Contain("Cost = staminaCost - nonCriticalRangedAbilityStaminaCost");
+        trackStaminaCost.Should().Contain("NonCriticalRangedAbilityStaminaCost = nonCriticalRangedAbilityStaminaCost");
         refundSurcharge.Should().Contain("state.NonCriticalRangedAbilityStaminaCost = 0");
         refundSurcharge.Should().Contain("Stat.RestoreStamina(creature, amount)");
     }

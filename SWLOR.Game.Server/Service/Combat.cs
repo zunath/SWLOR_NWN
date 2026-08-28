@@ -9660,13 +9660,14 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            var nonCriticalRangedAbilityStaminaCost = Math.Min(
+                staminaCost,
+                GetNonCriticalRangedAbilityStaminaCostFlatAdjustment(creature, ability));
             _abilityStaminaCosts[key] = new AbilityStaminaCostState
             {
-                Cost = staminaCost,
+                Cost = staminaCost - nonCriticalRangedAbilityStaminaCost,
                 SpentAt = DateTime.UtcNow,
-                NonCriticalRangedAbilityStaminaCost = Math.Min(
-                    staminaCost,
-                    GetNonCriticalRangedAbilityStaminaCostFlatAdjustment(creature, ability))
+                NonCriticalRangedAbilityStaminaCost = nonCriticalRangedAbilityStaminaCost
             };
         }
 

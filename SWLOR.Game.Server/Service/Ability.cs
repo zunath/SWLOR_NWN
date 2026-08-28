@@ -172,13 +172,17 @@ namespace SWLOR.Game.Server.Service
 
             _trackedAbilityImpacts.Remove(activator);
             impact.FlushDamageEffects(activator);
+            if (impact.Ability.IsHostileAbility && impact.Summary.CriticalHitCount > 0)
+            {
+                Combat.RefundCriticalRangedAbilityStaminaCost(
+                    activator,
+                    impact.Ability);
+            }
+
             if (impact.Ability.IsHostileAbility && impact.CountsAsAttackAttempt)
             {
                 if (impact.Summary.CriticalHitCount > 0)
                 {
-                    Combat.RefundCriticalRangedAbilityStaminaCost(
-                        activator,
-                        impact.Ability);
                     Combat.ConsumePersistentNextSkillAbilityCriticalRateBonus(
                         activator,
                         impact.Summary.SkillType);

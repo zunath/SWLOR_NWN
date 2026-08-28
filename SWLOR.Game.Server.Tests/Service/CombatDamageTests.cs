@@ -219,6 +219,9 @@ public class CombatDamageTests
         endAbilityImpact.Should().Contain("impact.Summary.CriticalHitCount > 0");
         endAbilityImpact.Should().Contain("Combat.RefundCriticalRangedAbilityStaminaCost");
         endAbilityImpact.Should().Contain("Combat.ApplyNonCriticalAbilityEffects");
+        endAbilityImpact.IndexOf("Combat.RefundCriticalRangedAbilityStaminaCost", StringComparison.Ordinal)
+            .Should().BeLessThan(endAbilityImpact.IndexOf("impact.CountsAsAttackAttempt", StringComparison.Ordinal),
+                "deferred area impacts must refund a critical surcharge without sending a second attack-attempt notification");
         getFlatAdjustment.Should().Contain("GetNonCriticalRangedAbilityStaminaCostFlatAdjustment(creature, ability)");
         getSurcharge.Should().Contain("IsRangedWeaponSkill(GetAbilitySkillType(creature, ability))");
         getSurcharge.Should().Contain("StatType.NonCriticalRangedAbilityStaminaCostFlatAdjustment");

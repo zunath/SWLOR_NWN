@@ -145,6 +145,7 @@ namespace SWLOR.Game.Server.Service
         {
             public int Cost { get; init; }
             public DateTime SpentAt { get; init; }
+            public int NonCriticalRangedAbilityStaminaCost { get; set; }
             public bool StaminaRestoreApplied { get; set; }
             public int DeferredImpactCount { get; set; }
         }
@@ -2079,8 +2080,6 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(activator) || skillType == SkillType.Invalid)
                 return;
 
-            ApplyNonCriticalRangedAbilityStaminaCost(activator, skillType);
-
             var requiredSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
                 activator,
                 StatType.NonCriticalAbilityNextSkillAbilityCriticalRateSkillType));
@@ -2145,18 +2144,6 @@ namespace SWLOR.Game.Server.Service
                     activator,
                     false);
             }
-        }
-
-        private static void ApplyNonCriticalRangedAbilityStaminaCost(uint activator, SkillType skillType)
-        {
-            if (!IsRangedWeaponSkill(skillType))
-                return;
-
-            var staminaCost = Stat.GetStatAdjustment(
-                activator,
-                StatType.NonCriticalRangedAbilityStaminaCostFlatAdjustment);
-            if (staminaCost > 0)
-                Stat.ReduceStamina(activator, staminaCost);
         }
 
         private static void ApplyCriticalBleedingStatusDurationExtension(uint attacker, uint defender)
@@ -9575,13 +9562,14 @@ namespace SWLOR.Game.Server.Service
             if (ability == null)
                 return 0;
 
+            var skillType = GetAbilitySkillType(creature, ability);
             var adjustment = GetAbilityStaminaCostFlatAdjustment(creature, ability.EffectiveLevelPerkType);
             if (ability.IsHostileAbility)
             {
                 adjustment += Stat.GetStatAdjustment(creature, StatType.HostileAbilityStaminaCostFlatAdjustment);
+                adjustment += GetNonCriticalRangedAbilityStaminaCostFlatAdjustment(creature, ability);
             }
 
-            var skillType = GetAbilitySkillType(creature, ability);
             var flatSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
                 creature,
                 StatType.SkillAbilityStaminaCostFlatAdjustmentSkillType));
@@ -9602,6 +9590,34 @@ namespace SWLOR.Game.Server.Service
             }
 
             return adjustment;
+        }
+
+        private static int GetNonCriticalRangedAbilityStaminaCostFlatAdjustment(
+            uint creature,
+            AbilityDetail ability)
+        {
+            if (ability?.IsHostileAbility != true ||
+                !IsRangedWeaponSkill(GetAbilitySkillType(creature, ability)))
+            {
+                return 0;
+            }
+
+            return Math.Max(0, Stat.GetStatAdjustment(
+                creature,
+                StatType.NonCriticalRangedAbilityStaminaCostFlatAdjustment));
+        }
+
+        public static int RefundCriticalRangedAbilityStaminaCost(uint creature, AbilityDetail ability)
+        {
+            if (!TryGetAbilityStaminaCostState(creature, ability, out var state) ||
+                state.NonCriticalRangedAbilityStaminaCost <= 0)
+            {
+                return 0;
+            }
+
+            var amount = state.NonCriticalRangedAbilityStaminaCost;
+            state.NonCriticalRangedAbilityStaminaCost = 0;
+            return Stat.RestoreStamina(creature, amount);
         }
 
         public static void ApplyAbilityStaminaCostFPRestore(uint creature, AbilityDetail ability, int staminaCost)
@@ -9647,7 +9663,10 @@ namespace SWLOR.Game.Server.Service
             _abilityStaminaCosts[key] = new AbilityStaminaCostState
             {
                 Cost = staminaCost,
-                SpentAt = DateTime.UtcNow
+                SpentAt = DateTime.UtcNow,
+                NonCriticalRangedAbilityStaminaCost = Math.Min(
+                    staminaCost,
+                    GetNonCriticalRangedAbilityStaminaCostFlatAdjustment(creature, ability))
             };
         }
 

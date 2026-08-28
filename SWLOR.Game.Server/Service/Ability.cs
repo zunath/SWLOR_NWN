@@ -176,6 +176,9 @@ namespace SWLOR.Game.Server.Service
             {
                 if (impact.Summary.CriticalHitCount > 0)
                 {
+                    Combat.RefundCriticalRangedAbilityStaminaCost(
+                        activator,
+                        impact.Ability);
                     Combat.ConsumePersistentNextSkillAbilityCriticalRateBonus(
                         activator,
                         impact.Summary.SkillType);

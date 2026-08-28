@@ -205,22 +205,27 @@ public class CombatDamageTests
     }
 
     [Test]
-    public void NonCriticalRangedAbilities_ApplyStatDrivenStaminaCostOnceAtCompletion()
+    public void NonCriticalRangedAbilities_ReserveStatDrivenStaminaCostAndRefundCriticalResults()
     {
         var root = FindRepositoryRoot();
         var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
         var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
         var endAbilityImpact = ExtractMethod(abilitySource, "public static AbilityImpactSummary EndAbilityImpact");
-        var applyNonCriticalEffects = ExtractMethod(combatSource, "public static void ApplyNonCriticalAbilityEffects");
-        var applyStaminaCost = ExtractMethod(combatSource, "private static void ApplyNonCriticalRangedAbilityStaminaCost");
+        var getFlatAdjustment = ExtractMethod(combatSource, "public static int GetAbilityStaminaCostFlatAdjustment(uint creature, AbilityDetail ability)");
+        var getSurcharge = ExtractMethod(combatSource, "private static int GetNonCriticalRangedAbilityStaminaCostFlatAdjustment");
+        var refundSurcharge = ExtractMethod(combatSource, "public static int RefundCriticalRangedAbilityStaminaCost");
+        var trackStaminaCost = ExtractMethod(combatSource, "private static void TrackAbilityStaminaCost");
 
         endAbilityImpact.Should().Contain("impact.Summary.CriticalHitCount > 0");
+        endAbilityImpact.Should().Contain("Combat.RefundCriticalRangedAbilityStaminaCost");
         endAbilityImpact.Should().Contain("Combat.ApplyNonCriticalAbilityEffects");
-        applyNonCriticalEffects.Should().Contain("ApplyNonCriticalRangedAbilityStaminaCost(activator, skillType)");
-        applyStaminaCost.Should().Contain("IsRangedWeaponSkill(skillType)");
-        applyStaminaCost.Should().Contain("StatType.NonCriticalRangedAbilityStaminaCostFlatAdjustment");
-        applyStaminaCost.Should().Contain("Stat.ReduceStamina(activator, staminaCost)");
-        applyStaminaCost.Should().NotContain("GamblerStance");
+        getFlatAdjustment.Should().Contain("GetNonCriticalRangedAbilityStaminaCostFlatAdjustment(creature, ability)");
+        getSurcharge.Should().Contain("IsRangedWeaponSkill(GetAbilitySkillType(creature, ability))");
+        getSurcharge.Should().Contain("StatType.NonCriticalRangedAbilityStaminaCostFlatAdjustment");
+        getSurcharge.Should().NotContain("GamblerStance");
+        trackStaminaCost.Should().Contain("NonCriticalRangedAbilityStaminaCost = Math.Min(");
+        refundSurcharge.Should().Contain("state.NonCriticalRangedAbilityStaminaCost = 0");
+        refundSurcharge.Should().Contain("Stat.RestoreStamina(creature, amount)");
     }
 
     [Test]

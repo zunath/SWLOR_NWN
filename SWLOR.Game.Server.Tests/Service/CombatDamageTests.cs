@@ -215,6 +215,7 @@ public class CombatDamageTests
         var getSurcharge = ExtractMethod(combatSource, "private static int GetNonCriticalRangedAbilityStaminaCostFlatAdjustment");
         var refundSurcharge = ExtractMethod(combatSource, "public static int RefundCriticalRangedAbilityStaminaCost");
         var trackStaminaCost = ExtractMethod(combatSource, "private static void TrackAbilityStaminaCost");
+        var resourceThreshold = ExtractMethod(combatSource, "public static bool IsCurrentFPAndStaminaAtOrAbovePercent");
 
         endAbilityImpact.Should().Contain("impact.Summary.CriticalHitCount > 0");
         endAbilityImpact.Should().Contain("Combat.RefundCriticalRangedAbilityStaminaCost");
@@ -231,6 +232,8 @@ public class CombatDamageTests
         trackStaminaCost.Should().Contain("NonCriticalRangedAbilityStaminaCost = nonCriticalRangedAbilityStaminaCost");
         refundSurcharge.Should().Contain("state.NonCriticalRangedAbilityStaminaCost = 0");
         refundSurcharge.Should().Contain("Stat.RestoreStamina(creature, amount)");
+        resourceThreshold.Should().Contain("TryGetAbilityStaminaCostState(creature, ability, out var costState)");
+        resourceThreshold.Should().Contain("currentStamina += costState.NonCriticalRangedAbilityStaminaCost");
     }
 
     [Test]

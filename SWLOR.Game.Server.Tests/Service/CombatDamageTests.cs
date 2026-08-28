@@ -205,6 +205,25 @@ public class CombatDamageTests
     }
 
     [Test]
+    public void NonCriticalRangedAbilities_ApplyStatDrivenStaminaCostOnceAtCompletion()
+    {
+        var root = FindRepositoryRoot();
+        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
+        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var endAbilityImpact = ExtractMethod(abilitySource, "public static AbilityImpactSummary EndAbilityImpact");
+        var applyNonCriticalEffects = ExtractMethod(combatSource, "public static void ApplyNonCriticalAbilityEffects");
+        var applyStaminaCost = ExtractMethod(combatSource, "private static void ApplyNonCriticalRangedAbilityStaminaCost");
+
+        endAbilityImpact.Should().Contain("impact.Summary.CriticalHitCount > 0");
+        endAbilityImpact.Should().Contain("Combat.ApplyNonCriticalAbilityEffects");
+        applyNonCriticalEffects.Should().Contain("ApplyNonCriticalRangedAbilityStaminaCost(activator, skillType)");
+        applyStaminaCost.Should().Contain("IsRangedWeaponSkill(skillType)");
+        applyStaminaCost.Should().Contain("StatType.NonCriticalRangedAbilityStaminaCostFlatAdjustment");
+        applyStaminaCost.Should().Contain("Stat.ReduceStamina(activator, staminaCost)");
+        applyStaminaCost.Should().NotContain("GamblerStance");
+    }
+
+    [Test]
     public void DeflectionGrantedSkillBonuses_DoNotInferEquippedWeaponSkillWhenNoSelectorIsDeclared()
     {
         var root = FindRepositoryRoot();

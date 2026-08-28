@@ -1881,6 +1881,7 @@ def exact_weapon_stance_stat_entries(row, base):
 
     if base == "Gambler Stance":
         add_stat(stats, "CriticalRatePercentAdjustment", parse_percent(r"\+(\d+)% Critical Rate", description))
+        add_stat(stats, "NonCriticalRangedAbilityStaminaCostFlatAdjustment", parse_count(r"cost (\d+) additional STM", description))
         return list(stats.items())
 
     if base == "Suppression Stance":

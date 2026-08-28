@@ -2079,6 +2079,8 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(activator) || skillType == SkillType.Invalid)
                 return;
 
+            ApplyNonCriticalRangedAbilityStaminaCost(activator, skillType);
+
             var requiredSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
                 activator,
                 StatType.NonCriticalAbilityNextSkillAbilityCriticalRateSkillType));
@@ -2143,6 +2145,18 @@ namespace SWLOR.Game.Server.Service
                     activator,
                     false);
             }
+        }
+
+        private static void ApplyNonCriticalRangedAbilityStaminaCost(uint activator, SkillType skillType)
+        {
+            if (!IsRangedWeaponSkill(skillType))
+                return;
+
+            var staminaCost = Stat.GetStatAdjustment(
+                activator,
+                StatType.NonCriticalRangedAbilityStaminaCostFlatAdjustment);
+            if (staminaCost > 0)
+                Stat.ReduceStamina(activator, staminaCost);
         }
 
         private static void ApplyCriticalBleedingStatusDurationExtension(uint attacker, uint defender)

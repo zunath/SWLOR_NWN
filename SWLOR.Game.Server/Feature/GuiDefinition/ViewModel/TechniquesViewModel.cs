@@ -264,10 +264,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private static string BuildRowText(AbilityDetail detail)
         {
             var slotLabel = detail.MimicrySlotCost == 1 ? "slot" : "slots";
-            var exclusivityLabel = detail.MimicryTraitFamily != MimicryTraitFamily.None
-                ? " [Exclusive]"
-                : string.Empty;
-            return $"{detail.Name}{exclusivityLabel} (Rank {detail.MimicrySkillRequirement} / {detail.MimicrySlotCost} {slotLabel})";
+            return $"{detail.Name} (Rank {detail.MimicrySkillRequirement} / {detail.MimicrySlotCost} {slotLabel})";
         }
 
         private void RefreshSlots(PlayerEntity dbPlayer)
@@ -303,10 +300,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             text += $"Slot Cost: {detail.MimicrySlotCost}\n" +
                     $"Requires: Mimicry Rank {detail.MimicrySkillRequirement}\n";
-
-            var mutuallyExclusiveTraits = Mimicry.GetMutuallyExclusiveTraitNames(feat);
-            if (mutuallyExclusiveTraits.Count > 0)
-                text += $"Mutually Exclusive With: {string.Join(", ", mutuallyExclusiveTraits)}\n";
 
             if (detail.IsMimicryTrait)
             {

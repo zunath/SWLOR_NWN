@@ -116,12 +116,6 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public Dictionary<ResistanceType, int> MimicryTraitResistances { get; set; }
 
         /// <summary>
-        /// Optional loadout family used to prevent alternate versions of the same passive trait role
-        /// from stacking. <see cref="MimicryTraitFamily.None"/> leaves the trait unrestricted.
-        /// </summary>
-        public MimicryTraitFamily MimicryTraitFamily { get; set; }
-
-        /// <summary>
         /// When true this mimicked technique is a self-toggle stance (via the toggle model) rather than
         /// a hostile cast, so the contract tests exempt it from the hostility / damage-element /
         /// combat-scaling assertions the way passive traits are exempt.
@@ -178,7 +172,6 @@ namespace SWLOR.Game.Server.Service.AbilityService
             MimicryElement = CombatDamageType.Invalid;
             MimicryTraitStats = new Dictionary<StatType, int>();
             MimicryTraitResistances = new Dictionary<ResistanceType, int>();
-            MimicryTraitFamily = MimicryTraitFamily.None;
         }
     }
 }

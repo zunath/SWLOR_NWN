@@ -21,7 +21,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .MimicryTrait(FeatType.ForceRend, 23, 2)
-                .MimicryTraitFamily(MimicryTraitFamily.ForceOffense)
                 .MimicryTraitStat(StatType.ForceAttackPercentAdjustment, 6);
 
             return _builder.Build();

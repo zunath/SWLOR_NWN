@@ -573,59 +573,6 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Returns the already-equipped trait that conflicts with <paramref name="feat"/>'s
-        /// mutually exclusive family, or <see cref="FeatType.Invalid"/> when there is no conflict.
-        /// </summary>
-        public static FeatType GetTraitFamilyConflict(Player dbPlayer, FeatType feat)
-        {
-            if (dbPlayer == null ||
-                !_techniques.TryGetValue(feat, out var detail) ||
-                !detail.IsMimicryTrait ||
-                detail.MimicryTraitFamily == MimicryTraitFamily.None)
-            {
-                return FeatType.Invalid;
-            }
-
-            foreach (var equippedFeat in dbPlayer.EquippedTechniques)
-            {
-                if (equippedFeat == feat ||
-                    !_techniques.TryGetValue(equippedFeat, out var equippedDetail) ||
-                    !equippedDetail.IsMimicryTrait)
-                {
-                    continue;
-                }
-
-                if (equippedDetail.MimicryTraitFamily == detail.MimicryTraitFamily)
-                    return equippedFeat;
-            }
-
-            return FeatType.Invalid;
-        }
-
-        /// <summary>
-        /// Returns the player-facing names of every other trait that shares the selected trait's
-        /// mutually exclusive family. The list is derived from registered technique metadata so the
-        /// Techniques window stays accurate when a family gains or loses members.
-        /// </summary>
-        public static IReadOnlyList<string> GetMutuallyExclusiveTraitNames(FeatType feat)
-        {
-            if (!_techniques.TryGetValue(feat, out var detail) ||
-                !detail.IsMimicryTrait ||
-                detail.MimicryTraitFamily == MimicryTraitFamily.None)
-            {
-                return Array.Empty<string>();
-            }
-
-            return _techniques
-                .Where(technique => technique.Key != feat &&
-                                    technique.Value.IsMimicryTrait &&
-                                    technique.Value.MimicryTraitFamily == detail.MimicryTraitFamily)
-                .Select(technique => technique.Value.Name)
-                .OrderBy(name => name)
-                .ToArray();
-        }
-
-        /// <summary>
         /// Determines whether a player can equip a given technique right now.
         /// </summary>
         public static bool CanEquip(uint player, FeatType feat, out string error)
@@ -671,16 +618,6 @@ namespace SWLOR.Game.Server.Service
             if (dbPlayer.EquippedTechniques.Contains(feat))
             {
                 error = "That technique is already equipped.";
-                return false;
-            }
-
-            var conflictingTrait = GetTraitFamilyConflict(dbPlayer, feat);
-            if (conflictingTrait != FeatType.Invalid)
-            {
-                var conflictingName = _techniques.TryGetValue(conflictingTrait, out var conflictingDetail)
-                    ? conflictingDetail.Name
-                    : "the equipped trait";
-                error = $"{detail.Name} and {conflictingName} are mutually exclusive traits. Unequip {conflictingName} first.";
                 return false;
             }
 
@@ -795,37 +732,6 @@ namespace SWLOR.Game.Server.Service
                     LogGroup.Mimicry,
                     "Technique unequipped by skill requirement enforcement: PlayerId={PlayerId} Technique={Technique} SkillRank={SkillRank} RequiredRank={RequiredRank}",
                     playerId, feat, skillRank, detail.MimicrySkillRequirement);
-            }
-
-            // Keep the earliest-equipped member of each exclusive trait family. CanEquip prevents
-            // new conflicts; this pass repairs persisted loadouts created before families existed.
-            var equippedTraitFamilies = new Dictionary<MimicryTraitFamily, FeatType>();
-            for (var i = 0; i < dbPlayer.EquippedTechniques.Count;)
-            {
-                var feat = dbPlayer.EquippedTechniques[i];
-                if (!_techniques.TryGetValue(feat, out var detail) ||
-                    !detail.IsMimicryTrait ||
-                    detail.MimicryTraitFamily == MimicryTraitFamily.None)
-                {
-                    i++;
-                    continue;
-                }
-
-                if (!equippedTraitFamilies.TryGetValue(detail.MimicryTraitFamily, out var retainedFeat))
-                {
-                    equippedTraitFamilies[detail.MimicryTraitFamily] = feat;
-                    i++;
-                    continue;
-                }
-
-                dbPlayer.EquippedTechniques.RemoveAt(i);
-                changed = true;
-                RevokeTechniqueFeat(player, feat);
-
-                Log.WriteStructured(
-                    LogGroup.Mimicry,
-                    "Technique unequipped by trait-family enforcement: PlayerId={PlayerId} Technique={Technique} RetainedTechnique={RetainedTechnique} Family={Family}",
-                    playerId, feat, retainedFeat, detail.MimicryTraitFamily);
             }
 
             for (var i = dbPlayer.EquippedTechniques.Count - 1; i >= 0; i--)

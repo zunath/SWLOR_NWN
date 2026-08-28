@@ -916,22 +916,6 @@ namespace SWLOR.Game.Server.Service.AbilityService
         }
 
         /// <summary>
-        /// Assigns this trait to a mutually exclusive loadout family. A player may equip only one
-        /// trait from a family at a time.
-        /// </summary>
-        public AbilityBuilder MimicryTraitFamily(MimicryTraitFamily family)
-        {
-            if (!_activeAbility.IsMimicryTrait)
-                throw new ArgumentException($"{nameof(MimicryTraitFamily)} requires {nameof(MimicryTrait)} to be called first.");
-            if (family == SWLOR.Game.Server.Service.AbilityService.MimicryTraitFamily.None)
-                throw new ArgumentException($"{nameof(family)} must identify a real trait family.");
-
-            _activeAbility.MimicryTraitFamily = family;
-
-            return this;
-        }
-
-        /// <summary>
         /// Marks a mimicked technique as a self-toggle stance: it activates/deactivates a stance status
         /// effect rather than casting a hostile ability, so the contract tests exempt it from the
         /// hostility / damage-element / combat-scaling assertions.

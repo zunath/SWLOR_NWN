@@ -135,6 +135,30 @@ public class AreaShapeElevationTests
     }
 
     [Test]
+    public void DirectionalShapeGeometry_CapsTargetsFromTheBackedUpOrigin()
+    {
+        var origin = CombatImpactShapeGeometry.ResolveOrigin(
+            Vector3.Zero,
+            0f,
+            CombatImpactAreaShape.Cone);
+        var candidates = new[]
+        {
+            (Name: "NearCaster", Position: new Vector3(0.1f, 0f, 0f)),
+            (Name: "NearApex", Position: new Vector3(-1.4f, 0f, 0f))
+        };
+
+        var selected = CombatImpactShapeGeometry.TakeClosestToOrigin(
+                candidates,
+                origin,
+                candidate => candidate.Position,
+                1)
+            .Single();
+
+        selected.Name.Should().Be("NearApex",
+            "capped directional impacts must rank targets from the displayed backed-up origin, not the caster");
+    }
+
+    [Test]
     public void TelegraphShape_SphereUsesHorizontalDistance()
     {
         InvokeTelegraphShape(

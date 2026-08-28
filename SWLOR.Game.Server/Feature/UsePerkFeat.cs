@@ -676,7 +676,8 @@ namespace SWLOR.Game.Server.Feature
                         feat,
                         ability,
                         targetLocation,
-                        activationTelegraphIds.Count > 0);
+                        hadActivationAreaTelegraph:
+                            ability.ImpactDelay <= 0f && activationTelegraphIds.Count > 0);
                     ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f);
 
                     // If this is an attack make the NPC react.

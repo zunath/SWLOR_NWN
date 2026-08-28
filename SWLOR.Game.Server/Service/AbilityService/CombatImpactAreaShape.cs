@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 
 namespace SWLOR.Game.Server.Service.AbilityService
@@ -37,6 +39,31 @@ namespace SWLOR.Game.Server.Service.AbilityService
             return shape is CombatImpactAreaShape.Cone or CombatImpactAreaShape.Line
                 ? forwardLength + DirectionalOriginBackOffset
                 : forwardLength;
+        }
+
+        /// <summary>
+        /// Returns at most <paramref name="count"/> candidates ordered by horizontal distance from
+        /// the same origin used to render the combat shape.
+        /// </summary>
+        public static IEnumerable<T> TakeClosestToOrigin<T>(
+            IEnumerable<T> candidates,
+            Vector3 origin,
+            Func<T, Vector3> resolvePosition,
+            int count)
+        {
+            if (count <= 0)
+                return candidates;
+
+            return candidates
+                .OrderBy(candidate => HorizontalDistanceSquared(resolvePosition(candidate), origin))
+                .Take(count);
+        }
+
+        private static float HorizontalDistanceSquared(Vector3 position, Vector3 origin)
+        {
+            var x = position.X - origin.X;
+            var y = position.Y - origin.Y;
+            return x * x + y * y;
         }
     }
 }

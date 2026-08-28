@@ -80,6 +80,9 @@ public class TelegraphTests
 
         source.Should().Contain("activationTelegraphIds.Count > 0");
         source.Should().Contain("hadActivationAreaTelegraph: hadActivationAreaTelegraph");
+        source.Should().Contain(
+            "ability.ImpactDelay <= 0f && activationTelegraphIds.Count > 0",
+            "a delayed impact occurs after its activation telegraph has been removed and still needs an impact flash");
     }
 
     [Test]

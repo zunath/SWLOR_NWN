@@ -1375,18 +1375,18 @@ namespace SWLOR.Game.Server.Service
                 return totalDamage;
             }
 
-            var areaVisualLocation = Location(
-                GetArea(activator),
-                shape == CombatImpactAreaShape.Sphere
-                    ? GetAreaImpactPosition(activator, target, targetLocation, centerOnActivator)
-                    : GetPosition(activator),
-                0f);
             var impactRotation = GetImpactRotationRadians(activator, target, targetLocation);
             var directionalOrigin = CombatImpactShapeGeometry.ResolveOrigin(
                 GetPosition(activator),
                 impactRotation,
                 shape);
             var adjustedLength = CombatImpactShapeGeometry.ResolveLength(shape, lengthOrRadius);
+            var areaVisualLocation = Location(
+                GetArea(activator),
+                shape == CombatImpactAreaShape.Sphere
+                    ? GetAreaImpactPosition(activator, target, targetLocation, centerOnActivator)
+                    : directionalOrigin,
+                0f);
             var trackedImpact = GetTrackedAbilityImpact(activator);
             var deferredNextAbilityDamageBonus =
                 (trackedImpact?.NextAbilityDamageBonus ?? 0) -
@@ -1682,9 +1682,8 @@ namespace SWLOR.Game.Server.Service
                     if (maxTargets > 0)
                     {
                         var impactPosition = GetPositionFromLocation(areaVisualLocation);
-                        hostileCreatures = hostileCreatures
-                            .OrderBy(creature => GetHorizontalDistance(GetPosition(creature), impactPosition))
-                            .Take(maxTargets)
+                        hostileCreatures = CombatImpactShapeGeometry
+                            .TakeClosestToOrigin(hostileCreatures, impactPosition, GetPosition, maxTargets)
                             .ToList();
                     }
 

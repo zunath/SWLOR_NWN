@@ -106,8 +106,13 @@ public class AbilityDamageQueueTests
             completeBody.IndexOf("void ResolveImpact()", StringComparison.Ordinal),
             completeBody.IndexOf("if (ability.ImpactDelay > 0f)", StringComparison.Ordinal) -
             completeBody.IndexOf("void ResolveImpact()", StringComparison.Ordinal));
-        resolveImpact.IndexOf("ExecuteAbilityImpact(activator, target, feat, ability, targetLocation)", StringComparison.Ordinal)
-            .Should().BeLessThan(resolveImpact.IndexOf("ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f)", StringComparison.Ordinal));
+        var executeImpactIndex = resolveImpact.IndexOf("ExecuteAbilityImpact(", StringComparison.Ordinal);
+        var delayedResumeIndex = resolveImpact.IndexOf(
+            "ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f)",
+            StringComparison.Ordinal);
+        executeImpactIndex.Should().BeGreaterThanOrEqualTo(0);
+        delayedResumeIndex.Should().BeGreaterThanOrEqualTo(0);
+        executeImpactIndex.Should().BeLessThan(delayedResumeIndex);
     }
 
     [Test]

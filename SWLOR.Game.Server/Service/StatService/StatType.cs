@@ -6075,6 +6075,13 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         BolsterAttackRank = 1053,
 
+        /// <summary>
+        /// Flat Stamina cost charged after a hostile ranged weapon ability resolves without
+        /// any critical hits.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative)]
+        NonCriticalRangedAbilityStaminaCostFlatAdjustment = 1054,
+
     }
 
     public class StatTypeAttribute : Attribute

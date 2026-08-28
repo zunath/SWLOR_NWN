@@ -1027,6 +1027,10 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertStatusStat(suppression, StatType.RangedHitSuppressionStackDurationSeconds, 30);
         AssertStatusStat(suppression, StatType.RangedCriticalDamagePercentAdjustment, -10);
 
+        var gambler = new GamblerStanceStatusEffect();
+        AssertStatusStat(gambler, StatType.CriticalRatePercentAdjustment, 12);
+        AssertStatusStat(gambler, StatType.NonCriticalRangedAbilityStaminaCostFlatAdjustment, 2);
+
         var vigor = new VigorStanceStatusEffect();
         AssertStatusStat(vigor, StatType.HostileAbilityStaminaCostFlatAdjustment, 2);
         AssertStatusStat(vigor, StatType.DamageDealtPercentAdjustment, 10);
@@ -1261,6 +1265,8 @@ public class GeneratedWeaponPerkBehaviorTests
         Stat.GetStatTypeCategory(StatType.SameTargetHostileAbilityStaminaRestore)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
         Stat.GetStatTypeCategory(StatType.BleedingStatusExpiredNextSkillAbilityStaminaCostAdjustment)
+            .Should().Be(StatTypeCategory.BeneficialWhenNegative);
+        Stat.GetStatTypeCategory(StatType.NonCriticalRangedAbilityStaminaCostFlatAdjustment)
             .Should().Be(StatTypeCategory.BeneficialWhenNegative);
         Stat.GetStatTypeCategory(StatType.AbilityRestoredFPHastePercentAdjustment)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);

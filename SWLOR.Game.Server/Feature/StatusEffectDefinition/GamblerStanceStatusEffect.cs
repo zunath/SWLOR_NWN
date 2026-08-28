@@ -15,6 +15,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public GamblerStanceStatusEffect()
         {
             StatGroup.Stats[StatType.CriticalRatePercentAdjustment] = 12;
+            StatGroup.Stats[StatType.NonCriticalRangedAbilityStaminaCostFlatAdjustment] = 2;
         }
     }
 }

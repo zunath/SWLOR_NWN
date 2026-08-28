@@ -176,6 +176,13 @@ namespace SWLOR.Game.Server.Service
 
             _trackedAbilityImpacts.Remove(activator);
             impact.FlushDamageEffects(activator);
+            if (impact.Ability.IsHostileAbility && impact.Summary.CriticalHitCount > 0)
+            {
+                Combat.RefundCriticalRangedAbilityStaminaCost(
+                    activator,
+                    impact.Ability);
+            }
+
             if (impact.Ability.IsHostileAbility && impact.CountsAsAttackAttempt)
             {
                 if (impact.Summary.CriticalHitCount > 0)
@@ -2518,7 +2525,8 @@ namespace SWLOR.Game.Server.Service
                 damage,
                 skillType,
                 damageType,
-                isAbilityDamage: true);
+                isAbilityDamage: true,
+                ability: trackedImpact?.Ability);
             damage = ApplyCombatReadinessToActivatedAbilityMagnitude(activator, damage);
             Combat.ApplyIncomingPhysicalToForceConversion(activator, target, damageType, ref damage);
             damage = Combat.ApplyTypedLeadershipDamageTakenModifier(target, damage, damageType);
@@ -2650,7 +2658,14 @@ namespace SWLOR.Game.Server.Service
             {
                 calculatedDamage = Perk.ApplyForceAffinityMagnitude(activator, perkType, calculatedDamage);
             }
-            calculatedDamage = Combat.ApplyDamageDealtModifiers(activator, target, calculatedDamage, skillType, damageType, true);
+            calculatedDamage = Combat.ApplyDamageDealtModifiers(
+                activator,
+                target,
+                calculatedDamage,
+                skillType,
+                damageType,
+                isAbilityDamage: true,
+                ability: trackedImpact?.Ability);
             calculatedDamage = ApplyCombatReadinessToActivatedAbilityMagnitude(activator, calculatedDamage);
             // Saber Ward / Aegis Eternal: re-type a share of an incoming physical hit into a real Force
             // instance (mitigated by Force resistance, shown as Force) before physical resistance.
@@ -2883,7 +2898,14 @@ namespace SWLOR.Game.Server.Service
             {
                 calculatedDamage = Perk.ApplyForceAffinityMagnitude(activator, perkType, calculatedDamage);
             }
-            calculatedDamage = Combat.ApplyDamageDealtModifiers(activator, target, calculatedDamage, skillType, damageType, true);
+            calculatedDamage = Combat.ApplyDamageDealtModifiers(
+                activator,
+                target,
+                calculatedDamage,
+                skillType,
+                damageType,
+                isAbilityDamage: true,
+                ability: trackedImpact?.Ability);
             calculatedDamage = ApplyCombatReadinessToActivatedAbilityMagnitude(activator, calculatedDamage);
             // Saber Ward / Aegis Eternal: re-type a share of an incoming physical hit into a real Force
             // instance (mitigated by Force resistance, shown as Force) before physical resistance.

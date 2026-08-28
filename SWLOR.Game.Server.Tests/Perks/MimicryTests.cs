@@ -356,6 +356,17 @@ public class MimicryTests
         Mimicry.GetTraitFamilyConflict(loadout, FeatType.ApexCollapseTechnique)
             .Should().Be(FeatType.Invalid,
                 "Apex Collapse keeps its defense tradeoff by allowing one, but not both, carapace traits");
+
+        Mimicry.GetMutuallyExclusiveTraitNames(FeatType.ChitinGuardTechnique)
+            .Should().Equal("Iron Carapace");
+        Mimicry.GetMutuallyExclusiveTraitNames(FeatType.IronCarapaceTechnique)
+            .Should().Equal("Chitin Guard");
+        Mimicry.GetMutuallyExclusiveTraitNames(FeatType.ForceRendTechnique)
+            .Should().Equal("Essence Scar");
+        Mimicry.GetMutuallyExclusiveTraitNames(FeatType.EssenceScarTechnique)
+            .Should().Equal("Force Rend");
+        Mimicry.GetMutuallyExclusiveTraitNames(FeatType.ApexCollapseTechnique)
+            .Should().BeEmpty();
     }
 
     [Test]

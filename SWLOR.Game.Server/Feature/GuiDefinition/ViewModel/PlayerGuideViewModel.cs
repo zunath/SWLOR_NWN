@@ -579,7 +579,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         new ArticleBlock("Technique Slots",
                             "Learned techniques are not active until equipped in the Techniques window. Techniques have different slot costs. Each Analyzer Memory rank adds 2 slots, and Overclocked Analyzer adds another 2."),
                         new ArticleBlock("Active and Passive Techniques",
-                            "Equipped active techniques are granted as usable abilities and can be placed on the hotbar. Passive traits apply while equipped but are not castable. You cannot change equipped techniques during combat.")
+                            "Equipped active techniques are granted as usable abilities and can be placed on the hotbar. Passive traits apply while equipped but are not castable. Some passive traits are mutually exclusive because they fill the same loadout role; these are marked [Exclusive], and their details name every conflicting trait. You cannot change equipped techniques during combat.")
                     },
                     new[]
                     {

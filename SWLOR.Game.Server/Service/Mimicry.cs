@@ -603,6 +603,29 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Returns the player-facing names of every other trait that shares the selected trait's
+        /// mutually exclusive family. The list is derived from registered technique metadata so the
+        /// Techniques window stays accurate when a family gains or loses members.
+        /// </summary>
+        public static IReadOnlyList<string> GetMutuallyExclusiveTraitNames(FeatType feat)
+        {
+            if (!_techniques.TryGetValue(feat, out var detail) ||
+                !detail.IsMimicryTrait ||
+                detail.MimicryTraitFamily == MimicryTraitFamily.None)
+            {
+                return Array.Empty<string>();
+            }
+
+            return _techniques
+                .Where(technique => technique.Key != feat &&
+                                    technique.Value.IsMimicryTrait &&
+                                    technique.Value.MimicryTraitFamily == detail.MimicryTraitFamily)
+                .Select(technique => technique.Value.Name)
+                .OrderBy(name => name)
+                .ToArray();
+        }
+
+        /// <summary>
         /// Determines whether a player can equip a given technique right now.
         /// </summary>
         public static bool CanEquip(uint player, FeatType feat, out string error)
@@ -657,7 +680,7 @@ namespace SWLOR.Game.Server.Service
                 var conflictingName = _techniques.TryGetValue(conflictingTrait, out var conflictingDetail)
                     ? conflictingDetail.Name
                     : "the equipped trait";
-                error = $"{detail.Name} cannot be equipped with {conflictingName}. Unequip the other trait first.";
+                error = $"{detail.Name} and {conflictingName} are mutually exclusive traits. Unequip {conflictingName} first.";
                 return false;
             }
 

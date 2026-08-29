@@ -174,6 +174,17 @@ public class ForceLightGuardianTests
             "shared temporary-HP identifiers must be referenced through named constants");
 
         var weaponDamage = File.ReadAllText((root / "SWLOR.Game.Server" / "Native" / "GetDamageRoll.cs").FullName);
+        var weaponProcessDamageStart = weaponDamage.IndexOf(
+            "private static int ProcessDamage(",
+            StringComparison.Ordinal);
+        var weaponAddDamageStart = weaponDamage.IndexOf(
+            "private static void AddDamageToAttackData(",
+            StringComparison.Ordinal);
+        weaponProcessDamageStart.Should().BeGreaterThan(-1);
+        weaponAddDamageStart.Should().BeGreaterThan(weaponProcessDamageStart);
+        var weaponProcessDamage = weaponDamage.Substring(
+            weaponProcessDamageStart,
+            weaponAddDamageStart - weaponProcessDamageStart);
         var abilityDamage = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Ability.cs").FullName);
         var abilityPreDamageNotification = abilityDamage.IndexOf(
             "StatusEffect.NotifyPreDamageStatusEffects(activator, target, damage, damageType);",
@@ -196,16 +207,15 @@ public class ForceLightGuardianTests
             immediateDamageApplication,
             "ordinary damage reactions such as Guardian's Resolve healing must observe post-hit HP");
 
-        var weaponPreDamageNotification = weaponDamage.IndexOf(
+        var weaponPreDamageNotification = weaponProcessDamage.IndexOf(
             "StatusEffect.NotifyPreDamageStatusEffects(",
             StringComparison.Ordinal);
         weaponPreDamageNotification.Should().BeGreaterThan(-1);
         weaponPreDamageNotification.Should().BeLessThan(
-            weaponDamage.IndexOf("PublishDamageDealtEvent(", weaponPreDamageNotification, StringComparison.Ordinal),
-            "conditional reflection must be validated before weapon damage callbacks and reflection");
-        weaponPreDamageNotification.Should().BeLessThan(
-            weaponDamage.IndexOf("Combat.ApplyDamageReflectionEffects(", weaponPreDamageNotification, StringComparison.Ordinal),
+            weaponProcessDamage.IndexOf("Combat.ApplyDamageReflectionEffects(", weaponPreDamageNotification, StringComparison.Ordinal),
             "an exhausted conditional reflection status must be removed before weapon reflection is calculated");
+        weaponProcessDamage.Should().NotContain("PublishDamageDealtEvent(",
+            "reflection must retain its original position in weapon damage calculation rather than moving across damage-dealt callbacks");
     }
 
     [Test]

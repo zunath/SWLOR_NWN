@@ -74,7 +74,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 AbilityEffectScaling.ApplyActivatedScaledHeal(activator, friendly, 8);
                 ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Remove_Condition), friendly);
             }
-            LightGuardianPowerSupport.ApplyDeflectivePresence(activator);
         }
     }
 }

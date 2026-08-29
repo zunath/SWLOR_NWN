@@ -84,6 +84,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Force,
                 afterSuccessfulHit: ApplyResolveDebuffVisual);
+            LightGuardianPowerSupport.ApplyCourageousResolve(activator);
         }
 
         private static void WeakenResolve2ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -100,6 +101,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 Array.Empty<Type>(),
                 damageType: CombatDamageType.Force,
                 afterSuccessfulHit: ApplyResolveDebuffVisual);
+            LightGuardianPowerSupport.ApplyCourageousResolve(activator);
         }
 
         private static void ApplyResolveDebuffVisual(uint target)

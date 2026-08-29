@@ -2136,9 +2136,10 @@ namespace SWLOR.Game.Server.Service
             if (damage > 0)
             {
                 trackedImpact?.ConsumeStatusAppliedNextAttackDamageBonus(activator);
-                Combat.SendTemporaryHitPointDamageFeedback(activator, target, damage);
                 if (trackedImpact == null)
                 {
+                    StatusEffect.NotifyPreDamageStatusEffects(activator, target, damage, damageType);
+                    Combat.SendTemporaryHitPointDamageFeedback(activator, target, damage);
                     AssignCommand(
                         activator,
                         () => ApplyEffectToObject(
@@ -2148,10 +2149,11 @@ namespace SWLOR.Game.Server.Service
                 }
                 else
                 {
-                    trackedImpact.QueueDamageEffect(
+                    trackedImpact.QueueDirectDamageEffect(
                         target,
                         damage,
-                        effectDamageType ?? damageType.GetNWScriptDamageType());
+                        effectDamageType ?? damageType.GetNWScriptDamageType(),
+                        damageType);
                 }
 
                 ApplyDarkForceConversion(activator, target, damage);
@@ -2164,7 +2166,8 @@ namespace SWLOR.Game.Server.Service
                     damageType,
                     isAbilityDamage: true);
                 StatusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType);
-                Combat.ApplyDamageReflectionEffects(activator, target, damage, damageType);
+                if (trackedImpact == null)
+                    Combat.ApplyDamageReflectionEffects(activator, target, damage, damageType);
             }
 
             ApplyHostileAbilityEnmity(
@@ -3328,11 +3331,33 @@ namespace SWLOR.Game.Server.Service
 
             public void QueueDamageEffect(uint target, int damage, DamageType damageType)
             {
+                QueueDamageEffect(target, damage, damageType, CombatDamageType.Invalid);
+            }
+
+            public void QueueDirectDamageEffect(
+                uint target,
+                int damage,
+                DamageType damageType,
+                CombatDamageType combatDamageType)
+            {
+                QueueDamageEffect(target, damage, damageType, combatDamageType);
+            }
+
+            private void QueueDamageEffect(
+                uint target,
+                int damage,
+                DamageType damageType,
+                CombatDamageType combatDamageType)
+            {
                 if (!GetIsObjectValid(target) || damage <= 0)
                     return;
 
                 Summary.AttributedDamage += damage;
-                _pendingDamageEffects.Add(new PendingDamageEffect(target, damage, damageType));
+                _pendingDamageEffects.Add(new PendingDamageEffect(
+                    target,
+                    damage,
+                    damageType,
+                    combatDamageType));
             }
 
             public void FlushDamageEffects(uint activator)
@@ -3350,6 +3375,27 @@ namespace SWLOR.Game.Server.Service
                         if (!GetIsObjectValid(effect.Target))
                             continue;
 
+                        var isDirectAbilityDamage = effect.CombatDamageType != CombatDamageType.Invalid;
+                        if (isDirectAbilityDamage)
+                        {
+                            // Resolve the direct-hit lifecycle inside this loop so the next queued
+                            // hit observes temporary HP and status effects consumed by this one.
+                            StatusEffect.NotifyPreDamageStatusEffects(
+                                activator,
+                                effect.Target,
+                                effect.Damage,
+                                effect.CombatDamageType);
+                            Combat.SendTemporaryHitPointDamageFeedback(
+                                activator,
+                                effect.Target,
+                                effect.Damage);
+                            Combat.ApplyDamageReflectionEffects(
+                                activator,
+                                effect.Target,
+                                effect.Damage,
+                                effect.CombatDamageType);
+                        }
+
                         ApplyEffectToObject(
                             DurationType.Instant,
                             EffectDamage(effect.Damage, effect.DamageType),
@@ -3361,16 +3407,22 @@ namespace SWLOR.Game.Server.Service
 
         private sealed class PendingDamageEffect
         {
-            public PendingDamageEffect(uint target, int damage, DamageType damageType)
+            public PendingDamageEffect(
+                uint target,
+                int damage,
+                DamageType damageType,
+                CombatDamageType combatDamageType)
             {
                 Target = target;
                 Damage = damage;
                 DamageType = damageType;
+                CombatDamageType = combatDamageType;
             }
 
             public uint Target { get; }
             public int Damage { get; }
             public DamageType DamageType { get; }
+            public CombatDamageType CombatDamageType { get; }
         }
     }
 }

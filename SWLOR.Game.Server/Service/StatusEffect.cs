@@ -1927,6 +1927,30 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Notifies status effects that must validate their state before an originating hit is
+        /// applied. Ordinary damage reactions remain in NotifyDamageStatusEffects so they observe
+        /// the defender's post-hit state whenever the damage path supports it.
+        /// </summary>
+        public static void NotifyPreDamageStatusEffects(
+            uint attacker,
+            uint defender,
+            int damage,
+            CombatDamageType damageType,
+            CombatDamageDeliveryType deliveryType = CombatDamageDeliveryType.Direct)
+        {
+            if (damage <= 0 || !GetIsObjectValid(attacker) || !GetIsObjectValid(defender))
+                return;
+
+            foreach (var effect in GetCreatureStatusEffects(defender)
+                         .GetAllEffects()
+                         .OfType<IPreDamageStatusEffect>()
+                         .ToList())
+            {
+                effect.OnBeforeDamageTaken(defender, attacker, damage, damageType, deliveryType);
+            }
+        }
+
+        /// <summary>
         /// Notifies limited-attack status effects once per originating hostile attack, including
         /// misses and deflections. Effects exhausted by the attempt are removed immediately so
         /// they cannot affect another attack before the next status-effect tick.

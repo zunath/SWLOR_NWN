@@ -241,6 +241,11 @@ namespace SWLOR.Game.Server.Native
 
             if (isLandedAttack && damage > 0 && targetObject.m_nObjectType == (int)ObjectType.Creature)
             {
+                StatusEffect.NotifyPreDamageStatusEffects(
+                    attacker.m_idSelf,
+                    targetObject.m_idSelf,
+                    damage,
+                    damageProfile.DamageType);
                 Combat.ApplyDamageReflectionEffects(
                     attacker.m_idSelf,
                     targetObject.m_idSelf,

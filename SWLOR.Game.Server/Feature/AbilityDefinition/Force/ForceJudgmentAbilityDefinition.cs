@@ -132,6 +132,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
             Type statusEffect,
             int maxTargets)
         {
+            LightGuardianPowerSupport.ApplyCourageousResolve(activator);
+
             if (maxTargets == 1)
             {
                 Ability.ApplyCombatImpact(

@@ -89,6 +89,163 @@ public class ForceLightGuardianTests
     }
 
     [Test]
+    public void ForceLightGuardianTraitHooks_MatchTheirBiblePowerCategories()
+    {
+        var root = FindRepositoryRoot();
+        var forceAbilityRoot = root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force";
+
+        var guardianWard = File.ReadAllText((forceAbilityRoot / "GuardianWardAbilityDefinition.cs").FullName);
+        guardianWard.Should().Contain("LightGuardianPowerSupport.ApplyTemporaryHPPowerRiders(activator, friendly, 30f)");
+
+        var powersThatDoNotQualifyForProtectivePresence = new[]
+        {
+            "ForcePushAbilityDefinition.cs",
+            "ForceLeapAbilityDefinition.cs",
+            "ForceInterceptAbilityDefinition.cs",
+            "PurifyingWaveAbilityDefinition.cs",
+            "LastStandOfTheLightAbilityDefinition.cs"
+        };
+        foreach (var file in powersThatDoNotQualifyForProtectivePresence)
+        {
+            File.ReadAllText((forceAbilityRoot / file).FullName)
+                .Should().NotContain("ApplyDeflectivePresence(", $"{file} is not a Control protection power");
+        }
+
+        var sensePowerFiles = new[]
+        {
+            "WeakenResolveAbilityDefinition.cs",
+            "ForceJudgmentAbilityDefinition.cs",
+            "RadiantLanceAbilityDefinition.cs",
+            "MindTrickAbilityDefinition.cs",
+            "NightmareFieldAbilityDefinition.cs",
+            "ForceInterceptAbilityDefinition.cs",
+            "EclipseOfResolveAbilityDefinition.cs"
+        };
+        foreach (var file in sensePowerFiles)
+        {
+            File.ReadAllText((forceAbilityRoot / file).FullName)
+                .Should().Contain("LightGuardianPowerSupport.ApplyCourageousResolve(activator)",
+                    $"{file} implements a Sense power");
+        }
+
+        var support = File.ReadAllText((forceAbilityRoot / "LightGuardianPowerSupport.cs").FullName);
+        support.Should().Contain("TemporaryHitPointEffects.IsActivePoolFromSource(");
+        support.Should().Contain("TemporaryHitPointEffectKey.GuardianWard");
+        support.Should().Contain("TemporaryHitPointEffectKey.FatalDamageSave");
+        support.Should().Contain("StatusEffect.RemoveStatusEffect(target, typeof(ReflectiveBarrier1StatusEffect), false)",
+            "replacing a Guardian Ward pool must remove the prior caster's reflection rider");
+        support.Should().NotContain("StatusEffect.HasStatusEffect(friendly, typeof(ReflectiveBarrier1StatusEffect), activator)",
+            "the stronger resolve bonus depends on Force temporary HP, not ownership of Reflective Barrier");
+
+        var temporaryHP = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "TemporaryHitPointEffects.cs").FullName);
+        temporaryHP.Should().Contain("public static void ApplyFlatFromSource(");
+        temporaryHP.Should().Contain("ApplyFlatFromSource(OBJECT_INVALID, target, effectKey, amount, durationSeconds);",
+            "sourced and unsourced temporary-HP pools must share one metadata-reset path");
+        temporaryHP.Should().Contain("public static bool IsActivePoolFromSource(");
+        temporaryHP.Should().Contain("GetEffectTag(effect) == effectTag");
+
+        var scaling = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "AbilityEffectScaling.cs").FullName);
+        scaling.Should().Contain("TemporaryHitPointEffects.ApplyFlatFromSource(source, target, effectKey, amount, durationSeconds)");
+
+        var combat = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Combat.cs").FullName);
+        combat.Should().Contain("StatusEffect.GetStatusEffectSourceWithStat(");
+        combat.Should().Contain("TemporaryHitPointEffects.ApplyFlatFromSource(");
+        combat.Should().Contain("TemporaryHitPointEffectKey.FatalDamageSave");
+
+        var reflectiveBarrier = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "StatusEffectDefinition" / "ReflectiveBarrier1StatusEffect.cs").FullName);
+        reflectiveBarrier.Should().Contain("TemporaryHitPointEffectKey.GuardianWard");
+        reflectiveBarrier.Should().Contain("IPreDamageStatusEffect");
+        reflectiveBarrier.Should().Contain("public void OnBeforeDamageTaken(");
+        reflectiveBarrier.Should().NotContain("DelayCommand(",
+            "an exhausted barrier must be gone before the shared reflection stage reads its stats");
+
+        var temporaryHPKeys = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "TemporaryHitPointEffectKey.cs").FullName);
+        temporaryHPKeys.Should().Contain("public const string FatalDamageSave = \"FATAL_DAMAGE_SAVE\";");
+        temporaryHPKeys.Should().Contain("public const string GuardianWard = \"GUARDIAN_WARD\";");
+
+        var guardianWardDefinitionSource = File.ReadAllText((forceAbilityRoot / "GuardianWardAbilityDefinition.cs").FullName);
+        var temporaryHPKeyConsumers = string.Join(
+            Environment.NewLine,
+            support,
+            combat,
+            reflectiveBarrier,
+            guardianWardDefinitionSource);
+        temporaryHPKeyConsumers.Should().NotContain("\"FATAL_DAMAGE_SAVE\"",
+            "shared temporary-HP identifiers must be referenced through named constants");
+        temporaryHPKeyConsumers.Should().NotContain("\"GUARDIAN_WARD\"",
+            "shared temporary-HP identifiers must be referenced through named constants");
+
+        var weaponDamage = File.ReadAllText((root / "SWLOR.Game.Server" / "Native" / "GetDamageRoll.cs").FullName);
+        var weaponProcessDamageStart = weaponDamage.IndexOf(
+            "private static int ProcessDamage(",
+            StringComparison.Ordinal);
+        var weaponAddDamageStart = weaponDamage.IndexOf(
+            "private static void AddDamageToAttackData(",
+            StringComparison.Ordinal);
+        weaponProcessDamageStart.Should().BeGreaterThan(-1);
+        weaponAddDamageStart.Should().BeGreaterThan(weaponProcessDamageStart);
+        var weaponProcessDamage = weaponDamage.Substring(
+            weaponProcessDamageStart,
+            weaponAddDamageStart - weaponProcessDamageStart);
+        var abilityDamage = File.ReadAllText((root / "SWLOR.Game.Server" / "Service" / "Ability.cs").FullName);
+        var abilityPreDamageNotification = abilityDamage.IndexOf(
+            "StatusEffect.NotifyPreDamageStatusEffects(activator, target, damage, damageType);",
+            StringComparison.Ordinal);
+        abilityPreDamageNotification.Should().BeGreaterThan(-1);
+        var abilityPostDamageNotification = abilityDamage.IndexOf(
+            "StatusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType);",
+            StringComparison.Ordinal);
+        var immediateDamageApplication = abilityDamage.IndexOf(
+            "EffectDamage(damage, effectDamageType ?? damageType.GetNWScriptDamageType())",
+            abilityPreDamageNotification,
+            StringComparison.Ordinal);
+        abilityPreDamageNotification.Should().BeLessThan(
+            immediateDamageApplication,
+            "conditional reflection must be validated before the originating ability hit");
+        abilityPostDamageNotification.Should().BeGreaterThan(
+            immediateDamageApplication,
+            "ordinary damage reactions such as Guardian's Resolve healing must observe post-hit HP");
+
+        var queuedDamageFlushStart = abilityDamage.IndexOf(
+            "public void FlushDamageEffects(uint activator)",
+            StringComparison.Ordinal);
+        var pendingDamageEffectStart = abilityDamage.IndexOf(
+            "private sealed class PendingDamageEffect",
+            StringComparison.Ordinal);
+        queuedDamageFlushStart.Should().BeGreaterThan(-1);
+        pendingDamageEffectStart.Should().BeGreaterThan(queuedDamageFlushStart);
+        var queuedDamageFlush = abilityDamage.Substring(
+            queuedDamageFlushStart,
+            pendingDamageEffectStart - queuedDamageFlushStart);
+        var queuedPreDamageNotification = queuedDamageFlush.IndexOf(
+            "StatusEffect.NotifyPreDamageStatusEffects(",
+            StringComparison.Ordinal);
+        var queuedDamageApplication = queuedDamageFlush.IndexOf(
+            "EffectDamage(effect.Damage, effect.DamageType)",
+            StringComparison.Ordinal);
+        var queuedReflection = queuedDamageFlush.IndexOf(
+            "Combat.ApplyDamageReflectionEffects(",
+            StringComparison.Ordinal);
+        queuedPreDamageNotification.Should().BeGreaterThan(-1);
+        queuedPreDamageNotification.Should().BeLessThan(
+            queuedReflection,
+            "each queued hit must validate its conditional reflection before reflection is calculated");
+        queuedReflection.Should().BeLessThan(
+            queuedDamageApplication,
+            "the queued hit that consumes the final Guardian Ward pool must reflect before its damage is applied, then the next hit revalidates the consumed pool");
+
+        var weaponPreDamageNotification = weaponProcessDamage.IndexOf(
+            "StatusEffect.NotifyPreDamageStatusEffects(",
+            StringComparison.Ordinal);
+        weaponPreDamageNotification.Should().BeGreaterThan(-1);
+        weaponPreDamageNotification.Should().BeLessThan(
+            weaponProcessDamage.IndexOf("Combat.ApplyDamageReflectionEffects(", weaponPreDamageNotification, StringComparison.Ordinal),
+            "an exhausted conditional reflection status must be removed before weapon reflection is calculated");
+        weaponProcessDamage.Should().NotContain("PublishDamageDealtEvent(",
+            "reflection must retain its original position in weapon damage calculation rather than moving across damage-dealt callbacks");
+    }
+
+    [Test]
     public void LastStandOfTheLight_HasDyingFallbackBeforeForcedPlayerDeath()
     {
         var root = FindRepositoryRoot();

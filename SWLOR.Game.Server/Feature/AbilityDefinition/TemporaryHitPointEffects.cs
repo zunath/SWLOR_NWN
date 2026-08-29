@@ -28,10 +28,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         // any prior pool carrying the same key, regardless of caster.
         public static void ApplyFlat(uint target, string effectKey, int amount, float durationSeconds)
         {
-            ValidateEffectKey(effectKey);
-            DeleteLocalString(target, GetOwnerVariable(effectKey));
-            DeleteLocalObject(target, GetSourceVariable(effectKey));
-            ApplyFlatInternal(target, effectKey, amount, durationSeconds);
+            ApplyFlatFromSource(OBJECT_INVALID, target, effectKey, amount, durationSeconds);
         }
 
         /// <summary>

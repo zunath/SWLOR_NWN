@@ -139,6 +139,8 @@ public class ForceLightGuardianTests
 
         var temporaryHP = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "TemporaryHitPointEffects.cs").FullName);
         temporaryHP.Should().Contain("public static void ApplyFlatFromSource(");
+        temporaryHP.Should().Contain("ApplyFlatFromSource(OBJECT_INVALID, target, effectKey, amount, durationSeconds);",
+            "sourced and unsourced temporary-HP pools must share one metadata-reset path");
         temporaryHP.Should().Contain("public static bool IsActivePoolFromSource(");
         temporaryHP.Should().Contain("GetEffectTag(effect) == effectTag");
 

@@ -34,7 +34,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 ResistanceType.Ice,
                 VisualEffect.Vfx_Imp_Frost_L,
                 VisualEffect.Vfx_Fnf_Icestorm,
-                maxRange: 8f,
                 enmityBonus: 100,
                 additionalStatusEffects: new[] { typeof(ImmobilizedStatusEffect) })
                 .SkillType(SkillType.Mimicry)
@@ -45,7 +44,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                     Spell.CryoBileTechnique,
                     8f,
                     5f,
-                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf);
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf | AbilityTargetingFlags.BackOffsetOrigin);
 
             return _builder.Build();
         }

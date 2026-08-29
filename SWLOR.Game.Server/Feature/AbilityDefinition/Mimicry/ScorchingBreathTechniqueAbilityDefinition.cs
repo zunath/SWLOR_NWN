@@ -34,7 +34,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 ResistanceType.Fire,
                 VisualEffect.Vfx_Com_Hit_Fire,
                 VisualEffect.Vfx_Fnf_Gas_Explosion_Fire,
-                maxRange: 8f,
                 additionalStatusEffects: new[] { typeof(WeakenedStatusEffect) })
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
@@ -44,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                     Spell.ScorchingBreathTechnique,
                     8f,
                     5f,
-                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf);
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf | AbilityTargetingFlags.BackOffsetOrigin);
 
             return _builder.Build();
         }

@@ -205,6 +205,38 @@ public class CombatDamageTests
     }
 
     [Test]
+    public void NonCriticalRangedAbilities_ReserveStatDrivenStaminaCostAndRefundCriticalResults()
+    {
+        var root = FindRepositoryRoot();
+        var abilitySource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
+        var combatSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var endAbilityImpact = ExtractMethod(abilitySource, "public static AbilityImpactSummary EndAbilityImpact");
+        var getFlatAdjustment = ExtractMethod(combatSource, "public static int GetAbilityStaminaCostFlatAdjustment(uint creature, AbilityDetail ability)");
+        var getSurcharge = ExtractMethod(combatSource, "private static int GetNonCriticalRangedAbilityStaminaCostFlatAdjustment");
+        var refundSurcharge = ExtractMethod(combatSource, "public static int RefundCriticalRangedAbilityStaminaCost");
+        var trackStaminaCost = ExtractMethod(combatSource, "private static void TrackAbilityStaminaCost");
+        var resourceThreshold = ExtractMethod(combatSource, "public static bool IsCurrentFPAndStaminaAtOrAbovePercent");
+
+        endAbilityImpact.Should().Contain("impact.Summary.CriticalHitCount > 0");
+        endAbilityImpact.Should().Contain("Combat.RefundCriticalRangedAbilityStaminaCost");
+        endAbilityImpact.Should().Contain("Combat.ApplyNonCriticalAbilityEffects");
+        endAbilityImpact.IndexOf("Combat.RefundCriticalRangedAbilityStaminaCost", StringComparison.Ordinal)
+            .Should().BeLessThan(endAbilityImpact.IndexOf("impact.CountsAsAttackAttempt", StringComparison.Ordinal),
+                "deferred area impacts must refund a critical surcharge without sending a second attack-attempt notification");
+        getFlatAdjustment.Should().Contain("GetNonCriticalRangedAbilityStaminaCostFlatAdjustment(creature, ability)");
+        getSurcharge.Should().Contain("IsRangedWeaponSkill(GetAbilitySkillType(creature, ability))");
+        getSurcharge.Should().Contain("StatType.NonCriticalRangedAbilityStaminaCostFlatAdjustment");
+        getSurcharge.Should().NotContain("GamblerStance");
+        trackStaminaCost.Should().Contain("var nonCriticalRangedAbilityStaminaCost = Math.Min(");
+        trackStaminaCost.Should().Contain("Cost = staminaCost - nonCriticalRangedAbilityStaminaCost");
+        trackStaminaCost.Should().Contain("NonCriticalRangedAbilityStaminaCost = nonCriticalRangedAbilityStaminaCost");
+        refundSurcharge.Should().Contain("state.NonCriticalRangedAbilityStaminaCost = 0");
+        refundSurcharge.Should().Contain("Stat.RestoreStamina(creature, amount)");
+        resourceThreshold.Should().Contain("TryGetAbilityStaminaCostState(creature, ability, out var costState)");
+        resourceThreshold.Should().Contain("currentStamina += costState.NonCriticalRangedAbilityStaminaCost");
+    }
+
+    [Test]
     public void DeflectionGrantedSkillBonuses_DoNotInferEquippedWeaponSkillWhenNoSelectorIsDeclared()
     {
         var root = FindRepositoryRoot();

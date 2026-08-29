@@ -34,7 +34,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 ResistanceType.Mind,
                 VisualEffect.Vfx_Imp_Fear_S,
                 VisualEffect.Vfx_Fnf_Gas_Explosion_Mind,
-                maxRange: 5f,
                 afterSuccessfulHit: InnateAbility.RestoreFPOnHit(4))
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
@@ -44,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                     Spell.WillFractureTechnique,
                     5f,
                     5f,
-                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf);
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf | AbilityTargetingFlags.BackOffsetOrigin);
 
             return _builder.Build();
         }

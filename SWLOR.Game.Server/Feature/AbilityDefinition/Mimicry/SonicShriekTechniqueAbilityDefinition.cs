@@ -33,8 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 CombatDamageType.Sonic,
                 ResistanceType.Mind,
                 VisualEffect.Vfx_Imp_Sonic,
-                VisualEffect.Vfx_Fnf_Sound_Burst,
-                maxRange: 8f)
+                VisualEffect.Vfx_Fnf_Sound_Burst)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Willpower)
@@ -43,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                     Spell.SonicShriekTechnique,
                     8f,
                     5f,
-                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf);
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf | AbilityTargetingFlags.BackOffsetOrigin);
 
             return _builder.Build();
         }

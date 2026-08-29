@@ -11,6 +11,7 @@ namespace SWLOR.Game.Server.Service.AbilityService
         HelpsAllies = 4,
         IgnoresSelf = 8,
         OriginOnSelf = 16,
-        SuppressWithTarget = 32
+        SuppressWithTarget = 32,
+        BackOffsetOrigin = 64
     }
 }

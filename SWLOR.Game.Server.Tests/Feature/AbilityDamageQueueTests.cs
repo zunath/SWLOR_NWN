@@ -24,7 +24,8 @@ public class AbilityDamageQueueTests
             0,
             0,
             true,
-            0
+            0,
+            false
         });
 
         trackedImpactType.GetMethod("AddDefenseIgnorePercentAdjustment")!
@@ -54,7 +55,7 @@ public class AbilityDamageQueueTests
         source.Should().Contain("Enmity.IssueAttackCommand(activator, target, clearActions);");
         source.Should().Contain("private static void ResumeAttackAfterDelay(uint activator, uint target, float delay, bool clearActions = true)");
         source.Should().Contain("DelayCommand(delay, () =>");
-        var impactIndex = completeBody.IndexOf("ExecuteAbilityImpact(activator, target, feat, ability, targetLocation)", StringComparison.Ordinal);
+        var impactIndex = completeBody.IndexOf("ExecuteAbilityImpact(", StringComparison.Ordinal);
         var resumeIndex = completeBody.IndexOf("ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f)", StringComparison.Ordinal);
 
         impactIndex.Should().BeGreaterThanOrEqualTo(0);
@@ -105,8 +106,13 @@ public class AbilityDamageQueueTests
             completeBody.IndexOf("void ResolveImpact()", StringComparison.Ordinal),
             completeBody.IndexOf("if (ability.ImpactDelay > 0f)", StringComparison.Ordinal) -
             completeBody.IndexOf("void ResolveImpact()", StringComparison.Ordinal));
-        resolveImpact.IndexOf("ExecuteAbilityImpact(activator, target, feat, ability, targetLocation)", StringComparison.Ordinal)
-            .Should().BeLessThan(resolveImpact.IndexOf("ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f)", StringComparison.Ordinal));
+        var executeImpactIndex = resolveImpact.IndexOf("ExecuteAbilityImpact(", StringComparison.Ordinal);
+        var delayedResumeIndex = resolveImpact.IndexOf(
+            "ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f)",
+            StringComparison.Ordinal);
+        executeImpactIndex.Should().BeGreaterThanOrEqualTo(0);
+        delayedResumeIndex.Should().BeGreaterThanOrEqualTo(0);
+        executeImpactIndex.Should().BeLessThan(delayedResumeIndex);
     }
 
     [Test]

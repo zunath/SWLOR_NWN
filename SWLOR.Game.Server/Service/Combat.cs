@@ -145,6 +145,7 @@ namespace SWLOR.Game.Server.Service
         {
             public int Cost { get; init; }
             public DateTime SpentAt { get; init; }
+            public int NonCriticalRangedAbilityStaminaCost { get; set; }
             public bool StaminaRestoreApplied { get; set; }
             public int DeferredImpactCount { get; set; }
         }
@@ -1023,6 +1024,7 @@ namespace SWLOR.Game.Server.Service
             bool isAbilityDamage,
             bool canApplyRandomFlatBonuses,
             bool isLandedAttack,
+            AbilityDetail ability,
             out int damageBeforeTargetStatusStage)
         {
             damageBeforeTargetStatusStage = 0;
@@ -1050,7 +1052,8 @@ namespace SWLOR.Game.Server.Service
                 skillType,
                 damageType,
                 isAbilityDamage,
-                canApplyRandomFlatBonuses);
+                canApplyRandomFlatBonuses,
+                ability);
             // The repeated-target modifiers keep per-attacker stack state, so a swing the engine
             // later discards must not advance (or reset) their counters - the damage value itself
             // is thrown away with the swing.
@@ -1098,7 +1101,8 @@ namespace SWLOR.Game.Server.Service
             CombatDamageType damageType = CombatDamageType.Physical,
             bool isAbilityDamage = false,
             bool canApplyRandomFlatBonuses = true,
-            bool isLandedAttack = true)
+            bool isLandedAttack = true,
+            AbilityDetail ability = null)
         {
             return ApplyDamageDealtModifiers(
                 attacker,
@@ -1109,6 +1113,7 @@ namespace SWLOR.Game.Server.Service
                 isAbilityDamage,
                 canApplyRandomFlatBonuses,
                 isLandedAttack,
+                ability,
                 out _);
         }
 
@@ -4194,7 +4199,8 @@ namespace SWLOR.Game.Server.Service
             SkillType skillType,
             CombatDamageType damageType,
             bool isAbilityDamage,
-            bool canApplyRandomFlatBonuses)
+            bool canApplyRandomFlatBonuses,
+            AbilityDetail ability)
         {
             var adjustment = 0;
             adjustment += GetStatusSourceStatAdjustment(
@@ -4267,7 +4273,8 @@ namespace SWLOR.Game.Server.Service
                     attacker,
                     Stat.GetStatAdjustment(
                         attacker,
-                        StatType.HighFPAndStaminaAbilityDamagePercentAdjustmentThresholdPercent)))
+                        StatType.HighFPAndStaminaAbilityDamagePercentAdjustmentThresholdPercent),
+                    ability))
             {
                 adjustment += Stat.GetStatAdjustment(
                     attacker,
@@ -5481,7 +5488,8 @@ namespace SWLOR.Game.Server.Service
             if (ability.IsHostileAbility &&
                 IsCurrentFPAndStaminaAtOrAbovePercent(
                     activator,
-                    Stat.GetStatAdjustment(activator, StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent)))
+                    Stat.GetStatAdjustment(activator, StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent),
+                    ability))
             {
                 bonus += Stat.GetStatAdjustment(activator, StatType.HighFPAndStaminaAbilityDamageBonus);
             }
@@ -9580,13 +9588,14 @@ namespace SWLOR.Game.Server.Service
             if (ability == null)
                 return 0;
 
+            var skillType = GetAbilitySkillType(creature, ability);
             var adjustment = GetAbilityStaminaCostFlatAdjustment(creature, ability.EffectiveLevelPerkType);
             if (ability.IsHostileAbility)
             {
                 adjustment += Stat.GetStatAdjustment(creature, StatType.HostileAbilityStaminaCostFlatAdjustment);
+                adjustment += GetNonCriticalRangedAbilityStaminaCostFlatAdjustment(creature, ability);
             }
 
-            var skillType = GetAbilitySkillType(creature, ability);
             var flatSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
                 creature,
                 StatType.SkillAbilityStaminaCostFlatAdjustmentSkillType));
@@ -9607,6 +9616,34 @@ namespace SWLOR.Game.Server.Service
             }
 
             return adjustment;
+        }
+
+        private static int GetNonCriticalRangedAbilityStaminaCostFlatAdjustment(
+            uint creature,
+            AbilityDetail ability)
+        {
+            if (ability?.IsHostileAbility != true ||
+                !IsRangedWeaponSkill(GetAbilitySkillType(creature, ability)))
+            {
+                return 0;
+            }
+
+            return Math.Max(0, Stat.GetStatAdjustment(
+                creature,
+                StatType.NonCriticalRangedAbilityStaminaCostFlatAdjustment));
+        }
+
+        public static int RefundCriticalRangedAbilityStaminaCost(uint creature, AbilityDetail ability)
+        {
+            if (!TryGetAbilityStaminaCostState(creature, ability, out var state) ||
+                state.NonCriticalRangedAbilityStaminaCost <= 0)
+            {
+                return 0;
+            }
+
+            var amount = state.NonCriticalRangedAbilityStaminaCost;
+            state.NonCriticalRangedAbilityStaminaCost = 0;
+            return Stat.RestoreStamina(creature, amount);
         }
 
         public static void ApplyAbilityStaminaCostFPRestore(uint creature, AbilityDetail ability, int staminaCost)
@@ -9649,10 +9686,14 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
+            var nonCriticalRangedAbilityStaminaCost = Math.Min(
+                staminaCost,
+                GetNonCriticalRangedAbilityStaminaCostFlatAdjustment(creature, ability));
             _abilityStaminaCosts[key] = new AbilityStaminaCostState
             {
-                Cost = staminaCost,
-                SpentAt = DateTime.UtcNow
+                Cost = staminaCost - nonCriticalRangedAbilityStaminaCost,
+                SpentAt = DateTime.UtcNow,
+                NonCriticalRangedAbilityStaminaCost = nonCriticalRangedAbilityStaminaCost
             };
         }
 
@@ -10922,7 +10963,10 @@ namespace SWLOR.Game.Server.Service
             return Stat.GetCurrentFP(creature) >= maxFP * (thresholdPercent / 100f);
         }
 
-        public static bool IsCurrentFPAndStaminaAtOrAbovePercent(uint creature, int thresholdPercent)
+        public static bool IsCurrentFPAndStaminaAtOrAbovePercent(
+            uint creature,
+            int thresholdPercent,
+            AbilityDetail ability = null)
         {
             if (thresholdPercent <= 0)
                 return false;
@@ -10932,8 +10976,14 @@ namespace SWLOR.Game.Server.Service
             if (maxFP <= 0 || maxStamina <= 0)
                 return false;
 
+            var currentStamina = Stat.GetCurrentStamina(creature);
+            if (TryGetAbilityStaminaCostState(creature, ability, out var costState))
+            {
+                currentStamina += costState.NonCriticalRangedAbilityStaminaCost;
+            }
+
             return Stat.GetCurrentFP(creature) >= maxFP * (thresholdPercent / 100f) &&
-                   Stat.GetCurrentStamina(creature) >= maxStamina * (thresholdPercent / 100f);
+                   currentStamina >= maxStamina * (thresholdPercent / 100f);
         }
 
         public static bool IsCurrentFPAndStaminaAtOrBelowPercent(uint creature, int thresholdPercent)

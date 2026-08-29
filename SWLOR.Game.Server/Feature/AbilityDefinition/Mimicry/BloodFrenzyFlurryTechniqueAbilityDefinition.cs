@@ -33,8 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 CombatDamageType.Physical,
                 ResistanceType.Trauma,
                 VisualEffect.Vfx_Com_Blood_Spark_Medium,
-                VisualEffect.Vfx_Fnf_Screen_Bump,
-                maxRange: 5f)
+                VisualEffect.Vfx_Fnf_Screen_Bump)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Agility)
@@ -43,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                     Spell.BloodFrenzyFlurryTechnique,
                     5f,
                     5f,
-                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf);
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf | AbilityTargetingFlags.BackOffsetOrigin);
 
             return _builder.Build();
         }

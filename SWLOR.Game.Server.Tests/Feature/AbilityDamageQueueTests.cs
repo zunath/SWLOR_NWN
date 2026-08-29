@@ -118,26 +118,111 @@ public class AbilityDamageQueueTests
             "SWLOR.Game.Server",
             "Service",
             "Ability.cs")).Replace("\r\n", "\n");
+        var endImpactStart = source.IndexOf(
+            "public static AbilityImpactSummary EndAbilityImpact",
+            StringComparison.Ordinal);
+        var trackedImpactLookupStart = source.IndexOf(
+            "private static TrackedAbilityImpact GetTrackedAbilityImpact",
+            StringComparison.Ordinal);
+        var queueDamageStart = source.IndexOf(
+            "public void QueueDamageEffect",
+            StringComparison.Ordinal);
+        var flushDamageStart = source.IndexOf(
+            "public void FlushDamageEffects",
+            StringComparison.Ordinal);
+        var pendingDamageEffectStart = source.IndexOf(
+            "private sealed class PendingDamageEffect",
+            StringComparison.Ordinal);
+        endImpactStart.Should().BeGreaterThan(-1);
+        trackedImpactLookupStart.Should().BeGreaterThan(endImpactStart);
+        queueDamageStart.Should().BeGreaterThan(-1);
+        flushDamageStart.Should().BeGreaterThan(queueDamageStart);
+        pendingDamageEffectStart.Should().BeGreaterThan(flushDamageStart);
         var endImpactBody = source.Substring(
-            source.IndexOf("public static AbilityImpactSummary EndAbilityImpact", StringComparison.Ordinal),
-            source.IndexOf("private static TrackedAbilityImpact GetTrackedAbilityImpact", StringComparison.Ordinal) -
-            source.IndexOf("public static AbilityImpactSummary EndAbilityImpact", StringComparison.Ordinal));
+            endImpactStart,
+            trackedImpactLookupStart - endImpactStart);
         var queueBody = source.Substring(
-            source.IndexOf("public void QueueDamageEffect", StringComparison.Ordinal),
-            source.IndexOf("public void FlushDamageEffects", StringComparison.Ordinal) -
-            source.IndexOf("public void QueueDamageEffect", StringComparison.Ordinal));
+            queueDamageStart,
+            flushDamageStart - queueDamageStart);
         var flushBody = source.Substring(
-            source.IndexOf("public void FlushDamageEffects", StringComparison.Ordinal),
-            source.IndexOf("private sealed class PendingDamageEffect", StringComparison.Ordinal) -
-            source.IndexOf("public void FlushDamageEffects", StringComparison.Ordinal));
+            flushDamageStart,
+            pendingDamageEffectStart - flushDamageStart);
 
         endImpactBody.Should().Contain("impact.FlushDamageEffects(activator);");
         source.Should().Contain("trackedImpact.QueueDamageEffect(");
-        queueBody.Should().Contain("_pendingDamageEffects.Add(new PendingDamageEffect(target, damage, damageType));");
+        source.Should().Contain("trackedImpact.QueueDirectDamageEffect(");
+        queueBody.Should().Contain("public void QueueDirectDamageEffect(");
+        queueBody.Should().Contain("QueueDamageEffect(target, damage, damageType, combatDamageType);");
+        queueBody.Should().Contain("_pendingDamageEffects.Add(new PendingDamageEffect(");
         flushBody.Should().Contain("var effects = _pendingDamageEffects.ToArray();");
         flushBody.Should().Contain("AssignCommand(activator, () =>");
         flushBody.Should().Contain("foreach (var effect in effects)");
         flushBody.Should().Contain("EffectDamage(effect.Damage, effect.DamageType)");
+
+        var preDamageValidation = flushBody.IndexOf(
+            "StatusEffect.NotifyPreDamageStatusEffects(",
+            StringComparison.Ordinal);
+        var damageApplication = flushBody.IndexOf(
+            "EffectDamage(effect.Damage, effect.DamageType)",
+            StringComparison.Ordinal);
+        var reflection = flushBody.IndexOf(
+            "Combat.ApplyDamageReflectionEffects(",
+            StringComparison.Ordinal);
+        preDamageValidation.Should().BeGreaterThan(-1);
+        preDamageValidation.Should().BeLessThan(
+            reflection,
+            "each queued hit must validate source-dependent defenses before calculating reflection");
+        reflection.Should().BeLessThan(
+            damageApplication,
+            "the ward-consuming hit must reflect before its damage is applied, while the next loop iteration revalidates the consumed pool");
+    }
+
+    [Test]
+    public void MultiHitWeaponAbilities_ResolveConditionalReflectionPerQueuedHit()
+    {
+        var root = FindRepositoryRoot();
+        var weaponAbilitySource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "WeaponActiveAbilityDefinitionBase.cs")).Replace("\r\n", "\n");
+        var configureMultiHitStart = weaponAbilitySource.IndexOf(
+            "protected static void ConfigureMultiHit(",
+            StringComparison.Ordinal);
+        var configureInterruptStart = weaponAbilitySource.IndexOf(
+            "protected static void ConfigureInterrupt(",
+            StringComparison.Ordinal);
+        configureMultiHitStart.Should().BeGreaterThan(-1);
+        configureInterruptStart.Should().BeGreaterThan(configureMultiHitStart);
+        var configureMultiHit = weaponAbilitySource.Substring(
+            configureMultiHitStart,
+            configureInterruptStart - configureMultiHitStart);
+
+        configureMultiHit.Should().Contain("for (var i = 0; i < hits; i++)");
+        configureMultiHit.Should().Contain("Ability.ApplyCombatImpact(",
+            "every hit is queued independently against the same target");
+
+        var abilitySource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Ability.cs")).Replace("\r\n", "\n");
+        var publicImpactStart = abilitySource.IndexOf(
+            "public static int ApplyHostileCombatImpact(",
+            StringComparison.Ordinal);
+        var privateImpactStart = abilitySource.IndexOf(
+            "private static int ApplyHostileCombatImpact(",
+            StringComparison.Ordinal);
+        publicImpactStart.Should().BeGreaterThan(-1);
+        privateImpactStart.Should().BeGreaterThan(publicImpactStart);
+        var primaryImpact = abilitySource.Substring(
+            publicImpactStart,
+            privateImpactStart - publicImpactStart);
+
+        primaryImpact.Should().Contain("trackedImpact.QueueDirectDamageEffect(");
+        primaryImpact.Should().Contain("if (trackedImpact == null)\n                    Combat.ApplyDamageReflectionEffects(",
+            "tracked hits must not reflect until each queued damage effect is applied");
     }
 
     [Test]
@@ -168,7 +253,7 @@ public class AbilityDamageQueueTests
         formulaSelectionBody.Should().Contain("return ApplyHostileCombatImpact(",
             "unscaled damage must retain the primary ability damage, rider, and enmity path");
         primaryImpactBody.Should().Contain("Combat.SendTemporaryHitPointDamageFeedback(activator, target, damage);");
-        primaryImpactBody.Should().Contain("trackedImpact.QueueDamageEffect(");
+        primaryImpactBody.Should().Contain("trackedImpact.QueueDirectDamageEffect(");
 
         unscaledDamageBody.Should().Contain("var trackedImpact = GetTrackedAbilityImpact(activator);");
         unscaledDamageBody.Should().Contain("baseDamage + (trackedImpact?.NextAbilityDamageBonus ?? 0)",

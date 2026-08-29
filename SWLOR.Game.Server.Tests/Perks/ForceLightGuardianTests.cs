@@ -189,6 +189,7 @@ public class ForceLightGuardianTests
         var abilityPreDamageNotification = abilityDamage.IndexOf(
             "StatusEffect.NotifyPreDamageStatusEffects(activator, target, damage, damageType);",
             StringComparison.Ordinal);
+        abilityPreDamageNotification.Should().BeGreaterThan(-1);
         var abilityPostDamageNotification = abilityDamage.IndexOf(
             "StatusEffect.NotifyDamageStatusEffects(activator, target, damage, damageType);",
             StringComparison.Ordinal);
@@ -196,16 +197,40 @@ public class ForceLightGuardianTests
             "EffectDamage(damage, effectDamageType ?? damageType.GetNWScriptDamageType())",
             abilityPreDamageNotification,
             StringComparison.Ordinal);
-        abilityPreDamageNotification.Should().BeGreaterThan(-1);
         abilityPreDamageNotification.Should().BeLessThan(
             immediateDamageApplication,
             "conditional reflection must be validated before the originating ability hit");
-        abilityPreDamageNotification.Should().BeLessThan(
-            abilityDamage.IndexOf("trackedImpact.QueueDamageEffect(", abilityPreDamageNotification, StringComparison.Ordinal),
-            "queued ability hits must use the same pre-damage validation");
         abilityPostDamageNotification.Should().BeGreaterThan(
             immediateDamageApplication,
             "ordinary damage reactions such as Guardian's Resolve healing must observe post-hit HP");
+
+        var queuedDamageFlushStart = abilityDamage.IndexOf(
+            "public void FlushDamageEffects(uint activator)",
+            StringComparison.Ordinal);
+        var pendingDamageEffectStart = abilityDamage.IndexOf(
+            "private sealed class PendingDamageEffect",
+            StringComparison.Ordinal);
+        queuedDamageFlushStart.Should().BeGreaterThan(-1);
+        pendingDamageEffectStart.Should().BeGreaterThan(queuedDamageFlushStart);
+        var queuedDamageFlush = abilityDamage.Substring(
+            queuedDamageFlushStart,
+            pendingDamageEffectStart - queuedDamageFlushStart);
+        var queuedPreDamageNotification = queuedDamageFlush.IndexOf(
+            "StatusEffect.NotifyPreDamageStatusEffects(",
+            StringComparison.Ordinal);
+        var queuedDamageApplication = queuedDamageFlush.IndexOf(
+            "EffectDamage(effect.Damage, effect.DamageType)",
+            StringComparison.Ordinal);
+        var queuedReflection = queuedDamageFlush.IndexOf(
+            "Combat.ApplyDamageReflectionEffects(",
+            StringComparison.Ordinal);
+        queuedPreDamageNotification.Should().BeGreaterThan(-1);
+        queuedPreDamageNotification.Should().BeLessThan(
+            queuedReflection,
+            "each queued hit must validate its conditional reflection before reflection is calculated");
+        queuedReflection.Should().BeLessThan(
+            queuedDamageApplication,
+            "the queued hit that consumes the final Guardian Ward pool must reflect before its damage is applied, then the next hit revalidates the consumed pool");
 
         var weaponPreDamageNotification = weaponProcessDamage.IndexOf(
             "StatusEffect.NotifyPreDamageStatusEffects(",

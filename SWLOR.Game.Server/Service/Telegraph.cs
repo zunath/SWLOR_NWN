@@ -316,12 +316,30 @@ namespace SWLOR.Game.Server.Service
 
         private static TelegraphColorType DetermineTelegraphColorType(uint player, uint telegrapher, bool isHostile)
         {
-            if (player == telegrapher)
+            var isOwnTelegraph = player == telegrapher;
+            var isPartyMemberTelegraph = !isOwnTelegraph && Party.IsInParty(player, telegrapher);
+
+            return SelectTelegraphColorType(isOwnTelegraph, isPartyMemberTelegraph, isHostile);
+        }
+
+        private static TelegraphColorType SelectTelegraphColorType(
+            bool isOwnTelegraph,
+            bool isPartyMemberTelegraph,
+            bool isHostile)
+        {
+            // The player's own placement stays recognizable, while beneficial effects remain green
+            // regardless of who created them. Party gray distinguishes allied offensive placement
+            // from hostile red telegraphs created outside the party.
+            if (isOwnTelegraph)
                 return TelegraphColorType.Self;
 
-            return isHostile
-                ? GetIsReactionTypeFriendly(player, telegrapher) == 1 ? TelegraphColorType.Friendly : TelegraphColorType.Hostile
-                : GetIsReactionTypeFriendly(player, telegrapher) == 1 ? TelegraphColorType.Friendly : TelegraphColorType.EnemyBeneficial;
+            if (!isHostile)
+                return TelegraphColorType.Beneficial;
+
+            if (isPartyMemberTelegraph)
+                return TelegraphColorType.PartyMember;
+
+            return TelegraphColorType.Hostile;
         }
 
         private static int PackTelegraphData(TelegraphType shapeType, TelegraphColorType colorType, Vector2 size, float rotation)
@@ -363,6 +381,23 @@ namespace SWLOR.Game.Server.Service
         {
             for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
             {
+                UpdateShaderForPlayer(player);
+            }
+        }
+
+        /// <summary>
+        /// Refreshes active telegraphs for specific player viewers after relationship state changes.
+        /// Party membership affects hostile telegraph colors, so existing packed uniforms must be
+        /// rebuilt even when no telegraph was created or removed.
+        /// </summary>
+        /// <param name="players">Players whose telegraph uniforms should be refreshed.</param>
+        public static void UpdateShadersForPlayers(IEnumerable<uint> players)
+        {
+            foreach (var player in players.Distinct())
+            {
+                if (!GetIsObjectValid(player) || (!GetIsPC(player) && !GetIsDM(player)))
+                    continue;
+
                 UpdateShaderForPlayer(player);
             }
         }

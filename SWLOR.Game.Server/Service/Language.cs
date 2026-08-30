@@ -51,28 +51,8 @@ namespace SWLOR.Game.Server.Service
 
             if (GetIsPC(speaker))
             {
-                var playerId = GetObjectUUID(speaker);
-                var dbSpeaker = DB.Get<Player>(playerId);
-                // Get the rank and max rank for the speaker, and garble their English text based on it.
-                var speakerSkillRank = dbSpeaker == null ?
-                    languageSkill.MaxRank :
-                    dbSpeaker.Skills[language].Rank;
-
-                if (speakerSkillRank != languageSkill.MaxRank)
-                {
-                    var garbledChance = 100 - (int)((speakerSkillRank / (float)languageSkill.MaxRank) * 100);
-
-                    var split = snippet.Split(' ');
-                    for (var i = 0; i < split.Length; ++i)
-                    {
-                        if (Random.Next(100) <= garbledChance)
-                        {
-                            split[i] = new string(split[i].ToCharArray().OrderBy(s => (Random.Next(2) % 2) == 0).ToArray());
-                        }
-                    }
-
-                    snippet = split.Aggregate((a, b) => a + " " + b);
-                }
+                var speakerSkillRank = GetSpeakerProficiencyRank(GetObjectUUID(speaker), language);
+                snippet = ApplySpeakerProficiency(language, snippet, speakerSkillRank);
             }
 
             if (!GetIsPC(listener) || GetIsDM(listener) || GetIsDMPossessed(listener))
@@ -167,6 +147,54 @@ namespace SWLOR.Game.Server.Service
             }
 
             return textAsForeignLanguage;
+        }
+
+        /// <summary>
+        /// Returns the persisted rank used to determine how fluently a player speaks a
+        /// language. Missing records fail open at maximum proficiency, matching live chat.
+        /// </summary>
+        public static int GetSpeakerProficiencyRank(string playerId, SkillType language)
+        {
+            var languageSkill = Skill.GetSkillDetails(language);
+            var dbSpeaker = string.IsNullOrWhiteSpace(playerId)
+                ? null
+                : DB.Get<Player>(playerId);
+
+            return dbSpeaker?.Skills != null && dbSpeaker.Skills.TryGetValue(language, out var skill)
+                ? Math.Clamp(skill.Rank, 0, languageSkill.MaxRank)
+                : languageSkill.MaxRank;
+        }
+
+        /// <summary>
+        /// Applies the speaker-side language proficiency transformation without requiring
+        /// a live player object. Recorded HoloCom speech uses this before an NPC hologram
+        /// speaks so it cannot bypass the sender's proficiency.
+        /// </summary>
+        public static string ApplySpeakerProficiency(SkillType language, string snippet, int speakerSkillRank)
+        {
+            if (string.IsNullOrWhiteSpace(snippet))
+                return snippet;
+
+            var maxRank = Skill.GetSkillDetails(language).MaxRank;
+            if (maxRank <= 0)
+                return snippet;
+
+            speakerSkillRank = Math.Clamp(speakerSkillRank, 0, maxRank);
+            if (speakerSkillRank == maxRank)
+                return snippet;
+
+            var garbledChance = 100 - (int)((speakerSkillRank / (float)maxRank) * 100);
+            var split = snippet.Split(' ');
+
+            for (var i = 0; i < split.Length; ++i)
+            {
+                if (Random.Next(100) <= garbledChance)
+                {
+                    split[i] = new string(split[i].ToCharArray().OrderBy(_ => Random.Next(2) % 2).ToArray());
+                }
+            }
+
+            return string.Join(" ", split);
         }
 
         public static (byte, byte, byte) GetColor(SkillType language)

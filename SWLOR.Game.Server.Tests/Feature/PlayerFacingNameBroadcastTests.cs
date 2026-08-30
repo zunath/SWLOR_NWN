@@ -72,18 +72,30 @@ public class PlayerFacingNameBroadcastTests
     public void HoloComDirectory_UsesObserverSpecificDisplayNames()
     {
         var root = FindRepositoryRoot();
-        var source = File.ReadAllText(Path.Combine(
+
+        var viewModelSource = File.ReadAllText(Path.Combine(
             root.FullName,
             "SWLOR.Game.Server",
             "Feature",
-            "DialogDefinition",
-            "HoloComDialog.cs"));
+            "GuiDefinition",
+            "ViewModel",
+            "HoloComViewModel.cs"));
 
-        source.Should().NotContain("GetName(");
-        source.Should().Contain("PlayerName.GetDisplayName(player, pc)");
-        source.Should().Contain("PlayerName.GetDisplayName(player, callSender)");
-        source.Should().Contain("PlayerName.GetDisplayName(player, callReceiver)");
-        source.Should().Contain("PlayerName.GetDisplayName(sender, receiver)");
+        viewModelSource.Should().NotContain("GetName(");
+        viewModelSource.Should().Contain("GetPlainLiveDisplayName(pc)");
+        viewModelSource.Should().Contain("GetPlainLiveDisplayName(callSender)");
+        viewModelSource.Should().Contain("GetPlainLiveDisplayName(callReceiver)");
+        viewModelSource.Should().Contain("UtilPlugin.StripColors(PlayerName.GetDisplayName(Player, target))");
+        viewModelSource.Should().Contain("PlayerName.GetPlainDisplayNameByIdentity(");
+
+        var holoComServiceSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "HoloCom.cs"));
+
+        holoComServiceSource.Should().NotContain("GetName(");
+        holoComServiceSource.Should().Contain("PlayerName.GetDisplayName(sender, receiver)");
     }
 
     [Test]
@@ -475,8 +487,17 @@ public class PlayerFacingNameBroadcastTests
             "HoloCom.cs"));
         holoComSource.Should().Contain("var holoSender = CopyObject(sender");
         holoComSource.Should().Contain("var holoReceiver = CopyObject(receiver");
-        holoComSource.Should().Contain("SetName(holoSender, \"HoloCom Hologram\");");
-        holoComSource.Should().Contain("SetName(holoReceiver, \"HoloCom Hologram\");");
+        holoComSource.Should().Contain("ConfigureHologram(holoSender);");
+        holoComSource.Should().Contain("ConfigureHologram(holoReceiver);");
+        holoComSource.Should().Contain("SetName(hologram, \"Hologram\");");
+
+        var holoComMessagingSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "HoloComMessaging.cs"));
+        holoComMessagingSource.Should().Contain("HoloCom.ConfigureHologram(hologram);");
+        holoComMessagingSource.Should().NotContain("SetName(hologram,");
 
         var spaceSource = File.ReadAllText(Path.Combine(
             root.FullName,

@@ -85,6 +85,16 @@ namespace SWLOR.Game.Server.Service
             return ResolveDisplayName(observer, target, out _);
         }
 
+        /// <summary>
+        /// Returns the canonical live character name for identity snapshots that will
+        /// later be formatted through this service. Do not display this value directly
+        /// on player-facing surfaces.
+        /// </summary>
+        public static string GetCanonicalName(uint target)
+        {
+            return GetIsObjectValid(target) ? GetName(target) : string.Empty;
+        }
+
         public static string GetChatDisplayName(uint observer, uint target)
         {
             return ResolveChatDisplayName(observer, target, out _);
@@ -166,6 +176,46 @@ namespace SWLOR.Game.Server.Service
                 return knownName;
 
             return PlayerDescriptor.GetUnknownDisplayNameByPlayerId(targetPlayerId);
+        }
+
+        /// <summary>
+        /// Resolves a color-token-free display name for an identity captured at a moment
+        /// in time, such as the sender of a stored HoloCom message shown in NUI. The identity key is the disguise
+        /// identity when the subject was disguised and their player Id otherwise. The
+        /// lookup never falls through to the real player Id, so a recorded disguised
+        /// identity remains disguised after the sender changes appearance or logs out.
+        /// </summary>
+        public static string GetPlainDisplayNameByIdentity(
+            uint observer,
+            string identityKey,
+            string descriptor,
+            string canonicalFallbackName)
+        {
+            var canonicalDisplayName = string.IsNullOrWhiteSpace(canonicalFallbackName)
+                ? UnknownName
+                : UtilPlugin.StripColors(canonicalFallbackName);
+            var descriptorDisplayName = string.IsNullOrWhiteSpace(descriptor)
+                ? UnknownName
+                : UtilPlugin.StripColors(descriptor);
+
+            if (!GetIsObjectValid(observer) || !GetIsPC(observer))
+                return descriptorDisplayName;
+
+            if (GetIsDM(observer) || GetIsDMPossessed(observer))
+                return $"{canonicalDisplayName} [{descriptorDisplayName}]";
+
+            if (!string.IsNullOrWhiteSpace(identityKey) && GetObjectUUID(observer) == identityKey)
+                return canonicalDisplayName;
+
+            if (!string.IsNullOrWhiteSpace(identityKey) && TryGetKnownName(observer, identityKey, out var knownName))
+            {
+                knownName = UtilPlugin.StripColors(knownName);
+                return ShouldShowDescriptorForNamedPlayers(observer)
+                    ? $"{knownName} [{descriptorDisplayName}]"
+                    : knownName;
+            }
+
+            return descriptorDisplayName;
         }
 
         /// <summary>

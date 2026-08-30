@@ -1,5 +1,4 @@
 using SWLOR.Game.Server.Entity;
-using SWLOR.Game.Server.Feature.DialogDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
@@ -551,7 +550,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            ConversationMenu.Start(Player, Player, nameof(HoloComDialog));
+            Gui.TogglePlayerWindow(Player, GuiWindowType.HoloCom);
         };
 
         public Action OnClickKeyItems() => () =>

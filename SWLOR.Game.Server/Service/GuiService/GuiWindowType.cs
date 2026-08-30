@@ -71,6 +71,7 @@ namespace SWLOR.Game.Server.Service.GuiService
         Techniques = 66,
         Slicing = 67,
         Conversation = 68,
+        HoloCom = 69,
 
         DebugEnmity = 900,
         DebugNuiGallery = 901,

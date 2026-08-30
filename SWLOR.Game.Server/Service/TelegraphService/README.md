@@ -21,10 +21,19 @@ The main service class that manages all telegraph functionality.
 - **Line**: Rectangular area extending in a direction
 
 ### Color Types
-- **Hostile**: Red - indicates dangerous effects
-- **Friendly**: Green - indicates beneficial effects
-- **Self**: Blue - indicates effects from the player
-- **Enemy Beneficial**: Gray - indicates beneficial effects from enemies
+
+Color selection uses this precedence so beneficial effects retain a consistent meaning while
+offensive telegraphs still communicate ownership:
+
+1. **Self**: Blue - any telegraph created by the observing player
+2. **Beneficial**: Green - a beneficial telegraph from any other creator, including party members
+3. **Party Member**: Gray - a hostile telegraph created by another member of the observer's party
+4. **Hostile**: Red - a hostile telegraph from any other creator
+
+Non-party allies and neutral NPCs use red or green based on the telegraph's hostile flag.
+Hostile telegraphs from associates tracked as party members use gray; their beneficial effects
+use green. The current ability integrations do not create a neutral, informational telegraph;
+add a fifth semantic color only if that use case is introduced.
 
 ## Usage
 

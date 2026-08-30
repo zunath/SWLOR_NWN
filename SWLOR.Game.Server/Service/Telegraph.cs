@@ -316,12 +316,30 @@ namespace SWLOR.Game.Server.Service
 
         private static TelegraphColorType DetermineTelegraphColorType(uint player, uint telegrapher, bool isHostile)
         {
-            if (player == telegrapher)
+            var isOwnTelegraph = player == telegrapher;
+            var isPartyMemberTelegraph = !isOwnTelegraph && Party.IsInParty(player, telegrapher);
+
+            return SelectTelegraphColorType(isOwnTelegraph, isPartyMemberTelegraph, isHostile);
+        }
+
+        private static TelegraphColorType SelectTelegraphColorType(
+            bool isOwnTelegraph,
+            bool isPartyMemberTelegraph,
+            bool isHostile)
+        {
+            // The player's own placement stays recognizable, while beneficial effects remain green
+            // regardless of who created them. Party gray distinguishes allied offensive placement
+            // from hostile red telegraphs created outside the party.
+            if (isOwnTelegraph)
                 return TelegraphColorType.Self;
 
-            return isHostile
-                ? GetIsReactionTypeFriendly(player, telegrapher) == 1 ? TelegraphColorType.Friendly : TelegraphColorType.Hostile
-                : GetIsReactionTypeFriendly(player, telegrapher) == 1 ? TelegraphColorType.Friendly : TelegraphColorType.EnemyBeneficial;
+            if (!isHostile)
+                return TelegraphColorType.Beneficial;
+
+            if (isPartyMemberTelegraph)
+                return TelegraphColorType.PartyMember;
+
+            return TelegraphColorType.Hostile;
         }
 
         private static int PackTelegraphData(TelegraphType shapeType, TelegraphColorType colorType, Vector2 size, float rotation)

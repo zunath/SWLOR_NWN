@@ -48,6 +48,8 @@ namespace SWLOR.Game.Server.Service
                 _parties[partyId].Add(creature);
                 _creatureToParty[creature] = partyId;
             }
+
+            Telegraph.UpdateShadersForPlayers(GetAllPartyMembers(requester));
         }
 
         /// <summary>
@@ -114,6 +116,7 @@ namespace SWLOR.Game.Server.Service
             if (!_creatureToParty.ContainsKey(creature)) return;
 
             var partyId = _creatureToParty[creature];
+            var affectedPartyMembers = _parties[partyId].ToList();
             var wasLeader = _partyLeaders[partyId] == creature;
 
             // Remove this creature from the caches.
@@ -141,15 +144,15 @@ namespace SWLOR.Game.Server.Service
 
                 _parties.Remove(partyId);
                 _partyLeaders.Remove(partyId);
-                return;
             }
-
             // The party is still valid but the creature who left was its leader.
             // Swap leadership to the next person in the party list.
-            if (wasLeader)
+            else if (wasLeader)
             {
                 _partyLeaders[partyId] = _parties[partyId].First();
             }
+
+            Telegraph.UpdateShadersForPlayers(affectedPartyMembers);
         }
 
         /// <summary>

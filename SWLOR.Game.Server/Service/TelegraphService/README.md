@@ -139,7 +139,9 @@ effect expires, the `telegraph_effect` handler (`ScriptName.TelegraphEffect`) fi
 shape and then clears the entry. There is no separate applied/ticked event.
 
 Shader uniforms are refreshed when a telegraph is created or removed in an area, and when a
-player enters an area. There is no periodic tick.
+player enters an area. Party membership changes also refresh the affected former/current party
+viewers so active hostile telegraphs switch between red and gray immediately. There is no
+periodic tick.
 
 ## Pre-cast telegraphs vs the impact flash
 

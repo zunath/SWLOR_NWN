@@ -72,6 +72,33 @@ public class TelegraphTests
     }
 
     [Test]
+    public void PartyMembershipChanges_RefreshAffectedTelegraphViewers()
+    {
+        var source = File.ReadAllText(ResolveRepositoryPath(
+            "SWLOR.Game.Server",
+            "Service",
+            "Party.cs"));
+        var addPartyStart = source.IndexOf("private static void AddToParty", StringComparison.Ordinal);
+        var removePartyStart = source.IndexOf("private static void RemoveCreatureFromParty", StringComparison.Ordinal);
+
+        addPartyStart.Should().BeGreaterThan(-1);
+        removePartyStart.Should().BeGreaterThan(-1);
+
+        var addPartyBody = ExtractBlockBody(source, addPartyStart);
+        var removePartyBody = ExtractBlockBody(source, removePartyStart);
+
+        addPartyBody.Should().Contain(
+            "Telegraph.UpdateShadersForPlayers(GetAllPartyMembers(requester));",
+            "joining players and associates must see active party telegraphs change color immediately");
+        removePartyBody.Should().Contain(
+            "var affectedPartyMembers = _parties[partyId].ToList();",
+            "the former party must be captured before its membership cache changes");
+        removePartyBody.Should().Contain(
+            "Telegraph.UpdateShadersForPlayers(affectedPartyMembers);",
+            "departing and remaining players must immediately repack active telegraph colors");
+    }
+
+    [Test]
     public void PackTelegraphData_LineKeepsGameplayRotation()
     {
         var packed = InvokePackTelegraphData(TelegraphType.Line, 0f);

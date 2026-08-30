@@ -386,6 +386,23 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Refreshes active telegraphs for specific player viewers after relationship state changes.
+        /// Party membership affects hostile telegraph colors, so existing packed uniforms must be
+        /// rebuilt even when no telegraph was created or removed.
+        /// </summary>
+        /// <param name="players">Players whose telegraph uniforms should be refreshed.</param>
+        public static void UpdateShadersForPlayers(IEnumerable<uint> players)
+        {
+            foreach (var player in players.Distinct())
+            {
+                if (!GetIsObjectValid(player) || (!GetIsPC(player) && !GetIsDM(player)))
+                    continue;
+
+                UpdateShaderForPlayer(player);
+            }
+        }
+
+        /// <summary>
         /// Updates shader uniforms only for players standing in the given area. Telegraph shader slots
         /// are per-area, so a telegraph created or removed in one area cannot affect players elsewhere.
         /// Instant abilities now flash their shape on every use, so this runs far more often than the

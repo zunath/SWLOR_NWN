@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature
 
             ApplyCutsceneGhostToPlayer(player);
             ApplyHeight(player);
-            RemoveImmobility(player);
+            RemoveLegacyUntaggedImmobility(player);
             ReapplySpeed(player);
         }
 
@@ -34,11 +34,12 @@ namespace SWLOR.Game.Server.Feature
             SetObjectVisualTransform(player, ObjectVisualTransform.Scale, dbPlayer.AppearanceScale);
         }
 
-        private static void RemoveImmobility(uint player)
+        private static void RemoveLegacyUntaggedImmobility(uint player)
         {
             for (var effect = GetFirstEffect(player); GetIsEffectValid(effect); effect = GetNextEffect(player))
             {
-                if (GetEffectType(effect) == EffectTypeScript.CutsceneImmobilize)
+                if (GetEffectType(effect) == EffectTypeScript.CutsceneImmobilize &&
+                    string.IsNullOrWhiteSpace(GetEffectTag(effect)))
                 {
                     RemoveEffect(player, effect);
                 }

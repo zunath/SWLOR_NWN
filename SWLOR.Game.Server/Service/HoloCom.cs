@@ -103,8 +103,7 @@ namespace SWLOR.Game.Server.Service
                 var message = "Call Connected. (Use the HoloCom or the chat command /endcall to terminate the call)";
                 SendMessageToPC(sender, message);
                 SendMessageToPC(receiver, message);
-                var effectImmobilized = EffectCutsceneImmobilize();
-                TagEffect(effectImmobilized, HolocomCallImmobilize);
+                var effectImmobilized = TagEffect(EffectCutsceneImmobilize(), HolocomCallImmobilize);
                 ApplyEffectToObject(DurationType.Permanent, effectImmobilized, sender);
                 ApplyEffectToObject(DurationType.Permanent, effectImmobilized, receiver);
 
@@ -139,29 +138,8 @@ namespace SWLOR.Game.Server.Service
             }
             else // END CALL
             {
-                for(var effect = GetFirstEffect(sender); GetIsEffectValid(effect); effect = GetNextEffect(sender))
-                {
-                    if (GetIsEffectValid(effect))
-                    {
-                        var effectType = GetEffectType(effect);
-                        if (effectType == EffectTypeScript.CutsceneImmobilize)
-                        {
-                            RemoveEffect(sender, effect);
-                        }
-                    }
-                }
-
-                for (var effect = GetFirstEffect(receiver); GetIsEffectValid(effect); effect = GetNextEffect(receiver))
-                {
-                    if (GetIsEffectValid(effect))
-                    {
-                        var effectType = GetEffectType(effect);
-                        if (effectType == EffectTypeScript.CutsceneImmobilize)
-                        {
-                            RemoveEffect(receiver, effect);
-                        }
-                    }
-                }
+                RemoveEffectByTag(sender, HolocomCallImmobilize);
+                RemoveEffectByTag(receiver, HolocomCallImmobilize);
 
                 AssignCommand(sender, () =>
                 {

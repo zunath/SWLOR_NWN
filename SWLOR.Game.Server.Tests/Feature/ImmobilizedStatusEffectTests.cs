@@ -29,6 +29,36 @@ public class ImmobilizedStatusEffectTests
         Stat.GetStatTypeCategory(StatType.MovementSpeedDisabled).Should().Be(StatTypeCategory.NonBeneficial);
     }
 
+    [Test]
+    public void ActivityCleanup_DoesNotRemoveTrackedImmobilizeRoots()
+    {
+        var root = FindRepositoryRoot();
+        var server = Path.Combine(root, "SWLOR.Game.Server");
+        var holoCom = File.ReadAllText(Path.Combine(server, "Service", "HoloCom.cs"));
+        var craft = File.ReadAllText(Path.Combine(
+            server,
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "CraftViewModel.cs"));
+        var temporaryEffects = File.ReadAllText(Path.Combine(server, "Feature", "PlayerTemporaryEffects.cs"));
+
+        holoCom.Should().Contain(
+            "var effectImmobilized = TagEffect(EffectCutsceneImmobilize(), HolocomCallImmobilize);");
+        holoCom.Should().Contain("RemoveEffectByTag(sender, HolocomCallImmobilize);");
+        holoCom.Should().Contain("RemoveEffectByTag(receiver, HolocomCallImmobilize);");
+        holoCom.Should().NotContain("effectType == EffectTypeScript.CutsceneImmobilize");
+
+        craft.Should().Contain(
+            "var effect = TagEffect(EffectCutsceneImmobilize(), CraftingImmobilizeEffectTag);");
+        craft.Should().Contain("RemoveEffectByTag(Player, CraftingImmobilizeEffectTag);");
+        craft.Should().NotContain("GetEffectType(effect) == EffectTypeScript.CutsceneImmobilize");
+
+        temporaryEffects.Should().Contain("RemoveLegacyUntaggedImmobility(player);");
+        temporaryEffects.Should().Contain("string.IsNullOrWhiteSpace(GetEffectTag(effect))",
+            "login cleanup may remove legacy untagged activity roots but must preserve tagged status roots");
+    }
+
     private static string FindRepositoryRoot()
     {
         var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);

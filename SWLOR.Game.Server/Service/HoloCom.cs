@@ -17,8 +17,6 @@ namespace SWLOR.Game.Server.Service
         private const string HolocomCallAttempt = "HOLOCOM_CALL_ATTEMPT";
         private const string HolocomHologram = "HOLOCOM_HOLOGRAM";
         private const string HologramOwner = "HOLOGRAM_OWNER";
-        private const string HolocomCallImmobilize = "HOLOCOM_CALL_IMMOBILIZE";
-
         [NWNEventHandler(ScriptName.OnModuleDeath)]
         public static void OnModuleDeath()
         {
@@ -32,7 +30,7 @@ namespace SWLOR.Game.Server.Service
         public static void OnModuleEnter()
         {
             var player = GetEnteringObject();
-            RemoveEffectByTag(player, HolocomCallImmobilize);
+            RemoveEffectByTag(player, PlayerActivityEffectTag.HoloComImmobilize);
         }
 
         [NWNEventHandler(ScriptName.OnModuleExit)]
@@ -103,7 +101,9 @@ namespace SWLOR.Game.Server.Service
                 var message = "Call Connected. (Use the HoloCom or the chat command /endcall to terminate the call)";
                 SendMessageToPC(sender, message);
                 SendMessageToPC(receiver, message);
-                var effectImmobilized = TagEffect(EffectCutsceneImmobilize(), HolocomCallImmobilize);
+                var effectImmobilized = TagEffect(
+                    EffectCutsceneImmobilize(),
+                    PlayerActivityEffectTag.HoloComImmobilize);
                 ApplyEffectToObject(DurationType.Permanent, effectImmobilized, sender);
                 ApplyEffectToObject(DurationType.Permanent, effectImmobilized, receiver);
 
@@ -138,8 +138,8 @@ namespace SWLOR.Game.Server.Service
             }
             else // END CALL
             {
-                RemoveEffectByTag(sender, HolocomCallImmobilize);
-                RemoveEffectByTag(receiver, HolocomCallImmobilize);
+                RemoveEffectByTag(sender, PlayerActivityEffectTag.HoloComImmobilize);
+                RemoveEffectByTag(receiver, PlayerActivityEffectTag.HoloComImmobilize);
 
                 AssignCommand(sender, () =>
                 {

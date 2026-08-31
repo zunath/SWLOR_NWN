@@ -28,7 +28,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public const string SetUpPartialName = "SetUpPartial";
         public const string CraftPartialName = "CraftPartial";
         private const string BlankTexture = "Blank";
-        private const string CraftingImmobilizeEffectTag = "CRAFTING_IMMOBILIZE";
 
         private RecipeType _recipe;
 
@@ -1132,13 +1131,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void ApplyImmobility()
         {
-            var effect = TagEffect(EffectCutsceneImmobilize(), CraftingImmobilizeEffectTag);
+            var effect = TagEffect(EffectCutsceneImmobilize(), PlayerActivityEffectTag.CraftingImmobilize);
             ApplyEffectToObject(DurationType.Permanent, effect, Player);
         }
 
         private void RemoveImmobility()
         {
-            RemoveEffectByTag(Player, CraftingImmobilizeEffectTag);
+            RemoveEffectByTag(Player, PlayerActivityEffectTag.CraftingImmobilize);
         }
 
         private void SwitchToSetUpMode()

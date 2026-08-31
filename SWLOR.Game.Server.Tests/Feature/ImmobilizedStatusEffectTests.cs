@@ -47,17 +47,23 @@ public class ImmobilizedStatusEffectTests
         var temporaryEffects = File.ReadAllText(Path.Combine(server, "Feature", "PlayerTemporaryEffects.cs"));
 
         holoCom.Should().Contain(
-            "var effectImmobilized = TagEffect(EffectCutsceneImmobilize(), HolocomCallImmobilize);");
-        holoCom.Should().Contain("RemoveEffectByTag(sender, HolocomCallImmobilize);");
-        holoCom.Should().Contain("RemoveEffectByTag(receiver, HolocomCallImmobilize);");
+            "PlayerActivityEffectTag.HoloComImmobilize);");
+        holoCom.Should().Contain("RemoveEffectByTag(sender, PlayerActivityEffectTag.HoloComImmobilize);");
+        holoCom.Should().Contain("RemoveEffectByTag(receiver, PlayerActivityEffectTag.HoloComImmobilize);");
         holoCom.Should().NotContain("effectType == EffectTypeScript.CutsceneImmobilize");
 
         craft.Should().Contain(
-            "var effect = TagEffect(EffectCutsceneImmobilize(), CraftingImmobilizeEffectTag);");
-        craft.Should().Contain("RemoveEffectByTag(Player, CraftingImmobilizeEffectTag);");
+            "var effect = TagEffect(EffectCutsceneImmobilize(), PlayerActivityEffectTag.CraftingImmobilize);");
+        craft.Should().Contain("RemoveEffectByTag(Player, PlayerActivityEffectTag.CraftingImmobilize);");
         craft.Should().NotContain("GetEffectType(effect) == EffectTypeScript.CutsceneImmobilize");
 
-        temporaryEffects.Should().Contain("RemoveLegacyUntaggedImmobility(player);");
+        temporaryEffects.Should().Contain("RemoveStaleActivityImmobility(player);");
+        temporaryEffects.Should().Contain(
+            "RemoveEffectByTag(player, PlayerActivityEffectTag.CraftingImmobilize);");
+        temporaryEffects.Should().Contain(
+            "RemoveEffectByTag(player, PlayerActivityEffectTag.HoloComImmobilize);");
+        temporaryEffects.Should().Contain(
+            "RemoveEffectByTag(player, PlayerActivityEffectTag.RefiningImmobilize);");
         temporaryEffects.Should().Contain("string.IsNullOrWhiteSpace(GetEffectTag(effect))",
             "login cleanup may remove legacy untagged activity roots but must preserve tagged status roots");
     }

@@ -223,8 +223,8 @@ public class MimicryTests
         abilityTargeting.Should().Contain(
             "if (!GetIsDead(creature) && GetCurrentHitPoints(creature) > 0)",
             "dead or unconscious party members must not receive Stim Canister");
-        abilityTargeting.Should().Contain(
-            "if (includeActivator &&\r\n                !yieldedActivator &&\r\n                IsAlive(activator) &&",
+        abilityTargeting.Should().MatchRegex(
+            @"if \(includeActivator &&\s+!yieldedActivator &&\s+IsAlive\(activator\) &&",
             "the caster must be included even when the area iterator does not return them");
 
         cryoBile.Should().Contain("additionalStatusEffects: new[] { typeof(ImmobilizedStatusEffect) }");

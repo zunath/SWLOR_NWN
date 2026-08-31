@@ -20,6 +20,9 @@ public class ImmobilizedStatusEffectTests
 
         source.Should().Contain("TagNativeEffect(EffectCutsceneImmobilize())",
             "a zero movement-rate factor still permits visible creeping in the client");
+        source.Should().Contain("var durationType = durationTicks < 0");
+        source.Should().Contain("? DurationType.Permanent",
+            "a permanent tracked status must not receive a zero-second temporary native root");
         source.Should().NotContain("StatType.MovementSpeedDisabled");
     }
 

@@ -15,12 +15,12 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         protected override void Apply(uint creature, int durationTicks)
         {
-            ApplyImmobilize(creature, GetDurationSeconds(durationTicks));
+            ApplyImmobilize(creature, durationTicks);
         }
 
         protected override void Reapply(uint creature)
         {
-            ApplyImmobilize(creature, GetDurationSeconds(DurationTicks));
+            ApplyImmobilize(creature, DurationTicks);
         }
 
         public override string CanApply(uint creature)
@@ -49,10 +49,14 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
                 ImmunityType.Immobilized);
         }
 
-        private void ApplyImmobilize(uint creature, float duration)
+        private void ApplyImmobilize(uint creature, int durationTicks)
         {
             var effect = TagNativeEffect(EffectCutsceneImmobilize());
-            ApplyEffectToObject(DurationType.Temporary, effect, creature, duration);
+            var durationType = durationTicks < 0
+                ? DurationType.Permanent
+                : DurationType.Temporary;
+            var duration = GetDurationSeconds(durationTicks);
+            ApplyEffectToObject(durationType, effect, creature, duration);
         }
     }
 }

@@ -218,8 +218,14 @@ public class MimicryTests
         stimCanister.Should().Contain(
             "StatusEffect.ApplyStatusEffect(activator, ally, new StimCanisterStatusEffect(), 30f)");
         abilityTargeting.Should().Contain("bool includeActivator = true");
-        abilityTargeting.Should().Contain("Party.IsInParty(activator, creature)",
-            "Stim Canister intentionally buffs living nearby party members as well as its caster");
+        abilityTargeting.Should().Contain(
+            "if ((creature == activator && includeActivator) || Party.IsInParty(activator, creature))");
+        abilityTargeting.Should().Contain(
+            "if (!GetIsDead(creature) && GetCurrentHitPoints(creature) > 0)",
+            "dead or unconscious party members must not receive Stim Canister");
+        abilityTargeting.Should().Contain(
+            "if (includeActivator &&\r\n                !yieldedActivator &&\r\n                IsAlive(activator) &&",
+            "the caster must be included even when the area iterator does not return them");
 
         cryoBile.Should().Contain("additionalStatusEffects: new[] { typeof(ImmobilizedStatusEffect) }");
         cryoBile.Should().Contain("enmityBonus: 100",

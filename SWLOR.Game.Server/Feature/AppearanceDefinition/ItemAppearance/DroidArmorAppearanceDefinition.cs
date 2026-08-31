@@ -2,7 +2,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
 {
     public class DroidArmorAppearanceDefinition : BaseArmorAppearanceDefinition
     {
-        public override int[] Helmet { get; } = { 0 };
+        public override int[] Helmet { get; } = { 0, 1, 11, 12, 21, 29, 38, 43, 50, 51, 56, 65, 67, 121, 267, 269, 271, 299 };
         public override int[] Cloak { get; } = { 0 };
         public override int[] Neck { get; } = { 0, 1, 2, 7, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236 };
         public override int[] Torso { get; } = { 1, 2, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 215, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236};

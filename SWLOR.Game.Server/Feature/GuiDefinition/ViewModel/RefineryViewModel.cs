@@ -271,7 +271,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             // Apply immobilization
             var effect = EffectCutsceneImmobilize();
-            effect = TagEffect(effect, "REFINING_EFFECT");
+            effect = TagEffect(effect, PlayerActivityEffectTag.RefiningImmobilize);
             ApplyEffectToObject(DurationType.Temporary, effect, Player, RefiningDelaySeconds);
 
             // Play an animation

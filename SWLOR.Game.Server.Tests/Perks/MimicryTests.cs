@@ -191,6 +191,50 @@ public class MimicryTests
     }
 
     [Test]
+    public void ReportedMimicryUtilityAndCryoPayloadsRemainWiredToTheBibleContract()
+    {
+        var root = FindRepositoryRoot();
+        var techniqueDirectory = Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "Mimicry");
+        var abilityTargeting = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "AbilityTargeting.cs"));
+        var stimCanister = File.ReadAllText(Path.Combine(
+            techniqueDirectory,
+            "StimCanisterTechniqueAbilityDefinition.cs"));
+        var cryoBile = File.ReadAllText(Path.Combine(
+            techniqueDirectory,
+            "CryoBileTechniqueAbilityDefinition.cs"));
+
+        stimCanister.Should().Contain(
+            "AbilityTargeting.GetFriendlyTargetsNearLocation(activator, GetLocation(activator), 4.0f)");
+        stimCanister.Should().Contain(
+            "StatusEffect.ApplyStatusEffect(activator, ally, new StimCanisterStatusEffect(), 30f)");
+        abilityTargeting.Should().Contain("bool includeActivator = true");
+        abilityTargeting.Should().Contain(
+            "if ((creature == activator && includeActivator) || Party.IsInParty(activator, creature))");
+        abilityTargeting.Should().Contain(
+            "if (!GetIsDead(creature) && GetCurrentHitPoints(creature) > 0)",
+            "dead or unconscious party members must not receive Stim Canister");
+        abilityTargeting.Should().MatchRegex(
+            @"if \(includeActivator &&\s+!yieldedActivator &&\s+IsAlive\(activator\) &&",
+            "the caster must be included even when the area iterator does not return them");
+
+        cryoBile.Should().Contain("additionalStatusEffects: new[] { typeof(ImmobilizedStatusEffect) }");
+        cryoBile.Should().Contain("enmityBonus: 100",
+            "Cryo Bile promises 100 additional enmity for every target that its area impact resolves against");
+        cryoBile.Should().Contain(".CombatImpactDamageAbility(AbilityType.Perception)",
+            "Cryo Bile uses the documented Perception scaling path; Freezing tick scaling is covered separately");
+    }
+
+    [Test]
     public void ShockTechniques_DescriptionsExposeTheirActualForceSuppressionContract()
     {
         var root = FindRepositoryRoot();

@@ -13,6 +13,12 @@ namespace SWLOR.Game.Server.Service.ConversationService
             return this;
         }
 
+        public ConversationMenuBuilder WithPortrait(string portraitResref)
+        {
+            _menu.PortraitResref = portraitResref ?? string.Empty;
+            return this;
+        }
+
         public ConversationMenuBuilder WithDataModel(object dataModel)
         {
             _menu.DataModel = dataModel;

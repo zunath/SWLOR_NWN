@@ -1,7 +1,8 @@
 [CmdletBinding()]
 param(
     [string]$WorkbookPath = "design\bible\SWLOR Design Bible - Combat Upgrade.xlsx",
-    [switch]$EspionageStealthOnly
+    [switch]$EspionageStealthOnly,
+    [string[]]$OnlyPerkName = @()
 )
 
 Set-StrictMode -Version Latest
@@ -19,6 +20,55 @@ else {
 # writer below changes only the named cells inside the workbook ZIP; it does not recalculate or
 # rewrite formula-backed sheets through a spreadsheet library.
 $perkChanges = @(
+    @{
+        Sheet = "Leadership"
+        PerkName = "Decisive Command"
+        Values = @{
+            Notes = "Player capstone: shared Capstone timer; uses a fixed 90-second capstone cooldown with a 45-second active duration and has no weapon/tool activation requirement. Only one Leadership command effect can be active per leader; a new command replaces the previous one. Ordinary Leadership damage-reduction effects do not stack; the strongest active source applies. Bolster Resolve's additional Field Steward recovery rider stacks with that strongest source."
+        }
+    },
+    @{
+        Sheet = "Leadership"
+        PerkName = "Bolster Resolve II"
+        Values = @{
+            Notes = "Support command. Affects the leader and nearby party members; valid use grants +2 Leadership CP to tagged NPCs. Its physical and Force reduction is an additional Field Steward recovery rider that stacks with the strongest ordinary Leadership damage-reduction source. Converted from separate active ability to Trait row for the 4-6 active-button budget. Former active values: STM 8; casting 1 second; cooldown 45 seconds."
+        }
+    },
+    @{
+        Sheet = "Lightsaber"
+        PerkName = "Force Sheath II"
+        Values = @{
+            Description = "On your next hit, deal + 17 Force DMG."
+        }
+    },
+    @{
+        Sheet = "Lightsaber"
+        PerkName = "Force Sheath III"
+        Values = @{
+            Description = "On your next hit, deal + 23 Force DMG."
+        }
+    },
+    @{
+        Sheet = "Lightsaber"
+        PerkName = "Force Sheath IV"
+        Values = @{
+            Description = "On your next hit, deal + 30 Force DMG."
+        }
+    },
+    @{
+        Sheet = "Rifle"
+        PerkName = "Headshot I"
+        Values = @{
+            "Casting Time" = "Queued"
+        }
+    },
+    @{
+        Sheet = "Rifle"
+        PerkName = "Headshot II"
+        Values = @{
+            "Casting Time" = "Queued"
+        }
+    },
     @{
         Sheet = "Katar"
         PerkName = "Guard Counter I"
@@ -404,7 +454,7 @@ $perkChanges = @(
         Sheet = "Devices"
         PerkName = "Emergency Bunker"
         Values = @{
-            Description = "Deploys a 4m-radius shield bunker at the target location for 45 seconds. Allies inside gain 60 temporary HP plus 8% of each target's maximum HP and take 15% less ranged physical damage."
+            Description = "Deploys an 8m-radius shield bunker at the target location for 45 seconds. Allies inside gain 60 temporary HP plus 8% of each target's maximum HP and take 15% less physical and Force damage."
         }
     },
     @{
@@ -1213,6 +1263,22 @@ if ($EspionageStealthOnly) {
     $perkChanges = @($perkChanges | Where-Object {
         $_.Sheet -eq "Espionage" -and $_.PerkName -in $stealthPerkNames
     })
+    $characterStatChanges = @()
+    $auditSheetChanges = @()
+}
+
+if ($OnlyPerkName.Count -gt 0) {
+    if ($EspionageStealthOnly) {
+        throw "Use either -EspionageStealthOnly or -OnlyPerkName, not both."
+    }
+
+    $perkChanges = @($perkChanges | Where-Object { $_.PerkName -in $OnlyPerkName })
+    $selectedPerkNames = @($perkChanges | ForEach-Object { $_.PerkName })
+    $missingPerks = @($OnlyPerkName | Where-Object { $_ -notin $selectedPerkNames })
+    if ($missingPerks.Count -gt 0) {
+        throw "No declarative Bible correction exists for: $($missingPerks -join ', ')."
+    }
+
     $characterStatChanges = @()
     $auditSheetChanges = @()
 }

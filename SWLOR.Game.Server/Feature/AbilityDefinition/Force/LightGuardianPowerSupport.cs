@@ -9,11 +9,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 {
     public static class LightGuardianPowerSupport
     {
-        public static void ApplyDeflectivePresence(uint activator)
-        {
-            ApplyDeflectivePresence(activator, activator);
-        }
-
         public static void ApplyDeflectivePresence(uint activator, uint target)
         {
             if (!GetIsObjectValid(activator))
@@ -41,12 +36,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
             ApplyDeflectivePresence(activator, target);
 
+            // Guardian Ward pools replace one another regardless of caster. Clear any rider tied
+            // to the replaced pool before conditionally applying the new caster's version.
+            StatusEffect.RemoveStatusEffect(target, typeof(ReflectiveBarrier1StatusEffect), false);
             if (Stat.GetStatAdjustment(activator, StatType.LightGuardianTemporaryHPReflectiveBarrier) > 0)
             {
                 StatusEffect.ApplyStatusEffect(activator, target, typeof(ReflectiveBarrier1StatusEffect), durationSeconds);
             }
-
-            ApplyCourageousResolve(activator);
         }
 
         public static void ApplyCourageousResolve(uint activator)
@@ -59,7 +55,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
             foreach (var friendly in AbilityTargeting.GetFriendlyTargetsNearLocation(activator, GetLocation(activator), 5f))
             {
-                var resistance = StatusEffect.HasStatusEffect(friendly, typeof(ReflectiveBarrier1StatusEffect), activator)
+                var hasForceTemporaryHP =
+                    TemporaryHitPointEffects.IsActivePoolFromSource(
+                        friendly,
+                        TemporaryHitPointEffectKey.GuardianWard,
+                        activator) ||
+                    TemporaryHitPointEffects.IsActivePoolFromSource(
+                        friendly,
+                        TemporaryHitPointEffectKey.FatalDamageSave,
+                        activator);
+                var resistance = hasForceTemporaryHP
                     ? 15
                     : 10;
                 StatusEffect.ApplyStatusEffect(activator, friendly, new CourageousResolve1StatusEffect(resistance), 30f);

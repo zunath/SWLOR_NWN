@@ -563,8 +563,13 @@ public class PropertyOnDemandLoadingTests
     }
 
     [Test]
-    public void PropertyDiagnostics_AreNotExposedAsChatCommands()
+    public void PropertyDiagnostics_AreExposedThroughDedicatedAdminCommand()
     {
+        var commands = new SWLOR.Game.Server.Feature.ChatCommandDefinition.AdminChatCommand().BuildChatCommands();
+        commands.Should().ContainKey("propertydiagnostics");
+        commands["propertydiagnostics"].Authorization
+            .Should().Be(SWLOR.Game.Server.Enumeration.AuthorizationLevel.Admin);
+
         var root = FindRepositoryRoot();
         var adminChatSource = File.ReadAllText(Path.Combine(
             root.FullName,
@@ -586,9 +591,24 @@ public class PropertyOnDemandLoadingTests
             "ViewModel",
             "ManageDMsViewModel.cs"));
 
-        adminChatSource.Should().NotContain("PropertyDiagnostics");
-        staffDefinitionSource.Should().Contain("OnClickPropertyDiagnostics");
-        staffViewModelSource.Should().Contain("GuiWindowType.PropertyDiagnostics");
+        var commandBody = ExtractMethod(adminChatSource, "private void PropertyDiagnosticsCommand()");
+        commandBody.Should().Contain("_builder.Create(\"propertydiagnostics\")");
+        commandBody.Should().Contain(".Permissions(AuthorizationLevel.Admin)");
+        commandBody.Should().Contain("var player = user;");
+        commandBody.Should().Contain("if (GetIsDMPossessed(player))");
+        commandBody.Should().Contain("uiTarget = player;");
+        commandBody.Should().Contain("player = GetMaster(player);");
+        commandBody.Should().Contain("Log.WriteStructured(");
+        commandBody.Should().Contain("LogGroup.Property");
+        commandBody.Should().Contain("Property diagnostics toggled:");
+        commandBody.Should().Contain("GetName(player)");
+        commandBody.Should().Contain("GetObjectUUID(player)");
+        commandBody.IndexOf("Log.WriteStructured(", StringComparison.Ordinal)
+            .Should().BeLessThan(commandBody.IndexOf("Gui.TogglePlayerWindow(", StringComparison.Ordinal));
+        commandBody.Should().Contain("GuiWindowType.PropertyDiagnostics,");
+        commandBody.Should().Contain("uiTarget);");
+        staffDefinitionSource.Should().NotContain("OnClickPropertyDiagnostics");
+        staffViewModelSource.Should().NotContain("GuiWindowType.PropertyDiagnostics");
     }
 
     private static string ExtractMethod(string source, string signature)

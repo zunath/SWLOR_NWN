@@ -3,10 +3,13 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Native;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AIService;
+using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 using static SWLOR.NWN.API.NWScript.NWScript;
 
@@ -186,6 +189,59 @@ public class AIModelTests
     }
 
     [Test]
+    public void BolsterAttackAIScore_UsesActiveRankStat()
+    {
+        const uint self = 100;
+        const uint target = 200;
+        var creatureEffects = (Dictionary<uint, CreatureStatusEffect>)typeof(StatusEffect)
+            .GetField("_creatureEffects", BindingFlags.NonPublic | BindingFlags.Static)!
+            .GetValue(null)!;
+        var tracker = new CreatureStatusEffect();
+        var abilities = new BolsterAttackAbilityDefinition().BuildAbilities();
+        var ranks = new (FeatType Feat, IStatusEffect StatusEffect, int AbilityLevel)[]
+        {
+            (FeatType.BolsterAttack1, new BolsterAttack1StatusEffect(), 1),
+            (FeatType.BolsterAttack2, new BolsterAttack2StatusEffect(), 2),
+            (FeatType.BolsterAttack3, new BolsterAttack3StatusEffect(), 3)
+        };
+
+        EnemyEnmityTables()[self] = new Dictionary<uint, int>
+        {
+            [target] = 1
+        };
+        CreatureToEnemies()[target] = new List<uint> { self };
+        creatureEffects[self] = tracker;
+
+        try
+        {
+            var context = CreateContext(self: self);
+
+            // A different damage-dealt buff must not be mistaken for Bolster Attack.
+            tracker.Add(new AlphaRhythm1BeastStatusEffect());
+
+            foreach (var (feat, statusEffect, abilityLevel) in ranks)
+            {
+                var score = abilities[feat].AIScore;
+                score.Should().NotBeNull();
+                score!(context).Should().Be(AIScoreBand.Defensive + abilityLevel);
+
+                tracker.Add(statusEffect);
+                score(context).Should().Be(0);
+                tracker.Remove(statusEffect);
+            }
+
+            // A stronger active rank also makes every weaker Bolster rank redundant.
+            tracker.Add(ranks[2].StatusEffect);
+            foreach (var (feat, _, _) in ranks)
+                abilities[feat].AIScore!(context).Should().Be(0);
+        }
+        finally
+        {
+            creatureEffects.Remove(self);
+        }
+    }
+
+    [Test]
     public void AITarget_SelectsSelfAndStoresDefaultOverrides()
     {
         var context = CreateContext(self: 123);
@@ -270,6 +326,29 @@ public class AIModelTests
     }
 
     [Test]
+    public void AITarget_SelfCenteredHostileAreasUseCasterAndNamedTargetPolicy()
+    {
+        var source = ReadSource("SWLOR.Game.Server", "Service", "AIService", "AITarget.cs")
+            .Replace("\r\n", "\n");
+        var selectorBody = source.Substring(
+            source.IndexOf("private static AITargetSelector SelfCenteredHostileArea", StringComparison.Ordinal),
+            source.IndexOf("public static AITargetSelector AllyAttacker", StringComparison.Ordinal) -
+            source.IndexOf("private static AITargetSelector SelfCenteredHostileArea", StringComparison.Ordinal));
+        var inferDefaultBody = source.Substring(
+            source.IndexOf("public static AITargetSelector InferDefault", StringComparison.Ordinal));
+
+        source.Should().Contain("private const int DefaultAreaAbilityMinimumTargets = 2;");
+        source.Should().NotContain("HostileCluster(ability.MaxRange, 2)");
+        selectorBody.Should().Contain("ability.Targeting.ResolveSizeX(context.Self, true)");
+        selectorBody.Should().Contain("context.SetEvaluatedTarget(context.Self);");
+        selectorBody.Should().Contain("context.CountHostilesNearTarget(radius) >= DefaultAreaAbilityMinimumTargets");
+        inferDefaultBody.Should().Contain("ability.Targeting?.Shape == AbilityTargetingShapeType.Sphere");
+        inferDefaultBody.Should().Contain("AbilityTargetingFlags.OriginOnSelf");
+        inferDefaultBody.Should().Contain("SelfCenteredHostileArea(ability)");
+        inferDefaultBody.Should().Contain("HostileCluster(ability.MaxRange, DefaultAreaAbilityMinimumTargets)");
+    }
+
+    [Test]
     public void CreatureAggroEnter_EnforcesAggroRangeBeforeAddingProximityEnmity()
     {
         var aiSource = File.ReadAllText(Path.Combine(
@@ -300,7 +379,7 @@ public class AIModelTests
         var rangeStartIndex = aiSource.IndexOf("static bool IsInAggroRange", StringComparison.Ordinal);
         var rangeBody = aiSource.Substring(
             rangeStartIndex,
-            aiSource.IndexOf("private static void TryAcquireAggro", StringComparison.Ordinal) -
+            aiSource.IndexOf("public static void TryAcquireAggroAfterDetection", StringComparison.Ordinal) -
             rangeStartIndex);
 
         rangeBody.Should().Contain("LineOfSightObject(target, creature)");
@@ -426,8 +505,15 @@ public class AIModelTests
             source.IndexOf("void CompleteActivation", StringComparison.Ordinal),
             source.IndexOf("// Begin the main process", StringComparison.Ordinal) -
             source.IndexOf("void CompleteActivation", StringComparison.Ordinal));
+        var delayedResumeBody = source.Substring(
+            source.IndexOf("private static void ResumeAttackAfterDelay", StringComparison.Ordinal),
+            source.IndexOf("/// <summary>\n        /// Breaks stealth", StringComparison.Ordinal) -
+            source.IndexOf("private static void ResumeAttackAfterDelay", StringComparison.Ordinal));
 
         resumeBody.Should().Contain("Enmity.IssueAttackCommand(activator, target, clearActions);");
+        resumeBody.Should().Contain("target = Enmity.GetHighestEnmityTarget(activator);");
+        delayedResumeBody.Should().Contain("GetIsPC(activator) || GetIsPC(GetMaster(activator))");
+        delayedResumeBody.Should().Contain("DelayCommand(delay, () =>");
         animationBody.Should().Contain("if (GetIsPC(activator))");
         animationBody.Should().Contain("ClearAllActions(true);");
         completeBody.Should().Contain("ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f);");
@@ -482,8 +568,8 @@ public class AIModelTests
             .BeGreaterThan(issueBody.LastIndexOf("AI.TryStartCombatLeashEvade(creature, target)", StringComparison.Ordinal));
         issueBody.Should().Contain("ClearAllActions(true);");
         issueBody.Should().Contain("ActionMoveToObject(target, true, GetAttackMoveRange(creature));");
-        enmitySource.Should().Contain("CreaturePlugin.GetPreferredAttackDistance(creature)");
-        enmitySource.Should().Contain("private static float GetAttackMoveRange(SkillType skillType, float preferredAttackDistance)");
+        enmitySource.Should().Contain("Combat.GetWeaponEngagementRange(skillType)");
+        enmitySource.Should().NotContain("GetPreferredAttackDistance");
         attackActionBody.Should().Contain("Enmity.AttackHighestEnmityTarget(context.Self);");
         attackActionBody.Should().NotContain("ClearAllActions");
         attackActionBody.Should().NotContain("ActionAttack");
@@ -495,15 +581,29 @@ public class AIModelTests
     public void NativeAttackAction_CancelsLeashedCreaturesBeforePathingOrResolvingAttack()
     {
         var source = ReadSource("SWLOR.Game.Server", "Native", "OnAIActionAttackObject.cs").Replace("\r\n", "\n");
+        var activeTargetIndex = source.IndexOf("if (bTargetActive)", StringComparison.Ordinal);
         var activeTargetBody = source.Substring(
-            source.IndexOf("if (bTargetActive)", StringComparison.Ordinal),
-            source.IndexOf("if (pCreature.m_pcCombatRound == null)", StringComparison.Ordinal) -
-            source.IndexOf("if (bTargetActive)", StringComparison.Ordinal));
+            activeTargetIndex,
+            source.IndexOf("pCreature.m_vLastAttackPosition = new Vector();", activeTargetIndex, StringComparison.Ordinal) -
+            activeTargetIndex);
         var pendingAttackIndex = source.IndexOf("case CNWSCOMBATROUND_TYPE_ATTACK:", StringComparison.Ordinal);
         var pendingAttackBody = source.Substring(
             pendingAttackIndex,
             source.IndexOf("case CNWSCOMBATROUND_TYPE_PARRY:", pendingAttackIndex, StringComparison.Ordinal) -
             pendingAttackIndex);
+        var combatRoundGuardIndex = source.IndexOf(
+            "var pCombatRound = pCreature.m_pcCombatRound;",
+            StringComparison.Ordinal);
+        var activeTargetPathingIndex = source.IndexOf(
+            "pCreature.AddActionToFront",
+            activeTargetIndex,
+            StringComparison.Ordinal);
+        var equippedWeaponFallbackIndex = source.IndexOf(
+            "var attackSkillType = Combat.GetEquippedWeaponSkillType(pCreature.m_idSelf);",
+            StringComparison.Ordinal);
+        var currentSwingWeaponIndex = source.IndexOf(
+            "var currentWeaponAttackType = pCombatRound.GetWeaponAttackType();",
+            StringComparison.Ordinal);
 
         source.Should().Contain("private static bool TryCancelAttackForCombatLeash");
         source.Should().Contain("AI.TryStartCombatLeashEvade(pCreature.m_idSelf, target)");
@@ -513,6 +613,16 @@ public class AIModelTests
         activeTargetBody.IndexOf("TryCancelAttackForCombatLeash(pCreature, pNode, oidAttackTarget)", StringComparison.Ordinal)
             .Should()
             .BeLessThan(activeTargetBody.IndexOf("pCreature.AddActionToFront", StringComparison.Ordinal));
+        combatRoundGuardIndex.Should().BeGreaterThanOrEqualTo(0);
+        activeTargetPathingIndex.Should().BeGreaterThanOrEqualTo(0);
+        equippedWeaponFallbackIndex.Should().BeGreaterThanOrEqualTo(0);
+        currentSwingWeaponIndex.Should().BeGreaterThanOrEqualTo(0);
+        combatRoundGuardIndex.Should().BeGreaterThan(activeTargetPathingIndex,
+            "a missing combat round must not bypass target validation, combat-leash cancellation, or pathing");
+        equippedWeaponFallbackIndex.Should().BeLessThan(combatRoundGuardIndex,
+            "pre-round range and pathing need the safe equipped-weapon fallback");
+        currentSwingWeaponIndex.Should().BeGreaterThan(combatRoundGuardIndex,
+            "the actual main-hand or off-hand weapon is only valid once a combat round exists");
         pendingAttackBody.Should().Contain("TryCancelAttackForCombatLeash(pCreature, pNode, oidTarget)");
         pendingAttackBody.IndexOf("TryCancelAttackForCombatLeash(pCreature, pNode, oidTarget)", StringComparison.Ordinal)
             .Should()
@@ -1155,6 +1265,225 @@ public class AIModelTests
     {
         var fullPath = Path.Combine(new[] { FindRepositoryRoot().FullName }.Concat(pathParts).ToArray());
         return File.ReadAllText(fullPath);
+    }
+
+    private static string ExtractMethodBody(string source, string signature)
+    {
+        var signatureIndex = source.IndexOf(signature, StringComparison.Ordinal);
+        signatureIndex.Should().BeGreaterThanOrEqualTo(0);
+
+        var openingBrace = source.IndexOf('{', signatureIndex);
+        openingBrace.Should().BeGreaterThan(signatureIndex);
+
+        var depth = 0;
+        for (var index = openingBrace; index < source.Length; index++)
+        {
+            switch (source[index])
+            {
+                case '{':
+                    depth++;
+                    break;
+                case '}':
+                    depth--;
+                    if (depth == 0)
+                        return source.Substring(signatureIndex, index - signatureIndex + 1);
+                    break;
+            }
+        }
+
+        throw new InvalidOperationException($"Could not find the end of method '{signature}'.");
+    }
+
+    [Test]
+    public void CompanionDefensiveEventsResumeAfterBusyAbilityActivations()
+    {
+        var companionControl = ReadSource(
+            "SWLOR.Game.Server",
+            "Service",
+            "CompanionControlService",
+            "CompanionControl.cs");
+        var usePerkFeat = ReadSource("SWLOR.Game.Server", "Feature", "UsePerkFeat.cs");
+        var registerThreat = ExtractMethodBody(companionControl, "public static void RegisterDefensiveThreat");
+        var processCombatRound = ExtractMethodBody(companionControl, "public static void ProcessCombatRound");
+        var resumeAttack = ExtractMethodBody(usePerkFeat, "private static void ResumeAttack");
+        var pendingReaction = registerThreat.IndexOf("state.DefensiveReactionPending = true;", StringComparison.Ordinal);
+        var processRound = registerThreat.IndexOf("ProcessCombatRound(companion, true);", StringComparison.Ordinal);
+        var explicitOrderGuard = processCombatRound.IndexOf("if (IsExplicitOrderInProgress(companion))", StringComparison.Ordinal);
+        var consumePending = processCombatRound.IndexOf("state.DefensiveReactionPending = false;", StringComparison.Ordinal);
+
+        pendingReaction.Should().BeGreaterThanOrEqualTo(0);
+        processRound.Should().BeGreaterThan(pendingReaction);
+        explicitOrderGuard.Should().BeGreaterThanOrEqualTo(0);
+        consumePending.Should().BeGreaterThan(explicitOrderGuard);
+        resumeAttack.Should().Contain("CompanionControl.TryProcessPendingDefensiveReaction(activator)");
+    }
+
+    [Test]
+    public void DefensiveTargetQueriesShareAuthorizationAndOrdering()
+    {
+        var companionControl = ReadSource(
+            "SWLOR.Game.Server",
+            "Service",
+            "CompanionControlService",
+            "CompanionControl.cs");
+        var peekTarget = ExtractMethodBody(companionControl, "public static uint PeekAuthorizedTarget");
+        var getTarget = ExtractMethodBody(companionControl, "private static uint GetDefensiveTarget");
+        var selectTarget = ExtractMethodBody(companionControl, "private static uint SelectDefensiveTarget");
+
+        peekTarget.Should().Contain("SelectDefensiveTarget(companion, state, false)");
+        getTarget.Should().Contain("SelectDefensiveTarget(companion, state, true)");
+        selectTarget.Should().Contain("CompanionControlPolicy.PathingTimeoutSeconds");
+        selectTarget.Should().Contain("CompanionEngagementType.Defensive");
+        selectTarget.Should().Contain("OrderByDescending(x => GetAttackTarget(x) == master)");
+        selectTarget.Should().Contain("ThenBy(x => GetDistanceBetween(companion, x))");
+    }
+
+    [Test]
+    public void DiscardingADefensiveThreatClearsItsPathingProgress()
+    {
+        var companionControl = ReadSource(
+            "SWLOR.Game.Server",
+            "Service",
+            "CompanionControlService",
+            "CompanionControl.cs");
+        var removeThreat = ExtractMethodBody(companionControl, "private static void RemoveDefensiveThreat");
+
+        removeThreat.Should().Contain("state.DefensiveThreats.Remove(threat);");
+        removeThreat.Should().Contain("if (state.TrackedTarget == threat)");
+        removeThreat.Should().Contain("ResetProgress(state);");
+    }
+
+    [Test]
+    public void ReleasingAnActiveBeastClearsCompanionStateBeforeDestruction()
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "StablesViewModel.cs");
+        var releaseMethod = ExtractMethodBody(source, "public Action OnClickReleaseBeast()");
+        var clearState = releaseMethod.IndexOf("CompanionControl.Clear(beast);", StringComparison.Ordinal);
+        var destroyBeast = releaseMethod.IndexOf("DestroyObject(beast);", StringComparison.Ordinal);
+
+        clearState.Should().BeGreaterThanOrEqualTo(0);
+        destroyBeast.Should().BeGreaterThan(clearState);
+    }
+
+    [Test]
+    public void ControlledHostileAbilitiesRejectInvalidTargetsBeforeSelfFallback()
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server",
+            "Service",
+            "AIService",
+            "NPCAI.cs");
+        var canExecute = ExtractMethodBody(source, "private static bool CanExecuteAction");
+        var executeAbility = ExtractMethodBody(source, "private static void ExecuteAbility");
+        var rejectDuringEvaluation = canExecute.IndexOf(
+            "action.Type == AIActionType.Ability && !GetIsObjectValid(target)",
+            StringComparison.Ordinal);
+        var validateAbility = canExecute.IndexOf("return CanUseAbility(context, action, target);", StringComparison.Ordinal);
+        var rejectDuringExecution = executeAbility.IndexOf(
+            "if (isControlledHostileAbility && !GetIsObjectValid(target))",
+            StringComparison.Ordinal);
+        var selfFallback = executeAbility.IndexOf(
+            "if (!GetIsObjectValid(target))",
+            rejectDuringExecution + 1,
+            StringComparison.Ordinal);
+
+        rejectDuringEvaluation.Should().BeGreaterThanOrEqualTo(0);
+        validateAbility.Should().BeGreaterThan(rejectDuringEvaluation);
+        rejectDuringExecution.Should().BeGreaterThanOrEqualTo(0);
+        selfFallback.Should().BeGreaterThan(rejectDuringExecution);
+    }
+
+    [Test]
+    public void GuardedBiteAISelectionUsesTheSharedAbilityRecastGate()
+    {
+        var npcAiSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Service",
+            "AIService",
+            "NPCAI.cs");
+        var abilitySource = ReadSource(
+            "SWLOR.Game.Server",
+            "Service",
+            "Ability.cs");
+        var canUseAbility = ExtractMethodBody(npcAiSource, "private static bool CanUseAbility");
+        var abilityValidation = ExtractMethodBody(abilitySource, "public static bool CanUseAbility");
+
+        canUseAbility.Should().Contain("return Ability.CanUseAbility(context.Self, target, action.Feat, effectiveLevel, targetLocation);");
+        abilityValidation.Should().Contain("var (isOnRecast, timeToWait) = Recast.IsOnRecastDelay(activator, ability.RecastGroup);");
+        abilityValidation.Should().Contain("if (isOnRecast)");
+
+        Ability.CacheData();
+        var guardedBite = Ability.GetAbilityDetail(FeatType.GuardedBite1);
+        guardedBite.RecastGroup.Should().Be(RecastGroup.GuardedBite);
+        guardedBite.RecastDelay(0).Should().Be(12f);
+    }
+
+    [Test]
+    public void CompanionCombatProcessingResumesRestBeforeTheBusyGuard()
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server",
+            "Service",
+            "CompanionControlService",
+            "CompanionControl.cs");
+        var processCombatRound = ExtractMethodBody(source, "public static void ProcessCombatRound");
+        var releaseRest = ExtractMethodBody(source, "private static void ResumeFromRestIfMasterIsActive");
+        var resumeRest = processCombatRound.IndexOf(
+            "ResumeFromRestIfMasterIsActive(companion, GetMaster(companion));",
+            StringComparison.Ordinal);
+        var busyGuard = processCombatRound.IndexOf("if (Activity.IsBusy(companion))", StringComparison.Ordinal);
+
+        resumeRest.Should().BeGreaterThanOrEqualTo(0);
+        busyGuard.Should().BeGreaterThan(resumeRest);
+        releaseRest.Should().Contain("Activity.GetBusyType(companion) != ActivityStatusType.Resting");
+        releaseRest.Should().Contain("Activity.GetBusyType(master) == ActivityStatusType.Resting");
+        releaseRest.Should().Contain("StatusEffect.RemoveStatusEffect(companion, typeof(RestStatusEffect), false)");
+        releaseRest.Should().Contain("Activity.ClearBusy(companion)");
+    }
+
+    [Test]
+    public void StandGroundPlacedAreasRequireAnExplicitPlacementRange()
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server",
+            "Service",
+            "CompanionControlService",
+            "CompanionControl.cs");
+        var checkAbilities = ExtractMethodBody(source, "private static bool CanUseHostileAbilityWithoutMoving");
+
+        checkAbilities.Should().Contain("!isSelfOriginArea");
+        checkAbilities.Should().Contain("CompanionControlPolicy.IsWithinDeclaredPlacementRange(");
+        checkAbilities.Should().Contain("ability.HasExplicitMaxRange");
+        checkAbilities.Should().Contain("ability.MaxRange");
+    }
+
+    [Test]
+    public void SelfOriginAreaAuthorizationChecksShapeReachInEveryMode()
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server",
+            "Service",
+            "CompanionControlService",
+            "CompanionControl.cs");
+        var resolveTarget = ExtractMethodBody(source, "public static uint ResolveHostileAbilityTarget");
+        var shapeReach = resolveTarget.IndexOf(
+            "CompanionControlPolicy.IsWithinSelfOriginAreaReach(",
+            StringComparison.Ordinal);
+        var selfSelectedArea = resolveTarget.IndexOf(
+            "if (ability.IsAreaAbility && selectedTarget == companion)",
+            StringComparison.Ordinal);
+        var authorizedTargetEquality = resolveTarget.LastIndexOf(
+            "return selectedTarget == authorizedTarget",
+            StringComparison.Ordinal);
+
+        shapeReach.Should().BeGreaterThanOrEqualTo(0);
+        selfSelectedArea.Should().BeGreaterThan(shapeReach);
+        authorizedTargetEquality.Should().BeGreaterThan(shapeReach);
     }
 
     private static float ReadConstFloat(string name, params string[] pathParts)

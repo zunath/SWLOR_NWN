@@ -26,12 +26,15 @@ public class NativeControlStatusEffectTests
 
         statusEffectBase.Should().Contain("protected Effect TagNativeEffect");
         statusEffectBase.Should().Contain("void RemoveNativeEffects");
+        statusEffectBase.Should().Contain("HideEffectIcon(effect)",
+            "native control effects provide mechanics while the tracked status supplies the one player-facing icon");
         statusEffectBase.Should().Contain(":Native:");
         statusEffectService.Should().Contain("statusEffect.RemoveNativeEffects(creature);");
     }
 
     [TestCase("BlindStatusEffect.cs", "EffectBlindness()")]
     [TestCase("DazedStatusEffect.cs", "EffectDazed()")]
+    [TestCase("ImmobilizedStatusEffect.cs", "EffectCutsceneImmobilize()")]
     [TestCase("KnockdownStatusEffect.cs", "EffectKnockdown()")]
     [TestCase("StunnedStatusEffect.cs", "EffectStunned()")]
     [TestCase("TranquilizedStatusEffect.cs", "IgnoreEffectImmunity(EffectSleep())")]

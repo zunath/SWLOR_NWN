@@ -19,6 +19,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.PerkCoverage
                 },
                 new()
                 {
+                    Perk = PerkType.ForceBurst,
+                    MaxLevel = 1,
+                    Prices = new[] { 4 },
+                    GrantedFeats = new[] { FeatType.ForceBurst1 },
+                },
+                new()
+                {
                     Perk = PerkType.Benevolence,
                     MaxLevel = 3,
                     Prices = new[] { 2, 3, 4 },

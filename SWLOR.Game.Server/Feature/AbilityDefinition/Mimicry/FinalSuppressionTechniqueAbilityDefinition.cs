@@ -33,8 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 CombatDamageType.Electrical,
                 ResistanceType.Mobility,
                 VisualEffect.Vfx_Imp_Lightning_S,
-                VisualEffect.Vfx_Fnf_Storm,
-                maxRange: 8f)
+                VisualEffect.Vfx_Fnf_Storm)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)
                 .CombatImpactDamageAbility(AbilityType.Might)
@@ -43,7 +42,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                     Spell.FinalSuppressionTechnique,
                     8f,
                     2.5f,
-                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf);
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf | AbilityTargetingFlags.BackOffsetOrigin);
 
             return _builder.Build();
         }

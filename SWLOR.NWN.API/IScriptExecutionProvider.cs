@@ -27,6 +27,14 @@ namespace SWLOR.NWN.API
         IEnumerable<(Action action, string name)> GetActionScripts(string scriptName);
 
         /// <summary>
+        /// Reports an exception raised by one registered C# script handler.
+        /// </summary>
+        /// <param name="scriptName">The script whose handler failed.</param>
+        /// <param name="handlerName">The registered handler name.</param>
+        /// <param name="exception">The exception raised by the handler.</param>
+        void ReportScriptException(string scriptName, string handlerName, Exception exception);
+
+        /// <summary>
         /// Executes an action within the proper script context, managing VM state and OBJECT_SELF.
         /// </summary>
         /// <param name="action">The action to execute</param>

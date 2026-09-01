@@ -340,6 +340,19 @@ namespace SWLOR.Game.Server.Service.AbilityService
             return this;
         }
 
+        /// <summary>
+        /// Delays impact resolution after activation completes while keeping the activator busy.
+        /// This is intended for effect choreography such as travel animations, not cast time.
+        /// </summary>
+        /// <param name="seconds">The delay between activation completion and impact.</param>
+        /// <returns>An ability builder with the configured options.</returns>
+        public AbilityBuilder HasImpactDelay(float seconds)
+        {
+            _activeAbility.ImpactDelay = seconds;
+
+            return this;
+        }
+
         public AbilityBuilder RemoveStatusEffectOnPerkRefund(Type statusEffectType)
         {
             if (statusEffectType == null)
@@ -347,6 +360,17 @@ namespace SWLOR.Game.Server.Service.AbilityService
 
             if (!_activeAbility.StatusEffectTypesRemovedOnPerkRefund.Contains(statusEffectType))
                 _activeAbility.StatusEffectTypesRemovedOnPerkRefund.Add(statusEffectType);
+
+            return this;
+        }
+
+        public AbilityBuilder RemoveSourceOwnedStatusEffectOnPerkRefund(Type statusEffectType)
+        {
+            if (statusEffectType == null)
+                throw new ArgumentNullException(nameof(statusEffectType));
+
+            if (!_activeAbility.SourceOwnedStatusEffectTypesRemovedOnPerkRefund.Contains(statusEffectType))
+                _activeAbility.SourceOwnedStatusEffectTypesRemovedOnPerkRefund.Add(statusEffectType);
 
             return this;
         }
@@ -529,6 +553,17 @@ namespace SWLOR.Game.Server.Service.AbilityService
         public AbilityBuilder IsHostileAbility()
         {
             _activeAbility.IsHostileAbility = true;
+
+            return this;
+        }
+
+        /// <summary>
+        /// Marks this ability as a healing option for explicit companion Heal Me orders.
+        /// </summary>
+        /// <returns>An ability builder with the configured options</returns>
+        public AbilityBuilder IsHealingAbility()
+        {
+            _activeAbility.IsHealingAbility = true;
 
             return this;
         }

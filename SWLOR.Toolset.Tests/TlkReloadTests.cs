@@ -1,6 +1,7 @@
 using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.NWN.Formats.Tlk;
 using SWLOR.Toolset.Domain.GameData.Tlk;
 
 namespace SWLOR.Toolset.Tests
@@ -28,6 +29,34 @@ namespace SWLOR.Toolset.Tests
                 service.ReloadCustomTlk(null);
                 service.GetString(TlkService.CustomTlkBase).Should().Be("repository fallback");
                 reloads.Should().Be(2);
+            }
+            finally
+            {
+                Directory.Delete(tempRoot, recursive: true);
+            }
+        }
+
+        [Test]
+        public void PublishedRepositoryGenerationRemainsAuthoritativeAcrossModuleContentReloads()
+        {
+            var tempRoot = Path.Combine(Path.GetTempPath(), "SWLOR.Toolset.Tests", Guid.NewGuid().ToString("N"));
+            Directory.CreateDirectory(tempRoot);
+            var selectedPath = Path.Combine(tempRoot, "selected.tlk");
+            var publishedPath = Path.Combine(tempRoot, "published.tlk");
+
+            try
+            {
+                WriteSingleEntryTlk(selectedPath, "selected from nwn.ini TLK folder");
+                WriteSingleEntryTlk(publishedPath, "edited repository generation");
+                var service = new TlkService(TlkJsonFile.Parse(
+                    "{ \"language\": 0, \"entries\": [ { \"id\": 0, \"text\": \"repository fallback\" } ] }"));
+
+                service.ReloadCustomTlk(selectedPath);
+                service.PublishCustomTlk(TlkReader.Read(publishedPath));
+                service.ReloadCustomTlk(null);
+
+                service.GetString(TlkService.CustomTlkBase).Should().Be("edited repository generation",
+                    "module assignment reloads must not replace a generation accepted by the repository editor");
             }
             finally
             {

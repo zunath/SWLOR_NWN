@@ -44,7 +44,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 new GeneratedWeaponAbilityProfile
                 {
                     HitCount = 2,
-                    RestoreStaminaIfAnyCriticalHit = 2
+                    RestoreStaminaIfAnyCriticalHit = 2,
+                    RestoreStaminaIfAnyCriticalHitFeedbackLabel = "Double Shot"
                 });
 
             ConfigureGeneratedWeaponAbility(
@@ -74,7 +75,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 new GeneratedWeaponAbilityProfile
                 {
                     HitCount = 2,
-                    RestoreStaminaIfAnyCriticalHit = 3
+                    RestoreStaminaIfAnyCriticalHit = 3,
+                    RestoreStaminaIfAnyCriticalHitFeedbackLabel = "Double Shot"
                 });
 
             ConfigureGeneratedWeaponAbility(
@@ -104,7 +106,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 new GeneratedWeaponAbilityProfile
                 {
                     HitCount = 2,
-                    RestoreStaminaIfAnyCriticalHit = 4
+                    RestoreStaminaIfAnyCriticalHit = 4,
+                    RestoreStaminaIfAnyCriticalHitFeedbackLabel = "Double Shot"
                 });
 
             return builder.Build();

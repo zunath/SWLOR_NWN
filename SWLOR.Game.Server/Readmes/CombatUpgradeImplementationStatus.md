@@ -1,6 +1,6 @@
 # Combat Upgrade Implementation Status
 
-Last updated: 2026-07-19
+Last updated: 2026-08-17
 
 ## Source Of Truth
 
@@ -30,7 +30,7 @@ Espionage and Mimicry are fully in scope, including all Tradecraft/Infiltrator/S
 
 ## Current Snapshot
 
-The static Bible implementation review currently reports 998 PASS, 5 SKIP (unimplemented, first-iteration-out-of-scope Agriculture), and 0 FAIL rows. Espionage is 41/41 PASS and Mimicry is 98/98 PASS, including all 88 techniques.
+The static Bible implementation review currently reports 999 PASS, 5 SKIP (unimplemented, first-iteration-out-of-scope Agriculture), and 0 FAIL rows. Espionage is 41/41 PASS and Mimicry is 98/98 PASS, including all 88 techniques.
 
 Static cross-skill validation is also covered. The release audit hard-gates every active weapon package against the legal Force, Devices, Leadership, First Aid, Beast Mastery, Mimicry, and Espionage support frontier under 400 SP, plus curated high-risk profiles. The interaction audit guards recursive damage/reflection/status chains, transferred-damage loops, aggregate damage-derived healing, cross-resource conversion, and cooldown-reset cycles.
 
@@ -78,6 +78,7 @@ The first implementation pass closed a few narrow, concrete gaps:
 - Brought Leadership stat-scaling implementation in line with the Bible caps for Press the Attack, Mark Target, Break Morale, Decisive Command, Rousing Shout, Bolster Resolve, Cleanse Order, Hold the Line, Triage Protocol, and Command Radius duration/range support.
 - Refreshed Dev Status and Scaling Source metadata in the local Bible workbook. Implemented rows use `Combat Formula`, `Design Added`, `Explicit Code`, or `None`; every Espionage and Mimicry row is included in the implementation review.
 - Updated active ability feat syncing so higher perk ranks replace lower-rank active ability feats instead of stacking redundant granted feats or stale hotbar entries. Ability use now rejects superseded active feat ranks, and droids use the same current-rank granted-feat synchronization.
+- Added per-player hotbar cooldown readiness feedback through `AbilityCooldownVisual`, generated `pr0_` through `pr5_` icon variants, recast/login/reset integration, and focused service and gameplay-icon coverage.
 - Normalized weapon DMG item properties so `DMG` is the untyped amount and `WeaponDamageType` selects the whole weapon damage type. The native damage roll hook, crafting/enhancement application, enhancement generation, live module items, and serialized item migrations now follow that shape.
 - Rebalanced armor, food, and droid resistance enhancement amounts for the direct -100 to 100 resistance scale. Player and server migrations update live player inventories plus stored serialized records in inventories, markets, world properties, research jobs, outfits, DM creatures, and ships.
 - Added migration coverage for obsolete Bible perks and obsolete combat instruction discs. `CombatUpgradeMigrationCoverageTests` now also guards the release-critical migration surfaces: forced rebuild flagging, player migration entry points, stored item requirement migration, weapon Delay/DMG migration, resistance migration, obsolete instruction cleanup, droid instruction normalization, and ship/module serialized items.
@@ -97,7 +98,7 @@ The first implementation pass closed a few narrow, concrete gaps:
 - Fixed Deflecting Return's missing Center of the Storm high-Embattled bonus consumer and changed Perfect Aegis to override reflection at documented final values instead of adding to the permanent trait values.
 - **2026-07-11: Completed a full redesign of the two Lightsaber perk trees.** Ward (`PerkCategoryType.LightsaberOffense`) replaced its old perk set (Ward Bond, Guardian's Oath, Reactive Ward, Guardian's Challenge, Deflective Presence, Punishing Guard, Impenetrable Guard, Guardian's Influence, Overwhelming Defense, Guardian Master) with Saber Ward, Mental Fortress, Deflecting Return, a retained/reworked Guardian's Challenge (2 ranks, "damaged you" trigger), Surrounded Not Outmatched, Force Link (reuses the old Ward Bond ally damage-redirect behavior), Immovable Stance, Reprisal, Center of the Storm, and the capstone Aegis Eternal. Severance (`PerkCategoryType.LightsaberDefense`) replaced its old perk set (Severing Strike, Deflection Training, Severance Riposte, Leg Slash, Severance Flow, Surge Strike, Focused Stance, Blade Blitz, Purify, Saber Storm) with Force Sheath, Overpower, Fast Strikes, Shattering Strike, Sundering Sweep, Weak Points, Imbuement Stance, High Ground, Focus Shift, and the capstone Epicenter. Three net-new shared engine systems were added to support the redesign: physical-to-Force damage conversion, Embattled stacking, and bounded Deflecting-Return weapon reflection triggered off Attack Deflect. The existing capstone mastery quests were reused rather than renamed: the "Saber Storm" mastery quest now gates Epicenter, and the "Guardian Master" mastery quest now gates Aegis Eternal (quest IDs/definitions unchanged). 29 new gameplay icons were produced through Claude's illustrated-SVG icon pipeline, and `IconStandards.md` gained an agent-specific icon rule (GPT Image 2 for Codex, illustrated SVG for Claude). This redesign supersedes every prior Lightsaber Offense/Defense entry in this file, in `CombatUpgradeCurrentStateAudit.md`, and in the Lightsaber rows of `CombatUpgradeActivePerkBudgetReview.md`; the checked-in Bible workbook and regenerated `CombatUpgradeBiblePerkManifest.csv` are the implementation/audit snapshots for the new rows.
 
-The latest checked-in local-workbook audit reports no scoped findings. After refreshing from the checked-in workbook, `CombatUpgradeBiblePerkManifest.csv` contains 1003 manifest rows: 998 scoped implemented rows and 5 intentionally skipped, unimplemented Agriculture rows that are out of scope for the first iteration. `CombatUpgradePerkAudit.csv` contains only its header row. Current Bible General rows that use Armor requirements are in scope, but Armor rows should not be counted as weapon-tree active-button work.
+The latest checked-in local-workbook audit reports no scoped findings. After refreshing from the checked-in workbook, `CombatUpgradeBiblePerkManifest.csv` contains 1004 manifest rows: 999 scoped implemented rows and 5 intentionally skipped, unimplemented Agriculture rows that are out of scope for the first iteration. `CombatUpgradePerkAudit.csv` contains only its header row. Current Bible General rows that use Armor requirements are in scope, but Armor rows should not be counted as weapon-tree active-button work.
 
 The scoped combat-upgrade audit is clean against the current local workbook snapshot. `CombatUpgradeBibleSyncTests` includes Espionage and both Mimicry core perks and techniques; it also guards the active-to-trait cleanup by failing if a Bible `Trait` row still grants active feats or if a live ability remains tied to a Bible-scoped perk without an implemented active Bible row granting that feat.
 
@@ -105,13 +106,15 @@ The combat-upgrade feat and spell icon resource checks pass for the scoped rows 
 
 The legacy combat Bible review gate has been retired. Use `CombatUpgradeBibleSyncTests` and `tools\UpdateCombatUpgradeAudit.ps1` as the current static release gates.
 
-## Major Remaining Gaps
+## Static Implementation Status And Validation Risks
+
+The scoped perk, ability, stat-consumer, feat, spell, icon, recast, and status-effect implementation audit is complete with no known static production gaps. Remaining mechanic work in this section is release validation, not another row-alignment or foundational-system implementation pass. Capstone world construction is tracked separately in `CapstoneQuestLinePlan.md`; eight content packages comprising sixteen physical areas remain there.
 
 Active-to-trait code cleanup is no longer a known outstanding implementation slice. The current C# sync tests cover trait rows, active feat grants, and extra live ability surfaces for Bible-scoped perks.
 
-Armor-specific specialization implementation is not remaining work. The remaining Armor work is equipment requirement validation, skill-cap/SP validation at the 400 cap, verification that current Bible General perks use Armor requirements as intended, and cleanup verification that stale Heavy/Light/older Armor perk-tree entries are absent from player-facing data.
+Armor-specific specialization implementation is not remaining work. Armor release validation covers equipment requirements, the skill-cap/SP path at the 400 cap, current Bible General perk requirements, and confirmation that stale Heavy/Light/older Armor perk-tree entries are absent from player-facing data.
 
-The telegraph service now has a combat ability integration point, and a broader set of line/cone/sphere abilities use it. Some bespoke channel, persistent field, chained, and conditional cases still need playtest review beyond static audit coverage.
+The telegraph service is implemented and integrated across line, cone, and sphere abilities through shared and ability-specific paths. Some bespoke channel, persistent-field, chained, and conditional cases still need playtest review beyond static audit coverage.
 
 The `StatusEffect` service is now adopted for status effects. Status definitions are discovered by class, so new effects are added by creating a definition rather than maintaining a separate enum list.
 
@@ -123,7 +126,7 @@ Perks and abilities are statically accounted for across the active weapon surfac
 
 The `experimental/combat-upgrade-status-effects` branch was checked as a reference. It contains older alternate combat work such as one-handed/two-handed ability structures and a broader recast enum. Use it as reference material only, not as a clean source to copy wholesale into this branch.
 
-## Next Steps
+## Release Validation
 
 1. Playtest conditional/channel/persistent-field abilities such as Current Overload, Serpent's Eclipse, Tempest Bloom, Pacification Field, Disruption Field, Shield Wall, Force Capacitor, and Infinite Conduit against the live module.
 2. Smoke-test forced rebuild, equipment skill requirements, weapon Delay/DMG, resistance enhancement behavior, and serialized item migrations against representative live data. Static coverage now confirms the migration entry points and storage surfaces, but it does not replace a run over representative player/world records.

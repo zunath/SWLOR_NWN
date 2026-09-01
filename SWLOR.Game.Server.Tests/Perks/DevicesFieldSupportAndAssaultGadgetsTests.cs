@@ -4,6 +4,7 @@ using NUnit.Framework;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Devices;
+using SWLOR.Game.Server.Feature.AbilityDefinition.Force;
 using SWLOR.Game.Server.Feature.PerkDefinition;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
@@ -18,6 +19,18 @@ namespace SWLOR.Game.Server.Tests.Perks;
 
 public class DevicesFieldSupportAndAssaultGadgetsTests
 {
+    [Test]
+    public void AssaultGadgetTwins_MatchForceBaseDamage()
+    {
+        foreach (var fieldName in new[] { "Rank1BaseDamage", "Rank2BaseDamage", "Rank3BaseDamage" })
+        {
+            GetAbilityConstant<int>(typeof(ArcProjectorAbilityDefinition), fieldName)
+                .Should().Be(GetAbilityConstant<int>(typeof(ThrowRockAbilityDefinition), fieldName));
+            GetAbilityConstant<int>(typeof(IonLanceAbilityDefinition), fieldName)
+                .Should().Be(GetAbilityConstant<int>(typeof(RadiantLanceAbilityDefinition), fieldName));
+        }
+    }
+
     [Test]
     public void DevicesFieldSupportAndAssaultGadgetsBibleManifest_ContainsBatch()
     {
@@ -64,16 +77,18 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         new DampeningField2StatusEffect().StatGroup.Stats[StatType.PhysicalDamageTakenPercentAdjustment].Should().Be(-10);
         new DampeningField2StatusEffect().StatGroup.Stats[StatType.ForceDamageTakenPercentAdjustment].Should().Be(-10);
         new OverclockRoutineStatusEffect().StatGroup.Stats[StatType.CombatReadinessPercent].Should().Be(4);
-        new EmergencyBunker1StatusEffect().StatGroup.Stats[StatType.RangedPhysicalDamageTakenPercentAdjustment].Should().Be(-15);
+        new EmergencyBunker1StatusEffect().StatGroup.Stats[StatType.PhysicalDamageTakenPercentAdjustment].Should().Be(-15);
+        new EmergencyBunker1StatusEffect().StatGroup.Stats[StatType.ForceDamageTakenPercentAdjustment].Should().Be(-15);
+        new EmergencyBunker1StatusEffect().StatGroup.Stats[StatType.RangedPhysicalDamageTakenPercentAdjustment].Should().Be(0);
         new TacticalUplinkStatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustmentSkillType].Should().Be((int)SkillType.Devices);
         new TacticalUplinkStatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(5);
         new TacticalUplinkStatusEffect().StatGroup.Stats[StatType.AbilityCriticalRatePercentAdjustmentSkillType].Should().Be((int)SkillType.Devices);
         new TacticalUplinkStatusEffect().StatGroup.Stats[StatType.AbilityCriticalRatePercentAdjustment].Should().Be(5);
 
-        new SonicBurst2StatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(-6);
-        new SonicBurst2StatusEffect().StatGroup.Stats[StatType.AccuracyPercentAdjustment].Should().Be(0);
-        new SonicBurst3StatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(-10);
-        new SonicBurst3StatusEffect().StatGroup.Stats[StatType.AccuracyPercentAdjustment].Should().Be(0);
+        new SonicBurst2StatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(0);
+        new SonicBurst2StatusEffect().StatGroup.Stats[StatType.AccuracyPercentAdjustment].Should().Be(-6);
+        new SonicBurst3StatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(0);
+        new SonicBurst3StatusEffect().StatGroup.Stats[StatType.AccuracyPercentAdjustment].Should().Be(-10);
 
         CombatDamageType.Sonic.GetDetails().NWScriptDamageType.Should().Be(DamageType.Sonic);
     }
@@ -229,8 +244,29 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
             .Replace("\r\n", "\n");
 
         source.Should().Contain("EmergencyBunkerAreaMarkerVisualEffect = VisualEffect.Vfx_Dur_Aura_Pulse_Blue_White");
-        source.Should().Contain("EmergencyBunkerAreaMarkerVisualEffectScale = 2f");
+        source.Should().Contain("EmergencyBunkerRadiusMeters = 8f");
+        source.Should().Contain("EmergencyBunkerAreaMarkerVisualEffectScale = 4f");
         source.Should().Contain("EmergencyBunkerAreaMarkerVisualEffect,\n                EmergencyBunkerAreaMarkerVisualEffectScale");
+    }
+
+    [Test]
+    public void PowerCellIII_TargetsAnAllyAndCentersTheAreaOnThatAlly()
+    {
+        var ability = new PowerCellAbilityDefinition().BuildAbilities()[FeatType.PowerCell3];
+
+        ability.RequiresTarget.Should().BeTrue();
+        ability.HasExplicitMaxRange.Should().BeTrue();
+        ability.MaxRange.Should().Be(15f);
+        ability.CustomValidation.Should().NotBeNull();
+        ability.Targeting.Flags.Should().HaveFlag(AbilityTargetingFlags.HelpsAllies);
+        ability.Targeting.Flags.Should().NotHaveFlag(AbilityTargetingFlags.OriginOnSelf);
+
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Devices" / "PowerCellAbilityDefinition.cs").FullName)
+            .Replace("\r\n", "\n");
+        source.Should().Contain("GetPowerCell3Targets(activator, target, targetLocation)");
+        source.Should().Contain("GetFriendlyTargetsNearLocation(\n                         activator,\n                         targetLocation,");
+        source.Should().NotContain("GetFriendlyTargets(activator, activator, true)");
     }
 
     [Test]
@@ -248,8 +284,8 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
             (FeatType.PowerCell2, "ife_pwrcll2", "M", "0x03", "0", "****", "****", "****", "****", "****"),
             (FeatType.DeflectorShield3, "ife_dflctrshld3", "M", "0x03", "0", "****", "****", "****", "****", "****"),
             (FeatType.GroupDeflector1, "ife_grpdflctr1", "P", "0x01", "0", "sphere", "5", "****", "17", "1"),
-            (FeatType.PowerCell3, "ife_pwrcll3", "P", "0x01", "0", "sphere", "5", "****", "17", "1"),
-            (FeatType.EmergencyBunker1, "ife_mrgncybnkr1", "M", "0x3E", "0", "sphere", "4", "****", "1", "****"),
+            (FeatType.PowerCell3, "ife_pwrcll3", "M", "0x03", "0", "sphere", "5", "****", "4", "****"),
+            (FeatType.EmergencyBunker1, "ife_mrgncybnkr1", "M", "0x3E", "0", "sphere", "8", "****", "1", "****"),
             (FeatType.Flamethrower1, "ife_flmthrwr1", "M", "0x3E", "1", "cone", "6", "5", "17", "****"),
             (FeatType.WristRocket1, "ife_wrstrckt1", "M", "0x02", "1", "****", "****", "****", "****", "****"),
             (FeatType.SonicBurst1, "ife_sncburst1", "M", "0x3E", "1", "sphere", "5", "****", "17", "1"),
@@ -448,6 +484,17 @@ public class DevicesFieldSupportAndAssaultGadgetsTests
         };
 
         return BuildPerksWithout2daLookup(definition, methodNames);
+    }
+
+    private static T GetAbilityConstant<T>(Type abilityDefinitionType, string fieldName)
+    {
+        var field = abilityDefinitionType.GetField(
+            fieldName,
+            BindingFlags.NonPublic | BindingFlags.Static);
+
+        field.Should().NotBeNull($"{abilityDefinitionType.Name} should declare {fieldName}");
+        field!.IsLiteral.Should().BeTrue();
+        return (T)field.GetRawConstantValue()!;
     }
 
     private static Dictionary<PerkType, PerkDetail> BuildDevicesAssaultGadgetsPerksWithout2daLookup()

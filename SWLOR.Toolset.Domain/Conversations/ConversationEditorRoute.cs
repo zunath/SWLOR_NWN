@@ -21,8 +21,8 @@ public sealed record ConversationEditorRoute(
     IReadOnlyList<string> Details)
 {
     /// <summary>
-    /// Every valid authored conversation is editable. A native exception such as DMFI remains in
-    /// the DLG editor while ordinary conversations use the graph-native editor.
+    /// Every valid authored conversation is editable. Generated graphs use the NUI editor; the
+    /// remaining route kinds preserve honest diagnostics for incomplete or external workspaces.
     /// </summary>
     public bool OpensEditor => Kind != ConversationEditorRouteKind.Missing;
 

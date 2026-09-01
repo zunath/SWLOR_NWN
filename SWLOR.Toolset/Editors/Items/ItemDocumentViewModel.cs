@@ -1,5 +1,4 @@
 using SWLOR.Toolset.Domain.Editors.Items;
-using System.Text.RegularExpressions;
 using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Mvvm.Controls;
 using SWLOR.NWN.Formats.Common;
@@ -27,8 +26,6 @@ namespace SWLOR.Toolset.Editors.Items
     /// </remarks>
     public partial class ItemDocumentViewModel : Document, IEditorDocument
     {
-        private static readonly Regex ResRefShape = new("^[a-z0-9_]{1,16}$", RegexOptions.Compiled);
-
         private readonly DocumentSession _session;
         private readonly OutputLogService _log;
         private readonly IEditorPromptService _prompts;
@@ -199,10 +196,11 @@ namespace SWLOR.Toolset.Editors.Items
                 }
 
                 var targetResRef = Editor.TemplateResRef.Trim().ToLowerInvariant();
-                if (!ResRefShape.IsMatch(targetResRef))
+                if (!NwnResRef.IsCanonical(targetResRef))
                 {
                     _log.AppendLine(
-                        $"Cannot save {_resRef}: ResRef '{Editor.TemplateResRef}' must be 1-16 " +
+                        $"Cannot save {_resRef}: ResRef '{Editor.TemplateResRef}' must be " +
+                        $"1-{NwnResRef.MaxLength} " +
                         "characters of a-z, 0-9, or underscore.");
                     return false;
                 }

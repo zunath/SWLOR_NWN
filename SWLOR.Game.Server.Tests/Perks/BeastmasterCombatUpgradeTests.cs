@@ -21,7 +21,9 @@ public class BeastmasterCombatUpgradeTests
     {
         var damage = BuildPerksWithout2daLookup(new BeastDamagePerkDefinition(), "BloodFrenzy", "PredatorsMark");
         AssertStatBonus(damage[PerkType.BeastBloodFrenzy].PerkLevels[1], StatType.DamageDealtBleedingTargetStaminaRestoreChance, 20);
+        AssertStatBonus(damage[PerkType.BeastBloodFrenzy].PerkLevels[1], StatType.DamageDealtBleedingTargetStaminaRestore, 1);
         AssertStatBonus(damage[PerkType.BeastBloodFrenzy].PerkLevels[2], StatType.DamageDealtBleedingTargetStaminaRestoreChance, 30);
+        AssertStatBonus(damage[PerkType.BeastBloodFrenzy].PerkLevels[2], StatType.DamageDealtBleedingTargetStaminaRestore, 1);
         AssertStatBonus(damage[PerkType.PredatorsMark].PerkLevels[1], StatType.PredatorsMarkDamageTakenFromBeastPercent, 10);
         AssertStatBonus(damage[PerkType.PredatorsMark].PerkLevels[1], StatType.PredatorsMarkDurationSeconds, 30);
         AssertStatBonus(damage[PerkType.PredatorsMark].PerkLevels[2], StatType.PredatorsMarkDamageTakenFromBeastPercent, 10);
@@ -58,6 +60,9 @@ public class BeastmasterCombatUpgradeTests
     {
         new BolsterAttack1StatusEffect().StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(5);
         new BolsterAttack3StatusEffect().StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(12);
+        new BolsterAttack1StatusEffect().StatGroup.Stats[StatType.BolsterAttackRank].Should().Be(1);
+        new BolsterAttack2StatusEffect().StatGroup.Stats[StatType.BolsterAttackRank].Should().Be(2);
+        new BolsterAttack3StatusEffect().StatGroup.Stats[StatType.BolsterAttackRank].Should().Be(3);
         new Hasten1StatusEffect().StatGroup.Stats[StatType.AttackDelayReductionPercent].Should().Be(15);
         new Hasten2StatusEffect().StatGroup.Stats[StatType.AttackDelayReductionPercent].Should().Be(25);
         new PrimalOverrun1StatusEffect().StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(12);
@@ -76,15 +81,48 @@ public class BeastmasterCombatUpgradeTests
         new GuardingBondBeastStatusEffect().StatGroup.Stats[StatType.EnmityPercentAdjustment].Should().Be(75);
         new PredatoryBondBeastStatusEffect().StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(25);
         new PredatoryBondBeastStatusEffect().StatGroup.Stats[StatType.AttackDelayReductionPercent].Should().Be(15);
-        new PredatoryBondBeastStatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(10);
+        new PredatoryBondBeastStatusEffect().StatGroup.Stats[StatType.PhysicalAndForceAbilityHitChancePercentAdjustment].Should().Be(10);
+        new PredatoryBondBeastStatusEffect().StatGroup.Stats[StatType.AbilityHitChancePercentAdjustment].Should().Be(0);
         new PredatoryBondBeastStatusEffect().StatGroup.Stats[StatType.EnmityPercentAdjustment].Should().Be(-40);
     }
 
     [Test]
     public void BeastmasterAbilities_MatchTargetingAndResourceCosts()
     {
+        var bite = new BiteAbilityDefinition().BuildAbilities();
+        bite.Values.Should().OnlyContain(x => x.ActivationType == AbilityActivationType.Weapon);
+        bite.Values.Should().OnlyContain(x => !x.RequiresTarget);
+
+        var rendingClaw = new RendingClawAbilityDefinition().BuildAbilities();
+        rendingClaw.Values.Should().OnlyContain(x => x.ActivationType == AbilityActivationType.Weapon);
+        rendingClaw.Values.Should().OnlyContain(x => !x.RequiresTarget);
+
+        var exposePrey = new ExposePreyAbilityDefinition().BuildAbilities()[FeatType.ExposePrey1];
+        AssertQueuedBeastAbility(exposePrey, "Expose Prey", RecastGroup.ExposePrey, 24f, 7);
+
+        var executePrey = new ExecutePreyAbilityDefinition().BuildAbilities()[FeatType.ExecutePrey1];
+        AssertQueuedBeastAbility(executePrey, "Execute Prey", RecastGroup.ExecutePrey, 30f, 8);
+
+        var coordinatedStrike = new CoordinatedStrikeAbilityDefinition().BuildAbilities();
+        AssertQueuedBeastAbility(
+            coordinatedStrike[FeatType.CoordinatedStrike1],
+            "Coordinated Strike I",
+            RecastGroup.CoordinatedStrike,
+            15f,
+            5);
+        AssertQueuedBeastAbility(
+            coordinatedStrike[FeatType.CoordinatedStrike2],
+            "Coordinated Strike II",
+            RecastGroup.CoordinatedStrike,
+            15f,
+            7);
+
         var apexBite = new ApexBiteAbilityDefinition().BuildAbilities()[FeatType.ApexBite1];
-        AssertStaminaAbility(apexBite, "Apex Bite", RecastGroup.ApexBite, 45f, 10, requiresTarget: true);
+        AssertQueuedBeastAbility(apexBite, "Apex Bite", RecastGroup.ApexBite, 45f, 10);
+
+        var pounce = new PounceAbilityDefinition().BuildAbilities();
+        AssertPounceAbility(pounce[FeatType.Pounce1], "Pounce I", 5);
+        AssertPounceAbility(pounce[FeatType.Pounce2], "Pounce II", 6);
 
         var evasiveChallenge = new EvasiveChallengeAbilityDefinition().BuildAbilities();
         AssertStaminaAbility(evasiveChallenge[FeatType.EvasiveChallenge1], "Evasive Challenge I", RecastGroup.EvasiveChallenge, 30f, 5, requiresTarget: true);
@@ -118,6 +156,34 @@ public class BeastmasterCombatUpgradeTests
     }
 
     [Test]
+    public void CoordinatedStrike_UsesSelfTargeted2daRows()
+    {
+        var root = FindRepositoryRoot();
+        var featRows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
+            root.FullName,
+            "SWLOR_Haks",
+            "sw_2da",
+            "feat.2da")));
+        var spellRows = Test2daHelper.Read2da(new FileInfo(Path.Combine(
+            root.FullName,
+            "SWLOR_Haks",
+            "sw_2da",
+            "spells.2da")));
+
+        foreach (var feat in new[] { FeatType.CoordinatedStrike1, FeatType.CoordinatedStrike2 })
+        {
+            var featRow = featRows[(int)feat];
+            featRow["TARGETSELF"].Should().Be("1");
+            featRow["HostileFeat"].Should().Be("****");
+
+            var spellRow = spellRows[int.Parse(featRow["SPELLID"])];
+            spellRow["Range"].Should().Be("P");
+            spellRow["TargetType"].Should().Be("0x01");
+            spellRow["HostileSetting"].Should().Be("0");
+        }
+    }
+
+    [Test]
     public void TameChance_ScalesSocialByThreePercentAndCapsAtSeventyFive()
     {
         var baseline = TameAbilityDefinition.CalculateTameChance(
@@ -135,8 +201,26 @@ public class BeastmasterCombatUpgradeTests
     {
         var root = FindRepositoryRoot();
         var pounce = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Beastmaster" / "PounceAbilityDefinition.cs").FullName);
-        pounce.Should().Contain("ActionJumpToObject(target)");
+        pounce.Should().Contain("ActionPlayAnimation(Animation.ForceLeap, LeapAnimationSpeed, LeapAnimationDurationSeconds)");
+        pounce.Should().Contain("JumpToLocation(destination)");
+        pounce.Should().Contain("SetFacingPoint(GetPosition(target))");
+        pounce.Should().Contain("UsePerkFeat.InterruptAbilityActivation(target)");
+        pounce.Should().Contain("PounceOpeningDistanceMeters");
+        pounce.Should().Contain("private const float MaxRangeMeters = 15.0f;");
+        pounce.Should().Contain("private const int Pounce1Damage = 14;");
+        pounce.Should().Contain("private const int Pounce2Damage = 24;");
         pounce.Should().Contain("ClearAllActions()");
+        pounce.Should().NotContain("ActionJumpToObject(target)");
+        pounce.Should().NotContain("ActionDoCommand(");
+
+        var pounce1Impact = pounce.Substring(
+            pounce.IndexOf("private static void Pounce1ImpactAction", StringComparison.Ordinal),
+            pounce.IndexOf("private static void Pounce2ImpactAction", StringComparison.Ordinal) -
+            pounce.IndexOf("private static void Pounce1ImpactAction", StringComparison.Ordinal));
+        pounce1Impact.IndexOf("CompleteLeap(activator, target)", StringComparison.Ordinal)
+            .Should().BeLessThan(pounce1Impact.IndexOf("Ability.ApplyCombatImpact(", StringComparison.Ordinal));
+        pounce1Impact.IndexOf("Ability.ApplyCombatImpact(", StringComparison.Ordinal)
+            .Should().BeLessThan(pounce1Impact.IndexOf("InterruptTargetActivation(target)", StringComparison.Ordinal));
 
         var apexBite = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Beastmaster" / "ApexBiteAbilityDefinition.cs").FullName);
         apexBite.Should().Contain("45");
@@ -162,9 +246,17 @@ public class BeastmasterCombatUpgradeTests
         combat.Should().Contain("ApplyAbilityUsedMasterAbilityHitChance");
         combat.Should().Contain("ApplyDamageTakenRedirectToStatusSource");
         combat.Should().Contain("ApplyPredatorsMarkEffects");
+        combat.Should().Contain("ApplyPredatorsMarkEffects(attacker, defender, isAbilityDamage);");
+        combat.Should().NotContain("skillType != SkillType.BeastMastery");
         combat.Should().Contain("StatType.PredatorsMarkDurationSeconds");
+        combat.Should().Contain("StatusEffect.HasStatusEffectCategory(defender, StatusEffectCategory.Bleeding)");
+        combat.Should().Contain("StatType.DamageDealtBleedingTargetStaminaRestoreChance");
+        combat.Should().Contain("StatType.DamageDealtBleedingTargetStaminaRestore");
         combat.Should().Contain("StatType.BeastBalancedAbilityStaminaRestoreCategoryId");
         combat.Should().Contain("InventorySlot.CreatureRight");
+        combat.Should().Contain("bool usesQueuedNaturalWeapon = false");
+        combat.Should().Contain("usesQueuedNaturalWeapon && skillType == SkillType.BeastMastery");
+        combat.Should().Contain("return GetCreatureNaturalWeapon(activator);");
     }
 
     [Test]
@@ -233,6 +325,32 @@ public class BeastmasterCombatUpgradeTests
         ability.RecastDelay(0).Should().Be(recastSeconds);
         ability.RequiresTarget.Should().Be(requiresTarget);
         ability.Requirements.OfType<AbilityRequirementStamina>().Should().ContainSingle().Which.RequiredSTM.Should().Be(staminaCost);
+    }
+
+    private static void AssertQueuedBeastAbility(
+        AbilityDetail ability,
+        string name,
+        RecastGroup recastGroup,
+        float recastSeconds,
+        int staminaCost)
+    {
+        AssertStaminaAbility(ability, name, recastGroup, recastSeconds, staminaCost, requiresTarget: false);
+        ability.ActivationType.Should().Be(AbilityActivationType.Weapon);
+        ability.IsSingleTargetAbility.Should().BeTrue();
+        ability.IsHostileAbility.Should().BeTrue();
+    }
+
+    private static void AssertPounceAbility(AbilityDetail ability, string name, int staminaCost)
+    {
+        AssertStaminaAbility(ability, name, RecastGroup.Pounce, 18f, staminaCost, requiresTarget: true);
+        ability.ActivationType.Should().Be(AbilityActivationType.Casted);
+        ability.IsSingleTargetAbility.Should().BeTrue();
+        ability.IsHostileAbility.Should().BeTrue();
+        ability.MaxRange.Should().Be(15f);
+        ability.HasExplicitMaxRange.Should().BeTrue();
+        ability.AIScore.Should().NotBeNull();
+        ability.ActivationAction.Should().NotBeNull();
+        ability.ImpactDelay.Should().Be(1f);
     }
 
     private static void AssertBeastBondAbility(AbilityDetail ability, string name)

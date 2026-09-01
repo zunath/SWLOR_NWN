@@ -70,6 +70,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
         public bool ExpectsRecast { get; set; }
 
         /// <summary>
+        /// After the first activation commits its recast, retry the same ability immediately
+        /// through TryUseAbility with full resources and assert the shared recast denial.
+        /// </summary>
+        public bool VerifiesImmediateRecastRejection { get; set; }
+
+        /// <summary>
         /// The ability's impact restores part of its own cost (e.g. RestoreStaminaOnHit,
         /// restore-on-crit riders), so the exact post-deduction pool is unobservable - the
         /// refund lands in the same window as the deduction and may be conditional. Cost
@@ -109,6 +115,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
         /// before activation so only the tested impact can satisfy the assertion.
         /// </summary>
         public bool ExpectsTargetHealing { get; set; }
+
+        /// <summary>
+        /// Optional target HP percentage established immediately before activation. Use this
+        /// for threshold-gated behavior that must be exercised through the live engine path.
+        /// Values must be between 1 and 100 inclusive.
+        /// </summary>
+        public int? TargetHitPointPercentBeforeActivation { get; set; }
 
         /// <summary>
         /// Minimum hit points the revived target must have after impact. Use this to distinguish

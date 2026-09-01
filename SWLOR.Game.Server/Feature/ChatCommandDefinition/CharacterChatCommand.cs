@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.ChatCommandService;
+using SWLOR.Game.Server.Service.CompanionControlService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -454,7 +455,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         private void SetKnownName()
         {
             _builder.Create("name")
-                .Description("Sets the name you personally recognize a targeted player character by, or the unknown description others see when used on yourself.")
+                .Description("Target another player to save a private label only you can see. Target yourself to set your gray public description.")
                 .Permissions(AuthorizationLevel.All)
                 .Validate((user, args) =>
                 {
@@ -490,7 +491,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                             GetObjectUUID(user),
                             GetObjectUUID(target),
                             name);
-                        SendMessageToPC(user, ColorToken.Green($"Players who have not named you will now see you as '{name}'."));
+                        SendMessageToPC(user, ColorToken.Green($"Public description set to '{name}'. Players who have not labeled your current identity will see this in gray."));
                         return;
                     }
 
@@ -510,14 +511,14 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         GetObjectUUID(user),
                         GetObjectUUID(target),
                         name);
-                    SendMessageToPC(user, ColorToken.Green($"You will now recognize this character as '{name}'."));
+                    SendMessageToPC(user, ColorToken.Green($"Private label saved as '{name}'. Only you can see this label."));
                 });
         }
 
         private void ForgetKnownName()
         {
             _builder.Create("forgetname")
-                .Description("Forgets the custom name you set for a targeted player character.")
+                .Description("Removes the private label only you can see for a targeted player character's current identity.")
                 .Permissions(AuthorizationLevel.All)
                 .RequiresTarget(ObjectType.Creature)
                 .Action((user, target, location, args) =>
@@ -541,7 +542,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                         "name-forget",
                         GetObjectUUID(user),
                         GetObjectUUID(target));
-                    SendMessageToPC(user, ColorToken.Green("You no longer have a custom name set for this character."));
+                    SendMessageToPC(user, ColorToken.Green("Private label removed. This changes only what you see."));
                 });
         }
 
@@ -556,6 +557,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var associate = GetHenchman(user);
                     if (target == associate)
                     {
+                        CompanionControl.CancelExplicitOrder(associate);
                         AssignCommand(associate, () =>
                         {
                             ClearAllActions();
@@ -563,6 +565,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
                     else if (GetIsEnemy(target, user) || GetObjectType(target) == ObjectType.Placeable)
                     {
+                        CompanionControl.BeginExplicitOrder(associate);
                         AssignCommand(associate, () =>
                         {
                             ClearAllActions();
@@ -571,6 +574,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     }
                     else if (GetObjectType(target) == ObjectType.Door && !GetLocked(target))
                     {
+                        CompanionControl.BeginExplicitOrder(associate);
                         AssignCommand(associate, () =>
                         {
                             ClearAllActions();

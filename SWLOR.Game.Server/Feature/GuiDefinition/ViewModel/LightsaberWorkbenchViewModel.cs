@@ -536,6 +536,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
+            ApplyBladeLight(item, top.LightColor);
+
             foreach (var property in _enhancementProperties.SelectMany(x => x))
             {
                 Craft.ApplyCraftedItemProperty(item, property);
@@ -585,6 +587,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             FloatingTextStringOnCreature($"You have constructed your {GetName(item)}!", Player, false);
 
             Gui.TogglePlayerWindow(Player, GuiWindowType.LightsaberWorkbench);
+        }
+
+        private static void ApplyBladeLight(uint item, LightColor lightColor)
+        {
+            // The output blueprints carry a neutral white fallback light. Replace it
+            // with the selected blade's supported engine color during construction.
+            // Scan first because removing properties while iterating skips entries.
+            var existingLights = new List<ItemProperty>();
+            for (var ip = GetFirstItemProperty(item); GetIsItemPropertyValid(ip); ip = GetNextItemProperty(item))
+            {
+                if (GetItemPropertyType(ip) == ItemPropertyType.Light)
+                    existingLights.Add(ip);
+            }
+
+            foreach (var light in existingLights)
+            {
+                RemoveItemProperty(item, light);
+            }
+
+            var bladeLight = ItemPropertyLight(LightBrightness.Dim, lightColor);
+            AddItemProperty(DurationType.Permanent, bladeLight, item);
         }
 
         private static uint ModifyWeaponPart(uint item, AppearanceWeapon partSlot, int partValue)

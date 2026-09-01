@@ -1,6 +1,6 @@
 # Combat Upgrade Current-State Balance Audit
 
-Last reviewed: 2026-08-11 (split weapon-deflection review)
+Last reviewed: 2026-08-17
 
 ## Scope
 
@@ -14,7 +14,7 @@ The audit includes weapons, Force, Devices, Leadership, First Aid, Beast Mastery
 - Perk stat bonuses use the current/effective perk level, not the sum of all prior levels. Max-rank audit values should use each perk's final active level.
 - Shield Deflection is checked before weapon deflection and covers both melee and ranged weapon auto-attacks. If a shield deflect chance exists, the matching Melee or Ranged Deflection check is skipped for that attack.
 - Melee Deflection and Ranged Deflection require a valid weapon and no equipped shield. They apply only to melee and ranged weapon auto-attacks respectively, each has an independent default cap of 50, and `MeleeDeflectionChanceCap` or `RangedDeflectionChanceCap` can independently raise that cap to the shared hard maximum of 100.
-- Guard is a damage-stage mitigation mechanic. It is separate from both deflection mechanics and currently has a base 20 percent reduction with a 40 percent maximum reduction.
+- Guard is a damage-stage mitigation mechanic. It is separate from both deflection mechanics and currently has a base 20 percent reduction with a 55 percent maximum reduction.
 - Direct, triggered, periodic, and transferred damage are distinct delivery types. Only direct damage may run ordinary damage-dealt and status-effect procs; reflection and secondary riders use triggered delivery, while shared damage uses transferred delivery and cannot reshare.
 - Damage-derived healing from all riders on one hit shares a 50 percent per-hit cap. Cross-resource conversion restores 35 percent of the resource actually spent and cannot call the inverse conversion. Cooldown reduction cannot affect capstones or reduce a timer past ready.
 
@@ -162,7 +162,7 @@ The Bible workbook and `CombatUpgradeBiblePerkManifest.csv` are the source of tr
 
 ## 2026-07-19 Addendum: Full Static Review And Deflecting Return Correction
 
-The refreshed workbook review contains 1,003 rows: 998 in-scope rows pass and only the five unimplemented, first-iteration-out-of-scope Agriculture rows are skipped. Mimicry is 98/98 pass, including all 88 techniques; Espionage is 41/41 pass.
+The refreshed workbook review contains 1,004 rows: 999 in-scope rows pass and only the five unimplemented, first-iteration-out-of-scope Agriculture rows are skipped. Mimicry is 98/98 pass, including all 88 techniques; Espionage is 41/41 pass.
 
 The production-consumer audit found one real stat wiring defect: `EmbattledHighStackDeflectionReflectionBonusPercent` was granted by Center of the Storm but never consumed. It is now applied at the documented Embattled stack threshold. The same review found that Aegis Eternal's Perfect Aegis status added its reflection and cap values on top of Deflecting Return instead of setting the documented final values. Perfect Aegis now uses stat-driven override values, so the capstone resolves to exactly its documented reflection and cap values while normal Center of the Storm behavior remains additive at the Embattled threshold.
 

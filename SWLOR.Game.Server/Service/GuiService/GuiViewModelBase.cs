@@ -8,9 +8,9 @@ using SWLOR.NWN.API.Engine;
 
 namespace SWLOR.Game.Server.Service.GuiService
 {
-    public abstract class GuiViewModelBase<TDerived, TPayload>: IGuiViewModel, INotifyPropertyChanged
-        where TDerived: GuiViewModelBase<TDerived, TPayload>
-        where TPayload: GuiPayloadBase
+    public abstract class GuiViewModelBase<TDerived, TPayload> : IGuiViewModel, INotifyPropertyChanged
+        where TDerived : GuiViewModelBase<TDerived, TPayload>
+        where TPayload : GuiPayloadBase
     {
         public uint TetherObject { get; private set; }
 
@@ -47,7 +47,7 @@ namespace SWLOR.Game.Server.Service.GuiService
         /// <typeparam name="T">The type of data to retrieve</typeparam>
         /// <param name="propertyName">The name of the property.</param>
         /// <returns>The retrieved object.</returns>
-        protected T Get<T>([CallerMemberName]string propertyName = null)
+        protected T Get<T>([CallerMemberName] string propertyName = null)
         {
             if (string.IsNullOrWhiteSpace(propertyName))
                 return default(T);
@@ -64,7 +64,7 @@ namespace SWLOR.Game.Server.Service.GuiService
         /// <typeparam name="T">The type of data to set.</typeparam>
         /// <param name="value">The new value to set.</param>
         /// <param name="propertyName">The name of the property.</param>
-        protected void Set<T>(T value, [CallerMemberName]string propertyName = null)
+        protected void Set<T>(T value, [CallerMemberName] string propertyName = null)
         {
             if (string.IsNullOrWhiteSpace(propertyName))
             {
@@ -145,13 +145,13 @@ namespace SWLOR.Game.Server.Service.GuiService
                 _propertyValues[propertyName].IsGuiList = true;
             }
 
-            if(!_propertyValues[propertyName].SkipNotify)
+            if (!_propertyValues[propertyName].SkipNotify)
                 OnPropertyChanged(propertyName);
         }
 
         private void OnListChanged(object sender, ListChangedEventArgs e)
         {
-            var list = ((IGuiBindingList) sender);
+            var list = ((IGuiBindingList)sender);
             OnPropertyChanged(list.PropertyName);
         }
 
@@ -248,13 +248,36 @@ namespace SWLOR.Game.Server.Service.GuiService
             // Rebind any existing properties (in the event the window was closed and reopened)
             foreach (var (name, propertyDetail) in _propertyValues)
             {
+                // A null value means the property was never assigned. Serializing it
+                // would throw and permanently prevent this window from ever reopening
+                // for this player - confirmed via the DebugNuiGallery hazard harness
+                // (H6), where recovery required a full server restart. Skip instead.
+                if (propertyDetail.Value == null)
+                    continue;
+
                 var json = _converter.ToJson(propertyDetail.Value);
                 NuiSetBind(Player, WindowToken, name, json);
             }
 
             WatchOnClient(model => model.Geometry);
 
+            // The input modal's text box only reports typed text back to the server
+            // while this bind is watched. Set before watching (layout rule R3).
+            ModalInputText = string.Empty;
+            WatchOnClient(model => model.ModalInputText);
+
             ChangePartialView("_window_", "%%WINDOW_MAIN%%");
+
+            // The client can drop the Geometry watch while the initial root layout is
+            // applied; until a relayout re-arms it, window moves never reach the server
+            // and the stale open position is what gets persisted at close. Re-issue the
+            // watch once the root layout has settled so the first move is captured.
+            DelayCommand(0.0f, () =>
+            {
+                if (Gui.IsWindowOpen(Player, WindowType))
+                    WatchOnClient(model => model.Geometry);
+            });
+
             var convertedPayload = payload == null ? default : (TPayload)payload;
             Initialize(convertedPayload);
         }
@@ -271,6 +294,20 @@ namespace SWLOR.Game.Server.Service.GuiService
             var value = _converter.ToObject(json, property.Type);
             var currentValue = GetType().GetProperty(propertyName)?.GetValue(this);
 
+            // The client transiently reports a 0x0 geometry while it relayouts a window
+            // (e.g. during the ChangePartialView redraw nudges). Accepting it corrupts the
+            // server-side geometry: a pending redraw nudge can then push a negative height
+            // (client shows "constraint can not be satisfied"), or - if no server push
+            // follows - the window permanently collapses to a bare title bar. Reject the
+            // degenerate rect and re-assert the last known-good geometry instead.
+            if (propertyName == nameof(Geometry) &&
+                value is GuiRectangle degenerateCheck &&
+                (degenerateCheck.Width < 1f || degenerateCheck.Height < 1f))
+            {
+                NuiSetBind(Player, WindowToken, nameof(Geometry), Geometry.ToJson());
+                return;
+            }
+
             _propertyValues[propertyName].Value = value;
             _propertyValues[propertyName].SkipNotify = true;
             if (!currentValue.Equals(value))
@@ -282,11 +319,9 @@ namespace SWLOR.Game.Server.Service.GuiService
         }
 
         /// <summary>
-        /// Called after a client-watched property (e.g. Geometry on window resize) has been applied to
-        /// the view model. Client updates suppress the standard change notification to avoid echo loops,
-        /// so view models which need to react to them (e.g. resize-driven layout binds) override this.
+        /// Called after a client-watched property has been applied to this view model.
+        /// Client updates suppress normal property notification to avoid echo loops.
         /// </summary>
-        /// <param name="propertyName">The name of the property that was updated by the client.</param>
         protected virtual void OnClientPropertyUpdated(string propertyName)
         {
         }
@@ -299,8 +334,19 @@ namespace SWLOR.Game.Server.Service.GuiService
         protected void WatchOnClient<TProperty>(Expression<Func<TDerived, TProperty>> expression)
         {
             var propertyName = GuiHelper<TDerived>.GetPropertyName(expression);
-            if (!_propertyValues.ContainsKey(propertyName))
-                _propertyValues[propertyName] = new PropertyDetail();
+
+            // Watching serializes the property's CURRENT value, so the property must
+            // have been assigned first (layout rule R3). Fail fast with a clear
+            // message instead of an NRE - and without creating a null-valued entry,
+            // which would poison every subsequent Bind/reopen of this window
+            // (confirmed via the DebugNuiGallery hazard harness, H6).
+            if (!_propertyValues.ContainsKey(propertyName) ||
+                _propertyValues[propertyName].Value == null)
+            {
+                throw new InvalidOperationException(
+                    $"Property '{propertyName}' must be assigned a value before WatchOnClient is called " +
+                    "(layout rule R3 - see Readmes/NuiLayoutRules.md). Assign it in Initialize first, then watch.");
+            }
 
             var value = _propertyValues[propertyName].Value;
             var json = _converter.ToJson(value);
@@ -333,6 +379,35 @@ namespace SWLOR.Game.Server.Service.GuiService
             ChangePartialView("_window_", "%%WINDOW_MODAL%%");
         }
 
+        /// <summary>
+        /// Displays an input modal on top of the active window. Unlike ShowModal's
+        /// yes/no prompt, this presents a multiline text box the player can type into.
+        /// The confirm action reads the submitted text from <see cref="ModalInputText"/>.
+        /// </summary>
+        /// <param name="prompt">The text to display above the text box.</param>
+        /// <param name="initialText">The text pre-filled into the text box.</param>
+        /// <param name="confirmAction">The action to run when the player confirms.</param>
+        /// <param name="cancelAction">The action to run when the player cancels.</param>
+        /// <param name="confirmText">The confirmation text to display.</param>
+        /// <param name="cancelText">The cancel text to display.</param>
+        protected void ShowInputModal(
+            string prompt,
+            string initialText,
+            Action confirmAction,
+            Action cancelAction = null,
+            string confirmText = "Send",
+            string cancelText = "Cancel")
+        {
+            ModalPromptText = prompt;
+            ModalConfirmButtonText = confirmText;
+            ModalCancelButtonText = cancelText;
+            ModalInputText = initialText ?? string.Empty;
+            _callerConfirmAction = confirmAction;
+            _callerCancelAction = cancelAction;
+
+            ChangePartialView("_window_", "%%WINDOW_INPUT_MODAL%%");
+        }
+
         /// <inheritdoc />
         public void ChangePartialView(string elementId, string partialName)
         {
@@ -344,19 +419,55 @@ namespace SWLOR.Game.Server.Service.GuiService
         }
 
         /// <summary>
-        /// Swaps a group element's layout for one generated at runtime. NUI layout attributes
-        /// (width/height) are static and cannot be bound, so layouts which must react to window
-        /// geometry (e.g. stretching content on resize) are regenerated and swapped in via this
-        /// method. Event handlers keep working as long as the regenerated elements reuse the same
-        /// element Ids that were registered when the window was built.
+        /// Swaps a group element's layout for one generated at runtime. Event handlers
+        /// remain valid when regenerated elements reuse their registered element IDs.
         /// </summary>
-        /// <param name="elementId">The Id of the group element to swap.</param>
-        /// <param name="layout">The new layout to apply.</param>
         protected void SetGroupLayout(string elementId, Json layout)
         {
             NuiSetGroupLayout(Player, WindowToken, elementId, layout);
-
             ApplyRefreshBugFix();
+        }
+
+        /// <summary>
+        /// Swaps a partial view that is nested inside another partial (e.g. a
+        /// tab's content area within a window whose own root is a partial).
+        /// NUI can silently drop a nested partial layout while its parent is
+        /// being redrawn. This forces a root redraw first, applies the target
+        /// partial, then reapplies it once more on the next tick to guarantee
+        /// it survives the parent's redraw pass.
+        /// </summary>
+        /// <param name="elementId">The nested element id to change.</param>
+        /// <param name="partialName">The partial view to apply.</param>
+        /// <param name="onBeforeApply">
+        /// Optional callback run immediately before each apply (e.g. to refresh
+        /// the data the partial will display). Runs twice - once per apply -
+        /// matching the existing RestoreSelectedTabPartial behavior.
+        /// </param>
+        /// <remarks>
+        /// Public rather than protected: orchestrator helpers like GuiTabGroup
+        /// live outside the ViewModel's own type hierarchy and need to call
+        /// this from the outside, the same way ChangePartialView already is.
+        /// </remarks>
+        public void SwapNestedPartialView(string elementId, string partialName, Action onBeforeApply = null)
+        {
+            void Apply()
+            {
+                onBeforeApply?.Invoke();
+                ChangePartialView(elementId, partialName);
+            }
+
+            ChangePartialView("_window_", "%%WINDOW_MAIN%%");
+            Apply();
+
+            // The delayed re-apply can fire after the player has already closed (or
+            // rapidly toggled) the window; NuiSetGroupLayout against a destroyed window
+            // raises a client-side "element id not found" error. Only re-apply while
+            // the window is still open.
+            DelayCommand(0.0f, () =>
+            {
+                if (Gui.IsWindowOpen(Player, WindowType))
+                    Apply();
+            });
         }
 
 
@@ -378,6 +489,14 @@ namespace SWLOR.Game.Server.Service.GuiService
             private set => Set(value);
         }
 
+        // Public setter (unlike the other modal properties): the client pushes typed
+        // text back through the watch pipeline, which sets this via reflection.
+        public string ModalInputText
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         private Action _callerConfirmAction;
         private Action _callerCancelAction;
 
@@ -388,37 +507,67 @@ namespace SWLOR.Game.Server.Service.GuiService
 
             ModalConfirmButtonText = "Yes";
             ModalCancelButtonText = "No";
+            ModalInputText = string.Empty;
 
             _callerConfirmAction = null;
             _callerCancelAction = null;
         };
 
-        public Action OnModalConfirmClick() => () =>
+        /// <summary>
+        /// Called after ANY modal (ShowModal / ShowInputModal) closes - confirm or
+        /// cancel - after the caller's confirm/cancel action has run. Closing a
+        /// modal swaps %%WINDOW_MAIN%% back into the root, which wipes any partial
+        /// currently applied to a nested element (e.g. the selected tab's content).
+        /// Tabbed windows should override this and re-apply their current tab
+        /// partial. Default: no-op.
+        /// </summary>
+        protected virtual void OnModalClosedRestore()
         {
-            ChangePartialView("_window_", "%%WINDOW_MAIN%%");
-            OnMainViewRestored();
-
-            if (_callerConfirmAction != null)
-                _callerConfirmAction();
-        };
-
-        public Action OnModalCancelClick() => () =>
-        {
-            ChangePartialView("_window_", "%%WINDOW_MAIN%%");
-            OnMainViewRestored();
-
-            if (_callerCancelAction != null)
-                _callerCancelAction();
-        };
+        }
 
         /// <summary>
-        /// Called after the main window view is restored (e.g. when a modal closes). Windows which
-        /// swap runtime-generated layouts into nested groups must reapply them here: restoring the
-        /// main view re-renders the static window template, whose nested placeholder groups are empty.
+        /// Called immediately after the static main view is restored. Windows that
+        /// install runtime-generated nested layouts should reapply them here.
         /// </summary>
         protected virtual void OnMainViewRestored()
         {
         }
+
+        private void CloseModalAndRestore(Action callerAction)
+        {
+            ChangePartialView("_window_", "%%WINDOW_MAIN%%");
+            OnMainViewRestored();
+            try
+            {
+                callerAction?.Invoke();
+            }
+            finally
+            {
+                // A failed confirm action must not leave a tabbed window with
+                // its nested content erased by the root-modal swap.
+                OnModalClosedRestore();
+            }
+        }
+
+        public Action OnModalConfirmClick() => () =>
+        {
+            CloseModalAndRestore(_callerConfirmAction);
+        };
+
+        public Action OnModalCancelClick() => () =>
+        {
+            CloseModalAndRestore(_callerCancelAction);
+        };
+
+        public Action OnInputModalConfirmClick() => () =>
+        {
+            CloseModalAndRestore(_callerConfirmAction);
+        };
+
+        public Action OnInputModalCancelClick() => () =>
+        {
+            CloseModalAndRestore(_callerCancelAction);
+        };
 
         /// <summary>
         /// Default implementation for OnWindowClosed.

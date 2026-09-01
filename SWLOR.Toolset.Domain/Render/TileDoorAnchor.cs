@@ -22,7 +22,10 @@ namespace SWLOR.Toolset.Domain.Render
         /// <summary>Which of that tile's door nodes this is, in .set order.</summary>
         public required int DoorIndex { get; init; }
 
-        /// <summary>The tileset's door Type for this node - the door's shape class, not a doortypes.2da row.</summary>
+        /// <summary>
+        /// The tileset's door Type for this node: zero accepts a generic door, while a positive value
+        /// is the tileset-specific <c>doortypes.2da</c> row the SET file requires at this doorway.
+        /// </summary>
         public required int Type { get; init; }
 
         /// <summary>World position of the doorway, on the tile's own floor height.</summary>

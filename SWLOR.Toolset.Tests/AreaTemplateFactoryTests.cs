@@ -94,5 +94,23 @@ namespace SWLOR.Toolset.Tests
             AreaTemplateFactory.AddAreaToModule(ifo, newResRef).Should().BeFalse("a second add for the same resref is a no-op");
             ifo.AreaList.Count.Should().Be(countBefore + 1, "no duplicate entry is created");
         }
+
+        [Test]
+        public void RemoveAreaFromModule_RemovesEveryDuplicateRegistration()
+        {
+            var ifoPath = Path.Combine(CorpusLocator.ModuleDirectory, "ifo", "module.ifo.json");
+            var ifo = IfoDocument.Load(ifoPath);
+            const string resRef = "delete_probe";
+            AreaTemplateFactory.AddAreaToModule(ifo, resRef).Should().BeTrue();
+
+            // Reproduce a hand-edited/legacy duplicate. Delete must not leave a second registration
+            // pointing at an ARE/GIT/GIC triplet that no longer exists.
+            var list = ifo.Fields.GetOrAddList("Mod_Area_list");
+            list.Add(list.Single(entry => entry.GetStringOrNull("Area_Name") == resRef));
+
+            AreaTemplateFactory.RemoveAreaFromModule(ifo, resRef).Should().Be(2);
+            ifo.AreaResRefs.Should().NotContain(resRef);
+            AreaTemplateFactory.RemoveAreaFromModule(ifo, resRef).Should().Be(0);
+        }
     }
 }

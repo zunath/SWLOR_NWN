@@ -414,6 +414,23 @@ namespace SWLOR.Toolset.Editors.Items
             RefreshCompleteness();
         }
 
+        /// <summary>Rebuilds every materialized choice row after TLK-backed labels change.</summary>
+        public void RefreshTlkLabels()
+        {
+            for (var index = 0; index < BasicRows.Count; index++)
+            {
+                if (BasicRows[index].Definition.ChoicesKey == null)
+                    continue;
+
+                var definition = BasicRows[index].Definition;
+                BasicRows[index].Dispose();
+                BasicRows[index] = CreateRow(definition);
+            }
+
+            Roles.Rebuild(Family, Role, FamilyDisplay);
+            RefreshCompleteness();
+        }
+
         private bool RunEdit(string description, Action mutation)
         {
             var identifiedBefore = _store.GetLocalizedText("DescIdentified");

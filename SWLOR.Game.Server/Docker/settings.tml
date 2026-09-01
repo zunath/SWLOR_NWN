@@ -79,7 +79,7 @@
 	allow-player-pausing = false
 	disallow-shouting = false
 	one-party-only = false
-	player-party-control = false
+	player-party-control = true
 	pvp-mode = 1
 	reload-when-empty = true
 	restore-spell-uses-on-login = false

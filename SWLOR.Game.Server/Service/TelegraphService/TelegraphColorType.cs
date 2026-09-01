@@ -2,10 +2,10 @@ namespace SWLOR.Game.Server.Service.TelegraphService
 {
     public enum TelegraphColorType
     {
-        None = 0,
-        Hostile = 1,
-        Friendly = 2,
-        Self = 3,
-        EnemyBeneficial = 4,
+        // These values are a two-bit protocol shared with sw_shader/fsfbpostpr.shd.
+        Hostile = 0,
+        Self = 1,
+        Beneficial = 2,
+        PartyMember = 3,
     }
 }

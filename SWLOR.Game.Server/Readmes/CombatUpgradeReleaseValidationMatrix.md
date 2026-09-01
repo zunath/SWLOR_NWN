@@ -1,6 +1,6 @@
 # Combat Upgrade Release Validation Matrix
 
-Last reviewed: 2026-08-11
+Last reviewed: 2026-08-17
 
 ## Purpose
 
@@ -60,9 +60,9 @@ Use this as the default cleanup pattern for weapon skill perk lines. Deviations 
 | 17 | 4 | Cross-skill Trait 1 Rank III | Trait | 45 |
 | 18 | 6 | Capstone | Capstone | 50 |
 
-The local Bible and regenerated manifest now adopt this progression pattern for every weapon style: 18 rows, 60 SP, skill-rank 2 opens with an active `Combat` ability, skill-rank 50 is a 6 SP `Capstone`, and no adjacent ranked ability rows are intended. The code alignment pass is still pending, so audit rows that report missing or stale live perk definitions are expected until the C# definitions are updated to match the Bible.
+The local Bible, regenerated manifest, generated perk/ability code, and supporting TLK/2DA data now adopt this progression pattern for every weapon style: 18 rows, 60 SP, skill-rank 2 opens with an active `Combat` ability, skill-rank 50 is a 6 SP `Capstone`, and no adjacent ranked ability rows are intended. The static alignment pass is complete and the scoped audit has no implementation findings.
 
-Adoption rule: keep the normalized SP costs and active-first opener unless playtesting proves the new pricing or early-combat cadence creates a release blocker. Future cleanup should focus on code alignment, engine feel, and real-enemy validation rather than another blind cost pass.
+Adoption rule: keep the normalized SP costs and active-first opener unless playtesting proves the new pricing or early-combat cadence creates a release blocker. Future cleanup should focus on engine feel and real-enemy validation rather than another blind cost pass.
 
 ## Curated Archetypes
 
@@ -118,6 +118,7 @@ Do not tune mobs from hologram results. Use these real profiles first:
 | Starter ordinary | `mynock`, `czcryo_mynock` | Low-stat baseline, starter pacing, simple special ability check. |
 | Ordinary humanoid ranged/melee | `man_ranger_2`, `man_warrior_2` | Real weapon delays and basic humanoid defenses. |
 | Mid-tier Force/caster pressure | `s_app_m`, `korr_frostbind` | Force Attack/Defense interaction, shutdown and resource-pressure value. |
+| Dathomir ordinary fauna | `vdathswampland`, `vdathshear`, `vdathsquell`, `vgapingspider` | Late-game solo baseline. A full Light Consular damage rotation should maintain at least 75% hit chance through the shared Force accuracy and affinity rules, without ability-specific hit bonuses, and defeat these ordinary enemies in roughly 20-30 seconds; they are not group-gated elites. |
 | Elite/scary | `byysk_guard002` | High HP, shield/weapon profile, sustained incoming pressure. |
 | Boss chain | `bf_butcher`, `bf_kess` | High HP boss pacing and capstone encounter pressure. |
 | Optional stress boss | `frogboss` | Extreme boss profile only; do not balance baseline combat around it. |
@@ -139,12 +140,14 @@ Manual checks should focus on:
 - Throwing Ordnance and Flurry target-density cadence.
 - Lightsaber Severance and Ward before and after capstones.
 - Heavy Vibroblade sustain under real incoming damage.
+- Force Leap against large Dathomir fauna, confirming the player lands 1.5m from the target and both models remain selectable.
+- Full Light Consular rotations against the four ordinary Dathomir fauna profiles, then the named Tuskens and Hutlar Byysks, confirming the ordinary baseline does not inherit elite pacing.
 
 If a timed payoff still feels bad, tune in this order: extend the window, lower the spike if needed, then consider next-N-hit mechanics only if duration tuning cannot solve the engine feel.
 
 ## Weapon Identity Status
 
-The screenshot identity list is now the Bible target for weapon styles. Code alignment is still pending, so this table describes the intended local Bible identity and the release check each style still needs.
+The screenshot identity list is now aligned across the Bible, generated perk/ability code, TLK/2DA data, and regression coverage. This table records each implemented identity and the remaining live release check.
 
 ## Status Glossary
 

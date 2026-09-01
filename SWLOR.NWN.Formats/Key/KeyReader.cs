@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 
+using SWLOR.NWN.Formats.Common;
 using SWLOR.NWN.Formats.Internal;
 
 namespace SWLOR.NWN.Formats.Key;
@@ -87,8 +88,8 @@ public static class KeyReader
         for (var index = 0; index < resourceCount; index++)
         {
             var offset = resourceTableOffset + (long)index * ResourceEntrySize;
-            var resRef = reader.ReadAscii(offset, 16, $"KEY ResRef {index}", trimNull: true);
-            var resourceType = reader.ReadUInt16(offset + 16);
+            var resRef = reader.ReadAscii(offset, NwnResRef.MaxLength, $"KEY ResRef {index}", trimNull: true);
+            var resourceType = reader.ReadUInt16(offset + NwnResRef.MaxLength);
             var resourceId = reader.ReadUInt32(offset + 18);
             var entry = new KeyResourceEntry(resRef, resourceType, resourceId);
             if (entry.BifIndex >= bifs.Count)

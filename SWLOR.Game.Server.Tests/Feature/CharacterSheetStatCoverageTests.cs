@@ -53,6 +53,25 @@ public class CharacterSheetStatCoverageTests
     }
 
     [Test]
+    public void CharacterSheet_DisplaysHighResourceAbilityBonusesAndTheirLiveState()
+    {
+        var viewModel = ReadViewModel();
+
+        viewModel.Should().Contain("AddHighResourceAbilityDamageStats(AddStat);");
+        viewModel.Should().Contain("\"High-Resource Ability DMG\"");
+        viewModel.Should().NotContain("\"Balanced Current\"");
+        viewModel.Should().Contain("StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent");
+        viewModel.Should().Contain("\"Balanced Attunement\"");
+        viewModel.Should().Contain("StatType.HighFPAndStaminaAbilityDamagePercentAdjustmentThresholdPercent");
+        viewModel.Should().Contain("StatType.HighFPAndStaminaAbilityDamageBonus");
+        viewModel.Should().Contain("StatType.HighFPAndStaminaAbilityDamagePercentAdjustment");
+        viewModel.Should().Contain("Combat.IsCurrentFPAndStaminaAtOrAbovePercent(_target, flatThreshold)");
+        viewModel.Should().Contain("Combat.IsCurrentFPAndStaminaAtOrAbovePercent(_target, percentThreshold)");
+        viewModel.Should().Contain("active ? $\"Active (+{flatBonus} DMG)\" : $\"Inactive ({flatThreshold}% required)\"");
+        viewModel.Should().Contain("active ? $\"Active (+{percentBonus}% DMG)\" : $\"Inactive ({percentThreshold}% required)\"");
+    }
+
+    [Test]
     public void CharacterSheet_DisplaysDetectionAndStealth()
     {
         var viewModel = ReadViewModel();
@@ -76,6 +95,31 @@ public class CharacterSheetStatCoverageTests
         viewModel.Should().Contain("public void Refresh(StatAdjustmentRefreshEvent payload)");
         temporaryModifiers.Should().Contain("Gui.PublishRefreshEvent(creature, new StatAdjustmentRefreshEvent())");
         temporaryModifiers.Should().Contain("if (PurgeExpired(creature))");
+    }
+
+    [Test]
+    public void CharacterSheet_RefreshesWhenStatusEffectStatsChange()
+    {
+        var viewModel = ReadViewModel();
+        var statusEffects = ReadService("StatusEffect.cs");
+
+        viewModel.Should().Contain("IGuiRefreshable<StatusEffectReceivedRefreshEvent>");
+        viewModel.Should().Contain("IGuiRefreshable<StatusEffectRemovedRefreshEvent>");
+        viewModel.Should().Contain("public void Refresh(StatusEffectReceivedRefreshEvent payload)");
+        viewModel.Should().Contain("public void Refresh(StatusEffectRemovedRefreshEvent payload)");
+        statusEffects.Should().Contain(
+            "Gui.PublishCharacterSheetRefreshEvent(creature, new StatusEffectReceivedRefreshEvent())");
+        statusEffects.Should().Contain(
+            "Gui.PublishCharacterSheetRefreshEvent(creature, new StatusEffectRemovedRefreshEvent())");
+        statusEffects.Should().Contain("if (!isReplacement)");
+        statusEffects.Should().Contain("isReplacement: true");
+        statusEffects.Should().Contain("bool isReplacement = false");
+        statusEffects.Should().MatchRegex(@"removeNativeEffect,\s+isReplacement\);");
+
+        var gui = ReadService("Gui.cs");
+        gui.Should().Contain("public static void PublishCharacterSheetRefreshEvent<T>(uint target, T payload)");
+        gui.Should().Contain("for (var observer = GetFirstPC(); GetIsObjectValid(observer); observer = GetNextPC())");
+        gui.Should().Contain("!viewModel.IsViewingTarget(target)");
     }
 
     [Test]

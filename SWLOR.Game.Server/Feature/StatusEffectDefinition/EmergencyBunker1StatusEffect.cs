@@ -14,7 +14,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public EmergencyBunker1StatusEffect()
         {
-            StatGroup.Stats[StatType.RangedPhysicalDamageTakenPercentAdjustment] = -15;
+            StatGroup.Stats[StatType.PhysicalDamageTakenPercentAdjustment] = -15;
+            StatGroup.Stats[StatType.ForceDamageTakenPercentAdjustment] = -15;
         }
     }
 }

@@ -18,12 +18,11 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
 
             foreach (var (type, value) in statusEffect.StatGroup.Stats)
             {
-                // Flag stats cannot be maintained as a running sum - two effects carrying the
-                // same flag must combine to that flag, not double it - so they are recomputed
-                // from the active set instead.
-                if (Stat.GetStatTypeAggregation(type) == StatTypeAggregation.BitwiseOr)
+                // Non-additive stats cannot be maintained as a running sum. Recompute them from
+                // the active set so removing one effect reveals the next active value correctly.
+                if (Stat.GetStatTypeAggregation(type) != StatTypeAggregation.Additive)
                 {
-                    RecomputeBitwiseOrStat(type);
+                    RecomputeNonAdditiveStat(type);
                     continue;
                 }
 
@@ -72,9 +71,9 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
 
             foreach (var (type, value) in statusEffect.StatGroup.Stats)
             {
-                if (Stat.GetStatTypeAggregation(type) == StatTypeAggregation.BitwiseOr)
+                if (Stat.GetStatTypeAggregation(type) != StatTypeAggregation.Additive)
                 {
-                    RecomputeBitwiseOrStat(type);
+                    RecomputeNonAdditiveStat(type);
                     continue;
                 }
 
@@ -113,13 +112,13 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
                 _effectsBySourceType[statusEffect.SourceType].Remove(statusEffect);
         }
 
-        private void RecomputeBitwiseOrStat(StatType type)
+        private void RecomputeNonAdditiveStat(StatType type)
         {
             var combined = 0;
             foreach (var effect in _allActiveEffects)
             {
                 if (effect.StatGroup.Stats.TryGetValue(type, out var value))
-                    combined |= value;
+                    combined = Stat.AggregateStatAdjustment(type, combined, value);
             }
 
             StatGroup.Stats[type] = combined;

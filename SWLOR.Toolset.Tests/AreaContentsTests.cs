@@ -9,6 +9,7 @@ using NUnit.Framework;
 using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Gff;
+using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors;
 using SWLOR.Toolset.Services;
@@ -60,7 +61,10 @@ namespace SWLOR.Toolset.Tests
                 Directory.Delete(_moduleRoot, recursive: true);
         }
 
-        private AreaEditorViewModel CreateEditor(IEditorPromptService? prompts = null)
+        private AreaEditorViewModel CreateEditor(
+            IEditorPromptService? prompts = null,
+            Func<ResourceType, string, string?>? editCopyBlueprint = null,
+            ModuleMutationLock? mutationLock = null)
         {
             var log = new OutputLogService();
             return new AreaEditorViewModel(
@@ -69,7 +73,9 @@ namespace SWLOR.Toolset.Tests
                 new LookupOptionProvider(new WorkspaceContext(_ => throw new NotSupportedException(), log)),
                 gameCodeIndex: null,
                 log,
-                prompts: prompts ?? new StubPrompts());
+                prompts: prompts ?? new StubPrompts(),
+                editCopyBlueprint: editCopyBlueprint,
+                mutationLock: mutationLock);
         }
 
         private static AreaContentsViewModel CreatePanel(
@@ -99,6 +105,63 @@ namespace SWLOR.Toolset.Tests
             placeables.Children.Count.Should().BeLessThan(
                 instances / 4,
                 "grouping exists so the branch is readable - a row per instance is what it replaces");
+        }
+
+        [Test]
+        public void ViewportEditCopyRoutesTheSelectedBlueprintWithoutChangingTheInstance()
+        {
+            const string sourceResRef = "source_plc";
+            File.WriteAllBytes(
+                Path.Combine(_moduleRoot, "utp", sourceResRef + ".utp.json"),
+                BlueprintTemplateFactory.CreateFileContent(
+                    ResourceType.Utp,
+                    sourceResRef,
+                    "Source Placeable"));
+            (ResourceType Type, string ResRef)? request = null;
+            var mutationLock = new ModuleMutationLock();
+            var editor = CreateEditor(
+                editCopyBlueprint: (type, resRef) =>
+                {
+                    request = (type, resRef);
+                    return sourceResRef + "001";
+                },
+                mutationLock: mutationLock);
+            var marker = new InstanceMarker
+            {
+                Kind = InstanceMarkerKind.Placeable,
+                TemplateResRef = sourceResRef,
+                Tag = "placed_instance",
+                Position = Vector3.Zero,
+                Orientation = Vector2.UnitX
+            };
+            editor.SelectSceneInstance(marker);
+
+            editor.EditCopySelectedBlueprintCommand.CanExecute(null).Should().BeTrue();
+            editor.EditCopySelectedBlueprintCommand.Execute(null);
+
+            request.Should().Be((ResourceType.Utp, sourceResRef));
+            marker.TemplateResRef.Should().Be(sourceResRef,
+                "Edit Copy creates a blueprint and must not retarget the placed instance");
+            editor.SceneStatus.Should().Contain(sourceResRef + "001");
+
+            mutationLock.Set(true);
+            editor.EditCopySelectedBlueprintCommand.CanExecute(null).Should().BeFalse();
+        }
+
+        [Test]
+        public void ViewportEditCopyIsDisabledWhenTheSourceBlueprintCannotResolve()
+        {
+            var editor = CreateEditor(editCopyBlueprint: (_, _) => "never_created");
+            editor.SelectSceneInstance(new InstanceMarker
+            {
+                Kind = InstanceMarkerKind.Placeable,
+                TemplateResRef = "missing_source",
+                Tag = "broken_instance",
+                Position = Vector3.Zero,
+                Orientation = Vector2.UnitX
+            });
+
+            editor.EditCopySelectedBlueprintCommand.CanExecute(null).Should().BeFalse();
         }
 
         [Test]
@@ -504,7 +567,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public async Task SavingAGitOnlyEditPublishesTheAreaCatalogChange()
+        public async Task SavingAGitOnlyEditDoesNotPublishAnAreaCatalogChange()
         {
             var editor = CreateEditor();
             var section = editor.SectionFor(ResourceType.Utp)!;
@@ -517,10 +580,10 @@ namespace SWLOR.Toolset.Tests
             section.DetailTag = "git_only_catalog_refresh";
 
             (await editor.TrySaveAsync()).Should().BeTrue();
-            notifications.Should().Be(1,
-                "placed-instance tags and script slots are indexed from GIT, not ARE");
+            notifications.Should().Be(0,
+                "the area catalog entry is parsed from ARE metadata, never the paired GIT");
             placementNotifications.Should().Be(1,
-                "a saved GIT changes the module placement index");
+                "a saved GIT changes the module's GIT-derived indexes");
             new GitDocument(JsonGffDocument.Load(
                     Path.Combine(_moduleRoot, "git", $"{AreaResRef}.git.json")))
                 .Placeables[0].GetStringOrNull("Tag")
@@ -549,7 +612,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public async Task ReloadingAnExternalGitChangePublishesTheAreaCatalogChange()
+        public async Task ReloadingAnExternalGitChangeDoesNotPublishAnAreaCatalogChange()
         {
             var editor = CreateEditor(new ReloadPrompts());
             var section = editor.SectionFor(ResourceType.Utp)!;
@@ -569,7 +632,8 @@ namespace SWLOR.Toolset.Tests
 
             (await editor.TrySaveAsync()).Should().BeTrue();
 
-            notifications.Should().Be(1);
+            notifications.Should().Be(0,
+                "reloading GIT instance data cannot change catalog metadata read from the ARE");
             placementNotifications.Should().Be(1,
                 "reloading the paired GIT changes the placement snapshot");
             editor.SectionFor(ResourceType.Utp)!.Rows[0].Tag.Should().Be(diskTag);

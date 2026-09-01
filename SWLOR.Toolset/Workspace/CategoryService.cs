@@ -473,6 +473,13 @@ namespace SWLOR.Toolset.Workspace
         /// <summary>Re-reads the tree in open views without writing anything.</summary>
         public void NotifyChanged() => Changed?.Invoke();
 
+        /// <summary>Drops TLK-resolved standard palette names and refreshes open category views.</summary>
+        public void RefreshTlkLabels()
+        {
+            _standardPalettes.Clear();
+            Changed?.Invoke();
+        }
+
         private StandardPalette StandardPaletteFor(ResourceType type)
         {
             if (_standardPalettes.TryGetValue(type, out var cached))

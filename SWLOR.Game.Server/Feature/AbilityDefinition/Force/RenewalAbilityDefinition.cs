@@ -37,6 +37,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.Renewal, 15f)
                 .SkillType(SkillType.Force)
                 .IsSingleTargetAbility()
+                .IsHealingAbility()
                 .HasMaxRange(15f)
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>
@@ -59,6 +60,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.Renewal, 15f)
                 .SkillType(SkillType.Force)
                 .IsSingleTargetAbility()
+                .IsHealingAbility()
                 .HasMaxRange(15f)
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>
@@ -81,6 +83,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 .HasRecastDelay(RecastGroup.Renewal, 15f)
                 .SkillType(SkillType.Force)
                 .IsSingleTargetAbility()
+                .IsHealingAbility()
                 .HasMaxRange(15f)
                 .RequiresTarget()
                 .HasCustomValidation((activator, target, _, _) =>

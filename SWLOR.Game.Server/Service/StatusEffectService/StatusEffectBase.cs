@@ -250,7 +250,7 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
                 : tagSuffix;
 
             _nativeEffectTagSuffixes.Add(tagSuffix);
-            return TagEffect(effect, GetNativeEffectTag(tagSuffix));
+            return TagEffect(HideEffectIcon(effect), GetNativeEffectTag(tagSuffix));
         }
 
         private string GetNativeEffectTag(string tagSuffix)

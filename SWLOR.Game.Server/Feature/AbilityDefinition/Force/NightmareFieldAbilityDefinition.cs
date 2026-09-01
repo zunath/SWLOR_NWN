@@ -51,6 +51,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void NightmareField1ImpactAction(uint activator, uint target, int level, Location targetLocation)
         {
+            LightGuardianPowerSupport.ApplyCourageousResolve(activator);
+
             Ability.ApplyTelegraphedCombatImpact(
                 activator,
                 target,

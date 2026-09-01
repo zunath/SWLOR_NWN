@@ -1,6 +1,7 @@
 using Avalonia.Headless.NUnit;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Toolset.Domain.Categories;
 using SWLOR.Toolset.Domain.Conversations;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Workspace;
@@ -158,6 +159,55 @@ namespace SWLOR.Toolset.Tests
             ContainsResRef(explorer.Rows, "ordinary").Should().BeTrue();
             ContainsResRef(explorer.Rows, "dialog1").Should().BeFalse();
             explorer.Tabs.Single(tab => tab.Type == ResourceType.Dlg).Count.Should().Be(1);
+        }
+
+        [Test]
+        public void AreaSearchHidesCategoriesWithoutMatchesAndRestoresThemWhenCleared()
+        {
+            File.WriteAllText(Path.Combine(_root, "are", "nanostation015.are.json"), "{}");
+            File.WriteAllText(Path.Combine(_root, "are", "tatooine001.are.json"), "{}");
+
+            var log = new OutputLogService();
+            var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
+            workspace.Open(_root);
+            var categories = new CategoryService(workspace, log);
+            var section = categories.Section(ResourceType.Area)!;
+            section.IsSeeded = true;
+            var stations = section.AddFolder("Stations");
+            stations.AddChild("Nanostation").AddMember("nanostation015");
+            stations.AddChild("Other Stations").AddMember("tatooine001");
+            section.AddFolder("Planets").AddMember("tatooine001");
+            section.AddFolder("Empty Category");
+
+            var explorer = new ModuleExplorerViewModel(
+                workspace,
+                new PropertiesViewModel(workspace, log),
+                categories,
+                log);
+            explorer.Initialize();
+
+            var stationsRow = explorer.Rows.Single(row => row.Folder == stations);
+            explorer.ToggleCommand.Execute(stationsRow);
+            explorer.Rows.Should().Contain(row => row.Name == "Other Stations");
+            explorer.Rows.Should().Contain(row => row.Name == "Planets");
+            explorer.Rows.Should().Contain(row => row.Name == "Empty Category");
+            explorer.Rows.Should().Contain(row => row.Name == CategorySection.UnsortedFolderName);
+
+            explorer.Filter = "nanostation015";
+
+            explorer.Rows.Should().Contain(row => row.Name == "Stations");
+            explorer.Rows.Should().Contain(row => row.Name == "Nanostation");
+            explorer.Rows.Should().NotContain(row => row.Name == "Other Stations");
+            explorer.Rows.Should().NotContain(row => row.Name == "Planets");
+            explorer.Rows.Should().NotContain(row => row.Name == "Empty Category");
+            explorer.Rows.Should().NotContain(row => row.Name == CategorySection.UnsortedFolderName);
+
+            explorer.Filter = string.Empty;
+
+            explorer.Rows.Should().Contain(row => row.Name == "Other Stations");
+            explorer.Rows.Should().Contain(row => row.Name == "Planets");
+            explorer.Rows.Should().Contain(row => row.Name == "Empty Category");
+            explorer.Rows.Should().Contain(row => row.Name == CategorySection.UnsortedFolderName);
         }
 
         /// <summary>

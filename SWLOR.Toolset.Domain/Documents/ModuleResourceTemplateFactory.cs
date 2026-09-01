@@ -1,3 +1,4 @@
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Script;
 using SWLOR.Toolset.Domain.Workspace;
@@ -78,7 +79,7 @@ namespace SWLOR.Toolset.Domain.Documents
                 '_',
                 new string(characters).Split('_', StringSplitOptions.RemoveEmptyEntries));
             return cleaned.Length > 0
-                ? cleaned[..Math.Min(16, cleaned.Length)]
+                ? cleaned[..Math.Min(NwnResRef.MaxLength, cleaned.Length)]
                 : string.Empty;
         }
 

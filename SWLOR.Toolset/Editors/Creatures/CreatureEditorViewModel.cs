@@ -304,6 +304,45 @@ namespace SWLOR.Toolset.Editors.Creatures
             BasicRows[index] = CreateRow(definition);
         }
 
+        /// <summary>Rebuilds every materialized choice row after TLK-backed labels change.</summary>
+        public void RefreshTlkLabels()
+        {
+            lock (_choiceLoadSync)
+                _choiceLoads.Clear();
+
+            RebuildChoiceRows(BasicRows);
+            RebuildChoiceRows(
+                AppearanceRows,
+                deferSearchableChoices: true,
+                loadDeferredChoicesInBackground: true);
+            RebuildChoiceRows(AiRows);
+
+            foreach (var row in _roleRowCache.Values.SelectMany(rows => rows))
+                row.Dispose();
+            _roleRowCache.Clear();
+            RoleRows.Clear();
+            SelectRole(SelectedRole);
+        }
+
+        private void RebuildChoiceRows(
+            ObservableCollection<BehaviorRowViewModel> rows,
+            bool deferSearchableChoices = false,
+            bool loadDeferredChoicesInBackground = false)
+        {
+            for (var index = 0; index < rows.Count; index++)
+            {
+                if (rows[index].Definition.ChoicesKey == null)
+                    continue;
+
+                var definition = rows[index].Definition;
+                rows[index].Dispose();
+                rows[index] = CreateRow(
+                    definition,
+                    deferSearchableChoices,
+                    loadDeferredChoicesInBackground);
+            }
+        }
+
         public void NormalizeForSave() => Loot.Normalize();
 
         public void SetDirty(bool value) => IsDirty = value;

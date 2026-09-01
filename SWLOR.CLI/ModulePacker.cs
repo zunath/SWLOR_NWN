@@ -27,6 +27,9 @@ namespace SWLOR.CLI
         private const string NewAreaPendingMarkerSuffix = ".pending";
         private const string ErfImportPendingMarkerPattern = ".swlor-toolset-erf-import-*.pending.json";
         private const string ItemRenamePendingMarkerPattern = ".swlor-toolset-item-rename-*.pending.json";
+        // Mirrors ModuleResourceDeletionService.DeleteTransactionSuffix. SWLOR.CLI cannot reference
+        // SWLOR.Toolset, so it refuses the durable manifest and lets the toolset roll it back.
+        private const string ResourceDeleteTransactionPattern = ".*.resource-delete-transaction.json";
 
         public void PackModule(string filePath, bool noPrompt = false)
         {
@@ -40,6 +43,7 @@ namespace SWLOR.CLI
             try
             {
                 RequireNoInterruptedSaves();
+                RequireNoInterruptedResourceDelete();
                 RequireNoInterruptedAreaCreation();
                 RequireNoInterruptedErfImport();
                 RequireNoInterruptedItemRename();
@@ -183,6 +187,7 @@ namespace SWLOR.CLI
             // .pending marker pointing at nothing, failing every subsequent pack. Refusing here
             // lets the toolset recover the transaction before the evidence is destroyed.
             RequireNoInterruptedSaves();
+            RequireNoInterruptedResourceDelete();
             RequireNoInterruptedAreaCreation();
             RequireNoInterruptedErfImport();
             RequireNoInterruptedItemRename();
@@ -579,6 +584,28 @@ namespace SWLOR.CLI
                 string.Join(Environment.NewLine, pending));
         }
 
+        /// <summary>
+        /// Refuses to pack a partially moved logical resource. The toolset writes this manifest
+        /// before moving the first area/dialog/script companion and removes it only at the commit
+        /// point. This check runs after the CLI acquires the module lease, so it also catches a
+        /// second toolset that crashes during PackService's preceding CLI build.
+        /// </summary>
+        private static void RequireNoInterruptedResourceDelete()
+        {
+            var pending = Directory.GetFiles(
+                ".",
+                ResourceDeleteTransactionPattern,
+                SearchOption.TopDirectoryOnly);
+            if (pending.Length == 0)
+                return;
+
+            throw new InvalidOperationException(
+                "Interrupted toolset resource delete detected - packing now could ship an incomplete " +
+                "area, dialog, or script. Open the module in the SWLOR Toolset to recover it, then " +
+                "pack again. Pending files:" + Environment.NewLine +
+                string.Join(Environment.NewLine, pending));
+        }
+
         private static string InterruptedSaveTarget(string backupPath)
         {
             // "area.git.json.<transaction-id>.save-backup" -> "area.git.json"
@@ -651,14 +678,15 @@ namespace SWLOR.CLI
                 if (!Directory.Exists(folder))
                     continue;
 
-                // Only the real resources. Atomic-save temporaries and rollback backups can remain
-                // beside their target after an interrupted/locked write. GetFileNameWithoutExtension
-                // strips their final suffix, so accepting either would convert and pack transaction
-                // debris as a real module resource.
+                // Only the real resources. Atomic-save temporaries and rollback/delete backups can
+                // remain beside their target after an interrupted or locked cleanup.
+                // GetFileNameWithoutExtension strips their final suffix, so accepting any of them
+                // would convert and pack transaction debris as a real module resource.
                 results.AddRange(Directory.GetFiles(folder)
                     .Where(file =>
                         !file.EndsWith(".tmp", StringComparison.OrdinalIgnoreCase) &&
-                        !file.EndsWith(".save-backup", StringComparison.OrdinalIgnoreCase)));
+                        !file.EndsWith(".save-backup", StringComparison.OrdinalIgnoreCase) &&
+                        !file.EndsWith(".delete-backup", StringComparison.OrdinalIgnoreCase)));
             }
 
             return results;

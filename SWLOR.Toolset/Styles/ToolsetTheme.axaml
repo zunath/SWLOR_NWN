@@ -39,6 +39,7 @@
       <SolidColorBrush x:Key="AccentInkBrush" Color="#D3E3FB" />
       <SolidColorBrush x:Key="AmberBrush" Color="#D9A155" />
       <SolidColorBrush x:Key="GreenBrush" Color="#5FBE8C" />
+      <SolidColorBrush x:Key="ErrorBrush" Color="#F07A7A" />
       <SolidColorBrush x:Key="GoldBrush" Color="#E4CE9A" />
 
       <!-- type: Segoe UI Variable is Win11-only, so the stack falls back to Segoe UI on Win10 -->

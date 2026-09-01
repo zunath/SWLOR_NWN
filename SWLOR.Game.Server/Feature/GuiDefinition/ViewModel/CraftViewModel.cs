@@ -1131,18 +1131,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void ApplyImmobility()
         {
-            ApplyEffectToObject(DurationType.Permanent, EffectCutsceneImmobilize(), Player);
+            var effect = TagEffect(EffectCutsceneImmobilize(), PlayerActivityEffectTag.CraftingImmobilize);
+            ApplyEffectToObject(DurationType.Permanent, effect, Player);
         }
 
         private void RemoveImmobility()
         {
-            for (var effect = GetFirstEffect(Player); GetIsEffectValid(effect); effect = GetNextEffect(Player))
-            {
-                if (GetEffectType(effect) == EffectTypeScript.CutsceneImmobilize)
-                {
-                    RemoveEffect(Player, effect);
-                }
-            }
+            RemoveEffectByTag(Player, PlayerActivityEffectTag.CraftingImmobilize);
         }
 
         private void SwitchToSetUpMode()

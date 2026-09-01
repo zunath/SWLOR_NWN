@@ -94,6 +94,7 @@ public class CombatReleaseBalanceAuditTests
         StatType.DamageToDisorientedDazedTargetPercentAdjustment,
         StatType.RangedDamageToNearbyTargetPercentAdjustment,
         StatType.HighFPAndStaminaAttackPercentAdjustment,
+        StatType.HighFPAndStaminaAbilityDamagePercentAdjustment,
         StatType.AttackToBleedingTargetPercentAdjustment,
         StatType.TwinBladeSingleTargetAbilityDamagePercentAdjustment,
         StatType.TwinBladeAreaAbilityDamagePercentAdjustment,
@@ -172,6 +173,7 @@ public class CombatReleaseBalanceAuditTests
     private static readonly StatType[] CriticalRateStats =
     {
         StatType.CriticalRatePercentAdjustment,
+        StatType.RangedCriticalRatePercentAdjustment,
         StatType.StaffCriticalRatePercentAdjustment,
         StatType.DeflectionNextSkillAbilityCriticalRatePercentAdjustment,
         StatType.NextSkillAbilityCriticalRatePercentAdjustment,
@@ -191,7 +193,8 @@ public class CombatReleaseBalanceAuditTests
         StatType.TargetStatusCriticalRatePercentAdjustment,
         StatType.RangedAutoAttackCycleCriticalRatePercentAdjustment,
         StatType.NonCriticalAbilityNextSkillAbilityCriticalRatePercentAdjustment,
-        StatType.BackAttackCriticalRatePercentAdjustment
+        StatType.BackAttackCriticalRatePercentAdjustment,
+        StatType.RangedAbilityLongRangeCriticalRatePercentAdjustment
     };
 
     private static readonly StatType[] CriticalDamageStats =
@@ -201,7 +204,8 @@ public class CombatReleaseBalanceAuditTests
         StatType.RangedCriticalDamagePercentAdjustment,
         StatType.CriticalDamageHighHPTargetPercentAdjustment,
         StatType.CriticalDamageTargetStatusPercentAdjustment,
-        StatType.IdleSkillAbilityCriticalDamagePercentAdjustment
+        StatType.IdleSkillAbilityCriticalDamagePercentAdjustment,
+        StatType.OpeningAutoAttackCriticalDamagePercentAdjustment
     };
 
     private static readonly StatType[] HasteStats =
@@ -257,7 +261,7 @@ public class CombatReleaseBalanceAuditTests
         StatType.StatusAppliedSelfDefensePercentAdjustment,
         StatType.StatusAppliedSelfEvasionPercentAdjustment,
         StatType.AreaAbilityUsedEvasionPercentAdjustment,
-        StatType.AbilityUsedRangedEvasionPercentAdjustment,
+        StatType.AbilityUsedRangedDeflection,
         StatType.CriticalHitSelfEvasionPercentAdjustment,
         StatType.AbilityUsedNearbyAllyDefensePercentAdjustment,
         StatType.AbilityUsedNearbyAllyForceDefensePercentAdjustment,
@@ -344,11 +348,12 @@ public class CombatReleaseBalanceAuditTests
         StatType.StatusAppliedTargetPhysicalDefensePercentAdjustment,
         StatType.StatusAppliedTargetAccuracyPercentAdjustment,
         StatType.AbilityTargetStatusPhysicalDefensePercentAdjustment,
-        StatType.AbilityHitChanceAgainstSuppressionStackPercentAdjustment,
-        StatType.SuppressionStackDamageDealtToOtherTargetsPercentAdjustment,
+        StatType.RangedAttackAccuracyAgainstSuppressionStackPercentAdjustment,
+        StatType.SuppressionStackDamageDealtPercentAdjustment,
         StatType.DefenseIgnoreHitPhysicalDefensePercentAdjustment,
         StatType.AreaAbilityTargetHitSequenceExposedDurationSeconds,
-        StatType.IdleStatusDurationPercentAdjustment
+        StatType.IdleStatusDurationPercentAdjustment,
+        StatType.RangedAbilityTargetDefenseReductionPercent
     };
 
     [Test]
@@ -509,6 +514,13 @@ public class CombatReleaseBalanceAuditTests
             "Tradecraft is explicitly audited non-combat utility");
         packages[PerkCategoryType.EspionageTradecraft].SupportPackageCount.Should().Be(0,
             "non-combat disguise utility must not inflate compound combat-support scores");
+
+        packages[PerkCategoryType.RifleMarksman].Stats[StatType.RangedAbilityLongRangeCriticalRatePercentAdjustment]
+            .Should().Be(8);
+        packages[PerkCategoryType.RifleMarksman].Stats[StatType.RangedAbilityTargetDefenseReductionPercent]
+            .Should().Be(10);
+        CriticalRateStats.Should().Contain(StatType.RangedAbilityLongRangeCriticalRatePercentAdjustment);
+        ControlStats.Should().Contain(StatType.RangedAbilityTargetDefenseReductionPercent);
     }
 
     private static bool IsCompoundReleaseBlocker(ReleaseProfile profile)

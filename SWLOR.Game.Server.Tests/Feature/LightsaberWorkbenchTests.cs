@@ -5,6 +5,7 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
@@ -90,15 +91,14 @@ public class LightsaberWorkbenchTests
         var saberProperties = ExtractProperties(saber);
         var templateProperties = ExtractProperties(template);
 
-        // Workbench sabers receive a free 5m glow: Light (44), no subtype,
-        // iprp_lightcost (18), Dim (1). It is part of the output blueprint rather
-        // than a socketed enhancement, so constructing the weapon cannot charge
-        // or consume an enhancement slot for it.
+        // Workbench sabers receive a free 5m glow: Light (44), White (6),
+        // iprp_lightcost (18), Dim (1). White is the safe blueprint fallback;
+        // construction replaces it with the selected blade's supported color.
         var expectedProperties = templateProperties
-            .Append((PropertyName: 44, Subtype: 0, CostTable: 18, CostValue: 1))
+            .Append((PropertyName: 44, Subtype: 6, CostTable: 18, CostValue: 1))
             .ToList();
         saberProperties.Should().BeEquivalentTo(expectedProperties,
-            $"{Path.GetFileName(saberPath)} must carry the exact property set of {Path.GetFileName(templatePath)} plus a free Dim (5m) Light property");
+            $"{Path.GetFileName(saberPath)} must carry the exact property set of {Path.GetFileName(templatePath)} plus a free Dim (5m) White Light property");
     }
 
     private static List<(int PropertyName, int Subtype, int CostTable, int CostValue)> ExtractProperties(JObject item)
@@ -342,6 +342,49 @@ public class LightsaberWorkbenchTests
             File.Exists(Path.Combine(uiRoot, $"{hilt.PreviewResref}.tga"))
                 .Should().BeTrue($"preview texture {hilt.PreviewResref}.tga must exist in sw_ui");
         }
+    }
+
+    [Test]
+    public void BladeColors_UseMatchingLightColorsOrNeutralWhiteFallback()
+    {
+        var expected = new Dictionary<string, LightColor>
+        {
+            ["Orange"] = LightColor.Orange,
+            ["Blue"] = LightColor.Blue,
+            ["Green 1"] = LightColor.Green,
+            ["Red"] = LightColor.Red,
+            ["White"] = LightColor.White,
+            ["Yellow"] = LightColor.Yellow,
+            ["Purple 1"] = LightColor.Purple,
+            ["Teal"] = LightColor.White,
+            ["Pink"] = LightColor.White,
+            ["Brown"] = LightColor.White,
+            ["Green 2"] = LightColor.Green,
+            ["Purple 2"] = LightColor.Purple,
+            ["Lavender"] = LightColor.White,
+            ["Cyan"] = LightColor.White,
+        };
+
+        var colors = LightsaberWorkbench.GetBladeColors(BaseItem.Lightsaber, false)
+            .ToDictionary(color => color.Name);
+        colors.Keys.Should().BeEquivalentTo(expected.Keys);
+
+        foreach (var (name, lightColor) in expected)
+        {
+            colors[name].LightColor.Should().Be(lightColor);
+        }
+
+        var root = FindRepositoryRoot();
+        var viewModel = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "LightsaberWorkbenchViewModel.cs"));
+        viewModel.Should().Contain("ApplyBladeLight(item, top.LightColor);");
+        viewModel.Should().Contain("ItemPropertyLight(LightBrightness.Dim, lightColor)");
+        viewModel.Should().Contain("GetItemPropertyType(ip) == ItemPropertyType.Light");
     }
 
     private static Func<string, bool> GetIsCraftableSaberResref()

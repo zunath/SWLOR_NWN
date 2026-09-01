@@ -6,11 +6,68 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Tests.Perks;
 
 public class CrossSkillPerkInteractionSafetyTests
 {
+    [Test]
+    public void IdleAbilityBonuses_KeepStaffAndRifleChannelsIndependent()
+    {
+        var perks = BuildPerksWithout2daLookup().ToDictionary(perk => perk.Type);
+
+        static PerkLevel MaxLevel(PerkDetail perk) => perk.PerkLevels
+            .OrderByDescending(level => level.Key)
+            .First()
+            .Value;
+
+        var patientSentinel = MaxLevel(perks[PerkType.PatientSentinel]);
+        patientSentinel.StatBonuses.Should().Contain(bonus =>
+            bonus.Stat == StatType.AlternateIdleSkillAbilitySkillType);
+        patientSentinel.StatBonuses.Should().NotContain(bonus =>
+            bonus.Stat == StatType.IdleSkillAbilitySkillType,
+            "Staff and Rifle idle payloads need independent selectors and bonus fields");
+
+        var patience = MaxLevel(perks[PerkType.Patience]);
+        patience.StatBonuses.Should().Contain(bonus =>
+            bonus.Stat == StatType.IdleSkillAbilitySkillType);
+        patience.StatBonuses.Should().NotContain(bonus =>
+            bonus.Stat == StatType.AlternateIdleSkillAbilitySkillType);
+
+        Stat.GetStatTypeAggregation(StatType.IdleSkillAbilityRequiredIdleSeconds)
+            .Should().Be(StatTypeAggregation.Maximum);
+        Stat.GetStatTypeAggregation(StatType.AlternateIdleSkillAbilityRequiredIdleSeconds)
+            .Should().Be(StatTypeAggregation.Maximum);
+        Stat.GetStatTypeAggregation(StatType.OpeningAutoAttackIdleSeconds)
+            .Should().Be(StatTypeAggregation.Maximum);
+        Stat.AggregateStatAdjustment(StatType.OpeningAutoAttackIdleSeconds, 3, 3)
+            .Should().Be(3,
+                "Steady Aim and Dead Center each promise the same three-second opening window");
+
+        var root = FindRepositoryRoot();
+        var combat = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
+        combat.Should().Contain("_idleSkillAbilityStatChannels");
+        combat.Should().Contain("StatType.AlternateIdleSkillAbilitySkillType");
+        combat.Should().Contain("foreach (var channel in _idleSkillAbilityStatChannels)");
+        combat.Should().Contain("typeof(IdleSkillAbilityReadyStatusEffect)");
+        combat.Should().Contain("ColorToken.Combat(\"Idle Skill Ability Ready\")");
+        var restoreOnLogin = ExtractMethod(combat, "public static void RestoreIdleReadinessOnPlayerEnter()");
+        restoreOnLogin.Should().Contain("RefreshIdleReadiness(creature)",
+            "non-persistent readiness markers must be rebuilt when a player logs in");
+        restoreOnLogin.Should().Contain("ScheduleIdleReadinessRefresh(creature)");
+        combat.Should().NotContain("Patience Ready",
+            "the shared readiness marker also represents Staff's Patient Sentinel channel");
+
+        var idleReadyStatus = Read(
+            root,
+            "SWLOR.Game.Server",
+            "Feature",
+            "StatusEffectDefinition",
+            "IdleSkillAbilityReadyStatusEffect.cs");
+        idleReadyStatus.Should().Contain("public override string Name => \"Idle Skill Ability Ready\"");
+    }
+
     [Test]
     public void ChargedBlows_NextAttackBonusSupportsAbilitiesAndAutoAttacks()
     {
@@ -151,9 +208,10 @@ public class CrossSkillPerkInteractionSafetyTests
 
         var damageEffects = ExtractMethod(combat, "public static void ApplyDamageDealtEffects(");
         damageEffects.Should().Contain("bool isAbilityDamage = false");
-        damageEffects.Should().Contain("if (isAbilityDamage)");
-        damageEffects.Should().Contain("ApplyPredatorsMarkEffects(attacker, defender, skillType);");
-        damageEffects.Should().Contain("else");
+        damageEffects.Should().Contain(
+            "ApplyPredatorsMarkEffects(attacker, defender, isAbilityDamage);",
+            "marked targets must grant Predator's Mark II stacks from both abilities and ordinary attacks");
+        damageEffects.Should().Contain("if (!isAbilityDamage)");
         damageEffects.Should().Contain(
             "ApplyAutoAttackSuppressionStack(attacker, defender, skillType, damageType);");
         damageEffects.Should().Contain(
@@ -241,6 +299,53 @@ public class CrossSkillPerkInteractionSafetyTests
             value => value > 0 && value < 100,
             "a paid ability may cross-convert part of its cost, but cannot restore its entire cost or create a self-feeding resource cycle");
 
+        Stat.GetStatTypeAggregation(StatType.AbilityStaminaCostFPRestorePercentSkillType)
+            .Should().Be(StatTypeAggregation.Maximum);
+        Stat.GetStatTypeAggregation(StatType.AbilityFPCostStaminaRestorePercentSkillType)
+            .Should().Be(StatTypeAggregation.Maximum);
+        Stat.GetStatTypeAggregation(StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent)
+            .Should().Be(StatTypeAggregation.Maximum);
+
+        Stat.AggregateStatAdjustment(
+                StatType.AbilityStaminaCostFPRestorePercentSkillType,
+                (int)SkillType.Saberstaff,
+                (int)SkillType.Saberstaff)
+            .Should().Be((int)SkillType.Saberstaff,
+                "Conduit Training and an active Conduit effect must keep the Saberstaff selector valid");
+        Stat.AggregateStatAdjustment(
+                StatType.AbilityFPCostStaminaRestorePercentSkillType,
+                (int)SkillType.Force,
+                (int)SkillType.Force)
+            .Should().Be((int)SkillType.Force,
+                "Conduit Training and an active Conduit effect must keep the Force selector valid");
+        Stat.AggregateStatAdjustment(
+                StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent,
+                60,
+                70)
+            .Should().Be(70,
+                "Balanced Current and Infinite Conduit must use the strictest active threshold, not add to 130%");
+
+        var activeEffects = new CreatureStatusEffect();
+        var lowerThreshold = new MaximumThresholdStatusEffect(60);
+        var higherThreshold = new MaximumThresholdStatusEffect(70);
+        activeEffects.Add(lowerThreshold);
+        activeEffects.Add(higherThreshold);
+        activeEffects.StatGroup.Stats[StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent]
+            .Should().Be(70);
+        activeEffects.Remove(higherThreshold);
+        activeEffects.StatGroup.Stats[StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent]
+            .Should().Be(60, "removing the stricter effect must reveal the remaining threshold");
+
+        CalculateCrossResourceRestore(1, 35).Should().Be(0,
+            "small costs must not be rounded up into guaranteed restoration");
+        CalculateCrossResourceRestore(3, 35).Should().Be(1);
+        CalculateCrossResourceRestore(4, 60).Should().Be(2,
+            "Conduit Training plus Conduit Stance should remain useful without restoring the full cost");
+        CalculateCrossResourceRestore(4, 85).Should().Be(3,
+            "Conduit Training plus Infinite Conduit should still consume net resources");
+        CalculateCrossResourceRestore(20, 110).Should().Be(19,
+            "Training, Stance, and Infinite Conduit together must remain below full cost restoration");
+
         var root = FindRepositoryRoot();
         var stamina = Read(root, "SWLOR.Game.Server", "Service", "AbilityService", "AbilityRequirementStamina.cs");
         var force = Read(root, "SWLOR.Game.Server", "Service", "AbilityService", "AbilityRequirementFP.cs");
@@ -255,6 +360,49 @@ public class CrossSkillPerkInteractionSafetyTests
             .Should().NotContain("ApplyAbilityFPCostStaminaRestore");
         ExtractMethod(combat, "public static void ApplyAbilityFPCostStaminaRestore(")
             .Should().NotContain("ApplyAbilityStaminaCostFPRestore");
+        ExtractMethod(combat, "public static void ApplyAbilityStaminaCostFPRestore(")
+            .Should().Contain("ApplyAbilityRestoredFPEffects(creature)",
+                "Energized Forms must trigger when Conduit restores FP");
+
+        var hostileRestore = ExtractMethod(combat, "private static void ApplyHostileAbilityResourceRestoreEffects(");
+        hostileRestore.Should().Contain("var restoredFP =");
+        hostileRestore.Should().Contain("var restoredStamina =");
+        hostileRestore.Should().Contain("if (restoredFP > 0)");
+        hostileRestore.Should().Contain("if (restoredFP > 0 && restoredStamina > 0)");
+
+        var deflectionRestore = ExtractMethod(combat, "public static void ApplyAbilityGrantedAttackDeflectionEffects(");
+        deflectionRestore.Should().Contain("if (Stat.RestoreFP(activator, fpRestore) > 0)");
+
+        var areaRestore = ExtractMethod(combat, "private static void ApplyAreaAbilityImpactEffects(");
+        areaRestore.Should().Contain("var restoredFP =");
+        areaRestore.Should().Contain("var restoredStamina =");
+        areaRestore.Should().Contain("if (restoredFP > 0)");
+        areaRestore.Should().Contain("if (restoredFP > 0 && restoredStamina > 0)");
+    }
+
+    [Test]
+    public void AvoidedAttackRangedDeflectionRefresh_RunsAbilityGrantedDeflectionRiders()
+    {
+        var root = FindRepositoryRoot();
+        var combat = Read(root, "SWLOR.Game.Server", "Service", "Combat.cs");
+        var refresh = ExtractMethod(
+            combat,
+            "private static void ApplyAvoidedAttackAbilityUsedRangedDeflectionRefresh(");
+
+        refresh.Should().Contain("if (StatusEffect.ApplyStatusEffect(",
+            "deflection riders must run only when the refreshed status was actually applied");
+        refresh.Should().Contain(
+            "Stat.GetStatTypeDeflectionSource(StatType.AbilityUsedRangedDeflection)",
+            "the refreshed deflection must retain the stat-declared ranged source");
+        refresh.Should().Contain("ApplyAbilityGrantedAttackDeflectionEffects(creature, source)",
+            "Last Word refreshes must trigger Force Gyre and any future stat-driven deflection riders");
+    }
+
+    private static int CalculateCrossResourceRestore(int cost, int percent)
+    {
+        return (int)typeof(Combat)
+            .GetMethod("CalculateResourceRestoreFromCost", BindingFlags.Static | BindingFlags.NonPublic)!
+            .Invoke(null, new object[] { cost, percent })!;
     }
 
     [Test]
@@ -564,5 +712,29 @@ public class CrossSkillPerkInteractionSafetyTests
             directory = directory.Parent;
 
         return directory ?? throw new DirectoryNotFoundException("Could not locate SWLOR.Game.Server.sln from the test directory.");
+    }
+
+    private sealed class MaximumThresholdStatusEffect : StatusEffectBase
+    {
+        private readonly int _threshold;
+
+        public override string Name => "Maximum Threshold Test";
+        public override EffectIconType Icon => EffectIconType.Invalid;
+
+        public MaximumThresholdStatusEffect()
+            : this(0)
+        {
+        }
+
+        public MaximumThresholdStatusEffect(int threshold)
+        {
+            _threshold = threshold;
+            StatGroup.Stats[StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent] = threshold;
+        }
+
+        public override IStatusEffect Clone()
+        {
+            return new MaximumThresholdStatusEffect(_threshold);
+        }
     }
 }

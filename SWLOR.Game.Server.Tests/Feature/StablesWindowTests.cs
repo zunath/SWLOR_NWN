@@ -30,6 +30,21 @@ public class StablesWindowTests
         }
     }
 
+    [Test]
+    public void BeastHpDisplay_UsesTheFinalLevelBudgetWithoutReapplyingVitality()
+    {
+        var source = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot().FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "StablesViewModel.cs"));
+
+        source.Should().Contain("HP = $\"{level.HP}\";");
+        source.Should().NotContain("level.HP +");
+    }
+
     private static string ExtractMethod(string source, string signature)
     {
         var signatureIndex = source.IndexOf(signature, StringComparison.Ordinal);

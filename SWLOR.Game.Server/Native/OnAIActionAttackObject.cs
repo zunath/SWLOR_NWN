@@ -77,6 +77,11 @@ namespace SWLOR.Game.Server.Native
                 var pCreature = CNWSCreature.FromPointer(creature);
                 var pNode = CNWSObjectActionNode.FromPointer(node);
                 var pArea = pCreature.GetArea();
+                var attackSkillType = Combat.GetEquippedWeaponSkillType(pCreature.m_idSelf);
+                var isPlayerCreature = pCreature.m_bPlayerCharacter == 1;
+                var usesRangedWeapon = isPlayerCreature
+                    ? pCreature.GetRangeWeaponEquipped() == 1
+                    : Combat.IsRangedWeaponSkill(attackSkillType);
 
                 // Clean up attack delay entry if creature no longer exists
                 if (_creatureAttackDelays.ContainsKey(pCreature.m_idSelf) && !GetIsObjectValid(pCreature.m_idSelf))
@@ -175,7 +180,19 @@ namespace SWLOR.Game.Server.Native
                     var pTargetArea = pTarget.GetArea();
 
                     var fMaxAttackRange = pCreature.MaxAttackRange(oidAttackTarget);
-                    var fDesiredAttackRange = pCreature.DesiredAttackRange(oidAttackTarget);
+                    var fDesiredAttackRange = isPlayerCreature
+                        ? ResolveEngineDesiredAttackRange(
+                            pCreature.DesiredAttackRange(oidAttackTarget),
+                            fMaxAttackRange,
+                            usesRangedWeapon)
+                        : ResolveWeaponEngagementRange(
+                            Combat.GetWeaponEngagementRange(attackSkillType),
+                            fMaxAttackRange,
+                            usesRangedWeapon);
+                    fMaxAttackRange = ResolveMaximumAttackRange(
+                        fDesiredAttackRange,
+                        fMaxAttackRange,
+                        usesRangedWeapon);
                     if (pCreature.m_oidAttemptedAttackTarget == OBJECT_INVALID)
                     {
                         pCreature.m_oidAttemptedAttackTarget = oidAttackTarget;
@@ -268,7 +285,7 @@ namespace SWLOR.Game.Server.Native
 
                             CNWSCreature newTarget = null;
 
-                            if (pCreature.GetRangeWeaponEquipped() == 0)
+                            if (!usesRangedWeapon)
                             {
                                 newTarget = pCreature.GetNewCombatTarget(oidAttackTarget);
                             }
@@ -331,7 +348,7 @@ namespace SWLOR.Game.Server.Native
                                 fDesiredAttackRange,
                                 fPersonalSpaceRange,
                                 bOutsideAttackRange,
-                                pCreature.GetRangeWeaponEquipped() == 1);
+                                usesRangedWeapon);
                             fMoveToTargetRange = movementPlan.AttackCheckRange;
                             fPathMoveRange = movementPlan.PathCompletionRange;
                             vMoveTargetPosition = new Vector(
@@ -396,12 +413,26 @@ namespace SWLOR.Game.Server.Native
 
                 _rangedRepositionDirections.Remove(pCreature.m_idSelf);
 
-
-
-                if (pCreature.m_pcCombatRound == null)
+                // Preserve the engine action's cleanup, target validation, leash, and pathing
+                // behavior before requiring a combat round. The active round is only needed once
+                // this action is ready to resolve a swing.
+                var pCombatRound = pCreature.m_pcCombatRound;
+                if (pCombatRound == null)
                 {
                     pCreature.ChangeAttackTarget(pNode, OBJECT_INVALID);
                     return ACTION_FAILED;
+                }
+
+                // The equipped-weapon skill above is the safe pre-round fallback used for range
+                // and pathing. At resolution time, prefer the weapon for the actual main-hand or
+                // off-hand swing so skill-scoped limited effects consume the correct charge.
+                var currentWeaponAttackType = pCombatRound.GetWeaponAttackType();
+                var currentAttackWeapon = pCombatRound.GetCurrentAttackWeapon(
+                    currentWeaponAttackType == WEAPON_ATTACK_TYPE_OFFHAND ? 1 : 0);
+                if (currentAttackWeapon != null)
+                {
+                    attackSkillType = SWLOR.Game.Server.Service.Skill.GetSkillTypeByBaseItem(
+                        (SWLOR.NWN.API.NWScript.Enum.Item.BaseItem)currentAttackWeapon.m_nBaseItem);
                 }
 
                 pCreature.m_vLastAttackPosition = new Vector();
@@ -423,17 +454,46 @@ namespace SWLOR.Game.Server.Native
                     }
                 }
 
-                var attackSkillType = Combat.GetEquippedWeaponSkillType(pCreature.m_idSelf);
-                var useDefaultMinimumDelay = Combat.HasNextAutoAttackNoDelay(pCreature.m_idSelf, attackSkillType);
-                var calculatedDelay = Combat.CalculateAttackDelay(pCreature.m_idSelf);
+                var hasLimitedAttackDelayReduction = StatusEffect.TryGetLimitedAttackDelayReduction(
+                    pCreature.m_idSelf,
+                    attackSkillType,
+                    out var limitedAttackDelayReductionPercent,
+                    out var limitedAttackDelayReductionRemainingAttacks);
+                var hasLimitedAttackNoDelay = StatusEffect.TryGetLimitedAttackNoDelay(
+                    pCreature.m_idSelf,
+                    attackSkillType,
+                    out var limitedAttackNoDelayRemainingAttacks);
+                var hasArmedNoDelay = Combat.HasTemporaryNextAutoAttackNoDelay(
+                    pCreature.m_idSelf,
+                    attackSkillType);
+                var useDefaultMinimumDelay = hasArmedNoDelay || hasLimitedAttackNoDelay;
+
+                // Limited Haste is skill-scoped. Supply it to this swing's delay calculation
+                // instead of contributing a creature-wide AttackDelayReductionPercent stat.
+                var calculatedDelayWithoutLimitedReduction = Combat.CalculateAttackDelay(pCreature.m_idSelf);
+                var calculatedDelay = hasLimitedAttackDelayReduction
+                    ? Combat.CalculateAttackDelay(pCreature.m_idSelf, limitedAttackDelayReductionPercent)
+                    : calculatedDelayWithoutLimitedReduction;
                 var effectiveAttackDelay = Combat.CalculateEffectiveAttackDelay(calculatedDelay, useDefaultMinimumDelay);
+                var effectiveDelayWithoutLimitedReduction = Combat.CalculateEffectiveAttackDelay(
+                    calculatedDelayWithoutLimitedReduction,
+                    hasArmedNoDelay);
+
+                var limitedDelayReductionRemainingAttacks = hasLimitedAttackDelayReduction
+                    ? limitedAttackDelayReductionRemainingAttacks
+                    : 0;
+                var limitedNoDelayRemainingAttacks = hasLimitedAttackNoDelay
+                    ? limitedAttackNoDelayRemainingAttacks
+                    : 0;
 
                 // The delay the attacker would have without a no-delay buff. Lowering the delay to
                 // the floor is meaningless for a build already at the floor, so this is passed to
                 // ConsumeAttacksPerSwing alongside useDefaultMinimumDelay to guarantee the buff is
                 // worth an extra attack either way. Both values are equal for a build already at the
                 // floor, so the buff state has to travel separately from the delays.
-                var unbuffedAttackDelay = Combat.CalculateEffectiveAttackDelay(calculatedDelay, false);
+                var unbuffedAttackDelay = Combat.CalculateEffectiveAttackDelay(
+                    calculatedDelayWithoutLimitedReduction,
+                    false);
 
                 // Check attack delay before starting or processing combat
                 // First attack is always instant, subsequent attacks respect delay
@@ -581,7 +641,10 @@ namespace SWLOR.Game.Server.Native
                                                         pCreature.m_idSelf,
                                                         effectiveAttackDelay,
                                                         unbuffedAttackDelay,
-                                                        useDefaultMinimumDelay);
+                                                        useDefaultMinimumDelay,
+                                                        effectiveDelayWithoutLimitedReduction,
+                                                        limitedDelayReductionRemainingAttacks,
+                                                        limitedNoDelayRemainingAttacks);
 
                                                     if (nAttacks > 1)
                                                     {
@@ -596,7 +659,15 @@ namespace SWLOR.Game.Server.Native
                                                     }
                                                 }
 
-                                                pCreature.ResolveAttack(oidTarget, nAttacks, nTimeAnimation);
+                                                StatusEffect.BeginNativeAttackSwing(pCreature.m_idSelf);
+                                                try
+                                                {
+                                                    pCreature.ResolveAttack(oidTarget, nAttacks, nTimeAnimation);
+                                                }
+                                                finally
+                                                {
+                                                    StatusEffect.EndNativeAttackSwing(pCreature.m_idSelf);
+                                                }
                                                 bTargetActive = true;
 
                                                 // Set the delay timestamp after the attack resolves
@@ -817,6 +888,67 @@ namespace SWLOR.Game.Server.Native
             bool TrackAttackTarget);
 
         private readonly record struct RepositionDestination(float X, float Y, float Z);
+
+        private static float ResolveWeaponEngagementRange(
+            float weaponEngagementRange,
+            float maxAttackRange,
+            bool usesRangedWeapon)
+        {
+            if (!usesRangedWeapon)
+                return weaponEngagementRange;
+
+            if (float.IsNaN(maxAttackRange) ||
+                float.IsInfinity(maxAttackRange) ||
+                maxAttackRange <= CNW_PATHFIND_TOLERANCE)
+            {
+                return weaponEngagementRange;
+            }
+
+            var maximumUsableRange = maxAttackRange - CNW_PATHFIND_TOLERANCE;
+            return Math.Min(weaponEngagementRange, maximumUsableRange);
+        }
+
+        private static float ResolveEngineDesiredAttackRange(
+            float desiredAttackRange,
+            float maxAttackRange,
+            bool usesRangedWeapon)
+        {
+            if (!usesRangedWeapon ||
+                !float.IsNaN(desiredAttackRange) &&
+                !float.IsInfinity(desiredAttackRange) &&
+                desiredAttackRange > Combat.MeleeWeaponEngagementRange)
+            {
+                return desiredAttackRange;
+            }
+
+            if (float.IsNaN(maxAttackRange) ||
+                float.IsInfinity(maxAttackRange) ||
+                maxAttackRange <= Combat.MeleeWeaponEngagementRange)
+            {
+                return Combat.RangedWeaponEngagementRange;
+            }
+
+            var maximumUsableRange = maxAttackRange - CNW_PATHFIND_TOLERANCE;
+            return Math.Min(Combat.RangedWeaponEngagementRange, maximumUsableRange);
+        }
+
+        private static float ResolveMaximumAttackRange(
+            float desiredAttackRange,
+            float maxAttackRange,
+            bool usesRangedWeapon)
+        {
+            if (!usesRangedWeapon)
+                return maxAttackRange;
+
+            if (float.IsNaN(maxAttackRange) ||
+                float.IsInfinity(maxAttackRange) ||
+                maxAttackRange <= CNW_PATHFIND_TOLERANCE)
+            {
+                return desiredAttackRange;
+            }
+
+            return Math.Max(maxAttackRange, desiredAttackRange);
+        }
 
         private static bool TryCancelAttackForCombatLeash(CNWSCreature pCreature, CNWSObjectActionNode pNode, uint target)
         {

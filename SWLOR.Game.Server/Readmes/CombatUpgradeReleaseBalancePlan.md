@@ -1,6 +1,6 @@
 # Combat Upgrade Release Balance Plan
 
-Last reviewed: 2026-07-19
+Last reviewed: 2026-08-17
 
 ## Purpose
 
@@ -100,7 +100,7 @@ Weapon skill perk lines should follow the default 18-slot, 60 SP progression pat
 
 The intended template uses three ranked combat abilities, two general traits, three cross-skill traits, one stance, and one capstone. The corrected type for `Ability 3 Rank I` is `Combat`.
 
-The local Bible and manifest now match the full template for every weapon style: 18 rows, 60 SP, a skill-rank 2 `Combat` opener, a skill-rank 50 `Capstone`, and the corrected `Ability 3 Rank I` `Combat` slot. The current mismatch is implementation-side: live C# definitions still need to be aligned to the new Bible names, descriptions, skill requirements, SP prices, resources, cooldowns, and effects.
+The local Bible, regenerated manifest, generated perk/ability code, and supporting TLK/2DA data now match the full template for every weapon style: 18 rows, 60 SP, a skill-rank 2 `Combat` opener, a skill-rank 50 `Capstone`, and the corrected `Ability 3 Rank I` `Combat` slot. The static alignment pass is complete; the remaining gate is live balance and engine-behavior validation.
 
 ### Audit Rules And Config
 
@@ -164,11 +164,11 @@ The same numeric stat may need different budget targets depending on its source 
 These engine-enforced rules bound how buckets combine across trees. Perk authors must price new content against these ceilings, not against each bucket in isolation.
 
 - Outgoing percent-damage bonuses (outgoing damage percent, weapon/Force damage percent, target-low-HP percent, target-status percent, and related percent stages) apply sequentially but the combined bonus is capped at +100% of the pre-stage damage (`Combat.MaximumDamageBonusPercent`). Flat weapon damage bonuses are outside this cap.
-- Incoming damage reduction from the target-status damage-taken stage and the generic damage-taken stage is capped at 85% combined (`Combat.MaximumCombinedDamageReductionPercent`); each stage additionally keeps its own 95% clamp. Guard is a separate damage-stage mechanic with its own 40% cap and is not part of this bucket.
+- Incoming damage reduction from the target-status damage-taken stage and the generic damage-taken stage is capped at 85% combined (`Combat.MaximumCombinedDamageReductionPercent`); each stage additionally keeps its own 95% clamp. Guard is a separate damage-stage mechanic with its own 55% cap (`Combat.MaximumGuardDamageReductionPercent`) and is not part of this bucket.
 - Ability critical rate is clamped to the same 5-50 range as auto-attack critical rate. Treat 50 as the hard crit ceiling when budgeting conditional crit bonuses.
 - Hard crowd control (Dazed, Knockdown, Stunned, Immobilized, Blind, Sleep/Tranquilized, Confusion) follows two rules. First, an ability's cooldown must be at least 1.5x its hard-control duration; dedicated control tools use 30-second effects on 45-second cooldowns, while damage-primary abilities carry shorter riders (15 seconds or less) so their cooldowns stay legal. Second, when any hard-control effect expires, the target gains 20 seconds of immunity to all hard-control types (shared `HardCrowdControl` immunity category, plus the existing per-type immunity), so alternating control types cannot chain-lock a target. Design for roughly 45-60% single-source control uptime, never 100%.
 - Uncapped AoE control is not allowed: area control tools must declare a target cap (grenades cap at 5; Force Push caps by rank).
-- Only one Leadership command effect (Press the Attack, Cleanse Order, Decisive Command) can be active per leader at a time; a new command replaces the previous one. Leadership damage-reduction sources (Watchful Presence, Cleanse Order, Bolster Resolve, Hold the Line) do not sum - the strongest active source applies.
+- Only one Leadership command effect (Press the Attack, Cleanse Order, Decisive Command) can be active per leader at a time; a new command replaces the previous one. Ordinary Leadership damage-reduction sources (Watchful Presence, Rousing Shout, Hold the Line) do not sum - the strongest active source applies. Bolster Resolve's additional Field Steward recovery rider stacks with that strongest source.
 - Only one companion (beast or droid) may be active per player; both spawn paths enforce the same shared guard.
 
 ## Source Tiers
@@ -265,7 +265,7 @@ Examples:
 Use positive-baseline trees as feel anchors, not as templates to clone:
 
 - Vibroblade Frenzy: satisfying throughput and clear combat loop.
-- Heavy Vibroblade: strong risk/sustain identity, but still needs stacking guardrails.
+- Heavy Vibroblade: strong risk/sustain identity, with implemented stacking guardrails retained as a release-validation focus.
 - Staff Sentinel: clear control and temporary-deflection identity.
 - Katar Scrapper: strong control identity, with cooldown windows to review.
 
@@ -325,7 +325,7 @@ Examples:
 
 - Permanent Attack Deflection can approach or reach cap.
 - A weapon tree requires positional uptime to function at baseline.
-- Spear Disabler remains too Force-only.
+- Spear Disabler regresses to Force-only value.
 - A weapon tree's mechanics contradict its intended playstyle.
 - A cross-tree passive becomes mandatory for most builds.
 - Attack Deflection, Shield Deflection, and Guard are blurred into the same role.

@@ -61,6 +61,26 @@ public class ForceUniversalTests
     }
 
     [Test]
+    public void ForcePush_UsesBibleBaseDamageForEveryRank()
+    {
+        AssertForcePushBaseDamage("ForcePush1BaseDamage", 8);
+        AssertForcePushBaseDamage("ForcePush2BaseDamage", 12);
+        AssertForcePushBaseDamage("ForcePush3BaseDamage", 18);
+
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ForcePushAbilityDefinition.cs").FullName)
+            .Replace("\r\n", "\n");
+
+        source.Should().Contain("SkillType.Force,\n                ForcePush1BaseDamage,");
+        source.Should().Contain("SkillType.Force,\n                ForcePush2BaseDamage,");
+        source.Should().Contain("SkillType.Force,\n                ForcePush3BaseDamage,");
+        source.Split("useUnscaledDamage: true", StringSplitOptions.None)
+            .Should().HaveCount(4, "all three Force Push ranks must bypass stat and critical scaling");
+        source.Should().NotContain("Combat.ApplyTriggeredDamage(",
+            "Force Push damage should retain the primary ability-damage pipeline");
+    }
+
+    [Test]
     public void ForcePush_UsesOnlyKotorImpactSfx()
     {
         var root = FindRepositoryRoot();
@@ -122,7 +142,7 @@ public class ForceUniversalTests
     }
 
     [Test]
-    public void ForceLeap_UsesLegacyLeapAnimationBeforeJump()
+    public void ForceLeap_UsesLegacyLeapAnimationAndLandsOutsideTheTarget()
     {
         var abilities = new ForceLeapAbilityDefinition().BuildAbilities();
 
@@ -133,7 +153,15 @@ public class ForceUniversalTests
         var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ForceLeapAbilityDefinition.cs").FullName);
 
         source.Should().Contain("ActionPlayAnimation(Animation.ForceLeap, LeapAnimationSpeed, LeapAnimationDurationSeconds)");
-        source.Should().Contain("ActionJumpToObject(target)");
+        source.Should().Contain("private const float ArrivalDistanceMeters = 1.5f;");
+        source.IndexOf("var destination = GetLeapDestination(activator, target)", StringComparison.Ordinal)
+            .Should().BeGreaterThan(
+                source.IndexOf("ActionPlayAnimation(Animation.ForceLeap", StringComparison.Ordinal),
+                "the target position must be sampled after the leap animation completes");
+        source.Should().Contain("JumpToLocation(destination)");
+        source.Should().Contain("SetFacingPoint(GetPosition(target))");
+        source.Should().NotContain("ActionJumpToLocation(destination)");
+        source.Should().NotContain("ActionJumpToObject(target)");
         source.Should().NotContain("UsesImpactAnimation(Animation.ForceLeap)");
         source.Should().NotContain("VisualEffect.Vfx_Fnf_Summon_Monster_1");
     }
@@ -253,6 +281,17 @@ public class ForceUniversalTests
         ability.Targeting.SizeY.Should().Be(5f);
         ability.Targeting.Flags.Should().Be(
             AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf);
+    }
+
+    private static void AssertForcePushBaseDamage(string fieldName, int expectedDamage)
+    {
+        var field = typeof(ForcePushAbilityDefinition).GetField(
+            fieldName,
+            BindingFlags.NonPublic | BindingFlags.Static);
+
+        field.Should().NotBeNull($"Force Push should declare {fieldName}");
+        field!.IsLiteral.Should().BeTrue();
+        field.GetRawConstantValue().Should().Be(expectedDamage);
     }
 
     private static bool InvokeThrowLightsaberPathCheck(Vector3 origin, Vector3 destination, Vector3 candidate)

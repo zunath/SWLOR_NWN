@@ -5,8 +5,10 @@ using Avalonia.Threading;
 using Dock.Model.Controls;
 using Dock.Model.Core;
 using Dock.Model.Mvvm.Controls;
+using FluentAssertions;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
+using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Settings;
 using SWLOR.Toolset.Shell;
 using SWLOR.Toolset.Shell.Panels;
@@ -112,6 +114,42 @@ namespace SWLOR.Toolset.Tests
                 window.Hide();
                 provider?.Dispose();
                 Logger.Sink = previousSink;
+            }
+        }
+
+        [AvaloniaTest]
+        public async Task ActiveResourceDeletionBlocksApplicationClose()
+        {
+            var settingsPath = Path.Combine(
+                Path.GetTempPath(), $"swlor-toolset-close-{Guid.NewGuid():N}.json");
+            var settings = ToolsetSettings.Load(settingsPath);
+            var services = new ServiceCollection();
+            typeof(App)
+                .GetMethod("ConfigureServices", BindingFlags.NonPublic | BindingFlags.Static)!
+                .Invoke(null, [services, settings]);
+            var previousAmbient = ModuleMutationLock.ModuleWrites;
+            using var provider = services.BuildServiceProvider();
+
+            try
+            {
+                var shell = provider.GetRequiredService<ShellViewModel>();
+                var mutationLock = provider.GetRequiredService<ModuleMutationLock>();
+
+                using (mutationLock.BeginResourceDeletion())
+                {
+                    shell.IsModuleMutationLocked.Should().BeTrue();
+                    (await shell.TryCloseAsync()).Should().BeFalse(
+                        "closing would terminate the background delete before its UI cleanup finishes");
+                    shell.StatusText.Should().Contain("active module operation");
+                }
+
+                shell.IsModuleMutationLocked.Should().BeFalse();
+            }
+            finally
+            {
+                ModuleMutationLock.ModuleWrites = previousAmbient;
+                if (File.Exists(settingsPath))
+                    File.Delete(settingsPath);
             }
         }
 

@@ -105,6 +105,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.FirstAid
         {
             var location = AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation);
 
+            AbilityAreaEffects.CreatePersistentSphereIndicator(
+                activator,
+                location,
+                HealRadiusMeters,
+                DurationSeconds,
+                false);
             ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(CloudBurstVisualEffect), location);
             // Script-free custom AoE row: renders the FogMind gas cloud visual only, without the
             // base game Mind Fog enter/heartbeat spell effects.

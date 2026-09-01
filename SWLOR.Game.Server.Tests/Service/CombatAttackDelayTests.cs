@@ -1,15 +1,20 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.Json;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -102,7 +107,7 @@ public class CombatAttackDelayTests
 
         foreach (var naturalWeaponType in naturalWeaponTypes)
         {
-            WeaponDelay.GetWeaponDelay(naturalWeaponType).Should().Be(24);
+            WeaponDelay.GetWeaponDelay(naturalWeaponType).Should().Be(ItemPropertyAttackDelay.Delay240);
         }
 
         var unmodifiedDelay = Combat.CalculateAttackDelayMilliseconds(240, 0, 0, 0);
@@ -117,7 +122,7 @@ public class CombatAttackDelayTests
     [Test]
     public void LegacySlingPistolDelay_UsesPistolDelay()
     {
-        WeaponDelay.GetWeaponDelay(BaseItem.Sling).Should().Be(25);
+        WeaponDelay.GetWeaponDelay(BaseItem.Sling).Should().Be(ItemPropertyAttackDelay.Delay250);
     }
 
     [Test]
@@ -280,6 +285,278 @@ public class CombatAttackDelayTests
         }
     }
 
+    [TestCase(2, 1, 1, 1)]
+    [TestCase(3, 1, 2, 2)]
+    [TestCase(3, 2, 1, 2)]
+    [TestCase(3, 2, 3, 3)]
+    public void CapAttacksPerSwingForLimitedAttackEffect_DoesNotOverscheduleCharges(
+        int acceleratedAttacks,
+        int baselineAttacks,
+        int remainingAttacks,
+        int expectedAttacks)
+    {
+        Combat.CapAttacksPerSwingForLimitedAttackEffect(
+                acceleratedAttacks,
+                baselineAttacks,
+                remainingAttacks)
+            .Should().Be(expectedAttacks);
+    }
+
+    [TestCase(2, 1, 1, 2)]
+    [TestCase(3, 2, 1, 3)]
+    [TestCase(4, 1, 3, 3)]
+    public void CapAttacksPerSwingForLimitedNoDelay_PreservesTheGuaranteedExtraRoll(
+        int acceleratedAttacks,
+        int baselineAttacks,
+        int remainingAttacks,
+        int expectedAttacks)
+    {
+        Combat.CapAttacksPerSwingForLimitedAttackEffect(
+                acceleratedAttacks,
+                baselineAttacks,
+                0,
+                remainingAttacks)
+            .Should().Be(expectedAttacks);
+    }
+
+    [Test]
+    public void ConsumeAttacksPerSwing_DropsAcceleratedDebtWhenTheSwingConsumesEveryRemainingCharge()
+    {
+        const uint attacker = 0x7F000004;
+        const int acceleratedDelay = 750;
+        const int baselineDelay = 1750;
+        const int remainingCharges = 2;
+        Combat.ClearAttackSwingDebt(attacker);
+
+        var attacks = Combat.ConsumeAttacksPerSwing(
+            attacker,
+            acceleratedDelay,
+            baselineDelay,
+            false,
+            baselineDelay,
+            remainingCharges);
+
+        var debts = (Dictionary<uint, float>)typeof(Combat)
+            .GetField("_attackSwingDebts", BindingFlags.NonPublic | BindingFlags.Static)!
+            .GetValue(null)!;
+        try
+        {
+            attacks.Should().Be(2);
+            debts.Should().NotContainKey(attacker,
+                "both matching rolls consume the two remaining charges, so accelerated debt must expire with the effect");
+        }
+        finally
+        {
+            Combat.ClearAttackSwingDebt(attacker);
+        }
+    }
+
+    [Test]
+    public void ConsumeAttacksPerSwing_DoesNotScheduleAnAcceleratedRollBeyondTheFinalCharge()
+    {
+        const uint attacker = 0x7F000007;
+        const int acceleratedDelay = 875;
+        const int baselineDelay = 1750;
+        Combat.ClearAttackSwingDebt(attacker);
+
+        var debts = (Dictionary<uint, float>)typeof(Combat)
+            .GetField("_attackSwingDebts", BindingFlags.NonPublic | BindingFlags.Static)!
+            .GetValue(null)!;
+
+        try
+        {
+            // One carried roll makes this swing worth three accelerated rolls but two baseline
+            // rolls. The one remaining charge is consumed by the first baseline roll, so it must
+            // not add a third roll to the count passed to ResolveAttack.
+            debts[attacker] = 1f;
+            var attacks = Combat.ConsumeAttacksPerSwing(
+                attacker,
+                acceleratedDelay,
+                baselineDelay,
+                false,
+                baselineDelay,
+                1);
+
+            attacks.Should().Be(2);
+            debts.Should().NotContainKey(attacker,
+                "the uncharged third roll must not be pre-scheduled and limited-speed debt expires with the charge");
+        }
+        finally
+        {
+            Combat.ClearAttackSwingDebt(attacker);
+        }
+    }
+
+    [Test]
+    public void ConsumeAttacksPerSwing_FinalLimitedNoDelayChargeStillGrantsAnExtraFloorRoll()
+    {
+        const uint attacker = 0x7F000009;
+        Combat.ClearAttackSwingDebt(attacker);
+
+        try
+        {
+            var attacks = Combat.ConsumeAttacksPerSwing(
+                attacker,
+                Combat.MinimumAttackDelayMilliseconds,
+                Combat.MinimumAttackDelayMilliseconds,
+                true,
+                Combat.MinimumAttackDelayMilliseconds,
+                0,
+                1);
+
+            attacks.Should().Be(Combat.MaxAttacksPerSwing,
+                "the final Dead Man's Hand charge guarantees one extra roll even when baseline cadence is already at the floor");
+        }
+        finally
+        {
+            Combat.ClearAttackSwingDebt(attacker);
+        }
+    }
+
+    [Test]
+    public void NativeAttackAction_StillCapsLimitedChargesWhenAnArmedNoDelayOverlaps()
+    {
+        var source = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot().FullName,
+            "SWLOR.Game.Server",
+            "Native",
+            "OnAIActionAttackObject.cs"));
+        var countStart = source.IndexOf(
+            "var limitedDelayReductionRemainingAttacks = hasLimitedAttackDelayReduction",
+            System.StringComparison.Ordinal);
+        var countEnd = source.IndexOf(
+            "// The delay the attacker would have without a no-delay buff.",
+            countStart,
+            System.StringComparison.Ordinal);
+
+        countStart.Should().BeGreaterThanOrEqualTo(0);
+        countEnd.Should().BeGreaterThan(countStart);
+        var countSetup = source[countStart..countEnd];
+        countSetup.Should().Contain("limitedAttackDelayReductionRemainingAttacks");
+        countSetup.Should().Contain("limitedAttackNoDelayRemainingAttacks");
+        countSetup.Should().NotContain("if (hasArmedNoDelay)",
+            "an armed timing effect must not disable the cap that protects concurrently active limited charges");
+    }
+
+    [Test]
+    public void ConsumeAttacksPerSwing_PreservesAcceleratedDebtWhenChargesRemainAfterTheSwing()
+    {
+        const uint attacker = 0x7F000005;
+        const int acceleratedDelay = 750;
+        const int baselineDelay = 1750;
+        const int remainingCharges = 3;
+        Combat.ClearAttackSwingDebt(attacker);
+
+        var attacks = Combat.ConsumeAttacksPerSwing(
+            attacker,
+            acceleratedDelay,
+            baselineDelay,
+            false,
+            baselineDelay,
+            remainingCharges);
+
+        var debts = (Dictionary<uint, float>)typeof(Combat)
+            .GetField("_attackSwingDebts", BindingFlags.NonPublic | BindingFlags.Static)!
+            .GetValue(null)!;
+        Combat.CalculateAttacksPerSwing(acceleratedDelay, 0f, out var expectedAcceleratedDebt);
+
+        try
+        {
+            attacks.Should().Be(2);
+            debts[attacker].Should().BeApproximately(expectedAcceleratedDebt, 0.0001f,
+                "two matching rolls leave one charge active, so its accelerated debt still belongs to the live effect");
+        }
+        finally
+        {
+            Combat.ClearAttackSwingDebt(attacker);
+        }
+    }
+
+    [Test]
+    public void ConsumeAttacksPerSwing_DropsAcceleratedDebtAccumulatedBeforeTheFinalCharge()
+    {
+        const uint attacker = 0x7F000006;
+        const int acceleratedDelay = 1400;
+        const int baselineDelay = 1750;
+        Combat.ClearAttackSwingDebt(attacker);
+
+        var debts = (Dictionary<uint, float>)typeof(Combat)
+            .GetField("_attackSwingDebts", BindingFlags.NonPublic | BindingFlags.Static)!
+            .GetValue(null)!;
+
+        try
+        {
+            var firstSwingAttacks = Combat.ConsumeAttacksPerSwing(
+                attacker,
+                acceleratedDelay,
+                baselineDelay,
+                false,
+                baselineDelay,
+                2);
+            firstSwingAttacks.Should().Be(1);
+            debts[attacker].Should().BeApproximately(0.25f, 0.0001f,
+                "the first accelerated one-roll swing carries fractional debt while one charge remains");
+
+            var finalSwingAttacks = Combat.ConsumeAttacksPerSwing(
+                attacker,
+                acceleratedDelay,
+                baselineDelay,
+                false,
+                baselineDelay,
+                1);
+            finalSwingAttacks.Should().Be(1);
+            debts.Should().NotContainKey(attacker,
+                "the parallel baseline ledger must replace debt accumulated over earlier limited-speed swings");
+        }
+        finally
+        {
+            Combat.ClearAttackSwingDebt(attacker);
+        }
+    }
+
+    [Test]
+    public void ConsumeAttacksPerSwing_SuppressedLimitedSpeedCalculatesFromBaselineDebt()
+    {
+        const uint attacker = 0x7F000008;
+        const int acceleratedDelay = 1000;
+        const int baselineDelay = 1400;
+        Combat.ClearAttackSwingDebt(attacker);
+
+        var debts = (Dictionary<uint, float>)typeof(Combat)
+            .GetField("_attackSwingDebts", BindingFlags.NonPublic | BindingFlags.Static)!
+            .GetValue(null)!;
+
+        try
+        {
+            var acceleratedAttacks = Combat.ConsumeAttacksPerSwing(
+                attacker,
+                acceleratedDelay,
+                baselineDelay,
+                false,
+                baselineDelay,
+                2);
+            acceleratedAttacks.Should().Be(1);
+            debts[attacker].Should().BeApproximately(0.75f, 0.0001f);
+
+            var suppressedAttacks = Combat.ConsumeAttacksPerSwing(
+                attacker,
+                baselineDelay,
+                baselineDelay,
+                false,
+                baselineDelay,
+                0);
+
+            suppressedAttacks.Should().Be(1,
+                "Signal Jammer must not turn accelerated debt into a second roll on the suppressed swing");
+            debts[attacker].Should().BeApproximately(0.5f, 0.0001f,
+                "only debt earned at the unsuppressed baseline cadence may survive the final charge");
+        }
+        finally
+        {
+            Combat.ClearAttackSwingDebt(attacker);
+        }
+    }
+
     [Test]
     public void CalculateAttacksPerSwing_CapsAttacksAtMaxPerSwing()
     {
@@ -354,7 +631,8 @@ public class CombatAttackDelayTests
     {
         Combat.CanConsumeNextAbilityNoDelay(new AbilityDetail
         {
-            IsHostileAbility = true
+            IsHostileAbility = true,
+            SkillType = SkillType.Pistol
         })
             .Should()
             .BeTrue();
@@ -365,6 +643,14 @@ public class CombatAttackDelayTests
         })
             .Should()
             .BeFalse();
+
+        Combat.CanConsumeNextAbilityNoDelay(new AbilityDetail
+        {
+            IsHostileAbility = true,
+            SkillType = SkillType.Invalid
+        })
+            .Should()
+            .BeFalse("an equipped weapon must not turn a skillless cast into a weapon attack");
     }
 
     [Test]
@@ -386,19 +672,276 @@ public class CombatAttackDelayTests
     }
 
     [Test]
-    public void ReloadTempo_DeclaresThePartialDelayReductionItsDescriptionPromises()
+    public void ConsumeNextAbilityDelayReduction_RejectsSkilllessHostileCasts()
     {
-        // The stat family it shares with full-no-delay perks zeroes the delay when this magnitude
-        // is absent, which is how the perk shipped at 100% while describing 20%.
+        var skilllessHostileAbility = new AbilityDetail
+        {
+            IsHostileAbility = true,
+            SkillType = SkillType.Invalid
+        };
+
+        Combat.ConsumeNextAbilityDelayReductionPercent(310, skilllessHostileAbility)
+            .Should()
+            .Be(0);
+    }
+
+    [Test]
+    public void WeaponAbilitiesDeclareSkillsWhileSkilllessCastsStayOutsideWeaponTimingEffects()
+    {
+        var abilities = typeof(IAbilityListDefinition).Assembly
+            .GetTypes()
+            .Where(type => !type.IsAbstract &&
+                           !type.IsInterface &&
+                           typeof(IAbilityListDefinition).IsAssignableFrom(type))
+            .SelectMany(type =>
+                ((IAbilityListDefinition)System.Activator.CreateInstance(type)!)
+                .BuildAbilities()
+                .Select(pair => (Definition: type.Name, Feat: pair.Key, Detail: pair.Value)))
+            .ToArray();
+
+        var skilllessWeaponAbilities = abilities
+            .Where(ability => ability.Detail.ActivationType == AbilityActivationType.Weapon &&
+                              ability.Detail.SkillType == SkillType.Invalid)
+            .Select(ability => $"{ability.Definition}:{ability.Feat}")
+            .ToArray();
+        skilllessWeaponAbilities.Should().BeEmpty(
+            "weapon timing effects require an explicitly declared weapon skill");
+
+        var skilllessHostileCasts = abilities
+            .Where(ability => ability.Detail.IsHostileAbility &&
+                              ability.Detail.ActivationType != AbilityActivationType.Weapon &&
+                              ability.Detail.SkillType == SkillType.Invalid)
+            .ToArray();
+        skilllessHostileCasts.Should().NotBeEmpty("Provoke-style hostile casts are intentionally skillless");
+        skilllessHostileCasts.Should().OnlyContain(ability =>
+            !Combat.CanConsumeNextAbilityNoDelay(ability.Detail));
+    }
+
+    [Test]
+    public void ConsumeNextAbilityDelayReduction_PreservesArmedBuffWhileRangedNoDelayStatusApplies()
+    {
+        var source = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot().FullName,
+            "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var method = source[source.IndexOf(
+            "public static int ConsumeNextAbilityDelayReductionPercent(uint creature, AbilityDetail ability)",
+            System.StringComparison.Ordinal)..];
+        method = method[..method.IndexOf(
+            "private static int ConsumeNextAbilityDelayReductionPercent(uint creature, SkillType skillType)",
+            System.StringComparison.Ordinal)];
+
+        var rangedStatusGuard = method.IndexOf("if (hasRangedStatusNoDelay)", System.StringComparison.Ordinal);
+        var consumingCall = method.IndexOf(
+            "var temporaryReductionPercent = ConsumeNextAbilityDelayReductionPercent(creature, skillType);",
+            System.StringComparison.Ordinal);
+
+        rangedStatusGuard.Should().BeGreaterThanOrEqualTo(0);
+        method[(rangedStatusGuard)..consumingCall].Should().Contain("return 100;");
+        consumingCall.Should().BeGreaterThan(rangedStatusGuard,
+            "the ranged status must return before the temporary next-ability arm can be consumed");
+    }
+
+    [Test]
+    public void ConsumeNextAutoAttackNoDelay_ChecksSuppressionBeforeReadingArmedState()
+    {
+        var source = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot().FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Combat.cs"));
+        var methodStart = source.IndexOf(
+            "public static bool ConsumeNextAutoAttackNoDelay(uint creature, SkillType skillType)",
+            System.StringComparison.Ordinal);
+        var methodEnd = source.IndexOf(
+            "public static int ConsumeNextAutoAttackCriticalRateBonus(uint creature, SkillType skillType)",
+            methodStart,
+            System.StringComparison.Ordinal);
+        methodStart.Should().BeGreaterThanOrEqualTo(0);
+        methodEnd.Should().BeGreaterThan(methodStart);
+
+        var method = source[methodStart..methodEnd];
+        var suppressionGuard = method.IndexOf(
+            "if (IsAttackDelayReductionSuppressed(creature))",
+            System.StringComparison.Ordinal);
+        var armedStateRead = method.IndexOf(
+            "StatType.NextAutoAttackNoDelayAllSkills",
+            System.StringComparison.Ordinal);
+        suppressionGuard.Should().BeGreaterThanOrEqualTo(0);
+        armedStateRead.Should().BeGreaterThan(suppressionGuard,
+            "suppressed timing must return before an armed all-skills or skill-specific modifier can be consumed");
+    }
+
+    [Test]
+    public void ConsumeNextAutoAttackNoDelay_PreservesArmedBuffWhileRangedNoDelayStatusApplies()
+    {
+        var source = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot().FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Combat.cs"));
+        var methodStart = source.IndexOf(
+            "public static bool ConsumeNextAutoAttackNoDelay(uint creature, SkillType skillType)",
+            System.StringComparison.Ordinal);
+        var methodEnd = source.IndexOf(
+            "public static int ConsumeNextAutoAttackCriticalRateBonus(uint creature, SkillType skillType)",
+            methodStart,
+            System.StringComparison.Ordinal);
+        methodStart.Should().BeGreaterThanOrEqualTo(0);
+        methodEnd.Should().BeGreaterThan(methodStart);
+
+        var method = source[methodStart..methodEnd];
+        var rangedStatusGuard = method.IndexOf(
+            "if (appliesToRangedStatus)",
+            System.StringComparison.Ordinal);
+        var firstConsume = method.IndexOf(
+            "TemporaryStatModifier.Consume(",
+            System.StringComparison.Ordinal);
+
+        rangedStatusGuard.Should().BeGreaterThanOrEqualTo(0);
+        firstConsume.Should().BeGreaterThan(rangedStatusGuard);
+        method[rangedStatusGuard..firstConsume].Should().Contain("return true;");
+    }
+
+    [Test]
+    public void LimitedAttackSpeedBonuses_AreSuppressedByAttackDelayReductionSuppression()
+    {
+        const uint creature = 311;
+        var creatureEffects = GetCreatureEffects();
+
+        try
+        {
+            var tracker = new CreatureStatusEffect();
+            creatureEffects[creature] = tracker;
+            tracker.Add(new LimitedHasteStatusEffect(
+                20,
+                2,
+                SkillType.Pistol,
+                EffectIconType.ReloadTempoStatusEffect,
+                new AbilityImpactSummary()));
+
+            Combat.ConsumeNextAbilityDelayReductionPercent(creature, new AbilityDetail
+            {
+                IsHostileAbility = true,
+                SkillType = SkillType.Pistol
+            }).Should().Be(20);
+
+            tracker.Add(new DeadMansHandStatusEffect());
+            StatusEffect.TryGetLimitedAttackNoDelay(
+                    creature,
+                    SkillType.Pistol,
+                    out var noDelayRemainingAttacks)
+                .Should()
+                .BeTrue();
+            noDelayRemainingAttacks.Should().Be(3);
+            Combat.HasNextAutoAttackNoDelay(creature, SkillType.Pistol).Should().BeTrue();
+            Combat.ConsumeNextAbilityDelayReductionPercent(creature, new AbilityDetail
+            {
+                IsHostileAbility = true,
+                SkillType = SkillType.Pistol
+            }).Should().Be(100);
+
+            var signalJammer = new SignalJammerStatusEffect();
+            tracker.Add(signalJammer);
+            signalJammer.StatGroup.Stats[StatType.AttackDelayReductionSuppressed].Should().Be(1);
+            Stat.GetStatTypeCategory(StatType.AttackDelayReductionSuppressed)
+                .Should().Be(StatTypeCategory.BeneficialWhenNegative);
+            Stat.GetStatTypeAggregation(StatType.AttackDelayReductionSuppressed)
+                .Should().Be(StatTypeAggregation.Maximum);
+
+            StatusEffect.TryGetLimitedAttackDelayReduction(
+                    creature,
+                    SkillType.Pistol,
+                    out var reductionPercent,
+                    out var remainingAttacks)
+                .Should()
+                .BeFalse();
+            reductionPercent.Should().Be(0);
+            remainingAttacks.Should().Be(0);
+            StatusEffect.TryGetLimitedAttackNoDelay(
+                    creature,
+                    SkillType.Pistol,
+                    out noDelayRemainingAttacks)
+                .Should()
+                .BeFalse();
+            noDelayRemainingAttacks.Should().Be(0);
+            Combat.HasNextAutoAttackNoDelay(creature, SkillType.Pistol).Should().BeFalse();
+            Combat.ConsumeNextAutoAttackNoDelay(creature, SkillType.Pistol).Should().BeFalse();
+            Combat.ConsumeNextAbilityDelayReductionPercent(creature, new AbilityDetail
+            {
+                IsHostileAbility = true,
+                SkillType = SkillType.Pistol
+            }).Should().Be(0);
+        }
+        finally
+        {
+            creatureEffects.Remove(creature);
+        }
+    }
+
+    [Test]
+    public void ReloadTempo_DeclaresLimitedHasteForTheNextTwoAttacks()
+    {
         var source = File.ReadAllText(Path.Combine(
             FindRepositoryRoot().FullName,
             "SWLOR.Game.Server", "Feature", "PerkDefinition", "PistolPerkDefinition.cs"));
         var reloadTempo = source[source.IndexOf("private void ReloadTempo()", StringComparison.Ordinal)..];
         reloadTempo = reloadTempo[..reloadTempo.IndexOf("private void ", 1, StringComparison.Ordinal)];
 
-        reloadTempo.Should().Contain("attack delay reduced by 20%");
+        reloadTempo.Should().Contain("gain +20% Haste for your next two attacks");
+        reloadTempo.Should().Contain(".IncreasesStat(StatType.CriticalHitLimitedHastePercentAdjustment, 20)");
+        reloadTempo.Should().Contain(".IncreasesStat(StatType.CriticalHitLimitedHasteDurationSeconds, 30)");
+        reloadTempo.Should().Contain(".IncreasesStat(StatType.CriticalHitLimitedHasteAttackCount, 2)");
         reloadTempo.Should().Contain(
-            ".IncreasesStat(StatType.CriticalNextAbilityDelayReductionPercent, 20)");
+            ".IncreasesStat(StatType.CriticalHitLimitedHasteStatusEffectIcon, (int)EffectIconType.ReloadTempoStatusEffect)");
+
+        var combat = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot().FullName,
+            "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var grant = combat[combat.IndexOf(
+            "private static void ApplyCriticalHitLimitedHaste(",
+            StringComparison.Ordinal)..combat.IndexOf(
+            "private static void ApplyCriticalNextAutoAttackNoDelay(",
+            StringComparison.Ordinal)];
+        grant.Should().Contain("SkillType.Invalid,",
+            "the triggering critical is Pistol-scoped, but the two promised Haste charges apply to any attacks");
+    }
+
+    [Test]
+    public void ReloadTempo_TriggersBeforeThePositiveCriticalDamageGuard()
+    {
+        var source = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot().FullName,
+            "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var method = source[source.IndexOf(
+            "public static void ApplyCriticalHitEffects(",
+            StringComparison.Ordinal)..];
+        method = method[..method.IndexOf(
+            "private static void ApplyCriticalHitSelfEffects(",
+            StringComparison.Ordinal)];
+
+        var limitedHasteTrigger = method.IndexOf(
+            "ApplyCriticalHitLimitedHaste(attacker, skillType);",
+            StringComparison.Ordinal);
+        var positiveDamageGuard = method.IndexOf("if (damage <= 0)", StringComparison.Ordinal);
+
+        limitedHasteTrigger.Should().BeGreaterThanOrEqualTo(0);
+        limitedHasteTrigger.Should().BeLessThan(positiveDamageGuard,
+            "a fully mitigated critical still earns Reload Tempo's next-two-attacks Haste");
+
+        var damageRoll = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot().FullName,
+            "SWLOR.Game.Server", "Native", "GetDamageRoll.cs"));
+        var landedDamageHandlingStart = damageRoll.IndexOf(
+            "if (isLandedAttack)",
+            StringComparison.Ordinal);
+        var landedDamageHandlingEnd = damageRoll.IndexOf(
+            "ProfilerPlugin.PopPerfScope();",
+            landedDamageHandlingStart,
+            StringComparison.Ordinal);
+        var landedDamageHandling = damageRoll[landedDamageHandlingStart..landedDamageHandlingEnd];
+        landedDamageHandling.Should().Contain("Combat.ApplyCriticalHitEffects(");
+        landedDamageHandling.Should().NotContain("if (isLandedAttack && totalDamage > 0)",
+            "a fully mitigated landed native critical must still notify critical-hit effects");
     }
 
     [Test]
@@ -432,13 +975,13 @@ public class CombatAttackDelayTests
         weaponDelayMigrationSource.Should().Contain("WeaponDelay.GetWeaponDelay(baseItem)");
         weaponDelayMigrationSource.Should().Contain("BuildWeaponBaseItemTypes");
         weaponDelayMigrationSource.Should().Contain("StaffBaseItemTypes");
-        weaponDelayMigrationSource.Should().Contain("[\"t_knife\"] = 22");
-        weaponDelayMigrationSource.Should().Contain("[\"t_shuriken\"] = 22");
-        weaponDelayMigrationSource.Should().Contain("[\"t_rifle\"] = 30");
-        weaponDelayMigrationSource.Should().Contain("[\"t_twinblade\"] = 29");
-        weaponDelayMigrationSource.Should().Contain("[\"byyskwarriorswor\"] = 22");
-        weaponDelayMigrationSource.Should().Contain("[\"sith_blade\"] = 22");
-        weaponDelayMigrationSource.Should().Contain("[\"wswss002\"] = 22");
+        weaponDelayMigrationSource.Should().Contain("[\"t_knife\"] = ItemPropertyAttackDelay.Delay220");
+        weaponDelayMigrationSource.Should().Contain("[\"t_shuriken\"] = ItemPropertyAttackDelay.Delay220");
+        weaponDelayMigrationSource.Should().Contain("[\"t_rifle\"] = ItemPropertyAttackDelay.Delay300");
+        weaponDelayMigrationSource.Should().Contain("[\"t_twinblade\"] = ItemPropertyAttackDelay.Delay290");
+        weaponDelayMigrationSource.Should().Contain("[\"byyskwarriorswor\"] = ItemPropertyAttackDelay.Delay220");
+        weaponDelayMigrationSource.Should().Contain("[\"sith_blade\"] = ItemPropertyAttackDelay.Delay220");
+        weaponDelayMigrationSource.Should().Contain("[\"wswss002\"] = ItemPropertyAttackDelay.Delay220");
         weaponDelayMigrationSource.Should().Contain("GetHasInventory(obj)");
         weaponDelayMigrationSource.Should().Contain("GetItemInSlot((InventorySlot)index, creature)");
     }
@@ -490,38 +1033,45 @@ public class CombatAttackDelayTests
         return directory!;
     }
 
-    private static readonly IReadOnlyDictionary<int, int> WeaponDelayCostByBaseItem = BuildWeaponDelayCostByBaseItem();
+    private static Dictionary<uint, CreatureStatusEffect> GetCreatureEffects()
+    {
+        return (Dictionary<uint, CreatureStatusEffect>)typeof(StatusEffect)
+            .GetField("_creatureEffects", BindingFlags.NonPublic | BindingFlags.Static)!
+            .GetValue(null)!;
+    }
+
+    private static readonly IReadOnlyDictionary<int, ItemPropertyAttackDelay> WeaponDelayByBaseItem = BuildWeaponDelayByBaseItem();
     private static readonly IReadOnlySet<int> ShieldBaseItems = SWLOR.Game.Server.Service.Item.ShieldBaseItemTypes
         .Select(x => (int)x)
         .ToHashSet();
 
-    private static IReadOnlyDictionary<int, int> BuildWeaponDelayCostByBaseItem()
+    private static IReadOnlyDictionary<int, ItemPropertyAttackDelay> BuildWeaponDelayByBaseItem()
     {
-        var delays = new Dictionary<int, int>();
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.VibrobladeBaseItemTypes, 23);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.KatarBaseItemTypes, 22);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.TwinBladeBaseItemTypes, 29);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.VibroknifeBaseItemTypes, 22);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.StaffBaseItemTypes, 27);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.RifleBaseItemTypes, 30);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.HeavyVibrobladeBaseItemTypes, 30);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.PistolBaseItemTypes, 25);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.LightsaberBaseItemTypes, 24);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.SpearBaseItemTypes, 28);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.ThrowingWeaponBaseItemTypes, 22);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.SaberstaffBaseItemTypes, 29);
-        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.CreatureBaseItemTypes, 24);
+        var delays = new Dictionary<int, ItemPropertyAttackDelay>();
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.VibrobladeBaseItemTypes, ItemPropertyAttackDelay.Delay230);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.KatarBaseItemTypes, ItemPropertyAttackDelay.Delay220);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.TwinBladeBaseItemTypes, ItemPropertyAttackDelay.Delay290);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.VibroknifeBaseItemTypes, ItemPropertyAttackDelay.Delay220);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.StaffBaseItemTypes, ItemPropertyAttackDelay.Delay270);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.RifleBaseItemTypes, ItemPropertyAttackDelay.Delay300);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.HeavyVibrobladeBaseItemTypes, ItemPropertyAttackDelay.Delay300);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.PistolBaseItemTypes, ItemPropertyAttackDelay.Delay250);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.LightsaberBaseItemTypes, ItemPropertyAttackDelay.Delay240);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.SpearBaseItemTypes, ItemPropertyAttackDelay.Delay280);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.ThrowingWeaponBaseItemTypes, ItemPropertyAttackDelay.Delay220);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.SaberstaffBaseItemTypes, ItemPropertyAttackDelay.Delay290);
+        AddWeaponDelays(delays, SWLOR.Game.Server.Service.Item.CreatureBaseItemTypes, ItemPropertyAttackDelay.Delay240);
 
         return delays;
     }
 
     private static void AddWeaponDelays(
-        Dictionary<int, int> delays,
+        Dictionary<int, ItemPropertyAttackDelay> delays,
         IEnumerable<BaseItem> baseItems,
-        int delayCost)
+        ItemPropertyAttackDelay delay)
     {
         foreach (var baseItem in baseItems)
-            delays[(int)baseItem] = delayCost;
+            delays[(int)baseItem] = delay;
     }
 
     private static void InspectWeaponDelays(
@@ -588,7 +1138,7 @@ public class CombatAttackDelayTests
         string findingPath,
         ICollection<string> findings)
     {
-        if (!WeaponDelayCostByBaseItem.TryGetValue(baseItem, out var expectedDelayCost))
+        if (!WeaponDelayByBaseItem.TryGetValue(baseItem, out var expectedDelay))
             return;
 
         var delayCosts = GetDelayCostValues(propertiesList).ToList();
@@ -596,9 +1146,9 @@ public class CombatAttackDelayTests
         {
             findings.Add($"{findingPath} missing weapon Delay");
         }
-        else if (delayCosts.Any(x => x != expectedDelayCost))
+        else if (delayCosts.Any(x => x != (int)expectedDelay))
         {
-            findings.Add($"{findingPath} weapon Delay [{string.Join(", ", delayCosts)}] should be {expectedDelayCost}");
+            findings.Add($"{findingPath} weapon Delay [{string.Join(", ", delayCosts)}] should be {(int)expectedDelay} ({expectedDelay})");
         }
     }
 

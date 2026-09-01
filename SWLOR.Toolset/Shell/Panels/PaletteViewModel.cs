@@ -214,9 +214,11 @@ namespace SWLOR.Toolset.Shell.Panels
             OnPropertyChanged(nameof(IsCustomSource));
             OnPropertyChanged(nameof(IsStandardSource));
             OnPropertyChanged(nameof(CanWrite));
+            OnPropertyChanged(nameof(CanEditCopy));
             OnPropertyChanged(nameof(CanCreateBlueprint));
             OnPropertyChanged(nameof(ReadOnlyNotice));
             OnPropertyChanged(nameof(HasReadOnlyNotice));
+            OnPropertyChanged(nameof(HasBlueprintActions));
 
             if (_settings != null && !_restoring)
                 _settings.PaletteShowsStandard = IsStandardSource;
@@ -254,8 +256,23 @@ namespace SWLOR.Toolset.Shell.Panels
         /// </remarks>
         public bool CanWrite => IsCustomSource && IsBlueprintMode && _mutationLock?.IsLocked != true;
 
+        /// <summary>
+        /// Edit Copy writes a new module blueprint but never changes its source, so it is available on
+        /// both Custom and Standard palette entries whenever ordinary module writes are available.
+        /// </summary>
+        public bool CanEditCopy => IsBlueprintMode && _mutationLock?.IsLocked != true;
+
+        /// <summary>Whether a blueprint tile has anything useful to expose through its ellipsis.</summary>
+        public bool HasBlueprintActions => CanWrite || CanEditCopy || HasReadOnlyNotice;
+
         /// <summary>Re-reads <see cref="CanWrite"/>, for when the module-wide lock has flipped.</summary>
-        public void NotifyWriteAvailabilityChanged() => OnPropertyChanged(nameof(CanWrite));
+        public void NotifyWriteAvailabilityChanged()
+        {
+            OnPropertyChanged(nameof(CanWrite));
+            OnPropertyChanged(nameof(CanEditCopy));
+            OnPropertyChanged(nameof(CanCreateBlueprint));
+            OnPropertyChanged(nameof(HasBlueprintActions));
+        }
 
         /// <summary>
         /// Creation is narrower than editing: types whose editor cannot finish a usable resource
@@ -560,9 +577,11 @@ namespace SWLOR.Toolset.Shell.Panels
             OnPropertyChanged(nameof(ShowsSourceSwitch));
             OnPropertyChanged(nameof(ShowsTilePaintSwitch));
             OnPropertyChanged(nameof(CanWrite));
+            OnPropertyChanged(nameof(CanEditCopy));
             OnPropertyChanged(nameof(CanCreateBlueprint));
             OnPropertyChanged(nameof(ReadOnlyNotice));
             OnPropertyChanged(nameof(HasReadOnlyNotice));
+            OnPropertyChanged(nameof(HasBlueprintActions));
             SelectedRow = null;
             SelectedTile = null;
             Refresh();
@@ -717,6 +736,166 @@ namespace SWLOR.Toolset.Shell.Panels
                 return;
 
             _editorService?.Invoke().TryOpenEditor(SelectedType, tile.ResRef);
+        }
+
+        /// <summary>
+        /// Creates an independent custom blueprint from the selected blueprint and opens that copy for
+        /// editing. The source and all instances placed from it remain untouched.
+        /// </summary>
+        [RelayCommand]
+        private void EditCopy(PaletteTileViewModel? tile)
+        {
+            if (tile == null || tile.IsTile || !CanEditCopy)
+                return;
+
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return;
+
+            var sourceSection = tile.Source == PaletteSource.Standard
+                ? _categories.StandardSection(SelectedType)
+                : _categories.Section(SelectedType);
+            var sourceFolder = SourceFolderForCopy(tile, sourceSection);
+            var sourcePath = sourceFolder == null || sourceSection == null
+                ? Array.Empty<string>()
+                : sourceSection.PathTo(sourceFolder).ToArray();
+
+            string copyResRef;
+            string copyPath;
+            try
+            {
+                copyResRef = BlueprintCopyFactory.NextResRef(
+                    workspace,
+                    SelectedType,
+                    tile.ResRef);
+                copyPath = workspace.GetResourcePath(SelectedType, copyResRef);
+
+                var source = tile.Source == PaletteSource.Standard
+                    ? workspace.LoadIndexedBlueprint(SelectedType, tile.ResRef)
+                    : workspace.LoadBlueprint(SelectedType, tile.ResRef);
+                var content = BlueprintCopyFactory.CreateFileContent(
+                    SelectedType,
+                    source.Document,
+                    copyResRef);
+
+                Directory.CreateDirectory(Path.GetDirectoryName(copyPath)!);
+                SaveService.WriteNewAtomic(copyPath, content);
+            }
+            catch (Exception ex)
+            {
+                StatusMessage = $"Could not copy {tile.Name}: {ex.Message}";
+                _log.AppendLine(
+                    $"Edit Copy failed for {SelectedType.Extension()} blueprint '{tile.ResRef}': {ex.Message}");
+                return;
+            }
+
+            _workspaceContext.RefreshCatalogEntry(SelectedType, copyResRef);
+
+            string? targetPathKey = null;
+            var filed = true;
+            if (sourcePath.Length > 0 && _categories.Section(SelectedType) is { } customSection)
+            {
+                var targetFolder = EnsureFolderPath(customSection, sourcePath);
+                targetFolder.AddMember(copyResRef);
+                filed = SaveCategories();
+                if (filed)
+                    targetPathKey = customSection.PathKey(targetFolder);
+            }
+
+            // Edit Copy always lands on the Custom side. Reveal the new entry there before opening its
+            // editor, matching Aurora and making the new blueprint immediately available for placement.
+            if (!IsCustomSource)
+                Source = PaletteSource.Custom;
+            else
+                Refresh();
+
+            RevealCustomCopy(copyResRef, filed ? targetPathKey : null);
+
+            if (filed)
+            {
+                StatusMessage = $"Copied {tile.Name} as {copyResRef}.";
+                _log.AppendLine(
+                    $"Copied {SelectedType.Extension()} blueprint '{tile.ResRef}' to '{copyResRef}' ({copyPath}).");
+            }
+            else
+            {
+                var category = sourcePath.Length == 0 ? "its source category" : sourcePath[^1];
+                StatusMessage =
+                    $"Copied {tile.Name} as {copyResRef}, but it could not be filed under '{category}' - " +
+                    $"it is in Unsorted. {StatusMessage}";
+                _log.AppendLine(
+                    $"Copied {SelectedType.Extension()} blueprint '{tile.ResRef}' to '{copyResRef}', " +
+                    $"but could not file the copy under '{category}'.");
+            }
+
+            _editorService?.Invoke().TryOpenEditor(SelectedType, copyResRef);
+        }
+
+        private CategoryFolder? SourceFolderForCopy(
+            PaletteTileViewModel tile,
+            CategorySection? sourceSection)
+        {
+            if (sourceSection == null)
+                return null;
+
+            var containing = sourceSection.FoldersContaining(tile.ResRef).ToList();
+            if (containing.Count == 0)
+                return null;
+
+            // A parent row includes all descendants. Prefer the leaf below the row whose tile menu was
+            // used; search has no category context, so its stable first filing is the best answer.
+            if (!IsSearching && SelectedRow?.Folder is { } selectedFolder)
+            {
+                var selectedPath = sourceSection.PathTo(selectedFolder);
+                var beneathSelection = containing.FirstOrDefault(folder =>
+                {
+                    var candidatePath = sourceSection.PathTo(folder);
+                    return candidatePath.Count >= selectedPath.Count &&
+                           candidatePath.Take(selectedPath.Count)
+                               .SequenceEqual(selectedPath, StringComparer.OrdinalIgnoreCase);
+                });
+
+                if (beneathSelection != null)
+                    return beneathSelection;
+            }
+
+            return containing[0];
+        }
+
+        /// <summary>Finds or creates the Custom category corresponding to a source category path.</summary>
+        private static CategoryFolder EnsureFolderPath(
+            CategorySection section,
+            IReadOnlyList<string> path)
+        {
+            var current = section.Folders.FirstOrDefault(folder =>
+                              string.Equals(folder.Name, path[0], StringComparison.OrdinalIgnoreCase))
+                          ?? section.AddFolder(path[0]);
+
+            for (var index = 1; index < path.Count; index++)
+            {
+                var segment = path[index];
+                current = current.Children.FirstOrDefault(child =>
+                              string.Equals(child.Name, segment, StringComparison.OrdinalIgnoreCase))
+                          ?? current.AddChild(segment);
+            }
+
+            return current;
+        }
+
+        private void RevealCustomCopy(string copyResRef, string? targetPathKey)
+        {
+            var section = _categories.Section(SelectedType);
+            var targetFolder = targetPathKey == null ? null : section?.FindByPathKey(targetPathKey);
+            var row = targetFolder == null
+                ? _allRows.FirstOrDefault(candidate => candidate.IsUnsorted)
+                : _allRows.FirstOrDefault(candidate => ReferenceEquals(candidate.Folder, targetFolder));
+
+            if (targetFolder != null)
+                ExpandTo(targetFolder);
+
+            SelectedRow = row;
+            SelectedTile = Tiles.FirstOrDefault(tile =>
+                string.Equals(tile.ResRef, copyResRef, StringComparison.OrdinalIgnoreCase));
         }
 
         // ----- context-menu actions -----
@@ -914,7 +1093,8 @@ namespace SWLOR.Toolset.Shell.Panels
             var kind = SelectedType.SingularDisplayName();
             var name = await _prompts.PromptForTextAsync(
                 $"New {kind}",
-                "The ResRef is derived from this name: lowercase, no spaces, 16 characters at most - " +
+                $"The ResRef is derived from this name: lowercase, no spaces, " +
+                $"{NwnResRef.MaxLength} characters at most - " +
                 "NWN's own limit.",
                 string.Empty,
                 "Create").ConfigureAwait(true);
@@ -998,7 +1178,7 @@ namespace SWLOR.Toolset.Shell.Panels
                 else if (character is ' ' or '_' or '-' && builder.Length > 0 && builder[^1] != '_')
                     builder.Append('_');
 
-                if (builder.Length == 16)
+                if (builder.Length == NwnResRef.MaxLength)
                     break;
             }
 

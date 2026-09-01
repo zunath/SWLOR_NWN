@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using SWLOR.Game.Server.Service.CompanionControlService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -44,7 +45,9 @@ namespace SWLOR.Game.Server.Service.AIService
                     return _currentEnmityTarget;
 
                 _currentEnmityTargetLoaded = true;
-                _currentEnmityTarget = Enmity.GetHighestEnmityTarget(Self);
+                _currentEnmityTarget = CompanionControl.IsRegisteredCompanion(Self)
+                    ? CompanionControl.PeekAuthorizedTarget(Self)
+                    : Enmity.GetHighestEnmityTarget(Self);
 
                 return _currentEnmityTarget;
             }

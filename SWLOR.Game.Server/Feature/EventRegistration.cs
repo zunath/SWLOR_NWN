@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.NWNX.Enum;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Service;
 using SWLOR.NWN.API.NWNX;
@@ -8,6 +9,16 @@ namespace SWLOR.Game.Server.Feature
 {
     public static class EventRegistration
     {
+        private static readonly BroadcastSafeProjectileType[] WeaponProjectileTypes =
+        {
+            BroadcastSafeProjectileType.WeaponVfxNone,
+            BroadcastSafeProjectileType.WeaponVfxAcid,
+            BroadcastSafeProjectileType.WeaponVfxCold,
+            BroadcastSafeProjectileType.WeaponVfxElectrical,
+            BroadcastSafeProjectileType.WeaponVfxFire,
+            BroadcastSafeProjectileType.WeaponVfxSonic
+        };
+
         /// <summary>
         /// Fires on the module PreLoad event. This event should be specified in the environment variables.
         /// This will hook all module/global events.
@@ -528,6 +539,18 @@ namespace SWLOR.Game.Server.Feature
             // Broadcast Spell Cast Events
             EventsPlugin.SubscribeEvent("NWNX_ON_BROADCAST_CAST_SPELL_BEFORE", ScriptName.OnBroadcastCastSpellBefore);
             EventsPlugin.SubscribeEvent("NWNX_ON_BROADCAST_CAST_SPELL_AFTER", ScriptName.OnBroadcastCastSpellAfter);
+
+            // Weapon projectile events
+            EventsPlugin.SubscribeEvent(
+                "NWNX_ON_BROADCAST_SAFE_PROJECTILE_BEFORE",
+                ScriptName.OnBroadcastSafeProjectileBefore);
+            foreach (var projectileType in WeaponProjectileTypes)
+            {
+                EventsPlugin.AddIDToWhitelist(
+                    "NWNX_ON_BROADCAST_SAFE_PROJECTILE_TYPE",
+                    (int)projectileType);
+            }
+            EventsPlugin.ToggleIDWhitelist("NWNX_ON_BROADCAST_SAFE_PROJECTILE_TYPE", true);
 
             // RunScript Debug Events
             EventsPlugin.SubscribeEvent("NWNX_ON_DEBUG_RUN_SCRIPT_BEFORE", ScriptName.OnDebugRunScriptBefore);

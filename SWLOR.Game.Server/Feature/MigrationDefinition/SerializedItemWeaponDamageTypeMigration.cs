@@ -9,6 +9,7 @@ using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using SWLOR.NWN.API.NWScript.Enum.Item.Property;
 
 namespace SWLOR.Game.Server.Feature.MigrationDefinition
 {
@@ -74,24 +75,24 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             [23] = CombatDamageType.Ice,
         };
 
-        private static readonly Dictionary<string, int> DelayCostByResref = new(StringComparer.OrdinalIgnoreCase)
+        private static readonly Dictionary<string, ItemPropertyAttackDelay> DelayByResref = new(StringComparer.OrdinalIgnoreCase)
         {
-            ["t_longsword"] = 23,
-            ["t_katar"] = 22,
-            ["t_twinblade"] = 29,
-            ["t_knife"] = 22,
-            ["t_staff"] = 27,
-            ["t_rifle"] = 30,
-            ["t_greatsword"] = 30,
-            ["t_pistol"] = 25,
-            ["t_electroblade"] = 24,
-            ["t_spear"] = 28,
-            ["t_shuriken"] = 22,
-            ["t_twin_elec"] = 29,
+            ["t_longsword"] = ItemPropertyAttackDelay.Delay230,
+            ["t_katar"] = ItemPropertyAttackDelay.Delay220,
+            ["t_twinblade"] = ItemPropertyAttackDelay.Delay290,
+            ["t_knife"] = ItemPropertyAttackDelay.Delay220,
+            ["t_staff"] = ItemPropertyAttackDelay.Delay270,
+            ["t_rifle"] = ItemPropertyAttackDelay.Delay300,
+            ["t_greatsword"] = ItemPropertyAttackDelay.Delay300,
+            ["t_pistol"] = ItemPropertyAttackDelay.Delay250,
+            ["t_electroblade"] = ItemPropertyAttackDelay.Delay240,
+            ["t_spear"] = ItemPropertyAttackDelay.Delay280,
+            ["t_shuriken"] = ItemPropertyAttackDelay.Delay220,
+            ["t_twin_elec"] = ItemPropertyAttackDelay.Delay290,
 
-            ["byyskwarriorswor"] = 22,
-            ["sith_blade"] = 22,
-            ["wswss002"] = 22,
+            ["byyskwarriorswor"] = ItemPropertyAttackDelay.Delay220,
+            ["sith_blade"] = ItemPropertyAttackDelay.Delay220,
+            ["wswss002"] = ItemPropertyAttackDelay.Delay220,
         };
 
         private static HashSet<BaseItem> BuildWeaponBaseItemTypes()
@@ -303,7 +304,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             }
 
             if (delayProperties.Count == 1 &&
-                delayProperties[0].Value == targetDelayCost.Value)
+                delayProperties[0].Value == (int)targetDelayCost.Value)
             {
                 return false;
             }
@@ -315,7 +316,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
             BiowareXP2.IPSafeAddItemProperty(
                 item,
-                ItemPropertyCustom(ItemPropertyType.Delay, -1, targetDelayCost.Value),
+                ItemPropertyCustom(ItemPropertyType.Delay, -1, (int)targetDelayCost.Value),
                 0.0f,
                 AddItemPropertyPolicy.ReplaceExisting,
                 false,
@@ -338,19 +339,19 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
                     continue;
 
                 delayPropertyCount++;
-                hasTargetDelay |= GetItemPropertyCostTableValue(ip) == targetDelayCost.Value;
+                hasTargetDelay |= GetItemPropertyCostTableValue(ip) == (int)targetDelayCost.Value;
             }
 
             return delayPropertyCount == 1 && hasTargetDelay;
         }
 
-        private static int? GetTargetDelayCost(uint item)
+        private static ItemPropertyAttackDelay? GetTargetDelayCost(uint item)
         {
             var resref = GetResRef(item);
             if (!string.IsNullOrWhiteSpace(resref) &&
-                DelayCostByResref.TryGetValue(resref, out var resrefDelayCost))
+                DelayByResref.TryGetValue(resref, out var resrefDelay))
             {
-                return resrefDelayCost;
+                return resrefDelay;
             }
 
             var baseItem = GetBaseItemType(item);

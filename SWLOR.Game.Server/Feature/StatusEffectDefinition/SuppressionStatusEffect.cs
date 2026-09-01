@@ -1,10 +1,14 @@
+using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 {
-    public sealed class SuppressionStatusEffect : StatusEffectBase
+    public sealed class SuppressionStatusEffect : StatusEffectBase,
+        IStatusEffectRemovedHandler,
+        IStatusEffectRestoredHandler,
+        IRemoveWhenSourceExits
     {
         public override string Name => "Suppression";
         public override EffectIconType Icon => EffectIconType.SuppressionStatusEffect;
@@ -30,6 +34,17 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
         public override IStatusEffect Clone()
         {
             return new SuppressionStatusEffect(EvasionPenaltyPercent);
+        }
+
+        public void AfterRemoved(uint creature)
+        {
+            Combat.ReconcileContainmentNetStatus(Source, creature);
+            Combat.ReconcileOverwatchStatus(Source);
+        }
+
+        public void AfterRestored(uint creature)
+        {
+            Combat.ReconcileContainmentNetStatus(Source, creature);
         }
     }
 }

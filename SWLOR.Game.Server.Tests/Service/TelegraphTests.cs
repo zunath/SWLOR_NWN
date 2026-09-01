@@ -13,8 +13,90 @@ namespace SWLOR.Game.Server.Tests.Service;
 
 public class TelegraphTests
 {
+    private const int PackedColorShift = 3;
+    private const int PackedColorMask = 0x3;
     private const int PackedRotationShift = 21;
     private const int PackedRotationMask = 0x3ff;
+
+    [TestCase(TelegraphColorType.Hostile, 0)]
+    [TestCase(TelegraphColorType.Self, 1)]
+    [TestCase(TelegraphColorType.Beneficial, 2)]
+    [TestCase(TelegraphColorType.PartyMember, 3)]
+    public void PackTelegraphData_UsesTheShaderColorProtocol(
+        TelegraphColorType colorType,
+        int expectedPackedColor)
+    {
+        var packed = InvokePackTelegraphData(TelegraphType.Sphere, colorType, 0f);
+
+        ExtractPackedColor(packed).Should().Be(expectedPackedColor);
+    }
+
+    [Test]
+    public void ShaderPalette_MatchesTheServerColorProtocol()
+    {
+        var shader = File.ReadAllText(ResolveRepositoryPath(
+            "SWLOR_Haks",
+            "sw_shader",
+            "fsfbpostpr.shd"));
+
+        shader.Should().Contain("const int COLOR_HOSTILE = 0;");
+        shader.Should().Contain("const int COLOR_SELF = 1;");
+        shader.Should().Contain("const int COLOR_BENEFICIAL = 2;");
+        shader.Should().Contain("const int COLOR_PARTY_MEMBER = 3;");
+        shader.Should().Contain("COLOR_HOSTILE) return vec3(1.0, 0.0, 0.0); // Red");
+        shader.Should().Contain("COLOR_SELF) return vec3(0.0, 0.0, 1.0); // Blue");
+        shader.Should().Contain("COLOR_BENEFICIAL) return vec3(0.0, 1.0, 0.0); // Green");
+        shader.Should().Contain("COLOR_PARTY_MEMBER) return vec3(0.66, 0.66, 0.66); // Gray");
+    }
+
+    [TestCase(true, true, true, TelegraphColorType.Self)]
+    [TestCase(true, false, false, TelegraphColorType.Self)]
+    [TestCase(false, true, true, TelegraphColorType.PartyMember)]
+    [TestCase(false, true, false, TelegraphColorType.Beneficial)]
+    [TestCase(false, false, true, TelegraphColorType.Hostile)]
+    [TestCase(false, false, false, TelegraphColorType.Beneficial)]
+    public void SelectTelegraphColorType_KeepsPartyBeneficialEffectsGreen(
+        bool isOwnTelegraph,
+        bool isPartyMemberTelegraph,
+        bool isHostile,
+        TelegraphColorType expected)
+    {
+        var method = typeof(Telegraph)
+            .GetMethod("SelectTelegraphColorType", BindingFlags.Static | BindingFlags.NonPublic)!;
+
+        var actual = (TelegraphColorType)method.Invoke(
+            null,
+            new object[] { isOwnTelegraph, isPartyMemberTelegraph, isHostile })!;
+
+        actual.Should().Be(expected);
+    }
+
+    [Test]
+    public void PartyMembershipChanges_RefreshAffectedTelegraphViewers()
+    {
+        var source = File.ReadAllText(ResolveRepositoryPath(
+            "SWLOR.Game.Server",
+            "Service",
+            "Party.cs"));
+        var addPartyStart = source.IndexOf("private static void AddToParty", StringComparison.Ordinal);
+        var removePartyStart = source.IndexOf("private static void RemoveCreatureFromParty", StringComparison.Ordinal);
+
+        addPartyStart.Should().BeGreaterThan(-1);
+        removePartyStart.Should().BeGreaterThan(-1);
+
+        var addPartyBody = ExtractBlockBody(source, addPartyStart);
+        var removePartyBody = ExtractBlockBody(source, removePartyStart);
+
+        addPartyBody.Should().Contain(
+            "Telegraph.UpdateShadersForPlayers(GetAllPartyMembers(requester));",
+            "joining players and associates must see active party telegraphs change color immediately");
+        removePartyBody.Should().Contain(
+            "var affectedPartyMembers = _parties[partyId].ToList();",
+            "the former party must be captured before its membership cache changes");
+        removePartyBody.Should().Contain(
+            "Telegraph.UpdateShadersForPlayers(affectedPartyMembers);",
+            "departing and remaining players must immediately repack active telegraph colors");
+    }
 
     [Test]
     public void PackTelegraphData_LineKeepsGameplayRotation()
@@ -49,7 +131,7 @@ public class TelegraphTests
     }
 
     [Test]
-    public void ApplyTelegraphedCombatImpact_FlashesTheShapeOnTheInstantPath()
+    public void ApplyTelegraphedCombatImpact_FlashesOnlyWhenActivationDidNotAlreadyShowTheShape()
     {
         // Guards the wiring itself: the zero-telegraph branch must still render something.
         var source = File.ReadAllText(ResolveRepositoryPath("SWLOR.Game.Server", "Service", "Ability.cs"));
@@ -64,8 +146,52 @@ public class TelegraphTests
         // would still pass.
         var branchBody = ExtractBlockBody(source, branchStart);
 
+        branchBody.Should().Contain("HadActivationAreaTelegraph",
+            "a casted area must not tear down and immediately redraw the same telegraph at impact");
         branchBody.IndexOf("ShowAreaImpactFlash(", StringComparison.Ordinal)
             .Should().BeGreaterThan(-1, "the instant-cast path must flash the area it just struck");
+    }
+
+    [Test]
+    public void AbilityActivation_TracksWhetherAnAreaTelegraphWasDisplayed()
+    {
+        var source = File.ReadAllText(ResolveRepositoryPath(
+            "SWLOR.Game.Server",
+            "Feature",
+            "UsePerkFeat.cs"));
+
+        source.Should().Contain("activationTelegraphIds.Count > 0");
+        source.Should().Contain("hadActivationAreaTelegraph: hadActivationAreaTelegraph");
+        source.Should().Contain(
+            "ability.ImpactDelay <= 0f && activationTelegraphIds.Count > 0",
+            "a delayed impact occurs after its activation telegraph has been removed and still needs an impact flash");
+    }
+
+    [Test]
+    public void PersistentAreaIndicators_DoNotDisplaceActivationWarnings()
+    {
+        var persistentIndicator = new ActiveTelegraph(
+            1,
+            0,
+            100,
+            new TelegraphData { IsPersistentAreaIndicator = true });
+        var activationWarnings = Enumerable.Range(1, Telegraph.MaxRenderCount)
+            .Select(start => new ActiveTelegraph(
+                1,
+                start,
+                100,
+                new TelegraphData { IsPersistentAreaIndicator = false }))
+            .ToArray();
+        var candidates = new[] { persistentIndicator }
+            .Concat(activationWarnings)
+            .ToArray();
+        var selector = typeof(Telegraph)
+            .GetMethod("SelectTelegraphsForRendering", BindingFlags.Static | BindingFlags.NonPublic)!;
+
+        var selected = (ActiveTelegraph[])selector.Invoke(null, new object[] { candidates })!;
+
+        selected.Should().HaveCount(Telegraph.MaxRenderCount);
+        selected.Should().OnlyContain(telegraph => !telegraph.Data.IsPersistentAreaIndicator);
     }
 
     /// <summary>
@@ -126,6 +252,14 @@ public class TelegraphTests
 
     private static int InvokePackTelegraphData(TelegraphType type, float rotation)
     {
+        return InvokePackTelegraphData(type, TelegraphColorType.Self, rotation);
+    }
+
+    private static int InvokePackTelegraphData(
+        TelegraphType type,
+        TelegraphColorType colorType,
+        float rotation)
+    {
         var method = typeof(Telegraph)
             .GetMethod("PackTelegraphData", BindingFlags.Static | BindingFlags.NonPublic)!;
 
@@ -134,10 +268,15 @@ public class TelegraphTests
             new object[]
             {
                 type,
-                TelegraphColorType.Self,
+                colorType,
                 new Vector2(8f, 2.5f),
                 rotation
             })!;
+    }
+
+    private static int ExtractPackedColor(int packed)
+    {
+        return (packed >> PackedColorShift) & PackedColorMask;
     }
 
     private static int ExtractPackedRotation(int packed)

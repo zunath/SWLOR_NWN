@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.SnippetService;
@@ -20,11 +21,16 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
             LocalNumberCondition();
             PlayerCreditsCondition();
             PlayerAbilityCondition();
+            PlayerClassCondition();
             RandomChanceCondition();
             SetLocalNumberAction();
             AdjustLocalNumberAction();
             TakePlayerCreditsAction();
             HealPlayerAction();
+            NotifyPlayerAction();
+            OpenTrainingStoreAction();
+            OpenStatRebuildAction();
+            PurchaseFullRebuildAction();
             return _builder.Build();
         }
 
@@ -102,6 +108,19 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     SWLOR.Game.Server.Service.Random.D100(1) <= Math.Clamp(chance, 0, 100));
         }
 
+        private void PlayerClassCondition()
+        {
+            _builder.Create("condition-player-class")
+                .Description("Checks whether the player has at least one level in a class.")
+                .Phrase("the player has levels in {class}")
+                .NegatedPhrase("the player has no levels in {class}")
+                .Argument("class", SnippetArgumentType.Text)
+                .AppearsWhenAction((player, args) =>
+                    args.Length > 0 &&
+                    Enum.TryParse(args[0], true, out ClassType classType) &&
+                    GetLevelByClass(classType, player) > 0);
+        }
+
         private void SetLocalNumberAction()
         {
             _builder.Create("action-set-local-number")
@@ -172,6 +191,49 @@ namespace SWLOR.Game.Server.Feature.SnippetDefinition
                     ApplyEffectToObject(DurationType.Instant, EffectHeal(GetMaxHitPoints(player)), player);
                     return true;
                 });
+        }
+
+        private void NotifyPlayerAction()
+        {
+            _builder.Create("action-notify-player")
+                .Description("Sends a message to the player.")
+                .Phrase("tells the player {message}")
+                .Argument("message", SnippetArgumentType.Text)
+                .ActionsTakenAction((player, args) =>
+                {
+                    if (args.Length == 0)
+                        return false;
+                    SendMessageToPC(player, args[0]);
+                    return true;
+                });
+        }
+
+        private void OpenTrainingStoreAction()
+        {
+            _builder.Create("action-open-training-store")
+                .Description("Opens the training store for the player.")
+                .Phrase("opens the training store")
+                .ActionsTakenAction((player, _) =>
+                    TrainingStoreViewModel.OpenTrainingStore(player, Snippet.GetExecutionOwner()));
+        }
+
+        private void OpenStatRebuildAction()
+        {
+            _builder.Create("action-open-stat-rebuild")
+                .Description("Opens the stat rebuild window for the player.")
+                .Phrase("opens the stat rebuild window")
+                .ActionsTakenAction((player, _) =>
+                    CharacterStatRebuildViewModel.OpenCharacterStatRebuild(
+                        player,
+                        Snippet.GetExecutionOwner()));
+        }
+
+        private void PurchaseFullRebuildAction()
+        {
+            _builder.Create("action-purchase-full-rebuild")
+                .Description("Consumes a rebuild token and sends the player to the rebuild area.")
+                .Phrase("purchases a full character rebuild")
+                .ActionsTakenAction((player, _) => PlaceableScripts.PurchaseRebuild(player));
         }
 
         private static bool TryReadLocalArguments(

@@ -110,6 +110,21 @@ namespace SWLOR.Toolset.Tests
                 viewModel.IsBusy = false;
                 Dispatcher.UIThread.RunJobs();
                 closeButton.IsEnabled.Should().BeTrue();
+
+                viewModel.Mode = ErfArchiveMode.Import;
+                viewModel.CurrentStep = 3;
+                viewModel.IsComplete = true;
+                Dispatcher.UIThread.RunJobs();
+
+                var importAgainButton = window.GetVisualDescendants()
+                    .OfType<Button>()
+                    .Single(button => button.Content?.ToString() == "Import another ERF");
+                importAgainButton.IsVisible.Should().BeTrue();
+                importAgainButton.IsEnabled.Should().BeTrue();
+                window.GetVisualDescendants()
+                    .OfType<Button>()
+                    .Single(button => button.Content?.ToString() == "Import to Module")
+                    .IsVisible.Should().BeFalse();
             }
             finally
             {

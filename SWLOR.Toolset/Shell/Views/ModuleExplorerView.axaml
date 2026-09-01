@@ -116,6 +116,10 @@
                   <MenuItem Header="Remove from folder"
                             Command="{Binding $parent[ListBox].((panels:ModuleExplorerViewModel)DataContext).RemoveFromFolderCommand}"
                             IsVisible="{Binding IsResource}" />
+                  <Separator IsVisible="{Binding IsResource}" />
+                  <MenuItem Header="Delete"
+                            Command="{Binding $parent[ListBox].((panels:ModuleExplorerViewModel)DataContext).DeleteSelectedResourceCommand}"
+                            IsVisible="{Binding IsResource}" />
                 </ContextMenu>
               </Grid.ContextMenu>
 

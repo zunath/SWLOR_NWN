@@ -181,6 +181,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 baseDamage,
                 GetAbilityScore(activator, AbilityType.Willpower),
                 source: activator);
+            AbilityAreaEffects.CreatePersistentSphereIndicator(
+                activator,
+                location,
+                radius,
+                durationSeconds,
+                true);
             ApplyEffectAtLocation(DurationType.Temporary, EffectAreaOfEffect(areaOfEffect), location, durationSeconds);
 
             CombatAreaPulses.SchedulePulses(
@@ -192,7 +198,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 pulseLocation =>
                 {
                     var ability = Ability.GetAbilityDetail(featType);
-                    Ability.BeginAbilityImpact(activator, ability);
+                    Ability.BeginAbilityImpact(activator, ability, countsAsAttackAttempt: false);
                     ApplyCreepingTerrorPulse(activator, pulseLocation, scaledPulseDamage, radius);
                     var summary = Ability.EndAbilityImpact(activator);
                     Combat.ApplyAbilityImpactEffects(activator, summary);

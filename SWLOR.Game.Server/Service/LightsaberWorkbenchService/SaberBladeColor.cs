@@ -1,3 +1,5 @@
+using SWLOR.NWN.API.NWScript.Enum.Item.Property;
+
 namespace SWLOR.Game.Server.Service.LightsaberWorkbenchService
 {
     /// <summary>
@@ -33,13 +35,25 @@ namespace SWLOR.Game.Server.Service.LightsaberWorkbenchService
         /// </summary>
         public string PreviewResref { get; }
 
-        public SaberBladeColor(string name, int straightTopValue, int curvedTopValue, int saberstaffTopValue, string previewResref)
+        /// <summary>
+        /// Color of the dim light emitted by a saber built with this blade.
+        /// </summary>
+        public LightColor LightColor { get; }
+
+        public SaberBladeColor(
+            string name,
+            int straightTopValue,
+            int curvedTopValue,
+            int saberstaffTopValue,
+            string previewResref,
+            LightColor lightColor)
         {
             Name = name;
             StraightTopValue = straightTopValue;
             CurvedTopValue = curvedTopValue;
             SaberstaffTopValue = saberstaffTopValue;
             PreviewResref = previewResref;
+            LightColor = lightColor;
         }
     }
 }

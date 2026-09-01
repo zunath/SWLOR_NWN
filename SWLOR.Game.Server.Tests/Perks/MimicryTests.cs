@@ -191,6 +191,50 @@ public class MimicryTests
     }
 
     [Test]
+    public void ReportedMimicryUtilityAndCryoPayloadsRemainWiredToTheBibleContract()
+    {
+        var root = FindRepositoryRoot();
+        var techniqueDirectory = Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "Mimicry");
+        var abilityTargeting = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "AbilityTargeting.cs"));
+        var stimCanister = File.ReadAllText(Path.Combine(
+            techniqueDirectory,
+            "StimCanisterTechniqueAbilityDefinition.cs"));
+        var cryoBile = File.ReadAllText(Path.Combine(
+            techniqueDirectory,
+            "CryoBileTechniqueAbilityDefinition.cs"));
+
+        stimCanister.Should().Contain(
+            "AbilityTargeting.GetFriendlyTargetsNearLocation(activator, GetLocation(activator), 4.0f)");
+        stimCanister.Should().Contain(
+            "StatusEffect.ApplyStatusEffect(activator, ally, new StimCanisterStatusEffect(), 30f)");
+        abilityTargeting.Should().Contain("bool includeActivator = true");
+        abilityTargeting.Should().Contain(
+            "if ((creature == activator && includeActivator) || Party.IsInParty(activator, creature))");
+        abilityTargeting.Should().Contain(
+            "if (!GetIsDead(creature) && GetCurrentHitPoints(creature) > 0)",
+            "dead or unconscious party members must not receive Stim Canister");
+        abilityTargeting.Should().MatchRegex(
+            @"if \(includeActivator &&\s+!yieldedActivator &&\s+IsAlive\(activator\) &&",
+            "the caster must be included even when the area iterator does not return them");
+
+        cryoBile.Should().Contain("additionalStatusEffects: new[] { typeof(ImmobilizedStatusEffect) }");
+        cryoBile.Should().Contain("enmityBonus: 100",
+            "Cryo Bile promises 100 additional enmity for every target that its area impact resolves against");
+        cryoBile.Should().Contain(".CombatImpactDamageAbility(AbilityType.Perception)",
+            "Cryo Bile uses the documented Perception scaling path; Freezing tick scaling is covered separately");
+    }
+
+    [Test]
     public void ShockTechniques_DescriptionsExposeTheirActualForceSuppressionContract()
     {
         var root = FindRepositoryRoot();
@@ -365,18 +409,20 @@ public class MimicryTests
             var trait = traits[index];
             if (usedSlots + trait.MimicrySlotCost > 10)
                 return;
-
             var withStats = new Dictionary<StatType, int>(stats);
             foreach (var (stat, value) in trait.MimicryTraitStats)
                 withStats[stat] = withStats.GetValueOrDefault(stat) + value;
             var withResistances = new Dictionary<ResistanceType, int>(resistances);
             foreach (var (resistance, value) in trait.MimicryTraitResistances)
                 withResistances[resistance] = withResistances.GetValueOrDefault(resistance) + value;
-
             Enumerate(index + 1, usedSlots + trait.MimicrySlotCost, withStats, withResistances);
         }
 
-        Enumerate(0, 0, new Dictionary<StatType, int>(), new Dictionary<ResistanceType, int>());
+        Enumerate(
+            0,
+            0,
+            new Dictionary<StatType, int>(),
+            new Dictionary<ResistanceType, int>());
 
         maximumByStat.Should().BeEquivalentTo(new Dictionary<StatType, int>
         {
@@ -400,9 +446,9 @@ public class MimicryTests
             [ResistanceType.Trauma] = 25
         });
         maximumCombinedDefense.Should().Be(50,
-            "stacking both defensive traits costs four of the ten slots and must stay within the reviewed defense budget");
+            "both carapace traits may stack when the loadout commits four slots to them");
         maximumCombinedResistance.Should().Be(95,
-            "the two defensive traits may complement one another without approaching immunity to any single damage type");
+            "both carapace traits may stack when the loadout commits four slots to them");
     }
 
     // The builder is the boundary where a bad trait declaration should fail loudly. An Invalid stat
@@ -420,7 +466,6 @@ public class MimicryTests
             .Should().Throw<ArgumentException>("an Invalid stat is not a real stat");
         Trait().Invoking(b => b.MimicryTraitResistance(ResistanceType.Invalid, 10))
             .Should().Throw<ArgumentException>("an Invalid resistance is not a real resistance");
-
         // Both helpers require MimicryTrait first, so a plain technique cannot accrue trait stats.
         static AbilityBuilder PlainTechnique() => new AbilityBuilder()
             .Create(FeatType.ToxicSpitTechnique, PerkType.CombatAnalyzer)
@@ -443,6 +488,43 @@ public class MimicryTests
 
         builder.Invoking(b => b.MimicryTechnique(FeatType.ToxicSpit, skillRequirement, 1))
             .Should().Throw<ArgumentException>("technique requirements must fit within the Mimicry skill's 0-50 range");
+    }
+
+    [TestCase(true)]
+    [TestCase(false)]
+    public void MimicryTechniqueBuilder_DoesNotDiscardExplicitAreaRange(bool targetingFirst)
+    {
+        var builder = new AbilityBuilder()
+            .Create(FeatType.ToxicSpitTechnique, PerkType.CombatAnalyzer)
+            .Name("Contract Test")
+            .IsCastedAbility()
+            .IsAreaAbility()
+            .HasMaxRange(8f);
+
+        if (targetingFirst)
+        {
+            builder
+                .HasTargetingCone(
+                    Spell.CryoBileTechnique,
+                    8f,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf)
+                .MimicryTechnique(FeatType.ToxicSpit, 24, 1);
+        }
+        else
+        {
+            builder
+                .MimicryTechnique(FeatType.ToxicSpit, 24, 1)
+                .HasTargetingCone(
+                    Spell.CryoBileTechnique,
+                    8f,
+                    5f,
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf);
+        }
+
+        var detail = builder.Build()[FeatType.ToxicSpitTechnique];
+        detail.HasExplicitMaxRange.Should().BeTrue();
+        detail.MaxRange.Should().Be(8f);
     }
 
     // The declaration tests above prove traits carry data, but not that the data is ever read. The
@@ -762,6 +844,39 @@ public class MimicryTests
         }
     }
 
+    [Test]
+    public void MimicryDirectionAimedAreas_DoNotRangeCheckTheCursorPoint()
+    {
+        var offenders = BuildAllAbilities(MimicryTechniqueNamespace)
+            .Where(technique => technique.Detail.RequiresLocationTarget)
+            .Where(technique => technique.Detail.Targeting.Shape is
+                AbilityTargetingShapeType.Rect or AbilityTargetingShapeType.Cone)
+            .Where(technique => technique.Detail.Targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf))
+            .Where(technique => technique.Detail.HasExplicitMaxRange)
+            .Select(technique => technique.Feat)
+            .ToList();
+
+        offenders.Should().BeEmpty(
+            "a line or cone cursor selects direction; the authored shape length limits actual reach, " +
+            "so the clicked ground point must not produce an out-of-range rejection");
+    }
+
+    [Test]
+    public void MimicryDirectionAimedAreas_ExplicitlyBackOffsetTheirOrigin()
+    {
+        var offenders = BuildAllAbilities(MimicryTechniqueNamespace)
+            .Where(technique => technique.Detail.RequiresLocationTarget)
+            .Where(technique => technique.Detail.Targeting.Shape is
+                AbilityTargetingShapeType.Rect or AbilityTargetingShapeType.Cone)
+            .Where(technique => technique.Detail.Targeting.Flags.HasFlag(AbilityTargetingFlags.OriginOnSelf))
+            .Where(technique => !technique.Detail.Targeting.Flags.HasFlag(AbilityTargetingFlags.BackOffsetOrigin))
+            .Select(technique => technique.Feat)
+            .ToList();
+
+        offenders.Should().BeEmpty(
+            "only explicitly flagged Mimicry lines and cones should move their apex behind the caster");
+    }
+
     // Registry-driven TLK check covering every technique in the pool. Replaces the old fixed
     // strref-id range assertion (192553-192573), which only fit the original 10-row pool, with a
     // check that every technique's FEAT/DESCRIPTION strrefs are custom TLK references that
@@ -833,6 +948,67 @@ public class MimicryTests
             .Should()
             .Contain(ScriptName.OnSwlorLoseSkill,
                 "every Mimicry rank loss must immediately enforce equipped technique requirements");
+    }
+
+    [Test]
+    public void MimicryTechniqueActivation_RequiresTheTechniqueToRemainEquipped()
+    {
+        var root = FindRepositoryRoot();
+        var abilitySource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Ability.cs"));
+
+        abilitySource.Should().Contain("ability.IsMimicryTechnique &&");
+        abilitySource.Should().Contain("!Mimicry.IsTechniqueEquipped(activator, abilityType)",
+            "both the initial and post-cast activation checks use CanUseAbility, so an unequipped technique cannot resolve");
+
+        var equipped = new Player();
+        equipped.EquippedTechniques.Add(FeatType.WardenWallTechnique);
+
+        Mimicry.IsTechniqueEquipped(equipped, FeatType.WardenWallTechnique).Should().BeTrue();
+        Mimicry.IsTechniqueEquipped(equipped, FeatType.SustainBurnTechnique).Should().BeFalse();
+        Mimicry.IsTechniqueEquipped((Player)null, FeatType.WardenWallTechnique).Should().BeFalse();
+    }
+
+    [Test]
+    public void MimicryTechniqueUnequip_RemovesDeclaredPersistentEffects()
+    {
+        var techniques = BuildAllAbilities(MimicryTechniqueNamespace)
+            .ToDictionary(technique => technique.Feat, technique => technique.Detail);
+
+        foreach (var feat in new[]
+                 {
+                     FeatType.ApexCollapseTechnique,
+                     FeatType.SustainBurnTechnique,
+                     FeatType.WardenWallTechnique
+                 })
+        {
+            techniques[feat].IsMimicryStance.Should().BeTrue();
+            techniques[feat].StatusEffectTypesRemovedOnPerkRefund.Should().ContainSingle(
+                $"{feat} must declare its permanent wearer effect for revocation cleanup");
+        }
+
+        techniques[FeatType.WardenWallTechnique]
+            .SourceOwnedStatusEffectTypesRemovedOnPerkRefund
+            .Should().Contain(typeof(WardenWallAuraStatusEffect),
+                "unequipping Warden Wall must also remove the aura it granted to nearby allies");
+
+        var root = FindRepositoryRoot();
+        var mimicrySource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Mimicry.cs"));
+        var revokeStart = mimicrySource.IndexOf("private static void RevokeTechniqueFeat", StringComparison.Ordinal);
+        var revokeEnd = mimicrySource.IndexOf("private static bool IsFeatOnHotBar", revokeStart, StringComparison.Ordinal);
+        var revokeBody = mimicrySource[revokeStart..revokeEnd];
+
+        revokeBody.Should().Contain("detail.StatusEffectTypesRemovedOnPerkRefund");
+        revokeBody.Should().Contain("StatusEffect.RemoveStatusEffect(player, statusEffectType, false);");
+        revokeBody.Should().Contain("detail.SourceOwnedStatusEffectTypesRemovedOnPerkRefund");
+        revokeBody.Should().Contain("StatusEffect.RemoveStatusEffectsFromAllTargetsBySource(");
     }
 
     [Test]

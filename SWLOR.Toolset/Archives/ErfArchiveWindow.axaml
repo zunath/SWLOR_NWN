@@ -382,6 +382,10 @@
         <Button Grid.Column="4" Classes="primary" Content="Import to Module"
                 Click="OnImportClicked" IsVisible="{Binding ShowImportAction}"
                 IsEnabled="{Binding CanCommit}" />
+        <Button Grid.Column="4" Classes="primary" Content="Import another ERF"
+                Command="{Binding RestartImportCommand}"
+                IsVisible="{Binding ShowRestartImportAction}"
+                IsEnabled="{Binding CanRestartImport}" />
         <Button Grid.Column="5" Classes="primary" Content="Save ERF As..."
                 Click="OnExportClicked" IsVisible="{Binding ShowExportAction}"
                 IsEnabled="{Binding CanCommit}" />

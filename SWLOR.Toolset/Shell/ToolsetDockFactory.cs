@@ -212,6 +212,9 @@ namespace SWLOR.Toolset.Shell
         /// <summary>Re-reads the front area in the tile-facing panels, after its tileset changed.</summary>
         public void NotifyActiveAreaChanged() => _palette.OnActiveAreaChanged();
 
+        /// <summary>Rebuilds materialized tool-panel values that resolve through the TLK.</summary>
+        public void RefreshTlkLabels() => _properties.RefreshTlkLabels();
+
         /// <summary>Docks an editor document into the Documents area and activates it.</summary>
         public void OpenDocument(Document document)
         {

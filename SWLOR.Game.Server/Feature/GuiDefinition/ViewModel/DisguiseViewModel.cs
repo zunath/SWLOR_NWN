@@ -247,6 +247,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
+        public string Biography
+        {
+            get => Get<string>();
+            set => Set(value);
+        }
+
         public string PortraitInternalId
         {
             get => Get<string>();
@@ -295,6 +301,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsViewMode = false;
             PrivateName = string.Empty;
             Descriptor = string.Empty;
+            Biography = string.Empty;
             PortraitInternalId = "1";
             SoundSetName = string.Empty;
             PortraitResref = string.Empty;
@@ -317,6 +324,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             WatchOnClient(model => model.PrivateName);
             WatchOnClient(model => model.Descriptor);
+            WatchOnClient(model => model.Biography);
             WatchOnClient(model => model.PortraitInternalId);
             WatchOnClient(model => model.SelectedSoundSetIndex);
             WatchOnClient(model => model.SelectedSoundSetPageIndex);
@@ -404,6 +412,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _selectedDisguiseId,
                 PrivateName,
                 Descriptor,
+                Biography,
                 _activePortraitInternalId,
                 _selectedSoundSetId,
                 ScrambleAccountId);
@@ -667,6 +676,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsViewMode = !IsEditMode;
             PrivateName = disguise.PrivateName;
             Descriptor = disguise.Descriptor;
+            Biography = disguise.Biography ?? string.Empty;
             PortraitInternalId = disguise.PortraitInternalId.ToString();
             ScrambleAccountId = disguise.ScrambleAccountId;
             SelectSoundSet(disguise.SoundSetId);
@@ -687,6 +697,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsViewMode = false;
             PrivateName = string.Empty;
             Descriptor = string.Empty;
+            Biography = string.Empty;
             PortraitInternalId = "1";
             SoundSetName = string.Empty;
             PortraitResref = string.Empty;

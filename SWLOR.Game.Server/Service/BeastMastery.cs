@@ -9,6 +9,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.CompanionControlService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.PerkService;
@@ -293,7 +294,6 @@ namespace SWLOR.Game.Server.Service
             SetEventScript(beast, EventScript.Creature_OnDeath, ScriptName.OnBeastDeath);
             SetEventScript(beast, EventScript.Creature_OnDisturbed, ScriptName.OnBeastDisturbed);
             SetEventScript(beast, EventScript.Creature_OnHeartbeat, ScriptName.OnBeastHeartbeat);
-            SetEventScript(beast, EventScript.Creature_OnNotice, ScriptName.OnBeastPerception);
             SetEventScript(beast, EventScript.Creature_OnMeleeAttacked, ScriptName.OnBeastAttacked);
             SetEventScript(beast, EventScript.Creature_OnRested, ScriptName.OnBeastRest);
             SetEventScript(beast, EventScript.Creature_OnSpawnIn, ScriptName.OnBeastSpawn);
@@ -303,6 +303,13 @@ namespace SWLOR.Game.Server.Service
             // Ensure the spawn script gets called as it normally gets skipped
             // because it doesn't exist at the time of the beast being created.
             ExecuteScript(GetEventScript(beast, EventScript.Creature_OnSpawnIn), beast);
+
+            // A normal Call Beast spawn requests 100% health. Restore it immediately so the
+            // companion does not appear near death while waiting for the delayed HP correction.
+            if (percentHeal >= 100)
+            {
+                SetCurrentHitPoints(beast, GetMaxHitPoints(beast));
+            }
 
             AssignCommand(GetModule(), () =>
             {
@@ -336,16 +343,17 @@ namespace SWLOR.Game.Server.Service
             BiowareXP2.IPSafeAddItemProperty(skin, ItemPropertyCustom(ItemPropertyType.FP, -1, level.FP), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
 
             BiowareXP2.IPSafeAddItemProperty(claw, ItemPropertyCustom(ItemPropertyType.DMG, -1, level.DMG), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(claw, ItemPropertyCustom(ItemPropertyType.Delay, -1, (int)level.AttackDelay), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPSafeAddItemProperty(claw, ItemPropertyCustom(ItemPropertyType.DamageStat, (int)beastDetail.DamageStat), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPSafeAddItemProperty(claw, ItemPropertyCustom(ItemPropertyType.AccuracyStat, (int)beastDetail.AccuracyStat), 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
 
-            ObjectPlugin.SetMaxHitPoints(beast, beastDetail.Levels[dbBeast.Level].HP);
             CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Might, level.Stats[AbilityType.Might]);
             CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Perception, level.Stats[AbilityType.Perception]);
             CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Vitality, level.Stats[AbilityType.Vitality]);
             CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Willpower, level.Stats[AbilityType.Willpower]);
             CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Agility, level.Stats[AbilityType.Agility]);
             CreaturePlugin.SetRawAbilityScore(beast, AbilityType.Social, level.Stats[AbilityType.Social]);
+            Stat.SetNPCMaxHitPoints(beast, level.HP);
 
             var attackBonus = (int)(level.MaxAttackBonus * (dbBeast.AttackPurity * 0.01f));
             var accuracyBonus = (int)(level.MaxAccuracyBonus * (dbBeast.AccuracyPurity * 0.01f));
@@ -421,6 +429,7 @@ namespace SWLOR.Game.Server.Service
         {
             var player = OBJECT_SELF;
             var beast = GetAssociate(AssociateType.Henchman, player);
+            CompanionControl.Clear(beast);
             DestroyObject(beast);
         }
 
@@ -460,30 +469,27 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnBeastRoundEnd)]
         public static void BeastOnEndCombatRound()
         {
-            var beast = OBJECT_SELF;
-            if (!Activity.IsBusy(beast))
-            {
-                ExecuteScript("x0_ch_hen_combat", OBJECT_SELF);
-                AI.ProcessTrigger(beast, AITriggerType.CombatRound);
-            }
+            CompanionControl.ProcessCombatRound(OBJECT_SELF);
         }
 
         [NWNEventHandler(ScriptName.OnBeastConversation)]
         public static void BeastOnConversation()
         {
-            ExecuteScript("x0_ch_hen_conv", OBJECT_SELF);
+            if (!CompanionControl.HandleConversation(OBJECT_SELF))
+                ExecuteScript("x0_ch_hen_conv", OBJECT_SELF);
         }
 
         [NWNEventHandler(ScriptName.OnBeastDamaged)]
         public static void BeastOnDamaged()
         {
-            ExecuteScript("x0_ch_hen_damage", OBJECT_SELF);
+            CompanionControl.RegisterDefensiveThreat(OBJECT_SELF, GetLastDamager(OBJECT_SELF));
         }
 
         [NWNEventHandler(ScriptName.OnBeastDeath)]
         public static void BeastOnDeath()
         {
             var beast = OBJECT_SELF;
+            CompanionControl.Clear(beast);
             ExecuteScript("x2_hen_death", beast);
 
             var beastId = GetBeastId(beast);
@@ -505,22 +511,14 @@ namespace SWLOR.Game.Server.Service
         [NWNEventHandler(ScriptName.OnBeastHeartbeat)]
         public static void BeastOnHeartbeat()
         {
-            ExecuteScript("x0_ch_hen_heart", OBJECT_SELF);
-            Stat.RestoreNPCStats(false);
-        }
-
-        [NWNEventHandler(ScriptName.OnBeastPerception)]
-        public static void BeastOnPerception()
-        {
-            ExecuteScript("x0_ch_hen_percep", OBJECT_SELF);
-
+            Stat.RestoreBeastStats();
+            CompanionControl.ProcessHeartbeat(OBJECT_SELF);
         }
 
         [NWNEventHandler(ScriptName.OnBeastAttacked)]
         public static void BeastOnPhysicalAttacked()
         {
-            ExecuteScript("x0_ch_hen_attack", OBJECT_SELF);
-
+            CompanionControl.RegisterDefensiveThreat(OBJECT_SELF, GetLastAttacker(OBJECT_SELF));
         }
 
         [NWNEventHandler(ScriptName.OnBeastRest)]
@@ -538,20 +536,20 @@ namespace SWLOR.Game.Server.Service
         public static void BeastOnSpawn()
         {
             var beast = OBJECT_SELF;
-            ExecuteScript("x0_ch_hen_spawn", beast);
             AssignCommand(beast, () =>
             {
                 SetIsDestroyable(true, false, false);
             });
             Stat.LoadNPCStats();
             Stat.ApplyCreatureMovementRate(beast);
+            CompanionControl.Initialize(beast);
         }
 
         [NWNEventHandler(ScriptName.OnBeastSpellCast)]
         public static void BeastOnSpellCastAt()
         {
-            ExecuteScript("x2_hen_spell", OBJECT_SELF);
-
+            if (GetLastSpellHarmful())
+                CompanionControl.RegisterDefensiveThreat(OBJECT_SELF, GetLastSpellCaster());
         }
 
         [NWNEventHandler(ScriptName.OnBeastUserDefined)]
@@ -793,8 +791,6 @@ namespace SWLOR.Game.Server.Service
 
         public static void CreateBeastEgg(IncubationJob job, uint player)
         {
-            var egg = CreateItemOnObject(BeastEggResref, player);
-
             var mutation = DetermineMutation(job.BeastDNAType, job);
             var beastType = mutation == BeastType.Invalid ? job.BeastDNAType : mutation;
 
@@ -805,10 +801,9 @@ namespace SWLOR.Game.Server.Service
                 IncubationFieldNote.GrantDiscoveredNote(player, mutation);
             }
 
+            var egg = CreateBeastEgg(beastType, player);
             var itemProperties = new List<ItemProperty>
             {
-                ItemPropertyCustom(ItemPropertyType.DNAType, (int)beastType),
-
                 ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.AttackPurity, job.AttackPurity),
                 ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.AccuracyPurity, job.AccuracyPurity),
                 ItemPropertyCustom(ItemPropertyType.Incubation, (int)IncubationStatType.EvasionPurity, job.EvasionPurity),
@@ -838,13 +833,22 @@ namespace SWLOR.Game.Server.Service
                 BiowareXP2.IPSafeAddItemProperty(egg, ip, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             }
 
-            var beastDetail = GetBeastDetail(beastType);
-            SetName(egg, $"Beast Egg: {beastDetail.Name}");
-
             var addGoldPiece = CalculateEggVendorBonus(job);
             ItemPlugin.SetAddGoldPieceValue(egg, addGoldPiece);
 
             DB.Delete<IncubationJob>(job.Id);
+        }
+
+        public static uint CreateBeastEgg(BeastType beastType, uint player)
+        {
+            var egg = CreateItemOnObject(BeastEggResref, player);
+            var dnaType = ItemPropertyCustom(ItemPropertyType.DNAType, (int)beastType);
+            BiowareXP2.IPSafeAddItemProperty(egg, dnaType, 0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+
+            var beastDetail = GetBeastDetail(beastType);
+            SetName(egg, $"Beast Egg: {beastDetail.Name}");
+
+            return egg;
         }
 
         private static int CalculateEggVendorBonus(IncubationJob job)

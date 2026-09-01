@@ -17,6 +17,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
     {
         private const float LineLengthMeters = 8f;
         private const float LineWidthMeters = 2.5f;
+        private const int Rank1BaseDamage = 16;
+        private const int Rank2BaseDamage = 30;
+        private const int Rank3BaseDamage = 44;
 
         public Dictionary<FeatType, AbilityDetail> BuildAbilities()
         {
@@ -31,17 +34,41 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void RadiantLance1(AbilityBuilder builder)
         {
-            ConfigureRadiantLance(builder, FeatType.RadiantLance1, Spell.RadiantLance1, "Radiant Lance I", 1, 12, 4, 15f);
+            ConfigureRadiantLance(
+                builder,
+                FeatType.RadiantLance1,
+                Spell.RadiantLance1,
+                "Radiant Lance I",
+                1,
+                Rank1BaseDamage,
+                4,
+                15f);
         }
 
         private static void RadiantLance2(AbilityBuilder builder)
         {
-            ConfigureRadiantLance(builder, FeatType.RadiantLance2, Spell.RadiantLance2, "Radiant Lance II", 2, 22, 5, 15f);
+            ConfigureRadiantLance(
+                builder,
+                FeatType.RadiantLance2,
+                Spell.RadiantLance2,
+                "Radiant Lance II",
+                2,
+                Rank2BaseDamage,
+                5,
+                15f);
         }
 
         private static void RadiantLance3(AbilityBuilder builder)
         {
-            ConfigureRadiantLance(builder, FeatType.RadiantLance3, Spell.RadiantLance3, "Radiant Lance III", 3, 32, 6, 18f);
+            ConfigureRadiantLance(
+                builder,
+                FeatType.RadiantLance3,
+                Spell.RadiantLance3,
+                "Radiant Lance III",
+                3,
+                Rank3BaseDamage,
+                6,
+                18f);
         }
 
         private static void ConfigureRadiantLance(
@@ -81,6 +108,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
         private static void ApplyRadiantLance(uint activator, uint target, Location targetLocation, int baseDamage)
         {
+            LightGuardianPowerSupport.ApplyCourageousResolve(activator);
+
             Ability.ApplyTelegraphedCombatImpact(
                 activator,
                 target,

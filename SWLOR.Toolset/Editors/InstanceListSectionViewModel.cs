@@ -8,6 +8,7 @@ using SWLOR.Toolset.Domain.Editors.Sounds;
 using SWLOR.Toolset.Domain.Editors.Waypoints;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Domain.Gff;
+using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.Toolset.Editors.Sounds;
 using SWLOR.Toolset.Editors.Waypoints;
@@ -249,6 +250,14 @@ namespace SWLOR.Toolset.Editors
             DoorEditor?.RefreshPaletteChoices();
             WaypointEditor?.RefreshPaletteChoices();
             SoundEditor?.RefreshPaletteChoices();
+        }
+
+        /// <summary>Refreshes TLK-backed choices in the selected specialized placement editor.</summary>
+        public void RefreshTlkLabels()
+        {
+            DoorEditor?.RefreshTlkLabels();
+            WaypointEditor?.RefreshTlkLabels();
+            SoundEditor?.RefreshTlkLabels();
         }
 
         /// <summary>
@@ -708,6 +717,60 @@ namespace SWLOR.Toolset.Editors
         }
 
         /// <summary>
+        /// Inserts a copied instance at a new map position while preserving every other authored GIT
+        /// field and its paired GIC comment.
+        /// </summary>
+        internal bool AddCopiedInstanceAt(
+            AreaInstanceClipboardEntry copy,
+            float x,
+            float y,
+            float z,
+            float xOrientation,
+            float yOrientation)
+        {
+            if (copy.Type != _blueprintType ||
+                !string.Equals(copy.ModuleRoot, _workspace.ModuleRoot, StringComparison.OrdinalIgnoreCase))
+                return false;
+
+            try
+            {
+                var ok = _runEdit($"Paste {Title} instance", () =>
+                {
+                    var listField = _gitSession.Document.Root.GetOrNull(_listFieldName);
+                    if (listField == null)
+                    {
+                        listField = JsonGffField.CreateList();
+                        _gitSession.Document.Root.Add(_listFieldName, listField);
+                    }
+
+                    var instance = InstanceFieldMap.Duplicate(copy.Instance);
+                    InstanceFieldMap.SetPosition(_blueprintType, instance, x, y, z);
+                    InstanceFieldMap.SetOrientation(
+                        _blueprintType, instance, xOrientation, yOrientation);
+
+                    var insertAt = listField.Elements!.Count;
+                    listField.InsertElement(insertAt, instance);
+                    new GicDocument(_gicSession.Document).InsertCopiedComment(
+                        _listFieldName,
+                        _blueprintType,
+                        insertAt,
+                        listField.Elements.Count,
+                        copy.Comment);
+                });
+
+                if (ok)
+                    RefreshFromDocument();
+
+                return ok;
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Failed to paste {Title} instance: {ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Sets the position of the instance at <paramref name="index"/> through
         /// <see cref="InstanceFieldMap.SetPosition"/> - the exact setter the detail form's X/Y/Z
         /// editors use - as one RunGitEdit transaction. Used by the 3D-view move gizmo
@@ -857,6 +920,36 @@ namespace SWLOR.Toolset.Editors
                 return null;
 
             return listField.Elements[index];
+        }
+
+        /// <summary>
+        /// The authored instance at a row index, for the area editor's single-marker scene update.
+        /// Kept internal so mutable document structures do not escape the editor assembly.
+        /// </summary>
+        internal JsonGffStruct? GetInstanceForScene(int index) => GetElement(index);
+
+        /// <summary>
+        /// Takes an independent clipboard snapshot of one GIT instance and its aligned GIC comment.
+        /// </summary>
+        internal AreaInstanceClipboardEntry? CopyInstanceForPlacement(
+            int index,
+            InstanceMarker preview)
+        {
+            var instance = GetElement(index);
+            if (instance == null)
+                return null;
+
+            var comments = _gicSession.Document.Root.GetOrNull(_listFieldName)?.Elements;
+            var comment = comments != null && index >= 0 && index < comments.Count
+                ? InstanceFieldMap.Duplicate(comments[index])
+                : null;
+
+            return new AreaInstanceClipboardEntry(
+                _workspace.ModuleRoot,
+                _blueprintType,
+                InstanceFieldMap.Duplicate(instance),
+                comment,
+                preview);
         }
 
         private static string PaletteFileName(ResourceType type)

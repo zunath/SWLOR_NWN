@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 
+using SWLOR.NWN.Formats.Common;
 using SWLOR.NWN.Formats.Internal;
 
 namespace SWLOR.NWN.Formats.Tlk;
@@ -14,7 +15,6 @@ public static class TlkReader
     private const uint TextPresent = 0x0001;
     private const uint SoundPresent = 0x0002;
     private const uint SoundLengthPresent = 0x0004;
-    private const int MaximumEntries = 8_000_000;
 
     public static TlkFile Read(string path)
     {
@@ -34,10 +34,17 @@ public static class TlkReader
 
         var languageId = reader.ReadUInt32(8);
         var count = reader.ReadUInt32(12);
-        if (count > MaximumEntries)
-            throw new NwnFormatException($"TLK entry count {count} exceeds {MaximumEntries}.");
+        if (count > TlkFormatLimits.MaximumEntryCount)
+        {
+            throw new NwnFormatException(
+                $"TLK entry count {count} exceeds {TlkFormatLimits.MaximumEntryCount}.");
+        }
         var stringsOffset = reader.ReadUInt32(16);
-        var tableBytes = GuardedBinaryReader.CheckedCount(count, EntrySize, MaximumEntries, "TLK entries");
+        var tableBytes = GuardedBinaryReader.CheckedCount(
+            count,
+            EntrySize,
+            TlkFormatLimits.MaximumEntryCount,
+            "TLK entries");
         reader.ValidateRange(HeaderSize, tableBytes, "TLK entry table");
         if (stringsOffset < HeaderSize + tableBytes || stringsOffset > reader.Length)
             throw new NwnFormatException("TLK string-data offset is outside the valid data region.");
@@ -46,8 +53,13 @@ public static class TlkReader
         // The entry list, entry objects, and sound resrefs are allocations too - charge them
         // before building anything so an 8M-entry table cannot blow past the budget on metadata
         // alone, the same way the KEY and BIF readers budget their tables.
-        var allocationBudget = new AllocationBudget("TLK");
-        allocationBudget.ReserveElements(count, 64, "TLK entry table");
+        var allocationBudget = new AllocationBudget(
+            "TLK",
+            TlkFormatLimits.MaximumDecodedAllocationBytes);
+        allocationBudget.ReserveElements(
+            count,
+            TlkFormatLimits.EstimatedManagedBytesPerEntry,
+            "TLK entry table");
         var entries = new List<TlkEntry>(checked((int)count));
         // Aliased entries (many records pointing at the same string-data range) share one decoded
         // string, and every unique decode is charged against a cumulative budget so a small file
@@ -59,7 +71,15 @@ public static class TlkReader
             var flags = reader.ReadUInt32(entryOffset);
             var soundResRef = (flags & SoundPresent) == 0
                 ? string.Empty
-                : reader.ReadAscii(entryOffset + 4, 16, "TLK sound ResRef", trimNull: true);
+                : reader.ReadAscii(
+                    entryOffset + 4, NwnResRef.MaxLength, "TLK sound ResRef", trimNull: true);
+            if ((flags & SoundPresent) != 0)
+            {
+                allocationBudget.Reserve(
+                    checked(TlkFormatLimits.EstimatedManagedStringOverheadBytes +
+                            (long)soundResRef.Length * sizeof(char)),
+                    $"TLK sound ResRef {index}");
+            }
             var relativeTextOffset = reader.ReadUInt32(entryOffset + 28);
             var textLength = reader.ReadUInt32(entryOffset + 32);
             var soundLength = (flags & SoundLengthPresent) == 0 ? 0f : reader.ReadSingle(entryOffset + 36);
@@ -71,8 +91,14 @@ public static class TlkReader
                 {
                     var absoluteTextOffset = checked((long)stringsOffset + relativeTextOffset);
                     reader.ValidateRange(absoluteTextOffset, textLength, $"TLK string {index}");
-                    allocationBudget.Reserve(textLength, $"TLK string {index}");
-                    text = encoding.GetString(reader.Slice(absoluteTextOffset, textLength, $"TLK string {index}"));
+                    var textBytes = reader.Slice(absoluteTextOffset, textLength, $"TLK string {index}");
+                    var characterCount = encoding.GetCharCount(textBytes);
+                    allocationBudget.Reserve(
+                        checked(TlkFormatLimits.EstimatedManagedStringOverheadBytes +
+                                TlkFormatLimits.EstimatedDecodedRangeDictionaryBytes +
+                                (long)characterCount * sizeof(char)),
+                        $"TLK string {index}");
+                    text = encoding.GetString(textBytes);
                     decodedStrings[(relativeTextOffset, textLength)] = text;
                 }
             }

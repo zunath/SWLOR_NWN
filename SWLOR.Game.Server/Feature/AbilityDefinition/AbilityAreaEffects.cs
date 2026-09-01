@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.LogService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -10,6 +11,36 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 {
     public static class AbilityAreaEffects
     {
+        public static string CreatePersistentSphereIndicator(
+            uint activator,
+            Location location,
+            float radius,
+            float durationSeconds,
+            bool isHostile)
+        {
+            var area = GetAreaFromLocation(location);
+            if (!GetIsObjectValid(activator) ||
+                !GetIsObjectValid(area) ||
+                radius <= 0f ||
+                durationSeconds <= 0f)
+            {
+                Log.Write(
+                    LogGroup.Error,
+                    $"Skipped persistent sphere indicator: activator={activator}, area={area}, " +
+                    $"radius={radius}, durationSeconds={durationSeconds}.");
+                return string.Empty;
+            }
+
+            return Telegraph.CreateSphereTelegraph(
+                activator,
+                GetPositionFromLocation(location),
+                radius,
+                durationSeconds,
+                isHostile,
+                null,
+                isPersistentAreaIndicator: true);
+        }
+
         public static void ScheduleFriendlyZoneStatus(
             uint activator,
             Location location,
@@ -21,6 +52,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             VisualEffect areaMarkerVisualEffect = VisualEffect.None,
             float areaMarkerVisualEffectScale = 1f)
         {
+            CreatePersistentSphereIndicator(
+                activator,
+                location,
+                radius,
+                durationSeconds,
+                false);
+
             if (areaMarkerVisualEffect != VisualEffect.None)
             {
                 ApplyEffectAtLocation(

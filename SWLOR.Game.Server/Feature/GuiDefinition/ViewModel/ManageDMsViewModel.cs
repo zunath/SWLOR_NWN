@@ -210,16 +210,5 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             StatusText = string.Empty;
         };
 
-        public Action OnClickPropertyDiagnostics() => () =>
-        {
-            if (Authorization.GetAuthorizationLevel(Player) != AuthorizationLevel.Admin)
-            {
-                StatusText = "Admin authorization required.";
-                StatusColor = GuiColor.Red;
-                return;
-            }
-
-            Gui.TogglePlayerWindow(Player, GuiWindowType.PropertyDiagnostics);
-        };
     }
 }

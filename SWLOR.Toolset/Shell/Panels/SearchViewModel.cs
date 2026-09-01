@@ -41,7 +41,8 @@ namespace SWLOR.Toolset.Shell.Panels
             _log = log ?? throw new ArgumentNullException(nameof(log));
             Id = "Search";
             Title = "Search";
-            _workspaceContext.CatalogEntryRefreshed += (_, _) => Refresh();
+            _workspaceContext.CatalogEntriesChanged += (_, _) => Refresh();
+            _workspaceContext.CatalogLabelsChanged += Refresh;
         }
 
         /// <summary>

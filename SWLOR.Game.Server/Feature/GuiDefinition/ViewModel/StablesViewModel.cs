@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.CompanionControlService;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -492,7 +493,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Name = dbBeast.Name;
             XPTooltip = $"XP: {dbBeast.XP} / {BeastMastery.GetRequiredXP(dbBeast.Level, dbBeast.XPPenaltyPercent)}";
 
-            var hp = level.HP + 1 * ((level.Stats[AbilityType.Vitality] - 10) / 2);
             var fp = Stat.GetMaxFP(level.FP, level.Stats[AbilityType.Willpower], 0);
             if (fp < 0)
                 fp = 0;
@@ -501,7 +501,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (stm < 0)
                 stm = 0;
 
-            HP = $"{hp}";
+            HP = $"{level.HP}";
             FP = $"{fp}";
             STM = $"{stm}";
             SP = $"{dbBeast.Level} / {BeastMastery.MaxLevel} ({dbBeast.UnallocatedSP})";
@@ -718,6 +718,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     var beast = GetAssociate(AssociateType.Henchman, Player);
                     if (BeastMastery.IsPlayerBeast(beast) && BeastMastery.GetBeastId(beast) == beastId)
                     {
+                        CompanionControl.Clear(beast);
                         DestroyObject(beast);
                     }
 

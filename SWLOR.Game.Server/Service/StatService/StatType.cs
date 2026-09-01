@@ -1338,28 +1338,28 @@ namespace SWLOR.Game.Server.Service.StatService
         DeflectionNextSkillAbilityNoDelayWindowSeconds = 243,
 
         /// <summary>
-        /// SkillType id required before a critical hit grants no activation delay to the next ability.
+        /// SkillType id required before a critical hit grants limited Haste.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        CriticalNextAbilityNoDelayTriggerSkillType = 244,
+        CriticalHitLimitedHasteTriggerSkillType = 244,
 
         /// <summary>
-        /// SkillType id that receives no activation delay after the critical-hit trigger.
+        /// Percent Haste granted by a matching critical hit.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
-        CriticalNextAbilityNoDelaySkillType = 245,
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CriticalHitLimitedHastePercentAdjustment = 245,
 
         /// <summary>
-        /// Duration in seconds for CriticalNextAbilityNoDelaySkillType.
+        /// Duration in seconds for CriticalHitLimitedHastePercentAdjustment.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        CriticalNextAbilityNoDelayDurationSeconds = 246,
+        CriticalHitLimitedHasteDurationSeconds = 246,
 
         /// <summary>
-        /// Cooldown in seconds for the critical-hit no-delay trigger.
+        /// Number of direct attacks that retain the critical-hit Haste effect.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        CriticalNextAbilityNoDelayCooldownSeconds = 247,
+        CriticalHitLimitedHasteAttackCount = 247,
 
         /// <summary>
         /// Percent adjustment applied to FP restored to the creature.
@@ -1610,7 +1610,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value required for an opening auto-attack bonus.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         OpeningAutoAttackSkillType = 292,
 
         /// <summary>
@@ -1628,7 +1628,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Seconds without combat activity required before the next auto-attack is considered an opening attack.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         OpeningAutoAttackIdleSeconds = 295,
 
         /// <summary>
@@ -1856,13 +1856,13 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value that can receive idle-time ability bonuses.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         IdleSkillAbilitySkillType = 333,
 
         /// <summary>
         /// Seconds since the last combat ability required before idle-time ability bonuses apply.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         IdleSkillAbilityRequiredIdleSeconds = 334,
 
         /// <summary>
@@ -2126,7 +2126,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value whose Stamina ability costs restore FP by percent.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         AbilityStaminaCostFPRestorePercentSkillType = 378,
 
         /// <summary>
@@ -2138,7 +2138,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// SkillType value whose FP ability costs restore Stamina by percent.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         AbilityFPCostStaminaRestorePercentSkillType = 380,
 
         /// <summary>
@@ -3030,10 +3030,10 @@ namespace SWLOR.Game.Server.Service.StatService
         SaberstaffTempestForceGyre = 532,
 
         /// <summary>
-        /// Enables Conduit ally buffs to apply Force Lens.
+        /// Force Attack percent granted whenever FP is actually restored.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        SaberstaffConduitForceLens = 533,
+        RestoredFPForceAttackPercentAdjustment = 533,
 
         /// <summary>
         /// Enables Spear Damage attacks to apply Breach.
@@ -3360,22 +3360,22 @@ namespace SWLOR.Game.Server.Service.StatService
         AbilityUsedEvasionDurationSeconds = 588,
 
         /// <summary>
-        /// SkillType value of abilities that trigger AbilityUsedRangedEvasionPercentAdjustment.
+        /// SkillType value of abilities that trigger AbilityUsedRangedDeflection.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        AbilityUsedRangedEvasionPercentAdjustmentSkillType = 826,
+        AbilityUsedRangedDeflectionSkillType = 826,
 
         /// <summary>
-        /// Temporary percent Ranged Evasion adjustment applied after using a matching ability.
+        /// Temporary Ranged Deflection granted after using a matching ability.
         /// </summary>
-        [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        AbilityUsedRangedEvasionPercentAdjustment = 827,
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Ranged)]
+        AbilityUsedRangedDeflection = 827,
 
         /// <summary>
-        /// Duration in seconds for AbilityUsedRangedEvasionPercentAdjustment.
+        /// Duration in seconds for AbilityUsedRangedDeflection.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        AbilityUsedRangedEvasionDurationSeconds = 828,
+        AbilityUsedRangedDeflectionDurationSeconds = 828,
 
         /// <summary>
         /// SkillType value of single-target abilities that trigger SingleTargetAbilityAttackDeflection.
@@ -3818,7 +3818,7 @@ namespace SWLOR.Game.Server.Service.StatService
         /// <summary>
         /// Percent of maximum FP and Stamina both required to enable HighFPAndStaminaAbilityDamageBonus.
         /// </summary>
-        [StatType(StatTypeCategory.NonBeneficial)]
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         HighFPAndStaminaAbilityDamageBonusThresholdPercent = 667,
 
         /// <summary>
@@ -3900,10 +3900,10 @@ namespace SWLOR.Game.Server.Service.StatService
         BleedingTargetAbilityBleedSpreadMaxTargets = 680,
 
         /// <summary>
-        /// Duration used to refresh ability-used Evasion after avoiding an attack.
+        /// Duration used to refresh ability-used Ranged Deflection after avoiding an attack.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        AvoidedAttackAbilityUsedEvasionRefreshDurationSeconds = 681,
+        AvoidedAttackAbilityUsedRangedDeflectionRefreshDurationSeconds = 681,
 
         /// <summary>
         /// SkillType value whose next auto-attack is quickened after avoiding an attack.
@@ -4261,22 +4261,23 @@ namespace SWLOR.Game.Server.Service.StatService
         CriticalDamageHighHPTargetPercentAdjustment = 741,
 
         /// <summary>
-        /// Ability hit chance adjustment against source-suppressed targets after they use a combat ability.
+        /// Accuracy adjustment for the next ranged attack against a source-suppressed target after
+        /// it uses a combat ability.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        AbilityHitChanceAgainstSuppressionStackPercentAdjustment = 742,
+        RangedAttackAccuracyAgainstSuppressionStackPercentAdjustment = 742,
 
         /// <summary>
-        /// Source-owned Suppression stack count required before a target's damage to other targets is adjusted.
+        /// Source-owned Suppression stack count required before the target's outgoing Damage Dealt is adjusted.
         /// </summary>
         [StatType(StatTypeCategory.NonBeneficial)]
-        SuppressionStackDamageDealtToOtherTargetsRequiredStacks = 743,
+        SuppressionStackDamageDealtRequiredStacks = 743,
 
         /// <summary>
-        /// Damage percent adjustment for suppressed targets attacking someone other than the Suppression source.
+        /// Damage Dealt percent adjustment applied to a source-suppressed target's outgoing damage.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenNegative)]
-        SuppressionStackDamageDealtToOtherTargetsPercentAdjustment = 744,
+        SuppressionStackDamageDealtPercentAdjustment = 744,
 
         /// <summary>
         /// Physical Defense percent applied when an ability with defense ignore hits.
@@ -5679,12 +5680,10 @@ namespace SWLOR.Game.Server.Service.StatService
         SkillAbilityBleedingTargetStaminaRestoreCooldownSeconds = 987,
 
         /// <summary>
-        /// Percent (1-99) the critical-hit next-ability trigger reduces the activation delay by
-        /// instead of removing it entirely. Zero or absent keeps the full no-delay behavior for
-        /// perks whose wording removes the delay outright.
+        /// Percent critical-rate adjustment applied to ranged weapon attacks and abilities.
         /// </summary>
         [StatType(StatTypeCategory.BeneficialWhenPositive)]
-        CriticalNextAbilityDelayReductionPercent = 988,
+        RangedCriticalRatePercentAdjustment = 988,
 
         /// <summary>
         /// Internal temporary partner to NextAttackNoDelay: the percent (1-99) the armed next
@@ -5763,6 +5762,326 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.NonBeneficial, deflectionSource: DeflectionSource.Melee)]
         MeleeDeflectionFPRestoreCooldownSeconds = 1000,
 
+        /// <summary>
+        /// Percent hostile ability damage bonus granted while FP and Stamina are both above
+        /// HighFPAndStaminaAbilityDamagePercentAdjustmentThresholdPercent.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        HighFPAndStaminaAbilityDamagePercentAdjustment = 1001,
+
+        /// <summary>
+        /// Percent of maximum FP and Stamina both required to enable
+        /// HighFPAndStaminaAbilityDamagePercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        HighFPAndStaminaAbilityDamagePercentAdjustmentThresholdPercent = 1002,
+
+        /// <summary>
+        /// Duration in seconds for RestoredFPForceAttackPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        RestoredFPForceAttackDurationSeconds = 1003,
+
+        /// <summary>
+        /// Attack percent granted whenever Stamina is actually restored.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RestoredStaminaAttackPercentAdjustment = 1004,
+
+        /// <summary>
+        /// Duration in seconds for RestoredStaminaAttackPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        RestoredStaminaAttackDurationSeconds = 1005,
+
+        /// <summary>
+        /// Effect icon displayed while CriticalHitLimitedHastePercentAdjustment is active.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        CriticalHitLimitedHasteStatusEffectIcon = 1006,
+
+        /// <summary>
+        /// Effect icon displayed while AbilityUsedRangedDeflection is active.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial)]
+        AbilityUsedRangedDeflectionStatusEffectIcon = 1007,
+
+        /// <summary>
+        /// When enabled, ranged weapon auto-attacks and hostile ranged weapon abilities use no
+        /// activation delay. Limited status effects that grant this stat account for attempts.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        RangedAttackNoDelay = 1008,
+
+        /// <summary>
+        /// Leadership-family percent adjustment to incoming physical damage. Leadership effects
+        /// reconcile this channel independently so only its strongest contribution applies.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative)]
+        LeadershipPhysicalDamageTakenPercentAdjustment = 1009,
+
+        /// <summary>
+        /// Leadership-family percent adjustment to incoming Force damage. Leadership effects
+        /// reconcile this channel independently so only its strongest contribution applies.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative)]
+        LeadershipForceDamageTakenPercentAdjustment = 1010,
+
+        /// <summary>
+        /// Leadership-family percent adjustment to damage that is neither physical nor Force.
+        /// Leadership effects reconcile this channel independently.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative)]
+        LeadershipOtherDamageTakenPercentAdjustment = 1011,
+
+        /// <summary>
+        /// When enabled, positive attack-delay-reduction effects cannot accelerate attacks or
+        /// hostile weapon abilities.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative, StatTypeAggregation.Maximum)]
+        AttackDelayReductionSuppressed = 1012,
+
+        /// <summary>
+        /// String reference displayed by the configured status applied through
+        /// RangedAbilityHitNearTargetDamageDealtPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        RangedAbilityHitNearTargetStatusEffectNameStrRef = 1013,
+
+        /// <summary>
+        /// Effect icon displayed by the configured status applied through
+        /// RangedAbilityHitNearTargetDamageDealtPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        RangedAbilityHitNearTargetStatusEffectIcon = 1014,
+
+        /// <summary>
+        /// Cleanse channels supported by the configured status applied through
+        /// RangedAbilityHitNearTargetDamageDealtPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.BitwiseOr)]
+        RangedAbilityHitNearTargetStatusEffectCleanseTypes = 1015,
+
+        /// <summary>
+        /// Resistance channel used by the configured status applied through
+        /// RangedAbilityHitNearTargetDamageDealtPercentAdjustment.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        RangedAbilityHitNearTargetStatusEffectResistanceType = 1016,
+
+        /// <summary>
+        /// Flat Stealth rating granted while the creature's native stealth mode is active.
+        /// The Stealth status effect transfers this value into the ordinary Stealth channel.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        ActiveStealthBonus = 1017,
+
+        /// <summary>
+        /// Additional physical damage-taken adjustment granted by a Leadership recovery rider.
+        /// This stacks with the strongest ordinary Leadership damage-reduction contribution.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative)]
+        LeadershipRecoveryPhysicalDamageTakenPercentAdjustment = 1018,
+
+        /// <summary>
+        /// Additional Force damage-taken adjustment granted by a Leadership recovery rider.
+        /// This stacks with the strongest ordinary Leadership damage-reduction contribution.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative)]
+        LeadershipRecoveryForceDamageTakenPercentAdjustment = 1019,
+
+        /// <summary>
+        /// Skill selector for a next-ability Critical Rate bonus that persists and grows after
+        /// noncritical abilities until an ability critically hits.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        PersistentNextSkillAbilityCriticalRateSkillType = 1020,
+
+        /// <summary>
+        /// Stored Critical Rate for the selected skill. Unlike ordinary next-ability bonuses,
+        /// this channel is consumed only when an ability critically hits.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        PersistentNextSkillAbilityCriticalRatePercentAdjustment = 1021,
+
+        /// <summary>
+        /// Effect icon used by the generic tracker for a noncritical-ability Critical Rate stack.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        NonCriticalAbilityNextSkillAbilityCriticalRateTrackerEffectIconType = 1022,
+
+        /// <summary>
+        /// Effect icon used by the generic ranged auto-attack cycle tracker.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        RangedAutoAttackCycleCriticalRateTrackerEffectIconType = 1023,
+
+        /// <summary>
+        /// Skill selector for an attempt-specific Critical Rate bonus being carried from a landed
+        /// auto-attack into its queued weapon ability.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        QueuedWeaponAbilityCriticalRateSkillType = 1024,
+
+        /// <summary>
+        /// Attempt-specific Critical Rate carried from a landed auto-attack into its queued weapon
+        /// ability impact.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        QueuedWeaponAbilityCriticalRatePercentAdjustment = 1025,
+
+        /// <summary>Minimum target range for ranged ability long-range bonuses.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        RangedAbilityLongRangeMinimumRangeMeters = 1026,
+
+        /// <summary>Accuracy adjustment for ranged abilities at or beyond the long-range threshold.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RangedAbilityLongRangeHitChancePercentAdjustment = 1027,
+
+        /// <summary>Critical Rate adjustment for ranged abilities at or beyond the long-range threshold.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RangedAbilityLongRangeCriticalRatePercentAdjustment = 1028,
+
+        /// <summary>Defense reduction applied to targets hit by hostile ranged abilities.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RangedAbilityTargetDefenseReductionPercent = 1029,
+
+        /// <summary>Duration of RangedAbilityTargetDefenseReductionPercent.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        RangedAbilityTargetDefenseReductionDurationSeconds = 1030,
+
+        /// <summary>
+        /// Skill selector for a conditional Critical Rate bonus captured when a queued weapon
+        /// ability is activated.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        QueuedWeaponAbilityActivationCriticalRateSkillType = 1031,
+
+        /// <summary>
+        /// Conditional Critical Rate captured when a queued weapon ability is activated and held
+        /// until that queue resolves or expires.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        QueuedWeaponAbilityActivationCriticalRatePercentAdjustment = 1032,
+
+        /// <summary>
+        /// Critical damage adjustment applied to a matching opening auto-attack after the
+        /// configured idle window.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        OpeningAutoAttackCriticalDamagePercentAdjustment = 1033,
+
+        /// <summary>
+        /// One-shot critical damage adjustment prepared for the current opening auto-attack.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        CurrentAutoAttackCriticalDamagePercentAdjustment = 1034,
+
+        /// <summary>
+        /// Independent SkillType selector for a second idle-time ability bonus channel.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        AlternateIdleSkillAbilitySkillType = 1035,
+
+        /// <summary>
+        /// Seconds since the last offensive activity required by the alternate idle-time channel.
+        /// </summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        AlternateIdleSkillAbilityRequiredIdleSeconds = 1036,
+
+        /// <summary>
+        /// Flat damage bonus supplied by the alternate idle-time ability channel.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AlternateIdleSkillAbilityDamageBonus = 1037,
+
+        /// <summary>
+        /// Hit chance bonus supplied by the alternate idle-time ability channel.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AlternateIdleSkillAbilityHitChancePercentAdjustment = 1038,
+
+        /// <summary>
+        /// Critical damage bonus supplied by the alternate idle-time ability channel.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AlternateIdleSkillAbilityCriticalDamagePercentAdjustment = 1039,
+
+        /// <summary>
+        /// Attempt-specific opening damage carried from a landed auto-attack into its queued
+        /// weapon ability impact.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        QueuedWeaponAbilityDamageBonus = 1040,
+
+        /// <summary>
+        /// Attempt-specific opening critical damage carried from a landed auto-attack into its
+        /// queued weapon ability impact.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        QueuedWeaponAbilityCriticalDamagePercentAdjustment = 1041,
+
+        /// <summary>
+        /// Idle-time damage captured when a queued weapon ability is activated.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        QueuedWeaponAbilityIdleDamageBonus = 1042,
+
+        /// <summary>
+        /// Idle-time Accuracy captured when a queued weapon ability is activated.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        QueuedWeaponAbilityIdleHitChancePercentAdjustment = 1043,
+
+        /// <summary>
+        /// Idle-time Critical Damage captured when a queued weapon ability is activated.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        QueuedWeaponAbilityIdleCriticalDamagePercentAdjustment = 1044,
+
+        /// <summary>Marker for idle conditional bonuses captured when a casted weapon ability activates.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        WeaponAbilityActivationIdleSnapshot = 1045,
+
+        /// <summary>Flat damage captured from the activation-time idle condition.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        WeaponAbilityActivationIdleDamageBonus = 1046,
+
+        /// <summary>Critical Rate captured from the activation-time idle condition.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        WeaponAbilityActivationIdleCriticalRatePercentAdjustment = 1047,
+
+        /// <summary>Defense ignore captured from the activation-time idle condition.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        WeaponAbilityActivationIdleDefenseIgnorePercent = 1048,
+
+        /// <summary>Skill selector for idle bonuses captured when a casted ability activates.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        AbilityActivationIdleSkillType = 1049,
+
+        /// <summary>Idle ability damage captured at cast activation.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AbilityActivationIdleDamageBonus = 1050,
+
+        /// <summary>Idle ability Accuracy captured at cast activation.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AbilityActivationIdleHitChancePercentAdjustment = 1051,
+
+        /// <summary>Idle ability critical damage captured at cast activation.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AbilityActivationIdleCriticalDamagePercentAdjustment = 1052,
+
+        /// <summary>Current active rank of Bolster Attack.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        BolsterAttackRank = 1053,
+
+        /// <summary>
+        /// Flat Stamina cost charged after a hostile ranged weapon ability resolves without
+        /// any critical hits.
+        /// </summary>
+        [StatType(StatTypeCategory.BeneficialWhenNegative)]
+        NonCriticalRangedAbilityStaminaCostFlatAdjustment = 1054,
+
     }
 
     public class StatTypeAttribute : Attribute
@@ -5785,6 +6104,7 @@ namespace SWLOR.Game.Server.Service.StatService
     public enum StatTypeAggregation
     {
         Additive = 0,
-        BitwiseOr = 1
+        BitwiseOr = 1,
+        Maximum = 2
     }
 }

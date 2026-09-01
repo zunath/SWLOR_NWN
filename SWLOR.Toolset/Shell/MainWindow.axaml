@@ -43,8 +43,13 @@
         <MenuItem Header="_Pack Module" Command="{Binding PackModuleCommand}" />
       </MenuItem>
       <MenuItem Header="_Tools">
+        <MenuItem x:Name="AreaGeneratorMenuItem" Header="_Area Generator..."
+                  Command="{Binding AreaGeneratorCommand}" />
         <MenuItem x:Name="FactionEditorMenuItem" Header="_Faction Editor..."
                   Command="{Binding FactionEditorCommand}" />
+        <MenuItem x:Name="TlkEditorMenuItem" Header="_TLK Editor..."
+                  Command="{Binding TlkEditorCommand}"
+                  ToolTip.Tip="{Binding TlkEditorAvailabilityMessage}" />
         <Separator />
         <MenuItem Header="Run Validation" Command="{Binding FocusValidationCommand}" />
         <Separator />

@@ -73,6 +73,7 @@ namespace SWLOR.Game.Server.Service.GuiService
         Conversation = 68,
 
         DebugEnmity = 900,
+        DebugNuiGallery = 901,
         ChangePortrait = 9999
     }
 }

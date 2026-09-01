@@ -285,6 +285,252 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task ReplacingAWorkspaceForTheSameModuleRetriesAreaDocumentLoading()
+        {
+            const string areaResRef = "bank";
+            var moduleRoot = NewModuleRoot();
+            var differentRoot = NewModuleRoot();
+            foreach (var extension in new[] { "are", "git", "gic" })
+            {
+                File.Copy(
+                    Path.Combine(
+                        CorpusLocator.ModuleDirectory,
+                        extension,
+                        $"{areaResRef}.{extension}.json"),
+                    Path.Combine(moduleRoot, extension, $"{areaResRef}.{extension}.json"));
+            }
+
+            var log = new OutputLogService();
+            var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
+            using var firstLoadStarted = new ManualResetEventSlim();
+            using var releaseFirstLoad = new ManualResetEventSlim();
+            using var secondLoadStarted = new ManualResetEventSlim();
+            using var releaseSecondLoad = new ManualResetEventSlim();
+            var loadCount = 0;
+            var editors = new EditorService(
+                workspace,
+                new LookupOptionProvider(workspace),
+                log,
+                factory: null!,
+                prompts: null!,
+                areaDocumentsLoader: (arePath, gitPath, gicPath) =>
+                {
+                    var loadNumber = Interlocked.Increment(ref loadCount);
+                    var started = loadNumber == 1 ? firstLoadStarted : secondLoadStarted;
+                    var release = loadNumber == 1 ? releaseFirstLoad : releaseSecondLoad;
+                    started.Set();
+                    if (!release.Wait(TimeSpan.FromSeconds(5)))
+                        throw new TimeoutException($"Area-load attempt {loadNumber} was not released.");
+
+                    return AreaEditorDocumentLoad.Load(arePath, gitPath, gicPath);
+                });
+
+            workspace.Open(moduleRoot);
+            editors.TryOpenEditor(ResourceType.Area, areaResRef);
+            firstLoadStarted.Wait(TimeSpan.FromSeconds(5)).Should().BeTrue();
+
+            workspace.Open(moduleRoot);
+            releaseFirstLoad.Set();
+            secondLoadStarted.Wait(TimeSpan.FromSeconds(5)).Should().BeTrue(
+                "reopening the same module for a watcher rescan must preserve the pending area open");
+
+            workspace.Open(differentRoot);
+            releaseSecondLoad.Set();
+
+            var openingAreas = (HashSet<string>)typeof(EditorService)
+                .GetField("_openingAreaEditors", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .GetValue(editors)!;
+            await WaitUntilAsync(() => !openingAreas.Contains(areaResRef));
+
+            loadCount.Should().Be(2);
+            log.Lines.Should().NotContain(line => line.Contains("Failed to open area editor"));
+        }
+
+        [Test]
+        public async Task AreaLoadCompletingAfterDeletionStartsIsNotPublished()
+        {
+            const string areaResRef = "bank";
+            var moduleRoot = NewModuleRoot();
+            foreach (var extension in new[] { "are", "git", "gic" })
+            {
+                File.Copy(
+                    Path.Combine(
+                        CorpusLocator.ModuleDirectory,
+                        extension,
+                        $"{areaResRef}.{extension}.json"),
+                    Path.Combine(moduleRoot, extension, $"{areaResRef}.{extension}.json"));
+            }
+
+            var log = new OutputLogService();
+            var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
+            var mutationLock = new ModuleMutationLock();
+            using var loadStarted = new ManualResetEventSlim();
+            using var releaseLoad = new ManualResetEventSlim();
+            var editors = new EditorService(
+                workspace,
+                new LookupOptionProvider(workspace),
+                log,
+                factory: null!,
+                prompts: null!,
+                mutationLock: mutationLock,
+                areaDocumentsLoader: (arePath, gitPath, gicPath) =>
+                {
+                    loadStarted.Set();
+                    if (!releaseLoad.Wait(TimeSpan.FromSeconds(5)))
+                        throw new TimeoutException("The area-load deletion race test was not released.");
+
+                    return AreaEditorDocumentLoad.Load(arePath, gitPath, gicPath);
+                });
+
+            workspace.Open(moduleRoot);
+            await workspace.Workspace!.TagIndex.GetTransitionDestinationTagsAsync();
+            editors.TryOpenEditor(ResourceType.Area, areaResRef);
+            loadStarted.Wait(TimeSpan.FromSeconds(5)).Should().BeTrue();
+
+            using (mutationLock.BeginResourceDeletion())
+            {
+                releaseLoad.Set();
+                var openingAreas = (HashSet<string>)typeof(EditorService)
+                    .GetField("_openingAreaEditors", BindingFlags.Instance | BindingFlags.NonPublic)!
+                    .GetValue(editors)!;
+                await WaitUntilAsync(() => !openingAreas.Contains(areaResRef));
+
+                var openAreas = (Dictionary<string, AreaEditorViewModel>)typeof(EditorService)
+                    .GetField("_openAreaEditors", BindingFlags.Instance | BindingFlags.NonPublic)!
+                    .GetValue(editors)!;
+                openAreas.Should().NotContainKey(areaResRef,
+                    "an area load that finishes during deletion must not publish stale documents");
+            }
+
+            log.Lines.Should().Contain(line =>
+                line.Contains($"Could not open '{areaResRef}'") &&
+                line.Contains("a module resource deletion is in progress"));
+        }
+
+        [Test]
+        public async Task AreaLoadCancelledByCommittedDeletionCannotPublishAfterReservationEnds()
+        {
+            const string areaResRef = "bank";
+            var moduleRoot = NewModuleRoot();
+            foreach (var extension in new[] { "are", "git", "gic" })
+            {
+                File.Copy(
+                    Path.Combine(
+                        CorpusLocator.ModuleDirectory,
+                        extension,
+                        $"{areaResRef}.{extension}.json"),
+                    Path.Combine(moduleRoot, extension, $"{areaResRef}.{extension}.json"));
+            }
+
+            var log = new OutputLogService();
+            var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
+            var mutationLock = new ModuleMutationLock();
+            using var loadStarted = new ManualResetEventSlim();
+            using var releaseLoad = new ManualResetEventSlim();
+            var editors = new EditorService(
+                workspace,
+                new LookupOptionProvider(workspace),
+                log,
+                factory: null!,
+                prompts: null!,
+                mutationLock: mutationLock,
+                areaDocumentsLoader: (arePath, gitPath, gicPath) =>
+                {
+                    loadStarted.Set();
+                    if (!releaseLoad.Wait(TimeSpan.FromSeconds(5)))
+                        throw new TimeoutException("The cancelled area-load test was not released.");
+
+                    return AreaEditorDocumentLoad.Load(arePath, gitPath, gicPath);
+                });
+
+            workspace.Open(moduleRoot);
+            await workspace.Workspace!.TagIndex.GetTransitionDestinationTagsAsync();
+            editors.TryOpenEditor(ResourceType.Area, areaResRef);
+            loadStarted.Wait(TimeSpan.FromSeconds(5)).Should().BeTrue();
+
+            using (mutationLock.BeginResourceDeletion())
+            {
+                var closeForDeletion = typeof(EditorService).GetMethod(
+                    "TryCloseResourceForDeletion",
+                    BindingFlags.Instance | BindingFlags.NonPublic)!;
+                ((bool)closeForDeletion.Invoke(editors, [ResourceType.Area, areaResRef])!)
+                    .Should().BeTrue();
+            }
+
+            // The delete command has now committed and released its reservation, but the old parse
+            // is still running. Its tombstone must outlive that transient lock.
+            releaseLoad.Set();
+            var openingAreas = (HashSet<string>)typeof(EditorService)
+                .GetField("_openingAreaEditors", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .GetValue(editors)!;
+            await WaitUntilAsync(() => !openingAreas.Contains(areaResRef));
+
+            var openAreas = (Dictionary<string, AreaEditorViewModel>)typeof(EditorService)
+                .GetField("_openAreaEditors", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .GetValue(editors)!;
+            openAreas.Should().NotContainKey(areaResRef,
+                "a load cancelled by a committed delete must not publish after the lock is released");
+        }
+
+        [Test]
+        public void ResourceDeletionBlocksEveryEditorOpeningRoute()
+        {
+            const string resRef = "delete_in_progress";
+            var moduleRoot = NewModuleRoot();
+            Directory.CreateDirectory(Path.Combine(moduleRoot, "nss"));
+            File.WriteAllText(
+                Path.Combine(moduleRoot, "nss", resRef + ".nss"),
+                "void main() {}");
+            var log = new OutputLogService();
+            var workspace = new WorkspaceContext(root => new ModuleWorkspace(root), log);
+            var mutationLock = new ModuleMutationLock();
+            var editors = new EditorService(
+                workspace,
+                new LookupOptionProvider(workspace),
+                log,
+                factory: null!,
+                prompts: null!,
+                mutationLock: mutationLock);
+            workspace.Open(moduleRoot);
+
+            using (mutationLock.BeginResourceDeletion())
+            {
+                editors.TryOpenEditor(ResourceType.Nss, resRef);
+                typeof(EditorService)
+                    .GetMethod("OpenScriptEditor", BindingFlags.Instance | BindingFlags.NonPublic)!
+                    .Invoke(editors, new object[] { workspace.Workspace!, resRef });
+                typeof(EditorService)
+                    .GetMethod("GoToObjectPlacement", BindingFlags.Instance | BindingFlags.NonPublic)!
+                    .Invoke(editors, new object[]
+                    {
+                        new ObjectPlacement(
+                            ResourceType.Utw,
+                            "arrival_wp",
+                            "area_being_deleted",
+                            0,
+                            "ARRIVAL",
+                            1f,
+                            2f,
+                            3f)
+                    });
+                editors.OpenModuleProperties();
+            }
+
+            var openScripts = (Dictionary<string, ScriptEditorViewModel>)typeof(EditorService)
+                .GetField("_openScriptEditors", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .GetValue(editors)!;
+            openScripts.Should().BeEmpty();
+            var pendingAreaReveals = (Dictionary<string, ObjectPlacement>)typeof(EditorService)
+                .GetField("_pendingAreaReveals", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .GetValue(editors)!;
+            pendingAreaReveals.Should().BeEmpty(
+                "object-source Go To must not queue an area reveal during deletion");
+            log.Lines.Count(line => line.Contains("a module resource deletion is in progress"))
+                .Should().Be(4,
+                    "public, include-navigation, object-source, and Module Properties routes are all gated");
+        }
+
+        [Test]
         public async Task PlacementInvalidationReloadsAnOpenObjectSource()
         {
             var moduleRoot = NewModuleRoot();

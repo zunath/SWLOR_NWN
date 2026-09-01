@@ -22,7 +22,19 @@ namespace SWLOR.Toolset.Workspace
 
         public event Action? WorkspaceOpened;
         public event Action? CatalogBuildCompleted;
+        /// <summary>Raised once after materialized catalog names are re-resolved from a new TLK.</summary>
+        public event Action? CatalogLabelsChanged;
+        /// <summary>
+        /// Raised for every saved, reloaded, created, or removed resource so content-dependent
+        /// caches can invalidate even when its catalog Name/Tag did not change.
+        /// </summary>
         public event Action<ResourceType, string>? CatalogEntryRefreshed;
+        /// <summary>
+        /// Raised only when the ordered catalog's indexed metadata or membership actually changed.
+        /// Explorer and Search subscribe here so an ordinary content-only save does not make them
+        /// regroup and requery the entire catalog.
+        /// </summary>
+        public event Action<ResourceType, string>? CatalogEntriesChanged;
         public event Action? PlacementIndexInvalidated;
         public event Action? ScriptUsagesInvalidated;
         public event Action? TagIndexInvalidated;
@@ -43,8 +55,34 @@ namespace SWLOR.Toolset.Workspace
         /// (also timed, with progress logged periodically). Returns once the workspace itself is
         /// open - the catalog build continues in the background after this method returns.
         /// </summary>
-        public void Open(string moduleRoot)
+        /// <remarks>
+        /// This synchronous entry point is intended for headless and already-background callers.
+        /// Avalonia callers must use <see cref="OpenAsync"/> so cross-process recovery lease waits
+        /// cannot block the UI thread.
+        /// </remarks>
+        public void Open(string moduleRoot) => CompleteOpen(moduleRoot, RecoverBeforeOpen(moduleRoot));
+
+        /// <summary>
+        /// Recovers interrupted filesystem transactions on a worker, then publishes the replacement
+        /// workspace on the caller's captured context. UI callers therefore keep
+        /// <see cref="WorkspaceOpened"/> and its subscribers on the Avalonia thread without making
+        /// that thread wait for another process's module leases.
+        /// </summary>
+        public async Task OpenAsync(string moduleRoot)
         {
+            var recovery = await Task.Run(() => RecoverBeforeOpen(moduleRoot))
+                .ConfigureAwait(true);
+            CompleteOpen(moduleRoot, recovery);
+        }
+
+        private static WorkspaceRecoveryResult RecoverBeforeOpen(string moduleRoot)
+        {
+            // A logical resource delete can span several files (and an area's IFO registration).
+            // Restore an interrupted transaction before any workspace enumeration can observe only
+            // the companions that had not moved when the prior process exited.
+            var deletes = Services.ModuleResourceDeletionService
+                .RecoverInterruptedDeletes(moduleRoot);
+
             // Before anything reads the folder. A grouped save that was interrupted between moving
             // an original aside and installing its replacement leaves the canonical ARE, GIT, or
             // GIC missing and its only copy sitting beside it under a .save-backup name; opening
@@ -55,16 +93,26 @@ namespace SWLOR.Toolset.Workspace
             // returning partial success, and that must propagate out of Open so the caller's
             // existing "failed to open" handling refuses the module rather than opening it with an
             // area at mixed ARE/GIT/GIC generations.
-            foreach (var recovered in Services.SaveService.RecoverInterruptedSaves(moduleRoot))
-                _log.AppendLine($"Recovered '{recovered}' from an interrupted save.");
+            var saves = Services.SaveService.RecoverInterruptedSaves(moduleRoot);
 
             // A ResRef rename may contain one of the grouped GIT saves recovered above. Restore that
             // inner transaction first, then the outer rename transaction can reliably see either
             // every original companion or every installed companion instead of a half-moved set.
-            foreach (var recovered in Services.ItemRenameRecovery.RecoverInterruptedRenames(moduleRoot))
-                _log.AppendLine($"Recovered '{recovered}' from an interrupted blueprint rename.");
+            var renames = Services.ItemRenameRecovery.RecoverInterruptedRenames(moduleRoot);
 
-            foreach (var recovered in Services.ErfArchiveService.RecoverInterruptedImports(moduleRoot))
+            var imports = Services.ErfArchiveService.RecoverInterruptedImports(moduleRoot);
+            return new WorkspaceRecoveryResult(deletes, saves, renames, imports);
+        }
+
+        private void CompleteOpen(string moduleRoot, WorkspaceRecoveryResult recovery)
+        {
+            foreach (var recovered in recovery.Deletes)
+                _log.AppendLine($"Recovered {recovered} from an interrupted delete.");
+            foreach (var recovered in recovery.Saves)
+                _log.AppendLine($"Recovered '{recovered}' from an interrupted save.");
+            foreach (var recovered in recovery.Renames)
+                _log.AppendLine($"Recovered '{recovered}' from an interrupted blueprint rename.");
+            foreach (var recovered in recovery.Imports)
                 _log.AppendLine($"Recovered '{recovered}' from an interrupted ERF import.");
 
             var openStopwatch = Stopwatch.StartNew();
@@ -164,6 +212,12 @@ namespace SWLOR.Toolset.Workspace
             InvalidateScriptUsages();
         }
 
+        private sealed record WorkspaceRecoveryResult(
+            IReadOnlyList<string> Deletes,
+            IReadOnlyList<string> Saves,
+            IReadOnlyList<string> Renames,
+            IReadOnlyList<string> Imports);
+
         /// <summary>
         /// The resource kinds <see cref="BlueprintCatalog"/>'s initial build actually indexes - areas
         /// and every blueprint type. Shared by <see cref="RefreshCatalogEntry"/>/
@@ -188,9 +242,22 @@ namespace SWLOR.Toolset.Workspace
         {
             InvalidateTagIndexWhenRelevant(type);
             InvalidateScriptUsagesWhenRelevant(type);
-            if (IsCatalogIndexedType(type))
-                Catalog?.RefreshEntry(type, resRef);
+            var catalogChanged = false;
+            if (IsCatalogIndexedType(type) && Catalog is { } catalog)
+                catalog.RefreshEntry(type, resRef, out catalogChanged);
             CatalogEntryRefreshed?.Invoke(type, resRef);
+            if (catalogChanged)
+                CatalogEntriesChanged?.Invoke(type, resRef);
+        }
+
+        /// <summary>
+        /// Re-resolves catalog display names from cached LocString metadata after a TLK publication.
+        /// This does not reopen the module's blueprint files.
+        /// </summary>
+        public void RefreshTlkLabels()
+        {
+            if (Catalog?.RefreshTlkLabels() == true)
+                CatalogLabelsChanged?.Invoke();
         }
 
         /// <summary>
@@ -206,9 +273,12 @@ namespace SWLOR.Toolset.Workspace
             if (type == ResourceType.Area)
                 InvalidatePlacementIndex();
             InvalidateScriptUsagesWhenRelevant(type);
-            if (IsCatalogIndexedType(type))
-                Catalog?.RemoveEntry(type, resRef);
+            var catalogChanged = false;
+            if (IsCatalogIndexedType(type) && Catalog is { } catalog)
+                catalogChanged = catalog.RemoveEntry(type, resRef);
             CatalogEntryRefreshed?.Invoke(type, resRef);
+            if (catalogChanged)
+                CatalogEntriesChanged?.Invoke(type, resRef);
         }
 
         /// <summary>
@@ -231,6 +301,7 @@ namespace SWLOR.Toolset.Workspace
         {
             InvalidateTagIndex();
             InvalidatePlacementIndex();
+            InvalidateScriptUsages();
         }
 
         /// <summary>
@@ -247,7 +318,7 @@ namespace SWLOR.Toolset.Workspace
 
         /// <summary>
         /// Drops the lazy script-usage snapshot. Paired GIT files are not first-class resource types,
-        /// so the file watcher calls this directly when a placed-instance script slot changes.
+        /// so their grouped invalidation routes here directly when a placed-instance script slot changes.
         /// </summary>
         public void InvalidateScriptUsages() => ScriptUsagesInvalidated?.Invoke();
 

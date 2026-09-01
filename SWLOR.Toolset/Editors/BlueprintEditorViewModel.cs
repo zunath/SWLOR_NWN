@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.Input;
 using Dock.Model.Mvvm.Controls;
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Editors;
@@ -26,6 +27,7 @@ namespace SWLOR.Toolset.Editors
         private readonly EditorFieldContext _context;
         private readonly OutputLogService _log;
         private readonly IEditorPromptService _prompts;
+        private readonly LookupOptionProvider _lookups;
         private readonly IGameCodeIndex? _gameCodeIndex;
         private readonly IScriptSlotHost? _scriptSlotHost;
         private readonly BlueprintSaveCoordinator? _saveCoordinator;
@@ -141,12 +143,14 @@ namespace SWLOR.Toolset.Editors
             Func<EditorFieldContext, Func<string, Action, bool>,
                 TintMaps.TintMapEditorViewModel?>? tintMapEditor = null,
             BlueprintSaveCoordinator? saveCoordinator = null,
-            Sources.ObjectSourceSectionViewModel? source = null)
+            Sources.ObjectSourceSectionViewModel? source = null,
+            Action<uint>? openTlkRow = null)
         {
             _scriptSlotHost = scriptSlotHost;
             _resourceLister = resourceLister;
             _log = log;
             _prompts = prompts;
+            _lookups = lookups;
             _gameCodeIndex = gameCodeIndex;
             _saveCoordinator = saveCoordinator;
             Source = source;
@@ -154,7 +158,7 @@ namespace SWLOR.Toolset.Editors
             BlueprintType = type;
             Id = $"editor:{filePath}";
             _session = DocumentSession.Open(filePath);
-            _context = new EditorFieldContext(_session.Document, RunEdit, resolveStrRef);
+            _context = new EditorFieldContext(_session.Document, RunEdit, resolveStrRef, openTlkRow);
 
             var tabbedGroups = new List<(string Tab, EditorGroup Group)>();
             foreach (var group in schema.Groups)
@@ -421,10 +425,11 @@ namespace SWLOR.Toolset.Editors
                 var targetResRef =
                     _session.Document.Root.GetStringOrNull("TemplateResRef")?.Trim().ToLowerInvariant()
                     ?? string.Empty;
-                if (!IsValidResRef(targetResRef))
+                if (!NwnResRef.IsCanonical(targetResRef))
                 {
                     _log.AppendLine(
-                        $"Cannot save {_resRef}: ResRef '{targetResRef}' must be 1-16 characters " +
+                        $"Cannot save {_resRef}: ResRef '{targetResRef}' must be " +
+                        $"1-{NwnResRef.MaxLength} characters " +
                         "of a-z, 0-9, or underscore.");
                     return false;
                 }
@@ -607,6 +612,15 @@ namespace SWLOR.Toolset.Editors
             RebuildVariablesTab();
         }
 
+        /// <summary>Re-resolves custom-TLK watermarks after the shared table is regenerated.</summary>
+        public void RefreshTlkLabels()
+        {
+            foreach (var field in Groups.SelectMany(group => group.Fields).OfType<LocStringFieldViewModel>())
+                field.RefreshFromDocument();
+            foreach (var field in Groups.SelectMany(group => group.Fields).OfType<DropdownFieldViewModel>())
+                field.RefreshOptions(_lookups.GetOptions(field.Descriptor.LookupKey));
+        }
+
         private void AfterHistoryChange()
         {
             TintMapEditor?.Reload();
@@ -625,9 +639,5 @@ namespace SWLOR.Toolset.Editors
             Title = IsDirty ? $"{_resRef} *" : _resRef;
         }
 
-        private static bool IsValidResRef(string value) =>
-            value.Length is >= 1 and <= 16 &&
-            value.All(character =>
-                character is >= 'a' and <= 'z' or >= '0' and <= '9' or '_');
     }
 }

@@ -32,8 +32,8 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
 
         private const int LightsaberTierDamage = 21;
         private const int SaberstaffTierDamage = 25;
-        private const int LightsaberDelay = 24;
-        private const int SaberstaffDelay = 29;
+        private const ItemPropertyAttackDelay LightsaberDelay = ItemPropertyAttackDelay.Delay240;
+        private const ItemPropertyAttackDelay SaberstaffDelay = ItemPropertyAttackDelay.Delay290;
         private const int TierRequiredSkill = 40;
         private const int LightsaberSkillSubtype = 38;
         private const int SaberstaffSkillSubtype = 42;
@@ -135,7 +135,7 @@ namespace SWLOR.Game.Server.Feature.MigrationDefinition
             var skillSubtype = isSaberstaff ? SaberstaffSkillSubtype : LightsaberSkillSubtype;
 
             BiowareXP2.IPSafeAddItemProperty(item, ItemPropertyCustom(ItemPropertyType.DMG, -1, damage), 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
-            BiowareXP2.IPSafeAddItemProperty(item, ItemPropertyCustom(ItemPropertyType.Delay, -1, delay), 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
+            BiowareXP2.IPSafeAddItemProperty(item, ItemPropertyCustom(ItemPropertyType.Delay, -1, (int)delay), 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
             BiowareXP2.IPSafeAddItemProperty(item, ItemPropertyCustom(ItemPropertyType.RequiresSkill, skillSubtype, TierRequiredSkill), 0.0f, AddItemPropertyPolicy.ReplaceExisting, false, false);
 
             SetLocalInt(item, SaberTierVariable, NormalizedTier);

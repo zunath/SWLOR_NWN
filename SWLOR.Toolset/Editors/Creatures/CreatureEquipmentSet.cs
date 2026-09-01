@@ -1,3 +1,4 @@
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.Editors.Creatures;
@@ -140,7 +141,7 @@ namespace SWLOR.Toolset.Editors.Creatures
 
         private string UniqueResRef(string creatureResRef, string suffix)
         {
-            var prefixLength = Math.Max(1, 16 - suffix.Length);
+            var prefixLength = Math.Max(1, NwnResRef.MaxLength - suffix.Length);
             var stem = new string(creatureResRef
                     .ToLowerInvariant()
                     .Where(character => char.IsAsciiLetterOrDigit(character) || character == '_')
@@ -150,13 +151,13 @@ namespace SWLOR.Toolset.Editors.Creatures
             if (stem.Length == 0)
                 stem = "creature"[..Math.Min(8, prefixLength)];
 
-            var candidate = (stem + suffix)[..Math.Min(16, stem.Length + suffix.Length)];
+            var candidate = (stem + suffix)[..Math.Min(NwnResRef.MaxLength, stem.Length + suffix.Length)];
             for (var counter = 2;
                  File.Exists(Path.Combine(_itemDirectory, candidate + ".uti.json")) || _documents.ContainsKey(candidate);
                  counter++)
             {
                 var number = counter.ToString(System.Globalization.CultureInfo.InvariantCulture);
-                var allowedStem = Math.Max(1, 16 - suffix.Length - number.Length);
+                var allowedStem = Math.Max(1, NwnResRef.MaxLength - suffix.Length - number.Length);
                 candidate = stem[..Math.Min(stem.Length, allowedStem)] + suffix + number;
             }
 

@@ -55,6 +55,7 @@ namespace SWLOR.Game.Server.Native
         private const int DefaultMissedBy = 1;
         private const int DefaultToHitMod = 1;
         private const int DefaultToHitRoll = 1;
+        private const int WeaponAttackTypeOffHand = 2;
         private const string DeflectionAttemptedDefendersVariable = "RESOLVE_ATTACK_ROLL_DEFLECTION_ATTEMPTED";
 
         internal delegate void ResolveAttackRollHook(void* thisPtr, void* pTarget);
@@ -119,12 +120,23 @@ namespace SWLOR.Game.Server.Native
                 Log.Write(LogGroup.Attack, "Attacker: " + attacker.GetFirstName().GetSimple(0) + ", defender " + targetObject.GetFirstName().GetSimple(0));
 
                 var pAttackData = pCombatRound.GetAttack(pCombatRound.m_nCurrentAttack);
+                var isOffHandAttack = pCombatRound.GetWeaponAttackType() == WeaponAttackTypeOffHand;
+                var weapon = pCombatRound.GetCurrentAttackWeapon(isOffHandAttack ? 1 : 0);
+                var weaponSkillType = weapon == null
+                    ? SkillType.Invalid
+                    : SWLOR.Game.Server.Service.Skill.GetSkillTypeByBaseItem((BaseItem)weapon.m_nBaseItem);
 
                 if (targetObject.m_nObjectType != (int)ObjectType.Creature)
                 {
                     // Automatically hit non-creature targets.  Do not apply criticals.
                     Log.Write(LogGroup.Attack, "Placeable target.  Auto hit.");
                     pAttackData.m_nAttackResult = AttackResultAutomaticHit;
+                    if (!UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType))
+                    {
+                        StatusEffect.NotifyAttackAttemptStatusEffects(
+                            attacker.m_idSelf,
+                            weaponSkillType);
+                    }
                     ProfilerPlugin.PopPerfScope();
                     return;
                 }
@@ -141,10 +153,6 @@ namespace SWLOR.Game.Server.Native
                 }
 
                 var attackType = (uint)AttackType.Melee;
-                var weapon = pCombatRound.GetCurrentAttackWeapon();
-                var weaponSkillType = weapon == null
-                    ? SkillType.Invalid
-                    : SWLOR.Game.Server.Service.Skill.GetSkillTypeByBaseItem((BaseItem)weapon.m_nBaseItem);
 
                 // Check whether this is a ranged weapon.
                 if (weapon != null && pAttackData.m_bRangedAttack == 1 && attacker.GetRangeWeaponEquipped() == 1)
@@ -171,7 +179,9 @@ namespace SWLOR.Game.Server.Native
                 //---------------------------------------------------------------------------------------------
                 // Modifiers - put in modifiers here based on the type of attack (and type of weapon etc.).
                 var accuracyModifiers = 0;
-
+                // Overwatch is a next ranged attack trigger. Resolve it in the native
+                // auto-attack path as well as the casted-ability path, and only when the
+                // selected defender is the suppressed target that armed the trigger.
                 // Defender not targeting the attacker.
                 // Dev note: the GetItem method always creates a new instance of CNWActionNode so there should be no NPEs.
                 // Note: this always returns object invalid for NPCs (2130706432) as their actions aren't represented the same way.
@@ -217,13 +227,32 @@ namespace SWLOR.Game.Server.Native
                 //---------------------------------------------------------------------------------------------
                 //---------------------------------------------------------------------------------------------
                 var attackRoll = Random.D100(1);
+                var queuedWeaponAbilityLongRangeHitChanceAdjustment =
+                    UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType)
+                        ? Combat.GetRangedAbilityLongRangeHitChanceAdjustment(
+                            attacker.m_idSelf,
+                            defender.m_idSelf,
+                            weaponSkillType)
+                        : 0;
                 var hitChanceModifier =
                     Combat.GetSideAttackHitChanceAdjustment(attacker.m_idSelf, defender.m_idSelf, weaponSkillType) +
-                    Combat.GetHitChanceAgainstSunderedTargetAdjustment(attacker.m_idSelf, defender.m_idSelf);
+                    queuedWeaponAbilityLongRangeHitChanceAdjustment +
+                    Combat.GetHitChanceAgainstSunderedTargetAdjustment(attacker.m_idSelf, defender.m_idSelf) +
+                    Combat.GetQueuedWeaponAbilityActivationHitChanceAdjustment(
+                        attacker.m_idSelf,
+                        weaponSkillType) +
+                    Combat.ConsumeSuppressionRangedAttackAccuracyAdjustment(
+                        attacker.m_idSelf,
+                        defender.m_idSelf,
+                        weaponSkillType);
                 var hitRate = Combat.CalculateHitRate(
                     attackerAccuracy + accuracyModifiers,
                     defenderEvasion,
                     hitChanceModifier);
+                // Lucky Chamber advances on every ranged attack attempt, including misses and
+                // deflections. Its returned bonus is only consulted if this attempt lands.
+                var autoAttackCycleCriticalRate =
+                    Combat.PrepareAutoAttackCycleCriticalRate(attacker.m_idSelf, weaponSkillType);
                 var isHit = Combat.GetAutoAttackHitResolutionOverride() ?? attackRoll <= hitRate;
 
                 Log.Write(LogGroup.Attack, $"attackerAccuracy = {attackerAccuracy}, modifiers = {accuracyModifiers}, defenderEvasion = {defenderEvasion}");
@@ -262,7 +291,10 @@ namespace SWLOR.Game.Server.Native
                         criticalModifier += Combat.ConsumeNextAttackGuardedHitCriticalRateBonus(attacker.m_idSelf);
                         criticalModifier += Combat.ConsumeNextAutoAttackCriticalRateBonus(attacker.m_idSelf, weaponSkillType);
                         criticalModifier += Combat.PrepareOpeningAutoAttack(attacker.m_idSelf, weaponSkillType);
-                        criticalModifier += Combat.GetAutoAttackCriticalRateAdjustment(attacker.m_idSelf, defender.m_idSelf, weaponSkillType);
+                        criticalModifier += Combat.GetAutoAttackCriticalRateAdjustment(
+                            attacker.m_idSelf,
+                            defender.m_idSelf,
+                            autoAttackCycleCriticalRate);
                         criticalModifier += Combat.GetSideAttackCriticalRateAdjustment(attacker.m_idSelf, defender.m_idSelf, weaponSkillType);
                         criticalModifier += Combat.GetBackAttackCriticalRateAdjustment(attacker.m_idSelf, defender.m_idSelf, weaponSkillType);
                         var criticalSkillRank = GetCriticalSkillRank(attacker, weapon);
@@ -349,6 +381,29 @@ namespace SWLOR.Game.Server.Native
                     !IsSuccessfulAttackResult(pAttackData.m_nAttackResult))
                 {
                     Combat.TrackAvoidedAttack(defender.m_idSelf, attacker.m_idSelf);
+                }
+
+                if (!IsSuccessfulAttackResult(pAttackData.m_nAttackResult))
+                    Combat.ClearOpeningAutoAttackModifiers(attacker.m_idSelf);
+
+                // A landed queued weapon ability is finalized through Ability.EndAbilityImpact,
+                // which sends the single attempt notification for that originating swing. A miss
+                // or deflection never starts the queued ability, so notify it here instead.
+                var queuedWeaponAbilityWillResolve =
+                    IsSuccessfulAttackResult(pAttackData.m_nAttackResult) &&
+                    UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType);
+                if (queuedWeaponAbilityWillResolve)
+                {
+                    Combat.StoreQueuedWeaponAbilityCriticalRateBonus(
+                        attacker.m_idSelf,
+                        weaponSkillType,
+                        autoAttackCycleCriticalRate);
+                }
+                else
+                {
+                    StatusEffect.NotifyAttackAttemptStatusEffects(
+                        attacker.m_idSelf,
+                        weaponSkillType);
                 }
 
                 Log.Write(LogGroup.Attack, $"Building combat log message");

@@ -39,7 +39,8 @@ namespace SWLOR.Game.Server.Service
             float duration,
             bool isHostile,
             TelegraphType type,
-            ApplyTelegraphEffect action)
+            ApplyTelegraphEffect action,
+            bool isPersistentAreaIndicator = false)
         {
             var data = new TelegraphData
             {
@@ -50,6 +51,7 @@ namespace SWLOR.Game.Server.Service
                 Size = size,
                 Duration = duration,
                 IsHostile = isHostile,
+                IsPersistentAreaIndicator = isPersistentAreaIndicator,
                 Action = action
             };
 
@@ -314,12 +316,30 @@ namespace SWLOR.Game.Server.Service
 
         private static TelegraphColorType DetermineTelegraphColorType(uint player, uint telegrapher, bool isHostile)
         {
-            if (player == telegrapher)
+            var isOwnTelegraph = player == telegrapher;
+            var isPartyMemberTelegraph = !isOwnTelegraph && Party.IsInParty(player, telegrapher);
+
+            return SelectTelegraphColorType(isOwnTelegraph, isPartyMemberTelegraph, isHostile);
+        }
+
+        private static TelegraphColorType SelectTelegraphColorType(
+            bool isOwnTelegraph,
+            bool isPartyMemberTelegraph,
+            bool isHostile)
+        {
+            // The player's own placement stays recognizable, while beneficial effects remain green
+            // regardless of who created them. Party gray distinguishes allied offensive placement
+            // from hostile red telegraphs created outside the party.
+            if (isOwnTelegraph)
                 return TelegraphColorType.Self;
 
-            return isHostile
-                ? GetIsReactionTypeFriendly(player, telegrapher) == 1 ? TelegraphColorType.Friendly : TelegraphColorType.Hostile
-                : GetIsReactionTypeFriendly(player, telegrapher) == 1 ? TelegraphColorType.Friendly : TelegraphColorType.EnemyBeneficial;
+            if (!isHostile)
+                return TelegraphColorType.Beneficial;
+
+            if (isPartyMemberTelegraph)
+                return TelegraphColorType.PartyMember;
+
+            return TelegraphColorType.Hostile;
         }
 
         private static int PackTelegraphData(TelegraphType shapeType, TelegraphColorType colorType, Vector2 size, float rotation)
@@ -361,6 +381,23 @@ namespace SWLOR.Game.Server.Service
         {
             for (var player = GetFirstPC(); GetIsObjectValid(player); player = GetNextPC())
             {
+                UpdateShaderForPlayer(player);
+            }
+        }
+
+        /// <summary>
+        /// Refreshes active telegraphs for specific player viewers after relationship state changes.
+        /// Party membership affects hostile telegraph colors, so existing packed uniforms must be
+        /// rebuilt even when no telegraph was created or removed.
+        /// </summary>
+        /// <param name="players">Players whose telegraph uniforms should be refreshed.</param>
+        public static void UpdateShadersForPlayers(IEnumerable<uint> players)
+        {
+            foreach (var player in players.Distinct())
+            {
+                if (!GetIsObjectValid(player) || (!GetIsPC(player) && !GetIsDM(player)))
+                    continue;
+
                 UpdateShaderForPlayer(player);
             }
         }
@@ -411,17 +448,11 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            var telegraphs = _telegraphsByArea[area];
-            var telegraphCountToRender = telegraphs.Count > MaxRenderCount
-                ? MaxRenderCount
-                : telegraphs.Count;
+            var telegraphs = SelectTelegraphsForRendering(_telegraphsByArea[area].Values);
 
             var i = 0;
-            foreach (var (_, telegraph) in telegraphs)
+            foreach (var telegraph in telegraphs)
             {
-                if (i >= MaxRenderCount)
-                    break;
-
                 var data = telegraph.Data;
                 var position = data.Position;
                 var size = data.Size;
@@ -445,7 +476,15 @@ namespace SWLOR.Game.Server.Service
                 i++;
             }
 
-            ResetTelegraphShaderSlots(player, telegraphCountToRender);
+            ResetTelegraphShaderSlots(player, telegraphs.Length);
+        }
+
+        private static ActiveTelegraph[] SelectTelegraphsForRendering(IEnumerable<ActiveTelegraph> telegraphs)
+        {
+            return telegraphs
+                .OrderBy(telegraph => telegraph.Data.IsPersistentAreaIndicator)
+                .Take(MaxRenderCount)
+                .ToArray();
         }
 
         private static void ResetTelegraphShaderSlots(uint player, int startIndex)
@@ -473,7 +512,8 @@ namespace SWLOR.Game.Server.Service
             float radius,
             float duration,
             bool isHostile,
-            ApplyTelegraphEffect action)
+            ApplyTelegraphEffect action,
+            bool isPersistentAreaIndicator = false)
         {
             return CreateTelegraph(
                 creator,
@@ -483,7 +523,8 @@ namespace SWLOR.Game.Server.Service
                 duration,
                 isHostile,
                 TelegraphType.Sphere,
-                action);
+                action,
+                isPersistentAreaIndicator);
         }
 
         /// <summary>

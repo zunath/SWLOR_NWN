@@ -143,7 +143,7 @@
   },
   "HitPoints": {
     "type": "short",
-    "value": 40
+    "value": 42
   },
   "Int": {
     "type": "byte",
@@ -177,7 +177,7 @@
   },
   "MaxHitPoints": {
     "type": "short",
-    "value": 38
+    "value": 40
   },
   "NaturalAC": {
     "type": "byte",

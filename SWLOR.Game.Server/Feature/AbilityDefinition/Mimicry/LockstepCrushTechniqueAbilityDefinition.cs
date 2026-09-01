@@ -35,7 +35,6 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 ResistanceType.Mobility,
                 VisualEffect.Vfx_Com_Chunk_Red_Medium,
                 VisualEffect.Vfx_Fnf_Screen_Shake,
-                maxRange: 5f,
                 afterSuccessfulHit: (activator, target) =>
                     StatusEffect.ApplyStatusEffect<SunderStatusEffect>(activator, target, 30f, CombatDamageType.Physical))
                 .SkillType(SkillType.Mimicry)
@@ -46,7 +45,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                     Spell.LockstepCrushTechnique,
                     5f,
                     5f,
-                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf);
+                    AbilityTargetingFlags.HarmsEnemies | AbilityTargetingFlags.OriginOnSelf | AbilityTargetingFlags.BackOffsetOrigin);
 
             return _builder.Build();
         }

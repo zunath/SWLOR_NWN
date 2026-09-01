@@ -97,13 +97,47 @@ public class DamageOverTimeStatusEffectTests
     }
 
     [TestCase("DiseaseStatusEffect.cs", "System.Math.Max(1, d2() + perception * _level)")]
-    [TestCase("FreezingStatusEffect.cs", "System.Math.Max(1, d2() + perception * _level)")]
+    [TestCase("FreezingStatusEffect.cs", "Math.Max(1, dieRoll + perceptionModifier * 2 * Math.Max(1, level))")]
     [TestCase("ShockStatusEffect.cs", "System.Math.Max(1, d4() + agility * 2 * _level)")]
     public void ScalingDamageOverTimeStatusEffects_FloorTickDamageBeforeResistance(string fileName, string floorExpression)
     {
         var source = ReadStatusEffectSource(fileName);
 
         source.Should().Contain(floorExpression);
+    }
+
+    [Test]
+    public void FreezingStatusEffect_ScalesWithMimicryAndDamageTakenModifiers()
+    {
+        var stages = new List<(string Name, int Input)>();
+
+        var damage = FreezingStatusEffect.CalculateTickDamage(
+            dieRoll: 4,
+            perceptionModifier: 3,
+            level: 2,
+            mimicryPotencyPercent: 25,
+            applyResistance: amount =>
+            {
+                stages.Add(("Resistance", amount));
+                return amount - 4;
+            },
+            applyDamageOverTimeTaken: amount =>
+            {
+                stages.Add(("DamageOverTimeTaken", amount));
+                return amount * 2;
+            },
+            applyDamageTaken: amount =>
+            {
+                stages.Add(("DamageTaken", amount));
+                return amount + 3;
+            });
+
+        stages.Should().Equal(
+            ("Resistance", 20),
+            ("DamageOverTimeTaken", 16),
+            ("DamageTaken", 32));
+        damage.Should().Be(35,
+            "Perception, level, Mimicry Potency, resistance, and target damage modifiers must all affect the final tick");
     }
 
     private static string ReadStatusEffectSource(string fileName)

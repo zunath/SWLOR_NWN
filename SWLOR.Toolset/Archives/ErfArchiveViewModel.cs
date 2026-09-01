@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Services;
 using SWLOR.Toolset.Settings;
 
@@ -305,7 +306,7 @@ namespace SWLOR.Toolset.Archives
         private static string SuggestedRename(string resRef)
         {
             const string suffix = "_imp";
-            var prefixLength = Math.Max(1, 16 - suffix.Length);
+            var prefixLength = Math.Max(1, NwnResRef.MaxLength - suffix.Length);
             return resRef[..Math.Min(resRef.Length, prefixLength)] + suffix;
         }
 
@@ -354,6 +355,9 @@ namespace SWLOR.Toolset.Archives
         [NotifyPropertyChangedFor(nameof(StepThreeLabel))]
         [NotifyPropertyChangedFor(nameof(StepFourLabel))]
         [NotifyPropertyChangedFor(nameof(StatusFilters))]
+        [NotifyPropertyChangedFor(nameof(ShowImportAction))]
+        [NotifyPropertyChangedFor(nameof(ShowRestartImportAction))]
+        [NotifyPropertyChangedFor(nameof(CanRestartImport))]
         private ErfArchiveMode _mode = ErfArchiveMode.Import;
 
         [ObservableProperty]
@@ -370,6 +374,8 @@ namespace SWLOR.Toolset.Archives
         [NotifyPropertyChangedFor(nameof(CanGoNext))]
         [NotifyPropertyChangedFor(nameof(ShowNext))]
         [NotifyPropertyChangedFor(nameof(ShowImportAction))]
+        [NotifyPropertyChangedFor(nameof(ShowRestartImportAction))]
+        [NotifyPropertyChangedFor(nameof(CanRestartImport))]
         [NotifyPropertyChangedFor(nameof(ShowExportAction))]
         [NotifyPropertyChangedFor(nameof(StepTitle))]
         [NotifyPropertyChangedFor(nameof(StepDescription))]
@@ -379,6 +385,7 @@ namespace SWLOR.Toolset.Archives
         [NotifyPropertyChangedFor(nameof(CanGoNext))]
         [NotifyPropertyChangedFor(nameof(CanCommit))]
         [NotifyPropertyChangedFor(nameof(CanClose))]
+        [NotifyPropertyChangedFor(nameof(CanRestartImport))]
         private bool _isBusy;
 
         [ObservableProperty]
@@ -392,6 +399,10 @@ namespace SWLOR.Toolset.Archives
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(CanCommit))]
+        [NotifyPropertyChangedFor(nameof(CanGoBack))]
+        [NotifyPropertyChangedFor(nameof(ShowImportAction))]
+        [NotifyPropertyChangedFor(nameof(ShowRestartImportAction))]
+        [NotifyPropertyChangedFor(nameof(CanRestartImport))]
         private bool _isComplete;
 
         [ObservableProperty]
@@ -443,10 +454,12 @@ namespace SWLOR.Toolset.Archives
         public bool IsStepFour => CurrentStep == 3;
         public bool CanGoBack =>
             !IsBusy &&
+            !(IsImport && IsComplete) &&
             CurrentStep > 0 &&
             !(IsExport && CurrentStep == 1);
         public bool ShowNext => CurrentStep < 3 && !IsValidatingSelection;
-        public bool ShowImportAction => IsImport && CurrentStep == 3;
+        public bool ShowImportAction => IsImport && CurrentStep == 3 && !IsComplete;
+        public bool ShowRestartImportAction => IsImport && CurrentStep == 3 && IsComplete;
         public bool ShowExportAction => IsExport && CurrentStep == 3;
         public bool ShowImportFile => IsImport && CurrentStep == 0;
         public bool ShowExportSnapshot => IsExport && CurrentStep == 0;
@@ -457,6 +470,7 @@ namespace SWLOR.Toolset.Archives
         public bool ShowExportValidation =>
             IsExport && CurrentStep == 2 && !IsValidatingSelection;
         public bool CanCommit => !IsBusy && !IsComplete;
+        public bool CanRestartImport => !IsBusy && ShowRestartImportAction;
         public bool CanClose => !IsBusy;
         public bool CanGoNext => !IsBusy && CurrentStep < 3 && (CurrentStep != 0 || !IsImport || _session != null);
         public string ModeTitle => IsImport ? "Import ERF" : "Export ERF";
@@ -606,6 +620,26 @@ namespace SWLOR.Toolset.Archives
             StatusText = _session == null
                 ? "Choose an ERF file to begin."
                 : $"{Assets.Count} asset(s) found.";
+        }
+
+        [RelayCommand]
+        private void RestartImport()
+        {
+            if (!CanRestartImport)
+                return;
+
+            var session = _session;
+            _session = null;
+            _explicitImportSelection.Clear();
+            ResetRows();
+            session?.Dispose();
+            ImportArchivePath = string.Empty;
+            SelectedRecentArchive = null;
+            CompletionTitle = string.Empty;
+            CompletionDetail = string.Empty;
+            CurrentStep = 0;
+            IsComplete = false;
+            StatusText = "Choose an ERF file to begin.";
         }
 
         [RelayCommand]
@@ -889,14 +923,11 @@ namespace SWLOR.Toolset.Archives
                     continue;
 
                 var value = row.RenameResRef;
-                if (string.IsNullOrWhiteSpace(value) || value.Length > 16 ||
-                    value.Any(character => character is not (>= 'a' and <= 'z'
-                        or >= 'A' and <= 'Z'
-                        or >= '0' and <= '9'
-                        or '_')))
+                if (!NwnResRef.IsValid(value))
                 {
                     StatusText =
-                        $"'{row.FileName}' needs a new 1-16 character resref using letters, digits, or underscores.";
+                        $"'{row.FileName}' needs a new 1-{NwnResRef.MaxLength} character resref " +
+                        "using letters, digits, or underscores.";
                     return false;
                 }
             }
@@ -1120,6 +1151,11 @@ namespace SWLOR.Toolset.Archives
         {
             BackCommand.NotifyCanExecuteChanged();
             NextCommand.NotifyCanExecuteChanged();
+        }
+
+        partial void OnIsCompleteChanged(bool value)
+        {
+            BackCommand.NotifyCanExecuteChanged();
         }
 
         public void Dispose()

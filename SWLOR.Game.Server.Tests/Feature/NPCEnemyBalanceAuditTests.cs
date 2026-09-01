@@ -1,5 +1,7 @@
+using System.Diagnostics;
 using System.Globalization;
 using System.IO.Compression;
+using System.Text;
 using System.Text.Json;
 using System.Xml.Linq;
 using FluentAssertions;
@@ -36,6 +38,10 @@ public class NPCEnemyBalanceAuditTests
     private const int ResistanceCostTable = 54;
     private const int PhysicalDefenseSubtype = 1;
     private const int ForceDefenseSubtype = 2;
+    private const int ToughnessFeatId = 40;
+    private const int FirstEpicToughnessFeatId = 754;
+    private const int LastEpicToughnessFeatId = 763;
+    private const int EpicToughnessHitPoints = 20;
 
     private static readonly int[] ResistanceSubtypes = { 1, 2, 3, 4, 100, 101, 102, 103 };
 
@@ -434,6 +440,309 @@ public class NPCEnemyBalanceAuditTests
         source.Should().Contain("_builder.Create(\"FrogBoss\", \"Alchemized Frog Boss\")");
         source.Should().Contain(".AddSpawn(ObjectType.Creature, \"frogboss\")");
         source.Should().Contain(".RespawnDelay(120)");
+    }
+
+    [Test]
+    public void AllNpcHpBudgets_AccountForNativeVitalityAndToughnessRules()
+    {
+        var root = FindRepositoryRoot();
+        var utcDirectory = Path.Combine(root.FullName, "Module", "utc");
+        var failures = new List<string>();
+        var audited = 0;
+
+        foreach (var utcPath in Directory.EnumerateFiles(utcDirectory, "*.utc.json").OrderBy(path => path))
+        {
+            using var utc = JsonDocument.Parse(File.ReadAllText(utcPath));
+            var skinResref = GetEquippedResref(utc.RootElement, CreatureArmorSlot);
+            if (string.IsNullOrWhiteSpace(skinResref))
+                continue;
+
+            var skinPath = Path.Combine(root.FullName, "Module", "uti", $"{skinResref}.uti.json");
+            if (!File.Exists(skinPath))
+                continue;
+
+            using var skin = JsonDocument.Parse(File.ReadAllText(skinPath));
+            var finalHp = GetNpcHpBudget(skin.RootElement);
+            if (!finalHp.HasValue)
+                continue;
+
+            var resref = Path.GetFileNameWithoutExtension(Path.GetFileNameWithoutExtension(utcPath));
+            var expectedBaseHp = GetExpectedNpcBaseHitPoints(utc.RootElement, finalHp.Value);
+            var currentHp = GetInt(utc.RootElement, "CurrentHitPoints");
+            var baseHp = GetInt(utc.RootElement, "HitPoints");
+            var maxHp = GetInt(utc.RootElement, "MaxHitPoints");
+
+            if (currentHp != finalHp.Value || baseHp != expectedBaseHp || maxHp != finalHp.Value)
+            {
+                failures.Add(
+                    $"{resref}: CurrentHitPoints={currentHp}, HitPoints={baseHp}, MaxHitPoints={maxHp}; " +
+                    $"expected final NPCHP={finalHp.Value} and native-adjusted base={expectedBaseHp}.");
+            }
+
+            audited++;
+        }
+
+        audited.Should().BeGreaterThan(450, "every terrestrial combat creature with an NPCHP stat skin should be audited");
+        failures.Should().BeEmpty(
+            "UTC HitPoints must exclude NWN's native Vitality/Constitution and Toughness bonuses while CurrentHitPoints and MaxHitPoints remain the final NPCHP budget");
+    }
+
+    [Test]
+    public async Task NpcHpNormalizer_PreservesWindows1252AssetText()
+    {
+        var root = FindRepositoryRoot();
+        var temporaryRoot = Path.Combine(Path.GetTempPath(), $"swlor-npc-hp-{Guid.NewGuid():N}");
+        var toolsDirectory = Path.Combine(temporaryRoot, "tools");
+        var utcDirectory = Path.Combine(temporaryRoot, "Module", "utc");
+        var utiDirectory = Path.Combine(temporaryRoot, "Module", "uti");
+
+        Directory.CreateDirectory(toolsDirectory);
+        Directory.CreateDirectory(utcDirectory);
+        Directory.CreateDirectory(utiDirectory);
+
+        try
+        {
+            var script = Path.Combine(toolsDirectory, "NormalizeNpcHitPoints.ps1");
+            File.Copy(Path.Combine(root.FullName, "tools", "NormalizeNpcHitPoints.ps1"), script);
+
+            const string utcText = """
+                                   {
+                                     "Equip_ItemList": {
+                                       "value": [
+                                         {
+                                           "__struct_id": 131072,
+                                           "EquippedRes": { "value": "legacy_skin" }
+                                         }
+                                       ]
+                                     },
+                                     "ClassList": { "value": [{ "ClassLevel": { "value": 2 } }] },
+                                     "Con": { "value": 14 },
+                                     "FeatList": { "value": [] },
+                                     "Description": { "value": { "0": "Nar Shaddaa’s shadow ports" } },
+                                     "CurrentHitPoints": { "type": "short", "value": 1 },
+                                     "HitPoints": { "type": "short", "value": 1 },
+                                     "MaxHitPoints": { "type": "short", "value": 1 }
+                                   }
+                                   """;
+            const string skinText = """
+                                    {
+                                      "PropertiesList": {
+                                        "value": [
+                                          {
+                                            "PropertyName": { "value": 96 },
+                                            "CostValue": { "value": 100 }
+                                          }
+                                        ]
+                                      }
+                                    }
+                                    """;
+
+            var utcPath = Path.Combine(utcDirectory, "legacy.utc.json");
+            File.WriteAllBytes(utcPath, EncodeWindows1252Fixture(utcText));
+            File.WriteAllText(Path.Combine(utiDirectory, "legacy_skin.uti.json"), skinText);
+
+            var startInfo = new ProcessStartInfo("powershell.exe")
+            {
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+            startInfo.ArgumentList.Add("-NoProfile");
+            startInfo.ArgumentList.Add("-ExecutionPolicy");
+            startInfo.ArgumentList.Add("Bypass");
+            startInfo.ArgumentList.Add("-File");
+            startInfo.ArgumentList.Add(script);
+
+            string output;
+            string error;
+            int exitCode;
+            using (var process = Process.Start(startInfo)!)
+            {
+                var outputTask = process.StandardOutput.ReadToEndAsync();
+                var errorTask = process.StandardError.ReadToEndAsync();
+                await process.WaitForExitAsync().WaitAsync(TimeSpan.FromSeconds(30));
+                output = await outputTask;
+                error = await errorTask;
+                exitCode = process.ExitCode;
+            }
+
+            exitCode.Should().Be(0, $"the normalizer should succeed. Output: {output} Error: {error}");
+
+            var normalizedBytes = File.ReadAllBytes(utcPath);
+            normalizedBytes.Should().Contain((byte)0x92,
+                "the original Windows-1252 apostrophe must remain encoded as 0x92");
+            normalizedBytes.AsSpan().IndexOf(new byte[] { 0xEF, 0xBF, 0xBD }).Should().Be(-1,
+                "the normalizer must not write an encoded Unicode replacement character");
+
+            var normalizedAscii = Encoding.ASCII.GetString(normalizedBytes);
+            normalizedAscii.Should().Contain("\"CurrentHitPoints\": { \"type\": \"short\", \"value\": 100 }");
+            normalizedAscii.Should().Contain("\"HitPoints\": { \"type\": \"short\", \"value\": 96 }");
+            normalizedAscii.Should().Contain("\"MaxHitPoints\": { \"type\": \"short\", \"value\": 100 }");
+        }
+        finally
+        {
+            Directory.Delete(temporaryRoot, true);
+        }
+    }
+
+    private static byte[] EncodeWindows1252Fixture(string text)
+    {
+        var bytes = new List<byte>();
+        var segments = text.Split('’');
+
+        for (var index = 0; index < segments.Length; index++)
+        {
+            bytes.AddRange(Encoding.ASCII.GetBytes(segments[index]));
+            if (index < segments.Length - 1)
+                bytes.Add(0x92);
+        }
+
+        return bytes.ToArray();
+    }
+
+    [Test]
+    public void WorldNpcAssets_MatchBibleRuntimeHpAndEvasionBudgets()
+    {
+        var root = FindRepositoryRoot();
+        using var archive = ZipFile.OpenRead(Path.Combine(
+            root.FullName,
+            "design",
+            "bible",
+            "SWLOR Design Bible - Combat Upgrade.xlsx"));
+        var worldNpcs = ReadWorksheetByName(archive, "World NPCs");
+        var sharedStrings = ReadSharedStrings(archive);
+        XNamespace ns = "http://schemas.openxmlformats.org/spreadsheetml/2006/main";
+        var lastRow = worldNpcs
+            .Descendants(ns + "row")
+            .Select(row => int.Parse(row.Attribute("r")!.Value, CultureInfo.InvariantCulture))
+            .Max();
+
+        var failures = new List<string>();
+        var auditedAssets = 0;
+        var bibleHpBudgets = 0;
+        var bibleEvasionBudgets = 0;
+
+        for (var row = 2; row <= lastRow; row++)
+        {
+            var resref = GetWorkbookCellText(worldNpcs, sharedStrings, $"C{row}");
+            if (string.IsNullOrWhiteSpace(resref))
+                continue;
+
+            var utcPath = Path.Combine(root.FullName, "Module", "utc", $"{resref}.utc.json");
+            if (!File.Exists(utcPath))
+            {
+                failures.Add($"World NPCs row {row} ({resref}) has no UTC blueprint.");
+                continue;
+            }
+
+            using var utc = JsonDocument.Parse(File.ReadAllText(utcPath));
+            var skinResref = GetEquippedResref(utc.RootElement, CreatureArmorSlot);
+            if (string.IsNullOrWhiteSpace(skinResref))
+            {
+                failures.Add($"World NPCs row {row} ({resref}) has no equipped stat skin.");
+                continue;
+            }
+
+            var skinPath = Path.Combine(root.FullName, "Module", "uti", $"{skinResref}.uti.json");
+            if (!File.Exists(skinPath))
+            {
+                failures.Add($"World NPCs row {row} ({resref}) references missing stat skin {skinResref}.");
+                continue;
+            }
+
+            using var skin = JsonDocument.Parse(File.ReadAllText(skinPath));
+            var skinHp = GetNpcHpBudget(skin.RootElement);
+            var currentHp = GetInt(utc.RootElement, "CurrentHitPoints");
+            var baseHp = GetInt(utc.RootElement, "HitPoints");
+            var maxHp = GetInt(utc.RootElement, "MaxHitPoints");
+            if (!skinHp.HasValue)
+            {
+                failures.Add($"World NPCs row {row} ({resref}) stat skin {skinResref} has no NPCHP budget.");
+            }
+            else
+            {
+                var expectedBaseHp = GetExpectedNpcBaseHitPoints(utc.RootElement, skinHp.Value);
+                if (currentHp != skinHp.Value || baseHp != expectedBaseHp || maxHp != skinHp.Value)
+                {
+                    failures.Add(
+                        $"World NPCs row {row} ({resref}) HP sources disagree: " +
+                        $"CurrentHitPoints={currentHp}, HitPoints={baseHp}, MaxHitPoints={maxHp}, " +
+                        $"{skinResref}.NPCHP={skinHp.Value}, expected native-adjusted base={expectedBaseHp}.");
+                }
+            }
+
+            var bibleHpText = GetWorkbookCellText(worldNpcs, sharedStrings, $"N{row}");
+            if (decimal.TryParse(bibleHpText, NumberStyles.Number, CultureInfo.InvariantCulture, out var bibleHpValue) &&
+                bibleHpValue > 0)
+            {
+                var bibleHp = decimal.ToInt32(bibleHpValue);
+                bibleHpBudgets++;
+                if (currentHp != bibleHp || maxHp != bibleHp || skinHp != bibleHp)
+                {
+                    failures.Add(
+                        $"World NPCs row {row} ({resref}) does not match Bible HP {bibleHp}: " +
+                        $"CurrentHitPoints={currentHp}, MaxHitPoints={maxHp}, {skinResref}.NPCHP={skinHp?.ToString() ?? "missing"}.");
+                }
+            }
+
+            var bibleEvasionText = GetWorkbookCellText(worldNpcs, sharedStrings, $"T{row}");
+            if (decimal.TryParse(bibleEvasionText, NumberStyles.Number, CultureInfo.InvariantCulture, out var bibleEvasionValue) &&
+                bibleEvasionValue > 0)
+            {
+                var bibleEvasion = decimal.ToInt32(bibleEvasionValue);
+                var skinEvasion = GetItemPropertyCost(skin.RootElement, ItemPropertyEvasion);
+                bibleEvasionBudgets++;
+                if (skinEvasion != bibleEvasion)
+                {
+                    failures.Add(
+                        $"World NPCs row {row} ({resref}) does not match Bible Evasion {bibleEvasion}: " +
+                        $"{skinResref}.Evasion={skinEvasion?.ToString() ?? "missing"}.");
+                }
+            }
+
+            auditedAssets++;
+        }
+
+        auditedAssets.Should().BeGreaterThan(400, "the complete World NPC corpus should remain under asset audit");
+        bibleHpBudgets.Should().BeGreaterThan(350, "formula-backed World NPC HP rows should remain under Bible audit");
+        bibleEvasionBudgets.Should().BeGreaterThan(350, "formula-backed World NPC Evasion rows should remain under Bible audit");
+        failures.Should().BeEmpty("World NPC runtime HP and Evasion sources must agree with the Design Bible");
+    }
+
+    [Test]
+    public void ReportedDathomirForceCasterTargets_MatchReviewedHpAndEffectiveEvasionBudgets()
+    {
+        var root = FindRepositoryRoot();
+        var targets = new[]
+        {
+            new { Resref = "vdathswampland", Skin = "junglebug_sk", Level = 40, HP = 683, Agility = 28, Evasion = 10, EffectiveEvasion = 126 },
+            new { Resref = "vdathpurbole", Skin = "purbole_sk", Level = 41, HP = 705, Agility = 28, Evasion = 10, EffectiveEvasion = 128 },
+            new { Resref = "vdathtribal", Skin = "kwitribal_sk", Level = 43, HP = 795, Agility = 29, Evasion = 11, EffectiveEvasion = 134 },
+            new { Resref = "vdathguard", Skin = "kwiguardian_sk", Level = 45, HP = 1902, Agility = 32, Evasion = 13, EffectiveEvasion = 143 },
+        };
+
+        foreach (var target in targets)
+        {
+            using var utc = ReadJson(root, "Module", "utc", $"{target.Resref}.utc.json");
+            using var skin = ReadJson(root, "Module", "uti", $"{target.Skin}.uti.json");
+
+            GetEquippedResref(utc.RootElement, CreatureArmorSlot).Should().Be(target.Skin, target.Resref);
+            GetInt(utc.RootElement, "CurrentHitPoints").Should().Be(target.HP, target.Resref);
+            GetInt(utc.RootElement, "HitPoints").Should().Be(
+                GetExpectedNpcBaseHitPoints(utc.RootElement, target.HP),
+                $"{target.Resref} must exclude native Vitality HP from its UTC base");
+            GetInt(utc.RootElement, "MaxHitPoints").Should().Be(target.HP, target.Resref);
+            GetItemPropertyCost(skin.RootElement, ItemPropertyNPCHP).Should().Be(target.HP, target.Skin);
+            GetItemPropertyCost(skin.RootElement, ItemPropertyNPCLevel).Should().Be(target.Level, target.Skin);
+            GetItemPropertyCost(skin.RootElement, ItemPropertyEvasion).Should().Be(target.Evasion, target.Skin);
+
+            var naturalAc = GetInt(utc.RootElement, "NaturalAC");
+            naturalAc.Should().Be(0, $"{target.Resref} must not hide extra Evasion outside its Bible stat skin");
+            Stat.GetEvasion(target.Level, target.Agility, target.Evasion + naturalAc * 5)
+                .Should()
+                .Be(target.EffectiveEvasion, $"{target.Resref} effective Evasion must include any serialized NaturalAC contribution");
+        }
     }
 
     [Test]
@@ -1381,7 +1690,9 @@ public class NPCEnemyBalanceAuditTests
     private static void AssertCreatureHitPoints(JsonElement utc, ExpectedEnemy expected)
     {
         GetInt(utc, "CurrentHitPoints").Should().Be(expected.HP, expected.Resref);
-        GetInt(utc, "HitPoints").Should().Be(expected.HP, expected.Resref);
+        GetInt(utc, "HitPoints").Should().Be(
+            GetExpectedNpcBaseHitPoints(utc, expected.HP),
+            $"{expected.Resref} must exclude native Vitality HP from its UTC base");
         GetInt(utc, "MaxHitPoints").Should().Be(expected.HP, expected.Resref);
     }
 
@@ -1472,6 +1783,26 @@ public class NPCEnemyBalanceAuditTests
             .ToArray();
     }
 
+    private static int GetExpectedNpcBaseHitPoints(JsonElement utc, int finalHp)
+    {
+        var level = utc
+            .GetProperty("ClassList")
+            .GetProperty("value")
+            .EnumerateArray()
+            .Sum(entry => GetInt(entry, "ClassLevel"));
+        var constitutionModifier = (int)Math.Floor((GetInt(utc, "Con") - 10) / 2m);
+        var feats = GetCreatureFeats(utc);
+        var nativeAdjustment = constitutionModifier * level;
+
+        if (feats.Contains(ToughnessFeatId))
+            nativeAdjustment += level;
+
+        nativeAdjustment += feats.Count(feat =>
+            feat >= FirstEpicToughnessFeatId && feat <= LastEpicToughnessFeatId) * EpicToughnessHitPoints;
+
+        return finalHp - nativeAdjustment;
+    }
+
     private static int GetJsonLocalInt(JsonElement utc, string variableName)
     {
         return utc
@@ -1507,6 +1838,16 @@ public class NPCEnemyBalanceAuditTests
                 (!subtype.HasValue || GetInt(property, "Subtype") == subtype.Value))
             .Select(property => (int?)GetInt(property, "CostValue"))
             .SingleOrDefault();
+    }
+
+    private static int? GetNpcHpBudget(JsonElement skin)
+    {
+        var values = GetItemProperties(skin)
+            .Where(property => GetInt(property, "PropertyName") == ItemPropertyNPCHP)
+            .Select(property => GetInt(property, "CostValue"))
+            .ToArray();
+
+        return values.Length == 0 ? null : values.Sum();
     }
 
     private static int[] GetItemPropertySubtypes(JsonElement item, int propertyName)

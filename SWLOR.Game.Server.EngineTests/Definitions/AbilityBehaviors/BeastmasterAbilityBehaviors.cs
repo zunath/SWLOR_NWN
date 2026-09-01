@@ -202,8 +202,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     ExpectsRecast = true,
                 },
 
-                // CoordinatedStrikeAbilityDefinition - hostile direct damage, no status; the
-                // "recent master damage" bonus is a conditional percent adjustment, not asserted.
+                // CoordinatedStrikeAbilityDefinition - queued natural-weapon damage, no status;
+                // the "recent master damage" bonus is a conditional percent adjustment, not asserted.
                 new()
                 {
                     Feat = FeatType.CoordinatedStrike1,
@@ -397,6 +397,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     ExpectsTargetDamage = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
+                    VerifiesImmediateRecastRejection = true,
                 },
                 new()
                 {
@@ -406,6 +407,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     ExpectsTargetDamage = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
+                    VerifiesImmediateRecastRejection = true,
                 },
                 new()
                 {
@@ -415,6 +417,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     ExpectsTargetDamage = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
+                    VerifiesImmediateRecastRejection = true,
                 },
 
                 // GuardingBondAbilityDefinition - PLAYER-only toggle: ValidateBeast requires

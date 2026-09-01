@@ -6454,7 +6454,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 3712
+          "value": 4385
         },
         "Race": {
           "type": "byte",
@@ -9576,7 +9576,7 @@
         },
         "ScriptDialogue": {
           "type": "resref",
-          "value": ""
+          "value": "dialog_start"
         },
         "ScriptDisturbed": {
           "type": "resref",

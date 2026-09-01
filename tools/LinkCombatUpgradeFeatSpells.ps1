@@ -6,7 +6,8 @@ param(
     [string]$SpellEnumPath = "SWLOR.NWN.API\NWScript\Enum\spell.cs",
     [string]$FeatEnumPath = "SWLOR.NWN.API\NWScript\Enum\FeatType.cs",
     [int]$GeneratedFeatStart = 2000,
-    [int]$GeneratedFeatEnd = 2898
+    [int]$GeneratedFeatEnd = 2899,
+    [int]$ManualHotbarClassFeatRowLimit = 1024
 )
 
 Set-StrictMode -Version Latest
@@ -122,6 +123,8 @@ if ([System.IO.Directory]::Exists($npcAbilityDefinitionPath)) {
 
 $playerAbilityLabels = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
 $mimicryTraitLabels = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
+$queuedWeaponAbilityLabels = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
+$generatedQueuedWeaponAbilityLabels = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
 if ([System.IO.Directory]::Exists($abilityDefinitionPath)) {
     Get-ChildItem $abilityDefinitionPath -Filter "*.cs" -File -Recurse |
         Where-Object { $_.FullName -notlike "*\Feature\AbilityDefinition\NPC\*" } |
@@ -131,14 +134,27 @@ if ([System.IO.Directory]::Exists($abilityDefinitionPath)) {
                 return
             }
 
+            $definitionAbilityLabels = [System.Collections.Generic.List[string]]::new()
             foreach ($match in [regex]::Matches($content, "\bFeatType\.(\w+)")) {
                 $playerAbilityLabels.Add($match.Groups[1].Value) | Out-Null
+                $definitionAbilityLabels.Add($match.Groups[1].Value)
             }
 
             if ($content -match "\.MimicryTrait\s*\(") {
                 foreach ($match in [regex]::Matches($content, "\.Create\s*\(\s*FeatType\.(\w+)")) {
                     $mimicryTraitLabels.Add($match.Groups[1].Value) | Out-Null
                 }
+            }
+
+            if ($content -match "\.IsWeaponAbility\s*\(" -or $content -match "\bConfigureWeapon\s*\(") {
+                foreach ($label in $definitionAbilityLabels) {
+                    $queuedWeaponAbilityLabels.Add($label) | Out-Null
+                }
+            }
+
+            $generatedQueuedAbilityPattern = "(?s)ConfigureGeneratedWeaponAbility\s*\(\s*builder\.Create\s*\(\s*FeatType\.(\w+)(?:(?!ConfigureGeneratedWeaponAbility).)*?IsQueuedWeaponAbility\s*=\s*true(?:(?!ConfigureGeneratedWeaponAbility).)*?\}\s*\);"
+            foreach ($match in [regex]::Matches($content, $generatedQueuedAbilityPattern)) {
+                $generatedQueuedWeaponAbilityLabels.Add($match.Groups[1].Value) | Out-Null
             }
         }
 }
@@ -179,6 +195,30 @@ $hostileSpellTargetingProfile = @{
 foreach ($label in $selfTargetingLabels) {
     $featTargetSelfByLabel[$label] = "1"
     $spellTargetingByLabel[$label] = $selfSpellTargetingProfile
+}
+
+foreach ($label in $queuedWeaponAbilityLabels) {
+    $featTargetSelfByLabel[$label] = "1"
+    $spellTargetingByLabel[$label] = $selfSpellTargetingProfile
+}
+
+foreach ($label in $generatedQueuedWeaponAbilityLabels) {
+    # Generated queued abilities must not prompt for a target, but retain their curated spell
+    # range/type metadata. Several hostile queues use that metadata for activation behavior even
+    # though TARGETSELF is what suppresses the client cursor.
+    $featTargetSelfByLabel[$label] = "1"
+}
+
+# These legacy active feats own curated spell rows outside the generated ability-definition
+# discovery range. Preserve their explicit links when the linker rebuilds feat.2da.
+$preservedSpellIdsByLabel = @{
+    "HackingBlade1" = 1303
+    "HackingBlade2" = 1306
+    "ForceSpark3" = 988
+    "Stealth1" = 1711
+    "Stealth2" = 1712
+    "Stealth3" = 1713
+    "Stealth4" = 1714
 }
 
 foreach ($label in $hostileTargetingLabels) {
@@ -259,6 +299,7 @@ $linkedFeatRows = 0
 $createdSpellRows = 0
 $spellIdsByLabel = [ordered]@{}
 $linkedPlayerFeats = [ordered]@{}
+$manualHotbarFeatLabels = [System.Collections.Generic.HashSet[string]]::new([System.StringComparer]::Ordinal)
 
 for ($i = $featHeaderIndex + 1; $i -lt $featLines.Count; $i++) {
     $tokens = Convert-ToStringList $featLines[$i]
@@ -278,7 +319,12 @@ for ($i = $featHeaderIndex + 1; $i -lt $featLines.Count; $i++) {
         continue
     }
     if (!$playerAbilityLabels.Contains($label)) {
-        Set-TokenByHeader $tokens $featHeaders "SPELLID" "****"
+        if ($preservedSpellIdsByLabel.ContainsKey($label)) {
+            Set-TokenByHeader $tokens $featHeaders "SPELLID" $preservedSpellIdsByLabel[$label].ToString()
+        }
+        else {
+            Set-TokenByHeader $tokens $featHeaders "SPELLID" "****"
+        }
         $featLines[$i] = Format-2DARow $tokens.ToArray() $featColumnWidths
         continue
     }
@@ -307,7 +353,18 @@ for ($i = $featHeaderIndex + 1; $i -lt $featLines.Count; $i++) {
     }
 
     if ($featTargetSelfByLabel.ContainsKey($label)) {
-        Set-TokenByHeader $tokens $featHeaders "TARGETSELF" $featTargetSelfByLabel[$label]
+        $targetSelf = $featTargetSelfByLabel[$label]
+        Set-TokenByHeader $tokens $featHeaders "TARGETSELF" $targetSelf
+        Set-TokenByHeader $tokens $featHeaders "HostileFeat" $(if ($targetSelf -eq "1") { "****" } else { "1" })
+    }
+
+    # TARGETSELF/HostileFeat are the client-facing materialization of the ability definition's
+    # targeting metadata. Derive manual-cursor placement from them so a new hostile object cast or
+    # aimed area is automatically kept within the class-feat rows the client scans for hotbar use.
+    $targetSelf = Get-TokenByHeader -Tokens $tokens -Headers $featHeaders -Header "TARGETSELF"
+    $hostileFeat = Get-TokenByHeader -Tokens $tokens -Headers $featHeaders -Header "HostileFeat"
+    if ($targetSelf -ne "1" -and $hostileFeat -eq "1") {
+        $manualHotbarFeatLabels.Add($label) | Out-Null
     }
 
     $spellId = 0
@@ -404,6 +461,7 @@ if ([System.IO.File]::Exists($classFeatPath)) {
     $classFeatHeaders = $classFeatLines[$classFeatHeaderIndex].Trim() -split "\s+"
     $classFeatExpectedTokens = $classFeatHeaders.Count + 1
     $classFeatLineByFeatIndex = @{}
+    $availableManualClassFeatLines = [System.Collections.Generic.Queue[int]]::new()
     $activePlayerFeatIndexes = [System.Collections.Generic.HashSet[int]]::new()
     foreach ($featIndexValue in $linkedPlayerFeats.Values) {
         $activePlayerFeatIndexes.Add([int]$featIndexValue) | Out-Null
@@ -422,9 +480,15 @@ if ([System.IO.File]::Exists($classFeatPath)) {
         }
 
         if ($tokens.Count -eq $classFeatExpectedTokens) {
-            $featIndex = Get-TokenByHeader $tokens $classFeatHeaders "FeatIndex"
+            $featLabel = Get-TokenByHeader -Tokens $tokens -Headers $classFeatHeaders -Header "FeatLabel"
+            $featIndex = Get-TokenByHeader -Tokens $tokens -Headers $classFeatHeaders -Header "FeatIndex"
             if ($featIndex -ne "****" -and !$classFeatLineByFeatIndex.ContainsKey($featIndex)) {
                 $classFeatLineByFeatIndex[$featIndex] = $i
+            }
+            elseif ($featLabel -eq "****" -and
+                    $featIndex -eq "****" -and
+                    $rowNumber -lt $ManualHotbarClassFeatRowLimit) {
+                $availableManualClassFeatLines.Enqueue($i)
             }
         }
     }
@@ -445,40 +509,76 @@ if ([System.IO.File]::Exists($classFeatPath)) {
 
         $lineIndex = $entry.Value
         $tokens = Convert-ToStringList $classFeatLines[$lineIndex]
-        Set-TokenByHeader $tokens $classFeatHeaders "List" "0"
-        Set-TokenByHeader $tokens $classFeatHeaders "OnMenu" "0"
+        Set-TokenByHeader -Tokens $tokens -Headers $classFeatHeaders -Header "List" -Value "0"
+        Set-TokenByHeader -Tokens $tokens -Headers $classFeatHeaders -Header "OnMenu" -Value "0"
         $classFeatLines[$lineIndex] = Format-2DARow $tokens.ToArray() $classFeatColumnWidths
     }
 
     foreach ($entry in $linkedPlayerFeats.GetEnumerator()) {
         $featLabel = $entry.Key
         $featIndex = $entry.Value.ToString()
+        $isManualHotbarFeat = $manualHotbarFeatLabels.Contains($featLabel)
 
         if ($classFeatLineByFeatIndex.ContainsKey($featIndex)) {
             $lineIndex = $classFeatLineByFeatIndex[$featIndex]
             $tokens = Convert-ToStringList $classFeatLines[$lineIndex]
-            Set-TokenByHeader $tokens $classFeatHeaders "FeatLabel" $featLabel
-            Set-TokenByHeader $tokens $classFeatHeaders "List" "1"
-            Set-TokenByHeader $tokens $classFeatHeaders "GrantedOnLevel" "99"
-            Set-TokenByHeader $tokens $classFeatHeaders "OnMenu" "1"
+            $classFeatRowNumber = Get-RowNumber $tokens
+            if ($isManualHotbarFeat -and $classFeatRowNumber -ge $ManualHotbarClassFeatRowLimit) {
+                if ($availableManualClassFeatLines.Count -eq 0) {
+                    throw "No empty class-feat row below $ManualHotbarClassFeatRowLimit is available for manual hotbar feat '$featLabel'."
+                }
+
+                $sourceLineIndex = $lineIndex
+                $lineIndex = $availableManualClassFeatLines.Dequeue()
+                $tokens = Convert-ToStringList $classFeatLines[$lineIndex]
+
+                $sourceTokens = Convert-ToStringList $classFeatLines[$sourceLineIndex]
+                for ($j = 1; $j -lt $classFeatExpectedTokens; $j++) {
+                    $sourceTokens[$j] = "****"
+                }
+                $classFeatLines[$sourceLineIndex] = Format-2DARow $sourceTokens.ToArray() $classFeatColumnWidths
+                $classFeatLineByFeatIndex[$featIndex] = $lineIndex
+            }
+
+            Set-TokenByHeader -Tokens $tokens -Headers $classFeatHeaders -Header "FeatLabel" -Value $featLabel
+            Set-TokenByHeader -Tokens $tokens -Headers $classFeatHeaders -Header "FeatIndex" -Value $featIndex
+            Set-TokenByHeader -Tokens $tokens -Headers $classFeatHeaders -Header "List" -Value "1"
+            Set-TokenByHeader -Tokens $tokens -Headers $classFeatHeaders -Header "GrantedOnLevel" -Value "99"
+            Set-TokenByHeader -Tokens $tokens -Headers $classFeatHeaders -Header "OnMenu" -Value "1"
             $classFeatLines[$lineIndex] = Format-2DARow $tokens.ToArray() $classFeatColumnWidths
             continue
         }
 
-        $maxClassFeatRow++
-        $tokens = New-Object System.Collections.Generic.List[string]
-        for ($j = 0; $j -lt $classFeatExpectedTokens; $j++) {
-            $tokens.Add("****") | Out-Null
+        $lineIndex = $null
+        if ($isManualHotbarFeat) {
+            if ($availableManualClassFeatLines.Count -eq 0) {
+                throw "No empty class-feat row below $ManualHotbarClassFeatRowLimit is available for manual hotbar feat '$featLabel'."
+            }
+
+            $lineIndex = $availableManualClassFeatLines.Dequeue()
+            $tokens = Convert-ToStringList $classFeatLines[$lineIndex]
+        }
+        else {
+            $maxClassFeatRow++
+            $tokens = New-Object System.Collections.Generic.List[string]
+            for ($j = 0; $j -lt $classFeatExpectedTokens; $j++) {
+                $tokens.Add("****") | Out-Null
+            }
+            $tokens[0] = $maxClassFeatRow.ToString()
         }
 
-        $tokens[0] = $maxClassFeatRow.ToString()
-        Set-TokenByHeader $tokens $classFeatHeaders "FeatLabel" $featLabel
-        Set-TokenByHeader $tokens $classFeatHeaders "FeatIndex" $featIndex
-        Set-TokenByHeader $tokens $classFeatHeaders "List" "1"
-        Set-TokenByHeader $tokens $classFeatHeaders "GrantedOnLevel" "99"
-        Set-TokenByHeader $tokens $classFeatHeaders "OnMenu" "1"
-        $classFeatLines.Add((Format-2DARow $tokens.ToArray() $classFeatColumnWidths)) | Out-Null
-        $addedClassFeatRows++
+        Set-TokenByHeader -Tokens $tokens -Headers $classFeatHeaders -Header "FeatLabel" -Value $featLabel
+        Set-TokenByHeader -Tokens $tokens -Headers $classFeatHeaders -Header "FeatIndex" -Value $featIndex
+        Set-TokenByHeader -Tokens $tokens -Headers $classFeatHeaders -Header "List" -Value "1"
+        Set-TokenByHeader -Tokens $tokens -Headers $classFeatHeaders -Header "GrantedOnLevel" -Value "99"
+        Set-TokenByHeader -Tokens $tokens -Headers $classFeatHeaders -Header "OnMenu" -Value "1"
+        if ($null -ne $lineIndex) {
+            $classFeatLines[$lineIndex] = Format-2DARow $tokens.ToArray() $classFeatColumnWidths
+        }
+        else {
+            $classFeatLines.Add((Format-2DARow $tokens.ToArray() $classFeatColumnWidths)) | Out-Null
+            $addedClassFeatRows++
+        }
     }
 
     [System.IO.File]::WriteAllLines($classFeatPath, $classFeatLines)

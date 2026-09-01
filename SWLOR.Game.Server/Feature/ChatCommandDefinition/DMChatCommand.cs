@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Enumeration;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.BeastMasteryService;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.ChatCommandService;
 using SWLOR.Game.Server.Service.FactionService;
@@ -13,6 +14,7 @@ using SWLOR.Game.Server.Service.QuestService;
 using SWLOR.Game.Server.Service.LogService;
 using Faction = SWLOR.Game.Server.Service.Faction;
 using ChatChannel = SWLOR.Game.Server.Core.NWNX.Enum.ChatChannel;
+using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -24,6 +26,9 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
     {
         private readonly ChatCommandBuilder _builder = new ChatCommandBuilder();
         private static readonly ApplicationSettings _appSettings = ApplicationSettings.Get();
+        private static string[] _spawnBeastEggHelpMessages = Array.Empty<string>();
+
+        private const int SpawnEggTypesPerHelpMessage = 20;
 
         public Dictionary<string, ChatCommandDetail> BuildChatCommands()
         {
@@ -40,6 +45,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             SetLocalVariable();
             SetPortrait();
             SpawnItem();
+            SpawnBeastEgg();
             GiveRPXP();
             ResetPerkCooldown();
             PlayVFX();
@@ -64,6 +70,26 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
             UnlockCapstoneQuests();
 
             return _builder.Build();
+        }
+
+        [NWNEventHandler(ScriptName.OnModuleCacheAfter)]
+        public static void CacheSpawnBeastEggHelp()
+        {
+            var beastTypes = BeastMastery.GetAllBeastTypes()
+                .OrderBy(type => type.ToString())
+                .ToArray();
+            var messages = new List<string>
+            {
+                "Usage: /spawnegg <beast type>",
+                "Available beast types:"
+            };
+
+            for (var index = 0; index < beastTypes.Length; index += SpawnEggTypesPerHelpMessage)
+            {
+                messages.Add(string.Join(", ", beastTypes.Skip(index).Take(SpawnEggTypesPerHelpMessage)));
+            }
+
+            _spawnBeastEggHelpMessages = messages.ToArray();
         }
 
         private void UnlockCapstoneQuests()
@@ -640,6 +666,50 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                 });
         }
 
+        private void SpawnBeastEgg()
+        {
+            _builder.Create("spawnegg")
+                .Description("Spawns a beast egg by beast type. Use /spawnegg help to list available types.")
+                .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
+                .AvailableToAllOnTestEnvironment()
+                .Validate((user, args) =>
+                {
+                    if (args.Length <= 0)
+                    {
+                        return ColorToken.Red("Please specify a beast type. Use /spawnegg help to list available types.");
+                    }
+
+                    if (args[0].Equals("help", StringComparison.OrdinalIgnoreCase))
+                        return string.Empty;
+
+                    if (!Enum.TryParse(args[0], true, out BeastType beastType) ||
+                        !BeastMastery.GetAllBeastTypes().Contains(beastType))
+                    {
+                        return ColorToken.Red($"Unknown beast type '{args[0]}'. Use /spawnegg help to list available types.");
+                    }
+
+                    return string.Empty;
+                })
+                .Action((user, target, location, args) =>
+                {
+                    if (args[0].Equals("help", StringComparison.OrdinalIgnoreCase))
+                    {
+                        foreach (var message in _spawnBeastEggHelpMessages)
+                        {
+                            SendMessageToPC(user, message);
+                        }
+
+                        return;
+                    }
+
+                    Enum.TryParse(args[0], true, out BeastType beastType);
+                    var egg = BeastMastery.CreateBeastEgg(beastType, user);
+                    var beastDetail = BeastMastery.GetBeastDetail(beastType);
+
+                    SendMessageToPC(user, $"Spawned '{GetName(egg)}' for beast type {beastType} ({beastDetail.Name}).");
+                });
+        }
+
         private void GiveRPXP()
         {
             const int MaxAmount = 500000;
@@ -720,6 +790,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     dbPlayer.DatePerkRefundAvailable = DateTime.UtcNow;
 
                     DB.Set(dbPlayer);
+                    Gui.PublishRefreshEvent(target, new PerkRefundCooldownResetRefreshEvent());
                     SendMessageToPC(target, $"A DM has reset your perk refund cooldown.");
                 });
         }
@@ -766,7 +837,7 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
         private void ResetAbilityRecastTimers()
         {
             _builder.Create("resetcooldown", "resetcooldowns")
-                .Description("Resets a player's ability and disguise cooldowns.")
+                .Description("Resets a player's ability, disguise, and perk refund cooldowns.")
                 .Permissions(AuthorizationLevel.DM, AuthorizationLevel.Admin)
                 .AvailableToAllOnTestEnvironment()
                 .RequiresTarget()
@@ -783,7 +854,9 @@ namespace SWLOR.Game.Server.Feature.ChatCommandDefinition
                     var dbPlayer = DB.Get<Player>(playerId);
                     dbPlayer.RecastTimes ??= new();
                     dbPlayer.RecastTimes.Clear();
+                    dbPlayer.DatePerkRefundAvailable = DateTime.UtcNow;
                     DB.Set(dbPlayer);
+                    Gui.PublishRefreshEvent(target, new PerkRefundCooldownResetRefreshEvent());
                     AbilityCooldownVisual.ClearAllRecastDelays(target);
                     Disguise.ResetActivationCooldowns(target);
 

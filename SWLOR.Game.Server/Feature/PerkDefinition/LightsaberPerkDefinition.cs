@@ -54,21 +54,21 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ForceSheath2)
-                .Description("On your next hit, deal + 15 Force DMG.")
+                .Description("On your next hit, deal + 17 Force DMG.")
                 .Price(3)
                 .RequirementSkill(SkillType.Lightsaber, 18)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ForceSheath3)
-                .Description("On your next hit, deal + 18 Force DMG.")
+                .Description("On your next hit, deal + 23 Force DMG.")
                 .Price(3)
                 .RequirementSkill(SkillType.Lightsaber, 32)
                 .RequirementCharacterType(CharacterType.ForceSensitive)
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.ForceSheath4)
-                .Description("On your next hit, deal + 21 Force DMG.")
+                .Description("On your next hit, deal + 30 Force DMG.")
                 .Price(5)
                 .RequirementSkill(SkillType.Lightsaber, 40)
                 .RequirementCharacterType(CharacterType.ForceSensitive);

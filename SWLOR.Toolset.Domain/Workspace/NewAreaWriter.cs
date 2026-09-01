@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using System.Security.Cryptography;
 using System.Text.Json;
 using SWLOR.NWN.Formats.Common;
@@ -20,14 +19,22 @@ namespace SWLOR.Toolset.Domain.Workspace
     /// </summary>
     public static class NewAreaWriter
     {
+        /// <summary>
+        /// Optional final mutation for a newly shaped area triplet. It runs before any destination
+        /// file is written, so generated tiles and instances participate in the writer's existing
+        /// all-or-nothing creation and recovery protocol.
+        /// </summary>
+        public delegate void AreaDocumentPopulator(
+            AreDocument are,
+            GitDocument git,
+            GicDocument gic);
+
         /// <summary>The module resref whose are/git/gic triplet new areas are cloned from.</summary>
         public const string TemplateResRef = "area_template";
 
         /// <summary>The largest area NWN accepts on a side.</summary>
         public const int MaxDimension = 32;
 
-        /// <summary>NWN resource names are at most 16 characters, lowercase, alphanumeric/underscore.</summary>
-        private static readonly Regex ResRefPattern = new("^[a-z0-9_]{1,16}$", RegexOptions.Compiled);
         private const string PendingMarkerPrefix = ".swlor-toolset-new-area-";
 
         /// <summary>
@@ -53,13 +60,40 @@ namespace SWLOR.Toolset.Domain.Workspace
             int width, int height,
             out string error)
         {
+            return TryCreate(
+                workspace,
+                resolveTileset,
+                resRef,
+                displayName,
+                tilesetResRef,
+                width,
+                height,
+                populate: null,
+                out error);
+        }
+
+        /// <summary>
+        /// Creates an area and applies <paramref name="populate"/> to the fresh triplet before its
+        /// bytes are fingerprinted or installed. This is the procedural generator's integration
+        /// point; ordinary blank-area creation continues through the overload above.
+        /// </summary>
+        public static bool TryCreate(
+            ModuleWorkspace workspace,
+            TilesetResolver? resolveTileset,
+            string resRef, string displayName, string tilesetResRef,
+            int width, int height,
+            AreaDocumentPopulator? populate,
+            out string error)
+        {
             ArgumentNullException.ThrowIfNull(workspace);
             error = string.Empty;
 
             resRef = (resRef ?? string.Empty).Trim().ToLowerInvariant();
-            if (!ResRefPattern.IsMatch(resRef))
+            if (!NwnResRef.IsCanonical(resRef))
             {
-                error = "ResRef must be 1-16 characters, lowercase letters/digits/underscore only.";
+                error =
+                    $"ResRef must be 1-{NwnResRef.MaxLength} characters, " +
+                    "lowercase letters/digits/underscore only.";
                 return false;
             }
 
@@ -207,6 +241,8 @@ namespace SWLOR.Toolset.Domain.Workspace
                 var are = AreDocument.Load(templateAre);
                 var templateGitBytes = File.ReadAllBytes(templateGit);
                 var templateGicBytes = File.ReadAllBytes(templateGic);
+                GitDocument? git = null;
+                GicDocument? gic = null;
                 // These are standalone documents loaded specifically for this write, but another
                 // editor's DocumentSession may still have the ambient mutation guard enabled on
                 // the UI context. Give each document its own short-lived session/transaction so
@@ -218,18 +254,33 @@ namespace SWLOR.Toolset.Domain.Workspace
                         are, resRef, displayName, tilesetResRef, width, height, fill.TileId, fill.Orientation);
                 }
 
+                if (populate != null)
+                {
+                    git = GitDocument.Parse(templateGitBytes);
+                    gic = GicDocument.Parse(templateGicBytes);
+                    // These documents are newly constructed and are not owned by an editor session.
+                    // Suppress any unrelated ambient editor guard on the UI context so their derived
+                    // content cannot leak onto another document's undo stack.
+                    using (EditScope.EnterConstruction())
+                        populate(are, git, gic);
+                }
+
                 var ifo = IfoDocument.Parse(ifoBaseline);
                 using (var ifoSession = new DocumentSession(ifoPath, ifo.Document))
                 using (ifoSession.Begin($"Register area '{resRef}'"))
                     AreaTemplateFactory.AddAreaToModule(ifo, resRef);
 
                 var areBytes = are.ToBytes();
+                // Preserve the longstanding byte-for-byte companion copy for ordinary blank areas.
+                // Generated areas serialize only because their populator actually changed the docs.
+                var gitBytes = git?.ToBytes() ?? templateGitBytes;
+                var gicBytes = gic?.ToBytes() ?? templateGicBytes;
                 pendingManifest = new PendingAreaManifest
                 {
                     ResRef = resRef,
                     Are = Fingerprint(areBytes),
-                    Git = Fingerprint(templateGitBytes),
-                    Gic = Fingerprint(templateGicBytes)
+                    Git = Fingerprint(gitBytes),
+                    Gic = Fingerprint(gicBytes)
                 };
 
                 // Persist intent before the first destination write. If the process or machine stops
@@ -249,9 +300,9 @@ namespace SWLOR.Toolset.Domain.Workspace
                 // Stage each companion beside its destination, then install it atomically without
                 // overwrite. Ownership begins only after the move succeeds: if another editor wins
                 // the destination race, rollback must not delete that editor's file.
-                WriteAtomic(gitPath, templateGitBytes, overwrite: false);
+                WriteAtomic(gitPath, gitBytes, overwrite: false);
                 createdPaths.Add(gitPath);
-                WriteAtomic(gicPath, templateGicBytes, overwrite: false);
+                WriteAtomic(gicPath, gicBytes, overwrite: false);
                 createdPaths.Add(gicPath);
 
                 var currentIfo = File.ReadAllBytes(ifoPath);

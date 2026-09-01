@@ -43,8 +43,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 AbilityType.Perception,
                 new GeneratedWeaponAbilityProfile
                 {
-                    CriticalRatePercentAdjustment = 15,
-                    SelfCriticalRatePercent = 15
+                    IsQueuedWeaponAbility = true,
+                    IdleWindowSeconds = 3.0f,
+                    CriticalRateIfIdle = 15,
+                    CriticalRateIfIdleFeedbackLabel = "Headshot"
                 });
 
             ConfigureGeneratedWeaponAbility(
@@ -73,8 +75,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 AbilityType.Perception,
                 new GeneratedWeaponAbilityProfile
                 {
-                    CriticalRatePercentAdjustment = 25,
-                    SelfCriticalRatePercent = 25
+                    IsQueuedWeaponAbility = true,
+                    IdleWindowSeconds = 3.0f,
+                    CriticalRateIfIdle = 25,
+                    CriticalRateIfIdleFeedbackLabel = "Headshot"
                 });
 
             return builder.Build();

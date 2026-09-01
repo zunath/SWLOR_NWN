@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using NWN.Native.API;
 using SWLOR.Game.Server.Core;
@@ -32,6 +33,10 @@ namespace SWLOR.Game.Server.Service
         private const float DefaultPlayerMovementSpeedIncrease = 0.25f;
         private const float DefaultCompanionMovementSpeedIncrease = 0.25f;
         private const float DefaultNPCMovementSpeedIncrease = 0.30f;
+        private const int MaximumNPCHitPoints = 30000;
+        private const int MaximumNPCHitPointAlignmentPasses = 4;
+        public const float BeastNaturalStaminaRegenDelaySeconds = 6f;
+        private const string BeastNaturalStaminaRegenAvailableAtVariable = "BEAST_STAMINA_REGEN_AVAILABLE_AT";
         public const int DefaultMeleeDeflectionChanceCap = 50;
         public const int DefaultRangedDeflectionChanceCap = 50;
         public const int MaximumDeflectionChanceCap = 100;
@@ -92,9 +97,12 @@ namespace SWLOR.Game.Server.Service
 
         public static int AggregateStatAdjustment(StatType statType, int current, int adjustment)
         {
-            return GetStatTypeAggregation(statType) == StatTypeAggregation.BitwiseOr
-                ? current | adjustment
-                : current + adjustment;
+            return GetStatTypeAggregation(statType) switch
+            {
+                StatTypeAggregation.BitwiseOr => current | adjustment,
+                StatTypeAggregation.Maximum => Math.Max(current, adjustment),
+                _ => current + adjustment
+            };
         }
 
         public static bool IsBeneficialStatAdjustment(StatType statType, int value)
@@ -320,14 +328,16 @@ namespace SWLOR.Game.Server.Service
         /// <param name="creature">The creature to modify.</param>
         /// <param name="amount">The amount of FP to restore.</param>
         /// <param name="dbPlayer">The player entity to modify. If this is not set, a call to the DB will be made. Leave null for NPCs.</param>
-        public static void RestoreFP(uint creature, int amount, Player dbPlayer = null)
+        /// <returns>The amount of FP actually restored after modifiers and the maximum-FP cap.</returns>
+        public static int RestoreFP(uint creature, int amount, Player dbPlayer = null)
         {
-            if (amount <= 0) return;
+            if (amount <= 0) return 0;
 
             amount = ApplyFPRestoreAdjustment(creature, amount);
-            if (amount <= 0) return;
+            if (amount <= 0) return 0;
 
             var maxFP = GetMaxFP(creature);
+            var restored = 0;
 
             // Players
             if (GetIsPC(creature) && !GetIsDM(creature))
@@ -338,26 +348,27 @@ namespace SWLOR.Game.Server.Service
                     dbPlayer = DB.Get<Player>(playerId);
                 }
 
-                dbPlayer.FP += amount;
-
-                if (dbPlayer.FP > maxFP)
-                    dbPlayer.FP = maxFP;
+                var current = dbPlayer.FP;
+                dbPlayer.FP = Math.Min(maxFP, current + amount);
+                restored = Math.Max(0, dbPlayer.FP - current);
 
                 DB.Set(dbPlayer);
             }
             // NPCs
             else
             {
-                var fp = GetLocalInt(creature, "FP");
-                fp += amount;
-
-                if (fp > maxFP)
-                    fp = maxFP;
+                var current = GetLocalInt(creature, "FP");
+                var fp = Math.Min(maxFP, current + amount);
+                restored = Math.Max(0, fp - current);
 
                 SetLocalInt(creature, "FP", fp);
             }
 
             ExecuteScript("pc_fp_adjusted", creature);
+            if (restored > 0)
+                Combat.ApplyFPRestoredEffects(creature);
+
+            return restored;
         }
 
         /// <summary>
@@ -405,11 +416,13 @@ namespace SWLOR.Game.Server.Service
         /// <param name="creature">The creature to modify.</param>
         /// <param name="amount">The amount of Stamina to restore.</param>
         /// <param name="dbPlayer">The player entity to modify. If this is not set, a DB call will be made. Leave null for NPCs.</param>
-        public static void RestoreStamina(uint creature, int amount, Player dbPlayer = null)
+        /// <returns>The amount of Stamina actually restored after the maximum-Stamina cap.</returns>
+        public static int RestoreStamina(uint creature, int amount, Player dbPlayer = null)
         {
-            if (amount <= 0) return;
+            if (amount <= 0) return 0;
 
             var maxSTM = GetMaxStamina(creature);
+            var restored = 0;
 
             // Players
             if (GetIsPC(creature) && !GetIsDM(creature))
@@ -420,26 +433,27 @@ namespace SWLOR.Game.Server.Service
                     dbPlayer = DB.Get<Player>(playerId);
                 }
 
-                dbPlayer.Stamina += amount;
-
-                if (dbPlayer.Stamina > maxSTM)
-                    dbPlayer.Stamina = maxSTM;
+                var current = dbPlayer.Stamina;
+                dbPlayer.Stamina = Math.Min(maxSTM, current + amount);
+                restored = Math.Max(0, dbPlayer.Stamina - current);
 
                 DB.Set(dbPlayer);
             }
             // NPCs
             else
             {
-                var fp = GetLocalInt(creature, "STAMINA");
-                fp += amount;
-
-                if (fp > maxSTM)
-                    fp = maxSTM;
+                var current = GetLocalInt(creature, "STAMINA");
+                var fp = Math.Min(maxSTM, current + amount);
+                restored = Math.Max(0, fp - current);
 
                 SetLocalInt(creature, "STAMINA", fp);
             }
 
             ExecuteScript("pc_stm_adjusted", creature);
+            if (restored > 0)
+                Combat.ApplyStaminaRestoredEffects(creature);
+
+            return restored;
         }
 
         /// <summary>
@@ -470,12 +484,22 @@ namespace SWLOR.Game.Server.Service
             }
             else
             {
-                var stamina = GetLocalInt(creature, "STAMINA");
+                var currentStamina = GetLocalInt(creature, "STAMINA");
+                var stamina = currentStamina;
                 stamina -= reduceBy;
                 if (stamina < 0)
                     stamina = 0;
 
                 SetLocalInt(creature, "STAMINA", stamina);
+
+                if (stamina < currentStamina && BeastMastery.IsPlayerBeast(creature))
+                {
+                    var availableAt = DateTime.UtcNow.AddSeconds(BeastNaturalStaminaRegenDelaySeconds);
+                    SetLocalString(
+                        creature,
+                        BeastNaturalStaminaRegenAvailableAtVariable,
+                        availableAt.Ticks.ToString(CultureInfo.InvariantCulture));
+                }
             }
 
             ExecuteScript("pc_stm_adjusted", creature);
@@ -2437,17 +2461,67 @@ namespace SWLOR.Game.Server.Service
                 }
             }
 
-            if (maxHP > 30000)
-                maxHP = 30000;
+            if (maxHP > MaximumNPCHitPoints)
+                maxHP = MaximumNPCHitPoints;
 
             if (maxHP > 0)
             {
-                ObjectPlugin.SetMaxHitPoints(self, maxHP);
-                ObjectPlugin.SetCurrentHitPoints(self, maxHP);
+                SetNPCMaxHitPoints(self, maxHP, true);
             }
 
             SetLocalInt(self, "FP", GetMaxFP(self));
             SetLocalInt(self, "STAMINA", GetMaxStamina(self));
+        }
+
+        /// <summary>
+        /// Sets an NPC's final maximum HP after accounting for the native NWN bonuses
+        /// derived from Constitution (SWLOR Vitality), Toughness, and similar rules.
+        /// ObjectPlugin.SetMaxHitPoints writes the engine's base HP, not its final maximum.
+        /// </summary>
+        /// <param name="creature">The NPC whose HP budget is being applied.</param>
+        /// <param name="desiredMaxHitPoints">The final maximum HP the NPC should have.</param>
+        /// <param name="restoreToFull">If true, restore current HP to the final maximum.</param>
+        public static void SetNPCMaxHitPoints(uint creature, int desiredMaxHitPoints, bool restoreToFull = false)
+        {
+            desiredMaxHitPoints = System.Math.Clamp(desiredMaxHitPoints, 1, MaximumNPCHitPoints);
+            var originalCurrentHitPoints = GetCurrentHitPoints(creature);
+
+            // Probe with the final budget, observe the engine-derived adjustment, then
+            // compensate the base value. Repeating also handles NWN's one-HP-per-level
+            // floor for creatures with a negative Constitution modifier.
+            var baseHitPoints = desiredMaxHitPoints;
+            for (var pass = 0; pass < MaximumNPCHitPointAlignmentPasses; pass++)
+            {
+                ObjectPlugin.SetMaxHitPoints(creature, baseHitPoints);
+                var actualMaxHitPoints = GetMaxHitPoints(creature);
+                if (actualMaxHitPoints == desiredMaxHitPoints)
+                    break;
+
+                baseHitPoints = System.Math.Clamp(
+                    baseHitPoints + desiredMaxHitPoints - actualMaxHitPoints,
+                    1,
+                    short.MaxValue);
+            }
+
+            var alignedMaxHitPoints = GetMaxHitPoints(creature);
+            if (alignedMaxHitPoints != desiredMaxHitPoints)
+            {
+                Log.Write(
+                    LogGroup.Error,
+                    $"Unable to align NPC HP budget for {GetResRef(creature)}. " +
+                    $"Expected {desiredMaxHitPoints}, received {alignedMaxHitPoints}.");
+            }
+
+            if (restoreToFull)
+            {
+                ObjectPlugin.SetCurrentHitPoints(creature, alignedMaxHitPoints);
+            }
+            else
+            {
+                ObjectPlugin.SetCurrentHitPoints(
+                    creature,
+                    System.Math.Min(originalCurrentHitPoints, alignedMaxHitPoints));
+            }
         }
 
         /// <summary>
@@ -2465,6 +2539,25 @@ namespace SWLOR.Game.Server.Service
         /// </summary>
         public static void RestoreNPCStats(bool outOfCombatRegen)
         {
+            RestoreNPCStats(outOfCombatRegen, false);
+        }
+
+        /// <summary>
+        /// Restores a beast's FP and STM. STM regeneration remains active in and out of combat,
+        /// but cannot begin until six seconds after the beast last spent STM.
+        /// </summary>
+        public static void RestoreBeastStats()
+        {
+            RestoreNPCStats(false, true);
+        }
+
+        public static bool IsNaturalStaminaRegenerationAvailable(long availableAtTicks, long currentTicks)
+        {
+            return availableAtTicks <= 0 || currentTicks >= availableAtTicks;
+        }
+
+        private static void RestoreNPCStats(bool outOfCombatRegen, bool respectsStaminaRegenDelay)
+        {
             var self = OBJECT_SELF;
             if (GetLocalInt(self, SuppressNaturalRegenVariable) != 0)
                 return;
@@ -2472,7 +2565,10 @@ namespace SWLOR.Game.Server.Service
             var maxFP = GetMaxFP(self);
             var maxSTM = GetMaxStamina(self);
             var fp = GetLocalInt(self, "FP") + 1;
-            var stm = GetLocalInt(self, "STAMINA") + 1;
+            var stm = GetLocalInt(self, "STAMINA");
+            var canRestoreStamina = !respectsStaminaRegenDelay || CanRestoreBeastStamina(self);
+            if (canRestoreStamina)
+                stm++;
 
             if (fp > maxFP)
                 fp = maxFP;
@@ -2493,6 +2589,29 @@ namespace SWLOR.Game.Server.Service
                     ApplyEffectToObject(DurationType.Instant, EffectHeal((int)hpToHeal), self);
                 }
             }
+        }
+
+        private static bool CanRestoreBeastStamina(uint beast)
+        {
+            var availableAtValue = GetLocalString(beast, BeastNaturalStaminaRegenAvailableAtVariable);
+            if (string.IsNullOrWhiteSpace(availableAtValue))
+                return true;
+
+            if (!long.TryParse(
+                    availableAtValue,
+                    NumberStyles.Integer,
+                    CultureInfo.InvariantCulture,
+                    out var availableAtTicks))
+            {
+                DeleteLocalString(beast, BeastNaturalStaminaRegenAvailableAtVariable);
+                return true;
+            }
+
+            if (!IsNaturalStaminaRegenerationAvailable(availableAtTicks, DateTime.UtcNow.Ticks))
+                return false;
+
+            DeleteLocalString(beast, BeastNaturalStaminaRegenAvailableAtVariable);
+            return true;
         }
     }
 }

@@ -43,9 +43,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 AbilityType.Perception,
                 new GeneratedWeaponAbilityProfile
                 {
-                    CriticalRatePercentAdjustment = 25,
-                    DefenseIgnorePercent = 25,
-                    SelfCriticalRatePercent = 25
+                    IdleWindowSeconds = 3.0f,
+                    CriticalRateIfIdle = 25,
+                    DefenseIgnoreIfIdle = 25
                 });
 
             return builder.Build();

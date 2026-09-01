@@ -4,6 +4,7 @@ using Avalonia.Input;
 using Avalonia.OpenGL;
 using Avalonia.OpenGL.Controls;
 using Avalonia.Threading;
+using Serilog;
 using Silk.NET.OpenGL;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -672,6 +673,8 @@ void main()
         private Point _pressStartPos;
         private bool _isClickCandidate;
         private InstanceMarker? _selectedInstance;
+        private Point _hoverPointerPos;
+        private bool _hasHoverPointerPos;
 
         // ----- Move/rotate gizmo -----
         private InstanceMarker? _manipulationOriginal;
@@ -737,7 +740,28 @@ void main()
         public bool IsPlacementActive
         {
             get => _isPlacementActive;
-            set => _isPlacementActive = value;
+            set
+            {
+                if (_isPlacementActive == value)
+                    return;
+
+                var templateResRef = _placementGhost?.TemplateResRef ?? _placementTemplateResRef;
+                _isPlacementActive = value;
+                if (!value)
+                {
+                    _ghostPosition = null;
+                    _snappedDoorAnchor = null;
+                }
+
+                Log.ForContext<GlAreaControl>().Information(
+                    "Area object placement mode changed to {IsPlacementActive} for {TemplateResRef}",
+                    value,
+                    templateResRef ?? "(none)");
+                RefreshPlacementGhostAtCursor();
+
+                if (!value)
+                    _placementTemplateResRef = null;
+            }
         }
 
         /// <summary>Raised when placement mode is active and a plain click (not a camera drag) lands in the viewport: the world-space ground point (ray intersected with the Z=0 plane). Clears <see cref="IsPlacementActive"/> before raising.</summary>
@@ -747,6 +771,7 @@ void main()
         public event Action? PlacementCancelled;
 
         private InstanceMarker? _placementGhost;
+        private string? _placementTemplateResRef;
 
         /// <summary>
         /// What to draw under the cursor while <see cref="IsPlacementActive"/>: the object about to
@@ -763,8 +788,10 @@ void main()
                     return;
 
                 _placementGhost = value;
+                if (!string.IsNullOrWhiteSpace(value?.TemplateResRef))
+                    _placementTemplateResRef = value.TemplateResRef;
                 _ghostPosition = null;
-                RequestNextFrameRendering();
+                RefreshPlacementGhostAtCursor();
             }
         }
 
@@ -1482,14 +1509,24 @@ void main()
 
         public void HandlePointerMoved(PointerEventArgs e)
         {
+            var pointerPos = e.GetPosition(this);
+            if (!Bounds.Contains(pointerPos))
+            {
+                InvalidateHoverPointer("pointer moved outside viewport bounds");
+                return;
+            }
+
+            _hoverPointerPos = pointerPos;
+            _hasHoverPointerPos = true;
+
             // The ghost must track the pointer with no button held - the one case the drag-mode
             // guard below rejects - so it is updated first and independently of it.
             if (_isPlacementActive && _placementGhost != null)
-                UpdatePlacementGhost(e.GetPosition(this));
+                UpdatePlacementGhost(pointerPos);
 
             // The cell highlight is a cursor too, and tracks with no button held for the same reason.
             if (_isTilePlacementActive && !_isPlacementActive)
-                UpdateTileHoverCell(e.GetPosition(this));
+                UpdateTileHoverCell(pointerPos);
 
             if (_dragMode == DragMode.None)
                 return;
@@ -1502,7 +1539,7 @@ void main()
                     (e.KeyModifiers & KeyModifiers.Shift) != 0) is { } liveDrag)
                 _dragMode = liveDrag;
 
-            var pos = e.GetPosition(this);
+            var pos = pointerPos;
             var dx = (float)(pos.X - _lastPointerPos.X);
             var dy = (float)(pos.Y - _lastPointerPos.Y);
             _lastPointerPos = pos;
@@ -1877,13 +1914,10 @@ void main()
 
         private void CancelPlacement()
         {
-            _snappedDoorAnchor = null;
             if (!_isPlacementActive)
                 return;
 
-            _isPlacementActive = false;
-            _ghostPosition = null;
-            RequestNextFrameRendering();
+            IsPlacementActive = false;
             PlacementCancelled?.Invoke();
         }
 
@@ -1910,6 +1944,18 @@ void main()
             // put the preview off where the builder was not looking.
             _snappedDoorAnchor = SnapsToDoorAnchors ? NearestDoorAnchor(hit) : null;
             _ghostPosition = _snappedDoorAnchor?.Position ?? hit;
+
+            RequestNextFrameRendering();
+        }
+
+        /// <summary>
+        /// Reuses the last passive hover position when placement is armed from the keyboard, so the
+        /// ghost appears under a stationary cursor rather than waiting for another mouse move.
+        /// </summary>
+        private void RefreshPlacementGhostAtCursor()
+        {
+            if (_isPlacementActive && _placementGhost != null && _hasHoverPointerPos)
+                UpdatePlacementGhost(_hoverPointerPos);
 
             RequestNextFrameRendering();
         }
@@ -1951,15 +1997,12 @@ void main()
                 if (NearestDoorAnchor(hit) is not { } anchor)
                     return;
 
-                _isPlacementActive = false;
-                _ghostPosition = null;
-                _snappedDoorAnchor = null;
+                IsPlacementActive = false;
                 PlacementPointPicked?.Invoke(new PlacementPick(anchor.Position, anchor.Orientation));
                 return;
             }
 
-            _isPlacementActive = false;
-            _ghostPosition = null;
+            IsPlacementActive = false;
             PlacementPointPicked?.Invoke(new PlacementPick(hit, null));
         }
 
@@ -2184,6 +2227,25 @@ void main()
             {
                 _previewAnimationStartedTicks = System.Diagnostics.Stopwatch.GetTimestamp();
             }
+        }
+
+        /// <summary>Clears cursor previews when the pointer leaves the map surface.</summary>
+        public void HandlePointerExited(PointerEventArgs e) =>
+            InvalidateHoverPointer("pointer exited viewport");
+
+        private void InvalidateHoverPointer(string reason)
+        {
+            if (!_hasHoverPointerPos)
+                return;
+
+            _hasHoverPointerPos = false;
+            _ghostPosition = null;
+            _snappedDoorAnchor = null;
+            _tileHoverCell = null;
+            _tileHoverEdge = null;
+            Log.ForContext<GlAreaControl>().Information(
+                "Area viewport hover cache invalidated: {Reason}", reason);
+            RequestNextFrameRendering();
         }
 
         private PreviewAnimationSnapshot PreviewAnimation()
@@ -2530,6 +2592,12 @@ void main()
         {
             base.OnPointerMoved(e);
             HandlePointerMoved(e);
+        }
+
+        protected override void OnPointerExited(PointerEventArgs e)
+        {
+            base.OnPointerExited(e);
+            HandlePointerExited(e);
         }
 
         protected override void OnPointerReleased(PointerReleasedEventArgs e)

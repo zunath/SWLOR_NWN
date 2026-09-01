@@ -1,3 +1,4 @@
+using SWLOR.NWN.Formats.Common;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Gff;
 
@@ -13,7 +14,6 @@ namespace SWLOR.Toolset.Domain.Editors.Sounds
     /// </remarks>
     public static class SoundEditorLayout
     {
-        public const int MaxResRefLength = 16;
         public const int MaxNameLength = 64;
 
         public static IReadOnlyList<BehaviorFieldDefinition> Basic { get; } = new[]
@@ -31,7 +31,7 @@ namespace SWLOR.Toolset.Domain.Editors.Sounds
             new BehaviorFieldDefinition
             {
                 Label = "ResRef", Name = "TemplateResRef", Kind = BehaviorFieldKind.Text,
-                FieldType = GffFieldType.ResRef, MaxLength = MaxResRefLength, IsRequired = true
+                FieldType = GffFieldType.ResRef, MaxLength = NwnResRef.MaxLength, IsRequired = true
             },
             new BehaviorFieldDefinition
             {

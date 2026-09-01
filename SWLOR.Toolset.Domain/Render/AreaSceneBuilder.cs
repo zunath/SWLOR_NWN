@@ -252,6 +252,60 @@ namespace SWLOR.Toolset.Domain.Render
             return markers;
         }
 
+        /// <summary>
+        /// Builds the render marker for one newly placed GIT instance through the same resolution path
+        /// used by a complete scene build.
+        /// </summary>
+        /// <remarks>
+        /// Object placement does not change the tile grid or any other instance. Exposing the single
+        /// marker operation lets an editor publish that one addition immediately instead of serializing
+        /// and parsing both area documents and rebuilding every tile and existing marker.
+        /// </remarks>
+        public static InstanceMarker BuildInstanceMarker(
+            ResourceType type,
+            JsonGffStruct instance,
+            TileModelCache modelCache,
+            PlaceableAppearanceService? placeableAppearances = null,
+            DoorTypeService? doorTypes = null,
+            WaypointAppearanceService? waypointAppearances = null,
+            Func<JsonGffStruct, RenderModel?>? resolveCreatureModel = null,
+            IReadOnlyList<TilePlacement>? tiles = null)
+        {
+            ArgumentNullException.ThrowIfNull(instance);
+            ArgumentNullException.ThrowIfNull(modelCache);
+
+            return type switch
+            {
+                ResourceType.Utc => BuildMarker(
+                    instance, InstanceMarkerKind.Creature, type,
+                    resolveModel: resolveCreatureModel,
+                    modelCorrection: CreatureModelFacing.ForwardCorrection),
+                ResourceType.Utd => BuildMarker(
+                    instance, InstanceMarkerKind.Door, type,
+                    resolveModel: placed => ResolveDoorModel(placed, doorTypes, modelCache),
+                    isDoorTransition: placed => IsDoorTransition(placed, doorTypes)),
+                ResourceType.Uti => BuildMarker(instance, InstanceMarkerKind.Item, type),
+                ResourceType.Utp => BuildMarker(
+                    instance, InstanceMarkerKind.Placeable, type,
+                    resolveModel: placed => ResolvePlaceableModel(placed, placeableAppearances, modelCache)),
+                ResourceType.Uts => BuildMarker(instance, InstanceMarkerKind.Sound, type),
+                ResourceType.Utm => BuildMarker(
+                    instance, InstanceMarkerKind.Store, type,
+                    resolveModel: _ => modelCache.GetOrBuild(WaypointMarkerModel.MerchantModelResRef),
+                    modelCorrection: WaypointMarkerModel.ForwardCorrection),
+                ResourceType.Utt => BuildMarker(
+                    instance, InstanceMarkerKind.Trigger, type,
+                    includeGeometry: true,
+                    tiles: tiles),
+                ResourceType.Utw => BuildMarker(
+                    instance, InstanceMarkerKind.Waypoint, type,
+                    resolveModel: placed => ResolveWaypointModel(placed, waypointAppearances, modelCache),
+                    modelCorrection: WaypointMarkerModel.ForwardCorrection),
+                _ => throw new ArgumentOutOfRangeException(
+                    nameof(type), type, "This resource type is not an area instance.")
+            };
+        }
+
         private static void AddMarkers(
             List<InstanceMarker> markers,
             IReadOnlyList<JsonGffStruct> instances,
@@ -264,51 +318,64 @@ namespace SWLOR.Toolset.Domain.Render
             Func<JsonGffStruct, bool>? isDoorTransition = null)
         {
             foreach (var instance in instances)
+                markers.Add(BuildMarker(
+                    instance, kind, type, includeGeometry, resolveModel, modelCorrection, tiles,
+                    isDoorTransition));
+        }
+
+        private static InstanceMarker BuildMarker(
+            JsonGffStruct instance,
+            InstanceMarkerKind kind,
+            ResourceType type,
+            bool includeGeometry = false,
+            Func<JsonGffStruct, RenderModel?>? resolveModel = null,
+            Matrix4x4? modelCorrection = null,
+            IReadOnlyList<TilePlacement>? tiles = null,
+            Func<JsonGffStruct, bool>? isDoorTransition = null)
+        {
+            var (x, y, z) = InstanceFieldMap.GetPosition(type, instance);
+            var (xo, yo) = InstanceFieldMap.GetOrientation(type, instance);
+            var templateResRef = InstanceFieldMap.GetTemplateResRef(type, instance);
+            var tag = InstanceFieldMap.GetTag(instance);
+            var position = new Vector3(x, y, z);
+            var geometry = includeGeometry ? ReadGeometry(instance) : null;
+
+            // Trigger Geometry is stored as offsets from X/Y/ZPosition. The stored PointZ is
+            // whatever height each vertex happened to be clicked at and the corpus mixes floor
+            // heights inside one flat polygon, so each vertex is draped onto the walkmesh under
+            // it - the same thing Aurora does - keeping the stored Z only when no floor covers
+            // that point (off-grid vertices, tiles with no resolvable .wok).
+            if (geometry != null)
             {
-                var (x, y, z) = InstanceFieldMap.GetPosition(type, instance);
-                var (xo, yo) = InstanceFieldMap.GetOrientation(type, instance);
-                var templateResRef = InstanceFieldMap.GetTemplateResRef(type, instance);
-                var tag = InstanceFieldMap.GetTag(instance);
-                var position = new Vector3(x, y, z);
-                var geometry = includeGeometry ? ReadGeometry(instance) : null;
-
-                // Trigger Geometry is stored as offsets from X/Y/ZPosition. The stored PointZ is
-                // whatever height each vertex happened to be clicked at and the corpus mixes floor
-                // heights inside one flat polygon, so each vertex is draped onto the walkmesh under
-                // it - the same thing Aurora does - keeping the stored Z only when no floor covers
-                // that point (off-grid vertices, tiles with no resolvable .wok).
-                if (geometry != null)
+                geometry = geometry.Select(point =>
                 {
-                    geometry = geometry.Select(point =>
-                    {
-                        var world = point + position;
-                        if (tiles != null && AreaWalkmesh.GroundHeightAt(tiles, world.X, world.Y) is { } floor)
-                            world = new Vector3(world.X, world.Y, floor);
-                        return world;
-                    }).ToArray();
-                }
-
-                markers.Add(new InstanceMarker
-                {
-                    Kind = kind,
-                    TemplateResRef = templateResRef,
-                    Tag = tag,
-                    Position = position,
-                    Orientation = new Vector2(xo, yo),
-                    // A model-space correction composes before the instance's own EE visual
-                    // transform, which is itself instance-local - see WaypointMarkerModel.
-                    VisualTransform = modelCorrection is { } correction
-                        ? correction * InstanceFieldMap.GetVisualTransform(instance)
-                        : InstanceFieldMap.GetVisualTransform(instance),
-                    Geometry = geometry,
-                    Model = resolveModel?.Invoke(instance),
-                    IsDoorTransition = isDoorTransition?.Invoke(instance) ?? false,
-                    TintMapOverrides = TintMapOverrides.Read(new VarTable(instance)),
-                    SoundMinDistance = kind == InstanceMarkerKind.Sound ? instance.GetSingleOrNull("MinDistance") : null,
-                    SoundMaxDistance = kind == InstanceMarkerKind.Sound ? instance.GetSingleOrNull("MaxDistance") : null,
-                    IsPositionalSound = kind == InstanceMarkerKind.Sound && (instance.GetIntOrNull("Positional") ?? 0) != 0
-                });
+                    var world = point + position;
+                    if (tiles != null && AreaWalkmesh.GroundHeightAt(tiles, world.X, world.Y) is { } floor)
+                        world = new Vector3(world.X, world.Y, floor);
+                    return world;
+                }).ToArray();
             }
+
+            return new InstanceMarker
+            {
+                Kind = kind,
+                TemplateResRef = templateResRef,
+                Tag = tag,
+                Position = position,
+                Orientation = new Vector2(xo, yo),
+                // A model-space correction composes before the instance's own EE visual
+                // transform, which is itself instance-local - see WaypointMarkerModel.
+                VisualTransform = modelCorrection is { } correction
+                    ? correction * InstanceFieldMap.GetVisualTransform(instance)
+                    : InstanceFieldMap.GetVisualTransform(instance),
+                Geometry = geometry,
+                Model = resolveModel?.Invoke(instance),
+                IsDoorTransition = isDoorTransition?.Invoke(instance) ?? false,
+                TintMapOverrides = TintMapOverrides.Read(new VarTable(instance)),
+                SoundMinDistance = kind == InstanceMarkerKind.Sound ? instance.GetSingleOrNull("MinDistance") : null,
+                SoundMaxDistance = kind == InstanceMarkerKind.Sound ? instance.GetSingleOrNull("MaxDistance") : null,
+                IsPositionalSound = kind == InstanceMarkerKind.Sound && (instance.GetIntOrNull("Positional") ?? 0) != 0
+            };
         }
 
         /// <summary>Placeable instances carry their appearance directly: Appearance → placeables.2da ModelName.</summary>

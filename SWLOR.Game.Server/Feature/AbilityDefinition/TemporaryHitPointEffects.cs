@@ -9,6 +9,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
     {
         private const string EffectTagPrefix = "TEMPORARY_HP_";
         private const string BarrierVisualEffectTagSuffix = "_BARRIER_VFX";
+        private const string OwnerVariableSuffix = "_OWNER";
+        private const string SourceVariableSuffix = "_SOURCE";
 
         public static void ApplyFlatPlusPercent(
             uint target,
@@ -26,9 +28,55 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
         // any prior pool carrying the same key, regardless of caster.
         public static void ApplyFlat(uint target, string effectKey, int amount, float durationSeconds)
         {
-            if (string.IsNullOrWhiteSpace(effectKey))
-                throw new ArgumentException("Temporary HP effects must declare the ability key they stack under.", nameof(effectKey));
+            ApplyFlatFromSource(OBJECT_INVALID, target, effectKey, amount, durationSeconds);
+        }
 
+        /// <summary>
+        /// Applies a keyed temporary-HP pool and records the creature that granted it. Source
+        /// ownership is only considered active while the matching native temporary-HP effect
+        /// still exists, so consuming the pool immediately invalidates source-dependent riders.
+        /// </summary>
+        public static void ApplyFlatFromSource(
+            uint source,
+            uint target,
+            string effectKey,
+            int amount,
+            float durationSeconds)
+        {
+            ValidateEffectKey(effectKey);
+            DeleteLocalString(target, GetOwnerVariable(effectKey));
+            DeleteLocalObject(target, GetSourceVariable(effectKey));
+            ApplyFlatInternal(target, effectKey, amount, durationSeconds);
+
+            if (amount > 0 && GetIsObjectValid(source))
+                SetLocalObject(target, GetSourceVariable(effectKey), source);
+        }
+
+        /// <summary>
+        /// Applies a keyed temporary-HP pool owned by a companion status-effect instance.
+        /// A later application of the same key replaces both the native pool and its owner,
+        /// allowing an older status marker to expire without deleting the newer pool.
+        /// </summary>
+        public static void ApplyFlatOwned(
+            uint target,
+            string effectKey,
+            int amount,
+            float durationSeconds,
+            string ownerId)
+        {
+            ValidateEffectKey(effectKey);
+            ValidateOwnerId(ownerId);
+
+            DeleteLocalObject(target, GetSourceVariable(effectKey));
+            ApplyFlatInternal(target, effectKey, amount, durationSeconds);
+            if (amount > 0)
+                SetLocalString(target, GetOwnerVariable(effectKey), ownerId);
+            else
+                DeleteLocalString(target, GetOwnerVariable(effectKey));
+        }
+
+        private static void ApplyFlatInternal(uint target, string effectKey, int amount, float durationSeconds)
+        {
             var effectTag = EffectTagPrefix + effectKey;
             RemoveEffectByTag(target, effectTag);
 
@@ -62,6 +110,68 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             var visualEffect = TagEffect(EffectVisualEffect(barrierVisualEffect), visualEffectTag);
             ApplyEffectToObject(DurationType.Temporary, visualEffect, target, durationSeconds);
+        }
+
+        public static void Remove(uint target, string effectKey)
+        {
+            ValidateEffectKey(effectKey);
+            DeleteLocalString(target, GetOwnerVariable(effectKey));
+            DeleteLocalObject(target, GetSourceVariable(effectKey));
+
+            var effectTag = EffectTagPrefix + effectKey;
+            RemoveEffectByTag(target, effectTag);
+            RemoveEffectByTag(target, effectTag + BarrierVisualEffectTagSuffix);
+        }
+
+        public static bool IsActivePoolFromSource(uint target, string effectKey, uint source)
+        {
+            ValidateEffectKey(effectKey);
+            if (!GetIsObjectValid(source) || GetLocalObject(target, GetSourceVariable(effectKey)) != source)
+                return false;
+
+            var effectTag = EffectTagPrefix + effectKey;
+            for (var effect = GetFirstEffect(target); GetIsEffectValid(effect); effect = GetNextEffect(target))
+            {
+                if (GetEffectTag(effect) == effectTag)
+                    return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Removes a keyed pool only when the caller still owns the most recent application.
+        /// </summary>
+        public static void RemoveIfCurrent(uint target, string effectKey, string ownerId)
+        {
+            ValidateEffectKey(effectKey);
+            ValidateOwnerId(ownerId);
+            if (GetLocalString(target, GetOwnerVariable(effectKey)) != ownerId)
+                return;
+
+            Remove(target, effectKey);
+        }
+
+        private static string GetOwnerVariable(string effectKey)
+        {
+            return EffectTagPrefix + effectKey + OwnerVariableSuffix;
+        }
+
+        private static string GetSourceVariable(string effectKey)
+        {
+            return EffectTagPrefix + effectKey + SourceVariableSuffix;
+        }
+
+        private static void ValidateEffectKey(string effectKey)
+        {
+            if (string.IsNullOrWhiteSpace(effectKey))
+                throw new ArgumentException("Temporary HP effects must declare the ability key they stack under.", nameof(effectKey));
+        }
+
+        private static void ValidateOwnerId(string ownerId)
+        {
+            if (string.IsNullOrWhiteSpace(ownerId))
+                throw new ArgumentException("Owned temporary HP effects must declare their status-effect owner.", nameof(ownerId));
         }
     }
 }

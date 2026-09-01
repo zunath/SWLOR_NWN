@@ -133,16 +133,16 @@ namespace SWLOR.Toolset.Services
         };
 
         private static readonly Regex IncludePattern = new(
-            @"^\s*#\s*include\s+""(?<resref>[A-Za-z0-9_]{1,16})""",
+            $@"^\s*#\s*include\s+""(?<resref>[A-Za-z0-9_]{{1,{NwnResRef.MaxLength}}})""",
             RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.Multiline);
         private static readonly Regex CreateItemPattern = new(
-            @"\bCreateItemOnObject\s*\(\s*""(?<resref>[A-Za-z0-9_]{1,16})""",
+            $@"\bCreateItemOnObject\s*\(\s*""(?<resref>[A-Za-z0-9_]{{1,{NwnResRef.MaxLength}}})""",
             RegexOptions.Compiled | RegexOptions.CultureInvariant);
         private static readonly Regex CreateObjectPattern = new(
-            @"\bCreateObject\s*\(\s*OBJECT_TYPE_(?<type>CREATURE|ITEM|PLACEABLE|STORE|WAYPOINT|DOOR|TRIGGER|SOUND)\s*,\s*""(?<resref>[A-Za-z0-9_]{1,16})""",
+            $@"\bCreateObject\s*\(\s*OBJECT_TYPE_(?<type>CREATURE|ITEM|PLACEABLE|STORE|WAYPOINT|DOOR|TRIGGER|SOUND)\s*,\s*""(?<resref>[A-Za-z0-9_]{{1,{NwnResRef.MaxLength}}})""",
             RegexOptions.Compiled | RegexOptions.CultureInvariant);
         private static readonly Regex ExecuteScriptPattern = new(
-            @"\bExecuteScript\s*\(\s*""(?<resref>[A-Za-z0-9_]{1,16})""",
+            $@"\bExecuteScript\s*\(\s*""(?<resref>[A-Za-z0-9_]{{1,{NwnResRef.MaxLength}}})""",
             RegexOptions.Compiled | RegexOptions.CultureInvariant);
 
         private readonly WorkspaceContext _workspaceContext;
@@ -1279,7 +1279,8 @@ namespace SWLOR.Toolset.Services
                 if (!IsValidResRef(renamed))
                 {
                     throw new InvalidOperationException(
-                        $"The new resref for '{asset.FileName}' must be 1-16 ASCII letters, digits, or underscores.");
+                        $"The new resref for '{asset.FileName}' must be 1-{NwnResRef.MaxLength} " +
+                        "ASCII letters, digits, or underscores.");
                 }
 
                 renameMap.Add(ArchiveKey(asset.Extension, asset.ResRef), renamed);
@@ -2297,16 +2298,7 @@ namespace SWLOR.Toolset.Services
         private static bool IsSupportedExtension(string extension) =>
             GffExtensions.Contains(extension) || PlainExtensions.Contains(extension);
 
-        private static bool IsValidResRef(string? value)
-        {
-            if (string.IsNullOrEmpty(value) || value.Length > 16)
-                return false;
-
-            return value.All(character => character is >= 'a' and <= 'z'
-                or >= 'A' and <= 'Z'
-                or >= '0' and <= '9'
-                or '_');
-        }
+        private static bool IsValidResRef(string? value) => NwnResRef.IsValid(value);
 
         private static string DisplayType(string extension)
         {

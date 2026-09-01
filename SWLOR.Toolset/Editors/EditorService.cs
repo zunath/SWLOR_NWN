@@ -1,7 +1,9 @@
 using System.Collections.Concurrent;
+using Dock.Model.Mvvm.Controls;
 using SWLOR.Toolset.Domain.Editors;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Schemas;
+using SWLOR.Toolset.Domain.Categories;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.GameData.GameCode;
@@ -27,6 +29,9 @@ namespace SWLOR.Toolset.Editors
         private readonly WorkspaceContext _workspaceContext;
         private readonly LookupOptionProvider _lookups;
         private readonly Domain.GameData.Tlk.TlkService? _tlkService;
+        private readonly Tlk.TlkEditorSource? _tlkEditorSource;
+        private readonly Func<Tlk.TlkEditorSource, Domain.GameData.Tlk.TlkService?, CancellationToken,
+            Tlk.ITlkEditorBackend> _tlkEditorBackendFactory;
         private readonly IGameCodeIndex? _gameCodeIndex;
         private readonly OutputLogService _log;
         private readonly ToolsetDockFactory _factory;
@@ -97,6 +102,8 @@ namespace SWLOR.Toolset.Editors
         private readonly Dictionary<string, BlueprintEditorViewModel> _openEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly Dictionary<string, AreaEditorViewModel> _openAreaEditors = new(StringComparer.OrdinalIgnoreCase);
         private readonly HashSet<string> _openingAreaEditors = new(StringComparer.OrdinalIgnoreCase);
+        private readonly HashSet<string> _cancelledAreaEditorLoads = new(StringComparer.OrdinalIgnoreCase);
+        private readonly AreaInstanceClipboard _areaInstanceClipboard = new();
         private readonly Dictionary<string, ObjectPlacement> _pendingAreaReveals =
             new(StringComparer.OrdinalIgnoreCase);
         private readonly List<WeakReference<Sources.ObjectSourceSectionViewModel>> _objectSources = new();
@@ -175,6 +182,17 @@ namespace SWLOR.Toolset.Editors
         private Services.SoundPreviewService? _soundPreviews;
         private readonly Workspace.ModuleCustomContentService? _moduleCustomContent;
         private Module.ModulePropertiesDocumentViewModel? _moduleProperties;
+        private Tlk.TlkEditorDocumentViewModel? _tlkEditor;
+        private Tlk.TlkEditorLoadingDocumentViewModel? _tlkEditorLoading;
+        private bool _tlkEditorOpening;
+        private uint? _pendingTlkStrRef;
+
+        /// <summary>
+        /// Whether module.ifo.json is currently owned by the Module Properties editor. Area deletion
+        /// must not rewrite that file underneath the document because a later save could restore the
+        /// deleted area's registration.
+        /// </summary>
+        public bool IsModulePropertiesOpen => _moduleProperties != null;
 
         // Keyed by path like the blueprint map rather than by resref like the area map: a script is
         // one file, so the path is its identity and there is no are/git/gic triplet to name.
@@ -283,8 +301,15 @@ namespace SWLOR.Toolset.Editors
                 ResourceType,
                 string,
                 Task<IReadOnlyList<ObjectPlacement>>>? objectPlacementsFinder = null,
-            Func<string, string, string, AreaEditorDocumentLoad>? areaDocumentsLoader = null)
+            Func<string, string, string, AreaEditorDocumentLoad>? areaDocumentsLoader = null,
+            Tlk.TlkEditorSource? tlkEditorSource = null,
+            Func<Tlk.TlkEditorSource, Domain.GameData.Tlk.TlkService?, CancellationToken,
+                Tlk.ITlkEditorBackend>? tlkEditorBackendFactory = null)
         {
+            _tlkEditorSource = tlkEditorSource;
+            _tlkEditorBackendFactory = tlkEditorBackendFactory ??
+                ((source, tlk, cancellationToken) =>
+                    new Tlk.TlkEditorBackend(source, tlk, cancellationToken));
             _moduleCustomContent = moduleCustomContent;
             _externalLinks = externalLinks;
             _categories = categories;
@@ -353,6 +378,7 @@ namespace SWLOR.Toolset.Editors
             _workspaceContext.TagIndexInvalidated += OnTagIndexInvalidated;
             _workspaceContext.PlacementIndexInvalidated += ReloadPlacementSources;
             _workspaceContext.CatalogBuildCompleted += RefreshObjectSourceAreaNames;
+            _workspaceContext.CatalogLabelsChanged += RefreshObjectSourceAreaNames;
 
             // Opening another module invalidates every module-derived picker; saving a blueprint
             // invalidates only the ones built out of the module's own content.
@@ -469,6 +495,9 @@ namespace SWLOR.Toolset.Editors
         /// <summary>Opens Module Properties as the single document tab for module.ifo.</summary>
         public void OpenModuleProperties(Module.ModulePropertiesActions? actions = null)
         {
+            if (IsResourceOpeningBlocked("Module Properties"))
+                return;
+
             var workspace = _workspaceContext.Workspace;
             if (workspace == null)
             {
@@ -508,9 +537,153 @@ namespace SWLOR.Toolset.Editors
             }
             catch (Exception ex)
             {
+                _moduleProperties = null;
                 _log.AppendLine($"Failed to open Module Properties: {ex.Message}");
             }
         }
+
+        /// <summary>
+        /// Opens the repository's SWLOR custom TLK as one docked document. Loading and the complete
+        /// reference scan stay off the UI thread; repeat requests activate the
+        /// singleton and may navigate it to a custom StrRef.
+        /// </summary>
+        public async Task OpenTlkEditorAsync(uint? strRef = null)
+        {
+            if (_tlkEditor != null)
+            {
+                _pendingTlkStrRef = null;
+                if (strRef.HasValue)
+                    _tlkEditor.SelectStrRef(strRef.Value);
+                _factory.ActivateDocument(_tlkEditor);
+                return;
+            }
+
+            if (_tlkEditorOpening)
+            {
+                if (strRef.HasValue)
+                    _pendingTlkStrRef = strRef;
+                if (_tlkEditorLoading != null)
+                    _factory.ActivateDocument(_tlkEditorLoading);
+                return;
+            }
+            if (_tlkEditorSource == null || !_tlkEditorSource.IsAvailable)
+            {
+                _log.AppendLine(_tlkEditorSource?.UnavailableReason ??
+                    "TLK Editor is unavailable because the SWLOR repository root could not be resolved.");
+                return;
+            }
+
+            _pendingTlkStrRef = strRef;
+            _tlkEditorOpening = true;
+            var loading = new Tlk.TlkEditorLoadingDocumentViewModel(_tlkEditorSource.JsonPath);
+            loading.Closed += closed =>
+            {
+                if (ReferenceEquals(_tlkEditorLoading, closed))
+                    _tlkEditorLoading = null;
+            };
+            _tlkEditorLoading = loading;
+            _factory.OpenDocument(loading);
+            try
+            {
+                _log.AppendLine("Loading the SWLOR custom TLK and indexing references...");
+                var backend = await Task.Run(() =>
+                    _tlkEditorBackendFactory(
+                        _tlkEditorSource,
+                        _tlkService,
+                        loading.CancellationToken))
+                    .ConfigureAwait(true);
+                loading.CancellationToken.ThrowIfCancellationRequested();
+
+                try
+                {
+                    backend.Publish();
+                    RefreshOpenTlkLabels();
+                }
+                catch (Exception ex)
+                {
+                    _log.AppendLine(
+                        "TLK Editor opened, but publishing its repository generation failed: " +
+                        ex.GetBaseException().Message);
+                }
+
+                var editor = new Tlk.TlkEditorDocumentViewModel(
+                    backend,
+                    _log,
+                    _prompts,
+                    RefreshOpenTlkLabels);
+                editor.Closed += closed =>
+                {
+                    if (ReferenceEquals(_tlkEditor, closed))
+                        _tlkEditor = null;
+                };
+                editor.CloseRequested += _ => _factory.CloseDocument(editor);
+                CloseTlkLoadingDocument(loading);
+                _tlkEditor = editor;
+                _factory.OpenDocument(editor);
+                if (_pendingTlkStrRef.HasValue)
+                    editor.SelectStrRef(_pendingTlkStrRef.Value);
+                _pendingTlkStrRef = null;
+                _log.AppendLine("TLK Editor ready.");
+            }
+            catch (OperationCanceledException) when (loading.CancellationRequested)
+            {
+                _pendingTlkStrRef = null;
+            }
+            catch (Exception ex)
+            {
+                _pendingTlkStrRef = null;
+                _log.AppendLine($"Failed to open TLK Editor: {ex.GetBaseException().Message}");
+            }
+            finally
+            {
+                if (ReferenceEquals(_tlkEditorLoading, loading))
+                    CloseTlkLoadingDocument(loading);
+                _tlkEditorOpening = false;
+            }
+        }
+
+        private void CloseTlkLoadingDocument(Tlk.TlkEditorLoadingDocumentViewModel loading)
+        {
+            loading.Complete();
+            if (ReferenceEquals(_tlkEditorLoading, loading))
+                _tlkEditorLoading = null;
+            _factory.CloseDocument(loading);
+        }
+
+        private void RefreshOpenTlkLabels()
+        {
+            ReloadOpenGameResources();
+            _workspaceContext.RefreshTlkLabels();
+            _categories?.RefreshTlkLabels();
+            _factory.RefreshTlkLabels();
+            foreach (var editor in _openEditors.Values)
+                editor.RefreshTlkLabels();
+            foreach (var editor in _openAreaEditors.Values)
+                editor.RefreshTlkLabels();
+            foreach (var editor in _openTriggerEditors.Values)
+                editor.Editor.RefreshTlkLabels();
+            foreach (var editor in _openWaypointEditors.Values)
+                editor.Editor.RefreshTlkLabels();
+            foreach (var editor in _openSoundEditors.Values)
+                editor.Editor.RefreshTlkLabels();
+            foreach (var editor in _openDoorEditors.Values)
+                editor.Editor.RefreshTlkLabels();
+            foreach (var editor in _openCreatureEditors.Values)
+                editor.Editor.RefreshTlkLabels();
+            foreach (var editor in _openItemEditors.Values)
+                editor.Editor.RefreshTlkLabels();
+            foreach (var editor in _openMerchantEditors.Values)
+                editor.Editor.RefreshTlkLabels();
+        }
+
+        private Action<uint>? TlkRowOpener =>
+            _tlkEditorSource?.IsAvailable == true
+                ? strRef =>
+                {
+                    if (!IsResourceOpeningBlocked("TLK Editor"))
+                        _ = OpenTlkEditorAsync(strRef);
+                }
+                : null;
 
         /// <summary>Refreshes open resource-backed content after the module HAK stack changes.</summary>
         public void ReloadOpenGameResources()
@@ -744,6 +917,11 @@ namespace SWLOR.Toolset.Editors
         /// <summary>Opens a NWScript source file as a text editor tab, or activates its open tab.</summary>
         private void OpenScriptEditor(ModuleWorkspace workspace, string resRef)
         {
+            // Include navigation calls this method directly after a script tab is already open, so
+            // the public TryOpenEditor gate alone would leave that route able to race a deletion.
+            if (IsResourceOpeningBlocked(resRef))
+                return;
+
             var filePath = workspace.GetResourcePath(ResourceType.Nss, resRef);
             if (!File.Exists(filePath))
             {
@@ -824,6 +1002,9 @@ namespace SWLOR.Toolset.Editors
 
         public void TryOpenEditor(ResourceType type, string resRef)
         {
+            if (IsResourceOpeningBlocked(resRef))
+                return;
+
             var workspace = _workspaceContext.Workspace;
             if (workspace == null)
                 return;
@@ -972,7 +1153,8 @@ namespace SWLOR.Toolset.Editors
                     type == ResourceType.Utc ? CreateCreatureAppearanceGallery : null,
                     type == ResourceType.Utc ? CreateCreatureTintMapEditor : null,
                     _blueprintSaves,
-                    CreateObjectSource(type, resRef));
+                    CreateObjectSource(type, resRef),
+                    TlkRowOpener);
                 editor.Closed += closed => _openEditors.Remove(closed.FilePath);
                 editor.CloseRequested += _ => _factory.CloseDocument(editor);
                 editor.CatalogEntryChanged += () =>
@@ -993,6 +1175,107 @@ namespace SWLOR.Toolset.Editors
             {
                 _log.AppendLine($"Failed to open editor for {resRef}: {ex.Message}");
             }
+        }
+
+        private bool IsResourceOpeningBlocked(string resRef)
+        {
+            if (_mutationLock?.IsResourceDeletionActive != true)
+                return false;
+
+            _log.AppendLine(
+                $"Could not open '{resRef}': a module resource deletion is in progress.");
+            return true;
+        }
+
+        /// <summary>
+        /// Aurora-style Edit Copy for an area instance: create a new module blueprint from its source,
+        /// retain the source category when possible, and open the independent copy.
+        /// </summary>
+        private string? TryEditCopyAndOpenBlueprint(ResourceType type, string sourceResRef)
+        {
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null || !ModuleWorkspace.BlueprintTypes.Contains(type))
+                return null;
+
+            try
+            {
+                var sourcePath = workspace.GetResourcePath(type, sourceResRef);
+                var isCustomSource = File.Exists(sourcePath);
+                var source = isCustomSource
+                    ? workspace.LoadBlueprint(type, sourceResRef)
+                    : workspace.LoadIndexedBlueprint(type, sourceResRef);
+                var copyResRef = BlueprintCopyFactory.NextResRef(
+                    workspace,
+                    type,
+                    sourceResRef);
+                var copyPath = workspace.GetResourcePath(type, copyResRef);
+                var content = BlueprintCopyFactory.CreateFileContent(type, source.Document, copyResRef);
+
+                Directory.CreateDirectory(Path.GetDirectoryName(copyPath)!);
+                SaveService.WriteNewAtomic(copyPath, content);
+                _workspaceContext.RefreshCatalogEntry(type, copyResRef);
+
+                var categoryNotificationRaised = false;
+                if (_categories != null)
+                {
+                    var sourceSection = isCustomSource
+                        ? _categories.Section(type)
+                        : _categories.StandardSection(type);
+                    var sourceFolder = sourceSection?.FoldersContaining(sourceResRef).FirstOrDefault();
+                    var categoryPath = sourceFolder == null || sourceSection == null
+                        ? Array.Empty<string>()
+                        : sourceSection.PathTo(sourceFolder).ToArray();
+
+                    if (categoryPath.Length > 0 && _categories.Section(type) is { } customSection)
+                    {
+                        var targetFolder = EnsureBlueprintCopyFolder(customSection, categoryPath);
+                        targetFolder.AddMember(copyResRef);
+                        var save = _categories.SaveChanges();
+                        categoryNotificationRaised = save.Saved;
+                        if (!save.Saved)
+                        {
+                            _log.AppendLine(
+                                $"Copied {type.Extension()} blueprint '{sourceResRef}' to '{copyResRef}', " +
+                                $"but could not file it under '{categoryPath[^1]}': {save.Problem}");
+                        }
+                    }
+
+                    // A successful category save raises Changed itself. An unfiled copy, or a failed
+                    // category save restored to Unsorted, still needs that notification so an open
+                    // palette re-enumerates the newly created module resource immediately.
+                    if (!categoryNotificationRaised)
+                        _categories.NotifyChanged();
+                }
+
+                _log.AppendLine(
+                    $"Copied {type.Extension()} blueprint '{sourceResRef}' to '{copyResRef}' ({copyPath}).");
+                TryOpenEditor(type, copyResRef);
+                return copyResRef;
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine(
+                    $"Edit Copy failed for {type.Extension()} blueprint '{sourceResRef}': {ex.Message}");
+                return null;
+            }
+        }
+
+        private static CategoryFolder EnsureBlueprintCopyFolder(
+            CategorySection section,
+            IReadOnlyList<string> path)
+        {
+            var current = section.Folders.FirstOrDefault(folder =>
+                              string.Equals(folder.Name, path[0], StringComparison.OrdinalIgnoreCase))
+                          ?? section.AddFolder(path[0]);
+            for (var index = 1; index < path.Count; index++)
+            {
+                var segment = path[index];
+                current = current.Children.FirstOrDefault(child =>
+                              string.Equals(child.Name, segment, StringComparison.OrdinalIgnoreCase))
+                          ?? current.AddChild(segment);
+            }
+
+            return current;
         }
 
         private Sources.ObjectSourceSectionViewModel CreateObjectSource(
@@ -1086,6 +1369,9 @@ namespace SWLOR.Toolset.Editors
 
         private void GoToObjectPlacement(ObjectPlacement placement)
         {
+            if (IsResourceOpeningBlocked(placement.AreaResRef))
+                return;
+
             var workspace = _workspaceContext.Workspace;
             if (workspace == null)
             {
@@ -1287,14 +1573,15 @@ namespace SWLOR.Toolset.Editors
         public bool IsOpen(ResourceType type, string resRef)
         {
             if (type == ResourceType.Area)
-                return _openAreaEditors.ContainsKey(resRef);
+                return _openAreaEditors.ContainsKey(resRef) || _openingAreaEditors.Contains(resRef);
 
             var workspace = _workspaceContext.Workspace;
             if (workspace == null)
                 return false;
 
             var path = workspace.GetResourcePath(type, resRef);
-            return _openEditors.ContainsKey(path)
+            return _openScriptEditors.ContainsKey(path)
+                   || _openEditors.ContainsKey(path)
                    || _openTriggerEditors.ContainsKey(path)
                    || _openWaypointEditors.ContainsKey(path)
                    || _openDoorEditors.ContainsKey(path)
@@ -1304,8 +1591,92 @@ namespace SWLOR.Toolset.Editors
                    || _openMerchantEditors.ContainsKey(path)
                    || _openConversations.ContainsKey(path)
                    || (type == ResourceType.Dlg &&
-                       _openNuiConversations.Values.Any(editor =>
-                           editor.ResRef.Equals(resRef, StringComparison.OrdinalIgnoreCase)));
+                        _openNuiConversations.Values.Any(editor =>
+                            editor.ResRef.Equals(resRef, StringComparison.OrdinalIgnoreCase)));
+        }
+
+        /// <summary>
+        /// Closes the editor that owns a resource immediately after that resource is deleted.
+        /// </summary>
+        /// <remarks>
+        /// The caller must already have received explicit destructive confirmation. That confirmation
+        /// covers the resource and any unsaved buffer held by its editor, so these closes deliberately
+        /// bypass the ordinary save/discard prompt. The caller keeps the shared deletion reservation
+        /// until this closes every document session, preventing a later save from recreating the
+        /// deleted files. An area still loading has no live document to save; it is tombstoned so
+        /// that the completed parse cannot publish after the deletion reservation is released.
+        /// </remarks>
+        internal bool TryCloseResourceForDeletion(ResourceType type, string resRef)
+        {
+            var documents = OpenResourceDocuments(type, resRef);
+            if (documents.Count == 0)
+            {
+                if (type == ResourceType.Area && _openingAreaEditors.Contains(resRef))
+                {
+                    _cancelledAreaEditorLoads.Add(resRef);
+                    return true;
+                }
+
+                return !IsOpen(type, resRef);
+            }
+
+            foreach (var document in documents)
+            {
+                switch (document)
+                {
+                    case AreaEditorViewModel area:
+                        area.ApproveApplicationClose();
+                        break;
+                    case ScriptEditorViewModel script:
+                        script.ApproveApplicationClose();
+                        break;
+                    case ConversationEditorViewModel conversation:
+                        conversation.ApproveApplicationClose();
+                        break;
+                    case NuiConversationEditorViewModel graph:
+                        graph.ApproveApplicationClose();
+                        break;
+                    default:
+                        return false;
+                }
+
+                _factory.CloseDocument(document);
+            }
+
+            return !IsOpen(type, resRef);
+        }
+
+        private IReadOnlyList<Document> OpenResourceDocuments(ResourceType type, string resRef)
+        {
+            if (type == ResourceType.Area)
+            {
+                return _openAreaEditors.TryGetValue(resRef, out var area)
+                    ? new Document[] { area }
+                    : Array.Empty<Document>();
+            }
+
+            var workspace = _workspaceContext.Workspace;
+            if (workspace == null)
+                return Array.Empty<Document>();
+
+            if (type == ResourceType.Nss)
+            {
+                var path = workspace.GetResourcePath(type, resRef);
+                return _openScriptEditors.TryGetValue(path, out var script)
+                    ? new Document[] { script }
+                    : Array.Empty<Document>();
+            }
+
+            if (type != ResourceType.Dlg)
+                return Array.Empty<Document>();
+
+            var documents = new List<Document>();
+            var legacyPath = workspace.GetResourcePath(type, resRef);
+            if (_openConversations.TryGetValue(legacyPath, out var conversation))
+                documents.Add(conversation);
+            documents.AddRange(_openNuiConversations.Values.Where(editor =>
+                editor.ResRef.Equals(resRef, StringComparison.OrdinalIgnoreCase)));
+            return documents;
         }
 
         /// <summary>
@@ -1314,6 +1685,12 @@ namespace SWLOR.Toolset.Editors
         /// </summary>
         public async Task<bool> SaveAllAsync()
         {
+            if (_tlkEditor != null &&
+                !await _tlkEditor.TrySaveAsync().ConfigureAwait(true))
+            {
+                return false;
+            }
+
             if (_moduleProperties != null &&
                 !await _moduleProperties.TrySaveAsync().ConfigureAwait(true))
             {
@@ -1411,7 +1788,20 @@ namespace SWLOR.Toolset.Editors
         /// </summary>
         public async Task<bool> TryPrepareApplicationCloseAsync()
         {
-            if (_moduleProperties?.IsDirty != true &&
+            if (_tlkEditorOpening)
+            {
+                _log.AppendLine("Wait for the TLK Editor reference index to finish loading before closing.");
+                return false;
+            }
+
+            // A clean explicit TLK save still regenerates and verifies the JSON/binary pair. Wait
+            // for that transaction before deciding whether shutdown needs a prompt or approving a
+            // discard, so process exit can never interrupt the paired commit.
+            if (_tlkEditor != null)
+                await _tlkEditor.WaitForActiveOperationAsync().ConfigureAwait(true);
+
+            if (_tlkEditor?.IsDirty != true &&
+                _moduleProperties?.IsDirty != true &&
                 !_openEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openTriggerEditors.Values.Any(editor => editor.IsDirty) &&
                 !_openWaypointEditors.Values.Any(editor => editor.IsDirty) &&
@@ -1433,6 +1823,7 @@ namespace SWLOR.Toolset.Editors
             if (choice != UnsavedChangesChoice.Discard)
                 return false;
 
+            _tlkEditor?.ApproveApplicationClose();
             _moduleProperties?.ApproveApplicationClose();
 
             foreach (var editor in _openEditors.Values)
@@ -3312,80 +3703,113 @@ namespace SWLOR.Toolset.Editors
 
             try
             {
-                var arePath = workspace.GetResourcePath(ResourceType.Area, resRef);
-                var gitPath = Path.Combine(workspace.ModuleRoot, "git", resRef + ".git.json");
-                var gicPath = Path.Combine(workspace.ModuleRoot, "gic", resRef + ".gic.json");
-                if (!File.Exists(arePath) || !File.Exists(gitPath) || !File.Exists(gicPath))
+                while (true)
                 {
-                    _log.AppendLine($"Area files not found for '{resRef}' (.are/.git/.gic set required).");
-                    return;
-                }
+                    var arePath = workspace.GetResourcePath(ResourceType.Area, resRef);
+                    var gitPath = Path.Combine(workspace.ModuleRoot, "git", resRef + ".git.json");
+                    var gicPath = Path.Combine(workspace.ModuleRoot, "gic", resRef + ".gic.json");
+                    if (!File.Exists(arePath) || !File.Exists(gitPath) || !File.Exists(gicPath))
+                    {
+                        _log.AppendLine($"Area files not found for '{resRef}' (.are/.git/.gic set required).");
+                        return;
+                    }
 
-                // Both cold operations start together: the module-wide waypoint scan and this
-                // area's file read/JSON parse. Neither owns Avalonia's UI thread, so a large area can
-                // load while the builder keeps working in another document.
-                var transitionTagsTask = GetCurrentTransitionDestinationTagsAsync(workspace);
-                var documentLoadTask = Task.Run(() =>
-                    _areaDocumentsLoader(arePath, gitPath, gicPath));
-                await Task.WhenAll(transitionTagsTask, documentLoadTask).ConfigureAwait(true);
-                var transitionDestinationTags = await transitionTagsTask.ConfigureAwait(true);
-                var loadedDocuments = await documentLoadTask.ConfigureAwait(true);
-                if (transitionDestinationTags == null ||
-                    !ReferenceEquals(workspace, _workspaceContext.Workspace))
-                    return;
+                    // Both cold operations start together: the module-wide waypoint scan and this
+                    // area's file read/JSON parse. Neither owns Avalonia's UI thread, so a large area can
+                    // load while the builder keeps working in another document.
+                    var transitionTagsTask = GetCurrentTransitionDestinationTagsAsync(workspace);
+                    var documentLoadTask = Task.Run(() =>
+                        _areaDocumentsLoader(arePath, gitPath, gicPath));
+                    await Task.WhenAll(transitionTagsTask, documentLoadTask).ConfigureAwait(true);
+                    var transitionDestinationTags = await transitionTagsTask.ConfigureAwait(true);
+                    var loadedDocuments = await documentLoadTask.ConfigureAwait(true);
+                    if (_cancelledAreaEditorLoads.Contains(resRef))
+                        return;
 
-                if (_openAreaEditors.TryGetValue(resRef, out existing))
-                {
-                    _factory.ActivateDocument(existing);
-                    DispatchPendingAreaReveal(existing);
-                    return;
-                }
+                    var currentWorkspace = _workspaceContext.Workspace;
+                    if (transitionDestinationTags == null ||
+                        !ReferenceEquals(workspace, currentWorkspace))
+                    {
+                        // A file-watcher overflow reopens the same module to rebuild its catalog. If
+                        // that replacement lands while a newly generated area is loading, retry with
+                        // the current workspace instead of silently dropping the automatic open. A
+                        // genuinely different module still cancels the stale request.
+                        if (currentWorkspace == null || !string.Equals(
+                                workspace.ModuleRoot,
+                                currentWorkspace.ModuleRoot,
+                                StringComparison.OrdinalIgnoreCase))
+                        {
+                            return;
+                        }
 
-                var editor = new AreaEditorViewModel(
-                    resRef, workspace, _lookups, _gameCodeIndex, _log,
-                    _tilesetCatalog, _tileModelCache, _resourceIndex,
-                    _placeableAppearances, _doorTypes, _tileWalkmeshCache, _prompts,
-                    ResolveBlueprintName, TryOpenEditor,
-                    _tlkService != null ? _tlkService.GetString : null, _waypointAppearances,
-                    _previewRenderer != null
-                        ? (type, blueprintResRef, useIndexed) =>
-                            _previewRenderer.BuildModelResult(type, blueprintResRef, useIndexed)
-                        : null,
-                    CreateScriptSlotHost($"Area '{resRef}'"),
-                    _previewRenderer != null
-                        ? instance => _previewRenderer.BuildModel(ResourceType.Utc, instance)
-                        : null,
-                    new Doors.DoorEditorServices(
-                        resRef,
-                        ResolveDoorTag,
-                        ResolveDoorChoices,
-                        DoorAppearances(),
-                        _resourceIndex,
+                        workspace = currentWorkspace;
+                        continue;
+                    }
+
+                    if (_openAreaEditors.TryGetValue(resRef, out existing))
+                    {
+                        _factory.ActivateDocument(existing);
+                        DispatchPendingAreaReveal(existing);
+                        return;
+                    }
+
+                    // The load started before deletion was reserved and may have completed while the
+                    // delete command was waiting on its filesystem transaction. Do not publish a
+                    // document backed by files that are now being removed.
+                    if (_cancelledAreaEditorLoads.Contains(resRef) || IsResourceOpeningBlocked(resRef))
+                        return;
+
+                    var editor = new AreaEditorViewModel(
+                        resRef, workspace, _lookups, _gameCodeIndex, _log,
+                        _tilesetCatalog, _tileModelCache, _resourceIndex,
+                        _placeableAppearances, _doorTypes, _tileWalkmeshCache, _prompts,
+                        ResolveBlueprintName, TryOpenEditor,
+                        _tlkService != null ? _tlkService.GetString : null, _waypointAppearances,
                         _previewRenderer != null
-                            ? door => _previewRenderer.BuildModelResult(ResourceType.Utd, door)
+                            ? (type, blueprintResRef, useIndexed) =>
+                                _previewRenderer.BuildModelResult(type, blueprintResRef, useIndexed)
                             : null,
-                        _thumbnails,
-                        ChoicePreviews()),
-                    new Waypoints.WaypointEditorServices(
-                        resRef,
-                        new Domain.Editors.Waypoints.WaypointBehaviorCatalog(
-                            _gameCodeIndex,
-                            transitionDestinationTags),
-                        ResolveWaypointChoices,
-                        ChoicePreviews()),
-                    ResolveSoundChoices,
-                    SoundResources(),
-                    SoundPreviews(),
-                    loadedDocuments);
-                editor.Closed += _ => _openAreaEditors.Remove(resRef);
-                editor.TilesetChanged += () => _factory.NotifyActiveAreaChanged();
-                editor.CloseRequested += _ => _factory.CloseDocument(editor);
-                editor.CatalogEntryChanged += () =>
-                    _workspaceContext.RefreshCatalogEntry(ResourceType.Area, resRef);
-                editor.PlacementsChanged += _workspaceContext.InvalidatePlacementIndex;
-                _openAreaEditors[resRef] = editor;
-                _factory.OpenDocument(editor);
-                DispatchPendingAreaReveal(editor);
+                        CreateScriptSlotHost($"Area '{resRef}'"),
+                        _previewRenderer != null
+                            ? instance => _previewRenderer.BuildModel(ResourceType.Utc, instance)
+                            : null,
+                        new Doors.DoorEditorServices(
+                            resRef,
+                            ResolveDoorTag,
+                            ResolveDoorChoices,
+                            DoorAppearances(),
+                            _resourceIndex,
+                            _previewRenderer != null
+                                ? door => _previewRenderer.BuildModelResult(ResourceType.Utd, door)
+                                : null,
+                            _thumbnails,
+                            ChoicePreviews()),
+                        new Waypoints.WaypointEditorServices(
+                            resRef,
+                            new Domain.Editors.Waypoints.WaypointBehaviorCatalog(
+                                _gameCodeIndex,
+                                transitionDestinationTags),
+                            ResolveWaypointChoices,
+                            ChoicePreviews()),
+                        ResolveSoundChoices,
+                        SoundResources(),
+                        SoundPreviews(),
+                        loadedDocuments,
+                        TryEditCopyAndOpenBlueprint,
+                        _mutationLock,
+                        _areaInstanceClipboard,
+                        TlkRowOpener);
+                    editor.Closed += _ => _openAreaEditors.Remove(resRef);
+                    editor.TilesetChanged += () => _factory.NotifyActiveAreaChanged();
+                    editor.CloseRequested += _ => _factory.CloseDocument(editor);
+                    editor.CatalogEntryChanged += () =>
+                        _workspaceContext.RefreshCatalogEntry(ResourceType.Area, resRef);
+                    editor.PlacementsChanged += _workspaceContext.InvalidateGitIndexes;
+                    _openAreaEditors[resRef] = editor;
+                    _factory.OpenDocument(editor);
+                    DispatchPendingAreaReveal(editor);
+                    return;
+                }
             }
             catch (Exception ex)
             {
@@ -3394,6 +3818,7 @@ namespace SWLOR.Toolset.Editors
             finally
             {
                 _openingAreaEditors.Remove(resRef);
+                _cancelledAreaEditorLoads.Remove(resRef);
                 if (!_openAreaEditors.ContainsKey(resRef))
                     _pendingAreaReveals.Remove(resRef);
             }

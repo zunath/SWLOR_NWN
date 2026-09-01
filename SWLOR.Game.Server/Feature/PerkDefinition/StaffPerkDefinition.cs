@@ -405,10 +405,10 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.PatientSentinelTrait)
                 .Description("After 3 seconds without attacking, your next hostile Staff ability gains +10 DMG and +8% Accuracy.")
-                .IncreasesStat(StatType.IdleSkillAbilitySkillType, (int)SkillType.Staff)
-                .IncreasesStat(StatType.IdleSkillAbilityRequiredIdleSeconds, 3)
-                .IncreasesStat(StatType.IdleSkillAbilityDamageBonus, 10)
-                .IncreasesStat(StatType.IdleSkillAbilityHitChancePercentAdjustment, 8)
+                .IncreasesStat(StatType.AlternateIdleSkillAbilitySkillType, (int)SkillType.Staff)
+                .IncreasesStat(StatType.AlternateIdleSkillAbilityRequiredIdleSeconds, 3)
+                .IncreasesStat(StatType.AlternateIdleSkillAbilityDamageBonus, 10)
+                .IncreasesStat(StatType.AlternateIdleSkillAbilityHitChancePercentAdjustment, 8)
                 .Price(2)
                 .RequirementSkill(SkillType.Staff, 35);
         }

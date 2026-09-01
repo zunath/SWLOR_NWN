@@ -1,7 +1,9 @@
 using FluentAssertions;
 using NUnit.Framework;
+using System.Text.RegularExpressions;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Katar;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Pistol;
+using SWLOR.Game.Server.Feature.AbilityDefinition.Rifle;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Spear;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Throwing;
@@ -9,6 +11,7 @@ using SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife;
 using SWLOR.Game.Server.Feature.StatusEffectDefinition;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
@@ -19,6 +22,739 @@ namespace SWLOR.Game.Server.Tests.Perks;
 public class GeneratedWeaponPerkBehaviorTests
 {
     [Test]
+    public void ConfiguredNearTargetStatusEnums_RejectUndefinedStatValues()
+    {
+        var bindingFlags = System.Reflection.BindingFlags.NonPublic |
+                           System.Reflection.BindingFlags.Static;
+        var cleanseMethod = typeof(Combat).GetMethod("GetStatusEffectCleanseTypeFromStat", bindingFlags);
+        var resistanceMethod = typeof(Combat).GetMethod("GetResistanceTypeFromStat", bindingFlags);
+        cleanseMethod.Should().NotBeNull();
+        resistanceMethod.Should().NotBeNull();
+        cleanseMethod!.GetParameters().Select(x => x.Name).Should().Equal("value");
+        resistanceMethod!.GetParameters().Select(x => x.Name).Should().Equal("value");
+
+        var supportedCleanseTypes = StatusEffectCleanseType.Purify | StatusEffectCleanseType.TreatmentKit1;
+        ((StatusEffectCleanseType)cleanseMethod.Invoke(null, new object[] { (int)supportedCleanseTypes })!)
+            .Should().Be(supportedCleanseTypes);
+        ((StatusEffectCleanseType)cleanseMethod.Invoke(null, new object[] { 16 })!)
+            .Should().Be(StatusEffectCleanseType.None);
+        ((ResistanceType)resistanceMethod.Invoke(null, new object[] { (int)ResistanceType.Trauma })!)
+            .Should().Be(ResistanceType.Trauma);
+        ((ResistanceType)resistanceMethod.Invoke(null, new object[] { 999 })!)
+            .Should().Be(ResistanceType.Invalid);
+
+        var combatSource = File.ReadAllText(Path.Combine(
+            FindRepositoryRoot().FullName,
+            "SWLOR.Game.Server",
+            "Service",
+            "Combat.cs"));
+        combatSource.Should().Contain("var icon = GetEffectIconTypeFromStat(");
+        combatSource.Should().Contain("var cleanseTypes = GetStatusEffectCleanseTypeFromStat(");
+        combatSource.Should().Contain("var resistanceType = GetResistanceTypeFromStat(");
+    }
+
+    [Test]
+    public void ReportedFailPerks_ExposeTheirPromisedStatusStatsAndTargeting()
+    {
+        AssertStatusStat(new FlashStatusEffect(20), StatType.PhysicalAndForceAbilityHitChancePercentAdjustment, -20);
+        AssertStatusStat(new FlashStatusEffect(20), StatType.AbilityHitChancePercentAdjustment, 0);
+
+        var soulAscension = new SoulAscensionStatusEffect();
+        AssertStatusStat(soulAscension, StatType.AttackPercentAdjustment, 8);
+        AssertStatusStat(soulAscension, StatType.PhysicalDamageDealtHPPercentRestore, 8);
+        soulAscension.Categories.Should().HaveFlag(StatusEffectCategory.Buff);
+
+        AssertStatusStat(new AdamantineGuardStatusEffect(), StatType.GuardDamageReductionPercentAdjustment, 20);
+        Combat.MaximumGuardDamageReductionPercent.Should().Be(55);
+
+        AssertStatusStat(new DisarmingShotStatusEffect(18), StatType.AttackPercentAdjustment, -18);
+        AssertStatusStat(new PointBlankBurstStatusEffect(15), StatType.EvasionPercentAdjustment, 15);
+        AssertStatusStat(
+            new RangedDeflectionStatusEffect(12, EffectIconType.SnapRollStatusEffect),
+            StatType.RangedDeflection,
+            12);
+        var damageDealtAdjustment = new DamageDealtAdjustmentStatusEffect(
+            -10,
+            16780744,
+            EffectIconType.DuelistsDistanceStatusEffect,
+            StatusEffectCleanseType.TreatmentKit1,
+            ResistanceType.Trauma);
+        AssertStatusStat(damageDealtAdjustment, StatType.DamageDealtPercentAdjustment, -10);
+        damageDealtAdjustment.Icon.Should().Be(EffectIconType.DuelistsDistanceStatusEffect);
+        damageDealtAdjustment.Categories.Should().Be(StatusEffectCategory.Debuff);
+        damageDealtAdjustment.CleanseTypes.Should().Be(StatusEffectCleanseType.TreatmentKit1);
+        damageDealtAdjustment.ResistanceType.Should().Be(ResistanceType.Trauma);
+        damageDealtAdjustment.CanApply(0).Should().BeEmpty();
+        var clonedDamageDealtAdjustment = damageDealtAdjustment.Clone();
+        AssertStatusStat(clonedDamageDealtAdjustment, StatType.DamageDealtPercentAdjustment, -10);
+        clonedDamageDealtAdjustment.Icon.Should().Be(EffectIconType.DuelistsDistanceStatusEffect);
+        clonedDamageDealtAdjustment.CleanseTypes.Should().Be(StatusEffectCleanseType.TreatmentKit1);
+        clonedDamageDealtAdjustment.ResistanceType.Should().Be(ResistanceType.Trauma);
+        var limitedHaste = new LimitedHasteStatusEffect(
+            20,
+            2,
+            SkillType.Invalid,
+            EffectIconType.ReloadTempoStatusEffect,
+            new AbilityImpactSummary());
+        limitedHaste.AttackDelayReductionPercent.Should().Be(20);
+        limitedHaste.AppliesToSkill(SkillType.Pistol).Should().BeTrue();
+        limitedHaste.AppliesToSkill(SkillType.Rifle).Should().BeTrue(
+            "Reload Tempo promises Haste for the next two attacks, not only Pistol attacks");
+        AssertStatusStat(limitedHaste, StatType.AttackDelayReductionPercent, 0);
+
+        var deadMansHandStatus = new DeadMansHandStatusEffect();
+        AssertStatusStat(deadMansHandStatus, StatType.RangedCriticalRatePercentAdjustment, 20);
+        AssertStatusStat(deadMansHandStatus, StatType.RangedAttackNoDelay, 1);
+
+        var deadMansHand = new DeadMansHandAbilityDefinition().BuildAbilities()[FeatType.DeadMansHand1];
+        deadMansHand.IsHostileAbility.Should().BeTrue();
+        deadMansHand.IsAreaAbility.Should().BeFalse();
+        deadMansHand.RequiresTarget.Should().BeTrue();
+        deadMansHand.Targeting.Should().BeNull();
+    }
+
+    [Test]
+    public void SoulAscension_ContributesEightPercentToRuntimePhysicalDamageHealing()
+    {
+        const uint Creature = 418;
+        const int PhysicalDamage = 125;
+        var bindingFlags = System.Reflection.BindingFlags.NonPublic |
+                           System.Reflection.BindingFlags.Static;
+        var creatureEffects = (Dictionary<uint, CreatureStatusEffect>)typeof(StatusEffect)
+            .GetField("_creatureEffects", bindingFlags)!
+            .GetValue(null)!;
+
+        try
+        {
+            var tracker = new CreatureStatusEffect();
+            creatureEffects[Creature] = tracker;
+            tracker.Add(new SoulAscensionStatusEffect());
+
+            var restorePercent = Stat.GetStatAdjustment(
+                Creature,
+                StatType.PhysicalDamageDealtHPPercentRestore);
+            restorePercent.Should().Be(8,
+                "the applied status must participate in the same runtime stat aggregation Combat reads");
+
+            var requestedHealing = GameMath.PercentOf(PhysicalDamage, restorePercent);
+            requestedHealing.Should().Be(10);
+            Combat.CalculateCappedDamageDerivedHealingAmount(PhysicalDamage, 0, requestedHealing)
+                .Should()
+                .Be(10, "Soul Ascension is below the shared per-hit healing cap");
+        }
+        finally
+        {
+            creatureEffects.Remove(Creature);
+        }
+    }
+
+    [Test]
+    public void ReportedFailPerks_WireVisibleEffectsAndCombatFeedback()
+    {
+        var root = FindRepositoryRoot();
+        var disarmingShot = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Pistol", "DisarmingShotAbilityDefinition.cs"));
+        (disarmingShot.Split("StatusEffectFactory = () => new DisarmingShotStatusEffect(").Length - 1).Should().Be(4);
+
+        var pointBlankBurst = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Pistol", "PointBlankBurstAbilityDefinition.cs"));
+        (pointBlankBurst.Split("SelfStatusEffectFactory = () => new PointBlankBurstStatusEffect(").Length - 1).Should().Be(2);
+        (pointBlankBurst.Split("ApplySelfModifiersOnHostileActivation = true").Length - 1).Should().Be(2);
+
+        var quickDraw = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Pistol", "QuickDrawAbilityDefinition.cs"));
+        (quickDraw.Split("CriticalRateIfNotRecentTargetFeedbackLabel = \"Quick Draw\"").Length - 1).Should().Be(4);
+
+        var doubleShot = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Pistol", "DoubleShotAbilityDefinition.cs"));
+        (doubleShot.Split("RestoreStaminaIfAnyCriticalHitFeedbackLabel = \"Double Shot\"").Length - 1).Should().Be(3);
+
+        var combat = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        combat.Should().Contain("High Noon +{adjustment}% critical damage");
+        combat.Should().Contain("Next ranged ability +{currentTotal}% Critical Rate");
+        combat.Should().Contain("Ranged attack +{criticalRate}% Critical Rate");
+        combat.Should().Contain("new CriticalRateStackTrackerStatusEffect(");
+        combat.Should().Contain("new AttackCycleTrackerStatusEffect(");
+        combat.Should().NotContain("new DeadeyeReloadStatusEffect(");
+        combat.Should().NotContain("new LuckyChamberStatusEffect(");
+        combat.Should().Contain("ConsumePersistentNextSkillAbilityCriticalRateBonus");
+        var criticalTracker = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "CriticalRateStackTrackerStatusEffect.cs"));
+        var cycleTracker = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "AttackCycleTrackerStatusEffect.cs"));
+        criticalTracker.Should().Contain("[StatConfiguredIcon]");
+        criticalTracker.Should().Contain("Critical Rate stack tracker requires a configured status icon.");
+        cycleTracker.Should().Contain("[StatConfiguredIcon]");
+        cycleTracker.Should().Contain("Attack cycle tracker requires a configured status icon.");
+        var resolveAttackRoll = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
+        var luckyChamberPreparation = resolveAttackRoll.IndexOf(
+            "Combat.PrepareAutoAttackCycleCriticalRate(attacker.m_idSelf, weaponSkillType)",
+            StringComparison.Ordinal);
+        var hitBranch = resolveAttackRoll.IndexOf("if (isHit)", StringComparison.Ordinal);
+        luckyChamberPreparation.Should().BeGreaterThan(-1);
+        luckyChamberPreparation.Should().BeLessThan(hitBranch,
+            "Lucky Chamber must advance before hit, miss, or deflection resolution");
+        resolveAttackRoll.Should().Contain("autoAttackCycleCriticalRate);");
+        resolveAttackRoll.Should().Contain("Combat.StoreQueuedWeaponAbilityCriticalRateBonus(");
+        var ability = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
+        ability.Should().Contain("Combat.ConsumeQueuedWeaponAbilityBonuses(activator, abilitySkillType)");
+        combat.Should().Contain("new DamageDealtAdjustmentStatusEffect(");
+        combat.Should().NotContain("new DuelistsDistanceStatusEffect(",
+            "shared combat must not couple generic near-target stats to one perk-specific status class");
+        var configuredDamageDealtStatus = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "StatusEffectDefinition",
+            "DamageDealtAdjustmentStatusEffect.cs"));
+        configuredDamageDealtStatus.Should().NotContain("Duelist",
+            "the reusable damage-dealt status must not inherit any perk identity or metadata");
+        combat.Should().Contain("new LimitedHasteStatusEffect(");
+        combat.Should().NotContain("new ReloadTempoStatusEffect(");
+        combat.Should().NotContain("new SnapRollStatusEffect(");
+
+        var pistolPerks = ReadPerkDefinition("PistolPerkDefinition.cs");
+        pistolPerks.Should().Contain("StatType.CriticalHitLimitedHasteStatusEffectIcon");
+        pistolPerks.Should().Contain("EffectIconType.ReloadTempoStatusEffect");
+
+        var deadMansHandStatus = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Feature", "StatusEffectDefinition", "DeadMansHandStatusEffect.cs"));
+        deadMansHandStatus.Should().Contain("Combat.IsRangedWeaponSkill(skillType)");
+        deadMansHandStatus.Should().Contain("StatType.RangedAttackNoDelay");
+        deadMansHandStatus.Should().Contain("ILimitedAttackNoDelayStatusEffect");
+        deadMansHandStatus.Should().NotContain("Combat.GrantNextAutoAttackNoDelay(");
+        deadMansHandStatus.Should().NotContain("Combat.GetEquippedWeaponSkillType(attacker)",
+            "the no-delay stat must follow every ranged skill rather than the initially equipped weapon");
+
+        var tagIn = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Katar", "TagInAbilityDefinition.cs"));
+        tagIn.Should().Contain("FriendlyTargetTemporaryHPUsesActivatorMaximum = true");
+
+        var flash = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "HeavyVibroblade", "FlashAbilityDefinition.cs"));
+        flash.Should().Contain("statusEffectFactory: () => new FlashStatusEffect(20)");
+        flash.Should().Contain("damagePercentAdjustment: _ => -100");
+        flash.Should().Contain("canCritical: false");
+
+        combat.Should().Contain("StatType.PhysicalDamageDealtHPPercentRestore");
+        combat.Should().Contain("ApplyDamageDerivedHealing(attacker, damage, hpRestorePercent)");
+    }
+
+    [Test]
+    public void RifleReportedFailures_GenerateConditionalHeadshotAndPlacedKillBoxBehavior()
+    {
+        var root = FindRepositoryRoot();
+        var headshotSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "Rifle",
+            "HeadshotAbilityDefinition.cs"));
+        (headshotSource.Split("IsQueuedWeaponAbility = true").Length - 1).Should().Be(2);
+        (headshotSource.Split("IdleWindowSeconds = 3.0f").Length - 1).Should().Be(2);
+        headshotSource.Should().Contain("CriticalRateIfIdle = 15");
+        headshotSource.Should().Contain("CriticalRateIfIdle = 25");
+        headshotSource.Should().NotContain("CriticalRatePercentAdjustment =");
+        headshotSource.Should().NotContain("SelfCriticalRatePercent =");
+
+        var headshotAbilities = new HeadshotAbilityDefinition().BuildAbilities();
+        headshotAbilities[FeatType.Headshot1].ActivationType.Should().Be(AbilityActivationType.Weapon);
+        headshotAbilities[FeatType.Headshot2].ActivationType.Should().Be(AbilityActivationType.Weapon);
+
+        var killBox = new KillBoxAbilityDefinition().BuildAbilities()[FeatType.KillBox1];
+        killBox.RequiresTarget.Should().BeFalse();
+        killBox.Targeting.Should().NotBeNull();
+        killBox.Targeting!.Shape.Should().Be(AbilityTargetingShapeType.Sphere);
+        killBox.Targeting.SizeX.Should().Be(8f);
+        killBox.Targeting.Flags.Should().HaveFlag(AbilityTargetingFlags.HarmsEnemies);
+        killBox.Targeting.Flags.Should().NotHaveFlag(AbilityTargetingFlags.OriginOnSelf);
+
+        var featRows = Read2da(root, "SWLOR_Haks", "sw_2da", "feat.2da");
+        var spellRows = Read2da(root, "SWLOR_Haks", "sw_2da", "spells.2da");
+        foreach (var feat in new[] { FeatType.Headshot1, FeatType.Headshot2 })
+        {
+            var featRow = featRows[(int)feat];
+            featRow["TARGETSELF"].Should().Be("1");
+            featRow["HostileFeat"].Should().Be("****");
+            var spellRow = spellRows[int.Parse(featRow["SPELLID"])];
+            spellRow["TargetType"].Should().Be("0x03");
+            spellRow["HostileSetting"].Should().Be("0");
+        }
+
+        var killBoxFeatRow = featRows[(int)FeatType.KillBox1];
+        killBoxFeatRow["TARGETSELF"].Should().Be("****");
+        killBoxFeatRow["HostileFeat"].Should().Be("1");
+        var killBoxSpellRow = spellRows[int.Parse(killBoxFeatRow["SPELLID"])];
+        killBoxSpellRow["TargetType"].Should().Be("0x3E");
+        killBoxSpellRow["HostileSetting"].Should().Be("1");
+        killBoxSpellRow["TargetShape"].Should().Be("sphere");
+        killBoxSpellRow["TargetSizeX"].Should().Be("8");
+        killBoxSpellRow["TargetFlags"].Should().Be("1");
+
+        featRows[(int)FeatType.ForceSpark3]["SPELLID"].Should().Be("988");
+        foreach (var (feat, spellId) in new[]
+                 {
+                     (FeatType.Stealth1, "1711"),
+                     (FeatType.Stealth2, "1712"),
+                     (FeatType.Stealth3, "1713"),
+                     (FeatType.Stealth4, "1714")
+                 })
+        {
+            featRows[(int)feat]["SPELLID"].Should().Be(spellId);
+        }
+
+        var combatSource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        combatSource.Should().Contain("QueuedWeaponAbilityActivationCriticalRatePercentAdjustment");
+        combatSource.Should().Contain("criticalRate += TemporaryStatModifier.Consume(");
+
+        var usePerkFeatSource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs"));
+        usePerkFeatSource.Should().Contain("ability.ActivationAction.Invoke(");
+        usePerkFeatSource.Should().Contain("ClearQueuedWeaponAbilityActivationBonuses");
+    }
+
+    [Test]
+    public void OneShot_CapturesIdleConditionAtActivationAndClearsItAfterImpact()
+    {
+        var root = FindRepositoryRoot();
+        var oneShotSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "Rifle",
+            "OneShotAbilityDefinition.cs"));
+        oneShotSource.Should().Contain("IdleWindowSeconds = 3.0f");
+        oneShotSource.Should().Contain("CriticalRateIfIdle = 25");
+        oneShotSource.Should().Contain("DefenseIgnoreIfIdle = 25");
+
+        var weaponBaseSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "WeaponActiveAbilityDefinitionBase.cs"));
+        var activationIndex = weaponBaseSource.IndexOf(
+            "profile.PrepareActivationIdleBonuses(activator);",
+            StringComparison.Ordinal);
+        var impactIndex = weaponBaseSource.IndexOf(
+            ".HasImpactAction((activator, target, level, targetLocation) =>",
+            StringComparison.Ordinal);
+        activationIndex.Should().BeGreaterThanOrEqualTo(0);
+        activationIndex.Should().BeLessThan(impactIndex,
+            "the idle qualification must be captured before the delayed impact begins");
+        weaponBaseSource.Should().Contain("GetWeaponAbilityActivationIdleCriticalRateBonus(activator)");
+        weaponBaseSource.Should().Contain("GetWeaponAbilityActivationIdleDefenseIgnorePercent(activator)");
+        weaponBaseSource.Should().Contain("Combat.ClearWeaponAbilityActivationIdleBonuses(activator);");
+        var snapshotSource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        snapshotSource.Should().Contain("isIdle ? criticalRatePercentAdjustment : 0");
+        snapshotSource.Should().Contain("isIdle ? defenseIgnorePercent : 0");
+    }
+
+    [Test]
+    public void QueuedWeaponNativeRolls_UseGenericLongRangeAccuracyAdjustment()
+    {
+        var root = FindRepositoryRoot();
+        var combatSource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var nativeSource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
+
+        combatSource.Should().Contain("public static int GetRangedAbilityLongRangeHitChanceAdjustment(");
+        combatSource.Should().Contain("RangedAbilityLongRangeHitChancePercentAdjustment");
+        nativeSource.Should().Contain("Combat.GetRangedAbilityLongRangeHitChanceAdjustment(");
+        nativeSource.Should().Contain("queuedWeaponAbilityLongRangeHitChanceAdjustment");
+        nativeSource.Should().NotContain("Headshot");
+    }
+
+    [Test]
+    public void QueuedWeaponActivation_SnapshotsOpeningRidersBeforeHostileActivity()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "WeaponActiveAbilityDefinitionBase.cs"));
+        var snapshotIndex = source.IndexOf(
+            "Combat.PrepareQueuedWeaponAbilityOpeningAttackAtActivation(activator, skill);",
+            StringComparison.Ordinal);
+        snapshotIndex.Should().BeGreaterThanOrEqualTo(0);
+        source.Should().NotContain("Combat.TrackHostileAbilityActivity(activator, true);",
+            "queued ability use is recorded only after the queue succeeds");
+        var combatSource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        var openingSnapshotIndex = combatSource.IndexOf(
+            "public static void PrepareQueuedWeaponAbilityOpeningAttackAtActivation(uint attacker, SkillType skillType)",
+            StringComparison.Ordinal);
+        openingSnapshotIndex.Should().BeGreaterThanOrEqualTo(0);
+        var openingSnapshot = combatSource.Substring(
+            openingSnapshotIndex,
+            Math.Min(1500, combatSource.Length - openingSnapshotIndex));
+        openingSnapshot.Should().Contain("StoreQueuedWeaponAbilityActivationOpeningBonuses(",
+            "activation-owned opening riders must survive misses while the queued ability remains armed");
+        openingSnapshot.Should().NotContain("StoreQueuedWeaponAbilityAttemptBonuses(",
+            "per-swing bonuses are cleared after misses and defensive avoidance");
+        combatSource.Should().Contain("private static void StoreQueuedWeaponAbilityActivationOpeningBonuses(");
+        combatSource.Should().Contain("criticalDamagePercentAdjustment = Math.Max(",
+            "overlapping shared and opening Critical Damage riders must not double-count");
+        var nativeSource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
+        nativeSource.Should().NotContain("PrepareQueuedWeaponAbilityOpeningAttack(",
+            "opening riders are activation snapshots and must not consume later auto-attack modifiers");
+    }
+
+    [Test]
+    public void CastedWeaponActivation_SnapshotsSharedIdleBonusesBeforeHostileActivity()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "WeaponActiveAbilityDefinitionBase.cs"));
+        source.Should().Contain("if (isHostile && !profile.IsQueuedWeaponAbility)");
+        source.Should().Contain("Combat.StoreAbilityActivationIdleBonuses(activator, skill);");
+
+        var combatSource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        combatSource.Should().Contain("CalculateIdleSkillAbilityBonuses(activator, skillType)");
+        combatSource.Should().Contain("AbilityActivationIdleHitChancePercentAdjustment");
+        combatSource.Should().Contain("ClearAbilityActivationIdleBonuses(activator);");
+        var usePerkFeatSource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Feature", "UsePerkFeat.cs"));
+        usePerkFeatSource.Should().Contain("ClearAbilityActivationIdleSnapshots(activator);");
+        usePerkFeatSource.Should().Contain("Combat.ClearAbilityActivationIdleBonuses(activator);");
+        usePerkFeatSource.Should().Contain("Combat.ClearWeaponAbilityActivationIdleBonuses(activator);");
+        usePerkFeatSource.Should().Contain("Combat.ClearQueuedWeaponAbilityAttemptBonuses(player);");
+        var rejectedQueueIndex = usePerkFeatSource.IndexOf("if (!executeQueue)", StringComparison.Ordinal);
+        rejectedQueueIndex.Should().BeGreaterThanOrEqualTo(0);
+        var rejectedQueueBody = usePerkFeatSource.Substring(rejectedQueueIndex, 400);
+        rejectedQueueBody.Should().Contain("Combat.ClearQueuedWeaponAbilityActivationBonuses(activator);");
+        rejectedQueueBody.Should().Contain("Combat.ClearQueuedWeaponAbilityAttemptBonuses(activator);");
+        rejectedQueueBody.Should().Contain("ClearAbilityActivationIdleSnapshots(activator);");
+        var queuedUseIndex = usePerkFeatSource.IndexOf(
+            "Combat.TrackQueuedWeaponAbilityUse(activator, ability);",
+            StringComparison.Ordinal);
+        var queueIndex = usePerkFeatSource.IndexOf(
+            "QueueWeaponAbility(activator, target, ability, feat);",
+            StringComparison.Ordinal);
+        queuedUseIndex.Should().BeGreaterThan(queueIndex,
+            "Suppression and offensive activity should be recorded only after the weapon ability is queued");
+        var combatActivationSource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        combatActivationSource.Should().Contain("if (ability.ActivationType != AbilityActivationType.Weapon)");
+        combatActivationSource.Should().Contain("public static void TrackQueuedWeaponAbilityUse(uint activator, AbilityDetail ability)");
+    }
+
+    [Test]
+    public void LimitedAttackBuffs_ConsumeOneChargePerOriginatingAttack()
+    {
+        var counter = new LimitedAttackCounter(3);
+        var firstAbilityImpact = new AbilityImpactSummary();
+        var secondAbilityImpact = new AbilityImpactSummary();
+
+        counter.TryConsume(firstAbilityImpact).Should().BeTrue();
+        counter.TryConsume(firstAbilityImpact).Should().BeFalse("additional hits and targets belong to the same attack");
+        counter.RemainingAttacks.Should().Be(2);
+
+        counter.TryConsume(secondAbilityImpact).Should().BeTrue();
+        counter.RemainingAttacks.Should().Be(1);
+
+        counter.TryConsume(null).Should().BeTrue("each native auto-attack arrives without an ability impact");
+        counter.RemainingAttacks.Should().Be(0);
+        counter.TryConsume(null).Should().BeFalse();
+    }
+
+    [Test]
+    public void LimitedAttackBuffs_DoNotConsumeTheAbilityThatGrantedThem()
+    {
+        var triggeringAbilityImpact = new AbilityImpactSummary();
+        var followingAbilityImpact = new AbilityImpactSummary();
+        var abilityCounter = new LimitedAttackCounter(2, triggeringAbilityImpact);
+
+        abilityCounter.TryConsume(triggeringAbilityImpact).Should().BeFalse();
+        abilityCounter.TryConsume(triggeringAbilityImpact).Should().BeFalse("all damage callbacks belong to the triggering impact");
+        abilityCounter.RemainingAttacks.Should().Be(2);
+        abilityCounter.TryConsume(followingAbilityImpact).Should().BeTrue();
+        abilityCounter.RemainingAttacks.Should().Be(1);
+    }
+
+    [Test]
+    public void ReloadTempo_ConsumesAnyAttackSkillAndRemovesOnTheFinalAttempt()
+    {
+        var effect = new LimitedHasteStatusEffect(
+            20,
+            2,
+            SkillType.Invalid,
+            EffectIconType.ReloadTempoStatusEffect,
+            null);
+        var attemptEffect = (IAttackAttemptStatusEffect)effect;
+
+        attemptEffect.OnAttackAttemptedEffect(0, SkillType.Rifle, null);
+        effect.IsFlaggedForRemoval.Should().BeFalse(
+            "the first attack spends one of Reload Tempo's two charges");
+
+        attemptEffect.OnAttackAttemptedEffect(0, SkillType.Pistol, null);
+        effect.IsFlaggedForRemoval.Should().BeTrue(
+            "an attempt is spent even when no damage callback was produced");
+    }
+
+    [Test]
+    public void DeadMansHand_PreservesThreeChargesAfterTheGrantingCritical()
+    {
+        var root = FindRepositoryRoot();
+        var abilitySource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "Pistol",
+            "DeadMansHandAbilityDefinition.cs"));
+        abilitySource.Should().Contain("SelfStatusEffectOnCriticalHitIsPermanent = true",
+            "the Bible promises the next three ranged attacks without an expiration window");
+        abilitySource.Should().NotContain("SelfStatusEffectOnCriticalHitDurationSeconds = 30");
+
+        var grantingImpact = new AbilityImpactSummary();
+        var effect = new DeadMansHandStatusEffect(grantingImpact);
+        var attemptEffect = (IAttackAttemptStatusEffect)effect;
+
+        attemptEffect.OnAttackAttemptedEffect(0, SkillType.Pistol, grantingImpact);
+        effect.RemainingAttacks.Should().Be(3,
+            "the critical impact that granted the status is not one of the next three attacks");
+        var clone = (DeadMansHandStatusEffect)effect.Clone();
+        ((IAttackAttemptStatusEffect)clone).OnAttackAttemptedEffect(
+            0,
+            SkillType.Pistol,
+            grantingImpact);
+        clone.RemainingAttacks.Should().Be(3,
+            "cloning must preserve the ignored granting impact and all remaining charges");
+    }
+
+    [Test]
+    public void AttackAttemptNotifications_CoverNativeMissesAndCompletedHostileAbilities()
+    {
+        var root = FindRepositoryRoot();
+        var nativeSource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
+        nativeSource.Should().Contain("StatusEffect.NotifyAttackAttemptStatusEffects(");
+        nativeSource.Should().Contain("UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType)");
+        nativeSource.Should().Contain("GetCurrentAttackWeapon(isOffHandAttack ? 1 : 0)");
+        var placeableBranchIndex = nativeSource.IndexOf(
+            "if (targetObject.m_nObjectType != (int)ObjectType.Creature)",
+            StringComparison.Ordinal);
+        var placeableReturnIndex = nativeSource.IndexOf(
+            "ProfilerPlugin.PopPerfScope();",
+            placeableBranchIndex,
+            StringComparison.Ordinal);
+        var placeableNotificationIndex = nativeSource.IndexOf(
+            "StatusEffect.NotifyAttackAttemptStatusEffects(",
+            placeableBranchIndex,
+            StringComparison.Ordinal);
+        var placeableBranch = nativeSource[placeableBranchIndex..placeableReturnIndex];
+        placeableBranch.Should().Contain("!UsePerkFeat.HasQueuedWeaponAbility(attacker.m_idSelf, weaponSkillType)",
+            "queued placeable hits are finalized by Ability.EndAbilityImpact and must not spend two charges");
+        placeableNotificationIndex.Should().BeGreaterThan(placeableBranchIndex);
+        placeableNotificationIndex.Should().BeLessThan(placeableReturnIndex,
+            "automatic hits against destructible placeables must spend attack charges");
+
+        var abilitySource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Service", "Ability.cs"));
+        abilitySource.Should().Contain(
+            "if (impact.Ability.IsHostileAbility && impact.CountsAsAttackAttempt)");
+        abilitySource.Should().Contain("impact.Summary.SkillType");
+
+        var creepingTerrorSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "Force",
+            "CreepingTerrorAbilityDefinition.cs"));
+        creepingTerrorSource.Should().Contain("countsAsAttackAttempt: false",
+            "periodic field pulses are effects, not new attack attempts");
+
+        var statusEffectSource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Service", "StatusEffect.cs"));
+        statusEffectSource.Should().Contain("effect.IsFlaggedForRemoval");
+        statusEffectSource.Should().Contain("effect.SendsWornOffMessage");
+        statusEffectSource.Should().Contain("TryGetLimitedAttackDelayReduction(");
+        statusEffectSource.Should().Contain("TryGetLimitedAttackNoDelay(");
+
+        var deadMansHandSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "StatusEffectDefinition",
+            "DeadMansHandStatusEffect.cs"));
+        deadMansHandSource.Should().Contain("StatType.RangedAttackNoDelay");
+        deadMansHandSource.Should().Contain("ILimitedAttackNoDelayStatusEffect");
+
+        var attackHookSource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Native", "OnAIActionAttackObject.cs"));
+        var combatRoundGuardIndex = attackHookSource.IndexOf("if (pCombatRound == null)", StringComparison.Ordinal);
+        var weaponLookupIndex = attackHookSource.IndexOf("pCombatRound.GetWeaponAttackType()", StringComparison.Ordinal);
+        combatRoundGuardIndex.Should().BeGreaterThanOrEqualTo(0);
+        combatRoundGuardIndex.Should().BeLessThan(weaponLookupIndex,
+            "the unmanaged hook must reject a missing combat round before dereferencing it");
+        attackHookSource.Should().Contain("Combat.CalculateAttackDelay(pCreature.m_idSelf, limitedAttackDelayReductionPercent)",
+            "Limited Haste must be applied only after the swing's actual weapon skill matches");
+
+        var combatSource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        combatSource.Should().Contain("if (isFirstSuccessfulTarget)");
+        combatSource.Should().Contain("ApplyLeadershipVanguardImpactRiders(activator)");
+
+        var generatedWeaponSource = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "WeaponActiveAbilityDefinitionBase.cs"));
+        var criticalStatusIndex = generatedWeaponSource.IndexOf(
+            "SelfStatusEffectOnCriticalHitFactory(summary)",
+            StringComparison.Ordinal);
+        var positiveDamageGuardIndex = generatedWeaponSource.IndexOf(
+            "if (totalDamage <= 0)",
+            StringComparison.Ordinal);
+        criticalStatusIndex.Should().BeGreaterThanOrEqualTo(0);
+        criticalStatusIndex.Should().BeLessThan(positiveDamageGuardIndex,
+            "zero-damage critical hits must still grant their critical-triggered status");
+    }
+
+    [Test]
+    public void LimitedHasteGrantedDuringNativeSwing_IsDeferredUntilPrecomputedRollsFinish()
+    {
+        var root = FindRepositoryRoot();
+        var nativeAttackSource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Native", "OnAIActionAttackObject.cs"));
+        var statusEffectSource = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Service", "StatusEffect.cs"));
+
+        var beginSwing = nativeAttackSource.IndexOf(
+            "StatusEffect.BeginNativeAttackSwing(pCreature.m_idSelf);",
+            StringComparison.Ordinal);
+        var resolveAttack = nativeAttackSource.IndexOf(
+            "pCreature.ResolveAttack(oidTarget, nAttacks, nTimeAnimation);",
+            StringComparison.Ordinal);
+        var endSwing = nativeAttackSource.IndexOf(
+            "StatusEffect.EndNativeAttackSwing(pCreature.m_idSelf);",
+            StringComparison.Ordinal);
+
+        beginSwing.Should().BeGreaterThanOrEqualTo(0);
+        resolveAttack.Should().BeGreaterThan(beginSwing);
+        endSwing.Should().BeGreaterThan(resolveAttack);
+        nativeAttackSource[beginSwing..endSwing].Should().Contain("try");
+        nativeAttackSource[resolveAttack..endSwing].Should().Contain("finally");
+        statusEffectSource.Should().Contain(
+            "statusEffect is not ILimitedAttackDelayReductionStatusEffect");
+        statusEffectSource.Should().Contain(
+            "statusEffect is not ILimitedAttackNoDelayStatusEffect");
+        statusEffectSource.Should().Contain("_nativeAttackSwingDepth.Remove(attacker);");
+        statusEffectSource.Should().Contain(
+            "deferredEffects.Add(() => ApplyStatusEffectInternal(",
+            "a speed effect granted by a precomputed roll must become active only after the swing ends");
+    }
+
+    [Test]
+    public void LimitedHasteApplication_IsQueuedWhileNativeSwingResolves()
+    {
+        AssertLimitedAttackEffectIsQueuedWhileNativeSwingResolves(
+            312,
+            new LimitedHasteStatusEffect(
+                20,
+                2,
+                SkillType.Pistol,
+                EffectIconType.ReloadTempoStatusEffect,
+                null));
+    }
+
+    [Test]
+    public void LimitedNoDelayApplication_IsQueuedWhileNativeSwingResolves()
+    {
+        AssertLimitedAttackEffectIsQueuedWhileNativeSwingResolves(313, new DeadMansHandStatusEffect());
+    }
+
+    private static void AssertLimitedAttackEffectIsQueuedWhileNativeSwingResolves(
+        uint creature,
+        IStatusEffect statusEffect)
+    {
+        var bindingFlags = System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static;
+        var swingDepth = (System.Collections.IDictionary)typeof(StatusEffect)
+            .GetField("_nativeAttackSwingDepth", bindingFlags)!
+            .GetValue(null)!;
+        var deferredEffects = (System.Collections.IDictionary)typeof(StatusEffect)
+            .GetField("_deferredNativeAttackStatusEffects", bindingFlags)!
+            .GetValue(null)!;
+        var creatureEffects = (System.Collections.IDictionary)typeof(StatusEffect)
+            .GetField("_creatureEffects", bindingFlags)!
+            .GetValue(null)!;
+
+        try
+        {
+            StatusEffect.BeginNativeAttackSwing(creature);
+            StatusEffect.ApplyStatusEffect(creature, creature, statusEffect, 30f)
+                .Should()
+                .BeTrue();
+
+            StatusEffect.GetCreatureStatusEffects(creature).GetAllEffects().Should().BeEmpty(
+                "the effect cannot benefit or be consumed by rolls that were scheduled before it was granted");
+            deferredEffects.Contains(creature).Should().BeTrue();
+        }
+        finally
+        {
+            swingDepth.Remove(creature);
+            deferredEffects.Remove(creature);
+            creatureEffects.Remove(creature);
+        }
+    }
+
+    [Test]
+    public void SnapRoll_GrantsOnlyRangedDeflectionAndLastWordRefreshesIt()
+    {
+        var pistolPerks = ReadPerkDefinition("PistolPerkDefinition.cs");
+        var start = pistolPerks.IndexOf("private void SnapRoll()", StringComparison.Ordinal);
+        var end = pistolPerks.IndexOf("private void InterruptingShot()", start, StringComparison.Ordinal);
+        var snapRoll = pistolPerks[start..end];
+
+        snapRoll.Should().Contain("StatType.AbilityUsedRangedDeflection");
+        snapRoll.Should().Contain("StatType.AbilityUsedRangedDeflectionStatusEffectIcon");
+        snapRoll.Should().Contain("EffectIconType.SnapRollStatusEffect");
+        snapRoll.Should().NotContain("StatType.AbilityUsedAttackDeflection");
+
+        var root = FindRepositoryRoot();
+        var lastWord = File.ReadAllText(Path.Combine(
+            root.FullName, "SWLOR.Game.Server", "Feature", "AbilityDefinition", "Pistol", "LastWordAbilityDefinition.cs"));
+        lastWord.Should().Contain("TemporaryAvoidedAttackAbilityUsedRangedDeflectionRefreshDurationSeconds = 30");
+
+        var combat = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "Combat.cs"));
+        combat.Should().Contain("new RangedDeflectionStatusEffect(deflection, statusEffectIcon)");
+        combat.Should().NotContain("new SnapRollStatusEffect(");
+        combat.Should().NotContain("ApplyAvoidedAttackAbilityUsedEvasionRefresh");
+
+        var applyStart = combat.IndexOf(
+            "private static void ApplyAbilityUsedSkillRangedDeflection(",
+            StringComparison.Ordinal);
+        var applyEnd = combat.IndexOf(
+            "private static void ApplySingleTargetAbilityUsedAttackDeflection(",
+            applyStart,
+            StringComparison.Ordinal);
+        applyStart.Should().BeGreaterThanOrEqualTo(0);
+        applyEnd.Should().BeGreaterThan(applyStart);
+        var applyRangedDeflection = combat[applyStart..applyEnd];
+        applyRangedDeflection.Should().Contain("if (StatusEffect.ApplyStatusEffect(");
+        applyRangedDeflection.Should().Contain(
+            "Stat.GetStatTypeDeflectionSource(StatType.AbilityUsedRangedDeflection)");
+        applyRangedDeflection.Should().Contain("ApplyAbilityGrantedAttackDeflectionEffects(activator, source)");
+    }
+
+    [Test]
     public void SaberCyclone_IsASelfBuffWithoutHostileAreaTargeting()
     {
         var ability = new SaberCycloneAbilityDefinition().BuildAbilities()[FeatType.SaberCyclone1];
@@ -27,6 +763,37 @@ public class GeneratedWeaponPerkBehaviorTests
         ability.IsAreaAbility.Should().BeFalse();
         ability.RequiresTarget.Should().BeFalse();
         ability.Targeting.Should().BeNull();
+    }
+
+    [Test]
+    public void ForceSheath_RanksUseMeaningfulDamageSteps()
+    {
+        var root = FindRepositoryRoot();
+        var source = File.ReadAllText(Path.Combine(
+            root.FullName,
+            "SWLOR.Game.Server",
+            "Feature",
+            "AbilityDefinition",
+            "Lightsaber",
+            "ForceSheathAbilityDefinition.cs"));
+        var matches = Regex.Matches(
+            source,
+            @"builder\.Create\(FeatType\.ForceSheath(?<rank>\d).*?SkillType\.Lightsaber,\s*(?<damage>\d+),",
+            RegexOptions.Singleline);
+        var damageByRank = matches.ToDictionary(
+            match => int.Parse(match.Groups["rank"].Value),
+            match => int.Parse(match.Groups["damage"].Value));
+
+        damageByRank.Should().Equal(
+            new Dictionary<int, int>
+            {
+                [1] = 12,
+                [2] = 17,
+                [3] = 23,
+                [4] = 30
+            });
+        (source.Split("IsQueuedWeaponAbility = true").Length - 1).Should().Be(4);
+        (source.Split("DamageType = CombatDamageType.Force").Length - 1).Should().Be(4);
     }
 
     [Test]
@@ -61,6 +828,7 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("RiflePerkDefinition.cs", StatType.IdleSkillAbilityDamageBonus, "14");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.IdleSkillAbilityHitChancePercentAdjustment, "8");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.IdleSkillAbilityCriticalDamagePercentAdjustment, "15");
+        AssertSourceStat("RiflePerkDefinition.cs", StatType.OpeningAutoAttackCriticalDamagePercentAdjustment, "15");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.SameTargetPressureBuildSkillType, "(int)SkillType.Rifle");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.SameTargetPressureBuildSeconds, "12");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.SameTargetPressureGraceSeconds, "6");
@@ -73,8 +841,9 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("RiflePerkDefinition.cs", StatType.AutoAttackSuppressionStackDurationSeconds, "30");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.AutoAttackSuppressionStackEvasionPenaltyPercent, "5");
         AssertSourceStat("RiflePerkDefinition.cs", StatType.RangedHitSuppressionStackEvasionPenaltyPercent, "5");
-        AssertSourceStat("RiflePerkDefinition.cs", StatType.AbilityHitChanceAgainstSuppressionStackPercentAdjustment, "10");
-        AssertSourceStat("RiflePerkDefinition.cs", StatType.DefenseIgnoreHitPhysicalDefensePercentAdjustment, "-10");
+        AssertSourceStat("RiflePerkDefinition.cs", StatType.RangedAttackAccuracyAgainstSuppressionStackPercentAdjustment, "10");
+        AssertSourceStat("RiflePerkDefinition.cs", StatType.RangedAbilityTargetDefenseReductionPercent, "10");
+        AssertSourceStat("RiflePerkDefinition.cs", StatType.RangedAbilityTargetDefenseReductionDurationSeconds, "30");
 
         AssertSourceStat("ThrowingPerkDefinition.cs", StatType.ThrowingBombardierClusterStormDamageBonus, "10");
         AssertSourceStat("ThrowingPerkDefinition.cs", StatType.ThrowingBombardierClusterStormMaximumTargets, "1");
@@ -106,7 +875,13 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.AbilityStaminaCostFPRestorePercent, "35");
         AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.AbilityFPCostStaminaRestorePercentSkillType, "(int)SkillType.Force");
         AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.AbilityFPCostStaminaRestorePercent, "35");
+        AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.RestoredFPForceAttackPercentAdjustment, "8");
+        AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.RestoredFPForceAttackDurationSeconds, "30");
+        AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.RestoredStaminaAttackPercentAdjustment, "8");
+        AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.RestoredStaminaAttackDurationSeconds, "30");
         AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.HighFPAndStaminaAbilityDamageBonus, "12");
+        AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.HighFPAndStaminaAbilityDamagePercentAdjustmentThresholdPercent, "60");
+        AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.HighFPAndStaminaAbilityDamagePercentAdjustment, "8");
         AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.AbilityRestoredFPHastePercentAdjustment, "10");
         AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.AreaAbilityAfterDeflectionDamagePercentAdjustment, "10");
         AssertSourceStat("SaberstaffPerkDefinition.cs", StatType.AbilityGrantedAttackDeflectionFPRestore, "2");
@@ -139,13 +914,19 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertSourceStat("StaffPerkDefinition.cs", StatType.AbilityUsedAttackDeflection, "8");
 
         AssertSourceStat("PistolPerkDefinition.cs", StatType.RangedAbilityHitNearTargetDamageDealtPercentAdjustment, "-10");
+        AssertSourceStat("PistolPerkDefinition.cs", StatType.RangedAbilityHitNearTargetStatusEffectNameStrRef, "16780744");
+        AssertSourceStat("PistolPerkDefinition.cs", StatType.RangedAbilityHitNearTargetStatusEffectIcon, "(int)EffectIconType.DuelistsDistanceStatusEffect");
+        AssertSourceStat("PistolPerkDefinition.cs", StatType.RangedAbilityHitNearTargetStatusEffectCleanseTypes, "(int)StatusEffectCleanseType.TreatmentKit1");
+        AssertSourceStat("PistolPerkDefinition.cs", StatType.RangedAbilityHitNearTargetStatusEffectResistanceType, "(int)ResistanceType.Trauma");
         AssertSourceStat("PistolPerkDefinition.cs", StatType.SecondaryAbilityUsedEvasionPercentAdjustmentSkillType, "(int)SkillType.Pistol");
         AssertSourceStat("PistolPerkDefinition.cs", StatType.SecondaryAbilityUsedEvasionPercentAdjustment, "8");
         AssertSourceStat("PistolPerkDefinition.cs", StatType.SecondaryAbilityUsedEvasionDurationSeconds, "30");
-        AssertSourceStat("PistolPerkDefinition.cs", StatType.AbilityUsedRangedEvasionPercentAdjustmentSkillType, "(int)SkillType.Pistol");
-        AssertSourceStat("PistolPerkDefinition.cs", StatType.AbilityUsedRangedEvasionPercentAdjustment, "12");
-        AssertSourceStat("PistolPerkDefinition.cs", StatType.AbilityUsedRangedEvasionDurationSeconds, "30");
+        AssertSourceStat("PistolPerkDefinition.cs", StatType.AbilityUsedRangedDeflectionSkillType, "(int)SkillType.Pistol");
+        AssertSourceStat("PistolPerkDefinition.cs", StatType.AbilityUsedRangedDeflection, "12");
+        AssertSourceStat("PistolPerkDefinition.cs", StatType.AbilityUsedRangedDeflectionDurationSeconds, "30");
         AssertSourceStat("PistolPerkDefinition.cs", StatType.RangedAutoAttackCycleCriticalRateRequiredCount, "4");
+        AssertSourceStat("PistolPerkDefinition.cs", StatType.RangedAutoAttackCycleCriticalRateTrackerEffectIconType, "(int)EffectIconType.LuckyChamberStatusEffect");
+        AssertSourceStat("PistolPerkDefinition.cs", StatType.NonCriticalAbilityNextSkillAbilityCriticalRateTrackerEffectIconType, "(int)EffectIconType.DeadeyeReloadStatusEffect");
         AssertSourceStat("PistolPerkDefinition.cs", StatType.CriticalDamageHighHPTargetPercentAdjustment, "15");
 
         AssertSourceStat("SpearPerkDefinition.cs", StatType.CostlyAbilityDamageBonus, "14");
@@ -246,6 +1027,10 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertStatusStat(suppression, StatType.RangedHitSuppressionStackDurationSeconds, 30);
         AssertStatusStat(suppression, StatType.RangedCriticalDamagePercentAdjustment, -10);
 
+        var gambler = new GamblerStanceStatusEffect();
+        AssertStatusStat(gambler, StatType.CriticalRatePercentAdjustment, 12);
+        AssertStatusStat(gambler, StatType.NonCriticalRangedAbilityStaminaCostFlatAdjustment, 2);
+
         var vigor = new VigorStanceStatusEffect();
         AssertStatusStat(vigor, StatType.HostileAbilityStaminaCostFlatAdjustment, 2);
         AssertStatusStat(vigor, StatType.DamageDealtPercentAdjustment, 10);
@@ -266,6 +1051,29 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertStatusStat(infiniteConduit, StatType.AbilityFPCostStaminaRestorePercent, 50);
         AssertStatusStat(infiniteConduit, StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent, 70);
         AssertStatusStat(infiniteConduit, StatType.HighFPAndStaminaAbilityDamageBonus, 20);
+
+        var restoredForcePointsForceAttack = new ForceLensForceAttackStatusEffect(8);
+        AssertStatusStat(restoredForcePointsForceAttack, StatType.ForceAttackPercentAdjustment, 8);
+        restoredForcePointsForceAttack.Name.Should().Be("Force Lens: Force Attack");
+        restoredForcePointsForceAttack.Icon.Should().Be(EffectIconType.ForceLensForceAttackStatusEffect);
+
+        var restoredStaminaAttack = new ForceLensAttackStatusEffect(8);
+        AssertStatusStat(restoredStaminaAttack, StatType.AttackPercentAdjustment, 8);
+        restoredStaminaAttack.Name.Should().Be("Force Lens: Attack");
+        restoredStaminaAttack.Icon.Should().Be(EffectIconType.ForceLensAttackStatusEffect);
+
+        var restoredForcePointsHaste = new EnergizedFormsHasteStatusEffect(10);
+        AssertStatusStat(restoredForcePointsHaste, StatType.AttackDelayReductionPercent, 10);
+        restoredForcePointsHaste.Name.Should().Be("Energized Forms: Haste");
+        restoredForcePointsHaste.Icon.Should().Be(EffectIconType.EnergizedFormsHasteStatusEffect);
+
+        var hostileAbilityForceAttack = new HostileAbilityForceAttackStatusEffect(15);
+        AssertStatusStat(hostileAbilityForceAttack, StatType.ForceAttackPercentAdjustment, 15);
+        hostileAbilityForceAttack.Icon.Should().Be(EffectIconType.HostileAbilityForceAttackStatusEffect);
+
+        var guardedChannel = new GuardedChannelStatusEffect(20);
+        AssertStatusStat(guardedChannel, StatType.PhysicalDefensePercentAdjustment, 20);
+        guardedChannel.Icon.Should().Be(EffectIconType.GuardedChannelStatusEffect);
 
         var guardianReflexes = new GuardianReflexesStatusEffect(25);
         AssertStatusStat(guardianReflexes, StatType.Guard, 25);
@@ -364,7 +1172,7 @@ public class GeneratedWeaponPerkBehaviorTests
             guardCounter[feat].ActivationType.Should().Be(AbilityActivationType.Weapon);
             guardCounter[feat].IsHostileAbility.Should().BeTrue();
             guardCounter[feat].RequiresTarget.Should().BeFalse();
-            AssertFeatSpellTargeting(featRows, spellRows, feat, "1", "****", "P", "0x01", "0");
+            AssertFeatSpellTargeting(featRows, spellRows, feat, "1", "****", "P", "0x03", "0");
         }
 
         var guardCounterSource = File.ReadAllText(Path.Combine(
@@ -458,9 +1266,13 @@ public class GeneratedWeaponPerkBehaviorTests
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
         Stat.GetStatTypeCategory(StatType.BleedingStatusExpiredNextSkillAbilityStaminaCostAdjustment)
             .Should().Be(StatTypeCategory.BeneficialWhenNegative);
+        Stat.GetStatTypeCategory(StatType.NonCriticalRangedAbilityStaminaCostFlatAdjustment)
+            .Should().Be(StatTypeCategory.BeneficialWhenNegative);
         Stat.GetStatTypeCategory(StatType.AbilityRestoredFPHastePercentAdjustment)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
         Stat.GetStatTypeCategory(StatType.HighFPAndStaminaAbilityDamageBonus)
+            .Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.HighFPAndStaminaAbilityDamagePercentAdjustment)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
         Stat.GetStatTypeCategory(StatType.BleedingTargetAbilityBleedSpreadChance)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
@@ -487,6 +1299,10 @@ public class GeneratedWeaponPerkBehaviorTests
         Stat.GetStatTypeCategory(StatType.RangedAbilityHitNearTargetDamageDealtPercentAdjustment)
             .Should().Be(StatTypeCategory.BeneficialWhenNegative);
         Stat.GetStatTypeCategory(StatType.IdleSkillAbilityCriticalDamagePercentAdjustment)
+            .Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.OpeningAutoAttackCriticalDamagePercentAdjustment)
+            .Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.CurrentAutoAttackCriticalDamagePercentAdjustment)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
         Stat.GetStatTypeCategory(StatType.TargetLowHPStatusDamageStatusCategory)
             .Should().Be(StatTypeCategory.NonBeneficial);
@@ -526,11 +1342,19 @@ public class GeneratedWeaponPerkBehaviorTests
             .Should().Be(StatTypeCategory.NonBeneficial);
         Stat.GetStatTypeCategory(StatType.WardAbilityDefenseCategoryId)
             .Should().Be(StatTypeCategory.NonBeneficial);
-        Stat.GetStatTypeCategory(StatType.AbilityUsedRangedEvasionPercentAdjustmentSkillType)
+        Stat.GetStatTypeCategory(StatType.AbilityUsedRangedDeflectionSkillType)
             .Should().Be(StatTypeCategory.NonBeneficial);
-        Stat.GetStatTypeCategory(StatType.AbilityUsedRangedEvasionPercentAdjustment)
+        Stat.GetStatTypeCategory(StatType.AbilityUsedRangedDeflection)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
-        Stat.GetStatTypeCategory(StatType.AbilityUsedRangedEvasionDurationSeconds)
+        Stat.GetStatTypeCategory(StatType.AbilityUsedRangedDeflectionDurationSeconds)
+            .Should().Be(StatTypeCategory.NonBeneficial);
+        Stat.GetStatTypeCategory(StatType.AbilityUsedRangedDeflectionStatusEffectIcon)
+            .Should().Be(StatTypeCategory.NonBeneficial);
+        Stat.GetStatTypeCategory(StatType.RangedCriticalRatePercentAdjustment)
+            .Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.CriticalHitLimitedHastePercentAdjustment)
+            .Should().Be(StatTypeCategory.BeneficialWhenPositive);
+        Stat.GetStatTypeCategory(StatType.CriticalHitLimitedHasteStatusEffectIcon)
             .Should().Be(StatTypeCategory.NonBeneficial);
         Stat.GetStatTypeCategory(StatType.ForceDamageTakenForceDefense)
             .Should().Be(StatTypeCategory.BeneficialWhenPositive);
@@ -602,7 +1426,20 @@ public class GeneratedWeaponPerkBehaviorTests
         var nativeAttackSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Native", "ResolveAttackRoll.cs"));
         var statusEffectSource = File.ReadAllText(Path.Combine(root.FullName, "SWLOR.Game.Server", "Service", "StatusEffect.cs"));
         var generatorSource = File.ReadAllText(Path.Combine(root.FullName, "tools", "GenerateWeaponArchetypeImplementation.py"));
+        var linkerSource = File.ReadAllText(Path.Combine(root.FullName, "tools", "LinkCombatUpgradeFeatSpells.ps1"));
         combatSource.Should().Contain("ApplyCriticalBleedingStatusDurationExtension(attacker, defender)");
+        combatSource.Should().Contain("StatType.HighFPAndStaminaAbilityDamagePercentAdjustmentThresholdPercent");
+        combatSource.Should().Contain("StatType.HighFPAndStaminaAbilityDamagePercentAdjustment");
+        combatSource.Should().Contain("new HostileAbilityForceAttackStatusEffect(total)");
+        combatSource.Should().Contain("new EnergizedFormsHasteStatusEffect(haste)");
+        combatSource.Should().Contain("new ForceLensForceAttackStatusEffect(forceAttack)");
+        combatSource.Should().Contain("new ForceLensAttackStatusEffect(attack)");
+        combatSource.Should().NotContain("SaberstaffConduitForceLens",
+            "shared resource restoration must remain stat-driven rather than checking a specific perk identity");
+        generatorSource.Should().Contain(
+            "add_stat(stats, \"HighFPAndStaminaAbilityDamagePercentAdjustmentThresholdPercent\"");
+        generatorSource.Should().Contain(
+            "add_stat(stats, \"HighFPAndStaminaAbilityDamagePercentAdjustment\"");
         combatSource.Should().Contain("ApplyHostileAbilitySequenceEffects(activator, feat, ability)");
         combatSource.Should().Contain("ApplySameTargetHostileAbilityHitEffects(activator, target, ability)");
         combatSource.Should().Contain("ApplyNextDamageDealtBleedEffect(attacker, defender, damageType)");
@@ -621,13 +1458,14 @@ public class GeneratedWeaponPerkBehaviorTests
         combatSource.Should().Contain("SuppressionStackEvasionPenaltyPercentAdjustment");
         combatSource.Should().Contain("if (adjustedEvasionPenaltyPercent <= 0)");
         combatSource.Should().Contain("TrackSuppressionAbilityUse(activator, now)");
-        combatSource.Should().Contain("GetSuppressionAbilityHitChanceAdjustment(attacker, defender, skillType)");
+        combatSource.Should().Contain("ConsumeSuppressionRangedAttackAccuracyAdjustment(attacker, defender, skillType)");
         combatSource.Should().Contain("!IsRangedWeaponSkill(skillType)");
         combatSource.Should().Contain("_pendingSuppressionAbilityUses.TryGetValue(key, out var state)");
-        combatSource.Should().Contain("state.Expiration <= DateTime.UtcNow");
+        combatSource.Should().Contain("state.Expiration <= now");
         combatSource.Should().Contain("HasCurrentSuppressionAbilityUseStack(attacker, defender, state.SuppressionEffectIds)");
         combatSource.Should().Contain("effects.Max(effect => effect.DurationTicks * effect.Frequency)");
-        combatSource.Should().Contain("SuppressionEffectIds = effects.Select(effect => effect.Id).ToHashSet()");
+        combatSource.Should().Contain("var effectIds = effects.Select(effect => effect.Id).ToHashSet()");
+        combatSource.Should().Contain("SuppressionEffectIds = effectIds");
         combatSource.Should().Contain("ApplySkillAreaAbilityDamageModifier(");
         combatSource.Should().Contain("ApplySkillAbilityDamageModifier(");
         combatSource.Should().Contain("ApplyHostileAbilityUsedEvasion(");
@@ -651,7 +1489,7 @@ public class GeneratedWeaponPerkBehaviorTests
         combatSource.Should().Contain("StatType.AbilityUsedPerkCategorySelfDefenseCategoryId");
         combatSource.Should().NotContain("KatarIronGuardPulseDamageBonus");
         combatSource.Should().NotContain("StaffSentinelGuardCategoryId");
-        combatSource.Should().Contain("StatType.RangedEvasionPercentAdjustment");
+        combatSource.Should().Contain("StatType.AbilityUsedRangedDeflection");
         usePerkFeatSource.Should().Contain("Combat.ApplyAbilityRecastDelayModifiers(");
         nativeAttackSource.Should().Contain("Combat.GetHitChanceAgainstSunderedTargetAdjustment(");
         nativeAttackSource.Should().Contain("Combat.GetCriticalRateAgainstSunderedTargetAdjustment(");
@@ -674,6 +1512,9 @@ public class GeneratedWeaponPerkBehaviorTests
         combatSource.Should().Contain("ApplyTargetLowHPStatusDamageModifier(attacker, defender, damage)");
         combatSource.Should().Contain("ApplyDamageTakenShareToStatusSource(defender, attacker, damage, damageType)");
         combatSource.Should().Contain("IdleSkillAbilityCriticalDamagePercentAdjustment");
+        combatSource.Should().Contain("OpeningAutoAttackCriticalDamagePercentAdjustment");
+        linkerSource.Should().Contain("IsQueuedWeaponAbility\\s*=\\s*true");
+        linkerSource.Should().Contain("ConfigureGeneratedWeaponAbility");
         combatSource.Should().Contain("TargetHasSourceAppliedStatusCategory(defender, attacker, category)");
         combatSource.Should().Contain("ApplySourceStatusStackEffects(attacker, defender)");
         combatSource.Should().Contain("ApplyHostileAbilityHitNextAutoAttackNoDelay(activator, ability)");
@@ -886,6 +1727,8 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertAbilitySourceContains(root, "Saberstaff", "FocusedArcAbilityDefinition.cs", "HighResourceExtraDamageThresholdPercent = 60");
         AssertAbilitySourceContains(root, "Saberstaff", "FocusedArcAbilityDefinition.cs", "ExtraDamageIfHighResources = 10");
         AssertAbilitySourceContains(root, "Saberstaff", "GuardedChannelAbilityDefinition.cs", "SelfStatResourceAboveThresholdPercent = 40");
+        AssertAbilitySourceContains(root, "Saberstaff", "GuardedChannelAbilityDefinition.cs", "SelfStatDurationSeconds = 30");
+        AssertAbilitySourceContains(root, "Saberstaff", "GuardedChannelAbilityDefinition.cs", "SelfStatusEffectFactory = () => new GuardedChannelStatusEffect");
         AssertAbilitySourceContains(root, "Saberstaff", "SeverFocusAbilityDefinition.cs", "DrainTargetResourceAboveThresholdPercent = 80");
         AssertAbilitySourceContains(root, "Saberstaff", "InfiniteConduitAbilityDefinition.cs", "typeof(InfiniteConduitStatusEffect)");
         AssertAbilitySourceContains(root, "Katar", "SteelShoulderAbilityDefinition.cs", "FriendlyTargetStatusEffectFactory = () => new GuardedStatusEffect(50, 5.0f)");
@@ -900,7 +1743,8 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertAbilitySourceContains(root, "Pistol", "LastWordAbilityDefinition.cs", "TemporaryAvoidedAttackNextAutoAttackNoDelaySkillType = (int)SkillType.Pistol");
         AssertAbilitySourceContains(root, "Rifle", "SuppressingShotAbilityDefinition.cs", "ApplySuppressionStackOnHit = true");
         AssertAbilitySourceContains(root, "Rifle", "SuppressiveLineAbilityDefinition.cs", "SuppressionDisorientedRequiredStacks = 2");
-        AssertAbilitySourceContains(root, "Rifle", "KillBoxAbilityDefinition.cs", "TemporarySuppressionStackEvasionPenaltyPercentAdjustment = 3");
+        AssertAbilitySourceContains(root, "Rifle", "KillBoxAbilityDefinition.cs", "StatusEffectFactory = () => new KillBoxStatusEffect(0, 3)");
+        AssertAbilitySourceContains(root, "Rifle", "KillBoxAbilityDefinition.cs", "SourceOwnedStatusEffectTypeRemovedOnPerkRefund = typeof(KillBoxStatusEffect)");
         AssertAbilitySourceContains(root, "TwinBlade", "TempestBloomAbilityDefinition.cs", "TemporaryAreaAbilityFragmentationDamage = 8");
         AssertAbilitySourceContains(root, "Throwing", "RainOfSteelAbilityDefinition.cs", "TemporaryAreaAbilityFragmentationPulseSeconds = 6");
         AssertAbilitySourceContains(root, "Throwing", "ExplosiveTossAbilityDefinition.cs", "typeof(BurnStatusEffect)");
@@ -934,6 +1778,10 @@ public class GeneratedWeaponPerkBehaviorTests
             "WeaponActiveAbilityDefinitionBase.cs"));
         weaponBaseSource.Should().Contain("UsePerkFeat.InterruptAbilityActivation(target)");
         weaponBaseSource.Should().Contain("Extended {extendedCount} {statusLabel} by {SourceStatusExtensionSeconds}s");
+        weaponBaseSource.Should().Contain("public bool HasImmediateSelfStatusEffect()");
+        weaponBaseSource.Should().Contain("SelfStatusEffectFactory != null && SelfStatDurationSeconds <= 0",
+            "resource-gated status factories must be applied by ApplySelfModifiers after the gate, not as permanent immediate statuses");
+        weaponBaseSource.Should().Contain("if (profile.HasImmediateSelfStatusEffect())");
     }
 
     [Test]

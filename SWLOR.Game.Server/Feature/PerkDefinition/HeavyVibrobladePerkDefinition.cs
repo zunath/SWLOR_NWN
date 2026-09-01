@@ -254,7 +254,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.Flash1)
-                .Description("Enemies within a 5m sphere around you receive the Flash effect, reducing physical and Force ability hit chance by 20% for 30 seconds. You generate +650 bonus Enmity toward these enemies.")
+                .Description("Enemies within a 5m sphere around you receive Flash, reducing Ability Accuracy by 20% for 30 seconds (physical and Force abilities). Deals no damage. You generate +650 bonus Enmity toward these enemies.")
                 .Price(2)
                 .RequirementSkill(SkillType.HeavyVibroblade, 10);
         }

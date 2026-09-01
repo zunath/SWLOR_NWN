@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
@@ -84,7 +86,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 {
                     Feat = FeatType.EclipseOfResolve1,
                     Target = AbilityTargetKind.HostileCreature,
+                    ExpectedActivatorStatusEffects = new[] { typeof(CourageousResolve1StatusEffect) },
                     ExpectedTargetStatusEffects = new[] { typeof(EclipseOfResolve1StatusEffect) },
+                    SetupNPCPerkLevels = new() { [PerkType.CourageousResolve] = 1 },
                     ExpectsFPCost = true,
                     ExpectsRecast = true,
                     Notes = "Sphere targeting has OriginOnSelf, so no location target is required; impact is centered on the activator and catches the nearby hostile.",
@@ -161,6 +165,17 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     ExpectsRecast = true,
                 },
 
+                // ForceBurstAbilityDefinition - selected-target sphere with immediate Force damage.
+                new()
+                {
+                    Feat = FeatType.ForceBurst1,
+                    Target = AbilityTargetKind.HostileCreature,
+                    ExpectsTargetDamage = true,
+                    ExpectsFPCost = true,
+                    ExpectsRecast = true,
+                    Notes = "The selected hostile anchors the 5m sphere and receives the direct impact damage.",
+                },
+
                 // ForceInterceptAbilityDefinition - ValidateFriendlyTarget(..., allowSelf: false),
                 // so it rejects a self target; the harness only offers Self or HostileCreature and
                 // HostileCreature fails the friendly check, so no target kind can pass validation.
@@ -170,7 +185,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     Target = AbilityTargetKind.FriendlyCreature,
                     TargetDistanceMeters = 10f,
                     MaximumActivatorDistanceToTargetAfterImpact = 2f,
+                    ExpectedActivatorStatusEffects = new[] { typeof(CourageousResolve1StatusEffect) },
                     ExpectedTargetStatusEffects = new[] { typeof(ForceIntercept1StatusEffect) },
+                    SetupNPCPerkLevels = new() { [PerkType.CourageousResolve] = 1 },
                     ExpectsFPCost = true,
                     ExpectsRecast = true,
                     Notes = "ValidateFriendlyTarget with allowSelf:false - cast on a spawned same-faction ally. Impact jumps the caster to the ally and applies ForceIntercept1StatusEffect to them; 5 FP / 24s recast per the definition.",
@@ -182,7 +199,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 {
                     Feat = FeatType.ForceJudgment1,
                     Target = AbilityTargetKind.HostileCreature,
+                    ExpectedActivatorStatusEffects = new[] { typeof(CourageousResolve1StatusEffect) },
                     ExpectedTargetStatusEffects = new[] { typeof(ForceJudgment1StatusEffect) },
+                    SetupNPCPerkLevels = new() { [PerkType.CourageousResolve] = 1 },
                     ExpectsTargetDamage = true,
                     ExpectsFPCost = true,
                     ExpectsRecast = true,
@@ -191,7 +210,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 {
                     Feat = FeatType.ForceJudgment2,
                     Target = AbilityTargetKind.HostileCreature,
+                    ExpectedActivatorStatusEffects = new[] { typeof(CourageousResolve1StatusEffect) },
                     ExpectedTargetStatusEffects = new[] { typeof(ForceJudgment2StatusEffect) },
+                    SetupNPCPerkLevels = new() { [PerkType.CourageousResolve] = 1 },
                     ExpectsTargetDamage = true,
                     ExpectsFPCost = true,
                     ExpectsRecast = true,
@@ -200,7 +221,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 {
                     Feat = FeatType.ForceJudgment3,
                     Target = AbilityTargetKind.HostileCreature,
+                    ExpectedActivatorStatusEffects = new[] { typeof(CourageousResolve1StatusEffect) },
                     ExpectedTargetStatusEffects = new[] { typeof(ForceJudgment3StatusEffect) },
+                    SetupNPCPerkLevels = new() { [PerkType.CourageousResolve] = 1 },
                     ExpectsTargetDamage = true,
                     ExpectsFPCost = true,
                     ExpectsRecast = true,
@@ -341,22 +364,36 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     ExpectsRecast = true,
                 },
 
-                // GuardianWardAbilityDefinition - grants temporary HP (raw EffectTemporaryHitpoints,
-                // not a tracked status effect) plus conditional riders gated on stat adjustments a
-                // base NPC doesn't have; the unconditional temp HP is asserted, the riders are not.
+                // GuardianWardAbilityDefinition - grants temporary HP (raw EffectTemporaryHitpoints)
+                // and exercises the two trained Control-protection riders: Protective Presence's
+                // ranged deflection and Reflective Barrier's tracked status effect.
                 new()
                 {
                     Feat = FeatType.GuardianWard1,
                     Target = AbilityTargetKind.Self,
+                    ExpectedActivatorStatusEffects = new[] { typeof(ReflectiveBarrier1StatusEffect) },
+                    ExpectedActivatorStatAdjustments = new() { [StatType.RangedDeflection] = 4 },
+                    SetupNPCPerkLevels = new()
+                    {
+                        [PerkType.LightGuardianDeflectivePresence] = 1,
+                        [PerkType.ReflectiveBarrier] = 1
+                    },
                     ExpectsActivatorTemporaryHP = true,
                     ExpectsFPCost = true,
                     ExpectsRecast = true,
-                    Notes = "Grants raw temporary HP (asserted via the engine-effect scan); LightGuardianPowerSupport riders are gated on stat adjustments the NPC doesn't have.",
+                    Notes = "Asserts the raw temporary-HP pool plus trained Protective Presence and Reflective Barrier riders.",
                 },
                 new()
                 {
                     Feat = FeatType.GuardianWard2,
                     Target = AbilityTargetKind.Self,
+                    ExpectedActivatorStatusEffects = new[] { typeof(ReflectiveBarrier1StatusEffect) },
+                    ExpectedActivatorStatAdjustments = new() { [StatType.RangedDeflection] = 4 },
+                    SetupNPCPerkLevels = new()
+                    {
+                        [PerkType.LightGuardianDeflectivePresence] = 1,
+                        [PerkType.ReflectiveBarrier] = 1
+                    },
                     ExpectsActivatorTemporaryHP = true,
                     ExpectsFPCost = true,
                     ExpectsRecast = true,
@@ -365,6 +402,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 {
                     Feat = FeatType.GuardianWard3,
                     Target = AbilityTargetKind.Self,
+                    ExpectedActivatorStatusEffects = new[] { typeof(ReflectiveBarrier1StatusEffect) },
+                    ExpectedActivatorStatAdjustments = new() { [StatType.RangedDeflection] = 4 },
+                    SetupNPCPerkLevels = new()
+                    {
+                        [PerkType.LightGuardianDeflectivePresence] = 1,
+                        [PerkType.ReflectiveBarrier] = 1
+                    },
                     ExpectsActivatorTemporaryHP = true,
                     ExpectsFPCost = true,
                     ExpectsRecast = true,
@@ -373,6 +417,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 {
                     Feat = FeatType.GuardianWard4,
                     Target = AbilityTargetKind.Self,
+                    ExpectedActivatorStatusEffects = new[] { typeof(ReflectiveBarrier1StatusEffect) },
+                    ExpectedActivatorStatAdjustments = new() { [StatType.RangedDeflection] = 4 },
+                    SetupNPCPerkLevels = new()
+                    {
+                        [PerkType.LightGuardianDeflectivePresence] = 1,
+                        [PerkType.ReflectiveBarrier] = 1
+                    },
                     ExpectsActivatorTemporaryHP = true,
                     ExpectsFPCost = true,
                     ExpectsRecast = true,
@@ -405,7 +456,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 {
                     Feat = FeatType.MindTrick1,
                     Target = AbilityTargetKind.HostileCreature,
+                    ExpectedActivatorStatusEffects = new[] { typeof(CourageousResolve1StatusEffect) },
                     ExpectedTargetStatusEffects = new[] { typeof(ConfusionStatusEffect) },
+                    SetupNPCPerkLevels = new() { [PerkType.CourageousResolve] = 1 },
                     ExpectsFPCost = true,
                     ExpectsRecast = true,
                     Notes = "Duration is a Willpower contest between caster and target; both are nw_rat001 so it resolves to the 30s base rather than being resisted to 0.",
@@ -414,7 +467,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 {
                     Feat = FeatType.MindTrick2,
                     Target = AbilityTargetKind.HostileCreature,
+                    ExpectedActivatorStatusEffects = new[] { typeof(CourageousResolve1StatusEffect) },
                     ExpectedTargetStatusEffects = new[] { typeof(ConfusionStatusEffect) },
+                    SetupNPCPerkLevels = new() { [PerkType.CourageousResolve] = 1 },
                     ExpectsFPCost = true,
                     ExpectsRecast = true,
                 },
@@ -425,7 +480,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 {
                     Feat = FeatType.NightmareField1,
                     Target = AbilityTargetKind.HostileCreature,
+                    ExpectedActivatorStatusEffects = new[] { typeof(CourageousResolve1StatusEffect) },
                     ExpectedTargetStatusEffects = new[] { typeof(NightmareField1StatusEffect) },
+                    SetupNPCPerkLevels = new() { [PerkType.CourageousResolve] = 1 },
                     ExpectsFPCost = true,
                     ExpectsRecast = true,
                 },
@@ -448,6 +505,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 {
                     Feat = FeatType.RadiantLance1,
                     Target = AbilityTargetKind.HostileCreature,
+                    ExpectedActivatorStatusEffects = new[] { typeof(CourageousResolve1StatusEffect) },
+                    SetupNPCPerkLevels = new() { [PerkType.CourageousResolve] = 1 },
                     ExpectsTargetDamage = true,
                     ExpectsFPCost = true,
                     ExpectsRecast = true,
@@ -456,6 +515,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 {
                     Feat = FeatType.RadiantLance2,
                     Target = AbilityTargetKind.HostileCreature,
+                    ExpectedActivatorStatusEffects = new[] { typeof(CourageousResolve1StatusEffect) },
+                    SetupNPCPerkLevels = new() { [PerkType.CourageousResolve] = 1 },
                     ExpectsTargetDamage = true,
                     ExpectsFPCost = true,
                     ExpectsRecast = true,
@@ -464,6 +525,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 {
                     Feat = FeatType.RadiantLance3,
                     Target = AbilityTargetKind.HostileCreature,
+                    ExpectedActivatorStatusEffects = new[] { typeof(CourageousResolve1StatusEffect) },
+                    SetupNPCPerkLevels = new() { [PerkType.CourageousResolve] = 1 },
                     ExpectsTargetDamage = true,
                     ExpectsFPCost = true,
                     ExpectsRecast = true,
@@ -562,7 +625,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 {
                     Feat = FeatType.WeakenResolve1,
                     Target = AbilityTargetKind.HostileCreature,
+                    ExpectedActivatorStatusEffects = new[] { typeof(CourageousResolve1StatusEffect) },
                     ExpectedTargetStatusEffects = new[] { typeof(WeakenResolve1StatusEffect) },
+                    SetupNPCPerkLevels = new() { [PerkType.CourageousResolve] = 1 },
                     ExpectsFPCost = true,
                     ExpectsRecast = true,
                 },
@@ -570,7 +635,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 {
                     Feat = FeatType.WeakenResolve2,
                     Target = AbilityTargetKind.HostileCreature,
+                    ExpectedActivatorStatusEffects = new[] { typeof(CourageousResolve1StatusEffect) },
                     ExpectedTargetStatusEffects = new[] { typeof(WeakenResolve2StatusEffect) },
+                    SetupNPCPerkLevels = new() { [PerkType.CourageousResolve] = 1 },
                     ExpectsFPCost = true,
                     ExpectsRecast = true,
                 },

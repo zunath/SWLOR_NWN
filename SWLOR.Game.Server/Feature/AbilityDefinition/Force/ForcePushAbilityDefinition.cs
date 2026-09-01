@@ -17,6 +17,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
     public sealed class ForcePushAbilityDefinition : IAbilityListDefinition
     {
         private const int KnockdownDurationSeconds = 6;
+        private const int ForcePush1BaseDamage = 8;
+        private const int ForcePush2BaseDamage = 12;
+        private const int ForcePush3BaseDamage = 18;
         private const int ForcePush1HobbleDurationSeconds = 12;
         private const int ForcePush2HobbleDurationSeconds = 12;
         private const int ForcePush3HobbleDurationSeconds = 12;
@@ -121,7 +124,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 target,
                 targetLocation,
                 SkillType.Force,
-                0,
+                ForcePush1BaseDamage,
                 KnockdownDurationSeconds,
                 typeof(KnockdownStatusEffect),
                 CombatImpactAreaShape.Cone,
@@ -134,8 +137,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 areaVisualEffect: VisualEffect.None,
                 maxTargets: 1,
                 afterSuccessfulHit: hitTarget => ApplyHobble(activator, hitTarget, ForcePush1HobbleDurationSeconds),
-                playImpactAnimation: false);
-            LightGuardianPowerSupport.ApplyDeflectivePresence(activator);
+                playImpactAnimation: false,
+                useUnscaledDamage: true);
         }
 
         private static void ForcePush2ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -145,7 +148,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 target,
                 targetLocation,
                 SkillType.Force,
-                0,
+                ForcePush2BaseDamage,
                 KnockdownDurationSeconds,
                 typeof(KnockdownStatusEffect),
                 CombatImpactAreaShape.Cone,
@@ -158,8 +161,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 areaVisualEffect: VisualEffect.None,
                 maxTargets: 2,
                 afterSuccessfulHit: hitTarget => ApplyHobble(activator, hitTarget, ForcePush2HobbleDurationSeconds),
-                playImpactAnimation: false);
-            LightGuardianPowerSupport.ApplyDeflectivePresence(activator);
+                playImpactAnimation: false,
+                useUnscaledDamage: true);
         }
 
         private static void ForcePush3ImpactAction(uint activator, uint target, int level, Location targetLocation)
@@ -169,7 +172,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 target,
                 targetLocation,
                 SkillType.Force,
-                0,
+                ForcePush3BaseDamage,
                 KnockdownDurationSeconds,
                 typeof(KnockdownStatusEffect),
                 CombatImpactAreaShape.Cone,
@@ -182,8 +185,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 areaVisualEffect: VisualEffect.None,
                 maxTargets: 3,
                 afterSuccessfulHit: hitTarget => ApplyHobble(activator, hitTarget, ForcePush3HobbleDurationSeconds),
-                playImpactAnimation: false);
-            LightGuardianPowerSupport.ApplyDeflectivePresence(activator);
+                playImpactAnimation: false,
+                useUnscaledDamage: true);
         }
 
         private static void ApplyHobble(uint activator, uint target, int durationSeconds)

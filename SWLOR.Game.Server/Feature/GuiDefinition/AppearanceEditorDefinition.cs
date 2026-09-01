@@ -226,6 +226,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 row.BindIsVisible(model => model.IsCustomTintAvailable);
                 row.AddSpacer();
 
+                row.AddLabel()
+                    .SetText("Material")
+                    .SetWidth(64f)
+                    .SetHeight(32f)
+                    .SetVerticalAlign(NuiVerticalAlign.Middle);
+                row.AddComboBox()
+                    .BindOptions(model => model.TintMaterialOptions)
+                    .BindSelectedIndex(model => model.SelectedTintMaterialIndex)
+                    .SetWidth(192f)
+                    .SetHeight(32f);
+
+                row.AddSpacer();
+            });
+
+            col.AddRow(row =>
+            {
+                row.BindIsVisible(model => model.IsCustomTintAvailable);
+                row.AddSpacer();
+
                 row.AddColorPicker()
                     .BindSelectedColor(model => model.SelectedTintColor)
                     .BindIsEnabled(model => model.IsCustomTintAvailable)

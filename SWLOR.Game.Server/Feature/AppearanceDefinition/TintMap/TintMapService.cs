@@ -143,29 +143,12 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             // before the current material-scoped values are installed.
             ResetMaterialShaderUniforms(creature);
 
-            var selections = TintMapModelResolver.GetCurrentSelections(creature);
-            var creatureLayers = new HashSet<TintMapLayerType>();
-            foreach (var selection in selections)
+            foreach (var selection in TintMapModelResolver.GetCurrentSelections(creature))
             {
                 foreach (var layer in selection.Material.Layers)
                 {
-                    if (TintMapVariable.IsCreatureColorLayer(layer))
-                    {
-                        creatureLayers.Add(layer);
-                        continue;
-                    }
-
                     ApplyColor(creature, selection, layer, GetEffectiveColor(creature, selection, layer));
                 }
-            }
-
-            foreach (var layer in creatureLayers)
-            {
-                ApplyCreatureColor(
-                    creature,
-                    selections,
-                    layer,
-                    GetEffectiveCreatureColor(creature, layer));
             }
         }
 
@@ -194,6 +177,30 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             TintMapColor color)
         {
             SetColor(creature, selection, layer, color, invalidatePendingCarry: true);
+        }
+
+        public static void SetPaletteColor(
+            uint creature,
+            TintMapMaterialSelection selection,
+            TintMapLayerType layer,
+            int paletteColorId)
+        {
+            if (selection == null ||
+                paletteColorId < 0 ||
+                paletteColorId >= TintMapMaterialRegistry.PaletteColorCount)
+            {
+                return;
+            }
+
+            // Values 1-176 are the original tint-map palette encoding. Keeping palette and
+            // picker edits in this format makes both controls publish the exact same material,
+            // layer and atlas row without modifying the model's legacy PLT appearance fields.
+            SetStoredColor(
+                creature,
+                selection,
+                layer,
+                paletteColorId + 1,
+                invalidatePendingCarry: true);
         }
 
         private static void SetColor(
@@ -1260,8 +1267,6 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             TintMapLayerType layer)
         {
             var savedColor = GetSavedColor(selection, layer);
-
-            var standardColor = GetStandardColor(creature, selection, layer);
             if (TintMapColor.TryFromStoredValue(savedColor, out var customColor))
             {
                 return new TintMapColorSelection(
@@ -1270,26 +1275,22 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             }
 
             // Values 1-176 are the palette-index format used by the original tint-map branch.
-            var paletteColor = savedColor > 0 && savedColor <= TintMapMaterialRegistry.PaletteColorCount
-                ? savedColor - 1
-                : standardColor;
-            return new TintMapColorSelection(paletteColor, null);
-        }
+            if (savedColor > 0 && savedColor <= TintMapMaterialRegistry.PaletteColorCount)
+                return new TintMapColorSelection(savedColor - 1, null);
 
-        private static TintMapColorSelection GetEffectiveCreatureColor(
-            uint creature,
-            TintMapLayerType layer)
-        {
-            if (TintMapColor.TryFromStoredValue(
+            // Preserve old saves created while creature tints were layer-wide. A material-specific
+            // override always wins, while untouched materials continue to render the legacy value.
+            if (TintMapVariable.IsCreatureColorLayer(layer) &&
+                TintMapColor.TryFromStoredValue(
                     GetLocalInt(creature, GetCreatureCustomColorStateVariable(layer)),
-                    out var globalColor))
+                    out var legacyGlobalColor))
             {
                 return new TintMapColorSelection(
-                    TintMapPaletteColors.GetClosestColorId(layer, globalColor),
+                    TintMapPaletteColors.GetClosestColorId(layer, legacyGlobalColor),
                     null);
             }
 
-            return new TintMapColorSelection(GetCreatureStandardColor(creature, layer), null);
+            return new TintMapColorSelection(GetStandardColor(creature, selection, layer), null);
         }
 
         public static TintMapColor GetEffectiveDisplayColor(
@@ -1297,9 +1298,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             TintMapMaterialSelection selection,
             TintMapLayerType layer)
         {
-            var effectiveColor = TintMapVariable.IsCreatureColorLayer(layer)
-                ? GetEffectiveCreatureColor(creature, layer)
-                : GetEffectiveColor(creature, selection, layer);
+            var effectiveColor = GetEffectiveColor(creature, selection, layer);
             return effectiveColor.CustomColor ??
                    TintMapPaletteColors.GetColor(layer, effectiveColor.PaletteColorId);
         }
@@ -1471,30 +1470,6 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             TintMapColorSelection color)
         {
             ApplyMaterialColor(creature, selection.Material.Resref, layer, color);
-        }
-
-        private static void ApplyCreatureColor(
-            uint creature,
-            IReadOnlyList<TintMapMaterialSelection> selections,
-            TintMapLayerType layer,
-            TintMapColorSelection color)
-        {
-            var materialResrefs = selections
-                .Where(selection =>
-                    selection.GetPaletteSource(layer) == creature &&
-                    selection.Material.Layers.Contains(layer))
-                .Select(selection => selection.Material.Resref)
-                .Where(materialResref => !string.IsNullOrWhiteSpace(materialResref))
-                .Distinct(StringComparer.OrdinalIgnoreCase)
-                .ToList();
-            if (materialResrefs.Count == 0)
-            {
-                return;
-            }
-
-            // The material-name-null tweak expands this one semantic row across every composed
-            // child mesh. This is the same model-wide update used by the known-good PLT tinter.
-            ApplyMaterialColor(creature, string.Empty, layer, color);
         }
 
         private static void ApplyCurrentColorsAndPublish(uint creature)

@@ -1593,6 +1593,22 @@ public class TintMapReviewTests
     }
 
     [Test]
+    public void MultipartWeaponCategoryReloadsTintMaterials()
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "AppearanceEditorViewModel.cs");
+        var selectPartCategory = FindMethod(source, "OnSelectPartCategory").ToString();
+
+        selectPartCategory.Should().Contain("LoadItemParts();");
+        selectPartCategory.Should().Contain("LoadTintMapEditor();",
+            "switching Top, Middle, or Bottom must reload that weapon component's tint materials");
+    }
+
+    [Test]
     public void DeploymentReexecutesUpdatedScriptBeforeRunningNewMigrations()
     {
         var source = ReadSource("scripts", "deployment", "swlor-deploy.sh");

@@ -1954,6 +1954,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             else if (IsEquipmentSelected)
             {
                 LoadItemParts();
+                LoadTintMapEditor();
             }
         };
 

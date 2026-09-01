@@ -732,8 +732,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             // The NUI can remain open while an equipment or body-part replacement completes.
             // Persist every currently rendered semantic material so model swaps and droid
             // snapshots retain the edit. ApplyCurrentColors publishes the semantic layer through
-            // the model-wide material target; the server's null-material tweak expands that target
-            // across every composed child mesh without rebuilding the creature appearance.
+            // the model-wide material target without rebuilding the creature appearance.
             var currentSelections = TintMapModelResolver.GetCurrentSelections(creature);
             foreach (var selection in selections.Concat(currentSelections))
             {
@@ -759,7 +758,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
             // Creature colors are semantic across the whole modular model: every registered
             // material whose tint mask uses this layer must receive the same value. The enabled
-            // material-name-null tweak lets the rebuild publish one authoritative model-wide row.
+            // material-name-null tweak publishes one authoritative model-wide row.
             ApplyCurrentColorsAndPublish(creature);
 
             // Reapply once after the model refresh interval, resolving the selections again, so a
@@ -1254,7 +1253,11 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
             var standardColor = GetStandardColor(creature, selection, layer);
             if (TintMapColor.TryFromStoredValue(savedColor, out var customColor))
-                return new TintMapColorSelection(standardColor, customColor);
+            {
+                return new TintMapColorSelection(
+                    TintMapPaletteColors.GetClosestColorId(layer, customColor),
+                    null);
+            }
 
             // Values 1-176 are the palette-index format used by the original tint-map branch.
             var paletteColor = savedColor > 0 && savedColor <= TintMapMaterialRegistry.PaletteColorCount
@@ -1272,8 +1275,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     out var globalColor))
             {
                 return new TintMapColorSelection(
-                    GetCreatureStandardColor(creature, layer),
-                    globalColor);
+                    TintMapPaletteColors.GetClosestColorId(layer, globalColor),
+                    null);
             }
 
             return new TintMapColorSelection(GetCreatureStandardColor(creature, layer), null);
@@ -1468,10 +1471,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 return;
             }
 
-            // The server enables NWNX_TWEAKS_MATERIAL_NAME_NULL_IS_ALL, so the model-wide target
-            // is the authoritative material override for composed creatures. Writing the same
-            // parameter again for concrete MTR resrefs creates duplicate overrides which can leave
-            // child meshes reading an older value.
+            // The material-name-null tweak expands this one semantic row across every composed
+            // child mesh. This is the same model-wide update used by the known-good PLT tinter.
             ApplyMaterialColor(creature, string.Empty, layer, color);
         }
 
@@ -1488,7 +1489,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             TintMapColorSelection color)
         {
             var layerDefinition = TintMapMaterialRegistry.GetLayer(layer);
-            var customColor = color.CustomColor;
+            var paletteColorId = color.CustomColor.HasValue
+                ? TintMapPaletteColors.GetClosestColorId(layer, color.CustomColor.Value)
+                : color.PaletteColorId;
 
             // The native setter appends shader parameters. Remove the previous material-scoped
             // values first so every edit installs one fresh entry, marks the object dirty for
@@ -1497,6 +1500,12 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 creature,
                 materialResref,
                 layerDefinition.UniformName);
+            // Clear the obsolete transports so players upgraded from an older build cannot retain
+            // a stale custom mode or RGB value alongside the packed row state.
+            ResetMaterialShaderUniforms(
+                creature,
+                materialResref,
+                layerDefinition.ColorUniformName);
             ResetMaterialShaderUniforms(
                 creature,
                 materialResref,
@@ -1516,51 +1525,15 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
             var paletteCoordinate = TintMapMaterialRegistry.GetPaletteCoordinate(
                 layer,
-                color.PaletteColorId);
+                paletteColorId);
 
-            // The generated MTRs declare row* and tint*RGB as scalar floats, while
-            // useCustom* is an int. Send every live override using that exact shape;
-            // otherwise the client silently retains the preset palette row.
-            if (!customColor.HasValue)
-            {
-                SetMaterialShaderUniformVec4(
-                    creature,
-                    materialResref,
-                    layerDefinition.UniformName,
-                    paletteCoordinate);
-                SetMaterialShaderUniformInt(
-                    creature,
-                    materialResref,
-                    layerDefinition.CustomModeUniformName,
-                    0);
-                return;
-            }
-
+            // Issue #2052's working shader accepts one palette-row uniform. Picker colors are
+            // resolved to a row before this point, so presets and picker edits use this exact call.
             SetMaterialShaderUniformVec4(
                 creature,
                 materialResref,
                 layerDefinition.UniformName,
-                0f);
-            SetMaterialShaderUniformVec4(
-                creature,
-                materialResref,
-                layerDefinition.ColorRedUniformName,
-                customColor.Value.Red / 255f);
-            SetMaterialShaderUniformVec4(
-                creature,
-                materialResref,
-                layerDefinition.ColorGreenUniformName,
-                customColor.Value.Green / 255f);
-            SetMaterialShaderUniformVec4(
-                creature,
-                materialResref,
-                layerDefinition.ColorBlueUniformName,
-                customColor.Value.Blue / 255f);
-            SetMaterialShaderUniformInt(
-                creature,
-                materialResref,
-                layerDefinition.CustomModeUniformName,
-                1);
+                paletteCoordinate);
         }
 
         private static Dictionary<string, int> GetItemTintOverrides(uint item)

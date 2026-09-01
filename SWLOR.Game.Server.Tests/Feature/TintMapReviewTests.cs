@@ -126,6 +126,9 @@ public class TintMapReviewTests
         definition.Should().NotContain(".SetText(\"Tints\")");
         definition.Should().NotContain("TintColorSheetResref");
         viewModel.Should().Contain("new TintMapColor(value.R, value.G, value.B)");
+        viewModel.Should().Contain("TintMapPaletteColors.GetClosestColorId(layerType, requestedColor)");
+        viewModel.Should().Contain("ApplySelectedPaletteColor(paletteColorId)",
+            "the dynamic picker must use the same palette-row application path as a preset click");
         viewModel.Should().Contain("WatchOnClient(model => model.SelectedTintColor)");
         viewModel.Should().Contain("WatchOnClient(model => model.CustomTintRed)");
         viewModel.Should().Contain("WatchOnClient(model => model.CustomTintGreen)");
@@ -213,6 +216,8 @@ public class TintMapReviewTests
             "TryGetSelectedTintLayer",
             "TryGetEditableTintSelections",
             "ResetCurrentCustomTintOverrides",
+            "ApplySelectedPaletteColor",
+            "ApplyArmorPaletteColor",
             "OnSelectColor",
             "OnClickColorPalette",
             "OnClickColorTarget"
@@ -230,8 +235,11 @@ public class TintMapReviewTests
             "selection.ArmorPart == armorPart");
         methods["TryGetEditableTintSelections"].ToString().Should().Contain(
             "selection.Material.Layers.Contains(selectedLayerType)");
-        methods["OnSelectColor"].ToString().Should().Contain("ResetCurrentCustomTintOverrides");
-        methods["OnClickColorPalette"].ToString().Should().Contain("ResetCurrentCustomTintOverrides");
+        methods["OnSelectColor"].ToString().Should().Contain("ApplySelectedPaletteColor");
+        methods["OnClickColorPalette"].ToString().Should().Contain("ApplySelectedPaletteColor");
+        methods["ApplySelectedPaletteColor"].ToString().Should().Contain("ResetCurrentCustomTintOverrides");
+        methods["ApplySelectedPaletteColor"].ToString().Should().Contain("SetColor(_target");
+        methods["ApplyArmorPaletteColor"].ToString().Should().Contain("ResetCurrentCustomTintOverrides");
         methods["OnClickColorTarget"].ToString().Should().Contain("LoadTintMapEditor");
         methods["ResetCurrentCustomTintOverrides"].ToString().Should()
             .Contain("TryGetSelectedTintLayer(out var selectedLayerType)");
@@ -597,9 +605,9 @@ public class TintMapReviewTests
         publishCalls.Should().Contain("SetForceUpdate",
             "the changed material-parameter list must be compared and sent to clients immediately");
         publish.ToString().Should().NotContain("GetLastUpdateObject",
-            "resetting and replacing the declared scalar uniforms dirties the live list without mutating per-player native snapshots");
+            "tint publication must not mutate native per-player render snapshots");
         publish.ToString().Should().NotContain("m_lMaterialShaderParameters.Clear()",
-            "publication must not reach into another object's native comparison cache");
+            "tint publication must not invalidate unrelated client shader state");
         publish.ToString().Should().NotContain("UpdateAppearanceDependantInfo",
             "a tint edit must not rebuild the creature or invalidate the client's scene state");
 
@@ -614,9 +622,9 @@ public class TintMapReviewTests
         replacementCalls.Should().NotContain("ResetMaterialShaderUniforms",
             "one semantic edit must not clear rows belonging to other registered materials");
         replacementSource.Should().Contain("string.Empty",
-            "composed aliases still need the model-wide target when that NWNX behavior is available");
+            "the known-good row update uses the model-wide material target for composed creatures");
         replacementSource.Should().Contain("selection.Material.Resref",
-            "resolved body materials prove the semantic layer is present before the model-wide write");
+            "resolved body materials prove the semantic layer exists before the model-wide write");
 
         var resetCreature = FindMethod(serviceSource, nameof(TintMapService.ResetCreatureCustomColor));
         resetCreature.ToString().Should().Contain("ApplyCurrentColorsAndPublish(creature)",
@@ -633,7 +641,8 @@ public class TintMapReviewTests
             .DescendantNodes()
             .OfType<PropertyDeclarationSyntax>()
             .Single(property => property.Identifier.ValueText == "SelectedTintColor");
-        selectedTintColor.ToString().Should().Contain(nameof(TintMapService.SetCreatureCustomColor));
+        selectedTintColor.ToString().Should().Contain("TintMapPaletteColors.GetClosestColorId");
+        selectedTintColor.ToString().Should().Contain("ApplySelectedPaletteColor");
     }
 
     [Test]
@@ -668,6 +677,21 @@ public class TintMapReviewTests
                     atlas[pixelOffset]);
 
                 TintMapPaletteColors.GetColor(layer, colorId).Should().Be(expected);
+            }
+        }
+    }
+
+    [Test]
+    public void DynamicPickerColorsResolveToARealPaletteRow()
+    {
+        foreach (var layer in Enum.GetValues<TintMapLayerType>())
+        {
+            foreach (var colorId in new[] { 0, 17, 63, 127, 175 })
+            {
+                var paletteColor = TintMapPaletteColors.GetColor(layer, colorId);
+                var resolvedColorId = TintMapPaletteColors.GetClosestColorId(layer, paletteColor);
+
+                TintMapPaletteColors.GetColor(layer, resolvedColorId).Should().Be(paletteColor);
             }
         }
     }
@@ -1023,7 +1047,7 @@ public class TintMapReviewTests
         modifyMethod.ToString().Should().Contain("selection.ArmorPart == armorPart",
             "one modular armor part must not overwrite another part's custom dyes");
 
-        var paletteMethod = FindMethod(viewModelSource, "OnClickColorPalette");
+        var paletteMethod = FindMethod(viewModelSource, "ApplyArmorPaletteColor");
         paletteMethod.DescendantNodes()
             .OfType<InvocationExpressionSyntax>()
             .Select(GetInvokedMethodName)
@@ -1303,7 +1327,7 @@ public class TintMapReviewTests
             "GuiDefinition",
             "ViewModel",
             "AppearanceEditorViewModel.cs");
-        viewModelSource.Should().Contain(nameof(TintMapService.SetGlobalItemCustomColor));
+        viewModelSource.Should().Contain("ApplySelectedPaletteColor(paletteColorId)");
         viewModelSource.Should().Contain(nameof(TintMapService.ResetGlobalItemCustomColor));
     }
 
@@ -1747,6 +1771,28 @@ public class TintMapReviewTests
     }
 
     [Test]
+    public void DefaultMaleHumanHandsRetainDetailedGeometryAndTintBindings()
+    {
+        var repositoryRoot = FindRepositoryRoot();
+        var expectedModels = new Dictionary<string, string>
+        {
+            [Path.Combine("sw_pt_lhand", "pmh0_handl001.mdl")] = "pmh0_h_lh_f13287",
+            [Path.Combine("sw_pt_rhand", "pmh0_handr001.mdl")] = "pmh0_handr001"
+        };
+
+        foreach (var (relativePath, material) in expectedModels)
+        {
+            var modelPath = Path.Combine(repositoryRoot.FullName, "SWLOR_Haks", relativePath);
+            var model = File.ReadAllBytes(modelPath);
+
+            model.Length.Should().BeGreaterThan(30_000,
+                "hand model 1 must retain the detailed human geometry rather than the stock stub");
+            System.Text.Encoding.ASCII.GetString(model).Should().Contain(material,
+                "the restored geometry must remain connected to its generated tint material");
+        }
+    }
+
+    [Test]
     public void HumanHand246ModelsUseTheirAuthoredSkinTintMasks()
     {
         var repositoryRoot = FindRepositoryRoot();
@@ -1837,7 +1883,7 @@ public class TintMapReviewTests
     }
 
     [Test]
-    public void TintLayersUseDedicatedIntegerCustomStateAndRetainLegacyCleanupNames()
+    public void TintLayersRetainLegacyCleanupNames()
     {
         var expectedUniforms = new Dictionary<TintMapLayerType, string>
         {
@@ -1865,7 +1911,7 @@ public class TintMapReviewTests
     }
 
     [Test]
-    public void ApplyingAColorUsesTheDeclaredScalarShaderUniformContract()
+    public void ApplyingAColorUsesTheKnownGoodPaletteRowContract()
     {
         var serviceSource = ReadSource(
             "SWLOR.Game.Server",
@@ -1874,33 +1920,27 @@ public class TintMapReviewTests
             "TintMap",
             "TintMapService.cs");
         var applyColor = FindMethod(serviceSource, "ApplyMaterialColor");
-        var rowWrites = applyColor.DescendantNodes()
+        var shaderWrites = applyColor.DescendantNodes()
             .OfType<InvocationExpressionSyntax>()
             .Where(invocation =>
                 invocation.Expression.ToString() == "SetMaterialShaderUniformVec4")
             .ToList();
 
-        rowWrites.Should().HaveCount(5,
-            "preset and custom paths write the row float, while custom RGB writes three scalar float parameters");
-        rowWrites.Count(write => write.ToString().Contains("layerDefinition.UniformName"))
-            .Should().Be(2,
-                "both preset and custom paths explicitly select their palette reference row");
-        rowWrites.Should().Contain(write => write.ToString().Contains("layerDefinition.ColorRedUniformName"));
-        rowWrites.Should().Contain(write => write.ToString().Contains("layerDefinition.ColorGreenUniformName"));
-        rowWrites.Should().Contain(write => write.ToString().Contains("layerDefinition.ColorBlueUniformName"));
+        shaderWrites.Should().ContainSingle(
+            "palette and picker colors must share the known-good row-only material update");
+        shaderWrites[0].ToString().Should().Contain("layerDefinition.UniformName");
+        shaderWrites[0].ToString().Should().Contain("paletteCoordinate");
+        applyColor.ToString().Should().Contain("TintMapPaletteColors.GetClosestColorId",
+            "legacy RGB state must be collapsed to a real palette row before rendering");
+        applyColor.ToString().Should().NotContain("customColor.Value.Red / 255f");
 
         var customWrites = applyColor.DescendantNodes()
             .OfType<InvocationExpressionSyntax>()
             .Where(invocation =>
                 invocation.Expression.ToString() == "SetMaterialShaderUniformInt")
             .ToList();
-        customWrites.Should().HaveCount(2,
-            "preset and custom paths must explicitly disable or enable the shader's int mode uniform");
-        customWrites.Should().Contain(write => write.ToString().Contains("0"));
-        customWrites.Should().Contain(write => write.ToString().Contains("1"));
-        applyColor.ToString().Should().Contain("customColor.Value.Red / 255f");
-        applyColor.ToString().Should().Contain("customColor.Value.Green / 255f");
-        applyColor.ToString().Should().Contain("customColor.Value.Blue / 255f");
+        customWrites.Should().BeEmpty(
+            "the RGBA tint vector must carry its own custom-mode alpha atomically");
         applyColor.ToString().Should().Contain("ResetMaterialShaderUniforms");
 
         var resets = applyColor.DescendantNodes()
@@ -1908,42 +1948,53 @@ public class TintMapReviewTests
             .Where(invocation =>
                 invocation.Expression.ToString() == "ResetMaterialShaderUniforms")
             .ToList();
-        resets.Should().HaveCount(5,
-            "all material-scoped entries must be replaced before native shader writes so live edits replicate cleanly");
-        resets.Should().NotContain(reset => reset.ToString().Contains("string.Empty"),
-            "material writes must never broadcast to every material on the creature");
+        resets.Should().HaveCount(6,
+            "the row and every obsolete RGB transport must be cleared before row replacement");
 
         foreach (var shaderName in new[] { "fs_plt_tinter.shd", "fs_plt_tinter_nm.shd" })
         {
             var shader = ReadSource("SWLOR_Haks", "sw_shader", shaderName);
             shader.Should().Contain("uniform float rowSkin");
-            shader.Should().Contain("uniform float tintSkinR");
-            shader.Should().Contain("uniform float tintSkinG");
-            shader.Should().Contain("uniform float tintSkinB");
-            shader.Should().Contain("uniform int useCustomSkin");
-            shader.Should().Contain("vec3 customTint = vec3(tintSkinR, tintSkinG, tintSkinB)");
-            shader.Should().Contain("bool useCustomTint = customTintMode > 0 || v <= 0.0");
-            shader.Should().Contain("v = referenceV");
+            shader.Should().Contain("float v = rowSkin");
+            shader.Should().Contain("vec3 vTint = paletteColor.rgb");
+            shader.Should().Contain("fEnvMapLevel = 1.0 - paletteColor.a");
+            shader.Should().NotContain("uniform vec4 tintSkin");
+            shader.Should().NotContain("useCustomTint");
+            shader.Should().NotContain("shadeScale");
         }
 
+        ReadSource("SWLOR_Haks", "sw_tint_mtr", "pmh0_c_ch_eb7e04.mtr")
+            .Should().Contain("parameter float rowSkin 0.000244 0.0 0.0 0.0",
+                "the Vec4 material setter updates the scalar row uniform through its first component");
     }
 
     [Test]
-    public void RuntimeUsesModelWideMaterialShaderUniformUpdates()
+    public void RuntimeUsesTheKnownGoodModelWideMaterialUpdate()
     {
+        var serviceSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapService.cs");
+        var applyCreatureColor = FindMethod(serviceSource, "ApplyCreatureColor");
+
+        applyCreatureColor.ToString().Should().Contain(
+            "ApplyMaterialColor(creature, string.Empty, layer, color)");
+
         ReadSource("SWLOR.Game.Server", "Docker", "swlor.env")
             .Should().Contain("NWNX_TWEAKS_MATERIAL_NAME_NULL_IS_ALL=true",
-                "semantic creature colors must reach every composed child material");
+                "the row update must reach every material in a composed creature");
         ReadSource("SWLOR.CLI", "DeployBuild.cs")
             .Should().Contain("MaterialNameNullTweakValue = \"true\"",
-                "debug deployment must enable model-wide creature color updates");
+                "debug deployment must enable model-wide row updates");
         ReadSource("scripts", "deployment", "swlor-deploy.sh")
             .Should().Contain("REQUIRED_TWEAK_VALUE=\"true\"",
-                "production deployment must enable model-wide creature color updates");
+                "production deployment must enable model-wide row updates");
     }
 
     [Test]
-    public void CreatureSemanticColorsUseModelWideMaterialUpdates()
+    public void CreatureSemanticColorsUseOneModelWidePaletteRowUpdate()
     {
         var serviceSource = ReadSource(
             "SWLOR.Game.Server",
@@ -1967,7 +2018,8 @@ public class TintMapReviewTests
         var applyCreatureColor = FindMethod(serviceSource, "ApplyCreatureColor");
         applyCreatureColor.ToString().Should().Contain("selection.GetPaletteSource(layer) == creature");
         applyCreatureColor.ToString().Should().Contain("selection.Material.Layers.Contains(layer)");
-        applyCreatureColor.ToString().Should().Contain("string.Empty");
+        applyCreatureColor.ToString().Should().Contain(
+            "ApplyMaterialColor(creature, string.Empty, layer, color)");
         applyCreatureColor.ToString().Should().Contain("selection.Material.Resref");
         applyCreatureColor.DescendantNodes()
             .OfType<InvocationExpressionSyntax>()
@@ -1988,7 +2040,7 @@ public class TintMapReviewTests
         publishText.Should().NotContain("ApplyCreatureColor(creature",
             "publishing only the edited layer can leave other rows on invalidated defaults");
         publishText.Should().NotContain("m_lMaterialShaderParameters.Clear()",
-            "resetting scalar uniforms dirties the live state without mutating per-observer native snapshots");
+            "publishing a tint must not invalidate unrelated client shader state");
         publishText.Should().Contain("SetForceUpdate()",
             "the rebuilt material state must be published in the current server update");
     }
@@ -2162,18 +2214,11 @@ public class TintMapReviewTests
 
         foreach (var shader in new[] { legacyShader, mappedShader })
         {
-            shader.Should().Contain("float referenceV = 0.000244;");
-            shader.Should().Contain(
-                "clamp(customTint * shadeScale, 0.0, 1.0)",
-                "the selected RGB must retain its hue while the PLT shade curve supplies lighting detail");
-            shader.Should().NotContain("vec3(1.0) - customTint",
-                "complementing editor RGB turns red into cyan and green into purple");
-            shader.Should().Contain("vec2(128.5 / 256.0, referenceV)",
-                "custom RGB is represented by the same midtone as the preset swatches");
-            shader.Should().NotContain("vec2(255.5 / 256.0, referenceV)",
-                "normalizing at the brightest palette texel darkens ordinary skin texels");
-            shader.Should().NotContain("customTint * g",
-                "raw PLT intensity exaggerates seams between modular skin parts");
+            shader.Should().Contain("uniform float rowSkin");
+            shader.Should().Contain("vec3 vTint = paletteColor.rgb",
+                "all appearance colors must come from the same PLT palette lookup");
+            shader.Should().NotContain("customTint");
+            shader.Should().NotContain("shadeScale");
         }
     }
 

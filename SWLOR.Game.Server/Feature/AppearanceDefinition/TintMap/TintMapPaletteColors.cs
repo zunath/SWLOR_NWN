@@ -49,5 +49,38 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             var offset = colorId * 3;
             return new TintMapColor(colors[offset], colors[offset + 1], colors[offset + 2]);
         }
+
+        /// <summary>
+        /// Resolves an arbitrary picker color to the closest row in the layer's PLT palette.
+        /// The runtime shader accepts palette rows only, so this keeps picker edits on the same
+        /// rendering and persistence path as clicking a preset swatch.
+        /// </summary>
+        public static int GetClosestColorId(TintMapLayerType layer, TintMapColor color)
+        {
+            if (!Colors.TryGetValue(layer, out var colors))
+                throw new ArgumentOutOfRangeException(nameof(layer), layer, "Unknown tint map layer.");
+
+            var closestColorId = 0;
+            var closestDistance = int.MaxValue;
+            for (var colorId = 0; colorId < TintMapMaterialRegistry.PaletteColorCount; colorId++)
+            {
+                var offset = colorId * 3;
+                var redDifference = color.Red - colors[offset];
+                var greenDifference = color.Green - colors[offset + 1];
+                var blueDifference = color.Blue - colors[offset + 2];
+                var distance = redDifference * redDifference +
+                               greenDifference * greenDifference +
+                               blueDifference * blueDifference;
+                if (distance >= closestDistance)
+                    continue;
+
+                closestColorId = colorId;
+                closestDistance = distance;
+                if (distance == 0)
+                    break;
+            }
+
+            return closestColorId;
+        }
     }
 }

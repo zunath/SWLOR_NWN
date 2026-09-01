@@ -221,31 +221,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 SynchronizeCustomTintComponents(value);
                 if (_loadingTintColor ||
-                    !TryGetEditableTintSelections(out var selections, out var layerType, out var layer))
+                    !TryGetEditableTintSelections(out _, out var layerType, out var layer))
                 {
                     return;
                 }
 
-                var color = new TintMapColor(value.R, value.G, value.B);
-                if (TintMapVariable.IsCreatureColorLayer(layerType))
-                {
-                    TintMapService.SetCreatureCustomColor(_target, selections, layerType, color);
-                }
-                else if (IsEquipmentSelected &&
-                         SelectedItemTypeIndex == 0 &&
-                         _colorTarget == ColorTarget.Global)
-                {
-                    TintMapService.SetGlobalItemCustomColor(_target, selections, layerType, color);
-                }
-                else
-                {
-                    foreach (var selection in selections)
-                    {
-                        TintMapService.SetColor(_target, selection, layerType, color);
-                    }
-                }
+                var requestedColor = new TintMapColor(value.R, value.G, value.B);
+                var paletteColorId = TintMapPaletteColors.GetClosestColorId(layerType, requestedColor);
+                if (!ApplySelectedPaletteColor(paletteColorId))
+                    return;
 
-                CustomTintSelectionText = $"{layer.Name}: #{value.R:X2}{value.G:X2}{value.B:X2}";
+                // The known-good PLT shader accepts palette rows, not arbitrary RGB. Reflect the
+                // row that was actually applied so the picker and model never disagree.
+                var appliedColor = TintMapPaletteColors.GetColor(layerType, paletteColorId);
+                SetSelectedTintColor(new GuiColor(
+                    appliedColor.Red,
+                    appliedColor.Green,
+                    appliedColor.Blue));
+                CustomTintSelectionText =
+                    $"{layer.Name}: #{appliedColor.Red:X2}{appliedColor.Green:X2}{appliedColor.Blue:X2}";
             }
         }
 
@@ -1800,11 +1794,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnSelectColor() => () =>
         {
+            ApplySelectedPaletteColor(GetSelectedPaletteColorId());
+        };
+
+        private bool ApplySelectedPaletteColor(int colorId)
+        {
             ToggleItemEquippedFlags();
             if (DoesNotHaveItemEquipped)
-                return;
+                return false;
 
-            var colorId = GetSelectedPaletteColorId();
+            if (colorId < 0 || colorId >= TintMapMaterialRegistry.PaletteColorCount)
+                return false;
+
+            if (IsEquipmentSelected && SelectedItemTypeIndex == 0)
+                return ApplyArmorPaletteColor(colorId);
+
+            if (!IsAppearanceSelected &&
+                (!IsEquipmentSelected || (SelectedItemTypeIndex != 1 && SelectedItemTypeIndex != 2)))
+            {
+                return false;
+            }
+
             ResetCurrentCustomTintOverrides();
 
             // Appearance - Skin, Hair, or Tattoo
@@ -1854,7 +1864,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             TintMapService.ApplyCurrentColors(_target);
             LoadTintMapEditor();
-        };
+            return true;
+        }
 
         public Action OnResetTintColor() => () =>
         {
@@ -2166,18 +2177,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickColorPalette(int colorId) => () =>
         {
-            ToggleItemEquippedFlags();
-            if (DoesNotHaveItemEquipped)
-                return;
+            ApplySelectedPaletteColor(colorId);
+        };
 
+        private bool ApplyArmorPaletteColor(int colorId)
+        {
             if (!GetBaseItemFitsInInventory(BaseItem.Armor, _target))
             {
                 SendMessageToPC(Player, "Not enough space to modify item.");
-                return;
+                return false;
             }
 
             if (_colorTarget == ColorTarget.Invalid)
-                return;
+                return false;
 
             ResetCurrentCustomTintOverrides(colorId);
 
@@ -2213,7 +2225,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             ChangeColor(_colorTarget, _selectedColorChannel, colorId);
-        };
+            return true;
+        }
 
         public Action OnClickClearColor(ColorTarget colorTarget, AppearanceArmorColor colorChannel) => () =>
         {

@@ -271,7 +271,11 @@ namespace SWLOR.Toolset.Domain.Render
             var ownershipKey = resolveMeshTexture == null
                 ? string.Empty
                 : mesh.UsesItemTintOverrides ? "|item" : "|owner";
-            var cacheKey = mesh.MaterialName + "|" + mesh.TextureName + paletteKey + tintKey + ownershipKey;
+            var armorPartKey = resolveMeshTexture == null
+                ? string.Empty
+                : $"|part:{(int)mesh.ArmorPart}";
+            var cacheKey = mesh.MaterialName + "|" + mesh.TextureName + paletteKey + tintKey +
+                           ownershipKey + armorPartKey;
             if (decoded.TryGetValue(cacheKey, out var cached))
                 return cached;
 

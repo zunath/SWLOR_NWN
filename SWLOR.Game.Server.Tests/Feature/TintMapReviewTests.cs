@@ -356,7 +356,7 @@ public class TintMapReviewTests
             "AppearanceDefinition",
             "TintMap",
             "TintMapModelResolver.cs");
-        FindMethod(resolver, nameof(TintMapModelResolver.GetWorldItemSelections))
+        FindMethod(resolver, "AddItemSelections")
             .ToString().Should().Contain("ItemClass");
 
         var service = ReadSource(
@@ -392,8 +392,7 @@ public class TintMapReviewTests
             "AppearanceDefinition",
             "TintMap",
             "TintMapModelResolver.cs");
-        var worldSelections = FindMethod(resolver, nameof(TintMapModelResolver.GetWorldItemSelections));
-        var worldSource = worldSelections.ToString();
+        var worldSource = FindMethod(resolver, "AddItemSelections").ToString();
         worldSource.Should().Contain("itemClass == \"cloak\"");
         worldSource.Should().Contain("Get2DAString(\"cloakmodel\", \"TEXTURE\", modelId)");
         worldSource.Should().Contain("overrideModel");
@@ -538,7 +537,7 @@ public class TintMapReviewTests
             "resetting to a preset must also remove the persisted global semantic tint marker");
         resetInvocations.Should().Contain("DeleteLocalInt");
         resetInvocations.Should().Contain("RemoveDroidOverrides");
-        resetInvocations.Should().Contain(nameof(TintMapService.ApplyCurrentColors),
+        resetInvocations.Should().Contain("ApplyCurrentColorsAndPublish",
             "resetting one semantic layer must atomically rebuild all equipment and body rows");
 
         var viewModelSource = ReadSource(
@@ -595,18 +594,12 @@ public class TintMapReviewTests
             .ToList();
         publishCalls.Should().Contain(nameof(TintMapService.ApplyCurrentColors),
             "the appearance rebuild must be followed by all current palette and custom rows");
-        publishCalls.Should().Contain("GetFirstPC",
-            "every connected observer can retain the old shader-parameter snapshot");
-        publish.ToString().Should().Contain("GetLastUpdateObject(creature)",
-            "the client comparison snapshot must be invalidated after a same-key vec4 replacement");
-        publish.ToString().Should().Contain("m_lMaterialShaderParameters.Clear()",
-            "clearing only the cached material parameters forces the live RGB values to replicate without recreating the creature");
         publishCalls.Should().Contain("SetForceUpdate",
             "the changed material-parameter list must be compared and sent to clients immediately");
-        publish.ToString().IndexOf("ApplyCurrentColors(creature)", StringComparison.Ordinal)
-            .Should().BeLessThan(
-                publish.ToString().IndexOf("m_lMaterialShaderParameters.Clear()", StringComparison.Ordinal),
-                "the server's live tint list must contain the replacement before observer snapshots are invalidated");
+        publish.ToString().Should().NotContain("GetLastUpdateObject",
+            "resetting and replacing the declared scalar uniforms dirties the live list without mutating per-player native snapshots");
+        publish.ToString().Should().NotContain("m_lMaterialShaderParameters.Clear()",
+            "publication must not reach into another object's native comparison cache");
         publish.ToString().Should().NotContain("UpdateAppearanceDependantInfo",
             "a tint edit must not rebuild the creature or invalidate the client's scene state");
 
@@ -623,7 +616,11 @@ public class TintMapReviewTests
         replacementSource.Should().Contain("string.Empty",
             "composed aliases still need the model-wide target when that NWNX behavior is available");
         replacementSource.Should().Contain("selection.Material.Resref",
-            "resolved body materials need exact writes when an empty material name does not match child meshes");
+            "resolved body materials prove the semantic layer is present before the model-wide write");
+
+        var resetCreature = FindMethod(serviceSource, nameof(TintMapService.ResetCreatureCustomColor));
+        resetCreature.ToString().Should().Contain("ApplyCurrentColorsAndPublish(creature)",
+            "resetting a live semantic color must publish its restored palette row immediately");
 
         var viewModelSource = ReadSource(
             "SWLOR.Game.Server",
@@ -834,6 +831,33 @@ public class TintMapReviewTests
                 invocation.ArgumentList.Arguments[0].Expression.ToString() == "\"cloakmodel\"" &&
                 invocation.ArgumentList.Arguments[1].Expression.ToString() == "\"TEXTURE\"");
         cloakMethod.ToString().Should().Contain("cloak_{textureId:D3}");
+    }
+
+    [Test]
+    public void CurrentSelectionsIncludeEquippedWeaponsAndPhenotypeSpecificRobes()
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapModelResolver.cs");
+        var currentSelections = FindMethod(source, nameof(TintMapModelResolver.GetCurrentSelections));
+        currentSelections.ToString().Should().Contain("InventorySlot.RightHand");
+        currentSelections.ToString().Should().Contain("InventorySlot.LeftHand");
+        currentSelections.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Count(invocation => GetInvokedMethodName(invocation) == "AddItemSelections")
+            .Should().Be(2,
+                "both equipped weapon slots can contribute tintable simple or three-part models");
+
+        var parts = FindMethod(source, "AddPartsAppearanceSelections");
+        parts.ToString().Should().Contain("GetRobeModelResref(prefix, (int)GetPhenoType(creature), robeId)");
+        var robeModel = FindMethod(source, "GetRobeModelResref");
+        robeModel.ToString().Should().Contain("phenotype == 2");
+        robeModel.ToString().Should().Contain("prefix.TrimEnd('_')");
+        robeModel.ToString().Should().Contain("2_",
+            "phenotype 2 robes use names such as pfh22_robe007 rather than pfh2_robe007");
     }
 
     [Test]
@@ -1129,6 +1153,8 @@ public class TintMapReviewTests
         var setStoredColorMethod = FindMethod(serviceSource, "SetStoredColor");
         setStoredColorMethod.ToString().Should().Contain("GetEquivalentItemTintVariables",
             "a new custom color must replace stale equivalent wearer-variant values too");
+        setStoredColorMethod.ToString().Should().Contain("ApplyCurrentColorsAndPublish(creature)",
+            "a live equipment RGB edit must be forced to connected clients");
         var resetColorMethod = FindMethod(serviceSource, nameof(TintMapService.ResetColor));
         resetColorMethod.ToString().Should().Contain(
             "MarkPendingItemColorEdit(paletteSource, layer, selection.ArmorPart)",
@@ -1239,6 +1265,11 @@ public class TintMapReviewTests
             "an explicit material color equal to the global RGB is still an independent override");
         setGlobalItemColor.ToString().Should().Contain("Droid.UpdateEquippedItemSnapshot(creature, item)",
             "changing only the global marker must still persist equipped droid armor");
+        setGlobalItemColor.ToString().Should().Contain(
+            "MarkPendingItemColorEdit(item, layer, AppearanceArmor.Invalid)",
+            "replacing a global tint must invalidate an older delayed color carry");
+        setGlobalItemColor.ToString().Should().Contain("ApplyCurrentColorsAndPublish(creature)",
+            "changing a global tint must publish the rebuilt equipment shader state");
         var explicitPresetMethod = FindMethod(serviceSource, "HasExplicitItemPresetColor");
         explicitPresetMethod.ToString().Should().Contain("savedColor <= TintMapMaterialRegistry.PaletteColorCount",
             "palette-format TM values must remain explicit when a global RGB tint changes");
@@ -1259,6 +1290,12 @@ public class TintMapReviewTests
             "global reset must remove matching inactive keys before they can resurrect the tint");
         resetGlobalItemColor.ToString().Should().Contain("Droid.UpdateEquippedItemSnapshot(creature, item)",
             "removing only the global marker must still persist equipped droid armor");
+        resetGlobalItemColor.ToString().Should().Contain(
+            "MarkPendingItemColorEdit(item, layer, AppearanceArmor.Invalid)",
+            "resetting a global tint must invalidate an older delayed color carry");
+        var inferLegacyGlobal = FindMethod(serviceSource, "TryInferLegacyGlobalItemCustomColor");
+        inferLegacyGlobal.ToString().Should().Contain("GetItemTintOverrides(item)",
+            "an inactive global reset must infer markerless legacy tint state from stored material keys");
 
         var viewModelSource = ReadSource(
             "SWLOR.Game.Server",
@@ -1278,17 +1315,26 @@ public class TintMapReviewTests
         var reexec = source.IndexOf(
             "exec \"$BASH\" \"$updated_deploy_script\" \"$@\"",
             StringComparison.Ordinal);
+        var submoduleSync = source.IndexOf(
+            "Synchronizing recursive submodules before re-exec.",
+            StringComparison.Ordinal);
         var envMigration = source.IndexOf(
             "if (( server_env_migration_required == 1 )); then",
             StringComparison.Ordinal);
 
         merge.Should().BeGreaterThan(-1);
+        submoduleSync.Should().BeGreaterThan(merge,
+            "a changed gitlink must be checked out after the parent fast-forward");
+        submoduleSync.Should().BeLessThan(reexec,
+            "the updated script's clean-tree guard runs immediately after re-exec");
         reexec.Should().BeGreaterThan(merge,
             "a fast-forward must transfer control to the fetched deployment implementation");
         reexec.Should().BeLessThan(envMigration,
             "new host migrations must execute from the updated script on their first rollout");
         source.Should().Contain("flock --unlock 9",
             "the replacement process must reacquire the deployment lock instead of deadlocking");
+        source.Should().Contain("\"$server_env_migration_required\" == 0",
+            "an unchanged commit must still deploy a required server environment migration");
     }
 
     [Test]
@@ -1634,7 +1680,8 @@ public class TintMapReviewTests
         var repositoryRoot = FindRepositoryRoot();
         var rows = ReadSource("SWLOR_Haks", "sw_2da", "tintmap.2da")
             .Split('\n', StringSplitOptions.RemoveEmptyEntries)
-            .Select(line => line.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+            .Select(line => line.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Select(column => column.Trim()).ToArray())
             .Where(columns => columns.Length >= 4)
             .ToList();
         var expectedRows = new Dictionary<string, (string Material, string Layers)>
@@ -1705,7 +1752,8 @@ public class TintMapReviewTests
         var repositoryRoot = FindRepositoryRoot();
         var rows = ReadSource("SWLOR_Haks", "sw_2da", "tintmap.2da")
             .Split('\n', StringSplitOptions.RemoveEmptyEntries)
-            .Select(line => line.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+            .Select(line => line.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Select(column => column.Trim()).ToArray())
             .Where(columns => columns.Length >= 4)
             .ToList();
         var expectedModels = new Dictionary<string, string>
@@ -1749,7 +1797,8 @@ public class TintMapReviewTests
 
         var rows = ReadSource("SWLOR_Haks", "sw_2da", "tintmap.2da")
             .Split('\n', StringSplitOptions.RemoveEmptyEntries)
-            .Select(line => line.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+            .Select(line => line.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Select(column => column.Trim()).ToArray())
             .Where(columns => columns.Length >= 4)
             .ToList();
         var expectedRows = new Dictionary<string, (string Material, string Layers)>
@@ -1816,7 +1865,7 @@ public class TintMapReviewTests
     }
 
     [Test]
-    public void ApplyingAColorPublishesCustomRgbThroughTheReplicatedPaletteRowVector()
+    public void ApplyingAColorUsesTheDeclaredScalarShaderUniformContract()
     {
         var serviceSource = ReadSource(
             "SWLOR.Game.Server",
@@ -1831,22 +1880,27 @@ public class TintMapReviewTests
                 invocation.Expression.ToString() == "SetMaterialShaderUniformVec4")
             .ToList();
 
-        rowWrites.Should().ContainSingle(
-            "the palette row must stay on its documented vec4 material parameter");
-        rowWrites.Single().ToString().Should().Contain("GetPaletteCoordinate");
+        rowWrites.Should().HaveCount(5,
+            "preset and custom paths write the row float, while custom RGB writes three scalar float parameters");
+        rowWrites.Count(write => write.ToString().Contains("layerDefinition.UniformName"))
+            .Should().Be(2,
+                "both preset and custom paths explicitly select their palette reference row");
+        rowWrites.Should().Contain(write => write.ToString().Contains("layerDefinition.ColorRedUniformName"));
+        rowWrites.Should().Contain(write => write.ToString().Contains("layerDefinition.ColorGreenUniformName"));
+        rowWrites.Should().Contain(write => write.ToString().Contains("layerDefinition.ColorBlueUniformName"));
 
         var customWrites = applyColor.DescendantNodes()
             .OfType<InvocationExpressionSyntax>()
             .Where(invocation =>
                 invocation.Expression.ToString() == "SetMaterialShaderUniformInt")
             .ToList();
-        customWrites.Should().BeEmpty(
-            "custom RGB must use the same row vec4 that presets prove is replicated to composed creature parts");
-        var rowWrite = rowWrites.Single().ToString();
-        rowWrite.Should().Contain("packedCustomRgb");
-        applyColor.ToString().Should().Contain("customColor.Value.Red << 16");
-        applyColor.ToString().Should().Contain("customColor.Value.Green << 8");
-        applyColor.ToString().Should().Contain("customColor.Value.Blue");
+        customWrites.Should().HaveCount(2,
+            "preset and custom paths must explicitly disable or enable the shader's int mode uniform");
+        customWrites.Should().Contain(write => write.ToString().Contains("0"));
+        customWrites.Should().Contain(write => write.ToString().Contains("1"));
+        applyColor.ToString().Should().Contain("customColor.Value.Red / 255f");
+        applyColor.ToString().Should().Contain("customColor.Value.Green / 255f");
+        applyColor.ToString().Should().Contain("customColor.Value.Blue / 255f");
         applyColor.ToString().Should().Contain("ResetMaterialShaderUniforms");
 
         var resets = applyColor.DescendantNodes()
@@ -1854,7 +1908,7 @@ public class TintMapReviewTests
             .Where(invocation =>
                 invocation.Expression.ToString() == "ResetMaterialShaderUniforms")
             .ToList();
-        resets.Should().HaveCount(6,
+        resets.Should().HaveCount(5,
             "all material-scoped entries must be replaced before native shader writes so live edits replicate cleanly");
         resets.Should().NotContain(reset => reset.ToString().Contains("string.Empty"),
             "material writes must never broadcast to every material on the creature");
@@ -1862,13 +1916,14 @@ public class TintMapReviewTests
         foreach (var shaderName in new[] { "fs_plt_tinter.shd", "fs_plt_tinter_nm.shd" })
         {
             var shader = ReadSource("SWLOR_Haks", "sw_shader", shaderName);
-            shader.Should().Contain("uniform vec4 rowSkin");
+            shader.Should().Contain("uniform float rowSkin");
+            shader.Should().Contain("uniform float tintSkinR");
+            shader.Should().Contain("uniform float tintSkinG");
+            shader.Should().Contain("uniform float tintSkinB");
             shader.Should().Contain("uniform int useCustomSkin");
-            shader.Should().Contain("bool usePackedCustomTint = tintState.x < 0.0");
-            shader.Should().Contain("float packedRed = floor(packedRgb / 65536.0)");
-            shader.Should().Contain("float packedGreen = floor(packedRgb / 256.0)");
-            shader.Should().Contain("float v = useCustomTint ? referenceV : tintState.x");
-            shader.Should().Contain("vec3 packedCustomTint = vec3(packedRed, packedGreen, packedBlue) / 255.0");
+            shader.Should().Contain("vec3 customTint = vec3(tintSkinR, tintSkinG, tintSkinB)");
+            shader.Should().Contain("bool useCustomTint = customTintMode > 0 || v <= 0.0");
+            shader.Should().Contain("v = referenceV");
         }
 
     }
@@ -1932,8 +1987,8 @@ public class TintMapReviewTests
             "a color edit must not rebuild the creature appearance or invalidate client scene state");
         publishText.Should().NotContain("ApplyCreatureColor(creature",
             "publishing only the edited layer can leave other rows on invalidated defaults");
-        publishText.Should().Contain("m_lMaterialShaderParameters.Clear()",
-            "each observer's stale material snapshot must be discarded before the forced update");
+        publishText.Should().NotContain("m_lMaterialShaderParameters.Clear()",
+            "resetting scalar uniforms dirties the live state without mutating per-observer native snapshots");
         publishText.Should().Contain("SetForceUpdate()",
             "the rebuilt material state must be published in the current server update");
     }
@@ -1944,7 +1999,8 @@ public class TintMapReviewTests
         var repositoryRoot = FindRepositoryRoot();
         var rows = ReadSource("SWLOR_Haks", "sw_2da", "tintmap.2da")
             .Split('\n', StringSplitOptions.RemoveEmptyEntries)
-            .Select(line => line.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+            .Select(line => line.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Select(column => column.Trim()).ToArray())
             .Where(columns => columns.Length >= 4)
             .ToList();
         var expectedRows = new Dictionary<string, (string Material, string Layers)>
@@ -1978,7 +2034,8 @@ public class TintMapReviewTests
     {
         var rows = ReadSource("SWLOR_Haks", "sw_2da", "tintmap.2da")
             .Split('\n', StringSplitOptions.RemoveEmptyEntries)
-            .Select(line => line.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+            .Select(line => line.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Select(column => column.Trim()).ToArray())
             .Where(columns => columns.Length >= 4)
             .ToList();
         var paddedFoot = rows.Single(columns => columns[1] == "pmo0_footl010");

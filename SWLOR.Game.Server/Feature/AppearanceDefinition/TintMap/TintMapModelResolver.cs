@@ -86,6 +86,16 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 appendagesUseItemColors,
                 selections,
                 seenSelections);
+            AddItemSelections(
+                GetItemInSlot(InventorySlot.RightHand, creature),
+                creature,
+                selections,
+                seenSelections);
+            AddItemSelections(
+                GetItemInSlot(InventorySlot.LeftHand, creature),
+                creature,
+                selections,
+                seenSelections);
 
             return selections;
         }
@@ -93,17 +103,27 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         public static IReadOnlyList<TintMapMaterialSelection> GetWorldItemSelections(uint item)
         {
             var selections = new List<TintMapMaterialSelection>();
+            var seenSelections = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            AddItemSelections(item, item, selections, seenSelections);
+            return selections;
+        }
+
+        private static void AddItemSelections(
+            uint item,
+            uint creaturePaletteSource,
+            ICollection<TintMapMaterialSelection> selections,
+            ISet<string> seenSelections)
+        {
             if (!GetIsObjectValid(item) || GetObjectType(item) != ObjectType.Item)
-                return selections;
+                return;
 
             var baseItem = (int)GetBaseItemType(item);
             var itemClass = Get2DAString("baseitems", "ItemClass", baseItem).ToLowerInvariant();
             if (string.IsNullOrWhiteSpace(itemClass) || itemClass == "****")
-                return selections;
+                return;
 
-            var seenSelections = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             if (!int.TryParse(Get2DAString("baseitems", "ModelType", baseItem), out var modelType))
-                return selections;
+                return;
 
             if (modelType is 0 or 1)
             {
@@ -123,7 +143,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                         seenSelections,
                         $"{itemClass}_{modelId:D3}",
                         item,
-                        item,
+                        creaturePaletteSource,
                         true,
                         AppearanceArmor.Invalid,
                         overrideModel);
@@ -131,21 +151,18 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             }
             else if (modelType == 2)
             {
-                AddWorldItemPart(
-                    item, itemClass, "b", AppearanceWeapon.Bottom, selections, seenSelections);
-                AddWorldItemPart(
-                    item, itemClass, "m", AppearanceWeapon.Middle, selections, seenSelections);
-                AddWorldItemPart(
-                    item, itemClass, "t", AppearanceWeapon.Top, selections, seenSelections);
+                AddItemPart(
+                    item, creaturePaletteSource, itemClass, "b", AppearanceWeapon.Bottom, selections, seenSelections);
+                AddItemPart(
+                    item, creaturePaletteSource, itemClass, "m", AppearanceWeapon.Middle, selections, seenSelections);
+                AddItemPart(
+                    item, creaturePaletteSource, itemClass, "t", AppearanceWeapon.Top, selections, seenSelections);
             }
-
-            // ModelType 3 armor uses the engine's generic ground bag. Its tintable body-part
-            // models only exist while worn and are already handled by GetCurrentSelections.
-            return selections;
         }
 
-        private static void AddWorldItemPart(
+        private static void AddItemPart(
             uint item,
+            uint creaturePaletteSource,
             string itemClass,
             string partName,
             AppearanceWeapon part,
@@ -161,7 +178,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 seenSelections,
                 $"{itemClass}_{partName}_{modelId:D3}",
                 item,
-                item,
+                creaturePaletteSource,
                 true,
                 AppearanceArmor.Invalid);
         }
@@ -211,7 +228,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     AddModelSelections(
                         selections,
                         seenSelections,
-                        $"{prefix}robe{robeId:D3}".ToLowerInvariant(),
+                        GetRobeModelResref(prefix, (int)GetPhenoType(creature), robeId),
                         armor,
                         creature,
                         true,
@@ -221,6 +238,14 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
             AddSimpleItemSelections(creature, InventorySlot.Head, "helm", selections, seenSelections);
             AddCloakSelections(creature, prefix, selections, seenSelections);
+        }
+
+        private static string GetRobeModelResref(string prefix, int phenotype, int robeId)
+        {
+            var robePrefix = phenotype == 2
+                ? $"{prefix.TrimEnd('_')}2_"
+                : prefix;
+            return $"{robePrefix}robe{robeId:D3}".ToLowerInvariant();
         }
 
         private static int ResolvePartId(int creaturePartId, int armorPartId, bool usesItemColors)

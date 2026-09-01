@@ -1,6 +1,7 @@
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Toolset.Domain.Render;
 
 namespace SWLOR.Toolset.Tests
@@ -437,11 +438,16 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void APerMeshResolverCachesDistinctDyeAndTintStateSeparately()
+        public void APerMeshResolverCachesDistinctDyeTintOwnershipAndArmorPartStateSeparately()
         {
             var first = TexturedQuad("shared_mtr").Meshes[0];
             first.LayerColorIndices = new Dictionary<int, int> { [2] = 45 };
             first.TintMapOverrides = new Dictionary<string, int> { ["TM_shared_mtr_2"] = 123 };
+            first.ArmorPart = AppearanceArmor.LeftHand;
+            var otherPart = TexturedQuad("shared_mtr").Meshes[0];
+            otherPart.LayerColorIndices = new Dictionary<int, int> { [2] = 45 };
+            otherPart.TintMapOverrides = new Dictionary<string, int> { ["TM_shared_mtr_2"] = 123 };
+            otherPart.ArmorPart = AppearanceArmor.RightHand;
             var itemOwned = TexturedQuad("shared_mtr").Meshes[0];
             itemOwned.LayerColorIndices = new Dictionary<int, int> { [2] = 45 };
             itemOwned.TintMapOverrides = new Dictionary<string, int> { ["TM_shared_mtr_2"] = 123 };
@@ -452,7 +458,11 @@ namespace SWLOR.Toolset.Tests
             var seen = new List<(int Palette, int Tint)>();
 
             ThumbnailRenderer.Render(
-                new RenderModel { Name = "independent-custom-tints", Meshes = [first, itemOwned, second] },
+                new RenderModel
+                {
+                    Name = "independent-custom-tints",
+                    Meshes = [first, otherPart, itemOwned, second]
+                },
                 Size,
                 resolveMeshTexture: mesh =>
                 {
@@ -460,8 +470,8 @@ namespace SWLOR.Toolset.Tests
                     return SolidTexture(10, 10, 10);
                 });
 
-            seen.Should().BeEquivalentTo(new[] { (45, 123), (45, 123), (97, 456) },
-                "a per-mesh resolver uses ownership, palette rows, and custom RGB overrides");
+            seen.Should().BeEquivalentTo(new[] { (45, 123), (45, 123), (45, 123), (97, 456) },
+                "a per-mesh resolver uses armor part, ownership, palette rows, and custom RGB overrides");
         }
 
         [Test]

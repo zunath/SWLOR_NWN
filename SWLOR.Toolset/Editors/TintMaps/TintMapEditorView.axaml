@@ -20,7 +20,8 @@
                 <TextBlock Text="{Binding MaterialName}" Classes="mono" FontSize="10" />
                 <TextBlock Text="{Binding Status}" Classes="dim" FontSize="10" />
               </StackPanel>
-              <ColorPicker Grid.Column="1" Color="{Binding Color, Mode=TwoWay}" />
+              <ColorPicker Grid.Column="1" Color="{Binding Color, Mode=TwoWay}"
+                           IsAlphaEnabled="False" />
               <Button Grid.Column="2" Content="Reset" VerticalAlignment="Top"
                       Command="{Binding ResetCommand}" IsEnabled="{Binding HasOverride}" />
             </Grid>

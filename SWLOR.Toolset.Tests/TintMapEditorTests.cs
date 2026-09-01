@@ -601,6 +601,55 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public async Task FullBodyAppearanceShowsOnlySemanticChannelsDeclaredByItsTintMap()
+        {
+            var creature = new ModuleWorkspace(CorpusLocator.ModuleDirectory)
+                .LoadBlueprint(ResourceType.Utc, "agr_guildmaster")
+                .Document.Root;
+            var store = new CreatureValueStore(creature);
+            static bool Edit(string _, Action mutation)
+            {
+                mutation();
+                return true;
+            }
+
+            var body = new CreatureBodyPartsViewModel(
+                store,
+                Edit,
+                id => new AppearanceRow(id, "FULL_BODY_TEST", "Full Body Test", "F", "H", null),
+                null,
+                null,
+                () => { });
+            body.SetTintMapRows(
+            [
+                new TintMapColorRowViewModel(
+                    "c_full_body",
+                    TintMapLayerType.Skin,
+                    store.Locals,
+                    Edit,
+                    null)
+            ]);
+
+            await body.EnsureLoadedAsync();
+
+            body.IsFullBody.Should().BeTrue();
+            body.Colors.Select(color => color.Label).Should().Equal("Skin");
+        }
+
+        [Test]
+        public void TintMapColorPickerDoesNotExposeAnUnusedAlphaChannel()
+        {
+            var source = File.ReadAllText(Path.Combine(
+                CorpusLocator.RepositoryRoot,
+                "SWLOR.Toolset",
+                "Editors",
+                "TintMaps",
+                "TintMapEditorView.axaml"));
+
+            source.Should().Contain("IsAlphaEnabled=\"False\"");
+        }
+
+        [Test]
         public async Task CreatureBodyColorCombinesPresetAndCustomRgbForOneSemanticChannel()
         {
             var creature = new ModuleWorkspace(CorpusLocator.ModuleDirectory)

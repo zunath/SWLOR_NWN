@@ -692,6 +692,13 @@ if [[ "$local_commit" != "$remote_commit" ]]; then
     git -C "$SOURCE_ROOT" merge --ff-only \
         "refs/remotes/$GIT_REMOTE/$BRANCH"
 
+    # The fast-forward can change a submodule gitlink. Update the checkout before re-exec so the
+    # replacement script's initial clean-tree guard does not mistake that expected gitlink change
+    # for a local modification.
+    log "Synchronizing recursive submodules before re-exec."
+    git -C "$SOURCE_ROOT" submodule sync --recursive
+    git -C "$SOURCE_ROOT" submodule update --init --recursive --depth 1
+
     # Continue with the just-fetched implementation rather than the old script body that was
     # already open when this process began. Deployment migrations added by this commit must run
     # during its first rollout, before the server is restarted.
@@ -713,7 +720,10 @@ fi
 
 target_commit="$(git -C "$SOURCE_ROOT" rev-parse HEAD)"
 active_commit="$(state_value active-commit)"
-if [[ "$MODE" == if-changed && "$active_commit" == "$target_commit" ]]; then
+if [[ "$MODE" == if-changed &&
+      "$active_commit" == "$target_commit" &&
+      "$server_env_migration_required" == 0 ]]
+then
     log "Commit $target_commit is already active; nothing to deploy."
     exit 0
 fi

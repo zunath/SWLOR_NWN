@@ -249,6 +249,9 @@ namespace SWLOR.Toolset.Editors.Creatures
             foreach (var definition in definitions)
             {
                 var tintRows = _tintRows.Where(row => row.Layer == definition.Layer).ToList();
+                if (IsFullBody && tintRows.Count == 0)
+                    continue;
+
                 Func<Color?>? readCustom = tintRows.Count == 0
                     ? null
                     : () => ReadCustomColor(tintRows);

@@ -240,6 +240,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 selection,
                 layer,
                 GetEffectiveColor(creature, selection, layer));
+            ApplyCurrentColorsAndPublish(creature);
         }
 
         public static void ResetColor(
@@ -281,6 +282,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 selection,
                 layer,
                 GetEffectiveColor(creature, selection, layer));
+            ApplyCurrentColorsAndPublish(creature);
         }
 
         /// <summary>
@@ -313,6 +315,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 selection,
                 layer,
                 GetEffectiveColor(creature, selection, layer));
+            ApplyCurrentColorsAndPublish(creature);
         }
 
         public static void SetGlobalItemCustomColor(
@@ -337,6 +340,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             itemSelections = itemSelections
                 .Where(selection => selection.GetPaletteSource(layer) == item)
                 .ToList();
+            MarkPendingItemColorEdit(item, layer, AppearanceArmor.Invalid);
             var stateVariable = TintMapVariable.GetItemGlobalColorStateName(layer);
             var inheritanceStateVariable = TintMapVariable.GetItemGlobalInheritanceStateName(layer);
             var hasPreviousGlobalColor = TintMapColor.TryFromStoredValue(
@@ -345,6 +349,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             if (!hasPreviousGlobalColor)
             {
                 hasPreviousGlobalColor = TryInferLegacyGlobalItemCustomColor(
+                    item,
                     itemSelections,
                     layer,
                     out previousGlobalColor);
@@ -394,6 +399,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             // The global marker is meaningful state even when every active material has an
             // independent override and the loop does not update a material.
             Droid.UpdateEquippedItemSnapshot(creature, item);
+            ApplyCurrentColorsAndPublish(creature);
         }
 
         public static void ResetGlobalItemCustomColor(
@@ -418,6 +424,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 .Where(selection => selection.GetPaletteSource(layer) == item)
                 .ToList();
             ResetGlobalItemCustomColor(creature, item, itemSelections, layer);
+            ApplyCurrentColorsAndPublish(creature);
         }
 
         private static void ResetGlobalItemCustomColor(
@@ -426,6 +433,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             IReadOnlyList<TintMapMaterialSelection> itemSelections,
             TintMapLayerType layer)
         {
+            MarkPendingItemColorEdit(item, layer, AppearanceArmor.Invalid);
             var stateVariable = TintMapVariable.GetItemGlobalColorStateName(layer);
             var inheritanceStateVariable = TintMapVariable.GetItemGlobalInheritanceStateName(layer);
             var usesExplicitInheritance = GetLocalInt(item, inheritanceStateVariable) != 0;
@@ -437,6 +445,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             // only a complete, uniform set can safely be interpreted as a global custom color.
             if (!hasGlobalColor)
                 hasGlobalColor = TryInferLegacyGlobalItemCustomColor(
+                    item,
                     itemSelections,
                     layer,
                     out globalColor);
@@ -493,13 +502,32 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         }
 
         private static bool TryInferLegacyGlobalItemCustomColor(
+            uint item,
             IReadOnlyList<TintMapMaterialSelection> itemSelections,
             TintMapLayerType layer,
             out TintMapColor globalColor)
         {
             globalColor = default;
             if (itemSelections.Count == 0)
-                return false;
+            {
+                var storedColors = GetItemTintOverrides(item)
+                    .Where(entry =>
+                        TintMapVariable.TryParse(entry.Key, out _, out var variableLayer) &&
+                        variableLayer == layer &&
+                        TintMapColor.TryFromStoredValue(entry.Value, out _))
+                    .Select(entry =>
+                    {
+                        TintMapColor.TryFromStoredValue(entry.Value, out var color);
+                        return color;
+                    })
+                    .Distinct()
+                    .ToList();
+                if (storedColors.Count != 1)
+                    return false;
+
+                globalColor = storedColors[0];
+                return true;
+            }
 
             var customColors = itemSelections
                 .Select(selection =>
@@ -549,6 +577,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     item,
                     Array.Empty<TintMapMaterialSelection>(),
                     layer);
+                ApplyCurrentColorsAndPublish(creature);
                 return;
             }
 
@@ -581,6 +610,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             }
 
             Droid.UpdateEquippedItemSnapshot(creature, item);
+            ApplyCurrentColorsAndPublish(creature);
         }
 
         public static bool TryGetCustomColor(
@@ -674,7 +704,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             }
 
             RemoveDroidOverrides(creature, variableNames);
-            ApplyCurrentColors(creature);
+            ApplyCurrentColorsAndPublish(creature);
         }
 
         public static void SetCreatureCustomColor(
@@ -728,9 +758,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 savedColor);
 
             // Creature colors are semantic across the whole modular model: every registered
-            // material whose tint mask uses this layer must receive the same value. Keep the
-            // material-name-null tweak disabled: its concrete-material hook mutates the server's
-            // override list in place without publishing the changed value to connected clients.
+            // material whose tint mask uses this layer must receive the same value. The enabled
+            // material-name-null tweak lets the rebuild publish one authoritative model-wide row.
             ApplyCurrentColorsAndPublish(creature);
 
             // Reapply once after the model refresh interval, resolving the selections again, so a

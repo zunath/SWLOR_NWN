@@ -219,27 +219,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (value == null)
                     return;
 
-                SynchronizeCustomTintComponents(value);
-                if (_loadingTintColor ||
-                    !TryGetEditableTintSelections(out _, out var layerType, out var layer))
-                {
-                    return;
-                }
-
-                var requestedColor = new TintMapColor(value.R, value.G, value.B);
-                var paletteColorId = TintMapPaletteColors.GetClosestColorId(layerType, requestedColor);
-                if (!ApplySelectedPaletteColor(paletteColorId))
-                    return;
-
-                // The known-good PLT shader accepts palette rows, not arbitrary RGB. Reflect the
-                // row that was actually applied so the picker and model never disagree.
-                var appliedColor = TintMapPaletteColors.GetColor(layerType, paletteColorId);
-                SetSelectedTintColor(new GuiColor(
-                    appliedColor.Red,
-                    appliedColor.Green,
-                    appliedColor.Blue));
-                CustomTintSelectionText =
-                    $"{layer.Name}: #{appliedColor.Red:X2}{appliedColor.Green:X2}{appliedColor.Blue:X2}";
+                ApplyCustomTintColor(value, synchronizeComponents: true);
             }
         }
 
@@ -939,17 +919,51 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             CustomTintSelectionText = $"{layer.Name}: Mixed colors";
         }
 
-        private void SetSelectedTintColor(GuiColor color)
+        private void SetSelectedTintColor(
+            GuiColor color,
+            bool synchronizeComponents = true)
         {
             _loadingTintColor = true;
             try
             {
-                SelectedTintColor = color;
+                if (synchronizeComponents)
+                    SelectedTintColor = color;
+                else
+                    Set(color, nameof(SelectedTintColor));
             }
             finally
             {
                 _loadingTintColor = false;
             }
+        }
+
+        private void ApplyCustomTintColor(
+            GuiColor value,
+            bool synchronizeComponents)
+        {
+            if (synchronizeComponents)
+                SynchronizeCustomTintComponents(value);
+
+            if (_loadingTintColor ||
+                !TryGetEditableTintSelections(out _, out var layerType, out var layer))
+            {
+                return;
+            }
+
+            var requestedColor = new TintMapColor(value.R, value.G, value.B);
+            var paletteColorId = TintMapPaletteColors.GetClosestColorId(layerType, requestedColor);
+            if (!ApplySelectedPaletteColor(paletteColorId))
+                return;
+
+            // The known-good PLT shader accepts palette rows, not arbitrary RGB. Reflect the row
+            // actually applied in the picker. Text-entry updates deliberately leave the three
+            // component fields alone so an in-progress multi-digit value is never overwritten.
+            var appliedColor = TintMapPaletteColors.GetColor(layerType, paletteColorId);
+            SetSelectedTintColor(
+                new GuiColor(appliedColor.Red, appliedColor.Green, appliedColor.Blue),
+                synchronizeComponents);
+            CustomTintSelectionText =
+                $"{layer.Name}: #{appliedColor.Red:X2}{appliedColor.Green:X2}{appliedColor.Blue:X2}";
         }
 
         private void SynchronizeCustomTintComponents(GuiColor color)
@@ -984,7 +998,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
             }
 
-            SelectedTintColor = new GuiColor(red, green, blue);
+            ApplyCustomTintColor(
+                new GuiColor(red, green, blue),
+                synchronizeComponents: false);
         }
 
         private bool TryGetEditableTintSelections(

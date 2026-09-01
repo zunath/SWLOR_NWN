@@ -402,7 +402,8 @@ namespace SWLOR.Toolset.Tests
                     return true;
                 },
                 null,
-                standardPaletteColorId: 37);
+                standardPaletteColorId: 37,
+                armorPart: AppearanceArmor.Torso);
 
             row.Color.Should().Be(Color.FromRgb(12, 34, 56));
             row.ResetCommand.Execute(null);
@@ -411,7 +412,21 @@ namespace SWLOR.Toolset.Tests
                 "palette overrides are stored one-based and must mask the inherited global tint");
             variables.GetInt(globalKey).Should().Be(globalColor,
                 "resetting one material must not discard the item-wide tint from sibling materials");
+            var partMarker = ArmorColorIndexCalculator.GetPerPartOverrideVariableName(
+                AppearanceArmor.Torso,
+                AppearanceArmorColor.Cloth1);
+            variables.GetInt(partMarker).Should().Be(1,
+                "the preset opt-out must survive a model swap that removes the material key");
             TintMapOverrides.GetMaterialColor(variables, row.MaterialName, layer).Should().Be(38);
+
+            variables.Remove(row.Key);
+            TintMapOverrides.GetMaterialColor(
+                    variables,
+                    "replacement_material",
+                    layer,
+                    AppearanceArmor.Torso)
+                .Should().Be(0,
+                    "the replacement material must remain on the part palette instead of inheriting global RGB");
             row.IsCustom.Should().BeFalse();
             row.Color.Should().Be(Color.FromRgb(
                 TintMapPaletteColors.GetColor(layer, 37).Red,

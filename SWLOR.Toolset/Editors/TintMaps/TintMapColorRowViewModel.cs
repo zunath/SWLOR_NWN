@@ -99,8 +99,14 @@ namespace SWLOR.Toolset.Editors.TintMaps
                         {
                             // A material without its own TM_* value inherits the item's TMG_*
                             // custom color. Keep that item-wide intent for sibling materials while
-                            // explicitly restoring this material to its stock NWN palette row.
+                            // explicitly restoring this material to its stock NWN palette row. The
+                            // part marker preserves that opt-out if a model swap removes this
+                            // material-specific key before the part is selected again.
                             _variables.SetInt(Key, _standardPaletteColorId + 1);
+                            TintMapOverrides.MarkExplicitPerPartPreset(
+                                _variables,
+                                ArmorPart,
+                                Layer);
                         }
                         else
                         {

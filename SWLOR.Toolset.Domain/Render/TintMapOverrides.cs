@@ -123,7 +123,31 @@ namespace SWLOR.Toolset.Domain.Render
                    variables.GetInt(
                        ArmorColorIndexCalculator.GetPerPartOverrideVariableName(
                            armorPart,
-                           colorChannel)) is > 0;
+                       colorChannel)) is > 0;
+        }
+
+        /// <summary>
+        /// Persists that an armor part intentionally uses its ordinary palette color instead of
+        /// inheriting an item-wide RGB tint for this layer.
+        /// </summary>
+        public static void MarkExplicitPerPartPreset(
+            VarTable variables,
+            AppearanceArmor armorPart,
+            TintMapLayerType layer)
+        {
+            ArgumentNullException.ThrowIfNull(variables);
+
+            if (armorPart == AppearanceArmor.Invalid ||
+                !TryGetArmorColorChannel(layer, out var colorChannel))
+            {
+                return;
+            }
+
+            variables.SetInt(
+                ArmorColorIndexCalculator.GetPerPartOverrideVariableName(
+                    armorPart,
+                    colorChannel),
+                1);
         }
 
         private static bool HasExplicitPerPartPreset(

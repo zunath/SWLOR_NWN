@@ -135,6 +135,16 @@ public class TintMapReviewTests
         viewModel.Should().Contain("TintMapPaletteColors.GetClosestColorId(layerType, requestedColor)");
         viewModel.Should().Contain("ApplySelectedPaletteColor(paletteColorId)",
             "the dynamic picker must use the same palette-row application path as a preset click");
+        var setCustomTintComponent = FindMethod(viewModel, "SetCustomTintComponent");
+        setCustomTintComponent.ToString().Should().Contain("ApplyCustomTintColor(",
+            "typing an RGB component must update the palette without replacing the field mid-entry");
+        setCustomTintComponent.ToString().Should().Contain("synchronizeComponents: false");
+        setCustomTintComponent.ToString().Should().NotContain("SelectedTintColor =",
+            "a watched text edit fires on each keystroke and must not synchronize over the active field");
+        var applyCustomTintColor = FindMethod(viewModel, "ApplyCustomTintColor");
+        applyCustomTintColor.ToString().Should().Contain("SetSelectedTintColor(",
+            "the color picker must still reflect the palette row rendered in game");
+        applyCustomTintColor.ToString().Should().Contain("synchronizeComponents");
         viewModel.Should().Contain("WatchOnClient(model => model.SelectedTintColor)");
         viewModel.Should().Contain("WatchOnClient(model => model.CustomTintRed)");
         viewModel.Should().Contain("WatchOnClient(model => model.CustomTintGreen)");
@@ -675,8 +685,10 @@ public class TintMapReviewTests
             .DescendantNodes()
             .OfType<PropertyDeclarationSyntax>()
             .Single(property => property.Identifier.ValueText == "SelectedTintColor");
-        selectedTintColor.ToString().Should().Contain("TintMapPaletteColors.GetClosestColorId");
-        selectedTintColor.ToString().Should().Contain("ApplySelectedPaletteColor");
+        selectedTintColor.ToString().Should().Contain("ApplyCustomTintColor");
+        var applyCustomTintColor = FindMethod(viewModelSource, "ApplyCustomTintColor");
+        applyCustomTintColor.ToString().Should().Contain("TintMapPaletteColors.GetClosestColorId");
+        applyCustomTintColor.ToString().Should().Contain("ApplySelectedPaletteColor");
     }
 
     [Test]

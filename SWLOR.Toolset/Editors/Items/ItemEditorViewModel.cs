@@ -872,21 +872,24 @@ namespace SWLOR.Toolset.Editors.Items
                 IsModelPreviewLoading = false;
                 ApplyPreviewScene(
                     model,
-                    carryItemCustomColorsAcrossMaterials: carryItemCustomColors);
+                    carryItemCustomColorsAcrossMaterials: carryItemCustomColors,
+                    modelResolutionCompleted: true);
             });
         }
 
         private void ApplyPreviewScene(
             RenderModel? model,
             bool carryItemCustomColorsAcrossMaterials,
-            IDocumentEdit? coalesceOrigin = null)
+            IDocumentEdit? coalesceOrigin = null,
+            bool modelResolutionCompleted = false)
         {
             var hasItemOwnedMeshes = model?.Meshes.Any(mesh => mesh.UsesItemTintOverrides) == true;
             TintMapEditor?.Reload(
                 model,
                 includeNonItemOwnedMaterials: !hasItemOwnedMeshes,
                 carryItemCustomColorsAcrossMaterials: carryItemCustomColorsAcrossMaterials,
-                coalesceOrigin: coalesceOrigin);
+                coalesceOrigin: coalesceOrigin,
+                modelResolutionCompleted: modelResolutionCompleted);
             PreviewScene = model == null
                 ? null
                 : new AreaScene

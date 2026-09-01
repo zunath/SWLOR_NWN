@@ -1567,6 +1567,52 @@ namespace SWLOR.Toolset.Tests
                 "the rejected first snapshot must not override the newer model color");
         }
 
+        [AvaloniaTest]
+        public void FailedItemModelResolutionDoesNotCarryTintIntoTheNextReplacement()
+        {
+            var catalog = TintMapCatalog.Load(Resources());
+            catalog.Should().NotBeNull();
+            var item = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
+                ResourceType.Uti,
+                "tint_fail",
+                "Failed Tint Carry")).Root;
+            var variables = new ItemValueStore(item).Locals;
+            var calls = 0;
+            using var editor = new ItemEditorViewModel(
+                item,
+                "tint_fail",
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                resolveModel: (_, _) => Interlocked.Increment(ref calls) switch
+                {
+                    1 => ItemOwnedModelWith("helm_004"),
+                    2 => null,
+                    _ => ItemOwnedModelWith("helm_005")
+                },
+                tintMapCatalog: catalog);
+            DrainUntil(() => !editor.IsModelPreviewLoading);
+
+            editor.TintMapEditor!.Colors.Single(row => row.Layer == TintMapLayerType.Cloth1).Color =
+                Color.FromRgb(12, 34, 56);
+            editor.PreviewFemale = true;
+            Dispatcher.UIThread.RunJobs();
+            DrainUntil(() => !editor.IsModelPreviewLoading);
+            editor.HasModelPreview.Should().BeFalse("the replacement model failed to resolve");
+
+            editor.PreviewFemale = false;
+            Dispatcher.UIThread.RunJobs();
+            DrainUntil(() => !editor.IsModelPreviewLoading);
+
+            var replacementKey = TintMapVariable.GetName("helm_005", TintMapLayerType.Cloth1);
+            variables.GetInt(replacementKey).Should().BeNull(
+                "a terminal failure must consume the previous model's pending tint snapshot");
+            editor.TintMapEditor.Colors.Single(row => row.Key == replacementKey).IsCustom
+                .Should().BeFalse();
+        }
+
         [Test]
         public void ItemModelReplacementDoesNotGuessBetweenDifferentColorsForOneLayer()
         {

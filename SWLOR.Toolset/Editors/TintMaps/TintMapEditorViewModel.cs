@@ -59,8 +59,15 @@ namespace SWLOR.Toolset.Editors.TintMaps
             bool includeNonItemOwnedMaterials = true,
             bool includeCreatureLayersFromItemOwnedMaterials = false,
             bool carryItemCustomColorsAcrossMaterials = false,
-            IDocumentEdit? coalesceOrigin = null)
+            IDocumentEdit? coalesceOrigin = null,
+            bool modelResolutionCompleted = false)
         {
+            // The loading placeholder also has a null model, but only a completed null resolution
+            // is terminal. Do not let its captured source tint leak into a later replacement.
+            var terminalResolutionFailure = modelResolutionCompleted && model == null;
+            if (terminalResolutionFailure)
+                _pendingItemColorCarry = null;
+
             if (_catalog == null)
             {
                 Colors.Clear();
@@ -78,12 +85,15 @@ namespace SWLOR.Toolset.Editors.TintMaps
             var currentKeys = Colors.Select(row => row.Key);
             var wantedKeys = wanted.Select(entry =>
                 TintMapVariable.GetName(entry.material.Resref, entry.layer));
+            var shouldCarryItemCustomColors =
+                carryItemCustomColorsAcrossMaterials &&
+                !terminalResolutionFailure;
 
             var hasPendingReplacement =
-                carryItemCustomColorsAcrossMaterials &&
+                shouldCarryItemCustomColors &&
                 model != null &&
                 _pendingItemColorCarry != null;
-            if (carryItemCustomColorsAcrossMaterials &&
+            if (shouldCarryItemCustomColors &&
                 model == null &&
                 _pendingItemColorCarry != null &&
                 coalesceOrigin != null)
@@ -108,7 +118,7 @@ namespace SWLOR.Toolset.Editors.TintMaps
             }
 
             ItemColorCarry? carry = null;
-            if (carryItemCustomColorsAcrossMaterials)
+            if (shouldCarryItemCustomColors)
             {
                 carry = _pendingItemColorCarry ?? CaptureItemCustomColors(Colors, coalesceOrigin);
                 if (model == null)
@@ -129,7 +139,7 @@ namespace SWLOR.Toolset.Editors.TintMaps
                     context.ArmorPart));
             }
 
-            if (carryItemCustomColorsAcrossMaterials && model != null)
+            if (shouldCarryItemCustomColors && model != null)
             {
                 CarryItemCustomColors(carry, Colors);
                 // A resolved replacement consumes its captured source snapshot even when the

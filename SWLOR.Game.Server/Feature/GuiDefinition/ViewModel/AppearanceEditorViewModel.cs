@@ -910,6 +910,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 : string.Empty;
 
             RefreshTintMapAvailability();
+            EnsureArmorTintSelection();
             if (!TryGetTintMaterialCandidates(out var candidates, out _, out _))
             {
                 _editableTintMaterialSelections = Array.Empty<TintMapMaterialSelection>();
@@ -948,6 +949,65 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SetSelectedTintMaterialIndex(selectedIndex);
             IsCustomTintAvailable = true;
             LoadSelectedTintMaterialColor();
+        }
+
+        private void EnsureArmorTintSelection()
+        {
+            if (!IsEquipmentSelected ||
+                SelectedItemTypeIndex != 0 ||
+                !IsValidItem())
+            {
+                return;
+            }
+
+            var item = GetItem();
+            if (!GetIsObjectValid(item))
+                return;
+
+            bool HasSelections(
+                ColorTarget target,
+                AppearanceArmorColor channel)
+            {
+                if (!TryGetArmorTintLayer(channel, out var layerType))
+                    return false;
+
+                var armorPart = target == ColorTarget.Global
+                    ? AppearanceArmor.Invalid
+                    : GetArmorModelType(target);
+                return _tintMapSelections.Any(selection =>
+                    selection.GetPaletteSource(layerType) == item &&
+                    selection.Material.Layers.Contains(layerType) &&
+                    (armorPart == AppearanceArmor.Invalid || selection.ArmorPart == armorPart));
+            }
+
+            if (_colorTarget != ColorTarget.Invalid &&
+                HasSelections(_colorTarget, _selectedColorChannel))
+            {
+                return;
+            }
+
+            var channels = new[]
+            {
+                AppearanceArmorColor.Leather1,
+                AppearanceArmorColor.Leather2,
+                AppearanceArmorColor.Cloth1,
+                AppearanceArmorColor.Cloth2,
+                AppearanceArmorColor.Metal1,
+                AppearanceArmorColor.Metal2
+            };
+            foreach (var channel in channels)
+            {
+                if (!HasSelections(ColorTarget.Global, channel))
+                    continue;
+
+                _colorTarget = ColorTarget.Global;
+                _selectedColorChannel = channel;
+                UpdateTargetedColor();
+                return;
+            }
+
+            _colorTarget = ColorTarget.Invalid;
+            ColorTargetText = string.Empty;
         }
 
         private void SetSelectedTintMaterialIndex(int index)

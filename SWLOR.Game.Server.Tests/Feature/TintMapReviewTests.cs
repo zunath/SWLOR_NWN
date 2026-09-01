@@ -233,6 +233,27 @@ public class TintMapReviewTests
         }
     }
 
+    [Test]
+    public void ArmorTintEditorSelectsTheFirstAddressableMaterialLayerOnOpen()
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "AppearanceEditorViewModel.cs");
+        var loadEditor = FindMethod(source, "LoadTintMapEditor");
+        var selectDefault = FindMethod(source, "EnsureArmorTintSelection");
+
+        loadEditor.ToString().Should().Contain("EnsureArmorTintSelection();",
+            "the armor page must not open with an invalid target and hidden material controls");
+        selectDefault.ToString().Should().Contain("selection.GetPaletteSource(layerType) == item");
+        selectDefault.ToString().Should().Contain("selection.Material.Layers.Contains(layerType)");
+        selectDefault.ToString().Should().Contain("_colorTarget = ColorTarget.Global;");
+        selectDefault.ToString().Should().Contain("_selectedColorChannel = channel;");
+        selectDefault.ToString().Should().Contain("UpdateTargetedColor();");
+    }
+
     [TestCase(1, 0, true, 1)]
     [TestCase(27, 0, true, 27)]
     [TestCase(27, 168, true, 168)]

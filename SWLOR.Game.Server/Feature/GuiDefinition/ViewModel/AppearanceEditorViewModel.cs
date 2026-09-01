@@ -70,6 +70,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private Dictionary<int, int> _partIdToIndex = new();
         private IReadOnlyList<TintMapMaterialSelection> _tintMapSelections = Array.Empty<TintMapMaterialSelection>();
         private bool _loadingTintColor;
+        private bool _tintControlBindingsWatched;
 
         private const string OutfitBarrelTag = "OUTFIT_BARREL";
 
@@ -854,6 +855,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             WatchOnClient(model => model.CustomTintRed);
             WatchOnClient(model => model.CustomTintGreen);
             WatchOnClient(model => model.CustomTintBlue);
+            _tintControlBindingsWatched = true;
 
             if (GetIsPC(_target) && !GetIsDM(_target) && !GetIsDMPossessed(_target))
             {
@@ -913,18 +915,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             GuiColor color,
             bool synchronizeComponents = true)
         {
-            _loadingTintColor = true;
-            try
+            SynchronizeTintControlBindings(() =>
             {
-                if (synchronizeComponents)
-                    SelectedTintColor = color;
-                else
-                    Set(color, nameof(SelectedTintColor));
-            }
-            finally
-            {
-                _loadingTintColor = false;
-            }
+                _loadingTintColor = true;
+                try
+                {
+                    if (synchronizeComponents)
+                        SelectedTintColor = color;
+                    else
+                        Set(color, nameof(SelectedTintColor));
+                }
+                finally
+                {
+                    _loadingTintColor = false;
+                }
+            });
         }
 
         private void ApplyCustomTintColor(
@@ -956,18 +961,47 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void SynchronizeCustomTintComponents(GuiColor color)
         {
-            var wasLoading = _loadingTintColor;
-            _loadingTintColor = true;
+            SynchronizeTintControlBindings(() =>
+            {
+                var wasLoading = _loadingTintColor;
+                _loadingTintColor = true;
+                try
+                {
+                    Set(color.R.ToString(), nameof(CustomTintRed));
+                    Set(color.G.ToString(), nameof(CustomTintGreen));
+                    Set(color.B.ToString(), nameof(CustomTintBlue));
+                }
+                finally
+                {
+                    _loadingTintColor = wasLoading;
+                }
+            });
+        }
+
+        private void SynchronizeTintControlBindings(Action update)
+        {
+            var restoreWatches = _tintControlBindingsWatched;
+            if (restoreWatches)
+                SetTintControlBindingsWatched(false);
+
             try
             {
-                Set(color.R.ToString(), nameof(CustomTintRed));
-                Set(color.G.ToString(), nameof(CustomTintGreen));
-                Set(color.B.ToString(), nameof(CustomTintBlue));
+                update();
             }
             finally
             {
-                _loadingTintColor = wasLoading;
+                if (restoreWatches)
+                    SetTintControlBindingsWatched(true);
             }
+        }
+
+        private void SetTintControlBindingsWatched(bool watched)
+        {
+            NuiSetBindWatch(Player, WindowToken, nameof(SelectedTintColor), watched);
+            NuiSetBindWatch(Player, WindowToken, nameof(CustomTintRed), watched);
+            NuiSetBindWatch(Player, WindowToken, nameof(CustomTintGreen), watched);
+            NuiSetBindWatch(Player, WindowToken, nameof(CustomTintBlue), watched);
+            _tintControlBindingsWatched = watched;
         }
 
         private void SetCustomTintComponent(string value, string propertyName)

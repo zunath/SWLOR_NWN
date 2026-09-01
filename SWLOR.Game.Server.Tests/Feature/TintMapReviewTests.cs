@@ -147,6 +147,28 @@ public class TintMapReviewTests
         applyCustomTintColor.ToString().Should().Contain("SetSelectedTintColor(",
             "the color picker must still reflect the palette row rendered in game");
         applyCustomTintColor.ToString().Should().Contain("synchronizeComponents");
+        var setSelectedTintColor = FindMethod(viewModel, "SetSelectedTintColor");
+        var synchronizeComponents = FindMethod(viewModel, "SynchronizeCustomTintComponents");
+        var synchronizeBindings = FindMethod(viewModel, "SynchronizeTintControlBindings");
+        var setBindingsWatched = FindMethod(viewModel, "SetTintControlBindingsWatched");
+        setSelectedTintColor.ToString().Should().Contain("SynchronizeTintControlBindings",
+            "server picker updates must not return through the watched input as a second tint edit");
+        synchronizeComponents.ToString().Should().Contain("SynchronizeTintControlBindings",
+            "server RGB updates must not return through their watched inputs as extra tint edits");
+        synchronizeBindings.ToString().Should().Contain("SetTintControlBindingsWatched(false)");
+        synchronizeBindings.ToString().Should().Contain("SetTintControlBindingsWatched(true)");
+        foreach (var propertyName in new[]
+                 {
+                     "SelectedTintColor",
+                     "CustomTintRed",
+                     "CustomTintGreen",
+                     "CustomTintBlue"
+                 })
+        {
+            setBindingsWatched.ToString().Should().Contain($"nameof({propertyName})");
+        }
+        viewModel.Should().Contain("_tintControlBindingsWatched = true;",
+            "the four bindings become suppressible after their initial watches are registered");
         viewModel.Should().Contain("WatchOnClient(model => model.SelectedTintColor)");
         viewModel.Should().Contain("WatchOnClient(model => model.CustomTintRed)");
         viewModel.Should().Contain("WatchOnClient(model => model.CustomTintGreen)");

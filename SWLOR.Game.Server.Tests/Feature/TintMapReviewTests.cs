@@ -1181,29 +1181,44 @@ public class TintMapReviewTests
         modifyMethod.ToString().Should().Contain("selection.ArmorPart == armorPart",
             "one modular armor part must not overwrite another part's custom dyes");
 
+        var setColorInPlace = FindMethod(viewModelSource, "SetItemColorInPlace");
+        setColorInPlace.ToString().Should().Contain("ItemPlugin.SetItemAppearance(",
+            "color-only edits must mutate the equipped item instead of creating a replacement");
+        setColorInPlace.ToString().Should().Contain("updateCreatureAppearance: true",
+            "the wearer must refresh immediately after its equipped item changes");
+        setColorInPlace.ToString().Should().Contain("Droid.UpdateEquippedItemSnapshot(_target, item)",
+            "in-place color changes must persist for constructed droids");
+        setColorInPlace.ToString().Should().Contain("TintMapService.ApplyCurrentColors(_target)",
+            "in-place palette changes need an explicit shader refresh because no equip event fires");
+        setColorInPlace.ToString().Should().NotContain("CopyItemAndModify");
+        setColorInPlace.ToString().Should().NotContain("DestroyObject");
+
         var paletteMethod = FindMethod(viewModelSource, "ApplyArmorPaletteColor");
-        paletteMethod.DescendantNodes()
-            .OfType<InvocationExpressionSyntax>()
-            .Select(GetInvokedMethodName)
-            .Count(name => name == "LinkPendingItemColorCarryReplacement")
-            .Should().Be(2,
-                "global and per-part preset copies must remain descendants of a pending model carry");
+        paletteMethod.ToString().Should().Contain("SetItemColorInPlace(item, colorIndex, colorId)");
+        paletteMethod.ToString().Should().NotContain("CopyItemAndModify");
+        paletteMethod.ToString().Should().NotContain("DestroyObject");
+        paletteMethod.ToString().Should().NotContain("ActionEquipItem");
+        paletteMethod.ToString().Should().NotContain("GetBaseItemFitsInInventory",
+            "an in-place color edit does not require a free inventory slot");
         paletteMethod.ToString().IndexOf("ResetCurrentCustomTintOverrides", StringComparison.Ordinal)
             .Should().BeLessThan(
-                paletteMethod.ToString().IndexOf("LinkPendingItemColorCarryReplacement", StringComparison.Ordinal),
-                "the selected layer revision must advance before its preset replacement joins the lineage");
+                paletteMethod.ToString().IndexOf("SetItemColorInPlace", StringComparison.Ordinal),
+                "the selected layer revision must advance before the equipped item is recolored");
 
         var clearMethod = FindMethod(viewModelSource, "OnClickClearColor");
-        clearMethod.ToString().Should().Contain("LinkPendingItemColorCarryReplacement(item, copy)",
-            "right-click preset resets also replace the equipped item during a pending carry");
+        clearMethod.ToString().Should().Contain("SetItemColorInPlace(item, index, 255)",
+            "right-click reset must clear the equipped item's per-part color in place");
+        clearMethod.ToString().Should().NotContain("CopyItemAndModify");
+        clearMethod.ToString().Should().NotContain("DestroyObject");
         clearMethod.ToString().IndexOf("ResetCustomTintOverrides", StringComparison.Ordinal)
             .Should().BeLessThan(
-                clearMethod.ToString().IndexOf("LinkPendingItemColorCarryReplacement", StringComparison.Ordinal),
-                "reset intent must invalidate only its layer before the replacement is linked");
+                clearMethod.ToString().IndexOf("SetItemColorInPlace", StringComparison.Ordinal),
+                "reset intent must invalidate only its layer before the item is recolored");
 
-        FindMethod(viewModelSource, "ModifyHelmetCloakColor").ToString().Should()
-            .Contain("LinkPendingItemColorCarryReplacement(item, copy)",
-                "helmet and cloak preset copies must preserve pending custom colors on untouched layers");
+        var helmetCloakColor = FindMethod(viewModelSource, "ModifyHelmetCloakColor").ToString();
+        helmetCloakColor.Should().Contain("SetItemColorInPlace(item, (int)colorChannel, colorId)");
+        helmetCloakColor.Should().NotContain("CopyItemAndModify");
+        helmetCloakColor.Should().NotContain("DestroyObject");
 
         var serviceSource = ReadSource(
             "SWLOR.Game.Server",

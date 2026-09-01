@@ -393,6 +393,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     row.AddSpacer()
                         .SetHeight(32f);
                 });
+
+                // Keep the custom editor in the same visible armor-controls column as the
+                // selected channel buttons. Building it inside the palette partial makes the
+                // parent row size itself from this shorter adjacent column and clips the picker.
+                BuildCustomTintEditor(col);
             }
 
             void CreatePartEditor(
@@ -1033,8 +1038,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         }
                     });
                 }
-
-                BuildCustomTintEditor(col);
 
             });
         }

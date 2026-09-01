@@ -865,6 +865,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ColorCategorySelected[0] = true;
             PartCategorySelected[0] = true;
             LoadBodyParts();
+            // Generated tint materials start at palette row zero. Initialize every active
+            // body and equipment material from the creature and equipped-item appearance
+            // before the editor exposes those colors.
+            TintMapService.ApplyCurrentColors(_target);
             RefreshTintMapAvailability();
             LoadTintMapEditor();
             LoadSettings();
@@ -1551,6 +1555,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             _colorTarget = ColorTarget.Invalid;
             ColorTargetText = string.Empty;
+            // Re-entering the equipment page must also repair rows after an outfit or part
+            // was replaced while the window remained open.
+            TintMapService.ApplyCurrentColors(_target);
+            RefreshTintMapAvailability();
             LoadTintMapEditor();
 
             // If we don't delay the watch, NUI will reset values of some parts back to default (first item in the list)

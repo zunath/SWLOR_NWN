@@ -122,7 +122,10 @@ public class TintMapReviewTests
         definition.Should().NotContain("IsCustomTintPickerVisible");
         definitionMethods["BuildEditorHeader"].ToString().Should().NotContain("BuildCustomTintEditor");
         definitionMethods["BuildMainEditor"].ToString().Should().Contain("BuildCustomTintEditor(col2)");
-        definitionMethods["BuildColorPalette"].ToString().Should().Contain("BuildCustomTintEditor(col)");
+        definitionMethods["BuildArmorEditor"].ToString().Should().Contain("BuildCustomTintEditor(col)",
+            "the armor picker must live in the visible controls column beside the palette");
+        definitionMethods["BuildColorPalette"].ToString().Should().NotContain("BuildCustomTintEditor",
+            "placing the picker below the palette partial clips it at the parent row boundary");
         definition.Should().NotContain(".SetText(\"Tints\")");
         definition.Should().NotContain("TintColorSheetResref");
         viewModel.Should().Contain("new TintMapColor(value.R, value.G, value.B)");
@@ -151,6 +154,34 @@ public class TintMapReviewTests
         viewModel.Should().NotContain("OnSelectTintColor");
         viewModel.Should().NotContain("OnSelectTintMap");
         viewModel.Should().NotContain("IsTintMapSelected");
+    }
+
+    [Test]
+    public void AppearanceEditorInitializesGeneratedMaterialRowsFromEquippedArmor()
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "AppearanceEditorViewModel.cs");
+        var root = CSharpSyntaxTree.ParseText(source).GetRoot();
+        var initialize = root.DescendantNodes()
+            .OfType<MethodDeclarationSyntax>()
+            .Single(method => method.Identifier.ValueText == "Initialize");
+        var selectEquipment = root.DescendantNodes()
+            .OfType<MethodDeclarationSyntax>()
+            .Single(method => method.Identifier.ValueText == "OnSelectEquipment");
+
+        foreach (var method in new[] { initialize, selectEquipment })
+        {
+            var body = method.ToString();
+            body.Should().Contain("TintMapService.ApplyCurrentColors(_target)",
+                "armor materials otherwise retain their generated row-zero texture colors");
+            body.IndexOf("TintMapService.ApplyCurrentColors(_target)", StringComparison.Ordinal)
+                .Should().BeLessThan(body.IndexOf("LoadTintMapEditor()", StringComparison.Ordinal),
+                    "the rendered armor must match its item colors before the picker reads them");
+        }
     }
 
     [TestCase(1, 0, true, 1)]

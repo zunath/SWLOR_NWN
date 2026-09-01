@@ -184,6 +184,82 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void ExecuteCoalesced_AllowsDeferredFieldCarryPastDisjointOptionalFieldEdit()
+        {
+            var path = CorpusFiles.FindFileWithMutableInteger("utc");
+            var document = JsonGffDocument.Parse(File.ReadAllBytes(path));
+            using var session = new DocumentSession(path, document);
+            var originField = CorpusFiles.FindFirstMutableInteger(document.Root)!;
+            var original = originField.GetInteger();
+            var unrelatedField = JsonGffField.CreateScalar(
+                GffFieldType.Int,
+                System.Text.Encoding.ASCII.GetBytes("1"));
+            var carriedTintField = JsonGffField.CreateScalar(
+                GffFieldType.Int,
+                System.Text.Encoding.ASCII.GetBytes("2"));
+
+            session.Execute("change model", () => originField.SetInteger(original + 1));
+            var origin = session.UndoStack.CurrentAppliedEntry;
+            origin.Should().NotBeNull();
+            session.Execute("set unrelated optional field", () =>
+                document.Root.Add("TST_UNRELATED", unrelatedField));
+
+            session.ExecuteCoalesced(
+                    origin!,
+                    "carry generated tint field",
+                    () => document.Root.Add("TM_TEST_CARRY", carriedTintField))
+                .Should().BeTrue(
+                    "structural edits on distinct field instances must not reject a deferred tint carry");
+
+            document.Root.Contains("TST_UNRELATED").Should().BeTrue();
+            document.Root.Contains("TM_TEST_CARRY").Should().BeTrue();
+            session.Undo();
+            document.Root.Contains("TST_UNRELATED").Should().BeFalse();
+            document.Root.Contains("TM_TEST_CARRY").Should().BeTrue(
+                "the deferred carry remains part of the originating model edit");
+            session.Undo();
+            document.Root.Contains("TM_TEST_CARRY").Should().BeFalse();
+            originField.GetInteger().Should().Be(original);
+        }
+
+        [Test]
+        public void ExecuteCoalesced_AllowsDeferredFieldCarryPastDisjointOptionalFieldRemoval()
+        {
+            var path = CorpusFiles.FindFileWithMutableInteger("utc");
+            var document = JsonGffDocument.Parse(File.ReadAllBytes(path));
+            using var session = new DocumentSession(path, document);
+            var originField = CorpusFiles.FindFirstMutableInteger(document.Root)!;
+            var original = originField.GetInteger();
+            var unrelatedEntry = document.Root.Entries
+                .First(entry => !ReferenceEquals(entry.Value, originField));
+            var carriedTintField = JsonGffField.CreateScalar(
+                GffFieldType.Int,
+                System.Text.Encoding.ASCII.GetBytes("2"));
+
+            session.Execute("change model", () => originField.SetInteger(original + 1));
+            var origin = session.UndoStack.CurrentAppliedEntry;
+            origin.Should().NotBeNull();
+            session.Execute("remove unrelated optional field", () =>
+                document.Root.Remove(unrelatedEntry.Key));
+
+            session.ExecuteCoalesced(
+                    origin!,
+                    "carry generated tint field",
+                    () => document.Root.Add("TM_TEST_CARRY", carriedTintField))
+                .Should().BeTrue(
+                    "removing a distinct field must not reject a deferred tint carry");
+
+            document.Root.Contains(unrelatedEntry.Key).Should().BeFalse();
+            document.Root.Contains("TM_TEST_CARRY").Should().BeTrue();
+            session.Undo();
+            document.Root.Contains(unrelatedEntry.Key).Should().BeTrue();
+            document.Root.Contains("TM_TEST_CARRY").Should().BeTrue();
+            session.Undo();
+            document.Root.Contains("TM_TEST_CARRY").Should().BeFalse();
+            originField.GetInteger().Should().Be(original);
+        }
+
+        [Test]
         public void ExecuteCoalesced_RejectsChildEditBeneathNewerInsertedListElement()
         {
             var path = CorpusFiles.FindFileWithListOfSize("utc", 2, out var listFieldName);

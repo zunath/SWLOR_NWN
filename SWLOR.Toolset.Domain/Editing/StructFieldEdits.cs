@@ -7,7 +7,7 @@ namespace SWLOR.Toolset.Domain.Editing
     /// name; JsonGffStruct.Add always recomputes nwn_gff's sorted insertion position from the
     /// struct's current contents, so re-applying (redo) reproduces the original position exactly.
     /// </summary>
-    public sealed class AddFieldEdit : IDocumentEdit
+    public sealed class AddFieldEdit : IDocumentEdit, IDocumentEditTargetProvider
     {
         private readonly JsonGffStruct _struct;
         private readonly string _name;
@@ -34,6 +34,8 @@ namespace SWLOR.Toolset.Domain.Editing
         {
             return $"Add field '{_name}'";
         }
+
+        public IEnumerable<object> GetMutationTargets() => new object[] { _field };
     }
 
     /// <summary>
@@ -41,7 +43,7 @@ namespace SWLOR.Toolset.Domain.Editing
     /// re-adds the exact same field instance; see <see cref="AddFieldEdit"/> for why this
     /// reproduces the original position.
     /// </summary>
-    public sealed class RemoveFieldEdit : IDocumentEdit
+    public sealed class RemoveFieldEdit : IDocumentEdit, IDocumentEditTargetProvider
     {
         private readonly JsonGffStruct _struct;
         private readonly string _name;
@@ -68,6 +70,8 @@ namespace SWLOR.Toolset.Domain.Editing
         {
             return $"Remove field '{_name}'";
         }
+
+        public IEnumerable<object> GetMutationTargets() => new object[] { _field };
     }
 
     /// <summary>

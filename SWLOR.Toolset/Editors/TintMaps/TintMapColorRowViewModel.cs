@@ -15,7 +15,6 @@ namespace SWLOR.Toolset.Editors.TintMaps
         private readonly VarTable _variables;
         private readonly Func<string, Action, bool> _runEdit;
         private readonly Action? _colorChanged;
-        private readonly IReadOnlyCollection<string> _activeMaterialNames;
         private int _standardPaletteColorId;
         private bool _loading;
 
@@ -47,15 +46,13 @@ namespace SWLOR.Toolset.Editors.TintMaps
             Func<string, Action, bool> runEdit,
             Action? colorChanged,
             int standardPaletteColorId = 0,
-            AppearanceArmor armorPart = AppearanceArmor.Invalid,
-            IReadOnlyCollection<string>? activeMaterialNames = null)
+            AppearanceArmor armorPart = AppearanceArmor.Invalid)
         {
             MaterialName = materialName;
             Layer = layer;
             _variables = variables;
             _runEdit = runEdit;
             _colorChanged = colorChanged;
-            _activeMaterialNames = activeMaterialNames ?? Array.Empty<string>();
             ArmorPart = armorPart;
             _standardPaletteColorId = Math.Clamp(
                 standardPaletteColorId,
@@ -182,24 +179,8 @@ namespace SWLOR.Toolset.Editors.TintMaps
 
         private void RemoveGlobalSemanticIntent()
         {
-            if (!TintMapVariable.IsCreatureColorLayer(Layer))
-                return;
-
-            var stateVariable = TintMapVariable.GetCreatureColorStateName(Layer);
-            var savedColor = _variables.GetInt(stateVariable);
-            if (savedColor.HasValue && TintMapColor.TryFromStoredValue(savedColor.Value, out _))
-            {
-                foreach (var materialName in _activeMaterialNames
-                             .Where(name => !name.Equals(MaterialName, StringComparison.OrdinalIgnoreCase))
-                             .Distinct(StringComparer.OrdinalIgnoreCase))
-                {
-                    var materialVariable = TintMapVariable.GetName(materialName, Layer);
-                    if (!_variables.GetInt(materialVariable).HasValue)
-                        _variables.SetInt(materialVariable, savedColor.Value);
-                }
-            }
-
-            _variables.Remove(stateVariable);
+            if (TintMapVariable.IsCreatureColorLayer(Layer))
+                _variables.Remove(TintMapVariable.GetCreatureColorStateName(Layer));
         }
 
         private bool HasInheritedItemGlobalColor()

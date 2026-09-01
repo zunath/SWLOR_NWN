@@ -827,11 +827,9 @@ namespace SWLOR.Toolset.Tests
             var initialRows = new[]
             {
                 new TintMapColorRowViewModel(
-                    "pmh0_head038", TintMapLayerType.Skin, store.Locals, Edit, null,
-                    activeMaterialNames: new[] { "pmh0_head038", "pmh0_handl001" }),
+                    "pmh0_head038", TintMapLayerType.Skin, store.Locals, Edit, null),
                 new TintMapColorRowViewModel(
-                    "pmh0_handl001", TintMapLayerType.Skin, store.Locals, Edit, null,
-                    activeMaterialNames: new[] { "pmh0_head038", "pmh0_handl001" })
+                    "pmh0_handl001", TintMapLayerType.Skin, store.Locals, Edit, null)
             };
             body.SetTintMapRows(initialRows);
             await body.EnsureLoadedAsync();
@@ -839,10 +837,6 @@ namespace SWLOR.Toolset.Tests
             initialRows[0].Color = Color.FromRgb(13, 34, 56);
             store.Locals.GetInt(stateKey).Should().BeNull(
                 "a direct per-material edit is no longer a global semantic tint intent");
-            TintMapColor.TryFromStoredValue(store.Locals.GetInt(presetKey)!.Value, out var preservedSibling)
-                .Should().BeTrue();
-            preservedSibling.Should().Be(new TintMapColor(90, 80, 70),
-                "an untouched rendered sibling must retain the semantic color it inherited before the marker was removed");
 
             body.SetTintMapRows(new[]
             {
@@ -853,7 +847,7 @@ namespace SWLOR.Toolset.Tests
             });
 
             store.Locals.GetInt(customKey).Should().NotBeNull();
-            store.Locals.GetInt(presetKey).Should().NotBeNull();
+            store.Locals.GetInt(presetKey).Should().BeNull();
             store.Locals.GetInt(replacementKey).Should().BeNull(
                 "one custom material must not be mistaken for a global semantic tint");
         }

@@ -9,7 +9,6 @@ using SWLOR.NWN.Formats.Mdl;
 using SWLOR.NWN.Formats.Plt;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Render;
-using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Tests
 {
@@ -796,66 +795,6 @@ namespace SWLOR.Toolset.Tests
             attached.Parent!.Parent!.Name.Should().Be("lthigh_g");
             attached.Should().NotBeSameAs(partMesh);
             partMesh.Bitmap.Should().Be("stale", "cached source models must not be mutated");
-        }
-
-        [Test]
-        public void DuplicateEquippedModelsKeepTheirOwnTintSnapshots()
-        {
-            var skeletonRoot = new MdlNode { Name = "root" };
-            var rightBone = new MdlNode { Name = "rhand", Parent = skeletonRoot };
-            var leftBone = new MdlNode { Name = "lhand", Parent = skeletonRoot };
-            skeletonRoot.Children.Add(rightBone);
-            skeletonRoot.Children.Add(leftBone);
-            var skeleton = new MdlModel { Name = "skeleton", GeometryRoot = skeletonRoot };
-
-            var partRoot = new MdlNode { Name = "part-root" };
-            var partMesh = Triangle("shared-mesh");
-            partMesh.Parent = partRoot;
-            partRoot.Children.Add(partMesh);
-            var sharedPart = new MdlModel { Name = "shared_weapon", GeometryRoot = partRoot };
-            var composer = new MdlPartComposer((resRef, _) =>
-                resRef == "skeleton" ? skeleton :
-                resRef == "shared_weapon" ? sharedPart :
-                null);
-
-            const string rightStamp = "@right";
-            const string leftStamp = "@left";
-            const string tintKey = "TM_shared_weapon_4";
-            var instances = new[]
-            {
-                new ComposedPartInstance(
-                    rightStamp,
-                    new BlueprintModelPart(
-                        "weaponr", "shared_weapon",
-                        UsesItemTintOverrides: true,
-                        TintMapOverrides: new Dictionary<string, int> { [tintKey] = 111 })),
-                new ComposedPartInstance(
-                    leftStamp,
-                    new BlueprintModelPart(
-                        "weaponl", "shared_weapon",
-                        UsesItemTintOverrides: true,
-                        TintMapOverrides: new Dictionary<string, int> { [tintKey] = 222 }))
-            };
-            var composed = composer.ComposeStamped(
-                "skeleton",
-                instances.Select(instance => (
-                    instance.Part.PartType,
-                    instance.Part.ModelResRef,
-                    instance.TextureStamp)),
-                adjustSeams: false)!;
-
-            var renderedStamps = composed.GetMeshNodes()
-                .Where(MdlMeshBuilder.IsRenderableMesh)
-                .Select(mesh => mesh.Bitmap)
-                .ToList();
-            var snapshots = BlueprintPreviewRenderer.CaptureComposedTintMapOverrides(composed, instances);
-            renderedStamps.Zip(snapshots).Should().OnlyContain(pair =>
-                pair.Second != null && pair.Second[tintKey] == (pair.First == rightStamp ? 111 : 222),
-                "each attachment occurrence must select its own equipped item's tint variables");
-
-            BlueprintPreviewRenderer.RestoreComposedPartStamps(composed, instances);
-            composed.GetMeshNodes().Should().OnlyContain(mesh => mesh.Bitmap == "shared_weapon",
-                "the temporary occurrence identity must not leak into texture resolution");
         }
 
         [Test]

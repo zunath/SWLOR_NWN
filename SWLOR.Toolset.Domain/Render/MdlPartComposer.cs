@@ -11,9 +11,8 @@ namespace SWLOR.Toolset.Domain.Render
     /// <remarks>
     /// Models are loaded through the caller so resource precedence and supermodel policy stay outside
     /// this class. Source models are never mutated: every composition receives a deep geometry clone,
-    /// attaches each part beneath its category's skeleton bone, and stamps a caller-selected texture
-    /// identity onto its meshes so the caller can retain per-attachment state until authored textures
-    /// are restored.
+    /// attaches each part beneath its category's skeleton bone, and stamps the part resref onto its
+    /// meshes so the normal Aurora part-texture convention can resolve it.
     /// </remarks>
     public sealed class MdlPartComposer
     {
@@ -56,23 +55,6 @@ namespace SWLOR.Toolset.Domain.Render
             IEnumerable<(string PartType, string ModelResRef)> parts,
             bool adjustSeams = true)
         {
-            ArgumentNullException.ThrowIfNull(parts);
-            return ComposeStamped(
-                skeletonResRef,
-                parts.Select(part => (part.PartType, part.ModelResRef, part.ModelResRef)),
-                adjustSeams);
-        }
-
-        /// <summary>
-        /// Composes parts while stamping each attachment with an identity independent of its model
-        /// resref. This keeps two occurrences of the same model distinguishable until the caller has
-        /// captured their individual palette and tint state.
-        /// </summary>
-        public MdlModel? ComposeStamped(
-            string skeletonResRef,
-            IEnumerable<(string PartType, string ModelResRef, string TextureStamp)> parts,
-            bool adjustSeams = true)
-        {
             ArgumentException.ThrowIfNullOrWhiteSpace(skeletonResRef);
             ArgumentNullException.ThrowIfNull(parts);
 
@@ -87,7 +69,7 @@ namespace SWLOR.Toolset.Domain.Render
             var bones = IndexNodes(composed.GeometryRoot);
             var attachedParts = new Dictionary<string, MdlNode>(StringComparer.OrdinalIgnoreCase);
             var partCount = 0;
-            foreach (var (partType, modelResRef, textureStamp) in parts)
+            foreach (var (partType, modelResRef) in parts)
             {
                 if (++partCount > MaximumParts)
                     throw new InvalidDataException($"A composed MDL may contain at most {MaximumParts} parts.");
@@ -126,9 +108,7 @@ namespace SWLOR.Toolset.Domain.Render
                 if (!attachesAtRoot)
                     DisableNamedAnimationPose(partRoot);
 
-                StampPartTexture(
-                    partRoot,
-                    string.IsNullOrWhiteSpace(textureStamp) ? modelResRef : textureStamp);
+                StampPartTexture(partRoot, modelResRef);
                 Attach(bone, partRoot);
                 attachedParts.TryAdd(partType.Trim(), partRoot);
             }

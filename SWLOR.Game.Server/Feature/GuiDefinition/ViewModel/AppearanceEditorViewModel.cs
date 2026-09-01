@@ -1040,6 +1040,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (IsEquipmentSelected && !IsValidItem())
                 return false;
 
+            // Global armor channels are palette defaults, not custom material overrides.
+            // Requiring a concrete part prevents one picker edit from repainting every part
+            // that inherits the selected global channel.
+            if (IsEquipmentSelected &&
+                SelectedItemTypeIndex == 0 &&
+                _colorTarget == ColorTarget.Global)
+            {
+                return false;
+            }
+
             var paletteSource = IsAppearanceSelected ? _target : GetItem();
             if (!GetIsObjectValid(paletteSource))
                 return false;

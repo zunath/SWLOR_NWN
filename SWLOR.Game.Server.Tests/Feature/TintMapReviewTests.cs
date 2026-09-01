@@ -128,9 +128,15 @@ public class TintMapReviewTests
         definitionMethods["BuildEditorHeader"].ToString().Should().NotContain("BuildCustomTintEditor");
         definitionMethods["BuildMainEditor"].ToString().Should().Contain("BuildCustomTintEditor(col2)");
         definitionMethods["BuildArmorEditor"].ToString().Should().Contain("BuildCustomTintEditor(col)",
-            "the armor picker must live in the visible controls column beside the palette");
+            "the armor picker must live in the full-width controls column below the compact palette row");
         definitionMethods["BuildColorPalette"].ToString().Should().NotContain("BuildCustomTintEditor",
             "placing the picker below the palette partial clips it at the parent row boundary");
+        var customTintEditor = definitionMethods["BuildCustomTintEditor"].ToString();
+        customTintEditor.Should().Contain("BindIsVisible(model => model.IsCustomTintAvailable)",
+            "unavailable custom controls must collapse instead of reserving dead space");
+        customTintEditor.Should().Contain("SetHeight(128f)",
+            "the picker should leave room for the armor part grid in the same window");
+        customTintEditor.Should().NotContain("SetHeight(176f)");
         definition.Should().NotContain(".SetText(\"Tints\")");
         definition.Should().NotContain("TintColorSheetResref");
         viewModel.Should().Contain("new TintMapColor(value.R, value.G, value.B)");
@@ -304,6 +310,9 @@ public class TintMapReviewTests
             "selection.ArmorPart == armorPart");
         methods["TryGetEditableTintSelections"].ToString().Should().Contain(
             "selection.Material.Layers.Contains(selectedLayerType)");
+        methods["TryGetEditableTintSelections"].ToString().Should().Contain(
+            "_colorTarget == ColorTarget.Global",
+            "custom armor tints must require a player-selected part instead of repainting all inheriting parts");
         methods["OnSelectColor"].ToString().Should().Contain("ApplySelectedPaletteColor");
         methods["OnSelectColor"].ToString().Should().Contain("SynchronizeCustomTintControlsToPaletteColor");
         methods["OnClickColorPalette"].ToString().Should().Contain("ApplySelectedPaletteColor");

@@ -223,19 +223,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         {
             col.AddRow(row =>
             {
+                row.BindIsVisible(model => model.IsCustomTintAvailable);
                 row.AddSpacer();
 
                 row.AddColorPicker()
                     .BindSelectedColor(model => model.SelectedTintColor)
                     .BindIsEnabled(model => model.IsCustomTintAvailable)
-                    .SetHeight(176f)
-                    .SetWidth(208f);
+                    .SetHeight(128f)
+                    .SetWidth(256f);
 
                 row.AddSpacer();
             });
 
             col.AddRow(row =>
             {
+                row.BindIsVisible(model => model.IsCustomTintAvailable);
                 row.AddSpacer();
 
                 row.AddLabel()
@@ -360,16 +362,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         model => model.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Metal2),
                         model => model.OnClickClearColor(AppearanceEditorViewModel.ColorTarget.Invalid, AppearanceArmorColor.Metal2));
                 });
-                col.AddRow(row =>
-                {
-                    row.AddSpacer()
-                        .SetHeight(32f);
-                });
-
-                // Keep the custom editor in the same visible armor-controls column as the
-                // selected channel buttons. Building it inside the palette partial makes the
-                // parent row size itself from this shorter adjacent column and clips the picker.
-                BuildCustomTintEditor(col);
             }
 
             void CreatePartEditor(
@@ -848,6 +840,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                                 row.AddColumn(BuildMainColorChannels);
                             });
+
+                            // A custom armor tint is a per-part override. Keep the editor out of
+                            // the palette/channel row so it cannot make that row leave a large
+                            // blank area beneath the palette.
+                            BuildCustomTintEditor(col);
 
                             col.AddRow(row =>
                             {

@@ -332,8 +332,13 @@ public class TintMapReviewTests
 
         methods["TryGetSelectedTintLayer"].ToString().Should().Contain("SelectedColorCategoryIndex switch");
         methods["TryGetSelectedTintLayer"].ToString().Should().Contain("_selectedColorChannel switch");
+        methods["TryGetSelectedTintLayer"].ToString().Should().Contain("TryGetSelectedWeaponTintSelection",
+            "main- and off-hand tabs must resolve an editable layer from the selected weapon material");
         methods["TryGetTintMaterialCandidates"].ToString().Should().Contain(
             "selection.GetPaletteSource(selectedLayerType) == paletteSource");
+        methods["TryGetTintMaterialCandidates"].ToString().Should().Contain(
+            "TryGetWeaponTintMaterialCandidates",
+            "weapon components need material candidates even though they do not expose armor color categories");
         methods["TryGetTintMaterialCandidates"].ToString().Should().Contain(
             "selection.ArmorPart == armorPart");
         methods["TryGetTintMaterialCandidates"].ToString().Should().Contain(
@@ -385,6 +390,12 @@ public class TintMapReviewTests
             "the UI list must expose the hardcoded material names from tintmap.2da");
         loadTintMapEditor.ToString().Should().Contain("GroupBy(",
             "one named material should appear only once even when multiple meshes use it");
+        var weaponCandidates = FindMethod(source, "TryGetWeaponTintMaterialCandidates").ToString();
+        weaponCandidates.Should().Contain("selection.WeaponPart == weaponPart");
+        weaponCandidates.Should().Contain("!TintMapVariable.IsCreatureColorLayer(candidateLayer)");
+        var weaponSelection = FindMethod(source, "TryGetSelectedWeaponTintSelection").ToString();
+        weaponSelection.Should().Contain("selectedMaterialResref");
+        weaponSelection.Should().Contain("selection.Material.Layers");
 
         var serviceSource = ReadSource(
             "SWLOR.Game.Server",

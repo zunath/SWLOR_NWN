@@ -1182,6 +1182,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             layerType = default;
             layer = null;
 
+            if (IsEquipmentSelected && SelectedItemTypeIndex is 3 or 4)
+                return TryGetWeaponTintMaterialCandidates(out selections, out layerType, out layer);
+
             if (!TryGetSelectedTintLayer(out layerType))
                 return false;
 
@@ -1212,6 +1215,37 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return true;
         }
 
+        private bool TryGetWeaponTintMaterialCandidates(
+            out IReadOnlyList<TintMapMaterialSelection> selections,
+            out TintMapLayerType layerType,
+            out TintMapLayerDefinition layer)
+        {
+            selections = Array.Empty<TintMapMaterialSelection>();
+            layerType = default;
+            layer = null;
+
+            if (!IsValidItem() ||
+                !TryGetSelectedWeaponPart(out var weaponPart) ||
+                !TryGetSelectedWeaponTintSelection(weaponPart, out var selectedSelection, out layerType))
+            {
+                return false;
+            }
+
+            var item = GetItem();
+            selections = _tintMapSelections
+                .Where(selection =>
+                    selection.PaletteSource == item &&
+                    selection.WeaponPart == weaponPart &&
+                    selection.Material.Layers.Any(candidateLayer =>
+                        !TintMapVariable.IsCreatureColorLayer(candidateLayer)))
+                .ToList();
+            if (selections.Count == 0 || !selections.Contains(selectedSelection))
+                return false;
+
+            layer = TintMapMaterialRegistry.GetLayer(layerType);
+            return true;
+        }
+
         private bool TryGetSelectedTintLayer(out TintMapLayerType layerType)
         {
             layerType = default;
@@ -1230,6 +1264,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (!IsEquipmentSelected)
                 return false;
+
+            if (SelectedItemTypeIndex is 3 or 4)
+            {
+                return TryGetSelectedWeaponPart(out var weaponPart) &&
+                       TryGetSelectedWeaponTintSelection(weaponPart, out _, out layerType);
+            }
 
             if (SelectedItemTypeIndex == 0)
             {
@@ -1263,6 +1303,72 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 _ => default
             };
             return SelectedColorCategoryIndex is >= 0 and <= 5;
+        }
+
+        private bool TryGetSelectedWeaponPart(out AppearanceWeapon weaponPart)
+        {
+            weaponPart = AppearanceWeapon.Invalid;
+            if (SelectedItemTypeIndex is not (3 or 4))
+                return false;
+
+            var item = GetItem();
+            if (!GetIsObjectValid(item) ||
+                !_weaponAppearances.TryGetValue(GetBaseItemType(item), out var appearance))
+            {
+                return false;
+            }
+
+            if (appearance.IsSimple)
+                return true;
+
+            weaponPart = SelectedPartCategoryIndex switch
+            {
+                0 => AppearanceWeapon.Top,
+                1 => AppearanceWeapon.Middle,
+                2 => AppearanceWeapon.Bottom,
+                _ => AppearanceWeapon.Invalid
+            };
+            return weaponPart != AppearanceWeapon.Invalid;
+        }
+
+        private bool TryGetSelectedWeaponTintSelection(
+            AppearanceWeapon weaponPart,
+            out TintMapMaterialSelection selection,
+            out TintMapLayerType layerType)
+        {
+            selection = null;
+            layerType = default;
+            var item = GetItem();
+            if (!GetIsObjectValid(item))
+                return false;
+
+            var selectedMaterialResref = SelectedTintMaterialIndex >= 0 &&
+                                         SelectedTintMaterialIndex < _editableTintMaterialSelections.Count
+                ? _editableTintMaterialSelections[SelectedTintMaterialIndex].Material.Resref
+                : string.Empty;
+            var candidates = _tintMapSelections
+                .Where(candidate =>
+                    candidate.PaletteSource == item &&
+                    candidate.WeaponPart == weaponPart)
+                .ToList();
+            selection = candidates.FirstOrDefault(candidate =>
+                            candidate.Material.Resref.Equals(
+                                selectedMaterialResref,
+                                StringComparison.OrdinalIgnoreCase)) ??
+                        candidates.FirstOrDefault();
+            if (selection == null)
+                return false;
+
+            foreach (var candidateLayer in selection.Material.Layers)
+            {
+                if (TintMapVariable.IsCreatureColorLayer(candidateLayer))
+                    continue;
+
+                layerType = candidateLayer;
+                return true;
+            }
+
+            return false;
         }
 
         private void StartArmorClientWatches()

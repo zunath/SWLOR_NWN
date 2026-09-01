@@ -82,6 +82,14 @@ namespace SWLOR.Toolset.Editors.TintMaps
                     includeCreatureLayersFromItemOwnedMaterials)
                 .SelectMany(material => material.Layers.Select(layer => (material, layer)))
                 .ToList();
+            var activeMaterialsByLayer = wanted
+                .GroupBy(entry => entry.layer)
+                .ToDictionary(
+                    group => group.Key,
+                    group => (IReadOnlyCollection<string>)group
+                        .Select(entry => entry.material.Resref)
+                        .Distinct(StringComparer.OrdinalIgnoreCase)
+                        .ToArray());
             var currentKeys = Colors.Select(row => row.Key);
             var wantedKeys = wanted.Select(entry =>
                 TintMapVariable.GetName(entry.material.Resref, entry.layer));
@@ -136,7 +144,8 @@ namespace SWLOR.Toolset.Editors.TintMaps
                     _runEdit,
                     _colorChanged,
                     context.StandardPaletteColorId,
-                    context.ArmorPart));
+                    context.ArmorPart,
+                    activeMaterialsByLayer[layer]));
             }
 
             if (shouldCarryItemCustomColors && model != null)

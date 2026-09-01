@@ -92,7 +92,7 @@ public class TintMapReviewTests
     }
 
     [Test]
-    public void AppearanceTintEditorAddsCustomColorAlongsideExistingPresetPalettes()
+    public void AppearanceTintEditorShowsPickerAndRgbWithoutRedundantLabel()
     {
         var definition = ReadSource(
             "SWLOR.Game.Server",
@@ -115,7 +115,9 @@ public class TintMapReviewTests
         definition.Should().Contain(".BindSelectedColor(model => model.SelectedTintColor)");
         definition.Should().Contain(".BindResref(model => model.ColorSheetResref)");
         definition.Should().Contain("model => model.OnClickColorPalette(paletteIndex)");
-        definition.Should().Contain(".SetText(\"Custom Color\")");
+        definition.Should().NotContain(".SetText(\"Custom Color\")");
+        definition.Should().NotContain("CustomTintSelectionText");
+        viewModel.Should().NotContain("CustomTintSelectionText");
         definition.Should().Contain(".BindValue(model => model.CustomTintRed)");
         definition.Should().Contain(".BindValue(model => model.CustomTintGreen)");
         definition.Should().Contain(".BindValue(model => model.CustomTintBlue)");
@@ -289,7 +291,6 @@ public class TintMapReviewTests
             "preset selection must display the exact selected palette row");
         synchronizeControls.Should().Contain("SetSelectedTintColor(new GuiColor",
             "preset selection must update the color picker and its bound RGB fields");
-        synchronizeControls.Should().Contain("CustomTintSelectionText =");
         methods["ApplySelectedPaletteColor"].ToString().Should().Contain("ResetCurrentCustomTintOverrides");
         methods["ApplySelectedPaletteColor"].ToString().Should().Contain("SetColor(_target");
         methods["ApplyArmorPaletteColor"].ToString().Should().Contain("ResetCurrentCustomTintOverrides");

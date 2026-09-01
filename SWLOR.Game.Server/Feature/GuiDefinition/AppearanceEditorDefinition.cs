@@ -223,20 +223,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         {
             col.AddRow(row =>
             {
-                row.AddLabel()
-                    .SetText("Custom Color")
-                    .SetWidth(128f)
-                    .SetHeight(32f)
-                    .SetVerticalAlign(NuiVerticalAlign.Middle);
-
-                row.AddLabel()
-                    .BindText(model => model.CustomTintSelectionText)
-                    .SetHeight(32f)
-                    .SetHorizontalAlign(NuiHorizontalAlign.Left);
-            });
-
-            col.AddRow(row =>
-            {
                 row.AddSpacer();
 
                 row.AddColorPicker()

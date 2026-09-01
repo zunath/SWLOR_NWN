@@ -204,12 +204,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public string CustomTintSelectionText
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-
         public GuiColor SelectedTintColor
         {
             get => Get<GuiColor>();
@@ -834,7 +828,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsColorPickerVisible = true;
             IsCopyEnabled = true;
             IsCustomTintAvailable = false;
-            CustomTintSelectionText = "Select a color channel.";
             ToggleItemEquippedFlags();
             LoadColorCategoryOptions();
             LoadPartCategoryOptions();
@@ -888,11 +881,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void LoadTintMapEditor()
         {
             RefreshTintMapAvailability();
-            if (!TryGetEditableTintSelections(out var selections, out var layerType, out var layer))
+            if (!TryGetEditableTintSelections(out var selections, out var layerType, out _))
             {
                 IsCustomTintAvailable = false;
                 SetSelectedTintColor(GuiColor.Grey);
-                CustomTintSelectionText = "Select a tintable color channel.";
                 return;
             }
 
@@ -911,12 +903,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 var color = distinctColors[0];
                 SetSelectedTintColor(new GuiColor(color.Red, color.Green, color.Blue));
-                CustomTintSelectionText = $"{layer.Name}: #{color.Red:X2}{color.Green:X2}{color.Blue:X2}";
                 return;
             }
 
             SetSelectedTintColor(GuiColor.Grey);
-            CustomTintSelectionText = $"{layer.Name}: Mixed colors";
         }
 
         private void SetSelectedTintColor(
@@ -945,7 +935,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 SynchronizeCustomTintComponents(value);
 
             if (_loadingTintColor ||
-                !TryGetEditableTintSelections(out _, out var layerType, out var layer))
+                !TryGetEditableTintSelections(out _, out var layerType, out _))
             {
                 return;
             }
@@ -962,8 +952,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SetSelectedTintColor(
                 new GuiColor(appliedColor.Red, appliedColor.Green, appliedColor.Blue),
                 synchronizeComponents);
-            CustomTintSelectionText =
-                $"{layer.Name}: #{appliedColor.Red:X2}{appliedColor.Green:X2}{appliedColor.Blue:X2}";
         }
 
         private void SynchronizeCustomTintComponents(GuiColor color)
@@ -1830,10 +1818,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var color = TintMapPaletteColors.GetColor(layerType, colorId);
             SetSelectedTintColor(new GuiColor(color.Red, color.Green, color.Blue));
-
-            var layer = TintMapMaterialRegistry.GetLayer(layerType);
-            CustomTintSelectionText =
-                $"{layer.Name}: #{color.Red:X2}{color.Green:X2}{color.Blue:X2}";
         }
 
         private bool ApplySelectedPaletteColor(int colorId)

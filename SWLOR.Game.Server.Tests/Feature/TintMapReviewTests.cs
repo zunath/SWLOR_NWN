@@ -354,6 +354,12 @@ public class TintMapReviewTests
             "preset selection must update the color picker and its bound RGB fields");
         methods["ApplySelectedPaletteColor"].ToString().Should().Contain("TintMapService.SetPaletteColor(",
             "registered tint materials must be edited directly instead of changing legacy PLT fields");
+        var editableMaterialBranch = methods["ApplySelectedPaletteColor"]
+            .DescendantNodes()
+            .OfType<IfStatementSyntax>()
+            .Single(statement => statement.Condition.ToString().Contains("TryGetEditableTintSelection"));
+        editableMaterialBranch.Statement.ToString().Should().NotContain("LoadTintMapEditor",
+            "a watched RGB text edit must not reload and overwrite a partially entered component");
         methods["ApplySelectedPaletteColor"].ToString().Should().Contain("ResetCurrentCustomTintOverrides",
             "models without a registered tint material still need the legacy fallback cleanup");
         methods["ApplySelectedPaletteColor"].ToString().Should().Contain("SetColor(_target",
@@ -391,6 +397,10 @@ public class TintMapReviewTests
             "material rows use the original 1-176 persisted palette encoding");
         setPaletteColor.ToString().Should().Contain("SetStoredColor(",
             "palette and picker edits must share the material-scoped persistence path");
+        setPaletteColor.ToString().Should().Contain("selection.ArmorPart != AppearanceArmor.Invalid");
+        setPaletteColor.ToString().Should().Contain("TryGetArmorColorChannel(layer, out var colorChannel)");
+        setPaletteColor.ToString().Should().Contain("GetPerPartOverrideVariableName(",
+            "a material-scoped part preset must keep the part opted out of item-wide RGB inheritance");
     }
 
     [Test]

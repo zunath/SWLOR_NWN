@@ -192,6 +192,19 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 return;
             }
 
+            var paletteSource = selection.GetPaletteSource(layer);
+            if (selection.ArmorPart != AppearanceArmor.Invalid &&
+                GetObjectType(paletteSource) == ObjectType.Item &&
+                TryGetArmorColorChannel(layer, out var colorChannel))
+            {
+                SetLocalInt(
+                    paletteSource,
+                    ArmorColorIndexCalculator.GetPerPartOverrideVariableName(
+                        selection.ArmorPart,
+                        colorChannel),
+                    1);
+            }
+
             // Values 1-176 are the original tint-map palette encoding. Keeping palette and
             // picker edits in this format makes both controls publish the exact same material,
             // layer and atlas row without modifying the model's legacy PLT appearance fields.

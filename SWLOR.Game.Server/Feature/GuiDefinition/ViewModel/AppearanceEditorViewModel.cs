@@ -2018,7 +2018,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     selection,
                     layerType,
                     colorId);
-                LoadTintMapEditor();
                 return true;
             }
 

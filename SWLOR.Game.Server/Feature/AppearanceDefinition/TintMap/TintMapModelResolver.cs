@@ -180,7 +180,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 item,
                 creaturePaletteSource,
                 true,
-                AppearanceArmor.Invalid);
+                AppearanceArmor.Invalid,
+                weaponPart: part);
         }
 
         private static void AddPartsAppearanceSelections(
@@ -548,13 +549,14 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             uint creaturePaletteSource,
             bool usesItemColors,
             AppearanceArmor armorPart,
-            string overrideModelResref = null)
+            string overrideModelResref = null,
+            AppearanceWeapon weaponPart = AppearanceWeapon.Invalid)
         {
             var foundModel = false;
             foreach (var material in TintMapMaterialRegistry.GetMaterials(model))
             {
                 foundModel = true;
-                var identity = $"{material.Resref}|{paletteSource}|{(int)armorPart}";
+                var identity = $"{material.Resref}|{paletteSource}|{(int)armorPart}|{(int)weaponPart}";
                 if (!seenSelections.Add(identity))
                     continue;
 
@@ -565,7 +567,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     creaturePaletteSource,
                     usesItemColors,
                     armorPart,
-                    overrideModelResref));
+                    overrideModelResref,
+                    weaponPart));
             }
 
             return foundModel;

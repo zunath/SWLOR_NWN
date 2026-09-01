@@ -1283,6 +1283,67 @@ namespace SWLOR.Toolset.Tests
         }
 
         [AvaloniaTest]
+        public void GeometryChangeDuringInitialPreviewCarriesStoredTintToReplacementMaterial()
+        {
+            var catalog = TintMapCatalog.Load(Resources());
+            catalog.Should().NotBeNull();
+            var item = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
+                ResourceType.Uti,
+                "init_tint_carry",
+                "Initial Tint Carry")).Root;
+            var variables = new ItemValueStore(item).Locals;
+            var layer = TintMapLayerType.Cloth1;
+            var openingKey = TintMapVariable.GetName("helm_004", layer);
+            var replacementKey = TintMapVariable.GetName("helm_005", layer);
+            var savedColor = new TintMapColor(12, 34, 56).ToStoredValue();
+            variables.SetInt(openingKey, savedColor);
+            using var openingStarted = new ManualResetEventSlim();
+            using var releaseOpening = new ManualResetEventSlim();
+            var calls = 0;
+            using var editor = new ItemEditorViewModel(
+                item,
+                "init_tint_carry",
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                resolveModel: (_, _) =>
+                {
+                    if (Interlocked.Increment(ref calls) == 1)
+                    {
+                        openingStarted.Set();
+                        releaseOpening.Wait();
+                        return ItemOwnedModelWith("helm_004");
+                    }
+
+                    return ItemOwnedModelWith("helm_005");
+                },
+                tintMapCatalog: catalog);
+
+            try
+            {
+                openingStarted.Wait(TimeSpan.FromSeconds(5)).Should().BeTrue();
+                editor.PreviewFemale = true;
+                Dispatcher.UIThread.RunJobs();
+                Volatile.Read(ref calls).Should().Be(1,
+                    "the opening model must finish once before its tint rows are replaced");
+            }
+            finally
+            {
+                releaseOpening.Set();
+            }
+
+            DrainUntil(() => !editor.IsModelPreviewLoading);
+
+            calls.Should().Be(2);
+            variables.GetInt(openingKey).Should().BeNull();
+            variables.GetInt(replacementKey).Should().Be(savedColor);
+            editor.TintMapEditor!.Colors.Should().Contain(row =>
+                row.Key == replacementKey && row.HasOverride && row.IsCustom);
+        }
+
+        [AvaloniaTest]
         public void ItemPreviewCapturesModelEditOriginBeforeDeferredRebuild()
         {
             var catalog = TintMapCatalog.Load(Resources());

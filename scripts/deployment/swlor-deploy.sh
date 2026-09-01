@@ -6,6 +6,7 @@ umask 0022
 CONFIG_FILE="${SWLOR_DEPLOY_CONFIG:-/etc/swlor-deploy.conf}"
 LOG_FILE="${SWLOR_DEPLOY_LOG:-/var/log/swlor-deploy.log}"
 LOCK_FILE="${SWLOR_DEPLOY_LOCK:-/run/lock/swlor-deploy.lock}"
+LOCK_FD_INHERITED="${SWLOR_DEPLOY_LOCK_FD_INHERITED:-0}"
 
 if [[ -f "$CONFIG_FILE" && ! -L "$CONFIG_FILE" && -r "$CONFIG_FILE" ]]; then
     if [[ "$(stat -c '%u' "$CONFIG_FILE")" != 0 ]]; then
@@ -130,10 +131,22 @@ else
 fi
 exec > >(tee -a "$LOG_FILE") 2>&1
 
-exec 9>"$LOCK_FILE"
-if ! flock --nonblock 9; then
-    die "Another SWLOR deployment is already running."
+if [[ "$LOCK_FD_INHERITED" == 1 ]]; then
+    inherited_lock_target="$(realpath "/proc/$$/fd/9" 2>/dev/null || true)"
+    expected_lock_target="$(realpath "$LOCK_FILE" 2>/dev/null || true)"
+    [[ -n "$inherited_lock_target" && "$inherited_lock_target" == "$expected_lock_target" ]] ||
+        die "The inherited deployment lock descriptor does not match $LOCK_FILE."
+    flock --nonblock 9 ||
+        die "The inherited deployment lock is no longer held."
+elif [[ "$LOCK_FD_INHERITED" == 0 ]]; then
+    exec 9>"$LOCK_FILE"
+    if ! flock --nonblock 9; then
+        die "Another SWLOR deployment is already running."
+    fi
+else
+    die "SWLOR_DEPLOY_LOCK_FD_INHERITED must be 0 or 1."
 fi
+unset SWLOR_DEPLOY_LOCK_FD_INHERITED
 
 require_command()
 {
@@ -706,7 +719,7 @@ if [[ "$local_commit" != "$remote_commit" ]]; then
     [[ -f "$updated_deploy_script" && ! -L "$updated_deploy_script" ]] ||
         die "Updated deployment script is missing or is a symbolic link: $updated_deploy_script"
     log "Re-executing deployment with the updated script from $remote_commit."
-    flock --unlock 9
+    export SWLOR_DEPLOY_LOCK_FD_INHERITED=1
     exec "$BASH" "$updated_deploy_script" "$@"
 fi
 

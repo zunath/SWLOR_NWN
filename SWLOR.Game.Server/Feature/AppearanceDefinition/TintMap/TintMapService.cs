@@ -1372,6 +1372,17 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         {
             if (selection.UsesItemColor(layer))
             {
+                if (selection.WeaponPart != AppearanceWeapon.Invalid)
+                {
+                    return Math.Clamp(
+                        GetItemAppearance(
+                            selection.PaletteSource,
+                            ItemAppearanceType.WeaponColor,
+                            (int)selection.WeaponPart),
+                        0,
+                        TintMapMaterialRegistry.PaletteColorCount - 1);
+                }
+
                 var itemColor = layer switch
                 {
                     TintMapLayerType.Metal1 => AppearanceArmorColor.Metal1,

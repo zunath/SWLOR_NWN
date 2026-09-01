@@ -672,8 +672,9 @@ namespace SWLOR.Toolset.Editors.Items
         private void OnAppearanceChanged()
         {
             var signature = GeometrySignature();
-            if (_cachedModelSignature != null &&
-                !string.Equals(_cachedModelSignature, signature, StringComparison.Ordinal) &&
+            var sourceSignature = _cachedModelSignature ?? _pendingModelSignature;
+            if (sourceSignature != null &&
+                !string.Equals(sourceSignature, signature, StringComparison.Ordinal) &&
                 !string.Equals(
                     _pendingModelEditOriginSignature,
                     signature,
@@ -734,6 +735,17 @@ namespace SWLOR.Toolset.Editors.Items
             }
 
             var signature = GeometrySignature();
+            if (_cachedModelSignature == null &&
+                _pendingModelSignature != null &&
+                !string.Equals(_pendingModelSignature, signature, StringComparison.Ordinal))
+            {
+                // Let the opening model finish once so its material rows can capture existing
+                // TM_* values before resolving a geometry edit made during initial loading.
+                // The completion immediately schedules the newest signature below.
+                IsModelPreviewLoading = true;
+                return;
+            }
+
             var carryItemCustomColors =
                 _cachedModelSignature != null &&
                 !string.Equals(
@@ -874,6 +886,9 @@ namespace SWLOR.Toolset.Editors.Items
                     model,
                     carryItemCustomColorsAcrossMaterials: carryItemCustomColors,
                     modelResolutionCompleted: true);
+
+                if (!string.Equals(GeometrySignature(), signature, StringComparison.Ordinal))
+                    UpdatePreviewScene();
             });
         }
 

@@ -10,6 +10,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         public uint CreaturePaletteSource { get; }
         public bool UsesItemColors { get; }
         public AppearanceArmor ArmorPart { get; }
+        public AppearanceWeapon WeaponPart { get; }
 
         /// <summary>
         /// An alternate rendered model whose material locals should be read for this selection.
@@ -25,7 +26,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             uint creaturePaletteSource,
             bool usesItemColors,
             AppearanceArmor armorPart,
-            string overrideModelResref = null)
+            string overrideModelResref = null,
+            AppearanceWeapon weaponPart = AppearanceWeapon.Invalid)
         {
             ModelResref = modelResref;
             Material = material;
@@ -33,6 +35,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             CreaturePaletteSource = creaturePaletteSource;
             UsesItemColors = usesItemColors;
             ArmorPart = armorPart;
+            WeaponPart = weaponPart;
             OverrideModelResref = overrideModelResref ?? string.Empty;
         }
 

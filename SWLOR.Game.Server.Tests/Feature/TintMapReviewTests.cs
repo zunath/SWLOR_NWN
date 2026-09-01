@@ -731,6 +731,19 @@ public class TintMapReviewTests
     }
 
     [Test]
+    public void ToolsetPreviewSnapsRgbOverridesToTheDeployedPaletteRow()
+    {
+        var source = ReadSource("SWLOR.Toolset", "Viewport", "GlAreaControl.cs");
+        var bindTintMapState = FindMethod(source, "BindTintMapState").ToString();
+
+        bindTintMapState.Should().Contain("TintMapPaletteColors.GetClosestColorId(layer, custom)",
+            "the Toolset and game must resolve an arbitrary picker RGB to the same palette row");
+        bindTintMapState.Should().Contain("SetUniformVec4($\"tintColor{layerValue}\", Vector4.Zero)");
+        bindTintMapState.Should().NotContain("custom.Red / 255f",
+            "the Toolset must not preview an RGB mode that the deployed shader no longer uses");
+    }
+
+    [Test]
     public void SpeederAppearanceChangesRefreshTintMaps()
     {
         var source = ReadSource(
@@ -833,6 +846,40 @@ public class TintMapReviewTests
         var standardColorMethod = FindMethod(serviceSource, "GetStandardColor").ToString();
         standardColorMethod.Should().Contain("ShouldUsePerPartColor");
         standardColorMethod.Should().Contain("GetPerPartOverrideVariableName");
+    }
+
+    [Test]
+    public void CompositeWeaponMaterialsUseTheirWeaponColorSlot()
+    {
+        var selectionSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapMaterialSelection.cs");
+        selectionSource.Should().Contain("public AppearanceWeapon WeaponPart { get; }");
+
+        var resolverSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapModelResolver.cs");
+        FindMethod(resolverSource, "AddItemPart").ToString().Should().Contain("weaponPart: part",
+            "each top, middle, and bottom model must retain its component color identity");
+        FindMethod(resolverSource, "AddModelSelections").ToString().Should().Contain("(int)weaponPart",
+            "shared material names on different weapon components must not collapse together");
+
+        var serviceSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapService.cs");
+        var standardColor = FindMethod(serviceSource, "GetStandardColor").ToString();
+        standardColor.Should().Contain("selection.WeaponPart != AppearanceWeapon.Invalid");
+        standardColor.Should().Contain("ItemAppearanceType.WeaponColor");
+        standardColor.Should().Contain("(int)selection.WeaponPart");
     }
 
     [Test]
@@ -1389,8 +1436,15 @@ public class TintMapReviewTests
             "a fast-forward must transfer control to the fetched deployment implementation");
         reexec.Should().BeLessThan(envMigration,
             "new host migrations must execute from the updated script on their first rollout");
-        source.Should().Contain("flock --unlock 9",
-            "the replacement process must reacquire the deployment lock instead of deadlocking");
+        source.Should().NotContain("flock --unlock 9",
+            "releasing descriptor 9 creates a race where another deployment can enter");
+        source.Should().Contain("export SWLOR_DEPLOY_LOCK_FD_INHERITED=1",
+            "the replacement script must know descriptor 9 already owns the deployment lock");
+        source.Should().Contain("realpath \"/proc/$$/fd/9\"",
+            "an inherited-lock marker must be validated against the configured lock file");
+        source.IndexOf("export SWLOR_DEPLOY_LOCK_FD_INHERITED=1", StringComparison.Ordinal)
+            .Should().BeLessThan(reexec,
+                "the held descriptor must be marked for reuse before replacing the shell");
         source.Should().Contain("\"$server_env_migration_required\" == 0",
             "an unchanged commit must still deploy a required server environment migration");
     }

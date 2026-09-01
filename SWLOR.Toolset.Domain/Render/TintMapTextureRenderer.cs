@@ -62,29 +62,15 @@ namespace SWLOR.Toolset.Domain.Render
                     layer,
                     armorPart);
 
-                if (TintMapColor.TryFromStoredValue(savedValue, out var customColor))
-                {
-                    var shadeScale = GetCustomShadeScale(palette, layer, shade);
-                    output[offset] = ApplyShade(customColor.Red, shadeScale);
-                    output[offset + 1] = ApplyShade(customColor.Green, shadeScale);
-                    output[offset + 2] = ApplyShade(customColor.Blue, shadeScale);
-                    output[offset + 3] = SampleAlpha(
-                        alphaTexture,
-                        alphaSource,
-                        pixel % tintMap.Width,
-                        pixel / tintMap.Width,
-                        tintMap.Width,
-                        tintMap.Height);
-                    continue;
-                }
-
-                var paletteIndex = savedValue > 0 &&
-                                   savedValue <= TintMapMaterialRegistry.PaletteColorCount
-                    ? savedValue - 1
-                    : layerColorIndices != null &&
-                      layerColorIndices.TryGetValue((int)layer, out var standardIndex)
-                        ? standardIndex
-                        : 0;
+                var paletteIndex = TintMapColor.TryFromStoredValue(savedValue, out var customColor)
+                    ? TintMapPaletteColors.GetClosestColorId(layer, customColor)
+                    : savedValue > 0 &&
+                      savedValue <= TintMapMaterialRegistry.PaletteColorCount
+                        ? savedValue - 1
+                        : layerColorIndices != null &&
+                          layerColorIndices.TryGetValue((int)layer, out var standardIndex)
+                            ? standardIndex
+                            : 0;
                 paletteIndex = Math.Clamp(
                     paletteIndex,
                     0,
@@ -121,47 +107,6 @@ namespace SWLOR.Toolset.Domain.Render
                 SourceFormat = tintMap.SourceFormat,
                 AlphaCutoff = alphaSource?.ByteCutoff ?? TextureImage.DefaultAlphaCutoff
             };
-        }
-
-        private static float GetCustomShadeScale(
-            TextureImage palette,
-            TintMapLayerType layer,
-            byte shade)
-        {
-            var definition = TintMapMaterialRegistry.GetLayer(layer);
-            var paletteY = Math.Clamp(
-                palette.Height - 1 - definition.PaletteBaseRow,
-                0,
-                palette.Height - 1);
-            var shadeX = Math.Clamp(
-                shade * (palette.Width - 1) / byte.MaxValue,
-                0,
-                palette.Width - 1);
-            var referenceX = Math.Clamp(
-                TintMapMaterialRegistry.CustomColorReferenceIntensity *
-                (palette.Width - 1) / byte.MaxValue,
-                0,
-                palette.Width - 1);
-            var shadeOffset = (paletteY * palette.Width + shadeX) * 4;
-            var referenceOffset = (paletteY * palette.Width + referenceX) * 4;
-            var shadeLuminance = Luminance(palette.Pixels, shadeOffset);
-            var referenceLuminance = Math.Max(Luminance(palette.Pixels, referenceOffset), 1f);
-            return Math.Max(shadeLuminance / referenceLuminance, 0f);
-        }
-
-        private static float Luminance(byte[] pixels, int offset)
-        {
-            return pixels[offset] * 0.2126f +
-                   pixels[offset + 1] * 0.7152f +
-                   pixels[offset + 2] * 0.0722f;
-        }
-
-        private static byte ApplyShade(byte color, float shadeScale)
-        {
-            return (byte)Math.Clamp(
-                (int)MathF.Round(color * shadeScale),
-                byte.MinValue,
-                byte.MaxValue);
         }
 
         private static byte SampleAlpha(

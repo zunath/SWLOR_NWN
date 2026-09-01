@@ -898,10 +898,15 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 state.PendingCount++;
                 var revisions = layers
                     .Distinct()
+                    .SelectMany(layer => new[]
+                    {
+                        new ItemColorCarryRevisionScope(layer, armorPart),
+                        new ItemColorCarryRevisionScope(layer, AppearanceArmor.Invalid)
+                    })
+                    .Distinct()
                     .ToDictionary(
-                        layer => new ItemColorCarryRevisionScope(layer, armorPart),
-                        layer => state.Revisions.GetValueOrDefault(
-                            new ItemColorCarryRevisionScope(layer, armorPart)));
+                        scope => scope,
+                        scope => state.Revisions.GetValueOrDefault(scope));
                 return (lineage, revisions);
             }
         }
@@ -937,11 +942,16 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             IReadOnlyDictionary<ItemColorCarryRevisionScope, int> capturedRevisions)
         {
             var scope = new ItemColorCarryRevisionScope(layer, armorPart);
+            var globalScope = new ItemColorCarryRevisionScope(
+                layer,
+                AppearanceArmor.Invalid);
             lock (PendingItemColorCarryLock)
             {
                 return PendingItemColorCarries.TryGetValue(lineage, out var state) &&
                        state.Revisions.GetValueOrDefault(scope) ==
-                       capturedRevisions.GetValueOrDefault(scope);
+                       capturedRevisions.GetValueOrDefault(scope) &&
+                       state.Revisions.GetValueOrDefault(globalScope) ==
+                       capturedRevisions.GetValueOrDefault(globalScope);
             }
         }
 

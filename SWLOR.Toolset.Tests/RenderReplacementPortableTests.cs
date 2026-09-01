@@ -427,20 +427,25 @@ namespace SWLOR.Toolset.Tests
                 });
 
             image.Should().NotBeNull();
-            Pixel(image!, 0, 0).Should().Be((20, 40, 60, 73));
+            Pixel(image!, 0, 0).Should().Be((255, 255, 255, 73));
             image.AlphaCutoff.Should().Be(77, "texture9 red uses the runtime shader's 0.3 cutoff");
         }
 
         [Test]
-        public void SoftwareTintRendererUsesNativePaletteShadingForCustomColors()
+        public void SoftwareTintRendererQuantizesCustomRgbToTheDeployedPaletteRow()
         {
-            File.WriteAllBytes(Path.Combine(_resourceDirectory, "tint.tga"), SolidColorTga(64, 0, 0));
-            File.WriteAllBytes(Path.Combine(_resourceDirectory, "palette.tga"), SolidColorTga(127, 127, 127));
+            var layer = TintMapLayerType.Skin;
+            var customColor = new TintMapColor(120, 80, 40);
+            var paletteIndex = TintMapPaletteColors.GetClosestColorId(layer, customColor);
+            var shaderRow = TintMapMaterialRegistry.GetLayer(layer).PaletteBaseRow + paletteIndex;
+            File.WriteAllBytes(Path.Combine(_resourceDirectory, "tint.tga"), SolidColorTga(255, 0, 0));
+            File.WriteAllBytes(
+                Path.Combine(_resourceDirectory, "palette.tga"),
+                PaletteRowTga(shaderRow, ((byte)21, (byte)43, (byte)65)));
             var material = MaterialResolver.Parse(
                 "texture7 tint\n" +
                 "texture10 palette\n" +
                 "customshaderPSH fs_plt_tinter\n");
-            var customColor = new TintMapColor(120, 80, 40);
 
             var image = TintMapTextureRenderer.Render(
                 Index(),
@@ -454,23 +459,29 @@ namespace SWLOR.Toolset.Tests
                 });
 
             image.Should().NotBeNull();
-            Pixel(image!, 0, 0).Should().Be((120, 80, 40, 255),
-                "custom RGB values should follow the native palette's nonlinear shade response, " +
-                "not be multiplied by the raw PLT intensity");
+            Pixel(image!, 0, 0).Should().Be((21, 43, 65, 255),
+                "software thumbnails must use the same nearest palette row as the viewport and game");
         }
 
         [Test]
-        public void SoftwareTintRendererDisplaysTheSelectedRgbAtTheSwatchMidpoint()
+        public void SoftwareTintRendererShadesTheQuantizedPaletteRow()
         {
+            var layer = TintMapLayerType.Skin;
+            var customColor = new TintMapColor(120, 80, 40);
+            var paletteIndex = TintMapPaletteColors.GetClosestColorId(layer, customColor);
+            var shaderRow = TintMapMaterialRegistry.GetLayer(layer).PaletteBaseRow + paletteIndex;
             File.WriteAllBytes(Path.Combine(_resourceDirectory, "tint.tga"), SolidColorTga(128, 0, 0));
             File.WriteAllBytes(
                 Path.Combine(_resourceDirectory, "palette.tga"),
-                HorizontalGrayscaleTga(64, 128, 255));
+                PaletteRowTga(
+                    shaderRow,
+                    ((byte)10, (byte)20, (byte)30),
+                    ((byte)40, (byte)50, (byte)60),
+                    ((byte)70, (byte)80, (byte)90)));
             var material = MaterialResolver.Parse(
                 "texture7 tint\n" +
                 "texture10 palette\n" +
                 "customshaderPSH fs_plt_tinter\n");
-            var customColor = new TintMapColor(120, 80, 40);
 
             var image = TintMapTextureRenderer.Render(
                 Index(),
@@ -484,8 +495,8 @@ namespace SWLOR.Toolset.Tests
                 });
 
             image.Should().NotBeNull();
-            Pixel(image!, 0, 0).Should().Be((120, 80, 40, 255),
-                "the color picker and preset swatches both represent intensity 128");
+            Pixel(image!, 0, 0).Should().Be((40, 50, 60, 255),
+                "custom RGB must retain the selected palette row's authored shade response");
         }
 
         [Test]
@@ -546,8 +557,16 @@ namespace SWLOR.Toolset.Tests
         [Test]
         public void SoftwareTintRendererDecodesLayerBoundariesLikeTheShader()
         {
+            var tattoo2Color = new TintMapColor(255, 0, 0);
+            var tattoo2PaletteIndex = TintMapPaletteColors.GetClosestColorId(
+                TintMapLayerType.Tattoo2,
+                tattoo2Color);
+            var tattoo2ShaderRow = TintMapMaterialRegistry.GetLayer(TintMapLayerType.Tattoo2)
+                .PaletteBaseRow + tattoo2PaletteIndex;
             File.WriteAllBytes(Path.Combine(_resourceDirectory, "tint.tga"), SolidColorTga(255, 230, 0));
-            File.WriteAllBytes(Path.Combine(_resourceDirectory, "palette.tga"), SolidColorTga(255, 255, 255));
+            File.WriteAllBytes(
+                Path.Combine(_resourceDirectory, "palette.tga"),
+                PaletteRowTga(tattoo2ShaderRow, ((byte)255, (byte)0, (byte)0)));
             var material = MaterialResolver.Parse(
                 "texture7 tint\n" +
                 "texture10 palette\n" +
@@ -563,7 +582,7 @@ namespace SWLOR.Toolset.Tests
                     [TintMapVariable.GetName("sample_material", TintMapLayerType.Tattoo1)] =
                         new TintMapColor(0, 255, 0).ToStoredValue(),
                     [TintMapVariable.GetName("sample_material", TintMapLayerType.Tattoo2)] =
-                        new TintMapColor(255, 0, 0).ToStoredValue()
+                        tattoo2Color.ToStoredValue()
                 });
 
             image.Should().NotBeNull();
@@ -1064,6 +1083,31 @@ namespace SWLOR.Toolset.Tests
                 bytes[offset] = values[index];
                 bytes[offset + 1] = values[index];
                 bytes[offset + 2] = values[index];
+            }
+
+            return bytes;
+        }
+
+        private static byte[] PaletteRowTga(
+            int shaderRow,
+            params (byte R, byte G, byte B)[] colors)
+        {
+            var width = colors.Length;
+            var height = TintMapMaterialRegistry.PaletteTextureHeight;
+            var bytes = new byte[18 + checked(width * height * 3)];
+            bytes[2] = 2;
+            BinaryPrimitives.WriteUInt16LittleEndian(bytes.AsSpan(12, 2), (ushort)width);
+            BinaryPrimitives.WriteUInt16LittleEndian(bytes.AsSpan(14, 2), (ushort)height);
+            bytes[16] = 24;
+
+            // TGA rows are bottom-first here, matching the shader-row coordinate before
+            // TextureLoader exposes the decoded image top-first.
+            for (var x = 0; x < width; x++)
+            {
+                var offset = 18 + (shaderRow * width + x) * 3;
+                bytes[offset] = colors[x].B;
+                bytes[offset + 1] = colors[x].G;
+                bytes[offset + 2] = colors[x].R;
             }
 
             return bytes;

@@ -1289,9 +1289,20 @@ public class TintMapReviewTests
         FindMethod(serviceSource, "MarkPendingItemColorEdit").ParameterList.Parameters
             .Select(parameter => parameter.Identifier.Text)
             .Should().Contain("armorPart");
-        FindMethod(serviceSource, "RegisterPendingItemColorCarry").ToString().Should()
+        var registerPendingCarry = FindMethod(serviceSource, "RegisterPendingItemColorCarry");
+        registerPendingCarry.ToString().Should()
             .Contain("new ItemColorCarryRevisionScope(layer, armorPart)",
                 "two armor parts sharing a layer need independent revision scopes");
+        registerPendingCarry.ToString().Should()
+            .Contain("new ItemColorCarryRevisionScope(layer, AppearanceArmor.Invalid)",
+                "every pending part carry must also capture the layer-wide global revision");
+        var carryRevisionIsCurrent = FindMethod(
+            serviceSource,
+            "PendingItemColorCarryLayerIsCurrent");
+        carryRevisionIsCurrent.ToString().Should().Contain("globalScope");
+        carryRevisionIsCurrent.ToString().Should()
+            .Contain("capturedRevisions.GetValueOrDefault(globalScope)",
+                "a new global tint must invalidate delayed carries for every armor part in the layer");
     }
 
     [Test]

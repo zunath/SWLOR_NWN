@@ -1875,11 +1875,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return true;
         }
 
-        public Action OnResetTintColor() => () =>
-        {
-            ResetCurrentCustomTintOverrides();
-        };
-
         private void ResetCurrentCustomTintOverrides(int? paletteColor = null)
         {
             if (!TryGetSelectedTintLayer(out var selectedLayerType))

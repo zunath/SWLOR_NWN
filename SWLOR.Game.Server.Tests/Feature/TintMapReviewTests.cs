@@ -119,6 +119,9 @@ public class TintMapReviewTests
         definition.Should().Contain(".BindValue(model => model.CustomTintRed)");
         definition.Should().Contain(".BindValue(model => model.CustomTintGreen)");
         definition.Should().Contain(".BindValue(model => model.CustomTintBlue)");
+        definition.Should().NotContain("Use Preset Color");
+        definition.Should().NotContain("OnResetTintColor");
+        viewModel.Should().NotContain("OnResetTintColor");
         definition.Should().NotContain("IsCustomTintPickerVisible");
         definitionMethods["BuildEditorHeader"].ToString().Should().NotContain("BuildCustomTintEditor");
         definitionMethods["BuildMainEditor"].ToString().Should().Contain("BuildCustomTintEditor(col2)");

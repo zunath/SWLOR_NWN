@@ -290,20 +290,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                 row.AddSpacer();
             });
-
-            col.AddRow(row =>
-            {
-                row.AddSpacer();
-
-                row.AddButton()
-                    .SetText("Use Preset Color")
-                    .SetWidth(144f)
-                    .SetHeight(32f)
-                    .BindIsEnabled(model => model.IsCustomTintAvailable)
-                    .BindOnClicked(model => model.OnResetTintColor());
-
-                row.AddSpacer();
-            });
         }
 
         private void BuildArmorEditor(GuiGroup<AppearanceEditorViewModel> partial)

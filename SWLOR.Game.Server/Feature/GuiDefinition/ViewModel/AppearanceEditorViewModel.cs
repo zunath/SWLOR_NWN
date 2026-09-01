@@ -2013,6 +2013,22 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (TryGetEditableTintSelection(out var selection, out var layerType, out _))
             {
+                if (IsEquipmentSelected &&
+                    SelectedItemTypeIndex == 0 &&
+                    _colorTarget == ColorTarget.Global)
+                {
+                    var item = selection.GetPaletteSource(layerType);
+                    var itemSelections = _tintMapSelections
+                        .Where(candidate =>
+                            candidate.GetPaletteSource(layerType) == item &&
+                            candidate.Material.Layers.Contains(layerType))
+                        .ToList();
+                    TintMapService.ResetGlobalItemCustomColor(
+                        _target,
+                        itemSelections,
+                        layerType);
+                }
+
                 TintMapService.SetPaletteColor(
                     _target,
                     selection,

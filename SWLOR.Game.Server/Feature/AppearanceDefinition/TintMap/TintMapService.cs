@@ -239,6 +239,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             bool invalidatePendingCarry)
         {
             var paletteSource = selection.GetPaletteSource(layer);
+            if (paletteSource == creature && TintMapVariable.IsCreatureColorLayer(layer))
+                RemoveCreatureGlobalSemanticIntent(creature, selection, layer);
+
             if (invalidatePendingCarry)
                 MarkPendingItemColorEdit(paletteSource, layer, selection.ArmorPart);
 
@@ -1717,6 +1720,45 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         private static string GetCreatureCustomColorStateVariable(TintMapLayerType layer)
         {
             return TintMapVariable.GetCreatureColorStateName(layer);
+        }
+
+        private static void RemoveCreatureGlobalSemanticIntent(
+            uint creature,
+            TintMapMaterialSelection editedSelection,
+            TintMapLayerType layer)
+        {
+            var stateVariable = GetCreatureCustomColorStateVariable(layer);
+            var savedColor = GetLocalInt(creature, stateVariable);
+            if (savedColor == 0)
+                return;
+
+            var migratedVariables = new List<string>();
+            if (TintMapColor.TryFromStoredValue(savedColor, out _))
+            {
+                var editedVariable = TintMapVariable.GetName(
+                    editedSelection.Material.Resref,
+                    layer);
+                migratedVariables = TintMapModelResolver.GetCurrentSelections(creature)
+                    .Where(selection =>
+                        selection.GetPaletteSource(layer) == creature &&
+                        selection.Material.Layers.Contains(layer))
+                    .Select(selection => TintMapVariable.GetName(
+                        selection.Material.Resref,
+                        layer))
+                    .Where(variableName =>
+                        variableName != editedVariable &&
+                        GetLocalInt(creature, variableName) == 0)
+                    .Distinct(StringComparer.Ordinal)
+                    .ToList();
+                foreach (var variableName in migratedVariables)
+                {
+                    SetLocalInt(creature, variableName, savedColor);
+                }
+            }
+
+            DeleteLocalInt(creature, stateVariable);
+            RemoveDroidOverrides(creature, new[] { stateVariable });
+            SaveDroidOverrides(creature, migratedVariables, savedColor);
         }
 
         private static void RemoveDroidOverrides(uint creature, IReadOnlyList<string> variableNames)

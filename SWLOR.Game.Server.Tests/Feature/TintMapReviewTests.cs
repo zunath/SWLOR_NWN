@@ -401,6 +401,21 @@ public class TintMapReviewTests
         setPaletteColor.ToString().Should().Contain("TryGetArmorColorChannel(layer, out var colorChannel)");
         setPaletteColor.ToString().Should().Contain("GetPerPartOverrideVariableName(",
             "a material-scoped part preset must keep the part opted out of item-wide RGB inheritance");
+        var setStoredColor = FindMethod(serviceSource, "SetStoredColor");
+        setStoredColor.ToString().Should().Contain("RemoveCreatureGlobalSemanticIntent(",
+            "a material-scoped creature edit must retire legacy layer-wide intent");
+        var removeCreatureGlobalIntent = FindMethod(
+            serviceSource,
+            "RemoveCreatureGlobalSemanticIntent");
+        removeCreatureGlobalIntent.ToString().Should().Contain(
+            "TintMapModelResolver.GetCurrentSelections(creature)",
+            "untouched current materials must retain the former semantic color");
+        removeCreatureGlobalIntent.ToString().Should().Contain("variableName != editedVariable",
+            "the newly edited material must not be overwritten by the migrated global color");
+        removeCreatureGlobalIntent.ToString().Should().Contain("DeleteLocalInt(creature, stateVariable)",
+            "future refreshes must not re-expand stale layer-wide state");
+        removeCreatureGlobalIntent.ToString().Should().Contain("RemoveDroidOverrides(",
+            "droid persistence must retire the same global semantic marker");
     }
 
     [Test]
@@ -1554,6 +1569,16 @@ public class TintMapReviewTests
             "AppearanceEditorViewModel.cs");
         viewModelSource.Should().Contain("ApplySelectedPaletteColor(paletteColorId)");
         viewModelSource.Should().Contain(nameof(TintMapService.ResetGlobalItemCustomColor));
+        var applyPaletteColor = FindMethod(viewModelSource, "ApplySelectedPaletteColor");
+        applyPaletteColor.ToString().Should().Contain("_colorTarget == ColorTarget.Global");
+        applyPaletteColor.ToString().IndexOf(
+                nameof(TintMapService.ResetGlobalItemCustomColor),
+                StringComparison.Ordinal)
+            .Should().BeLessThan(
+                applyPaletteColor.ToString().IndexOf(
+                    nameof(TintMapService.SetPaletteColor),
+                    StringComparison.Ordinal),
+                "a Global material preset must clear item-wide TMG/TMI state before storing its row");
     }
 
     [Test]

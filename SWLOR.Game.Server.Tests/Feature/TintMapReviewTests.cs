@@ -260,6 +260,7 @@ public class TintMapReviewTests
             "TryGetSelectedTintLayer",
             "TryGetEditableTintSelections",
             "ResetCurrentCustomTintOverrides",
+            "SynchronizeCustomTintControlsToPaletteColor",
             "ApplySelectedPaletteColor",
             "ApplyArmorPaletteColor",
             "OnSelectColor",
@@ -280,7 +281,15 @@ public class TintMapReviewTests
         methods["TryGetEditableTintSelections"].ToString().Should().Contain(
             "selection.Material.Layers.Contains(selectedLayerType)");
         methods["OnSelectColor"].ToString().Should().Contain("ApplySelectedPaletteColor");
+        methods["OnSelectColor"].ToString().Should().Contain("SynchronizeCustomTintControlsToPaletteColor");
         methods["OnClickColorPalette"].ToString().Should().Contain("ApplySelectedPaletteColor");
+        methods["OnClickColorPalette"].ToString().Should().Contain("SynchronizeCustomTintControlsToPaletteColor");
+        var synchronizeControls = methods["SynchronizeCustomTintControlsToPaletteColor"].ToString();
+        synchronizeControls.Should().Contain("TintMapPaletteColors.GetColor(layerType, colorId)",
+            "preset selection must display the exact selected palette row");
+        synchronizeControls.Should().Contain("SetSelectedTintColor(new GuiColor",
+            "preset selection must update the color picker and its bound RGB fields");
+        synchronizeControls.Should().Contain("CustomTintSelectionText =");
         methods["ApplySelectedPaletteColor"].ToString().Should().Contain("ResetCurrentCustomTintOverrides");
         methods["ApplySelectedPaletteColor"].ToString().Should().Contain("SetColor(_target");
         methods["ApplyArmorPaletteColor"].ToString().Should().Contain("ResetCurrentCustomTintOverrides");

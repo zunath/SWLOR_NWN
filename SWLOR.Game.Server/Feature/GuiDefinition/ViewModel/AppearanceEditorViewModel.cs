@@ -1818,8 +1818,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnSelectColor() => () =>
         {
-            ApplySelectedPaletteColor(GetSelectedPaletteColorId());
+            var colorId = GetSelectedPaletteColorId();
+            if (ApplySelectedPaletteColor(colorId))
+                SynchronizeCustomTintControlsToPaletteColor(colorId);
         };
+
+        private void SynchronizeCustomTintControlsToPaletteColor(int colorId)
+        {
+            if (!TryGetSelectedTintLayer(out var layerType))
+                return;
+
+            var color = TintMapPaletteColors.GetColor(layerType, colorId);
+            SetSelectedTintColor(new GuiColor(color.Red, color.Green, color.Blue));
+
+            var layer = TintMapMaterialRegistry.GetLayer(layerType);
+            CustomTintSelectionText =
+                $"{layer.Name}: #{color.Red:X2}{color.Green:X2}{color.Blue:X2}";
+        }
 
         private bool ApplySelectedPaletteColor(int colorId)
         {
@@ -2196,7 +2211,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickColorPalette(int colorId) => () =>
         {
-            ApplySelectedPaletteColor(colorId);
+            if (ApplySelectedPaletteColor(colorId))
+                SynchronizeCustomTintControlsToPaletteColor(colorId);
         };
 
         private bool ApplyArmorPaletteColor(int colorId)

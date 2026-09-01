@@ -947,7 +947,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             var requestedColor = new TintMapColor(value.R, value.G, value.B);
             var paletteColorId = TintMapPaletteColors.GetClosestColorId(layerType, requestedColor);
-            if (!ApplySelectedPaletteColor(paletteColorId))
+            if (!ApplySelectedPaletteColor(
+                    paletteColorId,
+                    reloadEditor: synchronizeComponents))
                 return;
 
             // The known-good PLT shader accepts palette rows, not arbitrary RGB. Reflect the row
@@ -1864,7 +1866,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SetSelectedTintColor(new GuiColor(color.Red, color.Green, color.Blue));
         }
 
-        private bool ApplySelectedPaletteColor(int colorId)
+        private bool ApplySelectedPaletteColor(int colorId, bool reloadEditor = true)
         {
             ToggleItemEquippedFlags();
             if (DoesNotHaveItemEquipped)
@@ -1930,7 +1932,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             TintMapService.ApplyCurrentColors(_target);
-            LoadTintMapEditor();
+            if (reloadEditor)
+                LoadTintMapEditor();
             return true;
         }
 

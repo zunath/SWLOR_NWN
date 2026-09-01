@@ -141,7 +141,7 @@ public class TintMapReviewTests
         definition.Should().NotContain("TintColorSheetResref");
         viewModel.Should().Contain("new TintMapColor(value.R, value.G, value.B)");
         viewModel.Should().Contain("TintMapPaletteColors.GetClosestColorId(layerType, requestedColor)");
-        viewModel.Should().Contain("ApplySelectedPaletteColor(paletteColorId)",
+        viewModel.Should().Contain("ApplySelectedPaletteColor(",
             "the dynamic picker must use the same palette-row application path as a preset click");
         var setCustomTintComponent = FindMethod(viewModel, "SetCustomTintComponent");
         setCustomTintComponent.ToString().Should().Contain("ApplyCustomTintColor(",
@@ -153,6 +153,10 @@ public class TintMapReviewTests
         applyCustomTintColor.ToString().Should().Contain("SetSelectedTintColor(",
             "the color picker must still reflect the palette row rendered in game");
         applyCustomTintColor.ToString().Should().Contain("synchronizeComponents");
+        applyCustomTintColor.ToString().Should().Contain("reloadEditor: synchronizeComponents",
+            "watched RGB text edits must not reload and overwrite a partially entered component");
+        var applySelectedPaletteColor = FindMethod(viewModel, "ApplySelectedPaletteColor");
+        applySelectedPaletteColor.ToString().Should().Contain("if (reloadEditor)");
         var setSelectedTintColor = FindMethod(viewModel, "SetSelectedTintColor");
         var synchronizeComponents = FindMethod(viewModel, "SynchronizeCustomTintComponents");
         var synchronizeBindings = FindMethod(viewModel, "SynchronizeTintControlBindings");
@@ -1487,7 +1491,7 @@ public class TintMapReviewTests
             "GuiDefinition",
             "ViewModel",
             "AppearanceEditorViewModel.cs");
-        viewModelSource.Should().Contain("ApplySelectedPaletteColor(paletteColorId)");
+        viewModelSource.Should().Contain("ApplySelectedPaletteColor(");
         viewModelSource.Should().Contain(nameof(TintMapService.ResetGlobalItemCustomColor));
     }
 

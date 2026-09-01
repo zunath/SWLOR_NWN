@@ -260,6 +260,41 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void ExecuteCoalesced_RejectsRecreatingANewerRemovedFieldSlot()
+        {
+            var path = CorpusFiles.FindFileWithMutableInteger("utc");
+            var document = JsonGffDocument.Parse(File.ReadAllBytes(path));
+            using var session = new DocumentSession(path, document);
+            var originField = CorpusFiles.FindFirstMutableInteger(document.Root)!;
+            var original = originField.GetInteger();
+            var removedEntry = document.Root.Entries
+                .First(entry => !ReferenceEquals(entry.Value, originField));
+            var replacement = JsonGffField.CreateScalar(
+                GffFieldType.Int,
+                System.Text.Encoding.ASCII.GetBytes("2"));
+
+            session.Execute("change model", () => originField.SetInteger(original + 1));
+            var origin = session.UndoStack.CurrentAppliedEntry;
+            origin.Should().NotBeNull();
+            session.Execute("remove optional field", () =>
+                document.Root.Remove(removedEntry.Key));
+
+            session.ExecuteCoalesced(
+                    origin!,
+                    "recreate removed field",
+                    () => document.Root.Add(removedEntry.Key, replacement))
+                .Should().BeFalse(
+                    "different field instances still overlap when they occupy the same struct/name slot");
+
+            document.Root.Contains(removedEntry.Key).Should().BeFalse(
+                "the rejected continuation must roll back its replacement field");
+            session.Undo();
+            document.Root.Get(removedEntry.Key).Should().BeSameAs(removedEntry.Value);
+            session.Undo();
+            originField.GetInteger().Should().Be(original);
+        }
+
+        [Test]
         public void ExecuteCoalesced_RejectsChildEditBeneathNewerInsertedListElement()
         {
             var path = CorpusFiles.FindFileWithListOfSize("utc", 2, out var listFieldName);

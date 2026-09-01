@@ -12,12 +12,14 @@ namespace SWLOR.Toolset.Domain.Editing
         private readonly JsonGffStruct _struct;
         private readonly string _name;
         private readonly JsonGffField _field;
+        private readonly object _fieldMutationTarget;
 
         internal AddFieldEdit(JsonGffStruct owner, string name, JsonGffField field)
         {
             _struct = owner;
             _name = name;
             _field = field;
+            _fieldMutationTarget = owner.GetFieldMutationTarget(name);
         }
 
         public void Apply()
@@ -35,7 +37,7 @@ namespace SWLOR.Toolset.Domain.Editing
             return $"Add field '{_name}'";
         }
 
-        public IEnumerable<object> GetMutationTargets() => new object[] { _field };
+        public IEnumerable<object> GetMutationTargets() => new[] { _field, _fieldMutationTarget };
     }
 
     /// <summary>
@@ -48,12 +50,14 @@ namespace SWLOR.Toolset.Domain.Editing
         private readonly JsonGffStruct _struct;
         private readonly string _name;
         private readonly JsonGffField _field;
+        private readonly object _fieldMutationTarget;
 
         internal RemoveFieldEdit(JsonGffStruct owner, string name, JsonGffField field)
         {
             _struct = owner;
             _name = name;
             _field = field;
+            _fieldMutationTarget = owner.GetFieldMutationTarget(name);
         }
 
         public void Apply()
@@ -71,7 +75,7 @@ namespace SWLOR.Toolset.Domain.Editing
             return $"Remove field '{_name}'";
         }
 
-        public IEnumerable<object> GetMutationTargets() => new object[] { _field };
+        public IEnumerable<object> GetMutationTargets() => new[] { _field, _fieldMutationTarget };
     }
 
     /// <summary>

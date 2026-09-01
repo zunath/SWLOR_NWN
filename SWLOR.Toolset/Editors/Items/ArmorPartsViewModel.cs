@@ -293,7 +293,14 @@ namespace SWLOR.Toolset.Editors.Items
                         ClearGlobalCustomTint(layer);
                     }),
                 _dyes?.GetPaletteColors(material) ?? Array.Empty<(byte, byte, byte)>(),
-                hasExternalOverride: () => GetTintVariableKeys(layer).Count > 0);
+                hasExternalOverride: () => HasTintOverride(layer));
+
+        private bool HasTintOverride(TintMapLayerType layer)
+        {
+            return GetTintVariableKeys(layer).Count > 0 ||
+                   _store.Locals.GetInt(TintMapVariable.GetItemGlobalColorStateName(layer)) != null ||
+                   _store.Locals.GetInt(TintMapVariable.GetItemGlobalInheritanceStateName(layer)) != null;
+        }
 
         /// <summary>
         /// Restores the selected global dye channel to its palette value without discarding an

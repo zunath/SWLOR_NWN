@@ -298,6 +298,54 @@ namespace SWLOR.Toolset.Tests.Items
             }
 
             [Test]
+            public void ReselectingTheDisplayedArmorSwatchClearsGlobalTintStateWithoutMaterialKeys()
+            {
+                var directory = Path.Combine(
+                    TestContext.CurrentContext.WorkDirectory,
+                    "armor-global-swatch-" + Guid.NewGuid().ToString("N"));
+                Directory.CreateDirectory(directory);
+                try
+                {
+                    var palette = new byte[18 + TintMapMaterialRegistry.PaletteColorCount * 3];
+                    palette[2] = 2;
+                    System.Buffers.Binary.BinaryPrimitives.WriteUInt16LittleEndian(
+                        palette.AsSpan(12, 2),
+                        1);
+                    System.Buffers.Binary.BinaryPrimitives.WriteUInt16LittleEndian(
+                        palette.AsSpan(14, 2),
+                        TintMapMaterialRegistry.PaletteColorCount);
+                    palette[16] = 24;
+                    File.WriteAllBytes(Path.Combine(directory, "pal_cloth01.tga"), palette);
+
+                    var store = OpenStore("adren_harness");
+                    var layer = TintMapLayerType.Cloth1;
+                    var state = TintMapVariable.GetItemGlobalColorStateName(layer);
+                    var inheritance = TintMapVariable.GetItemGlobalInheritanceStateName(layer);
+                    store.Locals.SetInt(state, new TintMapColor(12, 34, 56).ToStoredValue());
+                    store.Locals.SetInt(inheritance, 1);
+                    var resourceIndex = new ResourceIndex(
+                        null,
+                        new[] { new ResourceIndex.HakLayer("fixture", directory) });
+                    var armor = new ArmorPartsViewModel(
+                        store,
+                        RunEdit,
+                        dyes: new ArmorDyeSwatchService(resourceIndex));
+                    var currentIndex = (int)armor.Cloth1.Number!.Value;
+
+                    armor.Cloth1.PickCommand.Execute(armor.Cloth1.Swatches[currentIndex]);
+
+                    store.Locals.GetInt(state).Should().BeNull(
+                        "reselecting the visible preset must clear item-wide RGB intent");
+                    store.Locals.GetInt(inheritance).Should().BeNull(
+                        "the current global-inheritance marker must not make the swatch a no-op");
+                }
+                finally
+                {
+                    Directory.Delete(directory, recursive: true);
+                }
+            }
+
+            [Test]
             public void ChoosingAnArmorPresetClearsUniformLegacyGlobalTintWithoutMarker()
             {
                 var store = OpenStore("adren_harness");

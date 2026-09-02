@@ -101,7 +101,7 @@ public class PerksWindowTests
     }
 
     [Test]
-    public void ForceAffinity_IsProminentAndExplainsEachSelectedForcePerk()
+    public void ForceAffinity_ShowsCompactStatusAndSelectedForcePerkContext()
     {
         var root = FindRepositoryRoot();
         var definitionSource = File.ReadAllText(Path.Combine(
@@ -120,12 +120,13 @@ public class PerksWindowTests
 
         definitionSource.Should().Contain("model => model.IsForceAffinityVisible");
         definitionSource.Should().Contain("model => model.ForceAffinityHeading");
-        definitionSource.Should().Contain("model => model.ForceAffinityExplanation");
         definitionSource.Should().Contain("model => model.ForceAffinityColor");
+        definitionSource.Should().NotContain("model => model.ForceAffinityExplanation");
 
         viewModelSource.Should().Contain("dbPlayer.CharacterType == CharacterType.ForceSensitive");
         viewModelSource.Should().Contain("FORCE AFFINITY: {affinityLabel}");
-        viewModelSource.Should().Contain("Owning any rank of a Light power contributes +1; a Dark power contributes -1.");
+        viewModelSource.Should().NotContain("public string ForceAffinityExplanation");
+        viewModelSource.Should().NotContain("Owning any rank of a Light power contributes +1; a Dark power contributes -1.");
         viewModelSource.Should().Contain("detail.ForceAffinityType.Value == ForceAffinityType.Light ? \"LIGHT\" : \"DARK\"");
         viewModelSource.Should().Contain("{alignment}-ALIGNED FORCE POWER");
         viewModelSource.Should().Contain("UNIVERSAL FORCE POWER");

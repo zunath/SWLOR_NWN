@@ -110,33 +110,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                     col.AddRow(affinityRow =>
                     {
-                        affinityRow.SetHeight(88f);
                         affinityRow.BindIsVisible(model => model.IsForceAffinityVisible);
-                        affinityRow.AddGroup(group =>
-                        {
-                            group.SetScrollbars(NuiScrollbars.None);
-                            group.AddColumn(affinityColumn =>
-                            {
-                                affinityColumn.AddRow(row =>
-                                {
-                                    row.AddLabel()
-                                        .BindText(model => model.ForceAffinityHeading)
-                                        .BindColor(model => model.ForceAffinityColor)
-                                        .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                        .SetVerticalAlign(NuiVerticalAlign.Middle)
-                                        .SetHeight(24f);
-                                });
-
-                                affinityColumn.AddRow(row =>
-                                {
-                                    row.AddText()
-                                        .BindText(model => model.ForceAffinityExplanation)
-                                        .SetShowBorder(false)
-                                        .SetScrollbars(NuiScrollbars.None)
-                                        .SetHeight(58f);
-                                });
-                            });
-                        });
+                        affinityRow.AddLabel()
+                            .BindText(model => model.ForceAffinityHeading)
+                            .BindColor(model => model.ForceAffinityColor)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                            .SetVerticalAlign(NuiVerticalAlign.Middle)
+                            .SetHeight(26f);
                     });
 
                     col.AddRow(row =>

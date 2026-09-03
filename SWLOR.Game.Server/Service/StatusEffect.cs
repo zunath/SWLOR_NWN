@@ -347,7 +347,14 @@ namespace SWLOR.Game.Server.Service
             if (_suppressedStatusEffectRemovalIds.Contains(tag))
                 return;
 
-            RemoveStatusEffectById(player, tag, true, false);
+            // NWN can deliver the old timer's removal callback after a duration extension
+            // has already replaced it with another native effect carrying the same tag.
+            // Wait until native removal settles, then only clear statuses without a timer.
+            DelayCommand(0f, () =>
+            {
+                if (!HasEffectByTag(player, tag))
+                    RemoveStatusEffectById(player, tag, true, false);
+            });
         }
 
         private static string GetLastStatusEffectTag()

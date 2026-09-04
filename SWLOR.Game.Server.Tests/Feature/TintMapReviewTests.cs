@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Text.RegularExpressions;
 using FluentAssertions;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -2391,6 +2392,99 @@ public class TintMapReviewTests
             shader.Should().NotContain("customTint");
             shader.Should().NotContain("shadeScale");
         }
+    }
+
+    [TestCase("fs_plt_tinter")]
+    [TestCase("fs_plt_tinter_nm")]
+    [TestCase("fs_plt_hair_nm")]
+    public void TintShadersRebuildSpecularityFromFinalPaletteInputs(string shaderName)
+    {
+        var shader = ReadSource("SWLOR_Haks", "sw_shader", $"{shaderName}.shd");
+        var code = Regex.Replace(shader, @"/\*[\s\S]*?\*/|//[^\r\n]*", string.Empty);
+        var setup = code.IndexOf("SetupStandardShaderInputs();", StringComparison.Ordinal);
+        var environment = code.LastIndexOf("fEnvMapLevel = 1.0 - paletteColor.a;", StringComparison.Ordinal);
+        var diffuse = code.LastIndexOf("FragmentColor = vec4(surfaceColor, 1.0);", StringComparison.Ordinal);
+        var specularity = code.IndexOf(
+            "SetupSpecularity(FragmentColor.rgb * materialFrontDiffuse.rgb);",
+            StringComparison.Ordinal);
+        var lighting = code.IndexOf("ApplyStandardShader();", StringComparison.Ordinal);
+
+        setup.Should().BeGreaterThanOrEqualTo(0);
+        environment.Should().BeGreaterThan(setup,
+            "the packed palette must replace the engine's texture0 environment fallback");
+        diffuse.Should().BeGreaterThan(environment);
+        specularity.Should().BeGreaterThan(diffuse,
+            "specularity cached from the white placeholder would otherwise leave skin and cloth metallic");
+        lighting.Should().BeGreaterThan(specularity);
+        Regex.Matches(code, @"\bSetupSpecularity\s*\(").Count.Should().Be(1);
+        code.LastIndexOf("FragmentColor =", lighting, StringComparison.Ordinal).Should().Be(diffuse,
+            "the diffuse input used to rebuild specularity must also be the input to lighting");
+        code.LastIndexOf("fEnvMapLevel =", lighting, StringComparison.Ordinal).Should().Be(environment,
+            "later environment writes must not leave derived specularity stale again");
+
+        code.Should().MatchRegex(
+            @"#if\s+LIGHTING == 1 && \(FRAGMENT_LIGHTING == 1 \|\| NORMAL_MAP == 1\) && SPECULAR_LIGHT == 1\s+" +
+            @"SetupSpecularity\(FragmentColor\.rgb \* materialFrontDiffuse\.rgb\);\s+#endif",
+            "the call must use the same feature guard as the engine's specularity implementation");
+    }
+
+    [TestCase("pme0_head056", "pme0_head056", "0,1,4")]
+    [TestCase("pfh0_head121", "pfh0_head121", "0,1,8,9")]
+    [TestCase("pfh0_robe187", "pfh0_robe187", "0,4,5,6,7")]
+    [TestCase("pme0_legl104", "pmh0_legl104", "4")]
+    [TestCase("pme0_pelvis102", "pmh0_pelvis102", "4,6")]
+    public void ReportedNpcSkinHairHatDressAndPantsUseTheRepairedTintShader(
+        string model,
+        string material,
+        string layers)
+    {
+        var row = ReadSource("SWLOR_Haks", "sw_2da", "tintmap.2da")
+            .Split('\n', StringSplitOptions.RemoveEmptyEntries)
+            .Select(line => line.Split((char[])null, StringSplitOptions.RemoveEmptyEntries))
+            .Single(columns => columns.Length >= 4 && columns[1] == model);
+        row[2].Should().Be(material);
+        row[3].Should().Be(layers,
+            "these reported surfaces use skin, hair, cloth, leather or tattoo palettes rather than metal palettes");
+
+        ReadSource("SWLOR_Haks", "sw_tint_mtr", $"{material}.mtr")
+            .Should().MatchRegex(@"(?m)^customshaderFS\s+fs_plt_tinter\s*$");
+        TintShadersRebuildSpecularityFromFinalPaletteInputs("fs_plt_tinter");
+    }
+
+    [Test]
+    public void EveryGeneratedTintMaterialUsesAShaderWithPaletteDerivedSpecularity()
+    {
+        var materialRoot = Path.Combine(FindRepositoryRoot().FullName, "SWLOR_Haks", "sw_tint_mtr");
+        var shaderNames = new HashSet<string>(StringComparer.Ordinal)
+        {
+            "fs_plt_tinter", "fs_plt_tinter_nm", "fs_plt_hair_nm"
+        };
+        var materialPaths = Directory.GetFiles(materialRoot, "*.mtr");
+        materialPaths.Should().NotBeEmpty();
+        var coveredShaders = new HashSet<string>(StringComparer.Ordinal);
+        var failures = new List<string>();
+
+        foreach (var materialPath in materialPaths)
+        {
+            var shaders = Regex.Matches(
+                    File.ReadAllText(materialPath),
+                    @"(?m)^customshaderFS\s+(\S+)")
+                .Select(match => match.Groups[1].Value)
+                .ToArray();
+            if (shaders.Length != 1 || !shaderNames.Contains(shaders[0]))
+            {
+                failures.Add($"{Path.GetFileName(materialPath)}: {string.Join(", ", shaders)}");
+                continue;
+            }
+
+            coveredShaders.Add(shaders[0]);
+        }
+
+        failures.Should().BeEmpty(
+            "every generated body, clothing, helmet, weapon and appendage material needs the shared lighting fix");
+        coveredShaders.Should().BeEquivalentTo(shaderNames);
+        foreach (var shaderName in coveredShaders)
+            TintShadersRebuildSpecularityFromFinalPaletteInputs(shaderName);
     }
 
     [Test]

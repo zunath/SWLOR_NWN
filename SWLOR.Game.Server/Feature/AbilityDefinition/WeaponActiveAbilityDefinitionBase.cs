@@ -20,6 +20,22 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
         protected sealed class GeneratedWeaponAbilityProfile
         {
+            public sealed class StatusSpreadSnapshot
+            {
+                private readonly Dictionary<uint, (bool Bleeding, bool Sundered)> _sourceStatuses = new();
+
+                public (bool Bleeding, bool Sundered) Capture(uint target)
+                {
+                    if (!_sourceStatuses.TryGetValue(target, out var statuses))
+                    {
+                        statuses = (IsBleeding(target), StatusEffect.HasStatusEffect<SunderStatusEffect>(target));
+                        _sourceStatuses.Add(target, statuses);
+                    }
+
+                    return statuses;
+                }
+            }
+
             public sealed class ActivationIdleBonusSnapshot
             {
                 public bool HasSnapshot { get; init; }
@@ -424,7 +440,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 Combat.ApplyHitPointSpendAbilityEffects(activator, hpCost);
             }
 
-            public void AfterSuccessfulHit(uint activator, uint target, CombatDamageType damageType)
+            public void AfterSuccessfulHit(uint activator, uint target, CombatDamageType damageType, StatusSpreadSnapshot spreadSnapshot)
             {
                 if (ClearTargetActionsOnHit)
                 {
@@ -451,7 +467,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 ApplyTargetConditionalStatus(activator, target, damageType);
                 ApplyTargetTemporaryModifiers(target);
                 ApplyProtectedTargetHitSelfModifiers(activator, target);
-                ApplyStatusSpread(activator, target, damageType);
+                ApplyStatusSpread(activator, target, damageType, spreadSnapshot);
                 ApplySuppressionEffects(activator, target, damageType);
                 ApplyDefenseIgnoreHitEffects(activator, target);
                 ConsumeSourceStatusEffects(activator, target);
@@ -1115,37 +1131,43 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     damageType);
             }
 
-            private void ApplyStatusSpread(uint activator, uint target, CombatDamageType damageType)
+            private void ApplyStatusSpread(uint activator, uint target, CombatDamageType damageType, StatusSpreadSnapshot spreadSnapshot)
             {
-                if (SpreadBleedFromTarget && IsBleeding(target))
+                if (!SpreadBleedFromTarget && !SpreadHemorrhageFromTarget && !SpreadSunderFromTarget)
+                    return;
+
+                var sourceStatuses = spreadSnapshot.Capture(target);
+                if (SpreadBleedFromTarget && sourceStatuses.Bleeding)
                 {
                     SpreadStatusToNearbyHostile(
                         activator,
                         target,
                         typeof(BleedStatusEffect),
                         SpreadBleedDurationSeconds > 0 ? SpreadBleedDurationSeconds : 30f,
-                        damageType);
+                        damageType,
+                        spreadSnapshot);
                 }
 
-                if (SpreadHemorrhageFromTarget && IsBleeding(target))
+                if (SpreadHemorrhageFromTarget && sourceStatuses.Bleeding)
                 {
                     SpreadStatusToNearbyHostile(
                         activator,
                         target,
                         typeof(HemorrhageStatusEffect),
                         SpreadHemorrhageDurationSeconds > 0 ? SpreadHemorrhageDurationSeconds : 30f,
-                        damageType);
+                        damageType,
+                        spreadSnapshot);
                 }
 
-                if (SpreadSunderFromTarget &&
-                    StatusEffect.HasStatusEffect(target, typeof(SunderStatusEffect)))
+                if (SpreadSunderFromTarget && sourceStatuses.Sundered)
                 {
                     SpreadStatusToNearbyHostile(
                         activator,
                         target,
                         typeof(SunderStatusEffect),
                         SpreadSunderDurationSeconds > 0 ? SpreadSunderDurationSeconds : 30f,
-                        damageType);
+                        damageType,
+                        spreadSnapshot);
                 }
             }
 
@@ -1181,7 +1203,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 uint sourceTarget,
                 Type statusEffect,
                 float duration,
-                CombatDamageType damageType)
+                CombatDamageType damageType,
+                StatusSpreadSnapshot spreadSnapshot)
             {
                 if (duration <= 0f || !GetIsObjectValid(sourceTarget))
                     return;
@@ -1193,6 +1216,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                              1,
                              predicate: nearby => nearby != sourceTarget))
                 {
+                    // Remember the recipient's prerequisites before spreading, so an enemy
+                    // hit later in this cast cannot chain a newly received status onward.
+                    spreadSnapshot.Capture(nearby);
                     StatusEffect.ApplyStatusEffect(activator, nearby, statusEffect, duration, damageType);
                     break;
                 }
@@ -1430,6 +1456,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
                     profile.SpendHitPoints(activator);
                     profile.AfterHostileActivation(activator);
+                    var spreadSnapshot = new GeneratedWeaponAbilityProfile.StatusSpreadSnapshot();
                     var activationIdleBonusSnapshot = profile.CaptureActivationIdleBonusSnapshot(activator);
                     Ability.AddActiveAbilityDefenseIgnorePercentAdjustment(
                         activator,
@@ -1471,7 +1498,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                                 enmityBonus: profile.EnmityBonus,
                                 afterSuccessfulHit: impactedTarget =>
                                 {
-                                    profile.AfterSuccessfulHit(activator, impactedTarget, profile.DamageType);
+                                    profile.AfterSuccessfulHit(activator, impactedTarget, profile.DamageType, spreadSnapshot);
                                     Combat.ApplyRangedAbilityTargetDefenseReduction(activator, impactedTarget, skill);
                                 },
                                 beforeSuccessfulImpactRiders: impactedTarget => profile.BeforeSuccessfulImpactRiders(activator, impactedTarget),
@@ -1522,7 +1549,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                             enmityBonus: profile.EnmityBonus,
                             afterSuccessfulHit: impactedTarget =>
                             {
-                                profile.AfterSuccessfulHit(activator, impactedTarget, profile.DamageType);
+                                profile.AfterSuccessfulHit(activator, impactedTarget, profile.DamageType, spreadSnapshot);
                                 Combat.ApplyRangedAbilityTargetDefenseReduction(activator, impactedTarget, skill);
                             },
                             beforeSuccessfulImpactRiders: impactedTarget => profile.BeforeSuccessfulImpactRiders(activator, impactedTarget),

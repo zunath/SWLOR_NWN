@@ -130,6 +130,9 @@ public class TelegraphTests
         Ability.DefaultImpactFlashDuration.Should().BeGreaterThan(0f);
     }
 
+    /// <summary>
+    /// Guards the production wiring from the immediate damage branch to geometry-aware flash suppression.
+    /// </summary>
     [Test]
     public void ApplyTelegraphedCombatImpact_FlashesOnlyWhenActivationDidNotAlreadyShowTheShape()
     {
@@ -156,6 +159,9 @@ public class TelegraphTests
         flashBody.Should().Contain("Telegraph.ShouldShowImpactFlash(geometry, activationAreaTelegraphs)");
     }
 
+    /// <summary>
+    /// Guards snapshot capture and propagation while ensuring delayed impacts do not reuse expired warnings.
+    /// </summary>
     [Test]
     public void AbilityActivation_CapturesDisplayedGeometryBeforeTheTelegraphExpires()
     {

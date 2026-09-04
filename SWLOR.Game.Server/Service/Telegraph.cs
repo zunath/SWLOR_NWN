@@ -91,6 +91,10 @@ namespace SWLOR.Game.Server.Service
                 : new Dictionary<string, ActiveTelegraph>();
         }
 
+        /// <summary>
+        /// Copies the geometry of existing markers so activation warnings can be compared
+        /// with later impacts after their timers expire. Missing marker IDs are ignored.
+        /// </summary>
         public static IReadOnlyList<TelegraphGeometry> CaptureGeometry(IEnumerable<string> telegraphIds)
         {
             return telegraphIds
@@ -105,6 +109,10 @@ namespace SWLOR.Game.Server.Service
                 .ToArray();
         }
 
+        /// <summary>
+        /// Requests an impact flash unless a captured activation marker already described
+        /// the same area. Null or empty snapshots preserve instant and delayed impact flashes.
+        /// </summary>
         public static bool ShouldShowImpactFlash(
             TelegraphGeometry impact,
             IReadOnlyList<TelegraphGeometry> activationTelegraphs)

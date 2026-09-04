@@ -8,6 +8,9 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class AbilityDamageQueueTests
 {
+    /// <summary>
+    /// Verifies that an impact initialized without activation markers still accumulates defense ignore.
+    /// </summary>
     [Test]
     public void TrackedAbilityImpact_AddsDefenseIgnoreToTheCurrentImpact()
     {

@@ -98,6 +98,10 @@ namespace SWLOR.Game.Server.Service
             return _abilities[featType];
         }
 
+        /// <summary>
+        /// Consumes the activator's pending combat bonuses and starts impact tracking,
+        /// retaining any activation-marker snapshots for the impact flash decision.
+        /// </summary>
         public static void BeginAbilityImpact(
             uint activator,
             AbilityDetail ability,
@@ -142,6 +146,9 @@ namespace SWLOR.Game.Server.Service
                 activationAreaTelegraphs);
         }
 
+        /// <summary>
+        /// Registers an impact using already-resolved bonuses and activation-marker geometry.
+        /// </summary>
         private static void BeginAbilityImpact(
             uint activator,
             AbilityDetail ability,
@@ -3255,6 +3262,10 @@ namespace SWLOR.Game.Server.Service
             public bool DarkForceConversionApplied { get; set; }
             private bool _statusAppliedNextAttackDamageBonusConsumed;
 
+            /// <summary>
+            /// Initializes per-impact bonuses, summary classification, and the activation
+            /// geometry that can suppress redundant impact markers.
+            /// </summary>
             public TrackedAbilityImpact(
                 AbilityDetail ability,
                 int nextAbilityDamageBonus,

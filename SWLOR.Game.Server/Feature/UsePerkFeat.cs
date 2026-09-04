@@ -423,6 +423,10 @@ namespace SWLOR.Game.Server.Feature
             AssignCommand(activator, () => PlaySound(soundResref));
         }
 
+        /// <summary>
+        /// Runs an ability's impact with its activation-marker snapshots, applies completion
+        /// effects, and releases impact tracking and stamina context even if execution fails.
+        /// </summary>
         private static void ExecuteAbilityImpact(
             uint activator,
             uint target,
@@ -601,7 +605,10 @@ namespace SWLOR.Game.Server.Feature
                 DelayCommand(0.5f, () => CheckForActivationInterruption(activationId, originalPosition, activationTelegraphIds, resumeAttackTarget));
             }
 
-            // This method is called after the delay of the ability has finished.
+            /// <summary>
+            /// Completes or cancels a finished activation, retaining its marker snapshots
+            /// for an immediate impact while separately delayed impacts receive a fresh flash.
+            /// </summary>
             void CompleteActivation(
                 string activationId,
                 float abilityRecastDelay,
@@ -673,6 +680,10 @@ namespace SWLOR.Game.Server.Feature
                 ApplyRequirementEffects(activator, ability);
                 HandleStealthBreaking(activator, ability);
 
+                /// <summary>
+                /// Executes the validated impact and resumes combat, reusing activation
+                /// geometry only when no separate impact delay elapsed.
+                /// </summary>
                 void ResolveImpact()
                 {
                     ExecuteAbilityImpact(

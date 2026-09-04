@@ -10,6 +10,9 @@ namespace SWLOR.Game.Server.Tests.Service;
 
 public class AreaImpactTelegraphTests
 {
+    /// <summary>
+    /// Reproduces a target changing the attack direction after the activation warning was displayed.
+    /// </summary>
     [TestCase(TelegraphType.Cone)]
     [TestCase(TelegraphType.Line)]
     public void TargetMovesSidewaysDuringCast_ShowsTheNewImpactDirection(TelegraphType shape)
@@ -21,6 +24,9 @@ public class AreaImpactTelegraphTests
             "the old warning faced east, but this cast now strikes north");
     }
 
+    /// <summary>
+    /// Ensures movement along the same aim direction preserves suppression for an unchanged footprint.
+    /// </summary>
     [TestCase(TelegraphType.Cone)]
     [TestCase(TelegraphType.Line)]
     public void TargetMovesAlongTheSameDirection_DoesNotRedrawAnUnchangedArea(TelegraphType shape)
@@ -31,6 +37,9 @@ public class AreaImpactTelegraphTests
         Telegraph.ShouldShowImpactFlash(impact, new[] { activation }).Should().BeFalse();
     }
 
+    /// <summary>
+    /// Distinguishes a sphere's changed center from rotation that leaves its footprint unchanged.
+    /// </summary>
     [Test]
     public void TargetCenteredSphereMoves_ShowsItsNewCenter()
     {
@@ -43,6 +52,9 @@ public class AreaImpactTelegraphTests
             .Should().BeFalse("rotating a sphere does not change its area");
     }
 
+    /// <summary>
+    /// Requires a new marker when dimensions, origin, shape, or the containing game area changes.
+    /// </summary>
     [Test]
     public void ChangedSizeOriginShapeOrArea_RequiresAnImpactFlash()
     {
@@ -60,6 +72,9 @@ public class AreaImpactTelegraphTests
             Telegraph.ShouldShowImpactFlash(impact, new[] { activation }).Should().BeTrue();
     }
 
+    /// <summary>
+    /// Treats positive and negative pi as the same direction at the angle boundary.
+    /// </summary>
     [Test]
     public void EquivalentDirectionsAcrossAngleWrap_DoNotRedraw()
     {
@@ -69,6 +84,9 @@ public class AreaImpactTelegraphTests
         Telegraph.ShouldShowImpactFlash(impact, new[] { activation }).Should().BeFalse();
     }
 
+    /// <summary>
+    /// Keeps flashes without activation snapshots and accepts a match among multiple activation markers.
+    /// </summary>
     [Test]
     public void NoMatchingActivationMarker_StillFlashesInstantAndDelayedImpacts()
     {
@@ -80,6 +98,9 @@ public class AreaImpactTelegraphTests
             .Should().BeFalse("an additional activation marker can already describe this impact");
     }
 
+    /// <summary>
+    /// Ensures captured values remain stable when live marker data changes or the marker is removed.
+    /// </summary>
     [Test]
     public void CapturedGeometrySurvivesMarkerRemovalWithoutFollowingMutableData()
     {
@@ -111,6 +132,9 @@ public class AreaImpactTelegraphTests
         }
     }
 
+    /// <summary>
+    /// Builds a directional test footprint using the production origin and length offset rules.
+    /// </summary>
     private static TelegraphGeometry DirectionalGeometry(TelegraphType shape, Vector3 caster, Vector3 target)
     {
         var rotation = MathF.Atan2(target.Y - caster.Y, target.X - caster.X);

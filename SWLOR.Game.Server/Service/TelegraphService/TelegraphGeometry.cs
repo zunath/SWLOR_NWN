@@ -14,6 +14,10 @@ namespace SWLOR.Game.Server.Service.TelegraphService
         Vector2 Size,
         float Rotation)
     {
+        /// <summary>
+        /// Compares marker footprints within 1 cm and 0.001 radians, ignoring sphere rotation
+        /// and treating directions separated by a full turn as equivalent.
+        /// </summary>
         public bool Matches(TelegraphGeometry other)
         {
             const float distanceToleranceSquared = 0.0001f;

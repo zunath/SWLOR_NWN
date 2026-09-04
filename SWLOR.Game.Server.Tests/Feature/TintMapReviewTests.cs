@@ -2428,6 +2428,31 @@ public class TintMapReviewTests
             "the call must use the same feature guard as the engine's specularity implementation");
     }
 
+    [TestCase("fs_plt_tinter", false)]
+    [TestCase("fs_plt_tinter_nm", true)]
+    [TestCase("fs_plt_hair_nm", true)]
+    public void TintAlphaSamplerIsDeclaredEvenWithoutNormalMapping(string shaderName, bool normalMapped)
+    {
+        var shader = ReadSource("SWLOR_Haks", "sw_shader", $"{shaderName}.shd");
+        var code = Regex.Replace(shader, @"/\*[\s\S]*?\*/|//[^\r\n]*", string.Empty);
+        code.Should().Contain($"#define NORMAL_MAP {(normalMapped ? 1 : 0)}");
+        code.Should().Contain("texture2D(texUnit1, vTexCoords.xy).a",
+            "legacy alpha cutouts still read texture1 independently of normal mapping");
+        var declarations = Regex.Matches(code, @"\buniform\s+sampler2D\s+texUnit1\s*;");
+        declarations.Count.Should().Be(normalMapped ? 0 : 1,
+            "inc_common supplies texture1 only when NORMAL_MAP is enabled; duplicate uniforms also fail compilation");
+
+        if (!normalMapped)
+        {
+            code.Should().MatchRegex(
+                @"#if\s+NORMAL_MAP\s*!=\s*1\s+uniform\s+sampler2D\s+texUnit1\s*;\s+#endif",
+                "the alpha sampler must exist at every graphics quality when the engine omits its normal-map declaration");
+            declarations[0].Index.Should().BeGreaterThan(
+                code.IndexOf("#include \"inc_standard\"", StringComparison.Ordinal));
+            declarations[0].Index.Should().BeLessThan(code.IndexOf("void main", StringComparison.Ordinal));
+        }
+    }
+
     [TestCase("pme0_head056", "pme0_head056", "0,1,4")]
     [TestCase("pfh0_head121", "pfh0_head121", "0,1,8,9")]
     [TestCase("pfh0_robe187", "pfh0_robe187", "0,4,5,6,7")]

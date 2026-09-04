@@ -28,6 +28,20 @@ Preserve the engine's authored specular and roughness maps, material overrides,
 palette alpha, and hair cutouts. Disabling specularity globally or editing each
 NPC would hide the initialization error and remove intentional material detail.
 
+## Compile against the engine's conditional declarations
+
+The base shader disables normal mapping but still samples `texUnit1` for
+optional legacy cutout alpha. NWN's `inc_common` declares that sampler only
+when `NORMAL_MAP == 1`, so the base shader must supply its own declaration
+under the opposite guard. The mapped variants use the engine declaration.
+Missing this declaration causes a shader compile failure and can crash the
+client when the module loads the generated materials.
+
+Compile and link the production vertex/fragment pairs with the installed
+engine's complete include tree for each supported shader quality. A material
+test adapter that declares extra uniforms cannot validate this contract; keep
+its numerical lighting checks separate from the production compilation checks.
+
 ## Regression scene and checks
 
 The placed Bounty Hunter and Force Sensitive Civilian in `ooc_area` exercise
@@ -39,9 +53,9 @@ needed.
 Run `python SWLOR_Haks/tools/GenerateTintMapAssets.py --check` and the relevant
 `TintMapReviewTests` after changes. On Windows, run
 `python SWLOR_Haks/tools/TestTintShaderMaterials.py --game-data "<NWN>/data"`
-to exercise all three shader bodies with the installed engine's material
-function on the GPU, including a negative control that reproduces chrome when
-the repair is removed. Rebuild `sw_shader.hak` and load it in a
+to compile the production shader pairs and exercise the installed engine's
+material function on the GPU, including negative controls for the missing
+sampler and metallic lighting failures. Rebuild `sw_shader.hak` and load it in a
 fresh client session for visual verification. Shader-only changes do not
 require changing the module's existing HAK list or regenerating tint maps.
 

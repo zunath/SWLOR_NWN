@@ -130,6 +130,9 @@ public class TelegraphTests
         Ability.DefaultImpactFlashDuration.Should().BeGreaterThan(0f);
     }
 
+    /// <summary>
+    /// Guards the production wiring from the immediate damage branch to geometry-aware flash suppression.
+    /// </summary>
     [Test]
     public void ApplyTelegraphedCombatImpact_FlashesOnlyWhenActivationDidNotAlreadyShowTheShape()
     {
@@ -146,24 +149,31 @@ public class TelegraphTests
         // would still pass.
         var branchBody = ExtractBlockBody(source, branchStart);
 
-        branchBody.Should().Contain("HadActivationAreaTelegraph",
-            "a casted area must not tear down and immediately redraw the same telegraph at impact");
+        branchBody.Should().Contain("trackedImpact?.ActivationAreaTelegraphs",
+            "the impact must compare its current geometry with the shapes displayed during activation");
         branchBody.IndexOf("ShowAreaImpactFlash(", StringComparison.Ordinal)
             .Should().BeGreaterThan(-1, "the instant-cast path must flash the area it just struck");
+
+        var flashStart = source.IndexOf("private static void ShowAreaImpactFlash(", StringComparison.Ordinal);
+        var flashBody = ExtractBlockBody(source, flashStart);
+        flashBody.Should().Contain("Telegraph.ShouldShowImpactFlash(geometry, activationAreaTelegraphs)");
     }
 
+    /// <summary>
+    /// Guards snapshot capture and propagation while ensuring delayed impacts do not reuse expired warnings.
+    /// </summary>
     [Test]
-    public void AbilityActivation_TracksWhetherAnAreaTelegraphWasDisplayed()
+    public void AbilityActivation_CapturesDisplayedGeometryBeforeTheTelegraphExpires()
     {
         var source = File.ReadAllText(ResolveRepositoryPath(
             "SWLOR.Game.Server",
             "Feature",
             "UsePerkFeat.cs"));
 
-        source.Should().Contain("activationTelegraphIds.Count > 0");
-        source.Should().Contain("hadActivationAreaTelegraph: hadActivationAreaTelegraph");
+        source.Should().Contain("Telegraph.CaptureGeometry(activationTelegraphIds)");
+        source.Should().Contain("activationAreaTelegraphs: activationAreaTelegraphs");
         source.Should().Contain(
-            "ability.ImpactDelay <= 0f && activationTelegraphIds.Count > 0",
+            "ability.ImpactDelay <= 0f ? activationAreaTelegraphs : null",
             "a delayed impact occurs after its activation telegraph has been removed and still needs an impact flash");
     }
 

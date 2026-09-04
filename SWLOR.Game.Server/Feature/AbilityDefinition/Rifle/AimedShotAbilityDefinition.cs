@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.AimedShot1, PerkType.AimedShot)
                     .Name("Aimed Shot I")
                     .Level(1)
@@ -41,14 +41,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 Animation.PointPistol,
                 30.0f,
                 AbilityType.Perception,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     IdleWindowSeconds = 3.0f,
                     ExtraDamageIfIdle = 8,
                     ExtraDamageIfIdleFeedbackLabel = "Aimed Shot"
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.AimedShot2, PerkType.AimedShot)
                     .Name("Aimed Shot II")
                     .Level(2)
@@ -72,14 +72,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 Animation.PointPistol,
                 30.0f,
                 AbilityType.Perception,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     IdleWindowSeconds = 3.0f,
                     ExtraDamageIfIdle = 14,
                     ExtraDamageIfIdleFeedbackLabel = "Aimed Shot"
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.AimedShot3, PerkType.AimedShot)
                     .Name("Aimed Shot III")
                     .Level(3)
@@ -103,14 +103,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 Animation.PointPistol,
                 30.0f,
                 AbilityType.Perception,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     IdleWindowSeconds = 3.0f,
                     ExtraDamageIfIdle = 20,
                     ExtraDamageIfIdleFeedbackLabel = "Aimed Shot"
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.AimedShot4, PerkType.AimedShot)
                     .Name("Aimed Shot IV")
                     .Level(4)
@@ -134,7 +134,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 Animation.PointPistol,
                 30.0f,
                 AbilityType.Perception,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     IdleWindowSeconds = 3.0f,
                     ExtraDamageIfIdle = 26,

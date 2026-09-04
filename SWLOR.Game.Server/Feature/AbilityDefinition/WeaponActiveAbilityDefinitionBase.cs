@@ -18,8 +18,43 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
     {
         private const float ToggleActivationDelaySeconds = 2f;
 
-        protected sealed class GeneratedWeaponAbilityProfile
+        protected sealed class WeaponAbilityProfile
         {
+            public sealed class StatusSpreadSnapshot
+            {
+                private readonly Dictionary<uint, (bool Bleeding, bool Sundered)> _sourceStatuses = new();
+                private readonly int _maximumSpreads;
+                private int _successfulSpreads;
+
+                public StatusSpreadSnapshot(int maximumSpreads = 0)
+                {
+                    _maximumSpreads = maximumSpreads;
+                }
+
+                public bool TrySpread(Func<bool> applySpread)
+                {
+                    if (_maximumSpreads > 0 && _successfulSpreads >= _maximumSpreads)
+                        return false;
+
+                    if (!applySpread())
+                        return false;
+
+                    _successfulSpreads++;
+                    return true;
+                }
+
+                public (bool Bleeding, bool Sundered) Capture(uint target)
+                {
+                    if (!_sourceStatuses.TryGetValue(target, out var statuses))
+                    {
+                        statuses = (IsBleeding(target), StatusEffect.HasStatusEffect<SunderStatusEffect>(target));
+                        _sourceStatuses.Add(target, statuses);
+                    }
+
+                    return statuses;
+                }
+            }
+
             public sealed class ActivationIdleBonusSnapshot
             {
                 public bool HasSnapshot { get; init; }
@@ -28,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 public int DefenseIgnorePercent { get; init; }
             }
 
-            public static readonly GeneratedWeaponAbilityProfile Empty = new();
+            public static readonly WeaponAbilityProfile Empty = new();
 
             public int HitCount { get; init; } = 1;
             public bool IsQueuedWeaponAbility { get; init; }
@@ -135,6 +170,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public int TemporaryRangedHitSuppressionStackDurationSeconds { get; init; }
             public int TemporaryRangedHitSuppressionStackEvasionPenaltyPercent { get; init; }
             public int TemporaryAreaAbilityFragmentationDamage { get; init; }
+            public SkillType TemporaryAreaAbilityFragmentationSkillType { get; init; }
             public int TemporaryAreaAbilityFragmentationDurationSeconds { get; init; }
             public int TemporaryAreaAbilityFragmentationPulseSeconds { get; init; }
             public int TemporaryAreaAbilityMinTargetsResourceRestoreThreshold { get; init; }
@@ -166,6 +202,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public int SpreadHemorrhageDurationSeconds { get; init; }
             public bool SpreadSunderFromTarget { get; init; }
             public int SpreadSunderDurationSeconds { get; init; }
+            public int MaximumStatusSpreadsPerCast { get; init; }
             public bool ClearTargetActionsOnHit { get; init; }
             public Type ConditionalStatusEffect { get; init; }
             public int ConditionalStatusDurationSeconds { get; init; }
@@ -423,7 +460,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 Combat.ApplyHitPointSpendAbilityEffects(activator, hpCost);
             }
 
-            public void AfterSuccessfulHit(uint activator, uint target, CombatDamageType damageType)
+            public void AfterSuccessfulHit(uint activator, uint target, CombatDamageType damageType, StatusSpreadSnapshot spreadSnapshot)
             {
                 if (ClearTargetActionsOnHit)
                 {
@@ -450,7 +487,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 ApplyTargetConditionalStatus(activator, target, damageType);
                 ApplyTargetTemporaryModifiers(target);
                 ApplyProtectedTargetHitSelfModifiers(activator, target);
-                ApplyStatusSpread(activator, target, damageType);
+                ApplyStatusSpread(activator, target, damageType, spreadSnapshot);
                 ApplySuppressionEffects(activator, target, damageType);
                 ApplyDefenseIgnoreHitEffects(activator, target);
                 ConsumeSourceStatusEffects(activator, target);
@@ -848,6 +885,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     StatType.RangedHitSuppressionStackEvasionPenaltyPercent,
                     TemporaryRangedHitSuppressionStackEvasionPenaltyPercent,
                     duration);
+                if (TemporaryAreaAbilityFragmentationDamage > 0)
+                {
+                    // Replacing with Invalid clears any previous skill restriction for a global buff.
+                    TemporaryStatModifier.Replace(
+                        activator,
+                        StatType.AreaAbilityFragmentationSkillType,
+                        (int)TemporaryAreaAbilityFragmentationSkillType,
+                        duration,
+                        $"GeneratedWeaponAbility:{StatType.AreaAbilityFragmentationSkillType}");
+                }
                 ReplaceTemporary(activator, StatType.AreaAbilityFragmentationDamage, TemporaryAreaAbilityFragmentationDamage, duration);
                 ReplaceTemporary(
                     activator,
@@ -1104,37 +1151,43 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     damageType);
             }
 
-            private void ApplyStatusSpread(uint activator, uint target, CombatDamageType damageType)
+            private void ApplyStatusSpread(uint activator, uint target, CombatDamageType damageType, StatusSpreadSnapshot spreadSnapshot)
             {
-                if (SpreadBleedFromTarget && IsBleeding(target))
+                if (!SpreadBleedFromTarget && !SpreadHemorrhageFromTarget && !SpreadSunderFromTarget)
+                    return;
+
+                var sourceStatuses = spreadSnapshot.Capture(target);
+                if (SpreadBleedFromTarget && sourceStatuses.Bleeding)
                 {
                     SpreadStatusToNearbyHostile(
                         activator,
                         target,
                         typeof(BleedStatusEffect),
                         SpreadBleedDurationSeconds > 0 ? SpreadBleedDurationSeconds : 30f,
-                        damageType);
+                        damageType,
+                        spreadSnapshot);
                 }
 
-                if (SpreadHemorrhageFromTarget && IsBleeding(target))
+                if (SpreadHemorrhageFromTarget && sourceStatuses.Bleeding)
                 {
                     SpreadStatusToNearbyHostile(
                         activator,
                         target,
                         typeof(HemorrhageStatusEffect),
                         SpreadHemorrhageDurationSeconds > 0 ? SpreadHemorrhageDurationSeconds : 30f,
-                        damageType);
+                        damageType,
+                        spreadSnapshot);
                 }
 
-                if (SpreadSunderFromTarget &&
-                    StatusEffect.HasStatusEffect(target, typeof(SunderStatusEffect)))
+                if (SpreadSunderFromTarget && sourceStatuses.Sundered)
                 {
                     SpreadStatusToNearbyHostile(
                         activator,
                         target,
                         typeof(SunderStatusEffect),
                         SpreadSunderDurationSeconds > 0 ? SpreadSunderDurationSeconds : 30f,
-                        damageType);
+                        damageType,
+                        spreadSnapshot);
                 }
             }
 
@@ -1170,7 +1223,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 uint sourceTarget,
                 Type statusEffect,
                 float duration,
-                CombatDamageType damageType)
+                CombatDamageType damageType,
+                StatusSpreadSnapshot spreadSnapshot)
             {
                 if (duration <= 0f || !GetIsObjectValid(sourceTarget))
                     return;
@@ -1180,9 +1234,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                              GetLocation(sourceTarget),
                              5f,
                              1,
-                             sourceTarget))
+                             predicate: nearby => nearby != sourceTarget && !StatusEffect.HasStatusEffect(nearby, statusEffect)))
                 {
-                    StatusEffect.ApplyStatusEffect(activator, nearby, statusEffect, duration, damageType);
+                    spreadSnapshot.TrySpread(() =>
+                    {
+                        // Remember the recipient's prerequisites before spreading, so an enemy
+                        // hit later in this cast cannot chain a newly received status onward.
+                        spreadSnapshot.Capture(nearby);
+                        return StatusEffect.ApplyStatusEffect(activator, nearby, statusEffect, duration, damageType);
+                    });
                     break;
                 }
             }
@@ -1339,7 +1399,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             }
         }
 
-        protected static void ConfigureGeneratedWeaponAbility(
+        protected static void ConfigureWeaponAbility(
             AbilityBuilder ability,
             SkillType skill,
             int baseDamage,
@@ -1360,9 +1420,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             Animation impactAnimation,
             float maxRange,
             AbilityType combatImpactDamageAbility = AbilityType.Invalid,
-            GeneratedWeaponAbilityProfile profile = null)
+            WeaponAbilityProfile profile = null)
         {
-            profile ??= GeneratedWeaponAbilityProfile.Empty;
+            profile ??= WeaponAbilityProfile.Empty;
             var temporaryHPEffectKey = $"WEAPON_{ability.ActiveEffectiveLevelPerkType}";
 
             ApplyCombatImpactDamageAbility(ability, combatImpactDamageAbility);
@@ -1419,6 +1479,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
                     profile.SpendHitPoints(activator);
                     profile.AfterHostileActivation(activator);
+                    var spreadSnapshot = new WeaponAbilityProfile.StatusSpreadSnapshot(profile.MaximumStatusSpreadsPerCast);
+                    Action<uint> captureSpreadPrerequisites = profile.SpreadBleedFromTarget || profile.SpreadHemorrhageFromTarget || profile.SpreadSunderFromTarget
+                        ? impactedTarget => spreadSnapshot.Capture(impactedTarget)
+                        : null;
                     var activationIdleBonusSnapshot = profile.CaptureActivationIdleBonusSnapshot(activator);
                     Ability.AddActiveAbilityDefenseIgnorePercentAdjustment(
                         activator,
@@ -1458,9 +1522,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                                 },
                                 maxTargets: profile.MaximumAreaTargets,
                                 enmityBonus: profile.EnmityBonus,
+                                beforeImpact: captureSpreadPrerequisites,
                                 afterSuccessfulHit: impactedTarget =>
                                 {
-                                    profile.AfterSuccessfulHit(activator, impactedTarget, profile.DamageType);
+                                    profile.AfterSuccessfulHit(activator, impactedTarget, profile.DamageType, spreadSnapshot);
                                     Combat.ApplyRangedAbilityTargetDefenseReduction(activator, impactedTarget, skill);
                                 },
                                 beforeSuccessfulImpactRiders: impactedTarget => profile.BeforeSuccessfulImpactRiders(activator, impactedTarget),
@@ -1509,9 +1574,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                                 activationIdleBonusSnapshot),
                             damagePercentAdjustment: impactedTarget => profile.GetDamagePercentAdjustment(activator, impactedTarget),
                             enmityBonus: profile.EnmityBonus,
+                            beforeImpact: captureSpreadPrerequisites,
                             afterSuccessfulHit: impactedTarget =>
                             {
-                                profile.AfterSuccessfulHit(activator, impactedTarget, profile.DamageType);
+                                profile.AfterSuccessfulHit(activator, impactedTarget, profile.DamageType, spreadSnapshot);
                                 Combat.ApplyRangedAbilityTargetDefenseReduction(activator, impactedTarget, skill);
                             },
                             beforeSuccessfulImpactRiders: impactedTarget => profile.BeforeSuccessfulImpactRiders(activator, impactedTarget),
@@ -1597,7 +1663,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
         private static bool ShouldUseTelegraphedCombatImpact(
             AbilityTargetingShapeType targetingShape,
-            GeneratedWeaponAbilityProfile profile)
+            WeaponAbilityProfile profile)
         {
             return targetingShape != AbilityTargetingShapeType.None || profile.MaximumAreaTargets > 0;
         }

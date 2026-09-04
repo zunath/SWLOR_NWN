@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.TwinRupture1, PerkType.TwinRupture)
                     .Name("Twin Rupture I")
                     .Level(1)
@@ -41,14 +41,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     RequiredTargetStatusCategoryForConditionalStatus = StatusEffectCategory.Bleeding,
                     ConditionalTargetStatusEffect = typeof(HemorrhageStatusEffect),
                     ConditionalTargetStatusDurationSeconds = 30
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.TwinRupture2, PerkType.TwinRupture)
                     .Name("Twin Rupture II")
                     .Level(2)
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     RequiredTargetStatusCategoryForConditionalStatus = StatusEffectCategory.Bleeding,
                     ConditionalTargetStatusEffect = typeof(HemorrhageStatusEffect),

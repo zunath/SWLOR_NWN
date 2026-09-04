@@ -92,12 +92,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             set => Set(value);
         }
 
-        public string ForceAffinityExplanation
-        {
-            get => Get<string>();
-            set => Set(value);
-        }
-
         public GuiColor ForceAffinityColor
         {
             get => Get<GuiColor>();
@@ -468,7 +462,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!IsForceAffinityVisible)
             {
                 ForceAffinityHeading = string.Empty;
-                ForceAffinityExplanation = string.Empty;
                 ForceAffinityColor = GuiColor.White;
                 return;
             }
@@ -476,10 +469,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var affinity = Perk.GetForceAffinity(Player);
             var affinityLabel = FormatForceAffinity(affinity);
             ForceAffinityHeading = $"FORCE AFFINITY: {affinityLabel}";
-            ForceAffinityExplanation =
-                "Owning any rank of a Light power contributes +1; a Dark power contributes -1. " +
-                "Each point changes aligned or opposed magnitude by 5%. At full affinity, hit chance shifts by 5%. " +
-                "Universal powers and effect durations are unaffected. Select a Force perk for its current result.";
             ForceAffinityColor = affinity > 0
                 ? new GuiColor(120, 190, 255)
                 : affinity < 0

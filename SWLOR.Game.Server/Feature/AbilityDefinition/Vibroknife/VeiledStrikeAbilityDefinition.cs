@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.VeiledStrike1, PerkType.VeiledStrike)
                     .Name("Veiled Strike I")
                     .Level(1)
@@ -41,14 +41,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     IsQueuedWeaponAbility = true,
                     ExtraDamageTargetStatusEffect = typeof(ExposedStatusEffect),
                     ExtraDamageIfTargetStatusEffect = 6
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.VeiledStrike2, PerkType.VeiledStrike)
                     .Name("Veiled Strike II")
                     .Level(2)
@@ -72,14 +72,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     IsQueuedWeaponAbility = true,
                     ExtraDamageTargetStatusEffect = typeof(ExposedStatusEffect),
                     ExtraDamageIfTargetStatusEffect = 8
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.VeiledStrike3, PerkType.VeiledStrike)
                     .Name("Veiled Strike III")
                     .Level(3)
@@ -103,14 +103,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     IsQueuedWeaponAbility = true,
                     ExtraDamageTargetStatusEffect = typeof(ExposedStatusEffect),
                     ExtraDamageIfTargetStatusEffect = 10
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.VeiledStrike4, PerkType.VeiledStrike)
                     .Name("Veiled Strike IV")
                     .Level(4)
@@ -134,7 +134,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     IsQueuedWeaponAbility = true,
                     ExtraDamageTargetStatusEffect = typeof(ExposedStatusEffect),

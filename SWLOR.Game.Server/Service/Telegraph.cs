@@ -92,6 +92,35 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Copies the geometry of existing markers so activation warnings can be compared
+        /// with later impacts after their timers expire. Missing marker IDs are ignored.
+        /// </summary>
+        public static IReadOnlyList<TelegraphGeometry> CaptureGeometry(IEnumerable<string> telegraphIds)
+        {
+            return telegraphIds
+                .Where(_allTelegraphs.ContainsKey)
+                .Select(id => _allTelegraphs[id])
+                .Select(telegraph => new TelegraphGeometry(
+                    telegraph.Area,
+                    telegraph.Data.Shape,
+                    telegraph.Data.Position,
+                    telegraph.Data.Size,
+                    telegraph.Data.Rotation))
+                .ToArray();
+        }
+
+        /// <summary>
+        /// Requests an impact flash unless a captured activation marker already described
+        /// the same area. Null or empty snapshots preserve instant and delayed impact flashes.
+        /// </summary>
+        public static bool ShouldShowImpactFlash(
+            TelegraphGeometry impact,
+            IReadOnlyList<TelegraphGeometry> activationTelegraphs)
+        {
+            return activationTelegraphs == null || !activationTelegraphs.Any(impact.Matches);
+        }
+
+        /// <summary>
         /// Checks if a creature is within a telegraph's area of effect.
         /// </summary>
         /// <param name="creature">Creature to check</param>

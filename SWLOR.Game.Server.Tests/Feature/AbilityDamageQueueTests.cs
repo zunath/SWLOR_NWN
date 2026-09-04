@@ -2,11 +2,15 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
+using SWLOR.Game.Server.Service.TelegraphService;
 
 namespace SWLOR.Game.Server.Tests.Feature;
 
 public class AbilityDamageQueueTests
 {
+    /// <summary>
+    /// Verifies that an impact initialized without activation markers still accumulates defense ignore.
+    /// </summary>
     [Test]
     public void TrackedAbilityImpact_AddsDefenseIgnoreToTheCurrentImpact()
     {
@@ -25,7 +29,7 @@ public class AbilityDamageQueueTests
             0,
             true,
             0,
-            false
+            Array.Empty<TelegraphGeometry>()
         });
 
         trackedImpactType.GetMethod("AddDefenseIgnorePercentAdjustment")!

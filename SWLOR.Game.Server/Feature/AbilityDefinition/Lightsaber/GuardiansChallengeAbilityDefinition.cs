@@ -33,7 +33,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
             int enmityPercent,
             Spell targetingSpell)
         {
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(feat, PerkType.GuardiansChallenge)
                     .Name(name)
                     .Level(level)
@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     ProtectedTargetHitWindowSeconds = 30,
                     SelfEnmityPercentIfTargetRecentlyDamagedActivator = enmityPercent,

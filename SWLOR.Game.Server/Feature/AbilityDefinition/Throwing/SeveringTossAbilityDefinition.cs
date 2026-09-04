@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.SeveringToss1, PerkType.SeveringToss)
                     .Name("Severing Toss I")
                     .Level(1)
@@ -41,14 +41,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 Animation.ThrowGrenade,
                 20.0f,
                 AbilityType.Perception,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     RequiredTargetStatusCategoryForConditionalStatus = StatusEffectCategory.Bleeding,
                     ConditionalTargetStatusEffect = typeof(HemorrhageStatusEffect),
                     ConditionalTargetStatusDurationSeconds = 30
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.SeveringToss2, PerkType.SeveringToss)
                     .Name("Severing Toss II")
                     .Level(2)
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 Animation.ThrowGrenade,
                 20.0f,
                 AbilityType.Perception,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     RequiredTargetStatusCategoryForConditionalStatus = StatusEffectCategory.Bleeding,
                     ConditionalTargetStatusEffect = typeof(HemorrhageStatusEffect),

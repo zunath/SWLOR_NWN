@@ -19,6 +19,38 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         /// </summary>
         private const float ExpirationWaitTimeoutSeconds = 40f;
 
+        [EngineTest("Refreshing a passive status preserves it until the renewed timer expires", Category = "StatusEffect", TimeoutSeconds = 20f)]
+        public static async Task RefreshedPassiveStatusExpiresNormally(EngineTestContext ctx)
+        {
+            var npc = ctx.SpawnCreature("nw_rat001");
+            await ctx.WaitFrameAsync();
+            StatusEffect.ApplyStatusEffect<KoltoMistHealingStatusEffect>(npc, npc, 2f);
+            var effect = StatusEffect.GetStatusEffect(npc, typeof(KoltoMistHealingStatusEffect));
+
+            ctx.Assert(StatusEffect.RefreshStatusEffectDuration(npc, typeof(KoltoMistHealingStatusEffect), npc, 5f),
+                "the passive status must accept a duration refresh");
+            await ctx.DelaySecondsAsync(3f);
+            ctx.Assert(StatusEffect.GetStatusEffect(npc, typeof(KoltoMistHealingStatusEffect)) == effect,
+                "the refreshed status must survive both the old removal callback and its original expiration");
+            await ctx.WaitUntilAsync(() => !StatusEffect.HasStatusEffect<KoltoMistHealingStatusEffect>(npc),
+                5f, "the renewed passive timer to expire");
+        }
+
+        [EngineTest("Native removal still clears a renewed status", Category = "StatusEffect", TimeoutSeconds = 15f)]
+        public static async Task NativeRemovalClearsRenewedStatus(EngineTestContext ctx)
+        {
+            var npc = ctx.SpawnCreature("nw_rat001");
+            await ctx.WaitFrameAsync();
+            StatusEffect.ApplyStatusEffect<KoltoMistHealingStatusEffect>(npc, npc, 60f);
+            StatusEffect.ExtendStatusEffectDuration(npc, typeof(KoltoMistHealingStatusEffect), npc, 6f);
+            var effect = StatusEffect.GetStatusEffect(npc, typeof(KoltoMistHealingStatusEffect));
+            ctx.Assert(effect != null, "the renewed status must be present before native removal");
+            RemoveEffectByTag(npc, effect.Id);
+
+            await ctx.WaitUntilAsync(() => !StatusEffect.HasStatusEffect<KoltoMistHealingStatusEffect>(npc),
+                5f, "native removal to clear the managed status");
+        }
+
         [EngineTest("A directly applied status effect appears and naturally expires", Category = "StatusEffect", TimeoutSeconds = 60f)]
         public static async Task StatusEffectAppliesAndExpires(EngineTestContext ctx)
         {

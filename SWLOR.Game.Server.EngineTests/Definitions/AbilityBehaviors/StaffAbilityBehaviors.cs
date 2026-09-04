@@ -246,10 +246,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     Feat = FeatType.Worldbreaker1,
                     Target = AbilityTargetKind.HostileCreature,
                     EquipMainHandResref = StaffResref,
+                    TargetSetupStatusEffects = new[] { typeof(HamstringStatusEffect) },
+                    ExpectedTargetStatusEffects = new[] { typeof(DazedStatusEffect) },
                     ExpectsTargetDamage = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "ConditionalTargetStatusEffect (Dazed) requires the target to already carry a Control-category status; not guaranteed, so not asserted.",
+                    Notes = "Hamstring supplies the prerequisite Control status without triggering the shared hard-control immunity gate.",
                 },
             };
         }

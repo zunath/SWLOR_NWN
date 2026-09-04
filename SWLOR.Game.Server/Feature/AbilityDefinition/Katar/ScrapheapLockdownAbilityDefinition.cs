@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.ScrapheapLockdown1, PerkType.ScrapheapLockdown)
                     .Name("Scrapheap Lockdown")
                     .Level(1)

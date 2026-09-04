@@ -152,7 +152,7 @@ if ([System.IO.Directory]::Exists($abilityDefinitionPath)) {
                 }
             }
 
-            $generatedQueuedAbilityPattern = "(?s)ConfigureGeneratedWeaponAbility\s*\(\s*builder\.Create\s*\(\s*FeatType\.(\w+)(?:(?!ConfigureGeneratedWeaponAbility).)*?IsQueuedWeaponAbility\s*=\s*true(?:(?!ConfigureGeneratedWeaponAbility).)*?\}\s*\);"
+            $generatedQueuedAbilityPattern = "(?s)ConfigureWeaponAbility\s*\(\s*builder\.Create\s*\(\s*FeatType\.(\w+)(?:(?!ConfigureWeaponAbility).)*?IsQueuedWeaponAbility\s*=\s*true(?:(?!ConfigureWeaponAbility).)*?\}\s*\);"
             foreach ($match in [regex]::Matches($content, $generatedQueuedAbilityPattern)) {
                 $generatedQueuedWeaponAbilityLabels.Add($match.Groups[1].Value) | Out-Null
             }

@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.SunderingSweep1, PerkType.SunderingSweep)
                     .Name("Sundering Sweep I")
                     .Level(1)
@@ -40,13 +40,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     SpreadSunderFromTarget = true,
-                    SpreadSunderDurationSeconds = 30
+                    SpreadSunderDurationSeconds = 30,
+                    MaximumStatusSpreadsPerCast = 1
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.SunderingSweep2, PerkType.SunderingSweep)
                     .Name("Sundering Sweep II")
                     .Level(2)
@@ -70,13 +71,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     SpreadSunderFromTarget = true,
-                    SpreadSunderDurationSeconds = 30
+                    SpreadSunderDurationSeconds = 30,
+                    MaximumStatusSpreadsPerCast = 1
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.SunderingSweep3, PerkType.SunderingSweep)
                     .Name("Sundering Sweep III")
                     .Level(3)
@@ -100,10 +102,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     SpreadSunderFromTarget = true,
-                    SpreadSunderDurationSeconds = 30
+                    SpreadSunderDurationSeconds = 30,
+                    MaximumStatusSpreadsPerCast = 1
                 });
 
             return builder.Build();

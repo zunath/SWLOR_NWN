@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Service
             uint activator,
             AbilityDetail ability,
             bool countsAsAttackAttempt = true,
-            bool hadActivationAreaTelegraph = false)
+            IReadOnlyList<TelegraphGeometry> activationAreaTelegraphs = null)
         {
             if (!GetIsObjectValid(activator) || ability == null)
                 return;
@@ -139,7 +139,7 @@ namespace SWLOR.Game.Server.Service
                 statusAppliedNextAttackDamageBonus,
                 countsAsAttackAttempt,
                 queuedWeaponBonuses.CriticalDamagePercentAdjustment,
-                hadActivationAreaTelegraph);
+                activationAreaTelegraphs);
         }
 
         private static void BeginAbilityImpact(
@@ -152,7 +152,7 @@ namespace SWLOR.Game.Server.Service
             int statusAppliedNextAttackDamageBonus = 0,
             bool countsAsAttackAttempt = true,
             int nextAbilityCriticalDamagePercentAdjustment = 0,
-            bool hadActivationAreaTelegraph = false)
+            IReadOnlyList<TelegraphGeometry> activationAreaTelegraphs = null)
         {
             if (!GetIsObjectValid(activator) || ability == null)
                 return;
@@ -166,7 +166,7 @@ namespace SWLOR.Game.Server.Service
                 statusAppliedNextAttackDamageBonus,
                 countsAsAttackAttempt,
                 nextAbilityCriticalDamagePercentAdjustment,
-                hadActivationAreaTelegraph);
+                activationAreaTelegraphs);
         }
 
         public static AbilityImpactSummary EndAbilityImpact(uint activator)
@@ -1331,22 +1331,19 @@ namespace SWLOR.Game.Server.Service
             {
                 // Instant-cast area abilities cannot use a pre-cast telegraph without violating the
                 // Bible's "Instant" activation time, so they flash their shape at impact instead.
-                // The flash is purely visual: damage below is still applied immediately. A cast that
-                // already displayed this area through its activation must not tear that shape down
-                // and recreate it at impact, which produces a visible off/on flicker.
-                if (GetTrackedAbilityImpact(activator)?.HadActivationAreaTelegraph != true)
-                {
-                    ShowAreaImpactFlash(
-                        activator,
-                        target,
-                        targetLocation,
-                        shape,
-                        lengthOrRadius,
-                        width,
-                        centerOnActivator,
-                        impactFlashDuration,
-                        backOffsetOrigin);
-                }
+                // The flash is purely visual: damage below is still applied immediately. Compare
+                // the actual impact geometry with the activation marker before suppressing a redraw.
+                ShowAreaImpactFlash(
+                    activator,
+                    target,
+                    targetLocation,
+                    shape,
+                    lengthOrRadius,
+                    width,
+                    centerOnActivator,
+                    impactFlashDuration,
+                    backOffsetOrigin,
+                    trackedImpact?.ActivationAreaTelegraphs);
 
                 var totalDamage = ApplyCombatImpactInShape(
                     activator,
@@ -1507,7 +1504,8 @@ namespace SWLOR.Game.Server.Service
             float width,
             bool centerOnActivator,
             float flashDuration,
-            bool backOffsetOrigin)
+            bool backOffsetOrigin,
+            IReadOnlyList<TelegraphGeometry> activationAreaTelegraphs)
         {
             if (flashDuration <= 0f || lengthOrRadius <= 0f)
                 return;
@@ -1523,40 +1521,36 @@ namespace SWLOR.Game.Server.Service
                 lengthOrRadius,
                 backOffsetOrigin);
 
-            switch (shape)
+            var telegraphType = shape switch
             {
-                case CombatImpactAreaShape.Sphere:
-                    Telegraph.CreateSphereTelegraph(
-                        activator,
-                        GetAreaImpactPosition(activator, target, targetLocation, centerOnActivator),
-                        lengthOrRadius,
-                        flashDuration,
-                        true,
-                        null);
-                    break;
-                case CombatImpactAreaShape.Cone:
-                    Telegraph.CreateConeTelegraph(
-                        activator,
-                        directionalOrigin,
-                        rotation,
-                        adjustedLength,
-                        width > 0f ? width : adjustedLength,
-                        flashDuration,
-                        true,
-                        null);
-                    break;
-                case CombatImpactAreaShape.Line:
-                    Telegraph.CreateLineTelegraph(
-                        activator,
-                        directionalOrigin,
-                        rotation,
-                        adjustedLength,
-                        width > 0f ? width : 2.0f,
-                        flashDuration,
-                        true,
-                        null);
-                    break;
-            }
+                CombatImpactAreaShape.Sphere => TelegraphType.Sphere,
+                CombatImpactAreaShape.Cone => TelegraphType.Cone,
+                CombatImpactAreaShape.Line => TelegraphType.Line,
+                _ => TelegraphType.None
+            };
+            if (telegraphType == TelegraphType.None)
+                return;
+
+            var position = shape == CombatImpactAreaShape.Sphere
+                ? GetAreaImpactPosition(activator, target, targetLocation, centerOnActivator)
+                : directionalOrigin;
+            var size = shape == CombatImpactAreaShape.Sphere
+                ? new System.Numerics.Vector2(lengthOrRadius, lengthOrRadius)
+                : new System.Numerics.Vector2(adjustedLength,
+                    width > 0f ? width : shape == CombatImpactAreaShape.Cone ? adjustedLength : 2.0f);
+            var geometry = new TelegraphGeometry(GetArea(activator), telegraphType, position, size, rotation);
+            if (!Telegraph.ShouldShowImpactFlash(geometry, activationAreaTelegraphs))
+                return;
+
+            Telegraph.CreateTelegraph(
+                activator,
+                position,
+                shape == CombatImpactAreaShape.Sphere ? 0f : rotation,
+                size,
+                flashDuration,
+                true,
+                telegraphType,
+                null);
         }
 
         private static int ApplyCombatImpactInShape(
@@ -3251,7 +3245,7 @@ namespace SWLOR.Game.Server.Service
             public AbilityDetail Ability { get; }
             public AbilityImpactSummary Summary { get; }
             public bool CountsAsAttackAttempt { get; }
-            public bool HadActivationAreaTelegraph { get; }
+            public IReadOnlyList<TelegraphGeometry> ActivationAreaTelegraphs { get; }
             public int NextAbilityDamageBonus { get; private set; }
             public int NextAbilityCriticalRatePercentAdjustment { get; }
             public int NextAbilityCriticalDamagePercentAdjustment { get; }
@@ -3270,7 +3264,7 @@ namespace SWLOR.Game.Server.Service
                 int statusAppliedNextAttackDamageBonus,
                 bool countsAsAttackAttempt,
                 int nextAbilityCriticalDamagePercentAdjustment,
-                bool hadActivationAreaTelegraph)
+                IReadOnlyList<TelegraphGeometry> activationAreaTelegraphs)
             {
                 Ability = ability;
                 NextAbilityDamageBonus = nextAbilityDamageBonus;
@@ -3280,7 +3274,7 @@ namespace SWLOR.Game.Server.Service
                 NextAttackEnmityBonus = nextAttackEnmityBonus;
                 StatusAppliedNextAttackDamageBonus = statusAppliedNextAttackDamageBonus;
                 CountsAsAttackAttempt = countsAsAttackAttempt;
-                HadActivationAreaTelegraph = hadActivationAreaTelegraph;
+                ActivationAreaTelegraphs = activationAreaTelegraphs;
                 Summary = new AbilityImpactSummary
                 {
                     SkillType = ability.SkillType,

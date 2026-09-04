@@ -429,7 +429,7 @@ namespace SWLOR.Game.Server.Feature
             FeatType feat,
             AbilityDetail ability,
             Location targetLocation,
-            bool hadActivationAreaTelegraph = false)
+            IReadOnlyList<TelegraphGeometry> activationAreaTelegraphs = null)
         {
             var impactEnded = false;
             try
@@ -438,7 +438,7 @@ namespace SWLOR.Game.Server.Feature
                 Ability.BeginAbilityImpact(
                     activator,
                     ability,
-                    hadActivationAreaTelegraph: hadActivationAreaTelegraph);
+                    activationAreaTelegraphs: activationAreaTelegraphs);
                 ability.ImpactAction?.Invoke(activator, target, ability.AbilityLevel, targetLocation);
                 var summary = Ability.EndAbilityImpact(activator);
                 impactEnded = true;
@@ -602,7 +602,12 @@ namespace SWLOR.Game.Server.Feature
             }
 
             // This method is called after the delay of the ability has finished.
-            void CompleteActivation(string activationId, float abilityRecastDelay, uint resumeAttackTarget, List<string> activationTelegraphIds)
+            void CompleteActivation(
+                string activationId,
+                float abilityRecastDelay,
+                uint resumeAttackTarget,
+                List<string> activationTelegraphIds,
+                IReadOnlyList<TelegraphGeometry> activationAreaTelegraphs)
             {
                 void CancelActivation(bool resumeAttack)
                 {
@@ -676,8 +681,8 @@ namespace SWLOR.Game.Server.Feature
                         feat,
                         ability,
                         targetLocation,
-                        hadActivationAreaTelegraph:
-                            ability.ImpactDelay <= 0f && activationTelegraphIds.Count > 0);
+                        activationAreaTelegraphs:
+                            ability.ImpactDelay <= 0f ? activationAreaTelegraphs : null);
                     ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f);
 
                     // If this is an attack make the NPC react.
@@ -751,6 +756,7 @@ namespace SWLOR.Game.Server.Feature
             var position = GetPosition(activator);
             var resumeAttackTarget = GetResumeAttackTarget(activator, target, ability);
             var activationTelegraphIds = ProcessAnimationAndVisualEffects(activationDelay);
+            var activationAreaTelegraphs = Telegraph.CaptureGeometry(activationTelegraphIds);
             SetLocalInt(activator, activationId, (int)ActivationStatus.Started);
             _activeAbilityActivations[activator] = new ActiveAbilityActivation
             {
@@ -796,12 +802,13 @@ namespace SWLOR.Game.Server.Feature
                     feat,
                     ability,
                     targetLocation,
-                    activationTelegraphIds.Count > 0);
+                    activationAreaTelegraphs);
                 Recast.ApplyRecastDelay(activator, ability.RecastGroup, recastDelay);
             }
 
             Activity.SetBusy(activator, ActivityStatusType.AbilityActivation);
-            DelayCommand(activationDelay, () => CompleteActivation(activationId, recastDelay, resumeAttackTarget, activationTelegraphIds));
+            DelayCommand(activationDelay, () => CompleteActivation(
+                activationId, recastDelay, resumeAttackTarget, activationTelegraphIds, activationAreaTelegraphs));
         }
 
         /// <summary>

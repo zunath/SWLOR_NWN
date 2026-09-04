@@ -91,6 +91,27 @@ namespace SWLOR.Game.Server.Service
                 : new Dictionary<string, ActiveTelegraph>();
         }
 
+        public static IReadOnlyList<TelegraphGeometry> CaptureGeometry(IEnumerable<string> telegraphIds)
+        {
+            return telegraphIds
+                .Where(_allTelegraphs.ContainsKey)
+                .Select(id => _allTelegraphs[id])
+                .Select(telegraph => new TelegraphGeometry(
+                    telegraph.Area,
+                    telegraph.Data.Shape,
+                    telegraph.Data.Position,
+                    telegraph.Data.Size,
+                    telegraph.Data.Rotation))
+                .ToArray();
+        }
+
+        public static bool ShouldShowImpactFlash(
+            TelegraphGeometry impact,
+            IReadOnlyList<TelegraphGeometry> activationTelegraphs)
+        {
+            return activationTelegraphs == null || !activationTelegraphs.Any(impact.Matches);
+        }
+
         /// <summary>
         /// Checks if a creature is within a telegraph's area of effect.
         /// </summary>

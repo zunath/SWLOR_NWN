@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.TwinGuardStance1, PerkType.TwinGuardStance)
                     .Name("Steel Shoulder")
                     .Level(1)
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     FriendlyTargetStatusEffectFactory = () => new GuardedStatusEffect(50, 5.0f),
                     FriendlyTargetStatusPersistsUntilBroken = true

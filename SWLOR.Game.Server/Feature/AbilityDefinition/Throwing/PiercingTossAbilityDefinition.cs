@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.PiercingToss1, PerkType.PiercingToss)
                     .Name("Piercing Toss I")
                     .Level(1)
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 AbilityType.Perception,
                 null);
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.PiercingToss2, PerkType.PiercingToss)
                     .Name("Piercing Toss II")
                     .Level(2)
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 AbilityType.Perception,
                 null);
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.PiercingToss3, PerkType.PiercingToss)
                     .Name("Piercing Toss III")
                     .Level(3)
@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 AbilityType.Perception,
                 null);
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.PiercingToss4, PerkType.PiercingToss)
                     .Name("Piercing Toss IV")
                     .Level(4)

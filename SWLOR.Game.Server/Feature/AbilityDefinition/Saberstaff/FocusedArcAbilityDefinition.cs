@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.FocusedArc1, PerkType.FocusedArc)
                     .Name("Focused Arc I")
                     .Level(1)
@@ -41,13 +41,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     HighResourceExtraDamageThresholdPercent = 60,
                     ExtraDamageIfHighResources = 4
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.FocusedArc2, PerkType.FocusedArc)
                     .Name("Focused Arc II")
                     .Level(2)
@@ -71,13 +71,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     HighResourceExtraDamageThresholdPercent = 60,
                     ExtraDamageIfHighResources = 6
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.FocusedArc3, PerkType.FocusedArc)
                     .Name("Focused Arc III")
                     .Level(3)
@@ -101,13 +101,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     HighResourceExtraDamageThresholdPercent = 60,
                     ExtraDamageIfHighResources = 8
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.FocusedArc4, PerkType.FocusedArc)
                     .Name("Focused Arc IV")
                     .Level(4)
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     HighResourceExtraDamageThresholdPercent = 60,
                     ExtraDamageIfHighResources = 10

@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.GamblerStance1, PerkType.GamblerStance)
                     .Name("Gambler Stance")
                     .Level(1)

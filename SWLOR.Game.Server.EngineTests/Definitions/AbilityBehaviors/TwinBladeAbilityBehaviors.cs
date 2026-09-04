@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
         {
             return new List<AbilityBehaviorCase>
             {
-                // BladeVortexAbilityDefinition - ConfigureGeneratedWeaponAbility, isArea+isHostile, not
+                // BladeVortexAbilityDefinition - ConfigureWeaponAbility, isArea+isHostile, not
                 // queued (IsQueuedWeaponAbility unset) so this is a Casted sphere AoE, not a weapon ability.
                 new()
                 {

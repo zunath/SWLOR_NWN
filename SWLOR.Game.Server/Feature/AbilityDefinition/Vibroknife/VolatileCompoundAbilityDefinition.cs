@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.VolatileCompound1, PerkType.VolatileCompound)
                     .Name("Volatile Compound I")
                     .Level(1)
@@ -41,12 +41,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     StatusEffectFactory = () => new PoisonResistancePenaltyStatusEffect(-15)
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.VolatileCompound2, PerkType.VolatileCompound)
                     .Name("Volatile Compound II")
                     .Level(2)
@@ -70,7 +70,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     StatusEffectFactory = () => new PoisonResistancePenaltyStatusEffect(-25)
                 });

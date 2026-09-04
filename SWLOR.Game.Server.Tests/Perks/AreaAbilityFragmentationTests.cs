@@ -2,6 +2,7 @@ using System.Collections;
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Staff;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Throwing;
 using SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade;
@@ -93,6 +94,32 @@ public class AreaAbilityFragmentationTests
         ability.IsAreaAbility.Should().BeTrue();
     }
 
+    [TestCase(FeatType.SerratedArc1)]
+    [TestCase(FeatType.SerratedArc2)]
+    [TestCase(FeatType.SerratedArc3)]
+    public void SerratedArc_ConfiguresBleedSpreadWithoutFragmentation(FeatType feat)
+    {
+        var ability = new SerratedArcAbilityDefinition().BuildAbilities()[feat];
+        var profile = GetProfile(ability);
+
+        GetProperty<bool>(profile, "SpreadBleedFromTarget").Should().BeTrue();
+        GetProperty<int>(profile, "SpreadBleedDurationSeconds").Should().Be(30);
+        GetProperty<int>(profile, "MaximumStatusSpreadsPerCast").Should().Be(0);
+        GetProperty<int>(profile, "TemporaryAreaAbilityFragmentationDamage").Should().Be(0);
+        ability.SkillType.Should().Be(SkillType.TwinBlade);
+        ability.IsAreaAbility.Should().BeTrue();
+    }
+
+    [TestCase(FeatType.SunderingSweep1)]
+    [TestCase(FeatType.SunderingSweep2)]
+    [TestCase(FeatType.SunderingSweep3)]
+    public void SunderingSweep_LimitsSunderToOneSpreadPerCast(FeatType feat)
+    {
+        var profile = GetProfile(new SunderingSweepAbilityDefinition().BuildAbilities()[feat]);
+        GetProperty<bool>(profile, "SpreadSunderFromTarget").Should().BeTrue();
+        GetProperty<int>(profile, "MaximumStatusSpreadsPerCast").Should().Be(1);
+    }
+
     private static void AddShrapnelCasingStats(int rank)
     {
         const BindingFlags PrivateInstance = BindingFlags.NonPublic | BindingFlags.Instance;
@@ -131,7 +158,7 @@ public class AreaAbilityFragmentationTests
     private static object GetProfile(AbilityDetail ability) =>
         ability.ImpactAction.Target!.GetType()
             .GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
-            .Single(field => field.FieldType.Name == "GeneratedWeaponAbilityProfile")
+            .Single(field => field.FieldType.Name == "WeaponAbilityProfile")
             .GetValue(ability.ImpactAction.Target)!;
 
     private static T GetProperty<T>(object profile, string name) =>

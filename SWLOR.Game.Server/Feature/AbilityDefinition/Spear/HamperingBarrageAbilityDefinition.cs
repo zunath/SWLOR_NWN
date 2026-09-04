@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.HamperingBarrage1, PerkType.HamperingBarrage)
                     .Name("Hampering Barrage I")
                     .Level(1)
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 AbilityType.Invalid,
                 null);
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.HamperingBarrage2, PerkType.HamperingBarrage)
                     .Name("Hampering Barrage II")
                     .Level(2)

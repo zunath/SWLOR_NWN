@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.Slam1, PerkType.Slam)
                     .Name("Slam I")
                     .Level(1)
@@ -41,12 +41,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     ExtraDamageIfTargetControlled = 8
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.Slam2, PerkType.Slam)
                     .Name("Slam II")
                     .Level(2)
@@ -70,12 +70,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     ExtraDamageIfTargetControlled = 14
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.Slam3, PerkType.Slam)
                     .Name("Slam III")
                     .Level(3)
@@ -99,12 +99,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     ExtraDamageIfTargetControlled = 20
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.Slam4, PerkType.Slam)
                     .Name("Slam IV")
                     .Level(4)
@@ -128,7 +128,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     ExtraDamageIfTargetControlled = 26
                 });

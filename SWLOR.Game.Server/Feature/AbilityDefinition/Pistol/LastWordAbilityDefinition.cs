@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.LastWord1, PerkType.LastWord)
                     .Name("Last Word")
                     .Level(1)
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 Animation.PointPistol,
                 25.0f,
                 AbilityType.Perception,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     TemporaryAvoidedAttackAbilityUsedRangedDeflectionRefreshDurationSeconds = 30,
                     TemporaryAvoidedAttackNextAutoAttackNoDelaySkillType = (int)SkillType.Pistol,

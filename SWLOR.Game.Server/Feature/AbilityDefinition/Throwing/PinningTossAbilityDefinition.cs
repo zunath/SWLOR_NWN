@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.PinningToss1, PerkType.PinningToss)
                     .Name("Pinning Toss I")
                     .Level(1)
@@ -41,14 +41,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 Animation.ThrowGrenade,
                 20.0f,
                 AbilityType.Perception,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     RequiredTargetStatusCategoryForConditionalStatus = StatusEffectCategory.Bleeding,
                     ConditionalTargetStatusEffect = typeof(DisorientedStatusEffect),
                     ConditionalTargetStatusDurationSeconds = 30
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.PinningToss2, PerkType.PinningToss)
                     .Name("Pinning Toss II")
                     .Level(2)
@@ -72,14 +72,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 Animation.ThrowGrenade,
                 20.0f,
                 AbilityType.Perception,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     RequiredTargetStatusCategoryForConditionalStatus = StatusEffectCategory.Bleeding,
                     ConditionalTargetStatusEffect = typeof(DisorientedStatusEffect),
                     ConditionalTargetStatusDurationSeconds = 30
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.PinningToss3, PerkType.PinningToss)
                     .Name("Pinning Toss III")
                     .Level(3)
@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 Animation.ThrowGrenade,
                 20.0f,
                 AbilityType.Perception,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     RequiredTargetStatusCategoryForConditionalStatus = StatusEffectCategory.Bleeding,
                     ConditionalTargetStatusEffect = typeof(DisorientedStatusEffect),

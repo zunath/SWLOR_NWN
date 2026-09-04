@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.Backstab1, PerkType.Backstab)
                     .Name("Backstab I")
                     .Level(1)
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     ExtraDamageIfBehind = 10,
                     ExtraDamageIfBehindFeedbackLabel = "Backstab",
@@ -50,7 +50,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                     RequireBehindForConditionalStatus = true
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.Backstab2, PerkType.Backstab)
                     .Name("Backstab II")
                     .Level(2)
@@ -74,7 +74,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     ExtraDamageIfBehind = 20,
                     ExtraDamageIfBehindFeedbackLabel = "Backstab",

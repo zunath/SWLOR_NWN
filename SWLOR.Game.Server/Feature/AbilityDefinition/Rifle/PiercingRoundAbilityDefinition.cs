@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.PiercingRound1, PerkType.PiercingRound)
                     .Name("Piercing Round I")
                     .Level(1)
@@ -41,12 +41,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 Animation.PointPistol,
                 30.0f,
                 AbilityType.Perception,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     DefenseIgnorePercent = 10
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.PiercingRound2, PerkType.PiercingRound)
                     .Name("Piercing Round II")
                     .Level(2)
@@ -70,12 +70,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 Animation.PointPistol,
                 30.0f,
                 AbilityType.Perception,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     DefenseIgnorePercent = 15
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.PiercingRound3, PerkType.PiercingRound)
                     .Name("Piercing Round III")
                     .Level(3)
@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 Animation.PointPistol,
                 30.0f,
                 AbilityType.Perception,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     DefenseIgnorePercent = 20
                 });

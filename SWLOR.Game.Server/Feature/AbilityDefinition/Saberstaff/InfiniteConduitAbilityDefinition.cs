@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.InfiniteConduit1, PerkType.InfiniteConduit)
                     .Name("Infinite Conduit")
                     .Level(1)

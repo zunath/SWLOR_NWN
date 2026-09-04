@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.SeverFocus1, PerkType.SeverFocus)
                     .Name("Sever Focus I")
                     .Level(1)
@@ -41,14 +41,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     DrainTargetResourceAboveThresholdPercent = 80,
                     DrainTargetFPIfActivatorFPAboveThreshold = 4,
                     DrainTargetStaminaIfActivatorStaminaAboveThreshold = 4
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.SeverFocus2, PerkType.SeverFocus)
                     .Name("Sever Focus II")
                     .Level(2)
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     DrainTargetResourceAboveThresholdPercent = 80,
                     DrainTargetFPIfActivatorFPAboveThreshold = 8,

@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.Headshot1, PerkType.Headshot)
                     .Name("Headshot I")
                     .Level(1)
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 Animation.PointPistol,
                 30.0f,
                 AbilityType.Perception,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     IsQueuedWeaponAbility = true,
                     IdleWindowSeconds = 3.0f,
@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                     CriticalRateIfIdleFeedbackLabel = "Headshot"
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.Headshot2, PerkType.Headshot)
                     .Name("Headshot II")
                     .Level(2)
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 Animation.PointPistol,
                 30.0f,
                 AbilityType.Perception,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     IsQueuedWeaponAbility = true,
                     IdleWindowSeconds = 3.0f,

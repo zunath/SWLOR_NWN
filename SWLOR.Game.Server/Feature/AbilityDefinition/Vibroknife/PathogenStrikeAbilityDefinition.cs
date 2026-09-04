@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.PathogenStrike1, PerkType.PathogenStrike)
                     .Name("Pathogen Strike I")
                     .Level(1)
@@ -41,14 +41,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     IsQueuedWeaponAbility = true,
                     SourceStatusEffectsToExtend = new[] { typeof(VenomStatusEffect), typeof(InfectionStatusEffect) },
                     SourceStatusExtensionSeconds = 4
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.PathogenStrike2, PerkType.PathogenStrike)
                     .Name("Pathogen Strike II")
                     .Level(2)
@@ -72,14 +72,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     IsQueuedWeaponAbility = true,
                     SourceStatusEffectsToExtend = new[] { typeof(VenomStatusEffect), typeof(InfectionStatusEffect) },
                     SourceStatusExtensionSeconds = 4
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.PathogenStrike3, PerkType.PathogenStrike)
                     .Name("Pathogen Strike III")
                     .Level(3)
@@ -103,14 +103,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     IsQueuedWeaponAbility = true,
                     SourceStatusEffectsToExtend = new[] { typeof(VenomStatusEffect), typeof(InfectionStatusEffect) },
                     SourceStatusExtensionSeconds = 6
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.PathogenStrike4, PerkType.PathogenStrike)
                     .Name("Pathogen Strike IV")
                     .Level(4)
@@ -134,7 +134,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     IsQueuedWeaponAbility = true,
                     SourceStatusEffectsToExtend = new[] { typeof(VenomStatusEffect), typeof(InfectionStatusEffect) },

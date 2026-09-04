@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.OneShot1, PerkType.OneShot)
                     .Name("One Shot")
                     .Level(1)
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 Animation.PointPistol,
                 30.0f,
                 AbilityType.Perception,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     IdleWindowSeconds = 3.0f,
                     CriticalRateIfIdle = 25,

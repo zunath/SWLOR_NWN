@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.InterruptionStrike1, PerkType.InterruptionStrike)
                     .Name("Interruption Strike I")
                     .Level(1)
@@ -41,13 +41,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     TargetUsingAbilityDrainFP = 4,
                     TargetUsingAbilityDrainStamina = 4
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.InterruptionStrike2, PerkType.InterruptionStrike)
                     .Name("Interruption Strike II")
                     .Level(2)
@@ -71,13 +71,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     TargetUsingAbilityDrainFP = 7,
                     TargetUsingAbilityDrainStamina = 7
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.InterruptionStrike3, PerkType.InterruptionStrike)
                     .Name("Interruption Strike III")
                     .Level(3)
@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     TargetUsingAbilityDrainFP = 10,
                     TargetUsingAbilityDrainStamina = 10

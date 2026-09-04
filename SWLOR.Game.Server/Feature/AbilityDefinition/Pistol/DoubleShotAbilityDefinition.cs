@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.DoubleShot1, PerkType.DoubleShot)
                     .Name("Double Shot I")
                     .Level(1)
@@ -41,14 +41,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 Animation.DoubleShot,
                 25.0f,
                 AbilityType.Perception,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     HitCount = 2,
                     RestoreStaminaIfAnyCriticalHit = 2,
                     RestoreStaminaIfAnyCriticalHitFeedbackLabel = "Double Shot"
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.DoubleShot2, PerkType.DoubleShot)
                     .Name("Double Shot II")
                     .Level(2)
@@ -72,14 +72,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 Animation.DoubleShot,
                 25.0f,
                 AbilityType.Perception,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     HitCount = 2,
                     RestoreStaminaIfAnyCriticalHit = 3,
                     RestoreStaminaIfAnyCriticalHitFeedbackLabel = "Double Shot"
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.DoubleShot3, PerkType.DoubleShot)
                     .Name("Double Shot III")
                     .Level(3)
@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 Animation.DoubleShot,
                 25.0f,
                 AbilityType.Perception,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     HitCount = 2,
                     RestoreStaminaIfAnyCriticalHit = 4,

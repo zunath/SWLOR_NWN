@@ -156,7 +156,7 @@ Two distinct paths render a shape, and they are not interchangeable:
   This is what makes Bible-"Instant" area abilities visible without changing their
   activation time. Duration comes from `Ability.DefaultImpactFlashDuration`.
 
-Do not set `GeneratedWeaponAbilityProfile.TelegraphDuration` from a Bible casting time: the
+Do not set `WeaponAbilityProfile.TelegraphDuration` from a Bible casting time: the
 pre-cast telegraph already covers the activation delay, and this one applies at impact, so
 the two would stack into a double delay and a double render.
 

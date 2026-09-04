@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.InterruptingShot1, PerkType.InterruptingShot)
                     .Name("Interrupting Shot I")
                     .Level(1)
@@ -41,13 +41,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 Animation.PointPistol,
                 25.0f,
                 AbilityType.Perception,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     TargetUsingAbilityStatusEffect = typeof(DisorientedStatusEffect),
                     TargetUsingAbilityStatusDurationSeconds = 30
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.InterruptingShot2, PerkType.InterruptingShot)
                     .Name("Interrupting Shot II")
                     .Level(2)
@@ -71,13 +71,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 Animation.PointPistol,
                 25.0f,
                 AbilityType.Perception,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     TargetUsingAbilityStatusEffect = typeof(DisorientedStatusEffect),
                     TargetUsingAbilityStatusDurationSeconds = 30
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.InterruptingShot3, PerkType.InterruptingShot)
                     .Name("Interrupting Shot III")
                     .Level(3)
@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 Animation.PointPistol,
                 25.0f,
                 AbilityType.Perception,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     TargetUsingAbilityStatusEffect = typeof(DisorientedStatusEffect),
                     TargetUsingAbilityStatusDurationSeconds = 30

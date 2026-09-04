@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.SuppressingShot1, PerkType.SuppressingShot)
                     .Name("Suppressing Shot I")
                     .Level(1)
@@ -41,14 +41,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 Animation.PointPistol,
                 30.0f,
                 AbilityType.Perception,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     ApplySuppressionStackOnHit = true,
                     SuppressionStackDurationSeconds = 30,
                     SuppressionStackEvasionPenaltyPercent = 2
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.SuppressingShot2, PerkType.SuppressingShot)
                     .Name("Suppressing Shot II")
                     .Level(2)
@@ -72,14 +72,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 Animation.PointPistol,
                 30.0f,
                 AbilityType.Perception,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     ApplySuppressionStackOnHit = true,
                     SuppressionStackDurationSeconds = 30,
                     SuppressionStackEvasionPenaltyPercent = 3
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.SuppressingShot3, PerkType.SuppressingShot)
                     .Name("Suppressing Shot III")
                     .Level(3)
@@ -103,14 +103,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 Animation.PointPistol,
                 30.0f,
                 AbilityType.Perception,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     ApplySuppressionStackOnHit = true,
                     SuppressionStackDurationSeconds = 30,
                     SuppressionStackEvasionPenaltyPercent = 4
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.SuppressingShot4, PerkType.SuppressingShot)
                     .Name("Suppressing Shot IV")
                     .Level(4)
@@ -134,7 +134,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 Animation.PointPistol,
                 30.0f,
                 AbilityType.Perception,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     ApplySuppressionStackOnHit = true,
                     SuppressionStackDurationSeconds = 30,

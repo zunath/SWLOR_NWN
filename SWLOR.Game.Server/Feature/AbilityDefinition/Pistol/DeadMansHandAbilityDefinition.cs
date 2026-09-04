@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.DeadMansHand1, PerkType.DeadMansHand)
                     .Name("Dead Man's Hand")
                     .Level(1)
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 Animation.PointPistol,
                 25.0f,
                 AbilityType.Perception,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     SelfStatusEffectOnCriticalHitFactory = triggeringImpact => new DeadMansHandStatusEffect(triggeringImpact),
                     SelfStatusEffectOnCriticalHitIsPermanent = true

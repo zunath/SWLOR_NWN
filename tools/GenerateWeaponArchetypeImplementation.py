@@ -2623,7 +2623,7 @@ def profile_expression(row, level, primary_status):
     if not properties:
         return "null"
 
-    lines = ["new GeneratedWeaponAbilityProfile", "                {"]
+    lines = ["new WeaponAbilityProfile", "                {"]
     for index, (name, value) in enumerate(properties):
         suffix = "," if index < len(properties) - 1 else ""
         lines.append(f"                    {name} = {value}{suffix}")
@@ -3549,7 +3549,7 @@ def generate_ability_definitions(rows, feat_values, recast_values):
                     "AbilityTargetingFlags.HarmsEnemies",
                 )
             lines.extend([
-                "            ConfigureGeneratedWeaponAbility(",
+                "            ConfigureWeaponAbility(",
                 f"                builder.Create(FeatType.{feat}, PerkType.{perk_type})",
                 f"                    .Name(\"{escape_csharp(row['PerkName'])}\")",
                 f"                    .Level({level})",

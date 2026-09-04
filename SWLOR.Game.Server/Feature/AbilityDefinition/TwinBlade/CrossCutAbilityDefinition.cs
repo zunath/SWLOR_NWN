@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.CrossCut1, PerkType.CrossCut)
                     .Name("Cross Cut I")
                     .Level(1)
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     HitCount = 2,
                     SelfHastePercentIfAllHitsLand = 5,
@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                     SelfHasteDurationSecondsIfAllHitsLand = 30
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.CrossCut2, PerkType.CrossCut)
                     .Name("Cross Cut II")
                     .Level(2)
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     HitCount = 2,
                     SelfHastePercentIfAllHitsLand = 5,
@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                     SelfHasteDurationSecondsIfAllHitsLand = 30
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.CrossCut3, PerkType.CrossCut)
                     .Name("Cross Cut III")
                     .Level(3)
@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     HitCount = 2,
                     SelfHastePercentIfAllHitsLand = 5,
@@ -113,7 +113,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                     SelfHasteDurationSecondsIfAllHitsLand = 30
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.CrossCut4, PerkType.CrossCut)
                     .Name("Cross Cut IV")
                     .Level(4)
@@ -137,7 +137,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     HitCount = 2,
                     SelfHastePercentIfAllHitsLand = 5,

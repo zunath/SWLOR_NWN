@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.ExplosiveToss1, PerkType.ExplosiveToss)
                     .Name("Explosive Toss I")
                     .Level(1)
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 AbilityType.Perception,
                 null);
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.ExplosiveToss2, PerkType.ExplosiveToss)
                     .Name("Explosive Toss II")
                     .Level(2)
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 AbilityType.Perception,
                 null);
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.ExplosiveToss3, PerkType.ExplosiveToss)
                     .Name("Explosive Toss III")
                     .Level(3)
@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 AbilityType.Perception,
                 null);
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.ExplosiveToss4, PerkType.ExplosiveToss)
                     .Name("Explosive Toss IV")
                     .Level(4)

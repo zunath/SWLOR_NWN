@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.ShadowflowStance1, PerkType.ShadowflowStance)
                     .Name("Shadowflow Stance")
                     .Level(1)

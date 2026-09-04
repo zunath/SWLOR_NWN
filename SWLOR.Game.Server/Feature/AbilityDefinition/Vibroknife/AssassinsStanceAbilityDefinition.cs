@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Vibroknife
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.AssassinsStance1, PerkType.AssassinsStance)
                     .Name("Assassin's Stance")
                     .Level(1)

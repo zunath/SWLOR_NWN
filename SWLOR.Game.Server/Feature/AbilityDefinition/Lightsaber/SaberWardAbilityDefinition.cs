@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
             int defensePercent,
             int forceDefensePercent)
         {
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(feat, PerkType.SaberWard)
                     .Name(name)
                     .Level(level)
@@ -60,7 +60,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     SelfStatusEffectFactory = () => new SaberWardStatusEffect(conversionPercent, defensePercent, forceDefensePercent),
                     SelfStatusEffectsToReplace = new[] { typeof(PerfectAegisStatusEffect) }

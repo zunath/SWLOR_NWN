@@ -100,6 +100,7 @@ namespace SWLOR.Toolset.Editors
         public Appearance.AppearanceGallerySectionViewModel? AppearanceGallery { get; }
 
         public Sources.ObjectSourceSectionViewModel? Source { get; }
+        public TintMaps.TintMapEditorViewModel? TintMapEditor { get; }
 
         /// <summary>
         /// The generic blueprint view hosts the placeable editor too; only that editor shows the
@@ -139,6 +140,8 @@ namespace SWLOR.Toolset.Editors
             Func<Domain.Workspace.ModuleWorkspace?>? resourceLister = null,
             Func<EditorFieldContext, Func<string, Action, bool>,
                 Appearance.AppearanceGallerySectionViewModel?>? appearanceGallery = null,
+            Func<EditorFieldContext, Func<string, Action, bool>,
+                TintMaps.TintMapEditorViewModel?>? tintMapEditor = null,
             BlueprintSaveCoordinator? saveCoordinator = null,
             Sources.ObjectSourceSectionViewModel? source = null,
             Action<uint>? openTlkRow = null)
@@ -179,6 +182,7 @@ namespace SWLOR.Toolset.Editors
             // place still picked from a list of names. The gallery is the same control the door
             // editor uses; only the rows differ.
             AppearanceGallery = appearanceGallery?.Invoke(_context, RunEdit);
+            TintMapEditor = tintMapEditor?.Invoke(_context, RunEdit);
 
             PlaceableSections = placeableSections?.Invoke(
                 _context, RunEdit, _scriptSlotHost, ResourceChoices);
@@ -231,6 +235,18 @@ namespace SWLOR.Toolset.Editors
                 // facts a builder opens it to change.
                 Tabs.Insert(Math.Min(1, Tabs.Count),
                     new EditorTabViewModel("Appearance", AppearanceGallery));
+            }
+
+            if (TintMapEditor != null)
+            {
+                var appearanceIndex = Tabs
+                    .Select((tab, index) => (tab, index))
+                    .Where(entry => entry.tab.Title == "Appearance")
+                    .Select(entry => entry.index)
+                    .DefaultIfEmpty(0)
+                    .First();
+                Tabs.Insert(Math.Min(appearanceIndex + 1, Tabs.Count),
+                    new EditorTabViewModel("Tints", TintMapEditor));
             }
 
             if (VarTableSection != null && ShouldShowVariablesTab())
@@ -584,6 +600,7 @@ namespace SWLOR.Toolset.Editors
 
             VarTableSection?.RefreshFromDocument();
             AppearanceGallery?.ReloadFromDocument();
+            TintMapEditor?.Reload();
 
             if (PlaceableSections == null)
                 return;
@@ -606,6 +623,7 @@ namespace SWLOR.Toolset.Editors
 
         private void AfterHistoryChange()
         {
+            TintMapEditor?.Reload();
             UpdateTitle();
             UndoCommand.NotifyCanExecuteChanged();
             RedoCommand.NotifyCanExecuteChanged();

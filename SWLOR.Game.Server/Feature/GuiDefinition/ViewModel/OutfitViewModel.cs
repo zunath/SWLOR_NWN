@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Entity;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.DBService;
 using SWLOR.Game.Server.Service.GuiService;
@@ -251,11 +253,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 });
         };
 
-        private int CalculatePerPartColorIndex(AppearanceArmor armorModel, AppearanceArmorColor colorChannel)
-        {
-            return (int)AppearanceArmorColor.NumColors + (int)armorModel * (int)AppearanceArmorColor.NumColors + (int)colorChannel;
-        }
-
         private void LoadOutfit()
         {
             var armor = GetItemInSlot(InventorySlot.Chest, Player);
@@ -272,17 +269,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 DestroyObject(copy);
                 copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, (int)part, GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, (int)part), true);
                 DestroyObject(copy);
-                copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, CalculatePerPartColorIndex(part, AppearanceArmorColor.Cloth1), GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, CalculatePerPartColorIndex(part, AppearanceArmorColor.Cloth1)));
+                copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, ArmorColorIndexCalculator.CalculatePerPart(part, AppearanceArmorColor.Cloth1), GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, ArmorColorIndexCalculator.CalculatePerPart(part, AppearanceArmorColor.Cloth1)), true);
                 DestroyObject(copy);
-                copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, CalculatePerPartColorIndex(part, AppearanceArmorColor.Cloth2), GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, CalculatePerPartColorIndex(part, AppearanceArmorColor.Cloth2)));
+                copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, ArmorColorIndexCalculator.CalculatePerPart(part, AppearanceArmorColor.Cloth2), GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, ArmorColorIndexCalculator.CalculatePerPart(part, AppearanceArmorColor.Cloth2)), true);
                 DestroyObject(copy);
-                copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, CalculatePerPartColorIndex(part, AppearanceArmorColor.Leather1), GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, CalculatePerPartColorIndex(part, AppearanceArmorColor.Leather1)));
+                copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, ArmorColorIndexCalculator.CalculatePerPart(part, AppearanceArmorColor.Leather1), GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, ArmorColorIndexCalculator.CalculatePerPart(part, AppearanceArmorColor.Leather1)), true);
                 DestroyObject(copy);
-                copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, CalculatePerPartColorIndex(part, AppearanceArmorColor.Leather2), GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, CalculatePerPartColorIndex(part, AppearanceArmorColor.Leather2)));
+                copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, ArmorColorIndexCalculator.CalculatePerPart(part, AppearanceArmorColor.Leather2), GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, ArmorColorIndexCalculator.CalculatePerPart(part, AppearanceArmorColor.Leather2)), true);
                 DestroyObject(copy);
-                copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, CalculatePerPartColorIndex(part, AppearanceArmorColor.Metal1), GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, CalculatePerPartColorIndex(part, AppearanceArmorColor.Metal1)));
+                copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, ArmorColorIndexCalculator.CalculatePerPart(part, AppearanceArmorColor.Metal1), GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, ArmorColorIndexCalculator.CalculatePerPart(part, AppearanceArmorColor.Metal1)), true);
                 DestroyObject(copy);
-                copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, CalculatePerPartColorIndex(part, AppearanceArmorColor.Metal2), GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, CalculatePerPartColorIndex(part, AppearanceArmorColor.Metal2)));
+                copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, ArmorColorIndexCalculator.CalculatePerPart(part, AppearanceArmorColor.Metal2), GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, ArmorColorIndexCalculator.CalculatePerPart(part, AppearanceArmorColor.Metal2)), true);
                 DestroyObject(copy);
 
                 return copy;
@@ -308,6 +305,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             copy = CopyColors(AppearanceArmor.RightThigh);
             copy = CopyColors(AppearanceArmor.Torso);
 
+            TintMapService.ReplaceItemTintOverrides(deserialized, copy);
             var final = CopyItem(copy, Player, true);
             DestroyObject(armor);
             DestroyObject(copy);

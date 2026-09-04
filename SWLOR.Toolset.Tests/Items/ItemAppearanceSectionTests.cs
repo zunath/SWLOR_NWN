@@ -1,5 +1,8 @@
+using Avalonia.Headless.NUnit;
+using Avalonia.Media;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Items;
@@ -247,6 +250,139 @@ namespace SWLOR.Toolset.Tests.Items
             }
 
             [Test]
+            public void ChoosingAnArmorPresetPreservesIndependentCustomTintOverrides()
+            {
+                var store = OpenStore("adren_harness");
+                var cloth1 = TintMapVariable.GetName("pmh0_chest156", TintMapLayerType.Cloth1);
+                var cloth2 = TintMapVariable.GetName("pmh0_chest156", TintMapLayerType.Cloth2);
+                store.Locals.SetInt(cloth1, new TintMapColor(12, 34, 56).ToStoredValue());
+                store.Locals.SetInt(cloth2, new TintMapColor(65, 43, 21).ToStoredValue());
+                var section = Open(store, ArmorRow, new HashSet<string>());
+
+                section.Armor!.Cloth1.Number = 50;
+
+                store.GetInteger(BehaviorFieldStorage.Field, "Cloth1Color").Should().Be(50);
+                store.Locals.GetInt(cloth1).Should().NotBeNull(
+                    "without global semantic intent the custom value may belong to one material");
+                store.Locals.GetInt(cloth2).Should().NotBeNull(
+                    "selecting Cloth 1 must not reset another dye channel");
+            }
+
+            [Test]
+            public void ChoosingAnArmorPresetClearsOnlyOverridesFromThePreviousGlobalCustomTint()
+            {
+                var store = OpenStore("adren_harness");
+                var globalColor = new TintMapColor(12, 34, 56).ToStoredValue();
+                var independentColor = new TintMapColor(65, 43, 21).ToStoredValue();
+                var inherited = TintMapVariable.GetName("pmh0_chest156", TintMapLayerType.Cloth1);
+                var independent = TintMapVariable.GetName("pmh0_bicepl249", TintMapLayerType.Cloth1);
+                var otherLayer = TintMapVariable.GetName("pmh0_chest156", TintMapLayerType.Cloth2);
+                var state = TintMapVariable.GetItemGlobalColorStateName(TintMapLayerType.Cloth1);
+                store.Locals.SetInt(inherited, globalColor);
+                store.Locals.SetInt(independent, independentColor);
+                store.Locals.SetInt(otherLayer, globalColor);
+                store.Locals.SetInt(state, globalColor);
+                var section = Open(store, ArmorRow, new HashSet<string>());
+
+                section.Armor!.Cloth1.Number = 50;
+
+                store.GetInteger(BehaviorFieldStorage.Field, "Cloth1Color").Should().Be(50);
+                store.Locals.GetInt(inherited).Should().BeNull(
+                    "the material that followed the old global custom color now follows the preset");
+                store.Locals.GetInt(independent).Should().Be(independentColor,
+                    "a separately customized material must retain its own tint");
+                store.Locals.GetInt(otherLayer).Should().Be(globalColor,
+                    "the preset transition is scoped to one dye channel");
+                store.Locals.GetInt(state).Should().BeNull(
+                    "the selected preset replaces the old global custom intent");
+            }
+
+            [Test]
+            public void ReselectingTheDisplayedArmorSwatchClearsGlobalTintStateWithoutMaterialKeys()
+            {
+                var directory = Path.Combine(
+                    TestContext.CurrentContext.WorkDirectory,
+                    "armor-global-swatch-" + Guid.NewGuid().ToString("N"));
+                Directory.CreateDirectory(directory);
+                try
+                {
+                    var palette = new byte[18 + TintMapMaterialRegistry.PaletteColorCount * 3];
+                    palette[2] = 2;
+                    System.Buffers.Binary.BinaryPrimitives.WriteUInt16LittleEndian(
+                        palette.AsSpan(12, 2),
+                        1);
+                    System.Buffers.Binary.BinaryPrimitives.WriteUInt16LittleEndian(
+                        palette.AsSpan(14, 2),
+                        TintMapMaterialRegistry.PaletteColorCount);
+                    palette[16] = 24;
+                    File.WriteAllBytes(Path.Combine(directory, "pal_cloth01.tga"), palette);
+
+                    var store = OpenStore("adren_harness");
+                    var layer = TintMapLayerType.Cloth1;
+                    var state = TintMapVariable.GetItemGlobalColorStateName(layer);
+                    var inheritance = TintMapVariable.GetItemGlobalInheritanceStateName(layer);
+                    store.Locals.SetInt(state, new TintMapColor(12, 34, 56).ToStoredValue());
+                    store.Locals.SetInt(inheritance, 1);
+                    var resourceIndex = new ResourceIndex(
+                        null,
+                        new[] { new ResourceIndex.HakLayer("fixture", directory) });
+                    var armor = new ArmorPartsViewModel(
+                        store,
+                        RunEdit,
+                        dyes: new ArmorDyeSwatchService(resourceIndex));
+                    var currentIndex = (int)armor.Cloth1.Number!.Value;
+
+                    armor.Cloth1.PickCommand.Execute(armor.Cloth1.Swatches[currentIndex]);
+
+                    store.Locals.GetInt(state).Should().BeNull(
+                        "reselecting the visible preset must clear item-wide RGB intent");
+                    store.Locals.GetInt(inheritance).Should().BeNull(
+                        "the current global-inheritance marker must not make the swatch a no-op");
+                }
+                finally
+                {
+                    Directory.Delete(directory, recursive: true);
+                }
+            }
+
+            [Test]
+            public void ChoosingAnArmorPresetClearsUniformLegacyGlobalTintWithoutMarker()
+            {
+                var store = OpenStore("adren_harness");
+                var globalColor = new TintMapColor(12, 34, 56).ToStoredValue();
+                var first = TintMapVariable.GetName("pmh0_chest156", TintMapLayerType.Cloth1);
+                var second = TintMapVariable.GetName("pmh0_bicepl249", TintMapLayerType.Cloth1);
+                store.Locals.SetInt(first, globalColor);
+                store.Locals.SetInt(second, globalColor);
+                var section = Open(store, ArmorRow, new HashSet<string>());
+
+                section.Armor!.Cloth1.Number = 50;
+
+                store.Locals.GetInt(first).Should().BeNull();
+                store.Locals.GetInt(second).Should().BeNull(
+                    "a complete uniform pre-marker tint is the legacy global-color representation");
+            }
+
+            [Test]
+            public void ChoosingAnArmorPresetPreservesMixedLegacyPerMaterialTints()
+            {
+                var store = OpenStore("adren_harness");
+                var first = TintMapVariable.GetName("pmh0_chest156", TintMapLayerType.Cloth1);
+                var second = TintMapVariable.GetName("pmh0_bicepl249", TintMapLayerType.Cloth1);
+                var firstColor = new TintMapColor(12, 34, 56).ToStoredValue();
+                var secondColor = new TintMapColor(65, 43, 21).ToStoredValue();
+                store.Locals.SetInt(first, firstColor);
+                store.Locals.SetInt(second, secondColor);
+                var section = Open(store, ArmorRow, new HashSet<string>());
+
+                section.Armor!.Cloth1.Number = 50;
+
+                store.Locals.GetInt(first).Should().Be(firstColor);
+                store.Locals.GetInt(second).Should().Be(secondColor,
+                    "mixed legacy values are independent material edits, not global intent");
+            }
+
+            [Test]
             public void OutOfRangeDyeValueIsClampedToThePalette()
             {
                 var store = OpenStore("adren_harness");
@@ -325,7 +461,7 @@ namespace SWLOR.Toolset.Tests.Items
             }
 
             [Test]
-            public void PickingASwatchWritesItsIndexAndMarksItSelected()
+            public void PickingASwatchWritesItsIndexAndKeepsThePickerOpen()
             {
                 var store = OpenStore("adren_harness");
                 var palette = new[]
@@ -344,6 +480,7 @@ namespace SWLOR.Toolset.Tests.Items
                 cell.HasPalette.Should().BeTrue();
                 cell.Swatches.Should().HaveCount(3);
                 cell.Swatches[0].IsSelected.Should().BeTrue("index 0 is what the field holds");
+                cell.IsPickerOpen = true;
 
                 cell.PickCommand.Execute(cell.Swatches[2]);
 
@@ -352,7 +489,126 @@ namespace SWLOR.Toolset.Tests.Items
                 cell.Swatches[2].IsSelected.Should().BeTrue();
                 cell.Swatches[0].IsSelected.Should().BeFalse();
                 cell.SelectedBrush.Should().NotBeNull("the row's chip shows the chosen colour");
-                cell.IsPickerOpen.Should().BeFalse("picking closes the popup");
+                cell.IsPickerOpen.Should().BeTrue(
+                    "builders can compare preset colors without repeatedly reopening the popup");
+
+                cell.PickCommand.Execute(cell.Swatches[2]);
+
+                cell.IsPickerOpen.Should().BeTrue(
+                    "reselecting the active preset is still an interaction inside the popup");
+            }
+
+            [Test]
+            public void ReselectingTheCurrentPresetStillClearsAnExternalCustomOverride()
+            {
+                var stored = 1;
+                var hasOverride = true;
+                var writes = 0;
+                var cell = new ItemDyeCellViewModel(
+                    "Cloth 1",
+                    () => stored,
+                    value =>
+                    {
+                        writes++;
+                        stored = value;
+                        hasOverride = false;
+                        return true;
+                    },
+                    new[]
+                    {
+                        ((byte)10, (byte)20, (byte)30),
+                        ((byte)40, (byte)50, (byte)60)
+                    },
+                    hasExternalOverride: () => hasOverride);
+
+                cell.PickCommand.Execute(cell.Swatches[1]);
+
+                writes.Should().Be(1,
+                    "the matching TM_* override must be cleared even when its underlying preset is reselected");
+                hasOverride.Should().BeFalse();
+                cell.Number.Should().Be(1);
+            }
+
+            [AvaloniaTest]
+            public void CustomRgbIsAChoiceInsideThePresetPickerAndTheCurrentPresetClearsIt()
+            {
+                var stored = 1;
+                Color? custom = null;
+                var cell = new ItemDyeCellViewModel(
+                    "Skin",
+                    () => stored,
+                    value =>
+                    {
+                        stored = value;
+                        custom = null;
+                        return true;
+                    },
+                    new[]
+                    {
+                        ((byte)10, (byte)20, (byte)30),
+                        ((byte)40, (byte)50, (byte)60)
+                    },
+                    readCustom: () => custom,
+                    writeCustom: value =>
+                    {
+                        custom = value;
+                        return true;
+                    });
+
+                cell.HasCustomOption.Should().BeTrue();
+                cell.IsPickerOpen = true;
+                cell.CustomColor = Color.FromRgb(70, 80, 90);
+                cell.IsUsingCustomColor.Should().BeTrue();
+                cell.IsPickerOpen.Should().BeTrue(
+                    "editing custom RGB must leave the shared preset/custom popup open");
+                cell.DisplayBrush.Should().BeOfType<SolidColorBrush>()
+                    .Which.Color.Should().Be(Color.FromRgb(70, 80, 90));
+
+                cell.PickCommand.Execute(cell.Swatches[1]);
+
+                custom.Should().BeNull(
+                    "reselecting the underlying preset must authoritatively replace Custom");
+                cell.IsUsingCustomColor.Should().BeFalse();
+                cell.DisplayBrush.Should().BeSameAs(cell.SelectedBrush);
+                cell.IsPickerOpen.Should().BeTrue(
+                    "switching from a custom color to a preset must not dismiss the popup");
+            }
+
+            [AvaloniaTest]
+            public void PaletteLessCustomColorCanRestoreItsStoredPresetWithoutClosing()
+            {
+                var stored = 7;
+                Color? custom = null;
+                var cell = new ItemDyeCellViewModel(
+                    "Skin",
+                    () => stored,
+                    value =>
+                    {
+                        stored = value;
+                        custom = null;
+                        return true;
+                    },
+                    Array.Empty<(byte, byte, byte)>(),
+                    allowsNumericFallback: false,
+                    readCustom: () => custom,
+                    writeCustom: value =>
+                    {
+                        custom = value;
+                        return true;
+                    });
+                cell.IsPickerOpen = true;
+                cell.CustomColor = Color.FromRgb(70, 80, 90);
+
+                cell.CanRestorePreset.Should().BeTrue(
+                    "there is no swatch to clear Custom when palette artwork is unavailable");
+                cell.RestorePresetCommand.Execute(null);
+
+                custom.Should().BeNull();
+                stored.Should().Be(7, "restoring Custom keeps the existing NWN palette choice");
+                cell.IsUsingCustomColor.Should().BeFalse();
+                cell.CanRestorePreset.Should().BeFalse();
+                cell.IsPickerOpen.Should().BeTrue(
+                    "restoring a preset is another color choice inside the popup");
             }
 
         }

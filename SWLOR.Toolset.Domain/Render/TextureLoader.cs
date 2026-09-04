@@ -19,10 +19,18 @@ namespace SWLOR.Toolset.Domain.Render
     /// <summary>A decoded texture in canonical top-left, row-major RGBA byte order.</summary>
     public sealed class TextureImage
     {
+        public const byte DefaultAlphaCutoff = 96;
+
         public required int Width { get; init; }
         public required int Height { get; init; }
         public required byte[] Pixels { get; init; }
         public required TextureSourceFormat SourceFormat { get; init; }
+
+        /// <summary>
+        /// Texels below this value are discarded by software preview rendering. Ordinary textures
+        /// retain the historic default; material-derived tint textures carry their shader cutoff.
+        /// </summary>
+        public byte AlphaCutoff { get; init; } = DefaultAlphaCutoff;
 
         /// <summary>
         /// The compact BioWare DDS header's authored alpha mean, when present. Standard DDS, TGA,

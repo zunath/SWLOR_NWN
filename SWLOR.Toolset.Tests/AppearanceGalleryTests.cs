@@ -570,6 +570,36 @@ namespace SWLOR.Toolset.Tests
             itemView.Should().Contain("<items:PaletteColorPickerView");
             creatureView.Should().Contain("<items:PaletteColorPickerView",
                 "creature colors reuse the item editor's established palette control");
+            creatureView.Should().Contain(
+                "<TabItem Header=\"Body\" IsVisible=\"{Binding BodyParts.HasEditableContent}\">",
+                "the existing Body surface must be available only when the model exposes editable content");
+            creatureView.Should().Contain("Content=\"{Binding TintMapEditor}\"",
+                "full-body tint channels belong inside the existing Body editor");
+            creatureView.Should().NotContain("<TabItem Header=\"Tints\"",
+                "tints must not duplicate the Body appearance surface");
+            var palettePickerView = File.ReadAllText(Path.Combine(
+                CorpusLocator.RepositoryRoot,
+                "SWLOR.Toolset", "Editors", "Items", "PaletteColorPickerView.axaml"));
+            palettePickerView.Should().Contain("IsVisible=\"{Binding HasCustomOption}\"",
+                "the custom RGB editor must stay visible inside the existing preset popup");
+            palettePickerView.Should().Contain("<ColorView",
+                "the custom color surface must be shown alongside the presets");
+            palettePickerView.Should().Contain("Command=\"{Binding RestorePresetCommand}\"",
+                "Custom must be removable even when palette artwork cannot supply swatches");
+            palettePickerView.Should().Contain("<Popup");
+            palettePickerView.Should().Contain(
+                "IsOpen=\"{Binding IsPickerOpen, Mode=TwoWay}\"",
+                "custom RGB changes must not dismiss the palette popup");
+            palettePickerView.Should().Contain(
+                "IsLightDismissEnabled=\"True\"",
+                "a click outside the combined preset/custom picker must dismiss it");
+            palettePickerView.Should().Contain(
+                "OverlayDismissEventPassThrough=\"False\"",
+                "the dismiss click on the active color chip must close rather than reopen the picker");
+            palettePickerView.Should().NotContain("<Flyout",
+                "an auto-managed flyout closes during live custom color edits");
+            palettePickerView.Should().NotContain("<ColorPicker ",
+                "a nested collapsed picker would require another click");
             creatureView.Should().Contain("<TabItem Header=\"Equipment\"");
             creatureView.Should().Contain("SelectedItem=\"{Binding EquipmentSlots.SelectedSlot, Mode=TwoWay}\"",
                 "equipment reuses the merchant editor's focused rail/work-pane interaction");

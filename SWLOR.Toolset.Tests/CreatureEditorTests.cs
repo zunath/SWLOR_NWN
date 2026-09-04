@@ -24,7 +24,9 @@ using SWLOR.Toolset.Editors.Appearance;
 using SWLOR.Toolset.Editors.Behaviors;
 using SWLOR.Toolset.Editors.Creatures;
 using SWLOR.Toolset.Editors.Items;
+using SWLOR.Toolset.Editors.TintMaps;
 using SWLOR.Game.Server.Service.AIService;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Toolset.Tests
@@ -1225,6 +1227,17 @@ namespace SWLOR.Toolset.Tests
                                     $"armor_{index:D3}", $"Armor {index:D3}", 16, 2))
                                 .ToList()
                             : Array.Empty<CreatureEquipmentChoice>()));
+                var tintRow = new TintMapColorRowViewModel(
+                    "pmh0_head038",
+                    TintMapLayerType.Skin,
+                    new CreatureValueStore(session.Document.Root).Locals,
+                    (description, mutation) =>
+                    {
+                        session.Execute(description, mutation);
+                        return true;
+                    },
+                    null);
+                editor.BodyParts.SetTintMapRows(new[] { tintRow });
                 var view = new CreatureEditorView { DataContext = editor };
                 var window = new Window { Width = 1280, Height = 800, Content = view };
 
@@ -1276,13 +1289,31 @@ namespace SWLOR.Toolset.Tests
 
                 var appearanceSections = FindVisual<TabControl>(view, "CreatureAppearanceSections");
                 appearanceSections.Should().NotBeNull();
-                appearanceSections!.Items.Cast<TabItem>().Select(tab => tab.Header?.ToString()).Should().Equal(
+                var appearanceTabs = appearanceSections!.Items.Cast<TabItem>().ToList();
+                appearanceTabs.Select(tab => tab.Header?.ToString()).Should().Equal(
                     "Model", "Details", "Body");
+                appearanceTabs.Should().NotContain(tab => Convert.ToString(tab.Header) == "Tints",
+                    "preset colors and custom RGB tinting are one Body color editor");
                 for (var index = 0; index < 3; index++)
                 {
                     appearanceSections!.SelectedIndex = index;
                     Dispatcher.UIThread.RunJobs();
                 }
+                await editor.BodyParts.EnsureLoadedAsync();
+                Dispatcher.UIThread.RunJobs();
+                var skinColor = editor.BodyParts.Colors.Single(color => color.Label == "Skin");
+                skinColor.HasCustomTint.Should().BeTrue();
+                skinColor.Palette.HasCustomOption.Should().BeTrue();
+                view.GetVisualDescendants().OfType<Button>()
+                    .Should().ContainSingle(button => button.IsEffectivelyVisible && Equals(
+                        ToolTip.GetTip(button),
+                        "Pick a preset or custom colour"),
+                        "preset and Custom are choices in the same Body color selector");
+                view.GetVisualDescendants().OfType<Button>()
+                    .Should().NotContain(button => Equals(
+                        ToolTip.GetTip(button),
+                        "Pick an unrestricted custom RGB tint"),
+                        "Body must not expose a second custom-color control");
 
                 tabs.SelectedIndex = 4;
                 Dispatcher.UIThread.RunJobs();
@@ -1396,7 +1427,84 @@ namespace SWLOR.Toolset.Tests
         }
 
         [AvaloniaTest]
-        public void CreatureAppearance_HidesBodyTabForNonDynamicModelsAndRepairsSelection()
+        public async Task CreaturePreview_RecolorsTheRetainedModelImmediately()
+        {
+            var document = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
+                ResourceType.Utc, "recolor_test", "Recolor Test"));
+            var store = new CreatureValueStore(document.Root);
+            var model = new RenderModel
+            {
+                Name = "recolor_test",
+                LayerColorIndices = new Dictionary<int, int>
+                {
+                    [SWLOR.NWN.Formats.Plt.PltLayers.Skin] = 4,
+                    [SWLOR.NWN.Formats.Plt.PltLayers.Hair] = 5,
+                    [SWLOR.NWN.Formats.Plt.PltLayers.Metal1] = 73,
+                    [SWLOR.NWN.Formats.Plt.PltLayers.Tattoo1] = 6,
+                    [SWLOR.NWN.Formats.Plt.PltLayers.Tattoo2] = 7
+                }
+            };
+            using var editor = new CreatureEditorViewModel(
+                document.Root,
+                Path.Combine(CorpusLocator.ModuleDirectory, "utc", "recolor_test.utc.json"),
+                "recolor_test",
+                (_, mutation) =>
+                {
+                    mutation();
+                    return true;
+                },
+                null,
+                null,
+                null,
+                _ => model,
+                id => new AppearanceRow(id, "DYNAMIC_TEST", "Dynamic Test", "P", "H", null),
+                null);
+            DrainUntil(() => !editor.IsModelPreviewLoading);
+
+            var skinKey = TintMapVariable.GetName("pmh0_head220", TintMapLayerType.Skin);
+            editor.BodyParts.SetTintMapRows(new[]
+            {
+                new TintMapColorRowViewModel(
+                    "pmh0_head220",
+                    TintMapLayerType.Skin,
+                    store.Locals,
+                    (_, mutation) =>
+                    {
+                        mutation();
+                        return true;
+                    },
+                    null)
+            });
+            await editor.BodyParts.EnsureLoadedAsync();
+
+            var originalScene = editor.PreviewScene!;
+            var skin = editor.BodyParts.Colors.Single(color => color.Label == "Skin");
+            skin.Palette.Number = 44;
+
+            var presetScene = editor.PreviewScene!;
+            presetScene.Should().NotBeSameAs(originalScene,
+                "a new immutable color snapshot must be published to the viewport");
+            presetScene.Instances.Single().Model.Should().BeSameAs(model,
+                "a palette edit must retain the current geometry and camera framing");
+            presetScene.Instances.Single().LayerColorIndices[SWLOR.NWN.Formats.Plt.PltLayers.Skin]
+                .Should().Be(44, "the selected preset must reach the very next rendered frame");
+            presetScene.Instances.Single().LayerColorIndices[SWLOR.NWN.Formats.Plt.PltLayers.Metal1]
+                .Should().Be(73, "recoloring semantic layers must preserve the retained armor palette");
+
+            skin.CustomColor = Avalonia.Media.Color.FromRgb(12, 34, 56);
+
+            var customScene = editor.PreviewScene!;
+            customScene.Instances.Single().Model.Should().BeSameAs(model);
+            TintMapColor.TryFromStoredValue(
+                    customScene.Instances.Single().TintMapOverrides[skinKey],
+                    out var custom)
+                .Should().BeTrue();
+            custom.Should().Be(new TintMapColor(12, 34, 56),
+                "custom RGB must be present in the very next scene snapshot");
+        }
+
+        [AvaloniaTest]
+        public void CreatureAppearance_HidesUnavailableBodyEditorForFullBodyModels()
         {
             var document = JsonGffDocument.Parse(BlueprintTemplateFactory.CreateFileContent(
                 ResourceType.Utc, "body_visibility", "Body Visibility"));
@@ -1448,10 +1556,37 @@ namespace SWLOR.Toolset.Tests
                 tile.Option.CreatureAppearanceId == 7);
             Dispatcher.UIThread.RunJobs();
 
-            bodyTab.IsVisible.Should().BeFalse("fixed models have no editable segmented body parts");
+            bodyTab.IsVisible.Should().BeFalse(
+                "full-body models without tint channels do not offer any Body functionality");
+            editor.BodyParts.IsDynamic.Should().BeFalse();
+            editor.BodyParts.IsFullBody.Should().BeTrue();
             editor.SelectedAppearanceSectionIndex.Should().Be(0,
-                "changing away from a dynamic model cannot leave a hidden section selected");
+                "the editor must leave a Body section that becomes unavailable");
             appearanceSections.SelectedIndex.Should().Be(0);
+
+            editor.BodyParts.SetTintMapRows(new[]
+            {
+                new TintMapColorRowViewModel(
+                    "c_droid",
+                    TintMapLayerType.Skin,
+                    new CreatureValueStore(document.Root).Locals,
+                    (_, mutation) =>
+                    {
+                        mutation();
+                        return true;
+                    },
+                    null)
+            });
+            Dispatcher.UIThread.RunJobs();
+            bodyTab.IsVisible.Should().BeTrue(
+                "a full-body model with a tint channel still has editable Body content");
+
+            appearanceSections.SelectedIndex = 2;
+            Dispatcher.UIThread.RunJobs();
+            DrainUntil(() => editor.BodyParts.IsLoaded);
+            editor.BodyParts.Colors.Should().Contain(color => color.Label == "Skin");
+            editor.BodyParts.Structure.Should().BeEmpty(
+                "full-body models expose colors without segmented geometry controls");
 
             editorTabs!.SelectedItem = editorTabs.Items.Cast<TabItem>()
                 .Single(tab => tab.Header?.ToString() == "Equipment");

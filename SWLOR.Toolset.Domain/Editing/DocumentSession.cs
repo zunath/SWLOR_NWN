@@ -110,6 +110,37 @@ namespace SWLOR.Toolset.Domain.Editing
         }
 
         /// <summary>
+        /// Runs deferred work and merges its captured edits into the originating applied edit.
+        /// Returns false without mutating when that origin has left the applied history.
+        /// </summary>
+        public bool ExecuteCoalesced(
+            IDocumentEdit origin,
+            string description,
+            Action mutation)
+        {
+            ArgumentNullException.ThrowIfNull(origin);
+            ArgumentNullException.ThrowIfNull(mutation);
+
+            lock (_syncRoot)
+            {
+                if (!UndoStack.ContainsApplied(origin))
+                    return false;
+
+                using var transaction = Begin(description);
+                try
+                {
+                    mutation();
+                    return transaction.CommitCoalescedInto(origin);
+                }
+                catch
+                {
+                    transaction.Rollback();
+                    throw;
+                }
+            }
+        }
+
+        /// <summary>
         /// Applies derived metadata without adding an undo step. The caller must use this only for
         /// values fully determined by the document's authored content, such as a saved word count.
         /// </summary>

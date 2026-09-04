@@ -4,6 +4,7 @@ using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.GuiService;
@@ -18,7 +19,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 {
     public partial class AppearanceEditorViewModel :
         GuiViewModelBase<AppearanceEditorViewModel, AppearanceEditorPayload>,
-        IGuiRefreshable<EquipItemRefreshEvent>
+        IGuiRefreshable<EquipItemRefreshEvent>,
+        IGuiRefreshable<UnequipItemRefreshEvent>,
+        IGuiRefreshable<AppearanceChangedRefreshEvent>
     {
         public enum ColorTarget
         {
@@ -65,6 +68,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private static readonly Dictionary<AppearanceType, IRacialAppearanceDefinition> _racialAppearances = new();
         private static readonly Dictionary<BaseItem, IWeaponAppearanceDefinition> _weaponAppearances = new();
         private Dictionary<int, int> _partIdToIndex = new();
+        private IReadOnlyList<TintMapMaterialSelection> _tintMapSelections = Array.Empty<TintMapMaterialSelection>();
+        private bool _loadingTintColor;
+        private bool _tintControlBindingsWatched;
 
         private const string OutfitBarrelTag = "OUTFIT_BARREL";
 
@@ -185,6 +191,49 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             get => Get<bool>();
             set => Set(value);
+        }
+
+        public bool IsTintMapAvailable
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsCustomTintAvailable
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public GuiColor SelectedTintColor
+        {
+            get => Get<GuiColor>();
+            set
+            {
+                Set(value);
+                if (value == null)
+                    return;
+
+                ApplyCustomTintColor(value, synchronizeComponents: true);
+            }
+        }
+
+        public string CustomTintRed
+        {
+            get => Get<string>();
+            set => SetCustomTintComponent(value, nameof(CustomTintRed));
+        }
+
+        public string CustomTintGreen
+        {
+            get => Get<string>();
+            set => SetCustomTintComponent(value, nameof(CustomTintGreen));
+        }
+
+        public string CustomTintBlue
+        {
+            get => Get<string>();
+            set => SetCustomTintComponent(value, nameof(CustomTintBlue));
         }
 
         public bool IsSettingsVisible
@@ -639,6 +688,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 LoadColorCategoryOptions();
                 LoadPartCategoryOptions();
                 LoadItemParts();
+                LoadTintMapEditor();
                 _lastModifiedItem = OBJECT_INVALID;
             }
         }
@@ -778,6 +828,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsSettingsSelected = false;
             IsColorPickerVisible = true;
             IsCopyEnabled = true;
+            IsCustomTintAvailable = false;
             ToggleItemEquippedFlags();
             LoadColorCategoryOptions();
             LoadPartCategoryOptions();
@@ -788,12 +839,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             ColorCategorySelected[0] = true;
             PartCategorySelected[0] = true;
             LoadBodyParts();
+            // Generated tint materials start at palette row zero. Initialize every active
+            // body and equipment material from the creature and equipped-item appearance
+            // before the editor exposes those colors.
+            TintMapService.ApplyCurrentColors(_target);
+            RefreshTintMapAvailability();
+            LoadTintMapEditor();
             LoadSettings();
 
             WatchOnClient(model => model.SelectedColorCategoryIndex);
             WatchOnClient(model => model.SelectedPartCategoryIndex);
             WatchOnClient(model => model.SelectedPartIndex);
             WatchOnClient(model => model.SelectedItemTypeIndex);
+            WatchOnClient(model => model.SelectedTintColor);
+            WatchOnClient(model => model.CustomTintRed);
+            WatchOnClient(model => model.CustomTintGreen);
+            WatchOnClient(model => model.CustomTintBlue);
+            _tintControlBindingsWatched = true;
 
             if (GetIsPC(_target) && !GetIsDM(_target) && !GetIsDMPossessed(_target))
             {
@@ -805,6 +867,266 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             {
                 IsSettingsVisible = false;
             }
+        }
+
+        private IReadOnlyList<TintMapMaterialSelection> GetCurrentTintMapSelections()
+        {
+            return TintMapModelResolver.GetCurrentSelections(_target);
+        }
+
+        private void RefreshTintMapAvailability()
+        {
+            _tintMapSelections = GetCurrentTintMapSelections();
+            IsTintMapAvailable = _tintMapSelections.Count > 0;
+        }
+
+        private void LoadTintMapEditor()
+        {
+            RefreshTintMapAvailability();
+            if (!TryGetEditableTintSelections(out var selections, out var layerType, out _))
+            {
+                IsCustomTintAvailable = false;
+                SetSelectedTintColor(GuiColor.Grey);
+                return;
+            }
+
+            IsCustomTintAvailable = true;
+            var effectiveColors = selections
+                .Select(selection => TintMapService.GetEffectiveDisplayColor(
+                    _target,
+                    selection,
+                    layerType))
+                .ToList();
+            var distinctColors = effectiveColors
+                .Distinct()
+                .ToList();
+
+            if (distinctColors.Count == 1)
+            {
+                var color = distinctColors[0];
+                SetSelectedTintColor(new GuiColor(color.Red, color.Green, color.Blue));
+                return;
+            }
+
+            SetSelectedTintColor(GuiColor.Grey);
+        }
+
+        private void SetSelectedTintColor(
+            GuiColor color,
+            bool synchronizeComponents = true)
+        {
+            SynchronizeTintControlBindings(() =>
+            {
+                _loadingTintColor = true;
+                try
+                {
+                    if (synchronizeComponents)
+                        SelectedTintColor = color;
+                    else
+                        Set(color, nameof(SelectedTintColor));
+                }
+                finally
+                {
+                    _loadingTintColor = false;
+                }
+            });
+        }
+
+        private void ApplyCustomTintColor(
+            GuiColor value,
+            bool synchronizeComponents)
+        {
+            if (synchronizeComponents)
+                SynchronizeCustomTintComponents(value);
+
+            if (_loadingTintColor ||
+                !TryGetEditableTintSelections(out _, out var layerType, out _))
+            {
+                return;
+            }
+
+            var requestedColor = new TintMapColor(value.R, value.G, value.B);
+            var paletteColorId = TintMapPaletteColors.GetClosestColorId(layerType, requestedColor);
+            if (!ApplySelectedPaletteColor(
+                    paletteColorId,
+                    reloadEditor: synchronizeComponents))
+                return;
+
+            // The known-good PLT shader accepts palette rows, not arbitrary RGB. Reflect the row
+            // actually applied in the picker. Text-entry updates deliberately leave the three
+            // component fields alone so an in-progress multi-digit value is never overwritten.
+            var appliedColor = TintMapPaletteColors.GetColor(layerType, paletteColorId);
+            SetSelectedTintColor(
+                new GuiColor(appliedColor.Red, appliedColor.Green, appliedColor.Blue),
+                synchronizeComponents);
+        }
+
+        private void SynchronizeCustomTintComponents(GuiColor color)
+        {
+            SynchronizeTintControlBindings(() =>
+            {
+                var wasLoading = _loadingTintColor;
+                _loadingTintColor = true;
+                try
+                {
+                    Set(color.R.ToString(), nameof(CustomTintRed));
+                    Set(color.G.ToString(), nameof(CustomTintGreen));
+                    Set(color.B.ToString(), nameof(CustomTintBlue));
+                }
+                finally
+                {
+                    _loadingTintColor = wasLoading;
+                }
+            });
+        }
+
+        private void SynchronizeTintControlBindings(Action update)
+        {
+            var restoreWatches = _tintControlBindingsWatched;
+            if (restoreWatches)
+                SetTintControlBindingsWatched(false);
+
+            try
+            {
+                update();
+            }
+            finally
+            {
+                if (restoreWatches)
+                    SetTintControlBindingsWatched(true);
+            }
+        }
+
+        private void SetTintControlBindingsWatched(bool watched)
+        {
+            NuiSetBindWatch(Player, WindowToken, nameof(SelectedTintColor), watched);
+            NuiSetBindWatch(Player, WindowToken, nameof(CustomTintRed), watched);
+            NuiSetBindWatch(Player, WindowToken, nameof(CustomTintGreen), watched);
+            NuiSetBindWatch(Player, WindowToken, nameof(CustomTintBlue), watched);
+            _tintControlBindingsWatched = watched;
+        }
+
+        private void SetCustomTintComponent(string value, string propertyName)
+        {
+            var digits = new string((value ?? string.Empty).Where(char.IsDigit).ToArray());
+            var normalized = int.TryParse(digits, out var component)
+                ? Math.Clamp(component, 0, byte.MaxValue).ToString()
+                : string.Empty;
+            Set(normalized, propertyName);
+
+            if (_loadingTintColor ||
+                !byte.TryParse(CustomTintRed, out var red) ||
+                !byte.TryParse(CustomTintGreen, out var green) ||
+                !byte.TryParse(CustomTintBlue, out var blue))
+            {
+                return;
+            }
+
+            ApplyCustomTintColor(
+                new GuiColor(red, green, blue),
+                synchronizeComponents: false);
+        }
+
+        private bool TryGetEditableTintSelections(
+            out IReadOnlyList<TintMapMaterialSelection> selections,
+            out TintMapLayerType layerType,
+            out TintMapLayerDefinition layer)
+        {
+            selections = Array.Empty<TintMapMaterialSelection>();
+            layerType = default;
+            layer = null;
+
+            if (!TryGetSelectedTintLayer(out layerType))
+                return false;
+
+            if (IsEquipmentSelected && !IsValidItem())
+                return false;
+
+            // Global armor channels are palette defaults, not custom material overrides.
+            // Requiring a concrete part prevents one picker edit from repainting every part
+            // that inherits the selected global channel.
+            if (IsEquipmentSelected &&
+                SelectedItemTypeIndex == 0 &&
+                _colorTarget == ColorTarget.Global)
+            {
+                return false;
+            }
+
+            var paletteSource = IsAppearanceSelected ? _target : GetItem();
+            if (!GetIsObjectValid(paletteSource))
+                return false;
+
+            var restrictToArmorPart = IsEquipmentSelected &&
+                                      SelectedItemTypeIndex == 0 &&
+                                      _colorTarget != ColorTarget.Global;
+            var armorPart = restrictToArmorPart
+                ? GetArmorModelType(_colorTarget)
+                : AppearanceArmor.Invalid;
+            var selectedLayerType = layerType;
+            selections = _tintMapSelections
+                .Where(selection =>
+                    selection.GetPaletteSource(selectedLayerType) == paletteSource &&
+                    selection.Material.Layers.Contains(selectedLayerType) &&
+                    (!restrictToArmorPart || selection.ArmorPart == armorPart))
+                .ToList();
+            if (selections.Count == 0)
+                return false;
+
+            layer = TintMapMaterialRegistry.GetLayer(layerType);
+            return true;
+        }
+
+        private bool TryGetSelectedTintLayer(out TintMapLayerType layerType)
+        {
+            layerType = default;
+            if (IsAppearanceSelected)
+            {
+                layerType = SelectedColorCategoryIndex switch
+                {
+                    0 => TintMapLayerType.Skin,
+                    1 => TintMapLayerType.Hair,
+                    2 => TintMapLayerType.Tattoo1,
+                    3 => TintMapLayerType.Tattoo2,
+                    _ => default
+                };
+                return SelectedColorCategoryIndex is >= 0 and <= 3;
+            }
+
+            if (!IsEquipmentSelected)
+                return false;
+
+            if (SelectedItemTypeIndex == 0)
+            {
+                if (_colorTarget == ColorTarget.Invalid)
+                    return false;
+
+                layerType = _selectedColorChannel switch
+                {
+                    AppearanceArmorColor.Leather1 => TintMapLayerType.Leather1,
+                    AppearanceArmorColor.Leather2 => TintMapLayerType.Leather2,
+                    AppearanceArmorColor.Cloth1 => TintMapLayerType.Cloth1,
+                    AppearanceArmorColor.Cloth2 => TintMapLayerType.Cloth2,
+                    AppearanceArmorColor.Metal1 => TintMapLayerType.Metal1,
+                    AppearanceArmorColor.Metal2 => TintMapLayerType.Metal2,
+                    _ => default
+                };
+                return _selectedColorChannel is >= AppearanceArmorColor.Leather1 and <= AppearanceArmorColor.Metal2;
+            }
+
+            if (SelectedItemTypeIndex is not (1 or 2))
+                return false;
+
+            layerType = SelectedColorCategoryIndex switch
+            {
+                0 => TintMapLayerType.Leather1,
+                1 => TintMapLayerType.Leather2,
+                2 => TintMapLayerType.Cloth1,
+                3 => TintMapLayerType.Cloth2,
+                4 => TintMapLayerType.Metal1,
+                5 => TintMapLayerType.Metal2,
+                _ => default
+            };
+            return SelectedColorCategoryIndex is >= 0 and <= 5;
         }
 
         private void StartArmorClientWatches()
@@ -1263,6 +1585,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SelectedColorCategoryIndex = 0;
             _lastModifiedItem = OBJECT_INVALID;
             LoadBodyParts();
+            LoadTintMapEditor();
         };
 
         public Action OnSelectEquipment() => () =>
@@ -1282,6 +1605,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             _colorTarget = ColorTarget.Invalid;
             ColorTargetText = string.Empty;
+            // Re-entering the equipment page must also repair rows after an outfit or part
+            // was replaced while the window remained open.
+            TintMapService.ApplyCurrentColors(_target);
+            RefreshTintMapAvailability();
+            LoadTintMapEditor();
 
             // If we don't delay the watch, NUI will reset values of some parts back to default (first item in the list)
             // This is related to the dropdown menu options for each part type.
@@ -1362,6 +1690,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             SelectedColorCategoryIndex = index;
             ColorCategorySelected[index] = true;
+            LoadTintMapEditor();
         };
 
         public Action OnSelectPartCategory() => () =>
@@ -1452,6 +1781,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var item = GetItem();
             var itemType = GetBaseItemType(item);
             var modelType = GetModelType();
+            var armorPart = modelType == ItemAppearanceType.ArmorModel
+                ? (AppearanceArmor)type
+                : AppearanceArmor.Invalid;
+            var previousTintSelections = GetCurrentTintMapSelections()
+                .Where(selection =>
+                    selection.PaletteSource == item &&
+                    selection.ArmorPart == armorPart)
+                .ToList();
+            var tintCarry = TintMapService.CaptureItemCustomColors(item, previousTintSelections);
             var copy = item;
 
             if (colorId > -1)
@@ -1486,17 +1824,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ClearAllActions();
                 ActionEquipItem(copy, slot);
             });
+            TintMapService.QueueItemCustomColorCarry(
+                _target, item, copy, Player, slot, armorPart, tintCarry);
 
             _lastModifiedItem = copy;
         }
 
-        public Action OnSelectColor() => () =>
+        private int GetSelectedPaletteColorId()
         {
-            ToggleItemEquippedFlags();
-            if (DoesNotHaveItemEquipped)
-                return;
-
-            var scale = GetPlayerDeviceProperty(_target, PlayerDevicePropertyType.GuiScale) / 100.0f;
+            var scale = GetPlayerDeviceProperty(Player, PlayerDevicePropertyType.GuiScale) / 100.0f;
             var payload = NuiGetEventPayload();
             var mousePosition = JsonObjectGet(payload, "mouse_pos");
             var jsonX = JsonObjectGet(mousePosition, "x");
@@ -1508,17 +1844,47 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var cellX = (int)(x * scale / tileWidth);
             var cellY = (int)(y * scale / tileHeight);
 
-            if (cellX < 0)
-                cellX = 0;
-            else if (cellX > ColorWidthCells)
-                cellX = ColorWidthCells;
+            cellX = Math.Clamp(cellX, 0, ColorWidthCells - 1);
+            cellY = Math.Clamp(cellY, 0, ColorHeightCells - 1);
 
-            if (cellY < 0)
-                cellY = 0;
-            else if (cellY > ColorHeightCells)
-                cellY = ColorHeightCells;
+            return Math.Min(cellX + cellY * ColorWidthCells, TintMapMaterialRegistry.PaletteColorCount - 1);
+        }
 
-            var colorId = cellX + cellY * ColorWidthCells;
+        public Action OnSelectColor() => () =>
+        {
+            var colorId = GetSelectedPaletteColorId();
+            if (ApplySelectedPaletteColor(colorId))
+                SynchronizeCustomTintControlsToPaletteColor(colorId);
+        };
+
+        private void SynchronizeCustomTintControlsToPaletteColor(int colorId)
+        {
+            if (!TryGetSelectedTintLayer(out var layerType))
+                return;
+
+            var color = TintMapPaletteColors.GetColor(layerType, colorId);
+            SetSelectedTintColor(new GuiColor(color.Red, color.Green, color.Blue));
+        }
+
+        private bool ApplySelectedPaletteColor(int colorId, bool reloadEditor = true)
+        {
+            ToggleItemEquippedFlags();
+            if (DoesNotHaveItemEquipped)
+                return false;
+
+            if (colorId < 0 || colorId >= TintMapMaterialRegistry.PaletteColorCount)
+                return false;
+
+            if (IsEquipmentSelected && SelectedItemTypeIndex == 0)
+                return ApplyArmorPaletteColor(colorId);
+
+            if (!IsAppearanceSelected &&
+                (!IsEquipmentSelected || (SelectedItemTypeIndex != 1 && SelectedItemTypeIndex != 2)))
+            {
+                return false;
+            }
+
+            ResetCurrentCustomTintOverrides();
 
             // Appearance - Skin, Hair, or Tattoo
             if (IsAppearanceSelected)
@@ -1564,7 +1930,80 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                         break;
                 }
             }
-        };
+
+            TintMapService.ApplyCurrentColors(_target);
+            if (reloadEditor)
+                LoadTintMapEditor();
+            return true;
+        }
+
+        private void ResetCurrentCustomTintOverrides(int? paletteColor = null)
+        {
+            if (!TryGetSelectedTintLayer(out var selectedLayerType))
+                return;
+
+            if (!TryGetEditableTintSelections(out var selections, out var layerType, out var layer))
+            {
+                // A model can stop exposing a semantic channel (for example, a hairless
+                // head). Selecting a preset still means the persisted custom channel is
+                // being replaced, even though there is no current material to reset.
+                if (IsAppearanceSelected && TintMapVariable.IsCreatureColorLayer(selectedLayerType))
+                {
+                    TintMapService.ResetCreatureCustomColor(_target, selectedLayerType);
+                    LoadTintMapEditor();
+                }
+                else if (IsEquipmentSelected && SelectedItemTypeIndex == 0)
+                {
+                    var item = GetItem();
+                    if (GetIsObjectValid(item))
+                    {
+                        TintMapService.ResetInactiveItemCustomColor(
+                            _target,
+                            item,
+                            selectedLayerType,
+                            _colorTarget == ColorTarget.Global
+                                ? AppearanceArmor.Invalid
+                                : GetArmorModelType(_colorTarget));
+                        LoadTintMapEditor();
+                    }
+                }
+
+                return;
+            }
+
+            if (IsEquipmentSelected &&
+                SelectedItemTypeIndex == 0 &&
+                _colorTarget == ColorTarget.Global)
+            {
+                TintMapService.ResetGlobalItemCustomColor(_target, selections, layerType);
+                LoadTintMapEditor();
+            }
+            else
+            {
+                ResetCustomTintOverrides(selections, layerType, layer, paletteColor);
+            }
+        }
+
+        private void ResetCustomTintOverrides(
+            IReadOnlyList<TintMapMaterialSelection> selections,
+            TintMapLayerType layerType,
+            TintMapLayerDefinition layer,
+            int? paletteColor = null)
+        {
+            if (TintMapVariable.IsCreatureColorLayer(layerType))
+            {
+                TintMapService.ResetCreatureCustomColor(_target, layerType);
+            }
+            else
+            {
+                foreach (var selection in selections)
+                {
+                    TintMapService.ResetColor(_target, selection, layerType, paletteColor);
+                }
+            }
+
+            LoadTintMapEditor();
+        }
 
         private void ModifyHelmetCloakColor(AppearanceArmorColor colorChannel, int colorId)
         {
@@ -1572,26 +2011,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (DoesNotHaveItemEquipped)
                 return;
 
-            var slot = GetInventorySlot();
             var item = GetItem();
-            var copy = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, (int)colorChannel, colorId, true);
+            SetItemColorInPlace(item, (int)colorChannel, colorId);
+        }
 
-            if (item != _lastModifiedItem && _lastModifiedItem != OBJECT_INVALID)
-            {
-                DestroyObject(_lastModifiedItem);
-            }
-            else
-            {
-                DestroyObject(item);
-            }
+        private void SetItemColorInPlace(uint item, int colorIndex, int colorId)
+        {
+            if (!GetIsObjectValid(item))
+                return;
 
-            AssignCommand(_target, () =>
-            {
-                ClearAllActions();
-                ActionEquipItem(copy, slot);
-            });
-
-            _lastModifiedItem = copy;
+            ItemPlugin.SetItemAppearance(
+                item,
+                ItemAppearanceType.ArmorColor,
+                colorIndex,
+                colorId,
+                updateCreatureAppearance: true);
+            Droid.UpdateEquippedItemSnapshot(_target, item);
+            TintMapService.ApplyCurrentColors(_target);
         }
 
         private void LoadBodyPart()
@@ -1659,7 +2095,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     throw new ArgumentOutOfRangeException(nameof(SelectedPartIndex));
             }
 
+            TintMapService.CarryStoredCreatureCustomColors(_target);
             ExecuteScript(ScriptName.OnAppearanceEdit, _target);
+            LoadTintMapEditor();
         }
 
         private void LoadArmorPart()
@@ -1800,39 +2238,42 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnClickColorPalette(int colorId) => () =>
         {
-            ToggleItemEquippedFlags();
-            if (DoesNotHaveItemEquipped)
-                return;
+            if (ApplySelectedPaletteColor(colorId))
+                SynchronizeCustomTintControlsToPaletteColor(colorId);
+        };
 
-            if (!GetBaseItemFitsInInventory(BaseItem.Armor, _target))
-            {
-                SendMessageToPC(Player, "Not enough space to modify item.");
-                return;
-            }
-
+        private bool ApplyArmorPaletteColor(int colorId)
+        {
             if (_colorTarget == ColorTarget.Invalid)
-                return;
+                return false;
+
+            ResetCurrentCustomTintOverrides(colorId);
+            var item = GetItem();
+            if (!GetIsObjectValid(item))
+                return false;
+
+            int colorIndex;
 
             if (_colorTarget == ColorTarget.Global)
             {
-                var item = GetItem();
-                DestroyObject(item);
-                item = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, (int)_selectedColorChannel, colorId, true);
-                AssignCommand(_target, () => ActionEquipItem(item, InventorySlot.Chest));
+                colorIndex = (int)_selectedColorChannel;
             }
             else
             {
-                var item = GetItem();
-                DestroyObject(item);
-
                 var armorModel = GetArmorModelType(_colorTarget);
-                var index = CalculatePerPartColorIndex(armorModel, _selectedColorChannel);
-                item = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, index, colorId, true);
-                AssignCommand(_target, () => ActionEquipItem(item, InventorySlot.Chest));
+                colorIndex = ArmorColorIndexCalculator.CalculatePerPart(armorModel, _selectedColorChannel);
+                SetLocalInt(
+                    item,
+                    ArmorColorIndexCalculator.GetPerPartOverrideVariableName(
+                        armorModel,
+                        _selectedColorChannel),
+                    1);
             }
 
+            SetItemColorInPlace(item, colorIndex, colorId);
             ChangeColor(_colorTarget, _selectedColorChannel, colorId);
-        };
+            return true;
+        }
 
         public Action OnClickClearColor(ColorTarget colorTarget, AppearanceArmorColor colorChannel) => () =>
         {
@@ -1849,16 +2290,120 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (button != 2)
                 return;
 
+            ResetCustomTintOverrides(colorTarget, colorChannel);
+
             var item = GetItem();
-            DestroyObject(item);
-
             var armorModel = GetArmorModelType(colorTarget);
-            var index = CalculatePerPartColorIndex(armorModel, colorChannel);
-            item = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, index, 255, true);
-            AssignCommand(_target, () => ActionEquipItem(item, InventorySlot.Chest));
+            var index = ArmorColorIndexCalculator.CalculatePerPart(armorModel, colorChannel);
+            DeleteLocalInt(
+                item,
+                ArmorColorIndexCalculator.GetPerPartOverrideVariableName(armorModel, colorChannel));
 
+            SetItemColorInPlace(item, index, 255);
             ChangeColor(colorTarget, colorChannel, 255);
         };
+
+        private void ResetCustomTintOverrides(
+            ColorTarget colorTarget,
+            AppearanceArmorColor colorChannel)
+        {
+            if (!TryGetArmorTintLayer(colorChannel, out var layerType))
+                return;
+
+            var item = GetItem();
+            if (!GetIsObjectValid(item))
+                return;
+
+            var armorPart = colorTarget == ColorTarget.Global
+                ? AppearanceArmor.Invalid
+                : GetArmorModelType(colorTarget);
+            var selections = _tintMapSelections
+                .Where(selection =>
+                    selection.GetPaletteSource(layerType) == item &&
+                    selection.Material.Layers.Contains(layerType) &&
+                    (armorPart == AppearanceArmor.Invalid || selection.ArmorPart == armorPart))
+                .ToList();
+            if (selections.Count == 0)
+            {
+                TintMapService.ResetInactiveItemCustomColor(
+                    _target,
+                    item,
+                    layerType,
+                    armorPart);
+                return;
+            }
+
+            foreach (var selection in selections)
+            {
+                TintMapService.ResetColorToInheritance(_target, selection, layerType);
+            }
+
+            LoadTintMapEditor();
+        }
+
+        private static bool TryGetArmorTintLayer(
+            AppearanceArmorColor colorChannel,
+            out TintMapLayerType layerType)
+        {
+            layerType = colorChannel switch
+            {
+                AppearanceArmorColor.Leather1 => TintMapLayerType.Leather1,
+                AppearanceArmorColor.Leather2 => TintMapLayerType.Leather2,
+                AppearanceArmorColor.Cloth1 => TintMapLayerType.Cloth1,
+                AppearanceArmorColor.Cloth2 => TintMapLayerType.Cloth2,
+                AppearanceArmorColor.Metal1 => TintMapLayerType.Metal1,
+                AppearanceArmorColor.Metal2 => TintMapLayerType.Metal2,
+                _ => default
+            };
+            return colorChannel is >= AppearanceArmorColor.Leather1 and <= AppearanceArmorColor.Metal2;
+        }
+
+        private static int GetEffectiveArmorColor(
+            uint item,
+            AppearanceArmor armorPart,
+            AppearanceArmorColor colorChannel)
+        {
+            var perPartColorIndex = ArmorColorIndexCalculator.CalculatePerPart(armorPart, colorChannel);
+            var perPartColor = GetItemAppearance(
+                item,
+                ItemAppearanceType.ArmorColor,
+                perPartColorIndex);
+            var hasExplicitOverride = GetLocalInt(
+                item,
+                ArmorColorIndexCalculator.GetPerPartOverrideVariableName(
+                    armorPart,
+                    colorChannel)) > 0;
+            return ArmorColorIndexCalculator.ShouldUsePerPartColor(
+                    perPartColor,
+                    hasExplicitOverride)
+                ? perPartColor
+                : GetItemAppearance(item, ItemAppearanceType.ArmorColor, (int)colorChannel);
+        }
+
+        private static void MarkPerPartColorOverride(
+            uint item,
+            AppearanceArmor armorPart,
+            AppearanceArmorColor colorChannel)
+        {
+            SetLocalInt(
+                item,
+                ArmorColorIndexCalculator.GetPerPartOverrideVariableName(
+                    armorPart,
+                    colorChannel),
+                1);
+        }
+
+        private static void ClearPerPartColorOverride(
+            uint item,
+            AppearanceArmor armorPart,
+            AppearanceArmorColor colorChannel)
+        {
+            DeleteLocalInt(
+                item,
+                ArmorColorIndexCalculator.GetPerPartOverrideVariableName(
+                    armorPart,
+                    colorChannel));
+        }
 
         private AppearanceArmor GetArmorModelType(ColorTarget colorTarget)
         {
@@ -1927,11 +2472,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             return armorModel;
         }
 
-        private int CalculatePerPartColorIndex(AppearanceArmor armorModel, AppearanceArmorColor colorChannel)
-        {
-            return (int)AppearanceArmorColor.NumColors + (int)armorModel * (int)AppearanceArmorColor.NumColors + (int)colorChannel;
-        }
-
         public Action OnClickColorTarget(ColorTarget target, AppearanceArmorColor channel) => () =>
         {
             ToggleItemEquippedFlags();
@@ -1955,6 +2495,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ChangePartialView(ArmorColorElement, ArmorColorsClothLeather);
                 _isMetalPalette = false;
             }
+
+            LoadTintMapEditor();
         };
 
         private GuiRectangle BuildColorRegion(ColorTarget target, AppearanceArmorColor colorChannel)
@@ -1969,8 +2511,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             else
             {
                 var armorModel = GetArmorModelType(target);
-                var perPartColorIndex = CalculatePerPartColorIndex(armorModel, colorChannel);
-                colorId = GetItemAppearance(item, ItemAppearanceType.ArmorColor, perPartColorIndex);
+                colorId = GetEffectiveArmorColor(item, armorModel, colorChannel);
             }
 
             var (x, y) = ColorIdToCoordinates(colorId);
@@ -2213,66 +2754,61 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var copyFrom = GetArmorModelType(copyFromTarget);
             var copyTo = GetArmorModelType(copyToTarget);
 
-            // Cloth 1
-            if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
+            foreach (var colorChannel in new[]
+                     {
+                         AppearanceArmorColor.Cloth1,
+                         AppearanceArmorColor.Cloth2,
+                         AppearanceArmorColor.Leather1,
+                         AppearanceArmorColor.Leather2,
+                         AppearanceArmorColor.Metal1,
+                         AppearanceArmorColor.Metal2
+                     })
             {
-                var copyToIndex = CalculatePerPartColorIndex(copyTo, AppearanceArmorColor.Cloth1);
-                var copyFromIndex = CalculatePerPartColorIndex(copyFrom, AppearanceArmorColor.Cloth1);
-                var newColor = GetItemAppearance(item, ItemAppearanceType.ArmorColor, copyFromIndex);
-                ChangeColor(copyToTarget, AppearanceArmorColor.Cloth1, newColor);
-                item = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, copyToIndex, newColor, true);
-                DestroyObject(item);
+                CopyColor(ref item, copyToTarget, copyFrom, copyTo, colorChannel);
             }
-            // Cloth 2
-            if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
-            {
-                var copyToIndex = CalculatePerPartColorIndex(copyTo, AppearanceArmorColor.Cloth2);
-                var copyFromIndex = CalculatePerPartColorIndex(copyFrom, AppearanceArmorColor.Cloth2);
-                var newColor = GetItemAppearance(item, ItemAppearanceType.ArmorColor, copyFromIndex);
-                ChangeColor(copyToTarget, AppearanceArmorColor.Cloth2, newColor);
-                item = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, copyToIndex, newColor, true);
-                DestroyObject(item);
-            }
-            // Leather 1
-            if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
-            {
-                var copyToIndex = CalculatePerPartColorIndex(copyTo, AppearanceArmorColor.Leather1);
-                var copyFromIndex = CalculatePerPartColorIndex(copyFrom, AppearanceArmorColor.Leather1);
-                var newColor = GetItemAppearance(item, ItemAppearanceType.ArmorColor, copyFromIndex);
-                ChangeColor(copyToTarget, AppearanceArmorColor.Leather1, newColor);
-                item = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, copyToIndex, newColor, true);
-                DestroyObject(item);
-            }
-            // Leather 2
-            if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
-            {
-                var copyToIndex = CalculatePerPartColorIndex(copyTo, AppearanceArmorColor.Leather2);
-                var copyFromIndex = CalculatePerPartColorIndex(copyFrom, AppearanceArmorColor.Leather2);
-                var newColor = GetItemAppearance(item, ItemAppearanceType.ArmorColor, copyFromIndex);
-                ChangeColor(copyToTarget, AppearanceArmorColor.Leather2, newColor);
-                item = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, copyToIndex, newColor, true);
-                DestroyObject(item);
-            }
-            // Metal 1
-            if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
-            {
-                var copyToIndex = CalculatePerPartColorIndex(copyTo, AppearanceArmorColor.Metal1);
-                var copyFromIndex = CalculatePerPartColorIndex(copyFrom, AppearanceArmorColor.Metal1);
-                var newColor = GetItemAppearance(item, ItemAppearanceType.ArmorColor, copyFromIndex);
-                ChangeColor(copyToTarget, AppearanceArmorColor.Metal1, newColor);
-                item = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, copyToIndex, newColor, true);
-                DestroyObject(item);
-            }
-            // Metal 2
-            if (GetBaseItemFitsInInventory(BaseItem.Armor, _target))
-            {
-                var copyToIndex = CalculatePerPartColorIndex(copyTo, AppearanceArmorColor.Metal2);
-                var copyFromIndex = CalculatePerPartColorIndex(copyFrom, AppearanceArmorColor.Metal2);
-                var newColor = GetItemAppearance(item, ItemAppearanceType.ArmorColor, copyFromIndex);
-                ChangeColor(copyToTarget, AppearanceArmorColor.Metal2, newColor);
-                item = CopyItemAndModify(item, ItemAppearanceType.ArmorColor, copyToIndex, newColor, true);
-                DestroyObject(item);
-            }
+
+            TintMapModelResolver.CopyArmorPartTintOverrides(
+                _target,
+                item,
+                copyFrom,
+                copyTo);
+        }
+
+        private void CopyColor(
+            ref uint item,
+            ColorTarget copyToTarget,
+            AppearanceArmor copyFrom,
+            AppearanceArmor copyTo,
+            AppearanceArmorColor colorChannel)
+        {
+            if (!GetBaseItemFitsInInventory(BaseItem.Armor, _target))
+                return;
+
+            var copyFromIndex = ArmorColorIndexCalculator.CalculatePerPart(copyFrom, colorChannel);
+            var sourceColor = GetItemAppearance(item, ItemAppearanceType.ArmorColor, copyFromIndex);
+            var sourceHasExplicitOverride = GetLocalInt(
+                item,
+                ArmorColorIndexCalculator.GetPerPartOverrideVariableName(copyFrom, colorChannel)) > 0;
+            var sourceUsesPerPartColor = ArmorColorIndexCalculator.ShouldUsePerPartColor(
+                sourceColor,
+                sourceHasExplicitOverride);
+            var effectiveColor = sourceUsesPerPartColor
+                ? sourceColor
+                : GetItemAppearance(item, ItemAppearanceType.ArmorColor, (int)colorChannel);
+            var copyToIndex = ArmorColorIndexCalculator.CalculatePerPart(copyTo, colorChannel);
+
+            ChangeColor(copyToTarget, colorChannel, effectiveColor);
+            item = CopyItemAndModify(
+                item,
+                ItemAppearanceType.ArmorColor,
+                copyToIndex,
+                sourceUsesPerPartColor ? sourceColor : 255,
+                true);
+            if (sourceUsesPerPartColor)
+                MarkPerPartColorOverride(item, copyTo, colorChannel);
+            else
+                ClearPerPartColorOverride(item, copyTo, colorChannel);
+            DestroyObject(item);
         }
 
         public Action OnClickCopyToRight() => () =>
@@ -2434,6 +2970,27 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public void Refresh(EquipItemRefreshEvent payload)
         {
             _lastModifiedItem = OBJECT_INVALID;
+            RefreshTintMapEditorAfterAppearanceChange();
+        }
+
+        public void Refresh(UnequipItemRefreshEvent payload)
+        {
+            _lastModifiedItem = OBJECT_INVALID;
+            RefreshTintMapEditorAfterAppearanceChange();
+        }
+
+        public void Refresh(AppearanceChangedRefreshEvent payload)
+        {
+            _lastModifiedItem = OBJECT_INVALID;
+            RefreshTintMapEditorAfterAppearanceChange();
+        }
+
+        private void RefreshTintMapEditorAfterAppearanceChange()
+        {
+            if (IsAppearanceSelected || IsEquipmentSelected)
+                LoadTintMapEditor();
+            else
+                RefreshTintMapAvailability();
         }
     }
 }

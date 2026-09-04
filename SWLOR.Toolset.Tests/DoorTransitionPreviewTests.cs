@@ -119,7 +119,10 @@ namespace SWLOR.Toolset.Tests
                     log,
                     prompts: new StubPrompts(),
                     resolveBlueprintModel: (_, _, _) =>
-                        new BlueprintModelRenderResult(null, IsDoorTransition: true));
+                        new BlueprintModelRenderResult(
+                            null,
+                            IsDoorTransition: true,
+                            new Dictionary<string, int> { ["TM_test_2"] = 42 }));
 
                 editor.ArmPlacement(
                     ResourceType.Utd,
@@ -129,6 +132,7 @@ namespace SWLOR.Toolset.Tests
                 editor.PlacementGhost.Should().NotBeNull();
                 editor.PlacementGhost!.Model.Should().BeNull();
                 editor.PlacementGhost.IsDoorTransition.Should().BeTrue();
+                editor.PlacementGhost.TintMapOverrides.Should().Contain("TM_test_2", 42);
             }
             finally
             {

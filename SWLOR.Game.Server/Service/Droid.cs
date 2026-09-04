@@ -3,6 +3,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Core.Bioware;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.CombatService;
@@ -253,6 +254,32 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
+        /// Updates the controller-backed snapshot for an item currently equipped by a droid.
+        /// </summary>
+        /// <param name="droid">The droid wearing the item.</param>
+        /// <param name="item">The equipped item to serialize.</param>
+        public static void UpdateEquippedItemSnapshot(uint droid, uint item)
+        {
+            if (!IsDroid(droid) || !GetIsObjectValid(item))
+                return;
+
+            var controller = GetControllerItem(droid);
+            if (!GetIsObjectValid(controller))
+                return;
+
+            var slot = Item.GetItemSlot(droid, item);
+            if (slot == InventorySlot.Invalid)
+                return;
+
+            var constructedDroid = LoadConstructedDroid(controller);
+            if (!constructedDroid.EquippedItems.ContainsKey(slot))
+                return;
+
+            constructedDroid.EquippedItems[slot] = ObjectPlugin.Serialize(item);
+            SaveConstructedDroid(controller, constructedDroid);
+        }
+
+        /// <summary>
         /// When a droid unequips an item, it is removed from its equipped items and added to its inventory.
         /// </summary>
         [NWNEventHandler(ScriptName.OnItemUnequipBefore)]
@@ -280,7 +307,7 @@ namespace SWLOR.Game.Server.Service
 
             var constructedDroid = LoadConstructedDroid(controller);
 
-            constructedDroid.Inventory[itemId] = constructedDroid.EquippedItems[slot];
+            constructedDroid.Inventory[itemId] = ObjectPlugin.Serialize(item);
             constructedDroid.EquippedItems.Remove(slot);
 
             SaveConstructedDroid(controller, constructedDroid);
@@ -784,6 +811,8 @@ namespace SWLOR.Game.Server.Service
                     : defaultDroid.LeftFootId,
                 droid);
 
+            TintMapService.RestoreDroidOverrides(droid, constructedDroid.TintOverrides);
+
             if (constructedDroid.PortraitId == -1)
             {
                 constructedDroid.PortraitId = GetPortraitId(droid);
@@ -957,6 +986,8 @@ namespace SWLOR.Game.Server.Service
             {
                 constructedDroid = JsonConvert.DeserializeObject<ConstructedDroid>(serialized);
             }
+
+            constructedDroid.TintOverrides ??= new Dictionary<string, int>();
 
             return constructedDroid;
         }

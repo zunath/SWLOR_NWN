@@ -4,10 +4,12 @@ using System.Buffers.Binary;
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.NWN.Formats.Mdl;
 using SWLOR.NWN.Formats.Plt;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Render;
+using SWLOR.Toolset.Workspace;
 
 namespace SWLOR.Toolset.Tests
 {
@@ -252,6 +254,31 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void AdditiveTxiUsesBlendModeInsteadOfAlphaCutoff()
+        {
+            File.WriteAllText(
+                Path.Combine(_resourceDirectory, "air_glow.txi"),
+                "blending additive");
+            var pixels = Enumerable.Range(0, 100)
+                .SelectMany(_ => new byte[] { 10, 20, 30, 24 })
+                .ToArray();
+            var image = new TextureImage
+            {
+                Width = 10,
+                Height = 10,
+                Pixels = pixels,
+                SourceFormat = TextureSourceFormat.Tga
+            };
+
+            var hints = TextureRenderPolicy.Resolve(Index(), "air_glow", image);
+
+            hints.EnvironmentMapTexture.Should().BeNull();
+            hints.AlphaCutoff.Should().Be(0f,
+                "low additive alpha controls contribution rather than discarding geometry");
+            hints.Blending.Should().Be(TxiBlendMode.Additive);
+        }
+
+        [Test]
         public void LitShaderKeepsTheEnvironmentPassOutOfDiffuseLighting()
         {
             var shader = typeof(SWLOR.Toolset.Viewport.GlAreaControl)
@@ -269,12 +296,331 @@ namespace SWLOR.Toolset.Tests
             shader.Should().Contain(
                 "vec3 result = (ambientColor + diff * lightColor) * texColor.rgb;",
                 "only the diffuse pass is affected by the model lighting");
+            shader.Should().Contain("float environmentDiffuseCoverage = texColor.a;");
             shader.Should().Contain(
-                "result = mix(SampleEnvironmentMap(norm), result, texColor.a);",
+                "result = mix(SampleEnvironmentMap(norm), result, environmentDiffuseCoverage);",
                 "Aurora draws an unlit environment pass and source-alpha blends the lit diffuse on top");
+            shader.Should().Contain(
+                "paletteColor.rgb = clamp(custom.rgb * shadeScale, 0.0, 1.0);");
+            shader.Should().Contain("float shadeScale = max(",
+                "GLSL max accepts the intended lower bound while retaining bright tint-map highlights");
+            shader.Should().NotContain("float shadeScale = clamp(",
+                "GLSL clamp requires both a lower and upper bound");
+            shader.Should().Contain("float referenceRow = 0.000244;");
+            shader.Should().Contain("vec3 referenceShade = textureLod(");
+            shader.Should().Contain("vec2(128.5 / 256.0, referenceRow)",
+                "custom colors use the same representative midtone as the preset swatches");
+            shader.Should().NotContain("vec2(255.5 / 256.0, referenceRow)",
+                "normalizing at the palette peak makes the selected RGB much too dark");
+            shader.Should().Contain("paletteColor.a = 1.0;",
+                "custom RGB must not inherit the previously selected preset's reflection mask");
+            shader.Should().Contain("return paletteColor;",
+                "custom RGB must retain the tint map's native nonlinear shade detail");
             shader.Should().NotContain(
                 "(ambientColor + diff * lightColor) * surfaceColor",
                 "lighting the combined passes incorrectly darkens reflective PLT regions");
+            shader.Should().Contain(
+                "(useTextureAlpha || hasTintAlpha) ? texColor.a : 1.0",
+                "additive meshes must preserve the authored diffuse alpha that controls their contribution");
+
+            var source = File.ReadAllText(Path.Combine(
+                CorpusLocator.RepositoryRoot,
+                "SWLOR.Toolset",
+                "Viewport",
+                "GlAreaControl.cs"));
+            source.Should().Contain(
+                "SetUniformBool(\"useTextureAlpha\", material.Blending == TxiBlendMode.Additive);",
+                "every mesh bind must select and reset diffuse-alpha use from its own TXI blend mode");
+        }
+
+        [Test]
+        public void EnvironmentAndTintMapsUseDistinctTextureUnits()
+        {
+            var source = File.ReadAllText(Path.Combine(
+                CorpusLocator.RepositoryRoot,
+                "SWLOR.Toolset",
+                "Viewport",
+                "GlAreaControl.cs"));
+
+            source.Should().Contain("SetUniformInt(\"environmentTexture\", 4);");
+            source.Should().Contain("SetUniformInt(\"tintMapTexture\", 5);");
+            source.Should().Contain("SetUniformInt(\"tintPaletteTexture\", 6);");
+            source.Should().Contain("SetUniformInt(\"tintAlphaTexture\", 7);");
+            source.Should().Contain("_gl.ActiveTexture(TextureUnit.Texture4);");
+            source.Should().Contain("_gl!.ActiveTexture(TextureUnit.Texture5);");
+            source.Should().Contain("_gl.ActiveTexture(TextureUnit.Texture6);");
+            source.Should().Contain("_gl.ActiveTexture(TextureUnit.Texture7);");
+            source.Should().Contain("TextureRenderPolicy.StandaloneEnvironmentMap",
+                "converted PLTs must keep Aurora's standalone environment map in the Toolset");
+        }
+
+        [Test]
+        public void ParsedMaterialsAreCachedOutsideThePerMeshDrawPath()
+        {
+            var source = File.ReadAllText(Path.Combine(
+                CorpusLocator.RepositoryRoot,
+                "SWLOR.Toolset",
+                "Viewport",
+                "GlAreaControl.cs"));
+
+            source.Should().Contain("Dictionary<string, MtrMaterial?> _parsedMaterialCache");
+            source.Should().Contain("_parsedMaterialCache.TryGetValue(surfaceName, out var cached)",
+                "repeated meshes must not reload and parse the same MTR every frame");
+            source.Should().Contain("_parsedMaterialCache[surfaceName] = material",
+                "failed parses must be memoized too");
+            source.Should().Contain("_parsedMaterialCache.Clear()",
+                "a changed HAK resource index must invalidate parsed MTR data");
+        }
+
+        [Test]
+        public void PlacementGhostDrawCarriesBlueprintAndItemTintOverrides()
+        {
+            var source = File.ReadAllText(Path.Combine(
+                CorpusLocator.RepositoryRoot,
+                "SWLOR.Toolset",
+                "Viewport",
+                "GlAreaControl.cs"));
+
+            source.Should().Contain("TintMapOverrides = ghost.TintMapOverrides");
+            source.Should().Contain("placed.Kind != InstanceMarkerKind.Item");
+            source.Should().Contain(": placed.TintMapOverrides");
+        }
+
+        [Test]
+        public void TintShaderSamplesTexture9CutoutsFromRed()
+        {
+            var shader = typeof(SWLOR.Toolset.Viewport.GlAreaControl)
+                .GetField(
+                    "FragmentShaderBody",
+                    System.Reflection.BindingFlags.NonPublic |
+                    System.Reflection.BindingFlags.Static)!
+                .GetRawConstantValue()
+                .Should()
+                .BeOfType<string>()
+                .Subject;
+
+            shader.Should().Contain("uniform bool tintAlphaUsesRedChannel;");
+            shader.Should().Contain("tintAlphaUsesRedChannel ? alphaSample.r : alphaSample.a");
+        }
+
+        [Test]
+        public void SoftwareTintRendererUsesTexture9RedAsAlpha()
+        {
+            File.WriteAllBytes(Path.Combine(_resourceDirectory, "tint.tga"), SolidColorTga(255, 0, 0));
+            File.WriteAllBytes(Path.Combine(_resourceDirectory, "palette.tga"), SolidColorTga(255, 255, 255));
+            File.WriteAllBytes(Path.Combine(_resourceDirectory, "cutout.tga"), SolidColorTga(73, 0, 0));
+            var material = MaterialResolver.Parse(
+                "texture7 tint\n" +
+                "texture9 cutout\n" +
+                "texture10 palette\n" +
+                "customshaderPSH fs_plt_tinter\n" +
+                "parameter float useTexture9Alpha 1.0\n");
+            var overrideKey = TintMapVariable.GetName("sample_material", TintMapLayerType.Skin);
+
+            var image = TintMapTextureRenderer.Render(
+                Index(),
+                "sample_material",
+                material,
+                new Dictionary<int, int>(),
+                new Dictionary<string, int>
+                {
+                    [overrideKey] = new TintMapColor(20, 40, 60).ToStoredValue()
+                });
+
+            image.Should().NotBeNull();
+            Pixel(image!, 0, 0).Should().Be((255, 255, 255, 73));
+            image.AlphaCutoff.Should().Be(77, "texture9 red uses the runtime shader's 0.3 cutoff");
+        }
+
+        [Test]
+        public void SoftwareTintRendererQuantizesCustomRgbToTheDeployedPaletteRow()
+        {
+            var layer = TintMapLayerType.Skin;
+            var customColor = new TintMapColor(120, 80, 40);
+            var paletteIndex = TintMapPaletteColors.GetClosestColorId(layer, customColor);
+            var shaderRow = TintMapMaterialRegistry.GetLayer(layer).PaletteBaseRow + paletteIndex;
+            File.WriteAllBytes(Path.Combine(_resourceDirectory, "tint.tga"), SolidColorTga(255, 0, 0));
+            File.WriteAllBytes(
+                Path.Combine(_resourceDirectory, "palette.tga"),
+                PaletteRowTga(shaderRow, ((byte)21, (byte)43, (byte)65)));
+            var material = MaterialResolver.Parse(
+                "texture7 tint\n" +
+                "texture10 palette\n" +
+                "customshaderPSH fs_plt_tinter\n");
+
+            var image = TintMapTextureRenderer.Render(
+                Index(),
+                "sample_material",
+                material,
+                new Dictionary<int, int>(),
+                new Dictionary<string, int>
+                {
+                    [TintMapVariable.GetName("sample_material", TintMapLayerType.Skin)] =
+                        customColor.ToStoredValue()
+                });
+
+            image.Should().NotBeNull();
+            Pixel(image!, 0, 0).Should().Be((21, 43, 65, 255),
+                "software thumbnails must use the same nearest palette row as the viewport and game");
+        }
+
+        [Test]
+        public void SoftwareTintRendererShadesTheQuantizedPaletteRow()
+        {
+            var layer = TintMapLayerType.Skin;
+            var customColor = new TintMapColor(120, 80, 40);
+            var paletteIndex = TintMapPaletteColors.GetClosestColorId(layer, customColor);
+            var shaderRow = TintMapMaterialRegistry.GetLayer(layer).PaletteBaseRow + paletteIndex;
+            File.WriteAllBytes(Path.Combine(_resourceDirectory, "tint.tga"), SolidColorTga(128, 0, 0));
+            File.WriteAllBytes(
+                Path.Combine(_resourceDirectory, "palette.tga"),
+                PaletteRowTga(
+                    shaderRow,
+                    ((byte)10, (byte)20, (byte)30),
+                    ((byte)40, (byte)50, (byte)60),
+                    ((byte)70, (byte)80, (byte)90)));
+            var material = MaterialResolver.Parse(
+                "texture7 tint\n" +
+                "texture10 palette\n" +
+                "customshaderPSH fs_plt_tinter\n");
+
+            var image = TintMapTextureRenderer.Render(
+                Index(),
+                "sample_material",
+                material,
+                new Dictionary<int, int>(),
+                new Dictionary<string, int>
+                {
+                    [TintMapVariable.GetName("sample_material", TintMapLayerType.Skin)] =
+                        customColor.ToStoredValue()
+                });
+
+            image.Should().NotBeNull();
+            Pixel(image!, 0, 0).Should().Be((40, 50, 60, 255),
+                "custom RGB must retain the selected palette row's authored shade response");
+        }
+
+        [Test]
+        public void NormalMappedTintShaderIsRecognizedBySoftwareAndViewportRenderers()
+        {
+            File.WriteAllBytes(Path.Combine(_resourceDirectory, "tint.tga"), SolidColorTga(255, 0, 0));
+            File.WriteAllBytes(Path.Combine(_resourceDirectory, "palette.tga"), SolidColorTga(255, 255, 255));
+            var material = MaterialResolver.Parse(
+                "texture7 tint\n" +
+                "texture10 palette\n" +
+                "customshaderFS fs_plt_tinter_nm\n");
+
+            TintMapTextureRenderer.IsTintMapMaterial(material).Should().BeTrue();
+            var viewportRecognizesTintMaterial = typeof(SWLOR.Toolset.Viewport.GlAreaControl)
+                .GetMethod(
+                    "IsTintMapMaterial",
+                    System.Reflection.BindingFlags.NonPublic |
+                    System.Reflection.BindingFlags.Static)!
+                .Invoke(null, new object?[] { material });
+            viewportRecognizesTintMaterial.Should().Be(true);
+
+            var image = TintMapTextureRenderer.Render(
+                Index(),
+                "sample_material",
+                material,
+                new Dictionary<int, int>(),
+                new Dictionary<string, int>());
+
+            image.Should().NotBeNull(
+                "normal-mapped tint materials still require the same tint-map and palette composition");
+        }
+
+        [Test]
+        public void SoftwareTintRendererUsesTexture1AlphaChannel()
+        {
+            File.WriteAllBytes(Path.Combine(_resourceDirectory, "tint.tga"), SolidColorTga(255, 0, 0));
+            File.WriteAllBytes(Path.Combine(_resourceDirectory, "palette.tga"), SolidColorTga(255, 255, 255));
+            File.WriteAllBytes(Path.Combine(_resourceDirectory, "normal.tga"), SolidColorTga(10, 20, 30, 91));
+            var material = MaterialResolver.Parse(
+                "texture1 normal\n" +
+                "texture7 tint\n" +
+                "texture10 palette\n" +
+                "customshaderPSH fs_plt_tinter\n" +
+                "parameter float useTexture1Alpha 1.0\n");
+
+            var image = TintMapTextureRenderer.Render(
+                Index(),
+                "sample_material",
+                material,
+                new Dictionary<int, int>(),
+                new Dictionary<string, int>());
+
+            image.Should().NotBeNull();
+            Pixel(image!, 0, 0).A.Should().Be(91);
+            image.AlphaCutoff.Should().Be(51, "texture1 alpha uses the runtime shader's 0.2 cutoff");
+        }
+
+        [Test]
+        public void SoftwareTintRendererDecodesLayerBoundariesLikeTheShader()
+        {
+            var tattoo2Color = new TintMapColor(255, 0, 0);
+            var tattoo2PaletteIndex = TintMapPaletteColors.GetClosestColorId(
+                TintMapLayerType.Tattoo2,
+                tattoo2Color);
+            var tattoo2ShaderRow = TintMapMaterialRegistry.GetLayer(TintMapLayerType.Tattoo2)
+                .PaletteBaseRow + tattoo2PaletteIndex;
+            File.WriteAllBytes(Path.Combine(_resourceDirectory, "tint.tga"), SolidColorTga(255, 230, 0));
+            File.WriteAllBytes(
+                Path.Combine(_resourceDirectory, "palette.tga"),
+                PaletteRowTga(tattoo2ShaderRow, ((byte)255, (byte)0, (byte)0)));
+            var material = MaterialResolver.Parse(
+                "texture7 tint\n" +
+                "texture10 palette\n" +
+                "customshaderPSH fs_plt_tinter\n");
+
+            var image = TintMapTextureRenderer.Render(
+                Index(),
+                "sample_material",
+                material,
+                new Dictionary<int, int>(),
+                new Dictionary<string, int>
+                {
+                    [TintMapVariable.GetName("sample_material", TintMapLayerType.Tattoo1)] =
+                        new TintMapColor(0, 255, 0).ToStoredValue(),
+                    [TintMapVariable.GetName("sample_material", TintMapLayerType.Tattoo2)] =
+                        tattoo2Color.ToStoredValue()
+                });
+
+            image.Should().NotBeNull();
+            Pixel(image!, 0, 0).Should().Be((255, 0, 0, 255),
+                "byte 230 is layer 9 under floor((value / 255) * 10)");
+        }
+
+        [Test]
+        public void TintPaletteIsFlippedFromDecodedRowsIntoShaderCoordinateOrder()
+        {
+            byte[] rows =
+            [
+                255, 0, 0, 255,
+                0, 255, 0, 255,
+                0, 0, 255, 255,
+                255, 255, 255, 255
+            ];
+            var prepare = typeof(SWLOR.Toolset.Viewport.GlAreaControl)
+                .GetMethod(
+                    "PrepareTextureUploadPixels",
+                    System.Reflection.BindingFlags.NonPublic |
+                    System.Reflection.BindingFlags.Static)!;
+
+            var palette = (byte[])prepare.Invoke(null, ["plt_palette", 1, 4, rows])!;
+            var modelTexture = (byte[])prepare.Invoke(null, ["pmh0_robe010", 1, 4, rows])!;
+
+            byte[] expected =
+            [
+                255, 255, 255, 255,
+                0, 0, 255, 255,
+                0, 255, 0, 255,
+                255, 0, 0, 255
+            ];
+            palette.Should().Equal(expected,
+                "NWN palette rows count from the bottom while decoded TGA pixels are top-first");
+            modelTexture.Should().Equal(expected,
+                "ordinary model UVs also require the top-down decoded image to be flipped");
         }
 
         [Test]
@@ -450,6 +796,111 @@ namespace SWLOR.Toolset.Tests
             attached.Parent!.Parent!.Name.Should().Be("lthigh_g");
             attached.Should().NotBeSameAs(partMesh);
             partMesh.Bitmap.Should().Be("stale", "cached source models must not be mutated");
+        }
+
+        [Test]
+        public void DuplicateEquippedModelsKeepTheirOwnTintSnapshots()
+        {
+            var skeletonRoot = new MdlNode { Name = "root" };
+            var rightBone = new MdlNode { Name = "rhand", Parent = skeletonRoot };
+            var leftBone = new MdlNode { Name = "lhand", Parent = skeletonRoot };
+            skeletonRoot.Children.Add(rightBone);
+            skeletonRoot.Children.Add(leftBone);
+            var skeleton = new MdlModel { Name = "skeleton", GeometryRoot = skeletonRoot };
+
+            var partRoot = new MdlNode { Name = "part-root" };
+            var partMesh = Triangle("shared-mesh");
+            partMesh.Parent = partRoot;
+            partRoot.Children.Add(partMesh);
+            var sharedPart = new MdlModel { Name = "shared_weapon", GeometryRoot = partRoot };
+            var composer = new MdlPartComposer((resRef, _) =>
+                resRef == "skeleton" ? skeleton :
+                resRef == "shared_weapon" ? sharedPart :
+                null);
+
+            const string rightStamp = "@right";
+            const string leftStamp = "@left";
+            const string tintKey = "TM_shared_weapon_4";
+            var instances = new[]
+            {
+                new ComposedPartInstance(
+                    rightStamp,
+                    new BlueprintModelPart(
+                        "weaponr", "shared_weapon",
+                        UsesItemTintOverrides: true,
+                        TintMapOverrides: new Dictionary<string, int> { [tintKey] = 111 })),
+                new ComposedPartInstance(
+                    leftStamp,
+                    new BlueprintModelPart(
+                        "weaponl", "shared_weapon",
+                        UsesItemTintOverrides: true,
+                        TintMapOverrides: new Dictionary<string, int> { [tintKey] = 222 }))
+            };
+            var composed = composer.ComposeStamped(
+                "skeleton",
+                instances.Select(instance => (
+                    instance.Part.PartType,
+                    instance.Part.ModelResRef,
+                    instance.TextureStamp)),
+                adjustSeams: false)!;
+
+            var renderedStamps = composed.GetMeshNodes()
+                .Where(MdlMeshBuilder.IsRenderableMesh)
+                .Select(mesh => mesh.Bitmap)
+                .ToList();
+            var snapshots = BlueprintPreviewRenderer.CaptureComposedTintMapOverrides(composed, instances);
+            renderedStamps.Zip(snapshots).Should().OnlyContain(pair =>
+                pair.Second != null && pair.Second[tintKey] == (pair.First == rightStamp ? 111 : 222),
+                "each attachment occurrence must select its own equipped item's tint variables");
+
+            BlueprintPreviewRenderer.RestoreComposedPartStamps(composed, instances);
+            composed.GetMeshNodes().Should().OnlyContain(mesh => mesh.Bitmap == "shared_weapon",
+                "the temporary occurrence identity must not leak into texture resolution");
+        }
+
+        [Test]
+        public void ComposedPartThatRepeatsItsBoneNameConsumesThePoseOnlyOnce()
+        {
+            var skeletonRoot = new MdlNode { Name = "root" };
+            var thighBone = new MdlNode
+            {
+                Name = "lthigh_g",
+                Parent = skeletonRoot
+            };
+            skeletonRoot.Children.Add(thighBone);
+            var skeleton = new MdlModel { Name = "pmh0", GeometryRoot = skeletonRoot };
+
+            var partRoot = new MdlNode { Name = "pmh0_legl161" };
+            var partMesh = Triangle("lthigh_g");
+            partMesh.Parent = partRoot;
+            partRoot.Children.Add(partMesh);
+            var part = new MdlModel { Name = "pmh0_legl161", GeometryRoot = partRoot };
+            var composer = new MdlPartComposer((resRef, _) =>
+                resRef == "pmh0" ? skeleton :
+                resRef == "pmh0_legl161" ? part :
+                null);
+
+            var composed = composer.Compose(
+                "pmh0",
+                new[] { ("legl", "pmh0_legl161") },
+                adjustSeams: false)!;
+            var attachedMesh = composed.GetMeshNodes().Single();
+            var pose = new Dictionary<string, PosedNode>(StringComparer.OrdinalIgnoreCase)
+            {
+                ["lthigh_g"] = new PosedNode(
+                    new Vector3(-0.15f, 0.02f, -0.20f),
+                    Quaternion.CreateFromAxisAngle(Vector3.UnitY, 0.35f),
+                    1f)
+            };
+
+            var actual = MdlMeshBuilder.ComposeNodeTransform(attachedMesh, pose);
+            var posedBone = attachedMesh.Parent!.Parent!;
+            var expected = MdlMeshBuilder.ComposeNodeTransform(posedBone, pose);
+
+            actual.Should().Be(expected,
+                "the part already inherits the pose from its skeleton parent and must not pose its same-named mesh again");
+            attachedMesh.ReceivesNamedAnimationPose.Should().BeFalse();
+            posedBone.ReceivesNamedAnimationPose.Should().BeTrue();
         }
 
         [Test]
@@ -662,6 +1113,64 @@ namespace SWLOR.Toolset.Tests
             bytes[18] = b;
             bytes[19] = g;
             bytes[20] = r;
+            return bytes;
+        }
+
+        private static byte[] SolidColorTga(byte r, byte g, byte b, byte a)
+        {
+            var bytes = new byte[18 + 4];
+            bytes[2] = 2;
+            BinaryPrimitives.WriteUInt16LittleEndian(bytes.AsSpan(12, 2), 1);
+            BinaryPrimitives.WriteUInt16LittleEndian(bytes.AsSpan(14, 2), 1);
+            bytes[16] = 32;
+            bytes[17] = 8;
+            bytes[18] = b;
+            bytes[19] = g;
+            bytes[20] = r;
+            bytes[21] = a;
+            return bytes;
+        }
+
+        private static byte[] HorizontalGrayscaleTga(params byte[] values)
+        {
+            var bytes = new byte[18 + values.Length * 3];
+            bytes[2] = 2;
+            BinaryPrimitives.WriteUInt16LittleEndian(bytes.AsSpan(12, 2), (ushort)values.Length);
+            BinaryPrimitives.WriteUInt16LittleEndian(bytes.AsSpan(14, 2), 1);
+            bytes[16] = 24;
+            for (var index = 0; index < values.Length; index++)
+            {
+                var offset = 18 + index * 3;
+                bytes[offset] = values[index];
+                bytes[offset + 1] = values[index];
+                bytes[offset + 2] = values[index];
+            }
+
+            return bytes;
+        }
+
+        private static byte[] PaletteRowTga(
+            int shaderRow,
+            params (byte R, byte G, byte B)[] colors)
+        {
+            var width = colors.Length;
+            var height = TintMapMaterialRegistry.PaletteTextureHeight;
+            var bytes = new byte[18 + checked(width * height * 3)];
+            bytes[2] = 2;
+            BinaryPrimitives.WriteUInt16LittleEndian(bytes.AsSpan(12, 2), (ushort)width);
+            BinaryPrimitives.WriteUInt16LittleEndian(bytes.AsSpan(14, 2), (ushort)height);
+            bytes[16] = 24;
+
+            // TGA rows are bottom-first here, matching the shader-row coordinate before
+            // TextureLoader exposes the decoded image top-first.
+            for (var x = 0; x < width; x++)
+            {
+                var offset = 18 + (shaderRow * width + x) * 3;
+                bytes[offset] = colors[x].B;
+                bytes[offset + 1] = colors[x].G;
+                bytes[offset + 2] = colors[x].R;
+            }
+
             return bytes;
         }
 

@@ -1,8 +1,13 @@
+using System.ComponentModel;
 using System.Numerics;
 using System.Reflection;
+using Avalonia.Controls;
 using Avalonia.Headless.NUnit;
+using Avalonia.Threading;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Toolset.Domain.GameData.Resources;
+using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Viewport;
 
 namespace SWLOR.Toolset.Tests
@@ -42,6 +47,48 @@ namespace SWLOR.Toolset.Tests
             longTurn.Should().BeApproximately(shortTurn * 2f, 0.0001f);
         }
 
+        [AvaloniaTest]
+        public void SceneReadyBeforeAttachment_BindsAfterTheViewportIsLoaded()
+        {
+            var scene = new AreaScene
+            {
+                Tileset = string.Empty,
+                Width = 1,
+                Height = 1,
+                Tiles = Array.Empty<TilePlacement>(),
+                Instances = Array.Empty<InstanceMarker>(),
+                Diagnostics = new AreaSceneDiagnostics()
+            };
+            var source = new PreviewSource(scene);
+            using var preview = new ModelPreviewControl { DataContext = source };
+            var modelView = (GlAreaControl)typeof(ModelPreviewControl)
+                .GetField("_modelView", BindingFlags.Instance | BindingFlags.NonPublic)!
+                .GetValue(preview)!;
+            var window = new Window
+            {
+                Width = 300,
+                Height = 500,
+                Content = preview
+            };
+
+            modelView.Scene.Should().BeNull(
+                "a detached OpenGL control cannot retain the initial frame request");
+
+            try
+            {
+                window.Show();
+                Dispatcher.UIThread.RunJobs();
+
+                modelView.Scene.Should().BeSameAs(scene,
+                    "the latest preview must bind once the GL child is attached and laid out");
+            }
+            finally
+            {
+                window.Close();
+                Dispatcher.UIThread.RunJobs();
+            }
+        }
+
         private static GlAreaControl PreviewControl()
         {
             var control = new GlAreaControl();
@@ -61,5 +108,26 @@ namespace SWLOR.Toolset.Tests
 
         private static FieldInfo Field(string fieldName) =>
             typeof(GlAreaControl).GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic)!;
+
+        private sealed class PreviewSource(AreaScene scene) : IModelPreviewSource
+        {
+            public event PropertyChangedEventHandler? PropertyChanged
+            {
+                add { }
+                remove { }
+            }
+
+            public AreaScene? PreviewScene { get; } = scene;
+
+            public ResourceIndex? ResourceIndex => null;
+
+            public string? PreviewAnimationName => null;
+
+            public bool IsAnimationPlaying => false;
+
+            public void ReloadGameResources()
+            {
+            }
+        }
     }
 }

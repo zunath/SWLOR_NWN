@@ -19,6 +19,7 @@ namespace SWLOR.Game.Server.Service.DroidService
         public List<DroidPerk> ActivePerks { get; set; }
         public Dictionary<InventorySlot, string> EquippedItems { get; set; }
         public Dictionary<string, string> Inventory { get; set; }
+        public Dictionary<string, int> TintOverrides { get; set; }
 
         public ConstructedDroid()
         {
@@ -35,6 +36,7 @@ namespace SWLOR.Game.Server.Service.DroidService
             ActivePerks = new List<DroidPerk>();
             EquippedItems = new Dictionary<InventorySlot, string>();
             Inventory = new Dictionary<string, string>();
+            TintOverrides = new Dictionary<string, int>();
         }
     }
 }

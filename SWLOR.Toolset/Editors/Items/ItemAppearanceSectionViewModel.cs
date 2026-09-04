@@ -4,6 +4,7 @@ using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Items;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Editors.Behaviors;
+using SWLOR.Toolset.Editors.TintMaps;
 
 namespace SWLOR.Toolset.Editors.Items
 {
@@ -49,6 +50,14 @@ namespace SWLOR.Toolset.Editors.Items
 
         [ObservableProperty]
         private ArmorPartsViewModel? _armor;
+
+        [ObservableProperty]
+        private TintMapEditorViewModel? _tints;
+
+        public void SetTintMapEditor(TintMapEditorViewModel? editor)
+        {
+            Tints = editor;
+        }
 
         public ItemAppearanceSectionViewModel(
             ItemValueStore store,

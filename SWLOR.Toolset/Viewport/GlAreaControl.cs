@@ -6,6 +6,8 @@ using Avalonia.OpenGL.Controls;
 using Avalonia.Threading;
 using Serilog;
 using Silk.NET.OpenGL;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Render;
 
@@ -168,7 +170,13 @@ uniform sampler2D normalTexture;
 uniform sampler2D specularTexture;
 uniform sampler2D roughnessTexture;
 uniform sampler2D environmentTexture;
+uniform sampler2D tintMapTexture;
+uniform sampler2D tintPaletteTexture;
+uniform sampler2D tintAlphaTexture;
 uniform bool hasTexture;
+uniform bool hasTintMap;
+uniform bool hasTintAlpha;
+uniform bool tintAlphaUsesRedChannel;
 uniform bool hasNormalMap;
 uniform bool hasSpecularMap;
 uniform bool hasRoughnessMap;
@@ -185,6 +193,26 @@ uniform vec3 fogColor;
 uniform float fogDensity;
 uniform vec3 cameraPos;
 uniform mat4 view;
+uniform vec4 tintColor0;
+uniform vec4 tintColor1;
+uniform vec4 tintColor2;
+uniform vec4 tintColor3;
+uniform vec4 tintColor4;
+uniform vec4 tintColor5;
+uniform vec4 tintColor6;
+uniform vec4 tintColor7;
+uniform vec4 tintColor8;
+uniform vec4 tintColor9;
+uniform float tintPaletteRow0;
+uniform float tintPaletteRow1;
+uniform float tintPaletteRow2;
+uniform float tintPaletteRow3;
+uniform float tintPaletteRow4;
+uniform float tintPaletteRow5;
+uniform float tintPaletteRow6;
+uniform float tintPaletteRow7;
+uniform float tintPaletteRow8;
+uniform float tintPaletteRow9;
 
 // Blinn-Phong exponent for a specular-mapped highlight when the material carries no
 // roughness map. One shared value rather than a material parameter: MTR files carry no
@@ -238,9 +266,69 @@ vec3 SampleEnvironmentMap(vec3 worldNormal)
     return texture(environmentTexture, sphereUv).rgb;
 }
 
+vec4 ResolveTintMapColor()
+{
+    vec2 size = vec2(textureSize(tintMapTexture, 0));
+    vec2 wrappedUv = fract(TexCoord);
+    vec2 nearestUv = (floor(wrappedUv * size) + vec2(0.5)) / max(size, vec2(1.0));
+    float shade = textureLod(tintMapTexture, wrappedUv, 0.0).r;
+    float encodedLayer = textureLod(tintMapTexture, nearestUv, 0.0).g;
+    float layer = floor(clamp(encodedLayer, 0.0, 0.9999) * 10.0);
+
+    vec4 custom = tintColor0;
+    float paletteRow = tintPaletteRow0;
+    float referenceRow = 0.000244;
+    if      (layer > 8.5) { custom = tintColor9; paletteRow = tintPaletteRow9; referenceRow = 0.515869; }
+    else if (layer > 7.5) { custom = tintColor8; paletteRow = tintPaletteRow8; referenceRow = 0.515869; }
+    else if (layer > 6.5) { custom = tintColor7; paletteRow = tintPaletteRow7; referenceRow = 0.429932; }
+    else if (layer > 5.5) { custom = tintColor6; paletteRow = tintPaletteRow6; referenceRow = 0.429932; }
+    else if (layer > 4.5) { custom = tintColor5; paletteRow = tintPaletteRow5; referenceRow = 0.343994; }
+    else if (layer > 3.5) { custom = tintColor4; paletteRow = tintPaletteRow4; referenceRow = 0.343994; }
+    else if (layer > 2.5) { custom = tintColor3; paletteRow = tintPaletteRow3; referenceRow = 0.258057; }
+    else if (layer > 1.5) { custom = tintColor2; paletteRow = tintPaletteRow2; referenceRow = 0.172119; }
+    else if (layer > 0.5) { custom = tintColor1; paletteRow = tintPaletteRow1; referenceRow = 0.086182; }
+
+    float paletteU = (shade * 255.0 + 0.5) / 256.0;
+    vec4 paletteColor = textureLod(
+        tintPaletteTexture,
+        vec2(paletteU, paletteRow),
+        0.0);
+    if (custom.a > 0.5)
+    {
+        vec3 referenceShade = textureLod(
+            tintPaletteTexture,
+            vec2(paletteU, referenceRow),
+            0.0).rgb;
+        vec3 referenceMidpoint = textureLod(
+            tintPaletteTexture,
+            vec2(128.5 / 256.0, referenceRow),
+            0.0).rgb;
+        const vec3 luminanceWeights = vec3(0.2126, 0.7152, 0.0722);
+        float shadeScale = max(
+            dot(referenceShade, luminanceWeights) /
+                max(dot(referenceMidpoint, luminanceWeights), 1.0 / 255.0),
+            0.0);
+        paletteColor.rgb = clamp(custom.rgb * shadeScale, 0.0, 1.0);
+        // A direct RGB choice must not inherit the hidden preset row's reflection mask. Without
+        // this, the same custom color can turn chrome/grey depending on the preset selected before
+        // it. Presets retain their authored PLT environment coverage through paletteColor.a.
+        paletteColor.a = 1.0;
+    }
+    return paletteColor;
+}
+
 void main()
 {
-    vec4 texColor = hasTexture ? texture(diffuseTexture, TexCoord) : vec4(flatColor, 1.0);
+    vec4 texColor = hasTintMap
+        ? ResolveTintMapColor()
+        : hasTexture ? texture(diffuseTexture, TexCoord) : vec4(flatColor, 1.0);
+    float environmentDiffuseCoverage = texColor.a;
+
+    if (hasTintAlpha)
+    {
+        vec4 alphaSample = texture(tintAlphaTexture, TexCoord);
+        texColor.a = tintAlphaUsesRedChannel ? alphaSample.r : alphaSample.a;
+    }
 
     if (alphaCutoff > 0.0 && texColor.a < alphaCutoff)
         discard;
@@ -269,7 +357,7 @@ void main()
         // lit diffuse texture source-alpha blended over it. PLT alpha therefore means diffuse
         // coverage (zero = full reflection), not transparency. Applying diffuse lighting after
         // this mix incorrectly dims the reflective metal regions.
-        result = mix(SampleEnvironmentMap(norm), result, texColor.a);
+        result = mix(SampleEnvironmentMap(norm), result, environmentDiffuseCoverage);
     }
 
     if (hasTexture && hasSpecularMap)
@@ -299,7 +387,7 @@ void main()
 
     // flatAlpha is 1.0 for every ordinary draw; the placement ghosts lower it so the scene reads
     // through the object about to be placed.
-    FragColor = vec4(result, flatAlpha);
+    FragColor = vec4(result, flatAlpha * ((useTextureAlpha || hasTintAlpha) ? texColor.a : 1.0));
 }
 ";
 
@@ -330,9 +418,18 @@ void main()
 
             public string? TextureName { get; init; }
 
+            public string? MaterialName { get; init; }
+
             /// <summary>Equipment-specific PLT dyes; empty means use the instance/model palette.</summary>
             public IReadOnlyDictionary<int, int> LayerColorIndices { get; init; } =
                 new Dictionary<int, int>();
+
+            public bool UsesItemTintOverrides { get; init; }
+
+            public IReadOnlyDictionary<string, int> TintMapOverrides { get; init; } =
+                new Dictionary<string, int>(StringComparer.Ordinal);
+
+            public AppearanceArmor ArmorPart { get; init; } = AppearanceArmor.Invalid;
 
             /// <summary>
             /// The source node's MDL <c>tilefade</c> flag - see <see cref="RenderMesh.TileFade"/>.
@@ -379,15 +476,22 @@ void main()
         private readonly record struct MeshMaterial(
             uint TexId,
             float AlphaCutoff,
+            TxiBlendMode Blending,
             uint NormalTexId,
             uint SpecularTexId,
             uint RoughnessTexId,
-            uint EnvironmentTexId);
+            uint EnvironmentTexId,
+            uint TintMapTexId,
+            uint TintPaletteTexId,
+            uint TintAlphaTexId,
+            bool TintAlphaUsesRedChannel,
+            float TintAlphaCutoff);
 
         private readonly record struct UploadedDiffuse(
             uint TexId,
             float AlphaCutoff,
-            string? EnvironmentMapTexture);
+            string? EnvironmentMapTexture,
+            TxiBlendMode Blending);
 
         private GL? _gl;
         private uint _shaderProgram;
@@ -413,6 +517,12 @@ void main()
         // Points at the same GL texture ids as _textureCache/_mapTextureCache; cleared alongside
         // them on GL teardown.
         private readonly Dictionary<string, MeshMaterial> _rawTextureCache =
+            new(StringComparer.OrdinalIgnoreCase);
+
+        // MTR parsing reads and decodes the resource. Keep both successful parses and misses out of
+        // the per-mesh draw path; invalidating game resources clears this together with the GPU
+        // material cache so a changed HAK can be reparsed.
+        private readonly Dictionary<string, MtrMaterial?> _parsedMaterialCache =
             new(StringComparer.OrdinalIgnoreCase);
 
         private int _gameResourceInvalidationRequested;
@@ -1135,6 +1245,8 @@ void main()
             get => Volatile.Read(ref _sceneState).Scene;
             set
             {
+                var previous = Volatile.Read(ref _sceneState).Scene;
+                var preservesPreviewGeometry = HasSamePreviewGeometry(previous, value);
                 var version = Interlocked.Increment(ref _nextSceneVersion);
                 Volatile.Write(ref _sceneState, new SceneState(value, version));
 
@@ -1160,6 +1272,13 @@ void main()
                     _restoredCameraAwaitingScene = false;
                     RecordSceneFramingBaseline(value);
                 }
+                else if (value != null && preservesPreviewGeometry)
+                {
+                    // Palette and RGB edits replace the immutable scene only to publish new tint
+                    // dictionaries. The model, transform and placement are unchanged, so retain
+                    // the builder's exact orbit while refreshing the layout-aware baseline.
+                    RecordSceneFramingBaseline(value);
+                }
                 else if (value != null && (!_cameraFramed || NeedsRefit(value)))
                 {
                     _cameraFramed = true;
@@ -1174,6 +1293,21 @@ void main()
 
                 RequestNextFrameRendering();
             }
+        }
+
+        private static bool HasSamePreviewGeometry(AreaScene? previous, AreaScene? next)
+        {
+            if (!IsSingleModelPreview(previous) || !IsSingleModelPreview(next))
+                return false;
+
+            var before = previous!.Instances[0];
+            var after = next!.Instances[0];
+            return before.Model != null &&
+                   ReferenceEquals(before.Model, after.Model) &&
+                   before.Kind == after.Kind &&
+                   before.Position == after.Position &&
+                   before.Orientation == after.Orientation &&
+                   before.VisualTransform.Equals(after.VisualTransform);
         }
 
         /// <summary>
@@ -1624,9 +1758,11 @@ void main()
             Position = position,
             Orientation = orientation,
             VisualTransform = source.VisualTransform,
+            LayerColorIndices = source.LayerColorIndices,
             Geometry = source.Geometry,
             Model = source.Model,
             IsDoorTransition = source.IsDoorTransition,
+            TintMapOverrides = source.TintMapOverrides,
             SoundMinDistance = source.SoundMinDistance,
             SoundMaxDistance = source.SoundMaxDistance,
             IsPositionalSound = source.IsPositionalSound
@@ -2571,6 +2707,7 @@ void main()
                             _gl.DeleteTexture(texId);
                     _mapTextureCache.Clear();
                     _rawTextureCache.Clear();
+                    _parsedMaterialCache.Clear();
 
                     foreach (var buffer in _modelBuffers.Values)
                         DeleteBuffer(buffer.Vao, buffer.Vbo, buffer.Ebo);
@@ -2766,6 +2903,7 @@ void main()
             }
             _mapTextureCache.Clear();
             _rawTextureCache.Clear();
+            _parsedMaterialCache.Clear();
 
             foreach (var buffer in _modelBuffers.Values)
                 DeleteBuffer(buffer.Vao, buffer.Vbo, buffer.Ebo);
@@ -2897,6 +3035,14 @@ void main()
                 gl.Uniform3(location, value.X, value.Y, value.Z);
         }
 
+        private void SetUniformVec4(string name, Vector4 value)
+        {
+            var location = GetUniformLocationCached(name);
+            var gl = _gl;
+            if (location >= 0 && gl != null)
+                gl.Uniform4(location, value.X, value.Y, value.Z, value.W);
+        }
+
         private void SetUniformVec2(string name, Vector2 value)
         {
             var location = GetUniformLocationCached(name);
@@ -2906,6 +3052,20 @@ void main()
         }
 
         private void SetUniformBool(string name, bool value)
+        {
+            // Every path that disables the diffuse texture is switching to flat-color rendering.
+            // Tint state otherwise survives from the last model mesh and takes precedence over the
+            // flat color in the fragment shader, corrupting later markers and overlays.
+            if (name == "hasTexture" && !value)
+            {
+                SetUniformBoolCore("hasTintMap", false);
+                SetUniformBoolCore("hasTintAlpha", false);
+            }
+
+            SetUniformBoolCore(name, value);
+        }
+
+        private void SetUniformBoolCore(string name, bool value)
         {
             var location = GetUniformLocationCached(name);
             var gl = _gl;
@@ -3005,6 +3165,12 @@ void main()
             SetUniformInt("specularTexture", 2);
             SetUniformInt("roughnessTexture", 3);
             SetUniformInt("environmentTexture", 4);
+            SetUniformInt("tintMapTexture", 5);
+            SetUniformInt("tintPaletteTexture", 6);
+            SetUniformInt("tintAlphaTexture", 7);
+            SetUniformBool("hasTintMap", false);
+            SetUniformBool("hasTintAlpha", false);
+            SetUniformBool("tintAlphaUsesRedChannel", false);
             SetUniformBool("hasNormalMap", false);
             SetUniformBool("hasSpecularMap", false);
             SetUniformBool("hasRoughnessMap", false);
@@ -3098,13 +3264,14 @@ void main()
 
                             var worldMatrix = meshRange.MeshTransform * placement.Transform;
                             SetUniformMatrix4("model", worldMatrix);
-                            BindMeshTexture(meshRange.TextureName);
+                            var blending = BindMeshTexture(meshRange.TextureName, meshRange.MaterialName);
 
                             unsafe
                             {
                                 _gl.DrawElements(PrimitiveType.Triangles, (uint)meshRange.IndexCount,
                                     DrawElementsType.UnsignedInt, (void*)meshRange.IndexOffset);
                             }
+                            RestoreMeshBlending(blending);
                         }
                     }
                 }
@@ -3264,7 +3431,17 @@ void main()
                             PreviewMeshTransform(meshRange, buffer, preview, idleElapsed) * instanceTransform);
                         UseLayerColors(
                             meshRange.LayerColorIndices, instance.LayerColorIndices, raw.Model);
-                        BindMeshTexture(meshRange.TextureName);
+                        var itemOwnedCreatureMesh = instance.Kind == InstanceMarkerKind.Creature &&
+                                                    meshRange.UsesItemTintOverrides;
+                        var blending = BindMeshTexture(
+                            meshRange.TextureName,
+                            meshRange.MaterialName,
+                            meshRange.LayerColorIndices,
+                            itemOwnedCreatureMesh
+                                ? meshRange.TintMapOverrides
+                                : instance.TintMapOverrides,
+                            itemOwnedCreatureMesh ? instance.TintMapOverrides : null,
+                            meshRange.ArmorPart);
 
                         unsafe
                         {
@@ -3272,6 +3449,7 @@ void main()
                                 DrawElementsType.UnsignedInt,
                                 (void*)PreviewMeshIndexOffset(meshRange, buffer, preview, idleElapsed));
                         }
+                        RestoreMeshBlending(blending);
                     }
                 }
             }
@@ -3518,7 +3696,7 @@ void main()
                 return false;
 
             // Particles draw unlit, so only the diffuse matters here.
-            var texId = ResolveTexture(textureName).TexId;
+            var texId = ResolveTexture(textureName, materialName: null).TexId;
             if (texId == 0)
                 return false;
 
@@ -3785,7 +3963,8 @@ void main()
                 VisualTransform = ghost.VisualTransform,
                 LayerColorIndices = ghost.LayerColorIndices,
                 Model = ghost.Model,
-                IsDoorTransition = ghost.IsDoorTransition
+                IsDoorTransition = ghost.IsDoorTransition,
+                TintMapOverrides = ghost.TintMapOverrides
             };
 
             var transform = AreaPicking.ComputeInstanceTransform(placed);
@@ -3830,11 +4009,30 @@ void main()
                     foreach (var meshRange in buffer.MeshRanges)
                     {
                         SetUniformMatrix4("model", meshRange.MeshTransform * transform);
+                        var blending = TxiBlendMode.None;
                         if (!refused)
                         {
                             UseLayerColors(
                                 meshRange.LayerColorIndices, placed.LayerColorIndices, placed.Model);
-                            BindMeshTexture(meshRange.TextureName);
+                            var tintMapOverrides = placed.TintMapOverrides;
+                            IReadOnlyDictionary<string, int>? creatureTintMapOverrides = null;
+                            if (meshRange.UsesItemTintOverrides)
+                            {
+                                tintMapOverrides = meshRange.TintMapOverrides.Count > 0 ||
+                                                   placed.Kind != InstanceMarkerKind.Item
+                                    ? meshRange.TintMapOverrides
+                                    : placed.TintMapOverrides;
+                                if (placed.Kind == InstanceMarkerKind.Creature)
+                                    creatureTintMapOverrides = placed.TintMapOverrides;
+                            }
+
+                            blending = BindMeshTexture(
+                                meshRange.TextureName,
+                                meshRange.MaterialName,
+                                null,
+                                tintMapOverrides,
+                                creatureTintMapOverrides,
+                                meshRange.ArmorPart);
                         }
 
                         unsafe
@@ -3842,6 +4040,7 @@ void main()
                             _gl.DrawElements(PrimitiveType.Triangles, (uint)meshRange.IndexCount,
                                 DrawElementsType.UnsignedInt, (void*)meshRange.IndexOffset);
                         }
+                        RestoreMeshBlending(blending, restoreStandardTransparency: true);
                     }
                 }
                 finally
@@ -4410,14 +4609,16 @@ void main()
                             continue;
 
                         SetUniformMatrix4("model", meshRange.MeshTransform * transform);
-                        if (fits)
-                            BindMeshTexture(meshRange.TextureName);
+                        var blending = fits
+                            ? BindMeshTexture(meshRange.TextureName, meshRange.MaterialName)
+                            : TxiBlendMode.None;
 
                         unsafe
                         {
                             _gl.DrawElements(PrimitiveType.Triangles, (uint)meshRange.IndexCount,
                                 DrawElementsType.UnsignedInt, (void*)meshRange.IndexOffset);
                         }
+                        RestoreMeshBlending(blending, restoreStandardTransparency: true);
                     }
                 }
             }
@@ -4735,6 +4936,7 @@ void main()
                 }
                 _mapTextureCache.Clear();
                 _rawTextureCache.Clear();
+                _parsedMaterialCache.Clear();
             }
         }
 
@@ -4836,7 +5038,11 @@ void main()
                     AnimationFrames = mesh.AnimationFrames,
                     AnimationIndexOffsets = animationIndexOffsets,
                     TextureName = string.IsNullOrEmpty(mesh.TextureName) ? null : mesh.TextureName,
+                    MaterialName = string.IsNullOrEmpty(mesh.MaterialName) ? null : mesh.MaterialName,
                     LayerColorIndices = mesh.LayerColorIndices,
+                    UsesItemTintOverrides = mesh.UsesItemTintOverrides,
+                    TintMapOverrides = mesh.TintMapOverrides,
+                    ArmorPart = mesh.ArmorPart,
                     TileFade = mesh.TileFade
                 });
             }
@@ -4902,18 +5108,45 @@ void main()
                 ",", colors.OrderBy(pair => pair.Key).Select(pair => $"{pair.Key}:{pair.Value}"));
         }
 
-        private void BindMeshTexture(string? textureName)
+        private TxiBlendMode BindMeshTexture(
+            string? textureName,
+            string? materialName = null,
+            IReadOnlyDictionary<int, int>? layerColorIndices = null,
+            IReadOnlyDictionary<string, int>? tintMapOverrides = null,
+            IReadOnlyDictionary<string, int>? creatureTintMapOverrides = null,
+            AppearanceArmor armorPart = AppearanceArmor.Invalid)
         {
-            var material = string.IsNullOrWhiteSpace(textureName)
+            var surfaceName = !string.IsNullOrWhiteSpace(materialName)
+                ? materialName
+                : textureName;
+            var material = string.IsNullOrWhiteSpace(surfaceName)
                 ? default
-                : ResolveTexture(textureName);
+                : ResolveTexture(textureName!, materialName);
 
             SetUniformBool("unlit", false);
+            // Additive TXI materials use the diffuse bitmap's authored alpha as their source
+            // contribution. Reset this on every mesh bind so the choice never leaks to the next
+            // ordinary opaque mesh.
+            SetUniformBool("useTextureAlpha", material.Blending == TxiBlendMode.Additive);
 
             if (material.TexId != 0)
             {
                 SetUniformBool("hasTexture", true);
-                SetUniformFloat("alphaCutoff", material.AlphaCutoff);
+                var activeLayerColors = layerColorIndices is { Count: > 0 }
+                    ? layerColorIndices
+                    : _layerColors;
+                BindTintMapState(
+                    surfaceName!,
+                    material,
+                    activeLayerColors,
+                    tintMapOverrides,
+                    creatureTintMapOverrides,
+                    armorPart);
+                SetUniformFloat(
+                    "alphaCutoff",
+                    material.TintAlphaTexId != 0
+                        ? MathF.Max(material.AlphaCutoff, material.TintAlphaCutoff)
+                        : material.AlphaCutoff);
 
                 // The display toggle gates the flags rather than the caches, so flipping it is
                 // instant - the map textures stay resident and just stop being sampled.
@@ -4939,6 +5172,9 @@ void main()
             else
             {
                 SetUniformBool("hasTexture", false);
+                SetUniformBool("hasTintMap", false);
+                SetUniformBool("hasTintAlpha", false);
+                SetUniformBool("tintAlphaUsesRedChannel", false);
                 SetUniformBool("hasNormalMap", false);
                 SetUniformBool("hasSpecularMap", false);
                 SetUniformBool("hasRoughnessMap", false);
@@ -4946,24 +5182,79 @@ void main()
                 SetUniformFloat("alphaCutoff", 0f);
                 SetUniformVec3("flatColor", UntexturedTileColor);
             }
+
+            ConfigureMeshBlending(material.Blending);
+            return material.Blending;
         }
 
-        private MeshMaterial ResolveTexture(string rawTextureName)
+        private void ConfigureMeshBlending(TxiBlendMode blending)
+        {
+            if (blending != TxiBlendMode.Additive)
+                return;
+
+            _gl!.Enable(EnableCap.Blend);
+            _gl.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.One);
+            _gl.DepthMask(false);
+        }
+
+        private void RestoreMeshBlending(
+            TxiBlendMode blending,
+            bool restoreStandardTransparency = false)
+        {
+            if (blending != TxiBlendMode.Additive)
+                return;
+
+            if (restoreStandardTransparency)
+            {
+                _gl!.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+                _gl.DepthMask(false);
+                return;
+            }
+
+            _gl!.DepthMask(true);
+            _gl.Disable(EnableCap.Blend);
+        }
+
+        private MeshMaterial ResolveTexture(string rawTextureName, string? materialName)
         {
             if (ResourceIndex == null)
                 return default;
 
-            if (_rawTextureCache.TryGetValue(rawTextureName + _layerColorKey, out var memo))
+            var hasMaterial = !string.IsNullOrWhiteSpace(materialName);
+            var surfaceName = hasMaterial
+                ? materialName!
+                : rawTextureName;
+            MtrMaterial? parsedMaterial = null;
+            if (hasMaterial)
+            {
+                parsedMaterial = TryParseMaterial(surfaceName);
+            }
+            else
+            {
+                // Same-resref fallback is only valid for the generated tint shaders. A plain mesh
+                // whose bitmap happens to share a resref with an unrelated MTR must keep the bitmap.
+                var candidate = TryParseMaterial(surfaceName);
+                if (IsTintMapMaterial(candidate))
+                    parsedMaterial = candidate;
+            }
+
+            var resolveMaterial = hasMaterial || parsedMaterial != null;
+            var rawKey = (resolveMaterial ? "m|" : "t|") + surfaceName + _layerColorKey;
+            if (_rawTextureCache.TryGetValue(rawKey, out var memo))
                 return memo;
 
             MaterialMaps maps;
             try
             {
-                maps = MaterialResolver.ResolveMaterialMaps(ResourceIndex, rawTextureName);
+                maps = MaterialResolver.ResolveMaterialMaps(
+                    ResourceIndex,
+                    surfaceName,
+                    resolveMaterial);
             }
             catch (Exception)
             {
-                maps = new MaterialMaps { Diffuse = rawTextureName };
+                parsedMaterial = null;
+                maps = new MaterialMaps { Diffuse = surfaceName };
             }
 
             // Keyed by the dye set as well as the resref: one PLT dyed two ways is two different
@@ -4977,18 +5268,129 @@ void main()
 
             // A mesh whose diffuse failed to resolve draws flat-colored; loading its maps
             // anyway would waste GPU memory on textures the shader never samples.
+            var isTintMap = IsTintMapMaterial(parsedMaterial);
+            var alphaSource = isTintMap ? parsedMaterial?.GetAlphaSource() : null;
             var material = cached.TexId == 0
-                ? new MeshMaterial(0, 0f, 0, 0, 0, 0)
+                ? new MeshMaterial(0, 0f, TxiBlendMode.None, 0, 0, 0, 0, 0, 0, 0, false, 0f)
                 : new MeshMaterial(
                     cached.TexId,
                     cached.AlphaCutoff,
+                    cached.Blending,
                     ResolveMapTexture(maps.Normal),
                     ResolveMapTexture(maps.Specular),
                     ResolveMapTexture(maps.Roughness),
-                    ResolveMapTexture(cached.EnvironmentMapTexture));
+                    ResolveMapTexture(
+                        isTintMap
+                            ? cached.EnvironmentMapTexture ??
+                              TextureRenderPolicy.StandaloneEnvironmentMap
+                            : cached.EnvironmentMapTexture),
+                    isTintMap
+                        ? ResolveMapTexture(parsedMaterial!.GetTexture(7))
+                        : 0,
+                    isTintMap
+                        ? ResolveMapTexture(parsedMaterial!.GetTexture(10))
+                        : 0,
+                    ResolveTintAlphaTexture(parsedMaterial),
+                    alphaSource?.UsesRedChannel == true,
+                    alphaSource?.Cutoff ?? 0f);
 
-            _rawTextureCache[rawTextureName + _layerColorKey] = material;
+            _rawTextureCache[rawKey] = material;
             return material;
+        }
+
+        private MtrMaterial? TryParseMaterial(string surfaceName)
+        {
+            if (_parsedMaterialCache.TryGetValue(surfaceName, out var cached))
+                return cached;
+
+            MtrMaterial? material;
+            try
+            {
+                material = MaterialResolver.TryParseMaterial(ResourceIndex!, surfaceName);
+            }
+            catch (Exception)
+            {
+                material = null;
+            }
+
+            _parsedMaterialCache[surfaceName] = material;
+            return material;
+        }
+
+        private static bool IsTintMapMaterial(MtrMaterial? material)
+        {
+            return TintMapTextureRenderer.IsTintMapMaterial(material);
+        }
+
+        private uint ResolveTintAlphaTexture(MtrMaterial? material)
+        {
+            if (!IsTintMapMaterial(material))
+                return 0;
+
+            return ResolveMapTexture(material!.GetAlphaSource()?.TextureName);
+        }
+
+        private void BindTintMapState(
+            string materialName,
+            MeshMaterial material,
+            IReadOnlyDictionary<int, int>? layerColorIndices,
+            IReadOnlyDictionary<string, int>? tintMapOverrides,
+            IReadOnlyDictionary<string, int>? creatureTintMapOverrides,
+            AppearanceArmor armorPart)
+        {
+            var hasTintMap = material.TintMapTexId != 0 && material.TintPaletteTexId != 0;
+            var hasTintAlpha = hasTintMap && material.TintAlphaTexId != 0;
+            SetUniformBool("hasTintMap", hasTintMap);
+            SetUniformBool("hasTintAlpha", hasTintAlpha);
+            SetUniformBool(
+                "tintAlphaUsesRedChannel",
+                hasTintAlpha && material.TintAlphaUsesRedChannel);
+            if (!hasTintMap)
+                return;
+
+            _gl!.ActiveTexture(TextureUnit.Texture5);
+            _gl.BindTexture(TextureTarget.Texture2D, material.TintMapTexId);
+            _gl.ActiveTexture(TextureUnit.Texture6);
+            _gl.BindTexture(TextureTarget.Texture2D, material.TintPaletteTexId);
+            _gl.ActiveTexture(TextureUnit.Texture7);
+            _gl.BindTexture(TextureTarget.Texture2D, material.TintAlphaTexId);
+            _gl.ActiveTexture(TextureUnit.Texture0);
+
+            for (var layerValue = 0; layerValue < 10; layerValue++)
+            {
+                var layer = (TintMapLayerType)layerValue;
+                var activeOverrides = TintMapVariable.IsCreatureColorLayer(layer) &&
+                                      creatureTintMapOverrides != null
+                    ? creatureTintMapOverrides
+                    : tintMapOverrides;
+                var savedValue = TintMapOverrides.GetMaterialColor(
+                    activeOverrides,
+                    materialName,
+                    layer,
+                    armorPart);
+
+                var hasCustomColor = TintMapColor.TryFromStoredValue(savedValue, out var custom);
+                // The deployed shader accepts palette rows only. Keep the Toolset preview on the
+                // same path so an arbitrary RGB picker value cannot look different in game.
+                SetUniformVec4($"tintColor{layerValue}", Vector4.Zero);
+
+                var paletteColor = hasCustomColor
+                    ? TintMapPaletteColors.GetClosestColorId(layer, custom)
+                    : savedValue > 0 &&
+                      savedValue <= TintMapMaterialRegistry.PaletteColorCount
+                    ? savedValue - 1
+                    : layerColorIndices != null &&
+                      layerColorIndices.TryGetValue(layerValue, out var standardColor)
+                        ? standardColor
+                        : 0;
+                var paletteCoordinate = TintMapMaterialRegistry.GetPaletteCoordinate(
+                    layer,
+                    Math.Clamp(
+                        paletteColor,
+                        0,
+                        TintMapMaterialRegistry.PaletteColorCount - 1));
+                SetUniformFloat($"tintPaletteRow{layerValue}", paletteCoordinate);
+            }
         }
 
         private uint ResolveMapTexture(string? mapName)
@@ -5009,7 +5411,9 @@ void main()
             try
             {
                 var image = TextureLoader.Load(ResourceIndex!, mapName);
-                return image == null ? 0u : UploadTexture(image.Width, image.Height, image.Pixels);
+                return image == null
+                    ? 0u
+                    : UploadTexture(image.Width, image.Height, image.Pixels, mapName);
             }
             catch (Exception)
             {
@@ -5025,12 +5429,13 @@ void main()
                 if (image == null)
                     return default;
 
-                var texId = UploadTexture(image.Width, image.Height, image.Pixels);
+                var texId = UploadTexture(image.Width, image.Height, image.Pixels, resolvedName);
                 var hints = TextureRenderPolicy.Resolve(ResourceIndex!, resolvedName, image);
                 return new UploadedDiffuse(
                     texId,
                     hints.AlphaCutoff,
-                    hints.EnvironmentMapTexture);
+                    hints.EnvironmentMapTexture,
+                    hints.Blending);
             }
             catch (Exception)
             {
@@ -5039,16 +5444,17 @@ void main()
         }
 
         /// <summary>
-        /// Uploads decoded RGBA pixels as a 2D texture, flipping the rows on the way in so that
-        /// v = 0 lands on the last decoded row - see <see cref="TextureOrientation"/>.
+        /// Uploads top-first decoded RGBA pixels as an OpenGL texture. Every image, including the
+        /// row-addressed tint palette, must be flipped so v = 0 lands on its bottom decoded row.
         /// </summary>
-        private uint UploadTexture(int width, int height, byte[] rgba)
+        private uint UploadTexture(int width, int height, byte[] rgba, string resourceName)
         {
             var texId = _gl!.GenTexture();
             _gl.BindTexture(TextureTarget.Texture2D, texId);
 
             _gl.TexImage2D(TextureTarget.Texture2D, 0, InternalFormat.Rgba8, (uint)width, (uint)height, 0,
-                PixelFormat.Rgba, PixelType.UnsignedByte, new ReadOnlySpan<byte>(TextureOrientation.FlipRows(width, height, rgba)));
+                PixelFormat.Rgba, PixelType.UnsignedByte,
+                new ReadOnlySpan<byte>(PrepareTextureUploadPixels(resourceName, width, height, rgba)));
 
             _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
             _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
@@ -5058,6 +5464,15 @@ void main()
 
             _gl.BindTexture(TextureTarget.Texture2D, 0);
             return texId;
+        }
+
+        private static byte[] PrepareTextureUploadPixels(
+            string resourceName,
+            int width,
+            int height,
+            byte[] rgba)
+        {
+            return TextureOrientation.FlipRows(width, height, rgba);
         }
 
         // ----- Static placeholder/marker geometry (scene-independent; built once at GL init) -----

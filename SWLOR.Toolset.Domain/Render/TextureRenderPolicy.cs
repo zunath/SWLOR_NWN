@@ -8,7 +8,8 @@ namespace SWLOR.Toolset.Domain.Render
     /// </summary>
     public readonly record struct TextureRenderHints(
         float AlphaCutoff,
-        string? EnvironmentMapTexture);
+        string? EnvironmentMapTexture,
+        TxiBlendMode Blending);
 
     /// <summary>
     /// Resolves Aurora's two meanings for texture alpha: punch-through transparency or the blend
@@ -39,16 +40,23 @@ namespace SWLOR.Toolset.Domain.Render
             var environmentMap = ResolveEnvironmentMap(image.SourceFormat, txi);
 
             if (environmentMap != null)
-                return new TextureRenderHints(0f, environmentMap);
+                return new TextureRenderHints(0f, environmentMap, txi?.Blending ?? TxiBlendMode.None);
 
             if (txi?.Blending == TxiBlendMode.PunchThrough)
-                return new TextureRenderHints(TextureAlphaPolicy.PunchThroughCutoff, null);
+                return new TextureRenderHints(
+                    TextureAlphaPolicy.PunchThroughCutoff,
+                    null,
+                    TxiBlendMode.PunchThrough);
+
+            if (txi?.Blending == TxiBlendMode.Additive)
+                return new TextureRenderHints(0f, null, TxiBlendMode.Additive);
 
             return new TextureRenderHints(
                 TextureAlphaPolicy.RequiresCutoff(image)
                     ? TextureAlphaPolicy.PunchThroughCutoff
                     : 0f,
-                null);
+                null,
+                TxiBlendMode.None);
         }
 
         /// <summary>

@@ -371,6 +371,7 @@ namespace SWLOR.Toolset.Domain.Render
                 Geometry = geometry,
                 Model = resolveModel?.Invoke(instance),
                 IsDoorTransition = isDoorTransition?.Invoke(instance) ?? false,
+                TintMapOverrides = TintMapOverrides.Read(new VarTable(instance)),
                 SoundMinDistance = kind == InstanceMarkerKind.Sound ? instance.GetSingleOrNull("MinDistance") : null,
                 SoundMaxDistance = kind == InstanceMarkerKind.Sound ? instance.GetSingleOrNull("MaxDistance") : null,
                 IsPositionalSound = kind == InstanceMarkerKind.Sound && (instance.GetIntOrNull("Positional") ?? 0) != 0

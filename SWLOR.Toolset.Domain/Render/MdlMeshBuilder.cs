@@ -2,6 +2,7 @@
 
 using System.Numerics;
 using SWLOR.NWN.Formats.Mdl;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Toolset.Domain.Render
 {
@@ -16,6 +17,12 @@ namespace SWLOR.Toolset.Domain.Render
         /// no bitmap assigned (e.g. a "NULL" bitmap in the source MDL).
         /// </summary>
         public required string TextureName { get; init; }
+
+        /// <summary>
+        /// Explicit NWN:EE material bound by the source model. Empty means <see cref="TextureName"/>
+        /// is a bitmap and must not be replaced by an unrelated same-named MTR.
+        /// </summary>
+        public string MaterialName { get; init; } = string.Empty;
 
         /// <summary>Vertex positions in node-local space, 3 floats (x, y, z) per vertex.</summary>
         public required float[] Positions { get; init; }
@@ -104,6 +111,26 @@ namespace SWLOR.Toolset.Domain.Render
         /// </summary>
         public IReadOnlyDictionary<int, int> LayerColorIndices { get; set; } =
             new Dictionary<int, int>();
+
+        /// <summary>
+        /// The mesh is supplied by equipped creature armor, a helmet, or a cloak. Creature-blueprint
+        /// material-dye tint locals are stored on that item. Semantic skin, hair and tattoo layers
+        /// still come from the creature and are merged by creature preview renderers.
+        /// </summary>
+        public bool UsesItemTintOverrides { get; set; }
+
+        /// <summary>
+        /// Stored TM_* values from the equipped item that supplied this mesh. Empty for creature-
+        /// owned and ordinary model geometry.
+        /// </summary>
+        public IReadOnlyDictionary<string, int> TintMapOverrides { get; set; } =
+            new Dictionary<string, int>(StringComparer.Ordinal);
+
+        /// <summary>
+        /// Modular armor slot that supplied this mesh. The slot disambiguates a part that opted
+        /// into a preset palette color from sibling parts that still inherit a global RGB tint.
+        /// </summary>
+        public AppearanceArmor ArmorPart { get; set; } = AppearanceArmor.Invalid;
 
         public int VertexCount => Positions.Length / 3;
         public int TriangleCount => Indices.Length / 3;
@@ -350,7 +377,8 @@ namespace SWLOR.Toolset.Domain.Render
                     throw new InvalidDataException(
                         $"MDL parent chain exceeds the {MaximumParentDepth:N0}-level limit.");
 
-                var local = pose != null &&
+                var local = current.ReceivesNamedAnimationPose &&
+                            pose != null &&
                             !string.IsNullOrEmpty(current.Name) &&
                             pose.TryGetValue(current.Name, out var posed)
                     ? LocalTransform(posed.Position, posed.Orientation, posed.Scale)
@@ -585,6 +613,7 @@ namespace SWLOR.Toolset.Domain.Render
             {
                 NodeName = mesh.Name,
                 TextureName = NormalizeTextureName(mesh.Bitmap),
+                MaterialName = NormalizeTextureName(mesh.MaterialName),
                 DiffuseColor = ReadDiffuse(mesh),
                 Positions = positions,
                 Normals = normals,

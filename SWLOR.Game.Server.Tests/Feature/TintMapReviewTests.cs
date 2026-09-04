@@ -1,0 +1,2562 @@
+using System.Reflection;
+using FluentAssertions;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using NUnit.Framework;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
+using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
+using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
+using SWLOR.Game.Server.Service.DroidService;
+using SWLOR.Game.Server.Service.GuiService;
+using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item;
+
+namespace SWLOR.Game.Server.Tests.Feature;
+
+[TestFixture]
+public class TintMapReviewTests
+{
+    [TestCase(Gender.Male, "m")]
+    [TestCase(Gender.Female, "f")]
+    [TestCase(Gender.Both, "m")]
+    [TestCase(Gender.Other, "m")]
+    [TestCase(Gender.None, "m")]
+    public void PartsBasedModelGenderUsesEngineCompatiblePrefix(Gender gender, string expected)
+    {
+        var method = typeof(TintMapModelResolver).GetMethod(
+            "GetGenderModelCode",
+            BindingFlags.Static | BindingFlags.NonPublic);
+
+        method.Should().NotBeNull();
+        method!.Invoke(null, new object[] { gender }).Should().Be(expected);
+    }
+
+    [Test]
+    public void ConstructedDroidTintOverridesSurviveSerialization()
+    {
+        var droid = new ConstructedDroid();
+        var savedColor = new TintMapColor(12, 34, 56).ToStoredValue();
+        droid.TintOverrides["TM_droidmat_2"] = savedColor;
+
+        var serialized = JsonConvert.SerializeObject(droid);
+        var restored = JsonConvert.DeserializeObject<ConstructedDroid>(serialized);
+
+        restored.Should().NotBeNull();
+        restored!.TintOverrides.Should().ContainSingle()
+            .Which.Should().Be(new KeyValuePair<string, int>("TM_droidmat_2", savedColor));
+    }
+
+    [TestCase(0, 0, 0)]
+    [TestCase(12, 34, 56)]
+    [TestCase(255, 255, 255)]
+    public void TintMapRgbStorageRoundTrips(byte red, byte green, byte blue)
+    {
+        var expected = new TintMapColor(red, green, blue);
+        var stored = expected.ToStoredValue();
+
+        stored.Should().BePositive();
+        TintMapColor.TryFromStoredValue(stored, out var restored).Should().BeTrue();
+        restored.Should().Be(expected);
+        TintMapColor.TryFromStoredValue(43, out _).Should().BeFalse(
+            "legacy palette values must remain distinguishable from RGB colors");
+    }
+
+    [Test]
+    public void TintPaletteCoordinatesPreserveEveryLegacyMaterialFamily()
+    {
+        TintMapMaterialRegistry.PaletteTextureHeight.Should().Be(2048);
+        var expectedBaseRows = new Dictionary<TintMapLayerType, int>
+        {
+            [TintMapLayerType.Skin] = 0,
+            [TintMapLayerType.Hair] = 176,
+            [TintMapLayerType.Metal1] = 352,
+            [TintMapLayerType.Metal2] = 528,
+            [TintMapLayerType.Cloth1] = 704,
+            [TintMapLayerType.Cloth2] = 704,
+            [TintMapLayerType.Leather1] = 880,
+            [TintMapLayerType.Leather2] = 880,
+            [TintMapLayerType.Tattoo1] = 1056,
+            [TintMapLayerType.Tattoo2] = 1056,
+        };
+
+        foreach (var (layer, baseRow) in expectedBaseRows)
+        {
+            TintMapMaterialRegistry.GetLayer(layer).PaletteBaseRow.Should().Be(baseRow);
+            TintMapMaterialRegistry.GetPaletteCoordinate(layer, 0).Should().BeApproximately(
+                (baseRow + 0.5f) / TintMapMaterialRegistry.PaletteTextureHeight,
+                0.000001f);
+        }
+    }
+
+    [Test]
+    public void AppearanceTintEditorShowsPickerAndRgbWithoutRedundantLabel()
+    {
+        var definition = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "AppearanceEditorDefinition.cs");
+        var viewModel = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "AppearanceEditorViewModel.cs");
+
+        var definitionRoot = CSharpSyntaxTree.ParseText(definition).GetRoot();
+        var definitionMethods = definitionRoot.DescendantNodes()
+            .OfType<MethodDeclarationSyntax>()
+            .ToDictionary(method => method.Identifier.ValueText);
+
+        definition.Should().Contain("row.AddColorPicker()");
+        definition.Should().Contain(".BindSelectedColor(model => model.SelectedTintColor)");
+        definition.Should().Contain(".BindResref(model => model.ColorSheetResref)");
+        definition.Should().Contain("model => model.OnClickColorPalette(paletteIndex)");
+        definition.Should().NotContain(".SetText(\"Custom Color\")");
+        definition.Should().NotContain("CustomTintSelectionText");
+        viewModel.Should().NotContain("CustomTintSelectionText");
+        definition.Should().Contain(".BindValue(model => model.CustomTintRed)");
+        definition.Should().Contain(".BindValue(model => model.CustomTintGreen)");
+        definition.Should().Contain(".BindValue(model => model.CustomTintBlue)");
+        definition.Should().NotContain("Use Preset Color");
+        definition.Should().NotContain("OnResetTintColor");
+        viewModel.Should().NotContain("OnResetTintColor");
+        definition.Should().NotContain("IsCustomTintPickerVisible");
+        definitionMethods["BuildEditorHeader"].ToString().Should().NotContain("BuildCustomTintEditor");
+        definitionMethods["BuildMainEditor"].ToString().Should().Contain("BuildCustomTintEditor(col2)");
+        definitionMethods["BuildArmorEditor"].ToString().Should().Contain("BuildCustomTintEditor(col)",
+            "the armor picker must live in the full-width controls column below the compact palette row");
+        definitionMethods["BuildColorPalette"].ToString().Should().NotContain("BuildCustomTintEditor",
+            "placing the picker below the palette partial clips it at the parent row boundary");
+        var customTintEditor = definitionMethods["BuildCustomTintEditor"].ToString();
+        customTintEditor.Should().Contain("BindIsVisible(model => model.IsCustomTintAvailable)",
+            "unavailable custom controls must collapse instead of reserving dead space");
+        customTintEditor.Should().Contain("SetHeight(128f)",
+            "the picker should leave room for the armor part grid in the same window");
+        customTintEditor.Should().NotContain("SetHeight(176f)");
+        definition.Should().NotContain(".SetText(\"Tints\")");
+        definition.Should().NotContain("TintColorSheetResref");
+        viewModel.Should().Contain("new TintMapColor(value.R, value.G, value.B)");
+        viewModel.Should().Contain("TintMapPaletteColors.GetClosestColorId(layerType, requestedColor)");
+        viewModel.Should().Contain("ApplySelectedPaletteColor(",
+            "the dynamic picker must use the same palette-row application path as a preset click");
+        var setCustomTintComponent = FindMethod(viewModel, "SetCustomTintComponent");
+        setCustomTintComponent.ToString().Should().Contain("ApplyCustomTintColor(",
+            "typing an RGB component must update the palette without replacing the field mid-entry");
+        setCustomTintComponent.ToString().Should().Contain("synchronizeComponents: false");
+        setCustomTintComponent.ToString().Should().NotContain("SelectedTintColor =",
+            "a watched text edit fires on each keystroke and must not synchronize over the active field");
+        var applyCustomTintColor = FindMethod(viewModel, "ApplyCustomTintColor");
+        applyCustomTintColor.ToString().Should().Contain("SetSelectedTintColor(",
+            "the color picker must still reflect the palette row rendered in game");
+        applyCustomTintColor.ToString().Should().Contain("synchronizeComponents");
+        applyCustomTintColor.ToString().Should().Contain("reloadEditor: synchronizeComponents",
+            "watched RGB text edits must not reload and overwrite a partially entered component");
+        var applySelectedPaletteColor = FindMethod(viewModel, "ApplySelectedPaletteColor");
+        applySelectedPaletteColor.ToString().Should().Contain("if (reloadEditor)");
+        var setSelectedTintColor = FindMethod(viewModel, "SetSelectedTintColor");
+        var synchronizeComponents = FindMethod(viewModel, "SynchronizeCustomTintComponents");
+        var synchronizeBindings = FindMethod(viewModel, "SynchronizeTintControlBindings");
+        var setBindingsWatched = FindMethod(viewModel, "SetTintControlBindingsWatched");
+        setSelectedTintColor.ToString().Should().Contain("SynchronizeTintControlBindings",
+            "server picker updates must not return through the watched input as a second tint edit");
+        synchronizeComponents.ToString().Should().Contain("SynchronizeTintControlBindings",
+            "server RGB updates must not return through their watched inputs as extra tint edits");
+        synchronizeBindings.ToString().Should().Contain("SetTintControlBindingsWatched(false)");
+        synchronizeBindings.ToString().Should().Contain("SetTintControlBindingsWatched(true)");
+        foreach (var propertyName in new[]
+                 {
+                     "SelectedTintColor",
+                     "CustomTintRed",
+                     "CustomTintGreen",
+                     "CustomTintBlue"
+                 })
+        {
+            setBindingsWatched.ToString().Should().Contain($"nameof({propertyName})");
+        }
+        viewModel.Should().Contain("_tintControlBindingsWatched = true;",
+            "the four bindings become suppressible after their initial watches are registered");
+        viewModel.Should().Contain("WatchOnClient(model => model.SelectedTintColor)");
+        viewModel.Should().Contain("WatchOnClient(model => model.CustomTintRed)");
+        viewModel.Should().Contain("WatchOnClient(model => model.CustomTintGreen)");
+        viewModel.Should().Contain("WatchOnClient(model => model.CustomTintBlue)");
+        viewModel.Should().Contain("TintMapService.GetEffectiveDisplayColor(");
+        var service = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapService.cs");
+        var effectiveDisplayColor = FindMethod(service, nameof(TintMapService.GetEffectiveDisplayColor));
+        effectiveDisplayColor.ToString().Should().Contain("GetEffectiveColor(");
+        effectiveDisplayColor.ToString().Should().Contain("TintMapPaletteColors.GetColor(",
+            "legacy 1-176 overrides must initialize the picker from their rendered palette color");
+        viewModel.Should().NotContain("IsCustomTintPickerVisible");
+        viewModel.Should().NotContain("OnToggleCustomTintPicker");
+        viewModel.Should().NotContain("TintMaterialOptions");
+        viewModel.Should().NotContain("TintLayerOptions");
+        viewModel.Should().NotContain("OnSelectTintColor");
+        viewModel.Should().NotContain("OnSelectTintMap");
+        viewModel.Should().NotContain("IsTintMapSelected");
+    }
+
+    [Test]
+    public void AppearanceEditorInitializesGeneratedMaterialRowsFromEquippedArmor()
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "AppearanceEditorViewModel.cs");
+        var root = CSharpSyntaxTree.ParseText(source).GetRoot();
+        var initialize = root.DescendantNodes()
+            .OfType<MethodDeclarationSyntax>()
+            .Single(method => method.Identifier.ValueText == "Initialize");
+        var selectEquipment = root.DescendantNodes()
+            .OfType<MethodDeclarationSyntax>()
+            .Single(method => method.Identifier.ValueText == "OnSelectEquipment");
+
+        foreach (var method in new[] { initialize, selectEquipment })
+        {
+            var body = method.ToString();
+            body.Should().Contain("TintMapService.ApplyCurrentColors(_target)",
+                "armor materials otherwise retain their generated row-zero texture colors");
+            body.IndexOf("TintMapService.ApplyCurrentColors(_target)", StringComparison.Ordinal)
+                .Should().BeLessThan(body.IndexOf("LoadTintMapEditor()", StringComparison.Ordinal),
+                    "the rendered armor must match its item colors before the picker reads them");
+        }
+    }
+
+    [TestCase(1, 0, true, 1)]
+    [TestCase(27, 0, true, 27)]
+    [TestCase(27, 168, true, 168)]
+    [TestCase(0, 168, true, 168)]
+    [TestCase(27, 168, false, 27)]
+    public void PartsBasedModelUsesCreaturePartWhenArmorLeavesSlotAtZero(
+        int creaturePart,
+        int armorPart,
+        bool usesItemColors,
+        int expected)
+    {
+        var method = typeof(TintMapModelResolver).GetMethod(
+            "ResolvePartId",
+            BindingFlags.Static | BindingFlags.NonPublic);
+
+        method.Should().NotBeNull();
+        method!.Invoke(null, new object[] { creaturePart, armorPart, usesItemColors })
+            .Should().Be(expected);
+    }
+
+    [Test]
+    public void BodyPartChangesRefreshCustomTintTargets()
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "AppearanceEditorViewModel.cs");
+        var root = CSharpSyntaxTree.ParseText(source).GetRoot();
+        var loadBodyPart = root.DescendantNodes()
+            .OfType<MethodDeclarationSyntax>()
+            .Single(node => node.Identifier.ValueText == "LoadBodyPart");
+
+        loadBodyPart.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Select(GetInvokedMethodName)
+            .Should().Contain("LoadTintMapEditor");
+        loadBodyPart.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Select(GetInvokedMethodName)
+            .Should().Contain(nameof(TintMapService.CarryStoredCreatureCustomColors));
+        loadBodyPart.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Select(GetInvokedMethodName)
+            .Should().NotContain("RefreshTintMapAvailability");
+    }
+
+    [Test]
+    public void AppearanceTintEditorTargetsTheExistingColorSelectionAndRestoresPresets()
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "AppearanceEditorViewModel.cs");
+        var root = CSharpSyntaxTree.ParseText(source).GetRoot();
+        var methodNames = new HashSet<string>
+        {
+            "TryGetSelectedTintLayer",
+            "TryGetEditableTintSelections",
+            "ResetCurrentCustomTintOverrides",
+            "SynchronizeCustomTintControlsToPaletteColor",
+            "ApplySelectedPaletteColor",
+            "ApplyArmorPaletteColor",
+            "OnSelectColor",
+            "OnClickColorPalette",
+            "OnClickColorTarget"
+        };
+        var methods = root.DescendantNodes()
+            .OfType<MethodDeclarationSyntax>()
+            .Where(method => methodNames.Contains(method.Identifier.ValueText))
+            .ToDictionary(method => method.Identifier.ValueText);
+
+        methods["TryGetSelectedTintLayer"].ToString().Should().Contain("SelectedColorCategoryIndex switch");
+        methods["TryGetSelectedTintLayer"].ToString().Should().Contain("_selectedColorChannel switch");
+        methods["TryGetEditableTintSelections"].ToString().Should().Contain(
+            "selection.GetPaletteSource(selectedLayerType) == paletteSource");
+        methods["TryGetEditableTintSelections"].ToString().Should().Contain(
+            "selection.ArmorPart == armorPart");
+        methods["TryGetEditableTintSelections"].ToString().Should().Contain(
+            "selection.Material.Layers.Contains(selectedLayerType)");
+        methods["TryGetEditableTintSelections"].ToString().Should().Contain(
+            "_colorTarget == ColorTarget.Global",
+            "custom armor tints must require a player-selected part instead of repainting all inheriting parts");
+        methods["OnSelectColor"].ToString().Should().Contain("ApplySelectedPaletteColor");
+        methods["OnSelectColor"].ToString().Should().Contain("SynchronizeCustomTintControlsToPaletteColor");
+        methods["OnClickColorPalette"].ToString().Should().Contain("ApplySelectedPaletteColor");
+        methods["OnClickColorPalette"].ToString().Should().Contain("SynchronizeCustomTintControlsToPaletteColor");
+        var synchronizeControls = methods["SynchronizeCustomTintControlsToPaletteColor"].ToString();
+        synchronizeControls.Should().Contain("TintMapPaletteColors.GetColor(layerType, colorId)",
+            "preset selection must display the exact selected palette row");
+        synchronizeControls.Should().Contain("SetSelectedTintColor(new GuiColor",
+            "preset selection must update the color picker and its bound RGB fields");
+        methods["ApplySelectedPaletteColor"].ToString().Should().Contain("ResetCurrentCustomTintOverrides");
+        methods["ApplySelectedPaletteColor"].ToString().Should().Contain("SetColor(_target");
+        methods["ApplyArmorPaletteColor"].ToString().Should().Contain("ResetCurrentCustomTintOverrides");
+        methods["OnClickColorTarget"].ToString().Should().Contain("LoadTintMapEditor");
+        methods["ResetCurrentCustomTintOverrides"].ToString().Should()
+            .Contain("TryGetSelectedTintLayer(out var selectedLayerType)");
+        methods["ResetCurrentCustomTintOverrides"].ToString().Should()
+            .Contain("ResetCreatureCustomColor(_target, selectedLayerType)",
+                "selecting a preset must clear an inactive creature channel's persisted RGB tint");
+    }
+
+    [Test]
+    public void CreatureSemanticColorsRemainCreatureOwnedOnEquippedMeshes()
+    {
+        var material = new TintMapMaterialDefinition(
+            "exposed_skin",
+            "exposed_skin",
+            TintMapLayerType.Skin,
+            TintMapLayerType.Cloth1);
+        var selection = new TintMapMaterialSelection(
+            "pmh0_chest189",
+            material,
+            paletteSource: 200,
+            creaturePaletteSource: 100,
+            usesItemColors: true,
+            AppearanceArmor.Torso);
+
+        selection.GetPaletteSource(TintMapLayerType.Skin).Should().Be(100);
+        selection.UsesItemColor(TintMapLayerType.Skin).Should().BeFalse();
+        selection.GetPaletteSource(TintMapLayerType.Cloth1).Should().Be(200);
+        selection.UsesItemColor(TintMapLayerType.Cloth1).Should().BeTrue();
+    }
+
+    [Test]
+    public void WingAndTailEquipmentLayersUseEquippedArmorColors()
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapModelResolver.cs");
+        var method = FindMethod(source, nameof(TintMapModelResolver.GetCurrentSelections));
+        var appendageCalls = method.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Where(invocation => GetInvokedMethodName(invocation) == "AddTableModelSelections")
+            .ToDictionary(
+                invocation => invocation.ArgumentList.Arguments[0].Expression.ToString(),
+                invocation => invocation.ArgumentList.Arguments
+                    .Select(argument => argument.Expression.ToString())
+                    .ToArray());
+
+        appendageCalls["\"wingmodel\""]
+            .Should().Equal(
+                "\"wingmodel\"",
+                "\"MODEL\"",
+                "(int)GetCreatureWingType(creature)",
+                "appendagePaletteSource",
+                "creature",
+                "appendagesUseItemColors",
+                "selections",
+                "seenSelections");
+        appendageCalls["\"tailmodel\""]
+            .Should().Equal(
+                "\"tailmodel\"",
+                "\"MODEL\"",
+                "(int)GetCreatureTailType(creature)",
+                "appendagePaletteSource",
+                "creature",
+                "appendagesUseItemColors",
+                "selections",
+                "seenSelections");
+        method.ToString().Should().Contain(
+            "var equipmentPaletteSource = GetItemInSlot(InventorySlot.Chest, creature);");
+        method.ToString().Should().Contain(
+            "var appendagesUseItemColors = GetIsObjectValid(equipmentPaletteSource);");
+    }
+
+    [Test]
+    public void RightClickResetUsesTheClickedArmorChannel()
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "AppearanceEditorViewModel.cs");
+        var method = FindMethod(source, "OnClickClearColor");
+
+        method.ToString().Should().Contain(
+            "ResetCustomTintOverrides(colorTarget, colorChannel)");
+        method.ToString().Should().NotContain("ResetCurrentCustomTintOverrides()");
+
+        var rightClickReset = CSharpSyntaxTree.ParseText(source)
+            .GetRoot()
+            .DescendantNodes()
+            .OfType<MethodDeclarationSyntax>()
+            .Single(node =>
+                node.Identifier.ValueText == "ResetCustomTintOverrides" &&
+                node.ParameterList.Parameters.Count == 2);
+        rightClickReset.ToString().Should().Contain(
+            "TintMapService.ResetInactiveItemCustomColor",
+            "right-clicking a preset must clear stale custom state even when that armor part no longer exposes the layer");
+        rightClickReset.ToString().Should().Contain(
+            "TintMapService.ResetColorToInheritance",
+            "an active material must delete its override so it can inherit an item-wide RGB tint");
+
+        var inheritReset = FindMethod(source: ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapService.cs"), nameof(TintMapService.ResetColorToInheritance));
+        inheritReset.ToString().Should().Contain("DeleteLocalInt(paletteSource, resetVariable)");
+        inheritReset.ToString().Should().NotContain("GetStandardColor",
+            "restoring inheritance must not persist the part's current preset beneath the global tint");
+    }
+
+    [Test]
+    public void WorldItemsReceiveTheirOwnTintUniformsAfterTheyBecomeVisible()
+    {
+        var resolver = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapModelResolver.cs");
+        FindMethod(resolver, "AddItemSelections")
+            .ToString().Should().Contain("ItemClass");
+
+        var service = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapService.cs");
+        FindMethod(service, nameof(TintMapService.OnModuleUnacquire))
+            .ToString().Should().Contain("QueueItemRefresh(GetModuleItemLost())");
+        var areaEnter = FindMethod(service, nameof(TintMapService.OnAreaEnter)).ToString();
+        areaEnter.Should().Contain("QueueOtherCreaturesInArea(area, creature)",
+            "placed NPCs may have spawned before the managed tint hooks were registered");
+        areaEnter.Should().Contain("QueueWorldItemsInArea(area)");
+        areaEnter.Should().Contain(
+            "GetIsPC(creature) || GetIsDM(creature) || GetIsDMPossessed(creature)",
+            "NPC and summon entries must not rescan every ground item in the area");
+        var creatureRefresh = FindMethod(service, "QueueOtherCreaturesInArea").ToString();
+        creatureRefresh.Should().Contain("GetFirstObjectInArea(area, ObjectType.Creature)");
+        creatureRefresh.Should().Contain("QueueRefresh(creature)");
+        creatureRefresh.Should().Contain("creature != enteringCreature",
+            "the entering player is already queued before the area scan");
+        FindMethod(service, nameof(TintMapService.ApplyCurrentItemColors))
+            .ToString().Should().Contain("GetWorldItemSelections(item)");
+    }
+
+    [Test]
+    public void DroppedCloaksReadOverridesFromTheirMappedWornMaterial()
+    {
+        var resolver = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapModelResolver.cs");
+        var worldSource = FindMethod(resolver, "AddItemSelections").ToString();
+        worldSource.Should().Contain("itemClass == \"cloak\"");
+        worldSource.Should().Contain("Get2DAString(\"cloakmodel\", \"TEXTURE\", modelId)");
+        worldSource.Should().Contain("overrideModel");
+
+        var service = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapService.cs");
+        var savedColor = FindMethod(service, "GetSavedColor").ToString();
+        savedColor.Should().Contain("selection.OverrideModelResref");
+        savedColor.Should().Contain("material.Layers.Contains(layer)",
+            "the worn and ground materials are matched by semantic tint layer");
+        savedColor.Should().Contain("TintMapVariable.GetName(material.Resref, layer)");
+    }
+
+    [Test]
+    public void ManagedCreatureEquipmentChangesRefreshTintUniformsAndEditor()
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapService.cs");
+        var method = CSharpSyntaxTree.ParseText(source)
+            .GetRoot()
+            .DescendantNodes()
+            .OfType<MethodDeclarationSyntax>()
+            .Single(node => node.Identifier.ValueText == nameof(TintMapService.OnAppearanceEquipmentChanged));
+
+        var handlerScripts = method.AttributeLists
+            .SelectMany(list => list.Attributes)
+            .Where(attribute => attribute.Name.ToString().EndsWith("NWNEventHandler"))
+            .SelectMany(attribute => attribute.ArgumentList!.Arguments)
+            .Select(argument => argument.Expression.ToString());
+
+        handlerScripts.Should().BeEquivalentTo(
+            "ScriptName.OnSWLORItemEquipValidBefore",
+            "ScriptName.OnItemUnequipBefore");
+        var invocations = method.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .ToList();
+        var queuesEditorRefresh = invocations
+            .Any(invocation =>
+                invocation.Expression is IdentifierNameSyntax methodName &&
+                methodName.Identifier.ValueText == "QueueRefreshAndEditor" &&
+                invocation.ArgumentList.Arguments.Count == 2 &&
+                invocation.ArgumentList.Arguments[0].Expression is IdentifierNameSyntax argument &&
+                argument.Identifier.ValueText == "creature");
+        var resolvesOwner = invocations.Any(invocation =>
+            invocation.Expression is IdentifierNameSyntax methodName &&
+            methodName.Identifier.ValueText == "GetMaster" &&
+            invocation.ArgumentList.Arguments.Count == 1 &&
+            invocation.ArgumentList.Arguments[0].Expression is IdentifierNameSyntax argument &&
+            argument.Identifier.ValueText == "creature");
+        var acceptsDroids = invocations.Any(invocation =>
+            invocation.Expression is MemberAccessExpressionSyntax
+            {
+                Expression: IdentifierNameSyntax { Identifier.ValueText: "Droid" },
+                Name.Identifier.ValueText: "IsDroid"
+            } &&
+            invocation.ArgumentList.Arguments.Count == 1 &&
+            invocation.ArgumentList.Arguments[0].Expression.ToString() == "creature");
+        var acceptsDmPossessedCreatures = invocations.Any(invocation =>
+            invocation.Expression is IdentifierNameSyntax { Identifier.ValueText: "GetIsDMPossessed" } &&
+            invocation.ArgumentList.Arguments.Count == 1 &&
+            invocation.ArgumentList.Arguments[0].Expression.ToString() == "creature");
+        queuesEditorRefresh.Should().BeTrue();
+        resolvesOwner.Should().BeTrue();
+        acceptsDroids.Should().BeTrue();
+        acceptsDmPossessedCreatures.Should().BeTrue();
+        typeof(AppearanceEditorViewModel)
+            .GetInterfaces()
+            .Should()
+            .Contain(typeof(IGuiRefreshable<AppearanceChangedRefreshEvent>));
+    }
+
+    [Test]
+    public void QueuedRefreshCarriesOnlyExplicitGlobalSemanticColorsOntoNewMaterials()
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapService.cs");
+        var queueRefresh = FindMethod(source, nameof(TintMapService.QueueRefresh));
+        var delayedBody = queueRefresh.DescendantNodes()
+            .OfType<ParenthesizedLambdaExpressionSyntax>()
+            .Single()
+            .Body.ToString();
+
+        delayedBody.Should().Contain(nameof(TintMapService.CarryStoredCreatureCustomColors));
+        delayedBody.Should().Contain(nameof(TintMapService.ApplyCurrentColors));
+        delayedBody.IndexOf(nameof(TintMapService.CarryStoredCreatureCustomColors), StringComparison.Ordinal)
+            .Should().BeLessThan(
+                delayedBody.IndexOf(nameof(TintMapService.ApplyCurrentColors), StringComparison.Ordinal));
+
+        var carry = FindMethod(source, nameof(TintMapService.CarryStoredCreatureCustomColors));
+        carry.ToString().Should().Contain("GetCreatureCustomColorStateVariable(layer)",
+            "per-material variables cannot prove that a semantic color was chosen globally");
+        carry.ToString().Should().NotContain("entry.Value.Count == 1",
+            "one distinct custom value may still be only one member of a partial authored tint");
+        carry.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Select(GetInvokedMethodName)
+            .Should().Contain("ApplyCreatureCustomColors");
+
+        var setGlobal = FindMethod(source, nameof(TintMapService.SetCreatureCustomColor));
+        setGlobal.ToString().Should().Contain("GetCreatureCustomColorStateVariable(layer)",
+            "global edits need an explicit persisted marker for later equipment refreshes");
+
+        var viewModelSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "AppearanceEditorViewModel.cs");
+        FindMethod(viewModelSource, "LoadBodyPart").ToString().Should()
+            .Contain(nameof(TintMapService.CarryStoredCreatureCustomColors));
+    }
+
+    [Test]
+    public void SemanticPresetResetClearsInactiveAndPersistedOverrides()
+    {
+        var serviceSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapService.cs");
+        var reset = FindMethod(serviceSource, nameof(TintMapService.ResetCreatureCustomColor));
+        var resetInvocations = reset.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Select(GetInvokedMethodName)
+            .ToList();
+
+        reset.ToString().Should().Contain("GetCreatureCustomColorVariables(creature)");
+        reset.ToString().Should().Contain("GetCreatureCustomColorStateVariable(layer)",
+            "resetting to a preset must also remove the persisted global semantic tint marker");
+        resetInvocations.Should().Contain("DeleteLocalInt");
+        resetInvocations.Should().Contain("RemoveDroidOverrides");
+        resetInvocations.Should().Contain("ApplyCurrentColorsAndPublish",
+            "resetting one semantic layer must atomically rebuild all equipment and body rows");
+
+        var viewModelSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "AppearanceEditorViewModel.cs");
+        var resetEditor = CSharpSyntaxTree.ParseText(viewModelSource)
+            .GetRoot()
+            .DescendantNodes()
+            .OfType<MethodDeclarationSyntax>()
+            .Single(method =>
+                method.Identifier.ValueText == "ResetCustomTintOverrides" &&
+                method.ParameterList.Parameters.Count == 4);
+        resetEditor.ToString().Should().Contain("TintMapVariable.IsCreatureColorLayer(layerType)");
+        resetEditor.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Should().Contain(invocation =>
+                IsMemberInvocation(invocation, "TintMapService", nameof(TintMapService.ResetCreatureCustomColor)));
+    }
+
+    [Test]
+    public void SemanticRgbEditsSynchronizeInactiveAndPersistedOverrides()
+    {
+        var serviceSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapService.cs");
+        var synchronize = FindMethod(serviceSource, nameof(TintMapService.SetCreatureCustomColor));
+        var synchronizeCalls = synchronize.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Select(GetInvokedMethodName)
+            .ToList();
+
+        synchronize.ToString().Should().Contain("GetCreatureCustomColorVariables(creature)",
+            "inactive semantic material keys must receive the newly selected RGB value");
+        synchronizeCalls.Should().Contain("SetLocalInt");
+        synchronizeCalls.Should().Contain("SaveDroidOverrides",
+            "inactive semantic keys must remain synchronized after a droid respawns");
+        synchronizeCalls.Should().Contain("ApplyCurrentColorsAndPublish",
+            "a live RGB edit must rebuild and publish the complete composed tint state immediately");
+        synchronizeCalls.Should().Contain("DelayCommand",
+            "the latest semantic color must be reapplied after an in-flight body-part refresh");
+        synchronizeCalls.Should().Contain(nameof(TintMapModelResolver.GetCurrentSelections),
+            "an RGB edit must re-resolve body parts that changed while the editor remained open");
+
+        var publish = FindMethod(serviceSource, "ApplyCurrentColorsAndPublish");
+        var publishCalls = publish.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Select(GetInvokedMethodName)
+            .ToList();
+        publishCalls.Should().Contain(nameof(TintMapService.ApplyCurrentColors),
+            "the appearance rebuild must be followed by all current palette and custom rows");
+        publishCalls.Should().Contain("SetForceUpdate",
+            "the changed material-parameter list must be compared and sent to clients immediately");
+        publish.ToString().Should().NotContain("GetLastUpdateObject",
+            "tint publication must not mutate native per-player render snapshots");
+        publish.ToString().Should().NotContain("m_lMaterialShaderParameters.Clear()",
+            "tint publication must not invalidate unrelated client shader state");
+        publish.ToString().Should().NotContain("UpdateAppearanceDependantInfo",
+            "a tint edit must not rebuild the creature or invalidate the client's scene state");
+
+        var applyCreatureColor = FindMethod(serviceSource, "ApplyCreatureColor");
+        var replacementSource = applyCreatureColor.ToString();
+        var replacementCalls = applyCreatureColor.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Select(GetInvokedMethodName)
+            .ToList();
+        replacementCalls.Should().Contain("ApplyMaterialColor",
+            "each registered semantic material must receive the live RGB edit");
+        replacementCalls.Should().NotContain("ResetMaterialShaderUniforms",
+            "one semantic edit must not clear rows belonging to other registered materials");
+        replacementSource.Should().Contain("string.Empty",
+            "the known-good row update uses the model-wide material target for composed creatures");
+        replacementSource.Should().Contain("selection.Material.Resref",
+            "resolved body materials prove the semantic layer exists before the model-wide write");
+
+        var resetCreature = FindMethod(serviceSource, nameof(TintMapService.ResetCreatureCustomColor));
+        resetCreature.ToString().Should().Contain("ApplyCurrentColorsAndPublish(creature)",
+            "resetting a live semantic color must publish its restored palette row immediately");
+
+        var viewModelSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "AppearanceEditorViewModel.cs");
+        var selectedTintColor = CSharpSyntaxTree.ParseText(viewModelSource)
+            .GetRoot()
+            .DescendantNodes()
+            .OfType<PropertyDeclarationSyntax>()
+            .Single(property => property.Identifier.ValueText == "SelectedTintColor");
+        selectedTintColor.ToString().Should().Contain("ApplyCustomTintColor");
+        var applyCustomTintColor = FindMethod(viewModelSource, "ApplyCustomTintColor");
+        applyCustomTintColor.ToString().Should().Contain("TintMapPaletteColors.GetClosestColorId");
+        applyCustomTintColor.ToString().Should().Contain("ApplySelectedPaletteColor");
+    }
+
+    [Test]
+    public void PresetPickerColorsMatchThePaletteAtlasMiddletone()
+    {
+        var repositoryRoot = FindRepositoryRoot();
+        var atlas = File.ReadAllBytes(Path.Combine(
+            repositoryRoot.FullName,
+            "SWLOR_Haks",
+            "sw_item",
+            "plt_palette.tga"));
+        var width = BitConverter.ToUInt16(atlas, 12);
+        var height = BitConverter.ToUInt16(atlas, 14);
+        var bitsPerPixel = atlas[16];
+        var isTopOrigin = (atlas[17] & 0x20) != 0;
+
+        width.Should().Be(256);
+        height.Should().Be(TintMapMaterialRegistry.PaletteTextureHeight);
+        bitsPerPixel.Should().Be(32);
+
+        foreach (var layer in Enum.GetValues<TintMapLayerType>())
+        {
+            var baseRow = TintMapMaterialRegistry.GetLayer(layer).PaletteBaseRow;
+            for (var colorId = 0; colorId < TintMapMaterialRegistry.PaletteColorCount; colorId++)
+            {
+                var atlasY = baseRow + colorId;
+                var fileY = isTopOrigin ? height - 1 - atlasY : atlasY;
+                var pixelOffset = 18 + (fileY * width + 128) * 4;
+                var expected = new TintMapColor(
+                    atlas[pixelOffset + 2],
+                    atlas[pixelOffset + 1],
+                    atlas[pixelOffset]);
+
+                TintMapPaletteColors.GetColor(layer, colorId).Should().Be(expected);
+            }
+        }
+    }
+
+    [Test]
+    public void DynamicPickerColorsResolveToARealPaletteRow()
+    {
+        foreach (var layer in Enum.GetValues<TintMapLayerType>())
+        {
+            foreach (var colorId in new[] { 0, 17, 63, 127, 175 })
+            {
+                var paletteColor = TintMapPaletteColors.GetColor(layer, colorId);
+                var resolvedColorId = TintMapPaletteColors.GetClosestColorId(layer, paletteColor);
+
+                TintMapPaletteColors.GetColor(layer, resolvedColorId).Should().Be(paletteColor);
+            }
+        }
+    }
+
+    [Test]
+    public void ToolsetPreviewSnapsRgbOverridesToTheDeployedPaletteRow()
+    {
+        var source = ReadSource("SWLOR.Toolset", "Viewport", "GlAreaControl.cs");
+        var bindTintMapState = FindMethod(source, "BindTintMapState").ToString();
+
+        bindTintMapState.Should().Contain("TintMapPaletteColors.GetClosestColorId(layer, custom)",
+            "the Toolset and game must resolve an arbitrary picker RGB to the same palette row");
+        bindTintMapState.Should().Contain("SetUniformVec4($\"tintColor{layerValue}\", Vector4.Zero)");
+        bindTintMapState.Should().NotContain("custom.Red / 255f",
+            "the Toolset must not preview an RGB mode that the deployed shader no longer uses");
+    }
+
+    [Test]
+    public void SpeederAppearanceChangesRefreshTintMaps()
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "ItemDefinition",
+            "SpeederItemDefinition.cs");
+        var methods = CSharpSyntaxTree.ParseText(source)
+            .GetRoot()
+            .DescendantNodes()
+            .OfType<MethodDeclarationSyntax>()
+            .Where(node => new[]
+            {
+                "Speeder",
+                "AttackedDismount",
+                "AttackDismount",
+                "AreaTransitionDismount"
+            }.Contains(node.Identifier.ValueText))
+            .ToDictionary(node => node.Identifier.ValueText);
+
+        methods.Keys.Should().BeEquivalentTo(
+            "Speeder",
+            "AttackedDismount",
+            "AttackDismount",
+            "AreaTransitionDismount");
+        foreach (var method in methods.Values)
+        {
+            method.DescendantNodes()
+                .OfType<InvocationExpressionSyntax>()
+                .Should()
+                .ContainSingle(invocation =>
+                    invocation.Expression.ToString() == "TintMapService.QueueRefreshAndEditor" &&
+                    invocation.ArgumentList.Arguments.Count == 2 &&
+                    invocation.ArgumentList.Arguments[0].Expression.ToString() ==
+                    invocation.ArgumentList.Arguments[1].Expression.ToString());
+        }
+    }
+
+    [Test]
+    public void CombinedAppearanceRefreshUpdatesTintUniformsAndEditor()
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapService.cs");
+        var method = CSharpSyntaxTree.ParseText(source)
+            .GetRoot()
+            .DescendantNodes()
+            .OfType<MethodDeclarationSyntax>()
+            .Single(node => node.Identifier.ValueText == nameof(TintMapService.QueueRefreshAndEditor));
+        var invocations = method.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .ToList();
+
+        var queuesTintRefresh = invocations.Any(invocation =>
+            invocation.Expression.ToString() == nameof(TintMapService.QueueRefresh));
+        var publishesEditorRefresh = invocations.Any(invocation =>
+            invocation.Expression is MemberAccessExpressionSyntax
+            {
+                Expression: IdentifierNameSyntax { Identifier.ValueText: "Gui" },
+                Name.Identifier.ValueText: "PublishRefreshEvent"
+            } &&
+            invocation.ArgumentList.Arguments.Any(argument =>
+                argument.Expression is ObjectCreationExpressionSyntax creation &&
+                creation.Type.ToString() == nameof(AppearanceChangedRefreshEvent)));
+
+        queuesTintRefresh.Should().BeTrue();
+        publishesEditorRefresh.Should().BeTrue();
+    }
+
+    [Test]
+    public void PerPartArmorColorsUseSharedIndexEncoding()
+    {
+        ArmorColorIndexCalculator.CalculatePerPart(
+                AppearanceArmor.LeftForearm,
+                AppearanceArmorColor.Cloth2)
+            .Should()
+            .Be(
+                (int)AppearanceArmorColor.NumColors +
+                (int)AppearanceArmor.LeftForearm * (int)AppearanceArmorColor.NumColors +
+                (int)AppearanceArmorColor.Cloth2);
+    }
+
+    [Test]
+    public void LegacyArmorPartColorZeroInheritsTheAuthoredGlobalDye()
+    {
+        ArmorColorIndexCalculator.ShouldUsePerPartColor(0, false).Should().BeFalse();
+        ArmorColorIndexCalculator.ShouldUsePerPartColor(0, true).Should().BeTrue();
+        ArmorColorIndexCalculator.ShouldUsePerPartColor(23, false).Should().BeTrue();
+        ArmorColorIndexCalculator.ShouldUsePerPartColor(255, true).Should().BeFalse();
+
+        var serviceSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapService.cs");
+        var standardColorMethod = FindMethod(serviceSource, "GetStandardColor").ToString();
+        standardColorMethod.Should().Contain("ShouldUsePerPartColor");
+        standardColorMethod.Should().Contain("GetPerPartOverrideVariableName");
+    }
+
+    [Test]
+    public void CompositeWeaponMaterialsUseTheirWeaponColorSlot()
+    {
+        var selectionSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapMaterialSelection.cs");
+        selectionSource.Should().Contain("public AppearanceWeapon WeaponPart { get; }");
+
+        var resolverSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapModelResolver.cs");
+        FindMethod(resolverSource, "AddItemPart").ToString().Should().Contain("weaponPart: part",
+            "each top, middle, and bottom model must retain its component color identity");
+        FindMethod(resolverSource, "AddModelSelections").ToString().Should().Contain("(int)weaponPart",
+            "shared material names on different weapon components must not collapse together");
+
+        var serviceSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapService.cs");
+        var standardColor = FindMethod(serviceSource, "GetStandardColor").ToString();
+        standardColor.Should().Contain("selection.WeaponPart != AppearanceWeapon.Invalid");
+        standardColor.Should().Contain("ItemAppearanceType.WeaponColor");
+        standardColor.Should().Contain("(int)selection.WeaponPart");
+    }
+
+    [Test]
+    public void EquippedDroidTintChangesUpdateSerializedItemSnapshot()
+    {
+        var tintSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapService.cs");
+        var droidSource = ReadSource("SWLOR.Game.Server", "Service", "Droid.cs");
+        var saveOverrideMethod = FindMethod(tintSource, "SaveDroidOverride");
+        var updateSnapshotMethod = FindMethod(droidSource, "UpdateEquippedItemSnapshot");
+        var unequipMethod = FindMethod(droidSource, "OnUnequipItem");
+
+        saveOverrideMethod.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Should()
+            .ContainSingle(invocation =>
+                IsMemberInvocation(invocation, "Droid", "UpdateEquippedItemSnapshot"));
+        updateSnapshotMethod.DescendantNodes()
+            .OfType<AssignmentExpressionSyntax>()
+            .Should()
+            .ContainSingle(assignment => IsSerializedDictionaryAssignment(assignment, "EquippedItems"));
+        unequipMethod.DescendantNodes()
+            .OfType<AssignmentExpressionSyntax>()
+            .Should()
+            .ContainSingle(assignment => IsSerializedDictionaryAssignment(assignment, "Inventory"));
+    }
+
+    [Test]
+    public void PartsBasedCloaksResolveTextureThroughCloakModelTable()
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapModelResolver.cs");
+        var partsMethod = FindMethod(source, "AddPartsAppearanceSelections");
+        partsMethod.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Single(invocation =>
+                GetInvokedMethodName(invocation) == "AddCloakSelections");
+
+        var cloakMethod = FindMethod(source, "AddCloakSelections");
+        cloakMethod.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Should()
+            .Contain(invocation =>
+                GetInvokedMethodName(invocation) == "Get2DAString" &&
+                invocation.ArgumentList.Arguments.Count == 3 &&
+                invocation.ArgumentList.Arguments[0].Expression.ToString() == "\"cloakmodel\"" &&
+                invocation.ArgumentList.Arguments[1].Expression.ToString() == "\"TEXTURE\"");
+        cloakMethod.ToString().Should().Contain("cloak_{textureId:D3}");
+    }
+
+    [Test]
+    public void CurrentSelectionsIncludeEquippedWeaponsAndPhenotypeSpecificRobes()
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapModelResolver.cs");
+        var currentSelections = FindMethod(source, nameof(TintMapModelResolver.GetCurrentSelections));
+        currentSelections.ToString().Should().Contain("InventorySlot.RightHand");
+        currentSelections.ToString().Should().Contain("InventorySlot.LeftHand");
+        currentSelections.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Count(invocation => GetInvokedMethodName(invocation) == "AddItemSelections")
+            .Should().Be(2,
+                "both equipped weapon slots can contribute tintable simple or three-part models");
+
+        var parts = FindMethod(source, "AddPartsAppearanceSelections");
+        parts.ToString().Should().Contain("GetRobeModelResref(prefix, (int)GetPhenoType(creature), robeId)");
+        var robeModel = FindMethod(source, "GetRobeModelResref");
+        robeModel.ToString().Should().Contain("phenotype == 2");
+        robeModel.ToString().Should().Contain("prefix.TrimEnd('_')");
+        robeModel.ToString().Should().Contain("2_",
+            "phenotype 2 robes use names such as pfh22_robe007 rather than pfh2_robe007");
+    }
+
+    [Test]
+    public void NonPartsAppearancesIncludeVisibleItemOwnedTintSelections()
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapModelResolver.cs");
+        var method = FindMethod(source, "GetCurrentSelections");
+        var nonPartsBranch = method.DescendantNodes()
+            .OfType<ElseClauseSyntax>()
+            .Single();
+
+        var calls = nonPartsBranch.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Select(GetInvokedMethodName)
+            .ToList();
+        calls.Should().Contain("AddSimpleItemSelections",
+            "a non-modular creature can still visibly equip a helmet");
+        calls.Should().Contain("AddCloakSelections",
+            "a non-modular creature can still visibly equip an item-owned cloak");
+    }
+
+    [Test]
+    public void EquipmentTintEditsHonorItemRestrictions()
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "AppearanceEditorViewModel.cs");
+        var method = FindMethod(source, "TryGetEditableTintSelections");
+
+        method.ToString().Should().Contain("IsEquipmentSelected && !IsValidItem()");
+    }
+
+    [Test]
+    public void MirroringArmorCopiesCustomTintOverrides()
+    {
+        var viewModelSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "AppearanceEditorViewModel.cs");
+        FindMethod(viewModelSource, "CopyColors")
+            .DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Should()
+            .Contain(invocation =>
+                IsMemberInvocation(invocation, "TintMapModelResolver", "CopyArmorPartTintOverrides"));
+
+        var resolverSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapModelResolver.cs");
+        var method = FindMethod(resolverSource, "CopyArmorPartTintOverrides");
+        var invocations = method.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Select(GetInvokedMethodName)
+            .ToList();
+
+        invocations.Should().Contain("GetMaterials");
+        invocations.Should().Contain("SetLocalInt");
+        invocations.Should().Contain("DeleteLocalInt");
+        method.ToString().Should().Contain("destinationPartId",
+            "the old destination model must be captured before its part is replaced");
+        method.ToString().Should().Contain("previousDestinationMaterials");
+        method.ToString().Should().Contain("activeVariables.Contains(previousVariable)",
+            "an obsolete destination key must be removed without deleting a key another active part shares");
+        method.ToString().Should().Contain("ResolvePartId",
+            "zero-valued armor model fields render the creature's body-part fallback");
+        method.ToString().Should().Contain("GetCreatureBodyPart",
+            "cleanup must inspect the model that was actually rendered before mirroring");
+        method.ToString().Should().NotContain("destinationPartId > 0",
+            "a zero-valued destination still has a rendered fallback model whose stale tints must be removed");
+        method.ToString().Should().Contain("GetEquivalentMaterialVariables",
+            "mirroring and cleanup must include the corresponding material slots for inactive wearer variants");
+        FindMethod(resolverSource, "GetEquivalentMaterialVariables").ToString().Should()
+            .Contain(nameof(TintMapMaterialRegistry.GetEquivalentEquipmentMaterialResrefs));
+
+        TintMapEquipmentMaterialMatcher.GetMirroredPartIdentity("pmh0_forel153", "forel")
+            .Should().Be(TintMapEquipmentMaterialMatcher.GetMirroredPartIdentity("pmh0_forer153", "forer"));
+        TintMapEquipmentMaterialMatcher.GetMirroredPartIdentity("pfh0_f_lf_931556", "forel")
+            .Should().NotBe(TintMapEquipmentMaterialMatcher.GetMirroredPartIdentity("pmh0_forer153", "forer"),
+                "an unrelated material preceding the real mirrored source must not win by list position");
+        var mirroredSourceMethod = FindMethod(resolverSource, "FindMirroredSourceMaterial").ToString();
+        mirroredSourceMethod.Should().Contain("identityMatches.Count == 1",
+            "asymmetric material lists must select the actual mirrored material by identity");
+        mirroredSourceMethod.Should().Contain("sourceMaterials.Count == 1",
+            "one source material can intentionally map to several destination materials");
+        mirroredSourceMethod.Should().Contain("sourceMaterials.Count == destinationMaterials.Count",
+            "positional fallback is safe only for parallel material lists");
+        mirroredSourceMethod.Should().Contain("sourceMaterials[destinationIndex]",
+            "parallel multi-material parts must retain the corresponding material's distinct color");
+
+        var copyColorMethod = FindMethod(viewModelSource, "CopyColor");
+        var copyColorBody = copyColorMethod.ToString();
+        copyColorBody.Should().Contain("ShouldUsePerPartColor",
+            "mirroring must distinguish an explicit part color from an inherited global color");
+        copyColorBody.Should().Contain("sourceUsesPerPartColor ? sourceColor : 255",
+            "an inherited source must leave the destination in the inherited sentinel state");
+        copyColorBody.Should().Contain("ClearPerPartColorOverride",
+            "an inherited source must clear any explicit destination marker");
+    }
+
+    [Test]
+    public void BitmapOnlyMeshesResolveOnlyGeneratedTintMaterials()
+    {
+        var previewSource = ReadSource(
+            "SWLOR.Toolset",
+            "Workspace",
+            "BlueprintPreviewRenderer.cs");
+        var previewResolver = FindMethod(previewSource, "ResolveMeshTexture").ToString();
+        previewResolver.Should().Contain("hasMaterial || IsGeneratedTintMaterial(surfaceName)",
+            "an explicit material or a recognized generated tint material may resolve through MTR");
+        previewResolver.Should().NotContain("resolveMaterial: true",
+            "a bitmap-only mesh must not be replaced by an unrelated same-resref MTR");
+        FindMethod(previewSource, "IsGeneratedTintMaterial").ToString()
+            .Should().Contain("TintMapTextureRenderer.IsTintMapMaterial",
+                "same-resref fallback is limited to the generated tint shader family");
+
+        var viewportSource = ReadSource(
+            "SWLOR.Toolset",
+            "Viewport",
+            "GlAreaControl.cs");
+        var viewportResolver = FindMethod(viewportSource, "ResolveTexture").ToString();
+        viewportResolver.Should().Contain("hasMaterial || parsedMaterial != null",
+            "explicit MTR bindings remain authoritative in the live viewport");
+        viewportResolver.Should().Contain("IsTintMapMaterial(candidate)",
+            "bitmap-name fallback in the live viewport must use the same tint-material gate");
+        viewportResolver.Should().NotContain("resolveMaterial: true",
+            "ordinary bitmap-only viewport meshes must bypass same-resref MTR lookup");
+    }
+
+    [Test]
+    public void EquipmentModelChangesCarryCustomTintsToReplacementMaterials()
+    {
+        var viewModelSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "AppearanceEditorViewModel.cs");
+        var modifyMethod = FindMethod(viewModelSource, "ModifyItemPart");
+        var modifyCalls = modifyMethod.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Select(GetInvokedMethodName)
+            .ToList();
+
+        modifyCalls.Should().Contain("CaptureItemCustomColors",
+            "the old material keys must be read before CopyItemAndModify destroys the source item");
+        modifyCalls.Should().Contain("QueueItemCustomColorCarry",
+            "the replacement material resrefs are only available after the new item is equipped");
+        modifyMethod.ToString().Should().Contain("_target, item, copy, Player, slot, armorPart, tintCarry",
+            "the delayed carry needs both sides of the replacement so it can validate rapid-click lineage");
+        modifyMethod.ToString().Should().Contain("selection.ArmorPart == armorPart",
+            "one modular armor part must not overwrite another part's custom dyes");
+
+        var setColorInPlace = FindMethod(viewModelSource, "SetItemColorInPlace");
+        setColorInPlace.ToString().Should().Contain("ItemPlugin.SetItemAppearance(",
+            "color-only edits must mutate the equipped item instead of creating a replacement");
+        setColorInPlace.ToString().Should().Contain("updateCreatureAppearance: true",
+            "the wearer must refresh immediately after its equipped item changes");
+        setColorInPlace.ToString().Should().Contain("Droid.UpdateEquippedItemSnapshot(_target, item)",
+            "in-place color changes must persist for constructed droids");
+        setColorInPlace.ToString().Should().Contain("TintMapService.ApplyCurrentColors(_target)",
+            "in-place palette changes need an explicit shader refresh because no equip event fires");
+        setColorInPlace.ToString().Should().NotContain("CopyItemAndModify");
+        setColorInPlace.ToString().Should().NotContain("DestroyObject");
+
+        var paletteMethod = FindMethod(viewModelSource, "ApplyArmorPaletteColor");
+        paletteMethod.ToString().Should().Contain("SetItemColorInPlace(item, colorIndex, colorId)");
+        paletteMethod.ToString().Should().NotContain("CopyItemAndModify");
+        paletteMethod.ToString().Should().NotContain("DestroyObject");
+        paletteMethod.ToString().Should().NotContain("ActionEquipItem");
+        paletteMethod.ToString().Should().NotContain("GetBaseItemFitsInInventory",
+            "an in-place color edit does not require a free inventory slot");
+        paletteMethod.ToString().IndexOf("ResetCurrentCustomTintOverrides", StringComparison.Ordinal)
+            .Should().BeLessThan(
+                paletteMethod.ToString().IndexOf("SetItemColorInPlace", StringComparison.Ordinal),
+                "the selected layer revision must advance before the equipped item is recolored");
+
+        var clearMethod = FindMethod(viewModelSource, "OnClickClearColor");
+        clearMethod.ToString().Should().Contain("SetItemColorInPlace(item, index, 255)",
+            "right-click reset must clear the equipped item's per-part color in place");
+        clearMethod.ToString().Should().NotContain("CopyItemAndModify");
+        clearMethod.ToString().Should().NotContain("DestroyObject");
+        clearMethod.ToString().IndexOf("ResetCustomTintOverrides", StringComparison.Ordinal)
+            .Should().BeLessThan(
+                clearMethod.ToString().IndexOf("SetItemColorInPlace", StringComparison.Ordinal),
+                "reset intent must invalidate only its layer before the item is recolored");
+
+        var helmetCloakColor = FindMethod(viewModelSource, "ModifyHelmetCloakColor").ToString();
+        helmetCloakColor.Should().Contain("SetItemColorInPlace(item, (int)colorChannel, colorId)");
+        helmetCloakColor.Should().NotContain("CopyItemAndModify");
+        helmetCloakColor.Should().NotContain("DestroyObject");
+
+        var serviceSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapService.cs");
+        var captureMethod = FindMethod(serviceSource, "CaptureItemCustomColors");
+        captureMethod.ToString().Should().Contain("TintMapVariable.IsCreatureColorLayer(layer)",
+            "equipment swaps must leave creature-owned skin, hair and tattoo colors alone");
+        captureMethod.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Select(GetInvokedMethodName)
+            .Should().Contain("Any",
+                "layers without custom colors need no carry state");
+        captureMethod.ToString().Should().Contain("selection.Material.Resref",
+            "the carry must retain material identity rather than relying only on list position");
+        captureMethod.ToString().Should().Contain("storedValue",
+            "palette-format opt-outs must survive alongside custom RGB values");
+        captureMethod.ToString().Should().NotContain("distinct.Count != 1",
+            "ambiguous colors still need their source keys captured for stale cleanup");
+
+        FindMethod(serviceSource, "LinkPendingItemColorCarryReplacement").Modifiers
+            .Select(modifier => modifier.Text)
+            .Should().Contain("public",
+                "all appearance-editor replacement paths need to register descendants");
+
+        var carryMethod = FindMethod(serviceSource, "QueueItemCustomColorCarry");
+        var carryCalls = carryMethod.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Select(GetInvokedMethodName)
+            .ToList();
+        carryCalls.Should().Contain("CarryStoredItemColor");
+        carryCalls.Should().Contain("GetItemInSlot",
+            "rapid model selections can destroy an intermediate item before its carry runs");
+        carryMethod.ToString().Should().Contain("LinkPendingItemColorCarryReplacement(sourceItem, item)",
+            "even a colorless intermediate edit must link its replacement to the earlier pending carry");
+        carryMethod.ToString().IndexOf("LinkPendingItemColorCarryReplacement(sourceItem, item)", StringComparison.Ordinal)
+            .Should().BeLessThan(carryMethod.ToString().IndexOf("if (carry == null)", StringComparison.Ordinal),
+                "the descendant link is required precisely when the rapid intermediate capture is empty");
+        carryMethod.ToString().Should().Contain("BelongsToItemColorCarryLineage",
+            "a destroyed intermediate item may follow the slot only to a registered replacement descendant");
+        carryMethod.ToString().Should().Contain("GetIsObjectValid(item) && slottedItem == item",
+            "a surviving replacement must still occupy the original slot before its carry is applied");
+        carryMethod.ToString().Should().Contain("!GetIsObjectValid(item)",
+            "the slot fallback must not redirect a surviving, moved item's colors to unrelated equipment");
+        carryMethod.ToString().Should().Contain("PendingItemColorCarryLayerIsCurrent",
+            "a newer preset or custom edit must cancel the older delayed carry for that tint layer");
+        carryMethod.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Single(invocation => GetInvokedMethodName(invocation) == "PendingItemColorCarryLayerIsCurrent")
+            .ArgumentList.Arguments
+            .Select(argument => argument.Expression.ToString())
+            .Should().Equal(
+                new[]
+                {
+                    "registration.Lineage",
+                    "layer",
+                    "armorPart",
+                    "registration.Revisions"
+                },
+                "a color edit on one armor part must not cancel another part's pending carry for the same layer");
+        FindMethod(serviceSource, "CarryStoredItemColor").ToString().Should()
+            .Contain("invalidatePendingCarry: false",
+                "the carry's own writes must not invalidate its remaining derived work");
+        carryMethod.ToString().Should().Contain("selection.PaletteSource == targetItem");
+        carryMethod.ToString().Should().Contain("DeleteLocalInt(targetItem, variableName)");
+        carryCalls.Should().Contain("DeleteLocalInt",
+            "obsolete material keys must not resurrect an older color when the model returns");
+        carryMethod.ToString().Should().Contain("activeVariables.Contains(variableName)",
+            "cleanup must retain a material key that another equipped armor part still uses");
+        carryMethod.ToString().Should().NotContain("if (destinations.Count == 0)",
+            "a model with no destination for the layer must still discard inactive source keys");
+        carryMethod.ToString().Should().Contain("AreEquipmentMaterialsEquivalent",
+            "replacement materials must be matched by semantic identity before positional fallback");
+        carryMethod.ToString().Should().Contain("unmatchedSources.Count == unmatchedDestinations.Count",
+            "positional fallback is safe only after identity matching leaves equal-sized lists");
+        carryMethod.ToString().Should().Contain("storedSources.Count == 1 && unmatchedDestinations.Count == 1",
+            "a custom source behind a preset slot must survive a count-changing replacement");
+        carryMethod.ToString().Should().Contain("!destinationVariables.Contains(source.VariableName)",
+            "shared source slots must be removed before replacement slots are aligned");
+        carryMethod.ToString().Should().Contain("!sourceVariables.Contains",
+            "shared destination slots must be removed before replacement slots are aligned");
+        carryMethod.ToString().Should().Contain("source.StoredValue.HasValue",
+            "custom and palette-format source variables must both reach stale-key cleanup");
+        FindMethod(serviceSource, "CarryStoredItemColor").ToString().Should().Contain("SetStoredColor",
+            "carried palette opt-outs must retain their original storage format");
+        carryCalls.Should().Contain("ApplyCurrentColors",
+            "the equipped replacement must render its carried colors immediately");
+        carryCalls.Should().Contain("PublishRefreshEvent",
+            "the open appearance editor must show the replacement material's current value");
+
+        var setColorMethod = CSharpSyntaxTree.ParseText(serviceSource).GetRoot().DescendantNodes()
+            .OfType<MethodDeclarationSyntax>()
+            .Single(method => method.Identifier.Text == nameof(TintMapService.SetColor) &&
+                              method.ParameterList.Parameters.Count == 4);
+        setColorMethod.ToString().Should().Contain("invalidatePendingCarry: true",
+            "an explicit color edit must advance the pending-carry revision for its layer");
+        var privateSetColorMethod = CSharpSyntaxTree.ParseText(serviceSource).GetRoot().DescendantNodes()
+            .OfType<MethodDeclarationSyntax>()
+            .Single(method => method.Identifier.Text == nameof(TintMapService.SetColor) &&
+                              method.ParameterList.Parameters.Count == 5);
+        privateSetColorMethod.ToString().Should().Contain("SetStoredColor",
+            "custom RGB colors and compatibility palette values must share the same propagation path");
+        var setStoredColorMethod = FindMethod(serviceSource, "SetStoredColor");
+        setStoredColorMethod.ToString().Should().Contain("GetEquivalentItemTintVariables",
+            "a new custom color must replace stale equivalent wearer-variant values too");
+        setStoredColorMethod.ToString().Should().Contain("ApplyCurrentColorsAndPublish(creature)",
+            "a live equipment RGB edit must be forced to connected clients");
+        var resetColorMethod = FindMethod(serviceSource, nameof(TintMapService.ResetColor));
+        resetColorMethod.ToString().Should().Contain(
+            "MarkPendingItemColorEdit(paletteSource, layer, selection.ArmorPart)",
+            "reset sequencing must be scoped to the edited armor part as well as its layer");
+        resetColorMethod.ToString().Should().Contain("GetEquivalentItemTintVariables",
+            "resetting a carried color must remove inactive wearer-variant keys that could resurrect it");
+        resetColorMethod.ToString().Should().Contain("GetItemGlobalColorStateName(layer)",
+            "a part reset beneath an active global tint must record that it no longer inherits it");
+        resetColorMethod.ToString().Should().Contain("GetStandardColor(creature, selection, layer) + 1",
+            "the explicit non-inheriting value must use the compatibility palette encoding");
+        resetColorMethod.ToString().Should().Contain("SetLocalInt(paletteSource, resetVariable, savedPaletteColor)",
+            "equivalent inactive wearer-variant materials must retain the per-part preset too");
+        resetColorMethod.ToString().Should().Contain("!resetVariables.Contains(variableName, StringComparer.Ordinal)",
+            "the current material must record its preset even when inactive equivalent keys already exist");
+        FindMethod(serviceSource, "MarkPendingItemColorEdit").ParameterList.Parameters
+            .Select(parameter => parameter.Identifier.Text)
+            .Should().Contain("armorPart");
+        var registerPendingCarry = FindMethod(serviceSource, "RegisterPendingItemColorCarry");
+        registerPendingCarry.ToString().Should()
+            .Contain("new ItemColorCarryRevisionScope(layer, armorPart)",
+                "two armor parts sharing a layer need independent revision scopes");
+        registerPendingCarry.ToString().Should()
+            .Contain("new ItemColorCarryRevisionScope(layer, AppearanceArmor.Invalid)",
+                "every pending part carry must also capture the layer-wide global revision");
+        var carryRevisionIsCurrent = FindMethod(
+            serviceSource,
+            "PendingItemColorCarryLayerIsCurrent");
+        carryRevisionIsCurrent.ToString().Should().Contain("globalScope");
+        carryRevisionIsCurrent.ToString().Should()
+            .Contain("capturedRevisions.GetValueOrDefault(globalScope)",
+                "a new global tint must invalidate delayed carries for every armor part in the layer");
+    }
+
+    [Test]
+    public void NormalEquipmentRefreshCarriesOnlyMatchingCustomColorsToCurrentMaterials()
+    {
+        var serviceSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapService.cs");
+        var refreshMethod = FindMethod(serviceSource, nameof(TintMapService.QueueRefresh));
+        var refreshBody = refreshMethod.ToString();
+        refreshBody.Should().Contain("CarryStoredEquipmentCustomColors(creature)");
+        refreshBody.IndexOf("CarryStoredEquipmentCustomColors(creature)", StringComparison.Ordinal)
+            .Should().BeLessThan(refreshBody.IndexOf("ApplyCurrentColors(creature)", StringComparison.Ordinal),
+                "wearer-specific material locals must exist before shader uniforms are applied");
+
+        var carryMethod = FindMethod(serviceSource, "CarryStoredEquipmentCustomColors");
+        var carryCalls = carryMethod.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Select(GetInvokedMethodName)
+            .ToList();
+        carryCalls.Should().Contain("GetItemTintOverrides");
+        carryCalls.Should().Contain("TryParse");
+        carryCalls.Should().Contain("TryFromStoredValue");
+        carryCalls.Should().Contain("AreEquipmentMaterialsEquivalent",
+            "hashed generated material names must still migrate across wearer variants");
+        carryMethod.ToString().Should().Contain("destinationVariable",
+            "an existing destination override must remain untouched");
+        carryMethod.ToString().Should().Contain("destinationColor <= TintMapMaterialRegistry.PaletteColorCount",
+            "compatibility-format palette overrides are authoritative destination values too");
+        carryMethod.ToString().Should().Contain("matchingColors.Count == 1",
+            "only an unambiguous color for the corresponding material may migrate");
+        carryMethod.ToString().Should().Contain("savedColor > TintMapMaterialRegistry.PaletteColorCount",
+            "legacy palette values must be carried across equivalent wearer-variant materials");
+        carryMethod.ToString().Should().Contain("SetStoredColor",
+            "automatic migration must preserve either the RGB or legacy palette storage format");
+        carryMethod.ToString().Should().Contain("GetItemGlobalColorStateName(layer)",
+            "an explicit global tint must fill materials newly exposed by another wearer variant");
+        carryMethod.ToString().Should().Contain("out _",
+            "the presence of global intent is sufficient because inherited materials keep no TM_* value");
+        carryMethod.ToString().Should().Contain("following ApplyCurrentColors pass resolves it through TMG_*",
+            "newly exposed inheriting materials must resolve global state without persisting a duplicate color");
+        carryMethod.ToString().Should().Contain("invalidatePendingCarry: false",
+            "automatic refresh migration must not look like a newer explicit color edit");
+        carryMethod.ToString().Should().NotContain("Dictionary<TintMapLayerType",
+            "a partial dye on one armor part must not be spread to every material exposing the layer");
+        carryMethod.ToString().Should().Contain("TintMapVariable.IsCreatureColorLayer(layer)",
+            "equipment colors must not overwrite skin, hair, or tattoos");
+
+        var equivalentVariablesMethod = FindMethod(serviceSource, "GetEquivalentItemTintVariables");
+        equivalentVariablesMethod.ToString().Should().Contain("TryParse",
+            "reset cleanup must inspect every stored material key on the item");
+        equivalentVariablesMethod.ToString().Should().Contain("variableLayer == layer",
+            "reset cleanup must leave other tint layers untouched");
+        equivalentVariablesMethod.ToString().Should().Contain("AreEquipmentMaterialsEquivalent",
+            "only corresponding material slots across wearer variants may be cleared");
+        var equivalenceMethod = FindMethod(serviceSource, "AreEquipmentMaterialsEquivalent");
+        equivalenceMethod.ToString().Should().Contain("AreEquipmentMaterialSlotsEquivalent",
+            "hashed material variants require registry slot matching");
+        equivalenceMethod.ToString().Should().NotContain("GetVariantIdentity",
+            "normalizing a material resref alone can alias two distinct slots across wearer variants");
+
+        TintMapEquipmentMaterialMatcher.GetVariantIdentity("pmh0_shor012").Should().Be("shor012");
+        TintMapEquipmentMaterialMatcher.GetVariantIdentity("pfh0_shor012").Should().Be("shor012");
+        TintMapEquipmentMaterialMatcher.GetVariantIdentity("pmd22_shor012").Should().Be("shor012");
+        TintMapEquipmentMaterialMatcher.GetVariantIdentity("shared_material").Should().Be("shared_material");
+
+        var setGlobalItemColor = FindMethod(serviceSource, nameof(TintMapService.SetGlobalItemCustomColor));
+        setGlobalItemColor.ToString().Should().Contain("GetItemGlobalColorStateName(layer)",
+            "global equipment tints need persisted intent distinct from per-part material keys");
+        setGlobalItemColor.ToString().Should().Contain("GetItemGlobalInheritanceStateName(layer)",
+            "global equipment tint inheritance must be persisted independently of RGB equality");
+        setGlobalItemColor.ToString().Should().Contain("GetLocalInt(item, inheritanceStateVariable) == 0",
+            "only markerless legacy global tints may use equality for one-time normalization");
+        setGlobalItemColor.ToString().Should().Contain("TryInferLegacyGlobalItemCustomColor",
+            "a complete uniform pre-marker representation must be recognized before replacement");
+        setGlobalItemColor.ToString().Should().Contain("savedSelectionColor <= 0",
+            "only a material without its own override inherits a changed global tint");
+        setGlobalItemColor.ToString().Should().Contain("includeGlobalColor: false",
+            "explicit material intent must be inspected without the item-wide fallback");
+        setGlobalItemColor.ToString().Should().Contain("HasExplicitItemPresetColor",
+            "global RGB changes must preserve per-material and per-part preset dyes");
+        setGlobalItemColor.ToString().Should().Contain("!hasExplicitPresetColor",
+            "only genuinely inheriting materials may receive the global RGB tint");
+        setGlobalItemColor.ToString().Should().NotContain("selectionColor == previousGlobalColor",
+            "an explicit material color equal to the global RGB is still an independent override");
+        setGlobalItemColor.ToString().Should().Contain("Droid.UpdateEquippedItemSnapshot(creature, item)",
+            "changing only the global marker must still persist equipped droid armor");
+        setGlobalItemColor.ToString().Should().Contain(
+            "MarkPendingItemColorEdit(item, layer, AppearanceArmor.Invalid)",
+            "replacing a global tint must invalidate an older delayed color carry");
+        setGlobalItemColor.ToString().Should().Contain("ApplyCurrentColorsAndPublish(creature)",
+            "changing a global tint must publish the rebuilt equipment shader state");
+        var explicitPresetMethod = FindMethod(serviceSource, "HasExplicitItemPresetColor");
+        explicitPresetMethod.ToString().Should().Contain("savedColor <= TintMapMaterialRegistry.PaletteColorCount",
+            "palette-format TM values must remain explicit when a global RGB tint changes");
+        explicitPresetMethod.ToString().Should().Contain("GetPerPartOverrideVariableName",
+            "APC-marked standard dyes must remain explicit when a global RGB tint changes");
+        var resetGlobalItemColor = CSharpSyntaxTree.ParseText(serviceSource).GetRoot().DescendantNodes()
+            .OfType<MethodDeclarationSyntax>()
+            .Single(method =>
+                method.Identifier.ValueText == nameof(TintMapService.ResetGlobalItemCustomColor) &&
+                method.ParameterList.Parameters.Count == 4);
+        resetGlobalItemColor.ToString().Should().Contain("TryInferLegacyGlobalItemCustomColor",
+            "global set and reset must share the same conservative legacy inference");
+        resetGlobalItemColor.ToString().Should().Contain("color == globalColor",
+            "a global preset must preserve independently customized armor parts");
+        resetGlobalItemColor.ToString().Should().Contain("GetItemTintOverrides(item)",
+            "global reset must inspect inactive wearer-variant material keys too");
+        resetGlobalItemColor.ToString().Should().Contain("DeleteLocalInt(item, resetVariable)",
+            "global reset must remove matching inactive keys before they can resurrect the tint");
+        resetGlobalItemColor.ToString().Should().Contain("Droid.UpdateEquippedItemSnapshot(creature, item)",
+            "removing only the global marker must still persist equipped droid armor");
+        resetGlobalItemColor.ToString().Should().Contain(
+            "MarkPendingItemColorEdit(item, layer, AppearanceArmor.Invalid)",
+            "resetting a global tint must invalidate an older delayed color carry");
+        var inferLegacyGlobal = FindMethod(serviceSource, "TryInferLegacyGlobalItemCustomColor");
+        inferLegacyGlobal.ToString().Should().Contain("GetItemTintOverrides(item)",
+            "an inactive global reset must infer markerless legacy tint state from stored material keys");
+
+        var viewModelSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "AppearanceEditorViewModel.cs");
+        viewModelSource.Should().Contain("ApplySelectedPaletteColor(");
+        viewModelSource.Should().Contain(nameof(TintMapService.ResetGlobalItemCustomColor));
+    }
+
+    [Test]
+    public void DeploymentReexecutesUpdatedScriptBeforeRunningNewMigrations()
+    {
+        var source = ReadSource("scripts", "deployment", "swlor-deploy.sh");
+        var merge = source.IndexOf("git -C \"$SOURCE_ROOT\" merge --ff-only", StringComparison.Ordinal);
+        var reexec = source.IndexOf(
+            "exec \"$BASH\" \"$updated_deploy_script\" \"$@\"",
+            StringComparison.Ordinal);
+        var submoduleSync = source.IndexOf(
+            "Synchronizing recursive submodules before re-exec.",
+            StringComparison.Ordinal);
+        var envMigration = source.IndexOf(
+            "if (( server_env_migration_required == 1 )); then",
+            StringComparison.Ordinal);
+
+        merge.Should().BeGreaterThan(-1);
+        submoduleSync.Should().BeGreaterThan(merge,
+            "a changed gitlink must be checked out after the parent fast-forward");
+        submoduleSync.Should().BeLessThan(reexec,
+            "the updated script's clean-tree guard runs immediately after re-exec");
+        reexec.Should().BeGreaterThan(merge,
+            "a fast-forward must transfer control to the fetched deployment implementation");
+        reexec.Should().BeLessThan(envMigration,
+            "new host migrations must execute from the updated script on their first rollout");
+        source.Should().NotContain("flock --unlock 9",
+            "releasing descriptor 9 creates a race where another deployment can enter");
+        source.Should().Contain("export SWLOR_DEPLOY_LOCK_FD_INHERITED=1",
+            "the replacement script must know descriptor 9 already owns the deployment lock");
+        source.Should().Contain("realpath \"/proc/$$/fd/9\"",
+            "an inherited-lock marker must be validated against the configured lock file");
+        source.IndexOf("export SWLOR_DEPLOY_LOCK_FD_INHERITED=1", StringComparison.Ordinal)
+            .Should().BeLessThan(reexec,
+                "the held descriptor must be marked for reuse before replacing the shell");
+        source.Should().Contain("\"$server_env_migration_required\" == 0",
+            "an unchanged commit must still deploy a required server environment migration");
+    }
+
+    [Test]
+    public void HashedEquipmentMaterialsMatchByCorrespondingWearerVariantSlot()
+    {
+        var catalog = new Dictionary<string, IReadOnlyList<TintMapMaterialDefinition>>(
+            StringComparer.OrdinalIgnoreCase)
+        {
+            ["pmh0_robe030"] = new[]
+            {
+                new TintMapMaterialDefinition(
+                    "male skin",
+                    "pmh0_p_ro_6c9e96",
+                    TintMapLayerType.Skin,
+                    TintMapLayerType.Cloth2),
+                new TintMapMaterialDefinition(
+                    "male equipment",
+                    "pmh0_r_ro_7a1a22",
+                    TintMapLayerType.Metal1,
+                    TintMapLayerType.Cloth1)
+            },
+            ["pfh0_robe030"] = new[]
+            {
+                // tintmap.2da lists the equipment material before the skin material for the
+                // female model, unlike the male model. Matching absolute list indexes is wrong.
+                new TintMapMaterialDefinition(
+                    "female equipment",
+                    "pfh0_r_ro_82b326",
+                    TintMapLayerType.Metal1,
+                    TintMapLayerType.Cloth1),
+                new TintMapMaterialDefinition(
+                    "female skin",
+                    "pmh0_p_ro_6c9e96",
+                    TintMapLayerType.Skin,
+                    TintMapLayerType.Cloth2)
+            }
+        };
+
+        var index = new TintMapEquipmentMaterialIndex(catalog);
+        index.AreEquivalent(
+                "pmh0_r_ro_7a1a22",
+                "pfh0_robe030",
+                "pfh0_r_ro_82b326",
+                TintMapLayerType.Metal1)
+            .Should().BeTrue();
+        index.AreEquivalent(
+                "pmh0_p_ro_6c9e96",
+                "pfh0_robe030",
+                "pfh0_r_ro_82b326",
+                TintMapLayerType.Metal1)
+            .Should().BeFalse("a material in another slot must not receive the equipment dye");
+        index.GetEquivalentMaterialResrefs(
+                "pmh0_robe030",
+                "pmh0_r_ro_7a1a22",
+                TintMapLayerType.Metal1)
+            .Should().BeEquivalentTo(
+                "pmh0_r_ro_7a1a22",
+                "pfh0_r_ro_82b326");
+    }
+
+    [Test]
+    public void AmbiguousCrossVariantMaterialSlotsAreNotTreatedAsEquivalent()
+    {
+        var sharedMaterial = "pmh0_h_lh_1cb350";
+        var catalog = new Dictionary<string, IReadOnlyList<TintMapMaterialDefinition>>(
+            StringComparer.OrdinalIgnoreCase)
+        {
+            ["pmh0_handl153"] = new[]
+            {
+                new TintMapMaterialDefinition("shared male slot zero", sharedMaterial, TintMapLayerType.Cloth1),
+                new TintMapMaterialDefinition("male slot one", "pmh0_h_lh_other", TintMapLayerType.Cloth1)
+            },
+            ["pfh0_handl153"] = new[]
+            {
+                new TintMapMaterialDefinition("female slot zero", "pfh0_h_lh_other", TintMapLayerType.Cloth1),
+                new TintMapMaterialDefinition("shared female slot one", sharedMaterial, TintMapLayerType.Cloth1)
+            }
+        };
+
+        new TintMapEquipmentMaterialIndex(catalog).AreEquivalent(
+                sharedMaterial,
+                "pfh0_handl153",
+                "pfh0_h_lh_other",
+                TintMapLayerType.Cloth1)
+            .Should().BeFalse(
+                "the stored material resref does not identify which wearer variant supplied its slot");
+    }
+
+    [Test]
+    public void NaturalMaterialIdentitySurvivesShiftedWearerVariantLayerSlots()
+    {
+        var catalog = new Dictionary<string, IReadOnlyList<TintMapMaterialDefinition>>(
+            StringComparer.OrdinalIgnoreCase)
+        {
+            ["pfh0_pelvis268"] = new[]
+            {
+                new TintMapMaterialDefinition(
+                    "extra female material",
+                    "pfh0_p_pe_714899",
+                    TintMapLayerType.Leather2),
+                new TintMapMaterialDefinition(
+                    "female pelvis",
+                    "pfh0_pelvis268",
+                    TintMapLayerType.Leather2)
+            },
+            ["pmh0_pelvis268"] = new[]
+            {
+                new TintMapMaterialDefinition(
+                    "male pelvis",
+                    "pmh0_pelvis268",
+                    TintMapLayerType.Leather2)
+            }
+        };
+
+        var index = new TintMapEquipmentMaterialIndex(catalog);
+        index.AreEquivalent(
+                "pfh0_pelvis268",
+                "pmh0_pelvis268",
+                "pmh0_pelvis268",
+                TintMapLayerType.Leather2)
+            .Should().BeTrue(
+                "the extra female material shifts the layer slot but not the natural pelvis identity");
+        index.AreEquivalent(
+                "pfh0_p_pe_714899",
+                "pmh0_pelvis268",
+                "pmh0_pelvis268",
+                TintMapLayerType.Leather2)
+            .Should().BeFalse("the unrelated extra material must not win by list position");
+    }
+
+    [Test]
+    public void EquipmentMaterialSlotsAreIndexedIndependentlyForEachLayer()
+    {
+        var catalog = new Dictionary<string, IReadOnlyList<TintMapMaterialDefinition>>(
+            StringComparer.OrdinalIgnoreCase)
+        {
+            ["pfa0_bicepr122"] = new[]
+            {
+                new TintMapMaterialDefinition(
+                    "female material",
+                    "pfh0_b_rb_805035",
+                    TintMapLayerType.Metal1,
+                    TintMapLayerType.Metal2)
+            },
+            ["pfh0_bicepr122"] = new[]
+            {
+                new TintMapMaterialDefinition(
+                    "half-elf material",
+                    "pfh0_bicepr122",
+                    TintMapLayerType.Metal1,
+                    TintMapLayerType.Cloth1,
+                    TintMapLayerType.Cloth2,
+                    TintMapLayerType.Leather1,
+                    TintMapLayerType.Leather2)
+            }
+        };
+
+        var index = new TintMapEquipmentMaterialIndex(catalog);
+        index.AreEquivalent(
+                "pfh0_b_rb_805035",
+                "pfh0_bicepr122",
+                "pfh0_bicepr122",
+                TintMapLayerType.Metal1)
+            .Should().BeTrue(
+                "the first Metal 1 material remains the same slot even when its extra layers differ");
+        index.GetEquivalentMaterialResrefs(
+                "pfa0_bicepr122",
+                "pfh0_b_rb_805035",
+                TintMapLayerType.Metal1)
+            .Should().BeEquivalentTo("pfh0_b_rb_805035", "pfh0_bicepr122");
+    }
+
+    [Test]
+    public void InactivePartCleanupRequiresExclusiveMaterialOwnership()
+    {
+        var sharedMaterial = "shared_hand";
+        var catalog = new Dictionary<string, IReadOnlyList<TintMapMaterialDefinition>>(
+            StringComparer.OrdinalIgnoreCase)
+        {
+            ["pmh0_handl153"] = new[]
+            {
+                new TintMapMaterialDefinition(
+                    "left only",
+                    "left_hand_a",
+                    TintMapLayerType.Cloth1),
+                new TintMapMaterialDefinition("shared", sharedMaterial, TintMapLayerType.Cloth1)
+            },
+            ["pfh0_handl153"] = new[]
+            {
+                new TintMapMaterialDefinition(
+                    "left female",
+                    "left_hand_b",
+                    TintMapLayerType.Cloth1),
+                new TintMapMaterialDefinition("shared", sharedMaterial, TintMapLayerType.Cloth1)
+            },
+            ["pmh0_handr153"] = new[]
+            {
+                new TintMapMaterialDefinition(
+                    "right only",
+                    "right_hand_a",
+                    TintMapLayerType.Cloth1),
+                new TintMapMaterialDefinition("shared", sharedMaterial, TintMapLayerType.Cloth1)
+            }
+        };
+
+        var index = new TintMapEquipmentMaterialIndex(catalog);
+        index.IsExclusiveToArmorPart(
+                "left_hand_a",
+                TintMapLayerType.Cloth1,
+                AppearanceArmor.LeftHand)
+            .Should().BeTrue();
+        index.IsExclusiveToArmorPart(
+                "left_hand_b",
+                TintMapLayerType.Cloth1,
+                AppearanceArmor.LeftHand)
+            .Should().BeTrue("wearer variants remain owned by the same modular part");
+        index.IsExclusiveToArmorPart(
+                "right_hand_a",
+                TintMapLayerType.Cloth1,
+                AppearanceArmor.LeftHand)
+            .Should().BeFalse("an inactive sibling part must retain its stored tint");
+        index.IsExclusiveToArmorPart(
+                sharedMaterial,
+                TintMapLayerType.Cloth1,
+                AppearanceArmor.LeftHand)
+            .Should().BeFalse("ambiguous shared material variables must fail closed");
+    }
+
+    [Test]
+    public void InactiveResetAndRefreshHonorPartScopedPresetIntent()
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapService.cs");
+        var reset = FindMethod(source, nameof(TintMapService.ResetInactiveItemCustomColor));
+        reset.ToString().Should().Contain("IsEquipmentMaterialExclusiveToArmorPart");
+        reset.ToString().Should().NotContain("activeOtherPartVariables",
+            "inactive sibling parts cannot be protected by looking only at current selections");
+
+        var carry = FindMethod(source, "CarryStoredEquipmentCustomColors");
+        var presetCheck = carry.ToString().IndexOf(
+            "HasExplicitItemPresetColor(selection, layer, destinationColor)",
+            StringComparison.Ordinal);
+        var globalCheck = carry.ToString().IndexOf(
+            "GetItemGlobalColorStateName(layer)",
+            StringComparison.Ordinal);
+        var matchingCheck = carry.ToString().IndexOf(
+            "var matchingColors = storedColors",
+            StringComparison.Ordinal);
+        presetCheck.Should().BeGreaterThan(-1);
+        matchingCheck.Should().BeGreaterThan(presetCheck,
+            "preset intent must be checked before attempting a stored material carry");
+        matchingCheck.Should().BeLessThan(globalCheck,
+            "a stored palette opt-out must be restored before global inheritance is considered");
+        presetCheck.Should().BeLessThan(globalCheck,
+            "a per-part palette opt-out must win before restoring an item-wide RGB tint");
+
+        var getSavedColor = FindMethod(source, "GetSavedColor");
+        getSavedColor.ToString().Should().Contain("AreEquipmentMaterialSlotsEquivalent",
+            "dropped generic cloaks must resolve race-specific worn material slots");
+        getSavedColor.ToString().Should().Contain("equivalentColors.Count == 1",
+            "ambiguous race-specific material colors must fail closed");
+    }
+
+    [Test]
+    public void NormalizedVariantIdentityDoesNotOverrideMaterialSlotIdentity()
+    {
+        var catalog = new Dictionary<string, IReadOnlyList<TintMapMaterialDefinition>>(
+            StringComparer.OrdinalIgnoreCase)
+        {
+            ["pmh0_robe017"] = new[]
+            {
+                new TintMapMaterialDefinition("male slot", "pmh0_robe017", TintMapLayerType.Cloth1)
+            },
+            ["pfh0_robe017"] = new[]
+            {
+                new TintMapMaterialDefinition("male material in female slot zero", "pmh0_robe017", TintMapLayerType.Cloth1),
+                new TintMapMaterialDefinition("female material in slot one", "pfh0_robe017", TintMapLayerType.Cloth1)
+            }
+        };
+
+        TintMapEquipmentMaterialMatcher.GetVariantIdentity("pmh0_robe017")
+            .Should().Be(TintMapEquipmentMaterialMatcher.GetVariantIdentity("pfh0_robe017"));
+        new TintMapEquipmentMaterialIndex(catalog).AreEquivalent(
+                "pmh0_robe017",
+                "pfh0_robe017",
+                "pfh0_robe017",
+                TintMapLayerType.Cloth1)
+            .Should().BeFalse(
+                "materials with the same normalized variant identity can occupy different slots");
+    }
+
+    [Test]
+    public void TintMapVariableParsingRetainsTheMaterialIdentity()
+    {
+        TintMapVariable.TryParse(
+                "TM_pmh0_chest070_4",
+                out var materialResref,
+                out var layer)
+            .Should().BeTrue();
+        materialResref.Should().Be("pmh0_chest070");
+        layer.Should().Be(TintMapLayerType.Cloth1);
+
+        TintMapVariable.TryParse("TM__5", out _, out _).Should().BeFalse();
+        TintMapVariable.TryParse("APC_1_5", out _, out _).Should().BeFalse();
+    }
+
+    [Test]
+    public void TintMapVariableRecognizesTheItemGlobalInheritanceContract()
+    {
+        var variableName = TintMapVariable.GetItemGlobalInheritanceStateName(TintMapLayerType.Cloth1);
+
+        variableName.Should().Be($"TMI_{(int)TintMapLayerType.Cloth1}");
+        TintMapVariable.IsItemGlobalInheritanceStateName(variableName).Should().BeTrue();
+        TintMapVariable.IsItemGlobalInheritanceStateName(
+                TintMapVariable.GetItemGlobalColorStateName(TintMapLayerType.Cloth1))
+            .Should().BeFalse();
+        TintMapVariable.IsItemGlobalInheritanceStateName("TMI_not-a-layer").Should().BeFalse();
+    }
+
+    [Test]
+    public void FlatColorViewportPassesClearTintMapState()
+    {
+        var viewportSource = ReadSource(
+            "SWLOR.Toolset",
+            "Viewport",
+            "GlAreaControl.cs");
+        var setUniformMethod = FindMethod(viewportSource, "SetUniformBool");
+        var methodBody = setUniformMethod.ToString();
+
+        methodBody.Should().Contain("name == \"hasTexture\" && !value",
+            "every existing flat-color pass disables hasTexture through this shared path");
+        methodBody.Should().Contain("SetUniformBoolCore(\"hasTintMap\", false)");
+        methodBody.Should().Contain("SetUniformBoolCore(\"hasTintAlpha\", false)");
+    }
+
+    [Test]
+    public void RodianMusicianPartsBindTheConvertedHumanFallbackMaterials()
+    {
+        var repositoryRoot = FindRepositoryRoot();
+        var rows = ReadSource("SWLOR_Haks", "sw_2da", "tintmap.2da")
+            .Split('\n', StringSplitOptions.RemoveEmptyEntries)
+            .Select(line => line.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Select(column => column.Trim()).ToArray())
+            .Where(columns => columns.Length >= 4)
+            .ToList();
+        var expectedRows = new Dictionary<string, (string Material, string Layers)>
+        {
+            ["pfe0_chest070"] = ("pfh0_chest070", "0,2,5,6,7"),
+            ["pfe0_legl123"] = ("pfh0_legl123", "0,6"),
+            ["pfe0_legr123"] = ("pfh0_legr123", "0,6"),
+            ["pfe0_shinl080"] = ("pfh0_shinl080", "7"),
+            ["pfe0_shinr080"] = ("pfh0_shinr080", "7"),
+            ["pfh0_legl123"] = ("pfh0_legl123", "0,6"),
+            ["pfh0_legr123"] = ("pfh0_legr123", "0,6"),
+            ["pme0_chest070"] = ("pmh0_chest070", "0,2,3,5,6,7"),
+            ["pme0_footl102"] = ("pmh0_footl102", "2,3"),
+            ["pme0_legl123"] = ("pmh0_legl123", "0,6"),
+            ["pme0_legr123"] = ("pmh0_legr123", "0,6"),
+            ["pme0_shinl080"] = ("pmh0_shinl080", "7"),
+            ["pme0_shinr080"] = ("pmh0_shinr080", "7")
+        };
+
+        foreach (var (model, expected) in expectedRows)
+        {
+            var row = rows.Single(columns => columns[1] == model);
+            row[2].Should().Be(expected.Material);
+            row[3].Should().Be(expected.Layers);
+        }
+
+        var modelBindings = new Dictionary<string, string>
+        {
+            [Path.Combine("sw_pt_chest", "pfe0_chest070.mdl")] = "pfh0_chest070",
+            [Path.Combine("sw_pt_lthigh", "pfe0_legl123.mdl")] = "pfh0_legl123",
+            [Path.Combine("sw_pt_rthigh", "pfe0_legr123.mdl")] = "pfh0_legr123",
+            [Path.Combine("sw_pt_lshin", "pfe0_shinl080.mdl")] = "pfh0_shinl080",
+            [Path.Combine("sw_pt_rshin", "pfe0_shinr080.mdl")] = "pfh0_shinr080",
+            [Path.Combine("sw_pt_chest", "pme0_chest070.mdl")] = "pmh0_chest070",
+            [Path.Combine("sw_pt_lfoot", "pme0_footl102.mdl")] = "pmh0_footl102",
+            [Path.Combine("sw_pt_lthigh", "pme0_legl123.mdl")] = "pmh0_legl123",
+            [Path.Combine("sw_pt_rthigh", "pme0_legr123.mdl")] = "pmh0_legr123",
+            [Path.Combine("sw_pt_lshin", "pme0_shinl080.mdl")] = "pmh0_shinl080",
+            [Path.Combine("sw_pt_rshin", "pme0_shinr080.mdl")] = "pmh0_shinr080"
+        };
+        foreach (var (relativePath, material) in modelBindings)
+        {
+            var modelPath = Path.Combine(repositoryRoot.FullName, "SWLOR_Haks", relativePath);
+            System.Text.Encoding.ASCII.GetString(File.ReadAllBytes(modelPath))
+                .Should().Contain(material);
+        }
+
+        foreach (var material in new[] { "pfh0_legl123", "pfh0_legr123" })
+        {
+            var materialPath = Path.Combine(
+                repositoryRoot.FullName,
+                "SWLOR_Haks",
+                "sw_tint_mtr",
+                $"{material}.mtr");
+            File.ReadAllText(materialPath).Should().Contain("texture7 tm_53954255618f4");
+        }
+        File.Exists(Path.Combine(
+                repositoryRoot.FullName,
+                "SWLOR_Haks",
+                "sw_tint1",
+                "tm_53954255618f4.dds"))
+            .Should().BeTrue();
+    }
+
+    [Test]
+    public void DefaultMaleHumanHandsRetainDetailedGeometryAndTintBindings()
+    {
+        var repositoryRoot = FindRepositoryRoot();
+        var expectedModels = new Dictionary<string, string>
+        {
+            [Path.Combine("sw_pt_lhand", "pmh0_handl001.mdl")] = "pmh0_h_lh_f13287",
+            [Path.Combine("sw_pt_rhand", "pmh0_handr001.mdl")] = "pmh0_handr001"
+        };
+
+        foreach (var (relativePath, material) in expectedModels)
+        {
+            var modelPath = Path.Combine(repositoryRoot.FullName, "SWLOR_Haks", relativePath);
+            var model = File.ReadAllBytes(modelPath);
+
+            model.Length.Should().BeGreaterThan(30_000,
+                "hand model 1 must retain the detailed human geometry rather than the stock stub");
+            System.Text.Encoding.ASCII.GetString(model).Should().Contain(material,
+                "the restored geometry must remain connected to its generated tint material");
+        }
+    }
+
+    [Test]
+    public void HumanHand246ModelsUseTheirAuthoredSkinTintMasks()
+    {
+        var repositoryRoot = FindRepositoryRoot();
+        var rows = ReadSource("SWLOR_Haks", "sw_2da", "tintmap.2da")
+            .Split('\n', StringSplitOptions.RemoveEmptyEntries)
+            .Select(line => line.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Select(column => column.Trim()).ToArray())
+            .Where(columns => columns.Length >= 4)
+            .ToList();
+        var expectedModels = new Dictionary<string, string>
+        {
+            [Path.Combine("sw_pt_lhand", "pfh0_handl246.mdl")] = "pfh0_handl246",
+            [Path.Combine("sw_pt_rhand", "pfh0_handr246.mdl")] = "pfh0_handr246",
+            [Path.Combine("sw_pt_lhand", "pmh0_handl246.mdl")] = "pmh0_handl246",
+            [Path.Combine("sw_pt_rhand", "pmh0_handr246.mdl")] = "pmh0_handr246"
+        };
+
+        foreach (var (relativePath, model) in expectedModels)
+        {
+            var row = rows.Single(columns => columns[1] == model);
+            row[2].Should().Be(model);
+            row[3].Should().Be("0,1,2,4,5,6,7");
+
+            var modelPath = Path.Combine(repositoryRoot.FullName, "SWLOR_Haks", relativePath);
+            System.Text.Encoding.ASCII.GetString(File.ReadAllBytes(modelPath))
+                .Should().Contain(model);
+        }
+
+        var fallbackConfiguration = JObject.Parse(
+            ReadSource("SWLOR_Haks", "tools", "TintMapFallbacks.json"));
+        var authoredTextureOverrides = fallbackConfiguration["authoredTextureOverrides"]!
+            .ToObject<Dictionary<string, string>>();
+        authoredTextureOverrides.Should().BeEquivalentTo(
+            expectedModels.Values.ToDictionary(model => model, model => model));
+    }
+
+    [Test]
+    public void MaleMusicianOutfitKeepsItsAuthoredDyesAndConvertedThighMaterials()
+    {
+        var repositoryRoot = FindRepositoryRoot();
+        var outfit = JObject.Parse(ReadSource("Module", "uti", "musicianoutfit1.uti.json"));
+        outfit["Cloth1Color"]?["value"]?.Value<int>().Should().Be(132);
+        outfit["Cloth2Color"]?["value"]?.Value<int>().Should().Be(132);
+        outfit["Leather1Color"]?["value"]?.Value<int>().Should().Be(23);
+        outfit["Leather2Color"]?["value"]?.Value<int>().Should().Be(23);
+        outfit["Metal1Color"]?["value"]?.Value<int>().Should().Be(7);
+        outfit["Metal2Color"]?["value"]?.Value<int>().Should().Be(7);
+
+        var rows = ReadSource("SWLOR_Haks", "sw_2da", "tintmap.2da")
+            .Split('\n', StringSplitOptions.RemoveEmptyEntries)
+            .Select(line => line.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Select(column => column.Trim()).ToArray())
+            .Where(columns => columns.Length >= 4)
+            .ToList();
+        var expectedRows = new Dictionary<string, (string Material, string Layers)>
+        {
+            ["pmh0_chest070"] = ("pmh0_chest070", "0,2,3,5,6,7"),
+            ["pmh0_legl123"] = ("pmh0_legl123", "0,6"),
+            ["pmh0_legr123"] = ("pmh0_legr123", "0,6"),
+            ["pmh0_shinl080"] = ("pmh0_shinl080", "7"),
+            ["pmh0_shinr080"] = ("pmh0_shinr080", "7"),
+            ["pmh0_footl102"] = ("pmh0_footl102", "2,3"),
+            ["pmh0_footr102"] = ("pmh0_footr102", "2,3")
+        };
+        foreach (var (model, expected) in expectedRows)
+        {
+            var row = rows.Single(columns => columns[1] == model);
+            row[2].Should().Be(expected.Material);
+            row[3].Should().Be(expected.Layers);
+        }
+
+        foreach (var material in new[] { "pmh0_legl123", "pmh0_legr123" })
+        {
+            var modelPath = Path.Combine(
+                repositoryRoot.FullName,
+                "SWLOR_Haks",
+                material.Contains("legl", StringComparison.Ordinal) ? "sw_pt_lthigh" : "sw_pt_rthigh",
+                $"{material}.mdl");
+            System.Text.Encoding.ASCII.GetString(File.ReadAllBytes(modelPath))
+                .Should().Contain(material);
+            File.ReadAllText(Path.Combine(
+                    repositoryRoot.FullName,
+                    "SWLOR_Haks",
+                    "sw_tint_mtr",
+                    $"{material}.mtr"))
+                .Should().Contain("texture7 tm_53954255618f4");
+        }
+    }
+
+    [Test]
+    public void TintLayersRetainLegacyCleanupNames()
+    {
+        var expectedUniforms = new Dictionary<TintMapLayerType, string>
+        {
+            [TintMapLayerType.Skin] = "useCustomSkin",
+            [TintMapLayerType.Hair] = "useCustomHair",
+            [TintMapLayerType.Metal1] = "useCustomMetal1",
+            [TintMapLayerType.Metal2] = "useCustomMetal2",
+            [TintMapLayerType.Cloth1] = "useCustomCloth1",
+            [TintMapLayerType.Cloth2] = "useCustomCloth2",
+            [TintMapLayerType.Leather1] = "useCustomLeath1",
+            [TintMapLayerType.Leather2] = "useCustomLeath2",
+            [TintMapLayerType.Tattoo1] = "useCustomTat1",
+            [TintMapLayerType.Tattoo2] = "useCustomTat2"
+        };
+
+        foreach (var (layer, uniformName) in expectedUniforms)
+        {
+            var layerDefinition = TintMapMaterialRegistry.GetLayer(layer);
+            layerDefinition.CustomModeUniformName.Should().Be(uniformName);
+            layerDefinition.ColorRedUniformName.Should().Be($"{layerDefinition.ColorUniformName}R");
+            layerDefinition.ColorGreenUniformName.Should().Be($"{layerDefinition.ColorUniformName}G");
+            layerDefinition.ColorBlueUniformName.Should().Be($"{layerDefinition.ColorUniformName}B");
+            TintMapMaterialRegistry.GetPaletteCoordinate(layer, 42).Should().BePositive();
+        }
+    }
+
+    [Test]
+    public void ApplyingAColorUsesTheKnownGoodPaletteRowContract()
+    {
+        var serviceSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapService.cs");
+        var applyColor = FindMethod(serviceSource, "ApplyMaterialColor");
+        var shaderWrites = applyColor.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Where(invocation =>
+                invocation.Expression.ToString() == "SetMaterialShaderUniformVec4")
+            .ToList();
+
+        shaderWrites.Should().ContainSingle(
+            "palette and picker colors must share the known-good row-only material update");
+        shaderWrites[0].ToString().Should().Contain("layerDefinition.UniformName");
+        shaderWrites[0].ToString().Should().Contain("paletteCoordinate");
+        applyColor.ToString().Should().Contain("TintMapPaletteColors.GetClosestColorId",
+            "legacy RGB state must be collapsed to a real palette row before rendering");
+        applyColor.ToString().Should().NotContain("customColor.Value.Red / 255f");
+
+        var customWrites = applyColor.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Where(invocation =>
+                invocation.Expression.ToString() == "SetMaterialShaderUniformInt")
+            .ToList();
+        customWrites.Should().BeEmpty(
+            "the RGBA tint vector must carry its own custom-mode alpha atomically");
+        applyColor.ToString().Should().Contain("ResetMaterialShaderUniforms");
+
+        var resets = applyColor.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Where(invocation =>
+                invocation.Expression.ToString() == "ResetMaterialShaderUniforms")
+            .ToList();
+        resets.Should().HaveCount(6,
+            "the row and every obsolete RGB transport must be cleared before row replacement");
+
+        foreach (var shaderName in new[] { "fs_plt_tinter.shd", "fs_plt_tinter_nm.shd" })
+        {
+            var shader = ReadSource("SWLOR_Haks", "sw_shader", shaderName);
+            shader.Should().Contain("uniform float rowSkin");
+            shader.Should().Contain("float v = rowSkin");
+            shader.Should().Contain("vec3 vTint = paletteColor.rgb");
+            shader.Should().Contain("fEnvMapLevel = 1.0 - paletteColor.a");
+            shader.Should().NotContain("uniform vec4 tintSkin");
+            shader.Should().NotContain("useCustomTint");
+            shader.Should().NotContain("shadeScale");
+        }
+
+        ReadSource("SWLOR_Haks", "sw_tint_mtr", "pmh0_c_ch_eb7e04.mtr")
+            .Should().Contain("parameter float rowSkin 0.000244 0.0 0.0 0.0",
+                "the Vec4 material setter updates the scalar row uniform through its first component");
+    }
+
+    [Test]
+    public void RuntimeUsesTheKnownGoodModelWideMaterialUpdate()
+    {
+        var serviceSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapService.cs");
+        var applyCreatureColor = FindMethod(serviceSource, "ApplyCreatureColor");
+
+        applyCreatureColor.ToString().Should().Contain(
+            "ApplyMaterialColor(creature, string.Empty, layer, color)");
+
+        ReadSource("SWLOR.Game.Server", "Docker", "swlor.env")
+            .Should().Contain("NWNX_TWEAKS_MATERIAL_NAME_NULL_IS_ALL=true",
+                "the row update must reach every material in a composed creature");
+        ReadSource("SWLOR.CLI", "DeployBuild.cs")
+            .Should().Contain("MaterialNameNullTweakValue = \"true\"",
+                "debug deployment must enable model-wide row updates");
+        ReadSource("scripts", "deployment", "swlor-deploy.sh")
+            .Should().Contain("REQUIRED_TWEAK_VALUE=\"true\"",
+                "production deployment must enable model-wide row updates");
+    }
+
+    [Test]
+    public void CreatureSemanticColorsUseOneModelWidePaletteRowUpdate()
+    {
+        var serviceSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapService.cs");
+        var applyCurrent = FindMethod(serviceSource, nameof(TintMapService.ApplyCurrentColors));
+        applyCurrent.ToString().Should().Contain("creatureLayers");
+        applyCurrent.ToString().Should().Contain("ApplyCreatureColor");
+        applyCurrent.ToString().Should().Contain("GetEffectiveCreatureColor(creature, layer)");
+        var refreshInvocations = applyCurrent.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Where(invocation => invocation.Expression.ToString() == "ResetMaterialShaderUniforms")
+            .ToList();
+        refreshInvocations.Should().ContainSingle(
+            "the complete shader state must be cleared once before any palette rows are rebuilt");
+        refreshInvocations.Single().ArgumentList.Arguments.Should().ContainSingle(
+            "a full reset removes stale legacy wildcards without erasing rows later in the rebuild");
+
+        var applyCreatureColor = FindMethod(serviceSource, "ApplyCreatureColor");
+        applyCreatureColor.ToString().Should().Contain("selection.GetPaletteSource(layer) == creature");
+        applyCreatureColor.ToString().Should().Contain("selection.Material.Layers.Contains(layer)");
+        applyCreatureColor.ToString().Should().Contain(
+            "ApplyMaterialColor(creature, string.Empty, layer, color)");
+        applyCreatureColor.ToString().Should().Contain("selection.Material.Resref");
+        applyCreatureColor.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Count(invocation => invocation.Expression.ToString() == "ResetMaterialShaderUniforms")
+            .Should().Be(0,
+                "semantic layers must not erase equipment rows that were already rebuilt");
+
+        var effectiveCreatureColor = FindMethod(serviceSource, "GetEffectiveCreatureColor");
+        effectiveCreatureColor.ToString().Should().Contain("GetCreatureCustomColorStateVariable(layer)");
+        effectiveCreatureColor.ToString().Should().Contain("GetCreatureStandardColor(creature, layer)");
+        effectiveCreatureColor.ToString().Should().NotContain("GetEffectiveColor",
+            "an old per-material value must not be promoted to every creature body part");
+
+        var publishCreatureColor = FindMethod(serviceSource, "ApplyCurrentColorsAndPublish");
+        var publishText = publishCreatureColor.ToString();
+        publishText.Should().NotContain("UpdateAppearanceDependantInfo()",
+            "a color edit must not rebuild the creature appearance or invalidate client scene state");
+        publishText.Should().NotContain("ApplyCreatureColor(creature",
+            "publishing only the edited layer can leave other rows on invalidated defaults");
+        publishText.Should().NotContain("m_lMaterialShaderParameters.Clear()",
+            "publishing a tint must not invalidate unrelated client shader state");
+        publishText.Should().Contain("SetForceUpdate()",
+            "the rebuilt material state must be published in the current server update");
+    }
+
+    [Test]
+    public void RodianBountyHunterPartsBindTheConvertedHumanFallbackMaterials()
+    {
+        var repositoryRoot = FindRepositoryRoot();
+        var rows = ReadSource("SWLOR_Haks", "sw_2da", "tintmap.2da")
+            .Split('\n', StringSplitOptions.RemoveEmptyEntries)
+            .Select(line => line.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Select(column => column.Trim()).ToArray())
+            .Where(columns => columns.Length >= 4)
+            .ToList();
+        var expectedRows = new Dictionary<string, (string Material, string Layers)>
+        {
+            ["pme0_legl104"] = ("pmh0_legl104", "4"),
+            ["pme0_pelvis102"] = ("pmh0_pelvis102", "4,6")
+        };
+
+        foreach (var (model, expected) in expectedRows)
+        {
+            var row = rows.Single(columns => columns[1] == model);
+            row[2].Should().Be(expected.Material);
+            row[3].Should().Be(expected.Layers);
+        }
+
+        var modelBindings = new Dictionary<string, string>
+        {
+            [Path.Combine("sw_pt_lthigh", "pme0_legl104.mdl")] = "pmh0_legl104",
+            [Path.Combine("sw_pt_pelvis", "pme0_pelvis102.mdl")] = "pmh0_pelvis102"
+        };
+        foreach (var (relativePath, material) in modelBindings)
+        {
+            var modelPath = Path.Combine(repositoryRoot.FullName, "SWLOR_Haks", relativePath);
+            System.Text.Encoding.ASCII.GetString(File.ReadAllBytes(modelPath))
+                .Should().Contain(material);
+        }
+    }
+
+    [Test]
+    public void PaddedModularModelUsesItsUnpaddedTintMaterial()
+    {
+        var rows = ReadSource("SWLOR_Haks", "sw_2da", "tintmap.2da")
+            .Split('\n', StringSplitOptions.RemoveEmptyEntries)
+            .Select(line => line.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Select(column => column.Trim()).ToArray())
+            .Where(columns => columns.Length >= 4)
+            .ToList();
+        var paddedFoot = rows.Single(columns => columns[1] == "pmo0_footl010");
+
+        paddedFoot[2].Should().Be("pmo0_footl10");
+        rows.Should().NotContain(columns => columns[1] == "pmo0_footl10");
+    }
+
+    [Test]
+    public void TintMapRegistryUsesStructuredServerLogging()
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapMaterialRegistry.cs");
+        var loadMethod = FindMethod(source, nameof(TintMapMaterialRegistry.Load));
+        var invocations = loadMethod.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .ToList();
+        var logInvocation = invocations.Single(invocation =>
+            IsMemberInvocation(invocation, "Log", "WriteStructured"));
+
+        logInvocation.ArgumentList.Arguments.Any(argument =>
+            argument.Expression is MemberAccessExpressionSyntax
+            {
+                Name.Identifier.ValueText: "Server"
+            })
+            .Should()
+            .BeTrue();
+        logInvocation.ArgumentList.Arguments.Any(argument =>
+            argument.Expression is LiteralExpressionSyntax literal &&
+            literal.Token.ValueText == "Loaded {TintMapModelCount} tint-map models.")
+            .Should()
+            .BeTrue();
+        logInvocation.ArgumentList.Arguments.Any(argument =>
+            argument.Expression is MemberAccessExpressionSyntax
+            {
+                Name.Identifier.ValueText: "Count"
+            })
+            .Should()
+            .BeTrue();
+        invocations.Should().NotContain(invocation =>
+            IsMemberInvocation(invocation, "Console", "WriteLine"));
+        invocations.Should().NotContain(invocation =>
+            GetInvokedMethodName(invocation) == "Information");
+    }
+
+    [Test]
+    public void TintMapRegistryPrecomputesEquipmentMaterialSlotsDuringLoad()
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapMaterialRegistry.cs");
+        var loadMethod = FindMethod(source, nameof(TintMapMaterialRegistry.Load));
+        loadMethod.ToString().Should().Contain(
+            "_equipmentMaterialIndex = new TintMapEquipmentMaterialIndex(MaterialsByModel)",
+            "the complete tint-map catalog should be indexed once when the registry loads");
+
+        var equivalenceMethod = FindMethod(
+            source,
+            nameof(TintMapMaterialRegistry.AreEquipmentMaterialSlotsEquivalent));
+        equivalenceMethod.ToString().Should().Contain("_equipmentMaterialIndex.AreEquivalent");
+        equivalenceMethod.ToString().Should().NotContain("MaterialsByModel",
+            "interactive tint changes must not rescan every registered model");
+
+        var equivalentMaterialsMethod = FindMethod(
+            source,
+            nameof(TintMapMaterialRegistry.GetEquivalentEquipmentMaterialResrefs));
+        equivalentMaterialsMethod.ToString().Should()
+            .Contain("_equipmentMaterialIndex.GetEquivalentMaterialResrefs");
+        equivalentMaterialsMethod.ToString().Should().NotContain("MaterialsByModel",
+            "equivalent material expansion should use the precomputed slot index");
+    }
+
+    [Test]
+    public void PlainPltBodyPartsRetainLegacyTangentsWhileMappedMaterialsRetainTheirMaps()
+    {
+        var repositoryRoot = FindRepositoryRoot();
+        var materialRoot = Path.Combine(repositoryRoot.FullName, "SWLOR_Haks", "sw_tint_mtr");
+        var plainBodyMaterials = new[]
+        {
+            // Default nude male body pieces from the in-game seam regression.
+            "pmh0_chest001", "pmh0_bicepl001", "pmh0_forel001", "pmh0_handl001",
+            "pmh0_legl001", "pmh0_shinl001", "pmh0_footl001",
+
+            // Party Outfit Male (party_male.uti.json), which must follow the
+            // same legacy PLT lighting path as the stock NWN renderer.
+            "pmh0_chest168", "pmh0_bicepl008", "pmh0_neck115", "pmh0_pelvis237",
+            "pmh0_legl088", "pmh0_shinl081", "pmh0_footl052"
+        };
+
+        foreach (var materialName in plainBodyMaterials)
+        {
+            var material = File.ReadAllText(Path.Combine(materialRoot, $"{materialName}.mtr"));
+            material.Should().Contain("customshaderVS vslit_sm");
+            material.Should().Contain("customshaderFS fs_plt_tinter");
+            material.Should().NotContain("customshaderVS vslit_sm_nm");
+            material.Should().NotContain("customshaderFS fs_plt_tinter_nm");
+            material.Should().Contain("renderhint NormalTangents");
+            material.Should().NotContain("renderhint NormalAndSpecMapped");
+        }
+
+        var mappedMaterial = File.ReadAllText(Path.Combine(materialRoot, "helm_034.mtr"));
+        mappedMaterial.Should().Contain("renderhint NormalAndSpecMapped");
+        mappedMaterial.Should().Contain("texture1 helm_034_n");
+        mappedMaterial.Should().Contain("customshaderVS vslit_sm_nm");
+        mappedMaterial.Should().Contain("customshaderFS fs_plt_tinter_nm");
+
+        var legacyShader = ReadSource("SWLOR_Haks", "sw_shader", "fs_plt_tinter.shd");
+        var mappedShader = ReadSource("SWLOR_Haks", "sw_shader", "fs_plt_tinter_nm.shd");
+        foreach (var macro in new[]
+                 {
+                     "NORMAL_MAP", "SPECULAR_MAP", "ROUGHNESS_MAP", "SELF_ILLUMINATION_MAP"
+                 })
+        {
+            legacyShader.Should().Contain($"#define {macro} 0");
+            mappedShader.Should().Contain($"#define {macro} 1");
+        }
+
+        foreach (var shader in new[] { legacyShader, mappedShader })
+        {
+            shader.Should().Contain("uniform float rowSkin");
+            shader.Should().Contain("vec3 vTint = paletteColor.rgb",
+                "all appearance colors must come from the same PLT palette lookup");
+            shader.Should().NotContain("customTint");
+            shader.Should().NotContain("shadeScale");
+        }
+    }
+
+    [Test]
+    public void OutfitLoadsReplaceTintOverridesFromSavedOutfit()
+    {
+        var tintSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "AppearanceDefinition",
+            "TintMap",
+            "TintMapService.cs");
+        var replaceMethod = FindMethod(tintSource, nameof(TintMapService.ReplaceItemTintOverrides));
+        var replaceInvocations = replaceMethod.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Select(GetInvokedMethodName)
+            .ToList();
+
+        replaceInvocations.Should().Contain("GetItemTintOverrides");
+        replaceInvocations.Should().Contain("DeleteLocalInt");
+        replaceInvocations.Should().Contain("SetLocalInt");
+        var getOverridesMethod = FindMethod(tintSource, "GetItemTintOverrides");
+        getOverridesMethod.DescendantNodes()
+            .OfType<BinaryExpressionSyntax>()
+            .Should()
+            .Contain(expression =>
+                expression.Kind() == SyntaxKind.NotEqualsExpression &&
+                expression.Left.DescendantNodesAndSelf()
+                    .OfType<SimpleNameSyntax>()
+                    .Any(name => name.Identifier.ValueText == "Type") &&
+                expression.Right.DescendantNodesAndSelf()
+                    .OfType<SimpleNameSyntax>()
+                    .Any(name => name.Identifier.ValueText == "Int"));
+        getOverridesMethod.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Should()
+            .Contain(invocation =>
+                GetInvokedMethodName(invocation) == "StartsWith" &&
+                invocation.ArgumentList.Arguments.Any(argument =>
+                    argument.Expression.DescendantNodesAndSelf()
+                        .OfType<SimpleNameSyntax>()
+                        .Any(name => name.Identifier.ValueText == "Ordinal")));
+        getOverridesMethod.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Should()
+            .Contain(invocation =>
+                IsMemberInvocation(
+                    invocation,
+                    "TintMapVariable",
+                    nameof(TintMapVariable.IsItemGlobalColorStateName)),
+                "saved global tint intent must replace stale global state on the currently equipped armor");
+        getOverridesMethod.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Should()
+            .Contain(invocation =>
+                IsMemberInvocation(
+                    invocation,
+                    "TintMapVariable",
+                    nameof(TintMapVariable.IsItemGlobalInheritanceStateName)),
+                "saved global tint inheritance semantics must survive armor replacement and outfit loading");
+        getOverridesMethod.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Should()
+            .Contain(invocation =>
+                IsMemberInvocation(
+                    invocation,
+                    "ArmorColorIndexCalculator",
+                    "IsPerPartOverrideVariableName"),
+                "saved palette-zero markers must replace stale markers on the currently equipped armor");
+        var outfitSource = ReadSource(
+            "SWLOR.Game.Server",
+            "Feature",
+            "GuiDefinition",
+            "ViewModel",
+            "OutfitViewModel.cs");
+        var loadMethod = FindMethod(outfitSource, "LoadOutfit");
+        var loadInvocations = loadMethod.DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .ToList();
+        var replaceInvocation = loadInvocations.Single(invocation =>
+            IsMemberInvocation(invocation, "TintMapService", "ReplaceItemTintOverrides"));
+        loadInvocations.Where(invocation => GetInvokedMethodName(invocation) == "CopyItemAndModify")
+            .Should()
+            .OnlyContain(invocation =>
+                    invocation.ArgumentList.Arguments.Count == 5 &&
+                    invocation.ArgumentList.Arguments[4].Expression.Kind() == SyntaxKind.TrueLiteralExpression,
+                "every intermediate armor copy must retain unrelated item locals");
+        loadInvocations.Where(invocation =>
+                GetInvokedMethodName(invocation) == "CopyItem" &&
+                invocation.ArgumentList.Arguments.Count == 3 &&
+                invocation.ArgumentList.Arguments.Any(argument =>
+                    argument.Expression is IdentifierNameSyntax { Identifier.ValueText: "Player" }))
+            .Should()
+            .ContainSingle();
+        replaceInvocation.ArgumentList.Arguments.Should().HaveCount(2);
+    }
+
+    private static MethodDeclarationSyntax FindMethod(string source, string methodName)
+    {
+        return CSharpSyntaxTree.ParseText(source)
+            .GetRoot()
+            .DescendantNodes()
+            .OfType<MethodDeclarationSyntax>()
+            .Single(node => node.Identifier.ValueText == methodName);
+    }
+
+    private static string GetInvokedMethodName(InvocationExpressionSyntax invocation)
+    {
+        return invocation.Expression switch
+        {
+            IdentifierNameSyntax identifier => identifier.Identifier.ValueText,
+            MemberAccessExpressionSyntax memberAccess => memberAccess.Name.Identifier.ValueText,
+            _ => string.Empty
+        };
+    }
+
+    private static bool IsMemberInvocation(
+        InvocationExpressionSyntax invocation,
+        string receiver,
+        string methodName)
+    {
+        return invocation.Expression is MemberAccessExpressionSyntax
+        {
+            Expression: IdentifierNameSyntax receiverIdentifier,
+            Name.Identifier.ValueText: var invokedMethod
+        } &&
+               receiverIdentifier.Identifier.ValueText == receiver &&
+               invokedMethod == methodName;
+    }
+
+    private static bool IsSerializedDictionaryAssignment(
+        AssignmentExpressionSyntax assignment,
+        string dictionaryName)
+    {
+        return assignment.Left is ElementAccessExpressionSyntax
+               {
+                   Expression: MemberAccessExpressionSyntax
+                   {
+                       Name.Identifier.ValueText: var assignedDictionary
+                   }
+               } &&
+               assignedDictionary == dictionaryName &&
+               assignment.Right is InvocationExpressionSyntax serialization &&
+               IsMemberInvocation(serialization, "ObjectPlugin", "Serialize");
+    }
+
+    private static string ReadSource(params string[] pathParts)
+    {
+        var repositoryRoot = FindRepositoryRoot();
+        var fullPath = Path.Combine(new[] { repositoryRoot.FullName }.Concat(pathParts).ToArray());
+        return File.ReadAllText(fullPath);
+    }
+
+    private static DirectoryInfo FindRepositoryRoot()
+    {
+        var directory = new DirectoryInfo(TestContext.CurrentContext.TestDirectory);
+        while (directory != null)
+        {
+            if (Directory.Exists(Path.Combine(directory.FullName, "SWLOR.Game.Server")) &&
+                File.Exists(Path.Combine(directory.FullName, "Build", "hakbuilder.json")))
+            {
+                return directory;
+            }
+
+            directory = directory.Parent;
+        }
+
+        throw new DirectoryNotFoundException("Unable to locate the repository root.");
+    }
+}

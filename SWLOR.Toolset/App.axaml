@@ -6,6 +6,7 @@
              xmlns:waypoints="using:SWLOR.Toolset.Editors.Waypoints"
              xmlns:placeables="using:SWLOR.Toolset.Editors.Placeables"
              xmlns:behaviors="using:SWLOR.Toolset.Editors.Behaviors"
+             xmlns:tints="using:SWLOR.Toolset.Editors.TintMaps"
              x:Class="SWLOR.Toolset.App"
              RequestedThemeVariant="Dark">
 
@@ -295,6 +296,13 @@
       </behaviors:LabeledFieldPanel>
     </DataTemplate>
 
+    <!-- Shared by the item and creature blueprint editors. Without an application-level mapping,
+         an item ContentControl falls back to the view model's type name because the creature
+         editor's local template is outside the item editor's resource scope. -->
+    <DataTemplate DataType="tints:TintMapEditorViewModel">
+      <tints:TintMapEditorView />
+    </DataTemplate>
+
     <local:ViewLocator />
   </Application.DataTemplates>
 
@@ -311,6 +319,7 @@
   <Application.Styles>
     <FluentTheme />
     <StyleInclude Source="avares://Avalonia.Controls.DataGrid/Themes/Fluent.xaml" />
+    <StyleInclude Source="avares://Avalonia.Controls.ColorPicker/Themes/Fluent/Fluent.xaml" />
     <!-- AvaloniaEdit ships no default style: without this the script editor's TextEditor renders
          as an unstyled blank control. Must precede ToolsetTheme so our overrides still win. -->
     <StyleInclude Source="avares://AvaloniaEdit/Themes/Fluent/AvaloniaEdit.xaml" />

@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace SWLOR.CLI
 {
@@ -9,6 +11,9 @@ namespace SWLOR.CLI
         private const string HakPath = DebugServerPath + "hak";
         private const string ModulesPath = DebugServerPath + "modules";
         private const string TlkPath = DebugServerPath + "tlk";
+        private const string DebugServerEnvPath = DebugServerPath + "swlor.env";
+        private const string MaterialNameNullTweakVariable = "NWNX_TWEAKS_MATERIAL_NAME_NULL_IS_ALL";
+        private const string MaterialNameNullTweakValue = "true";
 
         private readonly HakBuilder _hakBuilder = new();
 
@@ -32,6 +37,10 @@ namespace SWLOR.CLI
             var target = new DirectoryInfo(DebugServerPath);
 
             CopyAll(source, target, "swlor.env");
+            EnsureEnvironmentSetting(
+                DebugServerEnvPath,
+                MaterialNameNullTweakVariable,
+                MaterialNameNullTweakValue);
         }
 
         private void CopyBinaries()
@@ -73,6 +82,33 @@ namespace SWLOR.CLI
                     target.CreateSubdirectory(diSourceSubDir.Name);
                 CopyAll(diSourceSubDir, nextTargetSubDir, excludeFile);
             }
+        }
+
+        private static void EnsureEnvironmentSetting(string path, string key, string value)
+        {
+            var prefix = key + "=";
+            var updatedLines = new List<string>();
+            var found = false;
+
+            foreach (var line in File.ReadAllLines(path))
+            {
+                if (!line.StartsWith(prefix, StringComparison.Ordinal))
+                {
+                    updatedLines.Add(line);
+                    continue;
+                }
+
+                if (!found)
+                {
+                    updatedLines.Add(prefix + value);
+                    found = true;
+                }
+            }
+
+            if (!found)
+                updatedLines.Add(prefix + value);
+
+            File.WriteAllLines(path, updatedLines);
         }
     }
 }

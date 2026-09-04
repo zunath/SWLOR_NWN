@@ -4,6 +4,7 @@ using Avalonia.Threading;
 using CommunityToolkit.Mvvm.ComponentModel;
 using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Items;
+using SWLOR.Toolset.Domain.Editing;
 using SWLOR.Toolset.Domain.GameData.GameCode;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
@@ -11,6 +12,7 @@ using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Domain.Render.Icons;
 using SWLOR.Toolset.Editors.Behaviors;
+using SWLOR.Toolset.Editors.TintMaps;
 using SWLOR.Toolset.Editors.Triggers;
 using SWLOR.Toolset.Viewport;
 
@@ -27,6 +29,8 @@ namespace SWLOR.Toolset.Editors.Items
         private bool _previewUpdateQueued;
         private bool _previewSceneUpdateQueued;
         private readonly Func<string, Action, bool> _runEdit;
+        private readonly Func<IDocumentEdit?>? _captureCoalesceOrigin;
+        private readonly Func<IDocumentEdit, string, Action, bool>? _runCoalescedEdit;
         private readonly IGameCodeIndex? _gameCodeIndex;
         private readonly Func<string, IReadOnlyList<BehaviorChoice>>? _resolveChoices;
         private readonly Func<int, BaseItemRow?>? _baseItemRows;
@@ -36,6 +40,8 @@ namespace SWLOR.Toolset.Editors.Items
         private RenderModel? _cachedModel;
         private string? _cachedModelSignature;
         private string? _pendingModelSignature;
+        private IDocumentEdit? _pendingModelEditOrigin;
+        private string? _pendingModelEditOriginSignature;
         private int _previewModelGeneration;
         private readonly SemaphoreSlim _previewModelGate = new(1);
         private bool _disposed;
@@ -55,6 +61,9 @@ namespace SWLOR.Toolset.Editors.Items
         public ItemAppearanceSectionViewModel? Appearance { get; }
 
         public bool ShowsAppearanceTab => Appearance != null;
+
+        [ObservableProperty]
+        private TintMapEditorViewModel? _tintMapEditor;
 
         public ItemSourceSectionViewModel Source { get; }
 
@@ -211,12 +220,17 @@ namespace SWLOR.Toolset.Editors.Items
             ArmorDyeSwatchService? armorDyeSwatches = null,
             ArmorPartCatalog? armorPartModels = null,
             Sources.ObjectSourceSectionViewModel? placementSource = null,
-            Workspace.OutputLogService? log = null)
+            Workspace.OutputLogService? log = null,
+            TintMapCatalog? tintMapCatalog = null,
+            Func<IDocumentEdit?>? captureCoalesceOrigin = null,
+            Func<IDocumentEdit, string, Action, bool>? runCoalescedEdit = null)
         {
             ArgumentNullException.ThrowIfNull(item);
 
             _store = new ItemValueStore(item);
             _runEdit = runEdit;
+            _captureCoalesceOrigin = captureCoalesceOrigin;
+            _runCoalescedEdit = runCoalescedEdit;
             _gameCodeIndex = gameCodeIndex;
             _resolveChoices = resolveChoices;
             _baseItemRows = baseItemRows;
@@ -243,8 +257,18 @@ namespace SWLOR.Toolset.Editors.Items
             if (baseItemIcons != null && textureExists != null)
             {
                 Appearance = new ItemAppearanceSectionViewModel(
-                    _store, RunEdit, baseItemIcons, textureExists, choicePreviews, QueuePreviewUpdate,
+                    _store, RunEdit, baseItemIcons, textureExists, choicePreviews, OnAppearanceChanged,
                     armorDyeSwatches, armorPartModels);
+            }
+            if (tintMapCatalog != null)
+            {
+                TintMapEditor = new TintMapEditorViewModel(
+                    _store.Locals,
+                    RunEdit,
+                    tintMapCatalog,
+                    colorChanged: UpdatePreview,
+                    runCoalescedEdit: _runCoalescedEdit);
+                Appearance?.SetTintMapEditor(TintMapEditor);
             }
             Source = new ItemSourceSectionViewModel(headerOwner, sourceLookup, itemSourcesReady);
             PlacementSource = placementSource;
@@ -640,6 +664,44 @@ namespace SWLOR.Toolset.Editors.Items
             }, DispatcherPriority.Background);
         }
 
+        /// <summary>
+        /// Appearance controls invoke this synchronously after their document edit commits. Capture
+        /// that transaction before the background-priority preview callback can observe a later,
+        /// unrelated edit as the current undo entry.
+        /// </summary>
+        private void OnAppearanceChanged()
+        {
+            var signature = GeometrySignature();
+            var sourceSignature = _cachedModelSignature ?? _pendingModelSignature;
+            if (sourceSignature != null &&
+                !string.Equals(sourceSignature, signature, StringComparison.Ordinal) &&
+                !string.Equals(
+                    _pendingModelEditOriginSignature,
+                    signature,
+                    StringComparison.Ordinal))
+            {
+                _pendingModelEditOrigin = _captureCoalesceOrigin?.Invoke();
+                _pendingModelEditOriginSignature = signature;
+            }
+
+            QueuePreviewUpdate();
+        }
+
+        private void ClearPendingModelEditOrigin(string? expectedSignature = null)
+        {
+            if (expectedSignature != null &&
+                !string.Equals(
+                    _pendingModelEditOriginSignature,
+                    expectedSignature,
+                    StringComparison.Ordinal))
+            {
+                return;
+            }
+
+            _pendingModelEditOrigin = null;
+            _pendingModelEditOriginSignature = null;
+        }
+
         private void QueuePreviewSceneUpdate()
         {
             if (_disposed || _previewSceneUpdateQueued)
@@ -666,18 +728,41 @@ namespace SWLOR.Toolset.Editors.Items
             {
                 _previewModelGeneration++;
                 _pendingModelSignature = null;
+                ClearPendingModelEditOrigin();
                 IsModelPreviewLoading = false;
-                ApplyPreviewScene(null);
+                ApplyPreviewScene(null, carryItemCustomColorsAcrossMaterials: false);
                 return;
             }
 
             var signature = GeometrySignature();
+            if (_cachedModelSignature == null &&
+                _pendingModelSignature != null &&
+                !string.Equals(_pendingModelSignature, signature, StringComparison.Ordinal))
+            {
+                // Let the opening model finish once so its material rows can capture existing
+                // TM_* values before resolving a geometry edit made during initial loading.
+                // The completion immediately schedules the newest signature below.
+                IsModelPreviewLoading = true;
+                return;
+            }
+
+            var carryItemCustomColors =
+                _cachedModelSignature != null &&
+                !string.Equals(
+                    _cachedModelSignature,
+                    signature,
+                    StringComparison.Ordinal);
+            var carryOrigin = carryItemCustomColors ? _pendingModelEditOrigin : null;
             if (_cachedModelSignature == signature)
             {
                 _previewModelGeneration++;
                 _pendingModelSignature = null;
+                ClearPendingModelEditOrigin();
                 IsModelPreviewLoading = false;
-                ApplyPreviewScene(_cachedModel);
+                ApplyPreviewScene(
+                    _cachedModel,
+                    carryItemCustomColorsAcrossMaterials: carryItemCustomColors,
+                    coalesceOrigin: carryOrigin);
                 return;
             }
 
@@ -687,13 +772,21 @@ namespace SWLOR.Toolset.Editors.Items
             var generation = ++_previewModelGeneration;
             _pendingModelSignature = signature;
             IsModelPreviewLoading = true;
-            ApplyPreviewScene(null);
+            ApplyPreviewScene(
+                null,
+                carryItemCustomColorsAcrossMaterials: carryItemCustomColors,
+                coalesceOrigin: carryOrigin);
 
             // Snapshot on the UI thread. The background resolver never observes a field halfway
             // through another edit, and an older completion is discarded by its generation.
             var snapshot = new JsonGffDocument("UTI ", _store.Item).ToBytes();
             var female = PreviewFemale;
-            _ = ResolvePreviewModelAsync(snapshot, female, signature, generation);
+            _ = ResolvePreviewModelAsync(
+                snapshot,
+                female,
+                signature,
+                carryItemCustomColors,
+                generation);
         }
 
         public void ReloadGameResources()
@@ -705,7 +798,32 @@ namespace SWLOR.Toolset.Editors.Items
             _pendingModelSignature = null;
             _cachedModel = null;
             _cachedModelSignature = null;
+            ClearPendingModelEditOrigin();
             UpdatePreview();
+        }
+
+        public void ReloadTintMapCatalog(TintMapCatalog? catalog)
+        {
+            if (catalog == null)
+            {
+                TintMapEditor = null;
+                Appearance?.SetTintMapEditor(null);
+                return;
+            }
+
+            if (TintMapEditor == null)
+            {
+                TintMapEditor = new TintMapEditorViewModel(
+                    _store.Locals,
+                    RunEdit,
+                    catalog,
+                    colorChanged: UpdatePreview,
+                    runCoalescedEdit: _runCoalescedEdit);
+                Appearance?.SetTintMapEditor(TintMapEditor);
+                return;
+            }
+
+            TintMapEditor.ReloadCatalog(catalog);
         }
 
         /// <summary>
@@ -726,6 +844,7 @@ namespace SWLOR.Toolset.Editors.Items
             byte[] snapshot,
             bool female,
             string signature,
+            bool carryItemCustomColors,
             int generation)
         {
             RenderModel? model;
@@ -761,13 +880,31 @@ namespace SWLOR.Toolset.Editors.Items
                 _pendingModelSignature = null;
                 _cachedModel = model;
                 _cachedModelSignature = signature;
+                ClearPendingModelEditOrigin(signature);
                 IsModelPreviewLoading = false;
-                ApplyPreviewScene(model);
+                ApplyPreviewScene(
+                    model,
+                    carryItemCustomColorsAcrossMaterials: carryItemCustomColors,
+                    modelResolutionCompleted: true);
+
+                if (!string.Equals(GeometrySignature(), signature, StringComparison.Ordinal))
+                    UpdatePreviewScene();
             });
         }
 
-        private void ApplyPreviewScene(RenderModel? model)
+        private void ApplyPreviewScene(
+            RenderModel? model,
+            bool carryItemCustomColorsAcrossMaterials,
+            IDocumentEdit? coalesceOrigin = null,
+            bool modelResolutionCompleted = false)
         {
+            var hasItemOwnedMeshes = model?.Meshes.Any(mesh => mesh.UsesItemTintOverrides) == true;
+            TintMapEditor?.Reload(
+                model,
+                includeNonItemOwnedMaterials: !hasItemOwnedMeshes,
+                carryItemCustomColorsAcrossMaterials: carryItemCustomColorsAcrossMaterials,
+                coalesceOrigin: coalesceOrigin,
+                modelResolutionCompleted: modelResolutionCompleted);
             PreviewScene = model == null
                 ? null
                 : new AreaScene
@@ -792,7 +929,8 @@ namespace SWLOR.Toolset.Editors.Items
                             // so an unrotated mannequin presented its back on every load.
                             Orientation = new Vector2(-1f, 0f),
                             LayerColorIndices = CurrentLayerColors(),
-                            Model = model
+                            Model = model,
+                            TintMapOverrides = TintMapOverrides.Read(_store.Locals)
                         }
                     },
                     Diagnostics = new AreaSceneDiagnostics()
@@ -807,7 +945,15 @@ namespace SWLOR.Toolset.Editors.Items
         {
             var parts = new System.Text.StringBuilder();
             parts.Append(PreviewFemale ? 'f' : 'm');
-            parts.Append(':').Append(CurrentBaseItem());
+            parts.Append(':').Append(ItemGeometrySignature());
+
+            return parts.ToString();
+        }
+
+        private string ItemGeometrySignature()
+        {
+            var parts = new System.Text.StringBuilder();
+            parts.Append(CurrentBaseItem());
 
             foreach (var field in GeometryFields)
                 parts.Append(':').Append(ItemAppearanceValues.Read(_store.Item, field) ?? -1);
@@ -863,6 +1009,7 @@ namespace SWLOR.Toolset.Editors.Items
             _disposed = true;
             _previewModelGeneration++;
             _pendingModelSignature = null;
+            ClearPendingModelEditOrigin();
             IsModelPreviewLoading = false;
             foreach (var row in AllBasicRows())
                 row.Dispose();

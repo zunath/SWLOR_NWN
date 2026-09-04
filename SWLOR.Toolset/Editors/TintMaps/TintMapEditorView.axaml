@@ -1,0 +1,36 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:tints="using:SWLOR.Toolset.Editors.TintMaps"
+             x:Class="SWLOR.Toolset.Editors.TintMaps.TintMapEditorView"
+             x:DataType="tints:TintMapEditorViewModel">
+  <StackPanel Spacing="8">
+    <StackPanel Spacing="3">
+      <TextBlock Text="Tint Map Colors" Classes="section" />
+      <TextBlock Classes="dim" FontSize="11" TextWrapping="Wrap"
+                 Text="Pick unrestricted RGB colors for converted model materials. Reset restores the blueprint's standard NWN color." />
+    </StackPanel>
+
+    <ItemsControl ItemsSource="{Binding Colors}" IsVisible="{Binding HasColors}">
+      <ItemsControl.ItemTemplate>
+        <DataTemplate DataType="tints:TintMapColorRowViewModel">
+          <Border Classes="card" Margin="0,0,0,8" Padding="12,10">
+            <Grid ColumnDefinitions="150,*,Auto" ColumnSpacing="12">
+              <StackPanel Grid.Column="0" Spacing="3">
+                <TextBlock Text="{Binding LayerName}" FontWeight="SemiBold" />
+                <TextBlock Text="{Binding MaterialName}" Classes="mono" FontSize="10" />
+                <TextBlock Text="{Binding Status}" Classes="dim" FontSize="10" />
+              </StackPanel>
+              <ColorPicker Grid.Column="1" Color="{Binding Color, Mode=TwoWay}"
+                           IsAlphaEnabled="False" />
+              <Button Grid.Column="2" Content="Reset" VerticalAlignment="Top"
+                      Command="{Binding ResetCommand}" IsEnabled="{Binding HasOverride}" />
+            </Grid>
+          </Border>
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+    </ItemsControl>
+
+    <TextBlock Text="The selected model does not expose tint-map materials."
+               Classes="dim" IsVisible="{Binding !HasColors}" />
+  </StackPanel>
+</UserControl>

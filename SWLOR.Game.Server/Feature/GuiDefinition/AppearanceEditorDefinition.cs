@@ -181,6 +181,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .BindIsVisible(model => model.IsColorPickerVisible);
                         });
 
+                        BuildCustomTintEditor(col2);
+
                         col2.AddRow(row2 =>
                         {
                             row2.AddList(template =>
@@ -214,6 +216,67 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                     });
                 });
+            });
+        }
+
+        private void BuildCustomTintEditor(GuiColumn<AppearanceEditorViewModel> col)
+        {
+            col.AddRow(row =>
+            {
+                row.BindIsVisible(model => model.IsCustomTintAvailable);
+                row.AddSpacer();
+
+                row.AddColorPicker()
+                    .BindSelectedColor(model => model.SelectedTintColor)
+                    .BindIsEnabled(model => model.IsCustomTintAvailable)
+                    .SetHeight(128f)
+                    .SetWidth(256f);
+
+                row.AddSpacer();
+            });
+
+            col.AddRow(row =>
+            {
+                row.BindIsVisible(model => model.IsCustomTintAvailable);
+                row.AddSpacer();
+
+                row.AddLabel()
+                    .SetText("R")
+                    .SetWidth(18f)
+                    .SetHeight(32f)
+                    .SetVerticalAlign(NuiVerticalAlign.Middle);
+                row.AddTextEdit()
+                    .BindValue(model => model.CustomTintRed)
+                    .BindIsEnabled(model => model.IsCustomTintAvailable)
+                    .SetMaxLength(3)
+                    .SetWidth(48f)
+                    .SetHeight(32f);
+
+                row.AddLabel()
+                    .SetText("G")
+                    .SetWidth(18f)
+                    .SetHeight(32f)
+                    .SetVerticalAlign(NuiVerticalAlign.Middle);
+                row.AddTextEdit()
+                    .BindValue(model => model.CustomTintGreen)
+                    .BindIsEnabled(model => model.IsCustomTintAvailable)
+                    .SetMaxLength(3)
+                    .SetWidth(48f)
+                    .SetHeight(32f);
+
+                row.AddLabel()
+                    .SetText("B")
+                    .SetWidth(18f)
+                    .SetHeight(32f)
+                    .SetVerticalAlign(NuiVerticalAlign.Middle);
+                row.AddTextEdit()
+                    .BindValue(model => model.CustomTintBlue)
+                    .BindIsEnabled(model => model.IsCustomTintAvailable)
+                    .SetMaxLength(3)
+                    .SetWidth(48f)
+                    .SetHeight(32f);
+
+                row.AddSpacer();
             });
         }
 
@@ -298,11 +361,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         4f,
                         model => model.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Metal2),
                         model => model.OnClickClearColor(AppearanceEditorViewModel.ColorTarget.Invalid, AppearanceArmorColor.Metal2));
-                });
-                col.AddRow(row =>
-                {
-                    row.AddSpacer()
-                        .SetHeight(32f);
                 });
             }
 
@@ -782,6 +840,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                                 row.AddColumn(BuildMainColorChannels);
                             });
+
+                            // A custom armor tint is a per-part override. Keep the editor out of
+                            // the palette/channel row so it cannot make that row leave a large
+                            // blank area beneath the palette.
+                            BuildCustomTintEditor(col);
 
                             col.AddRow(row =>
                             {

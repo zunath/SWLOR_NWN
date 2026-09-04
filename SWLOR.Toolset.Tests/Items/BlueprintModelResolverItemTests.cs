@@ -2,6 +2,7 @@ using System.Text;
 using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.NWN.Formats.Plt;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Render;
@@ -87,6 +88,8 @@ namespace SWLOR.Toolset.Tests.Items
 
             result.Kind.Should().Be(BlueprintModelKind.Simple);
             result.ModelResRef.Should().Be("it_torch_006");
+            result.RootUsesItemTintOverrides.Should().BeTrue(
+                "the root geometry belongs to the UTI rather than an owning creature");
         }
 
         [Test]
@@ -102,6 +105,8 @@ namespace SWLOR.Toolset.Tests.Items
 
             result.Kind.Should().Be(BlueprintModelKind.Simple);
             result.ModelResRef.Should().Be("it_bag");
+            result.RootUsesItemTintOverrides.Should().BeFalse(
+                "the generic fallback bag must not expose the missing item's tint channels");
         }
 
         [Test]
@@ -144,6 +149,8 @@ namespace SWLOR.Toolset.Tests.Items
 
             result.Kind.Should().Be(BlueprintModelKind.Simple);
             result.ModelResRef.Should().Be("helm_001");
+            result.RootUsesItemTintOverrides.Should().BeTrue(
+                "semantic layers on a wearable root model remain creature-owned when equipped");
         }
 
         [Test]
@@ -211,6 +218,12 @@ namespace SWLOR.Toolset.Tests.Items
 
             result.Parts.Single(part => part.PartType == "bicepl").ModelResRef
                 .Should().Be("pmh0_bicepl270");
+            result.Parts.Single(part => part.PartType == "bicepl").ArmorPart
+                .Should().Be(AppearanceArmor.LeftBicep);
+            result.Parts.Single(part => part.PartType == "chest").ArmorPart
+                .Should().Be(AppearanceArmor.Torso);
+            result.Parts.Single(part => part.PartType == "head").ArmorPart
+                .Should().Be(AppearanceArmor.Invalid);
         }
 
         [Test]

@@ -23,6 +23,9 @@ namespace SWLOR.Toolset.Editors.Items
     {
         private readonly Func<int?> _read;
         private readonly Func<int, bool> _write;
+        private readonly Func<Color?>? _readCustom;
+        private readonly Func<Color, bool>? _writeCustom;
+        private readonly Func<bool>? _hasExternalOverride;
 
         public string Label { get; }
 
@@ -38,7 +41,19 @@ namespace SWLOR.Toolset.Editors.Items
         public bool HasNumericFallback => !HasPalette && AllowsNumericFallback;
 
         /// <summary>True when this row must remain a color picker but its palette could not load.</summary>
-        public bool IsPaletteUnavailable => !HasPalette && !AllowsNumericFallback;
+        public bool IsPaletteUnavailable => !HasPalette && !AllowsNumericFallback && !HasCustomOption;
+
+        /// <summary>True when this palette selector includes the always-visible custom RGB editor.</summary>
+        public bool HasCustomOption => _readCustom != null && _writeCustom != null;
+
+        /// <summary>The combined selector is useful when either presets or Custom are available.</summary>
+        public bool HasColorPicker => HasPalette || HasCustomOption;
+
+        /// <summary>
+        /// Without palette artwork there are no swatches to clear a custom tint. The stored NWN
+        /// palette index still exists, so expose an explicit way to restore it while Custom is active.
+        /// </summary>
+        public bool CanRestorePreset => HasCustomOption && !HasPalette && IsUsingCustomColor;
 
         public int Minimum => 0;
 
@@ -53,6 +68,15 @@ namespace SWLOR.Toolset.Editors.Items
         private IBrush? _selectedBrush;
 
         [ObservableProperty]
+        private Color _customColor = Color.FromRgb(128, 128, 128);
+
+        public IBrush CustomBrush => new SolidColorBrush(CustomColor);
+        public IBrush? DisplayBrush => IsUsingCustomColor ? CustomBrush : SelectedBrush;
+
+        [ObservableProperty]
+        private bool _isUsingCustomColor;
+
+        [ObservableProperty]
         private bool _isPickerOpen;
 
         private bool _loading;
@@ -62,11 +86,17 @@ namespace SWLOR.Toolset.Editors.Items
             Func<int?> read,
             Func<int, bool> write,
             IReadOnlyList<(byte R, byte G, byte B)> paletteColors,
-            bool allowsNumericFallback = true)
+            bool allowsNumericFallback = true,
+            Func<Color?>? readCustom = null,
+            Func<Color, bool>? writeCustom = null,
+            Func<bool>? hasExternalOverride = null)
         {
             Label = label ?? throw new ArgumentNullException(nameof(label));
             _read = read ?? throw new ArgumentNullException(nameof(read));
             _write = write ?? throw new ArgumentNullException(nameof(write));
+            _readCustom = readCustom;
+            _writeCustom = writeCustom;
+            _hasExternalOverride = hasExternalOverride;
             AllowsNumericFallback = allowsNumericFallback;
 
             for (var index = 0; index < paletteColors.Count; index++)
@@ -89,13 +119,33 @@ namespace SWLOR.Toolset.Editors.Items
             }
 
             SyncSelection();
+
+            _loading = true;
+            try
+            {
+                var custom = _readCustom?.Invoke();
+                IsUsingCustomColor = custom.HasValue;
+                if (custom.HasValue)
+                    CustomColor = custom.Value;
+                else if (SelectedBrush is SolidColorBrush selected)
+                    CustomColor = selected.Color;
+            }
+            finally
+            {
+                _loading = false;
+            }
+
+            OnPropertyChanged(nameof(CustomBrush));
+            OnPropertyChanged(nameof(DisplayBrush));
         }
 
         [RelayCommand]
         private void Pick(ItemDyeSwatchViewModel? swatch)
         {
-            IsPickerOpen = false;
-            if (swatch == null || swatch.Index == (int?)Number)
+            if (swatch == null ||
+                swatch.Index == (int?)Number &&
+                !IsUsingCustomColor &&
+                !(_hasExternalOverride?.Invoke() ?? false))
                 return;
 
             if (_write(swatch.Index))
@@ -103,10 +153,16 @@ namespace SWLOR.Toolset.Editors.Items
         }
 
         [RelayCommand]
-        private void TogglePicker()
+        private void RestorePreset()
         {
-            if (HasPalette)
-                IsPickerOpen = !IsPickerOpen;
+            if (!CanRestorePreset)
+                return;
+
+            var index = Number.HasValue
+                ? (int)Math.Clamp(Number.Value, Minimum, Maximum)
+                : Minimum;
+            if (_write(index))
+                Reload();
         }
 
         partial void OnNumberChanged(decimal? value)
@@ -129,6 +185,29 @@ namespace SWLOR.Toolset.Editors.Items
                 : Minimum;
             _write(index);
             Reload();
+        }
+
+        partial void OnCustomColorChanged(Color value)
+        {
+            OnPropertyChanged(nameof(CustomBrush));
+            OnPropertyChanged(nameof(DisplayBrush));
+            if (_loading || _writeCustom == null)
+                return;
+
+            if (!_writeCustom(value))
+            {
+                Reload();
+                return;
+            }
+
+            Reload();
+            IsPickerOpen = true;
+        }
+
+        partial void OnIsUsingCustomColorChanged(bool value)
+        {
+            OnPropertyChanged(nameof(DisplayBrush));
+            OnPropertyChanged(nameof(CanRestorePreset));
         }
 
         private void SyncSelection()

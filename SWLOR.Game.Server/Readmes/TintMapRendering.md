@@ -34,13 +34,38 @@ The base shader disables normal mapping but still samples `texUnit1` for
 optional legacy cutout alpha. NWN's `inc_common` declares that sampler only
 when `NORMAL_MAP == 1`, so the base shader must supply its own declaration
 under the opposite guard. The mapped variants use the engine declaration.
-Missing this declaration causes a shader compile failure and can crash the
-client when the module loads the generated materials.
+Missing this declaration causes a shader compile failure when the module loads
+the generated materials. Fixing compilation alone does not validate texture
+loading or prevent the DDS overread described below.
 
 Compile and link the production vertex/fragment pairs with the installed
 engine's complete include tree for each supported shader quality. A material
 test adapter that declares extra uniforms cannot validate this contract; keep
 its numerical lighting checks separate from the production compilation checks.
+
+## Declare and enforce single-level packed textures
+
+Each generated ATI2/BC5 DDS stores only its base level. Set
+`DDSD_MIPMAPCOUNT` and `dwMipMapCount = 1`, and ship a same-resref TXI containing
+`mipmap 0` alongside every DDS in `sw_tint0`, `sw_tint1`, and `sw_tint2`.
+The TXI is required: the installed 89.8193.37-17 client's compressed upload
+loop derives further levels from the texture dimensions when mipmaps are
+enabled, regardless of the DDS mip count. Merely fixing the header is
+insufficient. The mask's green channel contains categorical layer IDs, so
+filtered mipmap generation is inappropriate for this texture.
+
+The NPC-spawn crash dump confirmed a `glCompressedTexImage2D` call requesting
+the 512 x 512 first mip (262,144 bytes) from a pointer exactly 1,048,576 bytes
+after a 1024 x 1024 BC5 base level. That DDS contained no mip payload, and the
+driver faulted reading beyond the buffer. Inspection of the installed client
+confirmed that TXI `mipmap 0` controls the condition that skips this upload loop.
+
+Use `python SWLOR_Haks/tools/GenerateTintMapAssets.py --refresh-packed-metadata`
+to repair existing DDS headers and create the TXIs without recompressing
+pixels. Generation, relocation, deduplication, and removal must preserve each
+DDS/TXI pair. Both the asset audit and C# corpus test require the pair; the GPU
+test rejects missing or enabled-mipmap TXIs before issuing compressed uploads.
+Rebuild and deploy all three `sw_tint*.hak` archives after this repair.
 
 ## Regression scene and checks
 
@@ -54,8 +79,9 @@ Run `python SWLOR_Haks/tools/GenerateTintMapAssets.py --check` and the relevant
 `TintMapReviewTests` after changes. On Windows, run
 `python SWLOR_Haks/tools/TestTintShaderMaterials.py --game-data "<NWN>/data"`
 to compile the production shader pairs and exercise the installed engine's
-material function on the GPU, including negative controls for the missing
-sampler and metallic lighting failures. Rebuild `sw_shader.hak` and load it in a
+material function on the GPU, including actual compressed NPC texture draws
+and negative controls for unsafe DDS/TXI metadata, the missing sampler, and
+metallic lighting failures. Rebuild `sw_shader.hak` and load it in a
 fresh client session for visual verification. Shader-only changes do not
 require changing the module's existing HAK list or regenerating tint maps.
 

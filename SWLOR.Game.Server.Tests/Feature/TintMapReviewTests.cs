@@ -1,3 +1,4 @@
+using System.Buffers.Binary;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using FluentAssertions;
@@ -2510,6 +2511,72 @@ public class TintMapReviewTests
         coveredShaders.Should().BeEquivalentTo(shaderNames);
         foreach (var shaderName in coveredShaders)
             TintShadersRebuildSpecularityFromFinalPaletteInputs(shaderName);
+    }
+
+    [Test]
+    public void EveryPackedTintMaskDeclaresItsSingleAti2MipLevel()
+    {
+        var hakRoot = Path.Combine(FindRepositoryRoot().FullName, "SWLOR_Haks");
+        var failures = new List<string>();
+
+        foreach (var directory in new[] { "sw_tint0", "sw_tint1", "sw_tint2" })
+        {
+            var paths = Directory.GetFiles(Path.Combine(hakRoot, directory), "*.dds");
+            paths.Should().NotBeEmpty($"{directory} must contribute its packed tint masks to the audit");
+
+            foreach (var path in paths)
+            {
+                var label = $"{directory}/{Path.GetFileName(path)}";
+                using var texture = File.OpenRead(path);
+                if (texture.Length < 128)
+                {
+                    failures.Add($"{label}: incomplete DDS header");
+                    continue;
+                }
+
+                var header = new byte[128];
+                texture.ReadExactly(header);
+                uint ReadHeader(int offset) => BinaryPrimitives.ReadUInt32LittleEndian(header.AsSpan(offset, 4));
+                var flags = ReadHeader(8);
+                var height = ReadHeader(12);
+                var width = ReadHeader(16);
+
+                if (ReadHeader(0) != 0x20534444 || ReadHeader(4) != 124 ||
+                    ReadHeader(76) != 32 || (ReadHeader(80) & 0x4) == 0 ||
+                    ReadHeader(84) != 0x32495441 || (ReadHeader(108) & 0x1000) == 0)
+                {
+                    failures.Add($"{label}: expected a standard DDS ATI2 texture header");
+                }
+
+                if (width == 0 || height == 0)
+                {
+                    failures.Add($"{label}: texture dimensions must be positive");
+                }
+                else
+                {
+                    var expectedLength = 128m + decimal.Ceiling(width / 4m) * decimal.Ceiling(height / 4m) * 16m;
+                    if (texture.Length != expectedLength)
+                        failures.Add($"{label}: {texture.Length} bytes, expected {expectedLength} for one ATI2 mip level");
+                }
+
+                if (ReadHeader(28) != 1 || (flags & 0x20000) == 0)
+                    failures.Add($"{label}: DDSD_MIPMAPCOUNT and an explicit mip count of one are required");
+
+                var txiPath = Path.ChangeExtension(path, ".txi");
+                if (!File.Exists(txiPath))
+                {
+                    failures.Add($"{label}: missing texture metadata");
+                    continue;
+                }
+
+                var mipmapDirectives = Regex.Matches(File.ReadAllText(txiPath), @"(?mi)^\s*mipmap\s+(\d+)\s*$");
+                if (mipmapDirectives.Count != 1 || mipmapDirectives[0].Groups[1].Value != "0")
+                    failures.Add($"{label}: texture metadata must declare mipmap 0 exactly once");
+            }
+        }
+
+        failures.Should().BeEmpty(
+            "categorical tint masks contain one compressed level and must not make the client upload a nonexistent mip chain");
     }
 
     [Test]

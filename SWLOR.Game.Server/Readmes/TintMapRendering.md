@@ -30,6 +30,31 @@ For the civilian, this reduces a full refresh from 309 material calls to 45
 (one reset and 44 row writes); the Rodian drops from 57 to nine. Palette IDs,
 blueprint colors, and atlas pixels remain unchanged.
 
+## Match material parameter arity to the shader
+
+Declare each palette row with exactly one value, for example
+`parameter float rowHair 0.086182`. The shader declares `uniform float rowHair`.
+Adding three zeroes to the MTR declaration makes NWN retain a four-component
+parameter and upload it with `glUniform4fv`. OpenGL rejects that call for a scalar
+uniform with `GL_INVALID_OPERATION`, leaving the shader's row-zero initializer
+unchanged. Correct native server rows and successful shader linking cannot detect
+this failure.
+
+The script API's `SetMaterialShaderUniformVec4` transport remains valid. With a
+one-component MTR declaration, the client reads the first supplied value and uses
+`glUniform1f`. The MTR declaration determines the GPU upload size; the script
+transport does not require a four-component MTR parameter.
+
+The production GPU test must parse MTR component counts and follow NWN's upload
+dispatch. It must reject the former four-component declaration and verify that
+authored NPC rows replace shader defaults. A harness that always calls
+`glUniform1f` bypasses the defect. Keep atlas pixels and palette IDs unchanged;
+the correction belongs in every generated material and in the generator.
+
+After correcting these declarations, rebuild and deploy `sw_tint_mtr.hak`,
+then fully restart the client to reload its cached materials. This repair does
+not require changing NPC blueprints, repacking the module, or recompiling models.
+
 Generated MTRs declare the active row uniforms, mask dimensions, and applicable
 cutout settings. Obsolete RGB and custom-mode parameters are removed when
 refreshing materials; declaring uniforms absent from the shader creates repeated

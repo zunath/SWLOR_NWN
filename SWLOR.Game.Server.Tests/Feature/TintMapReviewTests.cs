@@ -2084,7 +2084,7 @@ public class TintMapReviewTests
     }
 
     [Test]
-    public void ApplyingAColorUsesTheKnownGoodPaletteRowContract()
+    public void ApplyingAColorUsesOnePaletteCoordinate()
     {
         var serviceSource = ReadSource(
             "SWLOR.Game.Server",
@@ -2133,8 +2133,49 @@ public class TintMapReviewTests
         }
 
         ReadSource("SWLOR_Haks", "sw_tint_mtr", "pmh0_c_ch_eb7e04.mtr")
-            .Should().Contain("parameter float rowSkin 0.000244 0.0 0.0 0.0",
-                "the Vec4 material setter updates the scalar row uniform through its first component");
+            .Should().MatchRegex(@"(?m)^parameter float rowSkin 0\.000244\s*$",
+                "NWN must retain a scalar material declaration so the Vec4 script transport's first component uses glUniform1f");
+    }
+
+    [Test]
+    public void EveryTintMaterialDeclaresScalarRowsMatchingItsShader()
+    {
+        var expectedRows = Enum.GetValues<TintMapLayerType>()
+            .Select(layer => TintMapMaterialRegistry.GetLayer(layer).UniformName)
+            .ToHashSet(StringComparer.Ordinal);
+        foreach (var shaderName in new[] { "fs_plt_tinter", "fs_plt_tinter_nm", "fs_plt_hair_nm" })
+        {
+            var shader = ReadSource("SWLOR_Haks", "sw_shader", $"{shaderName}.shd");
+            foreach (var row in expectedRows)
+                shader.Should().MatchRegex($@"(?m)^uniform\s+float\s+{Regex.Escape(row)}\b");
+        }
+
+        var materialRoot = Path.Combine(FindRepositoryRoot().FullName, "SWLOR_Haks", "sw_tint_mtr");
+        var materialPaths = Directory.GetFiles(materialRoot, "*.mtr");
+        materialPaths.Should().NotBeEmpty();
+        var failures = new List<string>();
+        foreach (var path in materialPaths)
+        {
+            var rows = Regex.Matches(File.ReadAllText(path),
+                    @"(?m)^[ \t]*parameter[ \t]+(\S+)[ \t]+(row\w+)[ \t]+([^\r\n]*)")
+                .ToArray();
+            if (rows.Length != expectedRows.Count ||
+                !rows.Select(row => row.Groups[2].Value).ToHashSet(StringComparer.Ordinal).SetEquals(expectedRows))
+            {
+                failures.Add($"{Path.GetFileName(path)}: missing, duplicate, or unknown palette rows");
+                continue;
+            }
+
+            foreach (var row in rows)
+            {
+                var values = row.Groups[3].Value.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
+                if (row.Groups[1].Value != "float" || values.Length != 1)
+                    failures.Add($"{Path.GetFileName(path)}: {row.Groups[2].Value} declares {values.Length} components");
+            }
+        }
+
+        failures.Should().BeEmpty(
+            "four-value MTR rows make NWN call glUniform4fv on scalar GLSL uniforms, which rejects the update and retains default NPC colors");
     }
 
     [Test]

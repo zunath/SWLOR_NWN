@@ -6082,6 +6082,10 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.BeneficialWhenNegative)]
         NonCriticalRangedAbilityStaminaCostFlatAdjustment = 1054,
 
+        /// <summary>SkillType whose area abilities apply fragmentation; Invalid allows any skill.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        AreaAbilityFragmentationSkillType = 1055,
+
     }
 
     public class StatTypeAttribute : Attribute

@@ -135,6 +135,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public int TemporaryRangedHitSuppressionStackDurationSeconds { get; init; }
             public int TemporaryRangedHitSuppressionStackEvasionPenaltyPercent { get; init; }
             public int TemporaryAreaAbilityFragmentationDamage { get; init; }
+            public SkillType TemporaryAreaAbilityFragmentationSkillType { get; init; }
             public int TemporaryAreaAbilityFragmentationDurationSeconds { get; init; }
             public int TemporaryAreaAbilityFragmentationPulseSeconds { get; init; }
             public int TemporaryAreaAbilityMinTargetsResourceRestoreThreshold { get; init; }
@@ -848,6 +849,16 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     StatType.RangedHitSuppressionStackEvasionPenaltyPercent,
                     TemporaryRangedHitSuppressionStackEvasionPenaltyPercent,
                     duration);
+                if (TemporaryAreaAbilityFragmentationDamage > 0)
+                {
+                    // Replacing with Invalid clears any previous skill restriction for a global buff.
+                    TemporaryStatModifier.Replace(
+                        activator,
+                        StatType.AreaAbilityFragmentationSkillType,
+                        (int)TemporaryAreaAbilityFragmentationSkillType,
+                        duration,
+                        $"GeneratedWeaponAbility:{StatType.AreaAbilityFragmentationSkillType}");
+                }
                 ReplaceTemporary(activator, StatType.AreaAbilityFragmentationDamage, TemporaryAreaAbilityFragmentationDamage, duration);
                 ReplaceTemporary(
                     activator,

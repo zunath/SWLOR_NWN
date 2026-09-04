@@ -1554,6 +1554,7 @@ def description_stat_entries(row, base):
         add_stat(stats, "OpeningAutoAttackCriticalDamagePercentAdjustment", parse_percent(r"deals \+(\d+)% damage", description))
     if base == "Shrapnel Casing":
         add_stat(stats, "AreaAbilityFragmentationDamage", parse_count(r"fragmentation for (\d+) physical damage", description))
+        add_stat(stats, "AreaAbilityFragmentationSkillType", skill_expr)
         add_stat(stats, "AreaAbilityFragmentationPulseSeconds", parse_count(r"every (\d+) seconds", description) or 3)
         add_stat(stats, "AreaAbilityFragmentationDurationSeconds", parse_count(r"for (\d+) seconds", description) or 30)
     if base == "Saturation Toss":
@@ -2585,6 +2586,8 @@ def profile_property_lines(row, level, primary_status):
             parse_count(r"deal (\d+) physical", description)
         )
         add_profile_property("TemporaryAreaAbilityFragmentationDamage", fragmentation_damage)
+        if "thrown area abilities" in lowered:
+            add_profile_property("TemporaryAreaAbilityFragmentationSkillType", "SkillType.Throwing")
         add_profile_property("TemporaryAreaAbilityFragmentationDurationSeconds", "30")
         add_profile_property("TemporaryAreaAbilityFragmentationPulseSeconds", parse_count(r"every (\d+) seconds", description) or 3)
         add_profile_property("TemporaryDefeatedEnemyEffectDurationSeconds", str(first_sentence_duration(description) or parse_duration(description) or 45))

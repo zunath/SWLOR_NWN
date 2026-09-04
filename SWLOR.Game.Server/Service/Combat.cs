@@ -5884,9 +5884,9 @@ namespace SWLOR.Game.Server.Service
             if (ability == null || !ability.IsAreaAbility || !GetIsObjectValid(target))
                 return;
 
-            var damage = Stat.GetStatAdjustment(activator, StatType.AreaAbilityFragmentationDamage);
-            var duration = Stat.GetStatAdjustment(activator, StatType.AreaAbilityFragmentationDurationSeconds);
-            var pulse = Stat.GetStatAdjustment(activator, StatType.AreaAbilityFragmentationPulseSeconds);
+            var damage = GetAreaAbilityFragmentationStatAdjustment(activator, skillType, StatType.AreaAbilityFragmentationDamage);
+            var duration = GetAreaAbilityFragmentationStatAdjustment(activator, skillType, StatType.AreaAbilityFragmentationDurationSeconds);
+            var pulse = GetAreaAbilityFragmentationStatAdjustment(activator, skillType, StatType.AreaAbilityFragmentationPulseSeconds);
             if (damage <= 0 || duration <= 0 || pulse <= 0)
                 return;
 
@@ -5896,6 +5896,24 @@ namespace SWLOR.Game.Server.Service
                 new FragmentationStatusEffect(damage, pulse),
                 duration,
                 damageType);
+        }
+
+        private static int GetAreaAbilityFragmentationStatAdjustment(uint activator, SkillType skillType, StatType statType)
+        {
+            // Persistent traits and temporary buffs can have different skill restrictions.
+            // Filter each source before combining their fragmentation adjustments.
+            var persistentSkill = GetSkillTypeFromStat(Stat.GetStatAdjustmentExcludingTemporaryModifiers(
+                activator, StatType.AreaAbilityFragmentationSkillType));
+            var temporarySkill = GetSkillTypeFromStat(TemporaryStatModifier.GetStatAdjustment(
+                activator, StatType.AreaAbilityFragmentationSkillType));
+            var persistentAdjustment = SkillTypeMatchesOrGlobal(skillType, persistentSkill)
+                ? Stat.GetStatAdjustmentExcludingTemporaryModifiers(activator, statType)
+                : 0;
+            var temporaryAdjustment = SkillTypeMatchesOrGlobal(skillType, temporarySkill)
+                ? TemporaryStatModifier.GetStatAdjustment(activator, statType)
+                : 0;
+
+            return Stat.AggregateStatAdjustment(statType, persistentAdjustment, temporaryAdjustment);
         }
 
         private static void ApplyRicochetDamage(

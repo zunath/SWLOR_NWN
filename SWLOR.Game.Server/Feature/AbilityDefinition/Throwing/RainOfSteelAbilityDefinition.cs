@@ -44,6 +44,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 new GeneratedWeaponAbilityProfile
                 {
                     TemporaryAreaAbilityFragmentationDamage = 8,
+                    TemporaryAreaAbilityFragmentationSkillType = SkillType.Throwing,
                     TemporaryAreaAbilityFragmentationDurationSeconds = 30,
                     TemporaryAreaAbilityFragmentationPulseSeconds = 6,
                     TemporaryDefeatedEnemyEffectDurationSeconds = 45

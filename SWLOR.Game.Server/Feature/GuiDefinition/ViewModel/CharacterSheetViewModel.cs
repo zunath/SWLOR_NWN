@@ -574,6 +574,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Gui.TogglePlayerWindow(Player, GuiWindowType.Notes);
         };
 
+        public Action OnClickMasteries() => () =>
+        {
+            Gui.TogglePlayerWindow(Player, GuiWindowType.Masteries);
+        };
+
         public Action OnClickOpenTrash() => () =>
         {
             var location = GetLocation(Player);

@@ -276,6 +276,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         AddActionButton(actions, "Skills", model => model.OnClickSkills());
                         AddActionButton(actions, "Perks", model => model.OnClickPerks());
                         AddActionButton(actions, "Techniques", model => model.OnClickTechniques(), model => model.IsTechniquesEnabled);
+                        AddActionButton(actions, "Masteries", model => model.OnClickMasteries());
                         AddActionButton(actions, "Appearance", model => model.OnClickAppearance());
                         AddActionButton(actions, "Disguises", model => model.OnClickDisguises());
                         AddActionButton(actions, "Quests", model => model.OnClickQuests());

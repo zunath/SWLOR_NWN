@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.KillBox1, PerkType.KillBox)
                     .Name("Kill Box")
                     .Level(1)
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 Animation.PointPistol,
                 30.0f,
                 AbilityType.Perception,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     TemporaryDefeatedEnemyEffectDurationSeconds = 45,
                     StatusEffectFactory = () => new KillBoxStatusEffect(0, 3),

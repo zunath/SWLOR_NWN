@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.SpinningWhirl1, PerkType.SpinningWhirl)
                     .Name("Spinning Whirl I")
                     .Level(1)
@@ -41,12 +41,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     MaximumAreaTargets = 3
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.SpinningWhirl2, PerkType.SpinningWhirl)
                     .Name("Spinning Whirl II")
                     .Level(2)
@@ -70,12 +70,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     MaximumAreaTargets = 3
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.SpinningWhirl3, PerkType.SpinningWhirl)
                     .Name("Spinning Whirl III")
                     .Level(3)
@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     MaximumAreaTargets = 3
                 });

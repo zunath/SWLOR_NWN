@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.DisarmingShot1, PerkType.DisarmingShot)
                     .Name("Disarming Shot I")
                     .Level(1)
@@ -41,12 +41,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 Animation.PointPistol,
                 25.0f,
                 AbilityType.Perception,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     StatusEffectFactory = () => new DisarmingShotStatusEffect(10)
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.DisarmingShot2, PerkType.DisarmingShot)
                     .Name("Disarming Shot II")
                     .Level(2)
@@ -70,12 +70,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 Animation.PointPistol,
                 25.0f,
                 AbilityType.Perception,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     StatusEffectFactory = () => new DisarmingShotStatusEffect(12)
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.DisarmingShot3, PerkType.DisarmingShot)
                     .Name("Disarming Shot III")
                     .Level(3)
@@ -99,12 +99,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 Animation.PointPistol,
                 25.0f,
                 AbilityType.Perception,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     StatusEffectFactory = () => new DisarmingShotStatusEffect(15)
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.DisarmingShot4, PerkType.DisarmingShot)
                     .Name("Disarming Shot IV")
                     .Level(4)
@@ -128,7 +128,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 Animation.PointPistol,
                 25.0f,
                 AbilityType.Perception,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     StatusEffectFactory = () => new DisarmingShotStatusEffect(18)
                 });

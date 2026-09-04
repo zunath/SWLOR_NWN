@@ -22,19 +22,19 @@ public class WeaponStatusSpreadTests : WeaponActiveAbilityDefinitionBase
     [Test]
     public void LimitedSpread_AppliesToOnlyOneRecipientAcrossTheCast()
     {
-        var cast = new GeneratedWeaponAbilityProfile.StatusSpreadSnapshot(1);
+        var cast = new WeaponAbilityProfile.StatusSpreadSnapshot(1);
         var recipients = new List<uint>();
         foreach (var target in new uint[] { 1, 2, 3 })
             cast.TrySpread(() => { recipients.Add(target); return true; });
 
         recipients.Should().Equal(1u);
-        new GeneratedWeaponAbilityProfile.StatusSpreadSnapshot(1).TrySpread(() => true).Should().BeTrue();
+        new WeaponAbilityProfile.StatusSpreadSnapshot(1).TrySpread(() => true).Should().BeTrue();
     }
 
     [Test]
     public void FailedSpread_DoesNotConsumeTheCastLimit()
     {
-        var cast = new GeneratedWeaponAbilityProfile.StatusSpreadSnapshot(1);
+        var cast = new WeaponAbilityProfile.StatusSpreadSnapshot(1);
         cast.TrySpread(() => false).Should().BeFalse();
         cast.TrySpread(() => true).Should().BeTrue();
         cast.TrySpread(() => throw new AssertionException("The cast limit must prevent another application.")).Should().BeFalse();
@@ -43,7 +43,7 @@ public class WeaponStatusSpreadTests : WeaponActiveAbilityDefinitionBase
     [Test]
     public void UnlimitedSpread_PreservesOneApplicationFromEachEligibleSource()
     {
-        var cast = new GeneratedWeaponAbilityProfile.StatusSpreadSnapshot();
+        var cast = new WeaponAbilityProfile.StatusSpreadSnapshot();
         var recipients = new List<uint>();
         foreach (var target in new uint[] { 1, 2, 3 })
             cast.TrySpread(() => { recipients.Add(target); return true; });
@@ -65,7 +65,7 @@ public class WeaponStatusSpreadTests : WeaponActiveAbilityDefinitionBase
         if (initiallyAffected)
             tracker.Add(effect);
 
-        var cast = new GeneratedWeaponAbilityProfile.StatusSpreadSnapshot();
+        var cast = new WeaponAbilityProfile.StatusSpreadSnapshot();
         var original = cast.Capture(Creature);
         if (!initiallyAffected)
             tracker.Add(effect);
@@ -75,7 +75,7 @@ public class WeaponStatusSpreadTests : WeaponActiveAbilityDefinitionBase
         original.Bleeding.Should().Be(initiallyAffected && effectType != typeof(SunderStatusEffect));
         original.Sundered.Should().Be(initiallyAffected && effectType == typeof(SunderStatusEffect));
 
-        var nextCast = new GeneratedWeaponAbilityProfile.StatusSpreadSnapshot().Capture(Creature);
+        var nextCast = new WeaponAbilityProfile.StatusSpreadSnapshot().Capture(Creature);
         nextCast.Bleeding.Should().Be(effectType != typeof(SunderStatusEffect));
         nextCast.Sundered.Should().Be(effectType == typeof(SunderStatusEffect));
     }

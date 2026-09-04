@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.CircleSlash1, PerkType.CircleSlash)
                     .Name("Circle Slash I")
                     .Level(1)
@@ -41,13 +41,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     SelfRangedDeflection = 4,
                     SelfStatDurationSeconds = 30
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.CircleSlash2, PerkType.CircleSlash)
                     .Name("Circle Slash II")
                     .Level(2)
@@ -71,13 +71,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     SelfRangedDeflection = 6,
                     SelfStatDurationSeconds = 30
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.CircleSlash3, PerkType.CircleSlash)
                     .Name("Circle Slash III")
                     .Level(3)
@@ -101,7 +101,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     SelfRangedDeflection = 8,
                     SelfStatDurationSeconds = 30

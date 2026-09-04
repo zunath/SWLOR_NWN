@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.JointLock1, PerkType.JointLock)
                     .Name("Joint Lock I")
                     .Level(1)
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 AbilityType.Invalid,
                 null);
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.JointLock2, PerkType.JointLock)
                     .Name("Joint Lock II")
                     .Level(2)
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 AbilityType.Invalid,
                 null);
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.JointLock3, PerkType.JointLock)
                     .Name("Joint Lock III")
                     .Level(3)

@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.CripplingShot1, PerkType.CripplingShot)
                     .Name("Crippling Shot I")
                     .Level(1)
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 AbilityType.Perception,
                 null);
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.CripplingShot2, PerkType.CripplingShot)
                     .Name("Crippling Shot II")
                     .Level(2)
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Rifle
                 AbilityType.Perception,
                 null);
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.CripplingShot3, PerkType.CripplingShot)
                     .Name("Crippling Shot III")
                     .Level(3)

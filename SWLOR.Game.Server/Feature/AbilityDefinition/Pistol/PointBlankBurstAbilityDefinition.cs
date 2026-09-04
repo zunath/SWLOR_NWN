@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.PointBlankBurst1, PerkType.PointBlankBurst)
                     .Name("Point Blank Burst I")
                     .Level(1)
@@ -41,14 +41,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 Animation.PointPistol,
                 25.0f,
                 AbilityType.Perception,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     SelfStatusEffectFactory = () => new PointBlankBurstStatusEffect(10),
                     SelfStatDurationSeconds = 30,
                     ApplySelfModifiersOnHostileActivation = true
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.PointBlankBurst2, PerkType.PointBlankBurst)
                     .Name("Point Blank Burst II")
                     .Level(2)
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 Animation.PointPistol,
                 25.0f,
                 AbilityType.Perception,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     SelfStatusEffectFactory = () => new PointBlankBurstStatusEffect(15),
                     SelfStatDurationSeconds = 30,

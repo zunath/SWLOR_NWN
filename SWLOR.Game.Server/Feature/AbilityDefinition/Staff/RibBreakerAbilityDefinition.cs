@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.RibBreaker1, PerkType.RibBreaker)
                     .Name("Rib Breaker I")
                     .Level(1)
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 AbilityType.Invalid,
                 null);
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.RibBreaker2, PerkType.RibBreaker)
                     .Name("Rib Breaker II")
                     .Level(2)
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 AbilityType.Invalid,
                 null);
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.RibBreaker3, PerkType.RibBreaker)
                     .Name("Rib Breaker III")
                     .Level(3)

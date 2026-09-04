@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.DoubleStrike1, PerkType.DoubleStrike)
                     .Name("Double Strike I")
                     .Level(1)
@@ -41,13 +41,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     HitCount = 2,
                     RestoreFPIfAllHitsLand = 2
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.DoubleStrike2, PerkType.DoubleStrike)
                     .Name("Double Strike II")
                     .Level(2)
@@ -71,13 +71,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     HitCount = 2,
                     RestoreFPIfAllHitsLand = 3
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.DoubleStrike3, PerkType.DoubleStrike)
                     .Name("Double Strike III")
                     .Level(3)
@@ -101,13 +101,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     HitCount = 2,
                     RestoreFPIfAllHitsLand = 4
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.DoubleStrike4, PerkType.DoubleStrike)
                     .Name("Double Strike IV")
                     .Level(4)
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     HitCount = 2,
                     RestoreFPIfAllHitsLand = 5

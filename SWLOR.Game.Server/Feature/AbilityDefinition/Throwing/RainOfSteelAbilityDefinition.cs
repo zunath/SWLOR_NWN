@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.RainOfSteel1, PerkType.RainOfSteel)
                     .Name("Rain of Steel")
                     .Level(1)
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Throwing
                 Animation.ThrowGrenade,
                 20.0f,
                 AbilityType.Perception,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     TemporaryAreaAbilityFragmentationDamage = 8,
                     TemporaryAreaAbilityFragmentationSkillType = SkillType.Throwing,

@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.GroundQuake1, PerkType.GroundQuake)
                     .Name("Ground Quake I")
                     .Level(1)
@@ -41,14 +41,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     RequiredTargetStatusEffectForConditionalStatus = typeof(DazedStatusEffect),
                     ConditionalTargetStatusEffect = typeof(KnockdownStatusEffect),
                     ConditionalTargetStatusDurationSeconds = 6
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.GroundQuake2, PerkType.GroundQuake)
                     .Name("Ground Quake II")
                     .Level(2)
@@ -72,7 +72,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Staff
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     RequiredTargetStatusEffectForConditionalStatus = typeof(DazedStatusEffect),
                     ConditionalTargetStatusEffect = typeof(KnockdownStatusEffect),

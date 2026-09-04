@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.LaceratingTwinCut1, PerkType.LaceratingTwinCut)
                     .Name("Lacerating Twin Cut I")
                     .Level(1)
@@ -41,12 +41,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     HitCount = 2
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.LaceratingTwinCut2, PerkType.LaceratingTwinCut)
                     .Name("Lacerating Twin Cut II")
                     .Level(2)
@@ -70,12 +70,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     HitCount = 2
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.LaceratingTwinCut3, PerkType.LaceratingTwinCut)
                     .Name("Lacerating Twin Cut III")
                     .Level(3)
@@ -99,12 +99,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     HitCount = 2
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.LaceratingTwinCut4, PerkType.LaceratingTwinCut)
                     .Name("Lacerating Twin Cut IV")
                     .Level(4)
@@ -128,7 +128,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     HitCount = 2
                 });

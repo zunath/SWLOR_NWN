@@ -18,7 +18,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
     {
         private const float ToggleActivationDelaySeconds = 2f;
 
-        protected sealed class GeneratedWeaponAbilityProfile
+        protected sealed class WeaponAbilityProfile
         {
             public sealed class StatusSpreadSnapshot
             {
@@ -63,7 +63,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 public int DefenseIgnorePercent { get; init; }
             }
 
-            public static readonly GeneratedWeaponAbilityProfile Empty = new();
+            public static readonly WeaponAbilityProfile Empty = new();
 
             public int HitCount { get; init; } = 1;
             public bool IsQueuedWeaponAbility { get; init; }
@@ -1399,7 +1399,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             }
         }
 
-        protected static void ConfigureGeneratedWeaponAbility(
+        protected static void ConfigureWeaponAbility(
             AbilityBuilder ability,
             SkillType skill,
             int baseDamage,
@@ -1420,9 +1420,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             Animation impactAnimation,
             float maxRange,
             AbilityType combatImpactDamageAbility = AbilityType.Invalid,
-            GeneratedWeaponAbilityProfile profile = null)
+            WeaponAbilityProfile profile = null)
         {
-            profile ??= GeneratedWeaponAbilityProfile.Empty;
+            profile ??= WeaponAbilityProfile.Empty;
             var temporaryHPEffectKey = $"WEAPON_{ability.ActiveEffectiveLevelPerkType}";
 
             ApplyCombatImpactDamageAbility(ability, combatImpactDamageAbility);
@@ -1479,7 +1479,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
                     profile.SpendHitPoints(activator);
                     profile.AfterHostileActivation(activator);
-                    var spreadSnapshot = new GeneratedWeaponAbilityProfile.StatusSpreadSnapshot(profile.MaximumStatusSpreadsPerCast);
+                    var spreadSnapshot = new WeaponAbilityProfile.StatusSpreadSnapshot(profile.MaximumStatusSpreadsPerCast);
                     Action<uint> captureSpreadPrerequisites = profile.SpreadBleedFromTarget || profile.SpreadHemorrhageFromTarget || profile.SpreadSunderFromTarget
                         ? impactedTarget => spreadSnapshot.Capture(impactedTarget)
                         : null;
@@ -1663,7 +1663,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
         private static bool ShouldUseTelegraphedCombatImpact(
             AbilityTargetingShapeType targetingShape,
-            GeneratedWeaponAbilityProfile profile)
+            WeaponAbilityProfile profile)
         {
             return targetingShape != AbilityTargetingShapeType.None || profile.MaximumAreaTargets > 0;
         }

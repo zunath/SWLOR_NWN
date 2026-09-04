@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.VigorThrust1, PerkType.VigorThrust)
                     .Name("Vigor Thrust I")
                     .Level(1)
@@ -41,13 +41,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     SelfEvasionPercent = 6,
                     SelfStatDurationSeconds = 30
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.VigorThrust2, PerkType.VigorThrust)
                     .Name("Vigor Thrust II")
                     .Level(2)
@@ -71,13 +71,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     SelfEvasionPercent = 8,
                     SelfStatDurationSeconds = 30
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.VigorThrust3, PerkType.VigorThrust)
                     .Name("Vigor Thrust III")
                     .Level(3)
@@ -101,13 +101,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     SelfEvasionPercent = 10,
                     SelfStatDurationSeconds = 30
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.VigorThrust4, PerkType.VigorThrust)
                     .Name("Vigor Thrust IV")
                     .Level(4)
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Spear
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     SelfEvasionPercent = 12,
                     SelfStatDurationSeconds = 30

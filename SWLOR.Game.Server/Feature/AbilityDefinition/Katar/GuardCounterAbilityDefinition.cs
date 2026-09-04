@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.GuardCounter1, PerkType.GuardCounter)
                     .Name("Guard Counter I")
                     .Level(1)
@@ -41,14 +41,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     IsQueuedWeaponAbility = true,
                     ExtraDamageIfRecentGuardedHit = 8,
                     RecentGuardedHitWindowSeconds = 30
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.GuardCounter2, PerkType.GuardCounter)
                     .Name("Guard Counter II")
                     .Level(2)
@@ -72,14 +72,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     IsQueuedWeaponAbility = true,
                     ExtraDamageIfRecentGuardedHit = 12,
                     RecentGuardedHitWindowSeconds = 30
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.GuardCounter3, PerkType.GuardCounter)
                     .Name("Guard Counter III")
                     .Level(3)
@@ -103,7 +103,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     IsQueuedWeaponAbility = true,
                     ExtraDamageIfRecentGuardedHit = 17,

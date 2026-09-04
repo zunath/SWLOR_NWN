@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.HookingStrike1, PerkType.HookingStrike)
                     .Name("Hooking Strike I")
                     .Level(1)
@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 AbilityType.Invalid,
                 null);
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.HookingStrike2, PerkType.HookingStrike)
                     .Name("Hooking Strike II")
                     .Level(2)
@@ -69,7 +69,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 AbilityType.Invalid,
                 null);
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.HookingStrike3, PerkType.HookingStrike)
                     .Name("Hooking Strike III")
                     .Level(3)
@@ -95,7 +95,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Katar
                 AbilityType.Invalid,
                 null);
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.HookingStrike4, PerkType.HookingStrike)
                     .Name("Hooking Strike IV")
                     .Level(4)

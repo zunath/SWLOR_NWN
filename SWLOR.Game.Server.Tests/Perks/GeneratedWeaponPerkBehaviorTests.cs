@@ -1514,7 +1514,7 @@ public class GeneratedWeaponPerkBehaviorTests
         combatSource.Should().Contain("IdleSkillAbilityCriticalDamagePercentAdjustment");
         combatSource.Should().Contain("OpeningAutoAttackCriticalDamagePercentAdjustment");
         linkerSource.Should().Contain("IsQueuedWeaponAbility\\s*=\\s*true");
-        linkerSource.Should().Contain("ConfigureGeneratedWeaponAbility");
+        linkerSource.Should().Contain("ConfigureWeaponAbility");
         combatSource.Should().Contain("TargetHasSourceAppliedStatusCategory(defender, attacker, category)");
         combatSource.Should().Contain("ApplySourceStatusStackEffects(attacker, defender)");
         combatSource.Should().Contain("ApplyHostileAbilityHitNextAutoAttackNoDelay(activator, ability)");

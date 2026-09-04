@@ -16,7 +16,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.AegisEternal1, PerkType.AegisEternal)
                     .Name("Aegis Eternal")
                     .Level(1)
@@ -40,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     SelfStatusEffectFactory = () => new PerfectAegisStatusEffect(),
                     SelfStatusEffectsToReplace = new[] { typeof(SaberWardStatusEffect) }

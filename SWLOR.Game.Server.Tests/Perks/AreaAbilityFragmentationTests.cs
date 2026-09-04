@@ -158,7 +158,7 @@ public class AreaAbilityFragmentationTests
     private static object GetProfile(AbilityDetail ability) =>
         ability.ImpactAction.Target!.GetType()
             .GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
-            .Single(field => field.FieldType.Name == "GeneratedWeaponAbilityProfile")
+            .Single(field => field.FieldType.Name == "WeaponAbilityProfile")
             .GetValue(ability.ImpactAction.Target)!;
 
     private static T GetProperty<T>(object profile, string name) =>

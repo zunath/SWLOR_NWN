@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.QuickDraw1, PerkType.QuickDraw)
                     .Name("Quick Draw I")
                     .Level(1)
@@ -41,14 +41,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 Animation.QuickDraw,
                 25.0f,
                 AbilityType.Perception,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     CriticalRateIfNotRecentTarget = 10,
                     NotRecentTargetWindowSeconds = 30.0f,
                     CriticalRateIfNotRecentTargetFeedbackLabel = "Quick Draw"
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.QuickDraw2, PerkType.QuickDraw)
                     .Name("Quick Draw II")
                     .Level(2)
@@ -72,14 +72,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 Animation.QuickDraw,
                 25.0f,
                 AbilityType.Perception,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     CriticalRateIfNotRecentTarget = 12,
                     NotRecentTargetWindowSeconds = 30.0f,
                     CriticalRateIfNotRecentTargetFeedbackLabel = "Quick Draw"
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.QuickDraw3, PerkType.QuickDraw)
                     .Name("Quick Draw III")
                     .Level(3)
@@ -103,14 +103,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 Animation.QuickDraw,
                 25.0f,
                 AbilityType.Perception,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     CriticalRateIfNotRecentTarget = 15,
                     NotRecentTargetWindowSeconds = 30.0f,
                     CriticalRateIfNotRecentTargetFeedbackLabel = "Quick Draw"
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.QuickDraw4, PerkType.QuickDraw)
                     .Name("Quick Draw IV")
                     .Level(4)
@@ -134,7 +134,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Pistol
                 Animation.QuickDraw,
                 25.0f,
                 AbilityType.Perception,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     CriticalRateIfNotRecentTarget = 18,
                     NotRecentTargetWindowSeconds = 30.0f,

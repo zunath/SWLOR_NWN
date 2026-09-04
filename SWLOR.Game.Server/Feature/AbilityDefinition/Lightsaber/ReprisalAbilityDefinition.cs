@@ -31,7 +31,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
             int stamina,
             int fp)
         {
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(feat, PerkType.Reprisal)
                     .Name(name)
                     .Level(level)
@@ -55,7 +55,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     ConditionalTargetStatusEffect = typeof(DazedStatusEffect),
                     ConditionalTargetStatusDurationSeconds = 15,

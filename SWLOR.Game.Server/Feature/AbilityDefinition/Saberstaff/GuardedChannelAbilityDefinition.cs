@@ -17,7 +17,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
         {
             var builder = new AbilityBuilder();
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.GuardedChannel1, PerkType.GuardedChannel)
                     .Name("Guarded Channel I")
                     .Level(1)
@@ -41,7 +41,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     SelfDefensePercent = 10,
                     SelfStatResourceAboveThresholdPercent = 40,
@@ -49,7 +49,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                     SelfStatusEffectFactory = () => new GuardedChannelStatusEffect(10)
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.GuardedChannel2, PerkType.GuardedChannel)
                     .Name("Guarded Channel II")
                     .Level(2)
@@ -73,7 +73,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     SelfDefensePercent = 15,
                     SelfStatResourceAboveThresholdPercent = 40,
@@ -81,7 +81,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                     SelfStatusEffectFactory = () => new GuardedChannelStatusEffect(15)
                 });
 
-            ConfigureGeneratedWeaponAbility(
+            ConfigureWeaponAbility(
                 builder.Create(FeatType.GuardedChannel3, PerkType.GuardedChannel)
                     .Name("Guarded Channel III")
                     .Level(3)
@@ -105,7 +105,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Saberstaff
                 Animation.DoubleStrike,
                 0.0f,
                 AbilityType.Invalid,
-                new GeneratedWeaponAbilityProfile
+                new WeaponAbilityProfile
                 {
                     SelfDefensePercent = 20,
                     SelfStatResourceAboveThresholdPercent = 40,

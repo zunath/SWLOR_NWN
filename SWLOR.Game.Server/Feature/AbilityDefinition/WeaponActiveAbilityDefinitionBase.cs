@@ -1191,7 +1191,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                              GetLocation(sourceTarget),
                              5f,
                              1,
-                             sourceTarget))
+                             predicate: nearby => nearby != sourceTarget))
                 {
                     StatusEffect.ApplyStatusEffect(activator, nearby, statusEffect, duration, damageType);
                     break;

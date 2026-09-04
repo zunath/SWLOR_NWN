@@ -93,6 +93,21 @@ public class AreaAbilityFragmentationTests
         ability.IsAreaAbility.Should().BeTrue();
     }
 
+    [TestCase(FeatType.SerratedArc1)]
+    [TestCase(FeatType.SerratedArc2)]
+    [TestCase(FeatType.SerratedArc3)]
+    public void SerratedArc_ConfiguresBleedSpreadWithoutFragmentation(FeatType feat)
+    {
+        var ability = new SerratedArcAbilityDefinition().BuildAbilities()[feat];
+        var profile = GetProfile(ability);
+
+        GetProperty<bool>(profile, "SpreadBleedFromTarget").Should().BeTrue();
+        GetProperty<int>(profile, "SpreadBleedDurationSeconds").Should().Be(30);
+        GetProperty<int>(profile, "TemporaryAreaAbilityFragmentationDamage").Should().Be(0);
+        ability.SkillType.Should().Be(SkillType.TwinBlade);
+        ability.IsAreaAbility.Should().BeTrue();
+    }
+
     private static void AddShrapnelCasingStats(int rank)
     {
         const BindingFlags PrivateInstance = BindingFlags.NonPublic | BindingFlags.Instance;

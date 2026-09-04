@@ -23,6 +23,25 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public sealed class StatusSpreadSnapshot
             {
                 private readonly Dictionary<uint, (bool Bleeding, bool Sundered)> _sourceStatuses = new();
+                private readonly int _maximumSpreads;
+                private int _successfulSpreads;
+
+                public StatusSpreadSnapshot(int maximumSpreads = 0)
+                {
+                    _maximumSpreads = maximumSpreads;
+                }
+
+                public bool TrySpread(Func<bool> applySpread)
+                {
+                    if (_maximumSpreads > 0 && _successfulSpreads >= _maximumSpreads)
+                        return false;
+
+                    if (!applySpread())
+                        return false;
+
+                    _successfulSpreads++;
+                    return true;
+                }
 
                 public (bool Bleeding, bool Sundered) Capture(uint target)
                 {
@@ -183,6 +202,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public int SpreadHemorrhageDurationSeconds { get; init; }
             public bool SpreadSunderFromTarget { get; init; }
             public int SpreadSunderDurationSeconds { get; init; }
+            public int MaximumStatusSpreadsPerCast { get; init; }
             public bool ClearTargetActionsOnHit { get; init; }
             public Type ConditionalStatusEffect { get; init; }
             public int ConditionalStatusDurationSeconds { get; init; }
@@ -1216,10 +1236,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                              1,
                              predicate: nearby => nearby != sourceTarget))
                 {
-                    // Remember the recipient's prerequisites before spreading, so an enemy
-                    // hit later in this cast cannot chain a newly received status onward.
-                    spreadSnapshot.Capture(nearby);
-                    StatusEffect.ApplyStatusEffect(activator, nearby, statusEffect, duration, damageType);
+                    spreadSnapshot.TrySpread(() =>
+                    {
+                        // Remember the recipient's prerequisites before spreading, so an enemy
+                        // hit later in this cast cannot chain a newly received status onward.
+                        spreadSnapshot.Capture(nearby);
+                        return StatusEffect.ApplyStatusEffect(activator, nearby, statusEffect, duration, damageType);
+                    });
                     break;
                 }
             }
@@ -1456,7 +1479,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
                     profile.SpendHitPoints(activator);
                     profile.AfterHostileActivation(activator);
-                    var spreadSnapshot = new GeneratedWeaponAbilityProfile.StatusSpreadSnapshot();
+                    var spreadSnapshot = new GeneratedWeaponAbilityProfile.StatusSpreadSnapshot(profile.MaximumStatusSpreadsPerCast);
                     var activationIdleBonusSnapshot = profile.CaptureActivationIdleBonusSnapshot(activator);
                     Ability.AddActiveAbilityDefenseIgnorePercentAdjustment(
                         activator,

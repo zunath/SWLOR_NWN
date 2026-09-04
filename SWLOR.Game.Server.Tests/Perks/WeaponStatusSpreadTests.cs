@@ -19,6 +19,38 @@ public class WeaponStatusSpreadTests : WeaponActiveAbilityDefinitionBase
     [TearDown]
     public void ClearEffects() => CreatureEffects.Remove(Creature);
 
+    [Test]
+    public void LimitedSpread_AppliesToOnlyOneRecipientAcrossTheCast()
+    {
+        var cast = new GeneratedWeaponAbilityProfile.StatusSpreadSnapshot(1);
+        var recipients = new List<uint>();
+        foreach (var target in new uint[] { 1, 2, 3 })
+            cast.TrySpread(() => { recipients.Add(target); return true; });
+
+        recipients.Should().Equal(1u);
+        new GeneratedWeaponAbilityProfile.StatusSpreadSnapshot(1).TrySpread(() => true).Should().BeTrue();
+    }
+
+    [Test]
+    public void FailedSpread_DoesNotConsumeTheCastLimit()
+    {
+        var cast = new GeneratedWeaponAbilityProfile.StatusSpreadSnapshot(1);
+        cast.TrySpread(() => false).Should().BeFalse();
+        cast.TrySpread(() => true).Should().BeTrue();
+        cast.TrySpread(() => throw new AssertionException("The cast limit must prevent another application.")).Should().BeFalse();
+    }
+
+    [Test]
+    public void UnlimitedSpread_PreservesOneApplicationFromEachEligibleSource()
+    {
+        var cast = new GeneratedWeaponAbilityProfile.StatusSpreadSnapshot();
+        var recipients = new List<uint>();
+        foreach (var target in new uint[] { 1, 2, 3 })
+            cast.TrySpread(() => { recipients.Add(target); return true; });
+
+        recipients.Should().Equal(1u, 2u, 3u);
+    }
+
     [TestCase(typeof(BleedStatusEffect), false)]
     [TestCase(typeof(BleedStatusEffect), true)]
     [TestCase(typeof(HemorrhageStatusEffect), false)]

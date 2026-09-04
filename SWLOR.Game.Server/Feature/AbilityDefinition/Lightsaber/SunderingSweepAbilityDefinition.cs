@@ -43,7 +43,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 new GeneratedWeaponAbilityProfile
                 {
                     SpreadSunderFromTarget = true,
-                    SpreadSunderDurationSeconds = 30
+                    SpreadSunderDurationSeconds = 30,
+                    MaximumStatusSpreadsPerCast = 1
                 });
 
             ConfigureGeneratedWeaponAbility(
@@ -73,7 +74,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 new GeneratedWeaponAbilityProfile
                 {
                     SpreadSunderFromTarget = true,
-                    SpreadSunderDurationSeconds = 30
+                    SpreadSunderDurationSeconds = 30,
+                    MaximumStatusSpreadsPerCast = 1
                 });
 
             ConfigureGeneratedWeaponAbility(
@@ -103,7 +105,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber
                 new GeneratedWeaponAbilityProfile
                 {
                     SpreadSunderFromTarget = true,
-                    SpreadSunderDurationSeconds = 30
+                    SpreadSunderDurationSeconds = 30,
+                    MaximumStatusSpreadsPerCast = 1
                 });
 
             return builder.Build();

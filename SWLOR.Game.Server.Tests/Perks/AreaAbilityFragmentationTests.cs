@@ -2,6 +2,7 @@ using System.Collections;
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.Game.Server.Feature.AbilityDefinition.Lightsaber;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Staff;
 using SWLOR.Game.Server.Feature.AbilityDefinition.Throwing;
 using SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade;
@@ -103,9 +104,20 @@ public class AreaAbilityFragmentationTests
 
         GetProperty<bool>(profile, "SpreadBleedFromTarget").Should().BeTrue();
         GetProperty<int>(profile, "SpreadBleedDurationSeconds").Should().Be(30);
+        GetProperty<int>(profile, "MaximumStatusSpreadsPerCast").Should().Be(0);
         GetProperty<int>(profile, "TemporaryAreaAbilityFragmentationDamage").Should().Be(0);
         ability.SkillType.Should().Be(SkillType.TwinBlade);
         ability.IsAreaAbility.Should().BeTrue();
+    }
+
+    [TestCase(FeatType.SunderingSweep1)]
+    [TestCase(FeatType.SunderingSweep2)]
+    [TestCase(FeatType.SunderingSweep3)]
+    public void SunderingSweep_LimitsSunderToOneSpreadPerCast(FeatType feat)
+    {
+        var profile = GetProfile(new SunderingSweepAbilityDefinition().BuildAbilities()[feat]);
+        GetProperty<bool>(profile, "SpreadSunderFromTarget").Should().BeTrue();
+        GetProperty<int>(profile, "MaximumStatusSpreadsPerCast").Should().Be(1);
     }
 
     private static void AddShrapnelCasingStats(int rank)

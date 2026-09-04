@@ -1234,7 +1234,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                              GetLocation(sourceTarget),
                              5f,
                              1,
-                             predicate: nearby => nearby != sourceTarget))
+                             predicate: nearby => nearby != sourceTarget && !StatusEffect.HasStatusEffect(nearby, statusEffect)))
                 {
                     spreadSnapshot.TrySpread(() =>
                     {
@@ -1480,6 +1480,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     profile.SpendHitPoints(activator);
                     profile.AfterHostileActivation(activator);
                     var spreadSnapshot = new GeneratedWeaponAbilityProfile.StatusSpreadSnapshot(profile.MaximumStatusSpreadsPerCast);
+                    Action<uint> captureSpreadPrerequisites = profile.SpreadBleedFromTarget || profile.SpreadHemorrhageFromTarget || profile.SpreadSunderFromTarget
+                        ? impactedTarget => spreadSnapshot.Capture(impactedTarget)
+                        : null;
                     var activationIdleBonusSnapshot = profile.CaptureActivationIdleBonusSnapshot(activator);
                     Ability.AddActiveAbilityDefenseIgnorePercentAdjustment(
                         activator,
@@ -1519,6 +1522,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                                 },
                                 maxTargets: profile.MaximumAreaTargets,
                                 enmityBonus: profile.EnmityBonus,
+                                beforeImpact: captureSpreadPrerequisites,
                                 afterSuccessfulHit: impactedTarget =>
                                 {
                                     profile.AfterSuccessfulHit(activator, impactedTarget, profile.DamageType, spreadSnapshot);
@@ -1570,6 +1574,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                                 activationIdleBonusSnapshot),
                             damagePercentAdjustment: impactedTarget => profile.GetDamagePercentAdjustment(activator, impactedTarget),
                             enmityBonus: profile.EnmityBonus,
+                            beforeImpact: captureSpreadPrerequisites,
                             afterSuccessfulHit: impactedTarget =>
                             {
                                 profile.AfterSuccessfulHit(activator, impactedTarget, profile.DamageType, spreadSnapshot);

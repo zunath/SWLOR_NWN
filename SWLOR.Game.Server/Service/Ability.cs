@@ -1187,7 +1187,8 @@ namespace SWLOR.Game.Server.Service
             AbilityType combatImpactDamageAbility = AbilityType.Invalid,
             bool resolvesHit = true,
             bool canCritical = true,
-            bool useUnscaledDamage = false)
+            bool useUnscaledDamage = false,
+            Action<uint> beforeImpact = null)
         {
             var totalDamage = 0;
             RecordAbilityImpactShape(activator, skillType, isArea);
@@ -1226,6 +1227,7 @@ namespace SWLOR.Game.Server.Service
                     damagePercentAdjustment,
                     baseDamageAdjustment,
                     enmityBonus: enmityBonus,
+                    beforeImpact: beforeImpact,
                     afterSuccessfulHit: afterSuccessfulHit,
                     beforeSuccessfulImpactRiders: beforeSuccessfulImpactRiders,
                     hitChancePercentAdjustment: hitChancePercentAdjustment,
@@ -1255,6 +1257,7 @@ namespace SWLOR.Game.Server.Service
                     damagePercentAdjustment,
                     baseDamageAdjustment,
                     enmityBonus: enmityBonus,
+                    beforeImpact: beforeImpact,
                     afterSuccessfulHit: afterSuccessfulHit,
                     beforeSuccessfulImpactRiders: beforeSuccessfulImpactRiders,
                     hitChancePercentAdjustment: hitChancePercentAdjustment,
@@ -1830,15 +1833,25 @@ namespace SWLOR.Game.Server.Service
             var affectedCount = 0;
             var trackedAbility = GetTrackedAbilityImpact(activator)?.Ability;
 
-            foreach (var creature in creatures.Distinct())
+            var impactTargets = creatures.Distinct().ToList();
+            if (beforeImpact != null)
+            {
+                // Capture prerequisites for the entire target set before damage or riders
+                // on any hit can change another target's eligibility during this impact.
+                foreach (var creature in impactTargets)
+                {
+                    if (GetIsObjectValid(creature) && GetIsReactionTypeHostile(creature, activator))
+                        beforeImpact(creature);
+                }
+            }
+
+            foreach (var creature in impactTargets)
             {
                 if (!GetIsObjectValid(creature) || !GetIsReactionTypeHostile(creature, activator))
                     continue;
 
                 if (maxTargets > 0 && affectedCount >= maxTargets)
                     break;
-
-                beforeImpact?.Invoke(creature);
 
                 totalDamage += ApplyHostileCombatImpact(
                     activator,

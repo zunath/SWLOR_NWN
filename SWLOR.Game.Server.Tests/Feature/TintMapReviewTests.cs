@@ -708,7 +708,7 @@ public class TintMapReviewTests
             .OfType<InvocationExpressionSyntax>()
             .Select(GetInvokedMethodName)
             .ToList();
-        replacementCalls.Should().Contain("ApplyMaterialColor",
+        replacementCalls.Should().Contain("WriteMaterialColor",
             "each registered semantic material must receive the live RGB edit");
         replacementCalls.Should().NotContain("ResetMaterialShaderUniforms",
             "one semantic edit must not clear rows belonging to other registered materials");
@@ -2092,8 +2092,9 @@ public class TintMapReviewTests
             "AppearanceDefinition",
             "TintMap",
             "TintMapService.cs");
-        var applyColor = FindMethod(serviceSource, "ApplyMaterialColor");
-        var shaderWrites = applyColor.DescendantNodes()
+        var applyColor = FindMethod(serviceSource, "ApplyColor");
+        var writeColor = FindMethod(serviceSource, "WriteMaterialColor");
+        var shaderWrites = writeColor.DescendantNodes()
             .OfType<InvocationExpressionSyntax>()
             .Where(invocation =>
                 invocation.Expression.ToString() == "SetMaterialShaderUniformVec4")
@@ -2103,26 +2104,21 @@ public class TintMapReviewTests
             "palette and picker colors must share the known-good row-only material update");
         shaderWrites[0].ToString().Should().Contain("layerDefinition.UniformName");
         shaderWrites[0].ToString().Should().Contain("paletteCoordinate");
-        applyColor.ToString().Should().Contain("TintMapPaletteColors.GetClosestColorId",
+        writeColor.ToString().Should().Contain("TintMapPaletteColors.GetClosestColorId",
             "legacy RGB state must be collapsed to a real palette row before rendering");
-        applyColor.ToString().Should().NotContain("customColor.Value.Red / 255f");
+        writeColor.ToString().Should().NotContain("customColor.Value.Red / 255f");
+        applyColor.ToString().Should().Contain("WriteMaterialColor(creature, selection.Material.Resref, layer, color)");
 
-        var customWrites = applyColor.DescendantNodes()
+        var customWrites = writeColor.DescendantNodes()
             .OfType<InvocationExpressionSyntax>()
             .Where(invocation =>
                 invocation.Expression.ToString() == "SetMaterialShaderUniformInt")
             .ToList();
         customWrites.Should().BeEmpty(
             "the RGBA tint vector must carry its own custom-mode alpha atomically");
-        applyColor.ToString().Should().Contain("ResetMaterialShaderUniforms");
-
-        var resets = applyColor.DescendantNodes()
-            .OfType<InvocationExpressionSyntax>()
-            .Where(invocation =>
-                invocation.Expression.ToString() == "ResetMaterialShaderUniforms")
-            .ToList();
-        resets.Should().HaveCount(6,
-            "the row and every obsolete RGB transport must be cleared before row replacement");
+        applyColor.ToString().Should().NotContain("ResetMaterialShaderUniforms");
+        writeColor.ToString().Should().NotContain("ResetMaterialShaderUniforms",
+            "native scoped resets become type-zero records that reset every client material parameter");
 
         foreach (var shaderName in new[] { "fs_plt_tinter.shd", "fs_plt_tinter_nm.shd" })
         {
@@ -2153,7 +2149,7 @@ public class TintMapReviewTests
         var applyCreatureColor = FindMethod(serviceSource, "ApplyCreatureColor");
 
         applyCreatureColor.ToString().Should().Contain(
-            "ApplyMaterialColor(creature, string.Empty, layer, color)");
+            "WriteMaterialColor(creature, string.Empty, layer, color)");
 
         ReadSource("SWLOR.Game.Server", "Docker", "swlor.env")
             .Should().Contain("NWNX_TWEAKS_MATERIAL_NAME_NULL_IS_ALL=true",
@@ -2192,7 +2188,7 @@ public class TintMapReviewTests
         applyCreatureColor.ToString().Should().Contain("selection.GetPaletteSource(layer) == creature");
         applyCreatureColor.ToString().Should().Contain("selection.Material.Layers.Contains(layer)");
         applyCreatureColor.ToString().Should().Contain(
-            "ApplyMaterialColor(creature, string.Empty, layer, color)");
+            "WriteMaterialColor(creature, string.Empty, layer, color)");
         applyCreatureColor.ToString().Should().Contain("selection.Material.Resref");
         applyCreatureColor.DescendantNodes()
             .OfType<InvocationExpressionSyntax>()
@@ -2216,6 +2212,84 @@ public class TintMapReviewTests
             "publishing a tint must not invalidate unrelated client shader state");
         publishText.Should().Contain("SetForceUpdate()",
             "the rebuilt material state must be published in the current server update");
+    }
+
+    [TestCase(nameof(TintMapService.ApplyCurrentColors))]
+    [TestCase(nameof(TintMapService.ApplyCurrentItemColors))]
+    public void CompleteTintRefreshResetsOnceBeforeWritingAnyRows(string refreshMethodName)
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server", "Feature", "AppearanceDefinition", "TintMap", "TintMapService.cs");
+        var methods = CSharpSyntaxTree.ParseText(source).GetRoot().DescendantNodes()
+            .OfType<MethodDeclarationSyntax>()
+            .ToLookup(method => method.Identifier.ValueText);
+        var refresh = methods[refreshMethodName].Single();
+        var pending = new Queue<MethodDeclarationSyntax>();
+        var visited = new HashSet<MethodDeclarationSyntax>();
+        var resets = new List<(MethodDeclarationSyntax Method, InvocationExpressionSyntax Call)>();
+        var writes = new List<InvocationExpressionSyntax>();
+        pending.Enqueue(refresh);
+
+        while (pending.TryDequeue(out var method))
+        {
+            if (!visited.Add(method))
+                continue;
+
+            foreach (var call in method.DescendantNodes().OfType<InvocationExpressionSyntax>())
+            {
+                if (call.Expression is not IdentifierNameSyntax identifier)
+                    continue;
+
+                var name = identifier.Identifier.ValueText;
+                if (name == "ResetMaterialShaderUniforms")
+                    resets.Add((method, call));
+                else if (name == "SetMaterialShaderUniformVec4")
+                    writes.Add(call);
+
+                foreach (var callee in methods[name])
+                    pending.Enqueue(callee);
+            }
+        }
+
+        var reset = resets.Should().ContainSingle(
+                "nested material helpers must not erase palette rows or repeat native reset calls during a full refresh")
+            .Which;
+        reset.Method.Should().BeSameAs(refresh);
+        reset.Call.ArgumentList.Arguments.Should().ContainSingle(
+            "one complete reset removes legacy rows and custom-color transports before the new state is written");
+        reset.Call.Parent.Should().BeOfType<ExpressionStatementSyntax>()
+            .Which.Parent.Should().BeSameAs(refresh.Body,
+                "the reset must execute once outside the material and layer loops");
+        writes.Should().ContainSingle("all rendered rows must use the same write-only native setter");
+
+        var firstRowCall = refresh.DescendantNodes().OfType<InvocationExpressionSyntax>()
+            .Where(call => GetInvokedMethodName(call) is "WriteMaterialColor" or "ApplyCreatureColor")
+            .Min(call => call.SpanStart);
+        reset.Call.SpanStart.Should().BeLessThan(firstRowCall,
+            "the complete reset must precede both equipment rows and model-wide creature rows");
+    }
+
+    [Test]
+    public void MaterialUniformResetsOnlyOccurAtTheStartOfACompleteRefresh()
+    {
+        var source = ReadSource(
+            "SWLOR.Game.Server", "Feature", "AppearanceDefinition", "TintMap", "TintMapService.cs");
+        var resets = CSharpSyntaxTree.ParseText(source).GetRoot().DescendantNodes()
+            .OfType<InvocationExpressionSyntax>()
+            .Where(call => GetInvokedMethodName(call) == "ResetMaterialShaderUniforms")
+            .ToArray();
+        resets.Should().HaveCount(2,
+            "legacy shader parameters must be cleared only by complete creature and world-item refreshes");
+        resets.Select(call => call.Ancestors().OfType<MethodDeclarationSyntax>().First().Identifier.ValueText)
+            .Should().BeEquivalentTo(new[]
+            {
+                nameof(TintMapService.ApplyCurrentColors), nameof(TintMapService.ApplyCurrentItemColors)
+            });
+        foreach (var reset in resets)
+        {
+            reset.ArgumentList.Arguments.Should().ContainSingle(
+                "material/parameter-scoped resets leave client reset records that can erase unrelated colors");
+        }
     }
 
     [Test]

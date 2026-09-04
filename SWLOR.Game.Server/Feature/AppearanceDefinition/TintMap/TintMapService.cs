@@ -155,7 +155,11 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                         continue;
                     }
 
-                    ApplyColor(creature, selection, layer, GetEffectiveColor(creature, selection, layer));
+                    WriteMaterialColor(
+                        creature,
+                        selection.Material.Resref,
+                        layer,
+                        GetEffectiveColor(creature, selection, layer));
                 }
             }
 
@@ -178,11 +182,17 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 return;
             }
 
+            ResetMaterialShaderUniforms(item);
+
             foreach (var selection in TintMapModelResolver.GetWorldItemSelections(item))
             {
                 foreach (var layer in selection.Material.Layers)
                 {
-                    ApplyColor(item, selection, layer, GetEffectiveColor(OBJECT_INVALID, selection, layer));
+                    WriteMaterialColor(
+                        item,
+                        selection.Material.Resref,
+                        layer,
+                        GetEffectiveColor(OBJECT_INVALID, selection, layer));
                 }
             }
         }
@@ -1470,7 +1480,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             TintMapLayerType layer,
             TintMapColorSelection color)
         {
-            ApplyMaterialColor(creature, selection.Material.Resref, layer, color);
+            WriteMaterialColor(creature, selection.Material.Resref, layer, color);
         }
 
         private static void ApplyCreatureColor(
@@ -1494,7 +1504,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
             // The material-name-null tweak expands this one semantic row across every composed
             // child mesh. This is the same model-wide update used by the known-good PLT tinter.
-            ApplyMaterialColor(creature, string.Empty, layer, color);
+            WriteMaterialColor(creature, string.Empty, layer, color);
         }
 
         private static void ApplyCurrentColorsAndPublish(uint creature)
@@ -1503,47 +1513,20 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             NWNXLib.g_pAppManager.m_pServerExoApp.SetForceUpdate();
         }
 
-        private static void ApplyMaterialColor(
+        private static void WriteMaterialColor(
             uint creature,
             string materialResref,
             TintMapLayerType layer,
             TintMapColorSelection color)
         {
+            // Complete refreshes clear legacy parameters once, then only write rows. The native
+            // material-name-null tweak replaces existing matching rows without needing a reset.
+            // A scoped reset leaves a type-zero record which restores every material parameter
+            // on the client, discarding other colors written earlier in that update.
             var layerDefinition = TintMapMaterialRegistry.GetLayer(layer);
             var paletteColorId = color.CustomColor.HasValue
                 ? TintMapPaletteColors.GetClosestColorId(layer, color.CustomColor.Value)
                 : color.PaletteColorId;
-
-            // The native setter appends shader parameters. Remove the previous material-scoped
-            // values first so every edit installs one fresh entry, marks the object dirty for
-            // replication, and cannot exhaust the engine's per-object override capacity.
-            ResetMaterialShaderUniforms(
-                creature,
-                materialResref,
-                layerDefinition.UniformName);
-            // Clear the obsolete transports so players upgraded from an older build cannot retain
-            // a stale custom mode or RGB value alongside the packed row state.
-            ResetMaterialShaderUniforms(
-                creature,
-                materialResref,
-                layerDefinition.ColorUniformName);
-            ResetMaterialShaderUniforms(
-                creature,
-                materialResref,
-                layerDefinition.ColorRedUniformName);
-            ResetMaterialShaderUniforms(
-                creature,
-                materialResref,
-                layerDefinition.ColorGreenUniformName);
-            ResetMaterialShaderUniforms(
-                creature,
-                materialResref,
-                layerDefinition.ColorBlueUniformName);
-            ResetMaterialShaderUniforms(
-                creature,
-                materialResref,
-                layerDefinition.CustomModeUniformName);
-
             var paletteCoordinate = TintMapMaterialRegistry.GetPaletteCoordinate(
                 layer,
                 paletteColorId);

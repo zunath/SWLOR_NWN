@@ -106,7 +106,8 @@ namespace SWLOR.Game.Server.Service
             uint activator,
             AbilityDetail ability,
             bool countsAsAttackAttempt = true,
-            IReadOnlyList<TelegraphGeometry> activationAreaTelegraphs = null)
+            IReadOnlyList<TelegraphGeometry> activationAreaTelegraphs = null,
+            AbilityImpactSequence sequence = null)
         {
             if (!GetIsObjectValid(activator) || ability == null)
                 return;
@@ -143,7 +144,8 @@ namespace SWLOR.Game.Server.Service
                 statusAppliedNextAttackDamageBonus,
                 countsAsAttackAttempt,
                 queuedWeaponBonuses.CriticalDamagePercentAdjustment,
-                activationAreaTelegraphs);
+                activationAreaTelegraphs,
+                sequence);
         }
 
         /// <summary>
@@ -159,7 +161,9 @@ namespace SWLOR.Game.Server.Service
             int statusAppliedNextAttackDamageBonus = 0,
             bool countsAsAttackAttempt = true,
             int nextAbilityCriticalDamagePercentAdjustment = 0,
-            IReadOnlyList<TelegraphGeometry> activationAreaTelegraphs = null)
+            IReadOnlyList<TelegraphGeometry> activationAreaTelegraphs = null,
+            AbilityImpactSequence sequence = null,
+            TrackedAbilityImpact sequenceOwner = null)
         {
             if (!GetIsObjectValid(activator) || ability == null)
                 return;
@@ -173,7 +177,69 @@ namespace SWLOR.Game.Server.Service
                 statusAppliedNextAttackDamageBonus,
                 countsAsAttackAttempt,
                 nextAbilityCriticalDamagePercentAdjustment,
-                activationAreaTelegraphs);
+                activationAreaTelegraphs,
+                sequence)
+            {
+                SequenceOwner = sequenceOwner?.SequenceOwner ?? sequenceOwner
+            };
+        }
+
+        public static AbilityImpactSequence GetAbilityImpactSequence(uint activator)
+        {
+            return GetTrackedAbilityImpact(activator)?.Sequence;
+        }
+
+        /// <summary>
+        /// Reuses a payload's contributing sources within one impact. Delayed phases and
+        /// recurring pulses receive fresh trackers, while conditions can still be checked per target.
+        /// </summary>
+        public static IReadOnlyList<StatAdjustmentSource> GetAbilityImpactStatSources(uint activator, StatType payload)
+        {
+            var impact = GetTrackedAbilityImpact(activator);
+            return impact == null ? Stat.GetStatSources(activator, payload) : impact.GetStatSources(activator, payload);
+        }
+
+        public static bool TryTriggerAreaAbilityPulse(uint activator)
+        {
+            return GetAbilityImpactSequence(activator)?.TryTriggerAreaPulse() == true;
+        }
+
+        /// <summary>
+        /// Retains the originating ability and cast sequence for recurring impacts without
+        /// consuming another activation's pending bonuses or replacing its impact tracker.
+        /// </summary>
+        public static Action CaptureRepeatedAbilityImpact(uint activator, Action impactAction)
+        {
+            ArgumentNullException.ThrowIfNull(impactAction);
+            var originatingImpact = GetTrackedAbilityImpact(activator);
+            if (originatingImpact == null)
+                return impactAction;
+
+            var ability = originatingImpact.Ability;
+            var sequence = originatingImpact.Sequence;
+            return () =>
+            {
+                if (!GetIsObjectValid(activator) || GetCurrentHitPoints(activator) <= 0)
+                    return;
+
+                var previousImpact = GetTrackedAbilityImpact(activator);
+                BeginAbilityImpact(activator, ability, 0, 0, countsAsAttackAttempt: false, sequence: sequence);
+                var completed = false;
+                try
+                {
+                    impactAction();
+                    var summary = EndAbilityImpact(activator);
+                    completed = true;
+                    Combat.ApplyAbilityImpactEffects(activator, summary);
+                }
+                finally
+                {
+                    if (!completed)
+                        AbortAbilityImpact(activator);
+                    if (previousImpact != null)
+                        _trackedAbilityImpacts[activator] = previousImpact;
+                }
+            };
         }
 
         public static AbilityImpactSummary EndAbilityImpact(uint activator)
@@ -1392,6 +1458,9 @@ namespace SWLOR.Game.Server.Service
                 if (playImpactAnimation)
                     PlayCombatImpactAnimation(activator, impactAnimation);
 
+                if (trackedImpact != null)
+                    afterImpactAction?.Invoke(trackedImpact.Summary);
+
                 return totalDamage;
             }
 
@@ -1424,6 +1493,7 @@ namespace SWLOR.Game.Server.Service
                 shape,
                 areaVisualLocation,
                 trackedImpact?.Ability,
+                trackedImpact,
                 deferredNextAbilityDamageBonus,
                 trackedImpact?.NextAbilityCriticalRatePercentAdjustment ?? 0,
                 trackedImpact?.NextAbilityDefenseIgnorePercentAdjustment ?? 0,
@@ -1662,6 +1732,7 @@ namespace SWLOR.Game.Server.Service
             CombatImpactAreaShape shape,
             Location areaVisualLocation,
             AbilityDetail ability,
+            TrackedAbilityImpact sequenceOwner,
             int nextAbilityDamageBonus,
             int nextAbilityCriticalRatePercentAdjustment,
             int nextAbilityDefenseIgnorePercentAdjustment,
@@ -1739,7 +1810,8 @@ namespace SWLOR.Game.Server.Service
                             nextAbilityDefenseIgnorePercentAdjustment,
                             nextAttackEnmityBonus,
                             statusAppliedNextAttackDamageBonus,
-                            countsAsAttackAttempt: false);
+                            countsAsAttackAttempt: false,
+                            sequenceOwner: sequenceOwner);
                         impactStarted = true;
                         RecordAbilityImpactShape(creator, skillType, true);
                     }
@@ -3248,8 +3320,13 @@ namespace SWLOR.Game.Server.Service
         {
             private readonly HashSet<uint> _impactedTargets = new();
             private readonly List<PendingDamageEffect> _pendingDamageEffects = new();
+            private AbilityImpactSequence _sequence;
+            private Dictionary<StatType, IReadOnlyList<StatAdjustmentSource>> _statSources;
 
             public AbilityDetail Ability { get; }
+            // Delayed shapes share the original tracker until a rider actually needs cast state.
+            public TrackedAbilityImpact SequenceOwner { get; set; }
+            public AbilityImpactSequence Sequence => _sequence ??= SequenceOwner?.Sequence ?? new AbilityImpactSequence();
             public AbilityImpactSummary Summary { get; }
             public bool CountsAsAttackAttempt { get; }
             public IReadOnlyList<TelegraphGeometry> ActivationAreaTelegraphs { get; }
@@ -3275,9 +3352,11 @@ namespace SWLOR.Game.Server.Service
                 int statusAppliedNextAttackDamageBonus,
                 bool countsAsAttackAttempt,
                 int nextAbilityCriticalDamagePercentAdjustment,
-                IReadOnlyList<TelegraphGeometry> activationAreaTelegraphs)
+                IReadOnlyList<TelegraphGeometry> activationAreaTelegraphs,
+                AbilityImpactSequence sequence)
             {
                 Ability = ability;
+                _sequence = sequence;
                 NextAbilityDamageBonus = nextAbilityDamageBonus;
                 NextAbilityCriticalRatePercentAdjustment = nextAbilityCriticalRatePercentAdjustment;
                 NextAbilityCriticalDamagePercentAdjustment = nextAbilityCriticalDamagePercentAdjustment;
@@ -3292,6 +3371,20 @@ namespace SWLOR.Game.Server.Service
                     IsAreaAbility = ability.IsAreaAbility,
                     IsSingleTargetAbility = ability.IsSingleTargetAbility
                 };
+            }
+
+            public IReadOnlyList<StatAdjustmentSource> GetStatSources(uint activator, StatType payload)
+            {
+                if (_statSources != null && _statSources.TryGetValue(payload, out var cached))
+                    return cached;
+
+                var sources = Stat.GetStatSources(activator, payload);
+                if (sources.Count > 0)
+                {
+                    _statSources ??= new Dictionary<StatType, IReadOnlyList<StatAdjustmentSource>>();
+                    _statSources.Add(payload, sources);
+                }
+                return sources;
             }
 
             public void ConsumeStatusAppliedNextAttackDamageBonus(uint activator)

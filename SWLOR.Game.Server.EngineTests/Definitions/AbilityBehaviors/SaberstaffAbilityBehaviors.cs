@@ -229,15 +229,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     EquipMainHandResref = SaberstaffResref,
                     ExpectedActivatorStatAdjustments = new Dictionary<StatType, int>
                     {
-                        [StatType.AreaAbilityMinTargetsResourceRestoreThreshold] = 1,
-                        [StatType.AreaAbilityFPRestore] = 4,
-                        [StatType.AreaAbilityMinTargetsBuffThreshold] = 1,
-                        [StatType.AreaAbilityAttackDeflection] = 8,
-                        [StatType.AreaAbilityBuffDurationSeconds] = 30
+                        [StatType.AreaAbilityUsedFPRestore] = 4,
+                        [StatType.AreaAbilityUsedAttackDeflection] = 8,
+                        [StatType.AreaAbilityUsedAttackDeflectionDurationSeconds] = 30
                     },
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    Notes = "The five temporary stat modifiers last 45 seconds and empower subsequent area combat ability impacts."
+                    Notes = "The three temporary stat modifiers last 45 seconds and empower subsequent hostile area ability uses, including empty areas."
                 },
 
                 // SeverFocusAbilityDefinition - hostile damage; resource drain is conditional on the

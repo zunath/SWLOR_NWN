@@ -645,6 +645,39 @@ namespace SWLOR.Game.Server.Service
             return amount * GetForceAffinityMagnitudeMultiplier(creature, perkType);
         }
 
+        public static IReadOnlyList<StatAdjustmentSource> GetStatSources(uint creature, StatType payloadStat)
+        {
+            if (!_statBonusGroupsByStat.TryGetValue(payloadStat, out var groups))
+                return Array.Empty<StatAdjustmentSource>();
+
+            List<StatAdjustmentSource> sources = null;
+            foreach (var group in groups)
+            {
+                var level = GetStatBonusPerkLevel(creature, group.PerkType);
+                if (level <= 0 || !group.PerkDetail.PerkLevels.TryGetValue(level, out var perkLevel))
+                    continue;
+
+                var stats = new Dictionary<StatType, int>();
+                foreach (var bonus in group.PerkDetail.StatBonuses)
+                {
+                    stats.TryGetValue(bonus.Stat, out var current);
+                    stats[bonus.Stat] = Stat.AggregateStatAdjustment(bonus.Stat, current, bonus.Calculate(creature));
+                }
+                foreach (var bonus in perkLevel.StatBonuses)
+                {
+                    stats.TryGetValue(bonus.Stat, out var current);
+                    stats[bonus.Stat] = Stat.AggregateStatAdjustment(bonus.Stat, current, bonus.Calculate(creature));
+                }
+
+                if (stats.TryGetValue(payloadStat, out var value) && value != 0)
+                {
+                    sources ??= new List<StatAdjustmentSource>();
+                    sources.Add(new StatAdjustmentSource($"perk:{(int)group.PerkType}", stats));
+                }
+            }
+            return (IReadOnlyList<StatAdjustmentSource>)sources ?? Array.Empty<StatAdjustmentSource>();
+        }
+
         public static int GetStatBonus(uint creature, StatType stat)
         {
             var bonus = 0;

@@ -20,7 +20,8 @@
 
 .PARAMETER Filter
     Substring passed through as SWLOR_ENGINE_TEST_FILTER. Only engine tests
-    whose name or category contains this text will run.
+    whose name or category contains this text will run. Separate alternatives
+    with |, for example -Filter 'PerkTracker|StatusEffect'.
 
 .PARAMETER ArenaResref
     Optional override for SWLOR_ENGINE_TEST_ARENA_RESREF.

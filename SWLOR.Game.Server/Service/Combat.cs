@@ -1041,6 +1041,7 @@ namespace SWLOR.Game.Server.Service
             damage = ApplyOutgoingDamageModifier(attacker, damage);
             damage = ApplyDamageTypeDealtModifiers(attacker, damage, damageType);
             damage = ApplyWeaponAndForceDamageModifier(attacker, damage, skillType, damageType);
+            damage = ApplyAbilityShapeDamageModifier(attacker, damage, isAbilityDamage, ability);
             damage = ApplyTargetLowHPDamageModifier(attacker, defender, damage);
 
             damageBeforeTargetStatusStage = damage;
@@ -1070,6 +1071,16 @@ namespace SWLOR.Game.Server.Service
                 damage = maxBonusDamage;
 
             return Math.Max(1, damage);
+        }
+
+        public static int ApplyAbilityShapeDamageModifier(uint attacker, int damage, bool isAbilityDamage, AbilityDetail ability)
+        {
+            var adjustment = !isAbilityDamage || ability is { IsHostileAbility: true, IsSingleTargetAbility: true }
+                ? Stat.GetStatAdjustment(attacker, StatType.SingleTargetDamagePercentAdjustment)
+                : ability is { IsHostileAbility: true, IsAreaAbility: true }
+                    ? Stat.GetStatAdjustment(attacker, StatType.AreaAbilityDamagePercentAdjustment)
+                    : 0;
+            return ApplyPercentDamageAdjustment(damage, adjustment);
         }
 
         public static int ApplySkillAbilityDamageModifier(
@@ -3433,8 +3444,8 @@ namespace SWLOR.Game.Server.Service
             var singleStaminaRestore = Stat.GetStatAdjustment(creature, StatType.AvoidedAttackSingleStaminaRestore);
             if (singleChance > 0 && singleStaminaRestore > 0 && Random.D100(1) <= singleChance)
             {
+                StatusEffect.ConsumeStatusEffectStat(creature, StatType.AvoidedAttackSingleStaminaRestore);
                 Stat.RestoreStamina(creature, singleStaminaRestore);
-                StatusEffect.RemoveStatusEffectsWithStat(creature, StatType.AvoidedAttackSingleStaminaRestore, false);
             }
 
             ApplyAvoidedAttackAbilityUsedRangedDeflectionRefresh(creature);
@@ -4268,17 +4279,11 @@ namespace SWLOR.Game.Server.Service
             if (StatusEffect.HasStatusEffectCategory(defender, StatusEffectCategory.Control))
                 adjustment += Stat.GetStatAdjustment(attacker, StatType.DamageToControlTargetPercentAdjustment);
 
-            if (isAbilityDamage &&
-                IsCurrentFPAndStaminaAtOrAbovePercent(
-                    attacker,
-                    Stat.GetStatAdjustment(
-                        attacker,
-                        StatType.HighFPAndStaminaAbilityDamagePercentAdjustmentThresholdPercent),
-                    ability))
+            if (isAbilityDamage)
             {
-                adjustment += Stat.GetStatAdjustment(
-                    attacker,
-                    StatType.HighFPAndStaminaAbilityDamagePercentAdjustment);
+                adjustment += GetHighResourceStatAdjustment(attacker,
+                    StatType.HighFPAndStaminaAbilityDamagePercentAdjustment,
+                    StatType.HighFPAndStaminaAbilityDamagePercentAdjustmentThresholdPercent, ability);
             }
 
             if (skillType == SkillType.Rifle &&
@@ -4437,7 +4442,7 @@ namespace SWLOR.Game.Server.Service
             var requiredSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
                 attacker,
                 StatType.AreaAbilityAfterDeflectionDamagePercentAdjustmentSkillType));
-            if (!SkillTypeMatches(skillType, requiredSkillType))
+            if (!SkillTypeMatchesOrGlobal(skillType, requiredSkillType))
                 return damage;
 
             var window = Stat.GetStatAdjustment(attacker, StatType.AreaAbilityAfterDeflectionWindowSeconds);
@@ -5138,6 +5143,7 @@ namespace SWLOR.Game.Server.Service
             ApplyAbilityUsedPerkCategoryAttackDeflection(activator, ability);
             ApplySingleTargetAbilityUsedAttackDeflection(activator, ability, isSingleTargetAbility);
             ApplyAreaAbilityUsedEvasion(activator, ability, skillType);
+            ApplyAreaAbilityUsedRewards(activator, ability);
             ApplyHostileAbilityForceAttack(activator, ability);
             ApplyHostileAbilityFPSpendForceAttack(activator, ability);
             ApplyAbilityUsedNearbyAllyDefense(activator);
@@ -5167,18 +5173,45 @@ namespace SWLOR.Game.Server.Service
                 : GetAbilitySkillType(activator, ability);
         }
 
+        private static void ApplyAreaAbilityUsedRewards(uint activator, AbilityDetail ability)
+        {
+            if (ability is not { IsHostileAbility: true, IsAreaAbility: true })
+                return;
+
+            var grantedDeflection = false;
+            foreach (var source in Stat.GetStatSources(activator, StatType.AreaAbilityUsedAttackDeflection))
+            {
+                var deflection = source[StatType.AreaAbilityUsedAttackDeflection];
+                var duration = source[StatType.AreaAbilityUsedAttackDeflectionDurationSeconds];
+                if (deflection <= 0 || duration <= 0)
+                    continue;
+
+                TemporaryStatModifier.Replace(activator,
+                    Stat.GetGrantedDeflectionStatType(StatType.AreaAbilityUsedAttackDeflection),
+                    deflection, duration, source.GetModifierGroup(StatType.AreaAbilityUsedAttackDeflection));
+                grantedDeflection = true;
+            }
+            if (grantedDeflection)
+                ApplyAbilityGrantedAttackDeflectionEffects(activator,
+                    Stat.GetStatTypeDeflectionSource(StatType.AreaAbilityUsedAttackDeflection));
+
+            var restore = Stat.GetStatAdjustment(activator, StatType.AreaAbilityUsedFPRestore);
+            if (restore > 0 && Stat.RestoreFP(activator, restore) > 0)
+                ApplyAbilityRestoredFPEffects(activator);
+        }
+
         private static void ApplyAreaAbilityUsedEvasion(
             uint activator,
             AbilityDetail ability,
             SkillType skillType)
         {
-            if (ability == null || !ability.IsAreaAbility)
+            if (ability == null || !ability.IsHostileAbility || !ability.IsAreaAbility)
                 return;
 
             var requiredSkillType = GetSkillTypeFromStat(Stat.GetStatAdjustment(
                 activator,
                 StatType.AreaAbilityUsedEvasionPercentAdjustmentSkillType));
-            if (!SkillTypeMatches(skillType, requiredSkillType))
+            if (!SkillTypeMatchesOrGlobal(skillType, requiredSkillType))
                 return;
 
             var evasion = Stat.GetStatAdjustment(activator, StatType.AreaAbilityUsedEvasionPercentAdjustment);
@@ -5485,16 +5518,29 @@ namespace SWLOR.Game.Server.Service
 
             bonus += ConsumeGuardedHitNextSkillAbilityExposedDamageBonus(activator, skillType);
 
-            if (ability.IsHostileAbility &&
-                IsCurrentFPAndStaminaAtOrAbovePercent(
-                    activator,
-                    Stat.GetStatAdjustment(activator, StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent),
-                    ability))
-            {
-                bonus += Stat.GetStatAdjustment(activator, StatType.HighFPAndStaminaAbilityDamageBonus);
-            }
+            if (ability.IsHostileAbility)
+                bonus += GetHighResourceAbilityDamageBonus(activator, ability);
 
             return bonus;
+        }
+
+        public static int GetHighResourceAbilityDamageBonus(uint activator, AbilityDetail ability = null)
+        {
+            return GetHighResourceStatAdjustment(activator, StatType.HighFPAndStaminaAbilityDamageBonus,
+                StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent, ability);
+        }
+
+        private static int GetHighResourceStatAdjustment(uint activator, StatType payload, StatType threshold, AbilityDetail ability)
+        {
+            var sources = Ability.GetAbilityImpactStatSources(activator, payload);
+            var adjustment = 0;
+            for (var index = 0; index < sources.Count; index++)
+            {
+                var source = sources[index];
+                if (IsCurrentFPAndStaminaAbovePercent(activator, source[threshold], ability))
+                    adjustment = checked(adjustment + source[payload]);
+            }
+            return adjustment;
         }
 
         public static int GetCostlyAbilityDamageBonus(
@@ -5566,6 +5612,7 @@ namespace SWLOR.Game.Server.Service
             ApplyRangedAbilityHitNearTargetEffects(activator, target, ability, skillType);
             ApplyCostlyAbilityHitEffects(activator, target, ability, skillType);
             ApplyAbilityDamageRiders(activator, target, ability, skillType, damageType, damage);
+            ApplyAreaAbilityPulse(activator, target, ability, isFirstSuccessfulTarget);
             ApplyAreaAbilityTargetHitSequenceEffects(activator, target, ability, skillType);
         }
 
@@ -5872,6 +5919,45 @@ namespace SWLOR.Game.Server.Service
             var staminaDrain = Stat.GetStatAdjustment(activator, StatType.AbilityResourceDrainFoggyMindStamina);
             if (staminaDrain > 0)
                 Stat.ReduceStamina(target, staminaDrain);
+        }
+
+        private static IReadOnlyList<StatAdjustmentSource> GetAreaAbilityPulseSources(
+            uint activator,
+            AbilityDetail ability,
+            bool isFirstSuccessfulTarget)
+        {
+            if (ability?.IsHostileAbility != true || !ability.IsAreaAbility || !isFirstSuccessfulTarget)
+                return Array.Empty<StatAdjustmentSource>();
+
+            return Stat.GetStatSources(activator, StatType.AreaAbilityPulseDamage);
+        }
+
+        private static void ApplyAreaAbilityPulse(
+            uint activator,
+            uint target,
+            AbilityDetail ability,
+            bool isFirstSuccessfulTarget)
+        {
+            var sources = GetAreaAbilityPulseSources(activator, ability, isFirstSuccessfulTarget);
+            var index = 0;
+            while (index < sources.Count &&
+                   (sources[index][StatType.AreaAbilityPulseDamage] <= 0 || sources[index][StatType.AreaAbilityPulseRadiusMeters] <= 0))
+                index++;
+            if (index == sources.Count || !Ability.TryTriggerAreaAbilityPulse(activator))
+                return;
+
+            var location = GetLocation(target);
+            ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Howl_War_Cry), location);
+            for (; index < sources.Count; index++)
+            {
+                var damage = sources[index][StatType.AreaAbilityPulseDamage];
+                var radius = sources[index][StatType.AreaAbilityPulseRadiusMeters];
+                if (damage <= 0 || radius <= 0)
+                    continue;
+                foreach (var nearby in AbilityTargeting.GetHostileTargetsNearLocation(
+                             activator, location, radius, 0, target))
+                    ApplyTriggeredDamage(activator, nearby, damage, CombatDamageType.Physical);
+            }
         }
 
         private static void ApplyAreaAbilityFragmentation(
@@ -7955,6 +8041,8 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(activator) || summary == null || summary.ImpactedTargetCount <= 0)
                 return;
 
+            ApplyAreaHitRewards(activator, summary);
+
             switch (summary.SkillType)
             {
                 case SkillType.Throwing:
@@ -7965,9 +8053,6 @@ namespace SWLOR.Game.Server.Service
                     break;
                 case SkillType.Spear:
                     ApplySpearAbilityImpactEffects(activator, summary);
-                    break;
-                case SkillType.TwinBlade:
-                    ApplyTwinBladeAbilityImpactEffects(activator, summary);
                     break;
             }
         }
@@ -10729,102 +10814,38 @@ namespace SWLOR.Game.Server.Service
             }
         }
 
-        private static void ApplyTwinBladeAbilityImpactEffects(uint activator, AbilityImpactSummary summary)
+        private static void ApplyAreaHitRewards(uint activator, AbilityImpactSummary summary)
         {
-            if (summary.IsSingleTargetAbility)
-            {
-                var staminaRestore = Stat.GetStatAdjustment(activator, StatType.TwinBladeSingleTargetAbilityStaminaRestore);
-                var cooldown = Stat.GetStatAdjustment(activator, StatType.TwinBladeSingleTargetAbilityStaminaRestoreCooldownSeconds);
-                if (staminaRestore > 0 && TryUseStatTrigger(activator, StatType.TwinBladeSingleTargetAbilityStaminaRestore, cooldown))
-                {
-                    Stat.RestoreStamina(activator, staminaRestore);
-                }
-            }
-
             if (!summary.IsAreaAbility)
                 return;
 
-            ApplyTwinBladeSweepingAdvance(activator, summary);
-
-            var hasteThreshold = Stat.GetStatAdjustment(activator, StatType.TwinBladeAreaAbilityMinTargetsHasteThreshold);
-            var hastePercent = Stat.GetStatAdjustment(activator, StatType.TwinBladeAreaAbilityHastePercentAdjustment);
-            var hasteDuration = Stat.GetStatAdjustment(activator, StatType.TwinBladeAreaAbilityHasteDurationSeconds);
-            var hasteMax = Stat.GetStatAdjustment(activator, StatType.TwinBladeAreaAbilityHastePercentMax);
-            if (hasteThreshold > 0 &&
-                hastePercent > 0 &&
-                hasteDuration > 0 &&
-                hasteMax > 0 &&
-                summary.ImpactedTargetCount >= hasteThreshold)
+            ApplyAreaHitHaste(activator, summary.ImpactedTargetCount);
+            foreach (var source in Stat.GetStatSources(activator, StatType.AreaHitStaminaRestorePerTarget))
             {
-                var stacksGained = ApplyStackingHasteBoost(activator, hastePercent, hasteMax, hasteDuration, 1);
-                var staminaOnStack = Stat.GetStatAdjustment(activator, StatType.TwinBladeAreaAbilityStaminaRestoreOnHasteStack);
-                if (staminaOnStack > 0 && stacksGained > 0)
-                {
-                    Stat.RestoreStamina(activator, staminaOnStack * stacksGained);
-                }
-            }
-
-            var staminaPerTarget = Stat.GetStatAdjustment(activator, StatType.TwinBladeAreaAbilityStaminaRestorePerTarget);
-            var staminaMax = Stat.GetStatAdjustment(activator, StatType.TwinBladeAreaAbilityStaminaRestoreMax);
-            if (staminaPerTarget > 0 && staminaMax > 0)
-            {
-                Stat.RestoreStamina(activator, Math.Min(staminaMax, staminaPerTarget * summary.ImpactedTargetCount));
-            }
-
-            var cooldownStaminaPerTarget = Stat.GetStatAdjustment(activator, StatType.TwinBladeAreaAbilityCooldownStaminaRestorePerTarget);
-            var cooldownStaminaMax = Stat.GetStatAdjustment(activator, StatType.TwinBladeAreaAbilityCooldownStaminaRestoreMax);
-            var areaStaminaCooldown = Stat.GetStatAdjustment(activator, StatType.TwinBladeAreaAbilityCooldownStaminaRestoreCooldownSeconds);
-            if (cooldownStaminaPerTarget > 0 &&
-                cooldownStaminaMax > 0 &&
-                TryUseStatTrigger(activator, StatType.TwinBladeAreaAbilityCooldownStaminaRestorePerTarget, areaStaminaCooldown))
-            {
-                Stat.RestoreStamina(activator, Math.Min(cooldownStaminaMax, cooldownStaminaPerTarget * summary.ImpactedTargetCount));
+                var perTarget = source[StatType.AreaHitStaminaRestorePerTarget];
+                var maximum = source[StatType.AreaHitStaminaRestoreMaximum];
+                if (perTarget > 0 && maximum > 0)
+                    Stat.RestoreStamina(activator, Math.Min(maximum, perTarget * summary.ImpactedTargetCount));
             }
         }
 
-        private static void ApplyTwinBladeSweepingAdvance(uint activator, AbilityImpactSummary summary)
+        public static void ApplyAreaHitHaste(uint activator, int impactedTargetCount)
         {
-            if (Stat.GetStatAdjustment(activator, StatType.TwinBladeCycloneSweepingAdvance) <= 0)
-                return;
-
-            var minimumTargets = Stat.GetStatAdjustment(activator, StatType.TwinBladeCycloneSweepingAdvanceMinimumTargets);
-            if (minimumTargets <= 0 || summary.ImpactedTargetCount < minimumTargets)
-                return;
-
-            var staminaRestore = Stat.GetStatAdjustment(activator, StatType.TwinBladeCycloneSweepingAdvanceStaminaRestore);
-            if (staminaRestore > 0)
+            foreach (var source in Stat.GetStatSources(activator, StatType.AreaAbilityHastePerStack))
             {
-                Stat.RestoreStamina(activator, staminaRestore);
-            }
+                var threshold = source[StatType.AreaAbilityHasteStackMinimumTargets];
+                if (threshold <= 0 || impactedTargetCount < threshold)
+                    continue;
 
-            var hastePercent = Stat.GetStatAdjustment(activator, StatType.TwinBladeCycloneSweepingAdvanceHastePercent);
-            var duration = Stat.GetStatAdjustment(activator, StatType.TwinBladeCycloneSweepingAdvanceDurationSeconds);
-            if (hastePercent > 0 && duration > 0)
-            {
-                TemporaryStatModifier.Replace(
-                    activator,
-                    StatType.AttackDelayReductionPercent,
-                    hastePercent,
-                    duration,
-                    StatType.TwinBladeCycloneSweepingAdvanceHastePercent);
+                var stacks = source[StatType.AreaAbilityHasteStacksPerAdditionalTarget] > 0
+                    ? impactedTargetCount - threshold + 1
+                    : 1;
+                TemporaryStatModifier.AddCapped(activator, StatType.AttackDelayReductionPercent,
+                    source[StatType.AreaAbilityHastePerStack],
+                    source[StatType.AreaAbilityHasteStackDurationSeconds],
+                    source[StatType.AreaAbilityHasteStackMaximumPercent],
+                    source.GetModifierGroup(StatType.AreaAbilityHastePerStack), stacks);
             }
-        }
-
-        private static int ApplyStackingHasteBoost(
-            uint activator,
-            int hastePercent,
-            int maxHastePercent,
-            int durationSeconds,
-            int requestedStacks)
-        {
-            return TemporaryStatModifier.AddCapped(
-                activator,
-                StatType.AttackDelayReductionPercent,
-                hastePercent,
-                durationSeconds,
-                maxHastePercent,
-                StatType.TwinBladeAreaAbilityHastePercentAdjustment,
-                requestedStacks);
         }
 
         private static void ApplyStackingAttackBoost(
@@ -10981,7 +11002,7 @@ namespace SWLOR.Game.Server.Service
             return Stat.GetCurrentFP(creature) >= maxFP * (thresholdPercent / 100f);
         }
 
-        public static bool IsCurrentFPAndStaminaAtOrAbovePercent(
+        public static bool IsCurrentFPAndStaminaAbovePercent(
             uint creature,
             int thresholdPercent,
             AbilityDetail ability = null)
@@ -11000,8 +11021,8 @@ namespace SWLOR.Game.Server.Service
                 currentStamina += costState.NonCriticalRangedAbilityStaminaCost;
             }
 
-            return Stat.GetCurrentFP(creature) >= maxFP * (thresholdPercent / 100f) &&
-                   currentStamina >= maxStamina * (thresholdPercent / 100f);
+            return Stat.GetCurrentFP(creature) > maxFP * (thresholdPercent / 100f) &&
+                   currentStamina > maxStamina * (thresholdPercent / 100f);
         }
 
         public static bool IsCurrentFPAndStaminaAtOrBelowPercent(uint creature, int thresholdPercent)

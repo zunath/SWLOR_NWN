@@ -34,6 +34,23 @@ namespace SWLOR.Game.Server.Service
         private const string DroidItemId = "DROID_ITEM_ID";
         private const float RecastDelaySeconds = 1800f;
 
+        public static string GetInstructionDiscValidationError(uint user, uint item)
+        {
+            if (!GetIsObjectValid(item) || GetItemPossessor(item) != user)
+                return "Select an instruction disc from your inventory.";
+
+            if (GetResRef(item) == DroidControlItemResref)
+                return "A droid controller cannot be used as an instruction disc.";
+
+            for (var property = GetFirstItemProperty(item); GetIsItemPropertyValid(property); property = GetNextItemProperty(item))
+            {
+                if (GetItemPropertyType(property) == ItemPropertyType.DroidInstruction)
+                    return string.Empty;
+            }
+
+            return "That item is not a droid instruction disc.";
+        }
+
         /// <summary>
         /// When the module loads, cache all relevant droid data into memory.
         /// </summary>

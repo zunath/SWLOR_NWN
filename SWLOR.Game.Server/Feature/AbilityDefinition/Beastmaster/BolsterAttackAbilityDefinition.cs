@@ -7,7 +7,6 @@ using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -40,7 +39,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasRecastDelay(RecastGroup.BolsterAttack, 18f)
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()
-                .HasAIScore(AIScore.SelfStatBelow(StatType.BolsterAttackRank, 1, 1))
+                .HasAIScore(AIScore.SelfBuff<BolsterAttack1StatusEffect>(1))
                 .HasImpactAction(BolsterAttack1ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()
@@ -58,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasRecastDelay(RecastGroup.BolsterAttack, 18f)
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()
-                .HasAIScore(AIScore.SelfStatBelow(StatType.BolsterAttackRank, 2, 2))
+                .HasAIScore(AIScore.SelfBuff<BolsterAttack2StatusEffect>(2))
                 .HasImpactAction(BolsterAttack2ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()
@@ -76,7 +75,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .HasRecastDelay(RecastGroup.BolsterAttack, 18f)
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()
-                .HasAIScore(AIScore.SelfStatBelow(StatType.BolsterAttackRank, 3, 3))
+                .HasAIScore(AIScore.SelfBuff<BolsterAttack3StatusEffect>(3))
                 .HasImpactAction(BolsterAttack3ImpactAction)
                 .IsCastedAbility()
                 .BreaksStealth()

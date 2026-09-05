@@ -21,14 +21,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.PerkCoverage
                 {
                     Perk = PerkType.WristRocket,
                     MaxLevel = 3,
-                    Prices = new[] { 2, 3, 3 },
+                    Prices = new[] { 2, 2, 3 },
                     GrantedFeats = new[] { FeatType.WristRocket1, FeatType.WristRocket2, FeatType.WristRocket3 },
                 },
                 new()
                 {
                     Perk = PerkType.SonicBurst,
                     MaxLevel = 3,
-                    Prices = new[] { 2, 3, 3 },
+                    Prices = new[] { 2, 2, 3 },
                     GrantedFeats = new[] { FeatType.SonicBurst1, FeatType.SonicBurst2, FeatType.SonicBurst3 },
                 },
                 new()
@@ -49,14 +49,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.PerkCoverage
                 {
                     Perk = PerkType.IonLance,
                     MaxLevel = 3,
-                    Prices = new[] { 2, 2, 3 },
+                    Prices = new[] { 3, 4, 4 },
                     GrantedFeats = new[] { FeatType.IonLance1, FeatType.IonLance2, FeatType.IonLance3 },
                 },
                 new()
                 {
                     Perk = PerkType.RailDart,
                     MaxLevel = 3,
-                    Prices = new[] { 2, 3, 4 },
+                    Prices = new[] { 2, 2, 3 },
                     GrantedFeats = new[] { FeatType.RailDart1, FeatType.RailDart2, FeatType.RailDart3 },
                 },
                 new()

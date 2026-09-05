@@ -29,8 +29,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     ExpectsTargetDamage = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    ImpactRefundsCosts = true,
-                    Notes = "RestoreStaminaOnHit refunds 4 STM per landed hit in the impact window, so only the net stamina dip is observable.",
+                    Notes = "The 4 STM refund requires at least three landed targets; this single-target fixture pays the full cost.",
                 },
                 new()
                 {
@@ -40,8 +39,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                     ExpectsTargetDamage = true,
                     ExpectsSTMCost = true,
                     ExpectsRecast = true,
-                    ImpactRefundsCosts = true,
-                    Notes = "RestoreStaminaOnHit refunds 6 STM per landed hit in the impact window, so only the net stamina dip is observable.",
+                    Notes = "The 6 STM refund requires at least three landed targets; this single-target fixture pays the full cost.",
                 },
 
                 // CrossCutAbilityDefinition - Casted single-target, 2 hits.

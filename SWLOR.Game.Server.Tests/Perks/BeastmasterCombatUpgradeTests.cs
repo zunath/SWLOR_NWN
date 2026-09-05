@@ -60,9 +60,9 @@ public class BeastmasterCombatUpgradeTests
     {
         new BolsterAttack1StatusEffect().StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(5);
         new BolsterAttack3StatusEffect().StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(12);
-        new BolsterAttack1StatusEffect().StatGroup.Stats[StatType.BolsterAttackRank].Should().Be(1);
-        new BolsterAttack2StatusEffect().StatGroup.Stats[StatType.BolsterAttackRank].Should().Be(2);
-        new BolsterAttack3StatusEffect().StatGroup.Stats[StatType.BolsterAttackRank].Should().Be(3);
+        new BolsterAttack1StatusEffect().MorePowerfulEffectTypes.Should().Contain(typeof(BolsterAttack3StatusEffect));
+        new BolsterAttack2StatusEffect().LessPowerfulEffectTypes.Should().Contain(typeof(BolsterAttack1StatusEffect));
+        new BolsterAttack3StatusEffect().LessPowerfulEffectTypes.Should().Contain(typeof(BolsterAttack2StatusEffect));
         new Hasten1StatusEffect().StatGroup.Stats[StatType.AttackDelayReductionPercent].Should().Be(15);
         new Hasten2StatusEffect().StatGroup.Stats[StatType.AttackDelayReductionPercent].Should().Be(25);
         new PrimalOverrun1StatusEffect().StatGroup.Stats[StatType.DamageDealtPercentAdjustment].Should().Be(12);

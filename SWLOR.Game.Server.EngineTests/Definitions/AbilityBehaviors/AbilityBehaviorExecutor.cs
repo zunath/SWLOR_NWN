@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Service.StatService;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
@@ -129,6 +130,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
             var skipped = skippedFeats.Count;
             var passed = passedCount;
             var summary = $"{cases.Count} case(s): {passed} passed, {failures.Count} failed, {skipped} skipped.";
+            if (cases.Any(testCase => Ability.IsFeatRegistered(testCase.Feat) &&
+                                      Ability.GetAbilityDetail(testCase.Feat).IsMimicryTechnique))
+                summary += " NPC fixtures bypass the player technique-loadout gate; player learning/equipment validation is not exercised.";
             if (abortedAsSystemic)
             {
                 var notRun = cases.Count - passed - failures.Count - skipped;
@@ -157,12 +161,17 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
         {
             ctx.Assert(Ability.IsFeatRegistered(behaviorCase.Feat), "feat is not registered to any ability");
             var ability = Ability.GetAbilityDetail(behaviorCase.Feat);
+            var requiresPlayerTechniqueLoadout = ability.IsMimicryTechnique;
 
             var caster = ctx.SpawnCreature(CasterResref, -0.5f, 0f);
             var target = caster;
 
             try
             {
+                // A stock NPC cannot own a Player record/loadout. Temporarily bypass only
+                // that metadata gate for this serial engine case, restoring it in finally.
+                // Skill, technique potency, activation costs, recast and impacts stay intact.
+                ability.IsMimicryTechnique = false;
                 if (behaviorCase.Target == AbilityTargetKind.HostileCreature)
                 {
                     // 2m separation: a +/-1.5 split put the pair at exactly 3.0m, the outer
@@ -231,6 +240,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
                 // reset the FP/STAMINA locals to the (unraised) max and would overwrite us.
                 await NwTask.NextFrame();
                 ctx.SetNPCResources(caster, ResourcePool, ResourcePool);
+                CreaturePlugin.AddFeat(caster, behaviorCase.Feat);
 
                 // Out-of-combat NPCs heal 10% HP and restore 1 FP/STM per heartbeat tick;
                 // inside a 20s assertion window that would satisfy a healing assertion on a
@@ -547,6 +557,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
             }
             finally
             {
+                ability.IsMimicryTechnique = requiresPlayerTechniqueLoadout;
                 // Fresh actors per case: destroy immediately rather than letting hundreds
                 // accumulate until the tree test's cleanup.
                 if (target != caster)

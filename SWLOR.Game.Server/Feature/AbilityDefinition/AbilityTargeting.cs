@@ -178,7 +178,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             while (GetIsObjectValid(creature))
             {
-                if ((creature == activator && includeActivator) || Party.IsInParty(activator, creature))
+                if (creature == activator ? includeActivator : Party.IsInParty(activator, creature))
                 {
                     if (creature == activator)
                         yieldedActivator = true;

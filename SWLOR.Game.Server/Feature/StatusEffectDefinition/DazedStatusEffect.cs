@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Service;
 using SWLOR.Game.Server.Service.CombatService;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.NWScript.Enum;
 
@@ -34,7 +35,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             if (StatusEffect.HasStatusEffect(creature, GetType()))
                 return "Target is already dazed.";
 
-            return Ability.HasHardCrowdControlImmunity(creature, ImmunityType.Dazed)
+            return Stat.GetStatAdjustment(creature, StatType.DazeImmunity) > 0 ||
+                   Ability.HasHardCrowdControlImmunity(creature, ImmunityType.Dazed)
                 ? "Target is temporarily immune to daze."
                 : string.Empty;
         }

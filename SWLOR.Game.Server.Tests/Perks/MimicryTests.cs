@@ -219,7 +219,8 @@ public class MimicryTests
             "StatusEffect.ApplyStatusEffect(activator, ally, new StimCanisterStatusEffect(), 30f)");
         abilityTargeting.Should().Contain("bool includeActivator = true");
         abilityTargeting.Should().Contain(
-            "if ((creature == activator && includeActivator) || Party.IsInParty(activator, creature))");
+            "if (creature == activator ? includeActivator : Party.IsInParty(activator, creature))",
+            "excluding the caster must take precedence over party membership for Warden Wall");
         abilityTargeting.Should().Contain(
             "if (!GetIsDead(creature) && GetCurrentHitPoints(creature) > 0)",
             "dead or unconscious party members must not receive Stim Canister");

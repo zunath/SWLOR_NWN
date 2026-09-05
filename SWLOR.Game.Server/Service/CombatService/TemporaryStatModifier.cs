@@ -202,6 +202,44 @@ namespace SWLOR.Game.Server.Service.CombatService
             return Consume(creature, statType, GetGroup(groupStatType));
         }
 
+        public static IReadOnlyList<StatAdjustmentSource> GetStatSources(uint creature, StatType payloadStat)
+        {
+            if (PurgeExpired(creature))
+                PublishRefresh(creature);
+
+            if (!_modifiers.TryGetValue(creature, out var modifiers))
+                return Array.Empty<StatAdjustmentSource>();
+
+            Dictionary<string, Dictionary<StatType, int>> groups = null;
+            foreach (var modifier in modifiers)
+            {
+                if (modifier.StatType != payloadStat || modifier.Amount == 0)
+                    continue;
+
+                groups ??= new Dictionary<string, Dictionary<StatType, int>>();
+                if (!groups.ContainsKey(modifier.Group))
+                    groups.Add(modifier.Group, new Dictionary<StatType, int>());
+            }
+
+            if (groups == null)
+                return Array.Empty<StatAdjustmentSource>();
+
+            foreach (var modifier in modifiers)
+            {
+                if (groups.TryGetValue(modifier.Group, out var stats))
+                {
+                    stats.TryGetValue(modifier.StatType, out var current);
+                    stats[modifier.StatType] = Stat.AggregateStatAdjustment(modifier.StatType, current, modifier.Amount);
+                }
+            }
+
+            var sources = new StatAdjustmentSource[groups.Count];
+            var index = 0;
+            foreach (var (group, stats) in groups)
+                sources[index++] = new StatAdjustmentSource($"temporary:{group}", stats);
+            return sources;
+        }
+
         public static int GetStatAdjustment(uint creature, StatType statType, string group = null)
         {
             if (PurgeExpired(creature))
@@ -270,7 +308,20 @@ namespace SWLOR.Game.Server.Service.CombatService
                 return false;
 
             var now = DateTime.UtcNow;
-            var removed = modifiers.RemoveAll(x => x.Expiration <= now) > 0;
+            var retained = 0;
+            for (var index = 0; index < modifiers.Count; index++)
+            {
+                var modifier = modifiers[index];
+                if (modifier.Expiration > now)
+                {
+                    if (retained != index)
+                        modifiers[retained] = modifier;
+                    retained++;
+                }
+            }
+            var removed = retained < modifiers.Count;
+            if (removed)
+                modifiers.RemoveRange(retained, modifiers.Count - retained);
 
             if (modifiers.Count <= 0)
             {

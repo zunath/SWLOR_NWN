@@ -8,6 +8,63 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class AbilityDamageQueueTests
 {
+    [Test]
+    public void DelayedImpacts_ShareLazyCastStateAcrossSeparatePhases()
+    {
+        var impactType = typeof(Ability).GetNestedType(
+            "TrackedAbilityImpact", System.Reflection.BindingFlags.NonPublic)!;
+        var constructor = impactType.GetConstructors().Single();
+        object CreateImpact() => constructor.Invoke(new object[]
+        {
+            new AbilityDetail(), 0, 0, 0, 0, 0, true, 0,
+            Array.Empty<TelegraphGeometry>(), null
+        });
+        var origin = CreateImpact();
+        var firstPhase = CreateImpact();
+        var secondPhase = CreateImpact();
+        var ownerProperty = impactType.GetProperty("SequenceOwner")!;
+        ownerProperty.SetValue(firstPhase, origin);
+        ownerProperty.SetValue(secondPhase, origin);
+        var storedSequence = impactType.GetField(
+            "_sequence", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+        foreach (var impact in new[] { origin, firstPhase, secondPhase })
+            storedSequence.GetValue(impact).Should().BeNull("capturing or starting a delayed phase must not realize cast state");
+
+        var sequenceProperty = impactType.GetProperty("Sequence")!;
+        var firstSequence = (AbilityImpactSequence)sequenceProperty.GetValue(firstPhase)!;
+        firstSequence.TryTriggerAreaPulse().Should().BeTrue();
+        var secondSequence = (AbilityImpactSequence)sequenceProperty.GetValue(secondPhase)!;
+        secondSequence.Should().BeSameAs(firstSequence);
+        sequenceProperty.GetValue(origin).Should().BeSameAs(firstSequence);
+        secondSequence.TryTriggerAreaPulse().Should().BeFalse();
+    }
+
+    [TestCase(false)]
+    [TestCase(true)]
+    public void TrackedAbilityImpact_CreatesASequenceOnDemandAndPreservesSharedSequences(bool hasSharedSequence)
+    {
+        var trackedImpactType = typeof(Ability).GetNestedType(
+            "TrackedAbilityImpact", System.Reflection.BindingFlags.NonPublic)!;
+        var sharedSequence = hasSharedSequence ? new AbilityImpactSequence() : null;
+        var trackedImpact = trackedImpactType.GetConstructors().Single().Invoke(new object[]
+        {
+            new AbilityDetail(), 0, 0, 0, 0, 0, true, 0,
+            Array.Empty<TelegraphGeometry>(), sharedSequence
+        });
+        var storedSequence = trackedImpactType.GetField(
+            "_sequence", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+        storedSequence.GetValue(trackedImpact).Should().BeSameAs(sharedSequence);
+
+        var sequenceProperty = trackedImpactType.GetProperty("Sequence")!;
+        var sequence = (AbilityImpactSequence)sequenceProperty.GetValue(trackedImpact)!;
+        sequence.Should().NotBeNull();
+        sequenceProperty.GetValue(trackedImpact).Should().BeSameAs(sequence);
+        if (hasSharedSequence)
+            sequence.Should().BeSameAs(sharedSequence);
+        sequence.TryTriggerAreaPulse().Should().BeTrue();
+        ((AbilityImpactSequence)sequenceProperty.GetValue(trackedImpact)!).TryTriggerAreaPulse().Should().BeFalse();
+    }
+
     /// <summary>
     /// Verifies that an impact initialized without activation markers still accumulates defense ignore.
     /// </summary>
@@ -29,7 +86,8 @@ public class AbilityDamageQueueTests
             0,
             true,
             0,
-            Array.Empty<TelegraphGeometry>()
+            Array.Empty<TelegraphGeometry>(),
+            new AbilityImpactSequence()
         });
 
         trackedImpactType.GetMethod("AddDefenseIgnorePercentAdjustment")!

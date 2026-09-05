@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
@@ -26,12 +27,20 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var outsideRange = ctx.SpawnCreature("nw_rat001", 8f);
             var enemies = new[] { target, nearby, otherNearby, outsideRange };
             await ctx.WaitFrameAsync();
-            SetCommandable(false, caster);
+            // Keep the primary area inside the entry room. Native spawning nudges crowded
+            // creatures across the doorway, which otherwise changes the intended geometry.
+            const float originOffset = -4.25f;
+            ObjectPlugin.SetPosition(caster, GetPositionFromLocation(ctx.GetArenaLocation(originOffset)));
+            ObjectPlugin.SetPosition(target, GetPositionFromLocation(ctx.GetArenaLocation(originOffset + (recipientInsideArea ? 1f : 2f))));
+            ObjectPlugin.SetPosition(nearby, GetPositionFromLocation(ctx.GetArenaLocation(originOffset + (recipientInsideArea ? 4f : 6f))));
+            ObjectPlugin.SetPosition(otherNearby, GetPositionFromLocation(ctx.GetArenaLocation(originOffset + 6.5f)));
+            ObjectPlugin.SetPosition(outsideRange, GetPositionFromLocation(ctx.GetArenaLocation(originOffset + 8f)));
+            ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), caster, 120f);
             ctx.SetNPCPerkLevel(caster, PerkType.ShrapnelCasing, 3);
 
             foreach (var enemy in enemies)
             {
-                SetCommandable(false, enemy);
+                ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), enemy, 120f);
                 ctx.SuppressNPCNaturalRegen(enemy);
                 ApplyEffectToObject(DurationType.Temporary, EffectTemporaryHitpoints(1000), enemy, 120f);
                 ctx.MakeHostile(enemy);
@@ -60,19 +69,19 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
                         ctx.Assert((GetDistanceBetween(caster, nearby) < 5f) == recipientInsideArea &&
                                    GetDistanceBetween(target, nearby) < 5f,
-                            "the spread recipient must be inside the spread radius and in the expected primary area");
+                            $"spread geometry: caster-to-recipient {GetDistanceBetween(caster, nearby)}, source-to-recipient {GetDistanceBetween(target, nearby)}, expected inside area {recipientInsideArea}");
                         if (recipientInsideArea)
                         {
                             ctx.Assert(GetDistanceBetween(target, otherNearby) > 5f &&
                                        GetDistanceBetween(nearby, otherNearby) < GetDistanceBetween(nearby, target),
-                                "the later area target must have a nearer recipient beyond the original source's spread radius");
+                                $"chain geometry: source-to-extra {GetDistanceBetween(target, otherNearby)}, recipient-to-extra {GetDistanceBetween(nearby, otherNearby)}, recipient-to-source {GetDistanceBetween(nearby, target)}");
                         }
                         var ability = abilities[feat];
                         var impactedTargetCount = 0;
                         Ability.BeginAbilityImpact(caster, ability);
                         try
                         {
-                            ability.ImpactAction(caster, target, rank, GetLocation(target));
+                            await ctx.ExecuteInCreatureContextAsync(caster, () => ability.ImpactAction(caster, target, rank, GetLocation(target)));
                         }
                         finally
                         {

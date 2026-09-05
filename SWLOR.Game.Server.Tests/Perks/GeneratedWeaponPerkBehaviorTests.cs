@@ -577,8 +577,10 @@ public class GeneratedWeaponPerkBehaviorTests
             "AbilityDefinition",
             "Force",
             "CreepingTerrorAbilityDefinition.cs"));
-        creepingTerrorSource.Should().Contain("countsAsAttackAttempt: false",
+        creepingTerrorSource.Should().Contain("Ability.CaptureRepeatedAbilityImpact(activator,",
             "periodic field pulses are effects, not new attack attempts");
+        abilitySource.Should().Contain("BeginAbilityImpact(activator, ability, 0, 0, countsAsAttackAttempt: false, sequence: sequence)",
+            "recurring impacts must not consume a new activation's pending attack bonuses");
 
         var statusEffectSource = File.ReadAllText(Path.Combine(
             root.FullName, "SWLOR.Game.Server", "Service", "StatusEffect.cs"));
@@ -1745,11 +1747,11 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertAbilitySourceContains(root, "Rifle", "SuppressiveLineAbilityDefinition.cs", "SuppressionDisorientedRequiredStacks = 2");
         AssertAbilitySourceContains(root, "Rifle", "KillBoxAbilityDefinition.cs", "StatusEffectFactory = () => new KillBoxStatusEffect(0, 3)");
         AssertAbilitySourceContains(root, "Rifle", "KillBoxAbilityDefinition.cs", "SourceOwnedStatusEffectTypeRemovedOnPerkRefund = typeof(KillBoxStatusEffect)");
-        AssertAbilitySourceContains(root, "TwinBlade", "TempestBloomAbilityDefinition.cs", "TemporaryAreaAbilityFragmentationDamage = 8");
+        AssertAbilitySourceContains(root, "TwinBlade", "TempestBloomAbilityDefinition.cs", "TemporaryAreaAbilityPulseDamage = 8");
         AssertAbilitySourceContains(root, "Throwing", "RainOfSteelAbilityDefinition.cs", "TemporaryAreaAbilityFragmentationPulseSeconds = 6");
         AssertAbilitySourceContains(root, "Throwing", "ExplosiveTossAbilityDefinition.cs", "typeof(BurnStatusEffect)");
         AssertAbilitySourceContains(root, "Throwing", "ExplosiveTossAbilityDefinition.cs", "Spell.ExplosiveToss4");
-        AssertAbilitySourceContains(root, "Saberstaff", "SaberCycloneAbilityDefinition.cs", "TemporaryAreaAbilityAttackDeflection = 8");
+        AssertAbilitySourceContains(root, "Saberstaff", "SaberCycloneAbilityDefinition.cs", "TemporaryAreaAbilityUsedAttackDeflection = 8");
         AssertAbilitySourceContains(root, "Saberstaff", "CircleSlashAbilityDefinition.cs", "SelfRangedDeflection = 8");
         AssertAbilitySourceContains(root, "Staff", "ShelterCircleAbilityDefinition.cs", "NearbyPartyStatusEffect = typeof(ShelterCircleStatusEffect)");
         AssertAbilitySourceContains(root, "Staff", "ShelterCircleAbilityDefinition.cs", "NearbyPartyStatusIncludesSelf = true");

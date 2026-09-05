@@ -249,10 +249,8 @@ public class AppearanceEditorLayoutTests
             var imageRow = path.OfType<GuiRow<AppearanceEditorViewModel>>().Last();
             imageRow.DeclaredHeight.Should().Be(0f,
                 "the immediate parent must not force the square to use the outer row's full height");
-            imageRow.Elements.Should().HaveCount(3);
-            imageRow.Elements[0].Should().BeOfType<GuiSpacer<AppearanceEditorViewModel>>();
-            imageRow.Elements[1].Should().BeSameAs(image);
-            imageRow.Elements[2].Should().BeOfType<GuiSpacer<AppearanceEditorViewModel>>();
+            imageRow.Elements.Should().ContainSingle().Which.Should().BeSameAs(image,
+                "horizontal spacers compete with the image and reduce the swatch to one third of its available width");
             var stack = path.OfType<GuiColumn<AppearanceEditorViewModel>>().Last();
             stack.Elements.Should().HaveCount(2);
             stack.Elements[1].Elements.Should().ContainSingle().Which

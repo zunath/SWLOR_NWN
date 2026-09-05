@@ -830,8 +830,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             AppearanceArmorColor channel)
         {
             // The cell shares the available width; the image and its native glow
-            // share square bounds. Slack in both axes lets that square shrink instead
-            // of deriving a minimum width from the fixed height of the outer row.
+            // share square bounds. Give the image the full cell width; only the
+            // vertical spacer absorbs unused space when a narrow cell limits its size.
             row.AddGroup(cell =>
             {
                 cell.SetShowBorder(false).SetScrollbars(NuiScrollbars.None)
@@ -841,7 +841,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     column.AddRow(imageRow =>
                     {
                         imageRow.SetMargin(0f);
-                        imageRow.AddSpacer();
                         imageRow.AddImage()
                             .SetId("ae_color_" + GuiHelper<AppearanceEditorViewModel>.GetPropertyName(regionBinding))
                             .SetResref(texture)
@@ -854,7 +853,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetMargin(2f)
                             .BindOnMouseDown(model => model.OnMouseDownGlobalColor(channel));
-                        imageRow.AddSpacer();
                     });
                     column.AddRow(space => space.AddSpacer());
                 });

@@ -763,8 +763,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var imageRow = image.Ancestors().OfType<JObject>().First();
                 ctx.AssertEqual("row", imageRow["type"]?.Value<string>(), $"{stage}/{regionName}: image belongs to a private row");
                 ctx.Assert(imageRow["height"] == null, $"{stage}/{regionName}: the square must not be forced to the outer row's height");
-                ctx.Assert(imageRow["children"].OfType<JObject>().Select(node => node["type"]?.Value<string>())
-                    .SequenceEqual(new[] { "spacer", "image", "spacer" }), $"{stage}/{regionName}: horizontal slack centers the square in its cell.");
+                ctx.AssertEqual(1, imageRow["children"].Count(), $"{stage}/{regionName}: image uses the full cell without competing spacers");
                 var stack = imageRow.Ancestors().OfType<JObject>().First();
                 var stackRows = stack["children"].OfType<JObject>().ToArray();
                 ctx.AssertEqual(2, stackRows.Length, $"{stage}/{regionName}: cell keeps a row of vertical slack below the square");

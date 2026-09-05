@@ -68,6 +68,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private Dictionary<int, int> _partIdToIndex = new();
         private IReadOnlyList<TintMapMaterialSelection> _tintMapSelections = Array.Empty<TintMapMaterialSelection>();
         private bool _loadingTintColor;
+        private bool _applyingTintColor;
+        private int _tintEditGeneration;
         private bool _tintControlBindingsWatched;
 
         private const string OutfitBarrelTag = "OUTFIT_BARREL";
@@ -249,6 +251,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (value == null)
                     return;
 
+                if (!_loadingTintColor)
+                    _tintEditGeneration++;
                 ApplyCustomTintColor(value, synchronizeComponents: true);
             }
         }
@@ -867,6 +871,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void Initialize(AppearanceEditorPayload initialPayload)
         {
+            _tintEditGeneration++;
             _armorBindingGeneration++;
             _armorClientBindingsWatched = false;
             _tintControlBindingsWatched = false;
@@ -945,6 +950,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadTintMapEditor()
         {
+            // Resetting legacy overrides is part of applying a color. Do not replace the
+            // pending input with the old color halfway through that operation.
+            if (_applyingTintColor)
+                return;
+            _tintEditGeneration++;
             RefreshTintMapAvailability();
             if (!TryGetEditableTintSelections(out var selections, out var layerType, out _))
             {
@@ -954,13 +964,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             IsCustomTintAvailable = true;
-            if (IsEquipmentSelected && SelectedItemTypeIndex == 0 && _colorTarget == ColorTarget.Global)
+            if (IsEquipmentSelected && SelectedItemTypeIndex == 0)
             {
-                // The global picker edits the native default. Explicit part colors must not
-                // turn its preview gray or be promoted into the selected global value.
-                var paletteId = GetItemAppearance(GetItem(), ItemAppearanceType.ArmorColor, (int)_selectedColorChannel);
+                // Native armor colors remain editable even when the current model does not
+                // expose that channel. Empty part swatches inherit the global default.
+                var paletteId = _colorTarget == ColorTarget.Global
+                    ? 255
+                    : GetArmorSwatchColor(GetItem(), GetArmorModelType(_colorTarget), _selectedColorChannel);
+                if (paletteId == 255)
+                    paletteId = GetItemAppearance(GetItem(), ItemAppearanceType.ArmorColor, (int)_selectedColorChannel);
                 var globalColor = TintMapPaletteColors.GetColor(layerType, paletteId);
                 SetSelectedTintColor(new GuiColor(globalColor.Red, globalColor.Green, globalColor.Blue));
+                return;
+            }
+            if (selections.Count == 0)
+            {
+                var paletteId = IsAppearanceSelected
+                    ? GetColor(_target, (ColorChannel)SelectedColorCategoryIndex)
+                    : GetItemAppearance(GetItem(), ItemAppearanceType.ArmorColor, SelectedColorCategoryIndex);
+                var fallbackColor = TintMapPaletteColors.GetColor(layerType, paletteId);
+                SetSelectedTintColor(new GuiColor(fallbackColor.Red, fallbackColor.Green, fallbackColor.Blue));
                 return;
             }
             var effectiveColors = selections
@@ -1008,29 +1031,31 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             GuiColor value,
             bool synchronizeComponents)
         {
-            if (synchronizeComponents)
-                SynchronizeCustomTintComponents(value);
-
-            if (_loadingTintColor ||
-                !TryGetEditableTintSelections(out _, out var layerType, out _))
+            if (_loadingTintColor)
             {
+                if (synchronizeComponents)
+                    SynchronizeCustomTintComponents(value);
                 return;
             }
+            if (!TryGetEditableTintSelections(out _, out var layerType, out _))
+                return;
 
             var requestedColor = new TintMapColor(value.R, value.G, value.B);
             var paletteColorId = TintMapPaletteColors.GetClosestColorId(layerType, requestedColor);
-            if (!ApplySelectedPaletteColor(
-                    paletteColorId,
-                    reloadEditor: synchronizeComponents))
-                return;
+            _applyingTintColor = true;
+            try
+            {
+                if (!ApplySelectedPaletteColor(paletteColorId, reloadEditor: false))
+                    return;
+            }
+            finally
+            {
+                _applyingTintColor = false;
+            }
 
-            // The known-good PLT shader accepts palette rows, not arbitrary RGB. Reflect the row
-            // actually applied in the picker. Text-entry updates deliberately leave the three
-            // component fields alone so an in-progress multi-digit value is never overwritten.
+            // The picker and all three fields describe the palette color actually applied.
             var appliedColor = TintMapPaletteColors.GetColor(layerType, paletteColorId);
-            SetSelectedTintColor(
-                new GuiColor(appliedColor.Red, appliedColor.Green, appliedColor.Blue),
-                synchronizeComponents);
+            SetSelectedTintColor(new GuiColor(appliedColor.Red, appliedColor.Green, appliedColor.Blue));
         }
 
         private void SynchronizeCustomTintComponents(GuiColor color)
@@ -1086,17 +1111,50 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 : string.Empty;
             Set(normalized, propertyName);
 
-            if (_loadingTintColor ||
-                !byte.TryParse(CustomTintRed, out var red) ||
+            if (_loadingTintColor)
+                return;
+
+            // Keep the three inputs as a draft while typing; applying each digit used to
+            // reload the old color and overwrite the other two channels mid-edit.
+            var generation = ++_tintEditGeneration;
+            var token = WindowToken;
+            DelayCommand(0.4f, () =>
+            {
+                if (generation == _tintEditGeneration && token == WindowToken &&
+                    Gui.IsWindowOpen(Player, WindowType))
+                    CommitCustomTintComponents();
+            });
+        }
+
+        private void CommitCustomTintComponents()
+        {
+            if (!byte.TryParse(CustomTintRed, out var red) ||
                 !byte.TryParse(CustomTintGreen, out var green) ||
                 !byte.TryParse(CustomTintBlue, out var blue))
-            {
                 return;
-            }
+            _tintEditGeneration++;
+            ApplyCustomTintColor(new GuiColor(red, green, blue), synchronizeComponents: true);
+            PublishTintControlBindings();
+        }
 
-            ApplyCustomTintColor(
-                new GuiColor(red, green, blue),
-                synchronizeComponents: false);
+        protected override void OnClientPropertyUpdated(string propertyName)
+        {
+            if (propertyName is nameof(SelectedTintColor) or nameof(CustomTintRed) or
+                nameof(CustomTintGreen) or nameof(CustomTintBlue))
+                PublishTintControlBindings();
+        }
+
+        private void PublishTintControlBindings()
+        {
+            // The watched setter suppresses echoes of its own property. Publish corrected
+            // values after that suppression ends, without treating them as another edit.
+            SynchronizeTintControlBindings(() =>
+            {
+                OnPropertyChanged(nameof(SelectedTintColor));
+                OnPropertyChanged(nameof(CustomTintRed));
+                OnPropertyChanged(nameof(CustomTintGreen));
+                OnPropertyChanged(nameof(CustomTintBlue));
+            });
         }
 
         private bool TryGetEditableTintSelections(
@@ -1113,9 +1171,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (IsEquipmentSelected && !IsValidItem())
                 return false;
-
-            var isGlobalArmorColor = IsEquipmentSelected && SelectedItemTypeIndex == 0 &&
-                                     _colorTarget == ColorTarget.Global;
 
             var paletteSource = IsAppearanceSelected ? _target : GetItem();
             if (!GetIsObjectValid(paletteSource))
@@ -1134,9 +1189,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     selection.Material.Layers.Contains(selectedLayerType) &&
                     (!restrictToArmorPart || selection.ArmorPart == armorPart))
                 .ToList();
-            if (selections.Count == 0 && !isGlobalArmorColor)
-                return false;
-
+            // The native channel exists independently of the currently visible material.
             layer = TintMapMaterialRegistry.GetLayer(layerType);
             return true;
         }
@@ -2065,7 +2118,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!TryGetSelectedTintLayer(out var selectedLayerType))
                 return;
 
-            if (!TryGetEditableTintSelections(out var selections, out var layerType, out var layer))
+            if (!TryGetEditableTintSelections(out var selections, out var layerType, out var layer) || selections.Count == 0)
             {
                 // A model can stop exposing a semantic channel (for example, a hairless
                 // head). Selecting a preset still means the persisted custom channel is
@@ -2075,7 +2128,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     TintMapService.ResetCreatureCustomColor(_target, selectedLayerType);
                     LoadTintMapEditor();
                 }
-                else if (IsEquipmentSelected && SelectedItemTypeIndex == 0)
+                else if (IsEquipmentSelected && SelectedItemTypeIndex is >= 0 and <= 2)
                 {
                     var item = GetItem();
                     if (GetIsObjectValid(item))
@@ -2084,7 +2137,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                             _target,
                             item,
                             selectedLayerType,
-                            _colorTarget == ColorTarget.Global
+                            SelectedItemTypeIndex != 0 || _colorTarget == ColorTarget.Global
                                 ? AppearanceArmor.Invalid
                                 : GetArmorModelType(_colorTarget));
                         LoadTintMapEditor();
@@ -2336,6 +2389,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnCloseWindow() => () =>
         {
+            _tintEditGeneration++;
             if (GetIsDM(_target) || GetIsDMPossessed(_target) || !GetIsPC(_target))
                 return;
 

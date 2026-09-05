@@ -104,16 +104,40 @@ public class AppearanceEditorColorStateTests
     }
 
     [Test]
-    public void GlobalPickerReadsTheGlobalPaletteAndSupportsCurrentlyUnusedChannels()
+    public void PickerSupportsUnusedNativeChannelsAndShowsInheritedArmorDefaults()
     {
         var root = CSharpSyntaxTree.ParseText(ReadViewModel()).GetRoot();
         FindMethod(root, "TryGetEditableTintSelections").ToString()
-            .Should().Contain("selections.Count == 0 && !isGlobalArmorColor");
+            .Should().NotContain("selections.Count == 0");
         var load = FindMethod(root, "LoadTintMapEditor").ToString();
         load.Should().Contain("GetItemAppearance(GetItem(), ItemAppearanceType.ArmorColor, (int)_selectedColorChannel)");
+        load.Should().Contain("GetArmorSwatchColor(GetItem(), GetArmorModelType(_colorTarget), _selectedColorChannel)");
+        load.Should().Contain("if (paletteId == 255)");
+        load.Should().Contain("GetColor(_target, (ColorChannel)SelectedColorCategoryIndex)");
         load.IndexOf("var globalColor", StringComparison.Ordinal).Should()
             .BeLessThan(load.IndexOf("var effectiveColors", StringComparison.Ordinal),
-                "explicit part colors cannot replace the global picker preview");
+                "armor preview must honor its native explicit or inherited color even without a matching material");
+    }
+
+    [Test]
+    public void RgbDraftCommitRejectsStaleTargetsAndPublishesAfterTheClientSetter()
+    {
+        var root = CSharpSyntaxTree.ParseText(ReadViewModel()).GetRoot();
+        var input = FindMethod(root, "SetCustomTintComponent").ToString();
+        input.Should().Contain("DelayCommand(0.4f");
+        input.Should().Contain("generation == _tintEditGeneration");
+        input.Should().Contain("token == WindowToken");
+        input.Should().Contain("Gui.IsWindowOpen(Player, WindowType)");
+        input.Should().NotContain("ApplyCustomTintColor(");
+        FindMethod(root, "LoadTintMapEditor").ToString().Should().Contain("_tintEditGeneration++");
+        var closed = FindMethod(root, "OnCloseWindow").ToString();
+        closed.IndexOf("_tintEditGeneration++", StringComparison.Ordinal).Should()
+            .BeLessThan(closed.IndexOf("GetIsDM(_target)", StringComparison.Ordinal),
+                "closing an NPC editor must cancel drafts before the player-only restoration guard");
+        var commit = FindMethod(root, "CommitCustomTintComponents").ToString();
+        commit.IndexOf("ApplyCustomTintColor(", StringComparison.Ordinal).Should()
+            .BeLessThan(commit.IndexOf("PublishTintControlBindings()", StringComparison.Ordinal));
+        FindMethod(root, "OnClientPropertyUpdated").ToString().Should().Contain("PublishTintControlBindings()");
     }
 
     private static MethodDeclarationSyntax FindMethod(Microsoft.CodeAnalysis.SyntaxNode root, string name) =>

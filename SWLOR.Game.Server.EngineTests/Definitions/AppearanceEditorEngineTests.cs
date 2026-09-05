@@ -1,6 +1,8 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.EngineTests.Framework;
@@ -19,6 +21,212 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
     public static class AppearanceEditorEngineTests
     {
         private sealed record ArmorSnapshot(uint Item, int[] Models, int[] Colors, int[] Markers, int[] Projections);
+
+        [EngineTest("Appearance editor enables every native armor dye target and inheritance preview", Category = "AppearanceEditor", TimeoutSeconds = 30f)]
+        public static async Task EveryArmorColorTargetRetainsPickerAndNativePreview(EngineTestContext ctx)
+        {
+            var civilian = await SpawnCivilianAsync(ctx);
+            await RunAssignedAsync(ctx, civilian, () =>
+            {
+                var outfit = GetItemInSlot(InventorySlot.Chest, civilian);
+                // Chest70 is the reported case: its available native armor dyes must not
+                // depend on the currently visible mesh exposing a generated material layer.
+                ItemPlugin.SetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Torso, 70, false);
+                var channels = new[]
+                {
+                    (AppearanceArmorColor.Leather1, TintMapLayerType.Leather1),
+                    (AppearanceArmorColor.Leather2, TintMapLayerType.Leather2),
+                    (AppearanceArmorColor.Cloth1, TintMapLayerType.Cloth1),
+                    (AppearanceArmorColor.Cloth2, TintMapLayerType.Cloth2),
+                    (AppearanceArmorColor.Metal1, TintMapLayerType.Metal1),
+                    (AppearanceArmorColor.Metal2, TintMapLayerType.Metal2)
+                };
+                foreach (var (channel, _) in channels)
+                {
+                    ItemPlugin.SetItemAppearance(outfit, ItemAppearanceType.ArmorColor, (int)channel, 35 + (int)channel, false);
+                    for (var part = 0; part < (int)AppearanceArmor.Num; part++)
+                    {
+                        var mode = (part + (int)channel) % 4;
+                        var raw = mode switch { 0 => 255, 1 or 2 => 0, _ => 77 };
+                        var armorPart = (AppearanceArmor)part;
+                        ItemPlugin.SetItemAppearance(outfit, ItemAppearanceType.ArmorColor,
+                            ArmorColorIndexCalculator.CalculatePerPart(armorPart, channel), raw, false);
+                        var marker = ArmorColorIndexCalculator.GetPerPartOverrideVariableName(armorPart, channel);
+                        if (mode == 2) SetLocalInt(outfit, marker, 1);
+                        else DeleteLocalInt(outfit, marker);
+                    }
+                }
+                var snapshot = ReadArmor(civilian);
+                var editor = BindWithoutClient(civilian);
+                editor.OnSelectEquipment()();
+                foreach (var (part, target) in ArmorColorTargets())
+                foreach (var (channel, layer) in channels)
+                {
+                    editor.OnClickColorTarget(target, channel)();
+                    ctx.Assert(editor.IsCustomTintAvailable,
+                        $"{part}/{channel} must retain its native picker even without a generated tint selection.");
+                    var mode = ((int)part + (int)channel) % 4;
+                    var expectedId = mode switch { 2 => 0, 3 => 77, _ => 35 + (int)channel };
+                    AssertPickerColor(ctx, editor, TintMapPaletteColors.GetColor(layer, expectedId), $"{part}/{channel} native preview");
+                }
+                AssertArmorUnchanged(ctx, snapshot, civilian, "all114 part dye target selections");
+            });
+            ctx.SetResultDetail("All19×6 native armor targets retained a picker, including Chest70. Independent seeded raw255/raw0/explicit0/explicit77 cases displayed inherited or explicit native palette colors without armor writes. Headless VM coverage only.");
+        }
+
+        [EngineTest("Appearance editor watched color correction preserves RGB drafts until commit", Category = "AppearanceEditor", TimeoutSeconds = 30f)]
+        public static async Task WatchedColorCorrectionAndDraftCommit(EngineTestContext ctx)
+        {
+            var civilian = await SpawnCivilianAsync(ctx);
+            await RunAssignedAsync(ctx, civilian, () =>
+            {
+                var outfit = GetItemInSlot(InventorySlot.Chest, civilian);
+                SeedInheritance(outfit);
+                var editor = BindWithoutClient(civilian);
+                using var publications = new BindingPublications(editor);
+
+                ctx.Assert(editor.IsAppearanceSelected && editor.SelectedColorCategoryIndex == 0,
+                    "The initial watched RGB edit must target creature skin.");
+                var black = new TintMapColor(0, 0, 0);
+                var blackSkinId = TintMapPaletteColors.GetClosestColorId(TintMapLayerType.Skin, black);
+                var originalSkinId = GetColor(civilian, ColorChannel.Skin);
+                var beforeSkinDraft = ReadArmor(civilian);
+                ctx.AssertEqual(57, blackSkinId, "Native palette row for the reported black skin input");
+                ctx.Assert(originalSkinId != blackSkinId, "The black skin edit must change the fixture's authored skin.");
+                foreach (var property in new[]
+                {
+                    nameof(editor.CustomTintRed), nameof(editor.CustomTintGreen), nameof(editor.CustomTintBlue)
+                })
+                {
+                    publications.Clear();
+                    ApplyWatchedValue(editor, property, "0");
+                    ctx.AssertEqual("0", publications.Latest(ctx, property, "Black skin draft").Value<string>(),
+                        "Each watched skin RGB field must retain and publish the zero draft.");
+                    ctx.AssertEqual(originalSkinId, GetColor(civilian, ColorChannel.Skin),
+                        "Sequential skin RGB fields must not change the native color before commit");
+                    AssertArmorUnchanged(ctx, beforeSkinDraft, civilian, "uncommitted skin RGB draft");
+                }
+                ctx.AssertEqual("0", editor.CustomTintRed, "Black skin red draft");
+                ctx.AssertEqual("0", editor.CustomTintGreen, "Black skin green draft");
+                ctx.AssertEqual("0", editor.CustomTintBlue, "Black skin blue draft");
+                publications.Clear();
+                InvokePrivate(editor, "CommitCustomTintComponents");
+                ctx.AssertEqual(blackSkinId, GetColor(civilian, ColorChannel.Skin),
+                    "Committed zero RGB must select native black skin, not the old light color");
+                AssertPublishedColor(ctx, publications, editor, black, "Committed black skin RGB");
+                AssertArmorUnchanged(ctx, beforeSkinDraft, civilian, "committed skin color leaves equipment unchanged");
+
+                editor.OnSelectEquipment()();
+                publications.Clear();
+
+                var requested = new TintMapColor(253, 17, 91);
+                var selected = TintMapPaletteColors.GetClosestColorId(TintMapLayerType.Leather1, requested);
+                var canonical = TintMapPaletteColors.GetColor(TintMapLayerType.Leather1, selected);
+                ctx.Assert(requested != canonical, "Picker input must require palette correction.");
+                ApplyWatchedValue(editor, nameof(editor.SelectedTintColor),
+                    new GuiColor(requested.Red, requested.Green, requested.Blue), () =>
+                        ctx.Assert(!publications.Contains(nameof(editor.SelectedTintColor)),
+                            "The production SkipNotify flag must suppress the watched picker during its setter."));
+                AssertNativeColor(ctx, outfit, (int)AppearanceArmorColor.Leather1, selected, "Watched picker native dye");
+                AssertPublishedColor(ctx, publications, editor, canonical, "Post-client palette correction");
+
+                var beforeDraft = ReadArmor(civilian);
+                foreach (var (property, value) in new[]
+                {
+                    (nameof(editor.CustomTintRed), "2"), (nameof(editor.CustomTintRed), "230"),
+                    (nameof(editor.CustomTintGreen), "35"), (nameof(editor.CustomTintBlue), "170")
+                })
+                {
+                    publications.Clear();
+                    ApplyWatchedValue(editor, property, value);
+                    ctx.AssertEqual(value, publications.Latest(ctx, property, "RGB draft publication").Value<string>(),
+                        "The actively edited RGB field must be published after SkipNotify ends.");
+                    AssertArmorUnchanged(ctx, beforeDraft, civilian, "uncommitted RGB draft");
+                }
+                ctx.AssertEqual("230", editor.CustomTintRed, "Typing green/blue must preserve the complete red draft");
+                ctx.AssertEqual("35", editor.CustomTintGreen, "Uncommitted green draft");
+                ctx.AssertEqual("170", editor.CustomTintBlue, "Uncommitted blue draft");
+
+                publications.Clear();
+                // Run the same commit body as the debounce callback. The invalid viewer cannot
+                // exercise its timer/window-open guard; do not pretend that a PC is connected.
+                InvokePrivate(editor, "CommitCustomTintComponents");
+                selected = TintMapPaletteColors.GetClosestColorId(TintMapLayerType.Leather1, new TintMapColor(230, 35, 170));
+                canonical = TintMapPaletteColors.GetColor(TintMapLayerType.Leather1, selected);
+                AssertNativeColor(ctx, outfit, (int)AppearanceArmorColor.Leather1, selected, "Committed RGB native dye");
+                AssertPublishedColor(ctx, publications, editor, canonical, "Committed RGB palette correction");
+                AssertInheritedAndExplicitParts(ctx, outfit);
+            });
+            ctx.SetResultDetail("Watched skin RGB0/0/0 preserved native color until commit, then selected black skin57 and published four zero-valued controls. Equipment picker correction and sequential RGB drafts also synchronized native dyes/controls after SkipNotify without premature writes. Incoming NuiGetBind and debounce scheduling/open-window checks are synthesized or excluded.");
+        }
+
+        private static void ApplyWatchedValue(AppearanceEditorViewModel editor, string propertyName, object value, Action beforeCallback = null)
+        {
+            // Mirror only UpdatePropertyFromClient's incoming-read setup. Use its real private
+            // cache/SkipNotify fields, real property setter and real completion callback.
+            var baseType = typeof(AppearanceEditorViewModel).BaseType;
+            var cache = (IDictionary)baseType.GetField("_propertyValues", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(editor);
+            var detail = cache[propertyName];
+            var valueProperty = detail.GetType().GetProperty("Value");
+            var skipProperty = detail.GetType().GetProperty("SkipNotify");
+            var property = editor.GetType().GetProperty(propertyName);
+            var previous = property.GetValue(editor);
+            valueProperty.SetValue(detail, value);
+            skipProperty.SetValue(detail, true);
+            try
+            {
+                if (!Equals(previous, value)) property.SetValue(editor, value);
+            }
+            finally { skipProperty.SetValue(detail, false); }
+            beforeCallback?.Invoke();
+            InvokePrivate(editor, "OnClientPropertyUpdated", propertyName);
+        }
+
+        private static void InvokePrivate(AppearanceEditorViewModel editor, string method, params object[] arguments)
+        {
+            var target = editor.GetType().GetMethod(method, BindingFlags.Instance | BindingFlags.NonPublic)
+                ?? throw new InvalidOperationException($"Appearance editor method {method} was not found.");
+            try { target.Invoke(editor, arguments); }
+            catch (TargetInvocationException exception) when (exception.InnerException != null)
+            {
+                System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(exception.InnerException).Throw();
+            }
+        }
+
+        private static void AssertPickerColor(EngineTestContext ctx, AppearanceEditorViewModel editor, TintMapColor color, string stage)
+        {
+            ctx.AssertEqual(color.Red, editor.SelectedTintColor.R, $"{stage}: red");
+            ctx.AssertEqual(color.Green, editor.SelectedTintColor.G, $"{stage}: green");
+            ctx.AssertEqual(color.Blue, editor.SelectedTintColor.B, $"{stage}: blue");
+        }
+
+        private static void AssertPublishedColor(EngineTestContext ctx, BindingPublications values,
+            AppearanceEditorViewModel editor, TintMapColor color, string stage)
+        {
+            AssertPickerColor(ctx, editor, color, stage);
+            var picker = values.Latest(ctx, nameof(editor.SelectedTintColor), stage);
+            ctx.AssertEqual((int)color.Red, picker["r"].Value<int>(), $"{stage}: published picker red");
+            ctx.AssertEqual((int)color.Green, picker["g"].Value<int>(), $"{stage}: published picker green");
+            ctx.AssertEqual((int)color.Blue, picker["b"].Value<int>(), $"{stage}: published picker blue");
+            foreach (var (name, expected) in new[]
+            {
+                (nameof(editor.CustomTintRed), color.Red), (nameof(editor.CustomTintGreen), color.Green),
+                (nameof(editor.CustomTintBlue), color.Blue)
+            })
+                ctx.AssertEqual(expected.ToString(), values.Latest(ctx, name, stage).Value<string>(), $"{stage}: {name}");
+        }
+
+        private static IEnumerable<(AppearanceArmor Part, AppearanceEditorViewModel.ColorTarget Target)> ArmorColorTargets()
+        {
+            foreach (var target in Enum.GetValues<AppearanceEditorViewModel.ColorTarget>())
+            {
+                if (target is AppearanceEditorViewModel.ColorTarget.Invalid or AppearanceEditorViewModel.ColorTarget.Global)
+                    continue;
+                var part = target == AppearanceEditorViewModel.ColorTarget.Chest ? AppearanceArmor.Torso
+                    : Enum.Parse<AppearanceArmor>(target.ToString());
+                yield return (part, target);
+            }
+        }
 
         [EngineTest("Appearance editor republishes native binding JSON after layout and reopen", Category = "AppearanceEditor", TimeoutSeconds = 30f)]
         public static async Task HydrationPublishesBindingsAfterLayout(EngineTestContext ctx)
@@ -96,6 +304,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(value.Sequence > _values[nameof(AppearanceEditorViewModel.Geometry)].Sequence,
                     $"{stage}: {property} must be republished after the final layout notification.");
                 return value.Value;
+            }
+
+            public bool Contains(string property) => _values.ContainsKey(property);
+
+            public JToken Latest(EngineTestContext ctx, string property, string stage)
+            {
+                ctx.Assert(_values.ContainsKey(property), $"{stage}: binding {property} must be published.");
+                return _values[property].Value;
             }
 
             public void Clear()

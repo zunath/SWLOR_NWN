@@ -147,23 +147,35 @@ public class TintMapReviewTests
         viewModel.Should().Contain("ApplySelectedPaletteColor(",
             "the dynamic picker must use the same palette-row application path as a preset click");
         var setCustomTintComponent = FindMethod(viewModel, "SetCustomTintComponent");
-        setCustomTintComponent.ToString().Should().Contain("ApplyCustomTintColor(",
-            "typing an RGB component must update the palette without replacing the field mid-entry");
-        setCustomTintComponent.ToString().Should().Contain("synchronizeComponents: false");
+        setCustomTintComponent.ToString().Should().Contain("DelayCommand(0.4f",
+            "RGB components remain drafts until typing settles");
+        setCustomTintComponent.ToString().Should().Contain("CommitCustomTintComponents()");
+        setCustomTintComponent.ToString().Should().NotContain("ApplyCustomTintColor(",
+            "typing one digit must not reload the palette over the other two draft components");
         setCustomTintComponent.ToString().Should().NotContain("SelectedTintColor =",
             "a watched text edit fires on each keystroke and must not synchronize over the active field");
+        var commitCustomTintComponents = FindMethod(viewModel, "CommitCustomTintComponents");
+        commitCustomTintComponents.ToString().Should().Contain("ApplyCustomTintColor(new GuiColor(red, green, blue), synchronizeComponents: true)");
+        commitCustomTintComponents.ToString().Should().Contain("PublishTintControlBindings()");
         var applyCustomTintColor = FindMethod(viewModel, "ApplyCustomTintColor");
         applyCustomTintColor.ToString().Should().Contain("SetSelectedTintColor(",
             "the color picker must still reflect the palette row rendered in game");
         applyCustomTintColor.ToString().Should().Contain("synchronizeComponents");
-        applyCustomTintColor.ToString().Should().Contain("reloadEditor: synchronizeComponents",
-            "watched RGB text edits must not reload and overwrite a partially entered component");
+        applyCustomTintColor.ToString().Should().Contain("reloadEditor: false",
+            "resetting prior overrides must not reload the old palette during a color application");
+        applyCustomTintColor.ToString().Should().Contain("_applyingTintColor = true");
+        applyCustomTintColor.ToString().Should().Contain("_applyingTintColor = false");
         var applySelectedPaletteColor = FindMethod(viewModel, "ApplySelectedPaletteColor");
         applySelectedPaletteColor.ToString().Should().Contain("if (reloadEditor)");
         var setSelectedTintColor = FindMethod(viewModel, "SetSelectedTintColor");
         var synchronizeComponents = FindMethod(viewModel, "SynchronizeCustomTintComponents");
         var synchronizeBindings = FindMethod(viewModel, "SynchronizeTintControlBindings");
         var setBindingsWatched = FindMethod(viewModel, "SetTintControlBindingsWatched");
+        var publishBindings = FindMethod(viewModel, "PublishTintControlBindings");
+        var clientUpdated = FindMethod(viewModel, "OnClientPropertyUpdated");
+        clientUpdated.ToString().Should().Contain("PublishTintControlBindings()",
+            "the originating watch suppresses its corrective write until its setter finishes");
+        publishBindings.ToString().Should().Contain("SynchronizeTintControlBindings");
         setSelectedTintColor.ToString().Should().Contain("SynchronizeTintControlBindings",
             "server picker updates must not return through the watched input as a second tint edit");
         synchronizeComponents.ToString().Should().Contain("SynchronizeTintControlBindings",
@@ -179,6 +191,8 @@ public class TintMapReviewTests
                  })
         {
             setBindingsWatched.ToString().Should().Contain($"nameof({propertyName})");
+            clientUpdated.ToString().Should().Contain($"nameof({propertyName})");
+            publishBindings.ToString().Should().Contain($"OnPropertyChanged(nameof({propertyName}))");
         }
         viewModel.Should().Contain("_tintControlBindingsWatched = true;",
             "the four bindings become suppressible after their initial watches are registered");
@@ -317,11 +331,11 @@ public class TintMapReviewTests
         methods["TryGetEditableTintSelections"].ToString().Should().Contain(
             "selection.Material.Layers.Contains(selectedLayerType)");
         methods["TryGetEditableTintSelections"].ToString().Should().Contain(
-            "_colorTarget == ColorTarget.Global",
-            "global palette picking must remain available without requiring a part-specific override");
-        methods["TryGetEditableTintSelections"].ToString().Should().Contain(
-            "selections.Count == 0 && !isGlobalArmorColor",
-            "a native global channel remains editable even when the current model does not use it");
+            "_colorTarget != ColorTarget.Global",
+            "material selection must remain scoped to the selected armor part");
+        methods["TryGetEditableTintSelections"].ToString().Should().NotContain(
+            "selections.Count == 0",
+            "native global and part channels remain editable when the current model does not use them");
         methods["OnSelectColor"].ToString().Should().Contain("ApplySelectedPaletteColor");
         methods["OnSelectColor"].ToString().Should().Contain("SynchronizeCustomTintControlsToPaletteColor");
         methods["OnClickColorPalette"].ToString().Should().Contain("ApplySelectedPaletteColor");

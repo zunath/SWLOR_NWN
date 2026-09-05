@@ -914,6 +914,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             image.SetDrawTextureRegion(staticRegion);
                         }
                     });
+                    if (regionBind != null)
+                    {
+                        // NUI has one draw_list per widget. Keep the preset image
+                        // and RGB overlay together so neither replaces the other.
+                        drawList.AddPolyLine(fill => fill
+                            .BindIsEnabled(ColorSwatchBinding<bool>(regionBind, "Custom"))
+                            .BindColor(ColorSwatchBinding<GuiColor>(regionBind, "Tint"))
+                            .SetIsFilled(true)
+                            .AddPoint(drawOffset, drawOffset)
+                            .AddPoint(buttonSize - drawOffset, drawOffset)
+                            .AddPoint(buttonSize - drawOffset, buttonSize - drawOffset)
+                            .AddPoint(drawOffset, buttonSize - drawOffset));
+                    }
                 })
                 .BindOnClicked(onClickBind);
             if (onClickClearColor != null)
@@ -922,14 +935,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             {
                 button.SetId("ae_color_" + GuiHelper<AppearanceEditorViewModel>.GetPropertyName(regionBind));
                 button.BindIsEncouraged(ColorSelectionBinding(regionBind));
-                button.AddDrawList(list => list.AddPolyLine(fill => fill
-                    .BindIsEnabled(ColorSwatchBinding<bool>(regionBind, "Custom"))
-                    .BindColor(ColorSwatchBinding<GuiColor>(regionBind, "Tint"))
-                    .SetIsFilled(true)
-                    .AddPoint(drawOffset, drawOffset)
-                    .AddPoint(buttonSize - drawOffset, drawOffset)
-                    .AddPoint(buttonSize - drawOffset, buttonSize - drawOffset)
-                    .AddPoint(drawOffset, buttonSize - drawOffset)));
             }
             return button;
         }

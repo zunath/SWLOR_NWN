@@ -70,6 +70,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 {
                     var expected = swatch["id"].Value<string>()["ae_color_".Length..^"Region".Length] + "Selected";
                     ctx.AssertEqual(expected, swatch["encouraged"]?["bind"]?.Value<string>(), "Glow follows this exact material target");
+                    AssertColorSwatchDrawing(ctx, swatch);
                 }
                 AssertActiveColorSwatch(ctx, editor, "GlobalLeather1Selected");
                 foreach (var (channel, layer) in channels)
@@ -392,6 +393,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     selection.ArmorPart == AppearanceArmor.LeftForearm && selection.Material.Layers.Contains(TintMapLayerType.Leather2));
                 AssertTintInput(ctx, editor, green, "Reported pale green");
                 AssertSwatchRgb(ctx, editor.GlobalLeather2Tint, green, "Global swatch");
+                ctx.Assert(editor.GlobalLeather2Custom, "Global RGB enables the preview fill over the native preset.");
                 TintMapEngineTests.AssertNativeRgb(ctx, civilian, forearm.Material.Resref, TintMapLayerType.Leather2, green);
                 AssertArmorUnchanged(ctx, before, civilian, "Global RGB leaves item identity, models, native dyes and markers unchanged");
 
@@ -459,6 +461,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 TintMapEngineTests.AssertNativeRgb(ctx, civilian, robe.Material.Resref, TintMapLayerType.Cloth1,
                     new TintMapColor(205, 228, 197));
                 ctx.Assert((int)GetPhenoType(civilian) >= 34, "RGB installs the robe-bearing body root.");
+
+                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Cloth1)();
+                using var swatchPublications = new BindingPublications(editor);
+                var purple = new TintMapColor(100, 7, 180);
+                ApplyWatchedValue(editor, nameof(editor.SelectedTintColor), new GuiColor(100, 7, 180));
+                AssertSwatchRgb(ctx, editor.GlobalCloth1Tint, purple, "Reported purple global Cloth1 preview");
+                ctx.Assert(editor.GlobalCloth1Custom, "Custom purple replaces the gold preset preview.");
+                ctx.Assert(swatchPublications.Contains(nameof(editor.GlobalCloth1Tint)) &&
+                           swatchPublications.Contains(nameof(editor.GlobalCloth1Custom)),
+                    "The client receives both the exact color and the enabled RGB fill.");
             });
             ctx.SetResultDetail("Reported pale green and R1 persisted exactly through native scalar material uploads, fresh editor hydration, inheritance, explicit part overrides and reset/preset actions. RGB leaves equipped item identity and native dyes unchanged. Headless tests exclude client NUI event transport and rendering.");
         }
@@ -776,6 +788,34 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         $"{stage}: navigation buttons must share the row without disabling equal-width sizing.");
                 }
             }
+        }
+
+        private static void AssertColorSwatchDrawing(EngineTestContext ctx, JObject swatch)
+        {
+            var region = swatch["id"].Value<string>()["ae_color_".Length..];
+            var name = region[..^"Region".Length];
+            var isGlobal = name.StartsWith("Global", StringComparison.Ordinal);
+            var drawings = swatch["draw_list"].Children<JObject>().ToArray();
+            ctx.AssertEqual(isGlobal ? 1 : 2, drawings.Length, name + ": preset and custom drawings coexist");
+            if (!isGlobal)
+            {
+                ctx.AssertEqual((int)NuiDrawListItemType.Image, drawings[0]["type"].Value<int>(),
+                    name + ": the preset image is drawn before the custom fill");
+                ctx.AssertEqual(region, drawings[0]["image_region"]?["bind"]?.Value<string>(),
+                    name + ": switching back to a preset retains its image binding");
+            }
+            var fill = drawings.Last();
+            ctx.AssertEqual((int)NuiDrawListItemType.PolyLine, fill["type"].Value<int>(), name + ": RGB polygon");
+            ctx.AssertEqual(name + "Tint", fill["color"]?["bind"]?.Value<string>(), name + ": effective color binding");
+            ctx.AssertEqual(name + "Custom", fill["enabled"]?["bind"]?.Value<string>(), name + ": custom mode binding");
+            ctx.AssertEqual(true, fill["fill"]?.Value<bool>(), name + ": RGB polygon is filled");
+            var points = fill["points"] as JArray;
+            ctx.Assert(points != null && points.Count == 8 && points.All(point => point.Type == JTokenType.Float),
+                name + ": NUI requires eight flat float coordinates, not four vector objects");
+            var inset = isGlobal ? 0f : 2f;
+            var extent = isGlobal ? 99f : swatch["width"].Value<float>() - inset;
+            ctx.Assert(points.Values<float>().SequenceEqual(new[] { inset, inset, extent, inset, extent, extent, inset, extent }),
+                name + ": clockwise rectangle fills the color preview bounds");
         }
 
         private static void AssertGlobalSwatchImagesJson(EngineTestContext ctx, JObject panel, string stage)

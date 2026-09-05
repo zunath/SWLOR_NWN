@@ -52,6 +52,14 @@ the native AppearanceEditor tests cover scalar storage, drafts, reopening,
 inheritance and preset reset. Shader changes require rebuilding sw_shader.hak
 and fully restarting the client.
 
+The editor's global and per-part swatches draw exact RGB over their native
+preset image. NUI polyline points must be a flat array of alternating X/Y floats,
+not an array of `NuiVec` objects; the latter silently leaves the preset visible.
+Keep the preset image and custom fill in the same draw list: NUI only retains
+one `draw_list` on each widget. The native editor tests validate the serialized
+coordinates and both drawing layers for all 120 swatches, along with the color
+and custom-mode publications after an RGB edit.
+
 ## Preserve the robe's native palette transport
 
 The 89.8193.37-17 client does not replay creature material overrides onto the

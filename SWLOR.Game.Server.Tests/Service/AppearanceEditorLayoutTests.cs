@@ -175,10 +175,6 @@ public class AppearanceEditorLayoutTests
             if (row.DeclaredHeight > 0)
                 row.DeclaredHeight.Should().BeGreaterThanOrEqualTo(control.DeclaredHeight);
         }
-
-        var readout = Walk(partial).OfType<GuiLabel<AppearanceEditorViewModel>>().Single(label =>
-            ReadProperty<string>(label, "TextBindName") == nameof(AppearanceEditorViewModel.ClosestTintPresetText));
-        PathTo(partial, readout).Should().OnlyContain(widget => Width(widget) == 0f);
     }
 
     [Test]
@@ -208,8 +204,13 @@ public class AppearanceEditorLayoutTests
             PathTo(partial, list).Where(widget => !ReferenceEquals(widget, panels[0]))
                 .Should().OnlyContain(widget => Width(widget) == 0f,
                     "lists must fill their viewport without calculated widths");
-            list.DeclaredHeight.Should().Be(binding == nameof(AppearanceEditorViewModel.ColorCategoryOptions) + "_RowCount"
-                ? 154f : 210f);
+            var expectedHeight = binding switch
+            {
+                nameof(AppearanceEditorViewModel.ColorCategoryOptions) + "_RowCount" => 154f,
+                nameof(AppearanceEditorViewModel.PartCategoryOptions) + "_RowCount" => 450f,
+                _ => 280f
+            };
+            list.DeclaredHeight.Should().Be(expectedHeight);
         }
         lists.Select(list => ReadProperty<string>(list, "RowCountBindName")).Should().BeEquivalentTo(new[]
         {
@@ -220,7 +221,7 @@ public class AppearanceEditorLayoutTests
     }
 
     [Test]
-    public void ArmorCombosUseThreeEqualFlexibleGroupsWithFixedArrowsAndGaps()
+    public void ArmorCombosFitNarrowWindowsInsideThreeEqualFlexibleGroups()
     {
         var armor = AppearanceEditorDefinition.BuildEditorPanel(AppearanceEditorViewModel.EditorArmorPartial);
         ReadProperty<NuiScrollbars>(armor, "Scrollbars").Should().Be(NuiScrollbars.Auto);
@@ -229,8 +230,9 @@ public class AppearanceEditorLayoutTests
         foreach (var combo in combos)
         {
             var path = PathTo(armor, combo).ToArray();
-            path.Should().OnlyContain(widget => Width(widget) == 0f,
-                "all nineteen dropdowns must use client-allocated space between their fixed arrows");
+            path.Where(widget => !ReferenceEquals(widget, combo)).Should().OnlyContain(widget => Width(widget) == 0f,
+                "narrow dropdowns must not prevent their parent columns from sharing the client width");
+            Width(combo).Should().Be(96f);
             path.OfType<GuiColumn<AppearanceEditorViewModel>>().Last().DeclaredHeight.Should().Be(112f,
                 "each part block must contribute a bounded height to its stack");
             combo.DeclaredHeight.Should().Be(24f);
@@ -242,8 +244,8 @@ public class AppearanceEditorLayoutTests
             arrows.Should().OnlyContain(button => Width(button) == 24f && button.DeclaredHeight == 24f &&
                 button.DeclaredMargin == 0f && button.Events.Values.Any(action =>
                     action.Method.Name == nameof(AppearanceEditorViewModel.OnClickAdjustArmorPart)));
-            NaturalWidth(row).Should().Be(48f,
-                "only the two arrows may reserve a fixed horizontal span in this row");
+            NaturalWidth(row).Should().Be(144f,
+                "the dropdown and both arrows must fit within each column of the narrow editor");
         }
 
         var partsRow = Walk(armor).OfType<GuiRow<AppearanceEditorViewModel>>().Single(row =>

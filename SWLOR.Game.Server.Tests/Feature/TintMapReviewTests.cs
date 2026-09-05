@@ -159,7 +159,6 @@ public class TintMapReviewTests
         var applyCustomTintColor = FindMethod(viewModel, "ApplyCustomTintColor");
         applyCustomTintColor.ToString().Should().Contain("SetSelectedTintColor(value, synchronizeComponents)",
             "the picker must retain the requested RGB rather than rewriting input with the nearest palette row");
-        applyCustomTintColor.ToString().Should().Contain("UpdateClosestTintPreset(");
         applyCustomTintColor.ToString().Should().Contain("synchronizeComponents");
         applyCustomTintColor.ToString().Should().Contain("reloadEditor: false",
             "resetting prior overrides must not reload the old palette during a color application");

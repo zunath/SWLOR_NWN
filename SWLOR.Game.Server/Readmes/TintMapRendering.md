@@ -109,8 +109,8 @@ An empty robe attachment for that phenotype preserves the original robe number
 and its native body-part hiding rules without drawing a second copy.
 
 `SWLOR_Haks/tools/GenerateRobeRgbModels.py` preserves mesh data, materials,
-bind transforms, skin weights, and the original robe's animation chain and
-animation scale. It retains standard skeleton joints, moves their visible meshes
+bind transforms, skin weights, authored animation tracks, and animation scale.
+It retains standard skeleton joints, moves their visible meshes
 to child nodes, and fills missing attachment joints from the original body root.
 Duplicate legacy nodes are removed or renamed only after verifying actual binary
 bone references and child/animation relationships. Authored-to-generated and
@@ -127,19 +127,24 @@ tracks following the same phase. The conversion checks native animation IDs as
 well as geometry and skin weights, including all eight normal-body variants of
 robe 236. Run `TestRobeAnimations.py` for the focused overlay regressions.
 
-Robe 250 uses the same native attachment validation but inherits the complete
-body skeleton directly, since it has no custom animation overlay. Its original
-robe model lacks arm joints; using it as the immediate animation parent assigned
-invalid bicep IDs and incorrect forearm/hand IDs, causing missing hands even
-though `parts_robe.2da` permits both hands. All eight normal-body variants retain
-the base body's attachment IDs after conversion. ASCII body references are
-compiled before comparing their native IDs, just like binary references.
+Ordinary robes automatically inherit the complete body skeleton when their
+resolved animation tracks come from the same sources as the body and their
+shared joints retain the body's parent relationships. Missing joints are filled
+from the body, then the compiler's native attachment IDs are checked against it.
+This corrects robes 250 and 252, whose original models lack arm joints: using
+the separate robe as the immediate animation parent assigned invalid bicep IDs
+and incorrect forearm/hand IDs even though `parts_robe.2da` permits both hands.
+The rule applies to compatible models across the catalog without requiring a
+new robe-number exception. ASCII body references are compiled before comparing
+their native IDs, just like binary references.
 
 `complete_animation_styles` and `animation_bridges` in `RobeRgbModels.json`
 preserve this configuration across regeneration; use
-`--complete-animation-style <robe number>` to validate another style. Garments
-with incompatible attachment hierarchies fail validation instead of silently
-retargeting their animations. Other styles keep their existing animation setup.
+`--complete-animation-style <robe number>` to validate a custom animation style.
+The automatic rule leaves custom clips, different joint hierarchies, and
+unresolved animation sources on their existing animation path. Explicitly
+opting an incompatible style into complete animation conversion fails
+validation instead of silently retargeting its animations.
 
 The catalog currently covers 1,596 normal-body models across 184 robe styles.
 Phenotype IDs are a native byte, so generated IDs are reserved in the range

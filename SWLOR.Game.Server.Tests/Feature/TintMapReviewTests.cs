@@ -2132,7 +2132,7 @@ public class TintMapReviewTests
             shader.Should().NotContain("shadeScale");
         }
 
-        ReadSource("SWLOR_Haks", "sw_tint_mtr", "pmh0_c_ch_eb7e04.mtr")
+        ReadSource("SWLOR_Haks", "sw_tint_mtr", "pfh0_head121.mtr")
             .Should().MatchRegex(@"(?m)^parameter float rowSkin 0\.000244\s*$",
                 "NWN must retain a scalar material declaration so the Vec4 script transport's first component uses glUniform1f");
     }
@@ -2346,7 +2346,11 @@ public class TintMapReviewTests
         var expectedRows = new Dictionary<string, (string Material, string Layers)>
         {
             ["pme0_legl104"] = ("pmh0_legl104", "4"),
-            ["pme0_pelvis102"] = ("pmh0_pelvis102", "4,6")
+            ["pme0_pelvis102"] = ("pmh0_pelvis102", "4,6"),
+            ["pme0_footl247"] = ("pmh0_footl247", "7"),
+            ["pme0_footr247"] = ("pmh0_footr247", "7"),
+            ["pme0_shinl249"] = ("pmh0_shinl249", "7"),
+            ["pme0_shinr249"] = ("pmh0_shinr249", "7")
         };
 
         foreach (var (model, expected) in expectedRows)
@@ -2359,7 +2363,11 @@ public class TintMapReviewTests
         var modelBindings = new Dictionary<string, string>
         {
             [Path.Combine("sw_pt_lthigh", "pme0_legl104.mdl")] = "pmh0_legl104",
-            [Path.Combine("sw_pt_pelvis", "pme0_pelvis102.mdl")] = "pmh0_pelvis102"
+            [Path.Combine("sw_pt_pelvis", "pme0_pelvis102.mdl")] = "pmh0_pelvis102",
+            [Path.Combine("sw_pt_lfoot", "pme0_footl247.mdl")] = "pmh0_footl247",
+            [Path.Combine("sw_pt_rfoot", "pme0_footr247.mdl")] = "pmh0_footr247",
+            [Path.Combine("sw_pt_lshin", "pme0_shinl249.mdl")] = "pmh0_shinl249",
+            [Path.Combine("sw_pt_rshin", "pme0_shinr249.mdl")] = "pmh0_shinr249"
         };
         foreach (var (relativePath, material) in modelBindings)
         {
@@ -2370,7 +2378,48 @@ public class TintMapReviewTests
     }
 
     [Test]
-    public void PaddedModularModelUsesItsUnpaddedTintMaterial()
+    public void PlacedRodianBountyHunterKeepsItsAuthoredAppearanceAndDyes()
+    {
+        var area = JObject.Parse(ReadSource("Module", "git", "ooc_area.git.json"));
+        var hunter = area["Creature List"]!["value"]!
+            .Single(creature => creature["Tag"]?["value"]?.Value<string>() == "MaleBountyHunter");
+        hunter["Appearance_Type"]!["value"]!.Value<int>().Should().Be(10095);
+        hunter["Gender"]!["value"]!.Value<int>().Should().Be(0);
+        hunter["Phenotype"]!["value"]!.Value<int>().Should().Be(0);
+        hunter["Appearance_Head"]!["value"]!.Value<int>().Should().Be(56);
+
+        foreach (var (channel, color) in new Dictionary<string, int>
+                 {
+                     ["Skin"] = 80, ["Hair"] = 20, ["Tattoo1"] = 53, ["Tattoo2"] = 68
+                 })
+            hunter[$"Color_{channel}"]!["value"]!.Value<int>().Should().Be(color);
+
+        var outfit = hunter["Equip_ItemList"]!["value"]!
+            .Single(item => item["__struct_id"]!.Value<int>() == 2);
+        outfit["TemplateResRef"]!["value"]!.Value<string>().Should().Be("bountyhuntdred");
+        foreach (var (part, model) in new Dictionary<string, int>
+                 {
+                     ["LFoot"] = 247, ["RFoot"] = 247, ["LShin"] = 249, ["RShin"] = 249
+                 })
+        {
+            outfit[$"ArmorPart_{part}"]!["value"]!.Value<int>().Should().Be(model);
+            outfit[$"xArmorPart_{part}"]!["value"]!.Value<int>().Should().Be(model);
+        }
+
+        var blueprint = JObject.Parse(ReadSource("Module", "uti", "bountyhuntdred.uti.json"));
+        foreach (var (channel, color) in new Dictionary<string, int>
+                 {
+                     ["Cloth1"] = 97, ["Cloth2"] = 98, ["Leather1"] = 99,
+                     ["Leather2"] = 23, ["Metal1"] = 7, ["Metal2"] = 7
+                 })
+        {
+            outfit[$"{channel}Color"]!["value"]!.Value<int>().Should().Be(color);
+            blueprint[$"{channel}Color"]!["value"]!.Value<int>().Should().Be(color);
+        }
+    }
+
+    [Test]
+    public void NativePartPaletteFallbackPrecedesUnpaddedEmbeddedBitmap()
     {
         var rows = ReadSource("SWLOR_Haks", "sw_2da", "tintmap.2da")
             .Split('\n', StringSplitOptions.RemoveEmptyEntries)
@@ -2380,7 +2429,8 @@ public class TintMapReviewTests
             .ToList();
         var paddedFoot = rows.Single(columns => columns[1] == "pmo0_footl010");
 
-        paddedFoot[2].Should().Be("pmo0_footl10");
+        paddedFoot[2].Should().Be("pmh0_footl010",
+            "the native body-part loader formats both model and PLT indices with %03u, then replaces the embedded bitmap with its selected human fallback");
         rows.Should().NotContain(columns => columns[1] == "pmo0_footl10");
     }
 

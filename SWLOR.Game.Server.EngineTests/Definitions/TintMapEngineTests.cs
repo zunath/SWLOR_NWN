@@ -7,6 +7,8 @@ using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
+using AppearanceType = SWLOR.NWN.API.NWScript.Enum.AppearanceType;
+using CreaturePart = SWLOR.NWN.API.NWScript.Enum.Creature.CreaturePart;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using ItemAppearanceType = SWLOR.NWN.API.NWScript.Enum.Item.ItemAppearanceType;
 
@@ -113,6 +115,86 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 });
             }
             ctx.SetResultDetail($"Three dress-color edit/reset cycles preserved all {originalRows.Count} native rows with no type-zero reset records; unrelated skin, hair, tattoos and clothing stayed unchanged.");
+        }
+
+        [EngineTest("Tint Rodian bounty hunter feet and shins use authored leather dye", Category = "Tint", TimeoutSeconds = 30f)]
+        public static async Task RodianEquipmentFallbacksInstallAuthoredLeatherRows(EngineTestContext ctx)
+        {
+            var hunter = ctx.SpawnCreature("malebh");
+            await ctx.WaitUntilAsync(
+                () => GetIsObjectValid(GetItemInSlot(InventorySlot.Chest, hunter)),
+                10f,
+                "the bounty hunter's authored outfit to be equipped");
+            await ctx.WaitFrameAsync();
+
+            await RunAssignedAsync(ctx, hunter, () =>
+            {
+                // The placed OOC hunter overrides the human blueprint's appearance. Match that
+                // composed model while keeping its existing bountyhuntdred equipment and dyes.
+                SetCreatureAppearanceType(hunter, (AppearanceType)10095);
+                SetCreatureBodyPart(CreaturePart.Head, 56, hunter);
+                SetColor(hunter, ColorChannel.Skin, 80);
+                SetColor(hunter, ColorChannel.Hair, 20);
+                SetColor(hunter, ColorChannel.Tattoo1, 53);
+                SetColor(hunter, ColorChannel.Tattoo2, 68);
+            });
+
+            var expectedParts = new[]
+            {
+                (Part: AppearanceArmor.LeftFoot, Model: "pme0_footl247", Material: "pmh0_footl247", Number: 247),
+                (Part: AppearanceArmor.RightFoot, Model: "pme0_footr247", Material: "pmh0_footr247", Number: 247),
+                (Part: AppearanceArmor.LeftShin, Model: "pme0_shinl249", Material: "pmh0_shinl249", Number: 249),
+                (Part: AppearanceArmor.RightShin, Model: "pme0_shinr249", Material: "pmh0_shinr249", Number: 249)
+            };
+
+            for (var repeat = 0; repeat < 2; repeat++)
+            {
+                await RunAssignedAsync(ctx, hunter, () =>
+                {
+                    ctx.AssertEqual("E", Get2DAString("appearance", "RACE", (int)GetAppearanceType(hunter)),
+                        "Placed bounty hunter model race");
+                    ctx.AssertEqual(0, (int)GetGender(hunter), "Placed bounty hunter model gender");
+                    ctx.AssertEqual(0, (int)GetPhenoType(hunter), "Placed bounty hunter model phenotype");
+                    var outfit = GetItemInSlot(InventorySlot.Chest, hunter);
+                    ctx.AssertEqual("bountyhuntdred", GetResRef(outfit), "Bounty hunter outfit blueprint");
+                    ctx.AssertEqual(23,
+                        GetItemAppearance(outfit, ItemAppearanceType.ArmorColor, (int)AppearanceArmorColor.Leather2),
+                        "Authored bounty hunter leather2 palette index");
+                    var selections = TintMapModelResolver.GetCurrentSelections(hunter);
+                    foreach (var expected in expectedParts)
+                    {
+                        ctx.AssertEqual(expected.Number,
+                            GetItemAppearance(outfit, ItemAppearanceType.ArmorModel, (int)expected.Part),
+                            $"Authored {expected.Part} model");
+                        var matches = selections.Where(selection =>
+                                selection.ModelResref.Equals(expected.Model, StringComparison.OrdinalIgnoreCase))
+                            .ToArray();
+                        ctx.AssertEqual(1, matches.Length, $"Resolved tint selection for {expected.Model}");
+                        var selection = matches[0];
+                        ctx.AssertEqual(expected.Material, selection.Material.Resref.ToLowerInvariant(),
+                            $"Canonical tint material for {expected.Model}");
+                        ctx.Assert(selection.Material.Layers.SequenceEqual(new[] { TintMapLayerType.Leather2 }),
+                            $"{expected.Model} must expose its authored leather2 layer.");
+                        ctx.AssertEqual(outfit, selection.GetPaletteSource(TintMapLayerType.Leather2),
+                            $"Equipment dye source for {expected.Model}");
+                        ctx.Assert(selection.UsesItemColor(TintMapLayerType.Leather2),
+                            $"{expected.Model} must read armor dyes.");
+                        ctx.AssertEqual(23,
+                            TintMapService.GetStandardColorId(hunter, selection, TintMapLayerType.Leather2),
+                            $"Resolved authored leather2 palette index for {expected.Model}");
+                    }
+
+                    TintMapService.ApplyCurrentColors(hunter);
+                    var rows = ReadNativeRows(ctx, hunter);
+                    AssertNoResetRecords(ctx, rows);
+                    foreach (var expected in expectedParts)
+                        AssertNativeRow(ctx, rows, expected.Material, "rowleath2", (880f + 23f + 0.5f) / 2048f);
+                    AssertNativeRow(ctx, rows, string.Empty, "rowskin", (80f + 0.5f) / 2048f);
+                    AssertNativeRow(ctx, rows, string.Empty, "rowhair", (176f + 20f + 0.5f) / 2048f);
+                });
+            }
+
+            ctx.SetResultDetail("Race E male phenotype 0 resolved both feet 247 and shins 249 to canonical human materials; two refreshes installed all four leather2=23 rows without reset records. Server state only; no client renderer is attached.");
         }
 
         private static async Task RunAssignedAsync(EngineTestContext ctx, uint creature, Action action)

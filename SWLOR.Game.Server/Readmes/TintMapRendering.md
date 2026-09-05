@@ -129,6 +129,59 @@ Rebuild and deploy all three `sw_tint*.hak` archives after this repair.
 
 ## Regression scene and checks
 
+### Cover native body-part texture fallbacks
+
+The native segmented-body loader selects a PLT using the exact model name,
+then the same gender and race with phenotype zero, then the same gender with
+human phenotype zero. Female parts finally fall back to male human phenotype
+zero. Converting the PLT removes that implicit lookup: every eligible mesh in
+each affected model must explicitly bind the selected tint material, and the
+exact model name must appear in `tintmap.2da` so runtime colors reach it.
+The native loader formats part indices with `%03u`; an unpadded texture name
+does not precede the padded human fallback in that lookup.
+
+For example, the placed male bounty hunter uses `pme0_shinl249`,
+`pme0_shinr249`, `pme0_footl247`, and `pme0_footr247`. Their legacy bitmap names
+are `shin` and `but`; the native loader selects the corresponding `pmh0_`
+PLTs. All four masks use Leather2, whose authored item palette ID is 23. A
+canonical human MTR alone cannot replace the missing racial model binding.
+
+Audit the complete active modular-model corpus through the native fallback
+chain. A small list of known NPC parts cannot establish coverage. Once a PLT
+is selected, the native loader replaces every mesh surface in the body-part
+subtree, including meshes with existing bitmap or material names. Match that
+behavior and verify the resulting binary mesh bindings as well as catalog
+rows. The GPU regression resolves the reported feet and shins through
+the catalog and checks their actual packed masks select Leather2 row 23 with
+zero environment-map coverage.
+
+PLT replacement changes the underlying diffuse texture, not the existing
+SharedMaterial configuration. Preserve the original normal, specular,
+emission, transparency, and cutout settings; the fallback PLT's same-name MTR
+does not become the new configuration. An authored non-null `texture0` takes
+priority over the underlying PLT, so those fixed-diffuse meshes retain their
+original material and shader. This also applies to an unresolved texture: the
+native renderer binds its missing texture instead of falling back to the PLT.
+Resolve original resources using the module's `Mod_HakList`, where the first
+entry wins. `hakbuilder.json` controls packaging, not runtime resource priority.
+
+`TintMapMaterialSources.json` records the original MTR declarations, Git
+provenance, module priority, and lineage of retired bitmap aliases. Reproduce
+it with `CaptureTintMaterialSources.py --check`, supplying the recorded
+`hakCommit`, `moduleCommit`, and `convertedCommit` as `--baseline`,
+`--module-baseline`, and `--converted-baseline`, plus `--game-data`. Profile
+aliases preserve these inputs separately from the selected PLT. Fixed materials
+whose names collide with generated tint materials have preserved copies in
+`sw_item` and do not appear in the tint catalog.
+
+Use `python SWLOR_Haks/tools/GenerateTintMapAssets.py --refresh-model-bindings`
+to regenerate these bindings and their catalog without recompressing textures.
+Compile any changed ASCII models before packaging. Rebuild every changed model
+HAK together with `sw_2da.hak`, `sw_tint_mtr.hak`, and any changed preserved
+material HAK; the server must reload the catalog and the client must reload the
+model resources. ASCII models with duplicate node names must be compiled before
+binding, so each mesh can be addressed by its unique binary material offset.
+
 ### Ship compiled models
 
 `HakBuilder` packages the model bytes already present in each source folder;
@@ -166,6 +219,12 @@ string fields: `pfe22`/`pfo22` robes 027, 172, 174, and 200, plus `pfh22` robes
 172 and 174. Restoring their string padding preserves the authored names and
 all numeric geometry data. A fallback text scan must never hide structural
 corruption in a deployed binary model.
+
+The legacy `pmo0_forel129` source also had an empty dangly `period` value.
+Its male human, dwarf, and elf counterparts agree on period 10 with the same
+displacement and tightness. Compile it with the explicit, audited repair
+`--dangly-period pmo0_forel129:pmo0_forel129g:10`; this fills the missing value
+and must never overwrite a supplied value or become a general default.
 
 ### Exercise the reported NPCs
 

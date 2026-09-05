@@ -229,7 +229,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     AddModelSelections(
                         selections,
                         seenSelections,
-                        GetRobeModelResref(prefix, (int)GetPhenoType(creature), robeId),
+                        GetRobeModelResref(prefix, RobeModelRenderer.GetBasePhenotype(creature), robeId),
                         armor,
                         creature,
                         true,
@@ -265,7 +265,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             if (string.IsNullOrWhiteSpace(race) || race == "****" || race.Length != 1)
                 return string.Empty;
 
-            return $"p{gender}{race.ToLowerInvariant()}{(int)GetPhenoType(creature)}_";
+            return $"p{gender}{race.ToLowerInvariant()}{RobeModelRenderer.GetBasePhenotype(creature)}_";
         }
 
         private static string GetGenderModelCode(Gender gender)

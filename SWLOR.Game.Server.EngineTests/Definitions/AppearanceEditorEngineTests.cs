@@ -449,11 +449,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 EquippedItemAppearance.Set(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, 187);
                 editor.OnSelectEquipment()();
                 editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Robe, AppearanceArmorColor.Cloth1)();
-                ctx.Assert(editor.IsCustomTintAvailable && !editor.IsCustomTintEditable,
-                    "Unsupported robe RGB remains visible but disabled with a preset explanation.");
+                ctx.Assert(editor.IsCustomTintAvailable && editor.IsCustomTintEditable,
+                    "Converted robes expose the same exact RGB editor as other armor parts.");
                 var beforeRobe = ReadArmor(civilian);
                 ApplyWatchedValue(editor, nameof(editor.SelectedTintColor), new GuiColor(205, 228, 197));
-                AssertArmorUnchanged(ctx, beforeRobe, civilian, "Unsupported robe input cannot silently quantize a color");
+                AssertArmorUnchanged(ctx, beforeRobe, civilian, "Robe RGB retains all item models and native palette fields");
+                var robe = TintMapModelResolver.GetCurrentSelections(civilian).Single(selection =>
+                    selection.ArmorPart == AppearanceArmor.Robe && selection.Material.Layers.Contains(TintMapLayerType.Cloth1));
+                TintMapEngineTests.AssertNativeRgb(ctx, civilian, robe.Material.Resref, TintMapLayerType.Cloth1,
+                    new TintMapColor(205, 228, 197));
+                ctx.Assert((int)GetPhenoType(civilian) >= 34, "RGB installs the robe-bearing body root.");
             });
             ctx.SetResultDetail("Reported pale green and R1 persisted exactly through native scalar material uploads, fresh editor hydration, inheritance, explicit part overrides and reset/preset actions. RGB leaves equipped item identity and native dyes unchanged. Headless tests exclude client NUI event transport and rendering.");
         }

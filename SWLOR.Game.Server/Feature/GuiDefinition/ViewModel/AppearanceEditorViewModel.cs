@@ -997,10 +997,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             IsCustomTintAvailable = true;
             IsCustomTintEditable = selections.Count > 0 &&
-                                   selections.All(selection => selection.ArmorPart != AppearanceArmor.Robe);
+                                   selections.All(RobeModelRenderer.SupportsRgb);
             CustomTintTooltip = IsCustomTintEditable ? "Apply an RGB color."
                 : selections.Any(selection => selection.ArmorPart == AppearanceArmor.Robe)
-                    ? "This robe supports preset colors only. Select a color from the palette above."
+                    ? "This body and robe combination supports preset colors only. Select a color from the palette above."
                     : "This part has no visible material for this color.";
             if (TryGetSelectedCustomColor(selections, layerType, out var customColor))
             {
@@ -1108,7 +1108,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
             if (!TryGetEditableTintSelections(out var selections, out var layerType, out _))
                 return;
-            if (selections.Count == 0 || selections.Any(selection => selection.ArmorPart == AppearanceArmor.Robe))
+            if (selections.Count == 0 || !selections.All(RobeModelRenderer.SupportsRgb))
             {
                 LoadTintMapEditor();
                 return;

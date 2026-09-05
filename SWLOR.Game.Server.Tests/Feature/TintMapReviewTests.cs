@@ -1041,7 +1041,7 @@ public class TintMapReviewTests
                 "both equipped weapon slots can contribute tintable simple or three-part models");
 
         var parts = FindMethod(source, "AddPartsAppearanceSelections");
-        parts.ToString().Should().Contain("GetRobeModelResref(prefix, (int)GetPhenoType(creature), robeId)");
+        parts.ToString().Should().Contain("GetRobeModelResref(prefix, RobeModelRenderer.GetBasePhenotype(creature), robeId)");
         var robeModel = FindMethod(source, "GetRobeModelResref");
         robeModel.ToString().Should().Contain("phenotype == 2");
         robeModel.ToString().Should().Contain("prefix.TrimEnd('_')");

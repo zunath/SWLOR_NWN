@@ -142,7 +142,12 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             // A complete reset also removes legacy wildcard values left by older implementations
             // before the current material-scoped values are installed.
             var selections = TintMapModelResolver.GetCurrentSelections(creature);
-            ProjectNativeRobeColors(creature, selections);
+            var hasRobeRgb = selections.Any(selection => selection.ArmorPart == AppearanceArmor.Robe &&
+                selection.Material.Layers.Any(layer => (TintMapVariable.IsCreatureColorLayer(layer)
+                    ? GetEffectiveCreatureColor(creature, layer)
+                    : GetEffectiveColor(creature, selection, layer)).CustomColor.HasValue));
+            var rendersRobeRgb = RobeModelRenderer.Apply(creature, selections, hasRobeRgb);
+            ProjectNativeRobeColors(creature, selections, rendersRobeRgb);
             ResetMaterialShaderUniforms(creature);
             var creatureLayers = new HashSet<TintMapLayerType>();
             foreach (var selection in selections)
@@ -173,11 +178,12 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             }
         }
 
-        private static void ProjectNativeRobeColors(uint creature, IReadOnlyList<TintMapMaterialSelection> selections)
+        private static void ProjectNativeRobeColors(uint creature, IReadOnlyList<TintMapMaterialSelection> selections,
+            bool rendersRobeRgb)
         {
             // The client replays material uniforms on the body/head/attachments, but omits its
             // separate robe Gob. Tiny PLT resources carry these native palette values to the shader.
-            var robes = selections.Where(selection => selection.ArmorPart == AppearanceArmor.Robe).ToList();
+            var robes = selections.Where(selection => !rendersRobeRgb && selection.ArmorPart == AppearanceArmor.Robe).ToList();
             var creatureStateChanged = false;
             foreach (var layer in Enum.GetValues<TintMapLayerType>().Where(TintMapVariable.IsCreatureColorLayer))
             {

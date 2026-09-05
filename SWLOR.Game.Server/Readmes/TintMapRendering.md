@@ -85,16 +85,59 @@ but fill it from `pal_armor01` and use matching picker colors. Do not modify
 the original palette resources themselves. The GPU regression checks every
 color and shade against the original palette RGBA, including this distinction.
 
-This transport only supports native palette IDs, not arbitrary RGB. The editor
-disables RGB edits when the selected layer includes a robe, with a tooltip
-directing the user to presets. Persisted RGB from other sources still uses a
-nearest-preset compatibility projection for robes; this is not exact RGB.
-Ordinary body parts receive the full RGB material scalar. Preserve the
-authored palette values separately from their projected render values so
-resetting an override restores the original color, including per-part
-inheritance. Ordinary NPCs without overrides must not have their palette fields
-rewritten. Verify edits and resets through native engine tests as well as the
-shader tests; inspect a fresh client session to verify the attachment itself.
+This transport only supports native palette IDs. Unsupported robe/body
+combinations retain the nearest-preset compatibility projection for persisted
+RGB, with RGB editing disabled and presets available. Preserve the authored
+palette values separately from projected values so reset restores the original
+color and per-part inheritance. NPCs without overrides must retain their raw
+palette fields.
+
+## Exact RGB on robes
+
+`RobeModelRenderer` uses `roberender.2da` to select a generated body root when
+the worn robe has an effective RGB override. The body root contains the robe's
+geometry and therefore receives the same material scalars as other body parts.
+An empty robe attachment for that phenotype preserves the original robe number
+and its native body-part hiding rules without drawing a second copy.
+
+`SWLOR_Haks/tools/GenerateRobeRgbModels.py` preserves mesh data, materials,
+bind transforms, skin weights, and the original robe's animation chain and
+animation scale. It retains standard skeleton joints, moves their visible meshes
+to child nodes, and fills missing attachment joints from the original body root.
+Duplicate legacy nodes are removed or renamed only after verifying actual binary
+bone references and child/animation relationships. Authored-to-generated and
+compiler round-trip checks run before files are installed.
+
+The catalog currently covers 1,498 normal-body models across 178 robe styles.
+Phenotype IDs are a native byte, so generated IDs are reserved in the range
+34–255 and are never recycled. Normal body type 0 covers the current authored
+NPC corpus; large and mounted body types retain the native fallback. Reserved
+rows are internal rendering metadata, not character-creation choices.
+
+The NWScript `SetPhenoType` command silently rejects IDs above 99 despite the
+native byte fields. The renderer uses the typed native API to write the same
+two fields as that command (`m_pStats.m_nPhenoType` and
+`m_cAppearance.m_nPhenoType`), then requests replication. It does not call an
+equipment or stat rebuild. The engine test exercises a catalog ID above 99
+and checks that both fields agree.
+
+The model resolver always uses the original body type and robe resource name
+for material selection and saved colors. Removing the robe or the last effective
+RGB override restores the base phenotype. Saved generated phenotypes normalize
+through the reserved table rows, including when a robe is later retired. Mount
+phenotypes are not replaced. The renderer changes no equipped item, item property,
+model number, ownership, or equip/unequip event; native engine tests verify this
+with real event observers and gameplay-state snapshots.
+
+Regenerate after changing a source robe or base skeleton, and rebuild
+`sw_pt_root.hak`, `sw_pt_robe.hak`, and `sw_2da.hak` together. The tint generator
+keeps derived roots out of material-scope inference and checks their source/output
+hash manifest instead. A full client restart is required after installing models
+or phenotype tables. The female human robe187 prototype was verified in the
+89.8193.37-17 client: all eight converted material instances received exact Cloth1
+RGB (205,228,197), and walking/sitting kept skirt, sleeves, hands, and feet intact.
+Only surfaces using the selected layer change color; Cloth1 alone does not recolor
+the entire dress. Other styles still require visual spot checks in the client.
 
 ## Match material parameter arity to the shader
 

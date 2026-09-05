@@ -206,6 +206,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var civilian = await SpawnCivilianAsync(ctx);
             await RunAssignedAsync(ctx, civilian, () =>
             {
+                // Large-body robes retain the native compatibility path.
+                SetPhenoType((SWLOR.NWN.API.NWScript.Enum.PhenoType)2, civilian);
                 var outfit = GetItemInSlot(InventorySlot.Chest, civilian);
                 var originalItemColors = ReadArmorColors(outfit);
                 var originalCreatureColors = new[] { ColorChannel.Skin, ColorChannel.Hair, ColorChannel.Tattoo1, ColorChannel.Tattoo2 }
@@ -277,6 +279,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 TintMapService.ResetCreatureCustomColor(civilian, TintMapLayerType.Hair);
                 ctx.AssertEqual(2, GetColor(civilian, ColorChannel.Skin), "Skin reset restores authored native color");
                 AssertProjectionCleared(ctx, civilian, (int)TintMapLayerType.Skin);
+                // Restore the normal head registration before checking all authored rows.
+                SetPhenoType(SWLOR.NWN.API.NWScript.Enum.PhenoType.Normal, civilian);
+                TintMapService.ApplyCurrentColors(civilian);
                 AssertAuthoredRows(ctx, civilian);
             });
             await ctx.DelaySecondsAsync(0.5f);
@@ -296,6 +301,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var civilian = await SpawnCivilianAsync(ctx);
             await RunAssignedAsync(ctx, civilian, () =>
             {
+                SetPhenoType((SWLOR.NWN.API.NWScript.Enum.PhenoType)2, civilian);
                 var outfit = GetItemInSlot(InventorySlot.Chest, civilian);
                 var dress = GetCivilianDress(civilian);
                 var layer = TintMapLayerType.Cloth1;

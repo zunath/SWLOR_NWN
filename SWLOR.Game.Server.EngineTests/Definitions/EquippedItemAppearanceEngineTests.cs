@@ -149,6 +149,82 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SetResultDetail("Native torso edits, both seven-part side copies, global/part RGB edits, and all19 outfit models/120 dyes retained the same equipped item, item properties/locals, armor class/weight, NPC resources, skin properties, and queued-ability marker. Zero observed equipment events after settling. Genuine lifecycle control: " + genuineEvents + ". NPC fixture does not prove PC-only module event delivery or client visual rendering.");
         }
 
+        [EngineTest("Tint robe RGB swaps preserve gameplay and emit no equipment events", Category = "AppearanceEditor", TimeoutSeconds = 60f)]
+        public static async Task RobeRgbNeverReequips(EngineTestContext ctx)
+        {
+            var creature = await SpawnCivilianAsync(ctx);
+            var item = GetItemInSlot(InventorySlot.Chest, creature);
+            using var observation = new EventObservation(creature);
+            await VerifyGenuineEquipmentEventsAsync(ctx, creature, item, InventorySlot.Chest, observation);
+            await AssignedAsync(ctx, creature, () => SeedGameplaySentinels(ctx, creature, item));
+            await ctx.DelaySecondsAsync(0.5f);
+            var before = Snapshot(creature, item, InventorySlot.Chest);
+            var originalAppearance = ItemPlugin.GetEntireItemAppearance(item);
+            observation.Reset();
+            var requested = new TintMapColor(205, 228, 197);
+            var layers = new[] { TintMapLayerType.Cloth1, TintMapLayerType.Cloth2,
+                TintMapLayerType.Leather1, TintMapLayerType.Leather2 };
+            var generatedPhenotype = 0;
+            await AssignedAsync(ctx, creature, () =>
+            {
+                var initialRobe = TintMapModelResolver.GetCurrentSelections(creature).Single(selection =>
+                    selection.ArmorPart == AppearanceArmor.Robe);
+                ctx.Assert(RobeModelRenderer.SupportsRgb(initialRobe), $"Catalog must support {initialRobe.ModelResref}; table has {Get2DARowCount("roberender")} rows.");
+                foreach (var layer in layers)
+                    TintMapService.SetGlobalItemCustomColor(creature,
+                        TintMapModelResolver.GetCurrentSelections(creature), layer, requested, item);
+                generatedPhenotype = (int)GetPhenoType(creature);
+                ctx.Assert(generatedPhenotype >= 34 && generatedPhenotype <= 255, $"Generated phenotype fits the native byte; actual {generatedPhenotype}.");
+                ctx.Assert(generatedPhenotype > 99, "Exercise a generated ID beyond NWScript's hard-coded limit.");
+                var nativeCreature = global::NWN.Native.API.NWNXLib.g_pAppManager.m_pServerExoApp.GetCreatureByGameObjectID(creature);
+                ctx.AssertEqual((byte)generatedPhenotype, nativeCreature.m_cAppearance.m_nPhenoType,
+                    "Replicated appearance agrees with the native stats phenotype.");
+                ctx.AssertEqual(0, RobeModelRenderer.GetBasePhenotype(creature), "Logical body type stays normal.");
+                ctx.AssertEqual(originalAppearance, ItemPlugin.GetEntireItemAppearance(item), "RGB does not rewrite any armor field.");
+                var robe = TintMapModelResolver.GetCurrentSelections(creature).Single(selection =>
+                    selection.ArmorPart == AppearanceArmor.Robe);
+                ctx.AssertEqual("pfh0_robe187", robe.ModelResref, "Canonical robe identity survives projection.");
+                foreach (var layer in layers)
+                    TintMapEngineTests.AssertNativeRgb(ctx, creature, robe.Material.Resref, layer, requested);
+                var partColor = new TintMapColor(1, 17, 91);
+                TintMapService.SetColor(creature, robe, TintMapLayerType.Cloth1, partColor);
+                TintMapEngineTests.AssertNativeRgb(ctx, creature, robe.Material.Resref, TintMapLayerType.Cloth1, partColor);
+                TintMapService.ResetColorToInheritance(creature, robe, TintMapLayerType.Cloth1);
+                TintMapEngineTests.AssertNativeRgb(ctx, creature, robe.Material.Resref, TintMapLayerType.Cloth1, requested);
+            });
+            await AssertSettledAsync(ctx, before, observation, "all robe layers and per-part RGB inheritance");
+            foreach (var robeId in new[] { 0, 1, 7, 187 })
+            {
+                await AssignedAsync(ctx, creature, () =>
+                {
+                    EquippedItemAppearance.Set(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, robeId);
+                    TintMapService.ApplyCurrentColors(creature);
+                    if (robeId is 0 or 1)
+                        ctx.AssertEqual(0, (int)GetPhenoType(creature),
+                            "No robe or an unregistered robe restores the normal root.");
+                    else if (robeId == 187)
+                        ctx.AssertEqual(generatedPhenotype, (int)GetPhenoType(creature), "Restoring the robe reuses its stable root.");
+                    else
+                        ctx.Assert((int)GetPhenoType(creature) >= 34 && (int)GetPhenoType(creature) != generatedPhenotype,
+                            "Changing the robe selects its own geometry.");
+                });
+                await AssertSettledAsync(ctx, before, observation, $"robe model {robeId}");
+            }
+            await AssignedAsync(ctx, creature, () =>
+            {
+                var editor = BindEditor(creature);
+                foreach (var channel in new[] { AppearanceArmorColor.Cloth1, AppearanceArmorColor.Cloth2,
+                             AppearanceArmorColor.Leather1, AppearanceArmorColor.Leather2 })
+                {
+                    editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, channel)();
+                    editor.OnClickColorPalette(77)();
+                }
+                ctx.AssertEqual(0, (int)GetPhenoType(creature), "Removing the final RGB override restores the native robe path.");
+            });
+            await AssertSettledAsync(ctx, before, observation, "return to native presets");
+            ctx.SetResultDetail("Four exact robe RGB channels, part inheritance, robe removal/replacement, and preset reset preserved item identity, gameplay sentinels, and zero equipment events. Genuine equip/unequip events were observed before the test. Client walking/sitting is verified separately.");
+        }
+
         [EngineTest("Equipped weapon model and color edits preserve gameplay and emit no equipment events", Category = "AppearanceEditor", TimeoutSeconds = 45f)]
         public static async Task WeaponEditsNeverReequip(EngineTestContext ctx)
         {

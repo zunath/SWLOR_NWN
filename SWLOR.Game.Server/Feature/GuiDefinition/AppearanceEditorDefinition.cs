@@ -11,7 +11,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     {
         private readonly GuiWindowBuilder<AppearanceEditorViewModel> _builder = new();
 
-        private const float ContentWidth = 530f;
         private const float MainColorChannelButtonSize = 56f;
         private const float PartColorChannelButtonSize = 20f;
         private const float PaletteButtonSize = 18f;
@@ -61,7 +60,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .AddOption("Appearance")
                 .AddOption("Equipment")
                 .BindSelectedValue(model => model.EditorTabToggleValue)
-                .SetWidth(320f)
                 .SetHeight(28f);
             row.AddToggles()
                 .AddOption("Settings")
@@ -92,9 +90,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
         private void BuildMainEditor(GuiGroup<AppearanceEditorViewModel> partial)
         {
-            partial.SetWidth(ContentWidth);
             // A group does not expose its children's extent to the outer scroll host.
-            // This panel must scroll its own contents when the window is compact.
+            // Let the viewport fill the window and scroll its contents when compact.
             partial.SetScrollbars(NuiScrollbars.Auto);
             partial.AddColumn(col =>
             {
@@ -128,7 +125,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 });
                             })
                                 .BindRowCount(model => model.ColorCategoryOptions)
-                                .SetWidth(210f)
                                 .SetHeight(154f);
                         });
 
@@ -146,7 +142,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 });
                             })
                                 .BindRowCount(model => model.PartCategoryOptions)
-                                .SetWidth(210f)
                                 .SetHeight(210f);
                         });
 
@@ -185,7 +180,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 });
                             })
                                 .BindRowCount(model => model.PartOptions)
-                                .SetWidth(276f)
                                 .SetHeight(210f);
                         });
 
@@ -194,13 +188,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                             row2.AddButton()
                                 .SetText("Previous Part")
                                 .SetHeight(32f)
-                                .SetWidth(128f)
                                 .BindOnClicked(model => model.OnPreviousPart());
 
                             row2.AddButton()
                                 .SetText("Next Part")
                                 .SetHeight(32f)
-                                .SetWidth(128f)
                                 .BindOnClicked(model => model.OnNextPart());
                         });
 
@@ -214,15 +206,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             col.AddRow(row =>
             {
                 row.BindIsVisible(model => model.IsCustomTintAvailable);
-                row.AddSpacer();
 
                 row.AddColorPicker()
                     .BindSelectedColor(model => model.SelectedTintColor)
                     .BindIsEnabled(model => model.IsCustomTintAvailable)
-                    .SetHeight(128f)
-                    .SetWidth(256f);
-
-                row.AddSpacer();
+                    .SetHeight(128f);
             });
 
             col.AddRow(row =>
@@ -272,12 +260,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
         private void BuildArmorEditor(GuiGroup<AppearanceEditorViewModel> partial)
         {
-            partial.SetWidth(ContentWidth);
             partial.SetScrollbars(NuiScrollbars.Auto);
             void BuildMainColorChannels(GuiColumn<AppearanceEditorViewModel> col)
             {
                 col.AddRow(row =>
                 {
+                    row.AddSpacer();
                     row.AddLabel()
                         .SetHeight(20f)
                         .SetWidth(MainColorChannelButtonSize)
@@ -298,10 +286,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .SetText("Metal")
                         .SetHorizontalAlign(NuiHorizontalAlign.Center)
                         .SetVerticalAlign(NuiVerticalAlign.Top);
+                    row.AddSpacer();
                 });
 
                 col.AddRow(row =>
                 {
+                    row.AddSpacer();
                     CreateFilledButton(
                         row,
                         "gui_pal_tattoo",
@@ -326,9 +316,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         4f,
                         model => model.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Metal1),
                         model => model.OnClickClearColor(AppearanceEditorViewModel.ColorTarget.Invalid, AppearanceArmorColor.Metal1));
+                    row.AddSpacer();
                 });
                 col.AddRow(row =>
                 {
+                    row.AddSpacer();
                     CreateFilledButton(
                         row,
                         "gui_pal_tattoo",
@@ -353,6 +345,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         4f,
                         model => model.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Metal2),
                         model => model.OnClickClearColor(AppearanceEditorViewModel.ColorTarget.Invalid, AppearanceArmorColor.Metal2));
+                    row.AddSpacer();
                 });
             }
 
@@ -390,7 +383,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                     row.AddComboBox()
                         .SetHeight(24f)
-                        .SetWidth(100f)
                         .SetMargin(0f)
                         .BindOptions(optionsBinding)
                         .BindSelectedIndex(selectionBinding);
@@ -466,18 +458,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
             void CreateGap(GuiRow<AppearanceEditorViewModel> mainRow)
             {
-                mainRow.AddColumn(col =>
-                {
-                    for (var x = 1; x <= 7; x++)
-                    {
-                        col.AddRow(row =>
-                        {
-                            row.AddSpacer()
-                                .SetWidth(6f)
-                                .SetHeight(6f);
-                        });
-                    }
-                });
+                // Gutters must stay narrow while the three editor columns expand.
+                mainRow.AddSpacer().SetWidth(6f);
             }
 
             void BuildParts(GuiRow<AppearanceEditorViewModel> mainRow)
@@ -884,7 +866,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
         private void BuildSettings(GuiGroup<AppearanceEditorViewModel> partial)
         {
-            partial.SetWidth(ContentWidth);
             partial.SetScrollbars(NuiScrollbars.Auto);
             partial.AddColumn(col =>
             {

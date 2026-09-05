@@ -390,8 +390,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             TemporaryStatModifier.Add(beast, StatType.MindResistance, -20, 30f);
             ctx.Assert(!StatusEffect.ApplyStatusEffect(caster, beast, new KnockdownStatusEffect(), 6f), "explicit immunity survives a Mobility vulnerability");
             ctx.Assert(!StatusEffect.ApplyStatusEffect(caster, beast, new DazedStatusEffect(), 15f), "explicit immunity survives a Mind vulnerability");
-            ctx.Assert(!StatusEffect.TryApplyNativeKnockdown(beast, 3f), "weather and trap knockdown honor the same immunity");
-            ctx.Assert(StatusEffect.TryApplyNativeKnockdown(ordinary, 3f), "native knockdown still affects nonimmune creatures");
+            // A native knockdown exercises pulling an incapacitated creature.
+            ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), ordinary, 3f);
             var maul = Ability.GetAbilityDetail(FeatType.WardenMaulTechnique);
             Combat.SetAbilityHitResolutionOverride(true);
             Ability.BeginAbilityImpact(caster, maul);

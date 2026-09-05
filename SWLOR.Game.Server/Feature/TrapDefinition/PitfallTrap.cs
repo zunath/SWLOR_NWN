@@ -1,5 +1,6 @@
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
+using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
 
@@ -34,7 +35,14 @@ namespace SWLOR.Game.Server.Feature.TrapDefinition
 
             var vfx = EffectVisualEffect(VisualEffect.Vfx_Imp_Dust_Explosion);
             DelayCommand(3f, () => ApplyEffectToObject(DurationType.Instant, vfx, player));
-            DelayCommand(1.0f, () => StatusEffect.TryApplyNativeKnockdown(player, 3.0f));
+            DelayCommand(1.0f, () =>
+            {
+                if (GetIsObjectValid(player) &&
+                    Stat.GetStatAdjustment(player, StatType.KnockdownImmunity) <= 0)
+                {
+                    ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), player, 3.0f);
+                }
+            });
         }
     }
 }

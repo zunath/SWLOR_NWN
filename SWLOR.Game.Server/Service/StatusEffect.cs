@@ -19,16 +19,6 @@ namespace SWLOR.Game.Server.Service
         private const string StatusEffectTag = "STATUS_EFFECT";
         private const float Interval = 1f;
 
-        public static bool TryApplyNativeKnockdown(uint creature, float duration)
-        {
-            if (!GetIsObjectValid(creature) || duration <= 0f ||
-                Stat.GetStatAdjustment(creature, StatType.KnockdownImmunity) > 0)
-                return false;
-
-            ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), creature, duration);
-            return true;
-        }
-
         private static readonly Dictionary<uint, CreatureStatusEffect> _creatureEffects = new();
         private static readonly Dictionary<string, LoggedOutStatusEffects> _loggedOutPlayerEffects = new();
         private static readonly Dictionary<Type, StatusEffectMetadata> _statusEffects = new();

@@ -194,8 +194,8 @@ public class AppearanceEditorLayoutTests
             "the category rail is fixed while the detail panel consumes the remaining client width");
         panels.Should().OnlyContain(panel => panel.DeclaredHeight == 0f &&
             !ReadProperty<bool>(panel, "ShowBorder") &&
-            ReadProperty<NuiScrollbars>(panel, "Scrollbars") == NuiScrollbars.Y,
-            "each side needs its own vertical viewport when the window is short");
+            ReadProperty<NuiScrollbars>(panel, "Scrollbars") == NuiScrollbars.Auto,
+            "each side must scroll both tall content and fixed palette content wider than its viewport");
         var lists = Walk(partial).OfType<GuiList<AppearanceEditorViewModel>>().ToArray();
         lists.Should().HaveCount(3);
         foreach (var list in lists)
@@ -223,7 +223,7 @@ public class AppearanceEditorLayoutTests
     public void ArmorCombosUseThreeEqualFlexibleGroupsWithFixedArrowsAndGaps()
     {
         var armor = AppearanceEditorDefinition.BuildEditorPanel(AppearanceEditorViewModel.EditorArmorPartial);
-        ReadProperty<NuiScrollbars>(armor, "Scrollbars").Should().Be(NuiScrollbars.Y);
+        ReadProperty<NuiScrollbars>(armor, "Scrollbars").Should().Be(NuiScrollbars.Auto);
         var combos = Walk(armor).OfType<GuiComboBox<AppearanceEditorViewModel>>().ToArray();
         combos.Should().HaveCount(19);
         foreach (var combo in combos)
@@ -249,20 +249,23 @@ public class AppearanceEditorLayoutTests
         var partsRow = Walk(armor).OfType<GuiRow<AppearanceEditorViewModel>>().Single(row =>
             row.Elements.OfType<GuiGroup<AppearanceEditorViewModel>>().Count() == 3 &&
             Walk(row).OfType<GuiComboBox<AppearanceEditorViewModel>>().Count() == 19);
+        partsRow.DeclaredHeight.Should().Be(840f,
+            "the shared row must supply the stack height without modifying its peer groups' dimensions");
+        Width(partsRow).Should().Be(0f);
         partsRow.Elements.Should().HaveCount(5);
         var gaps = partsRow.Elements.OfType<GuiSpacer<AppearanceEditorViewModel>>().ToArray();
         gaps.Should().HaveCount(2);
         gaps.Should().OnlyContain(spacer => Width(spacer) == 6f,
             "flexible gaps must not consume the same new width as the actual armor columns");
         var stacks = partsRow.Elements.OfType<GuiGroup<AppearanceEditorViewModel>>().ToArray();
-        stacks.Should().OnlyContain(group => Width(group) == 0f && group.DeclaredHeight == 840f &&
+        stacks.Should().OnlyContain(group => Width(group) == 0f && group.DeclaredHeight == 0f &&
             !ReadProperty<bool>(group, "ShowBorder") &&
             ReadProperty<NuiScrollbars>(group, "Scrollbars") == NuiScrollbars.None,
-            "equal peer groups must expand together while the armor partial owns vertical scrolling");
+            "either width or height on a peer group disables native equal-width sharing in both axes");
         stacks.Select(group => Walk(group).OfType<GuiComboBox<AppearanceEditorViewModel>>().Count())
             .Should().Equal(7, 5, 7);
-        stacks.Should().OnlyContain(group => NaturalHeight(group) <= group.DeclaredHeight,
-            "every fixed part block must fit inside the stack exposed to the outer scroll viewport");
+        stacks.Should().OnlyContain(group => NaturalHeight(group) <= partsRow.DeclaredHeight,
+            "every fixed part block must fit inside the height supplied by the shared row");
     }
 
     [Test]
@@ -275,6 +278,35 @@ public class AppearanceEditorLayoutTests
             "the sixteen palette columns use fixed pixel coordinates in GetSelectedPaletteColorId");
         palette.DeclaredHeight.Should().Be(176f,
             "the eleven palette rows must keep their existing click-coordinate mapping");
+    }
+
+    [Test]
+    public void FixedMainPaletteHasATrailingFlexibleSpacer()
+    {
+        var main = _partials[AppearanceEditorViewModel.EditorMainPartial];
+        var palette = Walk(main).Single(widget => widget.Id == "ae_color_palette");
+        var row = PathTo(main, palette).OfType<GuiRow<AppearanceEditorViewModel>>().Last();
+        row.Elements.Should().HaveCount(2);
+        row.Elements[0].Should().BeSameAs(palette);
+        row.Elements[1].Should().BeOfType<GuiSpacer<AppearanceEditorViewModel>>();
+        Width(row.Elements[1]).Should().Be(0f);
+        row.Elements[1].DeclaredHeight.Should().Be(0f,
+            "a dimension modifier would prevent the spacer absorbing the detail panel's extra width");
+        Width(row).Should().Be(0f);
+    }
+
+    [Test]
+    public void PreviousAndNextPartButtonsShareWidthWithoutDimensionModifiers()
+    {
+        var main = _partials[AppearanceEditorViewModel.EditorMainPartial];
+        var previous = Walk(main).Single(widget => widget.Id == "ae_previous_part");
+        var next = Walk(main).Single(widget => widget.Id == "ae_next_part");
+        var row = PathTo(main, previous).OfType<GuiRow<AppearanceEditorViewModel>>().Last();
+        row.Elements.Should().Equal(new[] { previous, next });
+        row.DeclaredHeight.Should().Be(40f);
+        Width(row).Should().Be(0f);
+        row.Elements.Should().OnlyContain(button => Width(button) == 0f && button.DeclaredHeight == 0f,
+            "even a height-only modifier disables the buttons' native equal-width sharing");
     }
 
     [Test]
@@ -311,9 +343,14 @@ public class AppearanceEditorLayoutTests
     public void EditorViewportsHaveNoFixedRootWidthOrHeight(string partialName)
     {
         var partial = _partials[partialName];
-        ReadProperty<NuiScrollbars>(partial, "Scrollbars").Should().Be(
-            partialName == AppearanceEditorViewModel.EditorMainPartial ? NuiScrollbars.None : NuiScrollbars.Y,
-            "main uses independent side-by-side viewports; armor and settings scroll their full vertical content");
+        var expectedScrollbars = partialName switch
+        {
+            AppearanceEditorViewModel.EditorMainPartial => NuiScrollbars.None,
+            AppearanceEditorViewModel.EditorArmorPartial => NuiScrollbars.Auto,
+            _ => NuiScrollbars.Y
+        };
+        ReadProperty<NuiScrollbars>(partial, "Scrollbars").Should().Be(expectedScrollbars,
+            "main delegates scrolling to its side-by-side viewports, and armor permits both overflow axes");
         Width(partial).Should().Be(0f,
             "the scrollbar must follow the window edge instead of staying at the old panel width");
         partial.DeclaredHeight.Should().Be(0f,

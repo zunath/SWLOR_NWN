@@ -19,7 +19,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private const float CategoryWidth = 200f;
         private const float PartListHeight = 210f;
         private const float ArmorPartEditorHeight = 112f;
-        private const float ArmorPartColumnHeight = 840f;
+        private const float ArmorPartsHeight = 840f;
 
         // All expanding spans are resolved by the client. This tree is shared by every
         // window size; resizing must not require new layouts or binding replay.
@@ -131,7 +131,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                     row.AddGroup(panel =>
                     {
-                        panel.SetShowBorder(false).SetScrollbars(NuiScrollbars.Y);
+                        panel.SetShowBorder(false).SetScrollbars(NuiScrollbars.Auto);
                         panel.AddColumn(col2 =>
                         {
                             col2.AddRow(row2 =>
@@ -177,7 +177,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                     row.AddGroup(panel =>
                     {
-                        panel.SetShowBorder(false).SetScrollbars(NuiScrollbars.Y);
+                        panel.SetShowBorder(false).SetScrollbars(NuiScrollbars.Auto);
                         panel.AddColumn(col2 =>
                         {
                             col2.AddRow(row2 =>
@@ -192,6 +192,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                     .SetAspect(NuiAspect.ExactScaled)
                                     .BindOnMouseDown(model => model.OnSelectColor())
                                     .BindIsVisible(model => model.IsColorPickerVisible);
+
+                                // A fixed image alone pulls the group's private layout back
+                                // to its width. Give this row a place to absorb extra space.
+                                row2.AddSpacer();
                             });
 
                             BuildCustomTintEditor(col2);
@@ -215,16 +219,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                             col2.AddRow(row2 =>
                             {
+                                // Dimensions on the buttons would also disable their
+                                // native equal-width sharing. Size their shared row instead.
+                                row2.SetHeight(40f);
                                 row2.AddButton()
                                     .SetId("ae_previous_part")
                                     .SetText("Previous Part")
-                                    .SetHeight(32f)
                                     .BindOnClicked(model => model.OnPreviousPart());
 
                                 row2.AddButton()
                                     .SetId("ae_next_part")
                                     .SetText("Next Part")
-                                    .SetHeight(32f)
                                     .BindOnClicked(model => model.OnNextPart());
                             });
 
@@ -301,7 +306,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
         private void BuildArmorEditor(GuiGroup<AppearanceEditorViewModel> partial)
         {
-            partial.SetScrollbars(NuiScrollbars.Y);
+            partial.SetScrollbars(NuiScrollbars.Auto);
             void BuildMainColorChannels(GuiColumn<AppearanceEditorViewModel> col)
             {
                 col.AddRow(row =>
@@ -508,7 +513,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 {
                     group.SetShowBorder(false).SetScrollbars(NuiScrollbars.None);
                     group.AddColumn(build);
-                }).SetHeight(ArmorPartColumnHeight);
+                });
             }
 
             void CreateGap(GuiRow<AppearanceEditorViewModel> mainRow)
@@ -519,6 +524,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
             void BuildParts(GuiRow<AppearanceEditorViewModel> mainRow)
             {
+                // Any explicit dimension on a child disables native equal spacing in
+                // both axes. Bound the row's height so all three groups share its width.
+                mainRow.SetHeight(ArmorPartsHeight);
                 AddPartColumn(mainRow, col =>
                 {
                     CreatePartEditor(

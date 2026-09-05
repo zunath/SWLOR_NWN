@@ -560,9 +560,61 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(path.All(node => node["width"] == null),
                     $"{stage}: {control["type"]}/{control["id"]} must not encounter a fixed-width ancestor.");
                 ctx.Assert(path.Any(node => node["type"]?.Value<string>() == "group" &&
-                    (node["scrollbars"]?.Value<int>() == (int)NuiScrollbars.Y ||
-                     node["scrollbars"]?.Value<int>() == (int)NuiScrollbars.Auto)),
-                    $"{stage}: expanding controls must remain inside a scrolling viewport.");
+                    node["scrollbars"]?.Value<int>() == (int)NuiScrollbars.Auto),
+                    $"{stage}: expanding controls must remain inside an automatically scrolling viewport.");
+            }
+
+            if (isArmor)
+            {
+                var controls = objects.Where(node => node["type"]?.Value<string>() == "combo").ToArray();
+                ctx.AssertEqual(19, controls.Length, $"{stage}: all armor part selectors must be serialized");
+                var columns = controls.Select(control => control.Ancestors().OfType<JObject>()
+                    .First(node => node["type"]?.Value<string>() == "group")).Distinct().ToArray();
+                ctx.AssertEqual(3, columns.Length, $"{stage}: armor selectors must occupy three peer groups");
+                var row = columns[0].Ancestors().OfType<JObject>().First();
+                ctx.AssertEqual("row", row["type"]?.Value<string>(), $"{stage}: armor groups share a row");
+                ctx.AssertEqual(840f, row["height"]?.Value<float>(), $"{stage}: shared row bounds the armor stacks");
+                ctx.AssertEqual(3, row["children"].OfType<JObject>().Count(node => node["type"]?.Value<string>() == "group"),
+                    $"{stage}: exactly three groups must be direct row children");
+                foreach (var column in columns)
+                {
+                    ctx.Assert(ReferenceEquals(row, column.Ancestors().OfType<JObject>().First()),
+                        $"{stage}: all armor groups must be siblings in the bounded row.");
+                    // The client previously showed only the left stack: even a height-only
+                    // modifier disables the native peer group's equal-width eligibility.
+                    ctx.Assert(column["width"] == null && column["height"] == null,
+                        $"{stage}: neither dimension may be fixed on an equally sharing armor group.");
+                }
+                ctx.Assert(columns.Select(column => column.Descendants().OfType<JObject>()
+                        .Count(node => node["type"]?.Value<string>() == "combo")).SequenceEqual(new[] { 7, 5, 7 }),
+                    $"{stage}: the left, center and right armor stacks must retain all 19 controls.");
+            }
+            else
+            {
+                var palette = objects.Single(node => node["id"]?.Value<string>() == "ae_color_palette");
+                var paletteRow = palette.Ancestors().OfType<JObject>().First();
+                ctx.AssertEqual("row", paletteRow["type"]?.Value<string>(), $"{stage}: palette is in a row");
+                ctx.AssertEqual(256f, palette["width"]?.Value<float>(), $"{stage}: legacy palette retains its authored width");
+                var paletteChildren = paletteRow["children"].OfType<JObject>().ToArray();
+                // A lone fixed-width image pulled the entire group's internal content
+                // toward its minimum width, even when the client drew a wide outer group.
+                ctx.AssertEqual(2, paletteChildren.Length, $"{stage}: palette row includes an expansion spacer");
+                ctx.Assert(ReferenceEquals(paletteChildren[0], palette) &&
+                    paletteChildren[1]["type"]?.Value<string>() == "spacer" &&
+                    paletteChildren[1]["width"] == null && paletteChildren[1]["height"] == null,
+                    $"{stage}: a dimensionless trailing spacer must absorb spare palette-row width.");
+
+                var navigation = objects.Where(node => node["id"]?.Value<string>() is "ae_previous_part" or "ae_next_part").ToArray();
+                ctx.AssertEqual(2, navigation.Length, $"{stage}: both part navigation buttons are serialized");
+                var navigationRow = navigation[0].Ancestors().OfType<JObject>().First();
+                ctx.AssertEqual("row", navigationRow["type"]?.Value<string>(), $"{stage}: navigation shares a row");
+                ctx.AssertEqual(40f, navigationRow["height"]?.Value<float>(), $"{stage}: navigation row owns its height");
+                foreach (var button in navigation)
+                {
+                    ctx.Assert(ReferenceEquals(navigationRow, button.Ancestors().OfType<JObject>().First()) &&
+                        button["width"] == null && button["height"] == null,
+                        $"{stage}: navigation buttons must share the row without disabling equal-width sizing.");
+                }
             }
         }
 

@@ -96,6 +96,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private int _armorBindingGeneration;
         private bool _armorClientBindingsWatched;
         private int _loadedItemTypeIndex;
+        private int _editorResizeGeneration;
+        private string _appliedEditorPartial;
+        private float _appliedEditorContentWidth;
+        private float _appliedEditorListHeight;
+        private float _appliedEditorWindowHeight;
 
         public int EditorTabToggleValue
         {
@@ -871,6 +876,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void Initialize(AppearanceEditorPayload initialPayload)
         {
+            _editorResizeGeneration++;
+            _appliedEditorPartial = null;
             _tintEditGeneration++;
             _armorBindingGeneration++;
             _armorClientBindingsWatched = false;
@@ -1139,9 +1146,73 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void OnClientPropertyUpdated(string propertyName)
         {
+            if (propertyName == nameof(Geometry))
+                QueueEditorResize();
             if (propertyName is nameof(SelectedTintColor) or nameof(CustomTintRed) or
                 nameof(CustomTintGreen) or nameof(CustomTintBlue))
                 PublishTintControlBindings();
+        }
+
+        private string GetCurrentEditorPartial()
+        {
+            if (IsSettingsSelected)
+                return SettingsPartial;
+            return IsEquipmentSelected && SelectedItemTypeIndex == 0
+                ? EditorArmorPartial
+                : EditorMainPartial;
+        }
+
+        private bool HasEditorPanelSizeChanged()
+        {
+            var partial = GetCurrentEditorPartial();
+            var contentWidth = AppearanceEditorDefinition.CalculateContentWidth(Geometry.Width);
+            var listHeight = partial == EditorMainPartial
+                ? AppearanceEditorDefinition.CalculatePartListHeight(Geometry.Height)
+                : 0f;
+            if (partial != _appliedEditorPartial || contentWidth != _appliedEditorContentWidth)
+                return true;
+
+            // SetGroupLayout and the nested palette each nudge the window height by one
+            // pixel while redrawing. Ignore that jitter even at a list-height boundary.
+            return listHeight != _appliedEditorListHeight &&
+                   Math.Abs(Geometry.Height - _appliedEditorWindowHeight) > 4f;
+        }
+
+        private void QueueEditorResize()
+        {
+            if (_appliedEditorPartial == null || Geometry == null ||
+                !Gui.IsWindowOpen(Player, WindowType) || !HasEditorPanelSizeChanged())
+                return;
+
+            var generation = ++_editorResizeGeneration;
+            var token = WindowToken;
+            DelayCommand(0.15f, () =>
+            {
+                if (generation != _editorResizeGeneration || token != WindowToken ||
+                    !Gui.IsWindowOpen(Player, WindowType) || !HasEditorPanelSizeChanged())
+                    return;
+
+                OnEditorPartialApplied();
+                if (GetCurrentEditorPartial() != EditorArmorPartial)
+                    return;
+
+                // A direct resize does not receive GuiTabGroup's deferred second pass.
+                // Restore only the nested palette after its parent redraw has settled.
+                var appliedGeneration = _editorResizeGeneration;
+                DelayCommand(0f, () =>
+                {
+                    if (appliedGeneration != _editorResizeGeneration || token != WindowToken ||
+                        !Gui.IsWindowOpen(Player, WindowType) || GetCurrentEditorPartial() != EditorArmorPartial)
+                        return;
+                    SuspendArmorClientWatches();
+                    SynchronizeTintControlBindings(() =>
+                    {
+                        RestoreArmorPalette();
+                        RepublishBindings();
+                    });
+                    ResumeArmorClientWatches();
+                });
+            });
         }
 
         private void PublishTintControlBindings()
@@ -1300,6 +1371,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadItemTypeEditor()
         {
+            _editorResizeGeneration++;
             SuspendArmorClientWatches();
             var partialTabId = IsSettingsSelected
                 ? SettingsTabId
@@ -1311,18 +1383,34 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void OnEditorPartialApplied()
         {
+            _editorResizeGeneration++;
             SuspendArmorClientWatches();
+            var partial = GetCurrentEditorPartial();
+            // Record the dimensions before the native layout call can publish its redraw
+            // nudge. This also force-restores dynamic sizing after GuiTabGroup's next-tick
+            // reapply replaces this panel with its boot-time template.
+            _appliedEditorPartial = partial;
+            _appliedEditorContentWidth = AppearanceEditorDefinition.CalculateContentWidth(Geometry.Width);
+            _appliedEditorListHeight = partial == EditorMainPartial
+                ? AppearanceEditorDefinition.CalculatePartListHeight(Geometry.Height)
+                : 0f;
+            _appliedEditorWindowHeight = Geometry.Height;
+            var panel = AppearanceEditorDefinition.BuildEditorPanel(partial, Geometry.Width, Geometry.Height);
             var isArmorEditor = IsEquipmentSelected && SelectedItemTypeIndex == 0;
-            if (isArmorEditor)
+            SynchronizeTintControlBindings(() =>
             {
-                IsCopyEnabled = true;
-                RestoreArmorPalette();
-            }
+                SetGroupLayout(MainPartialElement, panel.ToJson());
+                if (isArmorEditor)
+                {
+                    IsCopyEnabled = true;
+                    RestoreArmorPalette();
+                }
 
-            // Replacement controls need their current values after their layout is applied.
-            // Send cached options, selections, visibility and swatches after every final layout,
-            // without running the setters that change the character or equipped item.
-            SynchronizeTintControlBindings(RepublishBindings);
+                // Replacement controls need their current values after their layout is applied.
+                // Send cached options, selections, visibility and swatches after every final layout,
+                // without running the setters that change the character or equipped item.
+                RepublishBindings();
+            });
             if (isArmorEditor)
                 ResumeArmorClientWatches();
         }
@@ -2389,6 +2477,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnCloseWindow() => () =>
         {
+            _editorResizeGeneration++;
             _tintEditGeneration++;
             if (GetIsDM(_target) || GetIsDMPossessed(_target) || !GetIsPC(_target))
                 return;

@@ -129,8 +129,8 @@ public class TintMapReviewTests
         viewModel.Should().NotContain("OnResetTintColor");
         definition.Should().NotContain("IsCustomTintPickerVisible");
         definitionMethods["BuildEquipmentSelection"].ToString().Should().NotContain("BuildCustomTintEditor");
-        definitionMethods["BuildMainEditor"].ToString().Should().Contain("BuildCustomTintEditor(col2)");
-        definitionMethods["BuildArmorEditor"].ToString().Should().Contain("BuildCustomTintEditor(col)",
+        definitionMethods["BuildMainEditor"].ToString().Should().Contain("BuildCustomTintEditor(col2,");
+        definitionMethods["BuildArmorEditor"].ToString().Should().Contain("BuildCustomTintEditor(col,",
             "the armor picker must live in the full-width controls column below the compact palette row");
         definitionMethods["BuildColorPalette"].ToString().Should().NotContain("BuildCustomTintEditor",
             "placing the picker below the palette partial clips it at the parent row boundary");

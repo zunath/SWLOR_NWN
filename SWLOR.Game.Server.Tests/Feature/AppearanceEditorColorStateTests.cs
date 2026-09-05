@@ -96,9 +96,12 @@ public class AppearanceEditorColorStateTests
         restored.IndexOf("SuspendArmorClientWatches()", StringComparison.Ordinal).Should()
             .BeLessThan(restored.IndexOf("RestoreArmorPalette()", StringComparison.Ordinal));
         restored.IndexOf("RestoreArmorPalette()", StringComparison.Ordinal).Should()
-            .BeLessThan(restored.IndexOf("SynchronizeTintControlBindings(RepublishBindings)", StringComparison.Ordinal));
-        restored.IndexOf("SynchronizeTintControlBindings(RepublishBindings)", StringComparison.Ordinal).Should()
+            .BeLessThan(restored.IndexOf("RepublishBindings()", StringComparison.Ordinal));
+        restored.IndexOf("RepublishBindings()", StringComparison.Ordinal).Should()
             .BeLessThan(restored.IndexOf("ResumeArmorClientWatches()", StringComparison.Ordinal));
+        restored.IndexOf("SynchronizeTintControlBindings(", StringComparison.Ordinal).Should()
+            .BeLessThan(restored.IndexOf("SetGroupLayout(", StringComparison.Ordinal),
+                "replacement widgets must not edit colors while their current bindings are restored");
         restored.Should().NotContain("LoadItemParts()");
         restored.Should().NotContain("ApplyCurrentColors");
     }

@@ -19,6 +19,11 @@ public class AppearanceEditorLayoutTests
 {
     private GuiConstructedWindow _window;
     private IReadOnlyDictionary<string, IGuiWidget> _partials;
+    private static readonly string[] EditorPanels =
+    {
+        AppearanceEditorViewModel.EditorMainPartial, AppearanceEditorViewModel.EditorArmorPartial,
+        AppearanceEditorViewModel.SettingsPartial
+    };
 
     [SetUp]
     public void BuildActualDefinitionWithoutEngineSerialization()
@@ -40,17 +45,57 @@ public class AppearanceEditorLayoutTests
     }
 
     [Test]
-    public void ProductionPartialsAreFluidAndTheirFixedControlsFitInitialWindow()
+    public void ProductionPartialsFitInitialWindow()
     {
         _window.LayoutFindings.Should().BeEmpty();
         foreach (var name in new[] { AppearanceEditorViewModel.EditorMainPartial,
                      AppearanceEditorViewModel.EditorArmorPartial, AppearanceEditorViewModel.SettingsPartial })
         {
             var partial = _partials[name];
-            Width(partial).Should().Be(0f,
-                $"{name}'s viewport must fill the window instead of retaining the old 530px cap");
+            Width(partial).Should().Be(0f, $"{name}'s viewport must fill the window");
+            Width(partial.Elements.Single()).Should().Be(530f);
             NaturalWidth(partial).Should().BeLessThanOrEqualTo(_window.InitialGeometry.Width - 60f,
                 $"{name}'s fixed controls must leave the initial window's border and scrollbar allowance");
+        }
+    }
+
+    [TestCase(320f, 530f)]
+    [TestCase(590f, 530f)]
+    [TestCase(590.9f, 530f)]
+    [TestCase(900f, 840f)]
+    [TestCase(1440f, 1380f)]
+    public void ContentWidthReservesWindowChromeAndKeepsCompactControlsUsable(float windowWidth, float expected)
+    {
+        AppearanceEditorDefinition.CalculateContentWidth(windowWidth).Should().Be(expected);
+    }
+
+    [TestCase(480f, 210f)]
+    [TestCase(740f, 210f)]
+    [TestCase(916f, 336f)]
+    [TestCase(931.9f, 336f)]
+    [TestCase(1200f, 608f)]
+    public void PartListHeightUsesAdditionalWindowSpaceInStableSteps(float windowHeight, float expected)
+    {
+        AppearanceEditorDefinition.CalculatePartListHeight(windowHeight).Should().Be(expected);
+    }
+
+    [Test]
+    public void ResizedPanelsHaveExplicitContentInsideAFluidScrollViewport(
+        [Values(590f, 900f, 1440f)] float windowWidth, [Values(480f, 1200f)] float windowHeight)
+    {
+        var contentWidth = windowWidth - 60f;
+        foreach (var name in EditorPanels)
+        {
+            var panel = AppearanceEditorDefinition.BuildEditorPanel(name, windowWidth, windowHeight);
+            Width(panel).Should().Be(0f);
+            panel.DeclaredHeight.Should().Be(0f);
+            ReadProperty<NuiScrollbars>(panel, "Scrollbars").Should().Be(NuiScrollbars.Auto);
+            panel.Elements.Should().ContainSingle();
+            var content = panel.Elements.Single();
+            content.Should().BeOfType<GuiColumn<AppearanceEditorViewModel>>();
+            Width(content).Should().Be(contentWidth);
+            NaturalWidth(content).Should().BeLessThanOrEqualTo(contentWidth + 0.01f,
+                $"{name}'s fixed child spans must fit even at the compact 590px window size");
         }
     }
 
@@ -100,17 +145,23 @@ public class AppearanceEditorLayoutTests
             "the old 320px palette plus 216px global channels exceeded the whole 476px window");
     }
 
-    [TestCase(AppearanceEditorViewModel.EditorMainPartial)]
-    [TestCase(AppearanceEditorViewModel.EditorArmorPartial)]
-    public void PickerAndRgbControlsRemainOutsideThePaletteSlotAndHaveRoom(string partialName)
+    [Test]
+    public void PickerAndRgbControlsRemainOutsideThePaletteSlotAndHaveRoom(
+        [Values(AppearanceEditorViewModel.EditorMainPartial, AppearanceEditorViewModel.EditorArmorPartial)] string partialName,
+        [Values(590f, 900f, 1440f)] float windowWidth)
     {
-        var partial = _partials[partialName];
+        var partial = AppearanceEditorDefinition.BuildEditorPanel(partialName, windowWidth, 740f);
+        var contentWidth = windowWidth - 60f;
+        var columnWidth = partialName == AppearanceEditorViewModel.EditorArmorPartial
+            ? contentWidth
+            : contentWidth - Math.Min(340f, contentWidth * 0.4f) - 16f;
         var picker = Walk(partial).OfType<GuiColorPicker<AppearanceEditorViewModel>>().Single();
         ReadProperty<string>(picker, "SelectedColorBindName").Should().Be(nameof(AppearanceEditorViewModel.SelectedTintColor));
-        Width(picker).Should().Be(0f, "the native picker must expand with its containing column");
+        Width(picker).Should().BeApproximately(columnWidth - 8f, 0.01f,
+            "the rebuilt picker must receive the available width explicitly");
         picker.DeclaredHeight.Should().Be(128f);
-        PathTo(partial, picker).Should().OnlyContain(widget => Width(widget) == 0f,
-            "a fixed-width ancestor would keep the picker narrow after the window expands");
+        Width(PathTo(partial, picker).OfType<GuiColumn<AppearanceEditorViewModel>>().Last())
+            .Should().BeApproximately(columnWidth, 0.01f);
         var pickerRow = PathTo(partial, picker).Reverse().OfType<GuiRow<AppearanceEditorViewModel>>().First();
         pickerRow.Elements.Should().ContainSingle().Which.Should().BeSameAs(picker,
             "flexible side spacers must not absorb the extra width intended for the picker");
@@ -131,43 +182,65 @@ public class AppearanceEditorLayoutTests
             path.Should().NotContain(widget => widget.Id == AppearanceEditorViewModel.ArmorColorElement);
             var row = path.Reverse().OfType<GuiRow<AppearanceEditorViewModel>>().First();
             ReadProperty<string>(row, "IsVisibleBindName").Should().Be(nameof(AppearanceEditorViewModel.IsCustomTintAvailable));
-            path.Take(path.Length - 1).Should().OnlyContain(widget => Width(widget) == 0f,
-                "the fixed RGB fields must not pin their containing panel to a fixed width");
-            NaturalWidth(row).Should().BeLessThanOrEqualTo(256f,
-                "the fixed RGB inputs must fit the narrowest column that holds the palette image");
+            NaturalWidth(row).Should().BeLessThanOrEqualTo(columnWidth,
+                "both the picker and the fixed RGB controls must fit their actual containing span");
+            if (control != picker)
+            {
+                Width(control).Should().Be(48f);
+                NaturalWidth(row).Should().BeLessThanOrEqualTo(256f,
+                    "the fixed RGB inputs must fit the narrowest column that holds the palette image");
+            }
             if (row.DeclaredHeight > 0)
                 row.DeclaredHeight.Should().BeGreaterThanOrEqualTo(control.DeclaredHeight);
         }
     }
 
     [Test]
-    public void MainEditorListsFillTheirColumnWidthAndRetainBoundedHeights()
+    public void MainEditorListsUseCalculatedColumnWidthsAndWindowHeight(
+        [Values(590f, 900f, 1440f)] float windowWidth, [Values(480f, 1200f)] float windowHeight)
     {
-        var partial = _partials[AppearanceEditorViewModel.EditorMainPartial];
+        var partial = AppearanceEditorDefinition.BuildEditorPanel(
+            AppearanceEditorViewModel.EditorMainPartial, windowWidth, windowHeight);
+        var contentWidth = windowWidth - 60f;
+        var categoryWidth = Math.Min(340f, contentWidth * 0.4f);
+        var detailWidth = contentWidth - categoryWidth - 16f;
+        var partHeight = windowHeight == 480f ? 210f : 608f;
         var lists = Walk(partial).OfType<GuiList<AppearanceEditorViewModel>>().ToArray();
         lists.Should().HaveCount(3);
         foreach (var list in lists)
         {
-            PathTo(partial, list).Should().OnlyContain(widget => Width(widget) == 0f,
-                "the category and part lists must share the increased window width");
-            list.DeclaredHeight.Should().BePositive();
-            PathTo(partial, list).Should().Contain(widget => widget.DeclaredHeight > 0f,
-                "category and part lists must not compete with the fixed palette and picker for unbounded height");
+            var binding = ReadProperty<string>(list, "RowCountBindName");
+            var expectedColumnWidth = binding == nameof(AppearanceEditorViewModel.PartOptions) + "_RowCount"
+                ? detailWidth : categoryWidth;
+            Width(list).Should().BeApproximately(expectedColumnWidth - 8f, 0.01f);
+            Width(PathTo(partial, list).OfType<GuiColumn<AppearanceEditorViewModel>>().Last())
+                .Should().BeApproximately(expectedColumnWidth, 0.01f);
+            list.DeclaredHeight.Should().Be(binding == nameof(AppearanceEditorViewModel.ColorCategoryOptions) + "_RowCount"
+                ? 154f : partHeight);
         }
-        lists.Select(list => list.DeclaredHeight).Should().BeEquivalentTo(new[] { 154f, 210f, 210f });
+        lists.Select(list => ReadProperty<string>(list, "RowCountBindName")).Should().BeEquivalentTo(new[]
+        {
+            nameof(AppearanceEditorViewModel.ColorCategoryOptions) + "_RowCount",
+            nameof(AppearanceEditorViewModel.PartCategoryOptions) + "_RowCount",
+            nameof(AppearanceEditorViewModel.PartOptions) + "_RowCount"
+        });
     }
 
     [Test]
-    public void ArmorCombosExpandBetweenFixedArrowsAndFixedGaps()
+    public void ArmorCombosExpandBetweenFixedArrowsAndFixedGaps([Values(590f, 900f, 1440f)] float windowWidth)
     {
-        var armor = _partials[AppearanceEditorViewModel.EditorArmorPartial];
+        var armor = AppearanceEditorDefinition.BuildEditorPanel(AppearanceEditorViewModel.EditorArmorPartial, windowWidth, 740f);
+        var contentWidth = windowWidth - 60f;
+        var partWidth = (contentWidth - 24f) / 3f;
         var combos = Walk(armor).OfType<GuiComboBox<AppearanceEditorViewModel>>().ToArray();
         combos.Should().HaveCount(19);
         foreach (var combo in combos)
         {
             var path = PathTo(armor, combo).ToArray();
-            path.Should().OnlyContain(widget => Width(widget) == 0f,
-                "a part dropdown must use the width left between its previous/next buttons");
+            Width(combo).Should().BeApproximately(partWidth - 56f, 0.01f,
+                "every part dropdown must expand by its share of the resized content width");
+            Width(path.OfType<GuiColumn<AppearanceEditorViewModel>>().Last())
+                .Should().BeApproximately(partWidth, 0.01f);
             combo.DeclaredHeight.Should().Be(24f);
             combo.DeclaredMargin.Should().Be(0f);
             var row = path.Reverse().OfType<GuiRow<AppearanceEditorViewModel>>().First();
@@ -177,6 +250,8 @@ public class AppearanceEditorLayoutTests
             arrows.Should().OnlyContain(button => Width(button) == 24f && button.DeclaredHeight == 24f &&
                 button.DeclaredMargin == 0f && button.Events.Values.Any(action =>
                     action.Method.Name == nameof(AppearanceEditorViewModel.OnClickAdjustArmorPart)));
+            NaturalWidth(row).Should().BeLessThanOrEqualTo(partWidth,
+                "the dropdown and both arrows must fit their own armor column");
         }
 
         var partsRow = Walk(armor).OfType<GuiRow<AppearanceEditorViewModel>>().Single(row =>
@@ -187,6 +262,9 @@ public class AppearanceEditorLayoutTests
         gaps.Should().HaveCount(2);
         gaps.Should().OnlyContain(spacer => Width(spacer) == 6f,
             "flexible gaps must not consume the same new width as the actual armor columns");
+        partsRow.Elements.OfType<GuiColumn<AppearanceEditorViewModel>>().Select(Width)
+            .Should().OnlyContain(width => Math.Abs(width - partWidth) < 0.01f);
+        NaturalWidth(partsRow).Should().BeLessThanOrEqualTo(contentWidth);
     }
 
     [Test]
@@ -202,12 +280,13 @@ public class AppearanceEditorLayoutTests
     }
 
     [Test]
-    public void SettingsContentCanCenterWithinTheResizedViewport()
+    public void SettingsContentUsesResizedContentWidth([Values(590f, 900f, 1440f)] float windowWidth)
     {
-        var settings = _partials[AppearanceEditorViewModel.SettingsPartial];
-        Walk(settings).Where(widget => widget is GuiColumn<AppearanceEditorViewModel> or
-            GuiRow<AppearanceEditorViewModel>).Should().OnlyContain(widget => Width(widget) == 0f,
-            "a fixed inner span would keep the settings controls centered inside the old narrow column");
+        var settings = AppearanceEditorDefinition.BuildEditorPanel(AppearanceEditorViewModel.SettingsPartial, windowWidth, 740f);
+        Width(settings.Elements.Single()).Should().Be(windowWidth - 60f);
+        Walk(settings).OfType<GuiRow<AppearanceEditorViewModel>>()
+            .Should().OnlyContain(row => Width(row) == 0f && NaturalWidth(row) <= windowWidth - 60f,
+                "centering spacers must operate inside the new explicit content span");
     }
 
     [Test]
@@ -263,6 +342,94 @@ public class AppearanceEditorLayoutTests
         Slots(_partials[AppearanceEditorViewModel.EditorArmorPartial]).Should().Equal(AppearanceEditorViewModel.ArmorColorElement);
         Slots(_partials[AppearanceEditorViewModel.ArmorColorsClothLeather]).Should().BeEmpty();
         Slots(_partials[AppearanceEditorViewModel.ArmorColorsMetal]).Should().BeEmpty();
+    }
+
+    [Test]
+    public void RuntimePanelsRetainEveryBootEventAndBinding(
+        [Values(AppearanceEditorViewModel.EditorMainPartial, AppearanceEditorViewModel.EditorArmorPartial,
+            AppearanceEditorViewModel.SettingsPartial)] string partialName,
+        [Values(590f, 900f, 1440f)] float windowWidth, [Values(480f, 1200f)] float windowHeight)
+    {
+        var boot = _partials[partialName];
+        var runtime = AppearanceEditorDefinition.BuildEditorPanel(partialName, windowWidth, windowHeight);
+        foreach (var panel in new[] { boot, runtime })
+        {
+            var eventWidgets = Walk(panel).Where(widget => widget.Events.Count > 0).ToArray();
+            eventWidgets.Should().NotBeEmpty();
+            eventWidgets.Select(widget => widget.Id).Should().OnlyContain(id => !string.IsNullOrWhiteSpace(id));
+            eventWidgets.Select(widget => widget.Id).Should().OnlyHaveUniqueItems(
+                "an event ID must identify one control in each panel");
+        }
+
+        EventSnapshot(runtime).Should().BeEquivalentTo(EventSnapshot(boot),
+            "runtime copies must route to the event handlers registered at boot, with the same typed arguments");
+        BindingSnapshot(runtime).Should().BeEquivalentTo(BindingSnapshot(boot),
+            "resizing must retain options, selected values, visibility and every draw-texture region binding");
+    }
+
+    [Test]
+    public void RuntimeArmorRetainsAllPartOptionsAndAll120SwatchRegions()
+    {
+        var armor = AppearanceEditorDefinition.BuildEditorPanel(AppearanceEditorViewModel.EditorArmorPartial, 1440f, 1200f);
+        var combos = Walk(armor).OfType<GuiComboBox<AppearanceEditorViewModel>>().ToArray();
+        combos.Should().HaveCount(19);
+        var options = combos.Select(combo => ReadProperty<string>(combo, "OptionsBindName")).ToArray();
+        options.Should().OnlyHaveUniqueItems();
+        options.Should().OnlyContain(name => name.EndsWith("Options", StringComparison.Ordinal));
+        combos.Select(combo => ReadProperty<string>(combo, "SelectedIndexBindName")).Should().BeEquivalentTo(
+            options.Select(name => name[..^"Options".Length] + "Selection"));
+
+        var expectedRegions = typeof(AppearanceEditorViewModel).GetProperties()
+            .Where(property => property.PropertyType == typeof(GuiRectangle) &&
+                property.Name.EndsWith("Region", StringComparison.Ordinal))
+            .Select(property => property.Name).ToArray();
+        expectedRegions.Should().HaveCount(120);
+        var regionBindings = BindingSnapshot(armor)
+            .Where(entry => entry.Key.EndsWith(".DrawTextureRegionBindName", StringComparison.Ordinal))
+            .Select(entry => entry.Value).ToArray();
+        regionBindings.Should().BeEquivalentTo(expectedRegions);
+    }
+
+    private static IReadOnlyDictionary<string, string> EventSnapshot(IGuiWidget root) => Walk(root)
+        .SelectMany(widget => widget.Events.Select(entry => new KeyValuePair<string, string>(
+            widget.Id + "/" + entry.Key,
+            entry.Value.Method.DeclaringType!.FullName + "." + entry.Value.Method + "(" +
+            string.Join(",", entry.Value.Arguments.Select(argument => argument.Key.FullName + ":" +
+                Convert.ToString(argument.Value, System.Globalization.CultureInfo.InvariantCulture))) + ")")))
+        .ToDictionary(entry => entry.Key, entry => entry.Value);
+
+    private static IReadOnlyDictionary<string, string> BindingSnapshot(IGuiWidget root) =>
+        BoundObjects(root, "root").SelectMany(entry => Properties(entry.Value)
+            .Where(property => property.PropertyType == typeof(string) &&
+                property.Name.EndsWith("BindName", StringComparison.Ordinal))
+            .Select(property => new KeyValuePair<string, string>(entry.Path + "." + property.Name,
+                (string)property.GetValue(entry.Value))))
+            .Where(entry => !string.IsNullOrWhiteSpace(entry.Value))
+            .ToDictionary(entry => entry.Key, entry => entry.Value);
+
+    private static IEnumerable<(string Path, object Value)> BoundObjects(IGuiWidget widget, string path)
+    {
+        yield return (path, widget);
+        var drawLists = ReadProperty<System.Collections.IEnumerable>(widget, "DrawLists").Cast<object>().ToArray();
+        for (var index = 0; index < drawLists.Length; index++)
+        {
+            var drawPath = path + "/draw/" + index;
+            yield return (drawPath, drawLists[index]);
+            var items = ReadProperty<System.Collections.IEnumerable>(drawLists[index], "DrawItems").Cast<object>().ToArray();
+            for (var item = 0; item < items.Length; item++)
+                yield return (drawPath + "/" + item, items[item]);
+        }
+        for (var index = 0; index < widget.Elements.Count; index++)
+        foreach (var child in BoundObjects(widget.Elements[index], path + "/" + index))
+            yield return child;
+    }
+
+    private static IEnumerable<PropertyInfo> Properties(object target)
+    {
+        for (var type = target.GetType(); type != null; type = type.BaseType)
+        foreach (var property in type.GetProperties(
+                     BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly))
+            yield return property;
     }
 
     private static IEnumerable<string> Slots(IGuiWidget widget) => Walk(widget)

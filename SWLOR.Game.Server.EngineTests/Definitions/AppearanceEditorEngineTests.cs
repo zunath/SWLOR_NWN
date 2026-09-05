@@ -5,9 +5,11 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
+using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
+using SWLOR.Game.Server.Feature.GuiDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.Payload;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
@@ -267,6 +269,94 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SetResultDetail("Actual PropertyChanged replay published native NUI JSON for appearance lists, all 19 armor combos/selections and 120 bounded sprite regions after layout, including reopen. Armor fields stayed unchanged. The invalid viewer does not test client bind storage, rendering, or the IsWindowOpen-gated deferred replay.");
         }
 
+        [EngineTest("Appearance editor resizing preserves bindings and native appearance", Category = "AppearanceEditor", TimeoutSeconds = 30f)]
+        public static async Task ResizedPanelsPreserveBindingsAndNativeAppearance(EngineTestContext ctx)
+        {
+            var civilian = await SpawnCivilianAsync(ctx);
+            await RunAssignedAsync(ctx, civilian, () =>
+            {
+                var outfit = GetItemInSlot(InventorySlot.Chest, civilian);
+                SeedInheritance(outfit);
+                var savedItemTintName = TintMapVariable.GetName("pfh0_robe187", TintMapLayerType.Cloth1);
+                var savedCreatureTintName = TintMapVariable.GetCreatureColorStateName(TintMapLayerType.Hair);
+                var savedItemTint = new TintMapColor(255, 0, 0).ToStoredValue();
+                var savedCreatureTint = new TintMapColor(20, 60, 210).ToStoredValue();
+                // Leave both edits unprojected: a resize must not apply or discard them.
+                SetLocalInt(outfit, savedItemTintName, savedItemTint);
+                SetLocalInt(civilian, savedCreatureTintName, savedCreatureTint);
+                var armor = ReadArmor(civilian);
+                var creatureColors = Enum.GetValues<ColorChannel>().Select(channel => GetColor(civilian, channel)).ToArray();
+                var editor = new AppearanceEditorViewModel { Geometry = new GuiRectangle(0, 0, 590, 740) };
+                using var publications = new BindingPublications(editor);
+                editor.Bind(OBJECT_INVALID, 0, editor.Geometry, GuiWindowType.AppearanceEditor,
+                    new AppearanceEditorPayload(civilian), OBJECT_INVALID);
+
+                foreach (var isArmor in new[] { false, true })
+                {
+                    publications.Clear();
+                    if (isArmor)
+                    {
+                        editor.OnSelectEquipment()();
+                        editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Robe, AppearanceArmorColor.Metal2)();
+                    }
+                    else editor.OnSelectAppearance()();
+                    InvokePrivate(editor, "OnEditorPartialApplied");
+                    var expectedBindings = publications.SnapshotWithoutGeometry();
+                    string[] originalIds = null;
+                    var partialName = isArmor ? AppearanceEditorViewModel.EditorArmorPartial : AppearanceEditorViewModel.EditorMainPartial;
+
+                    foreach (var (width, height, contentWidth, listHeight) in new[]
+                    {
+                        (590f, 740f, 530f, 210f), (1440f, 960f, 1380f, 368f), (590f, 520f, 530f, 210f)
+                    })
+                    {
+                        var stage = $"{partialName} at {width}x{height}";
+                        publications.Clear();
+                        editor.Geometry = new GuiRectangle(0, 0, width, height);
+                        // Run the actual resize-apply body. The invalid viewer cannot deliver a
+                        // client Geometry event or pass the debouncer's open-window guard.
+                        InvokePrivate(editor, "OnEditorPartialApplied");
+                        var flags = BindingFlags.Instance | BindingFlags.NonPublic;
+                        ctx.AssertEqual(partialName, typeof(AppearanceEditorViewModel).GetField("_appliedEditorPartial", flags).GetValue(editor),
+                            $"{stage}: the active panel must be rebuilt");
+                        ctx.AssertEqual(contentWidth, (float)typeof(AppearanceEditorViewModel).GetField("_appliedEditorContentWidth", flags).GetValue(editor),
+                            $"{stage}: the actual VM apply must use the new width");
+                        foreach (var (name, expected) in expectedBindings)
+                            ctx.Assert(JToken.DeepEquals(expected, publications.AfterLayout(ctx, name, stage)),
+                                $"{stage}: cached {name} must be republished unchanged after the resized layout.");
+                        if (isArmor) AssertArmorPublications(ctx, publications, armor, stage);
+                        else AssertAppearancePublications(ctx, publications, stage);
+
+                        // Native serialization of the same production panel builder catches
+                        // malformed wire JSON and boot-size controls surviving a resize.
+                        var panel = JObject.Parse(JsonDump(AppearanceEditorDefinition.BuildEditorPanel(partialName, width, height).ToJson()));
+                        ctx.AssertEqual((int)NuiScrollbars.Auto, panel["scrollbars"].Value<int>(), $"{stage}: actual viewport scroll policy");
+                        ctx.Assert(panel["width"] == null && panel["height"] == null,
+                            $"{stage}: the viewport must remain unconstrained by the content dimensions.");
+                        ctx.AssertEqual(contentWidth, panel["children"][0]["width"].Value<float>(), $"{stage}: serialized inner content width");
+                        var objects = new[] { panel }.Concat(panel.Descendants().OfType<JObject>()).ToArray();
+                        if (!isArmor)
+                        {
+                            var parts = objects.Single(node => node["type"]?.Value<string>() == "list" &&
+                                node["row_count"]?["bind"]?.Value<string>() == nameof(editor.PartOptions) + "_RowCount");
+                            ctx.AssertEqual(listHeight, parts["height"].Value<float>(), $"{stage}: native serialized part-list height");
+                        }
+                        var ids = objects.Where(node => node["id"] != null).Select(node => node["id"].Value<string>()).OrderBy(id => id).ToArray();
+                        ctx.Assert(ids.Length > 0 && ids.Distinct().Count() == ids.Length, $"{stage}: control IDs must be nonempty and unique.");
+                        if (originalIds == null) originalIds = ids;
+                        else ctx.Assert(originalIds.SequenceEqual(ids), $"{stage}: resized controls must retain the boot-registered event IDs.");
+
+                        AssertArmorUnchanged(ctx, armor, civilian, stage);
+                        ctx.Assert(creatureColors.SequenceEqual(Enum.GetValues<ColorChannel>().Select(channel => GetColor(civilian, channel))),
+                            $"{stage}: all four native creature colors must remain unchanged.");
+                        ctx.AssertEqual(savedItemTint, GetLocalInt(outfit, savedItemTintName), $"{stage}: pending item tint");
+                        ctx.AssertEqual(savedCreatureTint, GetLocalInt(civilian, savedCreatureTintName), $"{stage}: pending creature tint");
+                    }
+                }
+            });
+            ctx.SetResultDetail("Public Bind plus six actual resize-apply calls serialized appearance/armor panels at590x740,1440x960,590x520, retained stable control IDs, and republished identical non-geometry bindings. All19 armor models,120 armor colors,4 creature colors,APC markers,TMP baselines and pending tint locals stayed unchanged. Headless test excludes client Geometry delivery, debounce timing and rendered layout.");
+        }
+
         private sealed record BindingPublication(int Sequence, JToken Value);
 
         private sealed class BindingPublications : IDisposable
@@ -307,6 +397,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
 
             public bool Contains(string property) => _values.ContainsKey(property);
+
+            public IReadOnlyDictionary<string, JToken> SnapshotWithoutGeometry() => _values
+                .Where(pair => pair.Key != nameof(AppearanceEditorViewModel.Geometry))
+                .ToDictionary(pair => pair.Key, pair => pair.Value.Value.DeepClone());
 
             public JToken Latest(EngineTestContext ctx, string property, string stage)
             {

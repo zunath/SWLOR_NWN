@@ -646,7 +646,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 }
 
                 if (totalDamage <= 0)
+                {
+                    if ((summary?.ImpactedTargetCount ?? 0) > 0)
+                        ApplyLandedImpactModifiers(activator);
                     return;
+                }
 
                 if (HealPercentOfDamage > 0)
                 {
@@ -698,6 +702,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     }
                 }
 
+                ApplyLandedImpactModifiers(activator);
+            }
+
+            private void ApplyLandedImpactModifiers(uint activator)
+            {
                 if (!ApplySelfModifiersOnHostileActivation)
                     ApplySelfModifiers(activator);
                 ApplyTemporaryDefeatedEnemyModifiers(activator);

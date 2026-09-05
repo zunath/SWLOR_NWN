@@ -209,23 +209,32 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             // An uncapped reward reveals duplicate applications that a cooldown would hide.
             TemporaryStatModifier.Add(caster, StatType.AbilityGrantedAttackDeflectionFPRestore, 2, 30f);
             var ability = Ability.GetAbilityDetail(FeatType.CircleSlash1);
-            Combat.SetAbilityHitResolutionOverride(true);
             try
             {
-                await ctx.ExecuteInCreatureContextAsync(caster, () =>
+                foreach (var scenario in new (bool Lands, bool Immune)[] { (true, false), (true, true), (false, true) })
                 {
-                    Ability.BeginAbilityImpact(caster, ability);
-                    try
+                    Combat.SetAbilityHitResolutionOverride(scenario.Lands);
+                    TemporaryStatModifier.Replace(target, StatType.PhysicalDamageImmunity, scenario.Immune ? 1 : 0, 30f);
+                    await ctx.ExecuteInCreatureContextAsync(caster, () =>
                     {
-                        // Prepare the deficit after entering the assigned creature context;
-                        // queued NPC spawn initialization may refill resources before it runs.
-                        Stat.ReduceFP(caster, 20);
-                        var before = Stat.GetCurrentFP(caster);
-                        ability.ImpactAction(caster, target, 1, GetLocation(caster));
-                        ctx.AssertEqual(before + 2, Stat.GetCurrentFP(caster), "the instant impact grants one deflection reward");
-                    }
-                    finally { Ability.EndAbilityImpact(caster); }
-                });
+                        Ability.BeginAbilityImpact(caster, ability);
+                        try
+                        {
+                            // Prepare the deficit after entering the assigned creature context;
+                            // queued NPC spawn initialization may refill resources before it runs.
+                            Stat.ReduceFP(caster, 20);
+                            var before = Stat.GetCurrentFP(caster);
+                            ability.ImpactAction(caster, target, 1, GetLocation(caster));
+                            ctx.AssertEqual(before + (scenario.Lands ? 2 : 0), Stat.GetCurrentFP(caster),
+                                "landed instant impacts grant one reward even at zero damage; misses grant none");
+                            var summary = Ability.GetActiveAbilityImpactSummary(caster);
+                            ctx.AssertEqual(scenario.Lands, summary.ImpactedTargetCount > 0, "the hit result is recorded independently of damage");
+                            if (scenario.Immune)
+                                ctx.AssertEqual(0, summary.AttributedDamage, "physical immunity makes the impact deal zero damage");
+                        }
+                        finally { Ability.EndAbilityImpact(caster); }
+                    });
+                }
             }
             finally { Combat.SetAbilityHitResolutionOverride(null); }
 

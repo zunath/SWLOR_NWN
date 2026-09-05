@@ -824,13 +824,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             Expression<Func<AppearanceEditorViewModel, GuiRectangle>> regionBinding,
             AppearanceArmorColor channel)
         {
-            // Ordinary images stretch their cropped region with the widget. Draw-list
-            // destinations are fixed rectangles and cannot track the native layout.
+            // Keep the widget, hit area and glow square as the client shares the row
+            // width. The enclosing row caps its height without fixing its dimensions.
             row.AddImage()
                 .SetId("ae_color_" + GuiHelper<AppearanceEditorViewModel>.GetPropertyName(regionBinding))
                 .SetResref(texture)
                 .BindRegion(regionBinding)
                 .BindIsEncouraged(ColorSelectionBinding(regionBinding))
+                .SetAspectRatio(1f)
                 .SetAspect(NuiAspect.Stretch)
                 .SetHorizontalAlign(NuiHorizontalAlign.Left)
                 .SetVerticalAlign(NuiVerticalAlign.Top)

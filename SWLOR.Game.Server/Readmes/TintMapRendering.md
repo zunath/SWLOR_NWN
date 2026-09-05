@@ -226,6 +226,12 @@ displacement and tightness. Compile it with the explicit, audited repair
 `--dangly-period pmo0_forel129:pmo0_forel129g:10`; this fills the missing value
 and must never overwrite a supplied value or become a general default.
 
+Keep restored geometry and its palette mask paired. The base male hand models
+`pmh0_handl001` and `pmh0_handr001` use master geometry and require master's
+256-by-256 masks; retaining the earlier stock 64-by-64 masks changes their
+shading. The existing base male feet still use their matched stock models and
+masks. The material-profile tests protect both pairings.
+
 ### Exercise the reported NPCs
 
 The placed Bounty Hunter and Force Sensitive Civilian in `ooc_area` exercise

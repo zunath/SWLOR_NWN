@@ -1,4 +1,5 @@
 using System.Buffers.Binary;
+using System.Globalization;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using FluentAssertions;
@@ -1805,26 +1806,57 @@ public class TintMapReviewTests
         var catalog = new Dictionary<string, IReadOnlyList<TintMapMaterialDefinition>>(
             StringComparer.OrdinalIgnoreCase)
         {
-            ["pmh0_robe017"] = new[]
+            ["pmh0_chest017"] = new[]
             {
-                new TintMapMaterialDefinition("male slot", "pmh0_robe017", TintMapLayerType.Cloth1)
+                new TintMapMaterialDefinition("male slot", "pmh0_chest017", TintMapLayerType.Cloth1)
             },
-            ["pfh0_robe017"] = new[]
+            ["pfh0_chest017"] = new[]
             {
-                new TintMapMaterialDefinition("male material in female slot zero", "pmh0_robe017", TintMapLayerType.Cloth1),
-                new TintMapMaterialDefinition("female material in slot one", "pfh0_robe017", TintMapLayerType.Cloth1)
+                new TintMapMaterialDefinition("male material in female slot zero", "pmh0_chest017", TintMapLayerType.Cloth1),
+                new TintMapMaterialDefinition("female material in slot one", "pfh0_chest017", TintMapLayerType.Cloth1)
             }
         };
 
-        TintMapEquipmentMaterialMatcher.GetVariantIdentity("pmh0_robe017")
-            .Should().Be(TintMapEquipmentMaterialMatcher.GetVariantIdentity("pfh0_robe017"));
+        TintMapEquipmentMaterialMatcher.GetVariantIdentity("pmh0_chest017")
+            .Should().Be(TintMapEquipmentMaterialMatcher.GetVariantIdentity("pfh0_chest017"));
         new TintMapEquipmentMaterialIndex(catalog).AreEquivalent(
-                "pmh0_robe017",
-                "pfh0_robe017",
-                "pfh0_robe017",
+                "pmh0_chest017",
+                "pfh0_chest017",
+                "pfh0_chest017",
                 TintMapLayerType.Cloth1)
             .Should().BeFalse(
                 "materials with the same normalized variant identity can occupy different slots");
+    }
+
+    [Test]
+    public void RobeRenderProfilesShareOneNativePaletteSlotPerLayer()
+    {
+        var catalog = new Dictionary<string, IReadOnlyList<TintMapMaterialDefinition>>
+        {
+            ["pmh0_robe260"] = new[]
+            {
+                new TintMapMaterialDefinition("mapped robe", "pmh0_robe260", TintMapLayerType.Cloth1),
+                new TintMapMaterialDefinition("plain robe", "pmh0_r_ro_4043f4", TintMapLayerType.Cloth1)
+            },
+            ["pfd0_robe260"] = new[]
+            {
+                new TintMapMaterialDefinition("female fallback", "pmh0_r_ro_4043f4", TintMapLayerType.Cloth1),
+                new TintMapMaterialDefinition("female mapped", "pmh0_robe260", TintMapLayerType.Cloth1)
+            },
+            ["pmh0_robe170"] = new[]
+            {
+                new TintMapMaterialDefinition("different robe", "pmh0_robe170", TintMapLayerType.Cloth1)
+            }
+        };
+        var index = new TintMapEquipmentMaterialIndex(catalog);
+        index.AreEquivalent("pmh0_robe260", "pfd0_robe260", "pmh0_r_ro_4043f4", TintMapLayerType.Cloth1)
+            .Should().BeTrue("retained lighting profiles consume the same selected PLT palette entry");
+        index.GetEquivalentMaterialResrefs("pmh0_robe260", "pmh0_r_ro_4043f4", TintMapLayerType.Cloth1)
+            .Should().BeEquivalentTo("pmh0_robe260", "pmh0_r_ro_4043f4");
+        index.AreEquivalent("pmh0_robe170", "pfd0_robe260", "pmh0_robe260", TintMapLayerType.Cloth1)
+            .Should().BeFalse("a different robe model is a separate customization target");
+        index.AreEquivalent("pmh0_robe260", "pfd0_robe260", "pmh0_r_ro_4043f4", TintMapLayerType.Leather2)
+            .Should().BeFalse("only layers actually rendered by both profiles can share an override");
     }
 
     [Test]
@@ -2156,7 +2188,10 @@ public class TintMapReviewTests
         var failures = new List<string>();
         foreach (var path in materialPaths)
         {
-            var rows = Regex.Matches(File.ReadAllText(path),
+            var material = File.ReadAllText(path);
+            var usesNativePalette = Regex.IsMatch(material,
+                @"(?m)^parameter float useNativePalette 1(?:\.0)?\s*$");
+            var rows = Regex.Matches(material,
                     @"(?m)^[ \t]*parameter[ \t]+(\S+)[ \t]+(row\w+)[ \t]+([^\r\n]*)")
                 .ToArray();
             if (rows.Length != expectedRows.Count ||
@@ -2171,6 +2206,9 @@ public class TintMapReviewTests
                 var values = row.Groups[3].Value.Split((char[])null, StringSplitOptions.RemoveEmptyEntries);
                 if (row.Groups[1].Value != "float" || values.Length != 1)
                     failures.Add($"{Path.GetFileName(path)}: {row.Groups[2].Value} declares {values.Length} components");
+                else if (!float.TryParse(values[0], NumberStyles.Float, CultureInfo.InvariantCulture, out var value) ||
+                         (usesNativePalette ? value != -1f : value <= 0f || value >= 1f))
+                    failures.Add($"{Path.GetFileName(path)}: {row.Groups[2].Value} has an invalid default for its palette transport");
             }
         }
 

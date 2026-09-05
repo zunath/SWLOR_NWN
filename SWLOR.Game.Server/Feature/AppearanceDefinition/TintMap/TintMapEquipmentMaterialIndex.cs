@@ -44,7 +44,10 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     var material = materials[index];
                     foreach (var layer in material.Layers.Distinct())
                     {
-                        var slot = nextSlotByLayer.GetValueOrDefault(layer);
+                        // Every robe profile consumes the same native PLT and one palette entry
+                        // per layer. Extra materials preserve lighting, not independent dye slots.
+                        var slot = hasArmorPart && armorPart == AppearanceArmor.Robe
+                            ? 0 : nextSlotByLayer.GetValueOrDefault(layer);
                         nextSlotByLayer[layer] = slot + 1;
                         var materialKey = new MaterialLayerKey(
                             Normalize(material.Resref),
@@ -96,6 +99,12 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
             var normalizedSource = Normalize(sourceMaterialResref);
             var normalizedDestination = Normalize(destinationMaterialResref);
+            var variantIdentity = TintMapEquipmentMaterialMatcher.GetVariantIdentity(destinationModelResref);
+            if (TryGetArmorPart(variantIdentity, out var armorPart) && armorPart == AppearanceArmor.Robe)
+            {
+                return _slotsByVariant.TryGetValue(variantIdentity, out var robeMaterials) &&
+                       robeMaterials.ContainsKey(new MaterialLayerKey(normalizedSource, layer));
+            }
             var sourceIdentity = TintMapEquipmentMaterialMatcher.GetVariantIdentity(normalizedSource);
             var destinationIdentity = TintMapEquipmentMaterialMatcher.GetVariantIdentity(
                 normalizedDestination);
@@ -113,8 +122,6 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 return true;
             }
 
-            var variantIdentity = TintMapEquipmentMaterialMatcher.GetVariantIdentity(
-                destinationModelResref);
             if (!_slotsByVariant.TryGetValue(variantIdentity, out var variantMaterials) ||
                 !variantMaterials.TryGetValue(
                     new MaterialLayerKey(Normalize(sourceMaterialResref), layer),

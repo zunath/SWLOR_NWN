@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using NWN.Native.API;
 using SWLOR.Game.Server.EngineTests.Framework;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -11,6 +12,8 @@ using AppearanceType = SWLOR.NWN.API.NWScript.Enum.AppearanceType;
 using CreaturePart = SWLOR.NWN.API.NWScript.Enum.Creature.CreaturePart;
 using InventorySlot = SWLOR.NWN.API.NWScript.Enum.InventorySlot;
 using ItemAppearanceType = SWLOR.NWN.API.NWScript.Enum.Item.ItemAppearanceType;
+using ItemPlugin = SWLOR.NWN.API.NWNX.ItemPlugin;
+using ObjectPlugin = SWLOR.NWN.API.NWNX.ObjectPlugin;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -195,6 +198,175 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
 
             ctx.SetResultDetail("Race E male phenotype 0 resolved both feet 247 and shins 249 to canonical human materials; two refreshes installed all four leather2=23 rows without reset records. Server state only; no client renderer is attached.");
+        }
+
+        [EngineTest("Tint native robe palette preserves authored colors and restores custom edits", Category = "Tint", TimeoutSeconds = 30f)]
+        public static async Task NativeRobePalettePreservesAuthoredColorsAndResets(EngineTestContext ctx)
+        {
+            var civilian = await SpawnCivilianAsync(ctx);
+            await RunAssignedAsync(ctx, civilian, () =>
+            {
+                var outfit = GetItemInSlot(InventorySlot.Chest, civilian);
+                var originalItemColors = ReadArmorColors(outfit);
+                var originalCreatureColors = new[] { ColorChannel.Skin, ColorChannel.Hair, ColorChannel.Tattoo1, ColorChannel.Tattoo2 }
+                    .Select(channel => GetColor(civilian, channel)).ToArray();
+                TintMapService.ApplyCurrentColors(civilian);
+                ctx.Assert(originalItemColors.SequenceEqual(ReadArmorColors(outfit)),
+                    "An authored NPC with no custom tint must retain every raw armor palette field.");
+                ctx.Assert(originalCreatureColors.SequenceEqual(
+                        new[] { ColorChannel.Skin, ColorChannel.Hair, ColorChannel.Tattoo1, ColorChannel.Tattoo2 }
+                            .Select(channel => GetColor(civilian, channel))),
+                    "An authored NPC with no custom tint must retain every native creature palette field.");
+                for (var channel = 0; channel < 120; channel++)
+                {
+                    AssertProjectionCleared(ctx, outfit, channel);
+                    AssertProjectionCleared(ctx, civilian, channel);
+                }
+
+                var dress = GetCivilianDress(civilian);
+                var color = new TintMapColor(255, 0, 0);
+                var nativeColor = TintMapPaletteColors.GetClosestColorId(TintMapLayerType.Cloth1, color);
+                var index = ArmorColorIndexCalculator.CalculatePerPart(AppearanceArmor.Robe, AppearanceArmorColor.Cloth1);
+                ctx.Assert(nativeColor != 174, "The custom color must differ from the authored brown dress.");
+                TintMapService.SetColor(civilian, dress, TintMapLayerType.Cloth1, color);
+                ctx.AssertEqual(nativeColor, GetItemAppearance(outfit, ItemAppearanceType.ArmorColor, index),
+                    "Custom robe cloth1 must reach the native PLT palette field");
+                ctx.AssertEqual(174, TintMapService.GetStandardColorId(civilian, dress, TintMapLayerType.Cloth1),
+                    "The preset getter must retain the authored dress color beneath the projection");
+                var restored = ObjectPlugin.Deserialize(ObjectPlugin.Serialize(outfit));
+                ctx.Assert(GetIsObjectValid(restored), "The projected item snapshot must deserialize.");
+                ctx.Track(restored);
+                var restoredDress = new TintMapMaterialSelection(dress.ModelResref, dress.Material,
+                    restored, civilian, true, AppearanceArmor.Robe);
+                ctx.AssertEqual(nativeColor, GetItemAppearance(restored, ItemAppearanceType.ArmorColor, index),
+                    "Droid-style item serialization must preserve the native projection");
+                ctx.AssertEqual(174, TintMapService.GetStandardColorId(civilian, restoredDress, TintMapLayerType.Cloth1),
+                    "Droid-style item serialization must preserve the original preset baseline");
+                DeleteLocalInt(restored, TintMapNativePaletteProjection.BaselineName(index));
+                DeleteLocalInt(restored, TintMapNativePaletteProjection.LastAppliedName(index));
+                TintMapService.ReplaceItemTintOverrides(outfit, restored);
+                ctx.AssertEqual(174, TintMapService.GetStandardColorId(civilian, restoredDress, TintMapLayerType.Cloth1),
+                    "Equipment replacement must carry the native projection baseline with its tint locals");
+                var projectedItemColors = ReadArmorColors(outfit);
+                for (var channel = 0; channel < projectedItemColors.Length; channel++)
+                    if (channel != index)
+                        ctx.AssertEqual(originalItemColors[channel], projectedItemColors[channel],
+                            $"A robe edit must not alter unrelated armor palette field {channel}");
+
+                TintMapService.ResetColor(civilian, dress, TintMapLayerType.Cloth1);
+                ctx.AssertEqual(174, TintMapService.GetStandardColorId(civilian, dress, TintMapLayerType.Cloth1),
+                    "Reset restores the authored brown dress");
+                ctx.AssertEqual(255, GetItemAppearance(outfit, ItemAppearanceType.ArmorColor, index),
+                    "Reset restores native global-color inheritance for the authored robe");
+                AssertProjectionCleared(ctx, outfit, index);
+
+                // Robe187 exposes skin, so a custom semantic skin color must also reach the
+                // native creature field. Hair is on the head only and requires no native write.
+                var skinColor = TintMapPaletteColors.GetClosestColorId(TintMapLayerType.Skin, color);
+                ctx.Assert(skinColor != 2, "The custom skin color must differ from the authored palette.");
+                TintMapService.SetCreatureCustomColor(civilian, TintMapModelResolver.GetCurrentSelections(civilian),
+                    TintMapLayerType.Skin, color);
+                ctx.AssertEqual(skinColor, GetColor(civilian, ColorChannel.Skin), "Native robe skin projection");
+                ctx.AssertEqual(2, TintMapService.GetStandardColorId(civilian, dress, TintMapLayerType.Skin),
+                    "Native skin projection must preserve the original preset");
+                TintMapService.SetCreatureCustomColor(civilian, TintMapModelResolver.GetCurrentSelections(civilian),
+                    TintMapLayerType.Hair, color);
+                ctx.AssertEqual(31, GetColor(civilian, ColorChannel.Hair),
+                    "A head-only hair tint must not rewrite the native creature palette");
+                TintMapService.ResetCreatureCustomColor(civilian, TintMapLayerType.Skin);
+                TintMapService.ResetCreatureCustomColor(civilian, TintMapLayerType.Hair);
+                ctx.AssertEqual(2, GetColor(civilian, ColorChannel.Skin), "Skin reset restores authored native color");
+                AssertProjectionCleared(ctx, civilian, (int)TintMapLayerType.Skin);
+                AssertAuthoredRows(ctx, civilian);
+            });
+            await ctx.DelaySecondsAsync(0.5f);
+            await RunAssignedAsync(ctx, civilian, () =>
+            {
+                AssertAuthoredRows(ctx, civilian);
+                ctx.AssertEqual(2, GetColor(civilian, ColorChannel.Skin),
+                    "Queued refreshes must read the reset state instead of restoring an earlier custom projection");
+                AssertProjectionCleared(ctx, civilian, (int)TintMapLayerType.Skin);
+            });
+            ctx.SetResultDetail("Native armor fields stayed unchanged without tint; custom robe cloth1 and skin reached native PLT fields, retained authored presets, and reset to brown/skin2. Head-only hair avoided a native write. No client renderer is attached.");
+        }
+
+        [EngineTest("Tint native robe palette retains external presets and per-part inheritance", Category = "Tint", TimeoutSeconds = 30f)]
+        public static async Task NativeRobePaletteRetainsExternalPresetsAndInheritance(EngineTestContext ctx)
+        {
+            var civilian = await SpawnCivilianAsync(ctx);
+            await RunAssignedAsync(ctx, civilian, () =>
+            {
+                var outfit = GetItemInSlot(InventorySlot.Chest, civilian);
+                var dress = GetCivilianDress(civilian);
+                var layer = TintMapLayerType.Cloth1;
+                var channel = AppearanceArmorColor.Cloth1;
+                var index = ArmorColorIndexCalculator.CalculatePerPart(AppearanceArmor.Robe, channel);
+                var marker = ArmorColorIndexCalculator.GetPerPartOverrideVariableName(AppearanceArmor.Robe, channel);
+                var color = Enumerable.Range(1, TintMapMaterialRegistry.PaletteColorCount - 1)
+                    .Select(colorId => TintMapPaletteColors.GetColor(layer, colorId))
+                    .First(candidate => TintMapPaletteColors.GetClosestColorId(layer, candidate) is not (0 or 56 or 77 or 89));
+                var projected = TintMapPaletteColors.GetClosestColorId(layer, color);
+                ctx.Assert(projected != 77 && projected != 89, "The custom row must differ from both external presets.");
+
+                SetLocalInt(outfit, marker, 1);
+                ItemPlugin.SetItemAppearance(outfit, ItemAppearanceType.ArmorColor, index, 77, false);
+                TintMapService.SetColor(civilian, dress, layer, color);
+                ctx.AssertEqual(77, TintMapService.GetStandardColorId(civilian, dress, layer), "Explicit per-part baseline");
+                // A native preset writer can change the armor while the persisted custom tint
+                // remains active. The next refresh must remember that new authored baseline.
+                ItemPlugin.SetItemAppearance(outfit, ItemAppearanceType.ArmorColor, index, 89, false);
+                ctx.AssertEqual(89, TintMapService.GetStandardColorId(civilian, dress, layer), "External preset before refresh");
+                TintMapService.ApplyCurrentColors(civilian);
+                ctx.AssertEqual(projected, GetItemAppearance(outfit, ItemAppearanceType.ArmorColor, index),
+                    "The active custom tint remains projected after an external preset edit");
+                TintMapService.ResetColor(civilian, dress, layer);
+                ctx.AssertEqual(89, GetItemAppearance(outfit, ItemAppearanceType.ArmorColor, index),
+                    "Reset preserves the newer external per-part preset");
+                AssertProjectionCleared(ctx, outfit, index);
+
+                foreach (var rawInherited in new[] { 255, 0 })
+                {
+                    DeleteLocalInt(outfit, marker);
+                    ItemPlugin.SetItemAppearance(outfit, ItemAppearanceType.ArmorColor, index, rawInherited, false);
+                    TintMapService.SetColor(civilian, dress, layer, color);
+                    ItemPlugin.SetItemAppearance(outfit, ItemAppearanceType.ArmorColor, (int)channel, 56, false);
+                    TintMapService.ApplyCurrentColors(civilian);
+                    ctx.AssertEqual(56, TintMapService.GetStandardColorId(civilian, dress, layer),
+                        $"Raw {rawInherited} inheritance must read a later global preset edit");
+                    TintMapService.ResetColor(civilian, dress, layer);
+                    ctx.AssertEqual(255, GetItemAppearance(outfit, ItemAppearanceType.ArmorColor, index),
+                        $"Reset must restore native inheritance from raw {rawInherited}");
+                    ctx.AssertEqual(56, GetItemAppearance(outfit, ItemAppearanceType.ArmorColor, (int)channel),
+                        "Reset must not replace an externally edited global dye");
+                    AssertProjectionCleared(ctx, outfit, index);
+                }
+
+                SetLocalInt(outfit, marker, 1);
+                ItemPlugin.SetItemAppearance(outfit, ItemAppearanceType.ArmorColor, index, 0, false);
+                TintMapService.SetColor(civilian, dress, layer, color);
+                TintMapService.ResetColor(civilian, dress, layer);
+                ctx.AssertEqual(0, GetItemAppearance(outfit, ItemAppearanceType.ArmorColor, index),
+                    "An explicitly selected per-part palette zero must remain zero");
+                ctx.AssertEqual(0, TintMapService.GetStandardColorId(civilian, dress, layer),
+                    "The explicit zero marker must survive projection and reset");
+                AssertProjectionCleared(ctx, outfit, index);
+            });
+            ctx.SetResultDetail("Native field tests preserved explicit per-part edits 77→89, raw255 and legacy raw0 global inheritance, later global dye56, and explicitly selected palette0 through custom edit/reset. No client renderer is attached.");
+        }
+
+        private static TintMapMaterialSelection GetCivilianDress(uint civilian) =>
+            TintMapModelResolver.GetCurrentSelections(civilian)
+                .Single(selection => selection.Material.Resref.Equals("pfh0_robe187", StringComparison.OrdinalIgnoreCase));
+
+        private static int[] ReadArmorColors(uint item) => Enumerable.Range(0, 120)
+            .Select(channel => GetItemAppearance(item, ItemAppearanceType.ArmorColor, channel)).ToArray();
+
+        private static void AssertProjectionCleared(EngineTestContext ctx, uint target, int channel)
+        {
+            ctx.AssertEqual(0, GetLocalInt(target, TintMapNativePaletteProjection.BaselineName(channel)),
+                $"Projection baseline {channel} must be absent");
+            ctx.AssertEqual(0, GetLocalInt(target, TintMapNativePaletteProjection.LastAppliedName(channel)),
+                $"Projection last-applied {channel} must be absent");
         }
 
         private static async Task RunAssignedAsync(EngineTestContext ctx, uint creature, Action action)

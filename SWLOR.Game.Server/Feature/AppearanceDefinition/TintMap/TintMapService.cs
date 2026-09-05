@@ -141,9 +141,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             // rows already written for other layers, which leaves equipped clothing at row zero.
             // A complete reset also removes legacy wildcard values left by older implementations
             // before the current material-scoped values are installed.
-            ResetMaterialShaderUniforms(creature);
-
             var selections = TintMapModelResolver.GetCurrentSelections(creature);
+            ProjectNativeRobeColors(creature, selections);
+            ResetMaterialShaderUniforms(creature);
             var creatureLayers = new HashSet<TintMapLayerType>();
             foreach (var selection in selections)
             {
@@ -171,6 +171,138 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     layer,
                     GetEffectiveCreatureColor(creature, layer));
             }
+        }
+
+        private static void ProjectNativeRobeColors(uint creature, IReadOnlyList<TintMapMaterialSelection> selections)
+        {
+            // The client replays material uniforms on the body/head/attachments, but omits its
+            // separate robe Gob. Tiny PLT resources carry these native palette values to the shader.
+            var robes = selections.Where(selection => selection.ArmorPart == AppearanceArmor.Robe).ToList();
+            var creatureStateChanged = false;
+            foreach (var layer in Enum.GetValues<TintMapLayerType>().Where(TintMapVariable.IsCreatureColorLayer))
+            {
+                var channel = GetCreatureColorChannel(layer);
+                var nativeColor = GetColor(creature, channel);
+                var active = robes.Any(selection => selection.Material.Layers.Contains(layer)) &&
+                             TintMapColor.TryFromStoredValue(
+                                 GetLocalInt(creature, GetCreatureCustomColorStateVariable(layer)), out _);
+                var update = ResolveNativePaletteUpdate(creature, (int)layer, nativeColor,
+                    active ? GetEffectiveCreatureColor(creature, layer).PaletteColorId : null);
+                creatureStateChanged |= StoreNativePaletteUpdate(creature, (int)layer, update);
+                if (update.Color != nativeColor)
+                    SWLOR.NWN.API.NWScript.NWScript.SetColor(creature, channel, update.Color);
+            }
+
+            if (creatureStateChanged && Droid.IsDroid(creature))
+            {
+                var controller = Droid.GetControllerItem(creature);
+                if (GetIsObjectValid(controller))
+                {
+                    var droid = Droid.LoadConstructedDroid(controller);
+                    foreach (var layer in Enum.GetValues<TintMapLayerType>().Where(TintMapVariable.IsCreatureColorLayer))
+                    {
+                        foreach (var name in new[] { TintMapNativePaletteProjection.BaselineName((int)layer),
+                                     TintMapNativePaletteProjection.LastAppliedName((int)layer) })
+                        {
+                            var value = GetLocalInt(creature, name);
+                            if (value > 0)
+                                droid.TintOverrides[name] = value;
+                            else
+                                droid.TintOverrides.Remove(name);
+                        }
+                    }
+                    Droid.SaveConstructedDroid(controller, droid);
+                }
+            }
+
+            var item = GetItemInSlot(InventorySlot.Chest, creature);
+            if (!GetIsObjectValid(item))
+                return;
+
+            var changes = new List<(int Index, int Color)>();
+            var itemStateChanged = false;
+            foreach (var layer in Enum.GetValues<TintMapLayerType>().Where(layer => !TintMapVariable.IsCreatureColorLayer(layer)))
+            {
+                if (!TryGetArmorColorChannel(layer, out var channel))
+                    continue;
+                var colorIndex = ArmorColorIndexCalculator.CalculatePerPart(AppearanceArmor.Robe, channel);
+                var nativeColor = GetItemAppearance(item, ItemAppearanceType.ArmorColor, colorIndex);
+                var hasExplicitPreset = GetLocalInt(item,
+                    ArmorColorIndexCalculator.GetPerPartOverrideVariableName(AppearanceArmor.Robe, channel)) > 0;
+                var inheritedColor = ArmorColorIndexCalculator.ShouldUsePerPartColor(nativeColor, hasExplicitPreset)
+                    ? nativeColor : 255;
+                var selection = robes.FirstOrDefault(selection => selection.PaletteSource == item &&
+                    selection.Material.Layers.Contains(layer) && GetSavedColor(selection, layer) > 0);
+                var update = ResolveNativePaletteUpdate(item, colorIndex, nativeColor,
+                    selection == null ? null : GetEffectiveColor(creature, selection, layer).PaletteColorId,
+                    inheritedColor);
+                itemStateChanged |= StoreNativePaletteUpdate(item, colorIndex, update);
+                if (update.Color != nativeColor)
+                    changes.Add((colorIndex, update.Color));
+            }
+
+            for (var index = 0; index < changes.Count; index++)
+            {
+                var change = changes[index];
+                ItemPlugin.SetItemAppearance(item, ItemAppearanceType.ArmorColor, change.Index, change.Color,
+                    updateCreatureAppearance: index == changes.Count - 1);
+            }
+            if (changes.Count > 0 && GetIsPC(creature))
+            {
+                // NWNX refreshes the client item without changing ownership. Its destroy packet
+                // clears client quickbar references; resend only still-current server references.
+                DelayCommand(RefreshDelaySeconds, () => RestoreNativePaletteQuickbar(creature, item));
+            }
+            if (itemStateChanged || changes.Count > 0)
+                Droid.UpdateEquippedItemSnapshot(creature, item);
+        }
+
+        private static void RestoreNativePaletteQuickbar(uint creature, uint item)
+        {
+            if (!GetIsObjectValid(creature) || !GetIsPC(creature) || !GetIsObjectValid(item))
+                return;
+            for (var slot = 0; slot < 36; slot++)
+            {
+                var entry = PlayerPlugin.GetQuickBarSlot(creature, slot);
+                if (entry.Item == item || entry.SecondaryItem == item)
+                    PlayerPlugin.SetQuickBarSlot(creature, slot, entry);
+            }
+        }
+
+        private static TintMapNativePaletteProjection.Update ResolveNativePaletteUpdate(
+            uint target, int channel, int nativeColor, int? projectedColor, int? inheritedColor = null)
+        {
+            return TintMapNativePaletteProjection.Resolve(nativeColor,
+                GetLocalInt(target, TintMapNativePaletteProjection.BaselineName(channel)),
+                GetLocalInt(target, TintMapNativePaletteProjection.LastAppliedName(channel)),
+                projectedColor, inheritedColor);
+        }
+
+        private static bool StoreNativePaletteUpdate(uint target, int channel, TintMapNativePaletteProjection.Update update)
+        {
+            var changed = false;
+            foreach (var (name, value) in new[]
+                     {
+                         (TintMapNativePaletteProjection.BaselineName(channel), update.Baseline),
+                         (TintMapNativePaletteProjection.LastAppliedName(channel), update.LastApplied)
+                     })
+            {
+                if (GetLocalInt(target, name) == value)
+                    continue;
+                changed = true;
+                if (value > 0)
+                    SetLocalInt(target, name, value);
+                else
+                    DeleteLocalInt(target, name);
+            }
+            return changed;
+        }
+
+        private static int GetNativePaletteBaseline(uint target, int channel, int nativeColor)
+        {
+            return TintMapNativePaletteProjection.GetBaseline(nativeColor,
+                GetLocalInt(target, TintMapNativePaletteProjection.BaselineName(channel)),
+                GetLocalInt(target, TintMapNativePaletteProjection.LastAppliedName(channel)));
         }
 
         public static void ApplyCurrentItemColors(uint item)
@@ -1426,6 +1558,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                             selection.PaletteSource,
                             ItemAppearanceType.ArmorColor,
                             perPartIndex);
+                        if (selection.ArmorPart == AppearanceArmor.Robe)
+                            perPartColor = GetNativePaletteBaseline(selection.PaletteSource, perPartIndex, perPartColor);
                         var hasExplicitOverride = GetLocalInt(
                             selection.PaletteSource,
                             ArmorColorIndexCalculator.GetPerPartOverrideVariableName(
@@ -1452,7 +1586,17 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
 
         private static int GetCreatureStandardColor(uint creature, TintMapLayerType layer)
         {
-            var creatureColor = layer switch
+            var creatureColor = GetCreatureColorChannel(layer);
+
+            return (int)creatureColor >= 0 && GetObjectType(creature) == ObjectType.Creature
+                ? Math.Clamp(GetNativePaletteBaseline(creature, (int)layer, GetColor(creature, creatureColor)),
+                    0, TintMapMaterialRegistry.PaletteColorCount - 1)
+                : 0;
+        }
+
+        private static ColorChannel GetCreatureColorChannel(TintMapLayerType layer)
+        {
+            return layer switch
             {
                 TintMapLayerType.Skin => ColorChannel.Skin,
                 TintMapLayerType.Hair => ColorChannel.Hair,
@@ -1460,10 +1604,6 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 TintMapLayerType.Tattoo2 => ColorChannel.Tattoo2,
                 _ => (ColorChannel)(-1)
             };
-
-            return (int)creatureColor >= 0 && GetObjectType(creature) == ObjectType.Creature
-                ? Math.Clamp(GetColor(creature, creatureColor), 0, TintMapMaterialRegistry.PaletteColorCount - 1)
-                : 0;
         }
 
         public static int GetStandardColorId(
@@ -1551,6 +1691,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     (!variable.Key.StartsWith(TintMapVariable.Prefix, StringComparison.Ordinal) &&
                      !TintMapVariable.IsItemGlobalColorStateName(variable.Key) &&
                      !TintMapVariable.IsItemGlobalInheritanceStateName(variable.Key) &&
+                     !TintMapNativePaletteProjection.IsStateName(variable.Key) &&
                      !ArmorColorIndexCalculator.IsPerPartOverrideVariableName(variable.Key)))
                 {
                     continue;
@@ -1574,7 +1715,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 return new List<string>();
             }
 
-            return GetItemTintOverrides(item).Keys
+            var variables = GetItemTintOverrides(item).Keys
                 .Where(variableName =>
                     TintMapVariable.TryParse(
                         variableName,
@@ -1584,6 +1725,15 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     AreEquipmentMaterialsEquivalent(materialResref, selection, layer))
                 .Distinct(StringComparer.Ordinal)
                 .ToList();
+            if (selection.ArmorPart == AppearanceArmor.Robe)
+            {
+                // The robe's retained render profiles share one native palette slot. Install an
+                // edit on every current profile even if that alias had no previous custom local.
+                variables.AddRange(TintMapMaterialRegistry.GetMaterials(selection.ModelResref)
+                    .Where(material => material.Layers.Contains(layer))
+                    .Select(material => TintMapVariable.GetName(material.Resref, layer)));
+            }
+            return variables.Distinct(StringComparer.Ordinal).ToList();
         }
 
         private static bool AreEquipmentMaterialsEquivalent(

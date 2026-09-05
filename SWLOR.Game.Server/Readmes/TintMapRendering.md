@@ -26,9 +26,47 @@ to the composed models used by creature body parts.
 
 Both complete refreshes and individual row updates must use a write-only row
 helper. Only the complete refresh may clear old RGB/custom-mode parameters.
-For the civilian, this reduces a full refresh from 309 material calls to 45
-(one reset and 44 row writes); the Rodian drops from 57 to nine. Palette IDs,
-blueprint colors, and atlas pixels remain unchanged.
+Palette IDs and blueprint colors remain unchanged.
+
+## Preserve the robe's native palette transport
+
+The 89.8193.37-17 client does not replay creature material overrides onto the
+separate robe attachment. Its ordinary body and head receive those records;
+the robe does not, even for an empty material-name wildcard. Repeating the
+refresh or writing the records on the equipped item cannot repair that gap.
+The civilian reproduced it with all 14 robe materials retaining defaults while
+the head had the correct rows. A successful server-side row test therefore
+does not establish that a robe received its colors.
+
+NWN has another per-material transport: `PLTscheme[15]`. The native body-part
+loader fills it from the wearer and equipment when its selected PLT resource
+exists, and the renderer supplies it to custom shaders. Converted robes retain
+tiny, one-pixel PLT control resources for that lookup. Their visible shade and
+layer data still come from the full BC5 tint mask; the control is not artwork.
+Do not reconvert or remove these controls, replace stock PLTs, or treat them as
+authored diffuse textures when resolving model materials.
+
+Robe-consuming materials opt into the native fallback and use negative row
+defaults. A received nonnegative scripted row still takes priority. Otherwise,
+the shader decodes the native color byte from the corresponding scheme entry
+and uses that color in the existing 2048-row tint atlas. The native scheme
+uses 256-row palette blocks divided by 1792, so it cannot be sampled as an
+atlas coordinate directly. Skin, hair, tattoos, cloth, leather, and metal all
+need the same conversion.
+
+Native body parts, helmets, tails, and wings select `pal_armor01` for both
+metal layers. `pal_armor02` is a different palette and is not the native Metal2
+selection for this corpus. Keep the established Metal2 atlas base at row 528,
+but fill it from `pal_armor01` and use matching picker colors. Do not modify
+the original palette resources themselves. The GPU regression checks every
+color and shade against the original palette RGBA, including this distinction.
+
+Custom robe colors must also reach the native palette transport. Preserve the
+authored palette values separately from their projected render values so
+resetting an override restores the original color, including per-part
+inheritance. Ordinary NPCs without overrides must not have their palette fields
+rewritten. Verify edits and resets through native engine tests as well as the
+shader tests; inspect a fresh client session to verify the attachment itself.
 
 ## Match material parameter arity to the shader
 

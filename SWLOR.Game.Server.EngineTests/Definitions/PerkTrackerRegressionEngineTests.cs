@@ -241,6 +241,104 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(4, Stat.GetStatAdjustment(caster, StatType.RangedDeflection), "Circle Slash grants its self-buff");
         }
 
+        [EngineTest("Instant hostile impacts grant party statuses and self immunity only on landed hits", Category = "PerkTracker", TimeoutSeconds = 30f)]
+        public static async Task InstantImpactPartyStatusAndImmunity(EngineTestContext ctx)
+        {
+            try
+            {
+                foreach (var isArea in new[] { false, true })
+                foreach (var scenario in new (bool Lands, bool Immune)[] { (true, false), (true, true), (false, false) })
+                {
+                    var caster = ctx.SpawnCreature("nw_bandit001");
+                    var ally = ctx.SpawnCreature("nw_bandit001", 2f);
+                    var target = ctx.SpawnCreature("nw_rat001", 3f);
+                    await ctx.WaitFrameAsync();
+                    foreach (var creature in new[] { caster, ally, target })
+                        PrepareStationaryCreature(ctx, creature);
+                    ctx.MakeHostile(target);
+                    AssignCommand(caster, () => AddHenchman(caster, ally));
+                    await ctx.WaitUntilAsync(() => Party.IsInParty(caster, ally), 5f, "the party link");
+                    Combat.SetAbilityHitResolutionOverride(scenario.Lands);
+                    TemporaryStatModifier.Add(target, StatType.PhysicalDamageImmunity, scenario.Immune ? 1 : 0, 30f);
+                    var ability = ImpactModifierTestAbility.Build(isArea);
+                    await ctx.ExecuteInCreatureContextAsync(caster, () =>
+                    {
+                        Ability.BeginAbilityImpact(caster, ability);
+                        try
+                        {
+                            ability.ImpactAction(caster, target, 1, GetLocation(caster));
+                            var summary = Ability.GetActiveAbilityImpactSummary(caster);
+                            ctx.AssertEqual(scenario.Lands, summary.ImpactedTargetCount > 0, "the impact records whether a target was hit");
+                            if (scenario.Immune)
+                                ctx.AssertEqual(0, summary.AttributedDamage, "immunity exercises a landed zero-damage impact");
+                        }
+                        finally { Ability.EndAbilityImpact(caster); }
+                    });
+                    await ctx.WaitFrameAsync();
+                    foreach (var recipient in new[] { caster, ally })
+                        ctx.AssertEqual(scenario.Lands, StatusEffect.HasStatusEffect<ShelterCircleStatusEffect>(recipient),
+                            "landed impacts grant the nearby party status, including the source");
+                    ctx.Assert(!StatusEffect.HasStatusEffect<ShelterCircleStatusEffect>(target), "the party buff excludes enemies");
+                    foreach (var immunity in new[] { ImmunityType.Knockdown, ImmunityType.Dazed })
+                        ctx.AssertEqual(scenario.Lands, Ability.HasTemporaryImmunity(caster, immunity),
+                            "landed impacts grant self immunity, including when damage is zero; misses grant none");
+                    foreach (var creature in new[] { caster, ally, target })
+                        DestroyObject(creature);
+                    await ctx.WaitFrameAsync();
+                }
+            }
+            finally { Combat.SetAbilityHitResolutionOverride(null); }
+        }
+
+        private sealed class ImpactModifierTestAbility : WeaponActiveAbilityDefinitionBase
+        {
+            public static AbilityDetail Build(bool isArea)
+            {
+                var builder = new AbilityBuilder();
+                ConfigureWeaponAbility(
+                    builder.Create(FeatType.Invalid, PerkType.Invalid).Name("Impact modifier test").Level(1),
+                    SkillType.Staff, 8, 30, null, null, 0, 0, 0f,
+                    isArea, true, false, Spell.Invalid,
+                    isArea ? AbilityTargetingShapeType.Sphere : AbilityTargetingShapeType.None,
+                    5f, 0f, AbilityTargetingFlags.HarmsEnemies, Animation.DoubleStrike, 0f,
+                    profile: new WeaponAbilityProfile
+                    {
+                        TelegraphDuration = 0f,
+                        NearbyPartyStatusEffect = typeof(ShelterCircleStatusEffect),
+                        NearbyPartyStatusDurationSeconds = 30,
+                        NearbyPartyStatusIncludesSelf = true,
+                        SelfKnockdownDazedImmunityDurationSeconds = 45
+                    });
+                return builder.Build()[FeatType.Invalid];
+            }
+        }
+
+        [EngineTest("Staff support abilities retain party status and self immunity without a hostile hit", Category = "PerkTracker", TimeoutSeconds = 30f)]
+        public static async Task StaffSupportPartyStatusAndImmunity(EngineTestContext ctx)
+        {
+            var caster = ctx.SpawnCreature("nw_bandit001");
+            var ally = ctx.SpawnCreature("nw_bandit001", 2f);
+            var outsider = ctx.SpawnCreature("nw_bandit001", 3f);
+            await ctx.WaitFrameAsync();
+            foreach (var creature in new[] { caster, ally, outsider })
+                PrepareStationaryCreature(ctx, creature);
+            AssignCommand(caster, () => AddHenchman(caster, ally));
+            await ctx.WaitUntilAsync(() => Party.IsInParty(caster, ally), 5f, "the party link");
+            foreach (var feat in new[] { FeatType.ShelterCircle1, FeatType.UnmovingCenter1 })
+            {
+                var ability = Ability.GetAbilityDetail(feat);
+                ctx.Assert(!ability.IsHostileAbility, "the real support ability follows the non-hostile activation path");
+                await ctx.ExecuteInCreatureContextAsync(caster, () => ability.ImpactAction(caster, caster, 1, GetLocation(caster)));
+            }
+            await ctx.WaitFrameAsync();
+            foreach (var recipient in new[] { caster, ally })
+                ctx.AssertEqual(20, Stat.GetStatAdjustment(recipient, StatType.PhysicalDefensePercentAdjustment), "Shelter Circle protects the nearby party");
+            ctx.Assert(!StatusEffect.HasStatusEffect<ShelterCircleStatusEffect>(outsider), "Shelter Circle excludes nonparty neighbors");
+            ctx.AssertEqual(20, Stat.GetStatAdjustment(caster, StatType.MeleeDeflection), "Unmoving Center retains its self status");
+            ctx.Assert(Ability.HasTemporaryImmunity(caster, ImmunityType.Knockdown), "Unmoving Center grants knockdown immunity");
+            ctx.Assert(Ability.HasTemporaryImmunity(caster, ImmunityType.Dazed), "Unmoving Center grants daze immunity");
+        }
+
         [EngineTest("Scheduled device channels retain area rewards and share one pulse per cast", Category = "PerkTracker", TimeoutSeconds = 30f)]
         public static async Task ScheduledDeviceAreaContext(EngineTestContext ctx)
         {

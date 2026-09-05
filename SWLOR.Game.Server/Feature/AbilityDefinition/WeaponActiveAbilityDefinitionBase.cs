@@ -707,6 +707,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
             private void ApplyLandedImpactModifiers(uint activator)
             {
+                ApplyNearbyPartyStatus(activator);
+                ApplySelfImmunity(activator);
                 if (!ApplySelfModifiersOnHostileActivation)
                     ApplySelfModifiers(activator);
                 ApplyTemporaryDefeatedEnemyModifiers(activator);

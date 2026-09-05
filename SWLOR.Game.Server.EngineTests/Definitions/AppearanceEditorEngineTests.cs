@@ -753,22 +753,38 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(image["width"] == null && image["height"] == null,
                     $"{stage}/{regionName}: neither dimension may disable equal-width sharing.");
                 ctx.AssertEqual(2f, image["margin"]?.Value<float>(), $"{stage}/{regionName}: swatch margin");
-                ctx.Assert(image["aspect"] == null, $"{stage}/{regionName}: no height-derived width constraint may block shrinking");
-                ctx.AssertEqual((int)NuiAspect.Fit, image["image_aspect"]?.Value<int>(), $"{stage}/{regionName}: square artwork fits inside its shrinking cell");
+                ctx.AssertEqual(1f, image["aspect"]?.Value<float>(), $"{stage}/{regionName}: artwork and native encouragement share square bounds");
+                ctx.AssertEqual((int)NuiAspect.Stretch, image["image_aspect"]?.Value<int>(), $"{stage}/{regionName}: sprite fills the square independently of atlas dimensions");
                 ctx.AssertEqual((int)NuiHorizontalAlign.Center, image["image_halign"]?.Value<int>(), $"{stage}/{regionName}: image stays under its centered heading");
                 ctx.AssertEqual(regionName, image["image_region"]?["bind"]?.Value<string>(), $"{stage}/{regionName}: native region stays bound to the selected dye");
                 ctx.AssertEqual(regionName.Contains("Metal") ? "gui_pal_armor01" : "gui_pal_tattoo",
                     image["value"]?.Value<string>(), $"{stage}/{regionName}: swatch uses its authored palette family");
                 ctx.Assert(image["draw_list"] == null, $"{stage}/{regionName}: global fill must not remain a fixed draw-list inset.");
+                var imageRow = image.Ancestors().OfType<JObject>().First();
+                ctx.AssertEqual("row", imageRow["type"]?.Value<string>(), $"{stage}/{regionName}: image belongs to a private row");
+                ctx.Assert(imageRow["height"] == null, $"{stage}/{regionName}: the square must not be forced to the outer row's height");
+                ctx.Assert(imageRow["children"].OfType<JObject>().Select(node => node["type"]?.Value<string>())
+                    .SequenceEqual(new[] { "spacer", "image", "spacer" }), $"{stage}/{regionName}: horizontal slack centers the square in its cell.");
+                var stack = imageRow.Ancestors().OfType<JObject>().First();
+                var stackRows = stack["children"].OfType<JObject>().ToArray();
+                ctx.AssertEqual(2, stackRows.Length, $"{stage}/{regionName}: cell keeps a row of vertical slack below the square");
+                ctx.AssertEqual("spacer", stackRows[1]["children"]?.First?["type"]?.Value<string>(), $"{stage}/{regionName}: trailing vertical spacer");
+                var cell = stack.Ancestors().OfType<JObject>().First();
+                ctx.AssertEqual("group", cell["type"]?.Value<string>(), $"{stage}/{regionName}: each square has an independent cell");
+                ctx.Assert(cell["width"] == null && cell["height"] == null && cell["encouraged"] == null,
+                    $"{stage}/{regionName}: cell shares width and never receives the selection outline.");
+                ctx.AssertEqual(0f, cell["margin"]?.Value<float>(), $"{stage}/{regionName}: cell margin");
+                ctx.AssertEqual((int)NuiScrollbars.None, cell["scrollbars"]?.Value<int>(), $"{stage}/{regionName}: cell scrollbars");
             }
-            var rows = images.Select(image => image.Ancestors().OfType<JObject>().First()).Distinct().ToArray();
+            var rows = images.Select(image => image.Ancestors().OfType<JObject>()
+                .First(node => node["type"]?.Value<string>() == "group").Ancestors().OfType<JObject>().First()).Distinct().ToArray();
             ctx.AssertEqual(2, rows.Length, $"{stage}: global dyes occupy two shared rows");
             foreach (var row in rows)
             {
                 ctx.AssertEqual("row", row["type"]?.Value<string>(), $"{stage}: global image parent is a row");
                 ctx.AssertEqual(99f, row["height"]?.Value<float>(), $"{stage}: shared row bounds image height");
                 ctx.AssertEqual(0f, row["margin"]?.Value<float>(), $"{stage}: global image row has no hidden margins");
-                ctx.AssertEqual(3, row["children"].OfType<JObject>().Count(), $"{stage}: three peer images fill the shared row");
+                ctx.AssertEqual(3, row["children"].OfType<JObject>().Count(node => node["type"]?.Value<string>() == "group"), $"{stage}: three peer cells fill the shared row");
             }
             var column = rows[0].Ancestors().OfType<JObject>().First();
             ctx.Assert(ReferenceEquals(column, rows[1].Ancestors().OfType<JObject>().First()), $"{stage}: both image rows share their header column.");

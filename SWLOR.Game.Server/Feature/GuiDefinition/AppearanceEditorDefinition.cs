@@ -80,10 +80,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private void BuildNavigation(GuiRow<AppearanceEditorViewModel> row)
         {
             row.SetHeight(28f);
+            row.AddSpacer();
             row.AddToggles()
                 .AddOption("Appearance")
                 .AddOption("Equipment")
                 .BindSelectedValue(model => model.EditorTabToggleValue)
+                .SetWidth(300f)
                 .SetHeight(28f);
             row.AddToggles()
                 .AddOption("Settings")
@@ -91,11 +93,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .BindIsVisible(model => model.IsSettingsVisible)
                 .SetWidth(150f)
                 .SetHeight(28f);
+            row.AddSpacer();
         }
 
         private void BuildEquipmentSelection(GuiRow<AppearanceEditorViewModel> row)
         {
             row.BindIsVisible(model => model.IsEquipmentSelected);
+            row.AddSpacer();
             row.AddComboBox()
                 .AddOption("Armor", 0)
                 .AddOption("Helmet", 1)
@@ -110,6 +114,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetWidth(140f)
                 .SetHeight(32f)
                 .BindOnClicked(model => model.OnClickOutfits());
+            row.AddSpacer();
         }
 
         private void BuildMainEditor(GuiGroup<AppearanceEditorViewModel> partial)
@@ -824,18 +829,36 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             Expression<Func<AppearanceEditorViewModel, GuiRectangle>> regionBinding,
             AppearanceArmorColor channel)
         {
-            // A widget aspect ratio derives a fixed width from the row's height and
-            // prevents shrinking. Fit the square artwork inside each flexible cell.
-            row.AddImage()
-                .SetId("ae_color_" + GuiHelper<AppearanceEditorViewModel>.GetPropertyName(regionBinding))
-                .SetResref(texture)
-                .BindRegion(regionBinding)
-                .BindIsEncouraged(ColorSelectionBinding(regionBinding))
-                .SetAspect(NuiAspect.Fit)
-                .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                .SetVerticalAlign(NuiVerticalAlign.Top)
-                .SetMargin(2f)
-                .BindOnMouseDown(model => model.OnMouseDownGlobalColor(channel));
+            // The cell shares the available width; the image and its native glow
+            // share square bounds. Slack in both axes lets that square shrink instead
+            // of deriving a minimum width from the fixed height of the outer row.
+            row.AddGroup(cell =>
+            {
+                cell.SetShowBorder(false).SetScrollbars(NuiScrollbars.None)
+                    .SetMargin(0f).SetPadding(0f);
+                cell.AddColumn(column =>
+                {
+                    column.AddRow(imageRow =>
+                    {
+                        imageRow.SetMargin(0f);
+                        imageRow.AddSpacer();
+                        imageRow.AddImage()
+                            .SetId("ae_color_" + GuiHelper<AppearanceEditorViewModel>.GetPropertyName(regionBinding))
+                            .SetResref(texture)
+                            .BindRegion(regionBinding)
+                            .BindIsEncouraged(ColorSelectionBinding(regionBinding))
+                            .SetAspectRatio(1f)
+                            // Stretch the cropped swatch, not the full atlas's proportions.
+                            .SetAspect(NuiAspect.Stretch)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
+                            .SetMargin(2f)
+                            .BindOnMouseDown(model => model.OnMouseDownGlobalColor(channel));
+                        imageRow.AddSpacer();
+                    });
+                    column.AddRow(space => space.AddSpacer());
+                });
+            });
         }
 
         private GuiButton<AppearanceEditorViewModel> CreateFilledButton(

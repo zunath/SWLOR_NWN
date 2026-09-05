@@ -225,16 +225,16 @@ public class AppearanceEditorLayoutTests
             ReadProperty<string>(image, "Resref").Should().Be(
                 channel is AppearanceArmorColor.Metal1 or AppearanceArmorColor.Metal2
                     ? "gui_pal_armor01" : "gui_pal_tattoo");
-            ReadProperty<NuiAspect>(image, "Aspect").Should().Be(NuiAspect.Fit,
-                "square artwork must fit the available cell without stretching or clipping");
-            ReadProperty<float>(image, "AspectRatio").Should().Be(0f,
-                "a widget aspect constraint derives width from the fixed row height and prevents shrinking");
+            ReadProperty<NuiAspect>(image, "Aspect").Should().Be(NuiAspect.Stretch,
+                "the square sprite crop must fill the control, regardless of the source atlas's proportions");
+            ReadProperty<float>(image, "AspectRatio").Should().Be(1f,
+                "the image, click target and encouraged highlight must have identical square bounds");
             ReadProperty<NuiHorizontalAlign>(image, "HorizontalAlign").Should().Be(NuiHorizontalAlign.Center);
             ReadProperty<NuiVerticalAlign>(image, "VerticalAlign").Should().Be(NuiVerticalAlign.Top);
             PathTo(armor, image).Should().OnlyContain(widget => Width(widget) == 0f,
                 "the responsive image and its ancestors must use the width left beside the palette");
             image.DeclaredHeight.Should().Be(0f,
-                "either dimension disables native equal-width sharing, so the enclosing row supplies height");
+                "neither image dimension may force its flexible cell to overflow");
             image.DeclaredMargin.Should().Be(2f);
             image.Events.Should().ContainSingle();
             var handler = image.Events.Values.Single();
@@ -243,13 +243,36 @@ public class AppearanceEditorLayoutTests
                 new KeyValuePair<Type, object>(typeof(AppearanceArmorColor), channel));
         }
 
-        var rows = images.Select(image => PathTo(armor, image).OfType<GuiRow<AppearanceEditorViewModel>>().Last())
+        foreach (var image in images)
+        {
+            var path = PathTo(armor, image).ToArray();
+            var imageRow = path.OfType<GuiRow<AppearanceEditorViewModel>>().Last();
+            imageRow.DeclaredHeight.Should().Be(0f,
+                "the immediate parent must not force the square to use the outer row's full height");
+            imageRow.Elements.Should().HaveCount(3);
+            imageRow.Elements[0].Should().BeOfType<GuiSpacer<AppearanceEditorViewModel>>();
+            imageRow.Elements[1].Should().BeSameAs(image);
+            imageRow.Elements[2].Should().BeOfType<GuiSpacer<AppearanceEditorViewModel>>();
+            var stack = path.OfType<GuiColumn<AppearanceEditorViewModel>>().Last();
+            stack.Elements.Should().HaveCount(2);
+            stack.Elements[1].Elements.Should().ContainSingle().Which
+                .Should().BeOfType<GuiSpacer<AppearanceEditorViewModel>>();
+            var cell = path.OfType<GuiGroup<AppearanceEditorViewModel>>().Last();
+            cell.DeclaredHeight.Should().Be(0f);
+            cell.DeclaredMargin.Should().Be(0f);
+            ReadProperty<float>(cell, "Padding").Should().Be(0f);
+            ReadProperty<bool>(cell, "ShowBorder").Should().BeFalse();
+            ReadProperty<NuiScrollbars>(cell, "Scrollbars").Should().Be(NuiScrollbars.None);
+            ReadProperty<bool>(cell, "IsEncouragedBound").Should().BeFalse();
+        }
+        var cells = images.Select(image => PathTo(armor, image).OfType<GuiGroup<AppearanceEditorViewModel>>().Last()).ToArray();
+        var rows = cells.Select(cell => PathTo(armor, cell).OfType<GuiRow<AppearanceEditorViewModel>>().Last())
             .Distinct().ToArray();
         rows.Should().HaveCount(2);
         rows.Should().OnlyContain(row => row.Elements.Count == 3 &&
-            row.Elements.All(widget => widget is GuiImage<AppearanceEditorViewModel>) &&
+            row.Elements.All(widget => widget is GuiGroup<AppearanceEditorViewModel>) &&
             Width(row) == 0f && row.DeclaredHeight == 99f && row.DeclaredMargin == 0f,
-            "each row must split its available width among exactly three swatches without spacer competition");
+            "each row must split its available width among exactly three swatch cells");
         var column = PathTo(armor, rows[0]).OfType<GuiColumn<AppearanceEditorViewModel>>().Last();
         var header = (GuiRow<AppearanceEditorViewModel>)column.Elements.First();
         header.DeclaredHeight.Should().Be(28f);
@@ -461,8 +484,21 @@ public class AppearanceEditorLayoutTests
             nameof(AppearanceEditorViewModel.EditorTabToggleValue));
         var settings = toggles.Single(toggle => ReadProperty<string>(toggle, "SelectedValueBindName") ==
             nameof(AppearanceEditorViewModel.SettingsTabToggleValue));
-        PathTo(main, primary).Should().OnlyContain(widget => Width(widget) == 0f);
+        PathTo(main, primary).SkipLast(1).Should().OnlyContain(widget => Width(widget) == 0f);
+        Width(primary).Should().Be(300f);
         Width(settings).Should().Be(150f);
+        var tabRow = PathTo(main, primary).OfType<GuiRow<AppearanceEditorViewModel>>().Last();
+        var itemSelector = Walk(main).OfType<GuiComboBox<AppearanceEditorViewModel>>().Single();
+        var equipmentRow = PathTo(main, itemSelector).OfType<GuiRow<AppearanceEditorViewModel>>().Last();
+        foreach (var row in new[] { tabRow, equipmentRow })
+        {
+            row.Elements.Should().HaveCount(4);
+            row.Elements.First().Should().BeOfType<GuiSpacer<AppearanceEditorViewModel>>();
+            row.Elements.Last().Should().BeOfType<GuiSpacer<AppearanceEditorViewModel>>();
+            Width(row).Should().Be(0f);
+            row.Elements.Skip(1).Take(2).Should().OnlyContain(control => Width(control) > 0f,
+                "only the paired outer spacers should absorb spare width and center the controls");
+        }
         var slot = Walk(main).Single(widget => widget.Id == AppearanceEditorViewModel.MainPartialElement);
         PathTo(main, slot).Should().OnlyContain(widget => Width(widget) == 0f,
             "the active partial and its scrollbar need the full available window width");

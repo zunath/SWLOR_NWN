@@ -308,7 +308,20 @@ namespace SWLOR.Game.Server.Service.CombatService
                 return false;
 
             var now = DateTime.UtcNow;
-            var removed = modifiers.RemoveAll(x => x.Expiration <= now) > 0;
+            var retained = 0;
+            for (var index = 0; index < modifiers.Count; index++)
+            {
+                var modifier = modifiers[index];
+                if (modifier.Expiration > now)
+                {
+                    if (retained != index)
+                        modifiers[retained] = modifier;
+                    retained++;
+                }
+            }
+            var removed = retained < modifiers.Count;
+            if (removed)
+                modifiers.RemoveRange(retained, modifiers.Count - retained);
 
             if (modifiers.Count <= 0)
             {

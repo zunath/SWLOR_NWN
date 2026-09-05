@@ -2087,19 +2087,31 @@ namespace SWLOR.Game.Server.Service
             });
         }
 
-        public static IEnumerable<StatAdjustmentSource> GetStatSources(uint creature, StatType payloadStat)
+        public static IReadOnlyList<StatAdjustmentSource> GetStatSources(uint creature, StatType payloadStat)
         {
-            foreach (var source in Perk.GetStatSources(creature, payloadStat))
-                yield return source;
+            var perks = Perk.GetStatSources(creature, payloadStat);
+            var effects = StatusEffect.GetStatSources(creature, payloadStat);
+            var temporary = TemporaryStatModifier.GetStatSources(creature, payloadStat);
+            var traits = Mimicry.GetStatSources(creature, payloadStat);
+            var count = perks.Count + effects.Count + temporary.Count + traits.Count;
+            if (count == 0) return Array.Empty<StatAdjustmentSource>();
+            if (count == perks.Count) return perks;
+            if (count == effects.Count) return effects;
+            if (count == temporary.Count) return temporary;
+            if (count == traits.Count) return traits;
 
-            foreach (var source in StatusEffect.GetStatSources(creature, payloadStat))
-                yield return source;
+            var sources = new StatAdjustmentSource[count];
+            CopyStatSources(perks, sources, 0);
+            CopyStatSources(effects, sources, perks.Count);
+            CopyStatSources(temporary, sources, perks.Count + effects.Count);
+            CopyStatSources(traits, sources, perks.Count + effects.Count + temporary.Count);
+            return sources;
+        }
 
-            foreach (var source in TemporaryStatModifier.GetStatSources(creature, payloadStat))
-                yield return source;
-
-            foreach (var source in Mimicry.GetStatSources(creature, payloadStat))
-                yield return source;
+        private static void CopyStatSources(IReadOnlyList<StatAdjustmentSource> source, StatAdjustmentSource[] destination, int offset)
+        {
+            for (var index = 0; index < source.Count; index++)
+                destination[offset + index] = source[index];
         }
 
         public static int GetStatAdjustment(uint creature, StatType stat)

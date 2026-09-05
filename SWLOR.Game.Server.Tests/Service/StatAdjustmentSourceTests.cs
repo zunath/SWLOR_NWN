@@ -83,6 +83,31 @@ public class StatAdjustmentSourceTests
         StatusEffect.HasAnyActiveEffect(Creature, types).Should().BeFalse();
     }
 
+    [TestCase(false)]
+    [TestCase(true)]
+    public void MissingConditionalSources_DoNotAllocatePerHitPipelines(bool hasUnrelatedSources)
+    {
+        if (hasUnrelatedSources)
+        {
+            for (var index = 0; index < 40; index++)
+            {
+                AddStatus(Payload((StatType.AttackPercentAdjustment, 1)));
+                AddTemporary($"unrelated-{index}", StatType.AttackPercentAdjustment, 1);
+            }
+        }
+        for (var index = 0; index < 100; index++)
+            Combat.GetHighResourceAbilityDamageBonus(Creature);
+
+        var before = GC.GetAllocatedBytesForCurrentThread();
+        var adjustment = 0;
+        for (var index = 0; index < 1000; index++)
+            adjustment += Combat.GetHighResourceAbilityDamageBonus(Creature);
+        var allocated = GC.GetAllocatedBytesForCurrentThread() - before;
+
+        adjustment.Should().Be(0);
+        allocated.Should().BeLessThan(1024, "missing conditional payloads must not allocate iterator or delegate pipelines per target");
+    }
+
     [Test]
     public void TemporarySources_SnapshotOnlyMatchingGroupsBeforeCallersAddModifiers()
     {

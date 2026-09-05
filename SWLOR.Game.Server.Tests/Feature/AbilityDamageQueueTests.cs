@@ -8,6 +8,32 @@ namespace SWLOR.Game.Server.Tests.Feature;
 
 public class AbilityDamageQueueTests
 {
+    [TestCase(false)]
+    [TestCase(true)]
+    public void TrackedAbilityImpact_CreatesASequenceOnDemandAndPreservesSharedSequences(bool hasSharedSequence)
+    {
+        var trackedImpactType = typeof(Ability).GetNestedType(
+            "TrackedAbilityImpact", System.Reflection.BindingFlags.NonPublic)!;
+        var sharedSequence = hasSharedSequence ? new AbilityImpactSequence() : null;
+        var trackedImpact = trackedImpactType.GetConstructors().Single().Invoke(new object[]
+        {
+            new AbilityDetail(), 0, 0, 0, 0, 0, true, 0,
+            Array.Empty<TelegraphGeometry>(), sharedSequence
+        });
+        var storedSequence = trackedImpactType.GetField(
+            "_sequence", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)!;
+        storedSequence.GetValue(trackedImpact).Should().BeSameAs(sharedSequence);
+
+        var sequenceProperty = trackedImpactType.GetProperty("Sequence")!;
+        var sequence = (AbilityImpactSequence)sequenceProperty.GetValue(trackedImpact)!;
+        sequence.Should().NotBeNull();
+        sequenceProperty.GetValue(trackedImpact).Should().BeSameAs(sequence);
+        if (hasSharedSequence)
+            sequence.Should().BeSameAs(sharedSequence);
+        sequence.TryTriggerAreaPulse().Should().BeTrue();
+        ((AbilityImpactSequence)sequenceProperty.GetValue(trackedImpact)!).TryTriggerAreaPulse().Should().BeFalse();
+    }
+
     /// <summary>
     /// Verifies that an impact initialized without activation markers still accumulates defense ignore.
     /// </summary>

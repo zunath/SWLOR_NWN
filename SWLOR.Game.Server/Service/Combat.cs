@@ -5532,9 +5532,15 @@ namespace SWLOR.Game.Server.Service
 
         private static int GetHighResourceStatAdjustment(uint activator, StatType payload, StatType threshold, AbilityDetail ability)
         {
-            return Stat.GetStatSources(activator, payload)
-                .Where(source => IsCurrentFPAndStaminaAbovePercent(activator, source[threshold], ability))
-                .Sum(source => source[payload]);
+            var sources = Stat.GetStatSources(activator, payload);
+            var adjustment = 0;
+            for (var index = 0; index < sources.Count; index++)
+            {
+                var source = sources[index];
+                if (IsCurrentFPAndStaminaAbovePercent(activator, source[threshold], ability))
+                    adjustment = checked(adjustment + source[payload]);
+            }
+            return adjustment;
         }
 
         public static int GetCostlyAbilityDamageBonus(

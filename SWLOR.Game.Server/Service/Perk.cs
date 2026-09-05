@@ -645,11 +645,12 @@ namespace SWLOR.Game.Server.Service
             return amount * GetForceAffinityMagnitudeMultiplier(creature, perkType);
         }
 
-        public static IEnumerable<StatAdjustmentSource> GetStatSources(uint creature, StatType payloadStat)
+        public static IReadOnlyList<StatAdjustmentSource> GetStatSources(uint creature, StatType payloadStat)
         {
             if (!_statBonusGroupsByStat.TryGetValue(payloadStat, out var groups))
-                yield break;
+                return Array.Empty<StatAdjustmentSource>();
 
+            List<StatAdjustmentSource> sources = null;
             foreach (var group in groups)
             {
                 var level = GetStatBonusPerkLevel(creature, group.PerkType);
@@ -657,15 +658,24 @@ namespace SWLOR.Game.Server.Service
                     continue;
 
                 var stats = new Dictionary<StatType, int>();
-                foreach (var bonus in group.PerkDetail.StatBonuses.Concat(perkLevel.StatBonuses))
+                foreach (var bonus in group.PerkDetail.StatBonuses)
+                {
+                    stats.TryGetValue(bonus.Stat, out var current);
+                    stats[bonus.Stat] = Stat.AggregateStatAdjustment(bonus.Stat, current, bonus.Calculate(creature));
+                }
+                foreach (var bonus in perkLevel.StatBonuses)
                 {
                     stats.TryGetValue(bonus.Stat, out var current);
                     stats[bonus.Stat] = Stat.AggregateStatAdjustment(bonus.Stat, current, bonus.Calculate(creature));
                 }
 
                 if (stats.TryGetValue(payloadStat, out var value) && value != 0)
-                    yield return new StatAdjustmentSource($"perk:{(int)group.PerkType}", stats);
+                {
+                    sources ??= new List<StatAdjustmentSource>();
+                    sources.Add(new StatAdjustmentSource($"perk:{(int)group.PerkType}", stats));
+                }
             }
+            return (IReadOnlyList<StatAdjustmentSource>)sources ?? Array.Empty<StatAdjustmentSource>();
         }
 
         public static int GetStatBonus(uint creature, StatType stat)

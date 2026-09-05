@@ -177,7 +177,7 @@ namespace SWLOR.Game.Server.Service
                 countsAsAttackAttempt,
                 nextAbilityCriticalDamagePercentAdjustment,
                 activationAreaTelegraphs,
-                sequence ?? new AbilityImpactSequence());
+                sequence);
         }
 
         public static AbilityImpactSequence GetAbilityImpactSequence(uint activator)
@@ -1479,7 +1479,7 @@ namespace SWLOR.Game.Server.Service
                 shape,
                 areaVisualLocation,
                 trackedImpact?.Ability,
-                trackedImpact?.Sequence ?? new AbilityImpactSequence(),
+                trackedImpact?.Sequence,
                 deferredNextAbilityDamageBonus,
                 trackedImpact?.NextAbilityCriticalRatePercentAdjustment ?? 0,
                 trackedImpact?.NextAbilityDefenseIgnorePercentAdjustment ?? 0,
@@ -3306,9 +3306,10 @@ namespace SWLOR.Game.Server.Service
         {
             private readonly HashSet<uint> _impactedTargets = new();
             private readonly List<PendingDamageEffect> _pendingDamageEffects = new();
+            private AbilityImpactSequence _sequence;
 
             public AbilityDetail Ability { get; }
-            public AbilityImpactSequence Sequence { get; }
+            public AbilityImpactSequence Sequence => _sequence ??= new AbilityImpactSequence();
             public AbilityImpactSummary Summary { get; }
             public bool CountsAsAttackAttempt { get; }
             public IReadOnlyList<TelegraphGeometry> ActivationAreaTelegraphs { get; }
@@ -3338,7 +3339,7 @@ namespace SWLOR.Game.Server.Service
                 AbilityImpactSequence sequence)
             {
                 Ability = ability;
-                Sequence = sequence;
+                _sequence = sequence;
                 NextAbilityDamageBonus = nextAbilityDamageBonus;
                 NextAbilityCriticalRatePercentAdjustment = nextAbilityCriticalRatePercentAdjustment;
                 NextAbilityCriticalDamagePercentAdjustment = nextAbilityCriticalDamagePercentAdjustment;

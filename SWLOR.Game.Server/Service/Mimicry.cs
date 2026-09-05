@@ -142,22 +142,27 @@ namespace SWLOR.Game.Server.Service
         /// <summary>
         /// Returns each equipped trait's stat payload with the parameters declared by that trait.
         /// </summary>
-        public static IEnumerable<StatAdjustmentSource> GetStatSources(uint creature, StatType payloadStat)
+        public static IReadOnlyList<StatAdjustmentSource> GetStatSources(uint creature, StatType payloadStat)
         {
             if (!_traitStatsByStat.ContainsKey(payloadStat) ||
                 !GetIsPC(creature) || GetIsDM(creature) || GetIsDMPossessed(creature))
-                yield break;
+                return Array.Empty<StatAdjustmentSource>();
 
             var player = DB.Get<Player>(GetObjectUUID(creature));
             if (player == null)
-                yield break;
+                return Array.Empty<StatAdjustmentSource>();
 
+            List<StatAdjustmentSource> sources = null;
             foreach (var feat in player.EquippedTechniques)
             {
                 if (_techniques.TryGetValue(feat, out var detail) && detail.IsMimicryTrait &&
                     detail.MimicryTraitStats.TryGetValue(payloadStat, out var value) && value != 0)
-                    yield return new StatAdjustmentSource($"trait:{(int)feat}", detail.MimicryTraitStats);
+                {
+                    sources ??= new List<StatAdjustmentSource>();
+                    sources.Add(new StatAdjustmentSource($"trait:{(int)feat}", detail.MimicryTraitStats));
+                }
             }
+            return (IReadOnlyList<StatAdjustmentSource>)sources ?? Array.Empty<StatAdjustmentSource>();
         }
 
         /// <summary>

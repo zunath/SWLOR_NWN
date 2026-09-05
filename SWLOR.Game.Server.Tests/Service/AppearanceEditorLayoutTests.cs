@@ -225,10 +225,11 @@ public class AppearanceEditorLayoutTests
             ReadProperty<string>(image, "Resref").Should().Be(
                 channel is AppearanceArmorColor.Metal1 or AppearanceArmorColor.Metal2
                     ? "gui_pal_armor01" : "gui_pal_tattoo");
-            ReadProperty<NuiAspect>(image, "Aspect").Should().Be(NuiAspect.Stretch);
-            ReadProperty<float>(image, "AspectRatio").Should().Be(1f,
-                "the swatch artwork, hit area and selection glow must stay square at every window width");
-            ReadProperty<NuiHorizontalAlign>(image, "HorizontalAlign").Should().Be(NuiHorizontalAlign.Left);
+            ReadProperty<NuiAspect>(image, "Aspect").Should().Be(NuiAspect.Fit,
+                "square artwork must fit the available cell without stretching or clipping");
+            ReadProperty<float>(image, "AspectRatio").Should().Be(0f,
+                "a widget aspect constraint derives width from the fixed row height and prevents shrinking");
+            ReadProperty<NuiHorizontalAlign>(image, "HorizontalAlign").Should().Be(NuiHorizontalAlign.Center);
             ReadProperty<NuiVerticalAlign>(image, "VerticalAlign").Should().Be(NuiVerticalAlign.Top);
             PathTo(armor, image).Should().OnlyContain(widget => Width(widget) == 0f,
                 "the responsive image and its ancestors must use the width left beside the palette");

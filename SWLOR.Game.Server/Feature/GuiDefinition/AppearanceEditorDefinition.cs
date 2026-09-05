@@ -824,16 +824,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             Expression<Func<AppearanceEditorViewModel, GuiRectangle>> regionBinding,
             AppearanceArmorColor channel)
         {
-            // Keep the widget, hit area and glow square as the client shares the row
-            // width. The enclosing row caps its height without fixing its dimensions.
+            // A widget aspect ratio derives a fixed width from the row's height and
+            // prevents shrinking. Fit the square artwork inside each flexible cell.
             row.AddImage()
                 .SetId("ae_color_" + GuiHelper<AppearanceEditorViewModel>.GetPropertyName(regionBinding))
                 .SetResref(texture)
                 .BindRegion(regionBinding)
                 .BindIsEncouraged(ColorSelectionBinding(regionBinding))
-                .SetAspectRatio(1f)
-                .SetAspect(NuiAspect.Stretch)
-                .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                .SetAspect(NuiAspect.Fit)
+                .SetHorizontalAlign(NuiHorizontalAlign.Center)
                 .SetVerticalAlign(NuiVerticalAlign.Top)
                 .SetMargin(2f)
                 .BindOnMouseDown(model => model.OnMouseDownGlobalColor(channel));

@@ -753,8 +753,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.Assert(image["width"] == null && image["height"] == null,
                     $"{stage}/{regionName}: neither dimension may disable equal-width sharing.");
                 ctx.AssertEqual(2f, image["margin"]?.Value<float>(), $"{stage}/{regionName}: swatch margin");
-                ctx.AssertEqual(1f, image["aspect"]?.Value<float>(), $"{stage}/{regionName}: native widget and glow stay square as the row resizes");
-                ctx.AssertEqual((int)NuiAspect.Stretch, image["image_aspect"]?.Value<int>(), $"{stage}/{regionName}: image stretches across its allocated area");
+                ctx.Assert(image["aspect"] == null, $"{stage}/{regionName}: no height-derived width constraint may block shrinking");
+                ctx.AssertEqual((int)NuiAspect.Fit, image["image_aspect"]?.Value<int>(), $"{stage}/{regionName}: square artwork fits inside its shrinking cell");
+                ctx.AssertEqual((int)NuiHorizontalAlign.Center, image["image_halign"]?.Value<int>(), $"{stage}/{regionName}: image stays under its centered heading");
                 ctx.AssertEqual(regionName, image["image_region"]?["bind"]?.Value<string>(), $"{stage}/{regionName}: native region stays bound to the selected dye");
                 ctx.AssertEqual(regionName.Contains("Metal") ? "gui_pal_armor01" : "gui_pal_tattoo",
                     image["value"]?.Value<string>(), $"{stage}/{regionName}: swatch uses its authored palette family");

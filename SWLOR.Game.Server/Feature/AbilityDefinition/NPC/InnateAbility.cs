@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.NWN.API.NWScript.Enum.VisualEffect;
@@ -141,8 +142,21 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
         {
             return (activator, target) =>
             {
-                if (Stat.GetStatAdjustment(target, StatType.ForcedMovementImmunity) <= 0)
-                    AssignCommand(target, () => ActionJumpToObject(activator));
+                if (!GetIsObjectValid(activator) || !GetIsObjectValid(target) ||
+                    GetArea(activator) != GetArea(target) ||
+                    Stat.GetStatAdjustment(target, StatType.ForcedMovementImmunity) > 0)
+                    return;
+
+                var center = GetPosition(activator);
+                var currentOffset = GetPosition(target) - center;
+                var destination = CreaturePlugin.ComputeSafeLocation(target, center, currentOffset.Length());
+                // The native search returns its input on failure. Never place a target
+                // inside the caster or move it farther away when no closer spot is free.
+                if (destination == center || (destination - center).LengthSquared() >= currentOffset.LengthSquared())
+                    return;
+
+                // Knockdown blocks queued jumps, so apply the collision-checked pull immediately.
+                ObjectPlugin.SetPosition(target, destination);
             };
         }
 

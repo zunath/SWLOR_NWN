@@ -228,9 +228,11 @@ namespace SWLOR.Game.Server.EngineTests
 
             if (!string.IsNullOrWhiteSpace(filter))
             {
+                var filters = filter.Split('|', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
                 tests = tests
-                    .Where(x => x.Attribute.Name.Contains(filter, StringComparison.OrdinalIgnoreCase) ||
-                                x.Attribute.Category.Contains(filter, StringComparison.OrdinalIgnoreCase))
+                    .Where(x => filters.Any(term =>
+                        x.Attribute.Name.Contains(term, StringComparison.OrdinalIgnoreCase) ||
+                        x.Attribute.Category.Contains(term, StringComparison.OrdinalIgnoreCase)))
                     .ToList();
             }
 

@@ -12,7 +12,6 @@ Three ambiguities were resolved with the design owner:
 
 - Tempest Bloom: one immediate pulse per landed hostile area ability during the 45-second buff, centered on its first struck target, dealing 8 physical damage to enemies within 5m.
 - Finishing Drive: a 10-second cooldown; each cast adds one +8% Momentum stack (maximum three) and refreshes all stacks to 30 seconds. A 30-second cooldown could not reliably build stacks before the old duration expired.
-
 - Ground Quake: replace existing Dazed with six seconds of Knockdown, while preserving Dazed if explicit Knockdown immunity rejects the conversion. This makes the existing Bible combo work under the shared hard-control rule; its description is unchanged.
 
 The Tempest Bloom and Finishing Drive Bible cells, tracker cells, generated manifest, and existing TLK descriptions were synchronized. Workbook edits preserved unrelated ZIP entries and cached formula results. The workbook formatter then refreshed the generated audit files. The Haks companion PR contains regenerated binary TLK data.
@@ -22,7 +21,7 @@ The Tempest Bloom and Finishing Drive Bible cells, tracker cells, generated mani
 | Group | Rows | Review focus and corrections |
 |---|---:|---|
 | Beast Mastery | 73 | Rank progression, natural-weapon impacts, pet/master conditions, stat buffs and AI scoring. Iron Hide and Evasive Maneuver avoid redundant casts; Unbreakable Beast has the precise three immunities promised by the Bible. Evasive Challenge retains evasion after its one-use refund. |
-| Mimicry | 59 | Learning/slots, hit and damage stats, shapes, control durations, trait chances, party targets and capstones. Corrected Warden healing/auras, Last Bastion's target cap, Static Burst's arc fanout, arc potency and Finishing Drive's cooldown. |
+| Mimicry | 59 | Learning/slots, hit and damage stats, shapes, control durations, trait chances, party targets and capstones. Corrected Warden pulls and healing/auras, Last Bastion's target cap, Static Burst's arc fanout, arc potency and Finishing Drive's cooldown. |
 | Rifle | 24 | Queued impacts, critical refunds, suppression/kill zones, piercing targeting, weapon requirements and feedback. Existing fixes and regression coverage cover the recorded retest concerns. |
 | Force | 24 | Control/Alter/Sense gates, ally versus self triggers, damage and healing riders, persistent fields, threshold/cooldown conditions and aimed areas. Creeping Terror now shares pulse identity across ticks. |
 | Espionage | 23 | Coating charges and potency, trap tiers/arming, crafting and feat availability, stealth movement and native feat-use limits. |
@@ -43,8 +42,27 @@ Shared infrastructure consumes stats for the new behavior. Cast identity limits 
 
 ## Validation
 
-Validation is in progress while the PR is under review. The initial focused run passed 514/515 tests; the obsolete assertion was corrected. The first full unit run passed 2,074/2,079; all five failures were corrected and the 116 affected tests passed. Nine new NWN engine regressions passed; two additional Twin Blade regressions were added afterward.
+The build passed with the post-build deployment disabled. The full unit suite passed 2,080/2,080 tests, followed by 78 affected unit checks after the final pull correction. All 61 NWN engine checks passed across the complete sweep and affected follow-up run. The complete sweep passed 58/61; Warden Maul's queued pull and two Serrated Arc fixtures crossing raised floors were then corrected, and the combined perk/status-effect follow-up passed 26/26. The sweep included 678/689 ability-behavior cases with 11 explicitly skipped player-dependent cases and no failed behavior cases.
 
-The broader engine sweep exposed a fixture omission: NPC test actors had not been granted the feats they activated, so the runtime ownership check correctly cleared queued abilities. The executor now grants the tested feat before activation. Final suite and review results will replace this paragraph before handoff.
+The Bible registry audit has no findings; all 286 scoped tracker rows agree with the Bible after the three authorized metadata-cell edits. GUI layout validation passed and the isolated server boot produced no NUI layout warnings.
 
-Automated checks exercise definitions, native damage/status effects, resources and targeting. Cases requiring a real player account, learned-technique equipment or player-facing interaction remain explicitly identified as coverage gaps by the engine harness. Human tracker statuses are preserved for playtesting.
+The 14 native perk regressions cover:
+
+- Area ability pulses hit nearby enemies once per cast across impact phases.
+- Area combat traits grant per-target haste and capped stamina across skills.
+- Area-use deflection and FP rewards work across skills without requiring a hit.
+- Blade Vortex restores stamina once only after three targets land.
+- Droid programming accepts only an owned instruction disc.
+- Evasive Challenge refunds stamina once while retaining its evasion and timer.
+- Finishing Drive reaches three stacks through its real cooldown.
+- Ground Quake converts Dazed into Knockdown while preserving immune targets.
+- Last Bastion includes every enemy in its radius.
+- Resource damage bonuses retain independent strict thresholds.
+- Static Burst creates at most two extra arcs for a multi-target cast.
+- Unbreakable Beast blocks knockdown, daze, and pulls without blanket resistance.
+- Warden Order heals party members with outgoing, readiness, and received modifiers.
+- Warden Wall grants one defense bonus to its source and nearby party.
+
+The engine harness grants each NPC fixture the feat it activates, executes area impacts in the caster's script context, and fixes fixture positions where spawn collision would otherwise alter area boundaries. Its Mimicry fixtures bypass the player-only technique-loadout gate; real player learning/equipment validation is not exercised.
+
+The 11 skipped beast cases are Call Beast, Guarding Bond, Predatory Bond, Reward I–III, Revive Beast I–III, Soothe Pet, and Tame. Those player-owned pet interactions still require in-game playtesting. Human tracker statuses are preserved. The five Agriculture rows remain intentionally unimplemented/not testable in the Bible.

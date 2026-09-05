@@ -46,6 +46,26 @@ public class AppearanceEditorLayoutTests
     }
 
     [Test]
+    public void OnlyMaterialSwatchesBindTheActiveTargetGlow()
+    {
+        var armor = _partials[AppearanceEditorViewModel.EditorArmorPartial];
+        var swatches = Walk(armor).Where(widget => widget.Id?.StartsWith("ae_color_") == true).ToArray();
+        swatches.Should().HaveCount(120);
+        foreach (var swatch in swatches)
+        {
+            var expected = swatch.Id["ae_color_".Length..^"Region".Length] + "Selected";
+            ReadProperty<string>(swatch, "IsEncouragedBindName").Should().Be(expected);
+            ReadProperty<bool>(swatch, "IsEncouragedBound").Should().BeTrue();
+            typeof(AppearanceEditorViewModel).GetProperty(expected)!.PropertyType.Should().Be(typeof(bool));
+        }
+        foreach (var palette in _partials.Values.SelectMany(Walk).Where(widget => widget.Id?.StartsWith("ae_palette_") == true))
+        {
+            ReadProperty<string>(palette, "IsEncouragedBindName").Should().BeNullOrEmpty();
+            ReadProperty<bool>(palette, "IsEncouraged").Should().BeFalse();
+        }
+    }
+
+    [Test]
     public void ProductionPartialsFitInitialWindow()
     {
         _window.LayoutFindings.Should().BeEmpty();

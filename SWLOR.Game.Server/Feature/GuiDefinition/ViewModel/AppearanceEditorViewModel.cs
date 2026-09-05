@@ -893,6 +893,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Set(0, nameof(SelectedItemTypeIndex));
             _loadedItemTypeIndex = 0;
             RegisterColorMappings();
+            InitializeColorSelection();
             IsAppearanceSelected = true;
             IsEquipmentSelected = false;
             IsSettingsSelected = false;
@@ -2765,6 +2766,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void UpdateTargetedColor()
         {
+            UpdateColorSelection();
             string targetName;
             string channelName;
 

@@ -830,6 +830,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetId("ae_color_" + GuiHelper<AppearanceEditorViewModel>.GetPropertyName(regionBinding))
                 .SetResref(texture)
                 .BindRegion(regionBinding)
+                .BindIsEncouraged(ColorSelectionBinding(regionBinding))
                 .SetAspect(NuiAspect.Stretch)
                 .SetHorizontalAlign(NuiHorizontalAlign.Left)
                 .SetVerticalAlign(NuiVerticalAlign.Top)
@@ -853,7 +854,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 .SetWidth(buttonSize)
                 .SetHeight(buttonSize)
                 .SetMargin(0f)
-                .SetIsEncouraged(true)
                 .AddDrawList(drawList =>
                 {
                     drawList.AddImage(image =>
@@ -881,8 +881,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             if (onClickClearColor != null)
                 button.BindOnMouseDown(onClickClearColor);
             if (regionBind != null)
+            {
                 button.SetId("ae_color_" + GuiHelper<AppearanceEditorViewModel>.GetPropertyName(regionBind));
+                button.BindIsEncouraged(ColorSelectionBinding(regionBind));
+            }
             return button;
+        }
+
+        private static Expression<Func<AppearanceEditorViewModel, bool>> ColorSelectionBinding(
+            Expression<Func<AppearanceEditorViewModel, GuiRectangle>> regionBinding)
+        {
+            var propertyName = AppearanceEditorViewModel.GetColorSelectionPropertyName(
+                GuiHelper<AppearanceEditorViewModel>.GetPropertyName(regionBinding));
+            return Expression.Lambda<Func<AppearanceEditorViewModel, bool>>(
+                Expression.Property(regionBinding.Parameters[0], propertyName), regionBinding.Parameters);
         }
 
         private void BuildSettings(GuiGroup<AppearanceEditorViewModel> partial)

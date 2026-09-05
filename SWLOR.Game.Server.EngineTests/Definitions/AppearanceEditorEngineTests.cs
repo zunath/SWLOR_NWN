@@ -63,6 +63,15 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 editor.OnSelectEquipment()();
                 var panel = AppearanceEditorDefinition.BuildEditorPanel(AppearanceEditorViewModel.EditorArmorPartial);
                 AssertGlobalSwatchImagesJson(ctx, JObject.Parse(JsonDump(panel.ToJson())), "Global native swatch images");
+                var swatchJson = JObject.Parse(JsonDump(panel.ToJson())).Descendants().OfType<JObject>()
+                    .Where(node => node["id"]?.Value<string>()?.StartsWith("ae_color_") == true).ToArray();
+                ctx.AssertEqual(120, swatchJson.Length, "All global and part swatches have native glow bindings");
+                foreach (var swatch in swatchJson)
+                {
+                    var expected = swatch["id"].Value<string>()["ae_color_".Length..^"Region".Length] + "Selected";
+                    ctx.AssertEqual(expected, swatch["encouraged"]?["bind"]?.Value<string>(), "Glow follows this exact material target");
+                }
+                AssertActiveColorSwatch(ctx, editor, "GlobalLeather1Selected");
                 foreach (var (channel, layer) in channels)
                 {
                     var regionName = "Global" + channel + "Region";
@@ -77,6 +86,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     // The real mouse payload is client-owned. Exercise the unchanged
                     // target-selection action delegated to by the mouse-down filter.
                     editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, channel)();
+                    AssertActiveColorSwatch(ctx, editor, "Global" + channel + "Selected");
                     AssertTintInput(ctx, editor, TintMapPaletteColors.GetColor(layer, 35 + (int)channel),
                         $"{channel}: global image selection previews its own native dye");
                     AssertPaletteRegion(ctx, (GuiRectangle)editor.GetType().GetProperty(regionName).GetValue(editor),
@@ -86,6 +96,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 foreach (var (channel, layer) in channels)
                 {
                     editor.OnClickColorTarget(target, channel)();
+                    AssertActiveColorSwatch(ctx, editor, target.ToString() + channel + "Selected");
                     ctx.Assert(editor.IsCustomTintAvailable,
                         $"{part}/{channel} must retain its native picker even without a generated tint selection.");
                     var mode = ((int)part + (int)channel) % 4;
@@ -93,6 +104,12 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     AssertPickerColor(ctx, editor, TintMapPaletteColors.GetColor(layer, expectedId), $"{part}/{channel} native preview");
                 }
                 AssertArmorUnchanged(ctx, snapshot, civilian, "all114 part dye target selections");
+                editor.OnSelectAppearance()();
+                editor.OnSelectEquipment()();
+                AssertActiveColorSwatch(ctx, editor, "GlobalLeather1Selected");
+                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Chest, AppearanceArmorColor.Cloth1)();
+                InvokePrivate(editor, "ResetArmorColorToInheritance", AppearanceEditorViewModel.ColorTarget.Chest, AppearanceArmorColor.Cloth1);
+                AssertActiveColorSwatch(ctx, editor, "ChestCloth1Selected");
             });
             ctx.SetResultDetail("Six global images serialized dynamic regions and channel-specific mouse-down bindings; delegated target actions selected their native dyes. All19×6 native armor targets retained a picker, including Chest70. Seeded raw255/raw0/explicit0/explicit77 cases displayed inherited or explicit colors without armor writes. Headless coverage excludes mouse payload delivery and client rendering.");
         }
@@ -179,6 +196,18 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             foreach (var child in widget.Elements)
                 foreach (var descendant in WidgetTree(child))
                     yield return descendant;
+        }
+
+        private static void AssertActiveColorSwatch(EngineTestContext ctx, AppearanceEditorViewModel editor, string expected)
+        {
+            var selectionProperties = typeof(AppearanceEditorViewModel).GetProperties()
+                .Where(property => property.PropertyType == typeof(GuiRectangle) && property.Name.EndsWith("Region"))
+                .Select(property => typeof(AppearanceEditorViewModel).GetProperty(property.Name[..^"Region".Length] + "Selected"))
+                .ToArray();
+            ctx.AssertEqual(120, selectionProperties.Length, "Every material swatch exposes a glow binding");
+            var active = selectionProperties.Where(property => (bool)property.GetValue(editor)).Select(property => property.Name).ToArray();
+            ctx.AssertEqual(1, active.Length, "Exactly one material target is highlighted");
+            ctx.AssertEqual(expected, active.Single(), "The highlight moves to the selected target and channel");
         }
 
         [EngineTest("Appearance editor watched RGB input preserves drafts and requested values", Category = "AppearanceEditor", TimeoutSeconds = 30f)]

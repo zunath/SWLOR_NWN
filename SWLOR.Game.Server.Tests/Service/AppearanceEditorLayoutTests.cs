@@ -212,7 +212,7 @@ public class AppearanceEditorLayoutTests
             AppearanceArmorColor.Leather1, AppearanceArmorColor.Cloth1, AppearanceArmorColor.Metal1,
             AppearanceArmorColor.Leather2, AppearanceArmorColor.Cloth2, AppearanceArmorColor.Metal2
         };
-        var images = Walk(armor).OfType<GuiProgressBar<AppearanceEditorViewModel>>().Where(image =>
+        var images = Walk(armor).OfType<GuiImage<AppearanceEditorViewModel>>().Where(image =>
             image.Id?.StartsWith("ae_color_Global", StringComparison.Ordinal) == true).ToArray();
         images.Should().HaveCount(6);
         for (var index = 0; index < images.Length; index++)
@@ -221,8 +221,14 @@ public class AppearanceEditorLayoutTests
             var channel = expectedChannels[index];
             var regionBinding = "Global" + channel + "Region";
             image.Id.Should().Be("ae_color_" + regionBinding);
-            ReadProperty<string>(image, "ColorBindName").Should().Be("Global" + channel + "Tint");
-            ReadProperty<float>(image, "Value").Should().Be(1f);
+            ReadProperty<string>(image, "RegionBindName").Should().Be(regionBinding);
+            var drawList = ReadProperty<List<GuiDrawList<AppearanceEditorViewModel>>>(image, "DrawLists").Single();
+            ReadProperty<bool>(drawList, "IsConstrainedToTargetBounds").Should().BeTrue();
+            var fill = ReadProperty<List<IGuiDrawListItem>>(drawList, "DrawItems").Single();
+            ReadProperty<string>(fill, "ColorBindName").Should().Be("Global" + channel + "Tint");
+            ReadProperty<string>(fill, "IsEnabledBindName").Should().Be("Global" + channel + "Custom");
+            ReadProperty<List<GuiVector2>>(fill, "Points").Select(point => (point.X, point.Y))
+                .Should().Equal((0f, 0f), (99f, 0f), (99f, 99f), (0f, 99f));
             ReadProperty<float>(image, "AspectRatio").Should().Be(1f,
                 "the image, click target and encouraged highlight must have identical square bounds");
             PathTo(armor, image).Should().OnlyContain(widget => Width(widget) == 0f,
@@ -577,11 +583,7 @@ public class AppearanceEditorLayoutTests
             .Where(entry => entry.Key.EndsWith(".DrawTextureRegionBindName", StringComparison.Ordinal) ||
                 entry.Key.EndsWith(".RegionBindName", StringComparison.Ordinal))
             .Select(entry => entry.Value).ToArray();
-        regionBindings.Should().BeEquivalentTo(expectedRegions.Where(name => !name.StartsWith("Global")));
-        Walk(armor).OfType<GuiProgressBar<AppearanceEditorViewModel>>()
-            .Select(swatch => ReadProperty<string>(swatch, "ColorBindName"))
-            .Should().BeEquivalentTo(expectedRegions.Where(name => name.StartsWith("Global"))
-                .Select(name => name[..^"Region".Length] + "Tint"));
+        regionBindings.Should().BeEquivalentTo(expectedRegions);
     }
 
     private static IReadOnlyDictionary<string, string> EventSnapshot(IGuiWidget root) => Walk(root)

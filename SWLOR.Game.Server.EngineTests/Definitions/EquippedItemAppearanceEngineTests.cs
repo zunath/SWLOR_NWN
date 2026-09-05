@@ -117,8 +117,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Leather2)();
                 ctx.Assert(editor.IsCustomTintEditable, "RGB safety fixture has a tintable armor material.");
                 editor.SelectedTintColor = new GuiColor(205, 228, 197);
+                editor.OnMouseUpTintPicker()();
                 editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.LeftForearm, AppearanceArmorColor.Leather2)();
                 editor.SelectedTintColor = new GuiColor(1, 17, 91);
+                editor.OnMouseUpTintPicker()();
                 var selection = TintMapModelResolver.GetCurrentSelections(creature).Single(part =>
                     part.ArmorPart == AppearanceArmor.LeftForearm && part.Material.Layers.Contains(TintMapLayerType.Leather2));
                 TintMapEngineTests.AssertNativeRgb(ctx, creature, selection.Material.Resref,

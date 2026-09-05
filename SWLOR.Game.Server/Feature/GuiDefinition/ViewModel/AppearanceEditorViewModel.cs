@@ -69,6 +69,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private bool _loadingTintColor;
         private bool _applyingTintColor;
         private int _tintEditGeneration;
+        private GuiColor _pendingPickerColor;
+        private bool _pickerFlushScheduled;
         private bool _tintControlBindingsWatched;
         private string _tintComponentCorrection;
 
@@ -261,9 +263,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 if (value == null)
                     return;
 
-                if (!_loadingTintColor)
-                    _tintEditGeneration++;
-                ApplyCustomTintColor(value, synchronizeComponents: true);
+                if (_loadingTintColor)
+                {
+                    SynchronizeCustomTintComponents(value);
+                    return;
+                }
+
+                _tintEditGeneration++;
+                _tintComponentCorrection = null;
+                _pendingPickerColor = value;
+                if (_pickerFlushScheduled)
+                    return;
+                _pickerFlushScheduled = true;
+                var token = WindowToken;
+                DelayCommand(0.1f, () =>
+                {
+                    _pickerFlushScheduled = false;
+                    if (token == WindowToken && Gui.IsWindowOpen(Player, WindowType))
+                        FlushPendingPickerColor();
+                });
             }
         }
 
@@ -961,6 +979,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadTintMapEditor()
         {
+            _pendingPickerColor = null;
             // Resetting legacy overrides is part of applying a color. Do not replace the
             // pending input with the old color halfway through that operation.
             if (_applyingTintColor)
@@ -1078,7 +1097,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void ApplyCustomTintColor(
             GuiColor value,
-            bool synchronizeComponents)
+            bool synchronizeComponents,
+            bool synchronizePicker = true)
         {
             if (_loadingTintColor)
             {
@@ -1106,7 +1126,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     foreach (var selection in selections)
                         TintMapService.SetColor(_target, selection, layerType, requestedColor);
                 if (IsEquipmentSelected && SelectedItemTypeIndex == 0)
-                    UpdateAllColors();
+                    UpdateEditedColorSwatches();
             }
             finally
             {
@@ -1115,7 +1135,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             // Persist the actual RGB on the creature/item. Never change a native preset,
             // replace equipment, or echo normalized text into fields while the user types.
-            SetSelectedTintColor(value, synchronizeComponents);
+            if (synchronizePicker)
+                SetSelectedTintColor(value, synchronizeComponents);
+            else if (synchronizeComponents)
+                SynchronizeCustomTintComponents(value);
+        }
+
+        public Action OnMouseUpTintPicker() => FlushPendingPickerColor;
+
+        private void FlushPendingPickerColor()
+        {
+            var color = _pendingPickerColor;
+            _pendingPickerColor = null;
+            if (color != null)
+                ApplyCustomTintColor(color, synchronizeComponents: true, synchronizePicker: false);
         }
 
         private void SynchronizeCustomTintComponents(GuiColor color)
@@ -1165,6 +1198,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void SetCustomTintComponent(string value, string propertyName)
         {
+            _pendingPickerColor = null;
             var digits = new string((value ?? string.Empty).Where(char.IsDigit).ToArray());
             var normalized = int.TryParse(digits, out var component)
                 ? component <= byte.MaxValue ? digits : byte.MaxValue.ToString()
@@ -2381,6 +2415,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public Action OnCloseWindow() => () =>
         {
+            FlushPendingPickerColor();
             _tintEditGeneration++;
             if (GetIsDM(_target) || GetIsDMPossessed(_target) || !GetIsPC(_target))
                 return;
@@ -2740,6 +2775,24 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     GetType().GetProperty(detail.PropertyName)?.SetValue(this, BuildColorRegion(target, channel));
                     UpdateColorSwatch(target, channel, detail.PropertyName);
                 }
+            }
+        }
+
+        private void UpdateEditedColorSwatches()
+        {
+            // Only this material channel changed. Inherited parts remain empty;
+            // legacy global overrides may have been normalized by the service.
+            foreach (var (target, regions) in _colorMappings)
+            {
+                if (_colorTarget != ColorTarget.Global && target != _colorTarget)
+                    continue;
+                var detail = regions[_selectedColorChannel];
+                var region = BuildColorRegion(target, _selectedColorChannel);
+                var previous = Get<GuiRectangle>(detail.PropertyName);
+                if (previous == null || previous.X != region.X || previous.Y != region.Y ||
+                    previous.Width != region.Width || previous.Height != region.Height)
+                    GetType().GetProperty(detail.PropertyName)?.SetValue(this, region);
+                UpdateColorSwatch(target, _selectedColorChannel, detail.PropertyName);
             }
         }
 

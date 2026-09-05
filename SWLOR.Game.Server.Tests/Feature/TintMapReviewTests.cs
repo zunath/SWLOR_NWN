@@ -753,7 +753,11 @@ public class TintMapReviewTests
             .DescendantNodes()
             .OfType<PropertyDeclarationSyntax>()
             .Single(property => property.Identifier.ValueText == "SelectedTintColor");
-        selectedTintColor.ToString().Should().Contain("ApplyCustomTintColor");
+        selectedTintColor.ToString().Should().Contain("FlushPendingPickerColor");
+        selectedTintColor.ToString().Should().NotContain("ApplyCustomTintColor(",
+            "drag samples must be batched before publishing material updates");
+        FindMethod(viewModelSource, "FlushPendingPickerColor").ToString()
+            .Should().Contain("synchronizePicker: false", "deferred commits must not echo old samples into the live picker");
         var applyCustomTintColor = FindMethod(viewModelSource, "ApplyCustomTintColor");
         applyCustomTintColor.ToString().Should().Contain("TintMapService.SetCreatureCustomColor");
         applyCustomTintColor.ToString().Should().NotContain("ApplySelectedPaletteColor");

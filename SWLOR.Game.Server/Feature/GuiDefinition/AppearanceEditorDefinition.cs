@@ -248,9 +248,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 row.BindIsVisible(model => model.IsCustomTintAvailable);
 
                 row.AddColorPicker()
+                    .SetId("ae_tint_picker")
                     .BindSelectedColor(model => model.SelectedTintColor)
                     .BindIsEnabled(model => model.IsCustomTintEditable)
                     .BindTooltip(model => model.CustomTintTooltip)
+                    .BindOnMouseUp(model => model.OnMouseUpTintPicker())
                     .SetHeight(128f);
             });
 
@@ -845,13 +847,28 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     column.AddRow(imageRow =>
                     {
                         imageRow.SetMargin(0f);
-                        imageRow.AddProgressBar()
+                        imageRow.AddImage()
                             .SetId("ae_color_" + GuiHelper<AppearanceEditorViewModel>.GetPropertyName(regionBinding))
-                            .SetValue(1f)
-                            .BindColor(ColorSwatchBinding<GuiColor>(regionBinding, "Tint"))
+                            .SetResref(texture)
+                            .BindRegion(regionBinding)
+                            .SetAspect(NuiAspect.Stretch)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                            .SetVerticalAlign(NuiVerticalAlign.Top)
                             .BindIsEncouraged(ColorSelectionBinding(regionBinding))
                             .SetAspectRatio(1f)
                             .SetMargin(2f)
+                            // The client clips the fill to the image's responsive square.
+                            // Using the row's maximum extent covers every size without
+                            // publishing geometry or imposing a progress bar's default height.
+                            .AddDrawList(list => list.SetIsConstrainedToTargetBounds(true)
+                                .AddPolyLine(fill => fill
+                                    .BindIsEnabled(ColorSwatchBinding<bool>(regionBinding, "Custom"))
+                                    .BindColor(ColorSwatchBinding<GuiColor>(regionBinding, "Tint"))
+                                    .SetIsFilled(true)
+                                    .AddPoint(0f, 0f)
+                                    .AddPoint(MainColorChannelRowHeight, 0f)
+                                    .AddPoint(MainColorChannelRowHeight, MainColorChannelRowHeight)
+                                    .AddPoint(0f, MainColorChannelRowHeight)))
                             .BindOnMouseDown(model => model.OnMouseDownGlobalColor(channel));
                     });
                     column.AddRow(space => space.AddSpacer());

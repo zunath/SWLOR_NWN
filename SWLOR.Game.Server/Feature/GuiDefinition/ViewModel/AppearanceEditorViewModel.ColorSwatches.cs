@@ -25,8 +25,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     TintMapService.TryGetCustomColor(selection, layer, out custom));
             var color = hasCustom ? custom : colorId == 255 ? default
                 : TintMapPaletteColors.GetColor(layer, colorId);
-            Set(new GuiColor(color.Red, color.Green, color.Blue), name + "Tint");
-            Set(hasCustom, name + "Custom");
+            var previous = Get<GuiColor>(name + "Tint");
+            if (previous == null || previous.R != color.Red || previous.G != color.Green || previous.B != color.Blue)
+                Set(new GuiColor(color.Red, color.Green, color.Blue), name + "Tint");
+            if (previous == null || Get<bool>(name + "Custom") != hasCustom)
+                Set(hasCustom, name + "Custom");
         }
 
         public GuiColor GlobalLeather1Tint => Get<GuiColor>();

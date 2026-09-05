@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 {
                     var regionName = "Global" + channel + "Region";
                     var image = WidgetTree(panel).Single(widget => widget.Id == "ae_color_" + regionName);
-                    ctx.Assert(image is GuiProgressBar<AppearanceEditorViewModel>, $"{channel}: global swatch displays its actual foreground color.");
+                    ctx.Assert(image is GuiImage<AppearanceEditorViewModel>, $"{channel}: global swatch retains responsive image sizing.");
                     ctx.Assert(image.Events.TryGetValue("mousedown", out var mouseDown), $"{channel}: image handles mouse-down.");
                     ctx.AssertEqual(nameof(AppearanceEditorViewModel.OnMouseDownGlobalColor), mouseDown.Method.Name,
                         $"{channel}: image routes through the left-button filter");
@@ -322,6 +322,54 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SetResultDetail("Valid RGB drafts caused no color-control echoes;300 corrected only red to255 and empty text could not commit. Skin0/0/0 and equipment RGB commits published exact picker input while retaining text buffers and persisting exact RGB without editing native dyes. Incoming NuiGetBind and debounce scheduling/open-window checks are synthesized or excluded.");
         }
 
+        [EngineTest("Appearance editor drag batches keep the latest RGB without picker echoes", Category = "AppearanceEditor", TimeoutSeconds = 30f)]
+        public static async Task PickerDragKeepsLatestValue(EngineTestContext ctx)
+        {
+            var civilian = await SpawnCivilianAsync(ctx);
+            await RunAssignedAsync(ctx, civilian, () =>
+            {
+                var item = GetItemInSlot(InventorySlot.Chest, civilian);
+                SeedInheritance(item);
+                ConfigureRgbArmor(item);
+                var editor = new AppearanceEditorViewModel { Geometry = new GuiRectangle(0, 0, 800, 900) };
+                editor.Bind(OBJECT_INVALID, 0, editor.Geometry, GuiWindowType.AppearanceEditor,
+                    new AppearanceEditorPayload(civilian), OBJECT_INVALID);
+                editor.OnSelectEquipment()();
+                ctx.Assert(editor.IsCustomTintEditable, "The drag fixture must expose the global armor RGB channel");
+                var stateName = TintMapVariable.GetItemGlobalColorStateName(TintMapLayerType.Leather1);
+                var original = GetLocalInt(item, stateName);
+                using var publications = new BindingPublications(editor);
+                for (byte i = 0; i < 120; i++)
+                    ApplyWatchedValue(editor, nameof(editor.SelectedTintColor), new GuiColor(i, 170, 43), flushPicker: false);
+                ctx.AssertEqual(original, GetLocalInt(item, stateName), "Intermediate samples must not repeatedly rewrite material state");
+                ctx.AssertEqual(0, publications.Count, "No intermediate picker echoes or swatch floods");
+                editor.OnMouseUpTintPicker()();
+                var final = new TintMapColor(119, 170, 43);
+                ctx.AssertEqual(final.ToStoredValue(), GetLocalInt(item, stateName), "Release applies the last sample");
+                AssertTintInput(ctx, editor, final, "Released drag");
+                ctx.Assert(!publications.Contains(nameof(editor.SelectedTintColor)), "A deferred batch must not echo into the client picker");
+                ctx.Assert(publications.Count <= 6, "One global color edit must not republish all 120 swatches");
+                publications.Clear();
+                InvokePrivate(editor, "FlushPendingPickerColor");
+                ctx.AssertEqual(0, publications.Count, "An older scheduled flush cannot replay the released color");
+
+                ApplyWatchedValue(editor, nameof(editor.SelectedTintColor), new GuiColor(240, 12, 91), flushPicker: false);
+                ApplyWatchedValue(editor, nameof(editor.CustomTintRed), "1");
+                InvokePrivate(editor, "FlushPendingPickerColor");
+                ctx.AssertEqual(final.ToStoredValue(), GetLocalInt(item, stateName), "Typing cancels an older pending picker sample");
+                InvokePrivate(editor, "CommitCustomTintComponents");
+                ctx.AssertEqual(new TintMapColor(1, 170, 43).ToStoredValue(), GetLocalInt(item, stateName), "A newer typed draft wins");
+
+                ApplyWatchedValue(editor, nameof(editor.SelectedTintColor), new GuiColor(240, 12, 91), flushPicker: false);
+                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Cloth1)();
+                var clothName = TintMapVariable.GetItemGlobalColorStateName(TintMapLayerType.Cloth1);
+                var cloth = GetLocalInt(item, clothName);
+                InvokePrivate(editor, "FlushPendingPickerColor");
+                ctx.AssertEqual(cloth, GetLocalInt(item, clothName), "A pending drag cannot recolor a newly selected channel");
+            });
+            ctx.SetResultDetail("120 samples coalesced into one exact RGB commit, at most six bindings, and no picker echo. Release/late flush, newer text input and target switches cannot replay stale colors. Incoming client events and timer advancement are synthesized.");
+        }
+
         [EngineTest("Appearance editor persists exact RGB through native material transport and reopening", Category = "AppearanceEditor", TimeoutSeconds = 30f)]
         public static async Task ExactRgbInputSurvivesEditsNavigationAndResize(EngineTestContext ctx)
         {
@@ -453,7 +501,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 $"{stage}: the picker must not be published before the draft commits.");
         }
 
-        private static void ApplyWatchedValue(AppearanceEditorViewModel editor, string propertyName, object value, Action beforeCallback = null)
+        private static void ApplyWatchedValue(AppearanceEditorViewModel editor, string propertyName, object value, Action beforeCallback = null,
+            bool flushPicker = true)
         {
             // Mirror only UpdatePropertyFromClient's incoming-read setup. Use its real private
             // cache/SkipNotify fields, real property setter and real completion callback.
@@ -473,6 +522,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             finally { skipProperty.SetValue(detail, false); }
             beforeCallback?.Invoke();
             InvokePrivate(editor, "OnClientPropertyUpdated", propertyName);
+            // Advance the picker batch explicitly: this headless fixture has no open
+            // player window for the production timer's lifecycle guard.
+            if (flushPicker && propertyName == nameof(editor.SelectedTintColor))
+                InvokePrivate(editor, "FlushPendingPickerColor");
         }
 
         private static void InvokePrivate(AppearanceEditorViewModel editor, string method, params object[] arguments)
@@ -728,15 +781,17 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             foreach (var image in images)
             {
                 var regionName = image["id"].Value<string>().Substring("ae_color_".Length);
-                ctx.AssertEqual("progress", image["type"]?.Value<string>(), $"{stage}/{regionName}: swatch fills the native image rectangle");
+                ctx.AssertEqual("image", image["type"]?.Value<string>(), $"{stage}/{regionName}: responsive image dimensions");
                 ctx.Assert(image["width"] == null && image["height"] == null,
                     $"{stage}/{regionName}: neither dimension may disable equal-width sharing.");
                 ctx.AssertEqual(2f, image["margin"]?.Value<float>(), $"{stage}/{regionName}: swatch margin");
                 ctx.AssertEqual(1f, image["aspect"]?.Value<float>(), $"{stage}/{regionName}: artwork and native encouragement share square bounds");
-                ctx.AssertEqual(regionName[..^"Region".Length] + "Tint", image["foreground_color"]?["bind"]?.Value<string>(),
+                var fill = image["draw_list"]?.Children<JObject>().Single();
+                ctx.AssertEqual(true, image["draw_list_scissor"]?.Value<bool>(), $"{stage}: RGB fill is clipped to the responsive square");
+                ctx.AssertEqual(regionName[..^"Region".Length] + "Tint", fill?["color"]?["bind"]?.Value<string>(),
                     $"{stage}/{regionName}: swatch uses the effective RGB color");
-                ctx.AssertEqual(1f, image["value"]?.Value<float>(), $"{stage}/{regionName}: fill covers the square");
-                ctx.Assert(image["draw_list"] == null, $"{stage}/{regionName}: global fill must not remain a fixed draw-list inset.");
+                ctx.AssertEqual(true, fill?["fill"]?.Value<bool>(), $"{stage}/{regionName}: solid custom RGB fill");
+                ctx.AssertEqual(regionName[..^"Region".Length] + "Custom", fill?["enabled"]?["bind"]?.Value<string>(), $"{stage}: presets keep their original image");
                 var imageRow = image.Ancestors().OfType<JObject>().First();
                 ctx.AssertEqual("row", imageRow["type"]?.Value<string>(), $"{stage}/{regionName}: image belongs to a private row");
                 ctx.Assert(imageRow["height"] == null, $"{stage}/{regionName}: the square must not be forced to the outer row's height");

@@ -116,11 +116,23 @@ Duplicate legacy nodes are removed or renamed only after verifying actual binary
 bone references and child/animation relationships. Authored-to-generated and
 compiler round-trip checks run before files are installed.
 
-The catalog currently covers 1,498 normal-body models across 178 robe styles.
+The catalog currently covers 1,596 normal-body models across 184 robe styles.
 Phenotype IDs are a native byte, so generated IDs are reserved in the range
 34–255 and are never recycled. Normal body type 0 covers the current authored
 NPC corpus; large and mounted body types retain the native fallback. Reserved
 rows are internal rendering metadata, not character-creation choices.
+
+Stock KEY/BIF resources must also be included: scanning HAK files alone omitted
+robe3 and 97 other selectable stock model variants. Run
+`SWLOR_Haks/tools/ImportStockRobeTints.py --game-data "<NWN>/data" --apply`
+before regenerating robe roots. The importer preserves HAK overrides, excludes
+invalid `parts_robe.2da` rows, compiles affected ASCII inputs, converts missing
+stock PLTs, and binds imported variants that use already-converted masks.
+`TintMapStockRobes.json` records all 132 selectable stock model names and native
+palette choices; the robe audit requires those models in the RGB catalog.
+Rebuild the three `sw_tint*` texture HAKs and `sw_tint_mtr.hak` as well when
+importing masks. The male and female robe3 assets use Leather1, Cloth1/2, and
+Metal1/2; Leather2 has no pixels in those authored masks.
 
 The NWScript `SetPhenoType` command silently rejects IDs above 99 despite the
 native byte fields. The renderer uses the typed native API to write the same

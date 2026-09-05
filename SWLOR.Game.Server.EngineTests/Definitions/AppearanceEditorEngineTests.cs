@@ -475,6 +475,69 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SetResultDetail("Reported pale green and R1 persisted exactly through native scalar material uploads, fresh editor hydration, inheritance, explicit part overrides and reset/preset actions. RGB leaves equipped item identity and native dyes unchanged. Headless tests exclude client NUI event transport and rendering.");
         }
 
+        [EngineTest("Stock robe3 accepts global RGB and independent robe overrides", Category = "AppearanceEditor", TimeoutSeconds = 60f)]
+        public static async Task StockRobeColorsAndInheritance(EngineTestContext ctx)
+        {
+            foreach (var gender in new[] { Gender.Male, Gender.Female })
+            {
+                var civilian = await SpawnCivilianAsync(ctx);
+                await RunAssignedAsync(ctx, civilian, () =>
+                {
+                    SetGender(civilian, gender);
+                    var outfit = GetItemInSlot(InventorySlot.Chest, civilian);
+                    EquippedItemAppearance.Set(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, 3);
+                    var channels = new[]
+                    {
+                        (AppearanceArmorColor.Leather1, TintMapLayerType.Leather1),
+                        (AppearanceArmorColor.Cloth1, TintMapLayerType.Cloth1),
+                        (AppearanceArmorColor.Cloth2, TintMapLayerType.Cloth2),
+                        (AppearanceArmorColor.Metal1, TintMapLayerType.Metal1),
+                        (AppearanceArmorColor.Metal2, TintMapLayerType.Metal2)
+                    };
+                    foreach (var (channel, _) in channels)
+                    {
+                        EquippedItemAppearance.Set(outfit, ItemAppearanceType.ArmorColor,
+                            ArmorColorIndexCalculator.CalculatePerPart(AppearanceArmor.Robe, channel), 255);
+                        DeleteLocalInt(outfit, ArmorColorIndexCalculator.GetPerPartOverrideVariableName(AppearanceArmor.Robe, channel));
+                    }
+                    var before = ReadArmor(civilian);
+                    var editor = BindWithoutClient(civilian);
+                    editor.OnSelectEquipment()();
+                    foreach (var (channel, layer) in channels)
+                    {
+                        var robe = TintMapModelResolver.GetCurrentSelections(civilian).Single(selection =>
+                            selection.ArmorPart == AppearanceArmor.Robe && selection.Material.Layers.Contains(layer));
+                        ctx.AssertEqual(gender == Gender.Male ? "pmh0_robe003" : "pfh0_robe003", robe.ModelResref,
+                            "Stock robe selection resolves the correct sex and keeps its base model after phenotype changes");
+                        editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, channel)();
+                        ApplyWatchedValue(editor, nameof(editor.SelectedTintColor), new GuiColor(100, 7, 180));
+                        TintMapEngineTests.AssertNativeRgb(ctx, civilian, robe.Material.Resref, layer, new TintMapColor(100, 7, 180));
+                        ctx.Assert((int)GetPhenoType(civilian) >= 34, "Stock robe RGB activates the converted body root");
+                        AssertArmorUnchanged(ctx, before, civilian, "Global RGB preserves equipped item and native appearance");
+
+                        editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Robe, channel)();
+                        ctx.Assert(editor.IsCustomTintEditable, $"Robe3/{channel} exposes individual RGB editing");
+                        ApplyWatchedValue(editor, nameof(editor.SelectedTintColor), new GuiColor(205, 228, 197));
+                        TintMapEngineTests.AssertNativeRgb(ctx, civilian, robe.Material.Resref, layer, new TintMapColor(205, 228, 197));
+                        var prefix = "Robe" + channel;
+                        ctx.Assert((bool)editor.GetType().GetProperty(prefix + "Custom").GetValue(editor), "Individual robe RGB has a preview");
+                        AssertSwatchRgb(ctx, (GuiColor)editor.GetType().GetProperty(prefix + "Tint").GetValue(editor),
+                            new TintMapColor(205, 228, 197), "Individual robe preview matches the applied value");
+                        editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, channel)();
+                        ApplyWatchedValue(editor, nameof(editor.SelectedTintColor), new GuiColor(167, 219, 3));
+                        TintMapEngineTests.AssertNativeRgb(ctx, civilian, robe.Material.Resref, layer, new TintMapColor(205, 228, 197));
+                        InvokePrivate(editor, "ResetArmorColorToInheritance", AppearanceEditorViewModel.ColorTarget.Robe, channel);
+                        TintMapEngineTests.AssertNativeRgb(ctx, civilian, robe.Material.Resref, layer, new TintMapColor(167, 219, 3));
+                        editor = BindWithoutClient(civilian);
+                        editor.OnSelectEquipment()();
+                        editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Robe, channel)();
+                        AssertTintInput(ctx, editor, new TintMapColor(167, 219, 3), "Reopening retains inherited stock robe RGB");
+                    }
+                });
+            }
+            ctx.SetResultDetail("Male and female stock robe3: all five authored dye layers receive exact native RGB. Individual robe colors have matching previews, survive subsequent global edits, and reset to inherited RGB across editor reopen. Client rendering is checked separately.");
+        }
+
         private static void ConfigureRgbArmor(uint outfit)
         {
             EquippedItemAppearance.Set(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, 0);

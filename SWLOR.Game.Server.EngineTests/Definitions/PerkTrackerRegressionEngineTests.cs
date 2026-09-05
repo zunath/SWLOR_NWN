@@ -331,12 +331,20 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             TemporaryStatModifier.Add(caster, StatType.HighFPAndStaminaAbilityDamageBonus, 7, 45f, "third-resource-source");
             TemporaryStatModifier.Add(caster, StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent, 80, 45f, "third-resource-source");
             StatusEffect.ApplyStatusEffect(caster, caster, new InfiniteConduitStatusEffect(), 45f);
-            foreach (var (resource, expected) in new[] { (81, 39), (80, 32), (71, 32), (70, 12), (65, 12), (61, 12), (60, 0) })
+            Ability.BeginAbilityImpact(caster, new AbilityDetail { IsHostileAbility = true, IsAreaAbility = true });
+            try
             {
-                Stat.ReduceFP(caster, Stat.GetCurrentFP(caster) - resource);
-                Stat.ReduceStamina(caster, Stat.GetCurrentStamina(caster) - resource);
-                ctx.AssertEqual(expected, Combat.GetHighResourceAbilityDamageBonus(caster), $"flat ability bonus at {resource}% FP and STM");
+                var sources = Ability.GetAbilityImpactStatSources(caster, StatType.HighFPAndStaminaAbilityDamageBonus);
+                foreach (var (resource, expected) in new[] { (81, 39), (80, 32), (71, 32), (70, 12), (65, 12), (61, 12), (60, 0) })
+                {
+                    Stat.ReduceFP(caster, Stat.GetCurrentFP(caster) - resource);
+                    Stat.ReduceStamina(caster, Stat.GetCurrentStamina(caster) - resource);
+                    ctx.AssertEqual(expected, Combat.GetHighResourceAbilityDamageBonus(caster), $"flat ability bonus at {resource}% FP and STM");
+                    ctx.Assert(ReferenceEquals(sources, Ability.GetAbilityImpactStatSources(caster, StatType.HighFPAndStaminaAbilityDamageBonus)),
+                        "resource thresholds are evaluated per target while source descriptions are reused");
+                }
             }
+            finally { Ability.EndAbilityImpact(caster); }
         }
 
         [EngineTest("Evasive Challenge refunds stamina once while retaining its evasion and timer", Category = "PerkTracker", TimeoutSeconds = 30f)]

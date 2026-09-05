@@ -5532,7 +5532,7 @@ namespace SWLOR.Game.Server.Service
 
         private static int GetHighResourceStatAdjustment(uint activator, StatType payload, StatType threshold, AbilityDetail ability)
         {
-            var sources = Stat.GetStatSources(activator, payload);
+            var sources = Ability.GetAbilityImpactStatSources(activator, payload);
             var adjustment = 0;
             for (var index = 0; index < sources.Count; index++)
             {

@@ -189,6 +189,16 @@ namespace SWLOR.Game.Server.Service
             return GetTrackedAbilityImpact(activator)?.Sequence;
         }
 
+        /// <summary>
+        /// Reuses a payload's contributing sources within one impact. Delayed phases and
+        /// recurring pulses receive fresh trackers, while conditions can still be checked per target.
+        /// </summary>
+        public static IReadOnlyList<StatAdjustmentSource> GetAbilityImpactStatSources(uint activator, StatType payload)
+        {
+            var impact = GetTrackedAbilityImpact(activator);
+            return impact == null ? Stat.GetStatSources(activator, payload) : impact.GetStatSources(activator, payload);
+        }
+
         public static bool TryTriggerAreaAbilityPulse(uint activator)
         {
             return GetAbilityImpactSequence(activator)?.TryTriggerAreaPulse() == true;
@@ -3311,6 +3321,7 @@ namespace SWLOR.Game.Server.Service
             private readonly HashSet<uint> _impactedTargets = new();
             private readonly List<PendingDamageEffect> _pendingDamageEffects = new();
             private AbilityImpactSequence _sequence;
+            private Dictionary<StatType, IReadOnlyList<StatAdjustmentSource>> _statSources;
 
             public AbilityDetail Ability { get; }
             // Delayed shapes share the original tracker until a rider actually needs cast state.
@@ -3360,6 +3371,20 @@ namespace SWLOR.Game.Server.Service
                     IsAreaAbility = ability.IsAreaAbility,
                     IsSingleTargetAbility = ability.IsSingleTargetAbility
                 };
+            }
+
+            public IReadOnlyList<StatAdjustmentSource> GetStatSources(uint activator, StatType payload)
+            {
+                if (_statSources != null && _statSources.TryGetValue(payload, out var cached))
+                    return cached;
+
+                var sources = Stat.GetStatSources(activator, payload);
+                if (sources.Count > 0)
+                {
+                    _statSources ??= new Dictionary<StatType, IReadOnlyList<StatAdjustmentSource>>();
+                    _statSources.Add(payload, sources);
+                }
+                return sources;
             }
 
             public void ConsumeStatusAppliedNextAttackDamageBonus(uint activator)

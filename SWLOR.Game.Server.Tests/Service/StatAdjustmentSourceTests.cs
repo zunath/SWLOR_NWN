@@ -236,6 +236,43 @@ public class StatAdjustmentSourceTests
             .Select(source => (source[StatType.HighFPAndStaminaAbilityDamageBonus],
                 source[StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent]));
 
+    [Test]
+    public void ImpactSources_ReuseActiveSourcesAndRefreshForTheNextImpact()
+    {
+        const StatType payload = StatType.HighFPAndStaminaAbilityDamageBonus;
+        AddStatus(Payload((payload, 12), (StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent, 60)));
+        AddTemporary("other-source", payload, 7);
+        AddTemporary("other-source", StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent, 80);
+        var impactType = typeof(Ability).GetNestedType("TrackedAbilityImpact", BindingFlags.NonPublic)!;
+        Func<uint, StatType, IReadOnlyList<StatAdjustmentSource>> CreateImpactReader()
+        {
+            var impact = impactType.GetConstructors().Single().Invoke(new object[]
+            {
+                new AbilityDetail(), 0, 0, 0, 0, 0, true, 0, null, null
+            });
+            return impactType.GetMethod("GetStatSources")!
+                .CreateDelegate<Func<uint, StatType, IReadOnlyList<StatAdjustmentSource>>>(impact);
+        }
+        var read = CreateImpactReader();
+        var sources = read(Creature, payload);
+        sources.Select(source => (source[payload], source[StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent]))
+            .Should().BeEquivalentTo(new[] { (12, 60), (7, 80) });
+        for (var index = 0; index < 100; index++)
+            read(Creature, payload);
+        var before = GC.GetAllocatedBytesForCurrentThread();
+        var count = 0;
+        for (var index = 0; index < 1000; index++)
+            count += read(Creature, payload).Count;
+        var allocated = GC.GetAllocatedBytesForCurrentThread() - before;
+        count.Should().Be(2000);
+        allocated.Should().BeLessThan(1024, "active sources must not be rebuilt for every target in an impact");
+
+        AddTemporary("new-source", payload, 3);
+        read(Creature, payload).Should().BeSameAs(sources);
+        CreateImpactReader()(Creature, payload).Should().HaveCount(3,
+            "each delayed phase or recurring pulse must obtain a fresh source snapshot");
+    }
+
     private static PayloadEffect Haste(int amount, int maximum, int threshold, bool perTarget) => Payload(
         (StatType.AreaAbilityHastePerStack, amount),
         (StatType.AreaAbilityHasteStackMaximumPercent, maximum),

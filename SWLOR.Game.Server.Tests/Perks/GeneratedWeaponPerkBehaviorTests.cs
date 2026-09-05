@@ -1049,8 +1049,8 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertStatusStat(infiniteConduit, StatType.AbilityStaminaCostFPRestorePercent, 50);
         AssertStatusStat(infiniteConduit, StatType.AbilityFPCostStaminaRestorePercentSkillType, (int)SkillType.Force);
         AssertStatusStat(infiniteConduit, StatType.AbilityFPCostStaminaRestorePercent, 50);
-        AssertStatusStat(infiniteConduit, StatType.TemporaryHighFPAndStaminaAbilityDamageBonusThresholdPercent, 70);
-        AssertStatusStat(infiniteConduit, StatType.TemporaryHighFPAndStaminaAbilityDamageBonus, 20);
+        AssertStatusStat(infiniteConduit, StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent, 70);
+        AssertStatusStat(infiniteConduit, StatType.HighFPAndStaminaAbilityDamageBonus, 20);
 
         var restoredForcePointsForceAttack = new ForceLensForceAttackStatusEffect(8);
         AssertStatusStat(restoredForcePointsForceAttack, StatType.ForceAttackPercentAdjustment, 8);

@@ -113,6 +113,9 @@ namespace SWLOR.Game.Server.EngineTests.Framework
             Exception failure = null;
             AssignCommand(creature, () =>
             {
+                if (_cancellation.IsCancellationRequested)
+                    return;
+
                 executed = true;
                 try { action(); }
                 catch (Exception ex) { failure = ex; }

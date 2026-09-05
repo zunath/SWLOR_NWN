@@ -202,6 +202,29 @@ namespace SWLOR.Game.Server.Service.CombatService
             return Consume(creature, statType, GetGroup(groupStatType));
         }
 
+        public static IEnumerable<StatAdjustmentSource> GetStatSources(uint creature, StatType payloadStat)
+        {
+            if (PurgeExpired(creature))
+                PublishRefresh(creature);
+
+            if (!_modifiers.TryGetValue(creature, out var modifiers))
+                yield break;
+
+            foreach (var group in modifiers.GroupBy(x => x.Group).ToArray())
+            {
+                if (!group.Any(x => x.StatType == payloadStat && x.Amount != 0))
+                    continue;
+
+                var stats = new Dictionary<StatType, int>();
+                foreach (var modifier in group)
+                {
+                    stats.TryGetValue(modifier.StatType, out var current);
+                    stats[modifier.StatType] = Stat.AggregateStatAdjustment(modifier.StatType, current, modifier.Amount);
+                }
+                yield return new StatAdjustmentSource($"temporary:{group.Key}", stats);
+            }
+        }
+
         public static int GetStatAdjustment(uint creature, StatType statType, string group = null)
         {
             if (PurgeExpired(creature))

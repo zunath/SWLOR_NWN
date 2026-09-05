@@ -229,6 +229,9 @@ namespace SWLOR.Game.Server.EngineTests
             if (!string.IsNullOrWhiteSpace(filter))
             {
                 var filters = filter.Split('|', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+                if (filters.Length == 0)
+                    return tests;
+
                 tests = tests
                     .Where(x => filters.Any(term =>
                         x.Attribute.Name.Contains(term, StringComparison.OrdinalIgnoreCase) ||

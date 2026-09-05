@@ -191,7 +191,7 @@ public class AIModelTests
     [TestCase("BolsterAttack")]
     [TestCase("IronHide")]
     [TestCase("EvasiveManeuver")]
-    public void LongDurationBeastBuffAIScore_UsesActiveRankStat(string buff)
+    public void LongDurationBeastBuffAIScore_UsesEffectReplacementMetadata(string buff)
     {
         const uint self = 100;
         const uint target = 200;
@@ -236,6 +236,11 @@ public class AIModelTests
                 score(context).Should().Be(0);
                 tracker.Remove(statusEffect);
             }
+
+            tracker.Add(ranks[0].StatusEffect);
+            abilities[ranks[2].Feat].AIScore!(context).Should().Be(AIScoreBand.Defensive + 3,
+                "a weaker active rank must still allow an upgrade");
+            tracker.Remove(ranks[0].StatusEffect);
 
             // A stronger active rank also makes every weaker rank redundant.
             tracker.Add(ranks[2].StatusEffect);

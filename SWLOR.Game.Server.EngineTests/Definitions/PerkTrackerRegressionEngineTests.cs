@@ -5,6 +5,7 @@ using SWLOR.Game.Server.Feature.AbilityDefinition;
 using SWLOR.Game.Server.Service.AbilityService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
+using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
 using SWLOR.NWN.API.NWScript.Enum.Item;
@@ -202,12 +203,13 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.WaitFrameAsync();
             PrepareStationaryCreature(ctx, caster);
             ctx.SetNPCResources(caster, 100, 100);
-            TemporaryStatModifier.Add(caster, StatType.HighFPAndStaminaAbilityDamageBonus, 12, 45f);
+            SetLocalInt(caster, $"PERK_LEVEL_{(int)PerkType.BalancedCurrent}", 3);
             TemporaryStatModifier.Add(caster, StatType.MaxFP, 100 - Stat.GetMaxFP(caster), 45f);
             TemporaryStatModifier.Add(caster, StatType.MaxStamina, 100 - Stat.GetMaxStamina(caster), 45f);
-            TemporaryStatModifier.Add(caster, StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent, 60, 45f);
+            TemporaryStatModifier.Add(caster, StatType.HighFPAndStaminaAbilityDamageBonus, 7, 45f, "third-resource-source");
+            TemporaryStatModifier.Add(caster, StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent, 80, 45f, "third-resource-source");
             StatusEffect.ApplyStatusEffect(caster, caster, new InfiniteConduitStatusEffect(), 45f);
-            foreach (var (resource, expected) in new[] { (71, 32), (70, 12), (65, 12), (61, 12), (60, 0) })
+            foreach (var (resource, expected) in new[] { (81, 39), (80, 32), (71, 32), (70, 12), (65, 12), (61, 12), (60, 0) })
             {
                 Stat.ReduceFP(caster, Stat.GetCurrentFP(caster) - resource);
                 Stat.ReduceStamina(caster, Stat.GetCurrentStamina(caster) - resource);
@@ -343,24 +345,27 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             await ctx.WaitFrameAsync();
             PrepareStationaryCreature(ctx, caster);
             ctx.SetNPCResources(caster, 100, 100);
-            TemporaryStatModifier.Add(caster, StatType.TwinBladeAreaAbilityMinTargetsHasteThreshold, 2, 45f);
-            TemporaryStatModifier.Add(caster, StatType.TwinBladeAreaAbilityHastePercentAdjustment, 4, 45f);
-            TemporaryStatModifier.Add(caster, StatType.TwinBladeAreaAbilityHasteDurationSeconds, 30, 45f);
-            TemporaryStatModifier.Add(caster, StatType.TwinBladeAreaAbilityHastePercentMax, 12, 45f);
-            TemporaryStatModifier.Add(caster, StatType.TwinBladeAreaAbilityStaminaRestorePerTarget, 2, 45f);
-            TemporaryStatModifier.Add(caster, StatType.TwinBladeAreaAbilityStaminaRestoreMax, 6, 45f);
+            SetLocalInt(caster, $"PERK_LEVEL_{(int)PerkType.Momentum}", 1);
+            SetLocalInt(caster, $"PERK_LEVEL_{(int)PerkType.SpinningRhythm}", 3);
+            SetLocalInt(caster, $"PERK_LEVEL_{(int)PerkType.SweepingAdvance}", 1);
             TemporaryStatModifier.Add(caster, StatType.AreaAbilityUsedEvasionPercentAdjustment, 10, 45f);
             TemporaryStatModifier.Add(caster, StatType.AreaAbilityUsedEvasionDurationSeconds, 30, 45f);
             Stat.ReduceStamina(caster, 50);
             var before = Stat.GetCurrentStamina(caster);
             Combat.ApplyAbilityImpactEffects(caster, new AbilityImpactSummary
                 { SkillType = SkillType.Force, IsAreaAbility = true, ImpactedTargetCount = 4 });
-            ctx.AssertEqual(12, Stat.GetStatAdjustment(caster, StatType.AttackDelayReductionPercent), "four struck enemies grant three haste stacks in one cast");
+            ctx.AssertEqual(17, Stat.GetStatAdjustment(caster, StatType.AttackDelayReductionPercent), "four targets grant one Momentum stack and three independent Spinning Rhythm stacks");
             ctx.AssertEqual(before + 6, Stat.GetCurrentStamina(caster), "Sweeping Advance caps four targets at six STM");
             Combat.ApplyAbilityImpactEffects(caster, new AbilityImpactSummary
                 { SkillType = SkillType.Mimicry, IsAreaAbility = true, ImpactedTargetCount = 1 });
-            ctx.AssertEqual(12, Stat.GetStatAdjustment(caster, StatType.AttackDelayReductionPercent), "one struck enemy grants no haste stack");
+            ctx.AssertEqual(17, Stat.GetStatAdjustment(caster, StatType.AttackDelayReductionPercent), "one struck enemy grants no haste stack");
             ctx.AssertEqual(before + 8, Stat.GetCurrentStamina(caster), "one target restores two STM across skills");
+            Combat.ApplyAbilityImpactEffects(caster, new AbilityImpactSummary
+                { SkillType = SkillType.Mimicry, IsAreaAbility = true, ImpactedTargetCount = 2 });
+            ctx.AssertEqual(22, Stat.GetStatAdjustment(caster, StatType.AttackDelayReductionPercent), "Momentum gains its second stack while Spinning Rhythm remains capped");
+            Combat.ApplyAbilityImpactEffects(caster, new AbilityImpactSummary
+                { SkillType = SkillType.Force, IsAreaAbility = true, ImpactedTargetCount = 6 });
+            ctx.AssertEqual(27, Stat.GetStatAdjustment(caster, StatType.AttackDelayReductionPercent), "both perks reach their own caps");
             Combat.ApplyAbilityActivatedEffects(caster, OBJECT_INVALID, FeatType.Invalid,
                 new AbilityDetail { SkillType = SkillType.Force, IsAreaAbility = true, IsHostileAbility = true }, new AbilityImpactSummary());
             ctx.AssertEqual(10, Stat.GetStatAdjustment(caster, StatType.EvasionPercentAdjustment), "Flowing Footwork triggers on an empty Force area cast");
@@ -489,6 +494,27 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 }
             }
             finally { Combat.SetAbilityHitResolutionOverride(null); }
+        }
+
+        [EngineTest("Ranked self-buffs replace weaker effects and reject downgrades", Category = "PerkTracker", TimeoutSeconds = 30f)]
+        public static async Task RankedSelfBuffReplacement(EngineTestContext ctx)
+        {
+            var caster = ctx.SpawnCreature("nw_bandit001");
+            await ctx.WaitFrameAsync();
+            PrepareStationaryCreature(ctx, caster);
+            foreach (var (lower, higher, stat, expected) in new[]
+            {
+                (typeof(IronHide1StatusEffect), typeof(IronHide3StatusEffect), StatType.PhysicalDamageTakenPercentAdjustment, -12),
+                (typeof(EvasiveManeuver1StatusEffect), typeof(EvasiveManeuver3StatusEffect), StatType.EvasionPercentAdjustment, 14),
+                (typeof(BolsterAttack1StatusEffect), typeof(BolsterAttack3StatusEffect), StatType.DamageDealtPercentAdjustment, 12)
+            })
+            {
+                ctx.Assert(StatusEffect.ApplyStatusEffect(caster, caster, lower, 180f), "lower-rank buff applies");
+                ctx.Assert(StatusEffect.ApplyStatusEffect(caster, caster, higher, 180f), "higher-rank buff upgrades the lower rank");
+                ctx.Assert(!StatusEffect.HasStatusEffect(caster, lower), "the lower rank is removed");
+                ctx.AssertEqual(expected, Stat.GetStatAdjustment(caster, stat), "ranks do not stack their payloads");
+                ctx.Assert(!StatusEffect.ApplyStatusEffect(caster, caster, lower, 180f), "a weaker rank cannot replace the stronger buff");
+            }
         }
 
         private static void PrepareStationaryCreature(EngineTestContext ctx, uint creature)

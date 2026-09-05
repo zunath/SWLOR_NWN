@@ -1636,20 +1636,22 @@ def description_stat_entries(row, base):
             add_stat(stats, "AvoidedAttackNextSkillAbilityStaminaCostAdjustment", f"-{stamina_cost}")
             add_stat(stats, "AvoidedAttackNextSkillAbilityWindowSeconds", parse_duration(description) or 30)
 
-    if row["Tab"] == "Twin Blade" and ("hit 2 or more enemies" in lowered or "area combat abilities" in lowered):
+    if "hit 2 or more enemies" in lowered or "area combat abilities" in lowered:
         haste = parse_percent(r"\+(\d+)% Haste", description)
         if haste:
-            add_stat(stats, "TwinBladeAreaAbilityMinTargetsHasteThreshold", 2)
-            add_stat(stats, "TwinBladeAreaAbilityHastePercentAdjustment", haste)
-            add_stat(stats, "TwinBladeAreaAbilityHasteDurationSeconds", parse_duration(description) or 30)
+            add_stat(stats, "AreaAbilityHasteStackMinimumTargets", 2)
+            add_stat(stats, "AreaAbilityHastePerStack", haste)
+            if "per enemy hit beyond the first" in lowered:
+                add_stat(stats, "AreaAbilityHasteStacksPerAdditionalTarget", 1)
+            add_stat(stats, "AreaAbilityHasteStackDurationSeconds", parse_duration(description) or 30)
             max_percent = parse_percent(r"up to \+(\d+)%", description)
             if not max_percent and "up to three stacks" in lowered:
                 max_percent = haste * 3
-            add_stat(stats, "TwinBladeAreaAbilityHastePercentMax", max_percent or haste)
+            add_stat(stats, "AreaAbilityHasteStackMaximumPercent", max_percent or haste)
         stamina = parse_count(r"restore (\d+) STM", description)
         if stamina:
-            add_stat(stats, "TwinBladeAreaAbilityStaminaRestorePerTarget", stamina)
-            add_stat(stats, "TwinBladeAreaAbilityStaminaRestoreMax", stamina * 3)
+            add_stat(stats, "AreaHitStaminaRestorePerTarget", stamina)
+            add_stat(stats, "AreaHitStaminaRestoreMaximum", stamina * 3)
 
     if "restore" in lowered and "bleeding target" in lowered and "STM" in description:
         stamina_restore = parse_count(r"restore[s]? (\d+) STM", description)

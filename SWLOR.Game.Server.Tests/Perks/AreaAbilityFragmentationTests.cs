@@ -100,8 +100,8 @@ public class AreaAbilityFragmentationTests
     }
 
     private static (int Damage, int Radius) GetPulse(AbilityDetail ability, bool firstTarget) =>
-        ((int, int))typeof(Combat).GetMethod("GetAreaAbilityPulse", PrivateStatic)!
-            .Invoke(null, new object[] { Creature, ability, firstTarget })!;
+        ((IEnumerable<(int, int)>)typeof(Combat).GetMethod("GetAreaAbilityPulses", PrivateStatic)!
+            .Invoke(null, new object[] { Creature, ability, firstTarget })!).SingleOrDefault();
 
     [Test]
     public void Worldbreaker_ConfiguresDazedForThirtySecondsOnControlledTargets()

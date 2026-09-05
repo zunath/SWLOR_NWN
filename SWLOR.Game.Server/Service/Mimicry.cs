@@ -140,10 +140,29 @@ namespace SWLOR.Game.Server.Service
         }
 
         /// <summary>
-        /// Sums the stat adjustments contributed by a creature's equipped Mimicry traits, plus the
-        /// elemental-resonance set bonus. Read directly by the stat pipeline: trait bonuses are static
-        /// for as long as the trait is slotted, so they are a property of the loadout rather than a
-        /// status effect that could be cleared on death or drift out of sync with the equipped set.
+        /// Returns each equipped trait's stat payload with the parameters declared by that trait.
+        /// </summary>
+        public static IEnumerable<StatAdjustmentSource> GetStatSources(uint creature, StatType payloadStat)
+        {
+            if (!_traitStatsByStat.ContainsKey(payloadStat) ||
+                !GetIsPC(creature) || GetIsDM(creature) || GetIsDMPossessed(creature))
+                yield break;
+
+            var player = DB.Get<Player>(GetObjectUUID(creature));
+            if (player == null)
+                yield break;
+
+            foreach (var feat in player.EquippedTechniques)
+            {
+                if (_techniques.TryGetValue(feat, out var detail) && detail.IsMimicryTrait &&
+                    detail.MimicryTraitStats.TryGetValue(payloadStat, out var value) && value != 0)
+                    yield return new StatAdjustmentSource($"trait:{(int)feat}", detail.MimicryTraitStats);
+            }
+        }
+
+        /// <summary>
+        /// Sums equipped trait adjustments and the elemental-resonance set bonus. These belong
+        /// to the loadout rather than status effects that could be cleared on death.
         /// </summary>
         public static int GetStatBonus(uint creature, StatType stat)
         {

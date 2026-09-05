@@ -7,7 +7,6 @@ using SWLOR.Game.Server.Service.AIService;
 using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.PerkService;
 using SWLOR.Game.Server.Service.SkillService;
-using SWLOR.Game.Server.Service.StatService;
 using SWLOR.Game.Server.Service.StatusEffectService;
 using SWLOR.NWN.API.Engine;
 using SWLOR.NWN.API.NWScript.Enum;
@@ -41,7 +40,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()
                 .HasImpactAction(IronHide1ImpactAction)
-                .HasAIScore(AIScore.SelfStatBelow(StatType.IronHideRank, 1, 1))
+                .HasAIScore(AIScore.SelfBuff<IronHide1StatusEffect>(1))
                 .IsCastedAbility()
                 .BreaksStealth()
                 .RequirementStamina(3);
@@ -59,7 +58,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()
                 .HasImpactAction(IronHide2ImpactAction)
-                .HasAIScore(AIScore.SelfStatBelow(StatType.IronHideRank, 2, 2))
+                .HasAIScore(AIScore.SelfBuff<IronHide2StatusEffect>(2))
                 .IsCastedAbility()
                 .BreaksStealth()
                 .RequirementStamina(4);
@@ -77,7 +76,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Beastmaster
                 .SkillType(SkillType.BeastMastery)
                 .IsSingleTargetAbility()
                 .HasImpactAction(IronHide3ImpactAction)
-                .HasAIScore(AIScore.SelfStatBelow(StatType.IronHideRank, 3, 3))
+                .HasAIScore(AIScore.SelfBuff<IronHide3StatusEffect>(3))
                 .IsCastedAbility()
                 .BreaksStealth()
                 .RequirementStamina(6);

@@ -20,6 +20,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
         protected sealed class WeaponAbilityProfile
         {
+            private readonly string _modifierSource = $"ability:{Guid.NewGuid()}";
+
             public sealed class StatusSpreadSnapshot
             {
                 private readonly Dictionary<uint, (bool Bleeding, bool Sundered)> _sourceStatuses = new();
@@ -835,6 +837,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 ReplaceTemporary(activator, StatType.CriticalRatePercentAdjustment, SelfCriticalRatePercent, duration);
             }
 
+            private void ReplaceTemporaryPayload(uint activator, int durationSeconds, params (StatType Stat, int Amount)[] stats)
+            {
+                if (durationSeconds <= 0 || !stats.Any(stat => stat.Amount != 0))
+                    return;
+
+                foreach (var (stat, amount) in stats)
+                    TemporaryStatModifier.Replace(activator, stat, amount, durationSeconds, _modifierSource);
+            }
+
             private static void ReplaceTemporary(uint activator, StatType statType, int amount, int durationSeconds)
             {
                 if (amount == 0)
@@ -866,12 +877,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     duration);
                 ReplaceTemporary(activator, StatType.HostileAbilityFPRestore, TemporaryHostileAbilityFPRestore, duration);
                 ReplaceTemporary(activator, StatType.HostileAbilityStaminaRestore, TemporaryHostileAbilityStaminaRestore, duration);
-                ReplaceTemporary(activator, StatType.TemporaryHighFPAndStaminaAbilityDamageBonus, TemporaryHighFPAndStaminaAbilityDamageBonus, duration);
-                ReplaceTemporary(
-                    activator,
-                    StatType.TemporaryHighFPAndStaminaAbilityDamageBonusThresholdPercent,
-                    TemporaryHighFPAndStaminaAbilityDamageBonusThresholdPercent,
-                    duration);
+                ReplaceTemporaryPayload(activator, duration,
+                    (StatType.HighFPAndStaminaAbilityDamageBonus, TemporaryHighFPAndStaminaAbilityDamageBonus),
+                    (StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent, TemporaryHighFPAndStaminaAbilityDamageBonusThresholdPercent));
                 ReplaceTemporary(
                     activator,
                     StatType.FrenzySlashHasteRefreshDurationSeconds,
@@ -913,11 +921,12 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         $"GeneratedWeaponAbility:{StatType.AreaAbilityFragmentationSkillType}");
                 }
                 ReplaceTemporary(activator, StatType.AreaAbilityFragmentationDamage, TemporaryAreaAbilityFragmentationDamage, duration);
-                ReplaceTemporary(activator, StatType.AreaAbilityPulseDamage, TemporaryAreaAbilityPulseDamage, duration);
-                ReplaceTemporary(activator, StatType.AreaAbilityPulseRadiusMeters, TemporaryAreaAbilityPulseRadiusMeters, duration);
-                ReplaceTemporary(activator, StatType.AreaAbilityUsedFPRestore, TemporaryAreaAbilityUsedFPRestore, duration);
-                ReplaceTemporary(activator, StatType.AreaAbilityUsedAttackDeflection, TemporaryAreaAbilityUsedAttackDeflection, duration);
-                ReplaceTemporary(activator, StatType.AreaAbilityUsedAttackDeflectionDurationSeconds, TemporaryAreaAbilityUsedAttackDeflectionDurationSeconds, duration);
+                ReplaceTemporaryPayload(activator, duration,
+                    (StatType.AreaAbilityPulseDamage, TemporaryAreaAbilityPulseDamage),
+                    (StatType.AreaAbilityPulseRadiusMeters, TemporaryAreaAbilityPulseRadiusMeters),
+                    (StatType.AreaAbilityUsedFPRestore, TemporaryAreaAbilityUsedFPRestore),
+                    (StatType.AreaAbilityUsedAttackDeflection, TemporaryAreaAbilityUsedAttackDeflection),
+                    (StatType.AreaAbilityUsedAttackDeflectionDurationSeconds, TemporaryAreaAbilityUsedAttackDeflectionDurationSeconds));
                 ReplaceTemporary(
                     activator,
                     StatType.AreaAbilityFragmentationDurationSeconds,

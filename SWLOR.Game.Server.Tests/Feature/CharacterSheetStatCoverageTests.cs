@@ -58,17 +58,16 @@ public class CharacterSheetStatCoverageTests
         var viewModel = ReadViewModel();
 
         viewModel.Should().Contain("AddHighResourceAbilityDamageStats(AddStat);");
-        viewModel.Should().Contain("\"High-Resource Ability DMG\"");
+        viewModel.Should().Contain("Stat.GetStatSources(_target, payload)");
+        viewModel.Should().Contain("GroupBy(source => source[thresholdStat])");
         viewModel.Should().NotContain("\"Balanced Current\"");
+        viewModel.Should().NotContain("\"Balanced Attunement\"");
         viewModel.Should().Contain("StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent");
-        viewModel.Should().Contain("\"Balanced Attunement\"");
         viewModel.Should().Contain("StatType.HighFPAndStaminaAbilityDamagePercentAdjustmentThresholdPercent");
         viewModel.Should().Contain("StatType.HighFPAndStaminaAbilityDamageBonus");
         viewModel.Should().Contain("StatType.HighFPAndStaminaAbilityDamagePercentAdjustment");
-        viewModel.Should().Contain("Combat.IsCurrentFPAndStaminaAbovePercent(_target, flatThreshold)");
-        viewModel.Should().Contain("Combat.IsCurrentFPAndStaminaAbovePercent(_target, percentThreshold)");
-        viewModel.Should().Contain("active ? $\"Active (+{flatBonus} DMG)\" : $\"Inactive ({flatThreshold}% required)\"");
-        viewModel.Should().Contain("active ? $\"Active (+{percentBonus}% DMG)\" : $\"Inactive ({percentThreshold}% required)\"");
+        viewModel.Should().Contain("Combat.IsCurrentFPAndStaminaAbovePercent(_target, threshold)");
+
     }
 
     [Test]

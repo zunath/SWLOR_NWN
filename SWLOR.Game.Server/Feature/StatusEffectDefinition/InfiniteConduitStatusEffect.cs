@@ -17,8 +17,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             StatGroup.Stats[StatType.AbilityStaminaCostFPRestorePercent] = 50;
             StatGroup.Stats[StatType.AbilityFPCostStaminaRestorePercentSkillType] = (int)SkillType.Force;
             StatGroup.Stats[StatType.AbilityFPCostStaminaRestorePercent] = 50;
-            StatGroup.Stats[StatType.TemporaryHighFPAndStaminaAbilityDamageBonusThresholdPercent] = 70;
-            StatGroup.Stats[StatType.TemporaryHighFPAndStaminaAbilityDamageBonus] = 20;
+            StatGroup.Stats[StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent] = 70;
+            StatGroup.Stats[StatType.HighFPAndStaminaAbilityDamageBonus] = 20;
         }
     }
 }

@@ -19,6 +19,16 @@ namespace SWLOR.Game.Server.Service
         private const string StatusEffectTag = "STATUS_EFFECT";
         private const float Interval = 1f;
 
+        public static bool TryApplyNativeKnockdown(uint creature, float duration)
+        {
+            if (!GetIsObjectValid(creature) || duration <= 0f ||
+                Stat.GetStatAdjustment(creature, StatType.KnockdownImmunity) > 0)
+                return false;
+
+            ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), creature, duration);
+            return true;
+        }
+
         private static readonly Dictionary<uint, CreatureStatusEffect> _creatureEffects = new();
         private static readonly Dictionary<string, LoggedOutStatusEffects> _loggedOutPlayerEffects = new();
         private static readonly Dictionary<Type, StatusEffectMetadata> _statusEffects = new();
@@ -480,7 +490,8 @@ namespace SWLOR.Game.Server.Service
             int durationTicks,
             bool isPermanent,
             ResistanceType resistanceOverride = ResistanceType.Invalid,
-            CombatDamageType sourceDamageType = CombatDamageType.Invalid)
+            CombatDamageType sourceDamageType = CombatDamageType.Invalid,
+            Type replacedStatusEffectType = null)
         {
             if (TryDeferNativeAttackStatusEffect(
                     statusEffect,
@@ -489,7 +500,8 @@ namespace SWLOR.Game.Server.Service
                     durationTicks,
                     isPermanent,
                     resistanceOverride,
-                    sourceDamageType))
+                    sourceDamageType,
+                    replacedStatusEffectType))
             {
                 return true;
             }
@@ -530,7 +542,23 @@ namespace SWLOR.Game.Server.Service
                 return false;
             }
 
-            var canApply = statusEffect.CanApply(creature);
+            var existingEffects = replacedStatusEffectType == null ? null : GetCreatureStatusEffects(creature);
+            var replacedEffects = existingEffects?.GetAllEffects()
+                .Where(effect => effect.GetType() == replacedStatusEffectType).ToArray() ?? Array.Empty<IStatusEffect>();
+            if (replacedStatusEffectType != null && replacedEffects.Length == 0)
+                return false;
+
+            // A conversion validates without counting the effect it replaces as active
+            // control. Preserve its native effect, expiration and stats on rejection.
+            string canApply;
+            foreach (var effect in replacedEffects)
+                existingEffects.Remove(effect);
+            try { canApply = statusEffect.CanApply(creature); }
+            finally
+            {
+                foreach (var effect in replacedEffects)
+                    existingEffects.Add(effect);
+            }
             if (!string.IsNullOrWhiteSpace(canApply))
             {
                 var message = $"Effect failed to apply: {canApply}";
@@ -547,6 +575,9 @@ namespace SWLOR.Game.Server.Service
                     return false;
                 }
             }
+
+            if (replacedStatusEffectType != null)
+                RemoveStatusEffect(replacedStatusEffectType, creature, OBJECT_INVALID, false, true, true);
 
             var creatureEffects = EnsureCreatureStatusEffectTracker(creature);
 
@@ -911,7 +942,8 @@ namespace SWLOR.Game.Server.Service
             uint creature,
             Type statusEffectClass,
             float durationSeconds,
-            CombatDamageType sourceDamageType)
+            CombatDamageType sourceDamageType,
+            Type replacedStatusEffectType = null)
         {
             if (!TryCreateStatusEffect(statusEffectClass, out var statusEffect))
                 throw new KeyNotFoundException($"Status effect '{statusEffectClass?.Name ?? "null"}' is not registered.");
@@ -928,7 +960,8 @@ namespace SWLOR.Game.Server.Service
                 durationTicks,
                 durationSeconds <= 0f,
                 ResistanceType.Invalid,
-                sourceDamageType);
+                sourceDamageType,
+                replacedStatusEffectType);
         }
 
         private static void ApplyTrackedNWNEffect(uint creature, IStatusEffect statusEffect, int durationTicks, bool isPermanent)
@@ -2037,7 +2070,8 @@ namespace SWLOR.Game.Server.Service
             int durationTicks,
             bool isPermanent,
             ResistanceType resistanceOverride,
-            CombatDamageType sourceDamageType)
+            CombatDamageType sourceDamageType,
+            Type replacedStatusEffectType)
         {
             if ((statusEffect is not ILimitedAttackDelayReductionStatusEffect &&
                  statusEffect is not ILimitedAttackNoDelayStatusEffect) ||
@@ -2059,7 +2093,8 @@ namespace SWLOR.Game.Server.Service
                 durationTicks,
                 isPermanent,
                 resistanceOverride,
-                sourceDamageType));
+                sourceDamageType,
+                replacedStatusEffectType));
             return true;
         }
 

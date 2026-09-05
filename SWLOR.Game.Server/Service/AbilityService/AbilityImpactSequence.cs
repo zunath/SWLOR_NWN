@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace SWLOR.Game.Server.Service.AbilityService
 {
     /// <summary>
@@ -6,15 +8,14 @@ namespace SWLOR.Game.Server.Service.AbilityService
     public sealed class AbilityImpactSequence
     {
         private bool _areaPulseTriggered;
-        private bool _chainTriggered;
+        private readonly HashSet<uint> _chainTargets = new();
 
-        public bool TryTriggerChain()
+        public bool TryConsumeChainArc(uint target, int maximumTargets)
         {
-            if (_chainTriggered)
+            if (_chainTargets.Count >= maximumTargets)
                 return false;
 
-            _chainTriggered = true;
-            return true;
+            return _chainTargets.Add(target);
         }
 
         public bool TryTriggerAreaPulse()

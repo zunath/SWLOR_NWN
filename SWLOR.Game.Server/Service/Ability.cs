@@ -1406,6 +1406,9 @@ namespace SWLOR.Game.Server.Service
                 if (playImpactAnimation)
                     PlayCombatImpactAnimation(activator, impactAnimation);
 
+                if (trackedImpact != null)
+                    afterImpactAction?.Invoke(trackedImpact.Summary);
+
                 return totalDamage;
             }
 

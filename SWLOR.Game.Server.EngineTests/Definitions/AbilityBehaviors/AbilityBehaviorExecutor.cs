@@ -130,7 +130,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.AbilityBehaviors
             var skipped = skippedFeats.Count;
             var passed = passedCount;
             var summary = $"{cases.Count} case(s): {passed} passed, {failures.Count} failed, {skipped} skipped.";
-            if (cases.Any(testCase => Ability.GetAbilityDetail(testCase.Feat).IsMimicryTechnique))
+            if (cases.Any(testCase => Ability.IsFeatRegistered(testCase.Feat) &&
+                                      Ability.GetAbilityDetail(testCase.Feat).IsMimicryTechnique))
                 summary += " NPC fixtures bypass the player technique-loadout gate; player learning/equipment validation is not exercised.";
             if (abortedAsSystemic)
             {

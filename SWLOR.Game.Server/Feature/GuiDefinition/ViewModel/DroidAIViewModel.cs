@@ -144,6 +144,13 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             Targeting.EnterTargetingMode(Player, ObjectType.Item, "Please select an instruction disc from your inventory.",
                 item =>
                 {
+                    var error = Droid.GetInstructionDiscValidationError(Player, item);
+                    if (!string.IsNullOrEmpty(error))
+                    {
+                        SendMessageToPC(Player, ColorToken.Red(error));
+                        return;
+                    }
+
                     var constructedDroid = Droid.LoadConstructedDroid(_controller);
                     var controllerDetails = Droid.LoadDroidItemPropertyDetails(_controller);
 

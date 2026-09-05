@@ -603,7 +603,7 @@ namespace SWLOR.Game.Server.Service
 
                         PlayVoiceChat(VoiceChat.Pain1, oObject);
                         var duration = Resistance.CalculateResistedTicks(oObject, ResistanceType.Mobility, d6());
-                        ApplyEffectToObject(DurationType.Temporary, EffectKnockdown(), oObject, duration);
+                        StatusEffect.TryApplyNativeKnockdown(oObject, duration);
                     }
                 }
                 oObject = GetNextObjectInShape(Shape.Sphere, fRange, lLocation, false, ObjectType.Creature | ObjectType.Door | ObjectType.Placeable);

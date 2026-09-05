@@ -35,7 +35,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions.PerkCoverage
                 {
                     Perk = PerkType.ForceJudgment,
                     MaxLevel = 3,
-                    Prices = new[] { 3, 4, 4 },
+                    Prices = new[] { 2, 2, 3 },
                     GrantedFeats = new[] { FeatType.ForceJudgment1, FeatType.ForceJudgment2, FeatType.ForceJudgment3 },
                 },
                 new()

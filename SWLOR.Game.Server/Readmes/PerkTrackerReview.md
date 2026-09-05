@@ -8,12 +8,14 @@ Scope: every row without a `Pass` test status in the [Perk Testing tracker](http
 
 The local `design/bible/SWLOR Design Bible - Combat Upgrade.xlsx` is authoritative. Compared descriptions, requirements, character restrictions, FP/STM costs, cast times, cooldowns, and development status with all 286 scoped tracker rows. The initial values agreed after normalizing blank/dash and numeric formatting.
 
-Two ambiguities were resolved with the design owner:
+Three ambiguities were resolved with the design owner:
 
 - Tempest Bloom: one immediate pulse per landed hostile area ability during the 45-second buff, centered on its first struck target, dealing 8 physical damage to enemies within 5m.
 - Finishing Drive: a 10-second cooldown; each cast adds one +8% Momentum stack (maximum three) and refreshes all stacks to 30 seconds. A 30-second cooldown could not reliably build stacks before the old duration expired.
 
-The corresponding Bible cells, tracker cells, generated manifest, and existing TLK descriptions were synchronized. Workbook edits preserved unrelated ZIP entries and cached formula results. The workbook formatter then refreshed the generated audit files. The Haks companion PR contains regenerated binary TLK data.
+- Ground Quake: replace existing Dazed with six seconds of Knockdown, while preserving Dazed if explicit Knockdown immunity rejects the conversion. This makes the existing Bible combo work under the shared hard-control rule; its description is unchanged.
+
+The Tempest Bloom and Finishing Drive Bible cells, tracker cells, generated manifest, and existing TLK descriptions were synchronized. Workbook edits preserved unrelated ZIP entries and cached formula results. The workbook formatter then refreshed the generated audit files. The Haks companion PR contains regenerated binary TLK data.
 
 ## Implementation review
 
@@ -29,11 +31,13 @@ The corresponding Bible cells, tracker cells, generated manifest, and existing T
 | Vibroknife | 12 | Source-owned venom conditions and spreading, cross-skill riders, stack/duration caps, status extension and Stamina cooldowns. |
 | Twin Blade | 11 | Corrected cross-skill rewards, per-enemy haste stacking, Blade Vortex's three-target refund and Tempest Bloom's pulse. Checked area target limits, Cyclone Stance and Edge Rhythm. |
 | Vibroblade | 8 | Repeated-hit resource restoration, third-hit damage, execute threshold, cross-skill applicability and stance adjustments. |
-| Engineering | 5 | Droid Assembly rank requirements and CPU tier gate; other parts cannot exceed the selected CPU tier. |
+| Engineering | 5 | Droid Assembly rank requirements, CPU/part tiers, instruction tiers and AI-slot limits. Programming now rejects unowned items, non-discs and controllers before consumption. |
 | Katar | 5 | Guard versus deflection, Tag In healing, interruption and control duration. |
 | Spear | 3 | Control category, Knockdown/Dazed behavior and aimed versus self-centered targeting. |
 | Heavy Vibroblade | 2 | Flash's physical/Force accuracy reduction and enmity; Soul Ascension's physical life-steal behavior. |
 | Agriculture | 5 | Bible and tracker identify these as not implemented/not testable. No gameplay implementation was added. |
+
+The complete engine sweep also exposed Ground Quake's blocked Dazed-to-Knockdown combo outside the original tracker scope. Its explicit conversion is declared in ability metadata and regenerated consistently.
 
 Shared infrastructure consumes stats for the new behavior. Cast identity limits pulses and chains across delayed impact contexts. Generators were updated alongside generated definitions. Character-sheet resource-condition descriptions show the separate permanent and temporary thresholds.
 

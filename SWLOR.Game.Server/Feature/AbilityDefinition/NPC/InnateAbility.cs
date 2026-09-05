@@ -176,11 +176,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
         {
             return (activator, target) =>
             {
-                if (oncePerCast && Ability.GetAbilityImpactSequence(activator)?.TryTriggerChain() == false)
-                    return;
+                var sequence = oncePerCast ? Ability.GetAbilityImpactSequence(activator) : null;
 
-                foreach (var arc in AbilityTargeting.GetHostileTargetsNearLocation(activator, GetLocation(target), radius, maxArcs, predicate: c => c != target))
+                foreach (var arc in AbilityTargeting.GetHostileTargetsNearLocation(activator, GetLocation(target), radius,
+                             sequence == null ? maxArcs : 0, predicate: c => c != target))
                 {
+                    if (sequence != null && !sequence.TryConsumeChainArc(arc, maxArcs))
+                        continue;
+
                     Ability.ApplyCombatImpact(
                         activator, arc, GetLocation(arc),
                         ResolveSkillType(activator, profile), ScaleForMimicryPotency(activator, profile, arcDamage), arcDuration, arcStatus, false,

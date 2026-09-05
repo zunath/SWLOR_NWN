@@ -7,6 +7,7 @@ using SWLOR.Game.Server.Service.CombatService;
 using SWLOR.Game.Server.Service.SkillService;
 using SWLOR.Game.Server.Service.StatService;
 using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
 {
@@ -31,8 +32,21 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.MakeHostile(hostile);
             }
 
-            TemporaryStatModifier.Add(caster, StatType.AreaAbilityPulseDamage, 8, 45f);
-            TemporaryStatModifier.Add(caster, StatType.AreaAbilityPulseRadiusMeters, 5, 45f);
+            var bloom = Ability.GetAbilityDetail(FeatType.TempestBloom1);
+            Combat.SetAbilityHitResolutionOverride(true);
+            try
+            {
+                await ctx.ExecuteInCreatureContextAsync(caster, () =>
+                {
+                    Ability.BeginAbilityImpact(caster, bloom);
+                    try { bloom.ImpactAction(caster, first, 1, GetLocation(caster)); }
+                    finally { Ability.EndAbilityImpact(caster); }
+                });
+            }
+            finally { Combat.SetAbilityHitResolutionOverride(null); }
+            await ctx.WaitFrameAsync();
+            ctx.AssertEqual(8, Stat.GetStatAdjustment(caster, StatType.AreaAbilityPulseDamage), "Tempest Bloom's real area impact grants the pulse buff");
+            ctx.AssertEqual(5, Stat.GetStatAdjustment(caster, StatType.AreaAbilityPulseRadiusMeters), "the buff uses the approved 5m radius");
             var ability = new AbilityDetail { IsHostileAbility = true, IsAreaAbility = true, SkillType = SkillType.Force };
             var startingHP = creatures.ToDictionary(creature => creature, GetCurrentHitPoints);
             var sequence = new AbilityImpactSequence();
@@ -229,22 +243,29 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         {
             var caster = ctx.SpawnCreature("nw_bandit001");
             var beast = ctx.SpawnCreature("nw_bandit001", 4f);
+            var ordinary = ctx.SpawnCreature("nw_bandit001", 3f);
             await ctx.WaitFrameAsync();
             PrepareStationaryCreature(ctx, caster);
-            PrepareStationaryCreature(ctx, beast);
-            ctx.MakeHostile(beast);
+            foreach (var target in new[] { beast, ordinary })
+            {
+                ctx.SuppressNPCNaturalRegen(target);
+                Stat.SetNPCMaxHitPoints(target, 1000, true);
+                SetAILevel(target, AILevel.VeryLow);
+                ctx.MakeHostile(target);
+            }
             StatusEffect.ApplyStatusEffect(beast, beast, new UnbreakableBeast1StatusEffect(), 30f);
             TemporaryStatModifier.Add(beast, StatType.MobilityResistance, -20, 30f);
             TemporaryStatModifier.Add(beast, StatType.MindResistance, -20, 30f);
             ctx.Assert(!StatusEffect.ApplyStatusEffect(caster, beast, new KnockdownStatusEffect(), 6f), "explicit immunity survives a Mobility vulnerability");
             ctx.Assert(!StatusEffect.ApplyStatusEffect(caster, beast, new DazedStatusEffect(), 15f), "explicit immunity survives a Mind vulnerability");
-            var position = GetPosition(beast);
+            ctx.Assert(!StatusEffect.TryApplyNativeKnockdown(beast, 3f), "weather and trap knockdown honor the same immunity");
+            ctx.Assert(StatusEffect.TryApplyNativeKnockdown(ordinary, 3f), "native knockdown still affects nonimmune creatures");
             var maul = Ability.GetAbilityDetail(FeatType.WardenMaulTechnique);
             Combat.SetAbilityHitResolutionOverride(true);
             Ability.BeginAbilityImpact(caster, maul);
             try
             {
-                maul.ImpactAction(caster, beast, 1, GetLocation(beast));
+                await ctx.ExecuteInCreatureContextAsync(caster, () => maul.ImpactAction(caster, beast, 1, GetLocation(beast)));
             }
             finally
             {
@@ -252,7 +273,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 Combat.SetAbilityHitResolutionOverride(null);
             }
             await ctx.DelaySecondsAsync(1f);
-            ctx.AssertEqual(position, GetPosition(beast), "Warden Maul cannot pull an immune beast");
+            ctx.Assert(GetDistanceBetween(caster, beast) > 3f, "Warden Maul cannot pull an immune beast adjacent to its source");
+            ctx.Assert(GetDistanceBetween(caster, ordinary) < 1.5f, "the same impact pulls a nonimmune target immediately while it is knocked down");
             ctx.AssertEqual(-20, Stat.GetStatAdjustment(beast, StatType.MindResistance), "the capstone does not grant blanket Mind immunity");
             ctx.AssertEqual(-25, Stat.GetStatAdjustment(beast, StatType.DamageTakenPercentAdjustment), "damage reduction remains active");
         }
@@ -281,6 +303,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             Ability.BeginAbilityImpact(caster, burst);
             try
             {
+                ChangeToStandardFaction(targets[1], StandardFaction.Defender);
+                ChangeToStandardFaction(targets[2], StandardFaction.Defender);
+                chain(caster, targets[0]);
+                ctx.MakeHostile(targets[1]);
+                ctx.MakeHostile(targets[2]);
                 foreach (var target in targets)
                     chain(caster, target);
             }
@@ -360,7 +387,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     var before = Stat.GetCurrentStamina(caster);
                     var hp = GetCurrentHitPoints(target);
                     Ability.BeginAbilityImpact(caster, ability);
-                    try { ability.ImpactAction(caster, target, 1, GetLocation(caster)); }
+                    try { await ctx.ExecuteInCreatureContextAsync(caster, () => ability.ImpactAction(caster, target, 1, GetLocation(caster))); }
                     finally { Ability.EndAbilityImpact(caster); }
                     await ctx.WaitUntilAsync(() => GetCurrentHitPoints(target) < hp, 5f, "the area impact to land");
                     ctx.AssertEqual(before + (count >= 3 ? 6 : 0), Stat.GetCurrentStamina(caster), $"{count} targets must refund once only at the three-target threshold");
@@ -386,18 +413,82 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ability.IsMimicryTechnique = false;
                 for (var stack = 1; stack <= 3; stack++)
                 {
-                if (stack > 1)
-                    await ctx.DelaySecondsAsync(10.1f);
-                var used = false;
-                AssignCommand(caster, () => used = UsePerkFeat.TryUseAbility(caster, caster, FeatType.FinishingDriveTechnique, GetLocation(caster), true));
-                await ctx.WaitUntilAsync(() => used, 3f, "Finishing Drive to activate after its cooldown");
-                var expected = stack;
-                await ctx.WaitUntilAsync(() => (StatusEffect.GetStatusEffect(caster, typeof(FinishingDriveMomentumStatusEffect)) as FinishingDriveMomentumStatusEffect)?.Stacks == expected,
-                    3f, "the next Momentum stack");
-                ctx.AssertEqual(stack * 8, Stat.GetStatAdjustment(caster, StatType.MimicryPotencyPercent), "each cast adds eight percent potency");
+                    if (stack > 1)
+                        await ctx.DelaySecondsAsync(10.1f);
+                    var used = false;
+                    AssignCommand(caster, () => used = UsePerkFeat.TryUseAbility(caster, caster, FeatType.FinishingDriveTechnique, GetLocation(caster), true));
+                    await ctx.WaitUntilAsync(() => used, 3f, "Finishing Drive to activate after its cooldown");
+                    var expected = stack;
+                    await ctx.WaitUntilAsync(() => (StatusEffect.GetStatusEffect(caster, typeof(FinishingDriveMomentumStatusEffect)) as FinishingDriveMomentumStatusEffect)?.Stacks == expected,
+                        3f, "the next Momentum stack");
+                    ctx.AssertEqual(stack * 8, Stat.GetStatAdjustment(caster, StatType.MimicryPotencyPercent), "each cast adds eight percent potency");
                 }
             }
             finally { ability.IsMimicryTechnique = requiresPlayerLoadout; }
+        }
+
+        [EngineTest("Droid programming accepts only an owned instruction disc", Category = "PerkTracker", TimeoutSeconds = 30f)]
+        public static async Task DroidInstructionInputValidation(EngineTestContext ctx)
+        {
+            var programmer = ctx.SpawnCreature("nw_bandit001");
+            var other = ctx.SpawnCreature("nw_bandit001", 2f);
+            await ctx.WaitFrameAsync();
+            uint disc = OBJECT_INVALID, otherDisc = OBJECT_INVALID, weapon = OBJECT_INVALID, controller = OBJECT_INVALID;
+            await ctx.ExecuteInCreatureContextAsync(programmer, () =>
+            {
+                disc = CreateItemOnObject("id_adrenal1", programmer);
+                otherDisc = CreateItemOnObject("id_adrenal1", other);
+                weapon = CreateItemOnObject("nw_wswss001", programmer);
+                controller = CreateItemOnObject(Droid.DroidControlItemResref, programmer);
+            });
+            foreach (var item in new[] { disc, otherDisc, weapon, controller })
+                ctx.Assert(GetIsObjectValid(item), "the programming fixture item exists");
+            AddItemProperty(DurationType.Permanent, ItemPropertyCustom(ItemPropertyType.DroidInstruction,
+                (int)SWLOR.Game.Server.Service.PerkService.PerkType.AdrenalStim, 1), controller);
+            ctx.AssertEqual(string.Empty, Droid.GetInstructionDiscValidationError(programmer, disc), "an owned instruction disc is accepted");
+            foreach (var item in new[] { otherDisc, weapon, controller, OBJECT_INVALID })
+                ctx.Assert(!string.IsNullOrEmpty(Droid.GetInstructionDiscValidationError(programmer, item)), "invalid programming inputs are rejected before consumption");
+        }
+
+        [EngineTest("Ground Quake converts Dazed into Knockdown while preserving immune targets", Category = "PerkTracker", TimeoutSeconds = 30f)]
+        public static async Task GroundQuakeControlConversion(EngineTestContext ctx)
+        {
+            Combat.SetAbilityHitResolutionOverride(true);
+            try
+            {
+                foreach (var feat in new[] { FeatType.GroundQuake1, FeatType.GroundQuake2 })
+                {
+                    var caster = ctx.SpawnCreature("nw_bandit001");
+                    var target = ctx.SpawnCreature("nw_rat001", 1f);
+                    var immune = ctx.SpawnCreature("nw_rat001", 2f);
+                    var unaffected = ctx.SpawnCreature("nw_rat001", 3f);
+                    await ctx.WaitFrameAsync();
+                    foreach (var creature in new[] { caster, target, immune, unaffected })
+                        PrepareStationaryCreature(ctx, creature);
+                    foreach (var enemy in new[] { target, immune, unaffected })
+                        ctx.MakeHostile(enemy);
+                    foreach (var dazed in new[] { target, immune })
+                        ctx.Assert(StatusEffect.ApplyStatusEffect(caster, dazed, new DazedStatusEffect(), 30f), "setup Dazed applies");
+                    TemporaryStatModifier.Add(immune, StatType.KnockdownImmunity, 1, 30f);
+                    var originalDaze = StatusEffect.GetStatusEffect(immune, typeof(DazedStatusEffect));
+                    var ability = Ability.GetAbilityDetail(feat);
+                    await ctx.ExecuteInCreatureContextAsync(caster, () =>
+                    {
+                        Ability.BeginAbilityImpact(caster, ability);
+                        try { ability.ImpactAction(caster, target, ability.AbilityLevel, GetLocation(caster)); }
+                        finally { Ability.EndAbilityImpact(caster); }
+                    });
+                    ctx.Assert(StatusEffect.HasStatusEffect<KnockdownStatusEffect>(target), $"{feat} converts existing Dazed");
+                    ctx.Assert(!StatusEffect.HasStatusEffect<DazedStatusEffect>(target), "conversion replaces the previous control");
+                    ctx.Assert(!StatusEffect.HasStatusEffect<KnockdownStatusEffect>(immune), "explicit immunity prevents conversion");
+                    ctx.Assert(ReferenceEquals(originalDaze, StatusEffect.GetStatusEffect(immune, typeof(DazedStatusEffect))), "rejected conversion preserves Dazed and its timer");
+                    ctx.Assert(!StatusEffect.HasStatusEffect<KnockdownStatusEffect>(unaffected), "targets without Dazed receive no knockdown");
+                    foreach (var creature in new[] { caster, target, immune, unaffected })
+                        DestroyObject(creature);
+                    await ctx.WaitFrameAsync();
+                }
+            }
+            finally { Combat.SetAbilityHitResolutionOverride(null); }
         }
 
         private static void PrepareStationaryCreature(EngineTestContext ctx, uint creature)

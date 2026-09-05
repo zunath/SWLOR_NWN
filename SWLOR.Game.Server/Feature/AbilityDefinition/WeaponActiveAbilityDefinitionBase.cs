@@ -215,6 +215,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public int ConditionalStatusDurationSeconds { get; init; }
             public int ConditionalStatusAfterDeflectionWindowSeconds { get; init; }
             public Type RequiredTargetStatusEffectForConditionalStatus { get; init; }
+            public bool ConvertsRequiredTargetStatusEffect { get; init; }
             public StatusEffectCategory RequiredTargetStatusCategoryForConditionalStatus { get; init; }
             public bool RequireRecentGuardedHitForConditionalStatus { get; init; }
             public bool RequireRecentGuardedAllyHitForConditionalStatus { get; init; }
@@ -1116,7 +1117,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     target,
                     ConditionalTargetStatusEffect,
                     ConditionalTargetStatusDurationSeconds,
-                    damageType);
+                    damageType,
+                    ConvertsRequiredTargetStatusEffect ? RequiredTargetStatusEffectForConditionalStatus : null);
             }
 
             private void ApplyTargetTemporaryModifiers(uint target)

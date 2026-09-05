@@ -2468,6 +2468,7 @@ def profile_property_lines(row, level, primary_status):
     knockdown_dazed = re.search(r"knocks down already Dazed targets for (\d+) seconds", description, re.IGNORECASE)
     if knockdown_dazed:
         add_profile_property("RequiredTargetStatusEffectForConditionalStatus", "typeof(DazedStatusEffect)")
+        add_profile_property("ConvertsRequiredTargetStatusEffect", "true")
         add_profile_property("ConditionalTargetStatusEffect", "typeof(KnockdownStatusEffect)")
         add_profile_property("ConditionalTargetStatusDurationSeconds", knockdown_dazed.group(1))
 

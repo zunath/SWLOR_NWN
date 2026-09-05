@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AbilityDefinition.TwinBlade;
 using SWLOR.Game.Server.Service.PerkService;
+using SWLOR.NWN.API.NWNX;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.EngineTests.Definitions
@@ -26,7 +27,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var outsideRange = ctx.SpawnCreature("nw_rat001", 8f);
             var enemies = new[] { target, nearby, otherNearby, outsideRange };
             await ctx.WaitFrameAsync();
-            SetCommandable(false, caster);
+            // Keep the primary area inside the entry room. Native spawning nudges crowded
+            // creatures across the doorway, which otherwise changes the intended geometry.
+            ObjectPlugin.SetPosition(caster, GetPositionFromLocation(ctx.GetArenaLocation(-2f)));
+            ObjectPlugin.SetPosition(target, GetPositionFromLocation(ctx.GetArenaLocation(recipientInsideArea ? -1f : 0f)));
+            ObjectPlugin.SetPosition(nearby, GetPositionFromLocation(ctx.GetArenaLocation(recipientInsideArea ? 2f : 4f)));
+            ObjectPlugin.SetPosition(otherNearby, GetPositionFromLocation(ctx.GetArenaLocation(4.5f)));
+            ObjectPlugin.SetPosition(outsideRange, GetPositionFromLocation(ctx.GetArenaLocation(6f)));
+            ApplyEffectToObject(DurationType.Temporary, EffectCutsceneParalyze(), caster, 120f);
             ctx.SetNPCPerkLevel(caster, PerkType.ShrapnelCasing, 3);
 
             foreach (var enemy in enemies)
@@ -72,7 +80,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         Ability.BeginAbilityImpact(caster, ability);
                         try
                         {
-                            ability.ImpactAction(caster, target, rank, GetLocation(target));
+                            await ctx.ExecuteInCreatureContextAsync(caster, () => ability.ImpactAction(caster, target, rank, GetLocation(target)));
                         }
                         finally
                         {

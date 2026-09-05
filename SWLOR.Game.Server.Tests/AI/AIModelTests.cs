@@ -188,8 +188,10 @@ public class AIModelTests
         score(CreateContext(self: self)).Should().Be(AIScoreBand.Defensive + 4);
     }
 
-    [Test]
-    public void BolsterAttackAIScore_UsesActiveRankStat()
+    [TestCase("BolsterAttack")]
+    [TestCase("IronHide")]
+    [TestCase("EvasiveManeuver")]
+    public void LongDurationBeastBuffAIScore_UsesActiveRankStat(string buff)
     {
         const uint self = 100;
         const uint target = 200;
@@ -197,13 +199,18 @@ public class AIModelTests
             .GetField("_creatureEffects", BindingFlags.NonPublic | BindingFlags.Static)!
             .GetValue(null)!;
         var tracker = new CreatureStatusEffect();
-        var abilities = new BolsterAttackAbilityDefinition().BuildAbilities();
-        var ranks = new (FeatType Feat, IStatusEffect StatusEffect, int AbilityLevel)[]
+        IAbilityListDefinition definition = buff switch
         {
-            (FeatType.BolsterAttack1, new BolsterAttack1StatusEffect(), 1),
-            (FeatType.BolsterAttack2, new BolsterAttack2StatusEffect(), 2),
-            (FeatType.BolsterAttack3, new BolsterAttack3StatusEffect(), 3)
+            "IronHide" => new IronHideAbilityDefinition(),
+            "EvasiveManeuver" => new EvasiveManeuverAbilityDefinition(),
+            _ => new BolsterAttackAbilityDefinition()
         };
+        var abilities = definition.BuildAbilities();
+        var ranks = Enumerable.Range(1, 3).Select(rank => (
+            Feat: Enum.Parse<FeatType>($"{buff}{rank}"),
+            StatusEffect: (IStatusEffect)Activator.CreateInstance(typeof(BolsterAttack1StatusEffect).Assembly
+                .GetType($"SWLOR.Game.Server.Feature.StatusEffectDefinition.{buff}{rank}StatusEffect")!)!,
+            AbilityLevel: rank)).ToArray();
 
         EnemyEnmityTables()[self] = new Dictionary<uint, int>
         {
@@ -216,7 +223,7 @@ public class AIModelTests
         {
             var context = CreateContext(self: self);
 
-            // A different damage-dealt buff must not be mistaken for Bolster Attack.
+            // An unrelated buff must not suppress this ability.
             tracker.Add(new AlphaRhythm1BeastStatusEffect());
 
             foreach (var (feat, statusEffect, abilityLevel) in ranks)
@@ -230,7 +237,7 @@ public class AIModelTests
                 tracker.Remove(statusEffect);
             }
 
-            // A stronger active rank also makes every weaker Bolster rank redundant.
+            // A stronger active rank also makes every weaker rank redundant.
             tracker.Add(ranks[2].StatusEffect);
             foreach (var (feat, _, _) in ranks)
                 abilities[feat].AIScore!(context).Should().Be(0);

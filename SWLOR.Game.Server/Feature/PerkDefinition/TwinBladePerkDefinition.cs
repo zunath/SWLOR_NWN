@@ -153,7 +153,6 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.FlowingFootworkTrait)
                 .Description("After using an area combat ability, gain +10% Evasion for 30 seconds.")
-                .IncreasesStat(StatType.AreaAbilityUsedEvasionPercentAdjustmentSkillType, (int)SkillType.TwinBlade)
                 .IncreasesStat(StatType.AreaAbilityUsedEvasionPercentAdjustment, 10)
                 .IncreasesStat(StatType.AreaAbilityUsedEvasionDurationSeconds, 30)
                 .Price(4)
@@ -226,7 +225,7 @@ namespace SWLOR.Game.Server.Feature.PerkDefinition
 
                 .AddPerkLevel()
                 .GrantsFeat(FeatType.TempestBloom1)
-                .Description("Deal weapon DMG + 25 to enemies within 5m. For 45 seconds, your area attacks pulse for 8 physical DMG around your target.")
+                .Description("Deal weapon DMG + 25 to enemies within 5m. For 45 seconds, each hostile area ability that lands creates one immediate pulse for 8 physical DMG to enemies within 5m of its first struck target.")
                 .Price(6)
                 .RequirementSkill(SkillType.TwinBlade, 50)
                 .RequirementQuest(TwinBladeCapstoneQuestDefinition.TempestBloomMasteryQuestId);

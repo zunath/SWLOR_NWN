@@ -106,7 +106,8 @@ namespace SWLOR.Game.Server.Service
             uint activator,
             AbilityDetail ability,
             bool countsAsAttackAttempt = true,
-            IReadOnlyList<TelegraphGeometry> activationAreaTelegraphs = null)
+            IReadOnlyList<TelegraphGeometry> activationAreaTelegraphs = null,
+            AbilityImpactSequence sequence = null)
         {
             if (!GetIsObjectValid(activator) || ability == null)
                 return;
@@ -143,7 +144,8 @@ namespace SWLOR.Game.Server.Service
                 statusAppliedNextAttackDamageBonus,
                 countsAsAttackAttempt,
                 queuedWeaponBonuses.CriticalDamagePercentAdjustment,
-                activationAreaTelegraphs);
+                activationAreaTelegraphs,
+                sequence);
         }
 
         /// <summary>
@@ -159,7 +161,8 @@ namespace SWLOR.Game.Server.Service
             int statusAppliedNextAttackDamageBonus = 0,
             bool countsAsAttackAttempt = true,
             int nextAbilityCriticalDamagePercentAdjustment = 0,
-            IReadOnlyList<TelegraphGeometry> activationAreaTelegraphs = null)
+            IReadOnlyList<TelegraphGeometry> activationAreaTelegraphs = null,
+            AbilityImpactSequence sequence = null)
         {
             if (!GetIsObjectValid(activator) || ability == null)
                 return;
@@ -173,7 +176,18 @@ namespace SWLOR.Game.Server.Service
                 statusAppliedNextAttackDamageBonus,
                 countsAsAttackAttempt,
                 nextAbilityCriticalDamagePercentAdjustment,
-                activationAreaTelegraphs);
+                activationAreaTelegraphs,
+                sequence ?? new AbilityImpactSequence());
+        }
+
+        public static AbilityImpactSequence GetAbilityImpactSequence(uint activator)
+        {
+            return GetTrackedAbilityImpact(activator)?.Sequence;
+        }
+
+        public static bool TryTriggerAreaAbilityPulse(uint activator)
+        {
+            return GetAbilityImpactSequence(activator)?.TryTriggerAreaPulse() == true;
         }
 
         public static AbilityImpactSummary EndAbilityImpact(uint activator)
@@ -1424,6 +1438,7 @@ namespace SWLOR.Game.Server.Service
                 shape,
                 areaVisualLocation,
                 trackedImpact?.Ability,
+                trackedImpact?.Sequence ?? new AbilityImpactSequence(),
                 deferredNextAbilityDamageBonus,
                 trackedImpact?.NextAbilityCriticalRatePercentAdjustment ?? 0,
                 trackedImpact?.NextAbilityDefenseIgnorePercentAdjustment ?? 0,
@@ -1662,6 +1677,7 @@ namespace SWLOR.Game.Server.Service
             CombatImpactAreaShape shape,
             Location areaVisualLocation,
             AbilityDetail ability,
+            AbilityImpactSequence sequence,
             int nextAbilityDamageBonus,
             int nextAbilityCriticalRatePercentAdjustment,
             int nextAbilityDefenseIgnorePercentAdjustment,
@@ -1739,7 +1755,8 @@ namespace SWLOR.Game.Server.Service
                             nextAbilityDefenseIgnorePercentAdjustment,
                             nextAttackEnmityBonus,
                             statusAppliedNextAttackDamageBonus,
-                            countsAsAttackAttempt: false);
+                            countsAsAttackAttempt: false,
+                            sequence: sequence);
                         impactStarted = true;
                         RecordAbilityImpactShape(creator, skillType, true);
                     }
@@ -3250,6 +3267,7 @@ namespace SWLOR.Game.Server.Service
             private readonly List<PendingDamageEffect> _pendingDamageEffects = new();
 
             public AbilityDetail Ability { get; }
+            public AbilityImpactSequence Sequence { get; }
             public AbilityImpactSummary Summary { get; }
             public bool CountsAsAttackAttempt { get; }
             public IReadOnlyList<TelegraphGeometry> ActivationAreaTelegraphs { get; }
@@ -3275,9 +3293,11 @@ namespace SWLOR.Game.Server.Service
                 int statusAppliedNextAttackDamageBonus,
                 bool countsAsAttackAttempt,
                 int nextAbilityCriticalDamagePercentAdjustment,
-                IReadOnlyList<TelegraphGeometry> activationAreaTelegraphs)
+                IReadOnlyList<TelegraphGeometry> activationAreaTelegraphs,
+                AbilityImpactSequence sequence)
             {
                 Ability = ability;
+                Sequence = sequence;
                 NextAbilityDamageBonus = nextAbilityDamageBonus;
                 NextAbilityCriticalRatePercentAdjustment = nextAbilityCriticalRatePercentAdjustment;
                 NextAbilityCriticalDamagePercentAdjustment = nextAbilityCriticalDamagePercentAdjustment;

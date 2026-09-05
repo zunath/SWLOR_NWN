@@ -6086,6 +6086,62 @@ namespace SWLOR.Game.Server.Service.StatService
         [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
         AreaAbilityFragmentationSkillType = 1055,
 
+        /// <summary>Physical damage pulsed once around the first target hit by a hostile area ability.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AreaAbilityPulseDamage = 1056,
+
+        /// <summary>Radius in meters of the pulse around the first successful area-ability target.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        AreaAbilityPulseRadiusMeters = 1057,
+
+        /// <summary>Current active rank of Iron Hide.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        IronHideRank = 1058,
+
+        /// <summary>Current active rank of Evasive Maneuver.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        EvasiveManeuverRank = 1059,
+
+        /// <summary>Percent damage adjustment for hostile area abilities across skills.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AreaAbilityDamagePercentAdjustment = 1060,
+
+        /// <summary>Percent damage adjustment for auto-attacks and single-target hostile abilities.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        SingleTargetDamagePercentAdjustment = 1061,
+
+        /// <summary>Ranged Deflection granted after using a hostile area ability, even if it misses.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, deflectionSource: DeflectionSource.Ranged)]
+        AreaAbilityUsedAttackDeflection = 1062,
+
+        /// <summary>Duration of deflection granted after using an area ability.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        AreaAbilityUsedAttackDeflectionDurationSeconds = 1063,
+
+        /// <summary>FP restored after using a hostile area ability.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        AreaAbilityUsedFPRestore = 1064,
+
+        /// <summary>Temporary hostile ability damage bonus, with a threshold independent of passive bonuses.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive)]
+        TemporaryHighFPAndStaminaAbilityDamageBonus = 1065,
+
+        /// <summary>FP and Stamina must both exceed this percentage for the temporary damage bonus.</summary>
+        [StatType(StatTypeCategory.NonBeneficial, StatTypeAggregation.Maximum)]
+        TemporaryHighFPAndStaminaAbilityDamageBonusThresholdPercent = 1066,
+
+        /// <summary>Prevents hostile forced relocation, such as pulls.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        ForcedMovementImmunity = 1067,
+
+        /// <summary>Prevents Knockdown independently of Mobility Resistance.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        KnockdownImmunity = 1068,
+
+        /// <summary>Prevents Dazed independently of Mind Resistance.</summary>
+        [StatType(StatTypeCategory.BeneficialWhenPositive, StatTypeAggregation.Maximum)]
+        DazeImmunity = 1069,
+
     }
 
     public class StatTypeAttribute : Attribute

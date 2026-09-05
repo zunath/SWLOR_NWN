@@ -112,6 +112,20 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
                 _effectsBySourceType[statusEffect.SourceType].Remove(statusEffect);
         }
 
+        /// <summary>Consumes one stat payload while retaining each effect's other bonuses and lifetime.</summary>
+        public void ConsumeStat(StatType type)
+        {
+            foreach (var effect in GetAllEffects())
+            {
+                if (!effect.StatGroup.Stats.TryGetValue(type, out var value) || value == 0)
+                    continue;
+
+                Remove(effect);
+                effect.StatGroup.Stats[type] = 0;
+                Add(effect);
+            }
+        }
+
         private void RecomputeNonAdditiveStat(StatType type)
         {
             var combined = 0;

@@ -36,7 +36,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                     }
 
                     // Nearby enemies generate +25% enmity toward the caster for the duration.
-                    foreach (var enemy in AbilityTargeting.GetHostileTargetsNearLocation(activator, GetLocation(activator), 8.0f, 10))
+                    foreach (var enemy in AbilityTargeting.GetHostileTargetsNearLocation(activator, GetLocation(activator), 8.0f, 0))
                     {
                         StatusEffect.ApplyStatusEffect(activator, enemy, new LastBastionStatusEffect(), 30f);
                     }

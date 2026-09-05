@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public EvasiveManeuver1StatusEffect()
         {
+            StatGroup.Stats[StatType.EvasiveManeuverRank] = 1;
             StatGroup.Stats[StatType.EvasionPercentAdjustment] = 6;
         }
     }

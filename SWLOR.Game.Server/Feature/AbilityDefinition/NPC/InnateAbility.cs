@@ -139,7 +139,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
         /// <summary>Pulls the struck target adjacent to the caster.</summary>
         public static Action<uint, uint> PullOnHit()
         {
-            return (activator, target) => AssignCommand(target, () => ActionJumpToObject(activator));
+            return (activator, target) =>
+            {
+                if (Stat.GetStatAdjustment(target, StatType.ForcedMovementImmunity) <= 0)
+                    AssignCommand(target, () => ActionJumpToObject(activator));
+            };
         }
 
         /// <summary>
@@ -168,15 +172,18 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
         /// Arcs a reduced-damage strike from the struck target to up to <paramref name="maxArcs"/> other
         /// hostiles within <paramref name="radius"/>, applying <paramref name="arcStatus"/>.
         /// </summary>
-        public static Action<uint, uint> ChainOnHit(InnateAbilityProfile profile, int maxArcs, float radius, int arcDamage, Type arcStatus, int arcDuration, CombatDamageType damageType)
+        public static Action<uint, uint> ChainOnHit(InnateAbilityProfile profile, int maxArcs, float radius, int arcDamage, Type arcStatus, int arcDuration, CombatDamageType damageType, bool oncePerCast = false)
         {
             return (activator, target) =>
             {
+                if (oncePerCast && Ability.GetAbilityImpactSequence(activator)?.TryTriggerChain() == false)
+                    return;
+
                 foreach (var arc in AbilityTargeting.GetHostileTargetsNearLocation(activator, GetLocation(target), radius, maxArcs, predicate: c => c != target))
                 {
                     Ability.ApplyCombatImpact(
                         activator, arc, GetLocation(arc),
-                        ResolveSkillType(activator, profile), arcDamage, arcDuration, arcStatus, false,
+                        ResolveSkillType(activator, profile), ScaleForMimicryPotency(activator, profile, arcDamage), arcDuration, arcStatus, false,
                         damageType: damageType, playImpactAnimation: false,
                         useNPCStatScaling: ShouldUseNPCStatScaling(activator));
                 }

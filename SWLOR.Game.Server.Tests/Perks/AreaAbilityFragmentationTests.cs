@@ -66,17 +66,42 @@ public class AreaAbilityFragmentationTests
     }
 
     [Test]
-    public void GlobalAreaBuff_DoesNotCarryThrowingOnlyTraitStatsIntoOtherSkills()
+    public void TempestBloom_PulsesAcrossSkillsWithoutGrantingFragmentation()
     {
         AddShrapnelCasingStats(3);
         var ability = new TempestBloomAbilityDefinition().BuildAbilities()[FeatType.TempestBloom1];
-        AddTemporaryFragmentation(GetProfile(ability));
+        var profile = GetProfile(ability);
+        GetProperty<int>(profile, "TemporaryAreaAbilityFragmentationDamage").Should().Be(0);
+        GetProperty<int>(profile, "TemporaryDefeatedEnemyEffectDurationSeconds").Should().Be(45);
+        var add = typeof(TemporaryStatModifier).GetMethod("AddInternal", PrivateStatic)!;
+        foreach (var stat in new[] { StatType.AreaAbilityPulseDamage, StatType.AreaAbilityPulseRadiusMeters })
+        {
+            add.Invoke(null, new object[]
+            {
+                Creature, stat, GetProperty<int>(profile, $"Temporary{stat}"), 45f, "PulseTest", false
+            });
+        }
 
-        GetFragmentation(SkillType.Staff, StatType.AreaAbilityFragmentationDamage).Should().Be(8);
-        GetFragmentation(SkillType.Staff, StatType.AreaAbilityFragmentationDurationSeconds).Should().Be(30);
-        GetFragmentation(SkillType.Staff, StatType.AreaAbilityFragmentationPulseSeconds).Should().Be(3);
-        GetFragmentation(SkillType.Throwing, StatType.AreaAbilityFragmentationDamage).Should().Be(15);
+        foreach (var skill in new[] { SkillType.TwinBlade, SkillType.Staff, SkillType.Force, SkillType.Mimicry })
+        {
+            var area = new AbilityDetail { SkillType = skill, IsHostileAbility = true, IsAreaAbility = true };
+            GetPulse(area, true).Should().Be((8, 5));
+            GetPulse(area, false).Should().Be((0, 0), "additional targets must not create additional pulses");
+        }
+        GetPulse(new AbilityDetail { IsHostileAbility = true, IsSingleTargetAbility = true }, true)
+            .Should().Be((0, 0));
+        GetPulse(new AbilityDetail { IsAreaAbility = true }, true).Should().Be((0, 0));
+        GetFragmentation(SkillType.Staff, StatType.AreaAbilityFragmentationDamage).Should().Be(0);
+        GetFragmentation(SkillType.Throwing, StatType.AreaAbilityFragmentationDamage).Should().Be(7);
+
+        ((IDictionary)typeof(TemporaryStatModifier).GetField("_modifiers", PrivateStatic)!.GetValue(null)!)
+            .Remove(Creature);
+        GetPulse(ability, true).Should().Be((0, 0), "the pulse must end with its temporary buff");
     }
+
+    private static (int Damage, int Radius) GetPulse(AbilityDetail ability, bool firstTarget) =>
+        ((int, int))typeof(Combat).GetMethod("GetAreaAbilityPulse", PrivateStatic)!
+            .Invoke(null, new object[] { Creature, ability, firstTarget })!;
 
     [Test]
     public void Worldbreaker_ConfiguresDazedForThirtySecondsOnControlledTargets()

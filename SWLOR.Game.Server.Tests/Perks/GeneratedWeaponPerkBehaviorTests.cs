@@ -1049,8 +1049,8 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertStatusStat(infiniteConduit, StatType.AbilityStaminaCostFPRestorePercent, 50);
         AssertStatusStat(infiniteConduit, StatType.AbilityFPCostStaminaRestorePercentSkillType, (int)SkillType.Force);
         AssertStatusStat(infiniteConduit, StatType.AbilityFPCostStaminaRestorePercent, 50);
-        AssertStatusStat(infiniteConduit, StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent, 70);
-        AssertStatusStat(infiniteConduit, StatType.HighFPAndStaminaAbilityDamageBonus, 20);
+        AssertStatusStat(infiniteConduit, StatType.TemporaryHighFPAndStaminaAbilityDamageBonusThresholdPercent, 70);
+        AssertStatusStat(infiniteConduit, StatType.TemporaryHighFPAndStaminaAbilityDamageBonus, 20);
 
         var restoredForcePointsForceAttack = new ForceLensForceAttackStatusEffect(8);
         AssertStatusStat(restoredForcePointsForceAttack, StatType.ForceAttackPercentAdjustment, 8);
@@ -1745,11 +1745,11 @@ public class GeneratedWeaponPerkBehaviorTests
         AssertAbilitySourceContains(root, "Rifle", "SuppressiveLineAbilityDefinition.cs", "SuppressionDisorientedRequiredStacks = 2");
         AssertAbilitySourceContains(root, "Rifle", "KillBoxAbilityDefinition.cs", "StatusEffectFactory = () => new KillBoxStatusEffect(0, 3)");
         AssertAbilitySourceContains(root, "Rifle", "KillBoxAbilityDefinition.cs", "SourceOwnedStatusEffectTypeRemovedOnPerkRefund = typeof(KillBoxStatusEffect)");
-        AssertAbilitySourceContains(root, "TwinBlade", "TempestBloomAbilityDefinition.cs", "TemporaryAreaAbilityFragmentationDamage = 8");
+        AssertAbilitySourceContains(root, "TwinBlade", "TempestBloomAbilityDefinition.cs", "TemporaryAreaAbilityPulseDamage = 8");
         AssertAbilitySourceContains(root, "Throwing", "RainOfSteelAbilityDefinition.cs", "TemporaryAreaAbilityFragmentationPulseSeconds = 6");
         AssertAbilitySourceContains(root, "Throwing", "ExplosiveTossAbilityDefinition.cs", "typeof(BurnStatusEffect)");
         AssertAbilitySourceContains(root, "Throwing", "ExplosiveTossAbilityDefinition.cs", "Spell.ExplosiveToss4");
-        AssertAbilitySourceContains(root, "Saberstaff", "SaberCycloneAbilityDefinition.cs", "TemporaryAreaAbilityAttackDeflection = 8");
+        AssertAbilitySourceContains(root, "Saberstaff", "SaberCycloneAbilityDefinition.cs", "TemporaryAreaAbilityUsedAttackDeflection = 8");
         AssertAbilitySourceContains(root, "Saberstaff", "CircleSlashAbilityDefinition.cs", "SelfRangedDeflection = 8");
         AssertAbilitySourceContains(root, "Staff", "ShelterCircleAbilityDefinition.cs", "NearbyPartyStatusEffect = typeof(ShelterCircleStatusEffect)");
         AssertAbilitySourceContains(root, "Staff", "ShelterCircleAbilityDefinition.cs", "NearbyPartyStatusIncludesSelf = true");

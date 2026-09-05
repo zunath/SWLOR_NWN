@@ -120,6 +120,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public int RestoreStaminaOnHit { get; init; }
             public int RestoreFPOnHit { get; init; }
             public int RestoreStaminaAfterImpact { get; init; }
+            public int RestoreStaminaIfMinimumTargetsHit { get; init; }
+            public int StaminaRestoreMinimumTargets { get; init; }
             public int RestoreFPAfterImpact { get; init; }
             public int RestoreStaminaIfAllHitsLand { get; init; }
             public int RestoreFPIfAllHitsLand { get; init; }
@@ -173,6 +175,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public SkillType TemporaryAreaAbilityFragmentationSkillType { get; init; }
             public int TemporaryAreaAbilityFragmentationDurationSeconds { get; init; }
             public int TemporaryAreaAbilityFragmentationPulseSeconds { get; init; }
+            public int TemporaryAreaAbilityPulseDamage { get; init; }
+            public int TemporaryAreaAbilityPulseRadiusMeters { get; init; }
+            public int TemporaryAreaAbilityUsedFPRestore { get; init; }
+            public int TemporaryAreaAbilityUsedAttackDeflection { get; init; }
+            public int TemporaryAreaAbilityUsedAttackDeflectionDurationSeconds { get; init; }
             public int TemporaryAreaAbilityMinTargetsResourceRestoreThreshold { get; init; }
             public int TemporaryAreaAbilityFPRestore { get; init; }
             public int TemporaryAreaAbilityMinTargetsBuffThreshold { get; init; }
@@ -264,7 +271,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
                 if (ExtraDamageIfHighResources != 0 &&
                     HighResourceExtraDamageThresholdPercent > 0 &&
-                    Combat.IsCurrentFPAndStaminaAtOrAbovePercent(activator, HighResourceExtraDamageThresholdPercent))
+                    Combat.IsCurrentFPAndStaminaAbovePercent(activator, HighResourceExtraDamageThresholdPercent))
                 {
                     bonus += ExtraDamageIfHighResources;
                 }
@@ -601,6 +608,15 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 };
             }
 
+            public void RestoreResourcesForTargetCount(uint activator, AbilityImpactSummary summary)
+            {
+                if (RestoreStaminaIfMinimumTargetsHit > 0 && StaminaRestoreMinimumTargets > 0 &&
+                    (summary?.ImpactedTargetCount ?? 0) >= StaminaRestoreMinimumTargets)
+                {
+                    Stat.RestoreStamina(activator, RestoreStaminaIfMinimumTargetsHit);
+                }
+            }
+
             public void AfterImpact(
                 uint activator,
                 int totalDamage,
@@ -789,7 +805,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     return;
 
                 if (SelfStatResourceAboveThresholdPercent > 0 &&
-                    !Combat.IsCurrentFPAndStaminaAtOrAbovePercent(activator, SelfStatResourceAboveThresholdPercent))
+                    !Combat.IsCurrentFPAndStaminaAbovePercent(activator, SelfStatResourceAboveThresholdPercent))
                 {
                     return;
                 }
@@ -849,10 +865,10 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                     duration);
                 ReplaceTemporary(activator, StatType.HostileAbilityFPRestore, TemporaryHostileAbilityFPRestore, duration);
                 ReplaceTemporary(activator, StatType.HostileAbilityStaminaRestore, TemporaryHostileAbilityStaminaRestore, duration);
-                ReplaceTemporary(activator, StatType.HighFPAndStaminaAbilityDamageBonus, TemporaryHighFPAndStaminaAbilityDamageBonus, duration);
+                ReplaceTemporary(activator, StatType.TemporaryHighFPAndStaminaAbilityDamageBonus, TemporaryHighFPAndStaminaAbilityDamageBonus, duration);
                 ReplaceTemporary(
                     activator,
-                    StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent,
+                    StatType.TemporaryHighFPAndStaminaAbilityDamageBonusThresholdPercent,
                     TemporaryHighFPAndStaminaAbilityDamageBonusThresholdPercent,
                     duration);
                 ReplaceTemporary(
@@ -896,6 +912,11 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                         $"GeneratedWeaponAbility:{StatType.AreaAbilityFragmentationSkillType}");
                 }
                 ReplaceTemporary(activator, StatType.AreaAbilityFragmentationDamage, TemporaryAreaAbilityFragmentationDamage, duration);
+                ReplaceTemporary(activator, StatType.AreaAbilityPulseDamage, TemporaryAreaAbilityPulseDamage, duration);
+                ReplaceTemporary(activator, StatType.AreaAbilityPulseRadiusMeters, TemporaryAreaAbilityPulseRadiusMeters, duration);
+                ReplaceTemporary(activator, StatType.AreaAbilityUsedFPRestore, TemporaryAreaAbilityUsedFPRestore, duration);
+                ReplaceTemporary(activator, StatType.AreaAbilityUsedAttackDeflection, TemporaryAreaAbilityUsedAttackDeflection, duration);
+                ReplaceTemporary(activator, StatType.AreaAbilityUsedAttackDeflectionDurationSeconds, TemporaryAreaAbilityUsedAttackDeflectionDurationSeconds, duration);
                 ReplaceTemporary(
                     activator,
                     StatType.AreaAbilityFragmentationDurationSeconds,
@@ -1517,6 +1538,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                                 damagePercentAdjustment: impactedTarget => profile.GetDamagePercentAdjustment(activator, impactedTarget),
                                 afterImpactAction: summary =>
                                 {
+                                    profile.RestoreResourcesForTargetCount(activator, summary);
                                     if (summary.ImpactedTargetCount > 0)
                                         profile.AfterActivation(activator, skill);
                                 },
@@ -1591,6 +1613,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                             successfulHitCount++;
                     }
 
+                    profile.RestoreResourcesForTargetCount(activator, Ability.GetActiveAbilityImpactSummary(activator));
                     profile.AfterImpact(activator, totalDamage, successfulHitCount, Ability.GetActiveAbilityImpactSummary(activator));
                 })
                 .BreaksStealth();

@@ -65,8 +65,8 @@ public class CharacterSheetStatCoverageTests
         viewModel.Should().Contain("StatType.HighFPAndStaminaAbilityDamagePercentAdjustmentThresholdPercent");
         viewModel.Should().Contain("StatType.HighFPAndStaminaAbilityDamageBonus");
         viewModel.Should().Contain("StatType.HighFPAndStaminaAbilityDamagePercentAdjustment");
-        viewModel.Should().Contain("Combat.IsCurrentFPAndStaminaAtOrAbovePercent(_target, flatThreshold)");
-        viewModel.Should().Contain("Combat.IsCurrentFPAndStaminaAtOrAbovePercent(_target, percentThreshold)");
+        viewModel.Should().Contain("Combat.IsCurrentFPAndStaminaAbovePercent(_target, flatThreshold)");
+        viewModel.Should().Contain("Combat.IsCurrentFPAndStaminaAbovePercent(_target, percentThreshold)");
         viewModel.Should().Contain("active ? $\"Active (+{flatBonus} DMG)\" : $\"Inactive ({flatThreshold}% required)\"");
         viewModel.Should().Contain("active ? $\"Active (+{percentBonus}% DMG)\" : $\"Inactive ({percentThreshold}% required)\"");
     }

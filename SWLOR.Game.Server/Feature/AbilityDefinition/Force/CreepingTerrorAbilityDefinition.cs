@@ -189,6 +189,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 true);
             ApplyEffectAtLocation(DurationType.Temporary, EffectAreaOfEffect(areaOfEffect), location, durationSeconds);
 
+            var sequence = Ability.GetAbilityImpactSequence(activator) ?? new AbilityImpactSequence();
+
             CombatAreaPulses.SchedulePulses(
                 activator,
                 location,
@@ -198,7 +200,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
                 pulseLocation =>
                 {
                     var ability = Ability.GetAbilityDetail(featType);
-                    Ability.BeginAbilityImpact(activator, ability, countsAsAttackAttempt: false);
+                    Ability.BeginAbilityImpact(activator, ability, countsAsAttackAttempt: false, sequence: sequence);
                     ApplyCreepingTerrorPulse(activator, pulseLocation, scaledPulseDamage, radius);
                     var summary = Ability.EndAbilityImpact(activator);
                     Combat.ApplyAbilityImpactEffects(activator, summary);

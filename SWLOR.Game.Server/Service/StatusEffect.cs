@@ -1259,6 +1259,11 @@ namespace SWLOR.Game.Server.Service
             return true;
         }
 
+        public static void ConsumeStatusEffectStat(uint creature, StatType statType)
+        {
+            GetCreatureStatusEffects(creature).ConsumeStat(statType);
+        }
+
         public static void RemoveStatusEffectsWithStat(
             uint creature,
             StatType statType,

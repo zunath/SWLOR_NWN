@@ -113,7 +113,7 @@ public class ForceDarkManipulatorTests
         var creepingTerror = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "CreepingTerrorAbilityDefinition.cs").FullName);
         creepingTerror.Should().Contain("CreateCreepingTerrorField");
         creepingTerror.Should().Contain("CombatAreaPulses.SchedulePulses");
-        creepingTerror.Should().Contain("Ability.BeginAbilityImpact(activator, ability, countsAsAttackAttempt: false)",
+        creepingTerror.Should().Contain("Ability.BeginAbilityImpact(activator, ability, countsAsAttackAttempt: false, sequence: sequence)",
             "periodic field pulses must not spend limited attack charges");
         creepingTerror.Should().Contain("HasCustomValidation(ValidateTargetingRange)");
         creepingTerror.Should().Contain("AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation)");

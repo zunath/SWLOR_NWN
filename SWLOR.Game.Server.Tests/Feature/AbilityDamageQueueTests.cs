@@ -29,7 +29,8 @@ public class AbilityDamageQueueTests
             0,
             true,
             0,
-            Array.Empty<TelegraphGeometry>()
+            Array.Empty<TelegraphGeometry>(),
+            new AbilityImpactSequence()
         });
 
         trackedImpactType.GetMethod("AddDefenseIgnorePercentAdjustment")!

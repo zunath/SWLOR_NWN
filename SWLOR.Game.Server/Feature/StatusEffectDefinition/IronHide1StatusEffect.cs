@@ -13,6 +13,7 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
 
         public IronHide1StatusEffect()
         {
+            StatGroup.Stats[StatType.IronHideRank] = 1;
             StatGroup.Stats[StatType.PhysicalDamageTakenPercentAdjustment] = -5;
             StatGroup.Stats[StatType.ForceDamageTakenPercentAdjustment] = -5;
         }

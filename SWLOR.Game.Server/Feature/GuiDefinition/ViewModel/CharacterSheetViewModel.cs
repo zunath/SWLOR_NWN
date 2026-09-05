@@ -985,11 +985,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 StatType.HighFPAndStaminaAbilityDamageBonusThresholdPercent);
             if (flatBonus > 0 && flatThreshold > 0)
             {
-                var active = Combat.IsCurrentFPAndStaminaAtOrAbovePercent(_target, flatThreshold);
+                var active = Combat.IsCurrentFPAndStaminaAbovePercent(_target, flatThreshold);
                 addStat(
                     "High-Resource Ability DMG",
                     active ? $"Active (+{flatBonus} DMG)" : $"Inactive ({flatThreshold}% required)",
-                    $"Combined conditional bonus: hostile combat abilities gain +{flatBonus} DMG while FP and STM are both at least {flatThreshold}%.");
+                    $"Hostile combat abilities gain +{flatBonus} DMG while FP and STM are both above {flatThreshold}%.");
+            }
+
+            var temporaryBonus = Stat.GetStatAdjustment(_target, StatType.TemporaryHighFPAndStaminaAbilityDamageBonus);
+            var temporaryThreshold = Stat.GetStatAdjustment(_target, StatType.TemporaryHighFPAndStaminaAbilityDamageBonusThresholdPercent);
+            if (temporaryBonus > 0 && temporaryThreshold > 0)
+            {
+                var active = Combat.IsCurrentFPAndStaminaAbovePercent(_target, temporaryThreshold);
+                addStat("High-Resource Buff DMG",
+                    active ? $"Active (+{temporaryBonus} DMG)" : $"Inactive ({temporaryThreshold}% required)",
+                    $"Hostile combat abilities gain +{temporaryBonus} DMG while FP and STM are both above {temporaryThreshold}%. This stacks with the passive bonus at its own threshold.");
             }
 
             var percentBonus = Stat.GetStatAdjustment(
@@ -1000,11 +1010,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 StatType.HighFPAndStaminaAbilityDamagePercentAdjustmentThresholdPercent);
             if (percentBonus > 0 && percentThreshold > 0)
             {
-                var active = Combat.IsCurrentFPAndStaminaAtOrAbovePercent(_target, percentThreshold);
+                var active = Combat.IsCurrentFPAndStaminaAbovePercent(_target, percentThreshold);
                 addStat(
                     "Balanced Attunement",
                     active ? $"Active (+{percentBonus}% DMG)" : $"Inactive ({percentThreshold}% required)",
-                    $"Hostile combat abilities deal +{percentBonus}% damage while FP and STM are both at least {percentThreshold}%.");
+                    $"Hostile combat abilities deal +{percentBonus}% damage while FP and STM are both above {percentThreshold}%.");
             }
         }
 

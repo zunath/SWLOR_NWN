@@ -1290,9 +1290,8 @@ def description_stat_entries(row, base):
             add_stat(stats, "AbilityRestoredBothResourcesHastePercentAdjustment", parse_percent(r"\+(\d+)% Haste", description))
             add_stat(stats, "AbilityRestoredBothResourcesHasteDurationSeconds", parse_duration(description) or 30)
     if base == "Spinning Deflection":
-        add_stat(stats, "AreaAbilityMinTargetsBuffThreshold", 1)
-        add_stat(stats, "AreaAbilityAttackDeflection", parse_deflection_count(description))
-        add_stat(stats, "AreaAbilityBuffDurationSeconds", parse_duration(description) or 30)
+        add_stat(stats, "AreaAbilityUsedAttackDeflection", parse_deflection_count(description))
+        add_stat(stats, "AreaAbilityUsedAttackDeflectionDurationSeconds", parse_duration(description) or 30)
     if base == "Force Gyre":
         add_stat(stats, "AbilityGrantedAttackDeflectionFPRestore", parse_count(r"restore (\d+) FP", description) or 2)
         add_stat(stats, "AbilityGrantedAttackDeflectionFPRestoreCooldownSeconds", parse_cooldown(description, 6))
@@ -1356,7 +1355,6 @@ def description_stat_entries(row, base):
         add_stat(stats, "AbilityUsedEvasionPercentAdjustment", parse_percent(r"gain \+(\d+)% Evasion", description))
         add_stat(stats, "AbilityUsedEvasionDurationSeconds", parse_duration(description) or 30)
     if base == "Flowing Footwork":
-        add_stat(stats, "AreaAbilityUsedEvasionPercentAdjustmentSkillType", skill_expr)
         add_stat(stats, "AreaAbilityUsedEvasionPercentAdjustment", parse_percent(r"gain \+(\d+)% Evasion", description))
         add_stat(stats, "AreaAbilityUsedEvasionDurationSeconds", parse_duration(description) or 30)
     if base == "Edge Rhythm":
@@ -1380,7 +1378,6 @@ def description_stat_entries(row, base):
         add_stat(stats, "HostileAbilityForceAttackDurationSeconds", parse_duration(description) or 30)
         add_stat(stats, "HostileAbilityForceAttackPercentMax", parse_percent(r"stacking up to \+(\d+)%", description))
     if base == "Tempest Focus":
-        add_stat(stats, "AreaAbilityAfterDeflectionDamagePercentAdjustmentSkillType", skill_expr)
         add_stat(stats, "AreaAbilityAfterDeflectionDamagePercentAdjustment", parse_percent(r"deal \+(\d+)% damage", description))
         add_stat(stats, "AreaAbilityAfterDeflectionWindowSeconds", parse_count(r"last (\d+) seconds", description) or parse_count(r"last (\d+)", description) or 30)
     if base == "Flow of the Maelstrom":
@@ -1850,9 +1847,10 @@ def exact_weapon_stance_stat_entries(row, base):
         return list(stats.items())
 
     if base == "Tempest Stance":
-        add_stat(stats, "AreaAbilityMinTargetsBuffThreshold", 1)
-        add_stat(stats, "AreaAbilityAttackDeflection", parse_deflection_count(description))
-        add_stat(stats, "AreaAbilityBuffDurationSeconds", parse_count(r"for (\d+) seconds", description) or 30)
+        add_stat(stats, "AreaAbilityDamagePercentAdjustment", parse_percent(r"gain \+(\d+)% damage", description))
+        add_stat(stats, "SingleTargetDamagePercentAdjustment", -parse_percent(r"single-target damage is reduced by (\d+)%", description))
+        add_stat(stats, "AreaAbilityUsedAttackDeflection", parse_deflection_count(description))
+        add_stat(stats, "AreaAbilityUsedAttackDeflectionDurationSeconds", parse_count(r"for (\d+) seconds", description) or 30)
         return list(stats.items())
 
     if base == "Iron Guard Stance":
@@ -2345,7 +2343,11 @@ def profile_property_lines(row, level, primary_status):
 
     stamina_restore = first_int(r"(?:restore(?:s)?|gain(?:s)?) \+?(\d+) STM", description)
     if stamina_restore and "defeating" not in lowered and not both_resource_restore and not hostile_resource_restore and "control effects you apply" not in lowered:
-        if "both hits" in lowered:
+        minimum_targets = first_int(r"hits (\d+) or more enemies", description)
+        if minimum_targets:
+            properties.append(("RestoreStaminaIfMinimumTargetsHit", str(stamina_restore)))
+            properties.append(("StaminaRestoreMinimumTargets", str(minimum_targets)))
+        elif "both hits" in lowered:
             properties.append(("RestoreStaminaIfAllHitsLand", str(stamina_restore)))
         elif "either shot" in lowered and "critically hits" in lowered:
             properties.append(("RestoreStaminaIfAnyCriticalHit", str(stamina_restore)))
@@ -2580,7 +2582,11 @@ def profile_property_lines(row, level, primary_status):
         add_profile_property("SourceOwnedStatusEffectTypeRemovedOnPerkRefund", "typeof(KillBoxStatusEffect)")
     if "high-stm abilities also inflict exposed" in lowered:
         add_high_stm_exposed_properties()
-    if "area attacks pulse" in lowered or "fragmentation zones" in lowered:
+    if "immediate pulse" in lowered and "area ability" in lowered:
+        add_profile_property("TemporaryAreaAbilityPulseDamage", parse_count(r"pulse for (\d+) physical", description))
+        add_profile_property("TemporaryAreaAbilityPulseRadiusMeters", parse_count(r"enemies within (\d+)m of", description))
+        add_profile_property("TemporaryDefeatedEnemyEffectDurationSeconds", str(parse_duration(description) or 45))
+    if "fragmentation zones" in lowered:
         fragmentation_damage = (
             parse_count(r"pulse for (\d+) physical", description) or
             parse_count(r"deal (\d+) physical", description)
@@ -2592,11 +2598,9 @@ def profile_property_lines(row, level, primary_status):
         add_profile_property("TemporaryAreaAbilityFragmentationPulseSeconds", parse_count(r"every (\d+) seconds", description) or 3)
         add_profile_property("TemporaryDefeatedEnemyEffectDurationSeconds", str(first_sentence_duration(description) or parse_duration(description) or 45))
     if "area combat abilities restore" in lowered and has_deflection_description(description):
-        add_profile_property("TemporaryAreaAbilityMinTargetsResourceRestoreThreshold", "1")
-        add_profile_property("TemporaryAreaAbilityFPRestore", parse_count(r"restore (\d+) FP", description))
-        add_profile_property("TemporaryAreaAbilityMinTargetsBuffThreshold", "1")
-        add_profile_property("TemporaryAreaAbilityAttackDeflection", parse_deflection_count(description))
-        add_profile_property("TemporaryAreaAbilityBuffDurationSeconds", parse_deflection_duration(description) or 30)
+        add_profile_property("TemporaryAreaAbilityUsedFPRestore", parse_count(r"restore (\d+) FP", description))
+        add_profile_property("TemporaryAreaAbilityUsedAttackDeflection", parse_deflection_count(description))
+        add_profile_property("TemporaryAreaAbilityUsedAttackDeflectionDurationSeconds", parse_deflection_duration(description) or 30)
         add_profile_property("TemporaryDefeatedEnemyEffectDurationSeconds", str(first_sentence_duration(description) or parse_duration(description) or 45))
     if "control effects you apply grant" in lowered and has_deflection_description(description):
         add_profile_property("TemporaryStatusAppliedRequiredCategory", status_category_expression("Control"))

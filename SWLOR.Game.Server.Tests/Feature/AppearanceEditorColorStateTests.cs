@@ -123,7 +123,7 @@ public class AppearanceEditorColorStateTests
     }
 
     [Test]
-    public void RgbDraftCommitRejectsStaleTargetsAndPublishesAfterTheClientSetter()
+    public void RgbDraftCommitRejectsStaleTargetsWithoutRepublishingTextBuffers()
     {
         var root = CSharpSyntaxTree.ParseText(ReadViewModel()).GetRoot();
         var input = FindMethod(root, "SetCustomTintComponent").ToString();
@@ -138,9 +138,12 @@ public class AppearanceEditorColorStateTests
             .BeLessThan(closed.IndexOf("GetIsDM(_target)", StringComparison.Ordinal),
                 "closing an NPC editor must cancel drafts before the player-only restoration guard");
         var commit = FindMethod(root, "CommitCustomTintComponents").ToString();
-        commit.IndexOf("ApplyCustomTintColor(", StringComparison.Ordinal).Should()
-            .BeLessThan(commit.IndexOf("PublishTintControlBindings()", StringComparison.Ordinal));
-        FindMethod(root, "OnClientPropertyUpdated").ToString().Should().Contain("PublishTintControlBindings()");
+        commit.Should().Contain("synchronizeComponents: false");
+        commit.Should().NotContain("OnPropertyChanged");
+        var clientUpdate = FindMethod(root, "OnClientPropertyUpdated").ToString();
+        clientUpdate.Should().Contain("_tintComponentCorrection == propertyName");
+        clientUpdate.Should().Contain("OnPropertyChanged(propertyName)");
+        clientUpdate.Should().NotContain("OnPropertyChanged(nameof(CustomTint");
     }
 
     private static MethodDeclarationSyntax FindMethod(Microsoft.CodeAnalysis.SyntaxNode root, string name) =>

@@ -299,6 +299,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                 row.AddSpacer();
             });
+
+            col.AddRow(row =>
+            {
+                row.BindIsVisible(model => model.IsCustomTintAvailable);
+                row.AddLabel()
+                    .BindText(model => model.ClosestTintPresetText)
+                    .SetHeight(20f)
+                    .SetWidth(width);
+            });
         }
 
         private void BuildArmorEditor(GuiGroup<AppearanceEditorViewModel> partial)

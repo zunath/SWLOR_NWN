@@ -377,7 +377,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             RobeMetal2Region = new GuiRectangle(X, Y, Width, Height);
         }
 
-        private (int, int) ColorIdToCoordinates(int colorId)
+        private static (int, int) ColorIdToCoordinates(int colorId)
         {
             var x = colorId % TextureColorsPerRow;
             var y = colorId / TextureColorsPerRow;
@@ -386,17 +386,20 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
         private void ChangeColor(ColorTarget target, AppearanceArmorColor channel, int colorId)
         {
-            if (colorId >= 255)
-            {
-                _colorMappings[target][channel].Region = new GuiRectangle(247, 55, 1, 1);
-            }
-            else
-            {
-                var (x, y) = ColorIdToCoordinates(colorId);
-                _colorMappings[target][channel].Region = new GuiRectangle(x * ColorSize, y * ColorSize, ColorSize, ColorSize);
-            }
-
+            _colorMappings[target][channel].Region = BuildPaletteRegion(colorId);
             GetType().GetProperty(_colorMappings[target][channel].PropertyName)?.SetValue(this, _colorMappings[target][channel].Region);
+            if (target == _colorTarget && channel == _selectedColorChannel)
+                UpdateTargetedColor();
+        }
+
+        private static GuiRectangle BuildPaletteRegion(int colorId)
+        {
+            // The single neutral pixel is the existing inheritance indicator. Do not sample
+            // palette row zero (a real color) or substitute the global color for an unset part.
+            if (colorId < 0 || colorId >= ColorWidthCells * ColorHeightCells)
+                return new GuiRectangle(247, 55, 1, 1);
+            var (x, y) = ColorIdToCoordinates(colorId);
+            return new GuiRectangle(x * ColorSize, y * ColorSize, ColorSize, ColorSize);
         }
 
         // Global

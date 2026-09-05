@@ -128,7 +128,7 @@ public class TintMapReviewTests
         definition.Should().NotContain("OnResetTintColor");
         viewModel.Should().NotContain("OnResetTintColor");
         definition.Should().NotContain("IsCustomTintPickerVisible");
-        definitionMethods["BuildEditorHeader"].ToString().Should().NotContain("BuildCustomTintEditor");
+        definitionMethods["BuildEquipmentSelection"].ToString().Should().NotContain("BuildCustomTintEditor");
         definitionMethods["BuildMainEditor"].ToString().Should().Contain("BuildCustomTintEditor(col2)");
         definitionMethods["BuildArmorEditor"].ToString().Should().Contain("BuildCustomTintEditor(col)",
             "the armor picker must live in the full-width controls column below the compact palette row");
@@ -207,7 +207,7 @@ public class TintMapReviewTests
     }
 
     [Test]
-    public void AppearanceEditorInitializesGeneratedMaterialRowsFromEquippedArmor()
+    public void AppearanceEditorOpeningReadsColorsWithoutReapplyingAppearance()
     {
         var source = ReadSource(
             "SWLOR.Game.Server",
@@ -219,18 +219,17 @@ public class TintMapReviewTests
         var initialize = root.DescendantNodes()
             .OfType<MethodDeclarationSyntax>()
             .Single(method => method.Identifier.ValueText == "Initialize");
-        var selectEquipment = root.DescendantNodes()
+        var selectTab = root.DescendantNodes()
             .OfType<MethodDeclarationSyntax>()
-            .Single(method => method.Identifier.ValueText == "OnSelectEquipment");
+            .Single(method => method.Identifier.ValueText == "SelectEditorTab");
 
-        foreach (var method in new[] { initialize, selectEquipment })
+        foreach (var method in new[] { initialize, selectTab })
         {
             var body = method.ToString();
-            body.Should().Contain("TintMapService.ApplyCurrentColors(_target)",
-                "armor materials otherwise retain their generated row-zero texture colors");
-            body.IndexOf("TintMapService.ApplyCurrentColors(_target)", StringComparison.Ordinal)
-                .Should().BeLessThan(body.IndexOf("LoadTintMapEditor()", StringComparison.Ordinal),
-                    "the rendered armor must match its item colors before the picker reads them");
+            body.Should().NotContain("TintMapService.ApplyCurrentColors",
+                "opening a color editor must not rewrite native palettes or material state");
+            body.Should().Contain("LoadTintMapEditor()",
+                "the picker reads the current effective colors without reapplying them");
         }
     }
 
@@ -319,7 +318,10 @@ public class TintMapReviewTests
             "selection.Material.Layers.Contains(selectedLayerType)");
         methods["TryGetEditableTintSelections"].ToString().Should().Contain(
             "_colorTarget == ColorTarget.Global",
-            "custom armor tints must require a player-selected part instead of repainting all inheriting parts");
+            "global palette picking must remain available without requiring a part-specific override");
+        methods["TryGetEditableTintSelections"].ToString().Should().Contain(
+            "selections.Count == 0 && !isGlobalArmorColor",
+            "a native global channel remains editable even when the current model does not use it");
         methods["OnSelectColor"].ToString().Should().Contain("ApplySelectedPaletteColor");
         methods["OnSelectColor"].ToString().Should().Contain("SynchronizeCustomTintControlsToPaletteColor");
         methods["OnClickColorPalette"].ToString().Should().Contain("ApplySelectedPaletteColor");

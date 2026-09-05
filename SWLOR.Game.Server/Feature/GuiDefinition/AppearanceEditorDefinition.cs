@@ -11,19 +11,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     {
         private readonly GuiWindowBuilder<AppearanceEditorViewModel> _builder = new();
 
-        private const float MainColorChannelButtonSize = 72f;
-        private const float PartColorChannelButtonSize = 16f;
+        private const float ContentWidth = 530f;
+        private const float MainColorChannelButtonSize = 56f;
+        private const float PartColorChannelButtonSize = 20f;
+        private const float PaletteButtonSize = 18f;
+        private const float PaletteWidth = 308f;
+        private const float PaletteHeight = 246f;
 
         public GuiConstructedWindow BuildWindow()
         {
             _builder.CreateWindow(GuiWindowType.AppearanceEditor)
                 .SetIsResizable(true)
                 .SetIsCollapsible(true)
-                .SetInitialGeometry(0, 0, 476.57895f, 600f)
+                .SetInitialGeometry(0, 0, 590f, 740f)
                 .SetTitle("Appearance Editor")
                 .BindOnClosed(model => model.OnCloseWindow())
-
-                .DefinePartialView(AppearanceEditorViewModel.EditorHeaderPartial, BuildEditorHeader)
 
                 .DefinePartialView(AppearanceEditorViewModel.EditorMainPartial, BuildMainEditor)
 
@@ -41,80 +43,56 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     BuildColorPalette(partial, "gui_pal_armor01");
                 })
 
-                .AddColumn(BuildNavigation);
+                .AddStandardLayout(layout =>
+                {
+                    layout.SetTabPanelHeight(84f);
+                    layout.AddTabRow(BuildNavigation);
+                    layout.AddTabRow(BuildEquipmentSelection);
+                    layout.SetContentPartialElement(AppearanceEditorViewModel.MainPartialElement);
+                });
 
             return _builder.Build();
         }
 
-        private void BuildNavigation(GuiColumn<AppearanceEditorViewModel> col)
+        private void BuildNavigation(GuiRow<AppearanceEditorViewModel> row)
         {
-            col.AddRow(row =>
-            {
-                row.AddSpacer();
-
-                row.AddToggleButton()
-                    .SetText("Appearance")
-                    .SetHeight(32f)
-                    .BindIsToggled(model => model.IsAppearanceSelected)
-                    .BindOnClicked(model => model.OnSelectAppearance());
-
-                row.AddToggleButton()
-                    .SetText("Equipment")
-                    .SetHeight(32f)
-                    .BindIsToggled(model => model.IsEquipmentSelected)
-                    .BindOnClicked(model => model.OnSelectEquipment());
-
-                row.AddToggleButton()
-                    .SetText("Settings")
-                    .SetHeight(32f)
-                    .BindIsToggled(model => model.IsSettingsSelected)
-                    .BindOnClicked(model => model.OnSelectSettings())
-                    .BindIsVisible(model => model.IsSettingsVisible);
-
-                row.AddSpacer();
-            });
-
-            col.AddRow(row =>
-            {
-                row.AddPartialView(AppearanceEditorViewModel.MainPartialElement);
-            });
+            row.SetHeight(28f);
+            row.AddToggles()
+                .AddOption("Appearance")
+                .AddOption("Equipment")
+                .BindSelectedValue(model => model.EditorTabToggleValue)
+                .SetWidth(320f)
+                .SetHeight(28f);
+            row.AddToggles()
+                .AddOption("Settings")
+                .BindSelectedValue(model => model.SettingsTabToggleValue)
+                .BindIsVisible(model => model.IsSettingsVisible)
+                .SetWidth(150f)
+                .SetHeight(28f);
         }
 
-        private void BuildEditorHeader(GuiGroup<AppearanceEditorViewModel> partial)
+        private void BuildEquipmentSelection(GuiRow<AppearanceEditorViewModel> row)
         {
-            partial.AddColumn(col =>
-            {
-                col.AddRow(row =>
-                {
-                    row.BindIsVisible(model => model.IsEquipmentSelected);
-
-                    row.AddSpacer();
-
-                    row.AddComboBox()
-                        .AddOption("Armor", 0)
-                        .AddOption("Helmet", 1)
-                        .AddOption("Cloak", 2)
-                        .AddOption("Weapon (Main)", 3)
-                        .AddOption("Weapon (Off)", 4)
-                        .BindSelectedIndex(model => model.SelectedItemTypeIndex);
-
-                    row.AddButton()
-                        .SetText("Outfits")
-                        .SetHeight(32f)
-                        .BindOnClicked(model => model.OnClickOutfits());
-
-                    row.AddSpacer();
-                });
-
-                col.AddRow(row =>
-                {
-                    row.AddPartialView(AppearanceEditorViewModel.EditorPartialElement);
-                });
-            });
+            row.BindIsVisible(model => model.IsEquipmentSelected);
+            row.AddComboBox()
+                .AddOption("Armor", 0)
+                .AddOption("Helmet", 1)
+                .AddOption("Cloak", 2)
+                .AddOption("Weapon (Main)", 3)
+                .AddOption("Weapon (Off)", 4)
+                .BindSelectedIndex(model => model.SelectedItemTypeIndex)
+                .SetWidth(240f)
+                .SetHeight(32f);
+            row.AddButton()
+                .SetText("Outfits")
+                .SetWidth(140f)
+                .SetHeight(32f)
+                .BindOnClicked(model => model.OnClickOutfits());
         }
 
         private void BuildMainEditor(GuiGroup<AppearanceEditorViewModel> partial)
         {
+            partial.SetWidth(ContentWidth);
             partial.AddColumn(col =>
             {
                 col.AddRow(row =>
@@ -145,7 +123,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                         .BindOnClicked(model => model.OnSelectColorCategory());
                                 });
                             })
-                                .BindRowCount(model => model.ColorCategoryOptions);
+                                .BindRowCount(model => model.ColorCategoryOptions)
+                                .SetWidth(210f)
+                                .SetHeight(154f);
                         });
 
                         col2.AddRow(row2 =>
@@ -160,7 +140,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                         .BindOnClicked(model => model.OnSelectPartCategory());
                                 });
                             })
-                                .BindRowCount(model => model.PartCategoryOptions);
+                                .BindRowCount(model => model.PartCategoryOptions)
+                                .SetWidth(210f)
+                                .SetHeight(210f);
                         });
 
                     });
@@ -196,7 +178,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 });
                             })
                                 .BindRowCount(model => model.PartOptions)
-                                .SetWidth(256f);
+                                .SetWidth(276f)
+                                .SetHeight(210f);
                         });
 
                         col2.AddRow(row2 =>
@@ -282,6 +265,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
         private void BuildArmorEditor(GuiGroup<AppearanceEditorViewModel> partial)
         {
+            partial.SetWidth(ContentWidth);
             void BuildMainColorChannels(GuiColumn<AppearanceEditorViewModel> col)
             {
                 col.AddRow(row =>
@@ -800,7 +784,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 });
             }
 
-            partial.AddColumn(mainCol  =>
+            partial.AddColumn(mainCol =>
             {
                 mainCol.AddRow(row =>
                 {
@@ -815,48 +799,34 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 mainCol.AddRow(mainRow =>
                 {
                     mainRow.BindIsVisible(model => model.HasItemEquipped);
-                    mainRow.AddGroup(group =>
+                    mainRow.AddColumn(col =>
                     {
-                        group.SetShowBorder(false);
-                        group.AddColumn(col =>
+                        col.AddRow(row =>
                         {
-                            col.AddRow(row =>
-                            {
-                                row.AddLabel()
-                                    .SetText(" ")
-                                    .SetHeight(20f)
-                                    .SetWidth(MainColorChannelButtonSize);
-                            });
+                            row.AddPartialView(AppearanceEditorViewModel.ArmorColorElement)
+                                .SetWidth(PaletteWidth)
+                                .SetHeight(PaletteHeight);
+                            row.AddColumn(BuildMainColorChannels);
+                        });
 
-                            col.AddRow(row =>
-                            {
-                                row.AddColumn(col2 =>
-                                {
-                                    col2.AddRow(row2 =>
-                                    {
-                                        row2.AddPartialView(AppearanceEditorViewModel.ArmorColorElement);
-                                    });
-                                });
+                        BuildCustomTintEditor(col);
 
-                                row.AddColumn(BuildMainColorChannels);
-                            });
+                        col.AddRow(row =>
+                        {
+                            row.AddLabel()
+                                .SetText("Empty = inherited. Right-click a part color to reset.")
+                                .SetHeight(24f)
+                                .SetHorizontalAlign(NuiHorizontalAlign.Left);
+                        });
 
-                            // A custom armor tint is a per-part override. Keep the editor out of
-                            // the palette/channel row so it cannot make that row leave a large
-                            // blank area beneath the palette.
-                            BuildCustomTintEditor(col);
+                        col.AddRow(row =>
+                        {
+                            BuildParts(row);
+                        });
 
-                            col.AddRow(row =>
-                            {
-                                BuildParts(row);
-                                row.AddSpacer();
-                            });
-
-                            col.AddRow(row =>
-                            {
-                                BuildFooter(row);
-                                row.AddSpacer();
-                            });
+                        col.AddRow(row =>
+                        {
+                            BuildFooter(row);
                         });
                     });
                 });
@@ -906,6 +876,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
         private void BuildSettings(GuiGroup<AppearanceEditorViewModel> partial)
         {
+            partial.SetWidth(ContentWidth);
             partial.AddColumn(col =>
             {
 
@@ -961,6 +932,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
         private void BuildColorPalette(GuiGroup<AppearanceEditorViewModel> group, string texture)
         {
+            group.SetWidth(PaletteWidth);
+            group.SetHeight(PaletteHeight);
             group.AddColumn(col =>
             {
                 col.AddRow(row =>
@@ -971,15 +944,17 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         .BindIsVisible(model => model.IsEquipmentSelected);
                 });
 
-                const int UIColorsPerRow = 20;
+                const int UIColorsPerRow = 16;
                 const int ColorTotalCount = 176;
-                const int RowCount = 1 + ColorTotalCount / UIColorsPerRow;
+                const int RowCount = (ColorTotalCount + UIColorsPerRow - 1) / UIColorsPerRow;
 
                 for (var y = 0; y < RowCount; ++y)
                 {
                     var yCopy = y;
                     col.AddRow(uiRow =>
                     {
+                        uiRow.SetHeight(PaletteButtonSize);
+                        uiRow.SetMargin(0f);
                         for (var x = 0; x < UIColorsPerRow; ++x)
                         {
                             var paletteIndex = yCopy * UIColorsPerRow + x;
@@ -999,7 +974,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 uiRow,
                                 texture,
                                 null,
-                                PartColorChannelButtonSize,
+                                PaletteButtonSize,
                                 2f,
                                 model => model.OnClickColorPalette(paletteIndex),
                                 model => model.OnClickClearColor(AppearanceEditorViewModel.ColorTarget.Invalid, AppearanceArmorColor.Cloth1),

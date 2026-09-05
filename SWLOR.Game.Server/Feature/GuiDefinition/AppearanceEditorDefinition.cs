@@ -870,14 +870,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         col.AddRow(row =>
                         {
-                            row.AddLabel()
-                                .SetText("Empty = inherited. Right-click a part color to reset.")
-                                .SetHeight(24f)
-                                .SetHorizontalAlign(NuiHorizontalAlign.Left);
-                        });
-
-                        col.AddRow(row =>
-                        {
                             BuildParts(row);
                         });
 

@@ -469,6 +469,26 @@ namespace SWLOR.Game.Server.Service
                 : _creatureEffects[creature];
         }
 
+        public static IReadOnlyList<StatAdjustmentSource> GetStatSources(uint creature, StatType payloadStat)
+        {
+            return _creatureEffects.TryGetValue(creature, out var effects)
+                ? effects.GetStatSources(payloadStat)
+                : Array.Empty<StatAdjustmentSource>();
+        }
+
+        public static int GetStatAdjustment(uint creature, StatType stat)
+        {
+            return _creatureEffects.TryGetValue(creature, out var effects) &&
+                   effects.StatGroup.Stats.TryGetValue(stat, out var value)
+                ? value
+                : 0;
+        }
+
+        public static bool HasAnyActiveEffect(uint creature, IReadOnlySet<Type> effectTypes)
+        {
+            return _creatureEffects.TryGetValue(creature, out var effects) && effects.HasAnyActiveEffect(effectTypes);
+        }
+
         public static void ApplyPermanentStatusEffect<T>(uint source, uint creature)
             where T: IStatusEffect
         {

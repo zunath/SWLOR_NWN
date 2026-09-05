@@ -191,6 +191,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
             return (activator, target) =>
             {
                 var sequence = oncePerCast ? Ability.GetAbilityImpactSequence(activator) : null;
+                if (sequence != null && !sequence.HasRemainingChainArcs(maxArcs))
+                    return;
 
                 foreach (var arc in AbilityTargeting.GetHostileTargetsNearLocation(activator, GetLocation(target), radius,
                              sequence == null ? maxArcs : 0, predicate: c => c != target))
@@ -203,6 +205,9 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
                         ResolveSkillType(activator, profile), ScaleForMimicryPotency(activator, profile, arcDamage), arcDuration, arcStatus, false,
                         damageType: damageType, playImpactAnimation: false,
                         useNPCStatScaling: ShouldUseNPCStatScaling(activator));
+
+                    if (sequence != null && !sequence.HasRemainingChainArcs(maxArcs))
+                        break;
                 }
             };
         }

@@ -26,6 +26,81 @@ public class StatAdjustmentSourceTests
         ((IDictionary)typeof(TemporaryStatModifier).GetField("_modifiers", PrivateStatic)!.GetValue(null)!).Remove(Creature);
     }
 
+    [TestCase(false)]
+    [TestCase(true)]
+    public void MissingStatusPayloadAndBuffReads_DoNotAllocateTrackersOrEffectSnapshots(bool hasUnrelatedEffects)
+    {
+        if (hasUnrelatedEffects)
+        {
+            for (var index = 0; index < 40; index++)
+                AddStatus(Payload((StatType.AttackPercentAdjustment, 1)));
+        }
+        var otherEffectTypes = new HashSet<Type> { typeof(StatusEffectBase) };
+        for (var index = 0; index < 100; index++)
+        {
+            StatusEffect.GetStatSources(Creature, StatType.AreaAbilityPulseDamage);
+            StatusEffect.HasAnyActiveEffect(Creature, otherEffectTypes);
+            StatusEffect.GetStatAdjustment(Creature, StatType.AreaAbilityPulseDamage);
+        }
+
+        var before = GC.GetAllocatedBytesForCurrentThread();
+        var matches = 0;
+        for (var index = 0; index < 100; index++)
+        {
+            matches += StatusEffect.GetStatSources(Creature, StatType.AreaAbilityPulseDamage).Count;
+            matches += StatusEffect.HasAnyActiveEffect(Creature, otherEffectTypes) ? 1 : 0;
+            matches += StatusEffect.GetStatAdjustment(Creature, StatType.AreaAbilityPulseDamage);
+        }
+        var allocated = GC.GetAllocatedBytesForCurrentThread() - before;
+
+        matches.Should().Be(0);
+        allocated.Should().BeLessThan(4096, "combat and AI reads must not build empty trackers or copy unrelated effects");
+        Effects.ContainsKey(Creature).Should().Be(hasUnrelatedEffects);
+    }
+
+    [Test]
+    public void StatusSourceSnapshot_AllowsEffectChangesAndExcludesExpiredPayloads()
+    {
+        var first = Payload((StatType.AreaAbilityPulseDamage, 8));
+        var expired = Payload((StatType.AreaAbilityPulseDamage, 4));
+        expired.Expire();
+        AddStatus(first);
+        AddStatus(expired);
+        var sources = StatusEffect.GetStatSources(Creature, StatType.AreaAbilityPulseDamage);
+        foreach (var source in sources)
+        {
+            Effects[Creature].Remove(first);
+            AddStatus(Payload((StatType.AreaAbilityPulseDamage, 3)));
+            source[StatType.AreaAbilityPulseDamage].Should().Be(8);
+        }
+
+        sources.Should().ContainSingle();
+        StatusEffect.GetStatSources(Creature, StatType.AreaAbilityPulseDamage).Single()[StatType.AreaAbilityPulseDamage].Should().Be(3);
+        var types = new HashSet<Type> { typeof(PayloadEffect) };
+        StatusEffect.HasAnyActiveEffect(Creature, types).Should().BeTrue();
+        foreach (var effect in Effects[Creature].GetAllEffects().Cast<PayloadEffect>())
+            effect.Expire();
+        StatusEffect.HasAnyActiveEffect(Creature, types).Should().BeFalse();
+    }
+
+    [Test]
+    public void TemporarySources_SnapshotOnlyMatchingGroupsBeforeCallersAddModifiers()
+    {
+        for (var index = 0; index < 40; index++)
+            AddTemporary($"unrelated-{index}", StatType.AttackPercentAdjustment, 1);
+        AddTemporary("pulse", StatType.AreaAbilityPulseDamage, 8);
+        AddTemporary("pulse", StatType.AreaAbilityPulseRadiusMeters, 5);
+        var sources = TemporaryStatModifier.GetStatSources(Creature, StatType.AreaAbilityPulseDamage);
+        foreach (var source in sources)
+        {
+            AddTemporary("new-pulse", StatType.AreaAbilityPulseDamage, 2);
+            source[StatType.AreaAbilityPulseDamage].Should().Be(8);
+            source[StatType.AreaAbilityPulseRadiusMeters].Should().Be(5);
+        }
+        sources.Should().ContainSingle();
+        TemporaryStatModifier.GetStatSources(Creature, StatType.AreaAbilityPulseDamage).Should().HaveCount(2);
+    }
+
     [Test]
     public void ConditionalPayloads_KeepEachStatusAndTemporarySourceThreshold()
     {
@@ -146,6 +221,7 @@ public class StatAdjustmentSourceTests
 
     private sealed class PayloadEffect : StatusEffectBase
     {
+        public void Expire() => IsFlaggedForRemoval = true;
         public override StatusEffectStackType StackingType => StatusEffectStackType.StackFromMultipleSources;
         public override string Name => "Test payload";
         public override EffectIconType Icon => EffectIconType.Invalid;

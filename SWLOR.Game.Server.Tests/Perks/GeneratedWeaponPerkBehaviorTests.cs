@@ -577,8 +577,10 @@ public class GeneratedWeaponPerkBehaviorTests
             "AbilityDefinition",
             "Force",
             "CreepingTerrorAbilityDefinition.cs"));
-        creepingTerrorSource.Should().Contain("countsAsAttackAttempt: false",
+        creepingTerrorSource.Should().Contain("Ability.CaptureRepeatedAbilityImpact(activator,",
             "periodic field pulses are effects, not new attack attempts");
+        abilitySource.Should().Contain("BeginAbilityImpact(activator, ability, 0, 0, countsAsAttackAttempt: false, sequence: sequence)",
+            "recurring impacts must not consume a new activation's pending attack bonuses");
 
         var statusEffectSource = File.ReadAllText(Path.Combine(
             root.FullName, "SWLOR.Game.Server", "Service", "StatusEffect.cs"));

@@ -190,6 +190,44 @@ namespace SWLOR.Game.Server.Service
             return GetAbilityImpactSequence(activator)?.TryTriggerAreaPulse() == true;
         }
 
+        /// <summary>
+        /// Retains the originating ability and cast sequence for recurring impacts without
+        /// consuming another activation's pending bonuses or replacing its impact tracker.
+        /// </summary>
+        public static Action CaptureRepeatedAbilityImpact(uint activator, Action impactAction)
+        {
+            ArgumentNullException.ThrowIfNull(impactAction);
+            var originatingImpact = GetTrackedAbilityImpact(activator);
+            if (originatingImpact == null)
+                return impactAction;
+
+            var ability = originatingImpact.Ability;
+            var sequence = originatingImpact.Sequence;
+            return () =>
+            {
+                if (!GetIsObjectValid(activator) || GetCurrentHitPoints(activator) <= 0)
+                    return;
+
+                var previousImpact = GetTrackedAbilityImpact(activator);
+                BeginAbilityImpact(activator, ability, 0, 0, countsAsAttackAttempt: false, sequence: sequence);
+                var completed = false;
+                try
+                {
+                    impactAction();
+                    var summary = EndAbilityImpact(activator);
+                    completed = true;
+                    Combat.ApplyAbilityImpactEffects(activator, summary);
+                }
+                finally
+                {
+                    if (!completed)
+                        AbortAbilityImpact(activator);
+                    if (previousImpact != null)
+                        _trackedAbilityImpacts[activator] = previousImpact;
+                }
+            };
+        }
+
         public static AbilityImpactSummary EndAbilityImpact(uint activator)
         {
             if (!_trackedAbilityImpacts.TryGetValue(activator, out var impact))

@@ -202,27 +202,42 @@ namespace SWLOR.Game.Server.Service.CombatService
             return Consume(creature, statType, GetGroup(groupStatType));
         }
 
-        public static IEnumerable<StatAdjustmentSource> GetStatSources(uint creature, StatType payloadStat)
+        public static IReadOnlyList<StatAdjustmentSource> GetStatSources(uint creature, StatType payloadStat)
         {
             if (PurgeExpired(creature))
                 PublishRefresh(creature);
 
             if (!_modifiers.TryGetValue(creature, out var modifiers))
-                yield break;
+                return Array.Empty<StatAdjustmentSource>();
 
-            foreach (var group in modifiers.GroupBy(x => x.Group).ToArray())
+            Dictionary<string, Dictionary<StatType, int>> groups = null;
+            foreach (var modifier in modifiers)
             {
-                if (!group.Any(x => x.StatType == payloadStat && x.Amount != 0))
+                if (modifier.StatType != payloadStat || modifier.Amount == 0)
                     continue;
 
-                var stats = new Dictionary<StatType, int>();
-                foreach (var modifier in group)
+                groups ??= new Dictionary<string, Dictionary<StatType, int>>();
+                if (!groups.ContainsKey(modifier.Group))
+                    groups.Add(modifier.Group, new Dictionary<StatType, int>());
+            }
+
+            if (groups == null)
+                return Array.Empty<StatAdjustmentSource>();
+
+            foreach (var modifier in modifiers)
+            {
+                if (groups.TryGetValue(modifier.Group, out var stats))
                 {
                     stats.TryGetValue(modifier.StatType, out var current);
                     stats[modifier.StatType] = Stat.AggregateStatAdjustment(modifier.StatType, current, modifier.Amount);
                 }
-                yield return new StatAdjustmentSource($"temporary:{group.Key}", stats);
             }
+
+            var sources = new StatAdjustmentSource[groups.Count];
+            var index = 0;
+            foreach (var (group, stats) in groups)
+                sources[index++] = new StatAdjustmentSource($"temporary:{group}", stats);
+            return sources;
         }
 
         public static int GetStatAdjustment(uint creature, StatType statType, string group = null)

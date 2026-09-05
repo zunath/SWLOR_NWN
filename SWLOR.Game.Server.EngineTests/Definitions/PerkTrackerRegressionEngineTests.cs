@@ -196,6 +196,119 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
+        [EngineTest("Instant area self-buffs trigger their deflection reward only once", Category = "PerkTracker", TimeoutSeconds = 30f)]
+        public static async Task InstantAreaBuffRewardOnce(EngineTestContext ctx)
+        {
+            var caster = ctx.SpawnCreature("nw_bandit001");
+            var target = ctx.SpawnCreature("nw_rat001", 2f);
+            await ctx.WaitFrameAsync();
+            PrepareStationaryCreature(ctx, caster);
+            PrepareStationaryCreature(ctx, target);
+            ctx.MakeHostile(target);
+            ctx.SetNPCResources(caster, 100, 100);
+            // An uncapped reward reveals duplicate applications that a cooldown would hide.
+            TemporaryStatModifier.Add(caster, StatType.AbilityGrantedAttackDeflectionFPRestore, 2, 30f);
+            var ability = Ability.GetAbilityDetail(FeatType.CircleSlash1);
+            Combat.SetAbilityHitResolutionOverride(true);
+            try
+            {
+                await ctx.ExecuteInCreatureContextAsync(caster, () =>
+                {
+                    Ability.BeginAbilityImpact(caster, ability);
+                    try
+                    {
+                        // Prepare the deficit after entering the assigned creature context;
+                        // queued NPC spawn initialization may refill resources before it runs.
+                        Stat.ReduceFP(caster, 20);
+                        var before = Stat.GetCurrentFP(caster);
+                        ability.ImpactAction(caster, target, 1, GetLocation(caster));
+                        ctx.AssertEqual(before + 2, Stat.GetCurrentFP(caster), "the instant impact grants one deflection reward");
+                    }
+                    finally { Ability.EndAbilityImpact(caster); }
+                });
+            }
+            finally { Combat.SetAbilityHitResolutionOverride(null); }
+
+            ctx.AssertEqual(4, Stat.GetStatAdjustment(caster, StatType.RangedDeflection), "Circle Slash grants its self-buff");
+        }
+
+        [EngineTest("Scheduled device channels retain area rewards and share one pulse per cast", Category = "PerkTracker", TimeoutSeconds = 30f)]
+        public static async Task ScheduledDeviceAreaContext(EngineTestContext ctx)
+        {
+            var caster = ctx.SpawnCreature("nw_bandit001", -1f);
+            var first = ctx.SpawnCreature("nw_rat001", 1f);
+            var second = ctx.SpawnCreature("nw_rat001", 3f);
+            await ctx.WaitFrameAsync();
+            foreach (var creature in new[] { caster, first, second })
+                PrepareStationaryCreature(ctx, creature);
+            ctx.MakeHostile(first);
+            ctx.MakeHostile(second);
+            ctx.SetNPCResources(caster, 100, 100);
+            TemporaryStatModifier.Add(caster, StatType.AreaAbilityPulseDamage, 8, 30f, "pulse");
+            TemporaryStatModifier.Add(caster, StatType.AreaAbilityPulseRadiusMeters, 5, 30f, "pulse");
+            TemporaryStatModifier.Add(caster, StatType.AreaHitStaminaRestorePerTarget, 2, 30f, "reward");
+            TemporaryStatModifier.Add(caster, StatType.AreaHitStaminaRestoreMaximum, 6, 30f, "reward");
+            var area = Ability.GetAbilityDetail(FeatType.KillzoneBeacon1);
+            var firstHP = GetCurrentHitPoints(first);
+            var secondHP = GetCurrentHitPoints(second);
+            var stamina = 0;
+
+            // Use the production scheduler with zero direct damage to isolate the shared
+            // pulse rider across the beacon's physical and electrical channels.
+            void ScheduleChannel(CombatDamageType damageType, float duration)
+            {
+                DeviceAbilityEffects.ScheduleAreaHostilePulses(caster, GetLocation(first), SkillType.Devices,
+                    0, 0, null, 5f, duration, damageType, SWLOR.NWN.API.NWScript.Enum.VisualEffect.VisualEffect.None,
+                    appliesBeaconPulseBonuses: true, showAreaIndicator: false);
+            }
+
+            await ctx.ExecuteInCreatureContextAsync(caster, () =>
+            {
+                Stat.ReduceStamina(caster, 50);
+                stamina = Stat.GetCurrentStamina(caster);
+                Ability.BeginAbilityImpact(caster, area);
+                try
+                {
+                    ScheduleChannel(CombatDamageType.Physical, 6f);
+                    ScheduleChannel(CombatDamageType.Electrical, 6f);
+                }
+                finally { Ability.EndAbilityImpact(caster); }
+            });
+            Combat.GrantNextAbilityDamageBonus(caster, (int)PerkType.KillzoneBeacon, 100, 30);
+
+            // A pulse can also be forced while a different ability is being resolved.
+            // Keep that tracker alive across the timer to verify that it is restored.
+            var otherAbility = new AbilityDetail { IsSingleTargetAbility = true, SkillType = SkillType.Mimicry };
+            Ability.BeginAbilityImpact(caster, otherAbility);
+            var otherSummary = Ability.GetActiveAbilityImpactSummary(caster);
+            var otherSequence = Ability.GetAbilityImpactSequence(caster);
+            try
+            {
+                await ctx.WaitUntilAsync(() => Stat.GetCurrentStamina(caster) >= stamina + 8, 8f, "both channels to grant their area-hit rewards");
+                await ctx.WaitFrameAsync();
+                ctx.AssertEqual(firstHP - 8, GetCurrentHitPoints(first), "the two channels share one bonus pulse");
+                ctx.AssertEqual(secondHP - 8, GetCurrentHitPoints(second), "the bonus pulse reaches both targets");
+                ctx.Assert(ReferenceEquals(otherSummary, Ability.GetActiveAbilityImpactSummary(caster)), "the surrounding impact summary survives");
+                ctx.Assert(ReferenceEquals(otherSequence, Ability.GetAbilityImpactSequence(caster)), "the surrounding cast sequence survives");
+                ctx.Assert(otherSummary.IsSingleTargetAbility && !otherSummary.IsAreaAbility, "field hits are not attributed to the other ability");
+            }
+            finally { Ability.EndAbilityImpact(caster); }
+
+            await ctx.WaitUntilAsync(() => Stat.GetCurrentStamina(caster) >= stamina + 16, 8f, "the second scheduled pulse of each channel");
+            await ctx.WaitFrameAsync();
+            ctx.AssertEqual(firstHP - 8, GetCurrentHitPoints(first), "later ticks do not restart the once-per-cast bonus");
+            ctx.AssertEqual(100, Combat.ConsumeNextAbilityDamageBonus(caster, PerkType.KillzoneBeacon), "scheduled ticks leave the next activation's bonus untouched");
+            ctx.Assert(Ability.GetActiveAbilityImpactSummary(caster) == null, "scheduled impacts leave no active tracker");
+
+            await ctx.ExecuteInCreatureContextAsync(caster, () =>
+            {
+                Ability.BeginAbilityImpact(caster, area);
+                try { ScheduleChannel(CombatDamageType.Physical, 3f); }
+                finally { Ability.EndAbilityImpact(caster); }
+            });
+            await ctx.WaitUntilAsync(() => GetCurrentHitPoints(first) == firstHP - 16, 8f, "a new cast to receive its own bonus pulse");
+        }
+
         [EngineTest("Resource damage bonuses retain independent strict thresholds", Category = "PerkTracker", TimeoutSeconds = 30f)]
         public static async Task IndependentResourceThresholds(EngineTestContext ctx)
         {

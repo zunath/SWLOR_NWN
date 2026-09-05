@@ -8,13 +8,16 @@ namespace SWLOR.Game.Server.Service.AbilityService
     public sealed class AbilityImpactSequence
     {
         private bool _areaPulseTriggered;
-        private readonly HashSet<uint> _chainTargets = new();
+        private HashSet<uint> _chainTargets;
+
+        public bool HasRemainingChainArcs(int maximumTargets) => (_chainTargets?.Count ?? 0) < maximumTargets;
 
         public bool TryConsumeChainArc(uint target, int maximumTargets)
         {
-            if (_chainTargets.Count >= maximumTargets)
+            if (!HasRemainingChainArcs(maximumTargets))
                 return false;
 
+            _chainTargets ??= new HashSet<uint>();
             return _chainTargets.Add(target);
         }
 

@@ -138,6 +138,42 @@ namespace SWLOR.Game.Server.Service.StatusEffectService
             StatGroup.Stats[type] = combined;
         }
 
+        public IReadOnlyList<StatAdjustmentSource> GetStatSources(StatType payloadStat)
+        {
+            List<StatAdjustmentSource> sources = null;
+            foreach (var effect in _allActiveEffects)
+            {
+                if (effect.IsFlaggedForRemoval ||
+                    !effect.StatGroup.Stats.TryGetValue(payloadStat, out var value) || value == 0)
+                    continue;
+
+                // Refreshes preserve the trigger's cap. Independently stackable effects
+                // retain separate caps according to their declared stacking policy.
+                var contributor = effect.StackingType switch
+                {
+                    StatusEffectStackType.UnlimitedStacking => effect.Id,
+                    StatusEffectStackType.StackFromMultipleSources => effect.Source.ToString(),
+                    _ => string.Empty
+                };
+                sources ??= new List<StatAdjustmentSource>();
+                sources.Add(new StatAdjustmentSource($"status:{effect.GetType().FullName}:{contributor}", effect.StatGroup.Stats));
+            }
+
+            // Snapshot only the matching sources before callers can apply or remove effects.
+            return sources == null ? Array.Empty<StatAdjustmentSource>() : sources;
+        }
+
+        public bool HasAnyActiveEffect(IReadOnlySet<Type> effectTypes)
+        {
+            foreach (var effect in _allActiveEffects)
+            {
+                if (!effect.IsFlaggedForRemoval && effectTypes.Contains(effect.GetType()))
+                    return true;
+            }
+
+            return false;
+        }
+
         public HashSet<IStatusEffect> GetAllEffects()
         {
             return _allActiveEffects.ToHashSet();

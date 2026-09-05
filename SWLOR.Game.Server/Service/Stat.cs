@@ -2092,21 +2092,8 @@ namespace SWLOR.Game.Server.Service
             foreach (var source in Perk.GetStatSources(creature, payloadStat))
                 yield return source;
 
-            foreach (var effect in StatusEffect.GetCreatureStatusEffects(creature).GetAllEffects())
-            {
-                if (!effect.IsFlaggedForRemoval && effect.StatGroup.Stats.TryGetValue(payloadStat, out var value) && value != 0)
-                {
-                    // Refreshes preserve the trigger's cap; independently stackable effects
-                    // retain separate caps according to their declared stacking policy.
-                    var contributor = effect.StackingType switch
-                    {
-                        StatusEffectStackType.UnlimitedStacking => effect.Id,
-                        StatusEffectStackType.StackFromMultipleSources => effect.Source.ToString(),
-                        _ => string.Empty
-                    };
-                    yield return new StatAdjustmentSource($"status:{effect.GetType().FullName}:{contributor}", effect.StatGroup.Stats);
-                }
-            }
+            foreach (var source in StatusEffect.GetStatSources(creature, payloadStat))
+                yield return source;
 
             foreach (var source in TemporaryStatModifier.GetStatSources(creature, payloadStat))
                 yield return source;
@@ -2125,7 +2112,7 @@ namespace SWLOR.Game.Server.Service
 
         public static int GetStatAdjustmentExcludingTemporaryModifiers(uint creature, StatType stat)
         {
-            var statusAdjustment = StatusEffect.GetCreatureStatusEffects(creature).StatGroup.Stats[stat];
+            var statusAdjustment = StatusEffect.GetStatAdjustment(creature, stat);
             var perkAdjustment = Perk.GetStatBonus(creature, stat);
             var mimicryTraitAdjustment = Mimicry.GetStatBonus(creature, stat);
 

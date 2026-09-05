@@ -63,6 +63,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                 ShowAreaIndicator = showAreaIndicator;
                 MarkerObject = OBJECT_INVALID;
                 AreaIndicatorId = string.Empty;
+                ApplyPulse = Ability.CaptureRepeatedAbilityImpact(activator, () =>
+                {
+                    if (IsAreaPulse)
+                        ApplyAreaHostilePulse(this);
+                    else
+                        ApplySingleHostilePulse(this);
+                });
             }
 
             public uint Activator { get; }
@@ -83,6 +90,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
             public bool ShowAreaIndicator { get; }
             public uint MarkerObject { get; set; }
             public string AreaIndicatorId { get; set; }
+            public Action ApplyPulse { get; }
         }
 
         public static void ApplyPowerSurge(uint activator, uint target)
@@ -431,10 +439,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
                 ApplyFieldEngineerPulseEmitterVisual(emitter);
 
-                if (emitter.IsAreaPulse)
-                    ApplyAreaHostilePulse(emitter);
-                else
-                    ApplySingleHostilePulse(emitter);
+                emitter.ApplyPulse();
 
                 triggeredAny = true;
             }
@@ -499,10 +504,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
 
                 ApplyFieldEngineerPulseEmitterVisual(emitter);
 
-                if (emitter.IsAreaPulse)
-                    ApplyAreaHostilePulse(emitter);
-                else
-                    ApplySingleHostilePulse(emitter);
+                emitter.ApplyPulse();
 
                 if (emitter.RemainingSeconds > 0.01f)
                     ScheduleNextFieldEngineerPulse(emitter);

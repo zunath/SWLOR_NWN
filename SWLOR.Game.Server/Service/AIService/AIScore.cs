@@ -34,8 +34,7 @@ namespace SWLOR.Game.Server.Service.AIService
             var effect = new T();
             var redundantEffects = effect.MorePowerfulEffectTypes.Append(typeof(T)).ToHashSet();
             return context => context.CurrentEnmityTarget != OBJECT_INVALID &&
-                              !StatusEffect.GetCreatureStatusEffects(context.Self).GetAllEffects()
-                                  .Any(active => !active.IsFlaggedForRemoval && redundantEffects.Contains(active.GetType()))
+                              !StatusEffect.HasAnyActiveEffect(context.Self, redundantEffects)
                 ? AIScoreBand.Defensive + abilityLevel
                 : 0;
         }

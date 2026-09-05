@@ -1550,7 +1550,8 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition
                                 afterImpactAction: summary =>
                                 {
                                     profile.RestoreResourcesForTargetCount(activator, summary);
-                                    if (summary.ImpactedTargetCount > 0)
+                                    // Instant impacts apply these modifiers in AfterImpact below.
+                                    if (profile.TelegraphDuration > 0f && summary.ImpactedTargetCount > 0)
                                         profile.AfterActivation(activator, skill);
                                 },
                                 maxTargets: profile.MaximumAreaTargets,

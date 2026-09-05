@@ -113,13 +113,13 @@ public class ForceDarkManipulatorTests
         var creepingTerror = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "CreepingTerrorAbilityDefinition.cs").FullName);
         creepingTerror.Should().Contain("CreateCreepingTerrorField");
         creepingTerror.Should().Contain("CombatAreaPulses.SchedulePulses");
-        creepingTerror.Should().Contain("Ability.BeginAbilityImpact(activator, ability, countsAsAttackAttempt: false, sequence: sequence)",
+        creepingTerror.Should().Contain("Ability.CaptureRepeatedAbilityImpact(activator,",
             "periodic field pulses must not spend limited attack charges");
         creepingTerror.Should().Contain("HasCustomValidation(ValidateTargetingRange)");
         creepingTerror.Should().Contain("AbilityTargeting.ResolveImpactLocation(activator, target, targetLocation)");
         creepingTerror.Should().Contain("GetDistanceBetweenLocations(GetLocation(activator), location) <= FieldRange");
         creepingTerror.Should().Contain("var scaledPulseDamage = AbilityEffectScaling.ScaleDirectEffect");
-        creepingTerror.Should().Contain("ApplyCreepingTerrorPulse(activator, pulseLocation, scaledPulseDamage, radius)");
+        creepingTerror.Should().Contain("ApplyCreepingTerrorPulse(activator, location, scaledPulseDamage, radius)");
         creepingTerror.Should().Contain("AbilityAreaEffects.CreatePersistentSphereIndicator(");
         creepingTerror.Should().Contain("ApplyCreepingTerrorDamage");
         creepingTerror.Should().Contain("Ability.ApplyHostileCombatImpact");

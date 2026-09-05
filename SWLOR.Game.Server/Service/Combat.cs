@@ -5921,21 +5921,15 @@ namespace SWLOR.Game.Server.Service
                 Stat.ReduceStamina(target, staminaDrain);
         }
 
-        private static IEnumerable<(int Damage, int RadiusMeters)> GetAreaAbilityPulses(
+        private static IReadOnlyList<StatAdjustmentSource> GetAreaAbilityPulseSources(
             uint activator,
             AbilityDetail ability,
             bool isFirstSuccessfulTarget)
         {
             if (ability?.IsHostileAbility != true || !ability.IsAreaAbility || !isFirstSuccessfulTarget)
-                yield break;
+                return Array.Empty<StatAdjustmentSource>();
 
-            foreach (var source in Stat.GetStatSources(activator, StatType.AreaAbilityPulseDamage))
-            {
-                var damage = source[StatType.AreaAbilityPulseDamage];
-                var radius = source[StatType.AreaAbilityPulseRadiusMeters];
-                if (damage > 0 && radius > 0)
-                    yield return (damage, radius);
-            }
+            return Stat.GetStatSources(activator, StatType.AreaAbilityPulseDamage);
         }
 
         private static void ApplyAreaAbilityPulse(
@@ -5944,17 +5938,25 @@ namespace SWLOR.Game.Server.Service
             AbilityDetail ability,
             bool isFirstSuccessfulTarget)
         {
-            var pulses = GetAreaAbilityPulses(activator, ability, isFirstSuccessfulTarget).ToArray();
-            if (pulses.Length == 0 || !Ability.TryTriggerAreaAbilityPulse(activator))
+            var sources = GetAreaAbilityPulseSources(activator, ability, isFirstSuccessfulTarget);
+            var index = 0;
+            while (index < sources.Count &&
+                   (sources[index][StatType.AreaAbilityPulseDamage] <= 0 || sources[index][StatType.AreaAbilityPulseRadiusMeters] <= 0))
+                index++;
+            if (index == sources.Count || !Ability.TryTriggerAreaAbilityPulse(activator))
                 return;
 
             var location = GetLocation(target);
             ApplyEffectAtLocation(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Fnf_Howl_War_Cry), location);
-            foreach (var pulse in pulses)
+            for (; index < sources.Count; index++)
             {
+                var damage = sources[index][StatType.AreaAbilityPulseDamage];
+                var radius = sources[index][StatType.AreaAbilityPulseRadiusMeters];
+                if (damage <= 0 || radius <= 0)
+                    continue;
                 foreach (var nearby in AbilityTargeting.GetHostileTargetsNearLocation(
-                             activator, location, pulse.RadiusMeters, 0, target))
-                    ApplyTriggeredDamage(activator, nearby, pulse.Damage, CombatDamageType.Physical);
+                             activator, location, radius, 0, target))
+                    ApplyTriggeredDamage(activator, nearby, damage, CombatDamageType.Physical);
             }
         }
 

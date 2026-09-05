@@ -162,7 +162,8 @@ namespace SWLOR.Game.Server.Service
             bool countsAsAttackAttempt = true,
             int nextAbilityCriticalDamagePercentAdjustment = 0,
             IReadOnlyList<TelegraphGeometry> activationAreaTelegraphs = null,
-            AbilityImpactSequence sequence = null)
+            AbilityImpactSequence sequence = null,
+            TrackedAbilityImpact sequenceOwner = null)
         {
             if (!GetIsObjectValid(activator) || ability == null)
                 return;
@@ -177,7 +178,10 @@ namespace SWLOR.Game.Server.Service
                 countsAsAttackAttempt,
                 nextAbilityCriticalDamagePercentAdjustment,
                 activationAreaTelegraphs,
-                sequence);
+                sequence)
+            {
+                SequenceOwner = sequenceOwner?.SequenceOwner ?? sequenceOwner
+            };
         }
 
         public static AbilityImpactSequence GetAbilityImpactSequence(uint activator)
@@ -1479,7 +1483,7 @@ namespace SWLOR.Game.Server.Service
                 shape,
                 areaVisualLocation,
                 trackedImpact?.Ability,
-                trackedImpact?.Sequence,
+                trackedImpact,
                 deferredNextAbilityDamageBonus,
                 trackedImpact?.NextAbilityCriticalRatePercentAdjustment ?? 0,
                 trackedImpact?.NextAbilityDefenseIgnorePercentAdjustment ?? 0,
@@ -1718,7 +1722,7 @@ namespace SWLOR.Game.Server.Service
             CombatImpactAreaShape shape,
             Location areaVisualLocation,
             AbilityDetail ability,
-            AbilityImpactSequence sequence,
+            TrackedAbilityImpact sequenceOwner,
             int nextAbilityDamageBonus,
             int nextAbilityCriticalRatePercentAdjustment,
             int nextAbilityDefenseIgnorePercentAdjustment,
@@ -1797,7 +1801,7 @@ namespace SWLOR.Game.Server.Service
                             nextAttackEnmityBonus,
                             statusAppliedNextAttackDamageBonus,
                             countsAsAttackAttempt: false,
-                            sequence: sequence);
+                            sequenceOwner: sequenceOwner);
                         impactStarted = true;
                         RecordAbilityImpactShape(creator, skillType, true);
                     }
@@ -3309,7 +3313,9 @@ namespace SWLOR.Game.Server.Service
             private AbilityImpactSequence _sequence;
 
             public AbilityDetail Ability { get; }
-            public AbilityImpactSequence Sequence => _sequence ??= new AbilityImpactSequence();
+            // Delayed shapes share the original tracker until a rider actually needs cast state.
+            public TrackedAbilityImpact SequenceOwner { get; set; }
+            public AbilityImpactSequence Sequence => _sequence ??= SequenceOwner?.Sequence ?? new AbilityImpactSequence();
             public AbilityImpactSummary Summary { get; }
             public bool CountsAsAttackAttempt { get; }
             public IReadOnlyList<TelegraphGeometry> ActivationAreaTelegraphs { get; }

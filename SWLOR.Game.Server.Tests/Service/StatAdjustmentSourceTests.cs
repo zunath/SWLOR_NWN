@@ -207,9 +207,28 @@ public class StatAdjustmentSourceTests
         AddStatus(Payload((StatType.AreaAbilityPulseDamage, 8), (StatType.AreaAbilityPulseRadiusMeters, 5)));
         AddStatus(Payload((StatType.AreaAbilityPulseDamage, 3), (StatType.AreaAbilityPulseRadiusMeters, 2)));
         var ability = new AbilityDetail { IsHostileAbility = true, IsAreaAbility = true };
-        var pulses = (IEnumerable<(int, int)>)typeof(Combat).GetMethod("GetAreaAbilityPulses", PrivateStatic)!
+        var pulses = (IReadOnlyList<StatAdjustmentSource>)typeof(Combat).GetMethod("GetAreaAbilityPulseSources", PrivateStatic)!
             .Invoke(null, new object[] { Creature, ability, true })!;
-        pulses.Should().BeEquivalentTo(new[] { (8, 5), (3, 2) });
+        pulses.Select(source => (source[StatType.AreaAbilityPulseDamage], source[StatType.AreaAbilityPulseRadiusMeters]))
+            .Should().BeEquivalentTo(new[] { (8, 5), (3, 2) });
+    }
+
+    [TestCase(true, false, true)]
+    [TestCase(false, true, true)]
+    [TestCase(true, true, false)]
+    [TestCase(true, true, true)]
+    public void IneligibleOrMissingPulses_DoNotAllocatePerTarget(bool hostile, bool area, bool firstTarget)
+    {
+        var apply = typeof(Combat).GetMethod("ApplyAreaAbilityPulse", PrivateStatic)!
+            .CreateDelegate<Action<uint, uint, AbilityDetail, bool>>();
+        var ability = new AbilityDetail { IsHostileAbility = hostile, IsAreaAbility = area };
+        for (var index = 0; index < 100; index++)
+            apply(Creature, Creature, ability, firstTarget);
+        var before = GC.GetAllocatedBytesForCurrentThread();
+        for (var index = 0; index < 1000; index++)
+            apply(Creature, Creature, ability, firstTarget);
+        var allocated = GC.GetAllocatedBytesForCurrentThread() - before;
+        allocated.Should().BeLessThan(1024, "pulse checks must return before creating per-target iterators or cast state");
     }
 
     private static IEnumerable<(int, int)> ReadDamageSources() =>

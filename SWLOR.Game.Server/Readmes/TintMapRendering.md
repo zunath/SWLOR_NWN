@@ -126,6 +126,15 @@ complete skeleton. Body clip duration and events are retained, with garment
 tracks following the same phase. The conversion checks native animation IDs as
 well as geometry and skin weights, including all eight normal-body variants of
 robe 236. Run `TestRobeAnimations.py` for the focused overlay regressions.
+
+Robe 250 uses the same native attachment validation but inherits the complete
+body skeleton directly, since it has no custom animation overlay. Its original
+robe model lacks arm joints; using it as the immediate animation parent assigned
+invalid bicep IDs and incorrect forearm/hand IDs, causing missing hands even
+though `parts_robe.2da` permits both hands. All eight normal-body variants retain
+the base body's attachment IDs after conversion. ASCII body references are
+compiled before comparing their native IDs, just like binary references.
+
 `complete_animation_styles` and `animation_bridges` in `RobeRgbModels.json`
 preserve this configuration across regeneration; use
 `--complete-animation-style <robe number>` to validate another style. Garments

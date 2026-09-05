@@ -142,6 +142,27 @@ public class AppearanceEditorLayoutTests
                 "category and part lists must not compete with the fixed palette and picker for unbounded height");
     }
 
+    [TestCase(AppearanceEditorViewModel.EditorMainPartial)]
+    [TestCase(AppearanceEditorViewModel.EditorArmorPartial)]
+    [TestCase(AppearanceEditorViewModel.SettingsPartial)]
+    public void EditorPartialOwnsItsScrollViewportWithoutAFixedHeight(string partialName)
+    {
+        var partial = _partials[partialName];
+
+        // The reported client screenshot clipped the lower armor controls despite
+        // an Auto-scroll ancestor. A group does not report its contents' height
+        // to that ancestor, so a None-scroll partial silently clipped its own
+        // children. Check the group that actually contains the editor controls.
+        ReadProperty<NuiScrollbars>(partial, "Scrollbars").Should().Be(NuiScrollbars.Auto,
+            "the editor partial itself must scroll both tall content and content wider than a resized window");
+        partial.DeclaredHeight.Should().Be(0f,
+            "the scroll viewport must fill the available window height, not use a fixed content height");
+        partial.Elements.Should().ContainSingle().Which.Should().BeOfType<GuiColumn<AppearanceEditorViewModel>>();
+        Walk(partial).OfType<GuiGroup<AppearanceEditorViewModel>>()
+            .Where(group => !ReferenceEquals(group, partial) && group.Id != AppearanceEditorViewModel.ArmorColorElement)
+            .Should().BeEmpty("another unsized group would conceal the editor's content extent from its scroll viewport");
+    }
+
     [Test]
     public void MainContentScrollsAndUsesOnlyOneNestedArmorPaletteSlot()
     {

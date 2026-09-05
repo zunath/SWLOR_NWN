@@ -1253,16 +1253,25 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 : IsEquipmentSelected
                     ? SelectedItemTypeIndex == 0 ? EquipmentTabId : SimpleEquipmentTabId
                     : AppearanceTabId;
-            EditorTabs.Select(this, MainPartialElement, partialTabId);
-            if (partialTabId == EquipmentTabId)
+            EditorTabs.Select(this, MainPartialElement, partialTabId, OnEditorPartialApplied);
+        }
+
+        private void OnEditorPartialApplied()
+        {
+            SuspendArmorClientWatches();
+            var isArmorEditor = IsEquipmentSelected && SelectedItemTypeIndex == 0;
+            if (isArmorEditor)
             {
                 IsCopyEnabled = true;
                 RestoreArmorPalette();
-                // GuiTabGroup reapplies its parent partial on the next tick. Restore the one
-                // nested palette after that apply, using the current channel rather than a stale tab.
-                DelayCommand(0f, RestoreArmorPalette);
-                ResumeArmorClientWatches();
             }
+
+            // Replacement controls need their current values after their layout is applied.
+            // Send cached options, selections, visibility and swatches after every final layout,
+            // without running the setters that change the character or equipped item.
+            SynchronizeTintControlBindings(RepublishBindings);
+            if (isArmorEditor)
+                ResumeArmorClientWatches();
         }
 
         private void RestoreArmorPalette()

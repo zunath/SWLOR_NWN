@@ -87,6 +87,23 @@ public class AppearanceEditorColorStateTests
     }
 
     [Test]
+    public void TabRestorationPublishesBindingsAfterTheNestedPaletteAndBeforeEditingResumes()
+    {
+        var root = CSharpSyntaxTree.ParseText(ReadViewModel()).GetRoot();
+        FindMethod(root, "LoadItemTypeEditor").ToString().Should()
+            .Contain("EditorTabs.Select(this, MainPartialElement, partialTabId, OnEditorPartialApplied)");
+        var restored = FindMethod(root, "OnEditorPartialApplied").ToString();
+        restored.IndexOf("SuspendArmorClientWatches()", StringComparison.Ordinal).Should()
+            .BeLessThan(restored.IndexOf("RestoreArmorPalette()", StringComparison.Ordinal));
+        restored.IndexOf("RestoreArmorPalette()", StringComparison.Ordinal).Should()
+            .BeLessThan(restored.IndexOf("SynchronizeTintControlBindings(RepublishBindings)", StringComparison.Ordinal));
+        restored.IndexOf("SynchronizeTintControlBindings(RepublishBindings)", StringComparison.Ordinal).Should()
+            .BeLessThan(restored.IndexOf("ResumeArmorClientWatches()", StringComparison.Ordinal));
+        restored.Should().NotContain("LoadItemParts()");
+        restored.Should().NotContain("ApplyCurrentColors");
+    }
+
+    [Test]
     public void GlobalPickerReadsTheGlobalPaletteAndSupportsCurrentlyUnusedChannels()
     {
         var root = CSharpSyntaxTree.ParseText(ReadViewModel()).GetRoot();

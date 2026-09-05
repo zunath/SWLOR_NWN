@@ -1,5 +1,8 @@
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 using SWLOR.Game.Server.EngineTests.Framework;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
@@ -16,6 +19,158 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
     public static class AppearanceEditorEngineTests
     {
         private sealed record ArmorSnapshot(uint Item, int[] Models, int[] Colors, int[] Markers, int[] Projections);
+
+        [EngineTest("Appearance editor republishes native binding JSON after layout and reopen", Category = "AppearanceEditor", TimeoutSeconds = 30f)]
+        public static async Task HydrationPublishesBindingsAfterLayout(EngineTestContext ctx)
+        {
+            var civilian = await SpawnCivilianAsync(ctx);
+            await RunAssignedAsync(ctx, civilian, () =>
+            {
+                SeedInheritance(GetItemInSlot(InventorySlot.Chest, civilian));
+                var armor = ReadArmor(civilian);
+                var editor = new AppearanceEditorViewModel { Geometry = new GuiRectangle(0, 0, 1200, 900) };
+                using var publications = new BindingPublications(editor);
+                editor.Bind(OBJECT_INVALID, 0, editor.Geometry, GuiWindowType.AppearanceEditor,
+                    new AppearanceEditorPayload(civilian), OBJECT_INVALID);
+                AssertAppearancePublications(ctx, publications, "initial Bind");
+                AssertArmorUnchanged(ctx, armor, civilian, "initial binding publication");
+
+                for (var visit = 0; visit < 2; visit++)
+                {
+                    publications.Clear();
+                    editor.OnSelectEquipment()();
+                    AssertArmorPublications(ctx, publications, armor, $"equipment visit {visit}");
+                    AssertArmorUnchanged(ctx, armor, civilian, "armor binding publication");
+                    publications.Clear();
+                    editor.OnSelectAppearance()();
+                    AssertAppearancePublications(ctx, publications, $"appearance visit {visit}");
+                    AssertArmorUnchanged(ctx, armor, civilian, "appearance binding publication");
+
+                    if (visit == 0)
+                    {
+                        publications.Clear();
+                        editor.Bind(OBJECT_INVALID, 0, editor.Geometry, GuiWindowType.AppearanceEditor,
+                            new AppearanceEditorPayload(civilian), OBJECT_INVALID);
+                        AssertAppearancePublications(ctx, publications, "reopened Bind");
+                        AssertArmorUnchanged(ctx, armor, civilian, "reopened binding publication");
+                    }
+                }
+            });
+            ctx.SetResultDetail("Actual PropertyChanged replay published native NUI JSON for appearance lists, all 19 armor combos/selections and 120 bounded sprite regions after layout, including reopen. Armor fields stayed unchanged. The invalid viewer does not test client bind storage, rendering, or the IsWindowOpen-gated deferred replay.");
+        }
+
+        private sealed record BindingPublication(int Sequence, JToken Value);
+
+        private sealed class BindingPublications : IDisposable
+        {
+            private readonly AppearanceEditorViewModel _editor;
+            private readonly GuiPropertyConverter _converter = new();
+            private readonly Dictionary<string, BindingPublication> _values = new();
+            private int _sequence;
+
+            public BindingPublications(AppearanceEditorViewModel editor)
+            {
+                _editor = editor;
+                editor.PropertyChanged += Record;
+            }
+
+            private void Record(object sender, PropertyChangedEventArgs args)
+            {
+                _sequence++;
+                var value = _editor.GetType().GetProperty(args.PropertyName)?.GetValue(_editor);
+                if (value == null)
+                    return;
+                // The token-zero harness cannot inspect NuiGetBind. Exercise the real native
+                // JSON converter at the publication event instead, before the base token guard.
+                _values[args.PropertyName] = new BindingPublication(_sequence,
+                    JToken.Parse(JsonDump(_converter.ToJson(value))));
+            }
+
+            public JToken AfterLayout(EngineTestContext ctx, string property, string stage)
+            {
+                ctx.Assert(_values.ContainsKey(nameof(AppearanceEditorViewModel.Geometry)), $"{stage}: layout must notify geometry.");
+                ctx.Assert(_values.ContainsKey(property), $"{stage}: binding {property} must be published.");
+                var value = _values[property];
+                // Each layout change nudges Geometry; replay starts with the cached Geometry
+                // and must then re-emit the dependent controls. Early hydration alone fails.
+                ctx.Assert(value.Sequence > _values[nameof(AppearanceEditorViewModel.Geometry)].Sequence,
+                    $"{stage}: {property} must be republished after the final layout notification.");
+                return value.Value;
+            }
+
+            public void Clear()
+            {
+                _values.Clear();
+                _sequence = 0;
+            }
+
+            public void Dispose() => _editor.PropertyChanged -= Record;
+        }
+
+        private static void AssertAppearancePublications(EngineTestContext ctx, BindingPublications values, string stage)
+        {
+            foreach (var (optionsName, selectedName, indexName) in new[]
+            {
+                (nameof(AppearanceEditorViewModel.ColorCategoryOptions), nameof(AppearanceEditorViewModel.ColorCategorySelected), nameof(AppearanceEditorViewModel.SelectedColorCategoryIndex)),
+                (nameof(AppearanceEditorViewModel.PartCategoryOptions), nameof(AppearanceEditorViewModel.PartCategorySelected), nameof(AppearanceEditorViewModel.SelectedPartCategoryIndex)),
+                (nameof(AppearanceEditorViewModel.PartOptions), nameof(AppearanceEditorViewModel.PartSelected), nameof(AppearanceEditorViewModel.SelectedPartIndex))
+            })
+            {
+                var options = values.AfterLayout(ctx, optionsName, stage) as JArray;
+                var selected = values.AfterLayout(ctx, selectedName, stage) as JArray;
+                var index = values.AfterLayout(ctx, indexName, stage).Value<int>();
+                ctx.Assert(options != null && options.Count > 0, $"{stage}: {optionsName} must serialize a populated array.");
+                ctx.Assert(selected != null && selected.Count == options.Count,
+                    $"{stage}: {selectedName} must match the option count.");
+                ctx.Assert(index >= 0 && index < options.Count, $"{stage}: {indexName} must address an available option.");
+            }
+            ctx.Assert(values.AfterLayout(ctx, nameof(AppearanceEditorViewModel.IsAppearanceSelected), stage).Value<bool>(),
+                $"{stage}: appearance controls must be visible.");
+        }
+
+        private static void AssertArmorPublications(EngineTestContext ctx, BindingPublications values, ArmorSnapshot armor, string stage)
+        {
+            foreach (var (part, prefix) in new[]
+            {
+                (AppearanceArmor.Neck, "Neck"), (AppearanceArmor.Torso, "Chest"),
+                (AppearanceArmor.Belt, "Belt"), (AppearanceArmor.Pelvis, "Pelvis"), (AppearanceArmor.Robe, "Robe"),
+                (AppearanceArmor.LeftShoulder, "LeftShoulder"), (AppearanceArmor.RightShoulder, "RightShoulder"),
+                (AppearanceArmor.LeftBicep, "LeftBicep"), (AppearanceArmor.RightBicep, "RightBicep"),
+                (AppearanceArmor.LeftForearm, "LeftForearm"), (AppearanceArmor.RightForearm, "RightForearm"),
+                (AppearanceArmor.LeftHand, "LeftHand"), (AppearanceArmor.RightHand, "RightHand"),
+                (AppearanceArmor.LeftThigh, "LeftThigh"), (AppearanceArmor.RightThigh, "RightThigh"),
+                (AppearanceArmor.LeftShin, "LeftShin"), (AppearanceArmor.RightShin, "RightShin"),
+                (AppearanceArmor.LeftFoot, "LeftFoot"), (AppearanceArmor.RightFoot, "RightFoot")
+            })
+            {
+                var options = values.AfterLayout(ctx, prefix + "Options", stage) as JArray;
+                var selected = values.AfterLayout(ctx, prefix + "Selection", stage).Value<int>();
+                ctx.Assert(options != null && options.Count > 0, $"{stage}: {prefix} combo must contain options.");
+                ctx.Assert(options.All(entry => entry is JArray pair && pair.Count == 2 &&
+                    pair[0].Type == JTokenType.String && pair[1].Type == JTokenType.Integer),
+                    $"{stage}: {prefix} combo must use native [label, value] entries.");
+                ctx.AssertEqual(armor.Models[(int)part], selected, $"{stage}: {prefix} selected model");
+                ctx.Assert(options.Any(entry => entry[1].Value<int>() == selected),
+                    $"{stage}: {prefix} selected model must occur in its published options.");
+            }
+
+            var regions = typeof(AppearanceEditorViewModel).GetProperties()
+                .Where(property => property.PropertyType == typeof(GuiRectangle) && property.Name.EndsWith("Region"))
+                .ToArray();
+            ctx.AssertEqual(120, regions.Length, "All six dyes for Global and nineteen armor parts");
+            foreach (var property in regions)
+            {
+                var rectangle = values.AfterLayout(ctx, property.Name, stage);
+                var x = rectangle["x"].Value<float>();
+                var y = rectangle["y"].Value<float>();
+                var width = rectangle["w"].Value<float>();
+                var height = rectangle["h"].Value<float>();
+                ctx.Assert(width == 1f && height == 1f || width == 16f && height == 16f,
+                    $"{stage}: {property.Name} must crop one color or neutral pixel, never the whole atlas.");
+                ctx.Assert(x >= 0f && y >= 0f && x + width <= 256f && y + height <= 176f,
+                    $"{stage}: {property.Name} must be bounded by the palette texture.");
+            }
+        }
 
         [EngineTest("Appearance editor hydration preserves native armor and tint state", Category = "AppearanceEditor", TimeoutSeconds = 30f)]
         public static async Task HydrationPreservesArmorAndPendingTint(EngineTestContext ctx)

@@ -93,6 +93,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private void BuildMainEditor(GuiGroup<AppearanceEditorViewModel> partial)
         {
             partial.SetWidth(ContentWidth);
+            // A group does not expose its children's extent to the outer scroll host.
+            // This panel must scroll its own contents when the window is compact.
+            partial.SetScrollbars(NuiScrollbars.Auto);
             partial.AddColumn(col =>
             {
                 col.AddRow(row =>
@@ -113,6 +116,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     {
                         col2.AddRow(row2 =>
                         {
+                            row2.SetHeight(162f);
                             row2.AddList(template =>
                             {
                                 template.AddCell(cell =>
@@ -130,6 +134,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                         col2.AddRow(row2 =>
                         {
+                            row2.SetHeight(218f);
                             row2.AddList(template =>
                             {
                                 template.AddCell(cell =>
@@ -144,6 +149,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 .SetWidth(210f)
                                 .SetHeight(210f);
                         });
+
+                        col2.AddRow(row2 => row2.AddSpacer());
 
                     });
 
@@ -266,6 +273,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private void BuildArmorEditor(GuiGroup<AppearanceEditorViewModel> partial)
         {
             partial.SetWidth(ContentWidth);
+            partial.SetScrollbars(NuiScrollbars.Auto);
             void BuildMainColorChannels(GuiColumn<AppearanceEditorViewModel> col)
             {
                 col.AddRow(row =>
@@ -877,6 +885,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
         private void BuildSettings(GuiGroup<AppearanceEditorViewModel> partial)
         {
             partial.SetWidth(ContentWidth);
+            partial.SetScrollbars(NuiScrollbars.Auto);
             partial.AddColumn(col =>
             {
 

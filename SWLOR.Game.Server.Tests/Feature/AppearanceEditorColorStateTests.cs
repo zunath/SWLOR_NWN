@@ -100,10 +100,24 @@ public class AppearanceEditorColorStateTests
         restored.IndexOf("RepublishBindings()", StringComparison.Ordinal).Should()
             .BeLessThan(restored.IndexOf("ResumeArmorClientWatches()", StringComparison.Ordinal));
         restored.IndexOf("SynchronizeTintControlBindings(", StringComparison.Ordinal).Should()
-            .BeLessThan(restored.IndexOf("SetGroupLayout(", StringComparison.Ordinal),
+            .BeLessThan(restored.IndexOf("RestoreArmorPalette()", StringComparison.Ordinal),
                 "replacement widgets must not edit colors while their current bindings are restored");
+        restored.Should().NotContain("SetGroupLayout(");
         restored.Should().NotContain("LoadItemParts()");
         restored.Should().NotContain("ApplyCurrentColors");
+    }
+
+    [Test]
+    public void ResizingDoesNotRebuildTheEditorOrReplayItsBindings()
+    {
+        var source = ReadViewModel();
+        var root = CSharpSyntaxTree.ParseText(source).GetRoot();
+        var clientUpdated = FindMethod(root, "OnClientPropertyUpdated").ToString();
+        clientUpdated.Should().NotContain("Geometry");
+        source.Should().NotContain("QueueEditorResize");
+        source.Should().NotContain("BuildEditorPanel(");
+        source.Should().NotContain("SetGroupLayout(");
+        source.Should().NotContain("_editorResizeGeneration");
     }
 
     [Test]

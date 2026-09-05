@@ -245,10 +245,11 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 AssertTintInput(ctx, editor, requested, TintMapLayerType.Leather1, preset, "Return to remembered global input");
 
                 var beforeResize = ReadArmor(civilian);
-                publications.Clear();
                 editor.Geometry = new GuiRectangle(0, 0, 1440, 960);
-                InvokePrivate(editor, "OnEditorPartialApplied");
-                AssertPublishedColor(ctx, publications, editor, requested, "Resize republishes exact requested RGB");
+                publications.Clear();
+                InvokePrivate(editor, "OnClientPropertyUpdated", nameof(editor.Geometry));
+                ctx.AssertEqual(0, publications.Count, "Geometry callback must not rebuild the layout or republish bindings");
+                ctx.AssertEqual(960f, editor.Geometry.Height, "Geometry callback must not nudge the layout height");
                 AssertTintInput(ctx, editor, requested, TintMapLayerType.Leather1, preset, "Resize retains input and nearest-preset label");
                 AssertArmorUnchanged(ctx, beforeResize, civilian, "Resize after exact RGB input");
 
@@ -394,13 +395,6 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(color.Blue, editor.SelectedTintColor.B, $"{stage}: blue");
         }
 
-        private static void AssertPublishedColor(EngineTestContext ctx, BindingPublications values,
-            AppearanceEditorViewModel editor, TintMapColor color, string stage)
-        {
-            AssertPublishedPicker(ctx, values, editor, color, stage);
-            AssertPublishedRgbFields(ctx, values, editor, color, stage);
-        }
-
         private static void AssertPublishedRgbFields(EngineTestContext ctx, BindingPublications values,
             AppearanceEditorViewModel editor, TintMapColor color, string stage)
         {
@@ -473,8 +467,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SetResultDetail("Actual PropertyChanged replay published native NUI JSON for appearance lists, all 19 armor combos/selections and 120 bounded sprite regions after layout, including reopen. Armor fields stayed unchanged. The invalid viewer does not test client bind storage, rendering, or the IsWindowOpen-gated deferred replay.");
         }
 
-        [EngineTest("Appearance editor resizing preserves bindings and native appearance", Category = "AppearanceEditor", TimeoutSeconds = 30f)]
-        public static async Task ResizedPanelsPreserveBindingsAndNativeAppearance(EngineTestContext ctx)
+        [EngineTest("Appearance editor geometry notifications leave static panels and native appearance unchanged", Category = "AppearanceEditor", TimeoutSeconds = 30f)]
+        public static async Task GeometryNotificationsPreserveStaticPanelsAndNativeAppearance(EngineTestContext ctx)
         {
             var civilian = await SpawnCivilianAsync(ctx);
             await RunAssignedAsync(ctx, civilian, () =>
@@ -491,6 +485,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var armor = ReadArmor(civilian);
                 var creatureColors = Enum.GetValues<ColorChannel>().Select(channel => GetColor(civilian, channel)).ToArray();
                 var editor = new AppearanceEditorViewModel { Geometry = new GuiRectangle(0, 0, 590, 740) };
+                var converter = new GuiPropertyConverter();
                 using var publications = new BindingPublications(editor);
                 editor.Bind(OBJECT_INVALID, 0, editor.Geometry, GuiWindowType.AppearanceEditor,
                     new AppearanceEditorPayload(civilian), OBJECT_INVALID);
@@ -504,51 +499,37 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Robe, AppearanceArmorColor.Metal2)();
                     }
                     else editor.OnSelectAppearance()();
-                    InvokePrivate(editor, "OnEditorPartialApplied");
                     var expectedBindings = publications.SnapshotWithoutGeometry();
-                    string[] originalIds = null;
+                    ctx.Assert(expectedBindings.Count > 0, "The tab must have published bindings before geometry checks.");
                     var partialName = isArmor ? AppearanceEditorViewModel.EditorArmorPartial : AppearanceEditorViewModel.EditorMainPartial;
+                    var originalPanel = JObject.Parse(JsonDump(AppearanceEditorDefinition.BuildEditorPanel(partialName).ToJson()));
+                    AssertStaticPanelFlexPaths(ctx, originalPanel, isArmor, partialName);
 
-                    foreach (var (width, height, contentWidth, listHeight) in new[]
+                    foreach (var (width, height) in new[]
                     {
-                        (590f, 740f, 530f, 210f), (1440f, 960f, 1380f, 368f), (590f, 520f, 530f, 210f)
+                        (590f, 740f), (1440f, 960f), (590f, 520f)
                     })
                     {
                         var stage = $"{partialName} at {width}x{height}";
-                        publications.Clear();
                         editor.Geometry = new GuiRectangle(0, 0, width, height);
-                        // Run the actual resize-apply body. The invalid viewer cannot deliver a
-                        // client Geometry event or pass the debouncer's open-window guard.
-                        InvokePrivate(editor, "OnEditorPartialApplied");
-                        var flags = BindingFlags.Instance | BindingFlags.NonPublic;
-                        ctx.AssertEqual(partialName, typeof(AppearanceEditorViewModel).GetField("_appliedEditorPartial", flags).GetValue(editor),
-                            $"{stage}: the active panel must be rebuilt");
-                        ctx.AssertEqual(contentWidth, (float)typeof(AppearanceEditorViewModel).GetField("_appliedEditorContentWidth", flags).GetValue(editor),
-                            $"{stage}: the actual VM apply must use the new width");
+                        publications.Clear();
+                        // Exercise the actual completion callback after assigning geometry.
+                        // The viewer is invalid: this is not incoming NuiGetBind transport or
+                        // proof of client layout/scroll behavior at these dimensions.
+                        InvokePrivate(editor, "OnClientPropertyUpdated", nameof(editor.Geometry));
+                        ctx.AssertEqual(0, publications.Count, $"{stage}: geometry must not redeliver any binding");
+                        ctx.AssertEqual(width, editor.Geometry.Width, $"{stage}: geometry width remains exact");
+                        ctx.AssertEqual(height, editor.Geometry.Height, $"{stage}: no layout redraw height nudge");
                         foreach (var (name, expected) in expectedBindings)
-                            ctx.Assert(JToken.DeepEquals(expected, publications.AfterLayout(ctx, name, stage)),
-                                $"{stage}: cached {name} must be republished unchanged after the resized layout.");
-                        if (isArmor) AssertArmorPublications(ctx, publications, armor, stage);
-                        else AssertAppearancePublications(ctx, publications, stage);
-
-                        // Native serialization of the same production panel builder catches
-                        // malformed wire JSON and boot-size controls surviving a resize.
-                        var panel = JObject.Parse(JsonDump(AppearanceEditorDefinition.BuildEditorPanel(partialName, width, height).ToJson()));
-                        ctx.AssertEqual((int)NuiScrollbars.Auto, panel["scrollbars"].Value<int>(), $"{stage}: actual viewport scroll policy");
-                        ctx.Assert(panel["width"] == null && panel["height"] == null,
-                            $"{stage}: the viewport must remain unconstrained by the content dimensions.");
-                        ctx.AssertEqual(contentWidth, panel["children"][0]["width"].Value<float>(), $"{stage}: serialized inner content width");
-                        var objects = new[] { panel }.Concat(panel.Descendants().OfType<JObject>()).ToArray();
-                        if (!isArmor)
                         {
-                            var parts = objects.Single(node => node["type"]?.Value<string>() == "list" &&
-                                node["row_count"]?["bind"]?.Value<string>() == nameof(editor.PartOptions) + "_RowCount");
-                            ctx.AssertEqual(listHeight, parts["height"].Value<float>(), $"{stage}: native serialized part-list height");
+                            var current = editor.GetType().GetProperty(name).GetValue(editor);
+                            ctx.Assert(JToken.DeepEquals(expected, JToken.Parse(JsonDump(converter.ToJson(current)))),
+                                $"{stage}: cached {name} must remain unchanged without replay.");
                         }
-                        var ids = objects.Where(node => node["id"] != null).Select(node => node["id"].Value<string>()).OrderBy(id => id).ToArray();
-                        ctx.Assert(ids.Length > 0 && ids.Distinct().Count() == ids.Length, $"{stage}: control IDs must be nonempty and unique.");
-                        if (originalIds == null) originalIds = ids;
-                        else ctx.Assert(originalIds.SequenceEqual(ids), $"{stage}: resized controls must retain the boot-registered event IDs.");
+                        // Serialize the static production factory through the native JSON API.
+                        // It must keep the identical tree and event IDs across geometry changes.
+                        var panel = JObject.Parse(JsonDump(AppearanceEditorDefinition.BuildEditorPanel(partialName).ToJson()));
+                        ctx.Assert(JToken.DeepEquals(originalPanel, panel), $"{stage}: the static native panel JSON and control IDs must not change.");
 
                         AssertArmorUnchanged(ctx, armor, civilian, stage);
                         ctx.Assert(creatureColors.SequenceEqual(Enum.GetValues<ColorChannel>().Select(channel => GetColor(civilian, channel))),
@@ -558,7 +539,31 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     }
                 }
             });
-            ctx.SetResultDetail("Public Bind plus six actual resize-apply calls serialized appearance/armor panels at590x740,1440x960,590x520, retained stable control IDs, and republished identical non-geometry bindings. All19 armor models,120 armor colors,4 creature colors,APC markers,TMP baselines and pending tint locals stayed unchanged. Headless test excludes client Geometry delivery, debounce timing and rendered layout.");
+            ctx.SetResultDetail("Six actual Geometry completion callbacks at590x740,1440x960,590x520 published no bindings or redraw nudges and retained cached inputs. Static native panel JSON/event IDs stayed identical with no fixed widths along expanding control paths. All19 armor models,120 armor colors,4 creature colors,APC markers,TMP baselines and pending tint locals stayed unchanged. Headless coverage excludes client Geometry transport and rendered layout.");
+        }
+
+        private static void AssertStaticPanelFlexPaths(EngineTestContext ctx, JObject panel, bool isArmor, string stage)
+        {
+            ctx.Assert(panel["width"] == null && panel["height"] == null,
+                $"{stage}: the static viewport must not retain a fixed window size.");
+            var objects = new[] { panel }.Concat(panel.Descendants().OfType<JObject>()).ToArray();
+            var ids = objects.Where(node => node["id"] != null).Select(node => node["id"].Value<string>()).ToArray();
+            ctx.Assert(ids.Length > 0 && ids.Distinct().Count() == ids.Length, $"{stage}: native control IDs must be unique.");
+            var flexControls = objects.Where(node => node["type"]?.Value<string>() == "color_picker" ||
+                (isArmor ? node["type"]?.Value<string>() == "combo" :
+                    node["row_count"]?["bind"]?.Value<string>() == nameof(AppearanceEditorViewModel.PartOptions) + "_RowCount" ||
+                    node["id"]?.Value<string>() is "ae_previous_part" or "ae_next_part")).ToArray();
+            ctx.AssertEqual(isArmor ? 20 : 4, flexControls.Length, $"{stage}: all expanding picker/list/part controls are covered");
+            foreach (var control in flexControls)
+            {
+                var path = new[] { control }.Concat(control.Ancestors().OfType<JObject>()).ToArray();
+                ctx.Assert(path.All(node => node["width"] == null),
+                    $"{stage}: {control["type"]}/{control["id"]} must not encounter a fixed-width ancestor.");
+                ctx.Assert(path.Any(node => node["type"]?.Value<string>() == "group" &&
+                    (node["scrollbars"]?.Value<int>() == (int)NuiScrollbars.Y ||
+                     node["scrollbars"]?.Value<int>() == (int)NuiScrollbars.Auto)),
+                    $"{stage}: expanding controls must remain inside a scrolling viewport.");
+            }
         }
 
         private sealed record BindingPublication(int Sequence, JToken Value);
@@ -601,6 +606,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
 
             public bool Contains(string property) => _values.ContainsKey(property);
+            public int Count => _values.Count;
 
             public IReadOnlyDictionary<string, JToken> SnapshotWithoutGeometry() => _values
                 .Where(pair => pair.Key != nameof(AppearanceEditorViewModel.Geometry))

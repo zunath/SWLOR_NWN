@@ -53,49 +53,32 @@ public class AppearanceEditorLayoutTests
         {
             var partial = _partials[name];
             Width(partial).Should().Be(0f, $"{name}'s viewport must fill the window");
-            Width(partial.Elements.Single()).Should().Be(530f);
+            Width(partial.Elements.Single()).Should().Be(0f);
             NaturalWidth(partial).Should().BeLessThanOrEqualTo(_window.InitialGeometry.Width - 60f,
                 $"{name}'s fixed controls must leave the initial window's border and scrollbar allowance");
         }
     }
 
-    [TestCase(320f, 530f)]
-    [TestCase(590f, 530f)]
-    [TestCase(590.9f, 530f)]
-    [TestCase(900f, 840f)]
-    [TestCase(1440f, 1380f)]
-    public void ContentWidthReservesWindowChromeAndKeepsCompactControlsUsable(float windowWidth, float expected)
-    {
-        AppearanceEditorDefinition.CalculateContentWidth(windowWidth).Should().Be(expected);
-    }
-
-    [TestCase(480f, 210f)]
-    [TestCase(740f, 210f)]
-    [TestCase(916f, 336f)]
-    [TestCase(931.9f, 336f)]
-    [TestCase(1200f, 608f)]
-    public void PartListHeightUsesAdditionalWindowSpaceInStableSteps(float windowHeight, float expected)
-    {
-        AppearanceEditorDefinition.CalculatePartListHeight(windowHeight).Should().Be(expected);
-    }
-
     [Test]
-    public void ResizedPanelsHaveExplicitContentInsideAFluidScrollViewport(
-        [Values(590f, 900f, 1440f)] float windowWidth, [Values(480f, 1200f)] float windowHeight)
+    public void StaticPanelsRequireNoWindowGeometryAndRetainTheirBootDimensions()
     {
-        var contentWidth = windowWidth - 60f;
+        var factory = typeof(AppearanceEditorDefinition).GetMethods(BindingFlags.Public | BindingFlags.Static)
+            .Single(method => method.Name == nameof(AppearanceEditorDefinition.BuildEditorPanel));
+        factory.GetParameters().Select(parameter => parameter.ParameterType).Should().Equal(new[] { typeof(string) },
+            "the same client layout must serve every window size without server-computed dimensions");
         foreach (var name in EditorPanels)
         {
-            var panel = AppearanceEditorDefinition.BuildEditorPanel(name, windowWidth, windowHeight);
+            var panel = AppearanceEditorDefinition.BuildEditorPanel(name);
             Width(panel).Should().Be(0f);
             panel.DeclaredHeight.Should().Be(0f);
-            ReadProperty<NuiScrollbars>(panel, "Scrollbars").Should().Be(NuiScrollbars.Auto);
             panel.Elements.Should().ContainSingle();
             var content = panel.Elements.Single();
             content.Should().BeOfType<GuiColumn<AppearanceEditorViewModel>>();
-            Width(content).Should().Be(contentWidth);
-            NaturalWidth(content).Should().BeLessThanOrEqualTo(contentWidth + 0.01f,
-                $"{name}'s fixed child spans must fit even at the compact 590px window size");
+            Width(content).Should().Be(0f);
+            Walk(panel).Select(widget => (widget.GetType(), Width(widget), widget.DeclaredHeight))
+                .Should().Equal(Walk(_partials[name]).Select(widget =>
+                    (widget.GetType(), Width(widget), widget.DeclaredHeight)),
+                    "reopening or switching tabs must reuse the boot layout's dimensions");
         }
     }
 
@@ -143,25 +126,25 @@ public class AppearanceEditorLayoutTests
             .First(row => row.Elements.Count > 1);
         NaturalWidth(combinedRow).Should().BeLessThanOrEqualTo(_window.InitialGeometry.Width - 60f,
             "the old 320px palette plus 216px global channels exceeded the whole 476px window");
+        combinedRow.Elements.Should().HaveCount(2);
+        var channels = combinedRow.Elements.OfType<GuiGroup<AppearanceEditorViewModel>>()
+            .Single(group => group.Id != AppearanceEditorViewModel.ArmorColorElement);
+        ReadProperty<bool>(channels, "ShowBorder").Should().BeFalse();
+        ReadProperty<NuiScrollbars>(channels, "Scrollbars").Should().Be(NuiScrollbars.None);
+        PathTo(armor, channels).Should().OnlyContain(widget => Width(widget) == 0f,
+            "the global channels must receive the space left beside the fixed palette");
     }
 
     [Test]
     public void PickerAndRgbControlsRemainOutsideThePaletteSlotAndHaveRoom(
-        [Values(AppearanceEditorViewModel.EditorMainPartial, AppearanceEditorViewModel.EditorArmorPartial)] string partialName,
-        [Values(590f, 900f, 1440f)] float windowWidth)
+        [Values(AppearanceEditorViewModel.EditorMainPartial, AppearanceEditorViewModel.EditorArmorPartial)] string partialName)
     {
-        var partial = AppearanceEditorDefinition.BuildEditorPanel(partialName, windowWidth, 740f);
-        var contentWidth = windowWidth - 60f;
-        var columnWidth = partialName == AppearanceEditorViewModel.EditorArmorPartial
-            ? contentWidth
-            : contentWidth - Math.Min(340f, contentWidth * 0.4f) - 16f;
+        var partial = AppearanceEditorDefinition.BuildEditorPanel(partialName);
         var picker = Walk(partial).OfType<GuiColorPicker<AppearanceEditorViewModel>>().Single();
         ReadProperty<string>(picker, "SelectedColorBindName").Should().Be(nameof(AppearanceEditorViewModel.SelectedTintColor));
-        Width(picker).Should().BeApproximately(columnWidth - 8f, 0.01f,
-            "the rebuilt picker must receive the available width explicitly");
+        PathTo(partial, picker).Should().OnlyContain(widget => Width(widget) == 0f,
+            "the client must size the picker and all its ancestors without a server layout update");
         picker.DeclaredHeight.Should().Be(128f);
-        Width(PathTo(partial, picker).OfType<GuiColumn<AppearanceEditorViewModel>>().Last())
-            .Should().BeApproximately(columnWidth, 0.01f);
         var pickerRow = PathTo(partial, picker).Reverse().OfType<GuiRow<AppearanceEditorViewModel>>().First();
         pickerRow.Elements.Should().ContainSingle().Which.Should().BeSameAs(picker,
             "flexible side spacers must not absorb the extra width intended for the picker");
@@ -182,8 +165,7 @@ public class AppearanceEditorLayoutTests
             path.Should().NotContain(widget => widget.Id == AppearanceEditorViewModel.ArmorColorElement);
             var row = path.Reverse().OfType<GuiRow<AppearanceEditorViewModel>>().First();
             ReadProperty<string>(row, "IsVisibleBindName").Should().Be(nameof(AppearanceEditorViewModel.IsCustomTintAvailable));
-            NaturalWidth(row).Should().BeLessThanOrEqualTo(columnWidth,
-                "both the picker and the fixed RGB controls must fit their actual containing span");
+            path.Take(path.Length - 1).Should().OnlyContain(widget => Width(widget) == 0f);
             if (control != picker)
             {
                 Width(control).Should().Be(48f);
@@ -193,30 +175,41 @@ public class AppearanceEditorLayoutTests
             if (row.DeclaredHeight > 0)
                 row.DeclaredHeight.Should().BeGreaterThanOrEqualTo(control.DeclaredHeight);
         }
+
+        var readout = Walk(partial).OfType<GuiLabel<AppearanceEditorViewModel>>().Single(label =>
+            ReadProperty<string>(label, "TextBindName") == nameof(AppearanceEditorViewModel.ClosestTintPresetText));
+        PathTo(partial, readout).Should().OnlyContain(widget => Width(widget) == 0f);
     }
 
     [Test]
-    public void MainEditorListsUseCalculatedColumnWidthsAndWindowHeight(
-        [Values(590f, 900f, 1440f)] float windowWidth, [Values(480f, 1200f)] float windowHeight)
+    public void MainEditorUsesIndependentCategoryAndDetailScrollViewports()
     {
-        var partial = AppearanceEditorDefinition.BuildEditorPanel(
-            AppearanceEditorViewModel.EditorMainPartial, windowWidth, windowHeight);
-        var contentWidth = windowWidth - 60f;
-        var categoryWidth = Math.Min(340f, contentWidth * 0.4f);
-        var detailWidth = contentWidth - categoryWidth - 16f;
-        var partHeight = windowHeight == 480f ? 210f : 608f;
+        var partial = AppearanceEditorDefinition.BuildEditorPanel(AppearanceEditorViewModel.EditorMainPartial);
+        ReadProperty<NuiScrollbars>(partial, "Scrollbars").Should().Be(NuiScrollbars.None);
+        var contentRow = Walk(partial).OfType<GuiRow<AppearanceEditorViewModel>>()
+            .Single(row => row.Elements.OfType<GuiGroup<AppearanceEditorViewModel>>().Count() == 2);
+        contentRow.Elements.Should().HaveCount(2);
+        var panels = contentRow.Elements.OfType<GuiGroup<AppearanceEditorViewModel>>().ToArray();
+        panels.Select(Width).Should().Equal(new[] { 200f, 0f },
+            "the category rail is fixed while the detail panel consumes the remaining client width");
+        panels.Should().OnlyContain(panel => panel.DeclaredHeight == 0f &&
+            !ReadProperty<bool>(panel, "ShowBorder") &&
+            ReadProperty<NuiScrollbars>(panel, "Scrollbars") == NuiScrollbars.Y,
+            "each side needs its own vertical viewport when the window is short");
         var lists = Walk(partial).OfType<GuiList<AppearanceEditorViewModel>>().ToArray();
         lists.Should().HaveCount(3);
         foreach (var list in lists)
         {
             var binding = ReadProperty<string>(list, "RowCountBindName");
-            var expectedColumnWidth = binding == nameof(AppearanceEditorViewModel.PartOptions) + "_RowCount"
-                ? detailWidth : categoryWidth;
-            Width(list).Should().BeApproximately(expectedColumnWidth - 8f, 0.01f);
-            Width(PathTo(partial, list).OfType<GuiColumn<AppearanceEditorViewModel>>().Last())
-                .Should().BeApproximately(expectedColumnWidth, 0.01f);
+            var expectedPanel = binding == nameof(AppearanceEditorViewModel.PartOptions) + "_RowCount"
+                ? panels[1] : panels[0];
+            PathTo(partial, list).OfType<GuiGroup<AppearanceEditorViewModel>>().Last()
+                .Should().BeSameAs(expectedPanel);
+            PathTo(partial, list).Where(widget => !ReferenceEquals(widget, panels[0]))
+                .Should().OnlyContain(widget => Width(widget) == 0f,
+                    "lists must fill their viewport without calculated widths");
             list.DeclaredHeight.Should().Be(binding == nameof(AppearanceEditorViewModel.ColorCategoryOptions) + "_RowCount"
-                ? 154f : partHeight);
+                ? 154f : 210f);
         }
         lists.Select(list => ReadProperty<string>(list, "RowCountBindName")).Should().BeEquivalentTo(new[]
         {
@@ -227,20 +220,19 @@ public class AppearanceEditorLayoutTests
     }
 
     [Test]
-    public void ArmorCombosExpandBetweenFixedArrowsAndFixedGaps([Values(590f, 900f, 1440f)] float windowWidth)
+    public void ArmorCombosUseThreeEqualFlexibleGroupsWithFixedArrowsAndGaps()
     {
-        var armor = AppearanceEditorDefinition.BuildEditorPanel(AppearanceEditorViewModel.EditorArmorPartial, windowWidth, 740f);
-        var contentWidth = windowWidth - 60f;
-        var partWidth = (contentWidth - 24f) / 3f;
+        var armor = AppearanceEditorDefinition.BuildEditorPanel(AppearanceEditorViewModel.EditorArmorPartial);
+        ReadProperty<NuiScrollbars>(armor, "Scrollbars").Should().Be(NuiScrollbars.Y);
         var combos = Walk(armor).OfType<GuiComboBox<AppearanceEditorViewModel>>().ToArray();
         combos.Should().HaveCount(19);
         foreach (var combo in combos)
         {
             var path = PathTo(armor, combo).ToArray();
-            Width(combo).Should().BeApproximately(partWidth - 56f, 0.01f,
-                "every part dropdown must expand by its share of the resized content width");
-            Width(path.OfType<GuiColumn<AppearanceEditorViewModel>>().Last())
-                .Should().BeApproximately(partWidth, 0.01f);
+            path.Should().OnlyContain(widget => Width(widget) == 0f,
+                "all nineteen dropdowns must use client-allocated space between their fixed arrows");
+            path.OfType<GuiColumn<AppearanceEditorViewModel>>().Last().DeclaredHeight.Should().Be(112f,
+                "each part block must contribute a bounded height to its stack");
             combo.DeclaredHeight.Should().Be(24f);
             combo.DeclaredMargin.Should().Be(0f);
             var row = path.Reverse().OfType<GuiRow<AppearanceEditorViewModel>>().First();
@@ -250,21 +242,27 @@ public class AppearanceEditorLayoutTests
             arrows.Should().OnlyContain(button => Width(button) == 24f && button.DeclaredHeight == 24f &&
                 button.DeclaredMargin == 0f && button.Events.Values.Any(action =>
                     action.Method.Name == nameof(AppearanceEditorViewModel.OnClickAdjustArmorPart)));
-            NaturalWidth(row).Should().BeLessThanOrEqualTo(partWidth,
-                "the dropdown and both arrows must fit their own armor column");
+            NaturalWidth(row).Should().Be(48f,
+                "only the two arrows may reserve a fixed horizontal span in this row");
         }
 
         var partsRow = Walk(armor).OfType<GuiRow<AppearanceEditorViewModel>>().Single(row =>
-            row.Elements.OfType<GuiColumn<AppearanceEditorViewModel>>().Count() == 3 &&
+            row.Elements.OfType<GuiGroup<AppearanceEditorViewModel>>().Count() == 3 &&
             Walk(row).OfType<GuiComboBox<AppearanceEditorViewModel>>().Count() == 19);
         partsRow.Elements.Should().HaveCount(5);
         var gaps = partsRow.Elements.OfType<GuiSpacer<AppearanceEditorViewModel>>().ToArray();
         gaps.Should().HaveCount(2);
         gaps.Should().OnlyContain(spacer => Width(spacer) == 6f,
             "flexible gaps must not consume the same new width as the actual armor columns");
-        partsRow.Elements.OfType<GuiColumn<AppearanceEditorViewModel>>().Select(Width)
-            .Should().OnlyContain(width => Math.Abs(width - partWidth) < 0.01f);
-        NaturalWidth(partsRow).Should().BeLessThanOrEqualTo(contentWidth);
+        var stacks = partsRow.Elements.OfType<GuiGroup<AppearanceEditorViewModel>>().ToArray();
+        stacks.Should().OnlyContain(group => Width(group) == 0f && group.DeclaredHeight == 840f &&
+            !ReadProperty<bool>(group, "ShowBorder") &&
+            ReadProperty<NuiScrollbars>(group, "Scrollbars") == NuiScrollbars.None,
+            "equal peer groups must expand together while the armor partial owns vertical scrolling");
+        stacks.Select(group => Walk(group).OfType<GuiComboBox<AppearanceEditorViewModel>>().Count())
+            .Should().Equal(7, 5, 7);
+        stacks.Should().OnlyContain(group => NaturalHeight(group) <= group.DeclaredHeight,
+            "every fixed part block must fit inside the stack exposed to the outer scroll viewport");
     }
 
     [Test]
@@ -280,13 +278,15 @@ public class AppearanceEditorLayoutTests
     }
 
     [Test]
-    public void SettingsContentUsesResizedContentWidth([Values(590f, 900f, 1440f)] float windowWidth)
+    public void SettingsContentUsesClientWidthAndVerticalScrolling()
     {
-        var settings = AppearanceEditorDefinition.BuildEditorPanel(AppearanceEditorViewModel.SettingsPartial, windowWidth, 740f);
-        Width(settings.Elements.Single()).Should().Be(windowWidth - 60f);
+        var settings = AppearanceEditorDefinition.BuildEditorPanel(AppearanceEditorViewModel.SettingsPartial);
+        ReadProperty<NuiScrollbars>(settings, "Scrollbars").Should().Be(NuiScrollbars.Y);
+        Walk(settings).Where(widget => widget is GuiGroup<AppearanceEditorViewModel> or GuiColumn<AppearanceEditorViewModel>)
+            .Should().OnlyContain(widget => Width(widget) == 0f);
         Walk(settings).OfType<GuiRow<AppearanceEditorViewModel>>()
-            .Should().OnlyContain(row => Width(row) == 0f && NaturalWidth(row) <= windowWidth - 60f,
-                "centering spacers must operate inside the new explicit content span");
+            .Should().OnlyContain(row => Width(row) == 0f && NaturalWidth(row) <= 256f,
+                "fixed controls must leave the surrounding spacers free to follow the client width");
     }
 
     [Test]
@@ -308,24 +308,18 @@ public class AppearanceEditorLayoutTests
     [TestCase(AppearanceEditorViewModel.EditorMainPartial)]
     [TestCase(AppearanceEditorViewModel.EditorArmorPartial)]
     [TestCase(AppearanceEditorViewModel.SettingsPartial)]
-    public void EditorPartialOwnsItsScrollViewportWithoutAFixedHeight(string partialName)
+    public void EditorViewportsHaveNoFixedRootWidthOrHeight(string partialName)
     {
         var partial = _partials[partialName];
-
-        // The reported client screenshot clipped the lower armor controls despite
-        // an Auto-scroll ancestor. A group does not report its contents' height
-        // to that ancestor, so a None-scroll partial silently clipped its own
-        // children. Check the group that actually contains the editor controls.
-        ReadProperty<NuiScrollbars>(partial, "Scrollbars").Should().Be(NuiScrollbars.Auto,
-            "the editor partial itself must scroll both tall content and content wider than a resized window");
+        ReadProperty<NuiScrollbars>(partial, "Scrollbars").Should().Be(
+            partialName == AppearanceEditorViewModel.EditorMainPartial ? NuiScrollbars.None : NuiScrollbars.Y,
+            "main uses independent side-by-side viewports; armor and settings scroll their full vertical content");
         Width(partial).Should().Be(0f,
             "the scrollbar must follow the window edge instead of staying at the old panel width");
         partial.DeclaredHeight.Should().Be(0f,
             "the scroll viewport must fill the available window height, not use a fixed content height");
         partial.Elements.Should().ContainSingle().Which.Should().BeOfType<GuiColumn<AppearanceEditorViewModel>>();
-        Walk(partial).OfType<GuiGroup<AppearanceEditorViewModel>>()
-            .Where(group => !ReferenceEquals(group, partial) && group.Id != AppearanceEditorViewModel.ArmorColorElement)
-            .Should().BeEmpty("another unsized group would conceal the editor's content extent from its scroll viewport");
+        Width(partial.Elements.Single()).Should().Be(0f);
     }
 
     [Test]
@@ -347,11 +341,10 @@ public class AppearanceEditorLayoutTests
     [Test]
     public void RuntimePanelsRetainEveryBootEventAndBinding(
         [Values(AppearanceEditorViewModel.EditorMainPartial, AppearanceEditorViewModel.EditorArmorPartial,
-            AppearanceEditorViewModel.SettingsPartial)] string partialName,
-        [Values(590f, 900f, 1440f)] float windowWidth, [Values(480f, 1200f)] float windowHeight)
+            AppearanceEditorViewModel.SettingsPartial)] string partialName)
     {
         var boot = _partials[partialName];
-        var runtime = AppearanceEditorDefinition.BuildEditorPanel(partialName, windowWidth, windowHeight);
+        var runtime = AppearanceEditorDefinition.BuildEditorPanel(partialName);
         foreach (var panel in new[] { boot, runtime })
         {
             var eventWidgets = Walk(panel).Where(widget => widget.Events.Count > 0).ToArray();
@@ -364,13 +357,13 @@ public class AppearanceEditorLayoutTests
         EventSnapshot(runtime).Should().BeEquivalentTo(EventSnapshot(boot),
             "runtime copies must route to the event handlers registered at boot, with the same typed arguments");
         BindingSnapshot(runtime).Should().BeEquivalentTo(BindingSnapshot(boot),
-            "resizing must retain options, selected values, visibility and every draw-texture region binding");
+            "static panel copies must retain options, selected values, visibility and every draw-texture region binding");
     }
 
     [Test]
     public void RuntimeArmorRetainsAllPartOptionsAndAll120SwatchRegions()
     {
-        var armor = AppearanceEditorDefinition.BuildEditorPanel(AppearanceEditorViewModel.EditorArmorPartial, 1440f, 1200f);
+        var armor = AppearanceEditorDefinition.BuildEditorPanel(AppearanceEditorViewModel.EditorArmorPartial);
         var combos = Walk(armor).OfType<GuiComboBox<AppearanceEditorViewModel>>().ToArray();
         combos.Should().HaveCount(19);
         var options = combos.Select(combo => ReadProperty<string>(combo, "OptionsBindName")).ToArray();

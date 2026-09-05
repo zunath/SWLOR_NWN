@@ -464,7 +464,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             uint creature,
             IReadOnlyList<TintMapMaterialSelection> selections,
             TintMapLayerType layer,
-            TintMapColor color)
+            TintMapColor color,
+            uint item = OBJECT_INVALID)
         {
             if (selections == null || TintMapVariable.IsCreatureColorLayer(layer))
                 return;
@@ -475,10 +476,11 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     GetIsObjectValid(selection.GetPaletteSource(layer)) &&
                     GetObjectType(selection.GetPaletteSource(layer)) == ObjectType.Item)
                 .ToList();
-            if (itemSelections.Count == 0)
+            if (!GetIsObjectValid(item) && itemSelections.Count > 0)
+                item = itemSelections[0].GetPaletteSource(layer);
+            if (!GetIsObjectValid(item) || GetObjectType(item) != ObjectType.Item)
                 return;
 
-            var item = itemSelections[0].GetPaletteSource(layer);
             itemSelections = itemSelections
                 .Where(selection => selection.GetPaletteSource(layer) == item)
                 .ToList();
@@ -1414,7 +1416,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             {
                 return new TintMapColorSelection(
                     TintMapPaletteColors.GetClosestColorId(layer, customColor),
-                    null);
+                    customColor);
             }
 
             // Values 1-176 are the palette-index format used by the original tint-map branch.
@@ -1434,7 +1436,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             {
                 return new TintMapColorSelection(
                     TintMapPaletteColors.GetClosestColorId(layer, globalColor),
-                    null);
+                    globalColor);
             }
 
             return new TintMapColorSelection(GetCreatureStandardColor(creature, layer), null);
@@ -1670,20 +1672,17 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             // A scoped reset leaves a type-zero record which restores every material parameter
             // on the client, discarding other colors written earlier in that update.
             var layerDefinition = TintMapMaterialRegistry.GetLayer(layer);
-            var paletteColorId = color.CustomColor.HasValue
-                ? TintMapPaletteColors.GetClosestColorId(layer, color.CustomColor.Value)
-                : color.PaletteColorId;
-            var paletteCoordinate = TintMapMaterialRegistry.GetPaletteCoordinate(
-                layer,
-                paletteColorId);
+            var shaderColor = color.CustomColor.HasValue
+                ? TintMapShaderColor.Encode(color.CustomColor.Value)
+                : TintMapMaterialRegistry.GetPaletteCoordinate(layer, color.PaletteColorId);
 
-            // Issue #2052's working shader accepts one palette-row uniform. Picker colors are
-            // resolved to a row before this point, so presets and picker edits use this exact call.
+            // Preserve the proven scalar MTR transport. RGB occupies a separate lossless
+            // range; palette rows and the native robe fallback retain their existing values.
             SetMaterialShaderUniformVec4(
                 creature,
                 materialResref,
                 layerDefinition.UniformName,
-                paletteCoordinate);
+                shaderColor);
         }
 
         private static Dictionary<string, int> GetItemTintOverrides(uint item)

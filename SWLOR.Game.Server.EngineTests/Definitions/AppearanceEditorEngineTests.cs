@@ -76,7 +76,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 {
                     var regionName = "Global" + channel + "Region";
                     var image = WidgetTree(panel).Single(widget => widget.Id == "ae_color_" + regionName);
-                    ctx.Assert(image is GuiImage<AppearanceEditorViewModel>, $"{channel}: global swatch is an ordinary image.");
+                    ctx.Assert(image is GuiProgressBar<AppearanceEditorViewModel>, $"{channel}: global swatch displays its actual foreground color.");
                     ctx.Assert(image.Events.TryGetValue("mousedown", out var mouseDown), $"{channel}: image handles mouse-down.");
                     ctx.AssertEqual(nameof(AppearanceEditorViewModel.OnMouseDownGlobalColor), mouseDown.Method.Name,
                         $"{channel}: image routes through the left-button filter");
@@ -218,6 +218,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 var outfit = GetItemInSlot(InventorySlot.Chest, civilian);
                 SeedInheritance(outfit);
+                ConfigureRgbArmor(outfit);
                 var editor = BindWithoutClient(civilian);
                 using var publications = new BindingPublications(editor);
 
@@ -248,8 +249,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual("0", editor.CustomTintBlue, "Black skin blue draft");
                 publications.Clear();
                 InvokePrivate(editor, "CommitCustomTintComponents");
-                ctx.AssertEqual(blackSkinId, GetColor(civilian, ColorChannel.Skin),
-                    "Committed zero RGB must select native black skin, not the old light color");
+                ctx.AssertEqual(originalSkinId, GetColor(civilian, ColorChannel.Skin), "RGB retains the native fallback");
+                ctx.AssertEqual(black.ToStoredValue(), GetLocalInt(civilian, TintMapVariable.GetCreatureColorStateName(TintMapLayerType.Skin)), "Black is persisted without quantization");
                 AssertPublishedPicker(ctx, publications, editor, black, "Committed black skin RGB");
                 AssertTintInput(ctx, editor, black, "Committed black skin input");
                 AssertNoRgbFieldPublications(ctx, publications, "Black skin commit retains text buffers");
@@ -266,7 +267,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     new GuiColor(requested.Red, requested.Green, requested.Blue), () =>
                         ctx.Assert(!publications.Contains(nameof(editor.SelectedTintColor)),
                             "The production SkipNotify flag must suppress the watched picker during its setter."));
-                AssertNativeColor(ctx, outfit, (int)AppearanceArmorColor.Leather1, selected, "Watched picker native dye");
+                ctx.AssertEqual(requested.ToStoredValue(), GetLocalInt(outfit, TintMapVariable.GetItemGlobalColorStateName(TintMapLayerType.Leather1)), "Watched picker persists exact RGB");
                 AssertTintInput(ctx, editor, requested, "Post-client requested RGB");
                 AssertPublishedRgbFields(ctx, publications, editor, requested, "Picker publishes its exact RGB components");
                 ctx.Assert(!publications.Contains(nameof(editor.SelectedTintColor)),
@@ -311,16 +312,17 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 // exercise its timer/window-open guard; do not pretend that a PC is connected.
                 InvokePrivate(editor, "CommitCustomTintComponents");
                 selected = TintMapPaletteColors.GetClosestColorId(TintMapLayerType.Leather1, new TintMapColor(230, 35, 170));
-                AssertNativeColor(ctx, outfit, (int)AppearanceArmorColor.Leather1, selected, "Committed RGB native dye");
+                ctx.AssertEqual(new TintMapColor(230, 35, 170).ToStoredValue(), GetLocalInt(outfit, TintMapVariable.GetItemGlobalColorStateName(TintMapLayerType.Leather1)), "Draft commit persists RGB");
+                AssertArmorUnchanged(ctx, beforeDraft, civilian, "RGB commits never replace equipment or change native dyes");
                 AssertPublishedPicker(ctx, publications, editor, new TintMapColor(230, 35, 170), "Committed requested RGB");
                 AssertTintInput(ctx, editor, new TintMapColor(230, 35, 170), "Committed RGB input");
                 AssertNoRgbFieldPublications(ctx, publications, "RGB commit leaves unchanged text buffers alone");
                 AssertInheritedAndExplicitParts(ctx, outfit);
             });
-            ctx.SetResultDetail("Valid RGB drafts caused no color-control echoes;300 corrected only red to255 and empty text could not commit. Skin0/0/0 and equipment RGB commits published exact picker input while retaining text buffers and separately applying the nearest native preset. Incoming NuiGetBind and debounce scheduling/open-window checks are synthesized or excluded.");
+            ctx.SetResultDetail("Valid RGB drafts caused no color-control echoes;300 corrected only red to255 and empty text could not commit. Skin0/0/0 and equipment RGB commits published exact picker input while retaining text buffers and persisting exact RGB without editing native dyes. Incoming NuiGetBind and debounce scheduling/open-window checks are synthesized or excluded.");
         }
 
-        [EngineTest("Appearance editor remembers exact RGB per target until an explicit or external color change", Category = "AppearanceEditor", TimeoutSeconds = 30f)]
+        [EngineTest("Appearance editor persists exact RGB through native material transport and reopening", Category = "AppearanceEditor", TimeoutSeconds = 30f)]
         public static async Task ExactRgbInputSurvivesEditsNavigationAndResize(EngineTestContext ctx)
         {
             var civilian = await SpawnCivilianAsync(ctx);
@@ -328,128 +330,105 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 var outfit = GetItemInSlot(InventorySlot.Chest, civilian);
                 SeedInheritance(outfit);
+                ConfigureRgbArmor(outfit);
+                var before = ReadArmor(civilian);
                 var editor = BindWithoutClient(civilian);
-                using var publications = new BindingPublications(editor);
                 editor.OnSelectEquipment()();
-                ApplyWatchedValue(editor, nameof(editor.SelectedTintColor), new GuiColor(253, 17, 91));
+                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Leather2)();
+                ctx.Assert(editor.IsCustomTintEditable, "The reported ordinary armor layer supports RGB.");
+                var green = new TintMapColor(205, 228, 197);
+                ApplyWatchedValue(editor, nameof(editor.SelectedTintColor), new GuiColor(205, 228, 197));
+                var globalName = TintMapVariable.GetItemGlobalColorStateName(TintMapLayerType.Leather2);
+                ctx.AssertEqual(green.ToStoredValue(), GetLocalInt(outfit, globalName), "Global green is saved without selecting a tan preset");
+                var forearm = TintMapModelResolver.GetCurrentSelections(civilian).Single(selection =>
+                    selection.ArmorPart == AppearanceArmor.LeftForearm && selection.Material.Layers.Contains(TintMapLayerType.Leather2));
+                AssertTintInput(ctx, editor, green, "Reported pale green");
+                AssertSwatchRgb(ctx, editor.GlobalLeather2Tint, green, "Global swatch");
+                TintMapEngineTests.AssertNativeRgb(ctx, civilian, forearm.Material.Resref, TintMapLayerType.Leather2, green);
+                AssertArmorUnchanged(ctx, before, civilian, "Global RGB leaves item identity, models, native dyes and markers unchanged");
 
+                editor = BindWithoutClient(civilian);
+                editor.OnSelectEquipment()();
+                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Leather2)();
+                AssertTintInput(ctx, editor, green, "New editor loads persisted RGB without a session cache");
+                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.LeftForearm, AppearanceArmorColor.Leather2)();
+                AssertTintInput(ctx, editor, green, "Inherited part previews exact global RGB");
+                AssertInheritedRegion(ctx, editor.LeftForearmLeather2Region, "Inherited RGB part has an empty swatch");
+                var partColor = new TintMapColor(1, 17, 91);
+                ApplyWatchedValue(editor, nameof(editor.SelectedTintColor), new GuiColor(200, 17, 91));
                 ApplyWatchedValue(editor, nameof(editor.CustomTintRed), "1");
                 InvokePrivate(editor, "CommitCustomTintComponents");
-                var requested = new TintMapColor(1, 17, 91);
-                var preset = TintMapPaletteColors.GetClosestColorId(TintMapLayerType.Leather1, requested);
-                AssertTintInput(ctx, editor, requested, "Red1 committed independently");
-                AssertNativeColor(ctx, outfit, (int)AppearanceArmorColor.Leather1, preset, "Red1 native nearest preset");
-
-                ApplyWatchedValue(editor, nameof(editor.CustomTintGreen), "77");
-                InvokePrivate(editor, "CommitCustomTintComponents");
-                requested = new TintMapColor(1, 77, 91);
-                preset = TintMapPaletteColors.GetClosestColorId(TintMapLayerType.Leather1, requested);
-                ctx.Assert(requested != TintMapPaletteColors.GetColor(TintMapLayerType.Leather1, preset),
-                    "The fixture must distinguish entered RGB from the rendered preset.");
-                AssertTintInput(ctx, editor, requested, "Green edit retains Red1 and Blue91");
-                AssertNativeColor(ctx, outfit, (int)AppearanceArmorColor.Leather1, preset, "Second component native nearest preset");
-                AssertInheritedAndExplicitParts(ctx, outfit);
-                publications.Clear();
-                ApplyWatchedValue(editor, nameof(editor.CustomTintRed), "001");
-                AssertNoTintControlPublications(ctx, publications, "Leading-zero draft stays local");
-                InvokePrivate(editor, "CommitCustomTintComponents");
-                ctx.AssertEqual("001", editor.CustomTintRed, "Commit must not normalize valid text under the caret");
-                ctx.AssertEqual("77", editor.CustomTintGreen, "Leading-zero commit retains green");
-                ctx.AssertEqual("91", editor.CustomTintBlue, "Leading-zero commit retains blue");
-                AssertPublishedPicker(ctx, publications, editor, requested, "Leading-zero text still has exact numeric RGB");
-                AssertNoRgbFieldPublications(ctx, publications, "Leading-zero commit preserves all text buffers");
-
-                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.LeftFoot, AppearanceArmorColor.Leather1)();
-                AssertTintInput(ctx, editor, requested, "Raw0 inherited part previews the remembered global input");
-                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.RightFoot, AppearanceArmorColor.Leather1)();
-                AssertTintInput(ctx, editor, requested, "Raw255 inherited part previews the remembered global input");
-                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Cloth1)();
-                var clothId = GetItemAppearance(outfit, ItemAppearanceType.ArmorColor, (int)AppearanceArmorColor.Cloth1);
-                AssertTintInput(ctx, editor, TintMapPaletteColors.GetColor(TintMapLayerType.Cloth1, clothId), "Another semantic layer must not reuse leather input");
-                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Robe, AppearanceArmorColor.Leather1)();
-                AssertTintInput(ctx, editor, TintMapPaletteColors.GetColor(TintMapLayerType.Leather1, 0), "Explicit robe palette0 must not reuse global input");
-                var partRequested = new TintMapColor(2, 199, 93);
-                var partPreset = TintMapPaletteColors.GetClosestColorId(TintMapLayerType.Leather1, partRequested);
-                ApplyWatchedValue(editor, nameof(editor.SelectedTintColor), new GuiColor(2, 199, 93));
-                AssertNativeColor(ctx, outfit, PartIndex(AppearanceArmor.Robe), partPreset, "Part input native dye");
-                AssertNativeColor(ctx, outfit, (int)AppearanceArmorColor.Leather1, preset, "Part input retains global dye");
-                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Leather1)();
-                AssertTintInput(ctx, editor, requested, "Return to remembered global input");
-
-                var beforeResize = ReadArmor(civilian);
-                editor.Geometry = new GuiRectangle(0, 0, 1440, 960);
-                publications.Clear();
-                InvokePrivate(editor, "OnClientPropertyUpdated", nameof(editor.Geometry));
-                ctx.AssertEqual(0, publications.Count, "Geometry callback must not rebuild the layout or republish bindings");
-                ctx.AssertEqual(960f, editor.Geometry.Height, "Geometry callback must not nudge the layout height");
-                AssertTintInput(ctx, editor, requested, "Resize retains exact RGB input");
-                AssertArmorUnchanged(ctx, beforeResize, civilian, "Resize after exact RGB input");
-
-                editor.OnSelectAppearance()();
-                var skinRequested = new TintMapColor(7, 88, 159);
-                var skinPreset = TintMapPaletteColors.GetClosestColorId(TintMapLayerType.Skin, skinRequested);
-                ApplyWatchedValue(editor, nameof(editor.SelectedTintColor), new GuiColor(7, 88, 159));
-                ctx.AssertEqual(skinPreset, GetColor(civilian, ColorChannel.Skin), "Creature input native nearest preset");
-                editor.OnSelectEquipment()();
-                AssertTintInput(ctx, editor, requested, "Equipment tab restores item input");
-                editor.OnSelectAppearance()();
-                AssertTintInput(ctx, editor, skinRequested, "Appearance tab restores creature input");
-                editor.OnSelectEquipment()();
-                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Robe, AppearanceArmorColor.Leather1)();
-                AssertTintInput(ctx, editor, partRequested, "Part target restores its own input");
-
-                // Invoke the actual action body, excluding the client's mouse-button payload.
+                AssertTintInput(ctx, editor, partColor, "R1 remains one");
+                AssertSwatchRgb(ctx, editor.LeftForearmLeather2Tint, partColor, "Part swatch");
+                ctx.Assert(editor.LeftForearmLeather2Custom, "The explicit RGB override has a filled swatch.");
+                TintMapEngineTests.AssertNativeRgb(ctx, civilian, forearm.Material.Resref, TintMapLayerType.Leather2, partColor);
+                var laterGlobal = new TintMapColor(13, 149, 71);
+                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Leather2)();
+                ApplyWatchedValue(editor, nameof(editor.SelectedTintColor), new GuiColor(13, 149, 71));
+                TintMapEngineTests.AssertNativeRgb(ctx, civilian, forearm.Material.Resref, TintMapLayerType.Leather2, partColor);
+                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.LeftForearm, AppearanceArmorColor.Leather2)();
+                AssertTintInput(ctx, editor, partColor, "Global change preserves explicit part RGB");
+                using (var publications = new BindingPublications(editor))
+                {
+                    editor.Geometry = new GuiRectangle(0, 0, 1440, 960);
+                    publications.Clear();
+                    InvokePrivate(editor, "OnClientPropertyUpdated", nameof(editor.Geometry));
+                    ctx.AssertEqual(0, publications.Count, "Resize never rebuilds or republishes bindings");
+                    AssertTintInput(ctx, editor, partColor, "Resize preserves part RGB");
+                }
                 InvokePrivate(editor, "ResetArmorColorToInheritance",
-                    AppearanceEditorViewModel.ColorTarget.Robe, AppearanceArmorColor.Leather1);
-                AssertNativeColor(ctx, outfit, PartIndex(AppearanceArmor.Robe), 255, "Reset action restores native inheritance");
-                ctx.AssertEqual(0, GetLocalInt(outfit, OverrideName(AppearanceArmor.Robe)), "Reset action removes the explicit marker");
-                AssertTintInput(ctx, editor, requested,
-                    "Selected part reset immediately previews global exact input");
-                // Returning externally to the old part row must not resurrect the reset input.
-                SetPartColor(outfit, AppearanceArmor.Robe, partPreset, true);
-                InvokePrivate(editor, "LoadTintMapEditor");
-                AssertTintInput(ctx, editor, TintMapPaletteColors.GetColor(TintMapLayerType.Leather1, partPreset), "Reset invalidates the old part input cache");
-                ApplyWatchedValue(editor, nameof(editor.SelectedTintColor), new GuiColor(partRequested.Red, partRequested.Green, partRequested.Blue));
-
-                // Choosing the very row already applied is still an explicit preset action.
-                editor.OnClickColorPalette(partPreset)();
-                AssertTintInput(ctx, editor, TintMapPaletteColors.GetColor(TintMapLayerType.Leather1, partPreset), "Same-row part preset clears exact input");
-                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Leather1)();
-                AssertTintInput(ctx, editor, requested, "Part preset leaves global input intact");
-                editor.OnClickColorPalette(preset)();
-                var canonical = TintMapPaletteColors.GetColor(TintMapLayerType.Leather1, preset);
-                AssertTintInput(ctx, editor, canonical, "Same-row global preset clears exact input");
-                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Cloth1)();
-                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Leather1)();
-                AssertTintInput(ctx, editor, canonical, "Preset invalidation survives target switches");
-
-                ApplyWatchedValue(editor, nameof(editor.SelectedTintColor), new GuiColor(requested.Red, requested.Green, requested.Blue));
-                var externalPreset = (preset + 1) % TintMapMaterialRegistry.PaletteColorCount;
-                ItemPlugin.SetItemAppearance(outfit, ItemAppearanceType.ArmorColor,
-                    (int)AppearanceArmorColor.Leather1, externalPreset, false);
-                var afterExternal = ReadArmor(civilian);
-                InvokePrivate(editor, "LoadTintMapEditor");
-                AssertTintInput(ctx, editor, TintMapPaletteColors.GetColor(TintMapLayerType.Leather1, externalPreset), "External native dye invalidates remembered input");
-                AssertArmorUnchanged(ctx, afterExternal, civilian, "External dye preview must not reapply old input");
-                ctx.AssertEqual(1, GetLocalInt(outfit, OverrideName(AppearanceArmor.Robe)), "Part edits retain explicit override marker");
-                AssertNativeColor(ctx, outfit, PartIndex(AppearanceArmor.LeftFoot), 0, "Global input preserves inherited raw0");
-                AssertNativeColor(ctx, outfit, PartIndex(AppearanceArmor.RightFoot), 255, "Global input preserves inherited raw255");
+                    AppearanceEditorViewModel.ColorTarget.LeftForearm, AppearanceArmorColor.Leather2);
+                AssertTintInput(ctx, editor, laterGlobal, "Reset restores exact inherited global color");
+                TintMapEngineTests.AssertNativeRgb(ctx, civilian, forearm.Material.Resref, TintMapLayerType.Leather2, laterGlobal);
+                editor.OnClickColorPalette(77)();
+                AssertTintInput(ctx, editor, TintMapPaletteColors.GetColor(TintMapLayerType.Leather2, 77), "Part preset opts out of global RGB");
+                ctx.Assert(!editor.LeftForearmLeather2Custom, "Preset replaces the part RGB fill.");
+                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Leather2)();
+                AssertTintInput(ctx, editor, laterGlobal, "Part preset retains global RGB");
+                editor.OnClickColorPalette(66)();
+                ctx.AssertEqual(0, GetLocalInt(outfit, globalName), "Global preset clears persisted RGB");
+                ctx.Assert(!editor.GlobalLeather2Custom, "Global swatch returns to preset mode.");
 
                 editor.OnSelectAppearance()();
-                var nativeSkinId = GetColor(civilian, ColorChannel.Skin);
-                var nativeSkinColor = TintMapPaletteColors.GetColor(TintMapLayerType.Skin, nativeSkinId);
-                var persistedSkinColor = Enumerable.Range(0, TintMapMaterialRegistry.PaletteColorCount)
-                    .Select(id => TintMapPaletteColors.GetColor(TintMapLayerType.Skin, id))
-                    .First(color => color != nativeSkinColor);
-                var persistedSkinPreset = TintMapPaletteColors.GetClosestColorId(TintMapLayerType.Skin, persistedSkinColor);
-                ctx.Assert(persistedSkinPreset != nativeSkinId, "Stored custom skin must differ from the native fallback.");
-                SetLocalInt(civilian, TintMapVariable.GetCreatureColorStateName(TintMapLayerType.Skin), persistedSkinColor.ToStoredValue());
-                InvokePrivate(editor, "LoadTintMapEditor");
-                AssertTintInput(ctx, editor, persistedSkinColor,
-                    "Stored custom skin controls follow the effective color, not the native fallback");
-                ctx.AssertEqual(nativeSkinId, GetColor(civilian, ColorChannel.Skin), "Loading stored custom skin must leave its native fallback unchanged");
+                var originalSkin = GetColor(civilian, ColorChannel.Skin);
+                ApplyWatchedValue(editor, nameof(editor.SelectedTintColor), new GuiColor(7, 88, 159));
+                var skin = new TintMapColor(7, 88, 159);
+                ctx.AssertEqual(originalSkin, GetColor(civilian, ColorChannel.Skin), "Skin RGB retains native fallback");
+                TintMapEngineTests.AssertNativeRgb(ctx, civilian, string.Empty, TintMapLayerType.Skin, skin);
+                editor = BindWithoutClient(civilian);
+                AssertTintInput(ctx, editor, skin, "New editor restores creature RGB");
+
+                EquippedItemAppearance.Set(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, 187);
+                editor.OnSelectEquipment()();
+                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Robe, AppearanceArmorColor.Cloth1)();
+                ctx.Assert(editor.IsCustomTintAvailable && !editor.IsCustomTintEditable,
+                    "Unsupported robe RGB remains visible but disabled with a preset explanation.");
+                var beforeRobe = ReadArmor(civilian);
+                ApplyWatchedValue(editor, nameof(editor.SelectedTintColor), new GuiColor(205, 228, 197));
+                AssertArmorUnchanged(ctx, beforeRobe, civilian, "Unsupported robe input cannot silently quantize a color");
             });
-            ctx.SetResultDetail("Requested RGB survived component commits, target/layer/tab changes and resizing. Reset action body immediately restored inherited global input and invalidated part cache; presets/external changes also invalidated remembered input. Stored custom skin controls followed its effective color over a different native fallback. Headless coverage excludes mouse/Geometry event delivery and debounce timing.");
+            ctx.SetResultDetail("Reported pale green and R1 persisted exactly through native scalar material uploads, fresh editor hydration, inheritance, explicit part overrides and reset/preset actions. RGB leaves equipped item identity and native dyes unchanged. Headless tests exclude client NUI event transport and rendering.");
+        }
+
+        private static void ConfigureRgbArmor(uint outfit)
+        {
+            EquippedItemAppearance.Set(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, 0);
+            EquippedItemAppearance.Set(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Torso, 98);
+            EquippedItemAppearance.Set(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftForearm, 6);
+            EquippedItemAppearance.Set(outfit, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightForearm, 6);
+            foreach (var part in new[] { AppearanceArmor.LeftForearm, AppearanceArmor.RightForearm })
+            {
+                EquippedItemAppearance.Set(outfit, ItemAppearanceType.ArmorColor,
+                    ArmorColorIndexCalculator.CalculatePerPart(part, AppearanceArmorColor.Leather2), 255);
+                DeleteLocalInt(outfit, ArmorColorIndexCalculator.GetPerPartOverrideVariableName(part, AppearanceArmorColor.Leather2));
+            }
+        }
+
+        private static void AssertSwatchRgb(EngineTestContext ctx, GuiColor actual, TintMapColor expected, string stage)
+        {
+            ctx.AssertEqual(expected.Red, actual.R, stage + " red");
+            ctx.AssertEqual(expected.Green, actual.G, stage + " green");
+            ctx.AssertEqual(expected.Blue, actual.B, stage + " blue");
         }
 
         private static void AssertTintInput(EngineTestContext ctx, AppearanceEditorViewModel editor, TintMapColor requested, string stage)
@@ -749,16 +728,14 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             foreach (var image in images)
             {
                 var regionName = image["id"].Value<string>().Substring("ae_color_".Length);
-                ctx.AssertEqual("image", image["type"]?.Value<string>(), $"{stage}/{regionName}: swatch fills the native image rectangle");
+                ctx.AssertEqual("progress", image["type"]?.Value<string>(), $"{stage}/{regionName}: swatch fills the native image rectangle");
                 ctx.Assert(image["width"] == null && image["height"] == null,
                     $"{stage}/{regionName}: neither dimension may disable equal-width sharing.");
                 ctx.AssertEqual(2f, image["margin"]?.Value<float>(), $"{stage}/{regionName}: swatch margin");
                 ctx.AssertEqual(1f, image["aspect"]?.Value<float>(), $"{stage}/{regionName}: artwork and native encouragement share square bounds");
-                ctx.AssertEqual((int)NuiAspect.Stretch, image["image_aspect"]?.Value<int>(), $"{stage}/{regionName}: sprite fills the square independently of atlas dimensions");
-                ctx.AssertEqual((int)NuiHorizontalAlign.Center, image["image_halign"]?.Value<int>(), $"{stage}/{regionName}: image stays under its centered heading");
-                ctx.AssertEqual(regionName, image["image_region"]?["bind"]?.Value<string>(), $"{stage}/{regionName}: native region stays bound to the selected dye");
-                ctx.AssertEqual(regionName.Contains("Metal") ? "gui_pal_armor01" : "gui_pal_tattoo",
-                    image["value"]?.Value<string>(), $"{stage}/{regionName}: swatch uses its authored palette family");
+                ctx.AssertEqual(regionName[..^"Region".Length] + "Tint", image["foreground_color"]?["bind"]?.Value<string>(),
+                    $"{stage}/{regionName}: swatch uses the effective RGB color");
+                ctx.AssertEqual(1f, image["value"]?.Value<float>(), $"{stage}/{regionName}: fill covers the square");
                 ctx.Assert(image["draw_list"] == null, $"{stage}/{regionName}: global fill must not remain a fixed draw-list inset.");
                 var imageRow = image.Ancestors().OfType<JObject>().First();
                 ctx.AssertEqual("row", imageRow["type"]?.Value<string>(), $"{stage}/{regionName}: image belongs to a private row");
@@ -1046,10 +1023,10 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var requested = TintMapPaletteColors.GetColor(TintMapLayerType.Leather1, 52);
                 var selected = TintMapPaletteColors.GetClosestColorId(TintMapLayerType.Leather1, requested);
                 ctx.Assert(selected != 3, "The global picker edit must differ from the authored leather dye.");
-                editor.SelectedTintColor = new GuiColor(requested.Red, requested.Green, requested.Blue);
-                AssertNativeColor(ctx, outfit, (int)AppearanceArmorColor.Leather1, selected, "Global RGB picker");
+                editor.OnClickColorPalette(selected)();
+                AssertNativeColor(ctx, outfit, (int)AppearanceArmorColor.Leather1, selected, "Global preset picker");
                 AssertInheritedAndExplicitParts(ctx, outfit);
-                AssertPaletteRegion(ctx, editor.GlobalLeather1Region, selected, "Global swatch after RGB picker");
+                AssertPaletteRegion(ctx, editor.GlobalLeather1Region, selected, "Global swatch after preset picker");
 
                 editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Robe, AppearanceArmorColor.Leather1)();
                 editor.OnClickColorPalette(77)();
@@ -1075,7 +1052,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 AssertInheritedRegion(ctx, editor.RightFootLeather1Region, "Inherited raw-255 swatch after global edit");
                 AssertPaletteRegion(ctx, editor.RobeLeather1Region, 0, "Explicit zero remains distinct from inheritance");
             });
-            ctx.SetResultDetail("Actual VM RGB/preset actions edited global and robe dyes independently. Native raw0/raw255 inherited parts stayed unset; APC-marked palette0 survived a later global edit and tab rehydration. No client renderer or mouse-event transport is attached.");
+            ctx.SetResultDetail("Actual VM preset actions edited global and robe dyes independently. Native raw0/raw255 inherited parts stayed unset; APC-marked palette0 survived a later global edit and tab rehydration. No client renderer or mouse-event transport is attached.");
         }
 
         private static AppearanceEditorViewModel BindWithoutClient(uint target)

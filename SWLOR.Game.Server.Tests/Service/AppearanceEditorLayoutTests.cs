@@ -204,7 +204,7 @@ public class AppearanceEditorLayoutTests
     }
 
     [Test]
-    public void GlobalSwatchesShareClientWidthAndRetainTheirCropAndColorTarget()
+    public void GlobalSwatchesShareClientWidthAndDisplayTheirActualColor()
     {
         var armor = _partials[AppearanceEditorViewModel.EditorArmorPartial];
         var expectedChannels = new[]
@@ -212,7 +212,7 @@ public class AppearanceEditorLayoutTests
             AppearanceArmorColor.Leather1, AppearanceArmorColor.Cloth1, AppearanceArmorColor.Metal1,
             AppearanceArmorColor.Leather2, AppearanceArmorColor.Cloth2, AppearanceArmorColor.Metal2
         };
-        var images = Walk(armor).OfType<GuiImage<AppearanceEditorViewModel>>().Where(image =>
+        var images = Walk(armor).OfType<GuiProgressBar<AppearanceEditorViewModel>>().Where(image =>
             image.Id?.StartsWith("ae_color_Global", StringComparison.Ordinal) == true).ToArray();
         images.Should().HaveCount(6);
         for (var index = 0; index < images.Length; index++)
@@ -221,16 +221,10 @@ public class AppearanceEditorLayoutTests
             var channel = expectedChannels[index];
             var regionBinding = "Global" + channel + "Region";
             image.Id.Should().Be("ae_color_" + regionBinding);
-            ReadProperty<string>(image, "RegionBindName").Should().Be(regionBinding);
-            ReadProperty<string>(image, "Resref").Should().Be(
-                channel is AppearanceArmorColor.Metal1 or AppearanceArmorColor.Metal2
-                    ? "gui_pal_armor01" : "gui_pal_tattoo");
-            ReadProperty<NuiAspect>(image, "Aspect").Should().Be(NuiAspect.Stretch,
-                "the square sprite crop must fill the control, regardless of the source atlas's proportions");
+            ReadProperty<string>(image, "ColorBindName").Should().Be("Global" + channel + "Tint");
+            ReadProperty<float>(image, "Value").Should().Be(1f);
             ReadProperty<float>(image, "AspectRatio").Should().Be(1f,
                 "the image, click target and encouraged highlight must have identical square bounds");
-            ReadProperty<NuiHorizontalAlign>(image, "HorizontalAlign").Should().Be(NuiHorizontalAlign.Center);
-            ReadProperty<NuiVerticalAlign>(image, "VerticalAlign").Should().Be(NuiVerticalAlign.Top);
             PathTo(armor, image).Should().OnlyContain(widget => Width(widget) == 0f,
                 "the responsive image and its ancestors must use the width left beside the palette");
             image.DeclaredHeight.Should().Be(0f,
@@ -583,7 +577,11 @@ public class AppearanceEditorLayoutTests
             .Where(entry => entry.Key.EndsWith(".DrawTextureRegionBindName", StringComparison.Ordinal) ||
                 entry.Key.EndsWith(".RegionBindName", StringComparison.Ordinal))
             .Select(entry => entry.Value).ToArray();
-        regionBindings.Should().BeEquivalentTo(expectedRegions);
+        regionBindings.Should().BeEquivalentTo(expectedRegions.Where(name => !name.StartsWith("Global")));
+        Walk(armor).OfType<GuiProgressBar<AppearanceEditorViewModel>>()
+            .Select(swatch => ReadProperty<string>(swatch, "ColorBindName"))
+            .Should().BeEquivalentTo(expectedRegions.Where(name => name.StartsWith("Global"))
+                .Select(name => name[..^"Region".Length] + "Tint"));
     }
 
     private static IReadOnlyDictionary<string, string> EventSnapshot(IGuiWidget root) => Walk(root)

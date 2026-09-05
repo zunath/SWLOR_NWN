@@ -5370,9 +5370,9 @@ void main()
                     armorPart);
 
                 var hasCustomColor = TintMapColor.TryFromStoredValue(savedValue, out var custom);
-                // The deployed shader accepts palette rows only. Keep the Toolset preview on the
-                // same path so an arbitrary RGB picker value cannot look different in game.
-                SetUniformVec4($"tintColor{layerValue}", Vector4.Zero);
+                SetUniformVec4($"tintColor{layerValue}", hasCustomColor
+                    ? new Vector4(custom.Red / 255f, custom.Green / 255f, custom.Blue / 255f, 1f)
+                    : Vector4.Zero);
 
                 var paletteColor = hasCustomColor
                     ? TintMapPaletteColors.GetClosestColorId(layer, custom)

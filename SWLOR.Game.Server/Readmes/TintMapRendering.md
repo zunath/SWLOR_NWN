@@ -28,6 +28,30 @@ Both complete refreshes and individual row updates must use a write-only row
 helper. Only the complete refresh may clear old RGB/custom-mode parameters.
 Palette IDs and blueprint colors remain unchanged.
 
+## Preserve exact custom RGB
+
+RGB edits persist the requested bytes in the existing TMC/TMG/TM variables.
+The editor must load these values after reopening, not remember a requested
+color in a session cache while rendering a nearest preset. Native preset
+clicks clear the corresponding RGB override; unset armor parts inherit TMG,
+and explicit part colors remain independent. These edits do not replace or
+re-equip items.
+
+`TintMapShaderColor.Encode` carries all 24 RGB bits through the existing scalar
+row parameter. Atlas coordinates occupy [0,1). Custom values occupy [1,4),
+using the two float exponent ranges' 2^24 distinct values. All three shaders
+decode this value before lighting. They multiply RGB by a neutral reference
+row's luminance curve, normalized at shade128, preserving shading without
+importing a preset's hue or reflection mask. The Toolset uses the same shading
+formula. Preset lookup and authored colors are unchanged.
+
+Run `TestTintRgb.py --game-data <NWN data directory>` for GPU RGB checks and
+`TestTintShaderMaterials.py` for native engine shader/MTR and preset parity.
+`TintMapShaderColorTests` exhaustively checks every RGB byte combination;
+the native AppearanceEditor tests cover scalar storage, drafts, reopening,
+inheritance and preset reset. Shader changes require rebuilding sw_shader.hak
+and fully restarting the client.
+
 ## Preserve the robe's native palette transport
 
 The 89.8193.37-17 client does not replay creature material overrides onto the
@@ -61,7 +85,11 @@ but fill it from `pal_armor01` and use matching picker colors. Do not modify
 the original palette resources themselves. The GPU regression checks every
 color and shade against the original palette RGBA, including this distinction.
 
-Custom robe colors must also reach the native palette transport. Preserve the
+This transport only supports native palette IDs, not arbitrary RGB. The editor
+disables RGB edits when the selected layer includes a robe, with a tooltip
+directing the user to presets. Persisted RGB from other sources still uses a
+nearest-preset compatibility projection for robes; this is not exact RGB.
+Ordinary body parts receive the full RGB material scalar. Preserve the
 authored palette values separately from their projected render values so
 resetting an override restores the original color, including per-part
 inheritance. Ordinary NPCs without overrides must not have their palette fields

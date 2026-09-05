@@ -92,7 +92,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             var color = new TintMapColor(255, 0, 0);
             var colorId = TintMapPaletteColors.GetClosestColorId(TintMapLayerType.Cloth1, color);
             ctx.Assert(colorId != 174, "The edit must change the dress from its authored palette row.");
-            var editedCoordinate = (704f + colorId + 0.5f) / 2048f;
+            var editedCoordinate = TintMapShaderColor.Encode(color);
 
             for (var repeat = 0; repeat < 3; repeat++)
             {
@@ -478,6 +478,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.AssertEqual(2, matches[0].Type, $"Native row {material}/{parameter} float transport type");
             ctx.Assert(Math.Abs(expected - matches[0].Value) < 0.0000001f,
                 $"Native row {material}/{parameter}: expected {expected:R}, got {matches[0].Value:R}.");
+        }
+
+        internal static void AssertNativeRgb(EngineTestContext ctx, uint creature, string material, TintMapLayerType layer, TintMapColor color)
+        {
+            var rows = ReadNativeRows(ctx, creature);
+            AssertNoResetRecords(ctx, rows);
+            var uniform = TintMapMaterialRegistry.GetLayer(layer).UniformName.ToLowerInvariant();
+            var matches = rows.Where(row => row.Material == material.ToLowerInvariant() && row.Parameter == uniform).ToArray();
+            ctx.AssertEqual(1, matches.Length, "One atomic RGB scalar for " + material + "/" + uniform);
+            ctx.AssertEqual(TintMapShaderColor.Encode(color), matches[0].Value, "All RGB bits survive native material storage");
         }
 
         private static List<NativeTintRow> ReadNativeRows(EngineTestContext ctx, uint civilian)

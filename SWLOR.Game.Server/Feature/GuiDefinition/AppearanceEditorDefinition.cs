@@ -249,7 +249,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
 
                 row.AddColorPicker()
                     .BindSelectedColor(model => model.SelectedTintColor)
-                    .BindIsEnabled(model => model.IsCustomTintAvailable)
+                    .BindIsEnabled(model => model.IsCustomTintEditable)
+                    .BindTooltip(model => model.CustomTintTooltip)
                     .SetHeight(128f);
             });
 
@@ -265,7 +266,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .SetVerticalAlign(NuiVerticalAlign.Middle);
                 row.AddTextEdit()
                     .BindValue(model => model.CustomTintRed)
-                    .BindIsEnabled(model => model.IsCustomTintAvailable)
+                    .BindIsEnabled(model => model.IsCustomTintEditable)
+                    .BindTooltip(model => model.CustomTintTooltip)
                     .SetMaxLength(3)
                     .SetWidth(48f)
                     .SetHeight(32f);
@@ -277,7 +279,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .SetVerticalAlign(NuiVerticalAlign.Middle);
                 row.AddTextEdit()
                     .BindValue(model => model.CustomTintGreen)
-                    .BindIsEnabled(model => model.IsCustomTintAvailable)
+                    .BindIsEnabled(model => model.IsCustomTintEditable)
+                    .BindTooltip(model => model.CustomTintTooltip)
                     .SetMaxLength(3)
                     .SetWidth(48f)
                     .SetHeight(32f);
@@ -289,7 +292,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     .SetVerticalAlign(NuiVerticalAlign.Middle);
                 row.AddTextEdit()
                     .BindValue(model => model.CustomTintBlue)
-                    .BindIsEnabled(model => model.IsCustomTintAvailable)
+                    .BindIsEnabled(model => model.IsCustomTintEditable)
+                    .BindTooltip(model => model.CustomTintTooltip)
                     .SetMaxLength(3)
                     .SetWidth(48f)
                     .SetHeight(32f);
@@ -841,16 +845,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                     column.AddRow(imageRow =>
                     {
                         imageRow.SetMargin(0f);
-                        imageRow.AddImage()
+                        imageRow.AddProgressBar()
                             .SetId("ae_color_" + GuiHelper<AppearanceEditorViewModel>.GetPropertyName(regionBinding))
-                            .SetResref(texture)
-                            .BindRegion(regionBinding)
+                            .SetValue(1f)
+                            .BindColor(ColorSwatchBinding<GuiColor>(regionBinding, "Tint"))
                             .BindIsEncouraged(ColorSelectionBinding(regionBinding))
                             .SetAspectRatio(1f)
-                            // Stretch the cropped swatch, not the full atlas's proportions.
-                            .SetAspect(NuiAspect.Stretch)
-                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                            .SetVerticalAlign(NuiVerticalAlign.Top)
                             .SetMargin(2f)
                             .BindOnMouseDown(model => model.OnMouseDownGlobalColor(channel));
                     });
@@ -905,6 +905,14 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             {
                 button.SetId("ae_color_" + GuiHelper<AppearanceEditorViewModel>.GetPropertyName(regionBind));
                 button.BindIsEncouraged(ColorSelectionBinding(regionBind));
+                button.AddDrawList(list => list.AddPolyLine(fill => fill
+                    .BindIsEnabled(ColorSwatchBinding<bool>(regionBind, "Custom"))
+                    .BindColor(ColorSwatchBinding<GuiColor>(regionBind, "Tint"))
+                    .SetIsFilled(true)
+                    .AddPoint(drawOffset, drawOffset)
+                    .AddPoint(buttonSize - drawOffset, drawOffset)
+                    .AddPoint(buttonSize - drawOffset, buttonSize - drawOffset)
+                    .AddPoint(drawOffset, buttonSize - drawOffset)));
             }
             return button;
         }
@@ -916,6 +924,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                 GuiHelper<AppearanceEditorViewModel>.GetPropertyName(regionBinding));
             return Expression.Lambda<Func<AppearanceEditorViewModel, bool>>(
                 Expression.Property(regionBinding.Parameters[0], propertyName), regionBinding.Parameters);
+        }
+
+        private static Expression<Func<AppearanceEditorViewModel, T>> ColorSwatchBinding<T>(
+            Expression<Func<AppearanceEditorViewModel, GuiRectangle>> regionBinding, string suffix)
+        {
+            var name = GuiHelper<AppearanceEditorViewModel>.GetPropertyName(regionBinding);
+            return Expression.Lambda<Func<AppearanceEditorViewModel, T>>(
+                Expression.Property(regionBinding.Parameters[0], name[..^"Region".Length] + suffix),
+                regionBinding.Parameters);
         }
 
         private void BuildSettings(GuiGroup<AppearanceEditorViewModel> partial)

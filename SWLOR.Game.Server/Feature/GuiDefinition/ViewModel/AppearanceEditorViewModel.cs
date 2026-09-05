@@ -71,8 +71,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private int _tintEditGeneration;
         private bool _tintControlBindingsWatched;
         private string _tintComponentCorrection;
-        private readonly Dictionary<(uint Source, ColorTarget Part, TintMapLayerType Layer),
-            (TintMapColor Requested, TintMapColor Applied, int PaletteId)> _tintInputs = new();
 
         private uint _target;
         private bool _isMetalPalette;
@@ -239,6 +237,18 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public bool IsCustomTintAvailable
         {
             get => Get<bool>();
+            set => Set(value);
+        }
+
+        public bool IsCustomTintEditable
+        {
+            get => Get<bool>();
+            set => Set(value);
+        }
+
+        public string CustomTintTooltip
+        {
+            get => Get<string>();
             set => Set(value);
         }
 
@@ -870,7 +880,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         protected override void Initialize(AppearanceEditorPayload initialPayload)
         {
-            _tintInputs.Clear();
             _tintComponentCorrection = null;
             _tintEditGeneration++;
             _armorBindingGeneration++;
@@ -962,11 +971,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!TryGetEditableTintSelections(out var selections, out var layerType, out _))
             {
                 IsCustomTintAvailable = false;
+                IsCustomTintEditable = false;
                 SetSelectedTintColor(GuiColor.Grey);
                 return;
             }
 
             IsCustomTintAvailable = true;
+            IsCustomTintEditable = selections.Count > 0 &&
+                                   selections.All(selection => selection.ArmorPart != AppearanceArmor.Robe);
+            CustomTintTooltip = IsCustomTintEditable ? "Apply an RGB color."
+                : selections.Any(selection => selection.ArmorPart == AppearanceArmor.Robe)
+                    ? "This robe supports preset colors only. Select a color from the palette above."
+                    : "This part has no visible material for this color.";
+            if (TryGetSelectedCustomColor(selections, layerType, out var customColor))
+            {
+                SetSelectedTintColor(new GuiColor(customColor.Red, customColor.Green, customColor.Blue));
+                return;
+            }
             if (IsEquipmentSelected && SelectedItemTypeIndex == 0)
             {
                 // Native armor colors remain editable even when the current model does not
@@ -1012,34 +1033,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             SetSelectedTintColor(GuiColor.Grey);
         }
 
-        private (uint Source, ColorTarget Part, TintMapLayerType Layer) GetTintInputKey(
-            TintMapLayerType layerType,
-            bool resolveInheritance = false)
-        {
-            var source = IsAppearanceSelected ? _target : GetItem();
-            var part = IsEquipmentSelected && SelectedItemTypeIndex == 0
-                ? _colorTarget
-                : ColorTarget.Global;
-            if (resolveInheritance && part != ColorTarget.Global &&
-                GetArmorSwatchColor(source, GetArmorModelType(part), _selectedColorChannel) == 255)
-                part = ColorTarget.Global;
-            return (source, part, layerType);
-        }
-
         private void SetLoadedTintColor(TintMapColor color, TintMapLayerType layerType, int paletteId)
         {
-            var key = GetTintInputKey(layerType, resolveInheritance: true);
-            var inputColor = color;
-            if (_tintInputs.TryGetValue(key, out var input))
-            {
-                // Remember input only for this editor session and while the underlying dye
-                // still matches. External edits and replacement items must remain authoritative.
-                if (input.Applied == color && input.PaletteId == paletteId)
-                    inputColor = input.Requested;
-                else
-                    _tintInputs.Remove(key);
-            }
-            SetSelectedTintColor(new GuiColor(inputColor.Red, inputColor.Green, inputColor.Blue));
+            SetSelectedTintColor(new GuiColor(color.Red, color.Green, color.Blue));
+        }
+
+        private bool TryGetSelectedCustomColor(IReadOnlyList<TintMapMaterialSelection> selections,
+            TintMapLayerType layer, out TintMapColor color)
+        {
+            if (IsAppearanceSelected)
+                return TintMapColor.TryFromStoredValue(
+                    GetLocalInt(_target, TintMapVariable.GetCreatureColorStateName(layer)), out color);
+            if (SelectedItemTypeIndex != 0 || _colorTarget == ColorTarget.Global)
+                return TintMapColor.TryFromStoredValue(
+                    GetLocalInt(GetItem(), TintMapVariable.GetItemGlobalColorStateName(layer)), out color);
+            var customColors = selections
+                .Where(selection => TintMapService.TryGetCustomColor(selection, layer, out _))
+                .Select(selection => TintMapService.GetEffectiveDisplayColor(_target, selection, layer))
+                .Distinct().ToList();
+            color = customColors.Count == 1 ? customColors[0] : default;
+            return customColors.Count == 1;
         }
 
         private void SetSelectedTintColor(
@@ -1073,26 +1086,35 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     SynchronizeCustomTintComponents(value);
                 return;
             }
-            if (!TryGetEditableTintSelections(out _, out var layerType, out _))
+            if (!TryGetEditableTintSelections(out var selections, out var layerType, out _))
                 return;
+            if (selections.Count == 0 || selections.Any(selection => selection.ArmorPart == AppearanceArmor.Robe))
+            {
+                LoadTintMapEditor();
+                return;
+            }
 
             var requestedColor = new TintMapColor(value.R, value.G, value.B);
-            var paletteColorId = TintMapPaletteColors.GetClosestColorId(layerType, requestedColor);
             _applyingTintColor = true;
             try
             {
-                if (!ApplySelectedPaletteColor(paletteColorId, reloadEditor: false))
-                    return;
+                if (IsAppearanceSelected)
+                    TintMapService.SetCreatureCustomColor(_target, selections, layerType, requestedColor);
+                else if (SelectedItemTypeIndex != 0 || _colorTarget == ColorTarget.Global)
+                    TintMapService.SetGlobalItemCustomColor(_target, selections, layerType, requestedColor, GetItem());
+                else
+                    foreach (var selection in selections)
+                        TintMapService.SetColor(_target, selection, layerType, requestedColor);
+                if (IsEquipmentSelected && SelectedItemTypeIndex == 0)
+                    UpdateAllColors();
             }
             finally
             {
                 _applyingTintColor = false;
             }
 
-            // Palette conversion must never become the next RGB input. In particular, a
-            // pause after typing R=1 must not replace it (or G/B) with palette midtones.
-            var appliedColor = TintMapPaletteColors.GetColor(layerType, paletteColorId);
-            _tintInputs[GetTintInputKey(layerType)] = (requestedColor, appliedColor, paletteColorId);
+            // Persist the actual RGB on the creature/item. Never change a native preset,
+            // replace equipment, or echo normalized text into fields while the user types.
             SetSelectedTintColor(value, synchronizeComponents);
         }
 
@@ -2028,11 +2050,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (colorId < 0 || colorId >= TintMapMaterialRegistry.PaletteColorCount)
                 return false;
 
-            // An explicit preset replaces the remembered input even when it maps to the
-            // same native row. Picker/RGB commits store their new input after applying it.
-            if (!_applyingTintColor && TryGetSelectedTintLayer(out var layerType))
-                _tintInputs.Remove(GetTintInputKey(layerType));
-
             if (IsEquipmentSelected && SelectedItemTypeIndex == 0)
                 return ApplyArmorPaletteColor(colorId);
 
@@ -2130,8 +2147,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
 
             if (IsEquipmentSelected &&
-                SelectedItemTypeIndex == 0 &&
-                _colorTarget == ColorTarget.Global)
+                (SelectedItemTypeIndex != 0 || _colorTarget == ColorTarget.Global))
             {
                 if (selections.Count == 0)
                     TintMapService.ResetInactiveItemCustomColor(_target, GetItem(), layerType, AppearanceArmor.Invalid);
@@ -2487,7 +2503,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!GetIsObjectValid(item))
                 return;
 
-            _tintInputs.Remove((item, colorTarget, layerType));
 
             var armorPart = colorTarget == ColorTarget.Global
                 ? AppearanceArmor.Invalid
@@ -2723,6 +2738,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 foreach (var (channel, detail) in regions)
                 {
                     GetType().GetProperty(detail.PropertyName)?.SetValue(this, BuildColorRegion(target, channel));
+                    UpdateColorSwatch(target, channel, detail.PropertyName);
                 }
             }
         }

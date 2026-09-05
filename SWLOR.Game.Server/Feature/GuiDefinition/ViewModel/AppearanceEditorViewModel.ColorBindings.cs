@@ -389,6 +389,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             _colorMappings[target][channel].Region = BuildPaletteRegion(colorId);
             GetType().GetProperty(_colorMappings[target][channel].PropertyName)?.SetValue(this, _colorMappings[target][channel].Region);
+            UpdateColorSwatch(target, channel, _colorMappings[target][channel].PropertyName);
             if (target == _colorTarget && channel == _selectedColorChannel)
                 UpdateTargetedColor();
         }

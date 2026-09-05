@@ -111,6 +111,23 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
 
             await AssignedAsync(ctx, creature, () =>
             {
+                EquippedItemAppearance.Set(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, 0);
+                EquippedItemAppearance.Set(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftForearm, 6);
+                var editor = BindEditor(creature);
+                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Leather2)();
+                ctx.Assert(editor.IsCustomTintEditable, "RGB safety fixture has a tintable armor material.");
+                editor.SelectedTintColor = new GuiColor(205, 228, 197);
+                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.LeftForearm, AppearanceArmorColor.Leather2)();
+                editor.SelectedTintColor = new GuiColor(1, 17, 91);
+                var selection = TintMapModelResolver.GetCurrentSelections(creature).Single(part =>
+                    part.ArmorPart == AppearanceArmor.LeftForearm && part.Material.Layers.Contains(TintMapLayerType.Leather2));
+                TintMapEngineTests.AssertNativeRgb(ctx, creature, selection.Material.Resref,
+                    TintMapLayerType.Leather2, new TintMapColor(1, 17, 91));
+            });
+            await AssertSettledAsync(ctx, before, observation, "global and per-part RGB edits");
+
+            await AssignedAsync(ctx, creature, () =>
+            {
                 EquippedItemAppearance.ApplyOutfit(creature, item, template);
                 for (var part = 0; part < (int)AppearanceArmor.Num; ++part)
                     ctx.AssertEqual(GetItemAppearance(template, ItemAppearanceType.ArmorModel, part),
@@ -127,7 +144,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(templateBefore, ItemPlugin.GetEntireItemAppearance(template), "The template remains unchanged");
             });
             await AssertSettledAsync(ctx, before, observation, "outfit application");
-            ctx.SetResultDetail("Native torso edits, both seven-part side copies, and all19 outfit models/120 dyes retained the same equipped item, item properties/locals, armor class/weight, NPC resources, skin properties, and queued-ability marker. Zero observed equipment events after settling. Genuine lifecycle control: " + genuineEvents + ". NPC fixture does not prove PC-only module event delivery or client visual rendering.");
+            ctx.SetResultDetail("Native torso edits, both seven-part side copies, global/part RGB edits, and all19 outfit models/120 dyes retained the same equipped item, item properties/locals, armor class/weight, NPC resources, skin properties, and queued-ability marker. Zero observed equipment events after settling. Genuine lifecycle control: " + genuineEvents + ". NPC fixture does not prove PC-only module event delivery or client visual rendering.");
         }
 
         [EngineTest("Equipped weapon model and color edits preserve gameplay and emit no equipment events", Category = "AppearanceEditor", TimeoutSeconds = 45f)]

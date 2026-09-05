@@ -258,63 +258,19 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var armor = GetItemInSlot(InventorySlot.Chest, Player);
             var dbOutfit = DB.Get<PlayerOutfit>(_outfitIds[SelectedSlotIndex]);
 
-            // Get the temporary storage placeable and deserialize the outfit into it.
-            var tempStorage = GetObjectByTag("OUTFIT_BARREL");
-            var deserialized = ObjectPlugin.Deserialize(dbOutfit.Data);
-            var copy = CopyItem(armor, tempStorage, true);
+            var template = ObjectPlugin.Deserialize(dbOutfit.Data);
+            if (!GetIsObjectValid(template))
+                return;
 
-            uint CopyColors(AppearanceArmor part)
+            try
             {
-                copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorModel, (int)part, GetItemAppearance(deserialized, ItemAppearanceType.ArmorModel, (int)part), true);
-                DestroyObject(copy);
-                copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, (int)part, GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, (int)part), true);
-                DestroyObject(copy);
-                copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, ArmorColorIndexCalculator.CalculatePerPart(part, AppearanceArmorColor.Cloth1), GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, ArmorColorIndexCalculator.CalculatePerPart(part, AppearanceArmorColor.Cloth1)), true);
-                DestroyObject(copy);
-                copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, ArmorColorIndexCalculator.CalculatePerPart(part, AppearanceArmorColor.Cloth2), GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, ArmorColorIndexCalculator.CalculatePerPart(part, AppearanceArmorColor.Cloth2)), true);
-                DestroyObject(copy);
-                copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, ArmorColorIndexCalculator.CalculatePerPart(part, AppearanceArmorColor.Leather1), GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, ArmorColorIndexCalculator.CalculatePerPart(part, AppearanceArmorColor.Leather1)), true);
-                DestroyObject(copy);
-                copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, ArmorColorIndexCalculator.CalculatePerPart(part, AppearanceArmorColor.Leather2), GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, ArmorColorIndexCalculator.CalculatePerPart(part, AppearanceArmorColor.Leather2)), true);
-                DestroyObject(copy);
-                copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, ArmorColorIndexCalculator.CalculatePerPart(part, AppearanceArmorColor.Metal1), GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, ArmorColorIndexCalculator.CalculatePerPart(part, AppearanceArmorColor.Metal1)), true);
-                DestroyObject(copy);
-                copy = CopyItemAndModify(copy, ItemAppearanceType.ArmorColor, ArmorColorIndexCalculator.CalculatePerPart(part, AppearanceArmorColor.Metal2), GetItemAppearance(deserialized, ItemAppearanceType.ArmorColor, ArmorColorIndexCalculator.CalculatePerPart(part, AppearanceArmorColor.Metal2)), true);
-                DestroyObject(copy);
-
-                return copy;
+                EquippedItemAppearance.ApplyOutfit(Player, armor, template);
             }
-
-            copy = CopyColors(AppearanceArmor.LeftBicep);
-            copy = CopyColors(AppearanceArmor.Belt);
-            copy = CopyColors(AppearanceArmor.LeftFoot);
-            copy = CopyColors(AppearanceArmor.LeftForearm);
-            copy = CopyColors(AppearanceArmor.LeftHand);
-            copy = CopyColors(AppearanceArmor.LeftShin);
-            copy = CopyColors(AppearanceArmor.LeftShoulder);
-            copy = CopyColors(AppearanceArmor.LeftThigh);
-            copy = CopyColors(AppearanceArmor.Neck);
-            copy = CopyColors(AppearanceArmor.Pelvis);
-            copy = CopyColors(AppearanceArmor.RightBicep);
-            copy = CopyColors(AppearanceArmor.RightFoot);
-            copy = CopyColors(AppearanceArmor.RightForearm);
-            copy = CopyColors(AppearanceArmor.RightHand);
-            copy = CopyColors(AppearanceArmor.Robe);
-            copy = CopyColors(AppearanceArmor.RightShin);
-            copy = CopyColors(AppearanceArmor.RightShoulder);
-            copy = CopyColors(AppearanceArmor.RightThigh);
-            copy = CopyColors(AppearanceArmor.Torso);
-
-            TintMapService.ReplaceItemTintOverrides(deserialized, copy);
-            var final = CopyItem(copy, Player, true);
-            DestroyObject(armor);
-            DestroyObject(copy);
-            DestroyObject(deserialized);
-
-            AssignCommand(Player, () =>
+            finally
             {
-                ActionEquipItem(final, InventorySlot.Chest);
-            });
+                // Only the unequipped appearance template is temporary.
+                DestroyObject(template);
+            }
         }
 
         public Action OnClickNew() => () =>

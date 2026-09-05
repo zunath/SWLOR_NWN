@@ -1201,23 +1201,25 @@ public class TintMapReviewTests
             .ToList();
 
         modifyCalls.Should().Contain("CaptureItemCustomColors",
-            "the old material keys must be read before CopyItemAndModify destroys the source item");
+            "the old material keys must be read before the model fields change");
         modifyCalls.Should().Contain("QueueItemCustomColorCarry",
-            "the replacement material resrefs are only available after the new item is equipped");
-        modifyMethod.ToString().Should().Contain("_target, item, copy, Player, slot, armorPart, tintCarry",
-            "the delayed carry needs both sides of the replacement so it can validate rapid-click lineage");
+            "custom colors must follow the new model materials");
+        modifyMethod.ToString().Should().Contain("_target, item, item, Player, slot, armorPart, tintCarry, applyImmediately: true",
+            "in-place edits carry their colors immediately on the same equipped item");
         modifyMethod.ToString().Should().Contain("selection.ArmorPart == armorPart",
             "one modular armor part must not overwrite another part's custom dyes");
 
         var setColorInPlace = FindMethod(viewModelSource, "SetItemColorInPlace");
-        setColorInPlace.ToString().Should().Contain("ItemPlugin.SetItemAppearance(",
+        setColorInPlace.ToString().Should().Contain("EquippedItemAppearance.Set(",
             "color-only edits must mutate the equipped item instead of creating a replacement");
-        setColorInPlace.ToString().Should().Contain("updateCreatureAppearance: true",
-            "the wearer must refresh immediately after its equipped item changes");
-        setColorInPlace.ToString().Should().Contain("Droid.UpdateEquippedItemSnapshot(_target, item)",
-            "in-place color changes must persist for constructed droids");
-        setColorInPlace.ToString().Should().Contain("TintMapService.ApplyCurrentColors(_target)",
-            "in-place palette changes need an explicit shader refresh because no equip event fires");
+        setColorInPlace.ToString().Should().Contain("EquippedItemAppearance.Refresh(_target, item)",
+            "the shared cosmetic refresh must update the wearer without equipment events");
+        var equippedSource = ReadSource("SWLOR.Game.Server", "Feature", "AppearanceDefinition",
+            "ItemAppearance", "EquippedItemAppearance.cs");
+        FindMethod(equippedSource, "Refresh").ToString().Should().Contain("Droid.UpdateEquippedItemSnapshot",
+            "in-place changes must persist for constructed droids");
+        FindMethod(equippedSource, "Refresh").ToString().Should().Contain("TintMapService.ApplyCurrentColors",
+            "in-place changes need an explicit shader refresh because no equip event fires");
         setColorInPlace.ToString().Should().NotContain("CopyItemAndModify");
         setColorInPlace.ToString().Should().NotContain("DestroyObject");
 
@@ -2879,22 +2881,18 @@ public class TintMapReviewTests
         var loadInvocations = loadMethod.DescendantNodes()
             .OfType<InvocationExpressionSyntax>()
             .ToList();
-        var replaceInvocation = loadInvocations.Single(invocation =>
-            IsMemberInvocation(invocation, "TintMapService", "ReplaceItemTintOverrides"));
-        loadInvocations.Where(invocation => GetInvokedMethodName(invocation) == "CopyItemAndModify")
-            .Should()
-            .OnlyContain(invocation =>
-                    invocation.ArgumentList.Arguments.Count == 5 &&
-                    invocation.ArgumentList.Arguments[4].Expression.Kind() == SyntaxKind.TrueLiteralExpression,
-                "every intermediate armor copy must retain unrelated item locals");
-        loadInvocations.Where(invocation =>
-                GetInvokedMethodName(invocation) == "CopyItem" &&
-                invocation.ArgumentList.Arguments.Count == 3 &&
-                invocation.ArgumentList.Arguments.Any(argument =>
-                    argument.Expression is IdentifierNameSyntax { Identifier.ValueText: "Player" }))
-            .Should()
-            .ContainSingle();
-        replaceInvocation.ArgumentList.Arguments.Should().HaveCount(2);
+        loadInvocations.Should().Contain(invocation =>
+            IsMemberInvocation(invocation, "EquippedItemAppearance", "ApplyOutfit"));
+        loadInvocations.Select(GetInvokedMethodName).Should().NotContain(new[]
+        {
+            "CopyItemAndModify", "CopyItem", "ActionEquipItem", "ActionUnequipItem"
+        }, "loading an outfit must retain the actual equipped item and its gameplay state");
+        var appearanceSource = ReadSource("SWLOR.Game.Server", "Feature", "AppearanceDefinition",
+            "ItemAppearance", "EquippedItemAppearance.cs");
+        FindMethod(appearanceSource, "ApplyOutfit").DescendantNodes()
+            .OfType<InvocationExpressionSyntax>().Should().Contain(invocation =>
+                IsMemberInvocation(invocation, "TintMapService", "ReplaceItemTintOverrides"));
+
     }
 
     private static MethodDeclarationSyntax FindMethod(string source, string methodName)

@@ -1146,7 +1146,8 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             uint player,
             InventorySlot slot,
             AppearanceArmor armorPart,
-            TintMapItemColorCarry carry)
+            TintMapItemColorCarry carry,
+            bool applyImmediately = false)
         {
             if (!GetIsObjectValid(creature) || !GetIsObjectValid(item))
                 return;
@@ -1163,7 +1164,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 item,
                 armorPart,
                 carry.Sources.Keys);
-            DelayCommand(RefreshDelaySeconds, () =>
+            void ApplyCarry()
             {
                 try
                 {
@@ -1314,7 +1315,12 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                 {
                     CompletePendingItemColorCarry(registration.Lineage);
                 }
-            });
+            }
+
+            if (applyImmediately)
+                ApplyCarry();
+            else
+                DelayCommand(RefreshDelaySeconds, ApplyCarry);
         }
 
         private static void CarryStoredItemColor(

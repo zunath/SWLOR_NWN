@@ -74,8 +74,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private readonly Dictionary<(uint Source, ColorTarget Part, TintMapLayerType Layer),
             (TintMapColor Requested, TintMapColor Applied, int PaletteId)> _tintInputs = new();
 
-        private const string OutfitBarrelTag = "OUTFIT_BARREL";
-
         private uint _target;
         private bool _isMetalPalette;
 
@@ -748,7 +746,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     UpdateTargetedColor();
                 LoadItemTypeEditor();
                 LoadTintMapEditor();
-                _lastModifiedItem = OBJECT_INVALID;
             }
         }
 
@@ -1388,7 +1385,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             IsAppearanceSelected = tabId == AppearanceTabId;
             IsEquipmentSelected = tabId == EquipmentTabId;
             IsSettingsSelected = tabId == SettingsTabId;
-            _lastModifiedItem = OBJECT_INVALID;
             SuspendArmorClientWatches();
 
             if (IsSettingsSelected)
@@ -1926,10 +1922,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             }
         };
 
-        // Tracking the last modified item is done to avoid an issue where disruption in the client's network
-        // will result in the wrong equipped item being destroyed.
-        private uint _lastModifiedItem = OBJECT_INVALID;
-
         private InventorySlot GetInventorySlot()
         {
             var slot = InventorySlot.Invalid;
@@ -2001,44 +1993,21 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     selection.ArmorPart == armorPart)
                 .ToList();
             var tintCarry = TintMapService.CaptureItemCustomColors(item, previousTintSelections);
-            var copy = item;
-
             if (colorId > -1)
             {
-                var oldCopy = copy;
-                copy = CopyItemAndModify(copy, ItemAppearanceType.WeaponColor, type, colorId, true);
+                EquippedItemAppearance.Set(item, ItemAppearanceType.WeaponColor, type, colorId);
                 partId %= 100;
-
-                // Note: DestroyObject gets run at the end of the process so it's fine to queue up a call to destroy this temporary copy here.
-                DestroyObject(oldCopy);
-                DestroyObject(copy);
             }
 
-            if (_weaponAppearances.ContainsKey(itemType) && _weaponAppearances[itemType].IsSimple)
-            {
-                copy = CopyItemAndModify(copy, ItemAppearanceType.SimpleModel, type, partId, true);
-            }
-            else
-            {
-                copy = CopyItemAndModify(copy, modelType, type, partId, true);
-            }
+            if (_weaponAppearances.TryGetValue(itemType, out var weapon) && weapon.IsSimple)
+                modelType = ItemAppearanceType.SimpleModel;
 
-            DestroyObject(item);
-
-            if (item != _lastModifiedItem && _lastModifiedItem != OBJECT_INVALID)
-            {
-                DestroyObject(_lastModifiedItem);
-            }
-
-            AssignCommand(_target, () =>
-            {
-                ClearAllActions();
-                ActionEquipItem(copy, slot);
-            });
+            EquippedItemAppearance.Set(item, modelType, type, partId);
+            // The original item stays equipped. Its new material keys are available now,
+            // so carry custom tints before another model/preset click can arrive.
             TintMapService.QueueItemCustomColorCarry(
-                _target, item, copy, Player, slot, armorPart, tintCarry);
-
-            _lastModifiedItem = copy;
+                _target, item, item, Player, slot, armorPart, tintCarry, applyImmediately: true);
+            EquippedItemAppearance.Refresh(_target, item);
         }
 
         private void SynchronizeCustomTintControlsToPaletteColor(int colorId)
@@ -2212,14 +2181,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (!GetIsObjectValid(item))
                 return;
 
-            ItemPlugin.SetItemAppearance(
-                item,
-                ItemAppearanceType.ArmorColor,
-                colorIndex,
-                colorId,
-                updateCreatureAppearance: true);
-            Droid.UpdateEquippedItemSnapshot(_target, item);
-            TintMapService.ApplyCurrentColors(_target);
+            EquippedItemAppearance.Set(item, ItemAppearanceType.ArmorColor, colorIndex, colorId);
+            EquippedItemAppearance.Refresh(_target, item);
         }
 
         private void LoadBodyPart()
@@ -2978,13 +2941,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             AdjustArmorPart(partType, adjustBy);
         };
 
-        private uint GetOutfitBarrel()
-        {
-            var barrel = GetObjectByTag(OutfitBarrelTag);
-            return barrel;
-        }
-
-        private void CopyColors(ref uint item, ColorTarget copyToTarget, ColorTarget copyFromTarget)
+        private void CopyColors(uint item, ColorTarget copyToTarget, ColorTarget copyFromTarget)
         {
             var copyFrom = GetArmorModelType(copyFromTarget);
             var copyTo = GetArmorModelType(copyToTarget);
@@ -2999,7 +2956,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                          AppearanceArmorColor.Metal2
                      })
             {
-                CopyColor(ref item, copyToTarget, copyFrom, copyTo, colorChannel);
+                CopyColor(item, copyToTarget, copyFrom, copyTo, colorChannel);
             }
 
             TintMapModelResolver.CopyArmorPartTintOverrides(
@@ -3010,15 +2967,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         }
 
         private void CopyColor(
-            ref uint item,
+            uint item,
             ColorTarget copyToTarget,
             AppearanceArmor copyFrom,
             AppearanceArmor copyTo,
             AppearanceArmorColor colorChannel)
         {
-            if (!GetBaseItemFitsInInventory(BaseItem.Armor, _target))
-                return;
-
             var copyFromIndex = ArmorColorIndexCalculator.CalculatePerPart(copyFrom, colorChannel);
             var sourceColor = GetItemAppearance(item, ItemAppearanceType.ArmorColor, copyFromIndex);
             var sourceHasExplicitOverride = GetLocalInt(
@@ -3030,159 +2984,57 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             var copyToIndex = ArmorColorIndexCalculator.CalculatePerPart(copyTo, colorChannel);
 
             ChangeColor(copyToTarget, colorChannel, sourceUsesPerPartColor ? sourceColor : 255);
-            item = CopyItemAndModify(
-                item,
-                ItemAppearanceType.ArmorColor,
-                copyToIndex,
-                sourceUsesPerPartColor ? sourceColor : 255,
-                true);
+            EquippedItemAppearance.Set(item, ItemAppearanceType.ArmorColor,
+                copyToIndex, sourceUsesPerPartColor ? sourceColor : 255);
             if (sourceUsesPerPartColor)
                 MarkPerPartColorOverride(item, copyTo, colorChannel);
             else
                 ClearPerPartColorOverride(item, copyTo, colorChannel);
-            DestroyObject(item);
         }
 
-        public Action OnClickCopyToRight() => () =>
+        public Action OnClickCopyToRight() => () => CopyArmorSide(copyToRight: true);
+
+        public Action OnClickCopyToLeft() => () => CopyArmorSide(copyToRight: false);
+
+        private void CopyArmorSide(bool copyToRight)
         {
             ToggleItemEquippedFlags();
-            if (DoesNotHaveItemEquipped)
+            if (DoesNotHaveItemEquipped || SelectedItemTypeIndex != 0)
                 return;
 
-            var appearanceType = GetAppearanceType(_target);
-
+            var item = GetItem();
             _skipAdjustArmorPart = true;
             IsCopyEnabled = false;
-
-            var item = GetItem();
-
-            // Copy the outfit to the temporary barrel to ensure there is space to apply all modifications.
-            var outfitBarrel = GetOutfitBarrel();
-            var copy = CopyItem(item, outfitBarrel, true);
-            DestroyObject(item);
-            item = copy;
-
-            // Color modification
-            CopyColors(ref item, ColorTarget.RightShoulder, ColorTarget.LeftShoulder);
-            CopyColors(ref item, ColorTarget.RightBicep, ColorTarget.LeftBicep);
-            CopyColors(ref item, ColorTarget.RightForearm, ColorTarget.LeftForearm);
-            CopyColors(ref item, ColorTarget.RightHand, ColorTarget.LeftHand);
-            CopyColors(ref item, ColorTarget.RightThigh, ColorTarget.LeftThigh);
-            CopyColors(ref item, ColorTarget.RightShin, ColorTarget.LeftShin);
-            CopyColors(ref item, ColorTarget.RightFoot, ColorTarget.LeftFoot);
-
-            // Part modification
-            RightShoulderSelection = LeftShoulderSelection;
-            item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShoulder, _armorAppearances[appearanceType].Shoulder[ArmorValueToIndex(RightShoulderOptions, RightShoulderSelection)], true);
-            DestroyObject(item);
-
-            RightBicepSelection = LeftBicepSelection;
-            item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightBicep, _armorAppearances[appearanceType].Bicep[ArmorValueToIndex(RightBicepOptions, RightBicepSelection)], true);
-            DestroyObject(item);
-
-            RightForearmSelection = LeftForearmSelection;
-            item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightForearm, _armorAppearances[appearanceType].Forearm[ArmorValueToIndex(RightForearmOptions, RightForearmSelection)], true);
-            DestroyObject(item);
-
-            RightHandSelection = LeftHandSelection;
-            item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightHand, _armorAppearances[appearanceType].Hand[ArmorValueToIndex(RightHandOptions, RightHandSelection)], true);
-            DestroyObject(item);
-
-            RightThighSelection = LeftThighSelection;
-            item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightThigh, _armorAppearances[appearanceType].Thigh[ArmorValueToIndex(RightThighOptions, RightThighSelection)], true);
-            DestroyObject(item);
-
-            RightShinSelection = LeftShinSelection;
-            item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightShin, _armorAppearances[appearanceType].Shin[ArmorValueToIndex(RightShinOptions, RightShinSelection)], true);
-            DestroyObject(item);
-
-            RightFootSelection = LeftFootSelection;
-            item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.RightFoot, _armorAppearances[appearanceType].Foot[ArmorValueToIndex(RightFootOptions, RightFootSelection)], true);
-
-            // Copy the item from the outfit barrel back to the player.
-            var updatedItem = CopyItem(item, _target, true);
-            DestroyObject(item);
-
-            AssignCommand(_target, () => ActionEquipItem(updatedItem, InventorySlot.Chest));
-
-            DelayCommand(1f, () =>
+            try
             {
-                IsCopyEnabled = true;
-            });
+                foreach (var (left, right) in new[]
+                         {
+                             (ColorTarget.LeftShoulder, ColorTarget.RightShoulder),
+                             (ColorTarget.LeftBicep, ColorTarget.RightBicep),
+                             (ColorTarget.LeftForearm, ColorTarget.RightForearm),
+                             (ColorTarget.LeftHand, ColorTarget.RightHand),
+                             (ColorTarget.LeftThigh, ColorTarget.RightThigh),
+                             (ColorTarget.LeftShin, ColorTarget.RightShin),
+                             (ColorTarget.LeftFoot, ColorTarget.RightFoot)
+                         })
+                {
+                    var source = copyToRight ? left : right;
+                    var destination = copyToRight ? right : left;
+                    CopyColors(item, destination, source);
+                    EquippedItemAppearance.Set(item, ItemAppearanceType.ArmorModel,
+                        (int)GetArmorModelType(destination),
+                        GetItemAppearance(item, ItemAppearanceType.ArmorModel, (int)GetArmorModelType(source)));
+                }
 
-            _skipAdjustArmorPart = false;
-        };
-
-
-        public Action OnClickCopyToLeft() => () =>
-        {
-            ToggleItemEquippedFlags();
-            if (DoesNotHaveItemEquipped)
-                return;
-
-            var appearanceType = GetAppearanceType(_target);
-
-            _skipAdjustArmorPart = true;
-            IsCopyEnabled = false;
-
-            var item = GetItem();
-
-            // Copy the outfit to the temporary barrel to ensure there is space to apply all modifications.
-            var outfitBarrel = GetOutfitBarrel();
-            var copy = CopyItem(item, outfitBarrel, true);
-            DestroyObject(item);
-            item = copy;
-
-            // Color modification
-            CopyColors(ref item, ColorTarget.LeftShoulder, ColorTarget.RightShoulder);
-            CopyColors(ref item, ColorTarget.LeftBicep, ColorTarget.RightBicep);
-            CopyColors(ref item, ColorTarget.LeftForearm, ColorTarget.RightForearm);
-            CopyColors(ref item, ColorTarget.LeftHand, ColorTarget.RightHand);
-            CopyColors(ref item, ColorTarget.LeftThigh, ColorTarget.RightThigh);
-            CopyColors(ref item, ColorTarget.LeftShin, ColorTarget.RightShin);
-            CopyColors(ref item, ColorTarget.LeftFoot, ColorTarget.RightFoot);
-
-            // Part modification
-            LeftShoulderSelection = RightShoulderSelection;
-            item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShoulder, _armorAppearances[appearanceType].Shoulder[ArmorValueToIndex(LeftShoulderOptions, LeftShoulderSelection)], true);
-            DestroyObject(item);
-
-            LeftBicepSelection = RightBicepSelection;
-            item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftBicep, _armorAppearances[appearanceType].Bicep[ArmorValueToIndex(LeftBicepOptions, LeftBicepSelection)], true);
-            DestroyObject(item);
-
-            LeftForearmSelection = RightForearmSelection;
-            item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftForearm, _armorAppearances[appearanceType].Forearm[ArmorValueToIndex(LeftForearmOptions, LeftForearmSelection)], true);
-            DestroyObject(item);
-
-            LeftHandSelection = RightHandSelection;
-            item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftHand, _armorAppearances[appearanceType].Hand[ArmorValueToIndex(LeftHandOptions, LeftHandSelection)], true);
-            DestroyObject(item);
-
-            LeftThighSelection = RightThighSelection;
-            item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftThigh, _armorAppearances[appearanceType].Thigh[ArmorValueToIndex(LeftThighOptions, LeftThighSelection)], true);
-            DestroyObject(item);
-
-            LeftShinSelection = RightShinSelection;
-            item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftShin, _armorAppearances[appearanceType].Shin[ArmorValueToIndex(LeftShinOptions, LeftShinSelection)], true);
-            DestroyObject(item);
-
-            LeftFootSelection = RightFootSelection;
-            item = CopyItemAndModify(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.LeftFoot, _armorAppearances[appearanceType].Foot[ArmorValueToIndex(LeftFootOptions, LeftFootSelection)], true);
-
-            // Copy the item from the outfit barrel back to the player.
-            var updatedItem = CopyItem(item, _target, true);
-            DestroyObject(item);
-
-            AssignCommand(_target, () => ActionEquipItem(updatedItem, InventorySlot.Chest));
-
-            DelayCommand(1f, () =>
+                EquippedItemAppearance.Refresh(_target, item);
+                LoadItemParts();
+            }
+            finally
             {
+                _skipAdjustArmorPart = false;
                 IsCopyEnabled = true;
-            });
-
-            _skipAdjustArmorPart = false;
-        };
+            }
+        }
 
         private void UpdateArmorDisplay()
         {
@@ -3201,19 +3053,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public void Refresh(EquipItemRefreshEvent payload)
         {
-            _lastModifiedItem = OBJECT_INVALID;
             RefreshTintMapEditorAfterAppearanceChange();
         }
 
         public void Refresh(UnequipItemRefreshEvent payload)
         {
-            _lastModifiedItem = OBJECT_INVALID;
             RefreshTintMapEditorAfterAppearanceChange();
         }
 
         public void Refresh(AppearanceChangedRefreshEvent payload)
         {
-            _lastModifiedItem = OBJECT_INVALID;
             RefreshTintMapEditorAfterAppearanceChange();
         }
 

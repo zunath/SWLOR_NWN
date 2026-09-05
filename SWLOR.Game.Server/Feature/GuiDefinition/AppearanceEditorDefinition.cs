@@ -1,4 +1,5 @@
 using SWLOR.Game.Server.Core.Beamdog;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
@@ -11,12 +12,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
     {
         private readonly GuiWindowBuilder<AppearanceEditorViewModel> _builder = new();
 
-        private const float MainColorChannelButtonWidth = 64f;
-        private const float MainColorChannelButtonHeight = 99f;
+        private const float MainColorChannelRowHeight = 99f;
         private const float PartColorChannelButtonSize = 20f;
         private const float PaletteButtonSize = 18f;
         private const float PaletteWidth = 308f;
         private const float PaletteHeight = 246f;
+        private const float PaletteGridHeight = 218f;
         private const float CategoryWidth = 200f;
         private const float PartCategoryListHeight = 450f;
         private const float PartListHeight = 280f;
@@ -185,18 +186,11 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         {
                             col2.AddRow(row2 =>
                             {
-                                row2.AddImage()
+                                row2.AddGroup(palette => BuildColorPalette(palette, showTarget: false))
                                     .SetId("ae_color_palette")
-                                    .BindResref(model => model.ColorSheetResref)
-                                    .SetHeight(176f)
-                                    .SetWidth(256f)
-                                    .SetVerticalAlign(NuiVerticalAlign.Top)
-                                    .SetHorizontalAlign(NuiHorizontalAlign.Left)
-                                    .SetAspect(NuiAspect.ExactScaled)
-                                    .BindOnMouseDown(model => model.OnSelectColor())
                                     .BindIsVisible(model => model.IsColorPickerVisible);
 
-                                // A fixed image alone pulls the group's private layout back
+                                // A fixed palette alone pulls the group's private layout back
                                 // to its width. Give this row a place to absorb extra space.
                                 row2.AddSpacer();
                             });
@@ -306,89 +300,30 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             {
                 col.AddRow(row =>
                 {
-                    row.AddSpacer();
-                    row.AddLabel()
-                        .SetHeight(20f)
-                        .SetWidth(MainColorChannelButtonWidth)
-                        .SetText("Leather")
-                        .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                        .SetVerticalAlign(NuiVerticalAlign.Top);
-
-                    row.AddLabel()
-                        .SetHeight(20f)
-                        .SetWidth(MainColorChannelButtonWidth)
-                        .SetText("Cloth")
-                        .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                        .SetVerticalAlign(NuiVerticalAlign.Top);
-
-                    row.AddLabel()
-                        .SetHeight(20f)
-                        .SetWidth(MainColorChannelButtonWidth)
-                        .SetText("Metal")
-                        .SetHorizontalAlign(NuiHorizontalAlign.Center)
-                        .SetVerticalAlign(NuiVerticalAlign.Top);
-                    row.AddSpacer();
+                    row.SetHeight(28f).SetMargin(0f);
+                    foreach (var label in new[] { "Leather", "Cloth", "Metal" })
+                    {
+                        row.AddLabel()
+                            .SetText(label)
+                            .SetMargin(0f)
+                            .SetHorizontalAlign(NuiHorizontalAlign.Center)
+                            .SetVerticalAlign(NuiVerticalAlign.Top);
+                    }
                 });
 
                 col.AddRow(row =>
                 {
-                    row.SetHeight(MainColorChannelButtonHeight).SetMargin(0f);
-                    row.AddSpacer();
-                    CreateFilledButton(
-                        row,
-                        "gui_pal_tattoo",
-                        model => model.GlobalLeather1Region,
-                        MainColorChannelButtonWidth,
-                        4f,
-                        model => model.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Leather1),
-                        model => model.OnClickClearColor(AppearanceEditorViewModel.ColorTarget.Invalid, AppearanceArmorColor.Leather1), buttonHeight: MainColorChannelButtonHeight);
-                    CreateFilledButton(
-                        row,
-                        "gui_pal_tattoo",
-                        model => model.GlobalCloth1Region,
-                        MainColorChannelButtonWidth,
-                        4f,
-                        model => model.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Cloth1),
-                        model => model.OnClickClearColor(AppearanceEditorViewModel.ColorTarget.Invalid, AppearanceArmorColor.Cloth1), buttonHeight: MainColorChannelButtonHeight);
-                    CreateFilledButton(
-                        row,
-                        "gui_pal_armor01",
-                        model => model.GlobalMetal1Region,
-                        MainColorChannelButtonWidth,
-                        4f,
-                        model => model.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Metal1),
-                        model => model.OnClickClearColor(AppearanceEditorViewModel.ColorTarget.Invalid, AppearanceArmorColor.Metal1), buttonHeight: MainColorChannelButtonHeight);
-                    row.AddSpacer();
+                    row.SetHeight(MainColorChannelRowHeight).SetMargin(0f);
+                    CreateGlobalColorSwatch(row, "gui_pal_tattoo", model => model.GlobalLeather1Region, AppearanceArmorColor.Leather1);
+                    CreateGlobalColorSwatch(row, "gui_pal_tattoo", model => model.GlobalCloth1Region, AppearanceArmorColor.Cloth1);
+                    CreateGlobalColorSwatch(row, "gui_pal_armor01", model => model.GlobalMetal1Region, AppearanceArmorColor.Metal1);
                 });
                 col.AddRow(row =>
                 {
-                    row.SetHeight(MainColorChannelButtonHeight).SetMargin(0f);
-                    row.AddSpacer();
-                    CreateFilledButton(
-                        row,
-                        "gui_pal_tattoo",
-                        model => model.GlobalLeather2Region,
-                        MainColorChannelButtonWidth,
-                        4f,
-                        model => model.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Leather2),
-                        model => model.OnClickClearColor(AppearanceEditorViewModel.ColorTarget.Invalid, AppearanceArmorColor.Leather2), buttonHeight: MainColorChannelButtonHeight);
-                    CreateFilledButton(
-                        row,
-                        "gui_pal_tattoo",
-                        model => model.GlobalCloth2Region,
-                        MainColorChannelButtonWidth,
-                        4f,
-                        model => model.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Cloth2),
-                        model => model.OnClickClearColor(AppearanceEditorViewModel.ColorTarget.Invalid, AppearanceArmorColor.Cloth2), buttonHeight: MainColorChannelButtonHeight);
-                    CreateFilledButton(
-                        row,
-                        "gui_pal_armor01",
-                        model => model.GlobalMetal2Region,
-                        MainColorChannelButtonWidth,
-                        4f,
-                        model => model.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, AppearanceArmorColor.Metal2),
-                        model => model.OnClickClearColor(AppearanceEditorViewModel.ColorTarget.Invalid, AppearanceArmorColor.Metal2), buttonHeight: MainColorChannelButtonHeight);
-                    row.AddSpacer();
+                    row.SetHeight(MainColorChannelRowHeight).SetMargin(0f);
+                    CreateGlobalColorSwatch(row, "gui_pal_tattoo", model => model.GlobalLeather2Region, AppearanceArmorColor.Leather2);
+                    CreateGlobalColorSwatch(row, "gui_pal_tattoo", model => model.GlobalCloth2Region, AppearanceArmorColor.Cloth2);
+                    CreateGlobalColorSwatch(row, "gui_pal_armor01", model => model.GlobalMetal2Region, AppearanceArmorColor.Metal2);
                 });
             }
 
@@ -883,7 +818,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             });
         }
 
-        private void CreateFilledButton(
+        private void CreateGlobalColorSwatch(
+            GuiRow<AppearanceEditorViewModel> row,
+            string texture,
+            Expression<Func<AppearanceEditorViewModel, GuiRectangle>> regionBinding,
+            AppearanceArmorColor channel)
+        {
+            // Ordinary images stretch their cropped region with the widget. Draw-list
+            // destinations are fixed rectangles and cannot track the native layout.
+            row.AddImage()
+                .SetId("ae_color_" + GuiHelper<AppearanceEditorViewModel>.GetPropertyName(regionBinding))
+                .SetResref(texture)
+                .BindRegion(regionBinding)
+                .SetAspect(NuiAspect.Stretch)
+                .SetHorizontalAlign(NuiHorizontalAlign.Left)
+                .SetVerticalAlign(NuiVerticalAlign.Top)
+                .SetMargin(2f)
+                .BindOnMouseDown(model => model.OnMouseDownGlobalColor(channel));
+        }
+
+        private GuiButton<AppearanceEditorViewModel> CreateFilledButton(
             GuiExpandableComponent<AppearanceEditorViewModel> component,
             string texture,
             Expression<Func<AppearanceEditorViewModel, GuiRectangle>> regionBind,
@@ -892,21 +846,23 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             Expression<Func<AppearanceEditorViewModel, Action>> onClickBind,
             Expression<Func<AppearanceEditorViewModel, Action>> onClickClearColor,
             GuiRectangle staticRegion = null,
-            float? buttonHeight = null)
+            Expression<Func<AppearanceEditorViewModel, string>> textureBinding = null)
         {
-            var height = buttonHeight ?? buttonSize;
             var button = component.AddButton()
                 .SetText("")
                 .SetWidth(buttonSize)
-                .SetHeight(height)
+                .SetHeight(buttonSize)
                 .SetMargin(0f)
                 .SetIsEncouraged(true)
                 .AddDrawList(drawList =>
                 {
                     drawList.AddImage(image =>
                     {
-                        image.SetResref(texture);
-                        image.SetPosition(drawOffset, drawOffset, buttonSize - drawOffset * 2f, height - drawOffset * 2f);
+                        if (textureBinding != null)
+                            image.BindResref(textureBinding);
+                        else
+                            image.SetResref(texture);
+                        image.SetPosition(drawOffset, drawOffset, buttonSize - drawOffset * 2f, buttonSize - drawOffset * 2f);
                         image.SetAspect(NuiAspect.Stretch);
                         image.SetHorizontalAlign(NuiHorizontalAlign.Left);
                         image.SetVerticalAlign(NuiVerticalAlign.Top);
@@ -921,10 +877,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                         }
                     });
                 })
-                .BindOnClicked(onClickBind)
-                .BindOnMouseDown(onClickClearColor);
+                .BindOnClicked(onClickBind);
+            if (onClickClearColor != null)
+                button.BindOnMouseDown(onClickClearColor);
             if (regionBind != null)
                 button.SetId("ae_color_" + GuiHelper<AppearanceEditorViewModel>.GetPropertyName(regionBind));
+            return button;
         }
 
         private void BuildSettings(GuiGroup<AppearanceEditorViewModel> partial)
@@ -985,22 +943,26 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
             });
         }
 
-        private void BuildColorPalette(GuiGroup<AppearanceEditorViewModel> group, string texture)
+        private void BuildColorPalette(GuiGroup<AppearanceEditorViewModel> group, string texture = null, bool showTarget = true)
         {
+            group.SetShowBorder(false).SetScrollbars(NuiScrollbars.None);
             group.SetWidth(PaletteWidth);
-            group.SetHeight(PaletteHeight);
+            group.SetHeight(showTarget ? PaletteHeight : PaletteGridHeight);
             group.AddColumn(col =>
             {
-                col.AddRow(row =>
+                if (showTarget)
                 {
-                    row.AddLabel()
-                        .SetHeight(20f)
-                        .BindText(model => model.ColorTargetText)
-                        .BindIsVisible(model => model.IsEquipmentSelected);
-                });
+                    col.AddRow(row =>
+                    {
+                        row.AddLabel()
+                            .SetHeight(20f)
+                            .BindText(model => model.ColorTargetText)
+                            .BindIsVisible(model => model.IsEquipmentSelected);
+                    });
+                }
 
                 const int UIColorsPerRow = 16;
-                const int ColorTotalCount = 176;
+                const int ColorTotalCount = TintMapMaterialRegistry.PaletteColorCount;
                 const int RowCount = (ColorTotalCount + UIColorsPerRow - 1) / UIColorsPerRow;
 
                 for (var y = 0; y < RowCount; ++y)
@@ -1032,8 +994,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition
                                 PaletteButtonSize,
                                 2f,
                                 model => model.OnClickColorPalette(paletteIndex),
-                                model => model.OnClickClearColor(AppearanceEditorViewModel.ColorTarget.Invalid, AppearanceArmorColor.Cloth1),
-                                region);
+                                null,
+                                region,
+                                textureBinding: texture == null ? model => model.ColorSheetResref : null)
+                                .SetId("ae_palette_" + paletteIndex);
                         }
                     });
                 }

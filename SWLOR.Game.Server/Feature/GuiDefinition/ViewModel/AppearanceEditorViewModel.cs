@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
+using SWLOR.Game.Server.Core.Beamdog;
 using SWLOR.Game.Server.Entity;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.Game.Server.Feature.AppearanceDefinition.RacialAppearance;
@@ -59,8 +60,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         public const int TextureColorsPerRow = 16;
         public const int ColorSize = 16; // 16x16 colors on the sprite sheet
-        private const int ColorWidthCells = 16;
-        private const int ColorHeightCells = 11;
 
         private static readonly Dictionary<AppearanceType, IArmorAppearanceDefinition> _armorAppearances = new();
         private static readonly Dictionary<AppearanceType, IRacialAppearanceDefinition> _racialAppearances = new();
@@ -2041,33 +2040,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _lastModifiedItem = copy;
         }
 
-        private int GetSelectedPaletteColorId()
-        {
-            var scale = GetPlayerDeviceProperty(Player, PlayerDevicePropertyType.GuiScale) / 100.0f;
-            var payload = NuiGetEventPayload();
-            var mousePosition = JsonObjectGet(payload, "mouse_pos");
-            var jsonX = JsonObjectGet(mousePosition, "x");
-            var jsonY = JsonObjectGet(mousePosition, "y");
-            var x = (float)Convert.ToDouble(JsonDump(jsonX)) / scale;
-            var y = (float)Convert.ToDouble(JsonDump(jsonY)) / scale;
-            var tileWidth = 16f * scale;
-            var tileHeight = 16f * scale;
-            var cellX = (int)(x * scale / tileWidth);
-            var cellY = (int)(y * scale / tileHeight);
-
-            cellX = Math.Clamp(cellX, 0, ColorWidthCells - 1);
-            cellY = Math.Clamp(cellY, 0, ColorHeightCells - 1);
-
-            return Math.Min(cellX + cellY * ColorWidthCells, TintMapMaterialRegistry.PaletteColorCount - 1);
-        }
-
-        public Action OnSelectColor() => () =>
-        {
-            var colorId = GetSelectedPaletteColorId();
-            if (ApplySelectedPaletteColor(colorId))
-                SynchronizeCustomTintControlsToPaletteColor(colorId);
-        };
-
         private void SynchronizeCustomTintControlsToPaletteColor(int colorId)
         {
             if (!TryGetSelectedTintLayer(out var layerType))
@@ -2460,6 +2432,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             if (ApplySelectedPaletteColor(colorId))
                 SynchronizeCustomTintControlsToPaletteColor(colorId);
+        };
+
+        public Action OnMouseDownGlobalColor(AppearanceArmorColor channel) => () =>
+        {
+            var payload = NuiGetEventPayload();
+            var button = JsonGetInt(JsonObjectGet(payload, "mouse_btn"));
+            if (button != (int)NuiMouseButton.Left)
+                return;
+
+            OnClickColorTarget(ColorTarget.Global, channel)();
         };
 
         private bool ApplyArmorPaletteColor(int colorId)

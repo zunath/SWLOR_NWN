@@ -6,6 +6,7 @@ using SWLOR.Game.Server.Feature.GuiDefinition;
 using SWLOR.Game.Server.Feature.GuiDefinition.ViewModel;
 using SWLOR.Game.Server.Service.GuiService;
 using SWLOR.Game.Server.Service.GuiService.Component;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -84,9 +85,13 @@ public class AppearanceEditorLayoutTests
 
     [TestCase(AppearanceEditorViewModel.ArmorColorsClothLeather)]
     [TestCase(AppearanceEditorViewModel.ArmorColorsMetal)]
-    public void EveryPresetHasAClickableCellInsideThePaletteSlot(string partialName)
+    [TestCase(AppearanceEditorViewModel.EditorMainPartial)]
+    public void EveryPresetHasItsOwnClickableCellAndBoundedAtlasCrop(string partialName)
     {
-        var palette = _partials[partialName];
+        var isMain = partialName == AppearanceEditorViewModel.EditorMainPartial;
+        var palette = isMain
+            ? Walk(_partials[partialName]).Single(widget => widget.Id == "ae_color_palette")
+            : _partials[partialName];
         var paletteButtons = Walk(palette).OfType<GuiButton<AppearanceEditorViewModel>>()
             .Where(button => button.Events.Values.Any(method =>
                 method.Method.Name == nameof(AppearanceEditorViewModel.OnClickColorPalette)))
@@ -96,23 +101,66 @@ public class AppearanceEditorLayoutTests
             .Select(method => (int)method.Arguments.Single().Value);
         ids.Should().Equal(Enumerable.Range(0, 176),
             "all presets, including the previously clipped last colors, must retain their own click targets");
-        paletteButtons.Should().OnlyContain(button => Width(button) >= 16f &&
-            button.DeclaredHeight >= 16f && button.DeclaredMargin == 0f);
+        paletteButtons.Should().OnlyContain(button => Width(button) == 18f &&
+            button.DeclaredHeight == 18f && button.DeclaredMargin == 0f);
+
+        var crops = new List<(float X, float Y, float Width, float Height)>();
+        for (var index = 0; index < paletteButtons.Length; index++)
+        {
+            var button = paletteButtons[index];
+            button.Id.Should().Be("ae_palette_" + index);
+            button.Events.Should().ContainSingle(
+                "preset cells need only their click action and must not bind a no-op reset on mouse-down");
+            var image = BoundObjects(button, "button").Select(entry => entry.Value)
+                .OfType<GuiDrawListItemImage<AppearanceEditorViewModel>>().Single();
+            var crop = ReadProperty<GuiRectangle>(image, "DrawTextureRegion");
+            crop.Should().NotBeNull();
+            var actualCrop = (crop.X, crop.Y, crop.Width, crop.Height);
+            actualCrop.Should().Be((index % 16 * 16f + 2f, index / 16 * 16f + 2f, 12f, 12f),
+                "each click ID must show the interior of its own source palette cell");
+            crop.X.Should().BeGreaterThanOrEqualTo(0f);
+            crop.Y.Should().BeGreaterThanOrEqualTo(0f);
+            (crop.X + crop.Width).Should().BeLessThanOrEqualTo(256f);
+            (crop.Y + crop.Height).Should().BeLessThanOrEqualTo(176f);
+            ReadProperty<string>(image, "DrawTextureRegionBindName").Should().BeNullOrEmpty();
+            var position = ReadProperty<GuiRectangle>(image, "Position");
+            position.X.Should().BeGreaterThanOrEqualTo(0f);
+            position.Y.Should().BeGreaterThanOrEqualTo(0f);
+            (position.X + position.Width).Should().BeLessThanOrEqualTo(Width(button));
+            (position.Y + position.Height).Should().BeLessThanOrEqualTo(button.DeclaredHeight);
+            if (isMain)
+            {
+                ReadProperty<string>(image, "ResrefBindName").Should().Be(nameof(AppearanceEditorViewModel.ColorSheetResref),
+                    "all appearance cells must change together when the selected skin, hair, tattoo, or equipment category changes");
+            }
+            else
+            {
+                ReadProperty<string>(image, "ResrefBindName").Should().BeNullOrEmpty();
+                ReadProperty<string>(image, "Resref").Should().Be(
+                    partialName == AppearanceEditorViewModel.ArmorColorsMetal ? "gui_pal_armor01" : "gui_pal_tattoo");
+            }
+            crops.Add(actualCrop);
+        }
+        crops.Should().OnlyHaveUniqueItems();
 
         var slot = Walk(_partials[AppearanceEditorViewModel.EditorArmorPartial])
             .Single(widget => widget.Id == AppearanceEditorViewModel.ArmorColorElement);
         Width(slot).Should().Be(308f);
         slot.DeclaredHeight.Should().Be(246f);
         Width(palette).Should().Be(308f);
-        palette.DeclaredHeight.Should().Be(246f);
+        palette.DeclaredHeight.Should().Be(isMain ? 218f : 246f);
         var paletteRows = Walk(palette).OfType<GuiRow<AppearanceEditorViewModel>>()
             .Where(row => row.Elements.OfType<GuiButton<AppearanceEditorViewModel>>().Any()).ToArray();
         paletteRows.Should().HaveCount(11);
         paletteRows.Should().OnlyContain(row => row.Elements.Count == 16);
         paletteRows.Max(NaturalWidth).Should().BeLessThanOrEqualTo(Width(slot) - 16f,
             "palette rows need room inside the slot instead of overflowing beside the global channels");
-        NaturalHeight(palette).Should().BeLessThanOrEqualTo(slot.DeclaredHeight - 16f,
-            "the slot must include all eleven swatch rows and the target label with spacing");
+        NaturalHeight(palette).Should().BeLessThanOrEqualTo(palette.DeclaredHeight - 16f,
+            "the palette bounds must include all eleven swatch rows and any target label with spacing");
+        var targetLabels = Walk(palette).OfType<GuiLabel<AppearanceEditorViewModel>>().Where(label =>
+            ReadProperty<string>(label, "TextBindName") == nameof(AppearanceEditorViewModel.ColorTargetText));
+        targetLabels.Should().HaveCount(isMain ? 0 : 1,
+            "the appearance palette omits the equipment-only target header");
         Walk(palette).OfType<GuiColorPicker<AppearanceEditorViewModel>>().Should().BeEmpty(
             "the RGB picker belongs below the palette/channel row, outside this bounded partial");
     }
@@ -133,6 +181,61 @@ public class AppearanceEditorLayoutTests
         ReadProperty<NuiScrollbars>(channels, "Scrollbars").Should().Be(NuiScrollbars.None);
         PathTo(armor, channels).Should().OnlyContain(widget => Width(widget) == 0f,
             "the global channels must receive the space left beside the fixed palette");
+    }
+
+    [Test]
+    public void GlobalSwatchesShareClientWidthAndRetainTheirCropAndColorTarget()
+    {
+        var armor = _partials[AppearanceEditorViewModel.EditorArmorPartial];
+        var expectedChannels = new[]
+        {
+            AppearanceArmorColor.Leather1, AppearanceArmorColor.Cloth1, AppearanceArmorColor.Metal1,
+            AppearanceArmorColor.Leather2, AppearanceArmorColor.Cloth2, AppearanceArmorColor.Metal2
+        };
+        var images = Walk(armor).OfType<GuiImage<AppearanceEditorViewModel>>().Where(image =>
+            image.Id?.StartsWith("ae_color_Global", StringComparison.Ordinal) == true).ToArray();
+        images.Should().HaveCount(6);
+        for (var index = 0; index < images.Length; index++)
+        {
+            var image = images[index];
+            var channel = expectedChannels[index];
+            var regionBinding = "Global" + channel + "Region";
+            image.Id.Should().Be("ae_color_" + regionBinding);
+            ReadProperty<string>(image, "RegionBindName").Should().Be(regionBinding);
+            ReadProperty<string>(image, "Resref").Should().Be(
+                channel is AppearanceArmorColor.Metal1 or AppearanceArmorColor.Metal2
+                    ? "gui_pal_armor01" : "gui_pal_tattoo");
+            ReadProperty<NuiAspect>(image, "Aspect").Should().Be(NuiAspect.Stretch);
+            ReadProperty<NuiHorizontalAlign>(image, "HorizontalAlign").Should().Be(NuiHorizontalAlign.Left);
+            ReadProperty<NuiVerticalAlign>(image, "VerticalAlign").Should().Be(NuiVerticalAlign.Top);
+            PathTo(armor, image).Should().OnlyContain(widget => Width(widget) == 0f,
+                "the responsive image and its ancestors must use the width left beside the palette");
+            image.DeclaredHeight.Should().Be(0f,
+                "either dimension disables native equal-width sharing, so the enclosing row supplies height");
+            image.DeclaredMargin.Should().Be(2f);
+            image.Events.Should().ContainSingle();
+            var handler = image.Events.Values.Single();
+            handler.Method.Name.Should().Be(nameof(AppearanceEditorViewModel.OnMouseDownGlobalColor));
+            handler.Arguments.Should().ContainSingle().Which.Should().Be(
+                new KeyValuePair<Type, object>(typeof(AppearanceArmorColor), channel));
+        }
+
+        var rows = images.Select(image => PathTo(armor, image).OfType<GuiRow<AppearanceEditorViewModel>>().Last())
+            .Distinct().ToArray();
+        rows.Should().HaveCount(2);
+        rows.Should().OnlyContain(row => row.Elements.Count == 3 &&
+            row.Elements.All(widget => widget is GuiImage<AppearanceEditorViewModel>) &&
+            Width(row) == 0f && row.DeclaredHeight == 99f && row.DeclaredMargin == 0f,
+            "each row must split its available width among exactly three swatches without spacer competition");
+        var column = PathTo(armor, rows[0]).OfType<GuiColumn<AppearanceEditorViewModel>>().Last();
+        var header = (GuiRow<AppearanceEditorViewModel>)column.Elements.First();
+        header.DeclaredHeight.Should().Be(28f);
+        header.DeclaredMargin.Should().Be(0f);
+        Width(header).Should().Be(0f);
+        header.Elements.Should().HaveCount(3);
+        header.Elements.Should().OnlyContain(widget => widget is GuiLabel<AppearanceEditorViewModel> &&
+            Width(widget) == 0f && widget.DeclaredHeight == 0f && widget.DeclaredMargin == 0f);
+        header.Elements.Select(label => ReadProperty<string>(label, "Text")).Should().Equal("Leather", "Cloth", "Metal");
     }
 
     [Test]
@@ -271,15 +374,18 @@ public class AppearanceEditorLayoutTests
     }
 
     [Test]
-    public void MainPaletteImageRetainsItsPixelBasedClickCoordinates()
+    public void MainPaletteIsAnInlineButtonGroupWithNoContainerMouseHandler()
     {
         var palette = Walk(_partials[AppearanceEditorViewModel.EditorMainPartial])
-            .OfType<GuiImage<AppearanceEditorViewModel>>().Single(image =>
-                ReadProperty<string>(image, "ResrefBindName") == nameof(AppearanceEditorViewModel.ColorSheetResref));
-        Width(palette).Should().Be(256f,
-            "the sixteen palette columns use fixed pixel coordinates in GetSelectedPaletteColorId");
-        palette.DeclaredHeight.Should().Be(176f,
-            "the eleven palette rows must keep their existing click-coordinate mapping");
+            .Single(widget => widget.Id == "ae_color_palette");
+        palette.Should().BeOfType<GuiGroup<AppearanceEditorViewModel>>();
+        Width(palette).Should().Be(308f);
+        palette.DeclaredHeight.Should().Be(218f);
+        ReadProperty<bool>(palette, "ShowBorder").Should().BeFalse();
+        ReadProperty<NuiScrollbars>(palette, "Scrollbars").Should().Be(NuiScrollbars.None);
+        ReadProperty<string>(palette, "IsVisibleBindName").Should().Be(nameof(AppearanceEditorViewModel.IsColorPickerVisible));
+        palette.Events.Should().BeEmpty("individual buttons supply preset IDs, so the container must not interpret scaled mouse positions");
+        Walk(palette).OfType<GuiImage<AppearanceEditorViewModel>>().Should().BeEmpty();
     }
 
     [Test]
@@ -417,7 +523,8 @@ public class AppearanceEditorLayoutTests
             .Select(property => property.Name).ToArray();
         expectedRegions.Should().HaveCount(120);
         var regionBindings = BindingSnapshot(armor)
-            .Where(entry => entry.Key.EndsWith(".DrawTextureRegionBindName", StringComparison.Ordinal))
+            .Where(entry => entry.Key.EndsWith(".DrawTextureRegionBindName", StringComparison.Ordinal) ||
+                entry.Key.EndsWith(".RegionBindName", StringComparison.Ordinal))
             .Select(entry => entry.Value).ToArray();
         regionBindings.Should().BeEquivalentTo(expectedRegions);
     }

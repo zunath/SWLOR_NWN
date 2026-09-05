@@ -116,7 +116,9 @@ public class TintMapReviewTests
 
         definition.Should().Contain("row.AddColorPicker()");
         definition.Should().Contain(".BindSelectedColor(model => model.SelectedTintColor)");
-        definition.Should().Contain(".BindResref(model => model.ColorSheetResref)");
+        definitionMethods["BuildColorPalette"].ToString().Should().Contain("model => model.ColorSheetResref");
+        definitionMethods["BuildMainEditor"].ToString().Should().Contain("BuildColorPalette(",
+            "appearance and equipment presets must share the same individual-button palette construction");
         definition.Should().Contain("model => model.OnClickColorPalette(paletteIndex)");
         definition.Should().NotContain(".SetText(\"Custom Color\")");
         definition.Should().NotContain("CustomTintSelectionText");
@@ -309,7 +311,6 @@ public class TintMapReviewTests
             "SynchronizeCustomTintControlsToPaletteColor",
             "ApplySelectedPaletteColor",
             "ApplyArmorPaletteColor",
-            "OnSelectColor",
             "OnClickColorPalette",
             "OnClickColorTarget"
         };
@@ -332,8 +333,11 @@ public class TintMapReviewTests
         methods["TryGetEditableTintSelections"].ToString().Should().NotContain(
             "selections.Count == 0",
             "native global and part channels remain editable when the current model does not use them");
-        methods["OnSelectColor"].ToString().Should().Contain("ApplySelectedPaletteColor");
-        methods["OnSelectColor"].ToString().Should().Contain("SynchronizeCustomTintControlsToPaletteColor");
+        root.DescendantNodes().OfType<MethodDeclarationSyntax>()
+            .Select(method => method.Identifier.ValueText).Should().NotContain(new[]
+            {
+                "OnSelectColor", "GetSelectedPaletteColorId"
+            }, "preset clicks carry the exact color ID instead of calculating a cell from scaled mouse coordinates");
         methods["OnClickColorPalette"].ToString().Should().Contain("ApplySelectedPaletteColor");
         methods["OnClickColorPalette"].ToString().Should().Contain("SynchronizeCustomTintControlsToPaletteColor");
         var synchronizeControls = methods["SynchronizeCustomTintControlsToPaletteColor"].ToString();

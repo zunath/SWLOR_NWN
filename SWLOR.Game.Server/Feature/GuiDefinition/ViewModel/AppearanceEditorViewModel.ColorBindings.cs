@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Service.GuiService.Component;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 
@@ -396,7 +397,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         {
             // The single neutral pixel is the existing inheritance indicator. Do not sample
             // palette row zero (a real color) or substitute the global color for an unset part.
-            if (colorId < 0 || colorId >= ColorWidthCells * ColorHeightCells)
+            if (colorId < 0 || colorId >= TintMapMaterialRegistry.PaletteColorCount)
                 return new GuiRectangle(247, 55, 1, 1);
             var (x, y) = ColorIdToCoordinates(colorId);
             return new GuiRectangle(x * ColorSize, y * ColorSize, ColorSize, ColorSize);

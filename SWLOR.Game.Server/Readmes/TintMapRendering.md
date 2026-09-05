@@ -137,7 +137,15 @@ or phenotype tables. The female human robe187 prototype was verified in the
 89.8193.37-17 client: all eight converted material instances received exact Cloth1
 RGB (205,228,197), and walking/sitting kept skirt, sleeves, hands, and feet intact.
 Only surfaces using the selected layer change color; Cloth1 alone does not recolor
-the entire dress. Other styles still require visual spot checks in the client.
+the entire dress.
+
+The full catalog was also checked with the male human player switching between
+robes 7 and 187. Both outfits were intact in the supplied client views. After
+returning to robe187 (generated phenotype 171), a read-only client inspection
+confirmed all ten material instances received exact Leather1 and Leather2 RGB
+(205,228,197); the cloth channels retained their separate palette values. This
+also verifies client rendering with a generated phenotype above 99. Other styles
+still require visual spot checks in the client.
 
 ## Match material parameter arity to the shader
 

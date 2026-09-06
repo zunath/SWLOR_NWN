@@ -14,7 +14,8 @@ Creature `Portrait` resrefs take precedence over numeric `PortraitId` values.
 
 `nwn_stock_portraits.txt` records stock TGA/DDS resource names extracted from the
 installed NWN:EE KEY resource tables, with source KEY hashes. It contains no game
-artwork. Custom assets are checked against the actual HAK checkout, rather than
+artwork. Custom assets are checked only in configured HAK source directories
+loaded by the module, excluding staging files and unused HAKs, rather than
 an allowlist of portrait IDs. `npc_portrait_repairs.csv` records the September 2026
 NPC changes and selection reasons. It is historical evidence, not runtime policy.
 

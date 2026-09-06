@@ -10,6 +10,16 @@ import re
 ROOT = Path(__file__).resolve().parents[1]
 
 
+def read_json(path):
+    data = path.read_bytes()
+    try:
+        text = data.decode('utf-8-sig')
+    except UnicodeDecodeError:
+        # Two legacy UTC descriptions still use Windows-1252 punctuation.
+        text = data.decode('cp1252')
+    return json.loads(text)
+
+
 def portrait_table(root=ROOT):
     # NWN addresses 2DA rows by physical index, not the decorative row label.
     lines = (root / 'SWLOR_Haks/sw_2da/portraits.2da').read_text().splitlines()
@@ -23,15 +33,22 @@ def resources(root=ROOT):
     haks = root / 'SWLOR_Haks'
     if not (haks / 'sw_portrait').is_dir():
         raise ValueError('Initialize the SWLOR_Haks submodule before auditing portraits')
-    names.update(p.stem.lower() for p in haks.rglob('*') if p.suffix.lower() in ('.tga', '.dds'))
+    configured = {hak['Name']: hak['Path'] for hak in read_json(haks / 'hakbuilder.json')['HakList']}
+    loaded = read_json(root / 'Module/ifo/module.ifo.json')['Mod_HakList']['value']
+    for hak in loaded:
+        name = hak['Mod_Hak']['value']
+        source = haks / configured[name]
+        if not source.is_dir():
+            raise ValueError(f'Missing loaded HAK source: {name}')
+        names.update(p.stem.lower() for p in source.rglob('*') if p.suffix.lower() in ('.tga', '.dds'))
     return names
 
 
 def creatures(root=ROOT):
     for path in sorted((root / 'Module/utc').glob('*.utc.json')):
-        yield path, 0, json.loads(path.read_text())
+        yield path, 0, read_json(path)
     for path in sorted((root / 'Module/git').glob('*.git.json')):
-        for index, creature in enumerate(json.loads(path.read_text()).get('Creature List', {}).get('value', [])):
+        for index, creature in enumerate(read_json(path).get('Creature List', {}).get('value', [])):
             yield path, index, creature
 
 

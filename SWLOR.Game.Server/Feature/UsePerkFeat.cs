@@ -702,7 +702,13 @@ namespace SWLOR.Game.Server.Feature
                         targetLocation,
                         activationAreaTelegraphs:
                             ability.ImpactDelay <= 0f ? activationAreaTelegraphs : null);
-                    ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f);
+                    // NPCs must clear their combat state before reattacking. Queue that reset
+                    // after the authored clip, so it cannot erase the animation at impact.
+                    if (ability.AuthoredAnimation != null && !GetIsPC(activator))
+                        AssignCommand(activator, () => ActionDoCommand(() =>
+                            ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f)));
+                    else
+                        ResumeAttackAfterDelay(activator, resumeAttackTarget, 0.1f);
 
                     // If this is an attack make the NPC react.
                     if (GetIsObjectValid(target) && target != activator)

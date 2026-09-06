@@ -8,6 +8,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from portrait_tga import MAX_DECODED_BYTES, decode, encode, flip_horizontal, normalized_metadata
+from portrait_resources import EXPECTED_CONVERSION_COUNT, PortraitResources
 
 
 def tga(width, height, pixels, depth=24, kind=2, descriptor=0, trailer=b""):
@@ -45,14 +46,15 @@ class PortraitTgaTests(unittest.TestCase):
 
     def test_retained_corpus_fits_decoded_size_limit(self):
         root = Path(__file__).resolve().parents[2] / "SWLOR_Haks" / "sw_portrait"
-        portraits = list(root.glob("*.tga"))
-        self.assertTrue(portraits, "Portrait corpus is required")
-        for portrait in portraits:
-            with portrait.open("rb") as source:
-                header = source.read(18)
-            width, height, depth = struct.unpack_from("<HHB", header, 12)
-            with self.subTest(portrait=portrait.name):
-                self.assertLessEqual(width * height * (depth // 8), MAX_DECODED_BYTES)
+        resources = PortraitResources(root)
+        self.assertEqual(len(resources.conversions), EXPECTED_CONVERSION_COUNT,
+                         'Complete source-dimension manifest is required')
+        for row in resources.conversions.values():
+            with self.subTest(portrait=row['file']):
+                # The original corpus used 24- or 32-bit pixels. Four bytes
+                # per pixel is a conservative bound for either source depth.
+                self.assertLessEqual(int(row['width']) * int(row['height']) * 4,
+                                     MAX_DECODED_BYTES)
 
     def test_uncompressed_all_origins_and_alpha_are_exact(self):
         for depth in (24, 32):

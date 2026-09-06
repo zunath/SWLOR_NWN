@@ -10,6 +10,7 @@ import hashlib
 from pathlib import Path
 
 from portrait_tga import decode, flip_horizontal, normalized_metadata
+from portrait_resources import PortraitResources, safe_name
 
 
 # Independent of the companion CSV: a partial merge must not silently reduce
@@ -45,7 +46,8 @@ def main():
                         default=repository/'SWLOR_Haks/portrait_orientation_corrections.csv')
     parser.add_argument('--apply', action='store_true', help='Apply reviewed corrections; default is verification only')
     args = parser.parse_args()
-    rows = list(csv.DictReader(args.manifest.open(newline='', encoding='utf-8')))
+    with args.manifest.open(newline='', encoding='utf-8') as stream:
+        rows = list(csv.DictReader(stream))
     if len(rows) != EXPECTED_CORRECTION_COUNT:
         raise ValueError(f'Incomplete correction manifest: expected '
                          f'{EXPECTED_CORRECTION_COUNT} rows, found {len(rows)}')
@@ -53,18 +55,18 @@ def main():
     targets = {}
     for row in rows:
         name = row['file']
-        if Path(name).name != name or name.lower() in targets:
+        if not safe_name(name, '.tga') or name.lower() in targets:
             raise ValueError(f'Unsafe or duplicate manifest filename: {name}')
-        if Path(row['canonical']).name != row['canonical']:
+        if not safe_name(row['canonical'], '.tga'):
             raise ValueError(f'Unsafe canonical filename: {row["canonical"]}')
         targets[name.lower()] = row
+    resources = PortraitResources(args.portraits)
     for row in rows:
         name = row['file']
         path = args.portraits/name
-        original = path.read_bytes()
-        actual = digest(original)
+        actual = resources.historical_digest(name)
         canonical = args.portraits/row['canonical']
-        canonical_actual = digest(canonical.read_bytes())
+        canonical_actual = resources.historical_digest(row['canonical'])
         canonical_target = targets.get(row['canonical'].lower())
         # A retained canonical can itself be in this repair batch. Accept its
         # original bytes only during replay when its reviewed output is the
@@ -80,6 +82,10 @@ def main():
             raise ValueError(f'Unexpected image content: {name}')
         if not args.apply:
             raise ValueError(f'Correction has not been applied: {name}')
+        if not path.exists():
+            raise ValueError(f'Cannot losslessly repair converted DDS: {name}. '
+                             'Restore the original TGA, apply the correction, then reconvert it.')
+        original = path.read_bytes()
         corrected = flip_horizontal(original)
         validate_reflection(original, corrected)
         if digest(corrected) != row['corrected_sha256']:
@@ -106,7 +112,7 @@ def main():
             if created and temporary.exists():
                 temporary.unlink()
     for row in rows:
-        if digest((args.portraits/row['file']).read_bytes()) != row['corrected_sha256']:
+        if resources.historical_digest(row['file']) != row['corrected_sha256']:
             raise ValueError(f'Post-write verification failed: {row["file"]}')
     print(f'Verified {len(rows)} portrait corrections; applied {len(pending)} lossless flips.')
 

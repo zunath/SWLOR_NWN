@@ -1,15 +1,20 @@
 """Exercise manifest completeness and replay through the public CLI."""
 import csv
+from contextlib import redirect_stdout
 import hashlib
+import io
 from pathlib import Path
 import struct
 import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from portrait_tga import flip_horizontal
+from portrait_resources import PortraitResources
+import NormalizePortraitOrientations as normalizer
 
 SCRIPT = Path(__file__).resolve().parents[1] / 'NormalizePortraitOrientations.py'
 FIELDS = ['file', 'canonical', 'original_sha256', 'corrected_sha256', 'canonical_sha256']
@@ -173,6 +178,44 @@ class PortraitManifestTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn('Correction does not match reviewed output', result.stderr)
         self.assert_originals_untouched()
+
+    def converted_resources(self, source):
+        name = self.rows[0]['file']
+        output = Path(name).with_suffix('.dds').name
+        (self.root / name).unlink()
+        (self.root / output).write_bytes(b'compressed reviewed image')
+        conversion = dict(file=name, output=output, source_sha256=sha(source),
+                          output_sha256=sha(b'compressed reviewed image'))
+        manifest = self.root / 'conversions.csv'
+        with manifest.open('w', newline='', encoding='utf-8') as stream:
+            writer = csv.DictWriter(stream, fieldnames=conversion.keys())
+            writer.writeheader()
+            writer.writerow(conversion)
+        return PortraitResources(self.root, manifest, expected_count=1)
+
+    def run_with_resources(self, resources, *options):
+        with patch.object(normalizer, 'PortraitResources', return_value=resources), \
+                patch.object(sys, 'argv', [str(SCRIPT), '--portraits', str(self.root),
+                                          '--manifest', str(self.manifest), *options]), \
+                redirect_stdout(io.StringIO()) as output:
+            normalizer.main()
+        return output.getvalue()
+
+    def test_corrected_dds_verifies_and_apply_is_idempotent(self):
+        self.write_manifest(self.rows)
+        result = self.run_cli('--apply')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        resources = self.converted_resources(self.corrected)
+        for options in ((), ('--apply',)):
+            self.assertIn('applied 0 lossless flips', self.run_with_resources(resources, *options))
+
+    def test_dds_needing_reflection_requires_original_tga(self):
+        self.write_manifest(self.rows)
+        resources = self.converted_resources(self.original)
+        with self.assertRaisesRegex(ValueError, 'Restore the original TGA'):
+            self.run_with_resources(resources, '--apply')
+        for path in self.original_paths[1:]:
+            self.assertEqual(path.read_bytes(), self.original)
 
 
 if __name__ == '__main__':

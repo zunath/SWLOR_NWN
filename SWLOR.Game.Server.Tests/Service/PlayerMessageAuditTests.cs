@@ -15,7 +15,7 @@ public class PlayerMessageAuditTests
         "SendMessageToPCByStrRef", "SendMessageToAllPCs", "SendMessageNearbyToPlayers",
         "SendFeedbackString", "SendFeedbackMessage", "SendMessage", "PostString",
         "SpeakString", "ActionSpeakString", "SendDiagnosticToPlayer", "ShowDiagnosticFloatingText",
-        "SendResourceRestored", "SendWarningToPlayer"
+        "SendResourceRestored", "SendWarningToPlayer", "SendWarningNearby"
     };
 
     [Test]
@@ -111,7 +111,7 @@ public class PlayerMessageAuditTests
         {
             "SendDiagnosticToPlayer" or "ShowDiagnosticFloatingText" or "SendResourceRestored"
                 => "Testing only",
-            "SendWarningToPlayer" => "Rate limited in Production",
+            "SendWarningToPlayer" or "SendWarningNearby" => "Rate limited in Production",
             _ => call.Ancestors().OfType<IfStatementSyntax>()
                 .Any(statement => statement.Condition.ToString() == "PlayerFeedback.DiagnosticsEnabled")
                 ? "Testing only"
@@ -206,6 +206,25 @@ public class PlayerMessageAuditTests
         }
         calls.Should().NotContain(call => MethodName(call) == "SendMessageToPC",
             "the nearby helper already includes the actor, so a second private message would duplicate the notice");
+    }
+
+    [Test]
+    public void ParalysisWarnings_ReachNearbyObserversForPcAndNpcAttackers()
+    {
+        var root = Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", "Service");
+        var warning = ReadCalls(Path.Combine(root, "Combat.cs"))
+            .Single(call => MethodName(call) == "SendWarningNearby" &&
+                call.Ancestors().OfType<MethodDeclarationSyntax>().First().Identifier.ValueText == "HandleParalyze");
+        warning.ArgumentList.Arguments[0].ToString().Should().Be("attacker");
+        warning.ArgumentList.Arguments[2].ToString().Should().Contain("PlayerName.GetDisplayName(receiver, attacker)");
+        warning.ArgumentList.Arguments[3].ToString().Should().Be("5");
+
+        var delivery = ReadCalls(Path.Combine(root, "PlayerFeedback.cs"))
+            .Where(call => call.Ancestors().OfType<MethodDeclarationSyntax>().FirstOrDefault()?.Identifier.ValueText == "SendWarningNearby")
+            .ToArray();
+        delivery.Should().Contain(call => MethodName(call) == "SendMessageNearbyToPlayers");
+        delivery.Should().Contain(call => MethodName(call) == "TryBeginWarning");
+        delivery.Should().NotContain(call => MethodName(call) == "GetIsPC", "NPC state is also important to nearby players");
     }
 
     private static IEnumerable<InvocationExpressionSyntax> ReadCalls(string file) =>

@@ -30,14 +30,15 @@ public class PlayerFeedbackTests
         PlayerFeedback.BuildResourceRestoredMessage(restored, resource).Should().Be(expected);
     }
 
-    [Test]
-    public void AutomaticWarnings_SendImmediatelyThenWaitForTheInterval()
+    [TestCase(5)]
+    [TestCase(60)]
+    public void AutomaticWarnings_SendImmediatelyThenWaitForTheInterval(int intervalSeconds)
     {
         var now = new DateTime(2026, 9, 6, 12, 0, 0, DateTimeKind.Utc).Ticks;
-        PlayerFeedback.IsWarningDue(now, 0, 60).Should().BeTrue();
-        PlayerFeedback.IsWarningDue(now, now, 60).Should().BeFalse();
-        PlayerFeedback.IsWarningDue(now + TimeSpan.FromSeconds(59).Ticks, now, 60).Should().BeFalse();
-        PlayerFeedback.IsWarningDue(now + TimeSpan.FromSeconds(60).Ticks, now, 60).Should().BeTrue();
-        PlayerFeedback.IsWarningDue(now, now + 1, 60).Should().BeTrue("clock corrections must not silence warnings indefinitely");
+        PlayerFeedback.IsWarningDue(now, 0, intervalSeconds).Should().BeTrue();
+        PlayerFeedback.IsWarningDue(now, now, intervalSeconds).Should().BeFalse();
+        PlayerFeedback.IsWarningDue(now + TimeSpan.FromSeconds(intervalSeconds - 1).Ticks, now, intervalSeconds).Should().BeFalse();
+        PlayerFeedback.IsWarningDue(now + TimeSpan.FromSeconds(intervalSeconds).Ticks, now, intervalSeconds).Should().BeTrue();
+        PlayerFeedback.IsWarningDue(now, now + 1, intervalSeconds).Should().BeTrue("clock corrections must not silence warnings indefinitely");
     }
 }

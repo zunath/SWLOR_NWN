@@ -3777,7 +3777,7 @@
     "Line": 12104,
     "Member": "HandleParalyze",
     "Delivery": "Rate limited in Production",
-    "Call": "PlayerFeedback.SendWarningToPlayer(attacker, \"PARALYZED\", \"You are paralyzed and cannot act!\", 5)"
+    "Call": "PlayerFeedback.SendWarningNearby(\n                    attacker,\n                    \"PARALYZED\",\n                    receiver => $\"{PlayerName.GetDisplayName(receiver, attacker)} is paralyzed and cannot act!\",\n                    5)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Communication.cs",
@@ -4369,14 +4369,21 @@
   },
   {
     "File": "SWLOR.Game.Server/Service/PlayerFeedback.cs",
-    "Line": 50,
+    "Line": 43,
     "Member": "SendWarningToPlayer",
     "Delivery": "Shared transport; policy at caller",
     "Call": "SendMessageToPC(player, message)"
   },
   {
     "File": "SWLOR.Game.Server/Service/PlayerFeedback.cs",
-    "Line": 69,
+    "Line": 56,
+    "Member": "SendWarningNearby",
+    "Delivery": "Shared transport; policy at caller",
+    "Call": "Messaging.SendMessageNearbyToPlayers(creature, buildMessage, range)"
+  },
+  {
+    "File": "SWLOR.Game.Server/Service/PlayerFeedback.cs",
+    "Line": 87,
     "Member": "SendResourceRestored",
     "Delivery": "Shared transport; policy at caller",
     "Call": "SendMessageToPC(creature, ColorToken.Combat(BuildResourceRestoredMessage(restored, resource)))"

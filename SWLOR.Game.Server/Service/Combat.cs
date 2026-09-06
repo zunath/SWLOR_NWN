@@ -12101,7 +12101,11 @@ namespace SWLOR.Game.Server.Service
                 if (GetEffectType(effect) != EffectTypeScript.Paralyze)
                     continue;
 
-                PlayerFeedback.SendWarningToPlayer(attacker, "PARALYZED", "You are paralyzed and cannot act!", 5);
+                PlayerFeedback.SendWarningNearby(
+                    attacker,
+                    "PARALYZED",
+                    receiver => $"{PlayerName.GetDisplayName(receiver, attacker)} is paralyzed and cannot act!",
+                    5);
                 return true;
             }
 

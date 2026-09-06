@@ -49,7 +49,8 @@ There is no duplicate diagnostic popup.
 
 Warnings remain visible in Production, with only repeated copies limited:
 
-- Paralysis preventing action: once per five seconds for the affected player.
+- Paralysis preventing action: nearby feedback once per five seconds per affected
+  creature, including both PC and NPC attackers.
 - Skill cap: once per minute across skills and blocked/overflow outcomes. A kill
   can award several skills, but the total-rank cap and unlock remedy are the same.
 - Mimicry rank gates and failed decoding: once per technique/failure reason per

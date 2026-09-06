@@ -907,10 +907,19 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             // Creature colors are semantic across the whole modular model: every registered
             // material whose tint mask uses this layer must receive the same value. The enabled
             // material-name-null tweak publishes one authoritative model-wide row.
+            RefreshAfterColorChange(creature);
+        }
+
+        public static void RefreshAfterColorChange(uint creature)
+        {
+            if (!GetIsObjectValid(creature))
+                return;
+
             ApplyCurrentColorsAndPublish(creature);
 
-            // Reapply once after the model refresh interval, resolving the selections again, so a
-            // body-part replacement that completes during the edit receives the latest value too.
+            // Native palette changes and RGB-driven phenotype changes can replace client meshes
+            // after the immediate update. Read current state again rather than replaying the edit's
+            // captured color or materials, so a newer edit or part change always wins.
             DelayCommand(RefreshDelaySeconds, () =>
             {
                 if (!GetIsObjectValid(creature))
@@ -1670,6 +1679,16 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             // The material-name-null tweak expands this one semantic row across every composed
             // child mesh. This is the same model-wide update used by the known-good PLT tinter.
             WriteMaterialColor(creature, string.Empty, layer, color);
+
+            // Keep explicit records for the resolved attachments as well. Equipment changes
+            // can replace a child mesh after the blanket update has been applied. Its material
+            // must have the same semantic color when the client installs that replacement.
+            // Write these after the wildcard: the native tweak removes matching named rows
+            // when it receives a wildcard. Authored exceptions are applied by the caller last.
+            foreach (var materialResref in materialResrefs)
+            {
+                WriteMaterialColor(creature, materialResref, layer, color);
+            }
         }
 
         private static void ApplyCurrentColorsAndPublish(uint creature)

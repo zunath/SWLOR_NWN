@@ -356,13 +356,16 @@ public class TintMapReviewTests
                 "selecting a preset must clear an inactive creature channel's persisted RGB tint");
     }
 
-    [Test]
-    public void CreatureSemanticColorsRemainCreatureOwnedOnEquippedMeshes()
+    [TestCase(TintMapLayerType.Skin)]
+    [TestCase(TintMapLayerType.Hair)]
+    [TestCase(TintMapLayerType.Tattoo1)]
+    [TestCase(TintMapLayerType.Tattoo2)]
+    public void CreatureSemanticColorsRemainCreatureOwnedOnEquippedMeshes(TintMapLayerType layer)
     {
         var material = new TintMapMaterialDefinition(
             "exposed_skin",
             "exposed_skin",
-            TintMapLayerType.Skin,
+            layer,
             TintMapLayerType.Cloth1);
         var selection = new TintMapMaterialSelection(
             "pmh0_chest189",
@@ -372,8 +375,8 @@ public class TintMapReviewTests
             usesItemColors: true,
             AppearanceArmor.Torso);
 
-        selection.GetPaletteSource(TintMapLayerType.Skin).Should().Be(100);
-        selection.UsesItemColor(TintMapLayerType.Skin).Should().BeFalse();
+        selection.GetPaletteSource(layer).Should().Be(100);
+        selection.UsesItemColor(layer).Should().BeFalse();
         selection.GetPaletteSource(TintMapLayerType.Cloth1).Should().Be(200);
         selection.UsesItemColor(TintMapLayerType.Cloth1).Should().BeTrue();
     }
@@ -682,6 +685,32 @@ public class TintMapReviewTests
     }
 
     [Test]
+    public void PaletteAndRgbEditsRefreshCurrentStateAfterClientModelReplacement()
+    {
+        var service = ReadSource("SWLOR.Game.Server", "Feature", "AppearanceDefinition", "TintMap", "TintMapService.cs");
+        var editor = ReadSource("SWLOR.Game.Server", "Feature", "GuiDefinition", "ViewModel", "AppearanceEditorViewModel.cs");
+        var palette = FindMethod(editor, "ApplySelectedPaletteColor").ToString();
+        palette.IndexOf("TintMapService.RefreshAfterColorChange(_target)", StringComparison.Ordinal)
+            .Should().BeGreaterThan(palette.LastIndexOf("SetColor(_target", StringComparison.Ordinal),
+                "the palette must be stored before tint state is refreshed");
+        palette.Should().NotContain("TintMapService.ApplyCurrentColors(_target)");
+
+        var refresh = FindMethod(service, nameof(TintMapService.RefreshAfterColorChange));
+        refresh.ParameterList.Parameters.Should().HaveCount(1,
+            "a delayed refresh must retain only the creature, not a stale color or material selection");
+        var delayed = refresh.DescendantNodes().OfType<InvocationExpressionSyntax>()
+            .Single(call => GetInvokedMethodName(call) == "DelayCommand");
+        delayed.ToString().Should().Contain("RefreshDelaySeconds");
+        delayed.ToString().Should().Contain("GetIsObjectValid(creature)");
+        delayed.ToString().Should().Contain("ApplyCurrentColorsAndPublish(creature)");
+        refresh.DescendantNodes().OfType<InvocationExpressionSyntax>()
+            .Count(call => GetInvokedMethodName(call) == "ApplyCurrentColorsAndPublish")
+            .Should().Be(2, "colors must be applied immediately and after client model replacement");
+        delayed.ToString().Should().NotContain("SetColor(",
+            "an older queued refresh must not overwrite a newer native palette selection");
+    }
+
+    [Test]
     public void SemanticRgbEditsSynchronizeInactiveAndPersistedOverrides()
     {
         var serviceSource = ReadSource(
@@ -701,10 +730,8 @@ public class TintMapReviewTests
         synchronizeCalls.Should().Contain("SetLocalInt");
         synchronizeCalls.Should().Contain("SaveDroidOverrides",
             "inactive semantic keys must remain synchronized after a droid respawns");
-        synchronizeCalls.Should().Contain("ApplyCurrentColorsAndPublish",
-            "a live RGB edit must rebuild and publish the complete composed tint state immediately");
-        synchronizeCalls.Should().Contain("DelayCommand",
-            "the latest semantic color must be reapplied after an in-flight body-part refresh");
+        synchronizeCalls.Should().Contain(nameof(TintMapService.RefreshAfterColorChange),
+            "RGB and palette edits must use the same immediate and delayed refresh");
         synchronizeCalls.Should().Contain(nameof(TintMapModelResolver.GetCurrentSelections),
             "an RGB edit must re-resolve body parts that changed while the editor remained open");
 
@@ -2271,7 +2298,7 @@ public class TintMapReviewTests
     }
 
     [Test]
-    public void CreatureSemanticColorsUseOneModelWidePaletteRowUpdate()
+    public void CreatureSemanticColorsPreserveWildcardAndExplicitAttachmentRows()
     {
         var serviceSource = ReadSource(
             "SWLOR.Game.Server",
@@ -2298,6 +2325,13 @@ public class TintMapReviewTests
         applyCreatureColor.ToString().Should().Contain(
             "WriteMaterialColor(creature, string.Empty, layer, color)");
         applyCreatureColor.ToString().Should().Contain("selection.Material.Resref");
+        var namedRows = applyCreatureColor.DescendantNodes().OfType<ForEachStatementSyntax>()
+            .Single(loop => loop.Expression.ToString() == "materialResrefs");
+        namedRows.ToString().Should().Contain("WriteMaterialColor(creature, materialResref, layer, color)");
+        var wildcardRow = applyCreatureColor.DescendantNodes().OfType<InvocationExpressionSyntax>()
+            .Single(call => call.ToString() == "WriteMaterialColor(creature, string.Empty, layer, color)");
+        namedRows.SpanStart.Should().BeGreaterThan(wildcardRow.SpanStart,
+            "the native wildcard removes preceding named records for the same row");
         applyCreatureColor.DescendantNodes()
             .OfType<InvocationExpressionSyntax>()
             .Count(invocation => invocation.Expression.ToString() == "ResetMaterialShaderUniforms")

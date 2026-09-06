@@ -35,6 +35,13 @@ Both complete refreshes and individual row updates must use a write-only row
 helper. Only the complete refresh may clear old RGB/custom-mode parameters.
 Palette IDs and blueprint colors remain unchanged.
 
+Skin, hair, and tattoo updates write the blanket row first, then the same row
+for each resolved material, including exposed skin and fur on equipment.
+Named attachment records must follow the wildcard because the NWNX tweak
+removes earlier named records for that parameter. Authored material exceptions
+are applied last. This preserves explicit attachment colors during mesh
+replacement without changing the equipment's cloth, leather, or metal dyes.
+
 ## Preserve exact custom RGB
 
 RGB edits persist the requested bytes in the existing TMC/TMG/TM variables.
@@ -43,6 +50,13 @@ color in a session cache while rendering a nearest preset. Native preset
 clicks clear the corresponding RGB override; unset armor parts inherit TMG,
 and explicit part colors remain independent. These edits do not replace or
 re-equip items.
+
+Palette-menu and creature RGB edits share `RefreshAfterColorChange`: publish the
+complete tint state immediately, then reapply it after the model refresh interval.
+Native palette writes and RGB phenotype transitions can replace client head/body
+meshes after the initial publication. The delayed callback reads the current
+colors and material selections; it must not retain the earlier edit's color or
+selection, which could overwrite a newer edit or miss a replacement head/robe.
 
 `TintMapShaderColor.Encode` carries all 24 RGB bits through the existing scalar
 row parameter. Atlas coordinates occupy [0,1). Custom values occupy [1,4),

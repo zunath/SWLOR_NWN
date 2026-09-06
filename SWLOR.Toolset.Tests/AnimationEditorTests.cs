@@ -285,6 +285,20 @@ public class AnimationEditorTests
         File.ReadAllText(Path.Combine(_folder, "SWLOR.Game.Server/Service/AnimationService/AuthoredAnimation.cs"))
             .Should().Contain("SaluteWithSaber").And.Contain("SaluteWithStaff");
     }
+    [TestCase("Wave", "Wave_in")] [TestCase("Wave_in", "Wave")] [TestCase("Wave_out", "Wave")]
+    public void InstallationReservesEveryPlaybackPhaseWhenAllocatingNames(string firstName, string secondName)
+    {
+        var target = InstallFixture(); var project = Rig(); project.Name = firstName;
+        var first = AnimationInstall.Prepare(_folder, project, [target]); first.Apply();
+        project.Name = secondName;
+        var second = AnimationInstall.Prepare(_folder, project, [target]); second.Apply();
+        var names = new[] { first.AnimationName, first.AnimationName + "_in", first.AnimationName + "_out",
+            second.AnimationName, second.AnimationName + "_in", second.AnimationName + "_out" };
+        names.Distinct(StringComparer.OrdinalIgnoreCase).Should().HaveCount(6);
+        var model = new MdlReader().Parse(File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(target)!, "an_hero.mdl")));
+        model.Animations.Select(animation => animation.Name).Should().BeEquivalentTo(names);
+        AnimationInstall.Prepare(_folder, project, [target]).AnimationName.Should().Be(second.AnimationName);
+    }
 
     private string InstallFixture()
     {

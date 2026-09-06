@@ -150,8 +150,8 @@ public static class AnimationInstall
             throw new InvalidDataException("That animation name already exists with different capitalization. Use its registered C# name.");
         var stem = "sw_" + project.Name.ToLowerInvariant(); stem = stem[..Math.Min(stem.Length, AnimationClip.MaxNameLength)];
         var animationName = registration?.AnimationName ?? stem;
-        var usedNames = registrations.Select(r => r.AnimationName).ToHashSet(StringComparer.OrdinalIgnoreCase);
-        for (var suffix = 1; registration == null && usedNames.Contains(animationName); suffix++)
+        var usedNames = registrations.SelectMany(r => new[] { r.AnimationName, r.AnimationName + "_in", r.AnimationName + "_out" }).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        for (var suffix = 1; registration == null && (usedNames.Contains(animationName) || usedNames.Contains(animationName + "_in") || usedNames.Contains(animationName + "_out")); suffix++)
         {
             var number = suffix.ToString(System.Globalization.CultureInfo.InvariantCulture);
             animationName = stem[..Math.Min(stem.Length, AnimationClip.MaxNameLength - number.Length)] + number;

@@ -899,13 +899,13 @@ namespace SWLOR.Game.Server.Feature
             var abilityDetail = Ability.GetAbilityDetail(featType);
             ClearQueuedAbility(target);
 
-            // Notify the activator and nearby players
-            SendMessageToPC(target, $"Your weapon ability {abilityDetail.Name} is no longer queued.");
-
+            // Readiness changes inform the actor and nearby players. The nearby helper includes the actor once.
             if (sendMessage)
                 Messaging.SendMessageNearbyToPlayers(
                     target,
                     receiver => $"{PlayerName.GetDisplayName(receiver, target)} no longer has weapon ability {abilityDetail.Name} readied.");
+            else
+                PlayerFeedback.SendDiagnosticToPlayer(target, $"Your weapon ability {abilityDetail.Name} is no longer queued.");
         }
 
         public static bool HasQueuedWeaponAbility(uint activator)

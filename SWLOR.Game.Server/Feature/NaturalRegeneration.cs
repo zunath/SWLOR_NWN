@@ -39,12 +39,12 @@ namespace SWLOR.Game.Server.Feature
 
                 if (fpRegen > 0)
                 {
-                    Stat.RestoreFP(player, fpRegen, dbPlayer);
+                    Stat.RestoreFP(player, fpRegen, dbPlayer, sendFeedback: false);
                 }
 
                 if (stmRegen > 0)
                 {
-                    Stat.RestoreStamina(player, stmRegen, dbPlayer);
+                    Stat.RestoreStamina(player, stmRegen, dbPlayer, sendFeedback: false);
                 }
 
                 tick = 0;
@@ -67,10 +67,10 @@ namespace SWLOR.Game.Server.Feature
             var dbPlayer = DB.Get<Player>(GetObjectUUID(player));
 
             if (fpRestore > 0)
-                Stat.RestoreFP(player, fpRestore, dbPlayer);
+                Stat.RestoreFP(player, fpRestore, dbPlayer, sendFeedback: false);
 
             if (staminaRestore > 0)
-                Stat.RestoreStamina(player, staminaRestore, dbPlayer);
+                Stat.RestoreStamina(player, staminaRestore, dbPlayer, sendFeedback: false);
         }
     }
 }

@@ -99,7 +99,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
             if (GetPhenoType(player) == PhenoType.SpeederBike)
             {
                 SendMessageToPC(player, "You have been dismounted.");
-                FloatingTextStringOnCreature("You have been dismounted.", player, false);
+                PlayerFeedback.ShowDiagnosticFloatingText("You have been dismounted.", player, false);
                 SetPhenoType(PhenoType.Normal, player);
                 SetCreatureTailType(TailType.None, player);
                 Stat.ApplyCreatureMovementRate(player);

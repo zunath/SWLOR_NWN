@@ -512,7 +512,7 @@ namespace SWLOR.Game.Server.Service
 
             if (GetIsPC(attacker))
             {
-                FloatingTextStringOnCreature(
+                PlayerFeedback.ShowDiagnosticFloatingText(
                     ColorToken.Combat($"High Noon +{adjustment}% critical damage"),
                     attacker,
                     false);
@@ -3322,7 +3322,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             _autoAttackCycleCriticalCounts[attacker] = 0;
-            FloatingTextStringOnCreature(
+            PlayerFeedback.ShowDiagnosticFloatingText(
                 ColorToken.Combat($"Ranged attack +{criticalRate}% Critical Rate"),
                 attacker,
                 false);
@@ -3614,7 +3614,7 @@ namespace SWLOR.Game.Server.Service
             {
                 var feedback = BuildGuardedHitFeedback(defender, defender, attacker, preventedDamage);
                 SendMessageToPC(defender, feedback);
-                FloatingTextStringOnCreature(ColorToken.Combat($"Guard (-{preventedDamage})"), defender, false);
+                PlayerFeedback.ShowDiagnosticFloatingText(ColorToken.Combat($"Guard (-{preventedDamage})"), defender, false);
             }
 
             if (GetIsPC(attacker))
@@ -3640,7 +3640,7 @@ namespace SWLOR.Game.Server.Service
             {
                 var feedback = BuildIncomingCriticalHitDowngradeCombatLogMessage(defender, attacker, defender);
                 SendMessageToPC(defender, feedback);
-                FloatingTextStringOnCreature(ColorToken.Combat("Critical Ward"), defender, false);
+                PlayerFeedback.ShowDiagnosticFloatingText(ColorToken.Combat("Critical Ward"), defender, false);
             }
 
             if (GetIsObjectValid(attacker) &&
@@ -6265,7 +6265,7 @@ namespace SWLOR.Game.Server.Service
             if (applied && GetIsPC(attacker))
             {
                 SendMessageToPC(attacker, ColorToken.Combat("Pinning Fire: Suppression applied."));
-                FloatingTextStringOnCreature(ColorToken.Combat("Pinning Fire"), attacker, false);
+                PlayerFeedback.ShowDiagnosticFloatingText(ColorToken.Combat("Pinning Fire"), attacker, false);
             }
         }
 
@@ -6561,7 +6561,7 @@ namespace SWLOR.Game.Server.Service
                     $"First Strike deals +{damageBonus} DMG ({remaining} {stackLabel} remaining{rechargeText}).");
 
                 SendMessageToPC(attacker, feedback);
-                FloatingTextStringOnCreature(
+                PlayerFeedback.ShowDiagnosticFloatingText(
                     ColorToken.Combat($"First Strike +{damageBonus} DMG ({remaining} {stackLabel} remaining)"),
                     attacker,
                     false);
@@ -6603,7 +6603,7 @@ namespace SWLOR.Game.Server.Service
                 var feedback = ColorToken.Combat(
                     $"First Strike ready: {maximumCount} {stackLabel} (+{damageBonus} DMG each).");
                 SendMessageToPC(attacker, feedback);
-                FloatingTextStringOnCreature(
+                PlayerFeedback.ShowDiagnosticFloatingText(
                     ColorToken.Combat($"First Strike ready ({maximumCount} {stackLabel})"),
                     attacker,
                     false);
@@ -8453,7 +8453,7 @@ namespace SWLOR.Game.Server.Service
             RefreshOverwatchMarker(attacker, now);
             if (GetIsPC(attacker))
             {
-                SendMessageToPC(attacker, ColorToken.Combat($"Overwatch: +{adjustment}% Accuracy."));
+                PlayerFeedback.SendDiagnosticToPlayer(attacker, ColorToken.Combat($"Overwatch: +{adjustment}% Accuracy."));
                 FloatingTextStringOnCreature(ColorToken.Combat("Overwatch"), attacker, false);
             }
             return adjustment;
@@ -12101,9 +12101,11 @@ namespace SWLOR.Game.Server.Service
                 if (GetEffectType(effect) != EffectTypeScript.Paralyze)
                     continue;
 
-                Messaging.SendMessageNearbyToPlayers(
+                PlayerFeedback.SendWarningNearby(
                     attacker,
-                    receiver => $"{PlayerName.GetDisplayName(receiver, attacker)} is paralyzed and cannot act!");
+                    "PARALYZED",
+                    receiver => $"{PlayerName.GetDisplayName(receiver, attacker)} is paralyzed and cannot act!",
+                    5);
                 return true;
             }
 

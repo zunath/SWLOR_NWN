@@ -1015,6 +1015,7 @@ foreach ($entry in $mimicryCooldowns.GetEnumerator()) {
 }
 
 $mimicryCastingTimes = @{
+    "Inner Circle Bind" = "0.25 seconds"
     "Terrifying Bellow" = "0.25 seconds"
     "Final Mandate" = "1 second"
     "Finishing Drive" = "Instant"

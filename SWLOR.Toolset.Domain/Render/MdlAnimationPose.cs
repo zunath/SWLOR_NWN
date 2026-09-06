@@ -478,16 +478,19 @@ namespace SWLOR.Toolset.Domain.Render
             if (seconds >= times[last])
                 return (last, last, 0f);
 
-            for (var i = 0; i < last; i++)
+            // Controllers are stored in time order. Find the first key at or after the sample
+            // without rescanning the whole track for every frame of a dense import or preview.
+            var low = 1;
+            var high = last;
+            while (low < high)
             {
-                if (seconds > times[i + 1])
-                    continue;
-
-                var span = times[i + 1] - times[i];
-                return (i, i + 1, span <= 0f ? 0f : (seconds - times[i]) / span);
+                var middle = low + (high - low) / 2;
+                if (seconds > times[middle]) low = middle + 1;
+                else high = middle;
             }
-
-            return (last, last, 0f);
+            var before = low - 1;
+            var span = times[low] - times[before];
+            return (before, low, span <= 0f ? 0f : (seconds - times[before]) / span);
         }
 
         private static float AnimationScale(MdlModel? model) =>

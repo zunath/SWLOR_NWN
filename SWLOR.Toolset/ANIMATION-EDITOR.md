@@ -9,6 +9,8 @@ engine are not required.
 1. Enter a mounted NWN model resref (for example `a_ba`) and choose **Load rig**, or choose
    **Load rig file** for an ASCII or compiled `.mdl`. The model supplies the real joint names,
    hierarchy, and rest transforms. Loading a new rig prompts before replacing unsaved work.
+   Rigs loaded from packed HAKs resolve back to their loose repository source for installation;
+   if no source exists, choose a target source explicitly.
 2. Select a joint in the list or viewport. Right drag orbits, the wheel zooms, and **Frame rig**
    fits the skeleton. Left drag rotates the selected axis, moves a joint, or solves a two-bone
    IK chain according to the selected mode. The colored rings select a local rotation axis.
@@ -44,7 +46,8 @@ frame and pose the NWN rig to match it, then choose **Lock**. Calibration captur
 offsets in world space, so differently oriented source bones do not require Euler corrections.
 **Bake** writes the source motion onto the normal NWN timeline. Root scale affects displacement
 of the mapped animation root, while unmapped joints retain the calibration pose. Save/load bone
-maps as JSON; lock calibration again after loading or changing a map or switching clips. Bake results remain editable
+maps as JSON; lock calibration again after changing the matching pose or map, using undo/redo,
+or switching clips. Bake results remain editable
 and undoable. Morph-target weights do not move the skeleton and are not retargeted.
 
 ## Install and use from C#

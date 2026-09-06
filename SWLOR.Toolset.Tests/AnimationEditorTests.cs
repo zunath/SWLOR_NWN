@@ -9,6 +9,7 @@ using FluentAssertions;
 using NUnit.Framework;
 using SWLOR.NWN.Formats.Mdl;
 using SWLOR.Toolset.Domain.Animation;
+using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Render;
 using SWLOR.Toolset.Editors.Animation;
 using SWLOR.Toolset.Services;
@@ -153,9 +154,11 @@ public class AnimationEditorTests
     {
         var path = Gltf(badView: true); Action act = () => GltfAnimationSource.Load(path); act.Should().Throw<InvalidDataException>();
     }
-    [Test] public void RetargetPreservesCalibrationAndScalesRootDisplacement()
+    [TestCase("rootdummy")] [TestCase("ROOTDUMMY")]
+    public void RetargetPreservesCalibrationAndScalesRootDisplacement(string root)
     {
         var source = GltfAnimationSource.Load(Gltf()); var rig = Rig(); var pose = rig.Sample(0);
+        rig.AnimationRoot = root;
         pose[1] = pose[1] with { Position = new(0, 0, 1), Orientation = Quaternion.CreateFromAxisAngle(Vector3.UnitX, 2.4f) };
         var retarget = new AnimationRetarget(rig, pose, source, 0, 0, [new("rootdummy", "Root")]);
         var baked = retarget.Bake(source, 0, 30, 2);
@@ -194,6 +197,23 @@ public class AnimationEditorTests
         baked.Keys[^1].Time.Should().Be(600);
         baked.Sample(600)[1].Position.X.Should().BeApproximately(1, 1e-5f);
         baked.Sample(300.01f)[1].Position.X.Should().BeApproximately(300.01f / 600, 1e-5f);
+    }
+    private static AnimationProject DenseRig()
+    {
+        var project = new AnimationProject { Name = "Dense", ModelName = "hero", AnimationRoot = "rootdummy", Duration = 600,
+            Joints = [new("rootdummy", -1, new(Vector3.Zero, Quaternion.Identity, 1))] };
+        for (var i = 0; i < AnimationProject.MaxKeyframes; i++)
+            project.Keys.Add(new(i / 30f, [new(Vector3.Zero, Quaternion.Identity, 1)]));
+        return project;
+    }
+    [Test] public void DenseMdlImportPreservesExactAndInterpolatedPosesAtTheKeyLimit()
+    {
+        var project = DenseRig();
+        foreach (var key in project.Keys) key.Pose[0] = key.Pose[0] with { Position = new(key.Time, 0, 0) };
+        var imported = AnimationMdl.Import(AnimationMdl.Export(project), project);
+        imported.Keys.Should().HaveCount(AnimationProject.MaxKeyframes);
+        foreach (var time in new[] { 0f, .01f, 299.5f, 599.99f, 600f })
+            imported.Sample(time)[0].Position.X.Should().BeApproximately(time, .001f);
     }
 
     private string InstallFixture()
@@ -325,6 +345,12 @@ public class AnimationEditorTests
         Action act = () => AnimationInstall.Prepare(_folder, Rig(), [target]);
         act.Should().Throw<InvalidDataException>().WithMessage("*hierarchy*");
     }
+    [Test] public void InstallationRemapsAModelRootRegardlessOfDeclarationCase()
+    {
+        var target = InstallFixture(); var project = Rig(); project.AnimationRoot = "HERO";
+        AnimationInstall.Prepare(_folder, project, [target]).Apply();
+        File.ReadAllText(Path.Combine(Path.GetDirectoryName(target)!, "an_hero.mdl")).Should().Contain("animroot an_hero");
+    }
     [Test] public void InstallationPreservesTargetRestScaleAndAppliesAuthoredScaleDelta()
     {
         var target = InstallFixture();
@@ -381,6 +407,65 @@ public class AnimationEditorTests
         await vm.BakeCommand.ExecuteAsync(null);
         vm.Project.Keys.Should().HaveCount(31);
         vm.ApproveApplicationClose(); vm.OnClose();
+    }
+    [AvaloniaTest] public async Task RejectedDragAtKeyLimitKeepsUndoSaveAndCloseUsable()
+    {
+        var vm = new AnimationEditorDocumentViewModel(new Prompts(), new OutputLogService(), initial: DenseRig());
+        var original = vm.Project.Serialize(); vm.Playhead = .01; vm.EditMode = "Move";
+        vm.BeginDrag(); vm.Drag(Vector3.UnitX, 0);
+        vm.IsDirty.Should().BeTrue("application close and Save All must include an uncommitted drag");
+        vm.Project.Serialize().Should().Be(original, "dragging changes the preview until release");
+        vm.EndDrag();
+        vm.Project.Serialize().Should().Be(original); vm.Pose[0].Position.Should().Be(Vector3.Zero);
+        vm.IsDirty.Should().BeFalse(); vm.Status.Should().Contain("limits");
+        vm.Playhead = 0; vm.BeginDrag(); vm.Drag(Vector3.UnitX, 0); vm.EndDrag();
+        vm.CanUndo.Should().BeTrue(); vm.Undo(); vm.Project.Serialize().Should().Be(original);
+        vm.PickSavePath = (_, _) => Task.FromResult<string?>(Path.Combine(_folder, "dense.swlanim"));
+        (await vm.TrySaveAsync()).Should().BeTrue(); vm.OnClose().Should().BeTrue();
+    }
+    [AvaloniaTest] public async Task PoseEditsAndHistoryInvalidateCalibration()
+    {
+        var source = Gltf();
+        foreach (var operation in new[] { "position", "rotation", "scale", "reset", "paste", "undo", "redo", "drag" })
+        {
+            var vm = new AnimationEditorDocumentViewModel(new Prompts(), new OutputLogService(), initial: Rig());
+            vm.PickOpenPath = (_, _) => Task.FromResult<string?>(source);
+            await vm.LoadSourceCommand.ExecuteAsync(null);
+            vm.Mappings.Single(m => m.Target == "rootdummy").Source = "Root";
+            vm.PositionX = 1; vm.CopyPoseCommand.Execute(null); vm.PositionX = .5m;
+            if (operation == "redo") vm.Undo();
+            vm.LockCalibrationCommand.Execute(null);
+            switch (operation)
+            {
+                case "position": vm.PositionX = 2; break;
+                case "rotation": vm.RotationZ = 30; vm.RotateCommand.Execute(null); break;
+                case "scale": vm.JointScale = 2; break;
+                case "reset": vm.ResetPoseCommand.Execute(null); break;
+                case "paste": vm.PastePoseCommand.Execute(null); break;
+                case "undo": vm.Undo(); break;
+                case "redo": vm.Redo(); break;
+                case "drag": vm.EditMode = "Move"; vm.BeginDrag(); vm.Drag(Vector3.UnitX, 0); vm.EndDrag(); break;
+            }
+            var edited = vm.Project.Serialize();
+            await vm.BakeCommand.ExecuteAsync(null);
+            vm.Status.Should().Contain("Lock calibration", operation);
+            vm.Project.Serialize().Should().Be(edited, operation);
+            vm.ApproveApplicationClose(); vm.OnClose();
+        }
+    }
+    [AvaloniaTest] public async Task PackedHakRigPrefillsItsLooseSourceAndNeverAnArchive()
+    {
+        var target = InstallFixture(); var archive = Path.Combine(_folder, "models.hak");
+        ResourceIndexTests.WriteSingleResourceHak(archive, "hero", "mdl", File.ReadAllBytes(target));
+        var resources = new ResourceIndex(null, [new("models", archive)]);
+        await resources.InitializationTask;
+        var vm = new AnimationEditorDocumentViewModel(new Prompts(), new OutputLogService(), resources, _folder) { RigResource = "hero" };
+        await vm.LoadRigCommand.ExecuteAsync(null);
+        vm.TargetPaths.Should().Be(Path.GetFullPath(target));
+        File.Delete(target); vm.TargetPaths = "stale target";
+        await vm.LoadRigCommand.ExecuteAsync(null);
+        vm.TargetPaths.Should().BeEmpty(); vm.Project.ModelName.Should().Be("hero");
+        vm.OnClose().Should().BeTrue();
     }
     private sealed class Prompts : IEditorPromptService
     {

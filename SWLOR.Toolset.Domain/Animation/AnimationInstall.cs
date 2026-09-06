@@ -75,6 +75,26 @@ public sealed class AnimationInstallPlan
 
 public static class AnimationInstall
 {
+    /// <summary>Resolves a mounted rig back to its winning loose repository source, never to its HAK archive.</summary>
+    public static string? FindTargetSource(string repositoryRoot, string resref)
+    {
+        AnimationProject.ValidateToken(resref, 16);
+        var root = Path.GetFullPath(repositoryRoot);
+        var configPath = Path.Combine(root, "Build", "hakbuilder.json");
+        if (!File.Exists(configPath)) return null;
+        using var config = JsonDocument.Parse(File.ReadAllBytes(configPath));
+        foreach (var layer in ReadLayers(configPath, config.RootElement))
+        {
+            var path = Path.Combine(layer, resref + ".mdl");
+            if (File.Exists(path))
+                return path.StartsWith(Path.Combine(root, "SWLOR_Haks") + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase) ? path : null;
+        }
+        return null;
+    }
+
+    private static string[] ReadLayers(string configPath, JsonElement config) => config.GetProperty("HakList").EnumerateArray().Select(layer =>
+        Path.GetFullPath(Path.Combine(Path.GetDirectoryName(configPath)!, layer.GetProperty("Path").GetString()!))).ToArray();
+
     public static AnimationInstallPlan Prepare(string repositoryRoot, AnimationProject project, IEnumerable<string> targetPaths)
     {
         project.Validate();
@@ -94,8 +114,7 @@ public static class AnimationInstall
             return data;
         }
         using var config = JsonDocument.Parse(Read(configPath));
-        var layers = config.RootElement.GetProperty("HakList").EnumerateArray().Select(layer =>
-            Path.GetFullPath(Path.Combine(Path.GetDirectoryName(configPath)!, layer.GetProperty("Path").GetString()!))).ToArray();
+        var layers = ReadLayers(configPath, config.RootElement);
         // Resolve by the same first-HAK-wins order used by the resource index and pack pipeline.
         string? Resolve(string name)
         {
@@ -196,7 +215,7 @@ public static class AnimationInstall
             for (var i = 0; i < overlayProject.Joints.Count; i++)
                 if (overlayProject.Joints[i].Parent < 0)
                 {
-                    if (overlayProject.AnimationRoot == overlayProject.Joints[i].Name) overlayProject.AnimationRoot = overlayName;
+                    if (overlayProject.AnimationRoot.Equals(overlayProject.Joints[i].Name, StringComparison.OrdinalIgnoreCase)) overlayProject.AnimationRoot = overlayName;
                     overlayProject.Joints[i] = overlayProject.Joints[i] with { Name = overlayName };
                 }
             var super = string.IsNullOrWhiteSpace(model.SuperModel) ? "NULL" : model.SuperModel;
@@ -213,7 +232,7 @@ public static class AnimationInstall
             }
             var block = string.Concat(blocks.Values);
             targetRig.ModelName = overlayName;
-            if (targetRig.AnimationRoot == targetRig.Joints[0].Name) targetRig.AnimationRoot = overlayName;
+            if (targetRig.AnimationRoot.Equals(targetRig.Joints[0].Name, StringComparison.OrdinalIgnoreCase)) targetRig.AnimationRoot = overlayName;
             targetRig.Joints = targetRig.Joints.Select((joint, i) => joint with
             {
                 Name = i == 0 ? overlayName : joint.Name,

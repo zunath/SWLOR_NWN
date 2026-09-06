@@ -5,6 +5,7 @@ using SWLOR.AnimationDrafts;
 using SWLOR.NWN.Formats.Mdl;
 using SWLOR.Toolset.Domain.Animation;
 using SWLOR.Toolset.Domain.Render;
+using SWLOR.Game.Server.Service.AbilityService;
 
 if (args.Length >= 4 && args[0] == "install")
 {
@@ -32,9 +33,17 @@ if (args.Length == 2 && args[0] == "inspect")
     return 0;
 }
 
-if (args.Length is 4 or 5 && args[0] == "render-data" && (args.Length == 4 || args[4] == "--frames"))
+if (args.Length >= 4 && args[0] == "render-data")
 {
     var source = new MdlReader().Parse(File.ReadAllBytes(args[1]));
+    var equipment = new List<(string Bone, MdlModel Model)>();
+    for (var i = 4; i < args.Length; i++)
+    {
+        if (args[i] == "--frames") continue;
+        var bone = args[i] switch { "--shield" => "lhand_g", "--sword" => "rhand_g", _ => throw new ArgumentException("Unknown render option.") };
+        if (++i == args.Length) throw new ArgumentException("Equipment option requires an MDL path.");
+        equipment.Add((bone, new MdlReader().Parse(File.ReadAllBytes(args[i]))));
+    }
     using var manifest = JsonDocument.Parse(File.ReadAllText(Path.Combine(args[2], "manifest.json")));
     var poses = new List<object>();
     foreach (var entry in manifest.RootElement.GetProperty("Animations").EnumerateArray())
@@ -44,7 +53,7 @@ if (args.Length is 4 or 5 && args[0] == "render-data" && (args.Length == 4 || ar
         var project = AnimationProject.Deserialize(File.ReadAllText(Path.Combine(args[2], id + ".swlanim")));
         var snapshots = new List<object>();
         var beats = entry.GetProperty("Beats").EnumerateArray().ToArray();
-        var times = args.Length == 5
+        var times = args.Contains("--frames")
             ? Enumerable.Range(0, (int)Math.Ceiling(project.Duration * 20) + 1).Select(i => Math.Min(i / 20f, project.Duration))
             : beats.Select(b => b.GetProperty("Time").GetSingle());
         foreach (var time in times)
@@ -52,16 +61,21 @@ if (args.Length is 4 or 5 && args[0] == "render-data" && (args.Length == 4 || ar
             var beat = beats.Last(b => b.GetProperty("Time").GetSingle() <= time);
             var pose = project.Sample(time);
             var named = project.Joints.Select((j, i) => (j.Name, Pose: pose[i])).ToDictionary(j => j.Name, j => j.Pose);
-            var meshes = MdlMeshBuilder.Build(source, [named]).Meshes.Select(mesh => new
+            var world = AnimationRig.World(project.Joints, pose);
+            var allMeshes = MdlMeshBuilder.Build(source, [named]).Meshes.Select(mesh => (Mesh: mesh, Transform: mesh.Transform)).ToList();
+            foreach (var item in equipment)
+                foreach (var mesh in MdlMeshBuilder.Build(item.Model).Meshes)
+                    allMeshes.Add((mesh, mesh.Transform * world[project.Joints.FindIndex(j => j.Name == item.Bone)]));
+            var meshes = allMeshes.Select(entry => new
             {
-                mesh.NodeName, mesh.Indices,
-                Vertices = Enumerable.Range(0, mesh.Positions.Length / 3).Select(i =>
+                entry.Mesh.NodeName, entry.Mesh.Indices,
+                Vertices = Enumerable.Range(0, entry.Mesh.Positions.Length / 3).Select(i =>
                 {
-                    var p = Vector3.Transform(new Vector3(mesh.Positions[i * 3], mesh.Positions[i * 3 + 1], mesh.Positions[i * 3 + 2]), mesh.Transform);
+                    var v = entry.Mesh.Positions;
+                    var p = Vector3.Transform(new Vector3(v[i * 3], v[i * 3 + 1], v[i * 3 + 2]), entry.Transform);
                     return new[] { p.X, p.Y, p.Z };
                 }).ToArray()
             });
-            var world = AnimationRig.World(project.Joints, pose);
             float[] Point(string joint, Vector3 local)
             {
                 var p = Vector3.Transform(local, world[project.Joints.FindIndex(j => j.Name == joint)]);
@@ -70,7 +84,7 @@ if (args.Length is 4 or 5 && args[0] == "render-data" && (args.Length == 4 || ar
             snapshots.Add(new { Time = time, Label = beat.GetProperty("Label").GetString(), Meshes = meshes.ToArray(),
                 Hand = Point("rhand_g", Vector3.Zero), Tip = Point("rhand_g", new Vector3(0, .8f, 0)),
                 Shield = Enumerable.Range(0, 8).Select(i => Point("lhand_g", new Vector3(-.09f,
-                    .29f * MathF.Cos(i * MathF.PI / 4), .49f * MathF.Sin(i * MathF.PI / 4)))).ToArray() });
+                    .49f * MathF.Sin(i * MathF.PI / 4), .29f * MathF.Cos(i * MathF.PI / 4)))).ToArray(), EquipmentMeshes = equipment.Count > 0 });
         }
         poses.Add(new { Id = id, Name = entry.GetProperty("Name").GetString(), project.Duration, Snapshots = snapshots });
     }
@@ -89,6 +103,9 @@ try
     var modelBytes = File.ReadAllBytes(args[1]);
     var model = new MdlReader().Parse(modelBytes);
     var rig = AnimationProject.FromModel(model);
+    var idle = model.Animations.Single(a => a.Name == "pause1");
+    var sampledIdle = MdlAnimationPose.Sample(idle, 0, MdlAnimationPose.BindPose(model));
+    var neutral = rig.Joints.Select(j => sampledIdle.TryGetValue(j.Name, out var p) ? p : j.Rest).ToArray();
     var recipeText = File.ReadAllText(args[2]).Replace("\r\n", "\n");
     var recipe = JsonSerializer.Deserialize<Recipe>(recipeText, Recipe.Json) ?? throw new InvalidDataException("Empty recipe.");
     if (model.Name != recipe.Model) throw new InvalidDataException($"Recipe requires {recipe.Model}, received {model.Name}.");
@@ -98,9 +115,13 @@ try
     var reports = new List<object>();
     foreach (var motion in recipe.Motions)
     {
+        var definition = typeof(IAbilityListDefinition).Assembly.GetType(
+            "SWLOR.Game.Server.Feature.AbilityDefinition." + motion.AbilityDefinition);
+        if (definition == null || definition.IsAbstract || !typeof(IAbilityListDefinition).IsAssignableFrom(definition))
+            throw new InvalidDataException($"{motion.Id}: no current ability definition matches '{motion.AbilityDefinition}'. Remove outdated Bible entries from the recipe before generating.");
         AnimationProject.ValidateToken(motion.Id, 63);
         if (files.ContainsKey(motion.Id + ".swlanim")) throw new InvalidDataException("Duplicate motion ID.");
-        var project = MotionAuthor.Bake(rig, recipe, motion);
+        var project = MotionAuthor.Bake(rig, neutral, recipe, motion);
         var serialized = project.Serialize().Replace("\r\n", "\n");
         AnimationProject.Deserialize(serialized);
         // Exercise the same ASCII exchange and native MDL reader used by the editor.

@@ -20,8 +20,13 @@ public sealed class NamedAnimationPlayback
     public const string LoopSource = "custom1lp";
     public const string EndSource = "custom1end";
     private readonly INamedAnimationRuntime _runtime;
+    private readonly Action<uint> _releasePose;
 
-    public NamedAnimationPlayback(INamedAnimationRuntime runtime) => _runtime = runtime ?? throw new ArgumentNullException(nameof(runtime));
+    public NamedAnimationPlayback(INamedAnimationRuntime runtime, Action<uint> releasePose = null)
+    {
+        _runtime = runtime ?? throw new ArgumentNullException(nameof(runtime));
+        _releasePose = releasePose;
+    }
 
     public string Begin(uint creature, AnimationClip clip, float duration, bool completeAtDuration = false)
     {
@@ -56,6 +61,7 @@ public sealed class NamedAnimationPlayback
         _runtime.Replace(creature, LoopSource, "");
         _runtime.Replace(creature, EndSource, "");
         _runtime.SetToken(creature, "");
+        _releasePose?.Invoke(creature);
     }
 
     public void Stop(uint creature)

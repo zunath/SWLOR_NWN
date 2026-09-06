@@ -265,10 +265,12 @@
           "label": "Ready",
           "pose": {}
         }
-      ]
+      ],
+      "abilityDefinition": "Vibroblade.ShieldBashAbilityDefinition"
     },
     {
       "id": "ShieldWall",
+      "loop": true,
       "name": "Shield Wall",
       "bibleRow": 3,
       "reference": "https://chatgpt.com/s/m_6a3fdd84a41c8191ab3fcad9d97786f7",
@@ -461,7 +463,8 @@
           "label": "Ready",
           "pose": {}
         }
-      ]
+      ],
+      "abilityDefinition": "Vibroblade.ShieldWallAbilityDefinition"
     },
     {
       "id": "CoveringStrike",
@@ -683,7 +686,8 @@
           "label": "Ready",
           "pose": {}
         }
-      ]
+      ],
+      "abilityDefinition": "Vibroblade.CoveringStrikeAbilityDefinition"
     },
     {
       "id": "Invincible",
@@ -889,193 +893,8 @@
           "label": "Ready",
           "pose": {}
         }
-      ]
-    },
-    {
-      "id": "HackingBlade",
-      "name": "Hacking Blade",
-      "bibleRow": 6,
-      "reference": "https://chatgpt.com/s/m_6a3fdf2b35f88191abf0bba312b2fa2e",
-      "observation": "The blade finishes a descending diagonal cut in front of a forward-weighted stance; the empty left arm counterbalances.",
-      "interpretation": "Raise the blade over the right shoulder and drive a heavy diagonal cut downward, with a low follow-through and deliberate recovery.",
-      "shield": false,
-      "beats": [
-        {
-          "time": 0,
-          "label": "Ready",
-          "pose": {}
-        },
-        {
-          "time": 0.26,
-          "label": "Wind up",
-          "pose": {
-            "root": [
-              0,
-              -0.025,
-              1.06
-            ],
-            "chest": [
-              0,
-              -23,
-              -4
-            ],
-            "hips": [
-              0,
-              -9,
-              0
-            ],
-            "rightHand": [
-              0.46,
-              -0.16,
-              1.81
-            ],
-            "leftHand": [
-              -0.43,
-              -0.17,
-              1.23
-            ],
-            "blade": [
-              0.12,
-              0.3,
-              0.95
-            ]
-          }
-        },
-        {
-          "time": 0.4,
-          "label": "Descend",
-          "pose": {
-            "root": [
-              0.025,
-              0.055,
-              1.01
-            ],
-            "chest": [
-              9,
-              5,
-              0
-            ],
-            "hips": [
-              0,
-              2,
-              0
-            ],
-            "rightHand": [
-              0.43,
-              0.41,
-              1.54
-            ],
-            "leftHand": [
-              -0.44,
-              -0.15,
-              1.23
-            ],
-            "blade": [
-              0.4,
-              0.88,
-              0.05
-            ]
-          }
-        },
-        {
-          "time": 0.52,
-          "label": "Impact",
-          "pose": {
-            "root": [
-              0.04,
-              0.11,
-              0.98
-            ],
-            "chest": [
-              13,
-              22,
-              1
-            ],
-            "hips": [
-              0,
-              9,
-              0
-            ],
-            "rightHand": [
-              0.2,
-              0.745,
-              1.09
-            ],
-            "leftHand": [
-              -0.42,
-              -0.22,
-              1.24
-            ],
-            "blade": [
-              0.12,
-              0.6,
-              -0.8
-            ]
-          }
-        },
-        {
-          "time": 0.65,
-          "label": "Follow through",
-          "pose": {
-            "root": [
-              0.025,
-              0.09,
-              0.985
-            ],
-            "chest": [
-              13,
-              35,
-              1
-            ],
-            "hips": [
-              0,
-              12,
-              0
-            ],
-            "rightHand": [
-              -0.12,
-              0.43,
-              1
-            ],
-            "leftHand": [
-              -0.43,
-              -0.24,
-              1.25
-            ],
-            "blade": [
-              -0.7,
-              0.42,
-              -0.5
-            ]
-          }
-        },
-        {
-          "time": 0.9,
-          "label": "Recover",
-          "pose": {
-            "chest": [
-              5,
-              18,
-              0
-            ],
-            "rightHand": [
-              0.16,
-              0.35,
-              1.08
-            ],
-            "blade": [
-              -0.2,
-              0.7,
-              0.25
-            ]
-          }
-        },
-        {
-          "time": 1.2,
-          "label": "Ready",
-          "pose": {}
-        }
-      ]
+      ],
+      "abilityDefinition": "Vibroblade.InvincibleAbilityDefinition"
     },
     {
       "id": "RiotBlade",
@@ -1251,7 +1070,8 @@
           "label": "Ready",
           "pose": {}
         }
-      ]
+      ],
+      "abilityDefinition": "Vibroblade.RiotBladeAbilityDefinition"
     },
     {
       "id": "RendingStrike",
@@ -1437,7 +1257,8 @@
           "label": "Ready",
           "pose": {}
         }
-      ]
+      ],
+      "abilityDefinition": "Vibroblade.RendingStrikeAbilityDefinition"
     },
     {
       "id": "SavageCleave",
@@ -1659,224 +1480,8 @@
           "label": "Ready",
           "pose": {}
         }
-      ]
-    },
-    {
-      "id": "Carve",
-      "name": "Carve",
-      "bibleRow": 10,
-      "reference": "https://chatgpt.com/s/m_6a3fdf5024348191ba38c0965f358b0d",
-      "observation": "The extended blade cuts deeply across the front of the target and rises toward the upper torso.",
-      "interpretation": "Load the blade near the right hip, extend into a long rising carve, briefly hold the extended line, and recover under control.",
-      "shield": false,
-      "beats": [
-        {
-          "time": 0,
-          "label": "Ready",
-          "pose": {}
-        },
-        {
-          "time": 0.24,
-          "label": "Load",
-          "pose": {
-            "root": [
-              0,
-              -0.025,
-              1
-            ],
-            "chest": [
-              8,
-              -19,
-              -2
-            ],
-            "hips": [
-              0,
-              -7,
-              0
-            ],
-            "rightHand": [
-              0.49,
-              0,
-              0.99
-            ],
-            "blade": [
-              0.9,
-              -0.15,
-              -0.4
-            ]
-          }
-        },
-        {
-          "time": 0.41,
-          "label": "Draw across",
-          "pose": {
-            "root": [
-              0.025,
-              0.08,
-              0.98
-            ],
-            "chest": [
-              15,
-              8,
-              0
-            ],
-            "hips": [
-              0,
-              3,
-              0
-            ],
-            "rightHand": [
-              0.35,
-              0.49,
-              1.15
-            ],
-            "blade": [
-              0.55,
-              0.8,
-              0.2
-            ],
-            "leftHand": [
-              -0.41,
-              -0.24,
-              1.24
-            ]
-          }
-        },
-        {
-          "time": 0.55,
-          "label": "Carve",
-          "pose": {
-            "root": [
-              0.03,
-              0.13,
-              0.99
-            ],
-            "chest": [
-              15,
-              23,
-              0
-            ],
-            "hips": [
-              0,
-              9,
-              0
-            ],
-            "rightHand": [
-              0.17,
-              0.81,
-              1.32
-            ],
-            "blade": [
-              0.27,
-              0.81,
-              0.52
-            ],
-            "leftHand": [
-              -0.4,
-              -0.25,
-              1.26
-            ]
-          }
-        },
-        {
-          "time": 0.63,
-          "label": "Extend",
-          "pose": {
-            "root": [
-              0.03,
-              0.13,
-              1
-            ],
-            "chest": [
-              13,
-              27,
-              0
-            ],
-            "hips": [
-              0,
-              11,
-              0
-            ],
-            "rightHand": [
-              0.1,
-              0.82,
-              1.36
-            ],
-            "blade": [
-              0.15,
-              0.8,
-              0.58
-            ],
-            "leftHand": [
-              -0.4,
-              -0.25,
-              1.27
-            ]
-          }
-        },
-        {
-          "time": 0.79,
-          "label": "Finish high",
-          "pose": {
-            "root": [
-              0.005,
-              0.075,
-              1.03
-            ],
-            "chest": [
-              7,
-              38,
-              0
-            ],
-            "hips": [
-              0,
-              13,
-              0
-            ],
-            "rightHand": [
-              -0.09,
-              0.59,
-              1.53
-            ],
-            "blade": [
-              -0.5,
-              0.5,
-              0.7
-            ],
-            "leftHand": [
-              -0.42,
-              -0.23,
-              1.29
-            ]
-          }
-        },
-        {
-          "time": 1.02,
-          "label": "Recover",
-          "pose": {
-            "chest": [
-              5,
-              15,
-              0
-            ],
-            "rightHand": [
-              0.1,
-              0.41,
-              1.42
-            ],
-            "blade": [
-              -0.1,
-              0.6,
-              0.8
-            ]
-          }
-        },
-        {
-          "time": 1.35,
-          "label": "Ready",
-          "pose": {}
-        }
-      ]
+      ],
+      "abilityDefinition": "Vibroblade.SavageCleaveAbilityDefinition"
     }
   ]
 }

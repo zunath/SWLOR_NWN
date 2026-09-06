@@ -66,11 +66,10 @@ public class AuthoredCombatAnimationTests
     }
 
     [Test]
-    public void PreviewIncludesAllNineClipsIncludingTheTwoWithoutCurrentPerks()
+    public void PreviewIncludesOnlyTheSevenMovesWithCurrentPerks()
     {
-        AnimationPreviewChatCommand.Clips.Count.Should().Be(9);
-        AnimationPreviewChatCommand.Clips["HackingBlade"].Should().BeSameAs(AuthoredAnimation.HackingBlade);
-        AnimationPreviewChatCommand.Clips["Carve"].Should().BeSameAs(AuthoredAnimation.Carve);
+        AnimationPreviewChatCommand.Clips.Keys.Should().BeEquivalentTo(new[] {
+            "ShieldBash", "ShieldWall", "CoveringStrike", "Invincible", "RiotBlade", "RendingStrike", "SavageCleave" });
     }
 
     private sealed class Runtime : INamedAnimationRuntime

@@ -25,14 +25,16 @@ or other target models. Switching layouts preserves the animation and its undo h
 
 ## Bible animation drafts
 
-The first nine image references on the Bible's **Animations** tab have editable drafts in
+The seven current perks among the first nine image references on the Bible's **Animations** tab have editable drafts in
 `design/animations/drafts/vibroblade/`. Open `preview.html` in your normal browser to choose a
 motion, play it slowly, orbit the mannequin, and jump to its main poses. Its accessory proxies
 show the intended blade and shield directions; check the final equipment in NWN.
 
-In the toolset, choose **Open project** and open any of the nine `.swlanim` files. These drafts
-use the native male humanoid `a_ba` rig, have a ready pose at both ends, and remain editable.
-All nine are installed into the `a_ba` and `a_fa` humanoid supermodel chains in `sw_cr_creature`.
+In the toolset, choose **Open project** and open any of the seven `.swlanim` files. These drafts
+use the native male humanoid `a_ba` rig and remain editable. One-shot moves start and finish in
+the native standing pose. Shield Wall keeps a guard loop for its channel, with a separate exit
+that returns to the target model's neutral pose.
+All seven are installed into the `a_ba` and `a_fa` humanoid supermodel chains in `sw_cr_creature`.
 Their installed editable copies are in `design/animations/`. The images establish the main
 pose; wind-up, recovery, and durations are authored interpretations for review. The shield
 barriers, hit effects, blood, targets, and gameplay outcomes pictured in the references are
@@ -48,8 +50,9 @@ for a longer cast/channel. Damage, costs, cooldowns, and movement rules are unch
 
 `/animtest ShieldBash` previews a clip on your character; `/animtest` lists all names. This debug
 command is available to administrators and everyone on a test server. Hacking Blade and Carve
-have no current ability definitions, so their clips are installed and previewable but have no
-combat binding. They are not substituted for unrelated abilities.
+are outdated spreadsheet entries with no current matching abilities, so they are excluded
+from the recipe, installed models, registry, and preview list. Recipe entries must identify an
+existing `IAbilityListDefinition`; generation rejects stale entries instead of inventing perks.
 
 To update an installed draft from the command line, close the toolset and run this against an
 isolated checkout with the complete HAK source chain available:
@@ -79,6 +82,13 @@ feet during interpolation and correspondence with the Bible references. Recipe v
 native metres (`+Y` forward, `+Z` up); `chest`, `hips`, and `shield` use degrees in the order
 forward lean, yaw, side bend. Each beat overrides the corresponding ready pose, and the
 generator solves limb positions at 20 frames per second with smooth timing between beats.
+Native shield meshes face `-X` with their top along `+Y`; both axes must be calibrated when
+posing the hand, including sword moves that can be used with a shield equipped. To inspect
+actual equipment rather than the HTML mannequin's stand-ins, export posed triangles with:
+
+```powershell
+dotnet tools/SWLOR.AnimationDrafts/bin/Debug/net10.0/SWLOR.AnimationDrafts.dll render-data SWLOR_Haks/sw_cr_creature/a_ba.mdl design/animations/drafts/vibroblade artifacts/animation-poses.json --frames --shield SWLOR_Haks/sw_weapon/ashlw_113.mdl --sword SWLOR_Haks/sw_weapon/wswls_t_122.mdl
+```
 
 ## Advanced authoring
 
@@ -183,11 +193,24 @@ Do not independently replace that same carrier while the helper owns it. Ordinar
 requests during a named clip share that temporary mapping. A module-owned timeout restores the
 mapping if a cleared action queue drops its cleanup action. Per-creature tokens prevent older
 callbacks from clearing newer playback or touching a reused object handle.
+Cleanup also releases the pose on an idle, living creature. Interrupting an authored channel
+releases its mapping immediately; movement and combat that interrupted it retain their own actions.
 
 This does not consume additional engine custom slots. SWLOR already assigns the 70 custom slots
 exposed by its pinned NWN library; those IDs are not contiguous because mount/dismount intervene.
 Installation therefore generates named clips rather than inventing new `Animation` enum values.
 Runtime availability still depends on deploying the generated assets for the chosen target models.
+
+The 70 engine slots are playback entry points, not the animation library's capacity. A named
+clip can reuse the same creature-local carrier after another finishes; different creatures can
+play different named clips simultaneously. The registry and generated constants have no 70-clip
+limit. The installer splits large libraries into model banks of at most 256 clips (plus their
+entry/exit phases), keeps names within 16 characters, and updates a clip in its original bank.
+Constant transform tracks are stored once rather than repeated at every frame. A regression
+test installs beyond 1,024 clips and updates an older bank without losing existing animations.
+This verifies source installation and lookup, not NWN runtime performance: memory/loading cost
+still grows with the assets. The installer validates the complete chain and rejects more than
+32 models per target; very large libraries should be divided among the rigs that actually use them.
 
 ## Provenance and verification
 

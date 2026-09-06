@@ -118,7 +118,9 @@ public class AnimationEditorTests
     }
     [Test] public void MdlImportRejectsOutOfRangeAndDuplicateTimes()
     {
-        var rig = Rig(); rig.SetKey(0, rig.Sample(0)); rig.SetKey(1, rig.Sample(0));
+        var rig = Rig(); rig.SetKey(0, rig.Sample(0));
+        var moved = rig.Sample(0); moved[1] = moved[1] with { Position = Vector3.UnitX };
+        rig.SetKey(1, moved); // A real changing track must retain both timestamps after compaction.
         var text = AnimationMdl.Export(rig).Replace("length 1", "length 0.5");
         Action act = () => AnimationMdl.Import(text, Rig()); act.Should().Throw<InvalidDataException>();
         text = AnimationMdl.Export(rig).Replace("      1 ", "      0 ");
@@ -457,6 +459,14 @@ public class AnimationEditorTests
             Directory.CreateDirectory(Path.GetDirectoryName(destination)!);
             File.Copy(sources[name + ".mdl"], destination);
             var model = new MdlReader().Parse(File.ReadAllBytes(destination));
+            // Local gameplay corpora may already contain this editor's overlays. Reconstruct
+            // the pre-install chain in the fixture only, so this remains a fresh-install test.
+            if (model.SuperModel.Equals("an_" + name, StringComparison.OrdinalIgnoreCase))
+            {
+                var installed = new MdlReader().Parse(File.ReadAllBytes(sources[model.SuperModel + ".mdl"]));
+                File.WriteAllBytes(destination, AnimationInstall.PatchSupermodel(File.ReadAllBytes(destination), name, installed.SuperModel));
+                model.SuperModel = installed.SuperModel;
+            }
             if (!string.IsNullOrEmpty(model.SuperModel) && !model.SuperModel.Equals("NULL", StringComparison.OrdinalIgnoreCase)) CopyChain(model.SuperModel);
             return destination;
         }
@@ -472,6 +482,54 @@ public class AnimationEditorTests
             File.ReadAllBytes(target)[244..].Should().Equal(original[244..]);
         }
     }
+    [Test] public void InstallationSupportsOverOneThousandClipsAcrossBoundedBanks()
+    {
+        var rig = Rig();
+        while (rig.Joints.Count < 57) rig.Joints.Add(new("joint" + rig.Joints.Count, 1, new(Vector3.UnitZ * .01f, Quaternion.Identity, 1)));
+        rig.SetKey(0, rig.Joints.Select(j => j.Rest).ToArray());
+        var count = AnimationInstall.ClipsPerBank * 4;
+        var banks = new[] { "an_hero", "ab_hero_001", "ab_hero_002", "ab_hero_003" };
+        Write("Build/hakbuilder.json", "{\"HakList\":[{\"Path\":\"../SWLOR_Haks/models\"}]}");
+        var target = Write("SWLOR_Haks/models/hero.mdl", "newmodel hero\nsetsupermodel hero an_hero\n" + AnimationMdl.ExportGeometry(rig) + "donemodel hero\n");
+        var registrations = new List<AnimationRegistration>();
+        for (var bankIndex = 0; bankIndex < banks.Length; bankIndex++)
+        {
+            var bank = banks[bankIndex]; var project = rig.Clone(); project.ModelName = bank;
+            project.Joints[0] = project.Joints[0] with { Name = bank };
+            var text = new System.Text.StringBuilder($"# SWLOR authored animations for hero\nnewmodel {bank}\nsetsupermodel {bank} {(bankIndex == banks.Length - 1 ? "NULL" : banks[bankIndex + 1])}\n");
+            text.Append(AnimationMdl.ExportGeometry(project));
+            for (var i = bankIndex * AnimationInstall.ClipsPerBank; i < (bankIndex + 1) * AnimationInstall.ClipsPerBank; i++)
+            {
+                var name = "sw_clip" + i;
+                registrations.Add(new("Clip" + i, name, 1, ["SWLOR_Haks/models/hero.mdl"]));
+                foreach (var suffix in new[] { "", "_in", "_out" }) text.Append(AnimationMdl.Export(project, name + suffix, bank));
+            }
+            text.AppendLine($"donemodel {bank}");
+            Write("SWLOR_Haks/models/" + bank + ".mdl", text.ToString());
+        }
+        Write("design/animations/registry.json", System.Text.Json.JsonSerializer.Serialize(registrations));
+        var nativeBytes = File.ReadAllBytes(target);
+        rig.Name = "AnotherClip";
+        var plan = AnimationInstall.Prepare(_folder, rig, [target]); plan.Apply();
+        File.ReadAllBytes(target).Should().Equal(nativeBytes, "extra banks link behind the first overlay without repatching the native model");
+        var first = new MdlReader().Parse(File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(target)!, "an_hero.mdl")));
+        first.SuperModel.Should().Be("ab_hero_004");
+        var extraPath = Path.Combine(Path.GetDirectoryName(target)!, first.SuperModel + ".mdl");
+        var extra = new MdlReader().Parse(File.ReadAllBytes(extraPath));
+        extra.SuperModel.Should().Be("ab_hero_001");
+        extra.Animations.Should().HaveCount(3);
+        var allNames = Directory.EnumerateFiles(Path.GetDirectoryName(target)!, "*.mdl")
+            .SelectMany(path => new MdlReader().Parse(File.ReadAllBytes(path)).Animations.Select(a => a.Name)).ToArray();
+        allNames.Should().HaveCount((count + 1) * 3).And.OnlyHaveUniqueItems();
+        allNames.Should().Contain("sw_clip1023_out");
+        var extraBefore = File.ReadAllBytes(extraPath);
+        rig.Name = "Clip800"; rig.Duration = 2;
+        AnimationInstall.Prepare(_folder, rig, [target]).Apply();
+        File.ReadAllBytes(extraPath).Should().Equal(extraBefore, "updating an older clip must find its own bank");
+        var older = new MdlReader().Parse(File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(target)!, "ab_hero_003.mdl")));
+        older.Animations.Single(a => a.Name == "sw_clip800").Length.Should().Be(2);
+    }
+
     [Test] public void InstallationRejectsTargetsOutsideConfiguredSources()
     {
         var target = InstallFixture(); var other = Write("outside.mdl", File.ReadAllText(target));

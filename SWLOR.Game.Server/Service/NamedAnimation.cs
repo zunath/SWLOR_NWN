@@ -8,7 +8,7 @@ namespace SWLOR.Game.Server.Service;
 public static class NamedAnimation
 {
     private const string PlaybackTokenVariable = "_NAMED_ANIMATION_PLAYBACK";
-    private static readonly NamedAnimationPlayback Playback = new(new NativeRuntime());
+    private static readonly NamedAnimationPlayback Playback = new(new NativeRuntime(), ReleaseIdlePose);
 
     /// <summary>
     /// Queues a clip without clearing existing actions. The original Point Forward emote mapping
@@ -38,8 +38,25 @@ public static class NamedAnimation
         });
     }
 
-    /// <summary>Restores this helper's emote mapping; does not clear unrelated creature actions.</summary>
-    public static void Stop(uint creature) => Playback.Stop(creature);
+    /// <summary>Releases an authored pose; optionally cancels the current scripted animation action.</summary>
+    public static void Stop(uint creature, bool cancelQueuedAnimation = false)
+    {
+        if (string.IsNullOrEmpty(GetLocalString(creature, PlaybackTokenVariable))) return;
+        // GetCurrentAction returns Invalid for the internal scripted-animation action. Do not
+        // cancel movement or combat that may itself have interrupted a channel.
+        if (cancelQueuedAnimation && GetCurrentAction(creature) == ActionType.Invalid)
+            AssignCommand(creature, () => ClearAllActions());
+        Playback.Stop(creature);
+    }
+
+    private static void ReleaseIdlePose(uint creature)
+    {
+        // Restoring a replacement table only affects the next animation lookup. Explicitly
+        // leave the emote state when idle; moving/fighting/dead actors keep their engine state.
+        if (GetCurrentHitPoints(creature) <= 0 || GetIsInCombat(creature) ||
+            GetCurrentAction(creature) != ActionType.Invalid) return;
+        AssignCommand(creature, () => PlayAnimation(Animation.LoopingPause, 1f, .1f));
+    }
 
     private static float Validate(AnimationClip clip, float? duration)
     {

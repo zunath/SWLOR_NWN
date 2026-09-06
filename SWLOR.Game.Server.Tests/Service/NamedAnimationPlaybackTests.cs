@@ -10,6 +10,22 @@ namespace SWLOR.Game.Server.Tests.Service;
 
 public class NamedAnimationPlaybackTests
 {
+    [Test] public void CompletionAndInterruptionReleaseThePoseOnlyForTheOwnedPlayback()
+    {
+        var runtime = new Runtime(); var released = new List<uint>();
+        var playback = new NamedAnimationPlayback(runtime, released.Add);
+        var first = playback.Begin(1, new AnimationClip("sw_wave", 2), 2);
+        var second = playback.Begin(1, new AnimationClip("sw_point", 3), 3);
+        playback.Complete(1, first); runtime.Callbacks[0]();
+        released.Should().BeEmpty("an old timeout must not reset a newer animation's pose");
+        playback.Stop(1);
+        released.Should().Equal(1u);
+        runtime.Callbacks[1](); playback.Complete(1, second);
+        released.Should().HaveCount(1, "cleanup must not repeatedly restart idle");
+        var third = playback.Begin(1, new AnimationClip("sw_wave", 2), 2);
+        playback.Complete(1, third);
+        released.Should().Equal(1u, 1u);
+    }
     [Test] public void PlaybackUsesTheEngineCustomOneCarrierIncludingItsEntryAndExit()
     {
         ((int)Animation.PointForward).Should().Be(global::NWN.Core.NWScript.ANIMATION_LOOPING_CUSTOM1);

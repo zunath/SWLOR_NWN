@@ -14,8 +14,8 @@ namespace SWLOR.Toolset.Tests;
 [TestFixture]
 public class AnimationDraftAssetTests
 {
-    private static readonly string[] Names = ["ShieldBash", "ShieldWall", "CoveringStrike", "Invincible", "HackingBlade",
-        "RiotBlade", "RendingStrike", "SavageCleave", "Carve"];
+    private static readonly string[] Names = ["ShieldBash", "ShieldWall", "CoveringStrike", "Invincible",
+        "RiotBlade", "RendingStrike", "SavageCleave"];
     private static string Root
     {
         get
@@ -44,6 +44,16 @@ public class AnimationDraftAssetTests
             overlay.Animations.Single(a => a.Name == entry.AnimationName).Length.Should().BeApproximately(entry.Duration, .0001f);
             overlay.Animations.Should().Contain(a => a.Name == entry.AnimationName + "_in");
             overlay.Animations.Should().Contain(a => a.Name == entry.AnimationName + "_out");
+            var exit = overlay.Animations.Single(a => a.Name == entry.AnimationName + "_out");
+            exit.Length.Should().BeApproximately(.2f, .0001f);
+            var exitPose = MdlAnimationPose.Sample(exit, exit.Length, MdlAnimationPose.BindPose(overlay));
+            var idle = MdlAnimationPose.Sample(MdlAnimationPose.FindIdle(target), 0, MdlAnimationPose.BindPose(target));
+            foreach (var joint in AnimationProject.FromModel(target).Joints.Where(j => j.Parent >= 0))
+            {
+                var expected = idle.TryGetValue(joint.Name, out var value) ? value : joint.Rest;
+                Vector3.Distance(exitPose[joint.Name].Position * target.Scale, expected.Position).Should().BeLessThan(.0001f);
+                Math.Abs(Quaternion.Dot(exitPose[joint.Name].Orientation, expected.Orientation)).Should().BeGreaterThan(.9999f);
+            }
             var installed = AnimationProject.Deserialize(File.ReadAllText(Path.Combine(Root, "design", "animations", name + ".swlanim")));
             var draft = AnimationProject.Deserialize(File.ReadAllText(Path.Combine(Folder, name + ".swlanim")));
             installed.Serialize().Should().Be(draft.Serialize());
@@ -61,22 +71,59 @@ public class AnimationDraftAssetTests
         foreach (var key in project.Keys)
             for (var i = 0; i < project.Joints.Count; i++)
                 if (project.Joints[i].Name != "rootdummy")
-                    key.Pose[i].Position.Should().Be(project.Joints[i].Rest.Position, "posing must not stretch a native bone");
+                    Vector3.Distance(key.Pose[i].Position, project.Joints[i].Rest.Position).Should().BeLessThan(.000001f,
+                        "posing must not stretch a native bone; interpolation may round the last float bit");
         var first = AnimationRig.World(project.Joints, project.Sample(0));
         var last = AnimationRig.World(project.Joints, project.Sample(project.Duration));
         for (var i = 0; i < first.Length; i++)
             Vector3.Distance(first[i].Translation, last[i].Translation).Should().BeLessThan(.0001f, "the ready pose must close without a jump");
         var feet = new[] { "lfoot_g", "rfoot_g" }.Select(n => project.Joints.FindIndex(j => j.Name == n)).ToArray();
+        using var manifest = JsonDocument.Parse(File.ReadAllText(Path.Combine(Folder, "manifest.json")));
+        var beats = manifest.RootElement.GetProperty("Animations").EnumerateArray().Single(a => a.GetProperty("Id").GetString() == name)
+            .GetProperty("Beats").EnumerateArray().Select(b => b.GetProperty("Time").GetSingle()).ToArray();
+        var planted = AnimationRig.World(project.Joints, project.Sample(beats[1]));
         for (var t = 0f; t < project.Duration; t += 1f / 120)
         {
             var world = AnimationRig.World(project.Joints, project.Sample(t));
             foreach (var i in feet)
             {
                 world[i].Translation.Z.Should().BeGreaterThan(.125f);
-                if (name != "CoveringStrike")
-                    Vector3.Distance(world[i].Translation, first[i].Translation).Should().BeLessThan(.015f,
+                if (name != "CoveringStrike" && t >= beats[1] && t <= beats[^2])
+                    Vector3.Distance(world[i].Translation, planted[i].Translation).Should().BeLessThan(.015f,
                         "planted feet must remain fixed between baked frames, even as the body turns");
             }
+        }
+    }
+
+    [TestCaseSource(nameof(Names))]
+    public void EveryMoveKeepsTheActualShieldUprightInItsAuthoredGuard(string name)
+    {
+        var project = AnimationProject.Deserialize(File.ReadAllText(Path.Combine(Folder, name + ".swlanim")));
+        using var manifest = JsonDocument.Parse(File.ReadAllText(Path.Combine(Folder, "manifest.json")));
+        var entry = manifest.RootElement.GetProperty("Animations").EnumerateArray().Single(a => a.GetProperty("Id").GetString() == name);
+        var time = entry.GetProperty("Beats")[1].GetProperty("Time").GetSingle();
+        var hand = AnimationRig.World(project.Joints, project.Sample(time))[project.Joints.FindIndex(j => j.Name == "lhand_g")];
+        // AShLw model +Y is its top, -X its facing. The old proxy incorrectly used +Z as top.
+        Vector3.TransformNormal(Vector3.UnitY, hand).Z.Should().BeGreaterThan(.7f, "an equipped shield must not lie sideways over the arm");
+        Vector3.TransformNormal(-Vector3.UnitX, hand).Y.Should().BeGreaterThan(.5f, "the shield face must point toward the attack");
+    }
+
+    [TestCaseSource(nameof(Names))]
+    public void OneShotsFinishInTheNativeIdlePoseRatherThanHoldingTheirCombatStance(string name)
+    {
+        if (name == "ShieldWall") return; // Channel loop releases through its installed exit phase.
+        var path = Path.Combine(Root, "SWLOR_Haks", "sw_cr_creature", "a_ba.mdl");
+        if (!File.Exists(path)) Assert.Ignore("Initialize the HAK submodule for native idle verification.");
+        var model = new MdlReader().Parse(File.ReadAllBytes(path));
+        var idle = MdlAnimationPose.Sample(model.Animations.Single(a => a.Name == "pause1"), 0, MdlAnimationPose.BindPose(model));
+        var project = AnimationProject.Deserialize(File.ReadAllText(Path.Combine(Folder, name + ".swlanim")));
+        var finish = project.Sample(project.Duration);
+        for (var i = 0; i < project.Joints.Count; i++)
+        {
+            var joint = project.Joints[i];
+            var expected = idle.TryGetValue(joint.Name, out var value) ? value : joint.Rest;
+            Vector3.Distance(finish[i].Position, expected.Position).Should().BeLessThan(.0001f);
+            Math.Abs(Quaternion.Dot(finish[i].Orientation, expected.Orientation)).Should().BeGreaterThan(.9999f);
         }
     }
 
@@ -99,7 +146,7 @@ public class AnimationDraftAssetTests
     }
 
     [Test]
-    public void ManifestMatchesTheFirstNineBibleReferencesAndSavedProjects()
+    public void ManifestMatchesCurrentPerksFromTheFirstNineBibleReferencesAndSavedProjects()
     {
         using var manifest = JsonDocument.Parse(File.ReadAllText(Path.Combine(Folder, "manifest.json")));
         using var zip = ZipFile.OpenRead(Path.Combine(Root, "design", "bible", "SWLOR Design Bible - Combat Upgrade.xlsx"));
@@ -122,7 +169,7 @@ public class AnimationDraftAssetTests
         };
         var entries = manifest.RootElement.GetProperty("Animations").EnumerateArray().ToArray();
         entries.Select(e => e.GetProperty("Id").GetString()).Should().Equal(Names);
-        entries.Select(e => e.GetProperty("BibleRow").GetInt32()).Should().Equal(Enumerable.Range(2, 9));
+        entries.Select(e => e.GetProperty("BibleRow").GetInt32()).Should().Equal(2, 3, 4, 5, 7, 8, 9);
         foreach (var entry in entries)
         {
             var row = entry.GetProperty("BibleRow").GetInt32();

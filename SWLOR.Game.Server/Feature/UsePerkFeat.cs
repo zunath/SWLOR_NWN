@@ -176,6 +176,9 @@ namespace SWLOR.Game.Server.Feature
             if (activation.IsAwaitingImpact)
                 Combat.CompleteAbilityStaminaCostContext(activator, activation.Ability);
 
+            if (activation.Ability.AuthoredAnimation != null)
+                NamedAnimation.Stop(activator, cancelQueuedAnimation: true);
+
             _activeAbilityActivations.Remove(activator);
             ResumeAttack(activator, activation.ResumeAttackTarget);
             return true;

@@ -54,17 +54,22 @@ public static class AnimationMdl
             var bone = project.Joints[joint];
             text.AppendLine($"  node dummy {bone.Name}");
             text.AppendLine($"    parent {(bone.Parent < 0 ? "NULL" : project.Joints[bone.Parent].Name)}");
-            text.AppendLine($"    positionkey {keys.Length}");
-            foreach (var key in keys)
+            // Constant channels need one key, regardless of the clip's frame count. Large
+            // libraries otherwise repeat thousands of identical bone offsets and scales.
+            var positions = keys.All(k => k.Pose[joint].Position == keys[0].Pose[joint].Position) ? keys[..1] : keys;
+            var orientations = keys.All(k => k.Pose[joint].Orientation == keys[0].Pose[joint].Orientation) ? keys[..1] : keys;
+            var scales = keys.All(k => k.Pose[joint].Scale == keys[0].Pose[joint].Scale) ? keys[..1] : keys;
+            text.AppendLine($"    positionkey {positions.Length}");
+            foreach (var key in positions)
                 text.AppendLine($"      {F(key.Time)} {V(key.Pose[joint].Position)}");
-            text.AppendLine($"    orientationkey {keys.Length}");
-            foreach (var key in keys)
+            text.AppendLine($"    orientationkey {orientations.Length}");
+            foreach (var key in orientations)
             {
                 // Axis-angle is in radians in Aurora, not Euler angles or degrees.
                 text.AppendLine($"      {F(key.Time)} {AxisAngle(key.Pose[joint].Orientation)}");
             }
-            text.AppendLine($"    scalekey {keys.Length}");
-            foreach (var key in keys) text.AppendLine($"      {F(key.Time)} {F(key.Pose[joint].Scale)}");
+            text.AppendLine($"    scalekey {scales.Length}");
+            foreach (var key in scales) text.AppendLine($"      {F(key.Time)} {F(key.Pose[joint].Scale)}");
             text.AppendLine("  endnode");
         }
         text.AppendLine($"doneanim {name} {model}");

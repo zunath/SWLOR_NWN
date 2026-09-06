@@ -22,7 +22,7 @@ internal static class PreviewWriter
             points.Add(Vector3.Transform(new Vector3(0, .8f, 0), world[ids[9]]));
             foreach (var (x, z) in new[] { (-.19f, .49f), (.19f, .49f), (.28f, .34f), (.28f, -.34f),
                          (.19f, -.49f), (-.19f, -.49f), (-.28f, -.34f), (-.28f, .34f) })
-                points.Add(Vector3.Transform(new Vector3(-.09f, x, z), world[ids[6]]));
+                points.Add(Vector3.Transform(new Vector3(-.09f, z, x), world[ids[6]]));
             points.Add(Vector3.Transform(new Vector3(0, .21f, -.075f), world[ids[12]]));
             points.Add(Vector3.Transform(new Vector3(0, .21f, -.075f), world[ids[15]]));
             points.Add(Vector3.Transform(new Vector3(0, .14f, .13f), world[ids[3]]));

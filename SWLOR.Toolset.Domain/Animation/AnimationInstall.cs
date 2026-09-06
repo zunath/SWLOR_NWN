@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using System.Numerics;
 using SWLOR.NWN.Formats.Mdl;
 using SWLOR.Game.Server.Service.AnimationService;
+using SWLOR.Toolset.Domain.Render;
 
 namespace SWLOR.Toolset.Domain.Animation;
 
@@ -86,6 +87,7 @@ public sealed class AnimationInstallPlan
 
 public static class AnimationInstall
 {
+    public const int ClipsPerBank = 256;
     /// <summary>Resolves a mounted rig back to its winning loose repository source, never to its HAK archive.</summary>
     public static string? FindTargetSource(string repositoryRoot, string resref)
     {
@@ -159,6 +161,7 @@ public static class AnimationInstall
         var targets = targetPaths.Select(Path.GetFullPath).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
         if (targets.Length is < 1 or > 32) throw new InvalidDataException("Select 1–32 target model files.");
         var models = new Dictionary<string, MdlModel>(StringComparer.OrdinalIgnoreCase);
+        var chains = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
         foreach (var target in targets)
         {
             if (!target.StartsWith(hakRoot + Path.DirectorySeparatorChar, StringComparison.OrdinalIgnoreCase) ||
@@ -166,11 +169,13 @@ public static class AnimationInstall
                 !string.Equals(Resolve(Path.GetFileNameWithoutExtension(target)), target, StringComparison.OrdinalIgnoreCase))
                 throw new InvalidDataException("Targets must be winning model files in the configured SWLOR HAK source directories.");
             var currentPath = target;
+            var chain = chains[target] = [];
             var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             while (currentPath != null)
             {
                 if (!visited.Add(currentPath) || visited.Count > 32) throw new InvalidDataException("Cyclic or excessively deep supermodel chain.");
                 var model = new MdlReader().Parse(Read(currentPath)); models[currentPath] = model;
+                chain.Add(currentPath);
                 foreach (var animation in model.Animations)
                 {
                     if ((animation.Name.Equals(animationName, StringComparison.OrdinalIgnoreCase) ||
@@ -199,6 +204,7 @@ public static class AnimationInstall
         if (registration != null && !registration.Targets.ToHashSet(StringComparer.OrdinalIgnoreCase).SetEquals(targetNames))
             throw new InvalidDataException("An installed animation must be updated for all of its original targets. Use the target paths in the registry.");
         var changes = new List<AnimationFileChange>();
+        var plannedModels = new Dictionary<string, MdlModel>(StringComparer.OrdinalIgnoreCase);
         void Add(string path, byte[] bytes) => changes.Add(new(path, File.Exists(path) ? Read(path) : null, bytes));
         foreach (var target in targets)
         {
@@ -211,6 +217,44 @@ public static class AnimationInstall
             if (existingOverlay != null && (!string.Equals(existingOverlay, overlayPath, StringComparison.OrdinalIgnoreCase) ||
                 model.SuperModel != overlayName || !registrations.Any(r => r.Targets.Contains(relativeTarget, StringComparer.OrdinalIgnoreCase))))
                 throw new InvalidDataException($"Overlay '{overlayName}' exists but is not owned by the animation registry for this target.");
+            var linkPath = target;
+            var header = $"# SWLOR authored animations for {model.Name}";
+            bool IsOwnedBank(string path)
+            {
+                var contents = Encoding.ASCII.GetString(Read(path));
+                return contents.StartsWith(header + "\n", StringComparison.Ordinal) || contents.StartsWith(header + "\r\n", StringComparison.Ordinal);
+            }
+            if (existingOverlay != null)
+            {
+                if (!IsOwnedBank(existingOverlay)) throw new InvalidDataException("Existing overlay is not an authored animation source.");
+                var banks = chains[target].Skip(1).TakeWhile(IsOwnedBank).ToArray();
+                var selected = registration != null
+                    ? banks.SingleOrDefault(path => models[path].Animations.Any(a => a.Name.Equals(animationName, StringComparison.OrdinalIgnoreCase)))
+                    : banks.FirstOrDefault(path => models[path].Animations.Count < ClipsPerBank * 3 &&
+                        CountNodes(models[path]) + project.Joints.Count * 3 < 90_000 && Read(path).Length < 32 * 1024 * 1024);
+                if (registration != null && selected == null) throw new InvalidDataException("Registered animation is missing from its target's banks.");
+                if (selected == null)
+                {
+                    if (chains[target].Count >= 32) throw new InvalidDataException("Animation banks would exceed the supported supermodel chain depth. Split the library by target rig.");
+                    linkPath = existingOverlay;
+                    // Extra banks retain a fixed-size resref and are inserted behind the first
+                    // overlay. Native model payloads and the existing animation chain stay intact.
+                    var prefix = "ab_" + model.Name[..Math.Min(model.Name.Length, 8)] + "_";
+                    var number = 1;
+                    do
+                    {
+                        if (number > 999) throw new InvalidDataException("No free animation bank names remain for this target.");
+                        overlayName = prefix + (number++).ToString("D3", System.Globalization.CultureInfo.InvariantCulture);
+                    } while (Resolve(overlayName) != null);
+                    overlayPath = Path.Combine(Path.GetDirectoryName(target)!, overlayName + ".mdl");
+                    existingOverlay = null;
+                }
+                else
+                {
+                    existingOverlay = overlayPath = selected;
+                    overlayName = models[selected].Name;
+                }
+            }
             var overlayProject = project.Clone(); overlayProject.ModelName = overlayName;
             var targetRig = AnimationProject.FromModel(model);
             if (!float.IsFinite(model.Scale) || model.Scale <= 0) throw new InvalidDataException("Target model has an invalid animation scale.");
@@ -238,7 +282,8 @@ public static class AnimationInstall
                     if (overlayProject.AnimationRoot.Equals(overlayProject.Joints[i].Name, StringComparison.OrdinalIgnoreCase)) overlayProject.AnimationRoot = overlayName;
                     overlayProject.Joints[i] = overlayProject.Joints[i] with { Name = overlayName };
                 }
-            var super = string.IsNullOrWhiteSpace(model.SuperModel) ? "NULL" : model.SuperModel;
+            var previousSuper = models[linkPath].SuperModel;
+            var super = string.IsNullOrWhiteSpace(previousSuper) ? "NULL" : previousSuper;
             var blocks = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
                 [animationName] = AnimationMdl.Export(overlayProject, animationName, overlayName)
@@ -248,6 +293,20 @@ public static class AnimationInstall
                 var phase = overlayProject.Clone(); var pose = phase.Sample(time);
                 phase.Keys.Clear(); phase.Events.Clear(); phase.Duration = .001f; phase.Transition = 0;
                 phase.SetKey(0, pose);
+                if (suffix == "_out")
+                {
+                    // Release a looping emote into this target's actual neutral pose. Repeating
+                    // the final authored pose here can strand an idle creature in a combat stance.
+                    var idle = MdlAnimationPose.FindIdle(model);
+                    var neutral = MdlAnimationPose.Sample(idle, 0, MdlAnimationPose.BindPose(model));
+                    phase.Duration = .2f;
+                    phase.SetKey(phase.Duration, overlayProject.Joints.Select((joint, index) =>
+                    {
+                        var targetJoint = index == 0 ? targetRig.Joints[0] : targetRig.Joints.Single(j => j.Name.Equals(joint.Name, StringComparison.OrdinalIgnoreCase));
+                        var rest = neutral.TryGetValue(targetJoint.Name, out var value) ? value : targetJoint.Rest;
+                        return rest with { Position = rest.Position / model.Scale };
+                    }).ToArray());
+                }
                 blocks[animationName + suffix] = AnimationMdl.Export(phase, animationName + suffix, overlayName);
             }
             var block = string.Concat(blocks.Values);
@@ -264,7 +323,6 @@ public static class AnimationInstall
             if (existingOverlay != null)
             {
                 overlay = Encoding.ASCII.GetString(Read(existingOverlay));
-                var header = $"# SWLOR authored animations for {model.Name}";
                 if (!overlay.StartsWith(header + "\n", StringComparison.Ordinal) && !overlay.StartsWith(header + "\r\n", StringComparison.Ordinal))
                     throw new InvalidDataException("Existing overlay is not an authored animation source.");
                 if (registration != null)
@@ -285,13 +343,28 @@ public static class AnimationInstall
                 }
             }
             var overlayBytes = Encoding.ASCII.GetBytes(overlay);
-            _ = new MdlReader().Parse(overlayBytes);
+            plannedModels[overlayPath] = new MdlReader().Parse(overlayBytes);
             Add(overlayPath, overlayBytes);
             if (existingOverlay == null)
             {
-                var patched = PatchSupermodel(Read(target), model.Name, overlayName);
-                if (new MdlReader().Parse(patched).SuperModel != overlayName) throw new InvalidDataException("Supermodel patch failed validation.");
-                Add(target, patched);
+                var patched = PatchSupermodel(Read(linkPath), models[linkPath].Name, overlayName);
+                plannedModels[linkPath] = new MdlReader().Parse(patched);
+                if (plannedModels[linkPath].SuperModel != overlayName) throw new InvalidDataException("Supermodel patch failed validation.");
+                Add(linkPath, patched);
+            }
+        }
+        // Multiple selected rigs can inherit one another. Validate their combined planned
+        // chains, including every new bank, before applying any part of the transaction.
+        foreach (var target in targets)
+        {
+            var path = target; var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            while (true)
+            {
+                if (!visited.Add(path) || visited.Count > 32) throw new InvalidDataException("Planned animation banks exceed the supported supermodel chain depth or form a cycle.");
+                var model = plannedModels.TryGetValue(path, out var planned) ? planned : models[path];
+                if (string.IsNullOrWhiteSpace(model.SuperModel) || model.SuperModel.Equals("NULL", StringComparison.OrdinalIgnoreCase)) break;
+                path = plannedModels.Keys.FirstOrDefault(p => Path.GetFileNameWithoutExtension(p).Equals(model.SuperModel, StringComparison.OrdinalIgnoreCase)) ??
+                    Resolve(model.SuperModel) ?? throw new InvalidDataException("Planned animation bank is missing from the HAK sources.");
             }
         }
         if (registration != null) registrations.Remove(registration);
@@ -306,6 +379,12 @@ public static class AnimationInstall
         Add(constantsPath, Encoding.UTF8.GetBytes(generated));
         Add(Path.Combine(root, "design", "animations", project.Name + ".swlanim"), Encoding.UTF8.GetBytes(project.Serialize()));
         return new() { AnimationName = animationName, ConstantName = project.Name, Changes = changes, Inputs = inputs, AbsentInputs = absentInputs };
+    }
+
+    private static int CountNodes(MdlModel model)
+    {
+        static int Count(MdlNode? node) => node == null ? 0 : 1 + node.Children.Sum(Count);
+        return Count(model.GeometryRoot) + model.Animations.Sum(a => Count(a.GeometryRoot));
     }
 
     public static byte[] PatchSupermodel(byte[] data, string modelName, string supermodel)

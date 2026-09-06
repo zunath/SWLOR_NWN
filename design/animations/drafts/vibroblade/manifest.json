@@ -3,8 +3,8 @@
   "Workbook": "design/bible/SWLOR Design Bible - Combat Upgrade.xlsx",
   "Sheet": "Animations",
   "Model": "a_ba",
-  "ModelSha256": "c2616c0bf1beede09dab47e582fa352c0906cfd203efd701081c57ea575a84d8",
-  "RecipeSha256": "9ed43027b66bc7f04d12f7cd49079ba8ec5e19e00f4215b5430520537c9cd1a3",
+  "ModelSha256": "812a48e4a74887560c743f600f4c8e53e17bd6b66748bb52dfcc880d8bf680d3",
+  "RecipeSha256": "c95bb30bd27148c33cfe8e53e570c2f7185efcd4954c52fa8a7f7fce61c569d7",
   "Notes": "Image-informed poses authored through Codex and analytic IK. Timings are draft interpretations. No HAKs or gameplay bindings are changed.",
   "Animations": [
     {
@@ -50,7 +50,7 @@
           "Label": "Ready"
         }
       ],
-      "ProjectSha256": "bba5acb6f7a6f415e6293ad17f537900b6fba1cc06c8108bd54c6c4b5b639383"
+      "ProjectSha256": "4125bd2d1415bdc39be92aae277e138cad20b465d98ef052932592785ac80b60"
     },
     {
       "Id": "ShieldWall",
@@ -64,7 +64,7 @@
       "Duration": 2.1,
       "Keyframes": 44,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.6656008E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.6697626E-07,
       "Beats": [
         {
           "Time": 0,
@@ -95,7 +95,7 @@
           "Label": "Ready"
         }
       ],
-      "ProjectSha256": "b386a894e23d6e91d8d56a6ae2e0b1988621f631dad99de09e9182ff85aed7a0"
+      "ProjectSha256": "1691655dc447c7e7c56e17b892afd5da50675913335b41bc4924d5017cda8e63"
     },
     {
       "Id": "CoveringStrike",
@@ -109,7 +109,7 @@
       "Duration": 1.4,
       "Keyframes": 35,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 3.3848931E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.3466372E-07,
       "Beats": [
         {
           "Time": 0,
@@ -148,7 +148,7 @@
           "Label": "Ready"
         }
       ],
-      "ProjectSha256": "d7f7ef14c29d6127bfd0d997ef19af1f64240b7797039a6adadac18fd40fa859"
+      "ProjectSha256": "4c5e3651bc313caa565cb0a0d42dd64b521c176e25d0681a7cf80dd7d55741f3"
     },
     {
       "Id": "Invincible",
@@ -162,7 +162,7 @@
       "Duration": 1.7,
       "Keyframes": 40,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.4755667E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.5463115E-07,
       "Beats": [
         {
           "Time": 0,
@@ -193,52 +193,7 @@
           "Label": "Ready"
         }
       ],
-      "ProjectSha256": "27c2b01112833044d81d30040a19076ef91902b1689628fdff805354bfe0376f"
-    },
-    {
-      "Id": "HackingBlade",
-      "Name": "Hacking Blade",
-      "BibleRow": 6,
-      "Reference": "https://chatgpt.com/s/m_6a3fdf2b35f88191abf0bba312b2fa2e",
-      "Observation": "The blade finishes a descending diagonal cut in front of a forward-weighted stance; the empty left arm counterbalances.",
-      "Interpretation": "Raise the blade over the right shoulder and drive a heavy diagonal cut downward, with a low follow-through and deliberate recovery.",
-      "Status": "Draft: visual review required",
-      "Project": "HackingBlade.swlanim",
-      "Duration": 1.2,
-      "Keyframes": 27,
-      "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 3.7814908E-07,
-      "Beats": [
-        {
-          "Time": 0,
-          "Label": "Ready"
-        },
-        {
-          "Time": 0.26,
-          "Label": "Wind up"
-        },
-        {
-          "Time": 0.4,
-          "Label": "Descend"
-        },
-        {
-          "Time": 0.52,
-          "Label": "Impact"
-        },
-        {
-          "Time": 0.65,
-          "Label": "Follow through"
-        },
-        {
-          "Time": 0.9,
-          "Label": "Recover"
-        },
-        {
-          "Time": 1.2,
-          "Label": "Ready"
-        }
-      ],
-      "ProjectSha256": "b38e3cde3c01e0245f8fef33fd09259968506c6a67ca95cc4b22f5c2590e3122"
+      "ProjectSha256": "26c73b4779a32a1bb562ae7b1667aca7ab6eb3e572a9879743e99633a7faa187"
     },
     {
       "Id": "RiotBlade",
@@ -252,7 +207,7 @@
       "Duration": 0.9,
       "Keyframes": 22,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.6697626E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.4211522E-07,
       "Beats": [
         {
           "Time": 0,
@@ -283,7 +238,7 @@
           "Label": "Ready"
         }
       ],
-      "ProjectSha256": "ba6190fabde3a0b5d457f94671d427d3879acce8487b82dd988364dcf4d9c5fb"
+      "ProjectSha256": "eeeb53983e3e0ab5e09bbb36b0395addcd639f18260ad5c1f4590612da96b497"
     },
     {
       "Id": "RendingStrike",
@@ -297,7 +252,7 @@
       "Duration": 1.38,
       "Keyframes": 33,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.5680197E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.9802322E-07,
       "Beats": [
         {
           "Time": 0,
@@ -328,7 +283,7 @@
           "Label": "Ready"
         }
       ],
-      "ProjectSha256": "20befb49962c57b16b3c1888a187b49a70e0955d31b01e093f7a2b6ad23bb32c"
+      "ProjectSha256": "550cbfaf41d8dffb83c8d09a1c4efb2106956e098ec4a035b46b64869e5ecbae"
     },
     {
       "Id": "SavageCleave",
@@ -342,7 +297,7 @@
       "Duration": 1.55,
       "Keyframes": 37,
       "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.8154915E-07,
+      "MdlRoundTripMaximumErrorMetres": 2.731428E-07,
       "Beats": [
         {
           "Time": 0,
@@ -377,56 +332,7 @@
           "Label": "Ready"
         }
       ],
-      "ProjectSha256": "77dfdef2a7d9acacd77a598111a16def416b7aee0055c1f0e981a8b02d87050d"
-    },
-    {
-      "Id": "Carve",
-      "Name": "Carve",
-      "BibleRow": 10,
-      "Reference": "https://chatgpt.com/s/m_6a3fdf5024348191ba38c0965f358b0d",
-      "Observation": "The extended blade cuts deeply across the front of the target and rises toward the upper torso.",
-      "Interpretation": "Load the blade near the right hip, extend into a long rising carve, briefly hold the extended line, and recover under control.",
-      "Status": "Draft: visual review required",
-      "Project": "Carve.swlanim",
-      "Duration": 1.35,
-      "Keyframes": 33,
-      "Joints": 57,
-      "MdlRoundTripMaximumErrorMetres": 2.4620758E-07,
-      "Beats": [
-        {
-          "Time": 0,
-          "Label": "Ready"
-        },
-        {
-          "Time": 0.24,
-          "Label": "Load"
-        },
-        {
-          "Time": 0.41,
-          "Label": "Draw across"
-        },
-        {
-          "Time": 0.55,
-          "Label": "Carve"
-        },
-        {
-          "Time": 0.63,
-          "Label": "Extend"
-        },
-        {
-          "Time": 0.79,
-          "Label": "Finish high"
-        },
-        {
-          "Time": 1.02,
-          "Label": "Recover"
-        },
-        {
-          "Time": 1.35,
-          "Label": "Ready"
-        }
-      ],
-      "ProjectSha256": "244f3283b7076ea4ad749401d6efecd6d3d15914f66bb2d5ef9f3371d8a943ca"
+      "ProjectSha256": "0d8395bf1c571e591eec338695e0b396e74de8644924e375f0e18e64e65f5305"
     }
   ]
 }

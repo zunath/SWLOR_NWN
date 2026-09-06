@@ -11,12 +11,12 @@ internal sealed record Recipe(string Workbook, string Model, JsonObject ReadyShi
     public static readonly JsonSerializerOptions Json = new() { PropertyNameCaseInsensitive = true, WriteIndented = true };
 }
 internal sealed record Motion(string Id, string Name, int BibleRow, string Reference, string Observation,
-    string Interpretation, bool Shield, Beat[] Beats);
+    string Interpretation, bool Shield, Beat[] Beats, string AbilityDefinition, bool Loop = false);
 internal sealed record Beat(float Time, string Label, JsonObject Pose);
 
 internal static class MotionAuthor
 {
-    public static AnimationProject Bake(AnimationProject rig, Recipe recipe, Motion motion)
+    public static AnimationProject Bake(AnimationProject rig, PosedNode[] neutral, Recipe recipe, Motion motion)
     {
         var beats = motion.Beats;
         if (beats.Length < 2 || beats[0].Time != 0 || beats[^1].Time is <= 0 or > 10 ||
@@ -35,7 +35,35 @@ internal static class MotionAuthor
             var fraction = Math.Clamp((time - beats[segment].Time) / (beats[segment + 1].Time - beats[segment].Time), 0, 1);
             var eased = fraction * fraction * (3 - 2 * fraction);
             var p = Pose.Lerp(poses[segment], poses[segment + 1], eased);
-            result.SetKey(time, PoseRig(rig, p, motion.Id, time, motion.Shield));
+            var pose = PoseRig(rig, p, motion.Id, time);
+            // A one-shot must release its authored stance even when no walking/attack follows it.
+            // Channels retain a closed guard loop; their installed exit phase releases the stance.
+            if (!motion.Loop)
+            {
+                var weight = time <= beats[1].Time ? time / beats[1].Time :
+                    time >= beats[^2].Time ? (result.Duration - time) / (result.Duration - beats[^2].Time) : 1f;
+                weight = weight * weight * (3 - 2 * weight);
+                var fromWorld = AnimationRig.World(rig.Joints, neutral);
+                var toWorld = AnimationRig.World(rig.Joints, pose);
+                for (var i = 0; i < pose.Length; i++)
+                    pose[i] = new(Vector3.Lerp(neutral[i].Position, pose[i].Position, weight),
+                        Quaternion.Slerp(neutral[i].Orientation, pose[i].Orientation, weight),
+                        float.Lerp(neutral[i].Scale, pose[i].Scale, weight));
+                // Rotation interpolation alone arcs the feet through the floor while stepping
+                // between idle and the wider guard stance. Keep their world-space path grounded.
+                foreach (var foot in new[] { "lfoot_g", "rfoot_g" })
+                {
+                    var i = Index(rig, foot);
+                    var target = Vector3.Lerp(fromWorld[i].Translation, toWorld[i].Translation, weight);
+                    pose = AnimationRig.SolveLimb(rig.Joints, pose, i, target, target + new Vector3(0, 1, .3f));
+                    Matrix4x4.Decompose(fromWorld[i], out _, out var startRotation, out _);
+                    Matrix4x4.Decompose(toWorld[i], out _, out var endRotation, out _);
+                    Matrix4x4.Decompose(AnimationRig.World(rig.Joints, pose)[rig.Joints[i].Parent], out _, out var parent, out _);
+                    pose[i] = pose[i] with { Orientation = Quaternion.Normalize(Quaternion.Inverse(parent) * Quaternion.Slerp(startRotation, endRotation, weight)) };
+                }
+                if (weight == 0) pose = (PosedNode[])neutral.Clone();
+            }
+            result.SetKey(time, pose);
         }
         result.Validate();
         var start = result.Sample(0); var finish = result.Sample(result.Duration);
@@ -69,7 +97,7 @@ internal static class MotionAuthor
             V("leftFoot"), V("rightFoot"), V("shield"));
     }
 
-    private static PosedNode[] PoseRig(AnimationProject rig, Pose p, string name, float time, bool shield)
+    private static PosedNode[] PoseRig(AnimationProject rig, Pose p, string name, float time)
     {
         var pose = rig.Joints.Select(j => j.Rest).ToArray();
         var root = Index(rig, "rootdummy");
@@ -83,10 +111,24 @@ internal static class MotionAuthor
         SetWorld("rfoot_g", Quaternion.CreateFromAxisAngle(Vector3.UnitZ, Radians(-12)));
         Solve("lhand_g", p.LeftHand, new Vector3(-.85f, -.20f, p.Root.Z + .12f) + centre);
         Solve("rhand_g", p.RightHand, new Vector3(.85f, -.20f, p.Root.Z + .12f) + centre);
-        SetWorld("rhand_g", AnimationRig.Between(Vector3.UnitY, Vector3.Normalize(p.Blade)));
-        // Native swords extend along +Y; native shields face -X at the hand attachment.
-        SetWorld("lhand_g", Rotation(p.Shield) * (shield
-            ? Quaternion.CreateFromAxisAngle(Vector3.UnitZ, -MathF.PI / 2) : Quaternion.Identity));
+        // Preserve the native hand's roll around the blade, rather than arbitrarily twisting
+        // the wrist when the sword changes direction. Native +Z points toward the wrist/elbow.
+        var world = AnimationRig.World(rig.Joints, pose);
+        var blade = Vector3.Normalize(p.Blade);
+        var towardElbow = world[Index(rig, "rforearm_g")].Translation - p.RightHand;
+        var wrist = towardElbow - blade * Vector3.Dot(towardElbow, blade);
+        if (wrist.LengthSquared() < .0001f) wrist = Vector3.UnitZ - blade * blade.Z;
+        if (wrist.LengthSquared() < .0001f) wrist = Vector3.UnitX - blade * blade.X;
+        wrist = Vector3.Normalize(wrist);
+        var across = Vector3.Normalize(Vector3.Cross(blade, wrist));
+        SetWorld("rhand_g", Quaternion.CreateFromRotationMatrix(new Matrix4x4(
+            across.X, across.Y, across.Z, 0, blade.X, blade.Y, blade.Z, 0,
+            wrist.X, wrist.Y, wrist.Z, 0, 0, 0, 0, 1)));
+        // Actual AShLw meshes face -X and their TOP is +Y (not +Z). Apply both axes,
+        // including for sword moves: a shield can still be equipped in the off hand.
+        SetWorld("lhand_g", Rotation(p.Shield) *
+            Quaternion.CreateFromAxisAngle(Vector3.UnitZ, -MathF.PI / 2) *
+            Quaternion.CreateFromAxisAngle(Vector3.UnitX, MathF.PI / 2));
         return pose;
 
         void Solve(string joint, Vector3 target, Vector3 pole)

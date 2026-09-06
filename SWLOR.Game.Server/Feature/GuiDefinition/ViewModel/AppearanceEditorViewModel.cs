@@ -2190,7 +2190,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 }
             }
 
-            TintMapService.ApplyCurrentColors(_target);
+            TintMapService.RefreshAfterColorChange(_target);
             if (reloadEditor)
                 LoadTintMapEditor();
             return true;

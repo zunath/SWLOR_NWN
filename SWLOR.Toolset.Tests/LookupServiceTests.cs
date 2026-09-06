@@ -130,7 +130,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void PortraitService_GetTgaVariants_MatchesRealPortraitResourcesInSwPortraitHak()
+        public void PortraitService_SizeVariants_LoadDdsPortraitsFromSwPortraitHak()
         {
             var index = ResourceIndex.FromHakBuilderConfig(HakBuilderConfigPath, HaksDirectory);
             var variants = PortraitService.GetTgaVariants("hu_f_sf81_");
@@ -141,15 +141,23 @@ namespace SWLOR.Toolset.Tests
             variants.Large.Should().Be("po_hu_f_sf81_l");
             variants.Huge.Should().Be("po_hu_f_sf81_h");
 
-            // All five variants ship as loose .tga files in sw_t_portrait's hak (sw_portrait),
-            // confirming the naming convention actually matches real shipped resources.
+            // Huge is intentionally omitted: NWN:EE 8193.35+ falls back to Large.
+            // The remaining variants still use the normal portrait naming convention.
             var tgaType = ResourceIdentity.TypeFromExtension("tga");
-            foreach (var resref in new[] { variants.Tiny, variants.Small, variants.Medium, variants.Large, variants.Huge })
+            var ddsType = ResourceIdentity.TypeFromExtension("dds");
+            foreach (var resref in new[] { variants.Tiny, variants.Small, variants.Medium, variants.Large })
             {
-                index.TryLookup(new ResourceIdentity(resref, tgaType), out var handle)
-                    .Should().BeTrue($"{resref}.tga should ship in the sw_portrait hak");
+                index.TryLookup(new ResourceIdentity(resref, ddsType), out var handle)
+                    .Should().BeTrue($"{resref}.dds should ship in the sw_portrait hak");
                 handle.GetBytes().Should().NotBeEmpty();
+                index.TryLookup(new ResourceIdentity(resref, tgaType), out _).Should().BeFalse();
+                var decoded = SWLOR.Toolset.Domain.Render.TextureLoader.Load(index, resref);
+                decoded.Should().NotBeNull();
+                decoded!.SourceFormat.Should().Be(SWLOR.Toolset.Domain.Render.TextureSourceFormat.Dds);
             }
+            index.TryLookup(new ResourceIdentity(variants.Huge, ddsType), out _).Should().BeFalse();
+            index.TryLookup(new ResourceIdentity(variants.Huge, tgaType), out _)
+                .Should().BeFalse("Huge portrait resources are omitted to reduce hak size");
         }
 
         [Test]

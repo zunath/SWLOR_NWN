@@ -166,16 +166,20 @@ regressions, and run the complete generator for corpus validation.
 The manifest records generator/source/output hashes, pose coverage, and any
 missing animation-source fallback. Missing authored parents use the body's
 available clips and are explicitly recorded; they never retain the old unsafe
-robe-as-body inheritance path. Regeneration removes obsolete manifest-owned
-animation parents after successful validation.
+robe-as-body inheritance path. Regeneration retains validated roots, empty
+attachments and animation parents for retired phenotypes so saved creatures
+keep their complete dependency chain. Retired bridge names remain reserved.
 
-The manifest includes `CompileModels.py`, the stock robe importer/inventory and
-`parts_robe.2da` as required inputs. Python, JSON and 2DA hashes normalize line
+The manifest includes `CompileModels.py`, `GenerateTintMapAssets.py`, the stock
+robe importer/inventory, `parts_robe.2da` and `tintmap.2da` as required inputs.
+Python, JSON and 2DA hashes normalize line
 endings for Windows/Linux checkouts; compiled models remain byte-exact.
 Generation compares the stock inventory against the installed game's selectable
 models before producing outputs. Allocation reserves existing body, attachment
 and animation-bridge resrefs as well as phenotype rows, and verifies prior path
-and hash ownership before replacing or retiring generated resources. The palette
+and hash ownership before replacing or retaining generated resources. Source
+model bytes and generator/catalog input hashes are checked again immediately
+before applying compiled outputs; changed inputs require a new generation. The palette
 audit validates the entire atlas, including its TGA header, against the
 authoritative source checksum.
 

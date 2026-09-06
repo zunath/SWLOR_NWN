@@ -797,14 +797,16 @@ $mimicryDescriptions = @{
     "Inferno Blast" = "Deals 40 fire DMG plus MGT scaling in a 10m x 7m cone, increased by 50% against targets already suffering Burn. Inflicts Burn for 30 seconds."
     "Inner Circle Surge" = "Deals 48 electrical DMG plus SOC scaling to a single target, increased by 50% if it is suffering Shock. Inflicts Exposed for 30 seconds, then arcs to up to 3 enemies within 6m of the target for 16 electrical DMG plus SOC scaling and Shock for 30 seconds each."
     "Inner Circle Volley" = "Deals 48 sonic DMG plus SOC scaling to a single target, increased by 50% if it is Dazed or Disoriented. Inflicts Disoriented for 30 seconds."
-    "Inner Ring Flurry" = "Strikes a single target, inflicting Bleed for 30 seconds and restoring 4 STM to you. Deals no direct damage."
+    "Holdfast Slam" = "Strikes a single target within 6m, inflicting Sunder and Exposed for 30 seconds, generating 100 additional enmity. Deals no direct damage."
+    "Inner Circle Pounce" = "Deals 48 physical DMG plus SOC scaling to a single target within 6m. Inflicts Exposed for 30 seconds, with +25% critical chance."
+    "Inner Ring Flurry" = "Strikes a single target within 6m, inflicting Bleed for 30 seconds and refunding 4 STM on a successful hit. Deals no direct damage."
     "Last Bastion" = "Anchors a defensive line, granting allies within 8m of you a shield that absorbs 30 damage for 30 seconds; enemies within 8m generate +25% Enmity toward you for 30 seconds. Deals no direct damage."
     "Lockstep Crush" = "Deals 40 physical DMG plus AGI scaling in a 5m x 5m cone. Inflicts Knockdown for 6 seconds and Sunder for 30 seconds."
     "Merciless Angle" = "Deals 40 physical DMG plus SOC scaling in a 5m x 5m cone, increased by 50% against targets already suffering Bleed or Hemorrhage. Afflicted targets consume those effects to take another 40 physical DMG plus SOC scaling; other targets instead gain Hemorrhage for 30 seconds."
     "Pressure Lock" = "Inflicts Immobilized on enemies in a 5m x 5m cone for 15 seconds. Deals no direct damage."
     "Rupturing Quake" = "Deals 40 physical DMG plus MGT scaling to enemies within 9m of you. Inflicts Knockdown for 6 seconds and Sunder for 30 seconds."
     "Scorching Breath" = "Deals 40 fire DMG plus MGT scaling in an 8m x 5m cone. Inflicts Burn and Weakened for 30 seconds."
-    "Snap Rush" = "A burst of speed that restores 6 STM and grants +15% Haste for 15 seconds."
+    "Snap Rush" = "A burst of speed that restores 10 STM and grants +15% Haste for 15 seconds."
     "Terrifying Bellow" = "Inflicts Dazed on enemies within 6m of you for 15 seconds and interrupts their current actions. Deals no direct damage."
     "Warden Clamp" = "Inflicts Dazed on enemies within 5.5m of you for 15 seconds and generates 75 additional Enmity per target. Deals no direct damage."
     "Warden Mark" = "Inflicts Marked on enemies within 5.5m of you for 30 seconds and generates 75 additional Enmity per target. Deals no direct damage."
@@ -987,7 +989,7 @@ $mimicryCooldowns = @{
     "Final Line" = 30
     "Final Mandate" = 30
     "Final Suppression" = 30
-    "Finishing Drive" = 30
+    "Finishing Drive" = 5
     "Holdfast Slam" = 24
     "Inferno Blast" = 30
     "Inner Circle Bind" = 24
@@ -1015,6 +1017,9 @@ foreach ($entry in $mimicryCooldowns.GetEnumerator()) {
 }
 
 $mimicryCastingTimes = @{
+    "Holdfast Slam" = "0.5 seconds"
+    "Inner Circle Pounce" = "0.5 seconds"
+    "Inner Ring Flurry" = "0.5 seconds"
     "Inner Circle Bind" = "0.25 seconds"
     "Terrifying Bellow" = "0.25 seconds"
     "Final Mandate" = "1 second"
@@ -1031,6 +1036,12 @@ foreach ($entry in $mimicryCastingTimes.GetEnumerator()) {
         Values = @{ "Casting Time" = $entry.Value }
     }
 }
+
+$perkChanges += @(
+    @{ Sheet = "Mimicry"; PerkName = "Finishing Drive"; Values = @{ STM = 5 } },
+    @{ Sheet = "Mimicry"; PerkName = "Snap Rush"; Values = @{ STM = 4 } },
+    @{ Sheet = "Mimicry"; PerkName = "Inner Ring Flurry"; Values = @{ Slots = 2 } }
+)
 
 $characterStatChanges = @(
     @{ Cell = "J49"; Type = "Number"; Value = 100 },

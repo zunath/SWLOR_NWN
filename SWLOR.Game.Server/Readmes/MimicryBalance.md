@@ -57,6 +57,13 @@ Each technique has an individual Mimicry requirement ordered by its earliest pla
 
 Cooldowns are banded by payload strength and shape (stronger and area techniques recast slower), replacing the ad-hoc creature values inherited during generation.
 
+Individual utility and close-range techniques have exceptions to these starting bands:
+
+- Holdfast Slam, Inner Circle Pounce, and Inner Ring Flurry reach one target within 6m and cast in 0.5 seconds. Their former 3m reach and 1.3-second cast combined melee exposure with a slow delivery, without a stronger payload to compensate. They retain their 9 STM cost and 24-second cooldown.
+- Inner Ring Flurry occupies 2 slots. Its successful-hit refund is 4 STM, leaving a base net cost of 5 STM; it is a single-target Bleed tool, not a stamina generator. Its Bleed potency is unchanged.
+- Finishing Drive costs 5 STM per stack and recasts in 5 seconds. Three casts spend 15 STM over 10 seconds to reach +24% technique damage. Its 3-slot commitment and 30-second refreshed duration remain the constraints on sustained amplification.
+- Snap Rush spends 4 STM and restores 10 STM, a base net recovery of 6 STM when below the resource cap, alongside +15% Haste for 15 seconds. Its 3-slot cost and 30-second cooldown limit that recovery; it still requires enough STM to activate.
+
 ### Non-damage actives (the majority)
 
 **37 of the 64 combat actives deal no direct damage.** They span control, debuffs, resource disruption, threat, ally support, self-buffs, and reactive defenses. Their power is the fixed effect itself, so it is balanced through Stamina cost, cooldown, area, and duration rather than a damage number. None declares a damage-scaling attribute (`Primary Stat = None`). The three stances are counted separately. No fear effects are used anywhere in the pool.

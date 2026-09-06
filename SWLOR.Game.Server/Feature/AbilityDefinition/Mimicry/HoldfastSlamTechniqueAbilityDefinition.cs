@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 Animation.DoubleThrust,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.HoldfastSlam,
-                1.3f,
+                0.5f,
                 24f,
                 9,
                 0,
@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 CombatDamageType.Physical,
                 ResistanceType.Trauma,
                 VisualEffect.Vfx_Com_Chunk_Red_Medium,
-                maxRange: 3f,
+                maxRange: 6f,
                 enmityBonus: 100,
                 additionalStatusEffects: new[] { typeof(ExposedStatusEffect) })
                 .SkillType(SkillType.Mimicry)

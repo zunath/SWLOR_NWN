@@ -21,7 +21,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 Animation.DoubleThrust,
                 InnateAbilityProfile.Mimicry,
                 RecastGroup.InnerCirclePounce,
-                1.3f,
+                0.5f,
                 24f,
                 9,
                 48,
@@ -30,7 +30,7 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Mimicry
                 CombatDamageType.Physical,
                 ResistanceType.Trauma,
                 VisualEffect.Vfx_Com_Special_Red_White,
-                maxRange: 3f,
+                maxRange: 6f,
                 criticalRatePercentAdjustment: 25)
                 .SkillType(SkillType.Mimicry)
                 .Level(1)

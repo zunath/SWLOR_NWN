@@ -25,17 +25,27 @@ public sealed class AnimationProject
     public List<AnimationCue> Events { get; set; } = [];
 
     private static readonly JsonSerializerOptions JsonOptions = new() { IncludeFields = true, WriteIndented = true };
+    private const int MaximumSerializedCharacters = 64 * 1024 * 1024;
+    // A rest pose uses the shortest valid numbers and Boolean. Nested poses add indentation, so
+    // this lower bound rejects only outputs that are already certain to exceed the file limit.
+    private static readonly int MinimumPoseCharacters = JsonSerializer.Serialize(new PosedNode(Vector3.Zero, Quaternion.Identity, 1), JsonOptions).Length;
+
+    internal static void ValidateSizeBudget(int keyCount, int jointCount)
+    {
+        if ((long)keyCount * jointCount * MinimumPoseCharacters > MaximumSerializedCharacters)
+            throw new InvalidDataException("Animation project exceeds 64 MB. Reduce the bake rate or duration.");
+    }
 
     public string Serialize()
     {
         Validate();
         var text = JsonSerializer.Serialize(this, JsonOptions);
-        if (text.Length > 64 * 1024 * 1024) throw new InvalidDataException("Animation project exceeds 64 MB. Reduce the bake rate or duration.");
+        if (text.Length > MaximumSerializedCharacters) throw new InvalidDataException("Animation project exceeds 64 MB. Reduce the bake rate or duration.");
         return text;
     }
     public static AnimationProject Deserialize(string text)
     {
-        if (text.Length > 64 * 1024 * 1024) throw new InvalidDataException("Animation project exceeds 64 MB.");
+        if (text.Length > MaximumSerializedCharacters) throw new InvalidDataException("Animation project exceeds 64 MB.");
         var result = JsonSerializer.Deserialize<AnimationProject>(text, JsonOptions)
             ?? throw new InvalidDataException("Empty animation project.");
         result.Validate();
@@ -56,6 +66,7 @@ public sealed class AnimationProject
         if (Joints == null || Joints.Count is < 1 or > 512 || Keys == null || Keys.Count > MaxKeyframes ||
             Events == null || Events.Count > 4096 || (long)Keys.Count * Joints.Count > 2_000_000)
             throw new InvalidDataException("Animation exceeds the supported joint/keyframe limits.");
+        ValidateSizeBudget(Keys.Count, Joints.Count);
         var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         for (var i = 0; i < Joints.Count; i++)
         {

@@ -259,6 +259,32 @@ public class AnimationEditorTests
         foreach (var time in new[] { 0f, .01f, 299.5f, 599.99f, 600f })
             imported.Sample(time)[0].Position.X.Should().BeApproximately(time, .001f);
     }
+    [Test] public void BakeRejectsAnUnsaveablePoseCountBeforeSampling()
+    {
+        var rig = Rig();
+        while (rig.Joints.Count < 46) rig.Joints.Add(new("bone" + rig.Joints.Count, 0, new(Vector3.Zero, Quaternion.Identity, 1)));
+        var source = GltfAnimationSource.Load(Gltf(duration: 600));
+        var calibration = new AnimationRetarget(rig, rig.Sample(0), source, 0, 0, [new("rootdummy", "Root")]);
+        source.Animations[0].Tracks[0].Values[0] = new(float.NaN);
+        Action bake = () => calibration.Bake(source, 0, 30, 1);
+        bake.Should().Throw<InvalidDataException>().WithMessage("*64 MB*Reduce the bake rate*");
+    }
+    [Test] public void LongBuilderNamesGetStableDistinctNativeClipNames()
+    {
+        var target = InstallFixture(); var project = Rig(); project.Name = "SaluteWithSaber";
+        var first = AnimationInstall.Prepare(_folder, project, [target]); first.Apply();
+        first.AnimationName.Length.Should().BeLessThanOrEqualTo(12);
+        first.ConstantName.Should().Be("SaluteWithSaber");
+        project.Name = "SaluteWithStaff";
+        var second = AnimationInstall.Prepare(_folder, project, [target]); second.Apply();
+        second.AnimationName.Should().NotBe(first.AnimationName); second.AnimationName.Length.Should().BeLessThanOrEqualTo(12);
+        var model = new MdlReader().Parse(File.ReadAllBytes(Path.Combine(Path.GetDirectoryName(target)!, "an_hero.mdl")));
+        model.Animations.Should().OnlyContain(animation => animation.Name.Length <= 16);
+        project.Name = "SaluteWithSaber"; project.Duration = 2;
+        AnimationInstall.Prepare(_folder, project, [target]).AnimationName.Should().Be(first.AnimationName);
+        File.ReadAllText(Path.Combine(_folder, "SWLOR.Game.Server/Service/AnimationService/AuthoredAnimation.cs"))
+            .Should().Contain("SaluteWithSaber").And.Contain("SaluteWithStaff");
+    }
 
     private string InstallFixture()
     {

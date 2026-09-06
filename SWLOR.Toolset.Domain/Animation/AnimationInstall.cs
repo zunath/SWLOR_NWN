@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Numerics;
 using SWLOR.NWN.Formats.Mdl;
+using SWLOR.Game.Server.Service.AnimationService;
 
 namespace SWLOR.Toolset.Domain.Animation;
 
@@ -110,8 +111,6 @@ public static class AnimationInstall
         project.Validate();
         if (project.Name == "AuthoredAnimation" || !Regex.IsMatch(project.Name, @"\A[A-Z][A-Za-z0-9_]*\z"))
             throw new InvalidDataException("Use a C# constant name beginning with an uppercase letter, such as SaluteWithSaber.");
-        var animationName = "sw_" + project.Name.ToLowerInvariant();
-        AnimationProject.ValidateToken(animationName, 59); // Reserve four characters for the end phase suffix.
         var root = Path.GetFullPath(repositoryRoot);
         var hakRoot = Path.Combine(root, "SWLOR_Haks");
         var configPath = Path.Combine(root, "Build", "hakbuilder.json");
@@ -141,13 +140,22 @@ public static class AnimationInstall
             ? JsonSerializer.Deserialize<List<AnimationRegistration>>(Read(registryPath)) ?? throw new InvalidDataException("Invalid animation registry.")
             : [];
         if (registrations.Any(r => r == null || string.IsNullOrEmpty(r.Name) || r.Name == "AuthoredAnimation" || !Regex.IsMatch(r.Name, @"\A[A-Z][A-Za-z0-9_]*\z") ||
-                r.AnimationName != "sw_" + r.Name.ToLowerInvariant() || r.Targets == null || r.Targets.Length == 0 ||
+                r.AnimationName == null || r.AnimationName.Length > AnimationClip.MaxNameLength || !Regex.IsMatch(r.AnimationName, @"\Asw_[a-z0-9_]+\z") || r.Targets == null || r.Targets.Length == 0 ||
                 !float.IsFinite(r.Duration) || r.Duration <= 0 || r.Duration > 600) ||
-            registrations.Select(r => r.AnimationName).Distinct(StringComparer.OrdinalIgnoreCase).Count() != registrations.Count)
+            registrations.Select(r => r.AnimationName).Distinct(StringComparer.OrdinalIgnoreCase).Count() != registrations.Count ||
+            registrations.Select(r => r.Name).Distinct(StringComparer.OrdinalIgnoreCase).Count() != registrations.Count)
             throw new InvalidDataException("Invalid or conflicting animation registry entries.");
-        var registration = registrations.SingleOrDefault(r => r.AnimationName.Equals(animationName, StringComparison.OrdinalIgnoreCase));
+        var registration = registrations.SingleOrDefault(r => r.Name.Equals(project.Name, StringComparison.OrdinalIgnoreCase));
         if (registration != null && registration.Name != project.Name)
             throw new InvalidDataException("That animation name already exists with different capitalization. Use its registered C# name.");
+        var stem = "sw_" + project.Name.ToLowerInvariant(); stem = stem[..Math.Min(stem.Length, AnimationClip.MaxNameLength)];
+        var animationName = registration?.AnimationName ?? stem;
+        var usedNames = registrations.Select(r => r.AnimationName).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        for (var suffix = 1; registration == null && usedNames.Contains(animationName); suffix++)
+        {
+            var number = suffix.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            animationName = stem[..Math.Min(stem.Length, AnimationClip.MaxNameLength - number.Length)] + number;
+        }
         var targets = targetPaths.Select(Path.GetFullPath).Distinct(StringComparer.OrdinalIgnoreCase).ToArray();
         if (targets.Length is < 1 or > 32) throw new InvalidDataException("Select 1–32 target model files.");
         var models = new Dictionary<string, MdlModel>(StringComparer.OrdinalIgnoreCase);

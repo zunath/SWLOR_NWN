@@ -79,6 +79,10 @@ and undoable. Morph-target weights do not move the skeleton and are not retarget
 ## Install and use from C#
 
 Choose a C# name such as `SaluteWithSaber`, then add the target `.mdl` files in the Install panel.
+The installer generates a short internal clip name and retains your full C# name. Clip names use
+at most 12 characters, leaving room for entry/exit suffixes within the engine's 16-character
+animation replacement limit. Colliding short names get distinct numeric suffixes automatically;
+reinstalling a registered animation keeps its internal name.
 They must be winning resources in the repository's configured HAK source directories, and the
 complete supermodel chain must be available there. Target rigs must contain the animated joints
 with matching parent relationships.

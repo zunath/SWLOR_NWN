@@ -61,6 +61,13 @@ public class NamedAnimationPlaybackTests
         Action act = () => playback.Begin(1, new AnimationClip("sw_wave", 2), float.NaN);
         act.Should().Throw<ArgumentOutOfRangeException>(); runtime.Token.Should().BeEmpty(); runtime.Replacements.Should().BeEmpty();
     }
+    [TestCase(12, true)] [TestCase(13, false)]
+    public void ClipNamesLeaveRoomForAllNativeReplacementPhases(int length, bool valid)
+    {
+        var name = new string('a', length);
+        if (valid) new AnimationClip(name, 1).EndName.Length.Should().BeLessThanOrEqualTo(16);
+        else { Action create = () => new AnimationClip(name, 1); create.Should().Throw<ArgumentException>(); }
+    }
     private sealed class Runtime : INamedAnimationRuntime
     {
         public string Token = "";

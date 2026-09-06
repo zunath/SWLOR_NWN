@@ -53,6 +53,7 @@ public sealed class AnimationRetarget
             throw new InvalidDataException($"Bake exceeds {AnimationProject.MaxKeyframes:N0} keyframes. Choose a lower bake rate.");
         if ((long)(frames + 1) * (result.Joints.Count + source.Joints.Count) > 2_000_000)
             throw new InvalidDataException("Bake exceeds the source and target transform budget. Choose a shorter clip or a lower bake rate.");
+        AnimationProject.ValidateSizeBudget(frames + 1, result.Joints.Count);
         var root = result.Joints.FindIndex(j => j.Name.Equals(result.AnimationRoot, StringComparison.OrdinalIgnoreCase));
         for (var frame = 0; frame <= frames; frame++)
         {
@@ -85,7 +86,7 @@ public sealed class AnimationRetarget
             if (result.Keys.Count > 0 && result.Keys[^1].Time == time) result.Keys[^1] = key;
             else result.Keys.Add(key);
         }
-        result.Validate();
+        _ = result.Serialize(); // Check the exact serialized size before returning a publishable bake.
         return result;
     }
 }

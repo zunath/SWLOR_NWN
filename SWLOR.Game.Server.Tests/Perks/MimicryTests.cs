@@ -43,6 +43,21 @@ public class MimicryTests
     };
 
     [Test]
+    public void TerrifyingBellow_LeavesAReactionWindowAgainstMynockCasts()
+    {
+        var bellow = BuildTechnique(FeatType.TerrifyingBellowTechnique)[FeatType.TerrifyingBellowTechnique];
+        var bellowDelay = bellow.ActivationDelay(0, 0, 1);
+        var npcAbilities = BuildAllAbilities(NpcAbilityNamespace).ToDictionary(a => a.Feat, a => a.Detail);
+
+        foreach (var feat in new[] { FeatType.SonicShriek, FeatType.DisorientingScreech })
+        {
+            var enemyAbility = npcAbilities[feat];
+            (enemyAbility.ActivationDelay(0, 0, 1) - bellowDelay).Should().BeGreaterThanOrEqualTo(1f,
+                $"Bellow should leave at least a second to react to {enemyAbility.Name} before latency");
+        }
+    }
+
+    [Test]
     public void MimicryTechniques_RegisterFeatsWithCommonAbilityContract()
     {
         foreach (var entry in TechniqueTable)

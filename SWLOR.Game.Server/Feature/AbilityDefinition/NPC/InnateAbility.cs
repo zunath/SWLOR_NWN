@@ -131,10 +131,14 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.NPC
             };
         }
 
-        /// <summary>Interrupts the struck target's current action.</summary>
+        /// <summary>Interrupts the struck target's current action and pending cast or channel.</summary>
         public static Action<uint, uint> InterruptOnHit()
         {
-            return (_, target) => AssignCommand(target, () => ClearAllActions());
+            return (_, target) =>
+            {
+                AssignCommand(target, () => ClearAllActions());
+                UsePerkFeat.InterruptAbilityActivation(target);
+            };
         }
 
         /// <summary>Pulls the struck target adjacent to the caster.</summary>

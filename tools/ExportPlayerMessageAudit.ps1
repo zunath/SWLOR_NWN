@@ -4,6 +4,11 @@ $ErrorActionPreference = 'Stop'
 # PowerShell ships Roslyn for Add-Type, but the parser must also be available in a fresh session.
 Add-Type -Path (Join-Path $PSHOME 'Microsoft.CodeAnalysis.dll')
 Add-Type -Path (Join-Path $PSHOME 'Microsoft.CodeAnalysis.CSharp.dll')
+# Bundled Roslyn can target an earlier System.Runtime than the running PowerShell.
+Add-Type -Path (Join-Path $PSScriptRoot 'PlayerMessagePolicy.cs') -CompilerOptions '/nowarn:1701' -ReferencedAssemblies @(
+    (Join-Path $PSHOME 'Microsoft.CodeAnalysis.dll'),
+    (Join-Path $PSHOME 'Microsoft.CodeAnalysis.CSharp.dll')
+)
 $repo = (Get-Location).Path
 $sinks = @('SendMessageToPC', 'FloatingTextStringOnCreature', 'FloatingTextStrRefOnCreature', 'SendMessageToPCByStrRef', 'SendMessageToAllPCs', 'SendMessageNearbyToPlayers', 'SendFeedbackString', 'SendFeedbackMessage', 'SendMessage', 'PostString', 'SpeakString', 'ActionSpeakString', 'SendDiagnosticToPlayer', 'ShowDiagnosticFloatingText', 'SendResourceRestored', 'SendWarningToPlayer', 'SendWarningNearby')
 $rows = foreach ($file in (rg --files SWLOR.Game.Server -g '*.cs' | Sort-Object)) {
@@ -18,7 +23,7 @@ $rows = foreach ($file in (rg --files SWLOR.Game.Server -g '*.cs' | Sort-Object)
         $delivery = 'Retained'
         if ($name -in @('SendDiagnosticToPlayer', 'ShowDiagnosticFloatingText', 'SendResourceRestored')) { $delivery = 'Testing only' }
         elseif ($name -in @('SendWarningToPlayer', 'SendWarningNearby')) { $delivery = 'Rate limited in Production' }
-        elseif ($ancestors | Where-Object { $_ -is [Microsoft.CodeAnalysis.CSharp.Syntax.IfStatementSyntax] -and $_.Condition.ToString() -eq 'PlayerFeedback.DiagnosticsEnabled' }) { $delivery = 'Testing only' }
+        elseif ([SWLOR.Tools.PlayerMessagePolicy]::IsDiagnosticOnly($node)) { $delivery = 'Testing only' }
         if ($file -match 'Service[\\/](PlayerFeedback|Messaging|Communication|Gui)\.cs$' -and $name -notlike '*Diagnostic*') { $delivery = 'Shared transport; policy at caller' }
         [pscustomobject][ordered]@{
             File = $file.Replace('\', '/')

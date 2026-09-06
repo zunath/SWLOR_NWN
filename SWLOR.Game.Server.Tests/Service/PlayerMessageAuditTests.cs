@@ -4,6 +4,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using NUnit.Framework;
+using SWLOR.Tools;
 
 namespace SWLOR.Game.Server.Tests.Service;
 
@@ -112,8 +113,7 @@ public class PlayerMessageAuditTests
             "SendDiagnosticToPlayer" or "ShowDiagnosticFloatingText" or "SendResourceRestored"
                 => "Testing only",
             "SendWarningToPlayer" or "SendWarningNearby" => "Rate limited in Production",
-            _ => call.Ancestors().OfType<IfStatementSyntax>()
-                .Any(statement => statement.Condition.ToString() == "PlayerFeedback.DiagnosticsEnabled")
+            _ => PlayerMessagePolicy.IsDiagnosticOnly(call)
                 ? "Testing only"
                 : "Retained"
         };
@@ -123,6 +123,49 @@ public class PlayerMessageAuditTests
             delivery = "Shared transport; policy at caller";
 
         return new MessageAuditEntry(file, member, delivery, call.ToString().Replace("\r\n", "\n"));
+    }
+
+    [TestCase("if ((PlayerFeedback.DiagnosticsEnabled)) SendMessageToPC();", true)]
+    [TestCase("if (PlayerFeedback.DiagnosticsEnabled && ready) SendMessageToPC();", true)]
+    [TestCase("if (ready && (PlayerFeedback.DiagnosticsEnabled)) SendMessageToPC();", true)]
+    [TestCase("if ((PlayerFeedback.DiagnosticsEnabled && ready) || (PlayerFeedback.DiagnosticsEnabled && other)) SendMessageToPC();", true)]
+    [TestCase("if (PlayerFeedback.DiagnosticsEnabled || ready) SendMessageToPC();", false)]
+    [TestCase("if (!PlayerFeedback.DiagnosticsEnabled) SendMessageToPC();", false)]
+    [TestCase("if (!PlayerFeedback.DiagnosticsEnabled) {} else SendMessageToPC();", true)]
+    [TestCase("if (PlayerFeedback.DiagnosticsEnabled && ready) {} else SendMessageToPC();", false)]
+    [TestCase("if (!PlayerFeedback.DiagnosticsEnabled || ready) {} else SendMessageToPC();", true)]
+    [TestCase("if (PlayerFeedback.DiagnosticsEnabled == true) SendMessageToPC();", true)]
+    [TestCase("if (PlayerFeedback.DiagnosticsEnabled != false) SendMessageToPC();", true)]
+    [TestCase("if (PlayerFeedback.DiagnosticsEnabled == false) SendMessageToPC();", false)]
+    [TestCase("var x = PlayerFeedback.DiagnosticsEnabled ? SendMessageToPC() : 0;", true)]
+    [TestCase("var x = PlayerFeedback.DiagnosticsEnabled ? 0 : SendMessageToPC();", false)]
+    [TestCase("var x = !PlayerFeedback.DiagnosticsEnabled ? 0 : SendMessageToPC();", true)]
+    [TestCase("SendMessageToPC(PlayerFeedback.DiagnosticsEnabled ? detail : concise);", false)]
+    [TestCase("if (SendMessageToPC() && PlayerFeedback.DiagnosticsEnabled) {}", false)]
+    [TestCase("if (PlayerFeedback.DiagnosticsEnabled && SendMessageToPC()) {}", true)]
+    [TestCase("if (!PlayerFeedback.DiagnosticsEnabled || SendMessageToPC()) {}", true)]
+    [TestCase("if (PlayerFeedback.DiagnosticsEnabled) Register(() => SendMessageToPC());", false)]
+    [TestCase("Register(() => { if (PlayerFeedback.DiagnosticsEnabled) SendMessageToPC(); });", true)]
+    [TestCase("if (global::SWLOR.Game.Server.Service.PlayerFeedback.DiagnosticsEnabled) SendMessageToPC();", true)]
+    [TestCase("if (unrelated.DiagnosticsEnabled) SendMessageToPC();", false)]
+    public void MessageInventory_ClassifiesOnlyBranchesThatRequireDiagnostics(string body, bool diagnosticOnly)
+    {
+        var call = CSharpSyntaxTree.ParseText("class Example { void ExampleMethod() { " + body + " } }")
+            .GetRoot().DescendantNodes().OfType<InvocationExpressionSyntax>()
+            .Single(node => MethodName(node) == "SendMessageToPC");
+        BuildAuditEntry("Example.cs", call).Delivery.Should().Be(diagnosticOnly ? "Testing only" : "Retained");
+        UsesDiagnostics(call).Should().Be(diagnosticOnly);
+    }
+
+    [TestCase("SendDiagnosticToPlayer")]
+    [TestCase("ShowDiagnosticFloatingText")]
+    [TestCase("SendResourceRestored")]
+    public void DiagnosticWrappers_AreClassifiedConsistentlyWithoutCallerGuards(string method)
+    {
+        var call = CSharpSyntaxTree.ParseText("class Example { void ExampleMethod() { PlayerFeedback." + method + "(); } }")
+            .GetRoot().DescendantNodes().OfType<InvocationExpressionSyntax>().Single();
+        BuildAuditEntry("Example.cs", call).Delivery.Should().Be("Testing only");
+        UsesDiagnostics(call).Should().BeTrue();
     }
 
     [Test]
@@ -232,8 +275,7 @@ public class PlayerMessageAuditTests
 
     private static bool UsesDiagnostics(InvocationExpressionSyntax call) =>
         MethodName(call).Contains("Diagnostic", StringComparison.Ordinal) ||
-        call.Ancestors().OfType<IfStatementSyntax>().Any(statement => statement.Condition.ToString().Contains("DiagnosticsEnabled")) ||
-        call.Ancestors().OfType<ConditionalExpressionSyntax>().Any(expression => expression.Condition.ToString().Contains("DiagnosticsEnabled"));
+        MethodName(call) == "SendResourceRestored" || PlayerMessagePolicy.IsDiagnosticOnly(call);
 
     private static string MethodName(InvocationExpressionSyntax call) => call.Expression switch
     {

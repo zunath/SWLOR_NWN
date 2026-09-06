@@ -16,8 +16,7 @@ Creature `Portrait` resrefs take precedence over numeric `PortraitId` values.
 installed NWN:EE KEY resource tables, with source KEY hashes. It contains no game
 artwork. Custom assets are checked only in configured HAK source directories
 loaded by the module, excluding staging files and unused HAKs, rather than
-an allowlist of portrait IDs. `npc_portrait_repairs.csv` records the September 2026
-NPC changes and selection reasons. It is historical evidence, not runtime policy.
+an allowlist of portrait IDs.
 
 The companion HAK change restores ten missing sizes, recorded with hashes in
 `portrait_size_repairs.csv`. These supplement the original 8,109 DDS conversions;

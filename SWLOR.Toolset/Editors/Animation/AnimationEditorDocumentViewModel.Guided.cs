@@ -20,7 +20,7 @@ public sealed partial class AnimationEditorDocumentViewModel
     public int BeginnerStep { get => _beginnerStep; set => SetProperty(ref _beginnerStep, Math.Clamp(value, 0, 2)); }
     public bool ShowMovementChoices { get => _showMovementChoices; private set => SetProperty(ref _showMovementChoices, value); }
     public bool HasCharacter => _hasCharacter;
-    public bool HasModelPreview => _model != null;
+    public bool HasModelPreview => _hasPreviewGeometry;
     public bool ShowRigFallback => HasCharacter && !HasModelPreview;
     public bool HasStarterMovements => StarterMovements.Count > 0;
     public bool HasSelectedBodyPart => SelectedBodyPart != null;
@@ -74,7 +74,7 @@ public sealed partial class AnimationEditorDocumentViewModel
                      nameof(HasSelectedBodyPart), nameof(PoseSummary), nameof(CanRemovePose), nameof(PlaybackLabel), nameof(InstallationTargetSummary) }) OnPropertyChanged(property);
     }
 
-    private async Task RefreshStarterMovements(string? localFolder = null)
+    private async Task RefreshStarterMovements()
     {
         StarterMovements.Clear(); SelectedMovement = null; ShowMovementChoices = false;
         try
@@ -82,6 +82,7 @@ public sealed partial class AnimationEditorDocumentViewModel
             if (_model != null)
             {
                 var model = _model;
+                var localFolder = _modelFolder;
                 var samples = await Task.Run(() => MdlAnimationPose.SampleCreaturePreviewAnimations(model, name =>
                 {
                     AnimationProject.ValidateToken(name, 16);

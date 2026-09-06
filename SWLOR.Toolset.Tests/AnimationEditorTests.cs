@@ -518,7 +518,8 @@ public class AnimationEditorTests
         window.Show(); window.UpdateLayout();
         vm.PickOpenPath = (_, _) => Task.FromResult<string?>(path); await vm.OpenProjectCommand.ExecuteAsync(null);
         vm.Status.Should().Be("Animation project opened."); vm.Pose.Should().HaveCount(project.Joints.Count);
-        vm.HasModelPreview.Should().BeTrue(); vm.PreviewScene.Should().NotBeNull(); vm.BeginnerStep.Should().Be(1);
+        vm.HasModelPreview.Should().BeFalse(); vm.ShowRigFallback.Should().BeTrue(); vm.BeginnerStep.Should().Be(1);
+        ((AnimationEditorDocumentView)window.Content!).FindControl<AnimationRigControl>("BeginnerRig")!.IsVisible.Should().BeTrue();
         vm.OnClose().Should().BeTrue(); window.Close();
     }
     [AvaloniaTest] public async Task GuidedMovementsCopyInheritedMotionAndClearWhenTheCharacterChanges()
@@ -529,17 +530,46 @@ public class AnimationEditorTests
         var last = source.Sample(0); last[1] = last[1] with { Position = Vector3.UnitX };
         source.SetKey(0, source.Sample(0)); source.SetKey(1, last);
         Write("SWLOR_Haks/sw_cr_creature/base.mdl", "newmodel base\n" + AnimationMdl.ExportGeometry(source) + AnimationMdl.Export(source, "walk") + "donemodel base\n");
-        var vm = new AnimationEditorDocumentViewModel(new Prompts(), new OutputLogService());
+        var vm = new AnimationEditorDocumentViewModel(new Prompts { ExternalChoice = ExternalChangeChoice.Reload }, new OutputLogService());
         vm.PickOpenPath = (_, _) => Task.FromResult<string?>(target); await vm.LoadRigFileCommand.ExecuteAsync(null);
         vm.StarterMovements.Should().ContainSingle().Which.Name.Should().Be("Walking");
         var before = vm.Project.Serialize(); vm.ChooseMovementCommand.Execute(null); vm.UseMovementCommand.Execute(null); vm.Stop();
         vm.Project.Keys.Should().HaveCount(21); vm.Project.Sample(1)[1].Position.X.Should().BeApproximately(2, 1e-5f);
         vm.Undo(); vm.Project.Serialize().Should().Be(before);
+        var compatible = Write("compatible.swlanim", vm.Project.Serialize());
+        vm.PickOpenPath = (_, _) => Task.FromResult<string?>(compatible); await vm.OpenProjectCommand.ExecuteAsync(null);
+        vm.StarterMovements.Should().ContainSingle().Which.Name.Should().Be("Walking", "compatible projects retain the local supermodel folder");
+        var external = vm.Project.Clone(); external.Name = "External"; File.WriteAllText(compatible, external.Serialize());
+        vm.PositionX = .5m; (await vm.TrySaveAsync()).Should().BeFalse();
+        vm.Project.Name.Should().Be("External"); vm.StarterMovements.Should().ContainSingle().Which.Name.Should().Be("Walking");
         var different = Rig(); different.ModelName = "other"; different.Joints[0] = different.Joints[0] with { Name = "other" };
         var projectPath = Write("other.swlanim", different.Serialize()); vm.PickOpenPath = (_, _) => Task.FromResult<string?>(projectPath);
         await vm.OpenProjectCommand.ExecuteAsync(null);
         vm.StarterMovements.Should().BeEmpty(); vm.HasStarterMovements.Should().BeFalse(); vm.HasModelPreview.Should().BeFalse();
         vm.OnClose().Should().BeTrue();
+    }
+    [AvaloniaTest] public async Task ModelPlaybackReusesGeometryAndScrubbingRestoresAnExactPose()
+    {
+        var target = InstallFixture();
+        var geometry = "node trimesh visible\nparent hand\nverts 3\n0 0 0\n1 0 0\n0 1 0\nfaces 1\n0 1 2 0 0 0 0 0\nendnode\n";
+        File.WriteAllText(target, File.ReadAllText(target).Replace("endmodelgeom hero", geometry + "endmodelgeom hero"));
+        var vm = new AnimationEditorDocumentViewModel(new Prompts(), new OutputLogService());
+        vm.PickOpenPath = (_, _) => Task.FromResult<string?>(target); await vm.LoadRigFileCommand.ExecuteAsync(null);
+        vm.HasModelPreview.Should().BeTrue(); vm.ShowRigFallback.Should().BeFalse(); vm.SetPreviewVisible(true);
+        vm.BuildFromPosesCommand.Execute(null); vm.AdjustBodyPartCommand.Execute("bend+");
+        vm.PlayCommand.Execute(null);
+        vm.IsAnimationPlaying.Should().BeTrue(); vm.PreviewAnimationName.Should().Be("authored");
+        var scene = vm.PreviewScene!; var model = scene.Instances[0].Model!;
+        var frames = model.Meshes.Single().AnimationFrames["authored"];
+        frames.Count.Should().BeInRange(2, 240); frames.Distinct().Count().Should().BeGreaterThan(1);
+        for (var i = 0; i < 150; i++) vm.Playhead = i / 100.0;
+        vm.PreviewScene.Should().BeSameAs(scene); vm.PreviewScene!.Instances[0].Model.Should().BeSameAs(model);
+        vm.Stop(); vm.IsAnimationPlaying.Should().BeFalse(); vm.Playhead = .5;
+        vm.PreviewAnimationName.Should().BeNull(); vm.PreviewScene.Should().NotBeSameAs(scene);
+        var mdl = new MdlReader().Parse(File.ReadAllBytes(target)); var node = mdl.GetMeshNodes().Single();
+        var sampled = vm.Project.Joints.Select((joint, i) => (joint.Name, vm.Pose[i])).ToDictionary(p => p.Name, p => p.Item2);
+        vm.PreviewScene!.Instances[0].Model!.Meshes.Single().Transform.Should().Be(MdlMeshBuilder.ComposeNodeTransform(node, sampled));
+        vm.ApproveApplicationClose(); vm.OnClose();
     }
     [AvaloniaTest] public async Task CharactersWithoutMovementsCanStillStartFromPoses()
     {
@@ -548,6 +578,13 @@ public class AnimationEditorTests
         vm.ChooseMovementCommand.Execute(null); vm.ShowMovementChoices.Should().BeTrue(); vm.HasStarterMovements.Should().BeFalse();
         vm.BuildFromPosesCommand.Execute(null); vm.Project.Keys.Should().HaveCount(3);
         vm.ApproveApplicationClose(); vm.OnClose();
+    }
+    [Test] public void GltfWithoutAnimationsExplainsWhyItCannotBeUsed()
+    {
+        var path = Gltf(); var json = JsonNode.Parse(File.ReadAllText(path))!.AsObject(); json.Remove("animations");
+        File.WriteAllText(path, json.ToJsonString());
+        Action load = () => GltfAnimationSource.Load(path);
+        load.Should().Throw<InvalidDataException>().WithMessage("No skeletal animations in this source.");
     }
     [AvaloniaTest] public void ViewLoadsAndEditsUndoRedoThroughTheDocumentContract()
     {

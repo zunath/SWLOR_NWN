@@ -162,7 +162,9 @@ public sealed class GltfAnimationSource
             return values;
         }
         var animations = new List<SourceAnimation>();
-        foreach (var clip in root.GetProperty("animations").EnumerateArray())
+        if (!root.TryGetProperty("animations", out var clips))
+            throw new InvalidDataException("No skeletal animations in this source.");
+        foreach (var clip in clips.EnumerateArray())
         {
             var tracks = new List<SourceTrack>(); var unique = new HashSet<(int, string)>();
             foreach (var channel in clip.GetProperty("channels").EnumerateArray())

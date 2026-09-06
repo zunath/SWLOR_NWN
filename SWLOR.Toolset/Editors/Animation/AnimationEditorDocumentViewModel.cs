@@ -41,10 +41,13 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
     private PosedNode[]? _copiedPose;
     private bool _dragging, _dragChanged;
     private MdlModel? _model;
+    private string? _modelFolder;
+    private bool _hasPreviewGeometry, _previewIsPlayback;
     private GltfAnimationSource? _source;
     private AnimationRetarget? _calibration;
     private string? _calibrationMap;
     private bool _closeApproved, _closePrompt, _closed, _previewVisible;
+    private bool _dirty;
     private float _playhead, _playStart;
     private int _selectedJoint;
     private int _sourceClip;
@@ -70,11 +73,11 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
     public PosedNode[] Pose { get; private set; }
     public ResourceIndex? ResourceIndex { get; }
     public AreaScene? PreviewScene { get; private set; }
-    public string? PreviewAnimationName => null;
-    public bool IsAnimationPlaying => false;
+    public string? PreviewAnimationName => _previewIsPlayback ? "authored" : null;
+    public bool IsAnimationPlaying => IsPlaying && _previewIsPlayback;
     public bool IsPlaying => _timer.IsEnabled;
     public bool IsBusy { get; private set; }
-    public bool IsDirty => _dragging && _dragChanged || Project.Serialize() != _saved;
+    public bool IsDirty => _dragging && _dragChanged || _dirty;
     public bool CanUndo => !IsBusy && !_dragging && _undo.Count > 0;
     public bool CanRedo => !IsBusy && !_dragging && _redo.Count > 0;
     public ObservableCollection<string> JointNames { get; } = [];
@@ -192,6 +195,7 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
     }
     private void Changed(bool rebuildRows = false)
     {
+        _dirty = Project.Serialize() != _saved;
         Stop(); _playhead = Math.Clamp(_playhead, 0, Project.Duration); Pose = Project.Sample(_playhead);
         if (rebuildRows && !JointNames.SequenceEqual(Project.Joints.Select(j => j.Name))) RebuildRows();
         KeyTimes.Clear(); foreach (var key in Project.Keys) KeyTimes.Add(key.Time);
@@ -219,7 +223,7 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
         foreach (var property in new[] { nameof(PositionX), nameof(PositionY), nameof(PositionZ), nameof(JointScale) }) OnPropertyChanged(property);
         PoseChanged?.Invoke();
         NotifyGuided();
-        if (_previewVisible) RefreshPreview();
+        if (_previewVisible && !IsPlaying) RefreshPreview();
     }
     private void SetPosition(int axis, float value)
     {
@@ -253,10 +257,12 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
     {
         if (!CanEdit()) return;
         EndDrag();
-        if (IsPlaying) { Stop(); return; }
+        if (IsPlaying) { Stop(); if (_previewVisible) RefreshPreview(); return; }
+        if (_previewVisible) RefreshPreview(playback: true);
         _playStart = _playhead; _clock.Restart(); _timer.Start(); OnPropertyChanged(nameof(IsPlaying)); OnPropertyChanged(nameof(PlaybackLabel));
+        OnPropertyChanged(nameof(IsAnimationPlaying));
     }
-    public void Stop() { _timer.Stop(); _clock.Stop(); OnPropertyChanged(nameof(IsPlaying)); OnPropertyChanged(nameof(PlaybackLabel)); }
+    public void Stop() { _timer.Stop(); _clock.Stop(); OnPropertyChanged(nameof(IsPlaying)); OnPropertyChanged(nameof(PlaybackLabel)); OnPropertyChanged(nameof(IsAnimationPlaying)); }
     private void Tick(object? sender, EventArgs e) => Playhead = (_playStart + _clock.Elapsed.TotalSeconds) % Project.Duration;
     public void Undo()
     {
@@ -325,7 +331,7 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
         if (ResourceIndex == null || !ResourceIndex.TryLookup(ResourceIdentity.FromFileName(RigResource + ".mdl"), out var resource))
             throw new InvalidDataException($"Model '{RigResource}' was not found. Open a local MDL using Load rig file.");
         var model = await Task.Run(() => new MdlReader().Parse(resource.GetBytes()));
-        LoadModel(model);
+        LoadModel(model, LocalModelFolder(resource.Provenance.SourcePath));
         TargetPaths = ResolveInstallTarget(model.Name, resource.Provenance.SourcePath); OnPropertyChanged(nameof(TargetPaths));
         await RefreshStarterMovements();
     });
@@ -334,8 +340,8 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
         var path = await OpenPath("Load NWN rig", ["*.mdl"]);
         if (path == null || !await ConfirmReplace()) return;
         var model = await Task.Run(() => new MdlReader().Parse(File.ReadAllBytes(path)));
-        LoadModel(model); TargetPaths = ResolveInstallTarget(model.Name, path); OnPropertyChanged(nameof(TargetPaths));
-        await RefreshStarterMovements(Path.GetDirectoryName(path));
+        LoadModel(model, Path.GetDirectoryName(path)); TargetPaths = ResolveInstallTarget(model.Name, path); OnPropertyChanged(nameof(TargetPaths));
+        await RefreshStarterMovements();
     });
     private string ResolveInstallTarget(string resref, string fallbackPath)
     {
@@ -349,13 +355,13 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
         var rig = AnimationProject.FromModel(model);
         if (!MatchesPreviewRig(Project, rig))
             throw new InvalidDataException("The preview model must match this project's joint names, hierarchy, and rest transforms.");
-        _model = model; RefreshPreview(); await RefreshStarterMovements(Path.GetDirectoryName(path));
+        SetPreviewModel(model, Path.GetDirectoryName(path)); RefreshPreview(); await RefreshStarterMovements();
         Status = "Preview model attached; animation keys are unchanged.";
     });
-    private void LoadModel(MdlModel model)
+    private void LoadModel(MdlModel model, string? folder)
     {
         var project = AnimationProject.FromModel(model);
-        _model = model; Project = project; _hasCharacter = true; _undo.Clear(); _redo.Clear(); _copiedPose = null; _calibration = null; _path = null; _diskBytes = null;
+        SetPreviewModel(model, folder); Project = project; _hasCharacter = true; _undo.Clear(); _redo.Clear(); _copiedPose = null; _calibration = null; _path = null; _diskBytes = null;
         TargetPaths = ""; OnPropertyChanged(nameof(TargetPaths));
         _saved = project.Serialize(); _playhead = 0; Changed(rebuildRows: true);
         BeginnerStep = 0;
@@ -367,7 +373,7 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
         if (path == null || !await ConfirmReplace()) return;
         var bytes = await File.ReadAllBytesAsync(path);
         var project = AnimationProject.Deserialize(Encoding.UTF8.GetString(bytes));
-        _model = await ResolvePreviewModel(project);
+        var preview = await ResolvePreviewModel(project); SetPreviewModel(preview.Model, preview.Folder);
         Project = project; _hasCharacter = true; _path = path; _diskBytes = bytes; _saved = project.Serialize(); _undo.Clear(); _redo.Clear(); _copiedPose = null; _calibration = null;
         TargetPaths = ""; OnPropertyChanged(nameof(TargetPaths));
         Changed(rebuildRows: true);
@@ -380,20 +386,20 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
             Math.Abs(pair.First.Rest.Scale - pair.Second.Rest.Scale) < 1e-5f &&
             Math.Abs(Quaternion.Dot(Quaternion.Normalize(pair.First.Rest.Orientation), Quaternion.Normalize(pair.Second.Rest.Orientation))) > .99999f);
 
-    private async Task<MdlModel?> ResolvePreviewModel(AnimationProject project)
+    private async Task<(MdlModel? Model, string? Folder)> ResolvePreviewModel(AnimationProject project)
     {
         try
         {
             if (ResourceIndex?.TryLookup(ResourceIdentity.FromFileName(project.ModelName + ".mdl"), out var resource) == true)
             {
                 var model = await Task.Run(() => new MdlReader().Parse(resource.GetBytes()));
-                if (MatchesPreviewRig(project, AnimationProject.FromModel(model))) return model;
+                if (MatchesPreviewRig(project, AnimationProject.FromModel(model))) return (model, LocalModelFolder(resource.Provenance.SourcePath));
                 _log.AppendLine("Mounted animation preview skipped: the model does not match the saved rig.");
             }
         }
         catch (Exception ex) { _log.AppendLine("Mounted animation preview skipped: " + ex.GetBaseException().Message); }
         return _model != null && _model.Name.Equals(project.ModelName, StringComparison.OrdinalIgnoreCase) &&
-            MatchesPreviewRig(project, AnimationProject.FromModel(_model)) ? _model : null;
+            MatchesPreviewRig(project, AnimationProject.FromModel(_model)) ? (_model, _modelFolder) : (null, null);
     }
     [RelayCommand] private async Task ImportMdl() => await Run(async () =>
     {
@@ -440,7 +446,7 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
                 {
                     var bytes = await File.ReadAllBytesAsync(path);
                     var reloaded = AnimationProject.Deserialize(Encoding.UTF8.GetString(bytes));
-                    _model = await ResolvePreviewModel(reloaded); Project = reloaded; _hasCharacter = true;
+                    var preview = await ResolvePreviewModel(reloaded); SetPreviewModel(preview.Model, preview.Folder); Project = reloaded; _hasCharacter = true;
                     TargetPaths = ""; OnPropertyChanged(nameof(TargetPaths));
                     _diskBytes = bytes; _saved = Project.Serialize(); _undo.Clear(); _redo.Clear(); _copiedPose = null; _calibration = null; Changed(rebuildRows: true);
                     await RefreshStarterMovements(); BeginnerStep = 1; return false;
@@ -568,19 +574,45 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
     }
     private Task<string?> OpenPath(string title, string[] patterns) => PickOpenPath?.Invoke(title, patterns) ?? Task.FromResult<string?>(null);
     private Task<string?> SavePath(string title, string name) => PickSavePath?.Invoke(title, name) ?? Task.FromResult<string?>(null);
-    public void SetPreviewVisible(bool visible) { if (_previewVisible == visible) return; _previewVisible = visible; if (visible) RefreshPreview(); }
-    public void ReloadGameResources() { if (_previewVisible) RefreshPreview(); }
-    private void RefreshPreview()
+    public void SetPreviewVisible(bool visible) { if (_previewVisible == visible) return; _previewVisible = visible; if (visible) RefreshPreview(IsPlaying); }
+    public void ReloadGameResources() { if (_previewVisible) RefreshPreview(IsPlaying); }
+    private static string? LocalModelFolder(string path) => Path.GetExtension(path).Equals(".mdl", StringComparison.OrdinalIgnoreCase) ? Path.GetDirectoryName(path) : null;
+    private void SetPreviewModel(MdlModel? model, string? folder)
+    {
+        _model = model; _modelFolder = folder;
+        _hasPreviewGeometry = model != null && PreviewMeshes(model).Any();
+    }
+    private static IEnumerable<MdlTrimeshNode> PreviewMeshes(MdlModel model) => model.GetMeshNodes().Where(MdlMeshBuilder.IsRenderableMesh);
+    private void RefreshPreview(bool playback = false)
     {
         if (_model == null) { PreviewScene = null; OnPropertyChanged(nameof(PreviewScene)); return; }
         var pose = Project.Joints.Select((joint, i) => (joint.Name, Pose[i])).ToDictionary(p => p.Name, p => p.Item2, StringComparer.OrdinalIgnoreCase);
-        var model = MdlMeshBuilder.Build(_model, [pose]);
+        RenderModel model;
+        if (playback)
+        {
+            // The shared renderer uploads these frames once, then changes frame indices/transforms.
+            // Bound weighted geometry as well as frame count: skin frames carry CPU and GPU vertices.
+            var skinVertices = PreviewMeshes(_model).OfType<MdlSkinmeshNode>().Sum(mesh => (long)mesh.Faces.Length * 3);
+            var budgetFrames = (int)Math.Clamp(64L * 1024 * 1024 / Math.Max(1, skinVertices * 128), 2, 240);
+            var count = Math.Clamp((int)Math.Ceiling(Project.Duration * 30), 2, budgetFrames);
+            var frames = new List<IReadOnlyDictionary<string, PosedNode>>(count);
+            for (var i = 0; i < count; i++)
+            {
+                var sampled = Project.Sample((_playhead + Project.Duration * i / count) % Project.Duration);
+                frames.Add(Project.Joints.Select((joint, j) => (joint.Name, sampled[j])).ToDictionary(p => p.Name, p => p.Item2, StringComparer.OrdinalIgnoreCase));
+            }
+            model = MdlMeshBuilder.BuildAnimatedPreview(_model, [pose], [new("authored", Project.Duration, frames)]);
+            if (IsPlaying) { _playStart = _playhead; _clock.Restart(); }
+        }
+        else model = MdlMeshBuilder.Build(_model, [pose]);
+        _previewIsPlayback = playback;
         PreviewScene = new()
         {
             Tileset = "", Width = 1, Height = 1, Tiles = [], Diagnostics = new(),
             Instances = [new() { Kind = InstanceMarkerKind.Creature, TemplateResRef = Project.ModelName, Position = new(5, 5, 0), Orientation = new(-1, 0), Model = model }]
         };
         OnPropertyChanged(nameof(PreviewScene));
+        OnPropertyChanged(nameof(PreviewAnimationName)); OnPropertyChanged(nameof(IsAnimationPlaying));
     }
     internal void ApproveApplicationClose() => _closeApproved = true;
     public override bool OnClose()

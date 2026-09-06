@@ -42,6 +42,9 @@ or other target models. Switching layouts preserves the animation and its undo h
 4. The **Model preview** tab renders the current pose using SWLOR's shared model renderer.
    Reopening a project resolves its model resref through the mounted resources; **Attach
    matching preview model** can restore a local preview without replacing the animation.
+   Compatible local previews retain their source folder for inherited starter movements.
+   Skeleton-only models use the rig view in the guided layout. Playback uploads a bounded set
+   of sampled frames once; scrubbing while paused evaluates the exact authored pose.
 5. Save an editable `.swlanim` project or export a `newanim`/`doneanim` MDL text block. Import
    accepts one ASCII animation block against the loaded rig, including constant transforms,
    counted or `endlist`-terminated transform keys, and animation events. Multiple animation blocks

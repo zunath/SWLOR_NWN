@@ -551,7 +551,8 @@ namespace SWLOR.Toolset.Editors
             if (_animationEditor != null) { _factory.ActivateDocument(_animationEditor); return; }
             var editor = new Animation.AnimationEditorDocumentViewModel(
                 _prompts, _log, _resourceIndex,
-                _tlkEditorSource?.RepositoryRoot ?? Path.GetDirectoryName(_workspaceContext.Workspace?.ModuleRoot),
+                _tlkEditorSource?.RepositoryRoot ?? (_workspaceContext.Workspace is { } workspace
+                    ? Directory.GetParent(Path.TrimEndingDirectorySeparator(workspace.ModuleRoot))?.FullName : null),
                 _mutationLock);
             editor.Closed += _ => _animationEditor = null;
             editor.CloseRequested += _ => _factory.CloseDocument(editor);

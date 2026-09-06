@@ -428,87 +428,45 @@ namespace SWLOR.Toolset.Tests
                 });
 
             image.Should().NotBeNull();
-            Pixel(image!, 0, 0).Should().Be((255, 255, 255, 73));
+            Pixel(image!, 0, 0).Should().Be((20, 40, 60, 73));
             image.AlphaCutoff.Should().Be(77, "texture9 red uses the runtime shader's 0.3 cutoff");
         }
 
-        [Test]
-        public void SoftwareTintRendererQuantizesCustomRgbToTheDeployedPaletteRow()
+        [TestCase(0, 30, 20, 10)]
+        [TestCase(128, 120, 80, 40)]
+        [TestCase(255, 239, 159, 80)]
+        public void SoftwareTintRendererPreservesRgbWithNeutralRowShading(byte shade, int red, int green, int blue)
         {
-            var layer = TintMapLayerType.Skin;
+            var layer = TintMapLayerType.Cloth1;
             var customColor = new TintMapColor(120, 80, 40);
-            var paletteIndex = TintMapPaletteColors.GetClosestColorId(layer, customColor);
-            var shaderRow = TintMapMaterialRegistry.GetLayer(layer).PaletteBaseRow + paletteIndex;
-            File.WriteAllBytes(Path.Combine(_resourceDirectory, "tint.tga"), SolidColorTga(255, 0, 0));
-            File.WriteAllBytes(
-                Path.Combine(_resourceDirectory, "palette.tga"),
-                PaletteRowTga(shaderRow, ((byte)21, (byte)43, (byte)65)));
+            var shaderRow = TintMapMaterialRegistry.GetLayer(layer).PaletteBaseRow;
+            File.WriteAllBytes(Path.Combine(_resourceDirectory, "tint.tga"), SolidColorTga(shade, 115, 0));
+            File.WriteAllBytes(Path.Combine(_resourceDirectory, "palette.tga"),
+                PaletteRowTga(shaderRow, ((byte)32, (byte)32, (byte)32),
+                    ((byte)128, (byte)128, (byte)128), ((byte)255, (byte)255, (byte)255)));
             var material = MaterialResolver.Parse(
-                "texture7 tint\n" +
-                "texture10 palette\n" +
-                "customshaderPSH fs_plt_tinter\n");
-
-            var image = TintMapTextureRenderer.Render(
-                Index(),
-                "sample_material",
-                material,
-                new Dictionary<int, int>(),
-                new Dictionary<string, int>
+                "texture7 tint\ntexture10 palette\ncustomshaderPSH fs_plt_tinter\n");
+            var image = TintMapTextureRenderer.Render(Index(), "sample_material", material,
+                new Dictionary<int, int>(), new Dictionary<string, int>
                 {
-                    [TintMapVariable.GetName("sample_material", TintMapLayerType.Skin)] =
-                        customColor.ToStoredValue()
+                    [TintMapVariable.GetName("sample_material", layer)] = customColor.ToStoredValue()
                 });
-
             image.Should().NotBeNull();
-            Pixel(image!, 0, 0).Should().Be((21, 43, 65, 255),
-                "software thumbnails must use the same nearest palette row as the viewport and game");
+            Pixel(image!, 0, 0).Should().Be(((byte)red, (byte)green, (byte)blue, (byte)255),
+                "CPU previews must use the shader's neutral-row luminance ratio, preserving the requested hue");
         }
 
-        [Test]
-        public void SoftwareTintRendererShadesTheQuantizedPaletteRow()
-        {
-            var layer = TintMapLayerType.Skin;
-            var customColor = new TintMapColor(120, 80, 40);
-            var paletteIndex = TintMapPaletteColors.GetClosestColorId(layer, customColor);
-            var shaderRow = TintMapMaterialRegistry.GetLayer(layer).PaletteBaseRow + paletteIndex;
-            File.WriteAllBytes(Path.Combine(_resourceDirectory, "tint.tga"), SolidColorTga(128, 0, 0));
-            File.WriteAllBytes(
-                Path.Combine(_resourceDirectory, "palette.tga"),
-                PaletteRowTga(
-                    shaderRow,
-                    ((byte)10, (byte)20, (byte)30),
-                    ((byte)40, (byte)50, (byte)60),
-                    ((byte)70, (byte)80, (byte)90)));
-            var material = MaterialResolver.Parse(
-                "texture7 tint\n" +
-                "texture10 palette\n" +
-                "customshaderPSH fs_plt_tinter\n");
-
-            var image = TintMapTextureRenderer.Render(
-                Index(),
-                "sample_material",
-                material,
-                new Dictionary<int, int>(),
-                new Dictionary<string, int>
-                {
-                    [TintMapVariable.GetName("sample_material", TintMapLayerType.Skin)] =
-                        customColor.ToStoredValue()
-                });
-
-            image.Should().NotBeNull();
-            Pixel(image!, 0, 0).Should().Be((40, 50, 60, 255),
-                "custom RGB must retain the selected palette row's authored shade response");
-        }
-
-        [Test]
-        public void NormalMappedTintShaderIsRecognizedBySoftwareAndViewportRenderers()
+        [TestCase("fs_plt_tinter")]
+        [TestCase("fs_plt_tinter_nm")]
+        [TestCase("fs_plt_hair_nm")]
+        public void NormalMappedTintShaderIsRecognizedBySoftwareAndViewportRenderers(string shader)
         {
             File.WriteAllBytes(Path.Combine(_resourceDirectory, "tint.tga"), SolidColorTga(255, 0, 0));
             File.WriteAllBytes(Path.Combine(_resourceDirectory, "palette.tga"), SolidColorTga(255, 255, 255));
             var material = MaterialResolver.Parse(
                 "texture7 tint\n" +
                 "texture10 palette\n" +
-                "customshaderFS fs_plt_tinter_nm\n");
+                "customshaderFS " + shader + "\n");
 
             TintMapTextureRenderer.IsTintMapMaterial(material).Should().BeTrue();
             var viewportRecognizesTintMaterial = typeof(SWLOR.Toolset.Viewport.GlAreaControl)
@@ -559,11 +517,8 @@ namespace SWLOR.Toolset.Tests
         public void SoftwareTintRendererDecodesLayerBoundariesLikeTheShader()
         {
             var tattoo2Color = new TintMapColor(255, 0, 0);
-            var tattoo2PaletteIndex = TintMapPaletteColors.GetClosestColorId(
-                TintMapLayerType.Tattoo2,
-                tattoo2Color);
             var tattoo2ShaderRow = TintMapMaterialRegistry.GetLayer(TintMapLayerType.Tattoo2)
-                .PaletteBaseRow + tattoo2PaletteIndex;
+                .PaletteBaseRow;
             File.WriteAllBytes(Path.Combine(_resourceDirectory, "tint.tga"), SolidColorTga(255, 230, 0));
             File.WriteAllBytes(
                 Path.Combine(_resourceDirectory, "palette.tga"),

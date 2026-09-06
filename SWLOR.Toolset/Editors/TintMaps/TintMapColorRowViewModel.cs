@@ -16,6 +16,7 @@ namespace SWLOR.Toolset.Editors.TintMaps
         private readonly Func<string, Action, bool> _runEdit;
         private readonly Action? _colorChanged;
         private readonly IReadOnlyCollection<string> _activeMaterialNames;
+        private IReadOnlyCollection<string> _equivalentMaterialNames;
         private int _standardPaletteColorId;
         private bool _loading;
 
@@ -48,7 +49,8 @@ namespace SWLOR.Toolset.Editors.TintMaps
             Action? colorChanged,
             int standardPaletteColorId = 0,
             AppearanceArmor armorPart = AppearanceArmor.Invalid,
-            IReadOnlyCollection<string>? activeMaterialNames = null)
+            IReadOnlyCollection<string>? activeMaterialNames = null,
+            IReadOnlyCollection<string>? equivalentMaterialNames = null)
         {
             MaterialName = materialName;
             Layer = layer;
@@ -56,6 +58,7 @@ namespace SWLOR.Toolset.Editors.TintMaps
             _runEdit = runEdit;
             _colorChanged = colorChanged;
             _activeMaterialNames = activeMaterialNames ?? Array.Empty<string>();
+            _equivalentMaterialNames = equivalentMaterialNames ?? new[] { materialName };
             ArmorPart = armorPart;
             _standardPaletteColorId = Math.Clamp(
                 standardPaletteColorId,
@@ -74,7 +77,8 @@ namespace SWLOR.Toolset.Editors.TintMaps
                     $"Set {MaterialName} {LayerName} tint to #{value.R:X2}{value.G:X2}{value.B:X2}",
                     () =>
                     {
-                        _variables.SetInt(Key, tint.ToStoredValue());
+                        foreach (var key in EquivalentKeys())
+                            _variables.SetInt(key, tint.ToStoredValue());
                         RemoveGlobalSemanticIntent();
                     }))
             {
@@ -105,7 +109,8 @@ namespace SWLOR.Toolset.Editors.TintMaps
                             // explicitly restoring this material to its stock NWN palette row. The
                             // part marker preserves that opt-out if a model swap removes this
                             // material-specific key before the part is selected again.
-                            _variables.SetInt(Key, _standardPaletteColorId + 1);
+                            foreach (var key in EquivalentKeys())
+                                _variables.SetInt(key, _standardPaletteColorId + 1);
                             TintMapOverrides.MarkExplicitPerPartPreset(
                                 _variables,
                                 ArmorPart,
@@ -113,7 +118,8 @@ namespace SWLOR.Toolset.Editors.TintMaps
                         }
                         else
                         {
-                            _variables.Remove(Key);
+                            foreach (var key in EquivalentKeys())
+                                _variables.Remove(key);
                         }
                         RemoveGlobalSemanticIntent();
                     }))
@@ -128,8 +134,11 @@ namespace SWLOR.Toolset.Editors.TintMaps
 
         public void Reload(
             int? standardPaletteColorId = null,
-            AppearanceArmor? armorPart = null)
+            AppearanceArmor? armorPart = null,
+            IReadOnlyCollection<string>? equivalentMaterialNames = null)
         {
+            if (equivalentMaterialNames != null)
+                _equivalentMaterialNames = equivalentMaterialNames;
             if (standardPaletteColorId.HasValue)
             {
                 _standardPaletteColorId = Math.Clamp(
@@ -179,6 +188,11 @@ namespace SWLOR.Toolset.Editors.TintMaps
 
             OnPropertyChanged(nameof(Status));
         }
+
+        private IEnumerable<string> EquivalentKeys() => _equivalentMaterialNames
+            .Append(MaterialName)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Select(name => TintMapVariable.GetName(name, Layer));
 
         private void RemoveGlobalSemanticIntent()
         {

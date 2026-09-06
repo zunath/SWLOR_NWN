@@ -91,6 +91,16 @@ namespace SWLOR.Toolset.Editors.TintMaps
                         .Distinct(StringComparer.OrdinalIgnoreCase)
                         .ToArray());
             var currentKeys = Colors.Select(row => row.Key);
+            IReadOnlyCollection<string> EquivalentMaterials(string materialName, TintMapLayerType layer)
+            {
+                // A robe is one native dye slot even when render settings split it into profiles.
+                if (TintMapVariable.IsCreatureColorLayer(layer) ||
+                    ResolveMaterialContext(model, materialName, layer).ArmorPart != AppearanceArmor.Robe)
+                    return new[] { materialName };
+                return activeMaterialsByLayer[layer].Where(name =>
+                    ResolveMaterialContext(model, name, layer).ArmorPart == AppearanceArmor.Robe &&
+                    _catalog.AreEquipmentMaterialSlotsEquivalent(materialName, name, layer)).ToArray();
+            }
             var wantedKeys = wanted.Select(entry =>
                 TintMapVariable.GetName(entry.material.Resref, entry.layer));
             var shouldCarryItemCustomColors =
@@ -120,7 +130,8 @@ namespace SWLOR.Toolset.Editors.TintMaps
                     var context = ResolveMaterialContext(model, material.Resref, layer);
                     Colors[index].Reload(
                         context.StandardPaletteColorId,
-                        context.ArmorPart);
+                        context.ArmorPart,
+                        EquivalentMaterials(material.Resref, layer));
                 }
                 return;
             }
@@ -142,10 +153,11 @@ namespace SWLOR.Toolset.Editors.TintMaps
                     layer,
                     _variables,
                     _runEdit,
-                    _colorChanged,
+                    RefreshColorRows,
                     context.StandardPaletteColorId,
                     context.ArmorPart,
-                    activeMaterialsByLayer[layer]));
+                    activeMaterialsByLayer[layer],
+                    EquivalentMaterials(material.Resref, layer)));
             }
 
             if (shouldCarryItemCustomColors && model != null)
@@ -158,6 +170,13 @@ namespace SWLOR.Toolset.Editors.TintMaps
             }
 
             OnPropertyChanged(nameof(HasColors));
+        }
+
+        private void RefreshColorRows()
+        {
+            foreach (var row in Colors)
+                row.Reload();
+            _colorChanged?.Invoke();
         }
 
         private static MaterialContext ResolveMaterialContext(

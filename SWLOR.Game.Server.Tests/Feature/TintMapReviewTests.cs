@@ -145,7 +145,8 @@ public class TintMapReviewTests
         definition.Should().NotContain(".SetText(\"Tints\")");
         definition.Should().NotContain("TintColorSheetResref");
         viewModel.Should().Contain("new TintMapColor(value.R, value.G, value.B)");
-        viewModel.Should().Contain("TintMapService.SetGlobalItemCustomColor(_target, selections, layerType, requestedColor, GetItem())");
+        FindMethod(viewModel, "CaptureTintColorEdit").ToString().Should()
+            .Contain("TintMapService.SetGlobalItemCustomColor(target, selections, layerType, color, item)");
         FindMethod(viewModel, "ApplyCustomTintColor").ToString().Should().NotContain("ApplySelectedPaletteColor");
         var setCustomTintComponent = FindMethod(viewModel, "SetCustomTintComponent");
         setCustomTintComponent.ToString().Should().Contain("DelayCommand(0.4f",
@@ -156,7 +157,7 @@ public class TintMapReviewTests
         setCustomTintComponent.ToString().Should().NotContain("SelectedTintColor =",
             "a watched text edit fires on each keystroke and must not synchronize over the active field");
         var commitCustomTintComponents = FindMethod(viewModel, "CommitCustomTintComponents");
-        commitCustomTintComponents.ToString().Should().Contain("ApplyCustomTintColor(new GuiColor(red, green, blue), synchronizeComponents: false)");
+        commitCustomTintComponents.ToString().Should().Contain("synchronizeComponents: false, capturedEdit: apply");
         var applyCustomTintColor = FindMethod(viewModel, "ApplyCustomTintColor");
         applyCustomTintColor.ToString().Should().Contain("SetSelectedTintColor(value, synchronizeComponents)",
             "the picker must retain the requested RGB rather than rewriting input with the nearest palette row");
@@ -759,7 +760,9 @@ public class TintMapReviewTests
         FindMethod(viewModelSource, "FlushPendingPickerColor").ToString()
             .Should().Contain("synchronizePicker: false", "deferred commits must not echo old samples into the live picker");
         var applyCustomTintColor = FindMethod(viewModelSource, "ApplyCustomTintColor");
-        applyCustomTintColor.ToString().Should().Contain("TintMapService.SetCreatureCustomColor");
+        applyCustomTintColor.ToString().Should().Contain("capturedEdit ?? CaptureTintColorEdit()");
+        FindMethod(viewModelSource, "CaptureTintColorEdit").ToString().Should()
+            .Contain("TintMapService.SetCreatureCustomColor");
         applyCustomTintColor.ToString().Should().NotContain("ApplySelectedPaletteColor");
     }
 
@@ -1511,8 +1514,8 @@ public class TintMapReviewTests
             "MarkPendingItemColorEdit(item, layer, AppearanceArmor.Invalid)",
             "resetting a global tint must invalidate an older delayed color carry");
         var inferLegacyGlobal = FindMethod(serviceSource, "TryInferLegacyGlobalItemCustomColor");
-        inferLegacyGlobal.ToString().Should().Contain("GetItemTintOverrides(item)",
-            "an inactive global reset must infer markerless legacy tint state from stored material keys");
+        inferLegacyGlobal.ToString().Should().NotContain("GetItemTintOverrides(item)",
+            "inactive part keys cannot prove a complete markerless global set");
 
         var viewModelSource = ReadSource(
             "SWLOR.Game.Server",

@@ -143,9 +143,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             // before the current material-scoped values are installed.
             var selections = TintMapModelResolver.GetCurrentSelections(creature);
             var hasRobeRgb = selections.Any(selection => selection.ArmorPart == AppearanceArmor.Robe &&
-                selection.Material.Layers.Any(layer => (TintMapVariable.IsCreatureColorLayer(layer)
-                    ? GetEffectiveCreatureColor(creature, layer)
-                    : GetEffectiveColor(creature, selection, layer)).CustomColor.HasValue));
+                selection.Material.Layers.Any(layer => GetEffectiveColor(creature, selection, layer).CustomColor.HasValue));
             var rendersRobeRgb = RobeModelRenderer.Apply(creature, selections, hasRobeRgb);
             ProjectNativeRobeColors(creature, selections, rendersRobeRgb);
             ResetMaterialShaderUniforms(creature);
@@ -175,6 +173,19 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
                     selections,
                     layer,
                     GetEffectiveCreatureColor(creature, layer));
+            }
+
+            // Install authored material exceptions after the model-wide semantic defaults.
+            // Toolset edits retire TMC_* and preserve untouched sibling TM_* colors.
+            foreach (var selection in selections)
+            {
+                foreach (var layer in selection.Material.Layers.Where(TintMapVariable.IsCreatureColorLayer))
+                {
+                    var saved = GetSavedColor(selection, layer);
+                    if (saved > 0)
+                        WriteMaterialColor(creature, selection.Material.Resref, layer,
+                            GetEffectiveColor(creature, selection, layer));
+                }
             }
         }
 
@@ -660,23 +671,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             globalColor = default;
             if (itemSelections.Count == 0)
             {
-                var storedColors = GetItemTintOverrides(item)
-                    .Where(entry =>
-                        TintMapVariable.TryParse(entry.Key, out _, out var variableLayer) &&
-                        variableLayer == layer &&
-                        TintMapColor.TryFromStoredValue(entry.Value, out _))
-                    .Select(entry =>
-                    {
-                        TintMapColor.TryFromStoredValue(entry.Value, out var color);
-                        return color;
-                    })
-                    .Distinct()
-                    .ToList();
-                if (storedColors.Count != 1)
-                    return false;
-
-                globalColor = storedColors[0];
-                return true;
+                // No active material set exists against which completeness can be proven.
+                // A lone inactive part override is not evidence of global intent.
+                return false;
             }
 
             var customColors = itemSelections
@@ -1417,6 +1414,9 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
         {
             var savedColor = GetSavedColor(selection, layer);
 
+            if (savedColor == 0 && TintMapVariable.IsCreatureColorLayer(layer))
+                return GetEffectiveCreatureColor(creature, layer);
+
             var standardColor = GetStandardColor(creature, selection, layer);
             if (TintMapColor.TryFromStoredValue(savedColor, out var customColor))
             {
@@ -1453,9 +1453,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             TintMapMaterialSelection selection,
             TintMapLayerType layer)
         {
-            var effectiveColor = TintMapVariable.IsCreatureColorLayer(layer)
-                ? GetEffectiveCreatureColor(creature, layer)
-                : GetEffectiveColor(creature, selection, layer);
+            var effectiveColor = GetEffectiveColor(creature, selection, layer);
             return effectiveColor.CustomColor ??
                    TintMapPaletteColors.GetColor(layer, effectiveColor.PaletteColorId);
         }

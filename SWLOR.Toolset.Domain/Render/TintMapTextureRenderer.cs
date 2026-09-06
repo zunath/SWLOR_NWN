@@ -12,13 +12,15 @@ namespace SWLOR.Toolset.Domain.Render
     {
         private const string TintShader = "fs_plt_tinter";
         private const string NormalMappedTintShader = "fs_plt_tinter_nm";
+        private const string HairTintShader = "fs_plt_hair_nm";
 
         public static bool IsTintMapMaterial(MtrMaterial? material)
         {
             return material != null &&
                    material.CustomShaders.Values.Any(shader =>
                        shader.Equals(TintShader, StringComparison.OrdinalIgnoreCase) ||
-                       shader.Equals(NormalMappedTintShader, StringComparison.OrdinalIgnoreCase));
+                       shader.Equals(NormalMappedTintShader, StringComparison.OrdinalIgnoreCase) ||
+                       shader.Equals(HairTintShader, StringComparison.OrdinalIgnoreCase));
         }
 
         public static TextureImage? Render(
@@ -62,8 +64,9 @@ namespace SWLOR.Toolset.Domain.Render
                     layer,
                     armorPart);
 
-                var paletteIndex = TintMapColor.TryFromStoredValue(savedValue, out var customColor)
-                    ? TintMapPaletteColors.GetClosestColorId(layer, customColor)
+                var isCustom = TintMapColor.TryFromStoredValue(savedValue, out var customColor);
+                var paletteIndex = isCustom
+                    ? 0 // Custom RGB uses the shader's neutral reference row, preserving only shading.
                     : savedValue > 0 &&
                       savedValue <= TintMapMaterialRegistry.PaletteColorCount
                         ? savedValue - 1
@@ -90,6 +93,16 @@ namespace SWLOR.Toolset.Domain.Render
                 output[offset] = palette.Pixels[paletteOffset];
                 output[offset + 1] = palette.Pixels[paletteOffset + 1];
                 output[offset + 2] = palette.Pixels[paletteOffset + 2];
+                if (isCustom)
+                {
+                    var midpointX = 128 * (palette.Width - 1) / 255;
+                    var midpointOffset = (paletteY * palette.Width + midpointX) * 4;
+                    var scale = Luminance(palette.Pixels, paletteOffset) /
+                                Math.Max(Luminance(palette.Pixels, midpointOffset), 1f);
+                    output[offset] = Shade(customColor.Red, scale);
+                    output[offset + 1] = Shade(customColor.Green, scale);
+                    output[offset + 2] = Shade(customColor.Blue, scale);
+                }
                 output[offset + 3] = SampleAlpha(
                     alphaTexture,
                     alphaSource,
@@ -108,6 +121,12 @@ namespace SWLOR.Toolset.Domain.Render
                 AlphaCutoff = alphaSource?.ByteCutoff ?? TextureImage.DefaultAlphaCutoff
             };
         }
+
+        private static float Luminance(byte[] pixels, int offset) =>
+            pixels[offset] * 0.2126f + pixels[offset + 1] * 0.7152f + pixels[offset + 2] * 0.0722f;
+
+        private static byte Shade(byte component, float scale) =>
+            (byte)Math.Clamp(MathF.Round(component * scale), 0, 255);
 
         private static byte SampleAlpha(
             TextureImage? texture,

@@ -69,7 +69,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private bool _loadingTintColor;
         private bool _applyingTintColor;
         private int _tintEditGeneration;
+        private bool _hasTintComponentDraft;
+        private Action<TintMapColor> _tintComponentApply;
         private GuiColor _pendingPickerColor;
+        private Action<TintMapColor> _pendingPickerApply;
         private bool _pickerFlushScheduled;
         private bool _tintControlBindingsWatched;
         private string _tintComponentCorrection;
@@ -271,7 +274,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
                 _tintEditGeneration++;
                 _tintComponentCorrection = null;
+                _hasTintComponentDraft = false;
                 _pendingPickerColor = value;
+                _pendingPickerApply = CaptureTintColorEdit();
                 if (_pickerFlushScheduled)
                     return;
                 _pickerFlushScheduled = true;
@@ -979,13 +984,15 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void LoadTintMapEditor()
         {
-            _pendingPickerColor = null;
             // Resetting legacy overrides is part of applying a color. Do not replace the
             // pending input with the old color halfway through that operation.
             if (_applyingTintColor)
                 return;
+            FlushPendingPickerColor();
+            CommitCustomTintComponents();
             _tintEditGeneration++;
             _tintComponentCorrection = null;
+            _hasTintComponentDraft = false;
             RefreshTintMapAvailability();
             if (!TryGetEditableTintSelections(out var selections, out var layerType, out _))
             {
@@ -1098,7 +1105,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         private void ApplyCustomTintColor(
             GuiColor value,
             bool synchronizeComponents,
-            bool synchronizePicker = true)
+            bool synchronizePicker = true,
+            Action<TintMapColor> capturedEdit = null)
         {
             if (_loadingTintColor)
             {
@@ -1106,9 +1114,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                     SynchronizeCustomTintComponents(value);
                 return;
             }
-            if (!TryGetEditableTintSelections(out var selections, out var layerType, out _))
-                return;
-            if (selections.Count == 0 || !selections.All(RobeModelRenderer.SupportsRgb))
+            var apply = capturedEdit ?? CaptureTintColorEdit();
+            if (apply == null)
             {
                 LoadTintMapEditor();
                 return;
@@ -1118,13 +1125,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             _applyingTintColor = true;
             try
             {
-                if (IsAppearanceSelected)
-                    TintMapService.SetCreatureCustomColor(_target, selections, layerType, requestedColor);
-                else if (SelectedItemTypeIndex != 0 || _colorTarget == ColorTarget.Global)
-                    TintMapService.SetGlobalItemCustomColor(_target, selections, layerType, requestedColor, GetItem());
-                else
-                    foreach (var selection in selections)
-                        TintMapService.SetColor(_target, selection, layerType, requestedColor);
+                apply(requestedColor);
                 if (IsEquipmentSelected && SelectedItemTypeIndex == 0)
                     UpdateEditedColorSwatches();
             }
@@ -1141,14 +1142,42 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 SynchronizeCustomTintComponents(value);
         }
 
+        private Action<TintMapColor> CaptureTintColorEdit()
+        {
+            if (!TryGetEditableTintSelections(out var selections, out var layerType, out _) ||
+                selections.Count == 0 || !selections.All(RobeModelRenderer.SupportsRgb))
+                return null;
+
+            // NUI hydrates selection binds before their setters run. A pending text edit
+            // must retain its original layer and owner when the next selection loads.
+            var target = _target;
+            var appearance = IsAppearanceSelected;
+            var globalItem = SelectedItemTypeIndex != 0 || _colorTarget == ColorTarget.Global;
+            var item = appearance ? OBJECT_INVALID : GetItem();
+            return color =>
+            {
+                if (!GetIsObjectValid(target) || !appearance && !GetIsObjectValid(item))
+                    return;
+                if (appearance)
+                    TintMapService.SetCreatureCustomColor(target, selections, layerType, color);
+                else if (globalItem)
+                    TintMapService.SetGlobalItemCustomColor(target, selections, layerType, color, item);
+                else
+                    foreach (var selection in selections)
+                        TintMapService.SetColor(target, selection, layerType, color);
+            };
+        }
+
         public Action OnMouseUpTintPicker() => FlushPendingPickerColor;
 
         private void FlushPendingPickerColor()
         {
             var color = _pendingPickerColor;
+            var apply = _pendingPickerApply;
             _pendingPickerColor = null;
-            if (color != null)
-                ApplyCustomTintColor(color, synchronizeComponents: true, synchronizePicker: false);
+            _pendingPickerApply = null;
+            if (color != null && apply != null)
+                ApplyCustomTintColor(color, synchronizeComponents: true, synchronizePicker: false, capturedEdit: apply);
         }
 
         private void SynchronizeCustomTintComponents(GuiColor color)
@@ -1209,6 +1238,9 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 return;
 
             _tintComponentCorrection = normalized == value ? null : propertyName;
+            if (!_hasTintComponentDraft)
+                _tintComponentApply = CaptureTintColorEdit();
+            _hasTintComponentDraft = true;
 
             // Keep the three inputs as a draft while typing; applying each digit used to
             // reload the old color and overwrite the other two channels mid-edit.
@@ -1224,12 +1256,16 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void CommitCustomTintComponents()
         {
-            if (!byte.TryParse(CustomTintRed, out var red) ||
+            if (!_hasTintComponentDraft || !byte.TryParse(CustomTintRed, out var red) ||
                 !byte.TryParse(CustomTintGreen, out var green) ||
                 !byte.TryParse(CustomTintBlue, out var blue))
                 return;
+            _hasTintComponentDraft = false;
             _tintEditGeneration++;
-            ApplyCustomTintColor(new GuiColor(red, green, blue), synchronizeComponents: false);
+            var apply = _tintComponentApply;
+            _tintComponentApply = null;
+            if (apply != null)
+                ApplyCustomTintColor(new GuiColor(red, green, blue), synchronizeComponents: false, capturedEdit: apply);
         }
 
         protected override void OnClientPropertyUpdated(string propertyName)
@@ -1435,6 +1471,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
             if (tabId is < AppearanceTabId or > SettingsTabId ||
                 tabId == SettingsTabId && !IsSettingsVisible)
                 return;
+            CommitCustomTintComponents();
             _selectedTabId = tabId;
             EditorToggles.SyncTo(tabId, value => EditorTabToggleValue = value);
             SettingsToggles.SyncTo(tabId, value => SettingsTabToggleValue = value);
@@ -2037,6 +2074,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void ModifyItemPart(int type, int partId, int colorId = -1)
         {
+            CommitCustomTintComponents();
             ToggleItemEquippedFlags();
             if (DoesNotHaveItemEquipped)
                 return;
@@ -2088,6 +2126,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
             if (colorId < 0 || colorId >= TintMapMaterialRegistry.PaletteColorCount)
                 return false;
+
+            // A newer preset selection replaces any uncommitted text for this target.
+            _hasTintComponentDraft = false;
+            _tintComponentApply = null;
+            _pendingPickerColor = null;
+            _pendingPickerApply = null;
 
             if (IsEquipmentSelected && SelectedItemTypeIndex == 0)
                 return ApplyArmorPaletteColor(colorId);
@@ -2421,6 +2465,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
         public Action OnCloseWindow() => () =>
         {
             FlushPendingPickerColor();
+            CommitCustomTintComponents();
             _tintEditGeneration++;
             if (GetIsDM(_target) || GetIsDMPossessed(_target) || !GetIsPC(_target))
                 return;

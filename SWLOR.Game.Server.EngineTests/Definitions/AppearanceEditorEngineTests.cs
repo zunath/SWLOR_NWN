@@ -323,6 +323,77 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             ctx.SetResultDetail("Valid RGB drafts caused no color-control echoes;300 corrected only red to255 and empty text could not commit. Skin0/0/0 and equipment RGB commits published exact picker input while retaining text buffers and persisting exact RGB without editing native dyes. Incoming NuiGetBind and debounce scheduling/open-window checks are synthesized or excluded.");
         }
 
+        [EngineTest("Closing the editor commits only pending valid RGB text", Category = "AppearanceEditor", TimeoutSeconds = 30f)]
+        public static async Task CloseCommitsRgbDraft(EngineTestContext ctx)
+        {
+            var civilian = await SpawnCivilianAsync(ctx);
+            await RunAssignedAsync(ctx, civilian, () =>
+            {
+                var editor = BindWithoutClient(civilian);
+                editor.OnSelectAppearance()();
+                editor.CustomTintRed = "205";
+                editor.CustomTintGreen = "228";
+                editor.CustomTintBlue = "197";
+                var stateKey = TintMapVariable.GetCreatureColorStateName(TintMapLayerType.Skin);
+                editor.OnCloseWindow()();
+                ctx.AssertEqual(new TintMapColor(205, 228, 197).ToStoredValue(), GetLocalInt(civilian, stateKey),
+                    "Closing before the debounce applies the final complete RGB draft");
+                editor.OnClickColorPalette(20)();
+                editor.OnCloseWindow()();
+                ctx.AssertEqual(0, GetLocalInt(civilian, stateKey),
+                    "Closing a preset selection must not create a custom tint");
+                editor.CustomTintRed = "";
+                editor.OnCloseWindow()();
+                ctx.AssertEqual(0, GetLocalInt(civilian, stateKey), "Incomplete text cannot commit on close");
+
+                editor.CustomTintRed = "12";
+                editor.CustomTintGreen = "34";
+                editor.CustomTintBlue = "56";
+                editor.SelectedColorCategoryIndex = 1;
+                InvokePrivate(editor, "LoadTintMapEditor");
+                ctx.AssertEqual(new TintMapColor(12, 34, 56).ToStoredValue(), GetLocalInt(civilian, stateKey),
+                    "Selection reload commits the original skin draft after the category bind has changed");
+                ctx.AssertEqual(0, GetLocalInt(civilian, TintMapVariable.GetCreatureColorStateName(TintMapLayerType.Hair)),
+                    "The newly selected hair channel must not receive the old skin draft");
+                editor.CustomTintRed = "120";
+                editor.OnClickColorPalette(20)();
+                editor.OnCloseWindow()();
+                ctx.AssertEqual(0, GetLocalInt(civilian, TintMapVariable.GetCreatureColorStateName(TintMapLayerType.Hair)),
+                    "A newer palette click supersedes an uncommitted RGB draft");
+            });
+        }
+
+        [EngineTest("Inactive material colors survive global resets and creature materials retain authored RGB", Category = "AppearanceEditor", TimeoutSeconds = 30f)]
+        public static async Task PersistedMaterialColors(EngineTestContext ctx)
+        {
+            var civilian = await SpawnCivilianAsync(ctx);
+            await RunAssignedAsync(ctx, civilian, () =>
+            {
+                var outfit = GetItemInSlot(InventorySlot.Chest, civilian);
+                var layer = TintMapLayerType.Cloth1;
+                var key = TintMapVariable.GetName("pmh0_robe260", layer);
+                var saved = new TintMapColor(100, 7, 180).ToStoredValue();
+                SetLocalInt(outfit, key, saved);
+                TintMapService.ResetInactiveItemCustomColor(civilian, outfit, layer, AppearanceArmor.Invalid);
+                ctx.AssertEqual(saved, GetLocalInt(outfit, key),
+                    "One inactive material color cannot be inferred as a legacy global set");
+                var selections = TintMapModelResolver.GetCurrentSelections(civilian)
+                    .Where(s => s.Material.Layers.Contains(TintMapLayerType.Skin))
+                    .GroupBy(s => s.Material.Resref).Select(g => g.First()).ToArray();
+                ctx.Assert(selections.Length >= 2, "Fixture exposes independently named skin materials");
+                TintMapService.ResetCreatureCustomColor(civilian, TintMapLayerType.Skin);
+                var authored = new TintMapColor(12, 34, 56);
+                var sibling = new TintMapColor(65, 43, 21);
+                SetLocalInt(civilian, TintMapVariable.GetName(selections[0].Material.Resref, TintMapLayerType.Skin), authored.ToStoredValue());
+                SetLocalInt(civilian, TintMapVariable.GetName(selections[1].Material.Resref, TintMapLayerType.Skin), sibling.ToStoredValue());
+                TintMapService.ApplyCurrentColors(civilian);
+                ctx.AssertEqual(authored, TintMapService.GetEffectiveDisplayColor(civilian, selections[0], TintMapLayerType.Skin),
+                    "Authored per-material RGB participates in runtime color resolution");
+                ctx.AssertEqual(sibling, TintMapService.GetEffectiveDisplayColor(civilian, selections[1], TintMapLayerType.Skin),
+                    "A sibling material retains its independent color");
+            });
+        }
+
         [EngineTest("Appearance editor drag batches keep the latest RGB without picker echoes", Category = "AppearanceEditor", TimeoutSeconds = 30f)]
         public static async Task PickerDragKeepsLatestValue(EngineTestContext ctx)
         {

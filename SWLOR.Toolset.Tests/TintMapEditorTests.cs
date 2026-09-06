@@ -73,6 +73,43 @@ namespace SWLOR.Toolset.Tests
             };
 
         [Test]
+        public void RobeProfileRowsShareEditsResetsAndInheritedPaletteOptOuts()
+        {
+            var catalog = TintMapCatalog.Load(Resources())!;
+            var variables = new VarTable(JsonGffDocument.Parse(
+                Encoding.UTF8.GetBytes("""{"__data_type":"UTI "}""")).Root);
+            const string first = "pmh0_robe170";
+            const string second = "pmh0_r_ro_c34862";
+            var meshes = ModelWith(first).Meshes.Concat(ModelWith(second).Meshes).ToArray();
+            foreach (var mesh in meshes)
+                mesh.ArmorPart = AppearanceArmor.Robe;
+            var editor = new TintMapEditorViewModel(variables,
+                (_, mutation) => { mutation(); return true; }, catalog);
+            editor.Reload(new RenderModel { Meshes = meshes,
+                LayerColorIndices = new Dictionary<int, int> { [(int)TintMapLayerType.Metal1] = 37 } });
+            var profiles = editor.Colors.Where(row => row.Layer == TintMapLayerType.Metal1).ToArray();
+            profiles.Should().HaveCount(2);
+            var requested = Color.FromRgb(205, 228, 197);
+            profiles[1].Color = requested;
+            foreach (var row in profiles)
+            {
+                variables.GetInt(row.Key).Should().Be(new TintMapColor(205, 228, 197).ToStoredValue());
+                row.Color.Should().Be(requested);
+            }
+            profiles[0].ResetCommand.Execute(null);
+            foreach (var row in profiles)
+                variables.GetInt(row.Key).Should().BeNull();
+
+            var globalKey = TintMapVariable.GetItemGlobalColorStateName(TintMapLayerType.Metal1);
+            variables.SetInt(globalKey, new TintMapColor(10, 20, 30).ToStoredValue());
+            foreach (var row in profiles) row.Reload();
+            profiles[1].ResetCommand.Execute(null);
+            foreach (var row in profiles)
+                variables.GetInt(row.Key).Should().Be(38);
+            variables.GetInt(globalKey).Should().Be(new TintMapColor(10, 20, 30).ToStoredValue());
+        }
+
+        [Test]
         public void PickerWritesPackedRgbAndResetRemovesIt()
         {
             var catalog = TintMapCatalog.Load(Resources());
@@ -91,7 +128,7 @@ namespace SWLOR.Toolset.Tests
                 },
                 catalog!);
 
-            editor.Reload(ModelWith("pmo0_footl10"));
+            editor.Reload(ModelWith("pfh0_bicepl150"));
             editor.Colors.Select(row => row.Layer)
                 .Should().BeEquivalentTo(
                     new[] { TintMapLayerType.Leather1, TintMapLayerType.Leather2 });
@@ -119,7 +156,7 @@ namespace SWLOR.Toolset.Tests
             var root = JsonGffDocument.Parse(
                 Encoding.UTF8.GetBytes("""{"__data_type":"UTI "}""")).Root;
             var variables = new VarTable(root);
-            var key = TintMapVariable.GetName("pmo0_footl10", TintMapLayerType.Leather1);
+            var key = TintMapVariable.GetName("pfh0_bicepl150", TintMapLayerType.Leather1);
             variables.SetInt(key, 42);
             var editor = new TintMapEditorViewModel(
                 variables,
@@ -130,7 +167,7 @@ namespace SWLOR.Toolset.Tests
                 },
                 catalog!);
 
-            editor.Reload(ModelWith("pmo0_footl10"));
+            editor.Reload(ModelWith("pfh0_bicepl150"));
             var leather = editor.Colors.Single(row => row.Layer == TintMapLayerType.Leather1);
             leather.IsCustom.Should().BeFalse();
             leather.HasOverride.Should().BeTrue();
@@ -165,7 +202,7 @@ namespace SWLOR.Toolset.Tests
             {
                 Meshes = new[]
                 {
-                    ModelWith("pmo0_footl10").Meshes.Single(),
+                    ModelWith("pfh0_bicepl150").Meshes.Single(),
                     new RenderMesh
                     {
                         NodeName = "equipped_robe",
@@ -186,7 +223,7 @@ namespace SWLOR.Toolset.Tests
             editor.Colors.Should().NotBeEmpty();
             editor.Colors.Select(row => row.MaterialName)
                 .Should().OnlyContain(material => material.Equals(
-                    "pmo0_footl10", StringComparison.OrdinalIgnoreCase));
+                    "pfh0_bicepl150", StringComparison.OrdinalIgnoreCase));
         }
 
         [Test]
@@ -488,7 +525,7 @@ namespace SWLOR.Toolset.Tests
             variables.SetInt(
                 TintMapVariable.GetItemGlobalColorStateName(layer),
                 new TintMapColor(65, 43, 21).ToStoredValue());
-            var model = ModelWith("pmo0_footl10");
+            var model = ModelWith("pfh0_bicepl150");
             model.Meshes.Single().LayerColorIndices = new Dictionary<int, int>
             {
                 [(int)layer] = 73
@@ -519,7 +556,7 @@ namespace SWLOR.Toolset.Tests
             variables.SetInt(
                 TintMapVariable.GetItemGlobalColorStateName(layer),
                 new TintMapColor(65, 43, 21).ToStoredValue());
-            var model = ModelWith("pmo0_footl10");
+            var model = ModelWith("pfh0_bicepl150");
             model.Meshes.Single().LayerColorIndices = new Dictionary<int, int>
             {
                 [(int)layer] = 12
@@ -558,7 +595,7 @@ namespace SWLOR.Toolset.Tests
                     new RenderMesh
                     {
                         NodeName = "stock_cloak",
-                        TextureName = "cloak_102",
+                        TextureName = "helm_096",
                         MaterialName = string.Empty,
                         Positions = Array.Empty<float>(),
                         Normals = Array.Empty<float>(),
@@ -572,7 +609,7 @@ namespace SWLOR.Toolset.Tests
             var materials = catalog!.FindMaterials(model);
 
             materials.Should().ContainSingle(material =>
-                material.Resref.Equals("cloak_102", StringComparison.OrdinalIgnoreCase));
+                material.Resref.Equals("helm_096", StringComparison.OrdinalIgnoreCase));
         }
 
         [Test]
@@ -993,7 +1030,7 @@ namespace SWLOR.Toolset.Tests
             {
                 Meshes = new[]
                 {
-                    ModelWith("pmo0_footl10").Meshes.Single(),
+                    ModelWith("pfh0_bicepl150").Meshes.Single(),
                     itemMesh
                 }
             };
@@ -1511,7 +1548,7 @@ namespace SWLOR.Toolset.Tests
                 catalog!);
             var oldModel = ModelWith("helm_004");
             oldModel.Meshes.Single().UsesItemTintOverrides = true;
-            var replacementWithoutCloth = ModelWith("pmo0_footl10");
+            var replacementWithoutCloth = ModelWith("pfh0_bicepl150");
             replacementWithoutCloth.Meshes.Single().UsesItemTintOverrides = true;
             var oldKey = TintMapVariable.GetName("helm_004", TintMapLayerType.Cloth1);
 
@@ -1932,7 +1969,7 @@ namespace SWLOR.Toolset.Tests
                     return true;
                 },
                 catalog!);
-            editor.Reload(ModelWith("pmo0_footl10"));
+            editor.Reload(ModelWith("pfh0_bicepl150"));
             editor.Colors.Should().NotBeEmpty();
 
             editor.ReloadCatalog(null);
@@ -2018,7 +2055,7 @@ namespace SWLOR.Toolset.Tests
                     },
                     TintMapCatalog.Load(Resources())!)
             };
-            ((TintMapEditorViewModel)view.DataContext!).Reload(ModelWith("pmo0_footl10"));
+            ((TintMapEditorViewModel)view.DataContext!).Reload(ModelWith("pfh0_bicepl150"));
             var window = new Window { Content = view };
 
             window.Show();

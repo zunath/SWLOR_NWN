@@ -204,8 +204,9 @@ namespace SWLOR.Toolset.Tests
                     .Where(mesh => mesh.TextureName.Equals("n_repsold01", StringComparison.OrdinalIgnoreCase))
                     .ToList();
                 authoredHandMeshes.Should().NotBeEmpty();
-                authoredHandMeshes.Should().OnlyContain(mesh => string.IsNullOrWhiteSpace(mesh.MaterialName),
-                    "a generated same-name tint material must not replace the harness's authored hand texture");
+                authoredHandMeshes.Select(mesh => mesh.MaterialName).Should().BeEquivalentTo(
+                    new[] { "pmh0_handl246", "pmh0_handr246" },
+                    "the converted hand meshes must bind their explicit per-part tint materials, not a material inferred from n_repsold01");
                 TextureLoader.Load(_resources, "n_repsold01")!.SourceFormat
                     .Should().Be(TextureSourceFormat.Dds);
             }
@@ -289,7 +290,7 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
-        public void CloakTextureMappingPreservesItsExplicitTintMaterial()
+        public void CloakTextureMappingUsesItsNativeDynamicPalette()
         {
             var creature = InstanceFieldMap.Duplicate(
                 _workspace.LoadBlueprint(ResourceType.Utc, "npc_l").Fields);
@@ -307,15 +308,17 @@ namespace SWLOR.Toolset.Tests
 
             model.Should().NotBeNull();
             var cloakMeshes = model!.Meshes.Where(mesh =>
-                mesh.MaterialName.Equals("cloak__cl_c8ad14", StringComparison.OrdinalIgnoreCase)).ToList();
+                mesh.TextureName.Equals("pfh0_cloak_150", StringComparison.OrdinalIgnoreCase)).ToList();
             cloakMeshes.Should().NotBeEmpty(
-                "pfh0_cloak_150 explicitly binds the converted cloak tint material");
+                "cloakmodel row 70 selects the native cloak_150 palette");
             cloakMeshes.Should().OnlyContain(mesh => mesh.UsesItemTintOverrides);
+            cloakMeshes.Select(mesh => mesh.MaterialName).Should().OnlyContain(name => name == "cloak_150",
+                "the authored native palette must replace the retired tint alias");
 
             var textures = new PreviewTextureCache(_resources);
             cloakMeshes.Should().OnlyContain(mesh =>
                 textures.Get(mesh.MaterialName, mesh.LayerColorIndices, null, true) != null,
-                "cloakmodel texture selection must not replace a valid explicit MTR with the model resref");
+                "cloakmodel texture selection must preserve the native dyed surface");
         }
 
         [Test]
@@ -464,8 +467,8 @@ namespace SWLOR.Toolset.Tests
                 .Where(entry => entry.Material?.CustomShaders.Values.Any(shader =>
                     shader.Equals("fs_plt_tinter", StringComparison.OrdinalIgnoreCase)) == true)
                 .ToList();
-            tintMaterials.Select(entry => entry.Name).Should().Contain("pmh0_handl003",
-                "the left hand was the known legacy-DDS collision that corrupted creature colors");
+            tintMaterials.Select(entry => entry.Name).Should().Contain("pmh0_h_lh_83916d",
+                "the left hand's isolated material profile must retain its collision-proof tint mask");
             foreach (var (name, material) in tintMaterials)
             {
                 var tintTexture = material!.GetTexture(7);
@@ -516,7 +519,7 @@ namespace SWLOR.Toolset.Tests
                 ("pal_skin01", 0),
                 ("pal_hair01", 176),
                 ("pal_armor01", 352),
-                ("pal_armor02", 528),
+                ("pal_armor01", 528),
                 ("pal_cloth01", 704),
                 ("pal_leath01", 880),
                 ("pal_tattoo01", 1056),

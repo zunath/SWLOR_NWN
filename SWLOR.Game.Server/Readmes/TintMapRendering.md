@@ -5,6 +5,13 @@ The generated tint materials share three fragment shaders in
 `fs_plt_hair_nm`. A change to palette lighting must cover all three, including
 materials shared by multiple models through `tintmap.2da`.
 
+The current item catalog includes helmet materials; weapons and dynamic cloaks
+continue to use their native model/color choices. Hand-slot resolver support
+does not by itself introduce weapon tint assets. Before registering tintable
+weapons, provide distinct material identities or occurrence-specific rendering
+for independently colored copies of the same equipped model: creature material
+uniforms alone cannot distinguish identical main-hand and off-hand materials.
+
 ## Preserve the authored palette rows
 
 Converting a PLT material must preserve the creature and equipment color IDs.
@@ -161,6 +168,13 @@ missing animation-source fallback. Missing authored parents use the body's
 available clips and are explicitly recorded; they never retain the old unsafe
 robe-as-body inheritance path. Regeneration removes obsolete manifest-owned
 animation parents after successful validation.
+
+The manifest includes `CompileModels.py` as a required generation dependency.
+Python and 2DA hashes normalize line endings for Windows/Linux checkouts;
+compiled models remain byte-exact. Allocation reserves existing body/attachment
+resrefs as well as phenotype rows and verifies ownership before replacing an
+earlier generated model. The palette audit validates the entire atlas, including
+its TGA header, against the authoritative source checksum.
 
 The catalog currently covers 1,596 normal-body models across 184 robe styles.
 Phenotype IDs are a native byte, so generated IDs are reserved in the range
@@ -352,7 +366,9 @@ entry wins. `hakbuilder.json` controls packaging, not runtime resource priority.
 provenance, module priority, and lineage of retired bitmap aliases. Reproduce
 it with `CaptureTintMaterialSources.py --check`, supplying the recorded
 `hakCommit`, `moduleCommit`, and `convertedCommit` as `--baseline`,
-`--module-baseline`, and `--converted-baseline`, plus `--game-data`. Profile
+`--module-baseline`, and `--converted-baseline`, plus `--game-data`. When the
+repositories are separate checkouts, pass `--module-repo <SWLOR_NWN-path>`;
+the default assumes the HAK repository is nested inside the module checkout. Profile
 aliases preserve these inputs separately from the selected PLT. Fixed materials
 whose names collide with generated tint materials have preserved copies in
 `sw_item` and do not appear in the tint catalog.

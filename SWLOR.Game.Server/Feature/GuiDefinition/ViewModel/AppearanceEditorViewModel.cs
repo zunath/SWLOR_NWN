@@ -1783,7 +1783,12 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 ChestOptions = _armorAppearances[appearanceType].TorsoOptions;
                 BeltOptions = _armorAppearances[appearanceType].BeltOptions;
                 PelvisOptions = _armorAppearances[appearanceType].PelvisOptions;
-                RobeOptions = _armorAppearances[appearanceType].RobeOptions;
+                var robeOptions = new GuiBindingList<GuiComboEntry>();
+                foreach (var style in RobeAppearance.GetAvailableStyles(_target, _armorAppearances[appearanceType].Robe))
+                    robeOptions.Add(new GuiComboEntry(style.ToString(), style));
+                RobeOptions = robeOptions;
+                if (RobeAppearance.RemoveUnavailableRobe(_target, item))
+                    EquippedItemAppearance.Refresh(_target, item);
 
                 LeftShoulderOptions = _armorAppearances[appearanceType].ShoulderOptions;
                 LeftBicepOptions = _armorAppearances[appearanceType].BicepOptions;
@@ -2904,6 +2909,32 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void AdjustArmorPart(AppearanceArmor partType, int adjustBy)
         {
+            if (partType == AppearanceArmor.Robe)
+            {
+                // A filtered option's value is the model ID; its index no longer
+                // corresponds to the shared, unfiltered armor definition.
+                var styles = RobeAppearance.GetAvailableStyles(_target, _armorAppearances[GetAppearanceType(_target)].Robe);
+                var requested = RobeSelection;
+                var index = styles.ToList().IndexOf(requested);
+                if (index < 0 || styles.Count == 0)
+                {
+                    LoadItemParts();
+                    return;
+                }
+                var selected = styles[System.Math.Clamp(index + adjustBy, 0, styles.Count - 1)];
+                var wasSkipping = _skipAdjustArmorPart;
+                _skipAdjustArmorPart = true;
+                try
+                {
+                    RobeSelection = selected;
+                    ModifyItemPart((int)partType, selected);
+                }
+                finally
+                {
+                    _skipAdjustArmorPart = wasSkipping;
+                }
+                return;
+            }
             _skipAdjustArmorPart = true;
             var appearanceType = GetAppearanceType(_target);
 
@@ -2991,10 +3022,6 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
                 case AppearanceArmor.LeftHand:
                     LeftHandSelection = Adjust(LeftHandOptions, LeftHandSelection);
                     ModifyItemPart((int)partType, _armorAppearances[appearanceType].Hand[ArmorValueToIndex(LeftHandOptions, LeftHandSelection)]);
-                    break;
-                case AppearanceArmor.Robe:
-                    RobeSelection = Adjust(RobeOptions, RobeSelection);
-                    ModifyItemPart((int)partType, _armorAppearances[appearanceType].Robe[ArmorValueToIndex(RobeOptions, RobeSelection)]);
                     break;
             }
 

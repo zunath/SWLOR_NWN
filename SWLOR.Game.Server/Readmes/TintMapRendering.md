@@ -105,6 +105,17 @@ palette fields.
 `RobeModelRenderer` uses `roberender.2da` to select a generated body root when
 the worn robe has an effective RGB override. The body root contains the robe's
 geometry and therefore receives the same material scalars as other body parts.
+Robe choices must have an actual MDL for the wearer's gender, race and original
+body phenotype. `RobeAppearance` checks the module's resource search space, which
+includes native models without RGB materials. The shared style list alone is not
+proof of availability: male human styles 18, 19, 24 and 166 have no models, while
+female human styles 19 and 24 do. The editor filters these combinations and uses
+the displayed model ID directly when stepping across gaps. Opening the editor or
+applying an outfit with an unavailable robe restores robe 0 on the equipped armor,
+retaining its other parts, dyes, properties and identity. Saved outfit templates
+are unchanged. This is a missing-model recovery, not a replacement mesh for a
+gender that the source robe does not support.
+
 An empty robe attachment for that phenotype preserves the original robe number
 and its native body-part hiding rules without drawing a second copy.
 

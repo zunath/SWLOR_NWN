@@ -50,6 +50,7 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance
                 nativeCreature.m_pInventory.GetItemInInventory(nativeItem) == 0)
                 return;
 
+            RobeAppearance.RemoveUnavailableRobe(creature, item);
             nativeCreature.UpdateAppearanceForEquippedItems();
 
             var message = server.GetNWSMessage();

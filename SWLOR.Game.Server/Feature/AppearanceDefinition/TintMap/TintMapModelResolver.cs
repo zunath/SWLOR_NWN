@@ -241,6 +241,16 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             AddCloakSelections(creature, prefix, selections, seenSelections);
         }
 
+        public static string GetCurrentRobeModelResref(uint creature, int robeId)
+        {
+            if (!Get2DAString("appearance", "MODELTYPE", (int)GetAppearanceType(creature))
+                    .StartsWith("P", StringComparison.OrdinalIgnoreCase))
+                return string.Empty;
+            var prefix = GetCreatureModelPrefix(creature);
+            return string.IsNullOrEmpty(prefix) ? string.Empty :
+                GetRobeModelResref(prefix, RobeModelRenderer.GetBasePhenotype(creature), robeId);
+        }
+
         private static string GetRobeModelResref(string prefix, int phenotype, int robeId)
         {
             var robePrefix = phenotype == 2

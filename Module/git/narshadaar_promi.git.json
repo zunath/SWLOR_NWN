@@ -31340,7 +31340,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 376
+          "value": 4373
         },
         "Race": {
           "type": "byte",
@@ -36951,7 +36951,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 376
+          "value": 129
         },
         "Race": {
           "type": "byte",
@@ -37975,7 +37975,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 376
+          "value": 4346
         },
         "Race": {
           "type": "byte",
@@ -38988,7 +38988,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 376
+          "value": 4348
         },
         "Race": {
           "type": "byte",
@@ -46814,7 +46814,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 3764
+          "value": 4348
         },
         "Race": {
           "type": "byte",
@@ -48832,7 +48832,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 3712
+          "value": 4350
         },
         "Race": {
           "type": "byte",
@@ -62282,7 +62282,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 376
+          "value": 4346
         },
         "Race": {
           "type": "byte",
@@ -64290,7 +64290,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 242
+          "value": 4352
         },
         "Race": {
           "type": "byte",

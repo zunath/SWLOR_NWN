@@ -850,7 +850,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 376
+          "value": 3900
         },
         "Race": {
           "type": "byte",
@@ -2046,7 +2046,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 376
+          "value": 4346
         },
         "Race": {
           "type": "byte",
@@ -3242,7 +3242,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 376
+          "value": 3579
         },
         "Race": {
           "type": "byte",
@@ -4256,7 +4256,7 @@
         },
         "PortraitId": {
           "type": "word",
-          "value": 3764
+          "value": 4348
         },
         "Race": {
           "type": "byte",

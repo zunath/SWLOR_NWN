@@ -1366,7 +1366,9 @@ namespace SWLOR.Toolset.Editors
                     _ => Matrix4x4.Identity
                 },
                 Model = preview.Model,
-                IsDoorTransition = kind.Value == InstanceMarkerKind.Door && preview.IsDoorTransition
+                IsDoorTransition = kind.Value == InstanceMarkerKind.Door && preview.IsDoorTransition,
+                TintMapOverrides = preview.TintMapOverrides ??
+                                   new Dictionary<string, int>(StringComparer.Ordinal)
             };
         }
 

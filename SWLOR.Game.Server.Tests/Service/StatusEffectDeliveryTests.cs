@@ -27,7 +27,9 @@ public class StatusEffectDeliveryTests
         StatusEffect.BuildDurationResistanceMessage(ResistanceType.Mobility, "Immobilized", 10, 9, 3f)
             .Should().Be("Mobility Resistance reduced Immobilized duration from 30s to 27s.");
         StatusEffect.BuildDurationResistanceMessage(ResistanceType.Mind, "Confusion", 5, 6, 1f)
-            .Should().Be("Mind Resistance increased Confusion duration from 5s to 6s.");
+            .Should().Be("Mind Vulnerability increased Confusion duration from 5s to 6s.");
+        StatusEffect.BuildDurationResistanceMessage(ResistanceType.Mind, "Dazed", 15, 17, 1f)
+            .Should().Be("Mind Vulnerability increased Dazed duration from 15s to 17s.");
         StatusEffect.BuildDurationResistanceMessage(ResistanceType.Trauma, "Venom", 5, 5, 6f)
             .Should().BeEmpty();
     }

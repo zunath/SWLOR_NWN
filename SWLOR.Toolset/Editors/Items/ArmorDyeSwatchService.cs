@@ -1,3 +1,4 @@
+using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.Render;
 
@@ -43,9 +44,6 @@ namespace SWLOR.Toolset.Editors.Items
             Tattoo
         }
 
-        /// <summary>Grayscale intensity sampled to stand in for a palette row's hue (mid-tone).</summary>
-        private const int SwatchIntensity = 128;
-
         private readonly ResourceIndex? _resourceIndex;
 
         private readonly Dictionary<string, TextureImage?> _paletteCache =
@@ -72,7 +70,8 @@ namespace SWLOR.Toolset.Editors.Items
             var row = Math.Clamp(index, 0, palette.Height - 1);
             var column = palette.Width == 1
                 ? 0
-                : SwatchIntensity * (palette.Width - 1) / 255;
+                : TintMapMaterialRegistry.CustomColorReferenceIntensity *
+                  (palette.Width - 1) / byte.MaxValue;
             var offset = (row * palette.Width + column) * 4;
 
             return (palette.Pixels[offset], palette.Pixels[offset + 1], palette.Pixels[offset + 2]);

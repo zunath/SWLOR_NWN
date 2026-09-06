@@ -1,5 +1,6 @@
 using SWLOR.NWN.Formats.Mdl;
 using SWLOR.NWN.Formats.Plt;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.GameData.Resources;
@@ -12,6 +13,12 @@ using SWLOR.Toolset.Viewport;
 
 namespace SWLOR.Toolset.Workspace
 {
+    /// <summary>
+    /// One rigid attachment and the temporary texture stamp that distinguishes this occurrence from
+    /// another attachment using the same model resref.
+    /// </summary>
+    internal readonly record struct ComposedPartInstance(string TextureStamp, BlueprintModelPart Part);
+
     /// <summary>
     /// Produces the pixels for one blueprint's palette preview, choosing the best source available for
     /// the kind of thing it is.
@@ -53,6 +60,7 @@ namespace SWLOR.Toolset.Workspace
         private readonly WaypointAppearanceService? _waypoints;
         private readonly BaseItemIconService? _baseItems;
         private readonly CloakModelService? _cloakModels;
+        private readonly CreatureAttachmentModelService? _creatureAttachmentModels;
         private readonly PortraitService? _portraits;
         private readonly TwoDaService? _twoDa;
         private readonly ArmorDyeSwatchService _dyeSwatches;
@@ -92,6 +100,7 @@ namespace SWLOR.Toolset.Workspace
             _waypoints = waypoints;
             _baseItems = baseItems;
             _cloakModels = twoDa == null ? null : new CloakModelService(twoDa);
+            _creatureAttachmentModels = twoDa == null ? null : new CreatureAttachmentModelService(twoDa);
             _portraits = portraits;
             _twoDa = twoDa;
             _dyeSwatches = new ArmorDyeSwatchService(resourceIndex);
@@ -235,14 +244,15 @@ namespace SWLOR.Toolset.Workspace
                 type, root, _appearances, _placeables, _doors,
                 itemResRef => LoadItemBlueprintRoot(itemResRef, useIndexedBlueprint),
                 PartModelExists, _waypoints, _baseItems == null ? null : _baseItems.GetOrNull,
-                armorPreviewFemale, _cloakModels);
+                armorPreviewFemale, _cloakModels, _creatureAttachmentModels);
 
             var model = BuildResolvedModel(
                 type, reference, includeCreatureAnimations: type == ResourceType.Utc);
 
             return new BlueprintModelRenderResult(
                 WithLayerColors(model, reference),
-                reference.IsDoorTransition);
+                reference.IsDoorTransition,
+                TintMapOverrides.Read(new VarTable(root)));
         }
 
         /// <summary>
@@ -265,7 +275,8 @@ namespace SWLOR.Toolset.Workspace
                             : BuildCreatureModel(reference.ModelResRef, includeCreatureAnimations)
                         : type == ResourceType.Utd && reference.IsDoorTransition
                             ? BuildDoorTransitionModel(reference.ModelResRef)
-                        : BuildRenderModel(reference.ModelResRef),
+                        : ApplyRootItemTintOwnership(
+                            BuildRenderModel(reference.ModelResRef), reference),
                 BlueprintModelKind.Segmented => ComposeSegmented(reference, includeCreatureAnimations),
                 BlueprintModelKind.ItemComposite => ComposeItemParts(reference),
                 _ => null
@@ -276,6 +287,19 @@ namespace SWLOR.Toolset.Workspace
             includeCreatureAnimations
                 ? BuildCreatureRenderModel(modelResRef)
                 : BuildRenderModel(modelResRef);
+
+        private static RenderModel? ApplyRootItemTintOwnership(
+            RenderModel? model,
+            BlueprintModelReference reference)
+        {
+            if (model == null || !reference.RootUsesItemTintOverrides)
+                return model;
+
+            foreach (var mesh in model.Meshes)
+                mesh.UsesItemTintOverrides = true;
+
+            return model;
+        }
 
         /// <summary>
         /// Hands the blueprint's dye choices to the model so the viewport can colour its PLT layers.
@@ -384,7 +408,8 @@ namespace SWLOR.Toolset.Workspace
                 type, root, _appearances, _placeables, _doors,
                 itemResRef => LoadItemBlueprintRoot(itemResRef, useIndexedBlueprint),
                 PartModelExists, _waypoints, _baseItems == null ? null : _baseItems.GetOrNull,
-                cloakModels: _cloakModels);
+                cloakModels: _cloakModels,
+                creatureAttachmentModels: _creatureAttachmentModels);
 
             var model = BuildResolvedModel(type, reference, includeCreatureAnimations: false);
 
@@ -397,15 +422,18 @@ namespace SWLOR.Toolset.Workspace
                 layerColors = merged;
             }
 
-            Func<string, IReadOnlyDictionary<int, int>?, TextureImage?>? resolveLayeredTexture =
+            var tintMapOverrides = TintMapOverrides.Read(new VarTable(root));
+            Func<RenderMesh, TextureImage?>? resolveMeshTexture =
                 _textures == null
                     ? null
-                    : (texture, meshColors) => _textures.Get(
-                        texture,
-                        meshColors is { Count: > 0 } ? meshColors : layerColors);
+                    : mesh => ResolveMeshTexture(
+                        mesh,
+                        layerColors,
+                        tintMapOverrides,
+                        useBlueprintOverridesForItemOwnedMeshes: type == ResourceType.Uti);
             var pixels = ThumbnailRenderer.Render(
                 model, ModelRenderSize, palette: null,
-                resolveLayeredTexture: resolveLayeredTexture,
+                resolveMeshTexture: resolveMeshTexture,
                 renderDoorTransitionFallback: reference.IsDoorTransition);
             return pixels == null ? null : new IconImage(ModelRenderSize, ModelRenderSize, pixels);
         }
@@ -426,7 +454,7 @@ namespace SWLOR.Toolset.Workspace
                     : BuildRenderModel(modelResRef),
                 ModelRenderSize,
                 palette: null,
-                resolveTexture: _textures == null ? null : texture => _textures.Get(texture),
+                resolveMeshTexture: _textures == null ? null : mesh => ResolveMeshTexture(mesh),
                 renderDoorTransitionFallback: renderDoorTransitionFallback);
 
             return pixels == null ? null : new IconImage(ModelRenderSize, ModelRenderSize, pixels);
@@ -452,9 +480,66 @@ namespace SWLOR.Toolset.Workspace
             var pixels = ThumbnailRenderer.Render(
                 TileGroupPreview.Compose(slots, columns, rows), ModelRenderSize,
                 palette: null,
-                resolveTexture: _textures == null ? null : texture => _textures.Get(texture));
+                resolveMeshTexture: _textures == null ? null : mesh => ResolveMeshTexture(mesh));
 
             return pixels == null ? null : new IconImage(ModelRenderSize, ModelRenderSize, pixels);
+        }
+
+        private TextureImage? ResolveMeshTexture(
+            RenderMesh mesh,
+            IReadOnlyDictionary<int, int>? fallbackLayerColors = null,
+            IReadOnlyDictionary<string, int>? tintMapOverrides = null,
+            bool useBlueprintOverridesForItemOwnedMeshes = false)
+        {
+            if (_textures == null)
+                return null;
+
+            var hasMaterial = !string.IsNullOrWhiteSpace(mesh.MaterialName);
+            var surfaceName = hasMaterial ? mesh.MaterialName : mesh.TextureName;
+            var resolveMaterial = hasMaterial || IsGeneratedTintMaterial(surfaceName);
+            var layerColors = mesh.LayerColorIndices.Count > 0
+                ? mesh.LayerColorIndices
+                : fallbackLayerColors;
+            // Composed creature equipment carries its material-dye locals on the mesh. Creature
+            // skin, hair and tattoo overrides remain semantic appearance colors, so those four
+            // layers are merged from the creature root. A root item preview has no nested snapshot
+            // and instead falls back to the item blueprint's own locals for every layer.
+            var activeTintMapOverrides = tintMapOverrides;
+            if (mesh.UsesItemTintOverrides)
+            {
+                activeTintMapOverrides = useBlueprintOverridesForItemOwnedMeshes
+                    ? mesh.TintMapOverrides.Count > 0
+                        ? mesh.TintMapOverrides
+                        : tintMapOverrides
+                    : TintMapOverrides.MergeCreatureLayers(
+                        tintMapOverrides,
+                        mesh.TintMapOverrides);
+            }
+            return _textures.Get(
+                surfaceName,
+                layerColors,
+                activeTintMapOverrides,
+                // Only generated tint materials may use the same-resref MTR fallback. Ordinary
+                // bitmap-only meshes must retain their authored bitmap even when an unrelated MTR
+                // happens to share its resref.
+                resolveMaterial,
+                mesh.ArmorPart);
+        }
+
+        private bool IsGeneratedTintMaterial(string surfaceName)
+        {
+            if (_resourceIndex == null || string.IsNullOrWhiteSpace(surfaceName))
+                return false;
+
+            try
+            {
+                return TintMapTextureRenderer.IsTintMapMaterial(
+                    MaterialResolver.TryParseMaterial(_resourceIndex, surfaceName));
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -665,22 +750,35 @@ namespace SWLOR.Toolset.Workspace
 
             if (rigidParts.Count > 0)
             {
+                var rigidPartInstances = rigidParts
+                    .Select((part, index) => new ComposedPartInstance($"@swlor-part:{index}", part))
+                    .ToList();
                 MdlModel? composed;
                 IReadOnlyList<IReadOnlyDictionary<int, int>?> rigidLayerColors =
                     Array.Empty<IReadOnlyDictionary<int, int>?>();
+                IReadOnlyList<bool> rigidItemTintOwnership = Array.Empty<bool>();
+                IReadOnlyList<IReadOnlyDictionary<string, int>?> rigidTintMapOverrides =
+                    Array.Empty<IReadOnlyDictionary<string, int>?>();
+                IReadOnlyList<AppearanceArmor> rigidArmorParts = Array.Empty<AppearanceArmor>();
                 lock (_composerGate)
                 {
                     // _partTextures is filled by LoadComposerModel as the composer pulls each part in,
                     // so it has to be cleared and read inside the same lock that owns the compose run.
                     _partTextures.Clear();
-                    composed = _partComposer.Compose(
+                    composed = _partComposer.ComposeStamped(
                         skeletonResRef,
-                        rigidParts.Select(part => (part.PartType, part.ModelResRef)).ToList(),
+                        rigidPartInstances.Select(instance => (
+                            instance.Part.PartType,
+                            instance.Part.ModelResRef,
+                            instance.TextureStamp)).ToList(),
                         adjustSeams: true);
                     if (composed != null)
                     {
-                        rigidLayerColors = CaptureComposedLayerColors(composed, rigidParts);
-                        ApplyComposedTextureOverrides(composed, rigidParts);
+                        rigidLayerColors = CaptureComposedLayerColors(composed, rigidPartInstances);
+                        rigidItemTintOwnership = CaptureComposedItemTintOwnership(composed, rigidPartInstances);
+                        rigidTintMapOverrides = CaptureComposedTintMapOverrides(composed, rigidPartInstances);
+                        rigidArmorParts = CaptureComposedArmorParts(composed, rigidPartInstances);
+                        RestoreComposedPartStamps(composed, rigidPartInstances);
                         _partTextures.Restore(composed, TextureExists);
                     }
                 }
@@ -692,6 +790,9 @@ namespace SWLOR.Toolset.Workspace
                         ? MdlMeshBuilder.BuildAnimatedPreview(composed, frames, sharedAnimations)
                         : MdlMeshBuilder.Build(composed, frames);
                     ApplyLayerColors(rigidModel, rigidLayerColors);
+                    ApplyItemTintOwnership(rigidModel, rigidItemTintOwnership);
+                    ApplyTintMapOverrides(rigidModel, rigidTintMapOverrides);
+                    ApplyArmorParts(rigidModel, rigidArmorParts);
                     renderModels.Add(rigidModel);
                 }
             }
@@ -720,6 +821,17 @@ namespace SWLOR.Toolset.Workspace
                         mesh.LayerColorIndices = partColors;
                 }
 
+                if (part.Part.UsesItemTintOverrides)
+                {
+                    foreach (var mesh in model.Meshes)
+                    {
+                        mesh.UsesItemTintOverrides = true;
+                        mesh.TintMapOverrides = part.Part.TintMapOverrides ??
+                                                new Dictionary<string, int>(StringComparer.Ordinal);
+                        mesh.ArmorPart = part.Part.ArmorPart;
+                    }
+                }
+
                 return model;
             }));
 
@@ -727,47 +839,45 @@ namespace SWLOR.Toolset.Workspace
         }
 
         /// <summary>
-        /// Applies cloakmodel.2da's surface selection before authored-texture restoration. The part
-        /// composer stamps each attached mesh with its source model resref, which makes that value a
-        /// reliable key even when two cloak appearances share the same geometry.
+        /// Replaces each per-occurrence stamp with cloakmodel.2da's selected surface or the source
+        /// model resref before authored-texture restoration. Occurrence stamps remain distinct while
+        /// tint metadata is captured even when two equipped items use the same model.
         /// </summary>
-        private static void ApplyComposedTextureOverrides(
+        internal static void RestoreComposedPartStamps(
             MdlModel composed,
-            IReadOnlyList<BlueprintModelPart> parts)
+            IReadOnlyList<ComposedPartInstance> parts)
         {
-            var overrides = parts
-                .Where(part => !string.IsNullOrWhiteSpace(part.TextureResRef))
-                .GroupBy(part => part.ModelResRef, StringComparer.OrdinalIgnoreCase)
-                .ToDictionary(
-                    group => group.Key,
-                    group => group.Last().TextureResRef!,
-                    StringComparer.OrdinalIgnoreCase);
-            if (overrides.Count == 0)
-                return;
+            var partsByStamp = parts.ToDictionary(
+                instance => instance.TextureStamp,
+                instance => instance.Part,
+                StringComparer.Ordinal);
 
             foreach (var mesh in composed.GetMeshNodes())
             {
-                if (overrides.TryGetValue(mesh.Bitmap, out var textureResRef))
-                    mesh.Bitmap = textureResRef;
+                if (!partsByStamp.TryGetValue(mesh.Bitmap, out var part))
+                    continue;
+
+                mesh.Bitmap = string.IsNullOrWhiteSpace(part.TextureResRef)
+                    ? part.ModelResRef
+                    : part.TextureResRef;
             }
         }
 
         /// <summary>
-        /// Captures each composed mesh's equipment palette while the composer's model-resref stamp is
-        /// still present. Texture restoration deliberately replaces that stamp, so the association
-        /// must be retained before surfaces are corrected.
+        /// Captures each composed mesh's equipment palette while its per-occurrence stamp is still
+        /// present. Texture restoration deliberately replaces that stamp, so the association must be
+        /// retained before surfaces are corrected.
         /// </summary>
-        private static IReadOnlyList<IReadOnlyDictionary<int, int>?> CaptureComposedLayerColors(
+        internal static IReadOnlyList<IReadOnlyDictionary<int, int>?> CaptureComposedLayerColors(
             MdlModel composed,
-            IReadOnlyList<BlueprintModelPart> parts)
+            IReadOnlyList<ComposedPartInstance> parts)
         {
-            var colorsByModel = parts
-                .Where(part => part.LayerColorIndices is { Count: > 0 })
-                .GroupBy(part => part.ModelResRef, StringComparer.OrdinalIgnoreCase)
+            var colorsByStamp = parts
+                .Where(instance => instance.Part.LayerColorIndices is { Count: > 0 })
                 .ToDictionary(
-                    group => group.Key,
-                    group => group.Last().LayerColorIndices!,
-                    StringComparer.OrdinalIgnoreCase);
+                    instance => instance.TextureStamp,
+                    instance => instance.Part.LayerColorIndices!,
+                    StringComparer.Ordinal);
             var result = new List<IReadOnlyDictionary<int, int>?>();
             foreach (var mesh in composed.GetMeshNodes())
             {
@@ -777,7 +887,7 @@ namespace SWLOR.Toolset.Workspace
                 if (!MdlMeshBuilder.IsRenderableMesh(mesh))
                     continue;
 
-                result.Add(colorsByModel.TryGetValue(mesh.Bitmap, out var colors) ? colors : null);
+                result.Add(colorsByStamp.TryGetValue(mesh.Bitmap, out var colors) ? colors : null);
             }
 
             return result;
@@ -798,6 +908,115 @@ namespace SWLOR.Toolset.Workspace
                 if (layerColors[index] is { Count: > 0 } colors)
                     model.Meshes[index].LayerColorIndices = colors;
             }
+        }
+
+        internal static IReadOnlyList<bool> CaptureComposedItemTintOwnership(
+            MdlModel composed,
+            IReadOnlyList<ComposedPartInstance> parts)
+        {
+            var itemOwnedStamps = parts
+                .Where(instance => instance.Part.UsesItemTintOverrides)
+                .Select(instance => instance.TextureStamp)
+                .ToHashSet(StringComparer.Ordinal);
+            var result = new List<bool>();
+            foreach (var mesh in composed.GetMeshNodes())
+            {
+                if (MdlMeshBuilder.IsRenderableMesh(mesh))
+                    result.Add(itemOwnedStamps.Contains(mesh.Bitmap));
+            }
+
+            return result;
+        }
+
+        private static void ApplyItemTintOwnership(
+            RenderModel model,
+            IReadOnlyList<bool> itemTintOwnership)
+        {
+            if (model.Meshes.Count != itemTintOwnership.Count)
+            {
+                throw new InvalidDataException(
+                    $"Composed mesh tint ownership count {itemTintOwnership.Count} does not match rendered mesh count {model.Meshes.Count}.");
+            }
+
+            for (var index = 0; index < model.Meshes.Count; index++)
+                model.Meshes[index].UsesItemTintOverrides = itemTintOwnership[index];
+        }
+
+        internal static IReadOnlyList<IReadOnlyDictionary<string, int>?> CaptureComposedTintMapOverrides(
+            MdlModel composed,
+            IReadOnlyList<ComposedPartInstance> parts)
+        {
+            var overridesByStamp = parts
+                .Where(instance => instance.Part.TintMapOverrides is { Count: > 0 })
+                .ToDictionary(
+                    instance => instance.TextureStamp,
+                    instance => instance.Part.TintMapOverrides!,
+                    StringComparer.Ordinal);
+            var result = new List<IReadOnlyDictionary<string, int>?>();
+            foreach (var mesh in composed.GetMeshNodes())
+            {
+                if (!MdlMeshBuilder.IsRenderableMesh(mesh))
+                    continue;
+
+                result.Add(overridesByStamp.TryGetValue(mesh.Bitmap, out var values) ? values : null);
+            }
+
+            return result;
+        }
+
+        private static void ApplyTintMapOverrides(
+            RenderModel model,
+            IReadOnlyList<IReadOnlyDictionary<string, int>?> overrides)
+        {
+            if (model.Meshes.Count != overrides.Count)
+            {
+                throw new InvalidDataException(
+                    $"Composed mesh tint override count {overrides.Count} does not match rendered mesh count {model.Meshes.Count}.");
+            }
+
+            for (var index = 0; index < model.Meshes.Count; index++)
+            {
+                if (overrides[index] is { Count: > 0 } values)
+                    model.Meshes[index].TintMapOverrides = values;
+            }
+        }
+
+        internal static IReadOnlyList<AppearanceArmor> CaptureComposedArmorParts(
+            MdlModel composed,
+            IReadOnlyList<ComposedPartInstance> parts)
+        {
+            var armorPartsByStamp = parts
+                .Where(instance => instance.Part.ArmorPart != AppearanceArmor.Invalid)
+                .ToDictionary(
+                    instance => instance.TextureStamp,
+                    instance => instance.Part.ArmorPart,
+                    StringComparer.Ordinal);
+            var result = new List<AppearanceArmor>();
+            foreach (var mesh in composed.GetMeshNodes())
+            {
+                if (!MdlMeshBuilder.IsRenderableMesh(mesh))
+                    continue;
+
+                result.Add(armorPartsByStamp.GetValueOrDefault(
+                    mesh.Bitmap,
+                    AppearanceArmor.Invalid));
+            }
+
+            return result;
+        }
+
+        private static void ApplyArmorParts(
+            RenderModel model,
+            IReadOnlyList<AppearanceArmor> armorParts)
+        {
+            if (model.Meshes.Count != armorParts.Count)
+            {
+                throw new InvalidDataException(
+                    $"Composed mesh armor part count {armorParts.Count} does not match rendered mesh count {model.Meshes.Count}.");
+            }
+
+            for (var index = 0; index < model.Meshes.Count; index++)
+                model.Meshes[index].ArmorPart = armorParts[index];
         }
 
         /// <summary>Applies a selected surface to a weighted garment before its meshes are built.</summary>

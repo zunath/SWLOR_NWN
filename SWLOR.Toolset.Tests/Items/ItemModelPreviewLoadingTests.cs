@@ -42,7 +42,8 @@ namespace SWLOR.Toolset.Tests.Items
             try
             {
                 // Construction returned while the first resolver is still blocked. Changing the
-                // mannequin starts a newer generation without waiting for the old one.
+                // mannequin records the newest requested state without blocking the UI; after the
+                // opening model captures its tint rows, only that newest state is resolved.
                 firstStarted.Wait(TimeSpan.FromSeconds(5)).Should().BeTrue();
                 editor.IsModelPreviewLoading.Should().BeTrue();
                 editor.HasModelPreview.Should().BeFalse();

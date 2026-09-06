@@ -18,37 +18,61 @@
                Foreground="{DynamicResource InkSecondaryBrush}"
                TextTrimming="CharacterEllipsis" />
 
-    <Button Grid.Column="1" Padding="3" Command="{Binding TogglePickerCommand}"
-            IsVisible="{Binding HasPalette}" ToolTip.Tip="Pick a colour">
+    <ToggleButton x:Name="PickerButton" Grid.Column="1" Padding="3"
+                  IsChecked="{Binding IsPickerOpen, Mode=TwoWay}"
+                  IsVisible="{Binding HasColorPicker}" ToolTip.Tip="Pick a preset or custom colour">
       <Border Width="46" Height="18" CornerRadius="2"
-              Background="{Binding SelectedBrush}"
+              Background="{Binding DisplayBrush}"
               BorderBrush="{DynamicResource RuleBrush}" BorderThickness="1" />
-      <Button.Flyout>
-        <Flyout Placement="Bottom" ShowMode="Standard">
-          <ScrollViewer MaxHeight="260" HorizontalScrollBarVisibility="Disabled">
-            <ItemsControl ItemsSource="{Binding Swatches}" Width="272">
-              <ItemsControl.ItemsPanel>
-                <ItemsPanelTemplate>
-                  <WrapPanel />
-                </ItemsPanelTemplate>
-              </ItemsControl.ItemsPanel>
-              <ItemsControl.ItemTemplate>
-                <DataTemplate DataType="items:ItemDyeSwatchViewModel">
-                  <Button Padding="0" Margin="1" Background="Transparent"
-                          Command="{Binding $parent[ItemsControl].((items:ItemDyeCellViewModel)DataContext).PickCommand}"
-                          CommandParameter="{Binding}"
-                          ToolTip.Tip="{Binding Tooltip}">
-                    <Border Classes.selected="{Binding IsSelected}"
-                            Width="20" Height="20" CornerRadius="2"
-                            Background="{Binding Brush}" BorderThickness="2" />
-                  </Button>
-                </DataTemplate>
-              </ItemsControl.ItemTemplate>
-            </ItemsControl>
-          </ScrollViewer>
-        </Flyout>
-      </Button.Flyout>
-    </Button>
+    </ToggleButton>
+
+    <!-- Color changes never dismiss the picker, so builders can compare several choices against
+         the live preview. Light dismiss closes it only when the active chip or anything else
+         outside the popup is clicked; consuming that dismiss click prevents the chip from
+         immediately reopening the popup. -->
+    <Popup Grid.Column="1"
+           IsOpen="{Binding IsPickerOpen, Mode=TwoWay}"
+           PlacementTarget="{Binding #PickerButton}" Placement="Bottom"
+           IsLightDismissEnabled="True"
+           OverlayDismissEventPassThrough="False">
+      <Border Background="{DynamicResource PanelBrush}" CornerRadius="4" Padding="8"
+              BorderBrush="{DynamicResource RuleStrongBrush}" BorderThickness="1">
+          <StackPanel Width="292" Spacing="8">
+            <ScrollViewer MaxHeight="260" HorizontalScrollBarVisibility="Disabled"
+                          IsVisible="{Binding HasPalette}">
+              <ItemsControl ItemsSource="{Binding Swatches}" Width="272">
+                <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <WrapPanel />
+                  </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate DataType="items:ItemDyeSwatchViewModel">
+                    <Button Padding="0" Margin="1" Background="Transparent"
+                            Command="{Binding $parent[ItemsControl].((items:ItemDyeCellViewModel)DataContext).PickCommand}"
+                            CommandParameter="{Binding}"
+                            ToolTip.Tip="{Binding Tooltip}">
+                      <Border Classes.selected="{Binding IsSelected}"
+                              Width="20" Height="20" CornerRadius="2"
+                              Background="{Binding Brush}" BorderThickness="2" />
+                    </Button>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </ScrollViewer>
+
+            <Separator IsVisible="{Binding HasCustomOption}" />
+            <ColorView Color="{Binding CustomColor, Mode=TwoWay}"
+                       IsAlphaEnabled="False"
+                       IsColorPaletteVisible="False"
+                       IsVisible="{Binding HasCustomOption}" />
+            <Button Content="Restore preset"
+                    Command="{Binding RestorePresetCommand}"
+                    IsVisible="{Binding CanRestorePreset}"
+                    HorizontalAlignment="Right" />
+          </StackPanel>
+      </Border>
+    </Popup>
 
     <!-- Existing item documents remain editable without base-game palette artwork. Creature rows
          disable this path at construction, so they can never regress to a numeric color control. -->

@@ -241,6 +241,9 @@ internal sealed class AsciiMdlReader
                     bitmapSeen = true;
                     mesh.Bitmap = NullAsEmpty(RequiredToken(tokens, 1, line, "mesh bitmap"));
                     break;
+                case "materialname" when node is MdlTrimeshNode mesh:
+                    mesh.MaterialName = NullAsEmpty(RequiredToken(tokens, 1, line, "mesh material name"));
+                    break;
                 case "texture0" when node is MdlTrimeshNode:
                     texture0 = NullAsEmpty(RequiredToken(tokens, 1, line, "mesh texture0"));
                     break;

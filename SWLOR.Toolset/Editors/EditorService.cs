@@ -176,6 +176,7 @@ namespace SWLOR.Toolset.Editors
         private readonly BlueprintSaveCoordinator _blueprintSaves;
         private Items.ArmorDyeSwatchService? _armorDyeSwatches;
         private Items.ArmorPartCatalog? _armorPartModels;
+        private TintMapCatalog? _tintMapCatalog;
         private readonly Dictionary<string, Sounds.SoundDocumentViewModel> _openSoundEditors = new(StringComparer.OrdinalIgnoreCase);
         private IReadOnlyList<string>? _soundResources;
         private Services.SoundPreviewService? _soundPreviews;
@@ -705,6 +706,9 @@ namespace SWLOR.Toolset.Editors
             _itemCostTableRanges = null;
             _armorDyeSwatches = null;
             _armorPartModels = null;
+            _tintMapCatalog = null;
+
+            var tintMapCatalog = GetTintMapCatalog();
 
             foreach (var editor in _openAreaEditors.Values)
                 editor.ReloadGameResources();
@@ -713,9 +717,15 @@ namespace SWLOR.Toolset.Editors
             foreach (var editor in _openDoorEditors.Values)
                 editor.Editor.ReloadGameResources();
             foreach (var editor in _openCreatureEditors.Values)
+            {
+                editor.Editor.ReloadTintMapCatalog(tintMapCatalog);
                 editor.Editor.ReloadGameResources();
+            }
             foreach (var editor in _openItemEditors.Values)
+            {
+                editor.Editor.ReloadTintMapCatalog(tintMapCatalog);
                 editor.Editor.ReloadGameResources(ItemCostTables());
+            }
             foreach (var editor in _openMerchantEditors.Values)
                 editor.Editor.RefreshItemCatalog();
         }
@@ -1141,6 +1151,7 @@ namespace SWLOR.Toolset.Editors
                     type == ResourceType.Utp ? CreatePlaceableSections : null,
                     () => _workspaceContext.Workspace,
                     type == ResourceType.Utc ? CreateCreatureAppearanceGallery : null,
+                    type == ResourceType.Utc ? CreateCreatureTintMapEditor : null,
                     _blueprintSaves,
                     CreateObjectSource(type, resRef),
                     TlkRowOpener);
@@ -1493,6 +1504,21 @@ namespace SWLOR.Toolset.Editors
                     $"Change appearance to {option.Caption}",
                     () => WriteCreatureAppearance(context, option)),
                 noun: "appearance");
+        }
+
+        private TintMaps.TintMapEditorViewModel? CreateCreatureTintMapEditor(
+            EditorFieldContext context,
+            Func<string, Action, bool> runEdit)
+        {
+            var catalog = GetTintMapCatalog();
+            if (catalog == null || _previewRenderer == null)
+                return null;
+
+            return new TintMaps.TintMapEditorViewModel(
+                new VarTable(context.Document.Root),
+                runEdit,
+                catalog,
+                () => _previewRenderer.BuildModel(ResourceType.Utc, context.Document.Root));
         }
 
         private static void WriteCreatureAppearance(
@@ -1934,7 +1960,8 @@ namespace SWLOR.Toolset.Editors
                 SearchCreatureEquipmentItems,
                 _appearances == null ? null : CreatureAppearanceOptions,
                 CreatureAbilityIcon,
-                CreateObjectSource(ResourceType.Utc, resRef));
+                source: CreateObjectSource(ResourceType.Utc, resRef),
+                tintMapCatalog: GetTintMapCatalog());
             editor.Closed += closed => _openCreatureEditors.Remove(closed.FilePath);
             editor.CloseRequested += _ => _factory.CloseDocument(editor);
             editor.CatalogEntryChanged += () =>
@@ -2004,7 +2031,8 @@ namespace SWLOR.Toolset.Editors
                 canRefileCategories: CanRefileItemCategories,
                 refileCategories: RefileItemCategories,
                 saveCoordinator: _blueprintSaves,
-                placementSource: CreateObjectSource(ResourceType.Uti, resRef));
+                placementSource: CreateObjectSource(ResourceType.Uti, resRef),
+                tintMapCatalog: GetTintMapCatalog());
             editor.Closed += closed => _openItemEditors.Remove(closed.FilePath);
             editor.CloseRequested += _ => _factory.CloseDocument(editor);
             editor.CatalogEntryChanged += () =>
@@ -2146,6 +2174,15 @@ namespace SWLOR.Toolset.Editors
 
             _armorPartModels ??= new Items.ArmorPartCatalog(_resourceIndex);
             return _armorPartModels;
+        }
+
+        private TintMapCatalog? GetTintMapCatalog()
+        {
+            if (_resourceIndex == null)
+                return null;
+
+            _tintMapCatalog ??= TintMapCatalog.Load(_resourceIndex);
+            return _tintMapCatalog;
         }
 
         /// <summary>A stat/requirement/appearance cell's real engine cap, by CostTableId.</summary>

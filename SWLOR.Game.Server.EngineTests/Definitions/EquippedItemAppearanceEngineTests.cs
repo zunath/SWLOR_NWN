@@ -150,9 +150,17 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         }
 
         [EngineTest("Tint robe RGB swaps preserve gameplay and emit no equipment events", Category = "AppearanceEditor", TimeoutSeconds = 60f)]
-        public static async Task RobeRgbNeverReequips(EngineTestContext ctx)
+        public static Task RobeRgbNeverReequips(EngineTestContext ctx) => VerifyRobeRgbNeverReequips(ctx, false);
+
+        [EngineTest("Tint robe RGB male swaps preserve gameplay and emit no equipment events", Category = "AppearanceEditor", TimeoutSeconds = 60f)]
+        public static Task MaleRobeRgbNeverReequips(EngineTestContext ctx) => VerifyRobeRgbNeverReequips(ctx, true);
+
+        private static async Task VerifyRobeRgbNeverReequips(EngineTestContext ctx, bool male)
         {
-            var creature = await SpawnCivilianAsync(ctx);
+            var creature = await SpawnCivilianAsync(ctx, male ? "colonisthuman2" : "civilian");
+            if (male)
+                await AssignedAsync(ctx, creature, () => EquippedItemAppearance.Set(
+                    GetItemInSlot(InventorySlot.Chest, creature), ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, 187));
             var item = GetItemInSlot(InventorySlot.Chest, creature);
             using var observation = new EventObservation(creature);
             await VerifyGenuineEquipmentEventsAsync(ctx, creature, item, InventorySlot.Chest, observation);
@@ -183,7 +191,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(originalAppearance, ItemPlugin.GetEntireItemAppearance(item), "RGB does not rewrite any armor field.");
                 var robe = TintMapModelResolver.GetCurrentSelections(creature).Single(selection =>
                     selection.ArmorPart == AppearanceArmor.Robe);
-                ctx.AssertEqual("pfh0_robe187", robe.ModelResref, "Canonical robe identity survives projection.");
+                ctx.AssertEqual(male ? "pmh0_robe187" : "pfh0_robe187", robe.ModelResref, "Canonical robe identity survives projection.");
                 foreach (var layer in layers)
                     TintMapEngineTests.AssertNativeRgb(ctx, creature, robe.Material.Resref, layer, requested);
                 var partColor = new TintMapColor(1, 17, 91);
@@ -193,12 +201,27 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 TintMapEngineTests.AssertNativeRgb(ctx, creature, robe.Material.Resref, TintMapLayerType.Cloth1, requested);
             });
             await AssertSettledAsync(ctx, before, observation, "all robe layers and per-part RGB inheritance");
-            foreach (var robeId in new[] { 0, 1, 7, 187 })
+            // Repeat transitions so cumulative stat/effect application cannot hide
+            // behind a single successful swap. Include custom coat animations and
+            // the robes reported with detached hands, plus the native fallback.
+            var robeIds = male
+                ? new[] { 0, 1, 3, 7, 187, 227, 230, 236, 250, 252, 227, 230, 236, 250, 252, 0, 187 }
+                : new[] { 0, 1, 3, 7, 187, 230, 236, 250, 252, 230, 236, 250, 252, 0, 187 };
+            foreach (var robeId in robeIds)
             {
                 await AssignedAsync(ctx, creature, () =>
                 {
                     EquippedItemAppearance.Set(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, robeId);
                     TintMapService.ApplyCurrentColors(creature);
+                    if (robeId > 1)
+                    {
+                        var robeSelection = TintMapModelResolver.GetCurrentSelections(creature)
+                            .FirstOrDefault(selection => selection.ArmorPart == AppearanceArmor.Robe);
+                        ctx.Assert(robeSelection != null, $"Robe {robeId} must resolve a tint material for this body.");
+                        TintMapService.SetGlobalItemCustomColor(creature,
+                            TintMapModelResolver.GetCurrentSelections(creature),
+                            robeSelection.Material.Layers.First(), requested, item);
+                    }
                     if (robeId is 0 or 1)
                         ctx.AssertEqual(0, (int)GetPhenoType(creature),
                             "No robe or an unregistered robe restores the normal root.");
@@ -206,7 +229,22 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                         ctx.AssertEqual(generatedPhenotype, (int)GetPhenoType(creature), "Restoring the robe reuses its stable root.");
                     else
                         ctx.Assert((int)GetPhenoType(creature) >= 34 && (int)GetPhenoType(creature) != generatedPhenotype,
-                            "Changing the robe selects its own geometry.");
+                            $"Robe {robeId} selects its own geometry; actual phenotype {(int)GetPhenoType(creature)}.");
+                    if (robeId > 1)
+                    {
+                        var selections = TintMapModelResolver.GetCurrentSelections(creature);
+                        var custom = new TintMapColor(100, 7, 180);
+                        TintMapService.SetGlobalItemCustomColor(creature, selections, TintMapLayerType.Cloth1, custom, item);
+                        foreach (var selection in selections.Where(part => part.ArmorPart == AppearanceArmor.Robe &&
+                                     part.Material.Layers.Contains(TintMapLayerType.Cloth1)))
+                        {
+                            TintMapEngineTests.AssertNativeRgb(ctx, creature, selection.Material.Resref, TintMapLayerType.Cloth1, custom);
+                            TintMapService.SetColor(creature, selection, TintMapLayerType.Cloth1, requested);
+                            TintMapEngineTests.AssertNativeRgb(ctx, creature, selection.Material.Resref, TintMapLayerType.Cloth1, requested);
+                            TintMapService.ResetColorToInheritance(creature, selection, TintMapLayerType.Cloth1);
+                            TintMapEngineTests.AssertNativeRgb(ctx, creature, selection.Material.Resref, TintMapLayerType.Cloth1, custom);
+                        }
+                    }
                 });
                 await AssertSettledAsync(ctx, before, observation, $"robe model {robeId}");
             }
@@ -214,7 +252,8 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             {
                 var editor = BindEditor(creature);
                 foreach (var channel in new[] { AppearanceArmorColor.Cloth1, AppearanceArmorColor.Cloth2,
-                             AppearanceArmorColor.Leather1, AppearanceArmorColor.Leather2 })
+                             AppearanceArmorColor.Leather1, AppearanceArmorColor.Leather2,
+                             AppearanceArmorColor.Metal1, AppearanceArmorColor.Metal2 })
                 {
                     editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.Global, channel)();
                     editor.OnClickColorPalette(77)();
@@ -222,7 +261,7 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 ctx.AssertEqual(0, (int)GetPhenoType(creature), "Removing the final RGB override restores the native robe path.");
             });
             await AssertSettledAsync(ctx, before, observation, "return to native presets");
-            ctx.SetResultDetail("Four exact robe RGB channels, part inheritance, robe removal/replacement, and preset reset preserved item identity, gameplay sentinels, and zero equipment events. Genuine equip/unequip events were observed before the test. Client walking/sitting is verified separately.");
+            ctx.SetResultDetail($"{(male ? "Male" : "Female")} body: four exact robe RGB channels; repeated swaps through {string.Join(", ", robeIds)}; global/per-part inheritance; and preset reset preserved item identity, gameplay sentinels, and zero equipment events. Genuine equip/unequip events were observed before the test. Client walking/sitting is verified separately.");
         }
 
         [EngineTest("Equipped weapon model and color edits preserve gameplay and emit no equipment events", Category = "AppearanceEditor", TimeoutSeconds = 45f)]
@@ -449,9 +488,9 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
             }
         }
 
-        private static async Task<uint> SpawnCivilianAsync(EngineTestContext ctx)
+        private static async Task<uint> SpawnCivilianAsync(EngineTestContext ctx, string blueprint = "civilian")
         {
-            var creature = ctx.SpawnCreature("civilian");
+            var creature = ctx.SpawnCreature(blueprint);
             await ctx.WaitUntilAsync(() => GetIsObjectValid(GetItemInSlot(InventorySlot.Chest, creature)), 10f, "the civilian outfit equip");
             await ctx.DelaySecondsAsync(0.5f);
             await AssignedAsync(ctx, creature, () =>

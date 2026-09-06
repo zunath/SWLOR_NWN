@@ -328,8 +328,11 @@ namespace SWLOR.Game.Server.Native
                             {
                                 Log.Write(LogGroup.Attack, $"Immune to critical hits");
                                 // Immune!
-                                var defenderName = PlayerName.GetDisplayName(attacker.m_idSelf, defender.m_idSelf);
-                                attacker.SendFeedbackString(new CExoString($"{defenderName} is immune to critical hits!"));
+                                if (PlayerFeedback.DiagnosticsEnabled)
+                                {
+                                    var defenderName = PlayerName.GetDisplayName(attacker.m_idSelf, defender.m_idSelf);
+                                    attacker.SendFeedbackString(new CExoString($"{defenderName} is immune to critical hits!"));
+                                }
                                 pAttackData.m_nAttackResult = AttackResultRegularHit;
                             }
                             else
@@ -407,24 +410,27 @@ namespace SWLOR.Game.Server.Native
                 }
 
                 Log.Write(LogGroup.Attack, $"Building combat log message");
-                var attackerMessage = BuildAttackFeedbackMessage(
-                    attacker.m_idSelf,
-                    attacker,
-                    defender,
-                    pAttackData.m_nAttackResult,
-                    hitRate,
-                    weaponSkillType,
-                    deflectionSource);
-                var defenderMessage = BuildAttackFeedbackMessage(
-                    defender.m_idSelf,
-                    attacker,
-                    defender,
-                    pAttackData.m_nAttackResult,
-                    hitRate,
-                    weaponSkillType,
-                    deflectionSource);
-                attacker.SendFeedbackString(new CExoString(attackerMessage));
-                defender.SendFeedbackString(new CExoString(defenderMessage));
+                if (PlayerFeedback.DiagnosticsEnabled)
+                {
+                    var attackerMessage = BuildAttackFeedbackMessage(
+                        attacker.m_idSelf,
+                        attacker,
+                        defender,
+                        pAttackData.m_nAttackResult,
+                        hitRate,
+                        weaponSkillType,
+                        deflectionSource);
+                    var defenderMessage = BuildAttackFeedbackMessage(
+                        defender.m_idSelf,
+                        attacker,
+                        defender,
+                        pAttackData.m_nAttackResult,
+                        hitRate,
+                        weaponSkillType,
+                        deflectionSource);
+                    attacker.SendFeedbackString(new CExoString(attackerMessage));
+                    defender.SendFeedbackString(new CExoString(defenderMessage));
+                }
 
                 Log.Write(LogGroup.Attack, $"Setting pAttackData results");
                 pAttackData.m_nToHitMod = DefaultToHitMod;
@@ -555,8 +561,11 @@ namespace SWLOR.Game.Server.Native
                 Stat.ApplyDeflectionEffectsNative(defender, source);
 
                 var deflectionName = Combat.GetDeflectionResultName(source);
-                attacker.SendFeedbackString(new CExoString(BuildDeflectionFeedback(attacker.m_idSelf, attacker, defender, deflectionName)));
-                defender.SendFeedbackString(new CExoString(BuildDeflectionFeedback(defender.m_idSelf, attacker, defender, deflectionName)));
+                if (PlayerFeedback.DiagnosticsEnabled)
+                {
+                    attacker.SendFeedbackString(new CExoString(BuildDeflectionFeedback(attacker.m_idSelf, attacker, defender, deflectionName)));
+                    defender.SendFeedbackString(new CExoString(BuildDeflectionFeedback(defender.m_idSelf, attacker, defender, deflectionName)));
+                }
             }
 
             Log.Write(LogGroup.Attack, $"Deflect roll: {deflectRoll}, Chance: {deflectChance}, Hit: {!deflected}");

@@ -102,7 +102,7 @@ namespace SWLOR.Game.Server.Service
                 dbGuild.Points = maxGP - 1;
 
             var detail = _activeGuilds[guild];
-            SendMessageToPC(player, $"You earned {amount} {detail.Name} guild points");
+            PlayerFeedback.SendDiagnosticToPlayer(player, $"You earned {amount} {detail.Name} guild points");
 
             // Are we able to rank up?
             if (dbGuild.Rank < MaxRank)

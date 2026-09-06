@@ -319,18 +319,18 @@ namespace SWLOR.Game.Server.Service
 
             // Witnessing a technique above the player's current skill is still recorded (the learn roll re-checks the
             // gate at the creature's death, in case the player's rank crosses the floor first),
-            // but the feedback makes clear it cannot be learned yet and what rank it needs.
+            // Diagnostic feedback explains the skill gate without announcing every observation in Production.
             var skillRank = dbPlayer.Skills.TryGetValue(SkillType.Mimicry, out var mimicrySkill) ? mimicrySkill.Rank : 0;
             var requiredSkillRank = techniqueDetail.MimicrySkillRequirement;
 
             if (skillRank < requiredSkillRank)
             {
-                SendMessageToPC(player, ColorToken.Gray(
+                PlayerFeedback.SendDiagnosticToPlayer(player, ColorToken.Gray(
                     $"Your combat analyzer detects {techniqueDetail.Name}, but the pattern is beyond your current analysis level. (Requires Mimicry {requiredSkillRank})"));
                 return;
             }
 
-            SendMessageToPC(player, ColorToken.Cyan($"Your combat analyzer records {techniqueDetail.Name}..."));
+            PlayerFeedback.SendDiagnosticToPlayer(player, ColorToken.Cyan($"Your combat analyzer records {techniqueDetail.Name}..."));
         }
 
         /// <summary>
@@ -424,10 +424,10 @@ namespace SWLOR.Game.Server.Service
 
                 if (Random.D100(1) > chance)
                 {
-                    // Give explicit feedback on a failed roll so a miss is distinguishable from
+                    // In diagnostic modes, report a failed roll so a miss is distinguishable from
                     // "no roll happened". The witness entry for this creature is cleared on its
                     // death, so the player must analyze the technique again on another creature.
-                    SendMessageToPC(player, ColorToken.Orange(
+                    PlayerFeedback.SendDiagnosticToPlayer(player, ColorToken.Orange(
                         $"Your combat analyzer failed to decode {detail.Name}. Analyze it again to retry."));
                     continue;
                 }

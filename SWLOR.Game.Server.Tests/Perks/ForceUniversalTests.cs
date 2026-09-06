@@ -138,7 +138,7 @@ public class ForceUniversalTests
         var source = File.ReadAllText((root / "SWLOR.Game.Server" / "Feature" / "AbilityDefinition" / "Force" / "ThrowLightsaberAbilityDefinition.cs").FullName);
 
         source.Should().Contain("candidate => candidate == target || IsTargetAlongPath");
-        source.Should().Contain("Combat.BuildAbilityNoTargetCombatLogMessage");
+        source.Should().Contain("SendMessageToPC(activator, $\"{abilityName} did not hit any targets.\");");
     }
 
     [Test]

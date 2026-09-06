@@ -39,12 +39,12 @@ namespace SWLOR.Game.Server.Feature
 
                 if (fpRegen > 0)
                 {
-                    Stat.RestoreFP(player, fpRegen, dbPlayer);
+                    Stat.RestoreFP(player, fpRegen, dbPlayer, sendFeedback: false);
                 }
 
                 if (stmRegen > 0)
                 {
-                    Stat.RestoreStamina(player, stmRegen, dbPlayer);
+                    Stat.RestoreStamina(player, stmRegen, dbPlayer, sendFeedback: false);
                 }
 
                 tick = 0;

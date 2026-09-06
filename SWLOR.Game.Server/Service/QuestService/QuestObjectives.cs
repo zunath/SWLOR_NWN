@@ -97,7 +97,10 @@ namespace SWLOR.Game.Server.Service.QuestService
                 statusMessage += $" {ColorToken.Green("{COMPLETE}")}";
             }
 
-            SendMessageToPC(player, statusMessage);
+            if (quest.ItemProgresses[_resref] <= 0)
+                SendMessageToPC(player, statusMessage);
+            else
+                PlayerFeedback.SendDiagnosticToPlayer(player, statusMessage);
         }
 
         public bool IsComplete(uint player, string questId)
@@ -177,7 +180,10 @@ namespace SWLOR.Game.Server.Service.QuestService
                 statusMessage += $" {ColorToken.Green("{COMPLETE}")}";
             }
 
-            SendMessageToPC(player, statusMessage);
+            if (quest.KillProgresses[Group] <= 0)
+                SendMessageToPC(player, statusMessage);
+            else
+                PlayerFeedback.SendDiagnosticToPlayer(player, statusMessage);
         }
 
         public bool IsComplete(uint player, string questId)

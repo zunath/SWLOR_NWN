@@ -763,7 +763,7 @@ namespace SWLOR.Game.Server.Service
         private static void SendPropertyLoadFailedMessage(uint player)
         {
             SendMessageToPC(player, "This property could not be loaded. Please notify staff.");
-            FloatingTextStringOnCreature("This property could not be loaded. Please notify staff.", player, false);
+            PlayerFeedback.ShowDiagnosticFloatingText("This property could not be loaded. Please notify staff.", player, false);
         }
 
         /// <summary>

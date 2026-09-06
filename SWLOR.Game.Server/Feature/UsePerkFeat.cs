@@ -163,9 +163,7 @@ namespace SWLOR.Game.Server.Feature
             if (GetIsPC(activator))
                 PlayerPlugin.StopGuiTimingBar(activator, string.Empty);
 
-            Messaging.SendMessageNearbyToPlayers(
-                activator,
-                receiver => $"{PlayerName.GetDisplayName(receiver, activator)}'s ability has been interrupted.");
+            SendMessageToPC(activator, "Your ability has been interrupted.");
             SetLocalInt(activator, activation.ActivationId, (int)ActivationStatus.Interrupted);
             Activity.ClearBusy(activator);
             ClearAbilityActivationIdleSnapshots(activator);
@@ -362,7 +360,7 @@ namespace SWLOR.Game.Server.Feature
                     }
 
                     if(ability.DisplaysActivationMessage)
-                        Messaging.SendMessageNearbyToPlayers(
+                        PlayerFeedback.SendDiagnosticNearby(
                             activator,
                             receiver => $"{PlayerName.GetDisplayName(receiver, activator)} queues {ability.Name} for the next attack.");
                     QueueWeaponAbility(activator, target, ability, feat);
@@ -378,14 +376,14 @@ namespace SWLOR.Game.Server.Feature
                     if (GetIsObjectValid(target) && target != activator)
                     {
                         if (ability.DisplaysActivationMessage)
-                            Messaging.SendMessageNearbyToPlayers(
+                            PlayerFeedback.SendDiagnosticNearby(
                                 activator,
                                 receiver => $"{PlayerName.GetDisplayName(receiver, activator)} readies {ability.Name} on {PlayerName.GetDisplayName(receiver, target)}.");
                     }
                     else
                     {
                         if (ability.DisplaysActivationMessage)
-                            Messaging.SendMessageNearbyToPlayers(
+                            PlayerFeedback.SendDiagnosticNearby(
                                 activator,
                                 receiver => $"{PlayerName.GetDisplayName(receiver, activator)} readies {ability.Name}.");
                     }
@@ -888,13 +886,11 @@ namespace SWLOR.Game.Server.Feature
             var abilityDetail = Ability.GetAbilityDetail(featType);
             ClearQueuedAbility(target);
 
-            // Notify the activator and nearby players
-            SendMessageToPC(target, $"Your weapon ability {abilityDetail.Name} is no longer queued.");
-
+            // Notify only the actor on expiration/cancellation; silent callers get diagnostic output only.
             if (sendMessage)
-                Messaging.SendMessageNearbyToPlayers(
-                    target,
-                    receiver => $"{PlayerName.GetDisplayName(receiver, target)} no longer has weapon ability {abilityDetail.Name} readied.");
+                SendMessageToPC(target, $"Your weapon ability {abilityDetail.Name} is no longer queued.");
+            else
+                PlayerFeedback.SendDiagnosticToPlayer(target, $"Your weapon ability {abilityDetail.Name} is no longer queued.");
         }
 
         public static bool HasQueuedWeaponAbility(uint activator)

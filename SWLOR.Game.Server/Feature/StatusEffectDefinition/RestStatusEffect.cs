@@ -73,8 +73,8 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             }
 
             ApplyEffectToObject(DurationType.Instant, EffectHeal(hpAmount), creature);
-            Stat.RestoreStamina(creature, staminaAmount);
-            Stat.RestoreFP(creature, fpAmount);
+            Stat.RestoreStamina(creature, staminaAmount, sendFeedback: false);
+            Stat.RestoreFP(creature, fpAmount, sendFeedback: false);
         }
 
         protected override void Remove(uint creature)

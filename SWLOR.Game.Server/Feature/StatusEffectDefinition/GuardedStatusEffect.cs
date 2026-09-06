@@ -187,13 +187,13 @@ namespace SWLOR.Game.Server.Feature.StatusEffectDefinition
             if (GetIsPC(guarded))
             {
                 var sourceName = PlayerName.GetColoredDisplayName(guarded, source);
-                SendMessageToPC(guarded, ColorToken.Combat($"{sourceName} is guarding you."));
+                PlayerFeedback.SendDiagnosticToPlayer(guarded, ColorToken.Combat($"{sourceName} is guarding you."));
             }
 
             if (GetIsPC(source))
             {
                 var guardedName = PlayerName.GetColoredDisplayName(source, guarded);
-                SendMessageToPC(source, ColorToken.Combat($"You are guarding {guardedName}."));
+                PlayerFeedback.SendDiagnosticToPlayer(source, ColorToken.Combat($"You are guarding {guardedName}."));
             }
         }
 

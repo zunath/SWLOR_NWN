@@ -155,7 +155,10 @@ namespace SWLOR.Game.Server.Service
             if (debtRemoved > 0)
             {
                 dbPlayer.XPDebt -= debtRemoved;
-                SendMessageToPC(player, $"{debtRemoved} XP was removed from your debt. (Remaining: {dbPlayer.XPDebt})");
+                if (dbPlayer.XPDebt == 0)
+                    SendMessageToPC(player, "Your XP debt has been cleared.");
+                else
+                    PlayerFeedback.SendDiagnosticToPlayer(player, $"{debtRemoved} XP was removed from your debt. (Remaining: {dbPlayer.XPDebt})");
             }
 
             if (xp <= 0)
@@ -185,11 +188,11 @@ namespace SWLOR.Game.Server.Service
             // If player is at the skill cap and no skills are available for decay, exit early.
             if (details.ContributesToSkillCap && skillsPossibleToDecay.Count <= 0 && totalRanks >= SkillCap)
             {
-                SendMessageToPC(player, ColorToken.Red($"You cannot gain {details.Name} XP. You are at the skill cap of {SkillCap} and all of your other skills are locked from decay. Unlock a skill in the Skills menu to resume gaining {details.Name} XP."));
+                PlayerFeedback.SendWarningToPlayer(player, "SKILL_CAP", ColorToken.Red($"You cannot gain {details.Name} XP. You are at the skill cap of {SkillCap} and all of your other skills are locked from decay. Unlock a skill in the Skills menu to resume gaining {details.Name} XP."));
                 return;
             }
 
-            SendMessageToPC(player, $"You earned {details.Name} skill experience. ({xp})");
+            PlayerFeedback.SendDiagnosticToPlayer(player, $"You earned {details.Name} skill experience. ({xp})");
             pcSkill.XP += xp;
             // Skill is at cap. No additional XP can be acquired.
             if (pcSkill.Rank >= details.MaxRank)
@@ -245,7 +248,7 @@ namespace SWLOR.Game.Server.Service
                     if (skillsPossibleToDecay.Count <= 0)
                     {
                         dbPlayer.Skills[skill].XP = 0;
-                        SendMessageToPC(player, ColorToken.Red($"You have reached the skill cap of {SkillCap} and all of your other skills are locked from decay. Excess {details.Name} XP was lost."));
+                        PlayerFeedback.SendWarningToPlayer(player, "SKILL_CAP", ColorToken.Red($"You have reached the skill cap of {SkillCap} and all of your other skills are locked from decay. Excess {details.Name} XP was lost."));
                         break;
                     }
 

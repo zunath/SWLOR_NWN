@@ -82,7 +82,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
                     var recovery = capRestore + (moduleBonus + activatorShipStatus.Industrial) * 2;
                     Space.RestoreCapacitor(target, targetShipStatus, recovery);
 
-                    Messaging.SendMessageNearbyToPlayers(
+                    PlayerFeedback.SendDiagnosticNearby(
                         activator,
                         receiver => $"{PlayerName.GetDisplayName(receiver, activator)} restores {recovery} capacitor charge to {PlayerName.GetDisplayName(receiver, target)}'s ship.");
                     CombatPoint.AddCombatPointToAllTagged(activator, SkillType.Piloting);

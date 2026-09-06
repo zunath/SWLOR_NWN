@@ -57,7 +57,7 @@ namespace SWLOR.Game.Server.Feature.ShipModuleDefinition
             }
 
             var attackId = isHit ? 1 : 4;
-            Messaging.SendMessageNearbyToPlayers(
+            PlayerFeedback.SendDiagnosticNearby(
                 target,
                 receiver => Combat.BuildCombatLogMessage(receiver, activator, target, attackId, chanceToHit),
                 60f);

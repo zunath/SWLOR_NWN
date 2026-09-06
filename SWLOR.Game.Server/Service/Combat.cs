@@ -512,7 +512,7 @@ namespace SWLOR.Game.Server.Service
 
             if (GetIsPC(attacker))
             {
-                FloatingTextStringOnCreature(
+                PlayerFeedback.ShowDiagnosticFloatingText(
                     ColorToken.Combat($"High Noon +{adjustment}% critical damage"),
                     attacker,
                     false);
@@ -1978,7 +1978,7 @@ namespace SWLOR.Game.Server.Service
 
             if (GetCriticalRateAgainstSunderedTargetAdjustment(attacker, defender) > 0)
             {
-                FloatingTextStringOnCreature(ColorToken.Combat("Weak Points"), attacker, false);
+                PlayerFeedback.ShowDiagnosticFloatingText(ColorToken.Combat("Weak Points"), attacker, false);
             }
 
             var staminaRestore = Stat.GetStatAdjustment(attacker, StatType.CriticalStaminaRestore);
@@ -2173,7 +2173,7 @@ namespace SWLOR.Game.Server.Service
                             trackerIcon),
                         duration);
                 }
-                FloatingTextStringOnCreature(
+                PlayerFeedback.ShowDiagnosticFloatingText(
                     ColorToken.Combat($"Next ranged ability +{currentTotal}% Critical Rate"),
                     activator,
                     false);
@@ -3003,7 +3003,7 @@ namespace SWLOR.Game.Server.Service
                 duration);
 
             if (GetIsPC(guardRecipient))
-                FloatingTextStringOnCreature(ColorToken.Combat("Guardian Reflexes"), guardRecipient, false);
+                PlayerFeedback.ShowDiagnosticFloatingText(ColorToken.Combat("Guardian Reflexes"), guardRecipient, false);
 
             ApplyEffectToObject(DurationType.Instant, EffectVisualEffect(VisualEffect.Vfx_Imp_Ac_Bonus), guardRecipient);
         }
@@ -3322,7 +3322,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             _autoAttackCycleCriticalCounts[attacker] = 0;
-            FloatingTextStringOnCreature(
+            PlayerFeedback.ShowDiagnosticFloatingText(
                 ColorToken.Combat($"Ranged attack +{criticalRate}% Critical Rate"),
                 attacker,
                 false);
@@ -3613,14 +3613,14 @@ namespace SWLOR.Game.Server.Service
             if (GetIsPC(defender))
             {
                 var feedback = BuildGuardedHitFeedback(defender, defender, attacker, preventedDamage);
-                SendMessageToPC(defender, feedback);
-                FloatingTextStringOnCreature(ColorToken.Combat($"Guard (-{preventedDamage})"), defender, false);
+                PlayerFeedback.SendDiagnosticToPlayer(defender, feedback);
+                PlayerFeedback.ShowDiagnosticFloatingText(ColorToken.Combat($"Guard (-{preventedDamage})"), defender, false);
             }
 
             if (GetIsPC(attacker))
             {
                 var feedback = BuildGuardedHitFeedback(attacker, defender, attacker, preventedDamage);
-                SendMessageToPC(attacker, feedback);
+                PlayerFeedback.SendDiagnosticToPlayer(attacker, feedback);
             }
         }
 
@@ -3639,8 +3639,8 @@ namespace SWLOR.Game.Server.Service
             if (GetIsPC(defender))
             {
                 var feedback = BuildIncomingCriticalHitDowngradeCombatLogMessage(defender, attacker, defender);
-                SendMessageToPC(defender, feedback);
-                FloatingTextStringOnCreature(ColorToken.Combat("Critical Ward"), defender, false);
+                PlayerFeedback.SendDiagnosticToPlayer(defender, feedback);
+                PlayerFeedback.ShowDiagnosticFloatingText(ColorToken.Combat("Critical Ward"), defender, false);
             }
 
             if (GetIsObjectValid(attacker) &&
@@ -3648,7 +3648,7 @@ namespace SWLOR.Game.Server.Service
                 GetIsPC(attacker))
             {
                 var feedback = BuildIncomingCriticalHitDowngradeCombatLogMessage(attacker, attacker, defender);
-                SendMessageToPC(attacker, feedback);
+                PlayerFeedback.SendDiagnosticToPlayer(attacker, feedback);
             }
         }
 
@@ -3778,7 +3778,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             if (applied && GetIsPC(defender))
-                FloatingTextStringOnCreature(ColorToken.Combat("Retaliation Pulse"), defender, false);
+                PlayerFeedback.ShowDiagnosticFloatingText(ColorToken.Combat("Retaliation Pulse"), defender, false);
         }
 
         private static int ResolveGuardRetaliationDamage(
@@ -3961,7 +3961,7 @@ namespace SWLOR.Game.Server.Service
                 var criticalText = selected.CriticalRate != 0
                     ? $", +{selected.CriticalRate}% Crit"
                     : string.Empty;
-                FloatingTextStringOnCreature(
+                PlayerFeedback.ShowDiagnosticFloatingText(
                     ColorToken.Combat($"Counter Ready: +{selected.DamageBonus} DMG{criticalText}"),
                     creature,
                     false);
@@ -4627,7 +4627,7 @@ namespace SWLOR.Game.Server.Service
                 durationSeconds > 0 ? durationSeconds : 0f);
             if (GetIsPC(attacker))
             {
-                FloatingTextStringOnCreature(
+                PlayerFeedback.ShowDiagnosticFloatingText(
                     ColorToken.Combat($"Sustained Fire {state.Stacks}/{maxStacks} (+{stackBonus} DMG)"),
                     attacker,
                     false);
@@ -4736,7 +4736,7 @@ namespace SWLOR.Game.Server.Service
             if (GetIsPC(attacker))
             {
                 var bonus = Stat.GetStatAdjustment(attacker, StatType.SameTargetPressureWeaponAbilityDamageBonus);
-                FloatingTextStringOnCreature(ColorToken.Combat($"Spotter's Rhythm (+{bonus} DMG)"), attacker, false);
+                PlayerFeedback.ShowDiagnosticFloatingText(ColorToken.Combat($"Spotter's Rhythm (+{bonus} DMG)"), attacker, false);
             }
         }
 
@@ -4768,7 +4768,7 @@ namespace SWLOR.Game.Server.Service
 
             if (GetIsPC(attacker))
             {
-                FloatingTextStringOnCreature(ColorToken.Combat("Spotter's Rhythm"), attacker, false);
+                PlayerFeedback.ShowDiagnosticFloatingText(ColorToken.Combat("Spotter's Rhythm"), attacker, false);
             }
         }
 
@@ -6264,8 +6264,8 @@ namespace SWLOR.Game.Server.Service
 
             if (applied && GetIsPC(attacker))
             {
-                SendMessageToPC(attacker, ColorToken.Combat("Pinning Fire: Suppression applied."));
-                FloatingTextStringOnCreature(ColorToken.Combat("Pinning Fire"), attacker, false);
+                PlayerFeedback.SendDiagnosticToPlayer(attacker, ColorToken.Combat("Pinning Fire: Suppression applied."));
+                PlayerFeedback.ShowDiagnosticFloatingText(ColorToken.Combat("Pinning Fire"), attacker, false);
             }
         }
 
@@ -6560,8 +6560,8 @@ namespace SWLOR.Game.Server.Service
                 var feedback = ColorToken.Combat(
                     $"First Strike deals +{damageBonus} DMG ({remaining} {stackLabel} remaining{rechargeText}).");
 
-                SendMessageToPC(attacker, feedback);
-                FloatingTextStringOnCreature(
+                PlayerFeedback.SendDiagnosticToPlayer(attacker, feedback);
+                PlayerFeedback.ShowDiagnosticFloatingText(
                     ColorToken.Combat($"First Strike +{damageBonus} DMG ({remaining} {stackLabel} remaining)"),
                     attacker,
                     false);
@@ -6602,8 +6602,8 @@ namespace SWLOR.Game.Server.Service
                 var stackLabel = maximumCount == 1 ? "stack" : "stacks";
                 var feedback = ColorToken.Combat(
                     $"First Strike ready: {maximumCount} {stackLabel} (+{damageBonus} DMG each).");
-                SendMessageToPC(attacker, feedback);
-                FloatingTextStringOnCreature(
+                PlayerFeedback.SendDiagnosticToPlayer(attacker, feedback);
+                PlayerFeedback.ShowDiagnosticFloatingText(
                     ColorToken.Combat($"First Strike ready ({maximumCount} {stackLabel})"),
                     attacker,
                     false);
@@ -6629,7 +6629,7 @@ namespace SWLOR.Game.Server.Service
             }
 
             var remainingSeconds = Math.Max(1, (int)Math.Ceiling((state.RechargeAvailableAt.Value - now).TotalSeconds));
-            SendMessageToPC(
+            PlayerFeedback.SendDiagnosticToPlayer(
                 attacker,
                 ColorToken.Combat($"First Strike is recharging ({remainingSeconds} seconds remaining)."));
         }
@@ -7370,7 +7370,7 @@ namespace SWLOR.Game.Server.Service
             var staminaBefore = Stat.GetCurrentStamina(target);
             Stat.ReduceStamina(target, staminaDrain);
             var staminaDrained = Math.Max(0, staminaBefore - Stat.GetCurrentStamina(target));
-            FloatingTextStringOnCreature(
+            PlayerFeedback.ShowDiagnosticFloatingText(
                 ColorToken.Combat($"-{staminaDrained} STM"),
                 target,
                 false);
@@ -7575,7 +7575,7 @@ namespace SWLOR.Game.Server.Service
             if (appliedDamage <= 0)
                 return 0;
 
-            Messaging.SendMessageNearbyToPlayers(
+            PlayerFeedback.SendDiagnosticNearby(
                 defender,
                 observer => BuildDeflectingReturnCombatLogMessage(observer, defender, attacker, appliedDamage),
                 60f);
@@ -8128,7 +8128,7 @@ namespace SWLOR.Game.Server.Service
                 var enmityText = enmityBonus != 0
                     ? $", +{enmityBonus} Enmity"
                     : string.Empty;
-                FloatingTextStringOnCreature(
+                PlayerFeedback.ShowDiagnosticFloatingText(
                     ColorToken.Combat($"Counter Ready: +{dmgBonus} DMG{criticalText}{enmityText}"),
                     creature,
                     false);
@@ -8453,8 +8453,8 @@ namespace SWLOR.Game.Server.Service
             RefreshOverwatchMarker(attacker, now);
             if (GetIsPC(attacker))
             {
-                SendMessageToPC(attacker, ColorToken.Combat($"Overwatch: +{adjustment}% Accuracy."));
-                FloatingTextStringOnCreature(ColorToken.Combat("Overwatch"), attacker, false);
+                PlayerFeedback.SendDiagnosticToPlayer(attacker, ColorToken.Combat($"Overwatch: +{adjustment}% Accuracy."));
+                PlayerFeedback.ShowDiagnosticFloatingText(ColorToken.Combat("Overwatch"), attacker, false);
             }
             return adjustment;
         }
@@ -10564,7 +10564,7 @@ namespace SWLOR.Game.Server.Service
             {
                 StatusEffect.ApplyStatusEffect(creature, creature, new OpeningAttackReadyStatusEffect(), -1);
                 if (GetIsPC(creature))
-                    FloatingTextStringOnCreature(ColorToken.Combat("Opening Attack Ready"), creature, false);
+                    PlayerFeedback.ShowDiagnosticFloatingText(ColorToken.Combat("Opening Attack Ready"), creature, false);
             }
 
             var hasReadyIdleSkillChannel = _idleSkillAbilityStatChannels.Any(channel =>
@@ -10578,7 +10578,7 @@ namespace SWLOR.Game.Server.Service
             {
                 StatusEffect.ApplyStatusEffect(creature, creature, new IdleSkillAbilityReadyStatusEffect(), -1);
                 if (GetIsPC(creature))
-                    FloatingTextStringOnCreature(ColorToken.Combat("Idle Skill Ability Ready"), creature, false);
+                    PlayerFeedback.ShowDiagnosticFloatingText(ColorToken.Combat("Idle Skill Ability Ready"), creature, false);
             }
         }
 
@@ -11520,7 +11520,7 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(attacker) || !GetIsObjectValid(defender))
                 return;
 
-            Messaging.SendMessageNearbyToPlayers(
+            PlayerFeedback.SendDiagnosticNearby(
                 defender,
                 observer => BuildAbilityCriticalHitCombatLogMessage(
                     observer,
@@ -11553,7 +11553,7 @@ namespace SWLOR.Game.Server.Service
                 return;
             }
 
-            Messaging.SendMessageNearbyToPlayers(
+            PlayerFeedback.SendDiagnosticNearby(
                 defender,
                 receiver => BuildTemporaryHitPointDamageCombatLogMessage(receiver, attacker, defender, damage),
                 60f);
@@ -12101,9 +12101,7 @@ namespace SWLOR.Game.Server.Service
                 if (GetEffectType(effect) != EffectTypeScript.Paralyze)
                     continue;
 
-                Messaging.SendMessageNearbyToPlayers(
-                    attacker,
-                    receiver => $"{PlayerName.GetDisplayName(receiver, attacker)} is paralyzed and cannot act!");
+                PlayerFeedback.SendWarningToPlayer(attacker, "PARALYZED", "You are paralyzed and cannot act!", 5);
                 return true;
             }
 

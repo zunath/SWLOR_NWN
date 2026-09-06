@@ -346,7 +346,7 @@ namespace SWLOR.Toolset.Tests.Items
             }
 
             [Test]
-            public void ChoosingAnArmorPresetClearsUniformLegacyGlobalTintWithoutMarker()
+            public void ChoosingAnArmorPresetPreservesMarkerlessTintsWithoutResolvedActiveParts()
             {
                 var store = OpenStore("adren_harness");
                 var globalColor = new TintMapColor(12, 34, 56).ToStoredValue();
@@ -358,9 +358,9 @@ namespace SWLOR.Toolset.Tests.Items
 
                 section.Armor!.Cloth1.Number = 50;
 
-                store.Locals.GetInt(first).Should().BeNull();
-                store.Locals.GetInt(second).Should().BeNull(
-                    "a complete uniform pre-marker tint is the legacy global-color representation");
+                store.Locals.GetInt(first).Should().Be(globalColor);
+                store.Locals.GetInt(second).Should().Be(globalColor,
+                    "stored keys alone cannot prove a complete active set across distinct parts");
             }
 
             [Test]

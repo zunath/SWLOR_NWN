@@ -12,6 +12,7 @@ using SWLOR.Game.Server.Feature.AppearanceDefinition.ItemAppearance;
 using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Toolset.Domain.Documents;
 using SWLOR.Toolset.Domain.Editing;
+using SWLOR.Toolset.Domain.Editors.Behaviors;
 using SWLOR.Toolset.Domain.Editors.Creatures;
 using SWLOR.Toolset.Domain.Editors.Items;
 using SWLOR.Toolset.Domain.GameData.Resources;
@@ -107,6 +108,92 @@ namespace SWLOR.Toolset.Tests
             foreach (var row in profiles)
                 variables.GetInt(row.Key).Should().Be(38);
             variables.GetInt(globalKey).Should().Be(new TintMapColor(10, 20, 30).ToStoredValue());
+        }
+
+        [TestCase(false, false)]
+        [TestCase(true, false)]
+        [TestCase(true, true)]
+        public void GlobalPresetRequiresCompleteUniformTintsAcrossDistinctParts(
+            bool secondPart, bool tintSecondPart)
+        {
+            var catalog = TintMapCatalog.Load(Resources())!;
+            var root = JsonGffDocument.Parse(Encoding.UTF8.GetBytes(
+                """{"__data_type":"UTI ","BaseItem":{"type":"int","value":16}}""")).Root;
+            var store = new ItemValueStore(root);
+            bool Edit(string _, Action mutation) { mutation(); return true; }
+            var editor = new TintMapEditorViewModel(store.Locals, Edit, catalog);
+            var meshes = ModelWith("pmh0_robe170").Meshes
+                .Concat(ModelWith("pmh0_r_ro_c34862").Meshes).ToList();
+            foreach (var mesh in meshes) mesh.ArmorPart = AppearanceArmor.Robe;
+            if (secondPart)
+            {
+                var torso = ModelWith("pmh0_chest156").Meshes.Single();
+                torso.ArmorPart = AppearanceArmor.Torso;
+                meshes.Add(torso);
+            }
+            editor.Reload(new RenderModel { Meshes = meshes });
+            var rows = editor.Colors.Where(row => row.Layer == TintMapLayerType.Metal1).ToArray();
+            rows.Should().HaveCount(secondPart ? 3 : 2);
+            var custom = new TintMapColor(100, 7, 180).ToStoredValue();
+            foreach (var row in rows.Where(row => row.ArmorPart == AppearanceArmor.Robe || tintSecondPart))
+                store.Locals.SetInt(row.Key, custom);
+            var section = new ItemAppearanceSectionViewModel(store, Edit,
+                _ => new BaseItemIconRow(16, 3, "AArCl", "gifp"), _ => false);
+            section.SetTintMapEditor(editor);
+
+            section.Armor!.Metal1.Number = 50;
+
+            foreach (var row in rows)
+                store.Locals.GetInt(row.Key).Should().Be(
+                    secondPart && tintSecondPart || row.ArmorPart != AppearanceArmor.Robe ? null : custom,
+                    "one part's profiles and an incomplete active set are independent part tints");
+        }
+
+        [AvaloniaTest]
+        [TestCase(false)]
+        [TestCase(true)]
+        public void BaseItemTintCarryAndCleanupUndoWithTheBaseItem(bool replacementHasTint)
+        {
+            var catalog = TintMapCatalog.Load(Resources())!;
+            var document = JsonGffDocument.Parse(Encoding.UTF8.GetBytes(
+                """{"__data_type":"UTI ","BaseItem":{"type":"int","value":16}}"""));
+            var store = new ItemValueStore(document.Root);
+            var sourceKey = TintMapVariable.GetName("helm_004", TintMapLayerType.Cloth1);
+            var targetKey = TintMapVariable.GetName("helm_005", TintMapLayerType.Cloth1);
+            var saved = new TintMapColor(100, 7, 180).ToStoredValue();
+            store.Locals.SetInt(sourceKey, saved);
+            var before = document.ToBytes();
+            using var session = new DocumentSession(Path.Combine(RepoRoot, "unused-tint-test.uti.json"), document);
+            bool Edit(string description, Action mutation)
+            {
+                session.Execute(description, mutation);
+                return true;
+            }
+            using var editor = new ItemEditorViewModel(document.Root, "base_tint_test", Edit,
+                resolveChoices: key => key == ItemChoiceKeys.BaseItems
+                    ? new[] { new BehaviorChoice(16, "Armor"), new BehaviorChoice(29, "Misc Medium") }
+                    : Array.Empty<BehaviorChoice>(),
+                baseItemRows: id => new BaseItemRow(id, id == 16 ? "armor" : "miscmedium", id == 16 ? 3 : 0),
+                resolveModel: (snapshot, _) => new ItemValueStore(snapshot).GetInteger(BehaviorFieldStorage.Field, "BaseItem") == 16
+                    ? ItemOwnedModelWith("helm_004")
+                    : replacementHasTint ? ItemOwnedModelWith("helm_005") : ModelWith("unregistered"),
+                tintMapCatalog: catalog,
+                captureCoalesceOrigin: () => session.UndoStack.CurrentAppliedEntry,
+                runCoalescedEdit: session.ExecuteCoalesced);
+            DrainUntil(() => !editor.IsModelPreviewLoading);
+            var baseType = editor.BasicRows.Single(row => row.Definition.Name == "BaseItem");
+
+            baseType.Choice = baseType.Choices.Single(choice => choice.Value == 29);
+            DrainUntil(() => !editor.IsModelPreviewLoading);
+
+            store.Locals.GetInt(sourceKey).Should().BeNull();
+            store.Locals.GetInt(targetKey).Should().Be(replacementHasTint ? saved : null);
+            session.UndoStack.Position.Should().Be(1, "derived tint changes belong to the base-item transaction");
+            var after = document.ToBytes();
+            session.UndoStack.Undo();
+            document.ToBytes().Should().Equal(before);
+            session.UndoStack.Redo();
+            document.ToBytes().Should().Equal(after);
         }
 
         [Test]

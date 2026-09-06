@@ -121,7 +121,8 @@ namespace SWLOR.Toolset.Editors.Items
                 case 3:
                     Kind = ItemAppearanceKind.ArmorParts;
                     Armor = new ArmorPartsViewModel(
-                        _store, _runEdit, _appearanceChanged, _armorDyes, _armorPartModels);
+                        _store, _runEdit, _appearanceChanged, _armorDyes, _armorPartModels,
+                        layer => Tints?.InferLegacyGlobalItemColor(layer));
                     break;
 
                 default:

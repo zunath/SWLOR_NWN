@@ -2074,6 +2074,7 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void ModifyItemPart(int type, int partId, int colorId = -1)
         {
+            FlushPendingPickerColor();
             CommitCustomTintComponents();
             ToggleItemEquippedFlags();
             if (DoesNotHaveItemEquipped)

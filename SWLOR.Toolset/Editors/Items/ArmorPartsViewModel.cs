@@ -26,6 +26,7 @@ namespace SWLOR.Toolset.Editors.Items
         private readonly Action? _appearanceChanged;
         private readonly ArmorDyeSwatchService? _dyes;
         private readonly ArmorPartCatalog? _partModels;
+        private readonly Func<TintMapLayerType, int?>? _inferLegacyGlobalTint;
         private readonly List<ItemFieldCellViewModel> _allCells = new();
         private readonly List<ItemDyeCellViewModel> _dyeCells = new();
         private readonly List<BodyPartPairViewModel> _pairBindings = new();
@@ -71,13 +72,15 @@ namespace SWLOR.Toolset.Editors.Items
             Func<string, Action, bool> runEdit,
             Action? appearanceChanged = null,
             ArmorDyeSwatchService? dyes = null,
-            ArmorPartCatalog? partModels = null)
+            ArmorPartCatalog? partModels = null,
+            Func<TintMapLayerType, int?>? inferLegacyGlobalTint = null)
         {
             _store = store ?? throw new ArgumentNullException(nameof(store));
             _runEdit = runEdit ?? throw new ArgumentNullException(nameof(runEdit));
             _appearanceChanged = appearanceChanged;
             _dyes = dyes;
             _partModels = partModels;
+            _inferLegacyGlobalTint = inferLegacyGlobalTint;
 
             _mirrorRightFromLeft = DetectMirror();
 
@@ -321,24 +324,9 @@ namespace SWLOR.Toolset.Editors.Items
                 ? savedGlobalColor.Value
                 : null;
 
-            if (!globalColor.HasValue && tintVariableKeys.Count > 1)
-            {
-                var legacyColors = tintVariableKeys
-                    .Select(key => _store.Locals.GetInt(key))
-                    .ToList();
-                var distinctCustomColors = legacyColors
-                    .Where(value => value.HasValue &&
-                                    TintMapColor.TryFromStoredValue(value.Value, out _))
-                    .Select(value => value!.Value)
-                    .Distinct()
-                    .ToList();
-                if (legacyColors.All(value => value.HasValue &&
-                                              TintMapColor.TryFromStoredValue(value.Value, out _)) &&
-                    distinctCustomColors.Count == 1)
-                {
-                    globalColor = distinctCustomColors[0];
-                }
-            }
+            // Material keys alone cannot prove item-wide intent: one robe can have several
+            // profiles. Without resolved active parts, preserve markerless overrides.
+            globalColor ??= _inferLegacyGlobalTint?.Invoke(layer);
 
             if (globalColor.HasValue && !usesExplicitInheritance)
             {

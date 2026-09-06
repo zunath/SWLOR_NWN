@@ -528,6 +528,7 @@ namespace SWLOR.Toolset.Editors.Items
 
             if (definition.Name == "BaseItem")
             {
+                var baseItemOrigin = _captureCoalesceOrigin?.Invoke();
                 // Only a real user-driven base-type change should pick a default appearance for
                 // the builder - never the initial construction/reload paths, which must leave
                 // whatever the document already stores untouched (the byte-stability audit sweep
@@ -556,6 +557,16 @@ namespace SWLOR.Toolset.Editors.Items
                 // The base type is the only Basic row that changes the artwork; re-rendering
                 // the icon and 3D scene per keystroke of Name/Tag/ResRef would decode every
                 // texture layer on the UI thread for fields that never touch them.
+                var signature = GeometrySignature();
+                var sourceSignature = _cachedModelSignature ?? _pendingModelSignature;
+                if (sourceSignature != null &&
+                    !string.Equals(sourceSignature, signature, StringComparison.Ordinal))
+                {
+                    // EnsureSelection may commit a default appearance in the meantime.
+                    // Tint carry/cleanup still belongs to the originating base-type edit.
+                    _pendingModelEditOrigin = baseItemOrigin;
+                    _pendingModelEditOriginSignature = signature;
+                }
                 UpdatePreview();
             }
 

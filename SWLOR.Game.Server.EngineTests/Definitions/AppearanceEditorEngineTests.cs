@@ -449,6 +449,22 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 var cloth = GetLocalInt(item, clothName);
                 InvokePrivate(editor, "FlushPendingPickerColor");
                 ctx.AssertEqual(cloth, GetLocalInt(item, clothName), "A pending drag cannot recolor a newly selected channel");
+
+                editor.OnClickColorTarget(AppearanceEditorViewModel.ColorTarget.LeftForearm, AppearanceArmorColor.Leather2)();
+                var queuedPartColor = new TintMapColor(37, 121, 209);
+                ApplyWatchedValue(editor, nameof(editor.SelectedTintColor),
+                    new GuiColor(37, 121, 209), flushPicker: false);
+                InvokePrivate(editor, "ModifyItemPart", (int)AppearanceArmor.LeftForearm, 15, -1);
+                var replacement = TintMapModelResolver.GetCurrentSelections(civilian).Single(selection =>
+                    selection.ArmorPart == AppearanceArmor.LeftForearm &&
+                    selection.Material.Layers.Contains(TintMapLayerType.Leather2));
+                ctx.AssertEqual(queuedPartColor, TintMapService.GetEffectiveDisplayColor(
+                    civilian, replacement, TintMapLayerType.Leather2),
+                    "A model change carries the queued picker color even without mouse-up");
+                InvokePrivate(editor, "FlushPendingPickerColor");
+                ctx.AssertEqual(queuedPartColor, TintMapService.GetEffectiveDisplayColor(
+                    civilian, replacement, TintMapLayerType.Leather2),
+                    "A late picker callback cannot revert the replacement tint");
             });
             ctx.SetResultDetail("120 samples coalesced into one exact RGB commit, at most six bindings, and no picker echo. Release/late flush, newer text input and target switches cannot replay stale colors. Incoming client events and timer advancement are synthesized.");
         }

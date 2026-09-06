@@ -179,6 +179,20 @@ namespace SWLOR.Toolset.Editors.TintMaps
             _colorChanged?.Invoke();
         }
 
+        public int? InferLegacyGlobalItemColor(TintMapLayerType layer)
+        {
+            var rows = Colors.Where(row => row.Layer == layer).ToArray();
+            if (rows.Any(row => row.ArmorPart == AppearanceArmor.Invalid) ||
+                rows.Select(row => row.ArmorPart).Distinct().Take(2).Count() < 2)
+                return null;
+
+            var values = rows.Select(row => _variables.GetInt(row.Key)).ToArray();
+            if (values.Any(value => !value.HasValue ||
+                    !TintMapColor.TryFromStoredValue(value.Value, out _)))
+                return null;
+            return values.Distinct().Count() == 1 ? values[0] : null;
+        }
+
         private static MaterialContext ResolveMaterialContext(
             RenderModel? model,
             string materialResref,

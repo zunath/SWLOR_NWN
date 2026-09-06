@@ -155,6 +155,75 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
         [EngineTest("Tint robe RGB male swaps preserve gameplay and emit no equipment events", Category = "AppearanceEditor", TimeoutSeconds = 60f)]
         public static Task MaleRobeRgbNeverReequips(EngineTestContext ctx) => VerifyRobeRgbNeverReequips(ctx, true);
 
+        [EngineTest("Armor side copies commit pending RGB text and picker colors", Category = "AppearanceEditor", TimeoutSeconds = 30f)]
+        public static async Task CopySidesCommitsPendingColors(EngineTestContext ctx)
+        {
+            var creature = await SpawnCivilianAsync(ctx);
+            var item = GetItemInSlot(InventorySlot.Chest, creature);
+            using var observation = new EventObservation(creature);
+            await VerifyGenuineEquipmentEventsAsync(ctx, creature, item, InventorySlot.Chest, observation);
+            await AssignedAsync(ctx, creature, () =>
+            {
+                EquippedItemAppearance.Set(item, ItemAppearanceType.ArmorModel, (int)AppearanceArmor.Robe, 0);
+                foreach (var part in new[] { AppearanceArmor.LeftForearm, AppearanceArmor.RightForearm })
+                    EquippedItemAppearance.Set(item, ItemAppearanceType.ArmorModel, (int)part, 6);
+                EquippedItemAppearance.Refresh(creature, item);
+                SeedGameplaySentinels(ctx, creature, item);
+            });
+            await ctx.DelaySecondsAsync(0.5f);
+            var before = Snapshot(creature, item, InventorySlot.Chest);
+            observation.Reset();
+
+            foreach (var copyToRight in new[] { true, false })
+            foreach (var typed in new[] { true, false })
+            {
+                var expected = typed ? new TintMapColor(205, 228, 197) : new TintMapColor(37, 121, 209);
+                await AssignedAsync(ctx, creature, () =>
+                {
+                    var editor = BindEditor(creature);
+                    editor.OnClickColorTarget(copyToRight ? AppearanceEditorViewModel.ColorTarget.LeftForearm :
+                        AppearanceEditorViewModel.ColorTarget.RightForearm, AppearanceArmorColor.Leather2)();
+                    ctx.Assert(editor.IsCustomTintEditable, "The source forearm has a custom Leather2 channel.");
+                    editor.SelectedTintColor = new GuiColor(1, 17, 91);
+                    editor.OnMouseUpTintPicker()();
+                    if (typed)
+                    {
+                        editor.CustomTintRed = expected.Red.ToString();
+                        editor.CustomTintGreen = expected.Green.ToString();
+                        editor.CustomTintBlue = expected.Blue.ToString();
+                    }
+                    else
+                        editor.SelectedTintColor = new GuiColor(expected.Red, expected.Green, expected.Blue);
+
+                    if (copyToRight)
+                        editor.OnClickCopyToRight()();
+                    else
+                        editor.OnClickCopyToLeft()();
+                    AssertForearmColors("copy commits the pending source value");
+                    // Replay the delayed handlers after copying; neither may restore an older color.
+                    editor.OnMouseUpTintPicker()();
+                    typeof(AppearanceEditorViewModel).GetMethod("CommitCustomTintComponents",
+                        BindingFlags.Instance | BindingFlags.NonPublic).Invoke(editor, null);
+                    AssertForearmColors("late callbacks preserve both copied colors");
+                });
+                await AssertSettledAsync(ctx, before, observation, $"copy {(copyToRight ? "right" : "left")} {(typed ? "text" : "picker")}");
+                AssertForearmColors("settled copy retains both colors");
+
+                void AssertForearmColors(string stage)
+                {
+                    foreach (var part in new[] { AppearanceArmor.LeftForearm, AppearanceArmor.RightForearm })
+                    {
+                        var selection = TintMapModelResolver.GetCurrentSelections(creature).Single(selection =>
+                            selection.ArmorPart == part && selection.Material.Layers.Contains(TintMapLayerType.Leather2));
+                        ctx.AssertEqual(expected, TintMapService.GetEffectiveDisplayColor(creature, selection, TintMapLayerType.Leather2),
+                            $"{part}: {stage}");
+                        TintMapEngineTests.AssertNativeRgb(ctx, creature, selection.Material.Resref, TintMapLayerType.Leather2, expected);
+                    }
+                }
+            }
+            ctx.SetResultDetail("Both copy directions commit queued RGB text and picker samples before reading source colors; late callbacks retain both sides. Native RGB, item identity and gameplay snapshots pass with zero extra equipment events. Client events/timer replay are synthesized.");
+        }
+
         [EngineTest("Robe choices exclude missing body models and recover armor without equipment events", Category = "AppearanceEditor", TimeoutSeconds = 60f)]
         public static async Task MissingRobeModels(EngineTestContext ctx)
         {

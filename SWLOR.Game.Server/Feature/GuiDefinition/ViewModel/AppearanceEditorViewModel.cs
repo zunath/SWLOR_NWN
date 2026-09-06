@@ -3144,6 +3144,8 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void CopyArmorSide(bool copyToRight)
         {
+            FlushPendingPickerColor();
+            CommitCustomTintComponents();
             ToggleItemEquippedFlags();
             if (DoesNotHaveItemEquipped || SelectedItemTypeIndex != 0)
                 return;

@@ -486,6 +486,16 @@ namespace SWLOR.Game.Server.Service.SkillService
             CombatPointCategoryType.Utility,
             CharacterType.Standard)]
         Espionage = 49,
+
+        [Skill(SkillCategoryType.Languages,
+            "Arkanian",
+            20,
+            true,
+            "Ability to speak the Arkanian language.",
+            false,
+            false,
+            false)]
+        Arkanian = 50,
     }
 
     public class SkillAttribute : Attribute

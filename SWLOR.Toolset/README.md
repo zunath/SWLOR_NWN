@@ -17,7 +17,7 @@ reuses the existing pack pipeline unchanged.
 
 The **Animation Editor** adds native 3D posing, IK, keyframes, MDL animation exchange, glTF
 retargeting, and installation into HAK model sources with generated C# references. See
-[Animation Editor](ANIMATION-EDITOR.md) for the authoring and deployment workflow. No Godot
+[Animation Editor](Readmes/ANIMATION-EDITOR.md) for the authoring and deployment workflow. No Godot
 installation is needed.
 
 ---

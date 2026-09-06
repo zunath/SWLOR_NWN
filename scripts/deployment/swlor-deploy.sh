@@ -6,6 +6,7 @@ umask 0022
 CONFIG_FILE="${SWLOR_DEPLOY_CONFIG:-/etc/swlor-deploy.conf}"
 LOG_FILE="${SWLOR_DEPLOY_LOG:-/var/log/swlor-deploy.log}"
 LOCK_FILE="${SWLOR_DEPLOY_LOCK:-/run/lock/swlor-deploy.lock}"
+LOCK_FD_INHERITED="${SWLOR_DEPLOY_LOCK_FD_INHERITED:-0}"
 
 if [[ -f "$CONFIG_FILE" && ! -L "$CONFIG_FILE" && -r "$CONFIG_FILE" ]]; then
     if [[ "$(stat -c '%u' "$CONFIG_FILE")" != 0 ]]; then
@@ -57,6 +58,8 @@ SERVER_MODULE_ROOT="${SERVER_MODULE_ROOT:-$SERVER_ROOT/modules}"
 SERVER_DOTNET_ROOT="${SERVER_DOTNET_ROOT:-$SERVER_ROOT/dotnet}"
 SERVER_ENV_FILE="${SERVER_ENV_FILE:-$SERVER_ROOT/swlor.env}"
 NWSYNC_HASH_VARIABLE="${NWSYNC_HASH_VARIABLE:-NWN_NWSYNCHASH}"
+REQUIRED_TWEAK_VARIABLE="NWNX_TWEAKS_MATERIAL_NAME_NULL_IS_ALL"
+REQUIRED_TWEAK_VALUE="true"
 HEALTH_FATAL_LOG_PATTERN="${HEALTH_FATAL_LOG_PATTERN:-buffer overflow|Fatal error|has crashed|Segmentation fault}"
 HEALTH_LOG_TAIL_LINES="${HEALTH_LOG_TAIL_LINES:-2000}"
 
@@ -128,10 +131,22 @@ else
 fi
 exec > >(tee -a "$LOG_FILE") 2>&1
 
-exec 9>"$LOCK_FILE"
-if ! flock --nonblock 9; then
-    die "Another SWLOR deployment is already running."
+if [[ "$LOCK_FD_INHERITED" == 1 ]]; then
+    inherited_lock_target="$(realpath "/proc/$$/fd/9" 2>/dev/null || true)"
+    expected_lock_target="$(realpath "$LOCK_FILE" 2>/dev/null || true)"
+    [[ -n "$inherited_lock_target" && "$inherited_lock_target" == "$expected_lock_target" ]] ||
+        die "The inherited deployment lock descriptor does not match $LOCK_FILE."
+    flock --nonblock 9 ||
+        die "The inherited deployment lock is no longer held."
+elif [[ "$LOCK_FD_INHERITED" == 0 ]]; then
+    exec 9>"$LOCK_FILE"
+    if ! flock --nonblock 9; then
+        die "Another SWLOR deployment is already running."
+    fi
+else
+    die "SWLOR_DEPLOY_LOCK_FD_INHERITED must be 0 or 1."
 fi
+unset SWLOR_DEPLOY_LOCK_FD_INHERITED
 
 require_command()
 {
@@ -424,20 +439,29 @@ wait_for_server_health()
     return 0
 }
 
-write_manifest_hash()
+write_server_env_setting()
 {
-    local manifest_id="$1"
+    local setting_key="$1"
+    local setting_value="$2"
     server_env_temporary="${SERVER_ENV_FILE}.new.$$"
 
     awk \
-        -v key="$NWSYNC_HASH_VARIABLE" \
-        -v value="$manifest_id" \
+        -v key="$setting_key" \
+        -v value="$setting_value" \
         '
+          BEGIN { found = 0 }
           index($0, key "=") == 1 {
-              print key "=" value
+              if (!found) {
+                  print key "=" value
+                  found = 1
+              }
               next
           }
           { print }
+          END {
+              if (!found)
+                  print key "=" value
+          }
         ' \
         "$SERVER_ENV_FILE" > "$server_env_temporary"
     chown --reference="$SERVER_ENV_FILE" "$server_env_temporary"
@@ -445,8 +469,13 @@ write_manifest_hash()
     mv -f "$server_env_temporary" "$SERVER_ENV_FILE"
     server_env_temporary=
 
-    grep -Fqx "${NWSYNC_HASH_VARIABLE}=${manifest_id}" "$SERVER_ENV_FILE" ||
-        die "Failed to update $NWSYNC_HASH_VARIABLE in $SERVER_ENV_FILE."
+    grep -Fqx "${setting_key}=${setting_value}" "$SERVER_ENV_FILE" ||
+        die "Failed to update $setting_key in $SERVER_ENV_FILE."
+}
+
+write_manifest_hash()
+{
+    write_server_env_setting "$NWSYNC_HASH_VARIABLE" "$1"
 }
 
 restore_directory()
@@ -628,6 +657,21 @@ then
     die "$NWSYNC_HASH_VARIABLE must be empty or a 40-character manifest hash."
 fi
 
+required_tweak_line_count="$(
+    grep -Ec "^${REQUIRED_TWEAK_VARIABLE}=" "$SERVER_ENV_FILE" || true
+)"
+configured_required_tweak="$(
+    sed -n "s/^${REQUIRED_TWEAK_VARIABLE}=//p" "$SERVER_ENV_FILE" |
+        tail -n 1 |
+        tr -d '\r\n'
+)"
+server_env_migration_required=0
+if [[ "$required_tweak_line_count" != 1 ||
+      "$configured_required_tweak" != "$REQUIRED_TWEAK_VALUE" ]]
+then
+    server_env_migration_required=1
+fi
+
 compose config --quiet
 check_free_space "$MIN_FREE_GIB_BEFORE_BUILD" "Pre-build"
 
@@ -660,6 +704,23 @@ if [[ "$local_commit" != "$remote_commit" ]]; then
         die "$GIT_REMOTE/$BRANCH diverged from the deployment source; only fast-forward updates are allowed."
     git -C "$SOURCE_ROOT" merge --ff-only \
         "refs/remotes/$GIT_REMOTE/$BRANCH"
+
+    # The fast-forward can change a submodule gitlink. Update the checkout before re-exec so the
+    # replacement script's initial clean-tree guard does not mistake that expected gitlink change
+    # for a local modification.
+    log "Synchronizing recursive submodules before re-exec."
+    git -C "$SOURCE_ROOT" submodule sync --recursive
+    git -C "$SOURCE_ROOT" submodule update --init --recursive --depth 1
+
+    # Continue with the just-fetched implementation rather than the old script body that was
+    # already open when this process began. Deployment migrations added by this commit must run
+    # during its first rollout, before the server is restarted.
+    updated_deploy_script="$SOURCE_ROOT/scripts/deployment/swlor-deploy.sh"
+    [[ -f "$updated_deploy_script" && ! -L "$updated_deploy_script" ]] ||
+        die "Updated deployment script is missing or is a symbolic link: $updated_deploy_script"
+    log "Re-executing deployment with the updated script from $remote_commit."
+    export SWLOR_DEPLOY_LOCK_FD_INHERITED=1
+    exec "$BASH" "$updated_deploy_script" "$@"
 fi
 
 log "Synchronizing recursive submodules."
@@ -672,7 +733,10 @@ fi
 
 target_commit="$(git -C "$SOURCE_ROOT" rev-parse HEAD)"
 active_commit="$(state_value active-commit)"
-if [[ "$MODE" == if-changed && "$active_commit" == "$target_commit" ]]; then
+if [[ "$MODE" == if-changed &&
+      "$active_commit" == "$target_commit" &&
+      "$server_env_migration_required" == 0 ]]
+then
     log "Commit $target_commit is already active; nothing to deploy."
     exit 0
 fi
@@ -1271,7 +1335,8 @@ runtime_payload_changed=0
 if (( haks_inputs_changed == 1 ||
       module_inputs_changed == 1 ||
       dotnet_payload_changed == 1 ||
-      manifest_changed == 1 ))
+      manifest_changed == 1 ||
+      server_env_migration_required == 1 ))
 then
     runtime_payload_changed=1
 fi
@@ -1368,6 +1433,15 @@ if (( manifest_changed == 1 )); then
     write_manifest_hash "$manifest_id"
 else
     log "$NWSYNC_HASH_VARIABLE is unchanged."
+fi
+
+if (( server_env_migration_required == 1 )); then
+    log "Setting $REQUIRED_TWEAK_VARIABLE to $REQUIRED_TWEAK_VALUE."
+    write_server_env_setting \
+        "$REQUIRED_TWEAK_VARIABLE" \
+        "$REQUIRED_TWEAK_VALUE"
+else
+    log "$REQUIRED_TWEAK_VARIABLE is already configured."
 fi
 
 log "Switching the server to the independently staged artifact set."

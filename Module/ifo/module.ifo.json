@@ -3979,6 +3979,34 @@
           "type": "cexostring",
           "value": "sw_t_cepunder"
         }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_tint_mtr"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_tint0"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_tint1"
+        }
+      },
+      {
+        "__struct_id": 8,
+        "Mod_Hak": {
+          "type": "cexostring",
+          "value": "sw_tint2"
+        }
       }
     ]
   },

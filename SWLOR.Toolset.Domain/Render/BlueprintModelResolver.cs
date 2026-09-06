@@ -4,6 +4,7 @@ using SWLOR.Toolset.Domain.GameData.Lookups;
 using SWLOR.Toolset.Domain.Gff;
 using SWLOR.Toolset.Domain.Workspace;
 using SWLOR.NWN.Formats.Plt;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 
 namespace SWLOR.Toolset.Domain.Render
 {
@@ -41,7 +42,10 @@ namespace SWLOR.Toolset.Domain.Render
         string PartType,
         string ModelResRef,
         IReadOnlyDictionary<int, int>? LayerColorIndices = null,
-        string? TextureResRef = null);
+        string? TextureResRef = null,
+        bool UsesItemTintOverrides = false,
+        IReadOnlyDictionary<string, int>? TintMapOverrides = null,
+        AppearanceArmor ArmorPart = AppearanceArmor.Invalid);
 
     /// <summary>
     /// The resolved preview-model description for a blueprint, produced by <see cref="BlueprintModelResolver"/>.
@@ -57,6 +61,13 @@ namespace SWLOR.Toolset.Domain.Render
 
         /// <summary>The single model resref for <see cref="BlueprintModelKind.Simple"/>; null otherwise.</summary>
         public string? ModelResRef { get; init; }
+
+        /// <summary>
+        /// The meshes in <see cref="ModelResRef"/> belong to the item being previewed. This is
+        /// separate from <see cref="BlueprintModelPart.UsesItemTintOverrides"/> because a simple
+        /// ModelType 0/1 UTI has no composed part record.
+        /// </summary>
+        public bool RootUsesItemTintOverrides { get; init; }
 
         /// <summary>
         /// The resolved door row declares <c>VisibleModel=0</c>. These are area-transition planes:
@@ -176,14 +187,16 @@ namespace SWLOR.Toolset.Domain.Render
             WaypointAppearanceService? waypoints = null,
             Func<int, BaseItemIconRow?>? baseItems = null,
             bool armorPreviewFemale = false,
-            CloakModelService? cloakModels = null)
+            CloakModelService? cloakModels = null,
+            CreatureAttachmentModelService? creatureAttachmentModels = null)
         {
             ArgumentNullException.ThrowIfNull(root);
 
             return type switch
             {
                 ResourceType.Utc => ResolveCreature(
-                    root, appearances, itemBlueprintLoader, partModelExists, baseItems, cloakModels),
+                    root, appearances, itemBlueprintLoader, partModelExists, baseItems, cloakModels,
+                    creatureAttachmentModels),
                 ResourceType.Utp => ResolvePlaceable(root, placeables),
                 ResourceType.Utd => ResolveDoor(root, doors),
                 ResourceType.Utw => ResolveWaypoint(root, waypoints),
@@ -276,6 +289,7 @@ namespace SWLOR.Toolset.Domain.Render
                         Kind = BlueprintModelKind.Simple,
                         Status = $"{modelResRef}.mdl",
                         ModelResRef = modelResRef,
+                        RootUsesItemTintOverrides = true,
                         LayerColorIndices = ResolveLayerColors(root, root)
                     };
                 }
@@ -332,7 +346,11 @@ namespace SWLOR.Toolset.Domain.Render
             {
                 var robeResRef = BuildPartName(prefix, "robe", robeNumber);
                 if (partModelExists?.Invoke(robeResRef) ?? true)
-                    parts.Add(new BlueprintModelPart("robe", robeResRef));
+                {
+                    parts.Add(new BlueprintModelPart(
+                        "robe", robeResRef, UsesItemTintOverrides: true,
+                        ArmorPart: AppearanceArmor.Robe));
+                }
             }
 
             parts.Add(new BlueprintModelPart("head", BuildPartName(prefix, "head", 1)));
@@ -349,7 +367,13 @@ namespace SWLOR.Toolset.Domain.Render
                     ? armorValue
                     : partType is "shol" or "shor" ? 0 : 1;
                 if (number > 0)
-                    parts.Add(new BlueprintModelPart(partType, BuildPartName(prefix, partType, number)));
+                {
+                    parts.Add(new BlueprintModelPart(
+                        partType,
+                        BuildPartName(prefix, partType, number),
+                        UsesItemTintOverrides: true,
+                        ArmorPart: GetArmorPart(partType)));
+                }
             }
 
             return new BlueprintModelReference
@@ -388,7 +412,11 @@ namespace SWLOR.Toolset.Domain.Render
 
             var parts = new List<BlueprintModelPart>
             {
-                new("cloak", cloakResRef, TextureResRef: cloakTextureResRef)
+                new(
+                    "cloak",
+                    cloakResRef,
+                    TextureResRef: cloakTextureResRef,
+                    UsesItemTintOverrides: true)
             };
             parts.Add(new BlueprintModelPart("head", BuildPartName(prefix, "head", 1)));
             foreach (var (_, _, partType) in BodyPartFields)
@@ -417,7 +445,8 @@ namespace SWLOR.Toolset.Domain.Render
             Func<string, JsonGffStruct?>? itemBlueprintLoader,
             Func<string, bool>? partModelExists,
             Func<int, BaseItemIconRow?>? baseItems,
-            CloakModelService? cloakModels)
+            CloakModelService? cloakModels,
+            CreatureAttachmentModelService? creatureAttachmentModels)
         {
             if (appearances == null)
                 return BlueprintModelReference.NoneWith("Creature preview unavailable (appearance data not loaded).");
@@ -426,6 +455,8 @@ namespace SWLOR.Toolset.Domain.Render
             var row = appearances.GetAll().FirstOrDefault(r => r.Id == appearanceId);
             if (row == null)
                 return BlueprintModelReference.NoneWith($"Unknown appearance id {appearanceId}.");
+
+            var armor = LoadEquippedChestArmor(root, itemBlueprintLoader);
 
             if (string.Equals(row.ModelType, "P", StringComparison.OrdinalIgnoreCase))
             {
@@ -436,22 +467,29 @@ namespace SWLOR.Toolset.Domain.Render
 
                 var visibleEquipment = ResolveVisibleEquipment(
                     root, itemBlueprintLoader, partModelExists, baseItems, cloakModels, prefix);
+                visibleEquipment = AddCreatureAttachments(
+                    root, visibleEquipment, armor, creatureAttachmentModels, partModelExists);
                 return ResolveSegmentedCreature(
-                    root, row, prefix, itemBlueprintLoader, partModelExists, visibleEquipment);
+                    root, row, prefix, partModelExists, visibleEquipment, armor);
             }
 
             var modelResRef = row.Race;
             if (string.IsNullOrWhiteSpace(modelResRef))
                 return BlueprintModelReference.NoneWith($"{row.DisplayName}: no model ResRef in appearance.2da.");
 
+            var simpleParts = ResolveVisibleEquipment(
+                root, itemBlueprintLoader, partModelExists, baseItems, cloakModels,
+                wearerPrefix: null);
+            simpleParts = AddCreatureAttachments(
+                root, simpleParts, armor, creatureAttachmentModels, partModelExists);
+
             return new BlueprintModelReference
             {
                 Kind = BlueprintModelKind.Simple,
                 Status = $"{row.DisplayName} ({modelResRef}.mdl)",
                 ModelResRef = modelResRef,
-                Parts = ResolveVisibleEquipment(
-                    root, itemBlueprintLoader, partModelExists, baseItems, cloakModels,
-                    wearerPrefix: null).Parts
+                Parts = simpleParts.Parts,
+                LayerColorIndices = ResolveLayerColors(root, null)
             };
         }
 
@@ -470,11 +508,13 @@ namespace SWLOR.Toolset.Domain.Render
             JsonGffStruct root,
             AppearanceRow row,
             string prefix,
-            Func<string, JsonGffStruct?>? itemBlueprintLoader,
             Func<string, bool>? partModelExists,
-            VisibleEquipment visibleEquipment)
+            VisibleEquipment visibleEquipment,
+            JsonGffStruct? armor)
         {
-            var armor = LoadEquippedChestArmor(root, itemBlueprintLoader);
+            var armorTintMapOverrides = armor == null
+                ? null
+                : TintMapOverrides.Read(new VarTable(armor));
             var parts = new List<BlueprintModelPart>();
 
             // Robe first (armor-only; creatures have no robe body part), when its model resolves.
@@ -488,7 +528,12 @@ namespace SWLOR.Toolset.Domain.Render
             {
                 var robeResRef = BuildPartName(prefix, "robe", robeNumber);
                 if (partModelExists?.Invoke(robeResRef) ?? true)
-                    parts.Add(new BlueprintModelPart("robe", robeResRef));
+                {
+                    parts.Add(new BlueprintModelPart(
+                        "robe", robeResRef, UsesItemTintOverrides: true,
+                        TintMapOverrides: armorTintMapOverrides,
+                        ArmorPart: AppearanceArmor.Robe));
+                }
             }
 
             var head = root.GetIntOrNull("Appearance_Head");
@@ -506,7 +551,16 @@ namespace SWLOR.Toolset.Domain.Render
                         ? 0
                         : ItemAppearanceValues.Read(armor, "ArmorPart_" + armorKey) ?? 0);
                 if (number > 0)
-                    parts.Add(new BlueprintModelPart(partType, BuildPartName(prefix, partType, number)));
+                {
+                    parts.Add(new BlueprintModelPart(
+                        partType,
+                        BuildPartName(prefix, partType, number),
+                        UsesItemTintOverrides: armor != null,
+                        TintMapOverrides: armorTintMapOverrides,
+                        ArmorPart: armor == null
+                            ? AppearanceArmor.Invalid
+                            : GetArmorPart(partType)));
+                }
             }
 
             parts.AddRange(visibleEquipment.Parts);
@@ -521,6 +575,33 @@ namespace SWLOR.Toolset.Domain.Render
                 SkeletonResRef = prefix,
                 Parts = parts,
                 LayerColorIndices = ResolveLayerColors(root, armor)
+            };
+        }
+
+        private static AppearanceArmor GetArmorPart(string partType)
+        {
+            return partType switch
+            {
+                "footr" => AppearanceArmor.RightFoot,
+                "footl" => AppearanceArmor.LeftFoot,
+                "shinr" => AppearanceArmor.RightShin,
+                "shinl" => AppearanceArmor.LeftShin,
+                "legl" => AppearanceArmor.LeftThigh,
+                "legr" => AppearanceArmor.RightThigh,
+                "pelvis" => AppearanceArmor.Pelvis,
+                "chest" => AppearanceArmor.Torso,
+                "belt" => AppearanceArmor.Belt,
+                "neck" => AppearanceArmor.Neck,
+                "forer" => AppearanceArmor.RightForearm,
+                "forel" => AppearanceArmor.LeftForearm,
+                "bicepr" => AppearanceArmor.RightBicep,
+                "bicepl" => AppearanceArmor.LeftBicep,
+                "shor" => AppearanceArmor.RightShoulder,
+                "shol" => AppearanceArmor.LeftShoulder,
+                "handr" => AppearanceArmor.RightHand,
+                "handl" => AppearanceArmor.LeftHand,
+                "robe" => AppearanceArmor.Robe,
+                _ => AppearanceArmor.Invalid
             };
         }
 
@@ -572,6 +653,63 @@ namespace SWLOR.Toolset.Domain.Render
         private readonly record struct VisibleEquipment(
             IReadOnlyList<BlueprintModelPart> Parts,
             IReadOnlySet<string> HiddenBodyParts);
+
+        private static VisibleEquipment AddCreatureAttachments(
+            JsonGffStruct creature,
+            VisibleEquipment visibleEquipment,
+            JsonGffStruct? armor,
+            CreatureAttachmentModelService? attachmentModels,
+            Func<string, bool>? partModelExists)
+        {
+            if (attachmentModels == null)
+                return visibleEquipment;
+
+            var parts = visibleEquipment.Parts.ToList();
+            var layerColorIndices = ResolveLayerColors(creature, armor);
+            var tintMapOverrides = armor == null
+                ? null
+                : TintMapOverrides.Read(new VarTable(armor));
+            AddCreatureAttachment(
+                parts,
+                "wing",
+                attachmentModels.GetWingOrNull(creature.GetIntOrNull("Wings_New") ?? 0),
+                partModelExists,
+                layerColorIndices,
+                armor != null,
+                tintMapOverrides);
+            AddCreatureAttachment(
+                parts,
+                "tail",
+                attachmentModels.GetTailOrNull(creature.GetIntOrNull("Tail_New") ?? 0),
+                partModelExists,
+                layerColorIndices,
+                armor != null,
+                tintMapOverrides);
+            return new VisibleEquipment(parts, visibleEquipment.HiddenBodyParts);
+        }
+
+        private static void AddCreatureAttachment(
+            ICollection<BlueprintModelPart> parts,
+            string partType,
+            string? modelResRef,
+            Func<string, bool>? partModelExists,
+            IReadOnlyDictionary<int, int> layerColorIndices,
+            bool usesItemTintOverrides,
+            IReadOnlyDictionary<string, int>? tintMapOverrides)
+        {
+            if (string.IsNullOrWhiteSpace(modelResRef) ||
+                partModelExists?.Invoke(modelResRef) == false)
+            {
+                return;
+            }
+
+            parts.Add(new BlueprintModelPart(
+                partType,
+                modelResRef,
+                LayerColorIndices: layerColorIndices,
+                UsesItemTintOverrides: usesItemTintOverrides,
+                TintMapOverrides: tintMapOverrides));
+        }
 
         private static VisibleEquipment ResolveVisibleEquipment(
             JsonGffStruct root,
@@ -639,6 +777,8 @@ namespace SWLOR.Toolset.Domain.Render
             if (item == null)
                 return;
 
+            var tintMapOverrides = TintMapOverrides.Read(new VarTable(item));
+
             var reference = ResolveItem(
                 item, baseItems, partModelExists, armorPreviewFemale: false,
                 cloakModels: cloakModels);
@@ -664,7 +804,9 @@ namespace SWLOR.Toolset.Domain.Render
                     if (partModelExists?.Invoke(modelResRef) ?? true)
                     {
                         destination.Add(new BlueprintModelPart(
-                            attachmentType, modelResRef, reference.LayerColorIndices, textureResRef));
+                            attachmentType, modelResRef, reference.LayerColorIndices, textureResRef,
+                            UsesItemTintOverrides: true,
+                            TintMapOverrides: tintMapOverrides));
                     }
                 }
 
@@ -676,7 +818,9 @@ namespace SWLOR.Toolset.Domain.Render
                 foreach (var part in reference.Parts)
                 {
                     destination.Add(new BlueprintModelPart(
-                        attachmentType, part.ModelResRef, reference.LayerColorIndices));
+                        attachmentType, part.ModelResRef, reference.LayerColorIndices,
+                        UsesItemTintOverrides: true,
+                        TintMapOverrides: tintMapOverrides));
                 }
                 return;
             }
@@ -686,7 +830,9 @@ namespace SWLOR.Toolset.Domain.Render
                 !reference.ModelResRef.Equals("it_bag", StringComparison.OrdinalIgnoreCase))
             {
                 destination.Add(new BlueprintModelPart(
-                    attachmentType, reference.ModelResRef, reference.LayerColorIndices));
+                    attachmentType, reference.ModelResRef, reference.LayerColorIndices,
+                    UsesItemTintOverrides: true,
+                    TintMapOverrides: tintMapOverrides));
             }
         }
 

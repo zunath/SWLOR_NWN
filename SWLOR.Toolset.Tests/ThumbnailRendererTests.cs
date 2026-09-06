@@ -1,6 +1,7 @@
 using System.Numerics;
 using FluentAssertions;
 using NUnit.Framework;
+using SWLOR.NWN.API.NWScript.Enum.Item;
 using SWLOR.Toolset.Domain.Render;
 
 namespace SWLOR.Toolset.Tests
@@ -249,7 +250,13 @@ namespace SWLOR.Toolset.Tests
                 }
             };
 
-        private static TextureImage SolidTexture(byte r, byte g, byte b, byte a = 255, int size = 4)
+        private static TextureImage SolidTexture(
+            byte r,
+            byte g,
+            byte b,
+            byte a = 255,
+            int size = 4,
+            byte alphaCutoff = TextureImage.DefaultAlphaCutoff)
         {
             var pixels = new byte[size * size * 4];
             for (var i = 0; i < pixels.Length; i += 4)
@@ -265,7 +272,8 @@ namespace SWLOR.Toolset.Tests
                 Width = size,
                 Height = size,
                 Pixels = pixels,
-                SourceFormat = TextureSourceFormat.Tga
+                SourceFormat = TextureSourceFormat.Tga,
+                AlphaCutoff = alphaCutoff
             };
         }
 
@@ -430,6 +438,43 @@ namespace SWLOR.Toolset.Tests
         }
 
         [Test]
+        public void APerMeshResolverCachesDistinctDyeTintOwnershipAndArmorPartStateSeparately()
+        {
+            var first = TexturedQuad("shared_mtr").Meshes[0];
+            first.LayerColorIndices = new Dictionary<int, int> { [2] = 45 };
+            first.TintMapOverrides = new Dictionary<string, int> { ["TM_shared_mtr_2"] = 123 };
+            first.ArmorPart = AppearanceArmor.LeftHand;
+            var otherPart = TexturedQuad("shared_mtr").Meshes[0];
+            otherPart.LayerColorIndices = new Dictionary<int, int> { [2] = 45 };
+            otherPart.TintMapOverrides = new Dictionary<string, int> { ["TM_shared_mtr_2"] = 123 };
+            otherPart.ArmorPart = AppearanceArmor.RightHand;
+            var itemOwned = TexturedQuad("shared_mtr").Meshes[0];
+            itemOwned.LayerColorIndices = new Dictionary<int, int> { [2] = 45 };
+            itemOwned.TintMapOverrides = new Dictionary<string, int> { ["TM_shared_mtr_2"] = 123 };
+            itemOwned.UsesItemTintOverrides = true;
+            var second = TexturedQuad("shared_mtr").Meshes[0];
+            second.LayerColorIndices = new Dictionary<int, int> { [2] = 97 };
+            second.TintMapOverrides = new Dictionary<string, int> { ["TM_shared_mtr_2"] = 456 };
+            var seen = new List<(int Palette, int Tint)>();
+
+            ThumbnailRenderer.Render(
+                new RenderModel
+                {
+                    Name = "independent-custom-tints",
+                    Meshes = [first, otherPart, itemOwned, second]
+                },
+                Size,
+                resolveMeshTexture: mesh =>
+                {
+                    seen.Add((mesh.LayerColorIndices[2], mesh.TintMapOverrides["TM_shared_mtr_2"]));
+                    return SolidTexture(10, 10, 10);
+                });
+
+            seen.Should().BeEquivalentTo(new[] { (45, 123), (45, 123), (45, 123), (97, 456) },
+                "a per-mesh resolver uses armor part, ownership, palette rows, and custom RGB overrides");
+        }
+
+        [Test]
         public void Fully_Transparent_Texels_Are_Cut_Out_Rather_Than_Drawn()
         {
             var opaque = ThumbnailRenderer.Render(
@@ -439,6 +484,22 @@ namespace SWLOR.Toolset.Tests
 
             OpaquePixels(cutOut).Should().Be(0);
             OpaquePixels(opaque).Should().BeGreaterThan(0);
+        }
+
+        [Test]
+        public void TextureSpecificAlphaCutoffControlsSoftwarePreviewCutout()
+        {
+            var runtimeTintCutoff = ThumbnailRenderer.Render(
+                TexturedQuad("leaf"), Size, palette: null,
+                resolveTexture: _ => SolidTexture(9, 9, 9, a: 80, alphaCutoff: 77))!;
+            var legacyCutoff = ThumbnailRenderer.Render(
+                TexturedQuad("leaf"), Size, palette: null,
+                resolveTexture: _ => SolidTexture(9, 9, 9, a: 80))!;
+
+            OpaquePixels(runtimeTintCutoff).Should().BeGreaterThan(0,
+                "texture9 alpha 80 survives the shader's byte cutoff of 77");
+            OpaquePixels(legacyCutoff).Should().Be(0,
+                "ordinary preview textures retain the historical byte cutoff of 96");
         }
 
         [Test]

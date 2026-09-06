@@ -72,7 +72,8 @@ namespace SWLOR.Toolset.Editors.Creatures
                 Task<IReadOnlyList<CreatureEquipmentChoice>>>? equipmentSearch = null,
             Func<IReadOnlyList<AppearanceOption>>? appearanceOptionsLoader = null,
             Func<int, string?>? abilityIcon = null,
-            Sources.ObjectSourceSectionViewModel? source = null)
+            Sources.ObjectSourceSectionViewModel? source = null,
+            TintMapCatalog? tintMapCatalog = null)
         {
             _log = log;
             _prompts = prompts;
@@ -103,7 +104,10 @@ namespace SWLOR.Toolset.Editors.Creatures
                 equipmentSearch,
                 appearanceOptionsLoader,
                 abilityIcon,
-                log);
+                log,
+                tintMapCatalog,
+                captureCoalesceOrigin: () => _session.UndoStack.CurrentAppliedEntry,
+                runCoalescedEdit: RunCoalescedEdit);
             UpdateTitle();
         }
 
@@ -114,6 +118,25 @@ namespace SWLOR.Toolset.Editors.Creatures
                 _session.Execute(description, mutation);
                 AfterHistoryChange();
                 return true;
+            }
+            catch (Exception ex)
+            {
+                _log.AppendLine($"Edit failed ({description}): {ex.Message}");
+                return false;
+            }
+        }
+
+        private bool RunCoalescedEdit(
+            IDocumentEdit origin,
+            string description,
+            Action mutation)
+        {
+            try
+            {
+                var applied = _session.ExecuteCoalesced(origin, description, mutation);
+                if (applied)
+                    AfterHistoryChange();
+                return applied;
             }
             catch (Exception ex)
             {

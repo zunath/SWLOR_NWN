@@ -101,6 +101,71 @@ namespace SWLOR.Toolset.Tests
             AssertTheBodyStandsUp(model, superModel => Load(superModel, isSkeleton: true));
         }
 
+        [Test]
+        public void MaleHuman_Item016ThighMeshesFollowTheirSkeletonBonesExactlyOnce()
+        {
+            var installRoot = NwnInstallLocator.Locate();
+            installRoot.Should().NotBeNull("the explicit licensed-corpus suite requires NWN:EE");
+            var baseLayer = KeyBifCatalog.Load(Path.Combine(installRoot!, "data"));
+            var index = ResourceIndex.FromHakBuilderConfig(
+                Path.Combine(RepositoryRoot, "Build", "hakbuilder.json"),
+                Path.Combine(RepositoryRoot, "SWLOR_Haks"),
+                baseLayer);
+
+            MdlModel? Load(string resRef, bool isSkeleton)
+            {
+                if (!index.TryLookup(ResourceIdentity.FromFileName(resRef + ".mdl"), out var handle))
+                    return null;
+
+                var model = new MdlReader().Parse(handle.GetBytes());
+                if (!isSkeleton)
+                    MdlGeometryFlattener.FlattenNodeTransforms(model);
+                return model;
+            }
+
+            var skeleton = Load("pmh0", isSkeleton: true);
+            skeleton.Should().NotBeNull();
+            var frames = MdlAnimationPose.SampleIdleFrames(
+                skeleton,
+                superModel => Load(superModel, isSkeleton: true));
+            frames.Should().NotBeEmpty("the native player skeleton supplies the pose used by the preview");
+
+            var parts = new[]
+            {
+                (PartType: "pelvis", ModelResRef: "pmh0_pelvis233"),
+                (PartType: "legl", ModelResRef: "pmh0_legl161"),
+                (PartType: "legr", ModelResRef: "pmh0_legr161"),
+                (PartType: "shinl", ModelResRef: "pmh0_shinl222"),
+                (PartType: "shinr", ModelResRef: "pmh0_shinr222")
+            };
+            var composed = new MdlPartComposer(Load).Compose(
+                "pmh0",
+                parts,
+                adjustSeams: false);
+
+            composed.Should().NotBeNull();
+            var pose = frames[^1].Pose;
+            foreach (var (partType, modelResRef) in parts)
+            {
+                var boneName = MdlPartBoneMap.GetBoneName(partType)!;
+                var bone = FindNode(composed!.GeometryRoot!, boneName, receivesNamedPose: true);
+                bone.Should().NotBeNull($"the pmh0 skeleton must expose '{boneName}'");
+                var expected = MdlMeshBuilder.ComposeNodeTransform(bone!, pose);
+                var partMeshes = composed.GetMeshNodes()
+                    .Where(mesh => mesh.Bitmap.Equals(modelResRef, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+                partMeshes.Should().NotBeEmpty($"item016 uses the '{modelResRef}' part");
+
+                foreach (var mesh in partMeshes)
+                {
+                    mesh.ReceivesNamedAnimationPose.Should().BeFalse(
+                        "the attached part already inherits its skeleton bone's pose");
+                    var actual = MdlMeshBuilder.ComposeNodeTransform(mesh, pose);
+                    AssertMatrixApproximately(actual, expected, modelResRef, mesh.Name);
+                }
+            }
+        }
+
         /// <summary>
         /// A composed body posed by its idle has to occupy a body's worth of space. Attaching every
         /// part to the right bone is not enough on its own: the idle poses those bones, and when the
@@ -142,6 +207,56 @@ namespace SWLOR.Toolset.Tests
                 ancestors => ancestors.Any(name =>
                     name.Equals(boneName, StringComparison.OrdinalIgnoreCase)),
                 $"'{meshName}' must be attached below skeleton bone '{boneName}'");
+        }
+
+        private static MdlNode? FindNode(MdlNode root, string name, bool receivesNamedPose)
+        {
+            var pending = new Stack<MdlNode>();
+            pending.Push(root);
+            while (pending.Count > 0)
+            {
+                var node = pending.Pop();
+                if (node.ReceivesNamedAnimationPose == receivesNamedPose &&
+                    node.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
+                {
+                    return node;
+                }
+
+                foreach (var child in node.Children)
+                    pending.Push(child);
+            }
+
+            return null;
+        }
+
+        private static void AssertMatrixApproximately(
+            Matrix4x4 actual,
+            Matrix4x4 expected,
+            string partResRef,
+            string meshName)
+        {
+            var actualValues = new[]
+            {
+                actual.M11, actual.M12, actual.M13, actual.M14,
+                actual.M21, actual.M22, actual.M23, actual.M24,
+                actual.M31, actual.M32, actual.M33, actual.M34,
+                actual.M41, actual.M42, actual.M43, actual.M44
+            };
+            var expectedValues = new[]
+            {
+                expected.M11, expected.M12, expected.M13, expected.M14,
+                expected.M21, expected.M22, expected.M23, expected.M24,
+                expected.M31, expected.M32, expected.M33, expected.M34,
+                expected.M41, expected.M42, expected.M43, expected.M44
+            };
+
+            for (var index = 0; index < actualValues.Length; index++)
+            {
+                actualValues[index].Should().BeApproximately(
+                    expectedValues[index],
+                    0.0001f,
+                    $"'{partResRef}' mesh '{meshName}' must receive the same world transform as its skeleton bone");
+            }
         }
 
         private static bool IsFinite(Vector3 value) =>

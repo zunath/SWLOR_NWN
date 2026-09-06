@@ -9,5 +9,6 @@ namespace SWLOR.Toolset.Workspace
     /// </summary>
     public readonly record struct BlueprintModelRenderResult(
         RenderModel? Model,
-        bool IsDoorTransition);
+        bool IsDoorTransition,
+        IReadOnlyDictionary<string, int>? TintMapOverrides = null);
 }

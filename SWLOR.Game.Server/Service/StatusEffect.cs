@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Feature.GuiDefinition.RefreshEvent;
@@ -687,12 +687,15 @@ namespace SWLOR.Game.Server.Service
             var direction = adjustedDurationTicks < originalDurationTicks
                 ? "reduced"
                 : "increased";
+            var resistanceLabel = adjustedDurationTicks < originalDurationTicks
+                ? "Resistance"
+                : "Vulnerability";
             var secondsPerTick = Math.Max(1f, frequency);
             var originalSeconds = FormatDurationSeconds(originalDurationTicks * secondsPerTick);
             var adjustedSeconds = FormatDurationSeconds(adjustedDurationTicks * secondsPerTick);
             var displayedEffectName = string.IsNullOrWhiteSpace(effectName) ? "the effect" : effectName;
 
-            return $"{resistanceType} Resistance {direction} {displayedEffectName} duration from {originalSeconds} to {adjustedSeconds}.";
+            return $"{resistanceType} {resistanceLabel} {direction} {displayedEffectName} duration from {originalSeconds} to {adjustedSeconds}.";
         }
 
         private static string FormatDurationSeconds(float seconds)

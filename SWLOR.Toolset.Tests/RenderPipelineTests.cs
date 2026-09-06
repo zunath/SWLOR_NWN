@@ -4,6 +4,7 @@ using SWLOR.NWN.Formats.Mdl;
 using SWLOR.Toolset.Domain.GameData.Resources;
 using SWLOR.Toolset.Domain.GameData.Tilesets;
 using SWLOR.Toolset.Domain.Render;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 
 namespace SWLOR.Toolset.Tests
 {
@@ -210,12 +211,11 @@ namespace SWLOR.Toolset.Tests
         {
             var index = BuildHakOnlyIndex();
 
-            // Palette TGAs (pal_skin01 etc.) ship only in the base game BIF, not in SWLOR_Haks,
-            // so this hak-only index will fall back to grayscale for every layer - PltReader.Render
-            // still succeeds and yields non-empty RGBA of the reported dimensions, which is all
-            // this test asserts (color-accurate palette resolution is exercised separately, see
-            // the WORKLOG note on this dev machine's local NWN:EE install for future coverage).
-            var image = TextureLoader.LoadPlt(index, "cpex_direwolf");
+            // 3D material PLTs are converted to tint maps, while dynamic inventory icons remain
+            // PLTs so their colors continue to follow the item's palette rows. Palette TGAs
+            // (pal_skin01 etc.) ship only in the base game BIF, not in SWLOR_Haks, so this
+            // hak-only index falls back to grayscale; decoding and dimensions are asserted here.
+            var image = TextureLoader.LoadPlt(index, "ihelm_015");
 
             image.Should().NotBeNull();
             image!.Width.Should().BeGreaterThan(0);
@@ -308,6 +308,7 @@ namespace SWLOR.Toolset.Tests
                 "texture1 base_normal\n" +
                 "customshaderVSH my_vertex_shader\n" +
                 "customshaderPSH my_pixel_shader\n" +
+                "parameter float useTexture1Alpha 1.0\n" +
                 "someunknownparam 1.0\n";
 
             var material = MaterialResolver.Parse(sample);
@@ -317,6 +318,25 @@ namespace SWLOR.Toolset.Tests
             material.GetTexture(1).Should().Be("base_normal");
             material.CustomShaders.Should().ContainKey("customshaderVSH").WhoseValue.Should().Be("my_vertex_shader");
             material.CustomShaders.Should().ContainKey("customshaderPSH").WhoseValue.Should().Be("my_pixel_shader");
+            material.Parameters.Should().ContainKey("useTexture1Alpha").WhoseValue.Should().Be("1.0");
+            material.GetAlphaTexture().Should().Be("base_normal");
+            material.GetAlphaSource().Should().Be(new MtrAlphaSource("base_normal", UsesRedChannel: false));
+            material.GetAlphaSource()!.Value.Cutoff.Should().Be(0.2f);
+            material.GetAlphaSource()!.Value.ByteCutoff.Should().Be(51);
+        }
+
+        [Test]
+        public void MaterialResolver_Texture9AlphaUsesRedChannel()
+        {
+            const string sample =
+                "texture9 cutout_mask\n" +
+                "parameter float useTexture9Alpha 1.0\n";
+
+            var material = MaterialResolver.Parse(sample);
+
+            material.GetAlphaSource().Should().Be(new MtrAlphaSource("cutout_mask", UsesRedChannel: true));
+            material.GetAlphaSource()!.Value.Cutoff.Should().Be(0.3f);
+            material.GetAlphaSource()!.Value.ByteCutoff.Should().Be(77);
         }
 
         [Test]
@@ -417,6 +437,32 @@ namespace SWLOR.Toolset.Tests
             maps.Normal.Should().BeNull();
             maps.Specular.Should().BeNull();
             maps.Roughness.Should().BeNull();
+        }
+
+        [Test]
+        public void PreviewTextureCache_TintMapMaterial_AppliesRgbOverride()
+        {
+            var index = BuildHakOnlyIndex();
+            var cache = new PreviewTextureCache(index);
+            var overrides = new Dictionary<string, int>
+            {
+                [TintMapVariable.GetName("pmo0_footl10", TintMapLayerType.Leather1)] =
+                    new TintMapColor(220, 20, 10).ToStoredValue()
+            };
+
+            var image = cache.Get(
+                "pmo0_footl10",
+                new Dictionary<int, int>(),
+                overrides);
+
+            image.Should().NotBeNull();
+            Enumerable.Range(0, image!.Pixels.Length / 4)
+                .Select(pixel => pixel * 4)
+                .Should()
+                .Contain(offset =>
+                    image.Pixels[offset] > 40 &&
+                    image.Pixels[offset] > image.Pixels[offset + 1] * 4 &&
+                    image.Pixels[offset] > image.Pixels[offset + 2] * 4);
         }
     }
 }

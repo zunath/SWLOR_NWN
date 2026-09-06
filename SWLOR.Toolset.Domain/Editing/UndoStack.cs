@@ -37,6 +37,9 @@ namespace SWLOR.Toolset.Domain.Editing
         /// <summary>Number of entries currently applied (0..Entries.Count).</summary>
         public int Position => _position;
 
+        /// <summary>The most recently applied entry, used as an identity token for deferred work.</summary>
+        public IDocumentEdit? CurrentAppliedEntry => _position > 0 ? _entries[_position - 1] : null;
+
         public bool CanUndo => _position > 0;
 
         public bool CanRedo => _position < _entries.Count;
@@ -84,6 +87,96 @@ namespace SWLOR.Toolset.Domain.Editing
 
             _entries.Add(edit);
             _position++;
+        }
+
+        /// <summary>
+        /// Adds a continuation to an applied originating entry without changing the history cursor
+        /// or discarding its redo tail. Deferred work can therefore remain part of the user action
+        /// that caused it even after the builder undid a later unrelated edit.
+        /// </summary>
+        internal bool CoalesceIntoApplied(IDocumentEdit origin, IDocumentEdit continuation)
+        {
+            ArgumentNullException.ThrowIfNull(origin);
+            ArgumentNullException.ThrowIfNull(continuation);
+
+            var originIndex = -1;
+            for (var index = 0; index < _position; index++)
+            {
+                if (MatchesOrigin(_entries[index], origin))
+                {
+                    originIndex = index;
+                    break;
+                }
+            }
+
+            if (originIndex < 0)
+                return false;
+
+            var continuationTargets = GetMutationTargets(continuation)
+                .ToHashSet(ReferenceEqualityComparer.Instance);
+            for (var index = originIndex + 1; index < _position; index++)
+            {
+                var appliedTargets = GetMutationTargets(_entries[index]).ToList();
+                if (continuationTargets.Count > 0 &&
+                    appliedTargets.Count > 0 &&
+                    !appliedTargets.Any(continuationTargets.Contains))
+                {
+                    continue;
+                }
+
+                // The continuation was captured against the current document, after this entry.
+                // Moving it before an overlapping applied edit would make the history replay a
+                // different order from the live mutation. Reject it so CommitCoalescedInto rolls
+                // the deferred mutation back and preserves the builder's newer authored value.
+                return false;
+            }
+
+            _entries[originIndex] = new CoalescedDocumentEdit(_entries[originIndex], continuation);
+            for (var index = _position; index < _entries.Count; index++)
+            {
+                var redoTargets = GetMutationTargets(_entries[index]).ToList();
+                if (continuationTargets.Count > 0 &&
+                    redoTargets.Count > 0 &&
+                    !redoTargets.Any(continuationTargets.Contains))
+                {
+                    continue;
+                }
+
+                // A redo entry that touches the same object captured its before-state before the
+                // continuation existed. Its undo would resurrect that stale state, so this point
+                // becomes a normal history branch. Earlier unrelated redo entries remain valid.
+                if (_savedPosition.HasValue && _savedPosition.Value > index)
+                    _savedPosition = null;
+                _entries.RemoveRange(index, _entries.Count - index);
+                break;
+            }
+            if (_savedPosition.HasValue && _savedPosition.Value > originIndex)
+            {
+                // A saved state between the originating edit and its deferred continuation is no
+                // longer representable by the coalesced history.
+                _savedPosition = null;
+            }
+
+            return true;
+        }
+
+        internal bool ContainsApplied(IDocumentEdit origin)
+        {
+            ArgumentNullException.ThrowIfNull(origin);
+            return _entries.Take(_position).Any(entry => MatchesOrigin(entry, origin));
+        }
+
+        private static bool MatchesOrigin(IDocumentEdit entry, IDocumentEdit origin)
+        {
+            return ReferenceEquals(entry, origin) ||
+                   entry is CoalescedDocumentEdit coalesced && coalesced.Contains(origin);
+        }
+
+        internal static IEnumerable<object> GetMutationTargets(IDocumentEdit edit)
+        {
+            return edit is IDocumentEditTargetProvider provider
+                ? provider.GetMutationTargets()
+                : Array.Empty<object>();
         }
 
         public void Undo()
@@ -160,6 +253,44 @@ namespace SWLOR.Toolset.Domain.Editing
             _entries.Clear();
             _position = 0;
             _savedPosition = 0;
+        }
+
+        private sealed class CoalescedDocumentEdit : IDocumentEdit, IDocumentEditTargetProvider
+        {
+            private readonly IDocumentEdit _origin;
+            private readonly IDocumentEdit _continuation;
+
+            public CoalescedDocumentEdit(IDocumentEdit origin, IDocumentEdit continuation)
+            {
+                _origin = origin;
+                _continuation = continuation;
+            }
+
+            public void Apply()
+            {
+                _origin.Apply();
+                _continuation.Apply();
+            }
+
+            public void Revert()
+            {
+                _continuation.Revert();
+                _origin.Revert();
+            }
+
+            public string Describe() => _origin.Describe();
+
+            public bool Contains(IDocumentEdit origin)
+            {
+                return ReferenceEquals(_origin, origin) ||
+                       _origin is CoalescedDocumentEdit coalesced && coalesced.Contains(origin);
+            }
+
+            public IEnumerable<object> GetMutationTargets()
+            {
+                return UndoStack.GetMutationTargets(_origin)
+                    .Concat(UndoStack.GetMutationTargets(_continuation));
+            }
         }
     }
 }

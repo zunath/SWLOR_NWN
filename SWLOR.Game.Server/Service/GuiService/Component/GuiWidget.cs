@@ -43,7 +43,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
 
         private bool IsEncouraged { get; set; }
         private string IsEncouragedBindName { get; set; }
-        private bool IsEncouragedBound { get; set; }
+        private bool IsEncouragedBound => !string.IsNullOrWhiteSpace(IsEncouragedBindName);
 
         private GuiColor? Color { get; set; }
         private string ColorBindName { get; set; }
@@ -407,7 +407,7 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
                 var binding = Nui.Bind(IsEncouragedBindName);
                 element = Nui.Encouraged(element, binding);
             }
-            else if (!string.IsNullOrWhiteSpace(IsEncouragedBindName))
+            else if (IsEncouraged)
             {
                 element = Nui.Encouraged(element, JsonBool(IsEncouraged));
             }

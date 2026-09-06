@@ -65,12 +65,12 @@ namespace SWLOR.Game.Server.Service.GuiService.Component
         /// Applies the given tab: runs its refresh action (if any) then swaps
         /// the nested partial in via the safe double-reapply path.
         /// </summary>
-        public void Select(TViewModel model, string contentElementId, int tabId)
+        public void Select(TViewModel model, string contentElementId, int tabId, Action onAfterApply = null)
         {
             if (!_tabs.TryGetValue(tabId, out var tab))
                 throw new KeyNotFoundException($"Tab id '{tabId}' was not registered in this GuiTabGroup.");
 
-            model.SwapNestedPartialView(contentElementId, tab.PartialId, () => tab.OnSelected?.Invoke(model));
+            model.SwapNestedPartialView(contentElementId, tab.PartialId, () => tab.OnSelected?.Invoke(model), onAfterApply);
         }
     }
 

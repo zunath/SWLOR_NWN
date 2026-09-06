@@ -8,7 +8,7 @@ namespace SWLOR.Toolset.Domain.Editing
     /// mutation, plus the field-level "id" (RawLocStringId) alongside it, so Apply/Revert never
     /// re-derive formatting and always reproduce the original bytes exactly.
     /// </summary>
-    public sealed class FieldValueEdit : IDocumentEdit
+    public sealed class FieldValueEdit : IDocumentEdit, IDocumentEditTargetProvider
     {
         private readonly JsonGffField _field;
         private readonly byte[]? _oldValue;
@@ -42,13 +42,15 @@ namespace SWLOR.Toolset.Domain.Editing
         {
             return $"Set {GffFieldTypeNames.NameOf(_field.Type)} field value";
         }
+
+        public IEnumerable<object> GetMutationTargets() => new object[] { _field };
     }
 
     /// <summary>
     /// Memento for a single LocStringEntry's text change (LocStringEntry.SetText). Restores the
     /// exact raw string token bytes.
     /// </summary>
-    public sealed class LocStringEntryTextEdit : IDocumentEdit
+    public sealed class LocStringEntryTextEdit : IDocumentEdit, IDocumentEditTargetProvider
     {
         private readonly LocStringEntry _entry;
         private readonly byte[] _oldRawText;
@@ -75,5 +77,7 @@ namespace SWLOR.Toolset.Domain.Editing
         {
             return $"Set locstring text for language '{_entry.LanguageKey}'";
         }
+
+        public IEnumerable<object> GetMutationTargets() => new object[] { _entry };
     }
 }

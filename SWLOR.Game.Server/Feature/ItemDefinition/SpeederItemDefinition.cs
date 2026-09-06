@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap;
 using SWLOR.Game.Server.Service.ItemService;
 using SWLOR.Game.Server.Core;
 using SWLOR.Game.Server.Service;
@@ -53,6 +54,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                         SendMessageToPC(user, "You mount your speeder.");
                     }
 
+                    TintMapService.QueueRefreshAndEditor(user, user);
                 });
         }
         /// <summary>
@@ -82,6 +84,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 SetPhenoType(PhenoType.Normal, player);
                 SetCreatureTailType(TailType.None, player);
                 Stat.ApplyCreatureMovementRate(player);
+                TintMapService.QueueRefreshAndEditor(player, player);
             }
         }
         /// <summary>
@@ -100,6 +103,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 SetPhenoType(PhenoType.Normal, player);
                 SetCreatureTailType(TailType.None, player);
                 Stat.ApplyCreatureMovementRate(player);
+                TintMapService.QueueRefreshAndEditor(player, player);
             }
         }
         /// <summary>
@@ -120,6 +124,7 @@ namespace SWLOR.Game.Server.Feature.ItemDefinition
                 SetPhenoType(PhenoType.Normal, player);
                 SetCreatureTailType(TailType.None, player);
                 Stat.ApplyCreatureMovementRate(player);
+                TintMapService.QueueRefreshAndEditor(player, player);
             }
         }
 

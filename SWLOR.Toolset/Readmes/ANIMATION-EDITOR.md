@@ -4,7 +4,26 @@ Open **Tools → Animation Editor**. This editor uses C#, Avalonia, `System.Nume
 SWLOR MDL reader, and the existing OpenGL model preview. Godot, GDScript, and a separate game
 engine are not required.
 
-## Authoring
+## Start here
+
+The editor opens in a guided layout with **Start**, **Pose**, and **Use in game** tabs.
+
+1. Choose **Male humanoid**, **Female humanoid**, or **Other character file**.
+2. Choose either **Use an existing movement** or **Build from poses**. Both are on the start screen.
+   Starter movements include standing, walking, and an attack when the character supplies them.
+   They are editable pose copies sampled from the same inherited movements used by the toolset preview;
+   these short starters do not copy animation events. Advanced import remains available for other clips.
+3. In **Pose**, choose a readable body part such as **Left upper arm** or **Head**. Bend, turn, and tilt
+   buttons make five-degree adjustments. Each edit saves a pose at the current moment; Undo and Redo
+   work throughout. Use **Start**, **Middle**, and **Finish**, or click the timeline to choose a moment.
+4. Press **Play animation**. Add or remove poses as needed. Increasing the duration slows the movement.
+5. Save the project. In **Use in game**, choose the current character and review the installation.
+   The installation still needs rebuilt HAKs deployed to players and the server before in-game use.
+
+Enable **Advanced** whenever you need raw joints, exact transforms, IK, retargeting, MDL exchange,
+or other target models. Switching layouts preserves the animation and its undo history.
+
+## Advanced authoring
 
 1. Enter a mounted NWN model resref (for example `a_ba`) and choose **Load rig**, or choose
    **Load rig file** for an ASCII or compiled `.mdl`. The model supplies the real joint names,
@@ -73,7 +92,8 @@ should expose the animation.
   unchanged outside the fixed supermodel-name field; ASCII geometry and unrelated text are preserved.
 - `design/animations/registry.json` records the clip, natural duration, and target paths.
 - `design/animations/<Name>.swlanim` stores editable authoring data.
-- `SWLOR.NWN.API/NWScript/Enum/AuthoredAnimation.cs` supplies typed `AnimationClip` references.
+- `SWLOR.Game.Server/Service/AnimationService/AuthoredAnimation.cs` supplies typed `AnimationClip` references.
+  These SWLOR application types are generated outside the NWScript API.
 
 Input files are checked again after confirmation and after staging, before publishing any output.
 This includes previously absent higher-priority models that would change resource selection.
@@ -86,7 +106,7 @@ After **rebuilding/deploying the HAKs to server and clients** and rebuilding C#,
 
 ```csharp
 using SWLOR.Game.Server.Service;
-using SWLOR.NWN.API.NWScript.Enum;
+using SWLOR.Game.Server.Service.AnimationService;
 
 NamedAnimation.Queue(creature, AuthoredAnimation.SaluteWithSaber);
 NamedAnimation.Queue(creature, AuthoredAnimation.SaluteWithSaber, durationSeconds: 4f);

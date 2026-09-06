@@ -1,5 +1,5 @@
 using System;
-using SWLOR.NWN.API.NWScript;
+using SWLOR.Game.Server.Service.AnimationService;
 using SWLOR.NWN.API.NWScript.Enum;
 
 namespace SWLOR.Game.Server.Service;

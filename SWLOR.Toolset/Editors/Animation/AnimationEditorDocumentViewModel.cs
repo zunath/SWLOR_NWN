@@ -36,6 +36,7 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
     private readonly Stopwatch _clock = new();
     private string _saved;
     private string? _path;
+    private string _targetPaths = "";
     private byte[]? _diskBytes;
     private PosedNode[]? _copiedPose;
     private bool _dragging, _dragChanged;
@@ -48,7 +49,7 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
     private int _selectedJoint;
     private int _sourceClip;
     private decimal _rootScale = 1;
-    private string _status = "Load an NWN model to begin posing. Left drag edits; right drag orbits; mouse wheel zooms.";
+    private string _status = "Choose a character, then start with an existing movement or build from poses.";
 
     public AnimationEditorDocumentViewModel(IEditorPromptService prompts, OutputLogService log,
         ResourceIndex? resources = null, string? repositoryRoot = null, ModuleMutationLock? mutationLock = null,
@@ -59,7 +60,7 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
         {
             Joints = [new("rootdummy", -1, new(Vector3.Zero, Quaternion.Identity, 1))]
         };
-        Pose = Project.Sample(0); _saved = Project.Serialize();
+        _hasCharacter = initial != null; Pose = Project.Sample(0); _saved = Project.Serialize();
         Id = "animation-editor"; Title = "Animation Editor"; CanClose = true;
         _timer.Tick += Tick;
         RebuildRows();
@@ -82,7 +83,11 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
     public ObservableCollection<string> SourceBones { get; } = [];
     public ObservableCollection<string> SourceClips { get; } = [];
     public string RigResource { get; set; } = "a_ba";
-    public string TargetPaths { get; set; } = "";
+    public string TargetPaths
+    {
+        get => _targetPaths;
+        set { if (SetProperty(ref _targetPaths, value)) OnPropertyChanged(nameof(InstallationTargetSummary)); }
+    }
     public string EditMode { get; set; } = "Rotate";
     public IReadOnlyList<string> EditModes { get; } = ["Rotate", "Move", "IK"];
     public string Axis { get; set; } = "Z";
@@ -201,6 +206,7 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
         Mappings.Clear(); foreach (var joint in Project.Joints) Mappings.Add(new() { Target = joint.Name });
         _selectedJoint = Math.Clamp(_selectedJoint, 0, Project.Joints.Count - 1);
         _calibration = null;
+        RebuildBodyParts();
     }
     private void NotifyPose()
     {
@@ -212,6 +218,7 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
         OnPropertyChanged(nameof(RotationX)); OnPropertyChanged(nameof(RotationY)); OnPropertyChanged(nameof(RotationZ));
         foreach (var property in new[] { nameof(PositionX), nameof(PositionY), nameof(PositionZ), nameof(JointScale) }) OnPropertyChanged(property);
         PoseChanged?.Invoke();
+        NotifyGuided();
         if (_previewVisible) RefreshPreview();
     }
     private void SetPosition(int axis, float value)
@@ -247,9 +254,9 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
         if (!CanEdit()) return;
         EndDrag();
         if (IsPlaying) { Stop(); return; }
-        _playStart = _playhead; _clock.Restart(); _timer.Start(); OnPropertyChanged(nameof(IsPlaying));
+        _playStart = _playhead; _clock.Restart(); _timer.Start(); OnPropertyChanged(nameof(IsPlaying)); OnPropertyChanged(nameof(PlaybackLabel));
     }
-    public void Stop() { _timer.Stop(); _clock.Stop(); OnPropertyChanged(nameof(IsPlaying)); }
+    public void Stop() { _timer.Stop(); _clock.Stop(); OnPropertyChanged(nameof(IsPlaying)); OnPropertyChanged(nameof(PlaybackLabel)); }
     private void Tick(object? sender, EventArgs e) => Playhead = (_playStart + _clock.Elapsed.TotalSeconds) % Project.Duration;
     public void Undo()
     {
@@ -320,6 +327,7 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
         var model = await Task.Run(() => new MdlReader().Parse(resource.GetBytes()));
         LoadModel(model);
         TargetPaths = ResolveInstallTarget(model.Name, resource.Provenance.SourcePath); OnPropertyChanged(nameof(TargetPaths));
+        await RefreshStarterMovements();
     });
     [RelayCommand] private async Task LoadRigFile() => await Run(async () =>
     {
@@ -327,6 +335,7 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
         if (path == null || !await ConfirmReplace()) return;
         var model = await Task.Run(() => new MdlReader().Parse(File.ReadAllBytes(path)));
         LoadModel(model); TargetPaths = ResolveInstallTarget(model.Name, path); OnPropertyChanged(nameof(TargetPaths));
+        await RefreshStarterMovements(Path.GetDirectoryName(path));
     });
     private string ResolveInstallTarget(string resref, string fallbackPath)
     {
@@ -340,15 +349,17 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
         var rig = AnimationProject.FromModel(model);
         if (!MatchesPreviewRig(Project, rig))
             throw new InvalidDataException("The preview model must match this project's joint names, hierarchy, and rest transforms.");
-        _model = model; RefreshPreview(); Status = "Preview model attached; animation keys are unchanged.";
+        _model = model; RefreshPreview(); await RefreshStarterMovements(Path.GetDirectoryName(path));
+        Status = "Preview model attached; animation keys are unchanged.";
     });
     private void LoadModel(MdlModel model)
     {
         var project = AnimationProject.FromModel(model);
-        _model = model; Project = project; _undo.Clear(); _redo.Clear(); _copiedPose = null; _calibration = null; _path = null; _diskBytes = null;
+        _model = model; Project = project; _hasCharacter = true; _undo.Clear(); _redo.Clear(); _copiedPose = null; _calibration = null; _path = null; _diskBytes = null;
         TargetPaths = ""; OnPropertyChanged(nameof(TargetPaths));
         _saved = project.Serialize(); _playhead = 0; Changed(rebuildRows: true);
-        Status = $"Loaded {model.Name}: {project.Joints.Count} joints. Pose edits create a key at the playhead.";
+        BeginnerStep = 0;
+        Status = "Character ready. Start with an existing movement or build your own poses.";
     }
     [RelayCommand] private async Task OpenProject() => await Run(async () =>
     {
@@ -357,9 +368,10 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
         var bytes = await File.ReadAllBytesAsync(path);
         var project = AnimationProject.Deserialize(Encoding.UTF8.GetString(bytes));
         _model = await ResolvePreviewModel(project);
-        Project = project; _path = path; _diskBytes = bytes; _saved = project.Serialize(); _undo.Clear(); _redo.Clear(); _copiedPose = null; _calibration = null;
+        Project = project; _hasCharacter = true; _path = path; _diskBytes = bytes; _saved = project.Serialize(); _undo.Clear(); _redo.Clear(); _copiedPose = null; _calibration = null;
         TargetPaths = ""; OnPropertyChanged(nameof(TargetPaths));
-        Changed(rebuildRows: true); Status = "Animation project opened.";
+        Changed(rebuildRows: true);
+        await RefreshStarterMovements(); BeginnerStep = 1; Status = "Animation project opened.";
     });
     private static bool MatchesPreviewRig(AnimationProject project, AnimationProject rig) =>
         project.Joints.Count == rig.Joints.Count && project.Joints.Zip(rig.Joints).All(pair =>
@@ -428,9 +440,10 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
                 {
                     var bytes = await File.ReadAllBytesAsync(path);
                     var reloaded = AnimationProject.Deserialize(Encoding.UTF8.GetString(bytes));
-                    _model = await ResolvePreviewModel(reloaded); Project = reloaded;
+                    _model = await ResolvePreviewModel(reloaded); Project = reloaded; _hasCharacter = true;
                     TargetPaths = ""; OnPropertyChanged(nameof(TargetPaths));
-                    _diskBytes = bytes; _saved = Project.Serialize(); _undo.Clear(); _redo.Clear(); _copiedPose = null; _calibration = null; Changed(rebuildRows: true); return false;
+                    _diskBytes = bytes; _saved = Project.Serialize(); _undo.Clear(); _redo.Clear(); _copiedPose = null; _calibration = null; Changed(rebuildRows: true);
+                    await RefreshStarterMovements(); BeginnerStep = 1; return false;
                 }
             }
             var serialized = Project.Serialize(); var data = Encoding.UTF8.GetBytes(serialized);
@@ -555,7 +568,7 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
     }
     private Task<string?> OpenPath(string title, string[] patterns) => PickOpenPath?.Invoke(title, patterns) ?? Task.FromResult<string?>(null);
     private Task<string?> SavePath(string title, string name) => PickSavePath?.Invoke(title, name) ?? Task.FromResult<string?>(null);
-    public void SetPreviewVisible(bool visible) { _previewVisible = visible; if (visible) RefreshPreview(); }
+    public void SetPreviewVisible(bool visible) { if (_previewVisible == visible) return; _previewVisible = visible; if (visible) RefreshPreview(); }
     public void ReloadGameResources() { if (_previewVisible) RefreshPreview(); }
     private void RefreshPreview()
     {

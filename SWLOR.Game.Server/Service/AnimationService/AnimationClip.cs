@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
 
-namespace SWLOR.NWN.API.NWScript;
+namespace SWLOR.Game.Server.Service.AnimationService;
 
 /// <summary>A named MDL animation installed by the toolset, with its natural playback duration.</summary>
 public sealed record AnimationClip

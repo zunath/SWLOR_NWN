@@ -297,6 +297,9 @@ public class AnimationEditorTests
         var project = Rig(); var plan = AnimationInstall.Prepare(_folder, project, [target]);
         plan.AnimationName.Should().Be("sw_wave"); plan.CodeExample.Should().Be("NamedAnimation.Queue(creature, AuthoredAnimation.Wave);");
         plan.Apply();
+        var constants = Path.Combine(_folder, "SWLOR.Game.Server/Service/AnimationService/AuthoredAnimation.cs");
+        File.ReadAllText(constants).Should().Contain("SWLOR.Game.Server.Service.AnimationService.AnimationClip");
+        plan.Changes.Should().NotContain(change => change.Path.Contains("SWLOR.NWN.API"), "authored clips are application data, not NWScript API declarations");
         File.ReadAllText(target).Should().Be(original.Replace("setsupermodel hero NULL", "setsupermodel hero an_hero"));
         var overlay = Path.Combine(Path.GetDirectoryName(target)!, "an_hero.mdl");
         var installed = new MdlReader().Parse(File.ReadAllBytes(overlay));
@@ -461,6 +464,91 @@ public class AnimationEditorTests
         AnimationProject.FromModel(model).Joints.Single(j => j.Name == "hand").Rest.Scale.Should().Be(2);
     }
 
+    [AvaloniaTest] public void GuidedViewPresentsBothStartingPathsAndKeepsTechnicalControlsInAdvanced()
+    {
+        var vm = new AnimationEditorDocumentViewModel(new Prompts(), new OutputLogService(), initial: Rig());
+        var view = new AnimationEditorDocumentView { DataContext = vm };
+        var window = new Window { Content = view, Width = 1280, Height = 900 };
+        window.Show(); window.UpdateLayout();
+        view.FindControl<Grid>("GuidedEditor")!.IsVisible.Should().BeTrue();
+        view.FindControl<Grid>("AdvancedEditor")!.IsVisible.Should().BeFalse();
+        var movement = view.FindControl<Button>("ExistingMovementButton")!;
+        var poses = view.FindControl<Button>("BuildPosesButton")!;
+        movement.IsEffectivelyVisible.Should().BeTrue(); poses.IsEffectivelyVisible.Should().BeTrue();
+        movement.Bounds.Width.Should().Be(poses.Bounds.Width); movement.Bounds.Height.Should().Be(poses.Bounds.Height);
+        vm.BuildFromPosesCommand.Execute(null); var project = vm.Project.Serialize();
+        vm.IsAdvanced = true; window.UpdateLayout();
+        view.FindControl<Grid>("AdvancedEditor")!.IsVisible.Should().BeTrue();
+        vm.IsAdvanced = false; vm.Project.Serialize().Should().Be(project); vm.CanUndo.Should().BeTrue();
+        vm.ApproveApplicationClose(); vm.OnClose(); window.Close();
+    }
+    [AvaloniaTest] public async Task GuidedPoseWorkflowSupportsAdjustmentsNavigationUndoAndSave()
+    {
+        var vm = new AnimationEditorDocumentViewModel(new Prompts(), new OutputLogService(), initial: Rig());
+        var untouched = vm.Project.Serialize();
+        vm.HasSelectedBodyPart.Should().BeFalse(); vm.AdjustBodyPartCommand.Execute("bend+"); vm.ResetBodyPartCommand.Execute(null);
+        vm.Project.Serialize().Should().Be(untouched, "a hidden technical joint must not be edited without a body-part selection");
+        vm.BuildFromPosesCommand.Execute(null);
+        vm.Project.Keys.Select(key => key.Time).Should().Equal(0, 1, 2);
+        vm.BeginnerStep.Should().Be(1); vm.Playhead.Should().Be(1);
+        vm.BodyParts.Should().Contain(part => part.Name == "Whole body");
+        var initial = vm.Project.Serialize(); vm.AdjustBodyPartCommand.Execute("bend+");
+        vm.Project.Sample(1)[1].Orientation.Should().NotBe(Quaternion.Identity);
+        vm.Project.Sample(0)[1].Orientation.Should().Be(Quaternion.Identity);
+        vm.Project.Sample(2)[1].Orientation.Should().Be(Quaternion.Identity);
+        vm.Undo(); vm.Project.Serialize().Should().Be(initial); vm.Redo();
+        vm.AddPoseAfterCommand.Execute(null); vm.Playhead.Should().Be(1.5); vm.Project.Keys.Should().HaveCount(4);
+        vm.NextPoseCommand.Execute(null); vm.Playhead.Should().Be(2);
+        vm.PreviousPoseCommand.Execute(null); vm.Playhead.Should().Be(1.5);
+        vm.RemovePoseCommand.Execute(null); vm.Project.Keys.Should().HaveCount(3);
+        var path = Path.Combine(_folder, "guided.swlanim"); vm.PickSavePath = (_, _) => Task.FromResult<string?>(path);
+        (await vm.TrySaveAsync()).Should().BeTrue();
+        AnimationProject.Deserialize(File.ReadAllText(path)).Serialize().Should().Be(vm.Project.Serialize());
+        vm.OnClose().Should().BeTrue();
+    }
+    [AvaloniaTest] public async Task GuidedViewOpensMountedProjectWithMoreJointsThanThePreviousPose()
+    {
+        var target = InstallFixture(); var archive = Path.Combine(_folder, "models.hak");
+        ResourceIndexTests.WriteSingleResourceHak(archive, "hero", "mdl", File.ReadAllBytes(target));
+        var resources = new ResourceIndex(null, [new("models", archive)]); await resources.InitializationTask;
+        var project = AnimationProject.FromModel(new MdlReader().Parse(File.ReadAllBytes(target)));
+        var path = Write("hero.swlanim", project.Serialize());
+        var vm = new AnimationEditorDocumentViewModel(new Prompts(), new OutputLogService(), resources);
+        var window = new Window { Content = new AnimationEditorDocumentView { DataContext = vm }, Width = 1280, Height = 900 };
+        window.Show(); window.UpdateLayout();
+        vm.PickOpenPath = (_, _) => Task.FromResult<string?>(path); await vm.OpenProjectCommand.ExecuteAsync(null);
+        vm.Status.Should().Be("Animation project opened."); vm.Pose.Should().HaveCount(project.Joints.Count);
+        vm.HasModelPreview.Should().BeTrue(); vm.PreviewScene.Should().NotBeNull(); vm.BeginnerStep.Should().Be(1);
+        vm.OnClose().Should().BeTrue(); window.Close();
+    }
+    [AvaloniaTest] public async Task GuidedMovementsCopyInheritedMotionAndClearWhenTheCharacterChanges()
+    {
+        var target = InstallFixture();
+        File.WriteAllText(target, File.ReadAllText(target).Replace("setsupermodel hero NULL", "setsupermodel hero base").Replace("setanimationscale 1", "setanimationscale 2"));
+        var source = Rig(); source.ModelName = "base"; source.Joints[0] = source.Joints[0] with { Name = "base" };
+        var last = source.Sample(0); last[1] = last[1] with { Position = Vector3.UnitX };
+        source.SetKey(0, source.Sample(0)); source.SetKey(1, last);
+        Write("SWLOR_Haks/sw_cr_creature/base.mdl", "newmodel base\n" + AnimationMdl.ExportGeometry(source) + AnimationMdl.Export(source, "walk") + "donemodel base\n");
+        var vm = new AnimationEditorDocumentViewModel(new Prompts(), new OutputLogService());
+        vm.PickOpenPath = (_, _) => Task.FromResult<string?>(target); await vm.LoadRigFileCommand.ExecuteAsync(null);
+        vm.StarterMovements.Should().ContainSingle().Which.Name.Should().Be("Walking");
+        var before = vm.Project.Serialize(); vm.ChooseMovementCommand.Execute(null); vm.UseMovementCommand.Execute(null); vm.Stop();
+        vm.Project.Keys.Should().HaveCount(21); vm.Project.Sample(1)[1].Position.X.Should().BeApproximately(2, 1e-5f);
+        vm.Undo(); vm.Project.Serialize().Should().Be(before);
+        var different = Rig(); different.ModelName = "other"; different.Joints[0] = different.Joints[0] with { Name = "other" };
+        var projectPath = Write("other.swlanim", different.Serialize()); vm.PickOpenPath = (_, _) => Task.FromResult<string?>(projectPath);
+        await vm.OpenProjectCommand.ExecuteAsync(null);
+        vm.StarterMovements.Should().BeEmpty(); vm.HasStarterMovements.Should().BeFalse(); vm.HasModelPreview.Should().BeFalse();
+        vm.OnClose().Should().BeTrue();
+    }
+    [AvaloniaTest] public async Task CharactersWithoutMovementsCanStillStartFromPoses()
+    {
+        var target = InstallFixture(); var vm = new AnimationEditorDocumentViewModel(new Prompts(), new OutputLogService());
+        vm.PickOpenPath = (_, _) => Task.FromResult<string?>(target); await vm.LoadRigFileCommand.ExecuteAsync(null);
+        vm.ChooseMovementCommand.Execute(null); vm.ShowMovementChoices.Should().BeTrue(); vm.HasStarterMovements.Should().BeFalse();
+        vm.BuildFromPosesCommand.Execute(null); vm.Project.Keys.Should().HaveCount(3);
+        vm.ApproveApplicationClose(); vm.OnClose();
+    }
     [AvaloniaTest] public void ViewLoadsAndEditsUndoRedoThroughTheDocumentContract()
     {
         var vm = new AnimationEditorDocumentViewModel(new Prompts(), new OutputLogService(), initial: Rig());

@@ -135,6 +135,20 @@ The signature payload band contains 30 combat actives and 3 stances. Eleven comb
 | Rupturing Quake | Self-centered damage, 6-second Knockdown, and 30-second Sunder |
 | Scorching Breath | Cone damage with Burn and Weakened |
 
+Final Line calculates its bonus separately for each target when the line hits, using that
+target's HP before damage: `floor(35 * missing HP / maximum HP)`, capped at 35%.
+The extra damage is `ceil(normal rolled damage * bonus / 100)`. At 100%, 80%, 50%,
+25%, and 1% remaining HP, the bonuses are respectively 0%, 7%, 17%, 26%, and 34%.
+This bonus applies to Final Line's own hit; it is not a persistent damage boost on
+later auto-attacks. Exposed is its separate 30-second status effect.
+
+`FinalLineTests` covers health boundaries, the full integer HP range for several HP
+budgets, clamping, damage rounding, and changing health between hits.
+`FinalLineEngineTests` compares the actual technique's damage with its bonus enabled
+and disabled using identical random seeds, two targets with different health, and
+repeated casts including healing back to full. It also checks that both targets
+receive Exposed.
+
 | Non-damage technique | Distinct role |
 |---|---|
 | Crossfire Drill | Cone Suppression |

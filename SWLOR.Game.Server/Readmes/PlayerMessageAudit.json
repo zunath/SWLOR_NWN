@@ -25,7 +25,7 @@
     "Line": 121,
     "Member": "ApplyThrowLightsaber",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(activator, $\"{abilityName} did not hit any targets.\")"
+    "Call": "Messaging.SendMessageNearbyToPlayers(\n                    activator,\n                    receiver => Combat.BuildAbilityNoTargetCombatLogMessage(\n                        receiver,\n                        activator,\n                        abilityName),\n                    60f)"
   },
   {
     "File": "SWLOR.Game.Server/Feature/AbilityDefinition/HeavyVibroblade/HeavyVibrobladeActiveAbilityDefinitionBase.cs",
@@ -3406,7 +3406,7 @@
     "Line": 2484,
     "Member": "SendCombatImpactNoTargetsMessage",
     "Delivery": "Retained",
-    "Call": "SendMessageToPC(activator, $\"{ability.Name} did not hit any targets.\")"
+    "Call": "Messaging.SendMessageNearbyToPlayers(\n                activator,\n                receiver => Combat.BuildAbilityNoTargetCombatLogMessage(\n                    receiver,\n                    activator,\n                    ability.Name),\n                60f)"
   },
   {
     "File": "SWLOR.Game.Server/Service/Achievement.cs",

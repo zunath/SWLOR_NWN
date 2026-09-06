@@ -2481,7 +2481,13 @@ namespace SWLOR.Game.Server.Service
             if (!GetIsObjectValid(activator) || ability == null)
                 return;
 
-            SendMessageToPC(activator, $"{ability.Name} did not hit any targets.");
+            Messaging.SendMessageNearbyToPlayers(
+                activator,
+                receiver => Combat.BuildAbilityNoTargetCombatLogMessage(
+                    receiver,
+                    activator,
+                    ability.Name),
+                60f);
         }
 
         private static int ApplyDamagePercentAdjustment(

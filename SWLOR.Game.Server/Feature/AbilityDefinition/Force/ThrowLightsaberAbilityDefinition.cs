@@ -118,7 +118,13 @@ namespace SWLOR.Game.Server.Feature.AbilityDefinition.Force
 
             if (!foundTarget)
             {
-                SendMessageToPC(activator, $"{abilityName} did not hit any targets.");
+                Messaging.SendMessageNearbyToPlayers(
+                    activator,
+                    receiver => Combat.BuildAbilityNoTargetCombatLogMessage(
+                        receiver,
+                        activator,
+                        abilityName),
+                    60f);
             }
         }
 

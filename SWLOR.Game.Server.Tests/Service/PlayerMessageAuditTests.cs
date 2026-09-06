@@ -86,6 +86,21 @@ public class PlayerMessageAuditTests
         messages.Should().NotContain(call => UsesDiagnostics(call));
     }
 
+    [TestCase("Service/Ability.cs", "SendCombatImpactNoTargetsMessage")]
+    [TestCase("Feature/AbilityDefinition/Force/ThrowLightsaberAbilityDefinition.cs", "ApplyThrowLightsaber")]
+    public void NoTargetOutcomes_ReachTheActorAndNearbyObservers(string relative, string member)
+    {
+        var file = Path.Combine(FindRepositoryRoot(), "SWLOR.Game.Server", relative);
+        var messages = ReadCalls(file).Where(call => MethodName(call) == "SendMessageNearbyToPlayers" &&
+            call.Ancestors().OfType<MethodDeclarationSyntax>().First().Identifier.ValueText == member).ToArray();
+        messages.Should().ContainSingle();
+        var message = messages.Single();
+        message.ArgumentList.Arguments[0].ToString().Should().Be("activator");
+        message.ArgumentList.Arguments[1].ToString().Should().Contain("Combat.BuildAbilityNoTargetCombatLogMessage");
+        message.ArgumentList.Arguments[2].ToString().Should().Be("60f");
+        UsesDiagnostics(message).Should().BeFalse();
+    }
+
     private sealed record MessageAuditEntry(string File, string Member, string Delivery, string Call);
 
     private static MessageAuditEntry BuildAuditEntry(string file, InvocationExpressionSyntax call)

@@ -23,7 +23,7 @@ public sealed class NamedAnimationPlayback
 
     public NamedAnimationPlayback(INamedAnimationRuntime runtime) => _runtime = runtime ?? throw new ArgumentNullException(nameof(runtime));
 
-    public string Begin(uint creature, AnimationClip clip, float duration)
+    public string Begin(uint creature, AnimationClip clip, float duration, bool completeAtDuration = false)
     {
         ArgumentNullException.ThrowIfNull(clip);
         if (!float.IsFinite(duration) || duration <= 0 || duration > 600) throw new ArgumentOutOfRangeException(nameof(duration));
@@ -38,6 +38,8 @@ public sealed class NamedAnimationPlayback
             // Native queue cleanup normally runs first. A module-owned timeout also restores the
             // map when combat, movement, death, or another script clears the queued cleanup action.
             _runtime.Schedule(duration + 1f, () => Complete(creature, token));
+            if (completeAtDuration)
+                _runtime.Schedule(duration, () => Complete(creature, token));
             return token;
         }
         catch

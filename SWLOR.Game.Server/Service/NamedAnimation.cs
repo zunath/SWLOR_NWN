@@ -32,7 +32,7 @@ public static class NamedAnimation
         var duration = Validate(clip, durationSeconds);
         AssignCommand(creature, () =>
         {
-            var token = Playback.Begin(creature, clip, duration);
+            var token = Playback.Begin(creature, clip, duration, completeAtDuration: true);
             try { PlayAnimation(Animation.PointForward, 1f, duration); }
             catch { Playback.Complete(creature, token); throw; }
         });

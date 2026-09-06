@@ -40,6 +40,18 @@ public class NamedAnimationPlaybackTests
         runtime.Replacements.Values.Should().OnlyContain(value => value == "");
         runtime.Token.Should().BeEmpty();
     }
+    [Test] public void ImmediatePlaybackRestoresAtTheRequestedDurationWithoutClearingANewerClip()
+    {
+        var runtime = new Runtime(); var playback = new NamedAnimationPlayback(runtime);
+        playback.Begin(1, new AnimationClip("sw_wave", 2), .5f, completeAtDuration: true);
+        runtime.Delays.Should().Equal(1.5f, .5f);
+        runtime.Callbacks[1]();
+        runtime.Replacements.Values.Should().OnlyContain(value => value == "");
+        runtime.Token.Should().BeEmpty();
+        playback.Begin(1, new AnimationClip("sw_point", 3), 3, completeAtDuration: true);
+        runtime.Callbacks[0](); runtime.Callbacks[1]();
+        runtime.Replacements["custom1lp"].Should().Be("sw_point");
+    }
     [Test] public void CleanupIgnoresADestroyedOrReusedObject()
     {
         var runtime = new Runtime(); var playback = new NamedAnimationPlayback(runtime);
@@ -74,6 +86,7 @@ public class NamedAnimationPlaybackTests
         public bool Valid = true, FailSchedule;
         public Dictionary<string, string> Replacements { get; } = new();
         public List<Action> Callbacks { get; } = new();
+        public List<float> Delays { get; } = new();
         public bool IsValid(uint creature) => Valid;
         public string GetToken(uint creature) => Token;
         public void SetToken(uint creature, string token) => Token = token;
@@ -81,6 +94,7 @@ public class NamedAnimationPlaybackTests
         public void Schedule(float seconds, Action callback)
         {
             if (FailSchedule) throw new InvalidOperationException("Schedule failed");
+            Delays.Add(seconds);
             Callbacks.Add(callback);
         }
     }

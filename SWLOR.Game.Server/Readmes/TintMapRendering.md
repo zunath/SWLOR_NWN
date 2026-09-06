@@ -169,12 +169,15 @@ available clips and are explicitly recorded; they never retain the old unsafe
 robe-as-body inheritance path. Regeneration removes obsolete manifest-owned
 animation parents after successful validation.
 
-The manifest includes `CompileModels.py` as a required generation dependency.
-Python and 2DA hashes normalize line endings for Windows/Linux checkouts;
-compiled models remain byte-exact. Allocation reserves existing body/attachment
-resrefs as well as phenotype rows and verifies ownership before replacing an
-earlier generated model. The palette audit validates the entire atlas, including
-its TGA header, against the authoritative source checksum.
+The manifest includes `CompileModels.py`, the stock robe importer/inventory and
+`parts_robe.2da` as required inputs. Python, JSON and 2DA hashes normalize line
+endings for Windows/Linux checkouts; compiled models remain byte-exact.
+Generation compares the stock inventory against the installed game's selectable
+models before producing outputs. Allocation reserves existing body, attachment
+and animation-bridge resrefs as well as phenotype rows, and verifies prior path
+and hash ownership before replacing or retiring generated resources. The palette
+audit validates the entire atlas, including its TGA header, against the
+authoritative source checksum.
 
 The catalog currently covers 1,596 normal-body models across 184 robe styles.
 Phenotype IDs are a native byte, so generated IDs are reserved in the range

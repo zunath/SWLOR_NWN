@@ -377,6 +377,17 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                 TintMapService.ResetInactiveItemCustomColor(civilian, outfit, layer, AppearanceArmor.Invalid);
                 ctx.AssertEqual(saved, GetLocalInt(outfit, key),
                     "One inactive material color cannot be inferred as a legacy global set");
+                var itemSelection = TintMapModelResolver.GetCurrentSelections(civilian)
+                    .First(s => s.GetPaletteSource(layer) == outfit && s.Material.Layers.Contains(layer));
+                var activeKey = TintMapVariable.GetName(itemSelection.Material.Resref, layer);
+                SetLocalInt(outfit, activeKey, saved);
+                var onePart = new[] { itemSelection, itemSelection };
+                TintMapService.ResetGlobalItemCustomColor(civilian, onePart, layer);
+                ctx.AssertEqual(saved, GetLocalInt(outfit, activeKey),
+                    "A global preset preserves the sole independently colored active part");
+                TintMapService.SetGlobalItemCustomColor(civilian, onePart, layer, new TintMapColor(1, 2, 3));
+                ctx.AssertEqual(saved, GetLocalInt(outfit, activeKey),
+                    "A global RGB edit preserves a sole part even when its selection is repeated");
                 var selections = TintMapModelResolver.GetCurrentSelections(civilian)
                     .Where(s => s.Material.Layers.Contains(TintMapLayerType.Skin))
                     .GroupBy(s => s.Material.Resref).Select(g => g.First()).ToArray();
@@ -497,9 +508,16 @@ namespace SWLOR.Game.Server.EngineTests.Definitions
                     ctx.AssertEqual(0, publications.Count, "Resize never rebuilds or republishes bindings");
                     AssertTintInput(ctx, editor, partColor, "Resize preserves part RGB");
                 }
+                editor.CustomTintRed = "120";
                 InvokePrivate(editor, "ResetArmorColorToInheritance",
                     AppearanceEditorViewModel.ColorTarget.LeftForearm, AppearanceArmorColor.Leather2);
-                AssertTintInput(ctx, editor, laterGlobal, "Reset restores exact inherited global color");
+                AssertTintInput(ctx, editor, laterGlobal, "Inheritance reset supersedes pending RGB text");
+                TintMapEngineTests.AssertNativeRgb(ctx, civilian, forearm.Material.Resref, TintMapLayerType.Leather2, laterGlobal);
+                editor.SelectedTintColor = new GuiColor(120, 30, 60);
+                InvokePrivate(editor, "ResetArmorColorToInheritance",
+                    AppearanceEditorViewModel.ColorTarget.LeftForearm, AppearanceArmorColor.Leather2);
+                InvokePrivate(editor, "FlushPendingPickerColor");
+                AssertTintInput(ctx, editor, laterGlobal, "Inheritance reset supersedes pending picker input");
                 TintMapEngineTests.AssertNativeRgb(ctx, civilian, forearm.Material.Resref, TintMapLayerType.Leather2, laterGlobal);
                 editor.OnClickColorPalette(77)();
                 AssertTintInput(ctx, editor, TintMapPaletteColors.GetColor(TintMapLayerType.Leather2, 77), "Part preset opts out of global RGB");

@@ -2562,6 +2562,10 @@ namespace SWLOR.Game.Server.Feature.GuiDefinition.ViewModel
 
         private void ResetArmorColorToInheritance(ColorTarget colorTarget, AppearanceArmorColor colorChannel)
         {
+            // Settle the previous edit before clearing this part. Reloading afterward
+            // must not replay a draft over the user's newer inheritance reset.
+            FlushPendingPickerColor();
+            CommitCustomTintComponents();
             ResetCustomTintOverrides(colorTarget, colorChannel);
 
             var item = GetItem();

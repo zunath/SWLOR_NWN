@@ -669,10 +669,11 @@ namespace SWLOR.Game.Server.Feature.AppearanceDefinition.TintMap
             out TintMapColor globalColor)
         {
             globalColor = default;
-            if (itemSelections.Count == 0)
+            if (itemSelections.Select(selection => (selection.ArmorPart, selection.WeaponPart))
+                    .Distinct().Take(2).Count() < 2)
             {
-                // No active material set exists against which completeness can be proven.
-                // A lone inactive part override is not evidence of global intent.
+                // Empty sets, one part, and multiple profiles of the same robe cannot
+                // distinguish an independently authored part color from global intent.
                 return false;
             }
 

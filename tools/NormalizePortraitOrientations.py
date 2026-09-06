@@ -12,6 +12,11 @@ from pathlib import Path
 from portrait_tga import decode, flip_horizontal, normalized_metadata
 
 
+# Independent of the companion CSV: a partial merge must not silently reduce
+# the set of reviewed corrections. Update this only with a new reviewed batch.
+EXPECTED_CORRECTION_COUNT = 256
+
+
 def digest(data):
     return hashlib.sha256(data).hexdigest()
 
@@ -41,6 +46,9 @@ def main():
     parser.add_argument('--apply', action='store_true', help='Apply reviewed corrections; default is verification only')
     args = parser.parse_args()
     rows = list(csv.DictReader(args.manifest.open(newline='', encoding='utf-8')))
+    if len(rows) != EXPECTED_CORRECTION_COUNT:
+        raise ValueError(f'Incomplete correction manifest: expected '
+                         f'{EXPECTED_CORRECTION_COUNT} rows, found {len(rows)}')
     pending = []
     seen = set()
     for row in rows:

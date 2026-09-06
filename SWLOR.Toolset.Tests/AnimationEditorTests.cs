@@ -76,9 +76,38 @@ public class AnimationEditorTests
         pose[4].Position.Should().Be(Vector3.Zero);
         Math.Abs(Quaternion.Dot(pose[4].Orientation, Quaternion.CreateFromAxisAngle(Vector3.UnitZ, .5f))).Should().BeApproximately(1, 1e-5f);
     }
-    [Test] public void MovingTheBodyAnchorsTheHandPositionAndOrientation()
+    [TestCase("newanim")] [TestCase("NEWANIM")]
+    public void MdlImportRejectsASecondBlockEvenAfterACompleteFirstAnimation(string declaration)
     {
-        var rig = Rig(); rig.Joints[4] = rig.Joints[4] with { Name = "rhand_g" };
+        var rig = Rig();
+        var model = "newmodel hero\n" + AnimationMdl.ExportGeometry(rig) + AnimationMdl.Export(rig) +
+            "# another clip follows\n" + AnimationMdl.Export(rig, "Other").Replace("newanim", declaration) + "donemodel hero\n";
+        Action import = () => AnimationMdl.Import(model, rig);
+        import.Should().Throw<InvalidDataException>().WithMessage("*one newanim/doneanim block*");
+    }
+    [Test] public void MdlImportSupportsEndlistTracksAndPreservesTheirInterpolatedTransforms()
+    {
+        var block = "newanim Pose hero\nlength 1\nnode dummy hand\nparent lower\n" +
+            "positionkey\n0 0 0 0\n1 2 0 0\nendlist\n" +
+            "orientationkey\n0 0 0 1 0\n1 0 0 1 1.57079633\nendlist\n" +
+            "scalekey\n0 1\n1 2\nendlist\nendnode\ndoneanim Pose hero\n";
+        var pose = AnimationMdl.Import(block, Rig()).Sample(.5f)[4];
+        pose.Position.Should().Be(Vector3.UnitX); pose.Scale.Should().Be(1.5f);
+        Math.Abs(Quaternion.Dot(pose.Orientation, Quaternion.CreateFromAxisAngle(Vector3.UnitZ, MathF.PI / 4))).Should().BeApproximately(1, 1e-5f);
+        Action missingEndlist = () => AnimationMdl.Import(block.Replace("endlist\nendnode", "endnode"), Rig());
+        missingEndlist.Should().Throw<InvalidDataException>();
+        Action duplicateTime = () => AnimationMdl.Import(block.Replace("1 2 0 0", "0 2 0 0"), Rig());
+        duplicateTime.Should().Throw<InvalidDataException>().WithMessage("*times must increase*");
+        var oversized = "newanim Pose hero\nlength 600\nnode dummy hand\nparent lower\nscalekey\n" +
+            string.Join('\n', Enumerable.Range(0, AnimationProject.MaxKeyframes + 1).Select(i => $"{i} 1")) + "\nendlist\nendnode\ndoneanim Pose hero";
+        Action tooManyKeys = () => AnimationMdl.Import(oversized, Rig());
+        tooManyKeys.Should().Throw<InvalidDataException>().WithMessage("*too many keys*");
+    }
+    [TestCase("rootdummy", "rhand_g")] [TestCase("ROOTDUMMY", "RHAND_G")]
+    [TestCase("PELVIS_G", "LFOOT_G")] [TestCase("Pelvis_G", "Lhand_G")] [TestCase("RootDummy", "Rfoot_G")]
+    public void MovingTheBodyAnchorsTheHandPositionAndOrientation(string body, string end)
+    {
+        var rig = Rig(); rig.Joints[1] = rig.Joints[1] with { Name = body }; rig.Joints[4] = rig.Joints[4] with { Name = end };
         var pose = rig.Sample(0); var original = AnimationRig.World(rig.Joints, pose)[4];
         var changed = AnimationRig.SetJoint(rig.Joints, pose, 1,
             pose[1] with { Position = new(.3f, 0, 0), Orientation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ, .3f) }, true);
@@ -316,6 +345,32 @@ public class AnimationEditorTests
             if (_reads++ == 0) afterFirstRead();
         }
     }
+    [TestCase("hero", false)] [TestCase("an_hero", false)] [TestCase("base", false)] [TestCase("hero", true)]
+    public void InstallationRejectsNewHigherPriorityModelsBeforePublishing(string resref, bool duringStaging)
+    {
+        var target = InstallFixture(); var original = File.ReadAllText(target);
+        Write("Build/hakbuilder.json", "{\"HakList\":[{\"Path\":\"../SWLOR_Haks/overrides\"},{\"Path\":\"../SWLOR_Haks/sw_cr_creature\"}]}");
+        if (resref == "base")
+        {
+            Write("SWLOR_Haks/sw_cr_creature/base.mdl", original.Replace("hero", "base"));
+            original = original.Replace("setsupermodel hero NULL", "setsupermodel hero base"); File.WriteAllText(target, original);
+        }
+        var plan = AnimationInstall.Prepare(_folder, Rig(), [target]);
+        void CreateShadow() => Write("SWLOR_Haks/overrides/" + resref + ".mdl", original);
+        if (duringStaging)
+        {
+            var inputs = new ChangingInputs(CreateShadow);
+            foreach (var input in plan.Inputs) inputs.Add(input.Key, input.Value);
+            plan = new() { AnimationName = plan.AnimationName, ConstantName = plan.ConstantName,
+                Changes = plan.Changes, Inputs = inputs, AbsentInputs = plan.AbsentInputs };
+        }
+        else CreateShadow();
+        Action apply = plan.Apply; apply.Should().Throw<IOException>().WithMessage("*created after*preview*");
+        File.ReadAllText(target).Should().Be(original);
+        File.Exists(Path.Combine(_folder, "design/animations/registry.json")).Should().BeFalse();
+        File.Exists(Path.Combine(Path.GetDirectoryName(target)!, "an_hero.mdl")).Should().BeFalse();
+        Directory.GetFiles(_folder, "*.tmp", SearchOption.AllDirectories).Should().BeEmpty();
+    }
     [Test] public void BinarySupermodelPatchChangesOnlyItsFixedHeaderField()
     {
         var original = Enumerable.Range(0, 1000).Select(i => (byte)i).ToArray(); Array.Clear(original, 0, 4);
@@ -449,6 +504,28 @@ public class AnimationEditorTests
         vm.Project.Keys.Should().HaveCount(31);
         vm.ApproveApplicationClose(); vm.OnClose();
     }
+    [AvaloniaTest] public async Task CloseSaveKeepsEditsBlockedUntilTheDocumentIsSaved()
+    {
+        var vm = new AnimationEditorDocumentViewModel(new Prompts { CloseChoice = UnsavedChangesChoice.Save }, new OutputLogService(), initial: Rig());
+        var pickedPath = new TaskCompletionSource<string?>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var closed = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        vm.PickSavePath = (_, _) => pickedPath.Task; vm.CloseRequested += document => closed.TrySetResult(document.OnClose());
+        vm.PositionX = .5m; var original = vm.Project.Serialize();
+        vm.OnClose().Should().BeFalse(); vm.IsBusy.Should().BeTrue();
+        vm.PositionX = 9; vm.AnimationName = "ChangedWhileSaving"; vm.Project.Serialize().Should().Be(original);
+        var path = Path.Combine(_folder, "close.swlanim"); pickedPath.SetResult(path);
+        (await closed.Task.WaitAsync(TimeSpan.FromSeconds(5))).Should().BeTrue();
+        vm.IsBusy.Should().BeFalse(); vm.IsDirty.Should().BeFalse();
+        AnimationProject.Deserialize(File.ReadAllText(path)).Serialize().Should().Be(original);
+    }
+    [AvaloniaTest] public async Task OpeningAnotherProjectClearsPreviousInstallationTargets()
+    {
+        var path = Write("other.swlanim", Rig().Serialize());
+        var vm = new AnimationEditorDocumentViewModel(new Prompts(), new OutputLogService(), initial: Rig()) { TargetPaths = "previous-model.mdl" };
+        var notified = false; vm.PropertyChanged += (_, e) => { if (e.PropertyName == nameof(vm.TargetPaths)) notified = true; };
+        vm.PickOpenPath = (_, _) => Task.FromResult<string?>(path); await vm.OpenProjectCommand.ExecuteAsync(null);
+        vm.TargetPaths.Should().BeEmpty(); notified.Should().BeTrue(); vm.OnClose().Should().BeTrue();
+    }
     [AvaloniaTest] public async Task FailedRelockCannotReuseThePreviousCalibration()
     {
         var path = Gltf(); var json = JsonNode.Parse(File.ReadAllText(path))!;
@@ -552,8 +629,9 @@ public class AnimationEditorTests
         vm.PickSavePath = (_, _) => Task.FromResult<string?>(path);
         vm.PositionX = .5m; vm.CopyPoseCommand.Execute(null); (await vm.TrySaveAsync()).Should().BeTrue();
         var changed = Rig(); changed.Joints[4] = changed.Joints[4] with { Name = "foot", Parent = 1 };
-        File.WriteAllText(path, changed.Serialize()); vm.PositionX = 1;
+        File.WriteAllText(path, changed.Serialize()); vm.PositionX = 1; vm.TargetPaths = "previous-model.mdl";
         (await vm.TrySaveAsync()).Should().BeFalse(); vm.Project.Joints[4].Name.Should().Be("foot");
+        vm.TargetPaths.Should().BeEmpty();
         vm.PastePoseCommand.Execute(null);
         vm.Project.Keys.Should().BeEmpty(); vm.IsDirty.Should().BeFalse(); vm.OnClose().Should().BeTrue();
     }
@@ -622,8 +700,9 @@ public class AnimationEditorTests
     private sealed class Prompts : IEditorPromptService
     {
         public ExternalChangeChoice ExternalChoice { get; init; } = ExternalChangeChoice.Cancel;
+        public UnsavedChangesChoice CloseChoice { get; init; } = UnsavedChangesChoice.Cancel;
         public Task<ExternalChangeChoice> ConfirmExternalChangeAsync(string filePath) => Task.FromResult(ExternalChoice);
-        public Task<UnsavedChangesChoice> ConfirmCloseAsync(string documentTitle) => Task.FromResult(UnsavedChangesChoice.Cancel);
+        public Task<UnsavedChangesChoice> ConfirmCloseAsync(string documentTitle) => Task.FromResult(CloseChoice);
         public Task<bool> ConfirmDestructiveAsync(string headline, string message, string confirmLabel) => Task.FromResult(false);
         public Task<string?> PromptForTextAsync(string headline, string message, string initialValue, string confirmLabel) => Task.FromResult<string?>(null);
     }

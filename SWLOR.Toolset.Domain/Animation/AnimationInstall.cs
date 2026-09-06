@@ -16,6 +16,7 @@ public sealed class AnimationInstallPlan
     public required string ConstantName { get; init; }
     public required IReadOnlyList<AnimationFileChange> Changes { get; init; }
     public required IReadOnlyDictionary<string, byte[]> Inputs { get; init; }
+    public IReadOnlyCollection<string> AbsentInputs { get; init; } = [];
     public string CodeExample => $"NamedAnimation.Queue(creature, AuthoredAnimation.{ConstantName});";
 
     public void Apply()
@@ -66,6 +67,9 @@ public sealed class AnimationInstallPlan
 
     private void VerifyInputs()
     {
+        foreach (var path in AbsentInputs)
+            if (File.Exists(path))
+                throw new IOException($"'{path}' was created after the installation preview. Prepare a new preview.");
         foreach (var input in Inputs)
             if (!File.Exists(input.Key) || !File.ReadAllBytes(input.Key).AsSpan().SequenceEqual(input.Value))
                 throw new IOException($"'{input.Key}' changed after the installation preview. Prepare a new preview.");
@@ -114,6 +118,7 @@ public static class AnimationInstall
         var registryPath = Path.Combine(root, "design", "animations", "registry.json");
         var constantsPath = Path.Combine(root, "SWLOR.NWN.API", "NWScript", "Enum", "AuthoredAnimation.cs");
         var inputs = new Dictionary<string, byte[]>(StringComparer.OrdinalIgnoreCase);
+        var absentInputs = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         byte[] Read(string path)
         {
             if (!inputs.TryGetValue(path, out var data)) inputs[path] = data = File.ReadAllBytes(path);
@@ -128,6 +133,7 @@ public static class AnimationInstall
             {
                 var path = Path.Combine(layer, name + ".mdl");
                 if (File.Exists(path)) return path;
+                absentInputs.Add(path);
             }
             return null;
         }
@@ -291,7 +297,7 @@ public static class AnimationInstall
             throw new InvalidDataException("The animation constants file is not owned by this editor.");
         Add(constantsPath, Encoding.UTF8.GetBytes(generated));
         Add(Path.Combine(root, "design", "animations", project.Name + ".swlanim"), Encoding.UTF8.GetBytes(project.Serialize()));
-        return new() { AnimationName = animationName, ConstantName = project.Name, Changes = changes, Inputs = inputs };
+        return new() { AnimationName = animationName, ConstantName = project.Name, Changes = changes, Inputs = inputs, AbsentInputs = absentInputs };
     }
 
     public static byte[] PatchSupermodel(byte[] data, string modelName, string supermodel)

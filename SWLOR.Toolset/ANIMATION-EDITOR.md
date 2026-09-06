@@ -25,7 +25,8 @@ engine are not required.
    matching preview model** can restore a local preview without replacing the animation.
 5. Save an editable `.swlanim` project or export a `newanim`/`doneanim` MDL text block. Import
    accepts one ASCII animation block against the loaded rig, including constant transforms,
-   transform keys, and animation events. Unsupported controllers fail explicitly rather than
+   counted or `endlist`-terminated transform keys, and animation events. Multiple animation blocks
+   and unsupported controllers fail explicitly rather than
    disappearing during a round trip. Compiled MDLs can supply rigs; animation-block import is ASCII.
 
 Save, Save All, Ctrl+Z, Ctrl+Y, external-change checks, and unsaved-close prompts use the normal
@@ -75,6 +76,7 @@ should expose the animation.
 - `SWLOR.NWN.API/NWScript/Enum/AuthoredAnimation.cs` supplies typed `AnimationClip` references.
 
 Input files are checked again after confirmation and after staging, before publishing any output.
+This includes previously absent higher-priority models that would change resource selection.
 Writes are staged and roll back on failure.
 The editor reserves the workspace during application of the installation transaction.
 Target proportions and inherited animation scale are accounted for in the generated tracks.

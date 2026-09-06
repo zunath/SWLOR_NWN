@@ -10,11 +10,14 @@ public static class AnimationRig
         int selected, PosedNode value, bool anchorLimbs)
     {
         var next = (PosedNode[])pose.Clone(); next[selected] = value;
-        if (!anchorLimbs || joints[selected].Name is not ("pelvis_g" or "rootdummy")) return next;
+        if (!anchorLimbs || !joints[selected].Name.Equals("pelvis_g", StringComparison.OrdinalIgnoreCase) &&
+            !joints[selected].Name.Equals("rootdummy", StringComparison.OrdinalIgnoreCase)) return next;
         var before = World(joints, pose);
         for (var i = 0; i < joints.Count; i++)
         {
-            if (joints[i].Name is not ("lhand_g" or "rhand_g" or "lfoot_g" or "rfoot_g") || joints[i].Parent < 0) continue;
+            var name = joints[i].Name;
+            if (!(name.Equals("lhand_g", StringComparison.OrdinalIgnoreCase) || name.Equals("rhand_g", StringComparison.OrdinalIgnoreCase) ||
+                  name.Equals("lfoot_g", StringComparison.OrdinalIgnoreCase) || name.Equals("rfoot_g", StringComparison.OrdinalIgnoreCase)) || joints[i].Parent < 0) continue;
             var ancestor = joints[i].Parent;
             while (ancestor >= 0 && ancestor != selected) ancestor = joints[ancestor].Parent;
             if (ancestor < 0) continue;

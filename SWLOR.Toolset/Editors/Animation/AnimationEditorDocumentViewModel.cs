@@ -358,6 +358,7 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
         var project = AnimationProject.Deserialize(Encoding.UTF8.GetString(bytes));
         _model = await ResolvePreviewModel(project);
         Project = project; _path = path; _diskBytes = bytes; _saved = project.Serialize(); _undo.Clear(); _redo.Clear(); _copiedPose = null; _calibration = null;
+        TargetPaths = ""; OnPropertyChanged(nameof(TargetPaths));
         Changed(rebuildRows: true); Status = "Animation project opened.";
     });
     private static bool MatchesPreviewRig(AnimationProject project, AnimationProject rig) =>
@@ -428,6 +429,7 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
                     var bytes = await File.ReadAllBytesAsync(path);
                     var reloaded = AnimationProject.Deserialize(Encoding.UTF8.GetString(bytes));
                     _model = await ResolvePreviewModel(reloaded); Project = reloaded;
+                    TargetPaths = ""; OnPropertyChanged(nameof(TargetPaths));
                     _diskBytes = bytes; _saved = Project.Serialize(); _undo.Clear(); _redo.Clear(); _copiedPose = null; _calibration = null; Changed(rebuildRows: true); return false;
                 }
             }
@@ -582,7 +584,15 @@ public sealed partial class AnimationEditorDocumentViewModel : Document, IEditor
     }
     private async Task ConfirmClose()
     {
-        try { if (await ConfirmReplace()) { _closeApproved = true; CloseRequested?.Invoke(this); } }
-        finally { _closePrompt = false; }
+        var confirmed = false;
+        Stop(); IsBusy = true; OnPropertyChanged(nameof(IsBusy));
+        try { confirmed = await ConfirmReplace(); }
+        catch (Exception ex) { Status = ex.GetBaseException().Message; }
+        finally
+        {
+            IsBusy = false; OnPropertyChanged(nameof(IsBusy)); OnPropertyChanged(nameof(CanUndo)); OnPropertyChanged(nameof(CanRedo));
+            _closePrompt = false;
+        }
+        if (confirmed) { _closeApproved = true; CloseRequested?.Invoke(this); }
     }
 }

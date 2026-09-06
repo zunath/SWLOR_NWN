@@ -80,7 +80,7 @@ public static class AnimationMdl
         // The shared reader treats static node values as geometry defaults. Convert animation
         // constants into one-key tracks so they override a nonzero rig bind transform as intended.
         var lines = text.Replace("\r", "").Split('\n');
-        var start = -1; var end = -1; var node = false; var count = 0; var width = 0;
+        var start = -1; var end = -1; var node = false; var count = 0; var width = 0; var list = false; var rows = 0;
         float prior = -1;
         var seenNodes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var directives = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -100,12 +100,14 @@ public static class AnimationMdl
                 continue;
             }
             if (start < 0 || end >= 0) continue;
-            if (count > 0)
+            if (count > 0 || list)
             {
+                if (list && op == "endlist") { Need(parts, 1); list = false; continue; }
                 if (parts.Length != width) throw new InvalidDataException("Invalid transform key width.");
                 var values = parts.Select(Number).ToArray();
                 if (values[0] < 0 || values[0] <= prior) throw new InvalidDataException("Track times must increase.");
-                prior = values[0]; times.Add(prior); count--;
+                if (++rows > AnimationProject.MaxKeyframes) throw new InvalidDataException("Invalid transform track: too many keys.");
+                prior = values[0]; times.Add(prior); if (!list) count--;
                 continue;
             }
             var uniqueDirective = op.EndsWith("key", StringComparison.Ordinal) ? op[..^3] : op;
@@ -138,8 +140,8 @@ public static class AnimationMdl
                     lines[index] = $"{op}key 1\n0 " + string.Join(' ', parts.Skip(1));
                     break;
                 case "positionkey": case "orientationkey": case "scalekey":
-                    Need(parts, 2);
-                    if (!node || !int.TryParse(parts[1], out count) || count < 0 || count > AnimationProject.MaxKeyframes)
+                    list = parts.Length == 1; count = 0; rows = 0;
+                    if (!node || !list && (parts.Length != 2 || !int.TryParse(parts[1], out count) || count < 0 || count > AnimationProject.MaxKeyframes))
                         throw new InvalidDataException("Invalid transform track.");
                     prior = -1; width = op == "positionkey" ? 4 : op == "orientationkey" ? 5 : 2; break;
                 case "endnode":
@@ -153,7 +155,7 @@ public static class AnimationMdl
                 default: throw new InvalidDataException($"Unsupported animation directive '{op}'. Import cancelled to preserve its data.");
             }
         }
-        if (start < 0 || end < 0 || count > 0) throw new InvalidDataException("Incomplete animation block.");
+        if (start < 0 || end < 0 || count > 0 || list) throw new InvalidDataException("Incomplete animation block.");
         if (project.Duration == 0) project.Duration = 1; // A static pose becomes an editable one-second clip.
         var wrapper = $"newmodel {rig.ModelName}\nbeginmodelgeom {rig.ModelName}\nendmodelgeom {rig.ModelName}\n" +
             string.Join('\n', lines[start..(end + 1)]);
